@@ -53,10 +53,10 @@ import { requireSite, sitePath } from './repos.mjs';
 export const OUT = sitePath('data', 'yard-verbs.json');
 
 export async function yardVerbsJson() {
-  const { YARD_POOL, YARD_AK_ITEMS } = await import('../public/js/yard-verbs-mp.js?v=1d9a44fb');
+  const { YARD_POOL, YARD_AK_ITEMS } = await import('../public/js/yard-verbs-mp.js?v=7eba472b');
   const { ANIMAL_KINSHIP_PACKAGES } = await import('../public/js/animal-kinship.js?v=e2a94c13');
   const { ARBOROLOGY_HARVEST, TRANT_META } = await import('../public/js/trants.js?v=4d6f5593');
-  const { SEASONED_BEANS, SEEDLING_GROW_UPGRADES, SOIL_SKILL_PACKAGES, SOIL_TIMERS } = await import('../public/js/patches.js?v=bfdf79d4');
+  const { SEASONED_BEANS, SEEDLING_GROW_UPGRADES, SOIL_SKILL_PACKAGES, SOIL_TIMERS } = await import('../public/js/patches.js?v=0d8e92b4');
   const { WOOD_TREE_HARVEST } = await import('../public/js/woodcutting.js?v=ee35a30a');
   const { ENCHANTED_WOOD_TREE } = await import('../public/js/enchanted-forests.js?v=da978edc');
   const beans = Object.keys(SEASONED_BEANS).sort().map((id) => `${JSON.stringify(id)}:${JSON.stringify(SEASONED_BEANS[id].trantClass)}`);
@@ -65,9 +65,9 @@ export async function yardVerbsJson() {
   const arbor = Object.values(ARBOROLOGY_HARVEST).map((r) => `{"skill":${JSON.stringify(r.skillId)},"l":${r.intervalLimit},"b":${r.bonusAmount}}`);
   const dig = Object.entries(SOIL_SKILL_PACKAGES.dig_patch).map(([id, r]) => `{"skill":${JSON.stringify(id === 'no_skill' ? null : id)},"b":${r.bonus_amount}}`);
   const fruit = Object.keys(TRANT_META).sort().map((id) => `${JSON.stringify(id)}:${JSON.stringify(TRANT_META[id].fruitClass)}`);
-  const { STOCK_POOL, STOCK_NODE_CLASSES, STOCK_NODE_VERBS, STOCK_NODE_YIELD, ROCK_RESPAWN_MS } = await import('../public/js/yard-stock-mp.js?v=67b87535');
+  const { STOCK_POOL, STOCK_NODE_CLASSES, STOCK_NODE_VERBS, STOCK_NODE_YIELD, ROCK_RESPAWN_MS } = await import('../public/js/yard-stock-mp.js?v=3f4c8be8');
   const { ROCK_CATALOG } = await import('../public/js/mining.js?v=b28fef74');
-  const { RESOURCE_NODE_CATALOG } = await import('../public/js/resource-nodes.js?v=cf431a10');
+  const { RESOURCE_NODE_CATALOG } = await import('../public/js/resource-nodes.js?v=7f9f1d80');
   const { CULTIVATION_CLASSES } = await import('../public/js/homes-catalog.js?v=10ac34b6');
   const { LIFESPAN_STEP, MAX_LIFE_STEPS } = await import('../public/js/home-cultivation.js?v=a3135ffd');
   const allPool = { ...YARD_POOL, ...STOCK_POOL };
@@ -85,7 +85,7 @@ export async function yardVerbsJson() {
     return `${JSON.stringify(id)}:{"verb":${JSON.stringify(STOCK_NODE_VERBS[id])},"min":${st.min},"max":${st.max},"initial":${st.initial},"ready":${st.harvestableAt},"after":${st.afterHarvest ?? 'null'},"consume":${st.consume ?? 1},"regrow":[${regrow.join(',')}],"yield":${JSON.stringify(STOCK_NODE_YIELD[id])},"daily":${lim}}`;
   });
   const { FIREFLY_HIVE } = await import('../public/js/home-cultivation.js?v=a3135ffd');
-  const { FIREFLY_JAR_FULL } = await import('../public/js/yard-stock-mp.js?v=67b87535');
+  const { FIREFLY_JAR_FULL } = await import('../public/js/yard-stock-mp.js?v=3f4c8be8');
   const cult = Object.keys(CULTIVATION_CLASSES).sort().filter((id) => ['rock', 'node', 'hive'].includes(CULTIVATION_CLASSES[id].kind)).map((id) => {
     const d = CULTIVATION_CLASSES[id];
     const ns = (d.nodes || []).map((n) => [String(n.classTsid).startsWith('peat_') ? 'peat_1' : n.classTsid, n.dx, n.dy]);
@@ -93,7 +93,7 @@ export async function yardVerbsJson() {
     const hive = d.kind === 'hive' ? `,"hive":[${FIREFLY_HIVE.intervalMs},${FIREFLY_HIVE.maxCount},${FIREFLY_HIVE.radius}]` : '';
     return `${JSON.stringify(id)}:{"kind":${JSON.stringify(d.kind)},"maxWear":${d.maxWear},"nodes":${JSON.stringify(ns)}${hive}}`;
   });
-  const { POPULATION_CONTROLS, CROWD_CARDS, YARD_CAP_OURS, YARD_CAP_SCAN } = await import('../public/js/animal-crowding.js?v=e06991ca');
+  const { POPULATION_CONTROLS, CROWD_CARDS, YARD_CAP_OURS, YARD_CAP_SCAN } = await import('../public/js/animal-crowding.js?v=3ee9671d');
   const { HOME_LIMITS } = await import('../public/js/homes-catalog.js?v=10ac34b6');
   const { YARD_SEGMENT_W, HOUSE_LOT_W } = await import('../public/js/home-cultivation.js?v=a3135ffd');
   const controls = Object.keys(POPULATION_CONTROLS).sort().map((id) => `${JSON.stringify(id)}:[${POPULATION_CONTROLS[id].perWidth},${POPULATION_CONTROLS[id].minMax},${POPULATION_CONTROLS[id].maxMax}]`);

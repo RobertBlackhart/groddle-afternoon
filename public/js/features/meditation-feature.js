@@ -42,7 +42,7 @@
  */
 
 import { addItem, countItem, ensureItem } from '../inventory.js?v=f49c8998';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../game-day.js?v=caa7d584';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../game-day.js?v=72f37c7e';
 import {
   STATION_COUNTER,
   STATION_QUEST,

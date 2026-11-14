@@ -28,7 +28,7 @@ import {
   loadRecipeCatalogFromFile,
   recipeToolFor,
   recipeToolInUse,
-} from '../public/js/making.js?v=e974c915';
+} from '../public/js/making.js?v=202c452e';
 import { ITEM_CATALOG, countItem, createInventory, isToolItem } from '../public/js/inventory.js?v=f49c8998';
 import {
   GRINDER_TOOLS,
@@ -46,7 +46,7 @@ import { MAKE_TOOL_SHEETS } from '../public/js/make-tool-sheets.js?v=6f758e09';
 import { clearPlot, createGarden, getPlot, hasHoe, hasWateringCan, plantPlot, waterPlot } from '../public/js/garden.js?v=1420a6d6';
 import { performTrantCare, quoteTrantCare } from '../public/js/trant-care.js?v=6ee0b0f5';
 import { createTrantState, setTrantTables } from '../public/js/trants.js?v=4d6f5593';
-import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=bfdf79d4';
+import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=0d8e92b4';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

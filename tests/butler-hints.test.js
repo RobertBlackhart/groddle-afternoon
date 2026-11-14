@@ -13,11 +13,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=637855da';
-import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=c5115838';
-import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=33f0a46e';
+import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=57456a7f';
+import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=903c66d2';
+import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=9a5fb60e';
 import { homeTowerFeature, towerApi } from '../public/js/features/home-tower-feature.js?v=6553d242';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=16928809';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=38878bed';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

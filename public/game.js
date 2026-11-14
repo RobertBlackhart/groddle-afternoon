@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=f7e3d8ae';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a7855cd0';
 import { createErrorOnce, createFeatureHost, reportPageError } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c8f82f4c';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=aa506ef7';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -384,7 +384,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=270f7059';
+} from './js/paradise-flight.js?v=b41e12a0';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=b466613b';
 import {
   buildParadiseCourseArt,
@@ -497,8 +497,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=64e4a567';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=5dc797f1';
-import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=5dc797f1';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=95b338f6';
+import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=95b338f6';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -517,7 +517,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=91c3dae7';
+} from './js/player-save.js?v=b7b9edba';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -619,11 +619,11 @@ import {
   recipeTaskLimit,
   recipeToolInUse,
   pluralizeItem,
-} from './js/making.js?v=e974c915';
+} from './js/making.js?v=202c452e';
 import { outputIconsHtml, outputsPhrase, recipeOutputRows } from './js/ui/recipe-outputs.js?v=73e19baf';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=ef6193df';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=1ae985b2';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=de5b27f2';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=5e100f37';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=038298f0';
 import {
@@ -723,7 +723,7 @@ import {
   getGameDayKey,
   timestampForGameHour,
   msUntilNewDay,
-} from './js/game-day.js?v=caa7d584';
+} from './js/game-day.js?v=72f37c7e';
 import {
   FOOD_VARIETY_UPGRADE,
   createFoodState,
@@ -733,7 +733,7 @@ import {
   canEatFood,
   recordFoodEat,
   resetFoodDay,
-} from './js/food.js?v=8c70a04c';
+} from './js/food.js?v=2728d1c6';
 import {
   consumeTakesCount,
   consumeCountCap,
@@ -743,7 +743,7 @@ import {
   limitCountCap,
   useItemMany,
   recordFoodEatMany,
-} from './js/eat-many.js?v=6a4480d6';
+} from './js/eat-many.js?v=5cd11d92';
 import {
   TRIPLE_JUMP_UPGRADES,
   createJumpState,
@@ -785,7 +785,7 @@ import {
   trantStatusLabel,
   trantFootAnchorY,
 } from './js/trants.js?v=4d6f5593';
-import { growStreetTrant } from './js/patches.js?v=bfdf79d4';
+import { growStreetTrant } from './js/patches.js?v=0d8e92b4';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -824,7 +824,7 @@ import { createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=6ae5adce';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
-import { hellBuffDesc, isInHell } from './js/hell.js?v=3e9605f2';
+import { hellBuffDesc, isInHell } from './js/hell.js?v=df2b4357';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { createNpcGlitchKit } from './js/npc-glitch.js?v=28b5c170';
@@ -839,7 +839,7 @@ import {
   APPEARANCE_PRESETS,
   PRESET_GROUPS,
   appearanceCacheKey,
-} from './js/character-builder.js?v=80be991d';
+} from './js/character-builder.js?v=ffa761e9';
 import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=4e57b8c5';
 import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=a05b7d4f';
 import {
@@ -862,7 +862,7 @@ import {
   planMusicblockDrop,
   playMusicblock,
   starterMusicblocks,
-} from './js/musicblocks.js?v=93922111';
+} from './js/musicblocks.js?v=f75d0a19';
 import {
   VENDOR_PROFILES,
   selectVendorProfile,
@@ -881,7 +881,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=5dc797f1';
+} from './js/animals.js?v=95b338f6';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -920,7 +920,7 @@ import {
   favorRelationNote,
   emblemRelationNote,
   formatSpeedUpTime,
-} from './js/shrines.js?v=f3d90859';
+} from './js/shrines.js?v=d2c88987';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=6f3d6671';
@@ -933,7 +933,7 @@ import {
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=c95e49d7';
+} from './js/spinning-wheel.js?v=5c18c365';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -1010,11 +1010,11 @@ import {
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=02dd7dda';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=3ba8bbd7';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=e70bafd5';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=d79b13ec';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=445d35d7';
-import { isCrowdSad } from './js/animal-crowding.js?v=e06991ca';
+import { isCrowdSad } from './js/animal-crowding.js?v=3ee9671d';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=e3634838';
 import {
   actionLoopFor,
@@ -1061,7 +1061,7 @@ import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from '
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=22a844b6';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=5edfbb12';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=814d7926';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=6f478d81';
@@ -1069,10 +1069,11 @@ import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d5
 import { cancelAllOverlays, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=92383208';
 import * as textureUrls from './js/textures.js?v=814d7926';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
-import { hidesChatBubble } from './js/hi-signs.js?v=91a22049';
+import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
-import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=03027f36';
+import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=cd053443';
+import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide } from './js/speech-placement.js?v=09802fc5';
@@ -15058,6 +15059,17 @@ function holdSaves(reason) {
   else freezeSoloSaves();
 }
 
+/** G737: the build this page is (its stamp; null on a QA server), named in every save it writes. */
+const PAGE_BUILD = pageBuild(document);
+
+// Solo, another tab of a newer build saving this browser's game: this page stops writing over it
+// (js/save-build.js). Online the site refuses such a write (409 groddle_save_outdated, js/save-store.js).
+if (saveStore.kind !== 'multiplayer') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === saveStore.keyFor?.(PLAYER_STATE_STORAGE_KEY) && buildRefuses(saveStampOf(e.newValue), PAGE_BUILD)) holdSaves('newer');
+  });
+}
+
 /**
  * The stored save, read for boot (js/player-save.js inspectPlayerSave). G737: one the game cannot
  * read is never saved over (a copy is kept too, solo) and the game starts fresh without saving;
@@ -15086,7 +15098,8 @@ function loadPlayerState() {
     holdSaves('unreadable');
     return null;
   }
-  if (seen.status === 'newer') holdSaves('newer');
+  // A newer save version, or (solo) a newer build than this page: it plays, and is never written over.
+  if (seen.status === 'newer' || (saveStore.kind !== 'multiplayer' && buildRefuses(saveStampOf(raw), PAGE_BUILD))) holdSaves('newer');
   return seen.save;
 }
 
@@ -15101,6 +15114,7 @@ function savePlayerState() {
       systems: persistentSystems(),
       world: persistentWorldState,
       savedAt: Date.now(),
+      build: PAGE_BUILD,
     }));
     // savedAt changes each capture; compare gameplay payloads before writing.
     const comparable = serialized.replace(/"savedAt":\d+/, '"savedAt":0');

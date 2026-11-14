@@ -1,17 +1,18 @@
 /** Persistent player systems + per-street world snapshot. */
-import { normalizeShrineState } from './shrines.js?v=f3d90859';
+import { normalizeShrineState } from './shrines.js?v=d2c88987';
 import { normalizeQuoinState } from './quoins.js?v=61be601c';
 import { normalizeToolConditionState, syncToolCopies } from './tools.js?v=48542c24';
 import { normalizeSkillState } from './skills.js?v=4542bdf9';
-import { normalizeFoodState } from './food.js?v=8c70a04c';
+import { normalizeFoodState } from './food.js?v=2728d1c6';
 import { createGhostQuestState } from './ghost-quest.js?v=5f3cc133';
-import { normalizeParadiseState } from './paradise-flight.js?v=270f7059';
+import { normalizeParadiseState } from './paradise-flight.js?v=b41e12a0';
 import { normalizeFeatSnapshot } from './feats.js?v=f6c3b551';
 import { normalizeEmotionalBearState } from './emotional-bear.js?v=172f393b';
 import { normalizeHomeState } from './homes.js?v=631ab6b8';
 import { normalizeMailboxState } from './mailbox.js?v=a3e833ba';
 import { normalizeFeatureSlices } from './feature-host.js?v=a0bd032a';
 import { normalizeQuestOfferState } from './quest-offers.js?v=89511e1e';
+import { cleanBuild } from './save-build.js?v=588eae75';
 
 export const PLAYER_SAVE_VERSION = 7;
 
@@ -411,9 +412,13 @@ export function createPlayerSave({
   systems = {},
   world = {},
   savedAt = Date.now(),
+  build = null,
 } = {}) {
+  const stamp = cleanBuild(build);
   return {
     version: PLAYER_SAVE_VERSION,
+    // G737: the build that wrote it, right after the version (js/save-build.js saveStampOf reads the head).
+    ...(stamp ? { build: stamp } : {}),
     inventory: normalizeInventorySnapshot(inventory),
     player: normalizePlayerSnapshot(player),
     systems: normalizeSystemsSnapshot(systems),
@@ -425,8 +430,10 @@ export function createPlayerSave({
 export function normalizePlayerSave(seed, defaults = {}) {
   if (!seed || typeof seed !== 'object') return null;
   if (!seed.inventory || typeof seed.inventory !== 'object') return null;
+  const stamp = cleanBuild(seed.build);
   return {
     version: PLAYER_SAVE_VERSION,
+    ...(stamp ? { build: stamp } : {}),
     inventory: normalizeInventorySnapshot(seed.inventory, defaults.inventory || {}),
     player: normalizePlayerSnapshot(seed.player, defaults.player),
     systems: normalizeSystemsSnapshot(seed.systems || defaults.systems || {}),

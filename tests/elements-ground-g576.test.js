@@ -15,9 +15,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PACK_COPY, roomFor } from '../public/js/pack-slots.js?v=4d446d78';
-import { getVerbsFor } from '../public/content.js?v=f7e3d8ae';
+import { getVerbsFor } from '../public/content.js?v=a7855cd0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=b1c8773a';
+import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=31c01c19';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');

@@ -66,7 +66,7 @@
  */
 
 import { isPhoneDevice } from '../touch-controls.js?v=6ae5adce';
-import { butlerApi } from './butler-feature.js?v=c5115838';
+import { butlerApi } from './butler-feature.js?v=903c66d2';
 import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=814d7926';
 import {
@@ -101,7 +101,7 @@ import {
   setButlerHiVariant,
   setPlayerHiVariant,
   stepMissile,
-} from '../hi-signs.js?v=91a22049';
+} from '../hi-signs.js?v=0436d54a';
 import {
   BOARD_POLL_MS,
   BOARD_TEXT,
@@ -116,7 +116,7 @@ import {
   recordLine,
   yesterdayLine,
   yourSignLine,
-} from '../hi-signs-mp.js?v=48366990';
+} from '../hi-signs-mp.js?v=24b2d923';
 
 /** An art URL with its content key (js/data-urls.js groddleDataUrl); as it is in Node and on a page without the map. */
 const keyedArt = (url) => (typeof globalThis.groddleDataUrl === 'function' ? globalThis.groddleDataUrl(url) : url);

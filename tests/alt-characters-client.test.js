@@ -16,11 +16,11 @@ import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 import { CHARACTER_CHANGED, CHARACTER_CHANGED_EVENT, CHARACTER_HEADER, characterHeaders, characterOf, isCharacterChanged } from '../public/js/character-guard.js?v=510034a7';
 import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=bd210eb9';
-import { createSaveSync } from '../public/js/save-store.js?v=03027f36';
+import { createSaveSync } from '../public/js/save-store.js?v=cd053443';
 import { CLOSE_OTHER_CHARACTER, createRealtimeClient } from '../public/js/realtime-client.js?v=2663e2d3';
-import { OTHER_CHARACTER_TEXT, statusText } from '../public/js/features/realtime-feature.js?v=da5f8440';
-import { CHARACTER_COPY, FRESH_HASH, SAVE_ALERT_COPY, characterChoices, continuesAs, createRefusalText, saveAlertFor } from '../public/js/online-boot.js?v=78c32c71';
-import { SWITCHER_COPY, STYLE as SWITCHER_STYLE, cardUrl, popoverPlace, switcherChoices } from '../public/js/character-switcher.js?v=0d497216';
+import { OTHER_CHARACTER_TEXT, statusText } from '../public/js/features/realtime-feature.js?v=c7156ab2';
+import { CHARACTER_COPY, FRESH_HASH, SAVE_ALERT_COPY, characterChoices, continuesAs, createRefusalText, saveAlertFor } from '../public/js/online-boot.js?v=d3834f20';
+import { SWITCHER_COPY, STYLE as SWITCHER_STYLE, cardUrl, popoverPlace, switcherChoices } from '../public/js/character-switcher.js?v=5d09bc88';
 import { LOCAL_STATES } from '../public/js/shared-quoins.js?v=89d7b201';
 import { menuRowFor } from '../public/js/ui/topbar.js?v=23c2cb54';
 

@@ -42,7 +42,7 @@
 
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
-import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=e974c915';
+import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=202c452e';
 import { furnitureDef, furnitureScale, furnitureSize } from '../home-decor.js?v=06be9c65';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
@@ -53,11 +53,11 @@ import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=9b11451f';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
-import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=b823146f';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=33f0a46e';
-import { projectApi } from './street-jobs-feature.js?v=1317dbde';
-import { saveStore } from '../save-store.js?v=03027f36';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=9f0dad96';
+import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=46d0c065';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=9a5fb60e';
+import { projectApi } from './street-jobs-feature.js?v=6e4f25b8';
+import { saveStore } from '../save-store.js?v=cd053443';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=00977389';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -89,7 +89,7 @@ import {
   saleVerbs,
   signpostArms,
   signpostCandidates,
-} from '../home-street-mp.js?v=30369b1d';
+} from '../home-street-mp.js?v=4490d3ee';
 
 export { HOME_STREET_MP_ID };
 

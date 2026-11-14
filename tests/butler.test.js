@@ -70,13 +70,13 @@ import {
   takeVisitorDelivery,
   teachButler,
   visitorsReport,
-} from '../public/js/butler.js?v=637855da';
+} from '../public/js/butler.js?v=57456a7f';
 import { canOptIn, stoneVog, STONE_TEXT } from '../public/js/street-furniture.js?v=cf1d21b1';
 import { NEIGHBOURS, neighbourById, normalizeNeighbourState, visitorLetter } from '../public/js/neighbours.js?v=781ad57f';
-import { butlerApi, butlerFeature } from '../public/js/features/butler-feature.js?v=c5115838';
+import { butlerApi, butlerFeature } from '../public/js/features/butler-feature.js?v=903c66d2';
 // The URL clubhouse.js imports, so these share its Butler.
-import { butlerApi as clubButler, butlerFeature as clubButlerFeature } from '../public/js/features/butler-feature.js?v=c5115838';
-import { PART_1 as JOIN_CLUB, REMINISCE as JOIN_CLUB_REMINISCE, room as clubRoom } from '../public/js/quest-rooms/clubhouse.js?v=e37f6198';
+import { butlerApi as clubButler, butlerFeature as clubButlerFeature } from '../public/js/features/butler-feature.js?v=903c66d2';
+import { PART_1 as JOIN_CLUB, REMINISCE as JOIN_CLUB_REMINISCE, room as clubRoom } from '../public/js/quest-rooms/clubhouse.js?v=c3015fc4';
 import { BUTLER_FEET, ButlerPainter, clipRange, drawList } from '../public/js/butler-rig.js?v=86bb97ad';
 import { OFFER_OVERRIDES } from '../public/js/quest-rooms/catalog.js?v=a217b716';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';

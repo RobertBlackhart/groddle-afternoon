@@ -30,6 +30,7 @@
 import { GAME_MODE, MULTIPLAYER } from './game-mode.js?v=1ecf2899';
 import { leaveHandoff, listenForClaims, newWriterId } from './save-claim.js?v=30cf5250';
 import { CHARACTER_CHANGED_EVENT, characterHeaders, characterId, isCharacterChanged } from './character-guard.js?v=510034a7';
+import { buildRefuses, cleanBuild, pageBuild } from './save-build.js?v=588eae75';
 
 export { newWriterId };
 
@@ -71,12 +72,15 @@ export const SAVE_FORMAT = 1;
  * boot.js asks): keep this window's game (takeover) or load the saved one;
  * error waits for "Try again" (retry). held (G737): the game asked this page never to write (the
  * stored save could not be read, or a newer version wrote it; game.js holdSaves says why on the
- * game's own save card); nothing writes again until a reload. None of them is ever silent.
+ * game's own save card); nothing writes again until a reload. outdated (G737): a newer build of
+ * the game saved this character since (the site's 409 groddle_save_outdated, or the loaded save
+ * names a newer build than this page, js/save-build.js); nothing writes again, the player reloads.
+ * None of them is ever silent.
  */
-export const SAVE_STATES = Object.freeze(['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held']);
+export const SAVE_STATES = Object.freeze(['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held', 'outdated']);
 
 /** The states that stop writing until the player acts (online-boot.js shows each one). */
-export const SAVE_STOPPED = Object.freeze(['conflict', 'elsewhere', 'signed-out', 'error', 'held']);
+export const SAVE_STOPPED = Object.freeze(['conflict', 'elsewhere', 'signed-out', 'error', 'held', 'outdated']);
 
 /** The player's answer to a stopped save, as a groddle:save-choice event: keep (this window's game), retry. */
 export const SAVE_CHOICE_EVENT = 'groddle:save-choice';
@@ -289,6 +293,7 @@ export function createSaveSync({
       characterGone = true;
       return 'character';
     }
+    if (res.status === 409 && data?.code === 'groddle_save_outdated') return 'outdated';
     if (res.status === 409) {
       current.serverVersion = Number(data?.data?.version) || 0;
       refused = { serverVersion: current.serverVersion, otherUpdatedAt: data?.data?.updatedAt || null, otherSavedAt: Number(data?.data?.savedAt) || 0 };
@@ -427,6 +432,13 @@ export function createSaveSync({
     setState('held', { reason, force: true });
     return state;
   }
+  /** The save was stored by a newer build than this page (G737): stop now, as the site's refusal would. */
+  function outdated() {
+    if (characterGone || SAVE_STOPPED.includes(state)) return state;
+    clear();
+    setState('outdated', { confirmedAt: current.confirmedAt, force: true });
+    return state;
+  }
   /** Another call heard the site's character_changed: stop writing now, as a refused write would. */
   function characterChanged() {
     if (characterGone) return state;
@@ -443,6 +455,7 @@ export function createSaveSync({
     retry,
     yieldTo,
     hold,
+    outdated,
     characterChanged,
     /** The character every write names (0: none). */
     get character() { return playing; },
@@ -496,6 +509,8 @@ export function createMultiplayerSaveStore(opts = {}) {
   if (!boot || typeof boot !== 'object' || typeof boot.saveUrl !== 'string') return createRefusingMultiplayerStore();
   const entries = entriesOf(boot.entries);
   const writer = typeof boot.writer === 'string' && /^[A-Za-z0-9]{8,32}$/.test(boot.writer) ? boot.writer : newWriterId();
+  // G737: every write names this page's build; the site keeps it with the save (SaveShape build).
+  const build = cleanBuild('build' in opts ? opts.build : pageBuild(scope?.document));
   const sync = createSaveSync({
     url: boot.saveUrl,
     nonce: boot.nonce || '',
@@ -504,7 +519,7 @@ export function createMultiplayerSaveStore(opts = {}) {
     writer,
     character: boot.player?.id,
     confirmedAt: typeof boot.updatedAt === 'string' ? boot.updatedAt : null,
-    payload: () => ({ kind: MULTIPLAYER_SAVE_KIND, format: SAVE_FORMAT, entries: Object.fromEntries(entries) }),
+    payload: () => ({ kind: MULTIPLAYER_SAVE_KIND, format: SAVE_FORMAT, ...(build ? { build } : {}), entries: Object.fromEntries(entries) }),
     fetch: opts.fetch ?? scope?.fetch?.bind(scope),
     timers: opts.timers,
     now: opts.now,
@@ -527,6 +542,8 @@ export function createMultiplayerSaveStore(opts = {}) {
     // Another call of this page (mail, an auction, the realtime ticket) heard that another character is signed in.
     scope.addEventListener(CHARACTER_CHANGED_EVENT, () => { sync.characterChanged(); });
   }
+  // The save was loaded from a newer build than this page (an old copy of the page): it never writes.
+  if (buildRefuses(boot.build, build)) sync.outdated();
   // Another tab of this browser opening the same character asks this one to save and stand down first.
   const claims = listenForClaims({ scope, player: boot.player?.id, writer, onClaim: () => sync.yieldTo() });
   const check = (name) => {

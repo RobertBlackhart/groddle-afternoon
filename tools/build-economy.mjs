@@ -71,10 +71,10 @@ import { CUBIMAL_PACKAGE_IDS, CUBIMAL_SERIES } from '../public/js/cubimals.js?v=
 import { ARTIFACT_MAP, ARTIFACT_NECKLACES } from '../public/js/artifacts.js?v=fc419ecf';
 import { XP_FOR_LEVEL, currantRewardForLevel } from '../public/js/progression.js?v=72b2b22a';
 import { IMAGINATION_UPGRADES } from '../public/js/imagination-data.js?v=4a85e7fe';
-import { SPINDLE_TOOLS } from '../public/js/making.js?v=e974c915';
+import { SPINDLE_TOOLS } from '../public/js/making.js?v=202c452e';
 import { creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { FURNITURE_STARTER_KIT } from '../public/js/homes-catalog.js?v=10ac34b6';
-import { GIANTS } from '../public/js/shrines.js?v=f3d90859';
+import { GIANTS } from '../public/js/shrines.js?v=d2c88987';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const OUT = sitePath('data', 'economy.json');

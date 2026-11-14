@@ -63,7 +63,7 @@
  *    finished.
  */
 
-import { DAY_NAMES, GAME_DAY_MS } from './game-day.js?v=caa7d584';
+import { DAY_NAMES, GAME_DAY_MS } from './game-day.js?v=72f37c7e';
 
 export const SOLO_FEATS_ID = 'solo-feats';
 export const REWARD_ITEM = 'petrified_rock_small';

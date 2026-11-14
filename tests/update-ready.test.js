@@ -67,10 +67,10 @@ describe('the build id written at deploy', () => {
   it('stamps both play pages and play/build.json with one id, and the page knows its own', () => {
     const dir = builtCopy();
     try {
-      const out = stampBuild(dir, { version: 'v9.9.9' });
+      const out = stampBuild(dir, { version: 'v9.9.9', at: 1763100000 });
       assert.match(out.build, /^[0-9a-f]{12}$/);
       const file = JSON.parse(readFileSync(join(dir, BUILD_FILE), 'utf8'));
-      assert.deepEqual(file, { build: out.build, version: 'v9.9.9' });
+      assert.deepEqual(file, { build: out.build, version: 'v9.9.9', at: 1763100000 });
       assert.ok(readFileSync(join(dir, BUILD_FILE)).length < 200, 'a few dozen bytes');
       for (const p of PLAY_PAGES) {
         const html = readFileSync(join(dir, p), 'utf8');

@@ -55,7 +55,7 @@
 
 import { purgeOf, withoutPurged } from '../chat-purge.js?v=6c41f62d';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
-import { saveStore } from '../save-store.js?v=03027f36';
+import { saveStore } from '../save-store.js?v=cd053443';
 import {
   CHANNELS,
   CHANNEL_INTRO,

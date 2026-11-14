@@ -31,14 +31,14 @@ import {
   savedAtOf,
   savedThrough,
   soloSaveSnapshot,
-} from '../public/js/save-store.js?v=03027f36';
+} from '../public/js/save-store.js?v=cd053443';
 import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff } from '../public/js/save-claim.js?v=30cf5250';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=6fe817bc';
-import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=80be991d';
-import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=caa7d584';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=91c3dae7';
+import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
+import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=72f37c7e';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=b7b9edba';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');
@@ -460,7 +460,7 @@ describe('multiplayer save store (phase 2)', () => {
     assert.equal(scope.document.documentElement.dataset.saveState, 'pending');
     await timers.tick(2000);
     assert.equal(scope.document.documentElement.dataset.saveState, 'saved');
-    assert.deepEqual([...SAVE_STATES], ['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held']);
+    assert.deepEqual([...SAVE_STATES], ['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held', 'outdated']);
   });
 
   it('createSaveSync on its own writes nothing until something changes', async () => {

@@ -46,6 +46,7 @@ const PILL_TEXT = {
   error: 'Not saved',
   // G737: the game's own save card says why (js/save-trouble.js).
   held: 'Not saving',
+  outdated: 'Reload to save',
 };
 
 /**
@@ -74,6 +75,11 @@ export const SAVE_ALERT_COPY = {
     title: 'Playing in another window',
     body: 'This browser switched to another character in another window, so this window stopped saving.',
   },
+  // G737: a newer version of the game saved this character (the site's 409 groddle_save_outdated).
+  outdated: {
+    title: 'A newer version saved your game',
+    body: 'Your character was saved by a newer version of Groddle Afternoon, so this window stopped saving. Reload to carry on with the newer version.',
+  },
   error: {
     title: 'Your game is not being saved',
     body: 'The Groddle site did not take the last save.',
@@ -88,6 +94,7 @@ export const SAVE_ALERT_COPY = {
   here: 'Play here',
   choose: 'Choose a character',
   retry: 'Try again',
+  reload: 'Reload',
   signIn: 'Sign in again',
   lastSaved: (at) => `This window last saved at ${at}.`,
   otherSaved: (at) => `The other save is from ${at}.`,
@@ -124,6 +131,7 @@ export function saveAlertFor(state, detail = {}) {
     lines.push(C.keepNote);
     return { ...C[state], lines, buttons: [['load', C.load], ['keep', C.keep]] };
   }
+  if (state === 'outdated') return { ...C.outdated, lines: [], buttons: [['load', C.reload]] };
   if (state === 'error') return { ...C.error, lines: detail.message ? [String(detail.message)] : [], buttons: [['retry', C.retry]] };
   if (state === 'signed-out') return { ...C['signed-out'], lines: [], buttons: [['signIn', C.signIn]] };
   return null;
@@ -307,6 +315,8 @@ export function bootDataFrom({ account, session, save, writer = '' }) {
     version: Number.isInteger(save?.version) ? save.version : 0,
     updatedAt: save?.updatedAt || null,
     entries: data?.entries && typeof data.entries === 'object' ? { ...data.entries } : {},
+    // G737: the build that stored this save (js/save-store.js stops at once if it is newer than this page).
+    ...(data?.build && typeof data.build === 'object' ? { build: { ...data.build } } : {}),
     player: session.player,
     writer,
     // G567: an administrator's game draws Delete line on channel lines (groups-feature); the site's route checks again.
@@ -643,10 +653,10 @@ function mountSavePill(player) {
     shown = s;
     // Elsewhere looks like a conflict in the pack (its words show, not just the cloud).
     // Held (G737) shows red like a refused save; the game's own card says why.
-    pill.dataset.state = s === 'elsewhere' ? 'conflict' : s === 'held' ? 'error' : s;
+    pill.dataset.state = s === 'elsewhere' ? 'conflict' : s === 'held' ? 'error' : s === 'outdated' ? 'signed-out' : s;
     // A conflict or an ended session needs the player: the words become the way out.
     // Reloading /play/online/ shows the gate's sign-in when the session is gone.
-    const href = s === 'conflict' || s === 'signed-out' ? location.pathname : '';
+    const href = s === 'conflict' || s === 'signed-out' || s === 'outdated' ? location.pathname : '';
     const text = PILL_TEXT[s] || s;
     tip(text);
     pill.lastChild.replaceWith(href ? el('a', { class: 'save-pill-state', href }, text) : el('span', { class: 'save-pill-state' }, text));

@@ -92,8 +92,8 @@
  */
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
-import { getGameDayKey } from '../game-day.js?v=caa7d584';
-import { isPooped } from '../hell.js?v=3e9605f2';
+import { getGameDayKey } from '../game-day.js?v=72f37c7e';
+import { isPooped } from '../hell.js?v=df2b4357';
 import { metabolicGain, moodMax, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
 import {
   POWDERS,
@@ -115,9 +115,9 @@ import {
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=c821e9fa';
 import { migrateClassValue } from '../tools.js?v=48542c24';
-import { DEAD_TRANT_CLASSES } from '../patches.js?v=bfdf79d4';
-import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=252fb911';
-import { hellFeature } from './hell-feature.js?v=01410ca4';
+import { DEAD_TRANT_CLASSES } from '../patches.js?v=0d8e92b4';
+import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=8e3b1638';
+import { hellFeature } from './hell-feature.js?v=657cce8b';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=92383208';
 import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=445d35d7';
@@ -131,7 +131,7 @@ import {
   powderCaughtLine,
   powderRefusedLine,
   powderRefusedSound,
-} from '../hi-signs-mp.js?v=48366990';
+} from '../hi-signs-mp.js?v=24b2d923';
 
 export const POWDERS_FEATURE_ID = 'powders';
 

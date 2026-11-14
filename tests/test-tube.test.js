@@ -28,11 +28,11 @@ import {
   setSlotCount,
   slotsToInputs,
   stampKnownCompounds,
-} from '../public/js/test-tube.js?v=1ae985b2';
-import { COMPOUND_DISCOVERY_FEATURE_ID, compoundDiscoveryFeature } from '../public/js/features/compound-discovery-feature.js?v=ad64c298';
-import { RECIPE_CATALOG, TOOL_CATALOG, canCraft, compoundKnown, ensureMakingItems, loadRecipeCatalogFromFile, recipeBlockedLine, recipeKnown, searchRecipes } from '../public/js/making.js?v=e974c915';
+} from '../public/js/test-tube.js?v=5e100f37';
+import { COMPOUND_DISCOVERY_FEATURE_ID, compoundDiscoveryFeature } from '../public/js/features/compound-discovery-feature.js?v=dbaa717b';
+import { RECIPE_CATALOG, TOOL_CATALOG, canCraft, compoundKnown, ensureMakingItems, loadRecipeCatalogFromFile, recipeBlockedLine, recipeKnown, searchRecipes } from '../public/js/making.js?v=202c452e';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=91c3dae7';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=b7b9edba';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');

@@ -21,8 +21,8 @@
  */
 
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=f49c8998';
-import { getGameDayKey } from '../game-day.js?v=caa7d584';
-import { hellFeature } from './hell-feature.js?v=01410ca4';
+import { getGameDayKey } from '../game-day.js?v=72f37c7e';
+import { hellFeature } from './hell-feature.js?v=657cce8b';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import {
   RUBE_CLASS,
