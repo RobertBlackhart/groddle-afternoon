@@ -257,7 +257,10 @@ describe('world map (world_map.fla)', () => {
       }
     });
 
-    it('stays light: a picture under 80 KB, a card under 120 KB, all 47 under 2.5 MB (a card loads only when its region is hovered)', () => {
+    // The total was 2.5 MB while every card showed a painting made from its thumbnail; a region restored from its 2012
+    // map carries far more detail (Folivoria, Haraiva and Ix took it to 2.6 MB at 20 restored, lane maps4), so the total
+    // leaves room for every region restored. Each card's own limits are the ones a player feels: one loads per hover.
+    it('stays light: a picture under 80 KB, a card under 120 KB, all 47 under 4.5 MB (a card loads only when its region is hovered)', () => {
       let total = 0;
       for (const [id, row] of Object.entries(manifest.cards)) {
         const bytes = Buffer.byteLength(card(id));
@@ -265,7 +268,7 @@ describe('world map (world_map.fla)', () => {
         assert.ok(row.picture.bytes < 80 * 1024, `card ${id} picture ${row.picture.bytes} bytes`);
         assert.ok(bytes < 120 * 1024, `card ${id} ${bytes} bytes`);
       }
-      assert.ok(total < 2.5 * 1024 * 1024, `${total} bytes`);
+      assert.ok(total < 4.5 * 1024 * 1024, `${total} bytes`);
     });
 
     it('Baqala\'s card drew Zhambu\'s thumbnail in the FLA; it now carries Baqala\'s own painting', () => {

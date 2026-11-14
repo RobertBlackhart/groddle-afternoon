@@ -27,14 +27,14 @@
         "file": "assets/maps/art/bg/ix@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "35253bea08465e05a03f574edc598231c0c6b78b07cab0b4d8eb5317582a8e90"
+        "sha256": "4192f8af89833d1edcc9aedd25b6c6af6c437117c7b801f44a5773038e32af86"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 15768,
-        "sha256": "b6d1839c53f97cd7014022d101b744d5cb0c11c8ab4ac33a50809c5ade8e7869"
+        "bytes": 45920,
+        "sha256": "a62c9e740bee2c915d9de285f5f15e10096df1268f5ca80b2d55d563633f91cc"
       }
     },
     "51": {
@@ -589,14 +589,14 @@
         "file": "assets/maps/art/bg/haraiva@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "8bf003eba34e2066f4db95247e2a758ba6334664c52869fa4de3fcefd3560ddc"
+        "sha256": "cf4af8c529f1ee84d1c06213b0671e89bb1ace9b5082c8cbc8357ece3bcc3adc"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 22102,
-        "sha256": "5058d064f85328525cbf084ca6d197c81e2b851de4754b4cf7d65dfa501a22cf"
+        "bytes": 37162,
+        "sha256": "9c1e1f9ddfd2c7c4d970891b014326e2686b634ddf9ca12dc5af1190d03c9070"
       }
     },
     "119": {
@@ -606,14 +606,14 @@
         "file": "assets/maps/art/bg/folivoria@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "731f832737dc4a04a649704d785658f4938d67d171d85689810397acf68bd594"
+        "sha256": "76610da0a41765b95419808c38f0cfeb4eeb9ff13f84c219386b647b302f44b4"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 18864,
-        "sha256": "ffaddf0f8a0989d3ecba6d566f6f3d80e6d7a74492ac663150039b5a0207096c"
+        "bytes": 55218,
+        "sha256": "ead23480c061a28d5422316d43f6d9ec452da0fe868a2a91b445b41d5b4f2aef"
       }
     },
     "120": {

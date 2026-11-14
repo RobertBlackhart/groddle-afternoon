@@ -137,12 +137,13 @@ describe('region map backgrounds (tools/map-backgrounds/build.mjs)', () => {
         assert.match(i.sha256, /^[0-9a-f]{64}$/, `${name}: input ${i.n}`);
       }
       // Its own thumbnail is the first input, byte for byte; with none, the street layout from its map data.
-      if (noThumb) assert.match(`${r.inputs[0].what} ${r.inputs[0].source}`, new RegExp(`streets[\\s\\S]*hub-${id}\\.json`), `${name}: input 1 is its street layout`);
-      // One restored from 2012 takes Tiny Speck's own 2012 Encyclopedia picture of it instead (regions-restore pack).
-      else if (/^restored/.test(r.method || '')) {
+      // One restored from 2012 takes Tiny Speck's own 2012 Encyclopedia picture of it instead (regions-restore pack), with or
+      // without a thumbnail (Ilmenskie Deeps has none, lane maps4).
+      if (/^restored/.test(r.method || '')) {
         assert.match(r.inputs[0].source, /c1\.glitch\.bz\/img\/maps_encyclopedia\/[a-z_]+_\d+\.jpg/, `${name}: input 1 is its 2012 picture`);
         assert.ok(r.replaces?.x2?.sha256 && r.replaces.made, `${name}: names the painting it replaces`);
-      } else assert.equal(r.inputs[0].sha256, MANIFEST.regions[id].sha256, `${name}: input 1 is its thumbnail`);
+      } else if (noThumb) assert.match(`${r.inputs[0].what} ${r.inputs[0].source}`, new RegExp(`streets[\\s\\S]*hub-${id}\\.json`), `${name}: input 1 is its street layout`);
+      else assert.equal(r.inputs[0].sha256, MANIFEST.regions[id].sha256, `${name}: input 1 is its thumbnail`);
       // A restore says how it was cropped and aligned, and is matched to its 2012 picture's colour (Austin 2026-11-14:
       // 'matched to 2012' for every restored region) by saturation and gamma, never a brightness boost (that clipped the paper sea).
       if (/^restored/.test(r.method || '')) {

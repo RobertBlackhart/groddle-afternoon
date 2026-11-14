@@ -17,9 +17,9 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 16,
-    "painted": 31,
-    "layout": 4
+    "restored": 20,
+    "painted": 28,
+    "layout": 3
   },
   "world": {
     "made": "13 November 2026",
@@ -683,6 +683,50 @@
       "place": "/encyclopedia/places/firozi/"
     },
     {
+      "id": "119",
+      "name": "Folivoria",
+      "anchor": "map-folivoria",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Folivoria, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "Both canyons, the grass bands, and every acacia tree and grass tuft away from the roads sit where 2012 had them; a tree under the joint of Gondata Moo, Pitonia Lood and Moti Peral and one at the end of Berunj Mari's name did not come back. Returned more saturated and a little darker; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/folivoria.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Folivoria, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/folivoria.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Folivoria restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/folivoria@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/119.svg",
+        "w": 54,
+        "h": 41,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/folivoria/"
+    },
+    {
       "id": "56",
       "name": "Groddle Forest",
       "anchor": "map-groddle-forest",
@@ -771,6 +815,133 @@
       "place": "/encyclopedia/places/groddle-meadow/"
     },
     {
+      "id": "116",
+      "name": "Haraiva",
+      "anchor": "map-haraiva",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Haraiva, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The three snow terraces, their board-like cliff faces, the snowy firs and bushes, the snow mounds and the ponds (the one under the Brillah GO button continued as plain water) sit where 2012 had them. Returned a little darker and more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/haraiva.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Haraiva, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/haraiva.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Haraiva restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/haraiva@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/116.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/haraiva/"
+    },
+    {
+      "id": "78",
+      "name": "Ilmenskie Deeps",
+      "anchor": "map-ilmenskie-deeps",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Ilmenskie Deeps, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "Every shaft, tunnel, ledge, stalactite and pebble sits where 2012 had them; the dark pools at Kosi Aracana and Ajaya Bliss came back as water with brighter ripples than 2012's dark sheen. Returned close to 2012's colour; the toning step evens it.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 13 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/ilmenskiedeeps.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ilmenskie Deeps, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/ilmenskiedeeps.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Ilmenskie Deeps restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/ilmenskiedeeps@2x.webp"
+      },
+      "card": null,
+      "place": "/encyclopedia/places/ilmenskie-deeps/"
+    },
+    {
+      "id": "27",
+      "name": "Ix",
+      "anchor": "map-ix",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Ix, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "Both halves of the island, the terraced hills, the pale blue rock, the dead trees, the crates and the blue stones sit where 2012 had them; the dashed lines on 2012's paper sea came back as plain paper grain. Returned much more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/ix.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ix, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/ix.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Ix restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/ix@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/27.svg",
+        "w": 151,
+        "h": 122,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/ix/"
+    },
+    {
       "id": "123",
       "name": "Fenneq",
       "anchor": "map-fenneq",
@@ -809,46 +980,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/fenneq/"
-    },
-    {
-      "id": "119",
-      "name": "Folivoria",
-      "anchor": "map-folivoria",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Folivoria survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/folivoria.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Folivoria, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/folivoria.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Folivoria painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/folivoria@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/119.svg",
-        "w": 54,
-        "h": 41,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/folivoria/"
     },
     {
       "id": "64",
@@ -929,86 +1060,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/haoma/"
-    },
-    {
-      "id": "116",
-      "name": "Haraiva",
-      "anchor": "map-haraiva",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Haraiva survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/haraiva.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Haraiva, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/haraiva.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Haraiva painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/haraiva@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/116.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/haraiva/"
-    },
-    {
-      "id": "27",
-      "name": "Ix",
-      "anchor": "map-ix",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Ix survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/ix.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ix, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/ix.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Ix painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/ix@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/27.svg",
-        "w": 151,
-        "h": 122,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/ix/"
     },
     {
       "id": "136",
@@ -2044,41 +2095,6 @@
       },
       "card": null,
       "place": "/encyclopedia/places/ilmenskie-caverns/"
-    },
-    {
-      "id": "78",
-      "name": "Ilmenskie Deeps",
-      "anchor": "map-ilmenskie-deeps",
-      "state": "layout",
-      "caption": "Ilmenskie Deeps had no thumbnail on the World map, so the painting in the game now was made from its street layout alone, in the style of the decos Tiny Speck painted its streets with. The 2012 Encyclopedia map shows Tiny Speck’s own painting, under the game’s roads and names.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "13 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/ilmenskiedeeps.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ilmenskie Deeps, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/ilmenskiedeeps.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Ilmenskie Deeps painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/ilmenskiedeeps@2x.webp"
-      },
-      "card": null,
-      "place": "/encyclopedia/places/ilmenskie-deeps/"
     },
     {
       "id": "40",

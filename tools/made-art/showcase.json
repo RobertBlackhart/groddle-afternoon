@@ -58,15 +58,15 @@
    ]
   },
   "public/assets/made-art/maps-painted.webp": {
-   "what": "The paintings of Ix, Uralia and Haoma made again for Groddle",
+   "what": "The paintings of Vantalu, Uralia and Haoma made again for Groddle",
    "w": 600,
    "h": 1116,
-   "sha256": "a510a368fe1a819bb598c49e60d9d0de6c57abf63292aa54148b7bc6e76eb9c9",
+   "sha256": "38d47f9939796f6e3faa1fc561c890f9b7328b619f1c1d9928c4f0f9072024e9",
    "made": "the three repainted maps (2x files) at four times the thumbnails, one above the other, 12 px apart (tools/provenance/repainted-maps.json)",
    "from": [
     {
-     "file": "public/assets/maps/art/bg/ix@2x.webp",
-     "sha256": "35253bea08465e05a03f574edc598231c0c6b78b07cab0b4d8eb5317582a8e90"
+     "file": "public/assets/maps/art/bg/vantalu@2x.webp",
+     "sha256": "ad8106733dff822e53e83374de9791353c0b816d7c4f353a472c624ceb74c2bb"
     },
     {
      "file": "public/assets/maps/art/bg/uralia@2x.webp",
@@ -79,15 +79,15 @@
    ]
   },
   "public/assets/made-art/maps-thumbs.webp": {
-   "what": "Tiny Speck's thumbnails of Ix, Uralia and Haoma",
+   "what": "Tiny Speck's thumbnails of Vantalu, Uralia and Haoma",
    "w": 150,
    "h": 279,
-   "sha256": "6b5fc15828ab34d6f69b740a4d27649eb0c53b9cca4a89827f1b3c5cfd29f5d2",
+   "sha256": "47266c482f1d0e149bc6e23f4ec1fa2e60e00f6dc455704c779d0dd7b2f45747",
    "made": "the three CC0 thumbnails as they are, one above the other, 3 px apart",
    "from": [
     {
-     "file": "public/assets/maps/art/thumbs/sm_ix.jpg",
-     "sha256": "d0b9776e2735bcdc4ba75e6495166c6eb6928007a8e58b5529a08747c3432cfe",
+     "file": "public/assets/maps/art/thumbs/sm_vantalu.jpg",
+     "sha256": "e3134672e4819628a996e654250ec9cc66675d6b581bbad32e8fdddeb1df872a",
      "licence": "CC0 1.0, Tiny Speck"
     },
     {

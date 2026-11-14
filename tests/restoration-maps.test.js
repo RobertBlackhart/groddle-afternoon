@@ -117,12 +117,13 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
   it('a region with no 2012 map keeps its thumbnail (or nothing) and says so on its card', () => {
     const index = readJson(join(GAME_DIR, 'public/assets/maps/index.json'));
     const fs = { read: (f) => (existsSync(pub(f)) ? readFileSync(pub(f)) : null), exists: (f) => existsSync(pub(f)) };
-    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '27' && id !== '40')) };
+    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '100' && id !== '40')) };
     const data = build(provenance, null, index, fs, only);
-    const ix = data.regions.find((r) => r.id === '27');
-    assert.equal(ix.before.src, `/${index.hubs['27'].thumbLocal}`);
-    assert.match(ix.caption, /No 2012 Encyclopedia map of Ix survives, so it is shown beside that thumbnail\./);
-    assert.ok(!ix.facts.some((f) => f.label === '2012'));
+    // Vantalu, still painted from its thumbnail (Ix was the example until lane maps4 restored it from 2012).
+    const vantalu = data.regions.find((r) => r.id === '100');
+    assert.equal(vantalu.before.src, `/${index.hubs['100'].thumbLocal}`);
+    assert.match(vantalu.caption, /No 2012 Encyclopedia map of Vantalu survives, so it is shown beside that thumbnail\./);
+    assert.ok(!vantalu.facts.some((f) => f.label === '2012'));
     const naraka = data.regions.find((r) => r.id === '40');
     assert.equal(naraka.before, null);
     assert.match(naraka.caption, /No 2012 Encyclopedia map of Naraka survives/);

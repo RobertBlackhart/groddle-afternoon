@@ -72,10 +72,10 @@
       "x1": "assets/maps/art/bg/ix.webp",
       "x2": "assets/maps/art/bg/ix@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 25580,
-      "x1Sha256": "bb973998350578062231d15987801203a78b05ed09e6c2d0faeba9a91a3c9386",
-      "x2Bytes": 89922,
-      "x2Sha256": "35253bea08465e05a03f574edc598231c0c6b78b07cab0b4d8eb5317582a8e90"
+      "x1Bytes": 67246,
+      "x1Sha256": "231ecd62a50220a84e8caa619952b9cfe1afab6b1002eda2311fca4877455592",
+      "x2Bytes": 248316,
+      "x2Sha256": "4192f8af89833d1edcc9aedd25b6c6af6c437117c7b801f44a5773038e32af86"
     },
     "40": {
       "hubName": "Naraka",
@@ -260,10 +260,10 @@
       "x1": "assets/maps/art/bg/ilmenskiedeeps.webp",
       "x2": "assets/maps/art/bg/ilmenskiedeeps@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 21898,
-      "x1Sha256": "0c51778b079afb16f6070d1486d6590db43aa28ddfb154cd4233c4b437722111",
-      "x2Bytes": 79260,
-      "x2Sha256": "5f0fad98d242779cd1c98c77ba3d8d8ec7e6d8c99fa09f5ea1d8f78206643877"
+      "x1Bytes": 63810,
+      "x1Sha256": "e9339a7bb754a903f59294a0746d949b40fc18df5eb77f5b5dfe32138d2d890c",
+      "x2Bytes": 212968,
+      "x2Sha256": "52b7ccf2cde05ce182916364ac224d96d3fb362ffcbea95977e5361f9ed70109"
     },
     "85": {
       "hubName": "Kajuu",
@@ -644,10 +644,10 @@
       "x1": "assets/maps/art/bg/haraiva.webp",
       "x2": "assets/maps/art/bg/haraiva@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 35402,
-      "x1Sha256": "8d782c34e74e43d0a398d05381a511aa7d4c72c921942b10f1137797e5178e1c",
-      "x2Bytes": 103874,
-      "x2Sha256": "8bf003eba34e2066f4db95247e2a758ba6334664c52869fa4de3fcefd3560ddc"
+      "x1Bytes": 56326,
+      "x1Sha256": "cc60097b983c6009583fb45a215419c681d4875dddd3984abf1e5f5a51f35219",
+      "x2Bytes": 199948,
+      "x2Sha256": "cf4af8c529f1ee84d1c06213b0671e89bb1ace9b5082c8cbc8357ece3bcc3adc"
     },
     "119": {
       "hubName": "Folivoria",
@@ -660,10 +660,10 @@
       "x1": "assets/maps/art/bg/folivoria.webp",
       "x2": "assets/maps/art/bg/folivoria@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 30986,
-      "x1Sha256": "676c862c5f969d0061e415a7b86c91b840b09b7544adbab70b734a64b295a36d",
-      "x2Bytes": 105194,
-      "x2Sha256": "731f832737dc4a04a649704d785658f4938d67d171d85689810397acf68bd594"
+      "x1Bytes": 79436,
+      "x1Sha256": "993f6c384049b400931d573a14a039b00a2dd8b0581822708bdf5f081b43708b",
+      "x2Bytes": 282788,
+      "x2Sha256": "76610da0a41765b95419808c38f0cfeb4eeb9ff13f84c219386b647b302f44b4"
     },
     "120": {
       "hubName": "Cauda",
