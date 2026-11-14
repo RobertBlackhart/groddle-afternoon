@@ -643,7 +643,7 @@
       "encyclopedia/search.json": "bd15e649",
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",
-      "restoration/gaps.json": "1262f6b1",
+      "restoration/gaps.json": "12811cf8",
       "restoration/made.json": "f05b1113",
       "restoration/maps.json": "6ac0ead5",
       "restoration/maps/2012/alakol.webp": "33373357",

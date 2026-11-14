@@ -1120,6 +1120,125 @@
       ]
     },
     {
+      "id": "G737",
+      "area": "Accounts and saving",
+      "show": "fixing",
+      "text": "A save that failed did so without a word, and a game page left open across an update could save over the newer version's save.",
+      "commits": [
+        "game:c641ff91c6",
+        "game:fd6403b86b",
+        "game:68296fc276",
+        "game:a401082477",
+        "site:8fb0122"
+      ]
+    },
+    {
+      "id": "G748",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On some Android phones the Meal Vendor and Helga turned into black squares.",
+      "report": 326,
+      "commits": [
+        "game:0074ea384b"
+      ]
+    },
+    {
+      "id": "G749",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "The myopic frog asked its question before you could use Camera Mode; in Glitch the first talk was only the introduction.",
+      "report": 329,
+      "commits": [
+        "game:2e0c92d66f"
+      ]
+    },
+    {
+      "id": "G750",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "The Firebog, Groddle and Uralia Street Spirit cubimals could not be given to the Street Spirits.",
+      "report": 332,
+      "commits": [
+        "game:5d15f2f5e7"
+      ]
+    },
+    {
+      "id": "G751",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "Buying an upgrade card could play no sound; Glitch played a fanfare.",
+      "report": 333,
+      "commits": [
+        "game:ba76a21681"
+      ]
+    },
+    {
+      "id": "G752",
+      "area": "Shrines and favor",
+      "show": "fixing",
+      "text": "The shrine window offered a count for tools, which can only be donated one at a time.",
+      "report": 334,
+      "commits": [
+        "game:1c5d6c1bdb"
+      ]
+    },
+    {
+      "id": "G753",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "The once-every-42-game-days Piggy capture limit applied in your own house and yards, where Glitch had no limit.",
+      "report": 336,
+      "commits": [
+        "game:18782df1e3"
+      ]
+    },
+    {
+      "id": "G754",
+      "area": "Quoins",
+      "show": "fixing",
+      "text": "Hispikulus's Amazing Ramble counted too few Qurazy quoins found on new streets.",
+      "report": 335,
+      "commits": [
+        "game:77f22289be",
+        "server:f3ac6a5"
+      ]
+    },
+    {
+      "id": "G755",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Butterflies on tall streets said you needed to be closer and then jumped away.",
+      "report": 331,
+      "commits": [
+        "server:3cbe6dc"
+      ]
+    },
+    {
+      "id": "G756",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Phones had no way to act on the nearest thing, so signs and animals behind scenery were hard to reach.",
+      "report": 327,
+      "commits": [
+        "game:cfde591062"
+      ]
+    },
+    {
+      "id": "G757",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "It Takes Two did not say that the player being helped is the one whose dig counts.",
+      "commits": [
+        "game:a27285dab5"
+      ]
+    },
+    {
+      "id": "G759",
+      "area": "Streets",
+      "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
+      "report": 337
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."

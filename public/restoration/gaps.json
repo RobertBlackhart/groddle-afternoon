@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.39.1",
+  "release": "v0.40.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 1,
-    "known": 14,
+    "known": 15,
     "unreleased": 0,
-    "fixed": 114,
+    "fixed": 125,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -94,6 +94,13 @@
           "report": 297,
           "state": "fixed",
           "version": "v0.37.0"
+        },
+        {
+          "id": "G749",
+          "text": "The myopic frog asked its question before you could use Camera Mode; in Glitch the first talk was only the introduction.",
+          "report": 329,
+          "state": "fixed",
+          "version": "v0.40.0"
         }
       ]
     },
@@ -182,6 +189,19 @@
           "report": 323,
           "state": "fixed",
           "version": "v0.39.0"
+        },
+        {
+          "id": "G750",
+          "text": "The Firebog, Groddle and Uralia Street Spirit cubimals could not be given to the Street Spirits.",
+          "report": 332,
+          "state": "fixed",
+          "version": "v0.40.0"
+        },
+        {
+          "id": "G757",
+          "text": "It Takes Two did not say that the player being helped is the one whose dig counts.",
+          "state": "fixed",
+          "version": "v0.40.0"
         }
       ]
     },
@@ -201,6 +221,12 @@
         {
           "id": "G681",
           "text": "Teleporters that work by walking into them have not all been checked yet.",
+          "state": "known"
+        },
+        {
+          "id": "G759",
+          "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
+          "report": 337,
           "state": "known"
         },
         {
@@ -331,6 +357,13 @@
           "version": "v0.38.0"
         },
         {
+          "id": "G751",
+          "text": "Buying an upgrade card could play no sound; Glitch played a fanfare.",
+          "report": 333,
+          "state": "fixed",
+          "version": "v0.40.0"
+        },
+        {
           "id": "G11",
           "text": "Some of Glitch's sounds and tunes were never archived anywhere, so they play a simple stand-in.",
           "state": "lost"
@@ -356,6 +389,13 @@
           "text": "Rainbow Run and Top of the Tree quoins vanish without paying once you reach the daily quoin limit.",
           "state": "fixed",
           "version": "v0.36.0"
+        },
+        {
+          "id": "G754",
+          "text": "Hispikulus's Amazing Ramble counted too few Qurazy quoins found on new streets.",
+          "report": 335,
+          "state": "fixed",
+          "version": "v0.40.0"
         },
         {
           "id": "G271",
@@ -462,6 +502,13 @@
           "text": "Favor filled outside a donation gives no prompt to collect the emblem, and some favor can go past the cap.",
           "state": "fixed",
           "version": "v0.36.0"
+        },
+        {
+          "id": "G752",
+          "text": "The shrine window offered a count for tools, which can only be donated one at a time.",
+          "report": 334,
+          "state": "fixed",
+          "version": "v0.40.0"
         }
       ]
     },
@@ -614,6 +661,20 @@
           "report": 320,
           "state": "fixed",
           "version": "v0.38.1"
+        },
+        {
+          "id": "G753",
+          "text": "The once-every-42-game-days Piggy capture limit applied in your own house and yards, where Glitch had no limit.",
+          "report": 336,
+          "state": "fixed",
+          "version": "v0.40.0"
+        },
+        {
+          "id": "G755",
+          "text": "Butterflies on tall streets said you needed to be closer and then jumped away.",
+          "report": 331,
+          "state": "fixed",
+          "version": "v0.40.0"
         }
       ]
     },
@@ -848,6 +909,20 @@
           "text": "A game link opened on a phone lost its settings on the way through the phone page.",
           "state": "fixed",
           "version": "v0.37.0"
+        },
+        {
+          "id": "G748",
+          "text": "On some Android phones the Meal Vendor and Helga turned into black squares.",
+          "report": 326,
+          "state": "fixed",
+          "version": "v0.40.0"
+        },
+        {
+          "id": "G756",
+          "text": "Phones had no way to act on the nearest thing, so signs and animals behind scenery were hard to reach.",
+          "report": 327,
+          "state": "fixed",
+          "version": "v0.40.0"
         }
       ]
     },
@@ -907,6 +982,12 @@
           "text": "The community boards' sign-in had no Continue with Google, though the game's has one.",
           "state": "fixed",
           "version": "v0.36.1"
+        },
+        {
+          "id": "G737",
+          "text": "A save that failed did so without a word, and a game page left open across an update could save over the newer version's save.",
+          "state": "fixed",
+          "version": "v0.40.0"
         },
         {
           "id": "G665",
