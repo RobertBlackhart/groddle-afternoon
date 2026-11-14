@@ -82,7 +82,8 @@
  *   soloFeatWired, soloFeatUnwired, soloFeatRuns (id:runs for every Feat
  *   finished at least once), soloFeatReopens (id:ms until it opens again).
  *   Multiplayer: mpFeat (feat:total/goal:mine:place), mpFeatLast (the last
- *   server message), mpFeatRewards (ids applied); window.groddleFeats (QA).
+ *   server message), mpFeatRewards (ids applied), mpFeatQurazyOwed (Qurazys
+ *   the server has not answered yet, G754); window.groddleFeats (QA).
  */
 
 import { addItem } from '../inventory.js?v=f49c8998';
@@ -133,7 +134,7 @@ import {
   runFromServer,
   vogFor,
   youLine,
-} from '../feats-mp.js?v=847c7646';
+} from '../feats-mp.js?v=5ff2be5b';
 
 const POLL_MS = 500;
 /** How often an open panel redraws its "Opens again in" lines. */
@@ -141,6 +142,15 @@ const COUNTDOWN_MS = 30_000;
 const ROCK_ICON = 'assets/sprites/icons/petrified_rock_small@3x.webp';
 /** Archived street TSIDs (assets/streets/index.json): homes, neighbours and instances use other ids. */
 const REAL_STREET = /^G[A-Z0-9]{12,14}$/;
+/** G754: the Ramble's Qurazys, owed to the server until it answers (feats.go add). */
+const QURAZY_FEAT = 'qurazy_quoin_collecting';
+/** A repeat-visit Qurazy the pace held is asked again this much later (the pace frees one a 48 minutes). */
+const QURAZY_RETRY_MS = 5 * 60_000;
+/** Answers that will not change on asking again: the Qurazy is settled (counted, already counted, or cannot count). */
+const QURAZY_FINAL = new Set(['', 'already', 'not_today', 'street', 'act', 'amount']);
+/** The most Qurazys kept owed (a long time offline on a Ramble day). */
+const QURAZY_OWED_MAX = 50;
+const OWED_STREET = /^[A-Za-z0-9_-]{1,32}$/;
 
 let state = createSoloFeatState();
 let last = '';
@@ -157,6 +167,8 @@ let countdownAt = 0;
 let mpMode = false;
 let mp = null;
 let mpLists = { applied: [], rewarded: [], run: '' };
+/** Multiplayer (G754): the streets of Qurazys found that the server has not answered yet (saved as qurazyOwed). */
+let qurazyOwed = [];
 
 function nekkid(engine) {
   return typeof engine.hasBuff === 'function' && engine.hasBuff('nekkid') === true;
@@ -189,6 +201,7 @@ function publish(engine) {
     engine.setData('mpFeat', run ? `${run.feat}:${run.total}/${run.goal}:${run.mine}:${run.place}` : 'none');
     engine.setData('mpFeatRewards', mpLists.rewarded.join(',') || 'none');
     engine.setData('mpFeatSent', mp?.sent || 0);
+    engine.setData('mpFeatQurazyOwed', qurazyOwed.length);
   }
   engine.setData('soloFeatReopens', WIRED_FEATS.filter((f) => reopensAt(state, f.id)).map((f) => `${f.id}:${Math.max(0, reopensAt(state, f.id) - now)}`).join(',') || 'none');
 }
@@ -308,8 +321,71 @@ function poll(engine) {
     else if (qurazy > state.qurazyBase) {
       const d = qurazy - state.qurazyBase;
       state.qurazyBase = qurazy;
-      increment(engine, 'qurazy_quoin_collecting', d, { act: 'quoin', street: engine.streetTsid });
+      // Multiplayer (G754): each is owed until the server answers it; a refusal for pace is asked again.
+      if (mpMode) owe(engine, d);
+      else increment(engine, QURAZY_FEAT, d, { act: 'quoin', street: engine.streetTsid });
     }
+  }
+  if (mpMode && qurazyOwed.length && t >= (mp?.qurazyRetryAt || 0)) flushQurazy(engine);
+}
+
+/** Multiplayer: the Qurazys just found, owed for the street they were found on. */
+function owe(engine, n) {
+  const street = String(streetTsid || engine.streetTsid || '');
+  if (!OWED_STREET.test(street)) return;
+  for (let i = 0; i < n; i += 1) qurazyOwed.push(street);
+  qurazyOwed = qurazyOwed.slice(-QURAZY_OWED_MAX);
+  engine.save?.();
+  flushQurazy(engine);
+  publish(engine);
+}
+
+/**
+ * Sends the owed Qurazys not yet asked: once the server names today's Feat; on another
+ * Feat's day they can never count, so they are dropped.
+ */
+function flushQurazy(engine) {
+  const s = ensureMp(engine);
+  if (!s?.run || !qurazyOwed.length) return;
+  if (s.run.feat !== QURAZY_FEAT) {
+    qurazyOwed = [];
+    s.qurazyFlight = [];
+    engine.save?.();
+    publish(engine);
+    return;
+  }
+  const asking = [...s.qurazyFlight];
+  for (const street of qurazyOwed) {
+    const at = asking.indexOf(street);
+    if (at >= 0) {
+      asking.splice(at, 1);
+      continue;
+    }
+    const report = reportFor(s.run, QURAZY_FEAT, 1, { act: 'quoin', street });
+    if (!report) continue;
+    if (!s.client.send('feat_add', report)) {
+      s.lastReason = 'offline';
+      break;
+    }
+    s.sent += 1;
+    s.qurazyFlight.push(street);
+  }
+  publish(engine);
+}
+
+/** feat_counted for a Qurazy: settled (counted, or cannot count) or held by the pace (asked again later). */
+function qurazyAnswered(engine, s, msg) {
+  const street = typeof msg.street === 'string' ? msg.street : '';
+  const at = street ? s.qurazyFlight.indexOf(street) : 0;
+  if (at < 0 || !s.qurazyFlight.length) return;
+  const [asked] = s.qurazyFlight.splice(at, 1);
+  const reason = String(msg.reason || '');
+  if (Number(msg.n) > 0 || QURAZY_FINAL.has(reason)) {
+    const owed = qurazyOwed.indexOf(asked);
+    if (owed >= 0) qurazyOwed.splice(owed, 1);
+    engine.save?.();
+  } else if (reason === 'pace') {
+    s.qurazyRetryAt = Date.now() + QURAZY_RETRY_MS;
   }
 }
 
@@ -603,7 +679,7 @@ function startedRun(run) {
 
 function createMp(engine, client) {
   let offset = 0;
-  const s = { client, run: null, last: null, sent: 0, lastReason: '', applying: new Set(), get offset() { return offset; } };
+  const s = { client, run: null, last: null, sent: 0, lastReason: '', applying: new Set(), qurazyFlight: [], qurazyRetryAt: 0, get offset() { return offset; } };
   const clock = (msg) => {
     if (Number(msg?.now) > 0) offset = Number(msg.now) - Date.now();
   };
@@ -616,7 +692,12 @@ function createMp(engine, client) {
     publish(engine);
   };
   s.sync = () => client.send('feat_sync', {});
-  client.on('hello', () => s.sync());
+  client.on('hello', () => {
+    // A new connection: what was asked on the old one is asked again once today's Feat is known.
+    s.qurazyFlight = [];
+    s.qurazyRetryAt = 0;
+    s.sync();
+  });
   if (client.state === 'online') s.sync();
 
   client.on('msg:feat_state', (msg) => {
@@ -628,6 +709,7 @@ function createMp(engine, client) {
     if (startedRun(run)) engine.save?.();
     seen('feat_state');
     refresh();
+    flushQurazy(engine);
   });
   client.on('msg:feat_progress', (msg) => {
     if (!s.run || Number(msg.run) !== s.run.run || msg.feat !== s.run.feat) return;
@@ -638,6 +720,7 @@ function createMp(engine, client) {
   });
   client.on('msg:feat_counted', (msg) => {
     s.lastReason = String(msg.reason || '');
+    if (msg.feat === QURAZY_FEAT) qurazyAnswered(engine, s, msg);
     if (s.run && Number(msg.run) === s.run.run && msg.feat === s.run.feat) {
       s.run.total = Math.max(s.run.total, Number(msg.total) || 0);
       s.run.mine = Number(msg.mine) || s.run.mine;
@@ -883,6 +966,8 @@ export const soloFeatsFeature = {
   },
 
   onStreetClear(engine) {
+    // G754: a Qurazy picked up just before leaving is owed for the street it was found on.
+    if (mpMode) poll(engine);
     // location.js 1041-1055 onPlayerExit.
     const res = streakCheck(state, {
       tsid: streetTsid,
@@ -927,7 +1012,7 @@ export const soloFeatsFeature = {
 
   save() {
     // Multiplayer: the ids applied (the site's LedgerMath::FEAT_SLICE) and the run whose caps are in state. Solo saves what it always did.
-    if (mpMode) return { ...state, applied: [...mpLists.applied], rewarded: [...mpLists.rewarded], mpRun: mpLists.run };
+    if (mpMode) return { ...state, applied: [...mpLists.applied], rewarded: [...mpLists.rewarded], mpRun: mpLists.run, qurazyOwed: [...qurazyOwed] };
     return state;
   },
 
@@ -935,6 +1020,9 @@ export const soloFeatsFeature = {
     if (engine) mpMode = engine.mode === 'multiplayer';
     mpLists = mpMode ? { applied: appliedFrom(slice), rewarded: appliedFrom({ applied: slice?.rewarded }), run: String(slice?.mpRun || '').slice(0, 24) } : { applied: [], rewarded: [], run: '' };
     state = normalizeSoloFeatState(slice || {});
+    qurazyOwed = mpMode && Array.isArray(slice?.qurazyOwed)
+      ? slice.qurazyOwed.filter((k) => typeof k === 'string' && OWED_STREET.test(k)).slice(-QURAZY_OWED_MAX)
+      : [];
     // When the Feats first opened to this save (quick_on_your_feat).
     if (!state.openedAt) state.openedAt = Date.now();
     demoDone = false;

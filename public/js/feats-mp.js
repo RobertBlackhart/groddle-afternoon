@@ -117,8 +117,9 @@ export const ROCK_LARGE = 'petrified_rock_large';
 export const MP_PACE = Object.freeze({
   // vog_text counts minutes: one a minute (meditation.js focusing_orb:meditation_time).
   meditation_of_groddlocritus: pace(1, 60_000, 2, 'one minute a minute (vog_text counts minutes)'),
-  // location.js 255: no more than 5 found a game day.
-  qurazy_quoin_collecting: pace(5, GAME_DAY_MS, 5, 'location.js:255 five a game day'),
+  // location.js:255: no more than 5 found a game day, on repeat visits only (G754: a first visit always
+  // spawns one, location.js 213-217, and counts at no pace: MP_ACTS quoin first-street).
+  qurazy_quoin_collecting: pace(5, GAME_DAY_MS, 5, 'location.js:255 five a game day (repeat visits)'),
   donate_sparkly: pace(1, 3_000, 50, 'ours: a chunk every 3 s, a stack at once'),
   reminscequests: pace(1, 60_000, 3, 'ours: a quest a minute'),
   // TSFrontController.as 3165-3178: one hi per two seconds.
@@ -141,7 +142,9 @@ export const MP_ACTS = Object.freeze({
     wheel: Object.freeze({ n: 5, source: 'inc_skill_packages.js:54 spinning_wheel cubimal_package' }),
   }),
   qurazy_quoin_collecting: Object.freeze({
-    quoin: Object.freeze({ n: 1, dedupe: 'street', source: 'one qurazy quoin per street' }),
+    // G754: the first credit for a street (ever, per player) is a first visit and takes no pace; any later
+    // one is a repeat visit, within MP_PACE, and a street counts at most once a game day (location.js 248-253).
+    quoin: Object.freeze({ n: 1, dedupe: 'first-street', source: 'location.js 213-217 a first visit always spawns one; 248-255 repeats' }),
   }),
   // The street is the neighbour's HOME_<id>, so each Butler counts once a Feat.
   visiting_stones: Object.freeze({

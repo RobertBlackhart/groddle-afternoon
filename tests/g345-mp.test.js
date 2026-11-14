@@ -38,10 +38,10 @@ import {
   runAt,
   runFromServer,
   youLine,
-} from '../public/js/feats-mp.js?v=847c7646';
+} from '../public/js/feats-mp.js?v=5ff2be5b';
 import { FEAT_BY_ID, WIRED_FEATS, vogTextFor } from '../public/js/solo-feats.js?v=2b83c824';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=6d45b825';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=fa5423df';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/solo-feats-feature.js'), 'utf8');
@@ -188,6 +188,9 @@ function fakeClient() {
     deliver(msg) {
       for (const fn of listeners.get(`msg:${msg.t}`) || []) fn(msg);
     },
+    emit(type) {
+      for (const fn of listeners.get(type) || []) fn();
+    },
   };
 }
 
@@ -311,13 +314,76 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
     assert.equal(engine2.pc.currants, 100);
     assert.equal(engine2.inv.petrified_rock_large, 1);
   });
+
+  it('keeps a Qurazy owed until the server answers it (G754, #328 #335)', () => {
+    const client = fakeClient();
+    const engine = mpEngine(client);
+    let now = 0;
+    const tickPoll = () => { now += 1000; soloFeatsFeature.onTick(16, now, engine); };
+    const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
+    const ramble = { t: 'feat_state', now: Date.now(), run: 5347, feat: 'qurazy_quoin_collecting', start: Date.now() - 1000, end: Date.now() + RUN_MS, total: 0, goal: 27, bonus: 54, super: 81, tier: 0, count: 0, mine: 0, place: 0, top: [] };
+    soloFeatsFeature.init(engine);
+    soloFeatsFeature.restore({}, engine);
+    soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
+    tickPoll(); // the count already seen
+    // Found before the server named today's Feat: owed, not lost.
+    engine.quoinState.qurazyFound = 1;
+    tickPoll();
+    assert.equal(adds().length, 0);
+    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, ['GA5101HF7F429V5']);
+    client.deliver(ramble);
+    assert.deepEqual(adds(), [{ kind: 'feat_add', feat: 'qurazy_quoin_collecting', n: 1, act: 'quoin', street: 'GA5101HF7F429V5' }]);
+    tickPoll();
+    assert.equal(adds().length, 1, 'asked once while the answer is on its way');
+    // Held by the pace (a repeat visit): still owed, asked again later, not every tick.
+    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'pace', street: 'GA5101HF7F429V5', run: 5347, total: 0, mine: 0, place: 0 });
+    tickPoll();
+    assert.equal(adds().length, 1);
+    assert.equal(engine.calls.data.mpFeatQurazyOwed, '1');
+    // A new connection asks again once the Feat is known.
+    client.emit('hello');
+    client.deliver(ramble);
+    assert.equal(adds().length, 2);
+    // Counted: settled. An answer from a server without the street echo matches the oldest asked.
+    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 1, run: 5347, total: 1, mine: 1, place: 1 });
+    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
+    // Two streets: each its own report, each settled by its own answer.
+    soloFeatsFeature.onStreetClear(engine);
+    soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V6' }, engine);
+    engine.quoinState.qurazyFound = 2;
+    soloFeatsFeature.onStreetClear(engine); // picked up just before leaving: still this street's
+    soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V7' }, engine);
+    engine.quoinState.qurazyFound = 3;
+    tickPoll();
+    assert.deepEqual(adds().slice(2).map((m) => m.street), ['GA5101HF7F429V6', 'GA5101HF7F429V7']);
+    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 1, street: 'GA5101HF7F429V7', run: 5347, total: 2, mine: 2, place: 1 });
+    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, ['GA5101HF7F429V6']);
+    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'already', street: 'GA5101HF7F429V6', run: 5347, total: 2, mine: 2, place: 1 });
+    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
+    // A save that still owes one asks after the load; on another Feat's day it can never count and is dropped.
+    const client2 = fakeClient();
+    const engine2 = mpEngine(client2);
+    soloFeatsFeature.init(engine2);
+    soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8', '<b>'] }, engine2);
+    soloFeatsFeature.onStreetEnter({ tsid: engine2.streetTsid }, engine2);
+    client2.deliver(ramble);
+    assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add').map((m) => m.street), ['GA5101HF7F429V8']);
+    const client3 = fakeClient();
+    const engine3 = mpEngine(client3);
+    soloFeatsFeature.init(engine3);
+    soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8'] }, engine3);
+    soloFeatsFeature.onStreetEnter({ tsid: engine3.streetTsid }, engine3);
+    client3.deliver({ ...ramble, feat: 'animal_love' });
+    assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
+    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
+  });
 });
 
 describe('the feature keeps solo as it was', () => {
   it('gates every shared path on multiplayer', () => {
     assert.match(feature, /function increment\(engine, featId, amount, opts = \{\}\) \{\n  \/\/ Multiplayer: today's shared Feat, counted by the server \(feats\.go\)\.\n  if \(mpMode\) return mpReport/);
     assert.match(feature, /function reopenDue\(engine, now = Date\.now\(\)\) \{\n  if \(mpMode\) return \[\];/);
-    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run \};\n    return state;/);
+    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run, qurazyOwed: \[\.\.\.qurazyOwed\] \};\n    return state;/);
     assert.match(feature, /if \(mpMode\) ensureMp\(engine\);\n    else applyDemo\(engine\);/);
   });
 

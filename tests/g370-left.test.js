@@ -29,7 +29,7 @@ import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=895
 import { applyBuff, createBuffState } from '../public/js/buffs.js?v=c499cf1a';
 import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=a3093922';
 import { FEAT_BY_ID, UNWIRED_FEATS, WIRED_FEATS, featsInEpic } from '../public/js/solo-feats.js?v=2b83c824';
-import { MP_ACTS, MP_ORDER, MP_PACE, mpGoals, reportFor } from '../public/js/feats-mp.js?v=847c7646';
+import { MP_ACTS, MP_ORDER, MP_PACE, mpGoals, reportFor } from '../public/js/feats-mp.js?v=5ff2be5b';
 import { featTable } from '../tools/build-realtime-feats.mjs';
 import { endComedian } from '../public/js/features/funpickle-feature.js?v=1d4acac5';
 

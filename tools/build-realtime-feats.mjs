@@ -50,7 +50,7 @@ import {
   epicSizes,
   mpGoals,
   mpShare,
-} from '../public/js/feats-mp.js?v=847c7646';
+} from '../public/js/feats-mp.js?v=5ff2be5b';
 
 export const OUT_SERVER = serverPath('data', 'feats.json');
 
