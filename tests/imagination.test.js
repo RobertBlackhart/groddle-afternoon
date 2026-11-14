@@ -406,3 +406,20 @@ describe('report 135: search and a kind filter on Your upgrades', () => {
     assert.match(game, /e\.target\?\.matches\?\.\('input, textarea, select, \[contenteditable="true"\]'\)/);
   });
 });
+
+describe('#333 (G751): buying an upgrade card plays YOU_WIN', () => {
+  it('ImaginationPurchaseUpgradeUI.as 226: the purchase plays YOU_WIN, warmed when the panel opens', async () => {
+    const { PURCHASE_SOUND } = await import('../public/js/features/imagination-feature.js?v=b789ef36');
+    assert.equal(PURCHASE_SOUND, 'YOU_WIN');
+    const { resolveSound } = await import('../public/js/sound-board.js?v=e3634838');
+    const sound = resolveSound(PURCHASE_SOUND);
+    assert.equal(sound.file, 'assets/audio/sfx/YOU_WIN.mp3');
+    assert.ok(existsSync(join(publicRoot, sound.file)), sound.file);
+    const src = readFileSync(join(publicRoot, 'js/features/imagination-feature.js'), 'utf8');
+    const buy = src.slice(src.indexOf('function buySlot('), src.indexOf('function freeRedeal('));
+    assert.match(buy, /play\(PURCHASE_SOUND, \{ volume: 0\.7 \}\);/);
+    assert.doesNotMatch(buy, /IMAGINATION_PURCHASE/);
+    const open = src.slice(src.indexOf('function openPanel('), src.indexOf('function closePanel('));
+    assert.match(open, /engineRef\.preloadSounds\?\.\(\[PURCHASE_SOUND\]\);/);
+  });
+});

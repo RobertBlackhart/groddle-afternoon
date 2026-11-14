@@ -174,6 +174,9 @@ function dealSound(slot, order) {
   else setTimeout(() => play(key), order * DEAL_STAGGER_MS);
 }
 
+/** The sound of buying a card: Glitch's YOU_WIN (ImaginationPurchaseUpgradeUI.as 226). */
+export const PURCHASE_SOUND = 'YOU_WIN';
+
 function play(key, opts = {}) {
   try {
     engineRef?.playSound?.(key, { volume: 0.6, ...opts });
@@ -256,7 +259,8 @@ function buySlot(slot, engine = engineRef) {
   pc.imagination = wallet.imagination;
   const notes = applyEffect(result.effect, engine);
   if (result.effect?.brainCapacity) rescaleStudyForBrainCapacity(engine, capacityBefore);
-  play('IMAGINATION_PURCHASE', { volume: 0.7 });
+  // #333 (G751): ImaginationPurchaseUpgradeUI.as 226 show(): "play a sound to celebrate", YOU_WIN.
+  play(PURCHASE_SOUND, { volume: 0.7 });
   const name = result.text?.name || result.card.class_tsid;
   engine.pushActivity(`You got the ${name} upgrade!`);
   lastResult = `bought:${result.card.class_tsid}`;
@@ -616,6 +620,10 @@ function onKeyDown(e) {
 function openPanel(opts = {}) {
   if (!engineRef) return;
   ensurePanel();
+  // #333: warm the purchase sound with the panel. A cold file that takes longer than the sound
+  // board's 350 ms falls back to its synth (sound-board.js LATE_FILE_MS), and the 90 KB
+  // imagination_upgrade.mp3 was fetched only at the moment of buying.
+  engineRef.preloadSounds?.([PURCHASE_SOUND]);
   if (opts.view) view = opts.view;
   refillHand(engineRef);
   panel.hidden = false;
