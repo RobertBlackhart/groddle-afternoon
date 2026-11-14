@@ -38,13 +38,14 @@ import {
   slatherVerb,
   SLATHER_VERB,
   SLATHER_COPY,
-} from '../public/js/features/quest-verbs-feature.js?v=bce02f05';
+} from '../public/js/features/quest-verbs-feature.js?v=470989a4';
 import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=cc379ae5';
 import {
+  cubimalFor,
   giveCubimalVerb,
   GIVE_CUBIMAL_VERB,
   CUBIMAL_GIFT_RESPONSES,
-} from '../public/js/features/quest-verbs-feature.js?v=bce02f05';
+} from '../public/js/features/quest-verbs-feature.js?v=470989a4';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -500,6 +501,24 @@ describe('G447 Mini Me, Mini You', () => {
     assert.equal(giveCubimalVerb(fox, qs, { npc_cubimal_fox: 1 }, []).enabled, true);
     assert.equal(giveCubimalVerb(fox, qs, { npc_cubimal_fox: 1 }, ['npc_cubimal_fox']).reason, 'You already gave away a Fox cubimal');
     assert.equal(giveCubimalVerb({ classId: 'npc_chicken', label: 'Chicken' }, qs, { npc_cubimal_chick: 1 }, []), null, 'no likeness in the map');
+  });
+
+  it('#332 (G750): a Street Spirit vendor takes its own cubimal by state.spiritClass (Firebog, Groddle, Uralia)', () => {
+    const qs = createQuestState();
+    acceptOffer(qs, 'mini_me_mini_you', { inv: {}, now: 1 });
+    const spirit = (spiritClass) => ({ classId: 'street_spirit_groceries', label: 'Street Spirit', state: { vendorKey: 'groceries', spiritClass } });
+    for (const [cls, cubimal] of [
+      ['street_spirit_firebog', 'npc_cubimal_firebogstreetspirit'],
+      ['street_spirit_groddle', 'npc_cubimal_groddlestreetspirit'],
+      ['street_spirit_zutto', 'npc_cubimal_uraliastreetspirit'],
+    ]) {
+      assert.equal(cubimalFor(spirit(cls)), cubimal, cls);
+      assert.equal(giveCubimalVerb(spirit(cls), qs, { [cubimal]: 1 }, []).enabled, true, cls);
+      const other = cubimal === 'npc_cubimal_firebogstreetspirit' ? 'npc_cubimal_groddlestreetspirit' : 'npc_cubimal_firebogstreetspirit';
+      assert.equal(giveCubimalVerb(spirit(cls), qs, { [other]: 1 }, []).enabled, false, `${cls} takes only its own likeness`);
+    }
+    // The Ix spirit has no cubimal in street_spirit.js's list.
+    assert.equal(giveCubimalVerb(spirit('street_spirit_ix'), qs, { npc_cubimal_firebogstreetspirit: 1 }, []), null);
   });
 
   it('a gift uses the cubimal up, the character answers and the counter moves; the host adds it to feature NPCs', () => {

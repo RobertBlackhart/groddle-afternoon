@@ -98,9 +98,18 @@ let givenCubimals = [];
 
 const questOpen = (questState, id) => Boolean(questState?.active?.[id]) && !questState?.offers?.failed?.[id];
 
+/**
+ * The cubimal likeness of a character, or undefined. #332 (G750): a Street Spirit is a vendor
+ * target (classId its store's id); its own class (street_spirit_firebog, _groddle, _zutto) is
+ * state.spiritClass (street-spirits-feature.js), so that is matched first.
+ */
+export function cubimalFor(target) {
+  return CUBIMAL_LIKENESS[target?.state?.spiritClass] || CUBIMAL_LIKENESS[target?.classId];
+}
+
 /** The Give a cubimal row for a character, or null (conditions 147-160). */
 export function giveCubimalVerb(target, questState, inv, given = givenCubimals) {
-  const cubimal = CUBIMAL_LIKENESS[target?.classId];
+  const cubimal = cubimalFor(target);
   if (!cubimal || !questOpen(questState, CUBIMAL_QUEST)) return null;
   const label = target.label || target.classId;
   const row = { id: GIVE_CUBIMAL_VERB, label: 'Give a cubimal to', sort: 50, tooltip: `Give ${label} a cubimal likeness`, enabled: true, reason: '', energy: 0 };
@@ -239,7 +248,7 @@ export const questVerbsFeature = {
         if (row?.reason) engine.toast(row.reason, 2400);
         return true;
       }
-      const cubimal = CUBIMAL_LIKENESS[target.classId];
+      const cubimal = cubimalFor(target);
       removeItem(engine.inv, cubimal, 1);
       givenCubimals = [...givenCubimals, cubimal];
       const line = CUBIMAL_GIFT_RESPONSES[Math.floor(Math.random() * CUBIMAL_GIFT_RESPONSES.length)];
