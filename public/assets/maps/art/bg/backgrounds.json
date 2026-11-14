@@ -276,10 +276,10 @@
       "x1": "assets/maps/art/bg/kajuu.webp",
       "x2": "assets/maps/art/bg/kajuu@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 39662,
-      "x1Sha256": "01aa55c05836353a56f53303b809343b365df8730d0f679d9878dd568a7a37e9",
-      "x2Bytes": 128368,
-      "x2Sha256": "a58429a3efded0d99e3c17e6302163c35506234f9d09661b918b4361c9e78ee6"
+      "x1Bytes": 67132,
+      "x1Sha256": "ec8244d0e120d128e1a901a76a6ae5f3c977f76f8fda260c956b333ee9e82892",
+      "x2Bytes": 229928,
+      "x2Sha256": "2ae3589e99cd836161edc29519dde5d175f8393479ce4fd5b5a74000f24b85a6"
     },
     "86": {
       "hubName": "Baqala",
@@ -452,10 +452,10 @@
       "x1": "assets/maps/art/bg/kalavana.webp",
       "x2": "assets/maps/art/bg/kalavana@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 29780,
-      "x1Sha256": "eb8b21b05d2cf4753b2eab558208cb2b7bb8b356e6c479acff7af06f9007a3ed",
-      "x2Bytes": 109148,
-      "x2Sha256": "49f0cf53909bbb665358ca687dbe6ba7a322793be907879fe238115dceb63d9f"
+      "x1Bytes": 71786,
+      "x1Sha256": "d9eb1c98c9e2e517ef5e291f7e32e717c6f527b8084399dfdd31ac9e974ab43f",
+      "x2Bytes": 220408,
+      "x2Sha256": "62dc7d642bb66eebc988d7795397365f7f4e1481be5aca555505f536789ade49"
     },
     "100": {
       "hubName": "Vantalu",
@@ -788,10 +788,10 @@
       "x1": "assets/maps/art/bg/jal.webp",
       "x2": "assets/maps/art/bg/jal@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 23302,
-      "x1Sha256": "de1cea86171ed00119772032c8c905a1d3b0c765859c3259173196cb6f8c2d93",
-      "x2Bytes": 72874,
-      "x2Sha256": "171414d15f7e1cc03550c70ee0108d79f30d2f960421973e8e34595550dab65f"
+      "x1Bytes": 70758,
+      "x1Sha256": "26b21c853dd20e14b81ba4eab1381e897d1c4aa01e822daece946a6de96b9cba",
+      "x2Bytes": 230366,
+      "x2Sha256": "cf4708751d9418f6e14124b309229be3a551e38877d92153cb2b6edc9f338363"
     },
     "137": {
       "hubName": "Nottis",

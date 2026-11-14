@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 23,
-    "painted": 25,
+    "restored": 26,
+    "painted": 22,
     "layout": 3
   },
   "world": {
@@ -1077,13 +1077,17 @@
       "id": "136",
       "name": "Jal",
       "anchor": "map-jal",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Jal survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Jal, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The spires, the dark rock masses and scattered stones, the yellow-green corals, the pale coral in the bottom right corner, the bubbles and the open seabed sit where 2012 had them. The dark rock right of the Asura Spire road runs on under the To: Firozi label as a spiky ridge, where 2012's label hid it. The painting reads sharper and more detailed than 2012's soft picture. Returned more saturated and a little darker; the toning step brings it back.",
       "facts": [
         {
           "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
         },
         {
           "label": "2012",
@@ -1102,7 +1106,7 @@
         "w": 760,
         "h": 460,
         "label": "Now",
-        "alt": "Jal painted for Groddle, as the game draws it now",
+        "alt": "Jal restored, as the game draws it now",
         "src2": "/assets/maps/art/bg/jal@2x.webp"
       },
       "card": {
@@ -1112,6 +1116,94 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/jal/"
+    },
+    {
+      "id": "85",
+      "name": "Kajuu",
+      "anchor": "map-kajuu",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Kajuu, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The ravines and cracks in the grass, the tall rock spire in the ravine above Pahsmeq Diggs, the caves at Sambara Stack, Kanji Sink and Firabiz Flaunts, the pit on the right, the white rock, the standing stones in the Firabiz Flaunts pit, the white boulders, the bushes and the firs sit where 2012 had them. Returned a little darker and more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/kajuu.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kajuu, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/kajuu.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Kajuu restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/kajuu@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/85.svg",
+        "w": 151,
+        "h": 125,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/kajuu/"
+    },
+    {
+      "id": "99",
+      "name": "Kalavana",
+      "anchor": "map-kalavana",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Kalavana, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The ravine cracks at Dusa Tarad, Nia Sra, Gooliv Naven and Ghora Chani, the ponds along the top, the ledges and the boulders below them, the gold egg-shaped pots and the little gold trees sit where 2012 had them. The small box-like shapes are 2012's own bamboo racks and baskets (each checked against the 2012 picture: they stand beside and behind its grey icons, not in place of them). Returned more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/kalavana.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kalavana, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/kalavana.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Kalavana restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/kalavana@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/99.svg",
+        "w": 151,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/kalavana/"
     },
     {
       "id": "71",
@@ -1152,86 +1244,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/jethimadh/"
-    },
-    {
-      "id": "85",
-      "name": "Kajuu",
-      "anchor": "map-kajuu",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Kajuu survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/kajuu.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kajuu, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/kajuu.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Kajuu painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/kajuu@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/85.svg",
-        "w": 151,
-        "h": 125,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/kajuu/"
-    },
-    {
-      "id": "99",
-      "name": "Kalavana",
-      "anchor": "map-kalavana",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Kalavana survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/kalavana.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kalavana, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/kalavana.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Kalavana painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/kalavana@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/99.svg",
-        "w": 151,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/kalavana/"
     },
     {
       "id": "88",

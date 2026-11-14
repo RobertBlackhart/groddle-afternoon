@@ -197,14 +197,14 @@
         "file": "assets/maps/art/bg/kajuu@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "a58429a3efded0d99e3c17e6302163c35506234f9d09661b918b4361c9e78ee6"
+        "sha256": "2ae3589e99cd836161edc29519dde5d175f8393479ce4fd5b5a74000f24b85a6"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 25226,
-        "sha256": "c7d63ff4451f204f6c43742b9a531678173ad166e39fa148089b5e42d77bb181"
+        "bytes": 43772,
+        "sha256": "457bebbbbfa4058480c6582d84ac2c655b8b488b086c8e81ac4eda85274da0a3"
       }
     },
     "86": {
@@ -385,14 +385,14 @@
         "file": "assets/maps/art/bg/kalavana@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "49f0cf53909bbb665358ca687dbe6ba7a322793be907879fe238115dceb63d9f"
+        "sha256": "62dc7d642bb66eebc988d7795397365f7f4e1481be5aca555505f536789ade49"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 17980,
-        "sha256": "bb5dea7715fcef7d858b4adc19fec6e8bd52005d00e8b0fb1619d4c1f057e0fa"
+        "bytes": 48428,
+        "sha256": "c883db65771e32dcc9eb461bad995c6c203240ef2d61972be3ff21ede62d2d74"
       }
     },
     "100": {
@@ -743,14 +743,14 @@
         "file": "assets/maps/art/bg/jal@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "171414d15f7e1cc03550c70ee0108d79f30d2f960421973e8e34595550dab65f"
+        "sha256": "cf4708751d9418f6e14124b309229be3a551e38877d92153cb2b6edc9f338363"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 14840,
-        "sha256": "00ca789c285d6ee6636287787289fb8c216d6d5c5d23269b8e55376d644736b1"
+        "bytes": 46346,
+        "sha256": "af326da857dd33503129fdf2851fc6a4fce474616c0b73bea968135dc2643edf"
       }
     },
     "137": {
