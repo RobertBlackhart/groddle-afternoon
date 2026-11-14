@@ -8,6 +8,8 @@
  *   the keyboard's own). The stick starts where the thumb lands in its corner.
  * - Jump at the bottom right: a tap jumps (the Space key's edge, game.js queueJump), a hold
  *   holds Space (the Paradise courses that float while it is held).
+ * - Act beside Jump (#327, G756): the Enter key's press (game.js act: the menu of the thing in
+ *   reach, or the chooser when several are), for a sign or an animal that scenery or the HUD hides.
  * - A tap on the street (game.js, the canvas's pointerdown) opens the thing's verb menu as a
  *   click does, walks to empty ground (js/user-path.js, the street map's walk) and climbs a
  *   tapped ladder to where it was tapped.
@@ -267,17 +269,18 @@ export function touchWords(text, touch = isPhoneDevice()) {
 }
 
 /**
- * Builds the stick and the Jump button into `root` (the game's wrap) and wires them.
- * press(key) / release(key): the held keys (game.js `keys`); jump(): a jump's edge.
+ * Builds the stick and the Jump and Act buttons into `root` (the game's wrap) and wires them.
+ * press(key) / release(key): the held keys (game.js `keys`); jump(): a jump's edge; act(): Enter.
  * Returns { el, releaseAll, destroy }.
  */
-export function installTouchControls({ root, press, release, jump, tapThrough = null, floatStick = null, doc = globalThis.document, win = globalThis.window } = {}) {
+export function installTouchControls({ root, press, release, jump, act = null, tapThrough = null, floatStick = null, doc = globalThis.document, win = globalThis.window } = {}) {
   if (!root || !doc) return null;
   const el = doc.createElement('div');
   el.id = 'touch-controls';
   el.className = 'touch-controls';
   el.innerHTML = `
     <div class="touch-stick" data-touch-stick aria-hidden="true"><span class="touch-stick-base"><span class="touch-stick-knob"></span></span></div>
+    <button type="button" class="touch-act" data-touch-act aria-label="Act on what is nearby">Act</button>
     <button type="button" class="touch-jump" data-touch-jump aria-label="Jump">Jump</button>`;
   root.appendChild(el);
   doc.documentElement.classList.add('touch-phone');
@@ -285,6 +288,7 @@ export function installTouchControls({ root, press, release, jump, tapThrough = 
   const base = el.querySelector('.touch-stick-base');
   const knob = el.querySelector('.touch-stick-knob');
   const jumpBtn = el.querySelector('[data-touch-jump]');
+  const actBtn = el.querySelector('[data-touch-act]');
   // FLOAT STICK: the corner grows while the setting is on (style.css, data-float).
   const drawFloat = () => {
     if (floatStick?.get?.()) el.dataset.float = 'on';
@@ -413,6 +417,15 @@ export function installTouchControls({ root, press, release, jump, tapThrough = 
   }
   // The button never takes focus or a click of its own (Space on a focused button would press it).
   jumpBtn.addEventListener('click', (e) => e.preventDefault());
+  // Act: one press is one Enter (a held thumb does not repeat it).
+  actBtn?.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    actBtn.classList.add('is-held');
+    act?.();
+    try { win.navigator?.vibrate?.(8); } catch { /* no haptics */ }
+  });
+  for (const type of ['pointerup', 'pointercancel', 'pointerleave']) actBtn?.addEventListener(type, () => actBtn.classList.remove('is-held'));
+  actBtn?.addEventListener('click', (e) => e.preventDefault());
   // iOS: no long-press callout or text selection on the controls.
   el.addEventListener('contextmenu', (e) => e.preventDefault());
 

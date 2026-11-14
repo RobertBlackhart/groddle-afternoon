@@ -3,7 +3,7 @@
  * listeners, classes, style and a rect, and the controls built into it with the keys they hold.
  * Shared by tests/touch-stick-fingers.test.js and tests/touch-float-stick.test.js.
  */
-import { installTouchControls } from '../public/js/touch-controls.js?v=6ae5adce';
+import { installTouchControls } from '../public/js/touch-controls.js?v=455f4dc0';
 
 /** A fake element: listeners, classes, style, dataset, a rect. */
 export function fakeEl(rect = { left: 0, top: 0, width: 132, height: 132 }) {
@@ -44,6 +44,7 @@ export function fakeControls(opts = {}) {
     '.touch-stick-base': fakeEl(),
     '.touch-stick-knob': fakeEl(),
     '[data-touch-jump]': fakeEl(),
+    '[data-touch-act]': fakeEl(),
   };
   const wrap = fakeEl();
   wrap.querySelector = (sel) => parts[sel] || null;
@@ -71,15 +72,17 @@ export function fakeControls(opts = {}) {
   };
   const keys = new Set();
   const taps = [];
+  const acts = [];
   const api = installTouchControls({
     root: fakeEl(),
     press: (k) => keys.add(k),
     release: (k) => keys.delete(k),
     jump: () => {},
+    act: () => acts.push(1),
     tapThrough: (x, y, how) => taps.push({ x, y, ...(how || {}) }),
     doc,
     win,
     ...(opts.install || {}),
   });
-  return { api, keys, taps, zone: parts['[data-touch-stick]'], base: parts['.touch-stick-base'], knob: parts['.touch-stick-knob'], jump: parts['[data-touch-jump]'], wrap, doc, win };
+  return { api, keys, taps, zone: parts['[data-touch-stick]'], base: parts['.touch-stick-base'], knob: parts['.touch-stick-knob'], jump: parts['[data-touch-jump]'], act: parts['[data-touch-act]'], acts, wrap, doc, win };
 }

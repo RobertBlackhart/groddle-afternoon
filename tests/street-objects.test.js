@@ -40,7 +40,7 @@ import {
   treeSkill,
 } from '../public/js/street-objects.js?v=90fcd047';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=039b84f7';
-import { FEATURES } from '../public/js/features/index.js?v=3b4a4a7e';
+import { FEATURES } from '../public/js/features/index.js?v=82dabb39';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=b28fef74';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=7f9f1d80';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=4d6f5593';

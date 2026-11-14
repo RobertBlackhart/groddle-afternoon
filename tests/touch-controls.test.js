@@ -18,7 +18,7 @@ import {
   knobOffset,
   stickKeys,
   touchTapPlan,
-} from '../public/js/touch-controls.js?v=6ae5adce';
+} from '../public/js/touch-controls.js?v=455f4dc0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
@@ -69,6 +69,25 @@ describe('the stick', () => {
   it('holds the same keys a keyboard does, and Jump queues the Space key\'s jump', () => {
     assert.match(game, /press: \(k\) => keys\.add\(k\),\s*release: \(k\) => keys\.delete\(k\),\s*jump: \(\) => \{\s*queueJump\(jumpState, movementNow\(\)\);\s*window\.dispatchEvent\(new CustomEvent\(TOUCH_JUMP_EVENT\)\);\s*\},/);
     assert.match(mod, /press\(' '\);\s*jump\(\);/);
+  });
+});
+
+describe('Act (#327, G756)', () => {
+  it('one press is one Enter, and it holds no keys', async () => {
+    const { fakeControls } = await import('./touch-fake-dom.js');
+    const c = fakeControls();
+    const down = c.act.fire('pointerdown');
+    assert.equal(down.defaultPrevented, true, 'never takes focus');
+    assert.deepEqual(c.acts, [1]);
+    assert.equal(c.keys.size, 0);
+    c.act.fire('pointerup');
+    assert.deepEqual(c.acts, [1], 'a release does not act again');
+  });
+  it('sits beside Jump, and game.js runs it down the Enter key\'s own path with the chooser', () => {
+    assert.match(mod, /<button type="button" class="touch-act" data-touch-act aria-label="Act on what is nearby">Act<\/button>\s*<button type="button" class="touch-jump"/);
+    assert.match(game, /act: \(\) => \{\s*const down = new KeyboardEvent\('keydown', \{ key: 'Enter', bubbles: true, cancelable: true \}\);\s*down\.touchAct = true;\s*window\.dispatchEvent\(down\);/);
+    assert.match(game, /tryOpenNearestMenu\(\{ nearestFirst: e\.isTrusted === false && !e\.touchAct \}\);/);
+    assert.match(css, /\.touch-act \{\n\s+position: absolute; bottom: calc\(var\(--sp-6\) \+ 44px\);/);
   });
 });
 

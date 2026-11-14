@@ -4,11 +4,11 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a7855cd0';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3b4a4a7e';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=82dabb39';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
-import { createVogOverlay } from './js/vog-overlay.js?v=4ab1db52';
+import { createVogOverlay } from './js/vog-overlay.js?v=d977c132';
 import { createPromptStack } from './js/prompt-stack.js?v=6b79ae9b';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=ebe52dc8';
@@ -821,7 +821,7 @@ import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=106bf
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=43b1182e';
 import { createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
-import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=6ae5adce';
+import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=455f4dc0';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
 import { hellBuffDesc, isInHell } from './js/hell.js?v=df2b4357';
@@ -32692,7 +32692,7 @@ async function main() {
     // Enter / Return or E — open verb menu on nearest interactable
     if (e.key === 'Enter' || e.key === 'e' || e.key === 'E') {
       e.preventDefault();
-      tryOpenNearestMenu({ nearestFirst: e.isTrusted === false });
+      tryOpenNearestMenu({ nearestFirst: e.isTrusted === false && !e.touchAct });
       return;
     }
     // G221: the client's Shift keys (TSMainView.as 647-649): Shift+S the skills
@@ -33161,6 +33161,14 @@ async function main() {
       jump: () => {
         queueJump(jumpState, movementNow());
         window.dispatchEvent(new CustomEvent(TOUCH_JUMP_EVENT));
+      },
+      // #327 (G756): Act is the Enter key's press, through the same keydown path (open panels and menus
+      // first, then the thing in reach or the chooser); touchAct keeps the chooser a scripted press skips.
+      act: () => {
+        const down = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+        down.touchAct = true;
+        window.dispatchEvent(down);
+        window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
       },
       floatStick: createFloatStick({ win: window }),
       // A quick tap on the stick's corner on a thing behind it (an animal under it) is a tap on that thing;
