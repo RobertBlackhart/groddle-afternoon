@@ -2788,13 +2788,18 @@
   ]
  },
  "release": {
-  "game": "0.39.1",
+  "game": "0.40.0",
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2150,
+  "commits": 2155,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Jal, Kajuu and Kalavana's maps are Tiny Speck's 2012 paintings, restored"
+   },
    {
     "date": "2026-11-14",
     "kind": "new",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "The fourteen restored region maps lose the pale strips at their left and right edges"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Drifa and Firozi's maps are Tiny Speck's 2012 paintings, restored and matched to 2012's colour"
    }
   ]
  },
