@@ -345,6 +345,30 @@ describe('player verbs: between two players (fake server)', () => {
     client.players = [{ id: 2, name: 'Bo' }];
   });
 
+  it('takes the potion the ledger took once, by its op', () => {
+    const applied = new Set();
+    const query = engine.query;
+    engine.query = (hook, ...args) => {
+      if (hook !== 'ledgerReceipt') return query(hook, ...args);
+      if (applied.has(args[0])) return false;
+      applied.add(args[0]);
+      return true;
+    };
+    engine.inv.potion_charades = 2;
+    const use = { op: 'use-00112233aabbccdd', c: 'potion_charades', left: 0, spent: true, n: 1 };
+    client.msg({ t: 'charades_started', status: 'ok', word: 'pear', ends: Date.now() + 120_000, use });
+    assert.equal(engine.inv.potion_charades, 1, 'one potion leaves with the op');
+    client.msg({ t: 'charades_end', why: 'timeout', word: 'pear' });
+    // A load already took that op's potion out: the pack keeps what it has.
+    client.msg({ t: 'charades_started', status: 'ok', word: 'pear', ends: Date.now() + 120_000, use });
+    assert.equal(engine.inv.potion_charades, 1);
+    client.msg({ t: 'charades_end', why: 'timeout', word: 'pear' });
+    // A refusal (no potion in the ledger) takes nothing.
+    client.msg({ t: 'charades_started', status: 'refused', why: 'no_item', text: "You don't have enough of that item." });
+    assert.equal(engine.inv.potion_charades, 1);
+    engine.query = query;
+  });
+
   it('pays a winning guess and counts a blowout', () => {
     const before = engine.pc.currants;
     client.msg({ t: 'charades_won', from: { id: 2, name: 'Bo' }, xp: 50, currants: 250, text: 'Ada guessed correctly! +50 iMG, +250 currants' });

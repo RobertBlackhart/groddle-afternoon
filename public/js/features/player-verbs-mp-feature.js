@@ -438,9 +438,12 @@ function createSession(engine, client) {
       note(`charades:refused:${m?.why || ''}`);
       return;
     }
-    if (countItem(engine.inv, CHARADES_POTION) < 1) return;
-    // onInputBoxResponse 521-531: the potion is gone, the buff on, the counter counted.
-    removeItem(engine.inv, CHARADES_POTION, 1);
+    // onInputBoxResponse 521-531: the potion is gone, the buff on, the counter counted. The site's ledger
+    // took it before the game started (use, verbs.go), so it leaves the pack once by that op (ledgerReceipt:
+    // false when a load already took it out).
+    const use = m.use && typeof m.use === 'object' ? m.use : null;
+    const taken = use?.spent && engine.query?.('ledgerReceipt', String(use.op || ''), engine) === false;
+    if (!taken && countItem(engine.inv, CHARADES_POTION) > 0) removeItem(engine.inv, CHARADES_POTION, 1);
     engine.achievement?.(`potions_used:${CHARADES_POTION}`, 1);
     const left = Math.max(1, Math.round((Number(m.ends) - Date.now()) / 1000));
     engine.applyBuff?.(CHARADES_BUFF, { durationSec: Math.min(120, left) });
