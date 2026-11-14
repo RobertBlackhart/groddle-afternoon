@@ -172,7 +172,7 @@ describe('the site: no account until the email is proven (groddle-afternoon-site
     const acct = src('PlayerAccount.php');
     assert.match(acct, /public const INSTANT_OPTION = 'groddle_signup_instant';/);
     assert.match(acct, /str_ends_with\(\(string\) parse_url\(\$home, PHP_URL_HOST\), '\.localhost'\)/, 'never on a real domain');
-    assert.match(acct, /if \(\$this->instant\(\$email\)\) \{\n\s*return \$this->makeNow\(\$email, \$password, \$name\);/);
+    assert.match(acct, /if \(\$this->instant\(\$email\)\) \{\n\s*return \$this->emailTaken\(\$email\) \? self::emailExists\(\) : \$this->makeNow\(\$email, \$password, \$name\);/);
   });
 
   it('opening the link makes the account exactly as a sign-up did, once, and signs the player in', () => {

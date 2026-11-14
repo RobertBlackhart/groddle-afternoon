@@ -125,6 +125,18 @@ describe('the site: email limits and Turnstile (groddle-afternoon-site)', { skip
     assert.match(signups, /self::time\(\$now \+ self::LIFETIME\), MailLimits::addressKey\(\$address\),/, 'and are stored so');
   });
 
+  it('sign-up looks up the email only after Turnstile passes, then gives the same friendly answer', () => {
+    const acct = src('PlayerAccount.php');
+    const create = acct.slice(acct.indexOf('public function create('), acct.indexOf('public function verify('));
+    const afterQa = create.slice(create.indexOf('if ($this->instant($email))') + 'if ($this->instant($email))'.length);
+    const turnstile = afterQa.indexOf('$this->turnstileRefusal($request, $body)');
+    const lookup = afterQa.indexOf('$this->emailTaken($email)', afterQa.indexOf('}'));
+    assert.ok(turnstile > 0 && lookup > turnstile, 'Turnstile first, then the email');
+    assert.equal((create.slice(0, create.indexOf('if ($this->instant($email))')).match(/emailTaken\(/g) || []).length, 0, 'nothing looks the email up before that point');
+    assert.match(acct, /private static function emailExists\(\): Response\n\s*\{\n\s*return self::refused\('email_exists', self::WORDS\['email_exists'\], \['email' => self::WORDS\['email_exists'\]\], 400\);/, 'the email field keeps its friendly words');
+    assert.match(acct, /'email_exists' => 'That email already has a character\. Sign in instead\.'/);
+  });
+
   it('the secret stays on the server: options hands out the site key only', () => {
     const acct = src('PlayerAccount.php');
     const options = acct.slice(acct.indexOf('public function options('), acct.indexOf('private function turnstileRefusal('));
