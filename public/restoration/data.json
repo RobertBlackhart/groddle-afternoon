@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2125,
+  "commits": 2128,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "A new email takes effect only once a link sent to it is opened, and then signs out other devices"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Sign-up checks Turnstile before it looks up the email"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Folivoria, Haraiva, Ilmenskie Deeps and Ix's maps are Tiny Speck's 2012 paintings, restored and matched to 2012's colour"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "A felled street tree's Patch is drawn once, not twice, when you join its street"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Radiant Glare's bulbs click from anywhere, as the room's hint says"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "An open bag no longer holds a quest's award (Gwendolyn's Task Part 2 is offered)"
-   },
-   {
-    "date": "2026-11-13",
-    "kind": "fix",
-    "text": "Groddle Meadow's shrines stand where the 2012 street pictures show them"
    }
   ]
  },
- "tests": 979,
+ "tests": 980,
  "generatedAt": "2026-11-14"
 }
