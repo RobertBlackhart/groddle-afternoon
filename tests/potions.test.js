@@ -46,9 +46,9 @@ import {
   trantsformOutcome,
   usePotion,
 } from '../public/js/potions.js?v=4f4c996d';
-import { potionsFeature, usePotionNow, munchRug, shakeFavor } from '../public/js/features/potions-feature.js?v=f751f581';
+import { potionsFeature, usePotionNow, munchRug, shakeFavor } from '../public/js/features/potions-feature.js?v=4dc6dfcd';
 import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=a3093922';
-import { createPlot, growTree, tickPlot, trantsformPlotTree, normalizePlot } from '../public/js/patches.js?v=1ba4f75f';
+import { createPlot, growTree, tickPlot, trantsformPlotTree, normalizePlot } from '../public/js/patches.js?v=bfdf79d4';
 import { POTION_ART } from '../public/js/potion-art.js?v=27ccc756';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=e4e5edd0';

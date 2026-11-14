@@ -49,8 +49,8 @@ import {
   jumpApex,
   teleportersOn,
 } from '../public/js/hidden-floors.js?v=732a2610';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=ebfe5cb2';
-import { FEATURES } from '../public/js/features/index.js?v=ad9735ff';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=1ace9813';
+import { FEATURES } from '../public/js/features/index.js?v=c8f82f4c';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=b30f84eb';
 import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=43b1182e';
 import { buffPhysics } from '../public/js/buffs.js?v=c499cf1a';

@@ -33,8 +33,8 @@ import {
   writeMemory,
 } from '../public/js/groups.js?v=c9635d96';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
-import { groupsFeature } from '../public/js/features/groups-feature.js?v=f42ed375';
-import { FEATURES } from '../public/js/features/index.js?v=ad9735ff';
+import { groupsFeature } from '../public/js/features/groups-feature.js?v=cadb6f35';
+import { FEATURES } from '../public/js/features/index.js?v=c8f82f4c';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

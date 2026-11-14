@@ -49,7 +49,7 @@ import { hasRaceDispenser } from '../races.js?v=ab22a079';
 import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=219965d5';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { saveStore } from '../save-store.js?v=04420633';
+import { saveStore } from '../save-store.js?v=03027f36';
 
 const PIG_CLASS = 'test_game_starter';
 const PIG_ART = 'assets/sprites/races/test_game_starter@3x.webp';

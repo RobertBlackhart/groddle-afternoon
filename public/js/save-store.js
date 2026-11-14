@@ -69,12 +69,14 @@ export const SAVE_FORMAT = 1;
  * server refused the save). In conflict and elsewhere the page keeps its
  * game in memory and writes nothing until the player chooses (js/online-
  * boot.js asks): keep this window's game (takeover) or load the saved one;
- * error waits for "Try again" (retry). None of them is ever silent.
+ * error waits for "Try again" (retry). held (G737): the game asked this page never to write (the
+ * stored save could not be read, or a newer version wrote it; game.js holdSaves says why on the
+ * game's own save card); nothing writes again until a reload. None of them is ever silent.
  */
-export const SAVE_STATES = Object.freeze(['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error']);
+export const SAVE_STATES = Object.freeze(['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held']);
 
 /** The states that stop writing until the player acts (online-boot.js shows each one). */
-export const SAVE_STOPPED = Object.freeze(['conflict', 'elsewhere', 'signed-out', 'error']);
+export const SAVE_STOPPED = Object.freeze(['conflict', 'elsewhere', 'signed-out', 'error', 'held']);
 
 /** The player's answer to a stopped save, as a groddle:save-choice event: keep (this window's game), retry. */
 export const SAVE_CHOICE_EVENT = 'groddle:save-choice';
@@ -335,6 +337,11 @@ export function createSaveSync({
         if (state !== 'elsewhere') setState('elsewhere', { by: 'character', confirmedAt: current.confirmedAt });
         return state;
       }
+      if (state === 'held') {
+        // Held while this write was out: it was the last.
+        if (outcome === 'ok') landed = Math.max(landed, number);
+        return state;
+      }
       if (outcome === 'ok') {
         // A superseded answer is ok too: a newer copy of this page's is in already.
         landed = Math.max(landed, number);
@@ -412,6 +419,14 @@ export function createSaveSync({
     }
     return state;
   }
+  /** G737: the game must not write this save at all (held): nothing more goes out, a write in flight is the last. */
+  function hold(reason = '') {
+    if (characterGone || state === 'held') return state;
+    clear();
+    takingOver = false;
+    setState('held', { reason, force: true });
+    return state;
+  }
   /** Another call heard the site's character_changed: stop writing now, as a refused write would. */
   function characterChanged() {
     if (characterGone) return state;
@@ -427,6 +442,7 @@ export function createSaveSync({
     takeover,
     retry,
     yieldTo,
+    hold,
     characterChanged,
     /** The character every write names (0: none). */
     get character() { return playing; },
@@ -549,6 +565,8 @@ export function createMultiplayerSaveStore(opts = {}) {
     retry: () => sync.retry(),
     /** Saves the last change, then stops writing: another window plays now. */
     yieldTo: (detail) => sync.yieldTo(detail),
+    /** G737: never writes again from this page (game.js holdSaves). */
+    hold: (reason) => sync.hold(reason),
     get state() { return sync.state; },
     get version() { return sync.version; },
     /** This page's name on the save (MultiplayerSave.php writer). */
@@ -641,6 +659,25 @@ export function restoreSoloSave(data, store = createBrowserSaveStore()) {
     else store.remove(name);
   }
   return Object.fromEntries(entries);
+}
+
+/** G737: where a solo save the game could not read is copied before the game starts fresh. */
+export const UNREADABLE_SAVE_KEY = 'groddle_player_state_unreadable_v1';
+
+/**
+ * Copies a solo player state the game could not read beside it (UNREADABLE_SAVE_KEY), so it is
+ * kept even if the player later starts over. A copy kept before is never replaced. The original
+ * stays where it is too: the page holding it writes nothing (freezeSoloSaves).
+ */
+export function keepUnreadableSave(raw, storage = globalThis.localStorage) {
+  if (typeof raw !== 'string' || raw === '' || !storage) return false;
+  try {
+    if (storage.getItem(UNREADABLE_SAVE_KEY) != null) return false;
+    storage.setItem(UNREADABLE_SAVE_KEY, JSON.stringify({ keptAt: Date.now(), key: SAVE_KEYS.playerState, raw }));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 let soloFrozen = false;

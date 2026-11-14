@@ -8,7 +8,7 @@
  * there, and a part whose block is not on the page is skipped.
  */
 
-import { dametimeParts } from '../js/game-day.js?v=cf9afac0';
+import { dametimeParts } from '../js/game-day.js?v=caa7d584';
 import { setupMadeCompare } from './made-compare.js?v=bbd8d187';
 
 const $ = (sel, root = document) => root.querySelector(sel);

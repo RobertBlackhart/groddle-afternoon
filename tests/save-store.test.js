@@ -31,14 +31,14 @@ import {
   savedAtOf,
   savedThrough,
   soloSaveSnapshot,
-} from '../public/js/save-store.js?v=04420633';
+} from '../public/js/save-store.js?v=03027f36';
 import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff } from '../public/js/save-claim.js?v=30cf5250';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=6fe817bc';
-import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=e1afc3ca';
-import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=cf9afac0';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=da2082ba';
+import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=80be991d';
+import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=caa7d584';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=91c3dae7';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');
@@ -460,7 +460,7 @@ describe('multiplayer save store (phase 2)', () => {
     assert.equal(scope.document.documentElement.dataset.saveState, 'pending');
     await timers.tick(2000);
     assert.equal(scope.document.documentElement.dataset.saveState, 'saved');
-    assert.deepEqual([...SAVE_STATES], ['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error']);
+    assert.deepEqual([...SAVE_STATES], ['saved', 'pending', 'saving', 'offline', 'conflict', 'elsewhere', 'signed-out', 'error', 'held']);
   });
 
   it('createSaveSync on its own writes nothing until something changes', async () => {
@@ -997,12 +997,12 @@ describe('every save read and write goes through the store', () => {
 
   it('game.js uses the store for the player state, location, drops and companions', () => {
     const game = read('game.js');
-    assert.match(game, /import \{ saveStore \} from '\.\/js\/save-store\.js\?v=[\w-]+';/);
+    assert.match(game, /import \{ [\w, ]*\bsaveStore \} from '\.\/js\/save-store\.js\?v=[\w-]+';/);
     for (const name of ['playerState', 'location', 'droppedItems', 'companions']) {
       assert.match(game, new RegExp(`_STORAGE_KEY = '${name}';`), name);
     }
     assert.match(game, /saveStore\.set\(PLAYER_STATE_STORAGE_KEY, serialized\)/);
-    assert.match(game, /parsePlayerSave\(saveStore\.get\(PLAYER_STATE_STORAGE_KEY\)/);
+    assert.match(game, /raw = saveStore\.get\(PLAYER_STATE_STORAGE_KEY\);[\s\S]{0,120}inspectPlayerSave\(raw,/);
     assert.match(game, /saveStore\.remove\(PLAYER_STATE_STORAGE_KEY\);\n\s*saveStore\.remove\(DROPPED_ITEMS_STORAGE_KEY\);\n\s*saveStore\.remove\(LOCATION_STORAGE_KEY\);/);
   });
 

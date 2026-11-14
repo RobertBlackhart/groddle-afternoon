@@ -31,7 +31,7 @@
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
 import { pixiSpeed } from '../sprite-sheets.js?v=b4abfbf2';
-import { ensureHellItems, HELL_BARTENDER, HELL_SPRITES } from '../hell.js?v=23354bc4';
+import { ensureHellItems, HELL_BARTENDER, HELL_SPRITES } from '../hell.js?v=3e9605f2';
 import { questFlagsFeature } from './quest-flags-feature.js?v=17c6ef48';
 import {
   BARTENDER,
@@ -48,7 +48,7 @@ import {
   isHellBarTsid,
   pickBartenderLine,
   talkStateFor,
-} from '../hell-bar.js?v=106dd7c8';
+} from '../hell-bar.js?v=60045a26';
 
 export const HELL_BAR_FEATURE_ID = 'hell-bar';
 const CLASS = 'hell_bartender';

@@ -70,7 +70,7 @@ import { copyFromLedger, keepsCopies } from '../copy-charges.js?v=c821e9fa';
 import { migrateClassValue } from '../tools.js?v=48542c24';
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=f49c8998';
 import { moodMax } from '../metabolics.js?v=1383e6fd';
-import { plantChoices } from '../patches.js?v=1ba4f75f';
+import { plantChoices } from '../patches.js?v=bfdf79d4';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=8ee23f81';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=92383208';
@@ -100,7 +100,7 @@ import {
   quotePoisonVerb,
   treeDeathOutcome,
 } from '../tree-poison.js?v=d8fb42c9';
-import { patchesFeature } from './patches-feature.js?v=1d5714ed';
+import { patchesFeature } from './patches-feature.js?v=5b0dcb06';
 
 export const TREE_DEATH_FEATURE_ID = 'tree-death';
 const VERB_PREFIX = 'treepoison:';

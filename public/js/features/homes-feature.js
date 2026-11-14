@@ -170,7 +170,7 @@ import {
   swatchFilters,
   trayFilters,
 } from '../ui/home-builder.js?v=378178ac';
-import { RECIPE_CATALOG } from '../making.js?v=9bbf2186';
+import { RECIPE_CATALOG } from '../making.js?v=e974c915';
 import {
   createBackYardState,
   fixtureObstacles,
@@ -212,15 +212,15 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=92383208';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b4abfbf2';
 import { fadeInNewNear } from '../poof-fade.js?v=2705d584';
-import { projectApi } from './street-jobs-feature.js?v=0fd27c71';
+import { projectApi } from './street-jobs-feature.js?v=1317dbde';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=0962d6c8';
 import { drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=6553d242';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=8dbbe0f7';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=e96ab9ed';
-import { patchesFeature } from './patches-feature.js?v=1d5714ed';
-import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=1ba4f75f';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=1dba831f';
+import { patchesFeature } from './patches-feature.js?v=5b0dcb06';
+import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=bfdf79d4';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
 import { XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
@@ -260,7 +260,7 @@ import {
   rockVerbs,
   ROCK_VERB_IDS,
 } from '../magic-rock-home.js?v=c07b2327';
-import { getGameDayKey } from '../game-day.js?v=cf9afac0';
+import { getGameDayKey } from '../game-day.js?v=caa7d584';
 import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=11d72678';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=b30f84eb';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';

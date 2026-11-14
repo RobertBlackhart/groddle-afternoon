@@ -1,11 +1,11 @@
 /** Persistent player systems + per-street world snapshot. */
-import { normalizeShrineState } from './shrines.js?v=4d558b8b';
+import { normalizeShrineState } from './shrines.js?v=f3d90859';
 import { normalizeQuoinState } from './quoins.js?v=61be601c';
 import { normalizeToolConditionState, syncToolCopies } from './tools.js?v=48542c24';
 import { normalizeSkillState } from './skills.js?v=4542bdf9';
-import { normalizeFoodState } from './food.js?v=353b90ed';
+import { normalizeFoodState } from './food.js?v=8c70a04c';
 import { createGhostQuestState } from './ghost-quest.js?v=5f3cc133';
-import { normalizeParadiseState } from './paradise-flight.js?v=fdc76095';
+import { normalizeParadiseState } from './paradise-flight.js?v=270f7059';
 import { normalizeFeatSnapshot } from './feats.js?v=f6c3b551';
 import { normalizeEmotionalBearState } from './emotional-bear.js?v=172f393b';
 import { normalizeHomeState } from './homes.js?v=631ab6b8';
@@ -14,6 +14,62 @@ import { normalizeFeatureSlices } from './feature-host.js?v=a0bd032a';
 import { normalizeQuestOfferState } from './quest-offers.js?v=89511e1e';
 
 export const PLAYER_SAVE_VERSION = 7;
+
+/**
+ * G737: how a save written at an older PLAYER_SAVE_VERSION becomes the current one. One entry per
+ * version, keyed by the version it upgrades FROM: `[7]: (save) => save` turns a version 7 save into
+ * a version 8 one (change the plain object, return it). Empty until the shape first changes; the
+ * normalizers below still fill in what an older save lacks. Run in order by migratePlayerSave.
+ */
+export const PLAYER_SAVE_MIGRATIONS = Object.freeze({});
+
+/** The version a parsed save says it was written at (0: from before saves carried one). */
+export function playerSaveVersionOf(seed) {
+  const v = Number(seed?.version);
+  return Number.isInteger(v) && v > 0 ? v : 0;
+}
+
+/**
+ * A parsed save brought up to `to` through `migrations`, one version at a time. A save newer than
+ * `to` comes back as it is (inspectPlayerSave flags it: this build must not write over it).
+ */
+export function migratePlayerSave(seed, { migrations = PLAYER_SAVE_MIGRATIONS, to = PLAYER_SAVE_VERSION } = {}) {
+  if (!seed || typeof seed !== 'object') return seed;
+  let save = seed;
+  for (let v = playerSaveVersionOf(seed); v < to; v += 1) {
+    const step = migrations[v];
+    if (typeof step === 'function') save = step(save) ?? save;
+  }
+  return save;
+}
+
+/**
+ * What a stored save is, before the game uses it (G737):
+ * - none: nothing stored (a new game);
+ * - ok: read, migrated and normalized (save);
+ * - newer: written by a newer build (its version is above this one's). It still plays (save), but
+ *   this page must never write over it;
+ * - unreadable: stored but not a save this game can read (broken JSON, no pack, a normalizer that
+ *   throws). The game must keep it and not write over it.
+ */
+export function inspectPlayerSave(raw, defaults = {}, { migrations = PLAYER_SAVE_MIGRATIONS, to = PLAYER_SAVE_VERSION } = {}) {
+  if (raw == null || raw === '') return { status: 'none', save: null, version: 0 };
+  let seed;
+  try {
+    seed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  } catch {
+    return { status: 'unreadable', save: null, version: 0 };
+  }
+  const version = playerSaveVersionOf(seed);
+  let save = null;
+  try {
+    save = normalizePlayerSave(version > to ? seed : migratePlayerSave(seed, { migrations, to }), defaults);
+  } catch {
+    save = null;
+  }
+  if (!save) return { status: 'unreadable', save: null, version };
+  return { status: version > to ? 'newer' : 'ok', save, version };
+}
 
 const PLAYER_DEFAULTS = Object.freeze({
   energy: 80,
@@ -380,12 +436,7 @@ export function normalizePlayerSave(seed, defaults = {}) {
 }
 
 export function parsePlayerSave(raw, defaults = {}) {
-  if (!raw) return null;
-  try {
-    return normalizePlayerSave(typeof raw === 'string' ? JSON.parse(raw) : raw, defaults);
-  } catch {
-    return null;
-  }
+  return inspectPlayerSave(raw, defaults).save;
 }
 
 export function serializePlayerSave(snapshot) {

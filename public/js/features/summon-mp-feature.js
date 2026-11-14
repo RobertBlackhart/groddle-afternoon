@@ -51,7 +51,7 @@ import {
   summonVerb,
 } from '../summon-mp.js?v=7598f381';
 import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
-import { homeStreetName, houseName, readHomeStreet } from '../neighbours-mp.js?v=e141e898';
+import { homeStreetName, houseName, readHomeStreet } from '../neighbours-mp.js?v=b823146f';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 
 export const SUMMON_MP_FEATURE_ID = 'summon-mp';

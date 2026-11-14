@@ -44,6 +44,8 @@ const PILL_TEXT = {
   elsewhere: 'Playing in another window',
   'signed-out': 'Signed out. Sign in again',
   error: 'Not saved',
+  // G737: the game's own save card says why (js/save-trouble.js).
+  held: 'Not saving',
 };
 
 /**
@@ -640,7 +642,8 @@ function mountSavePill(player) {
     if (s === shown) return;
     shown = s;
     // Elsewhere looks like a conflict in the pack (its words show, not just the cloud).
-    pill.dataset.state = s === 'elsewhere' ? 'conflict' : s;
+    // Held (G737) shows red like a refused save; the game's own card says why.
+    pill.dataset.state = s === 'elsewhere' ? 'conflict' : s === 'held' ? 'error' : s;
     // A conflict or an ended session needs the player: the words become the way out.
     // Reloading /play/online/ shows the gate's sign-in when the session is gone.
     const href = s === 'conflict' || s === 'signed-out' ? location.pathname : '';

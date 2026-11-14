@@ -14,10 +14,10 @@ import {
   partyScrapingVerb,
   resolveResourceSkillPackage,
   runPartyScrapingVerb,
-} from '../public/js/resource-nodes.js?v=3a26727e';
+} from '../public/js/resource-nodes.js?v=cf431a10';
 import { createToolConditionState } from '../public/js/tools.js?v=48542c24';
-import { normalizePlayerSnapshot } from '../public/js/player-save.js?v=da2082ba';
-import { partyScrapingFeature as feature } from '../public/js/features/party-scraping-feature.js?v=df7b78e4';
+import { normalizePlayerSnapshot } from '../public/js/player-save.js?v=91c3dae7';
+import { partyScrapingFeature as feature } from '../public/js/features/party-scraping-feature.js?v=2e3f9933';
 
 const GS = join(dirname(fileURLToPath(import.meta.url)), '../../glitch-GameServerJS');
 const CARD = 'barnacle_scraping_speed_1';

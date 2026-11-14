@@ -16,13 +16,13 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 
 import { createMinnAccount, minnUrls } from '../public/js/minn-account.js?v=00f3eadb';
-import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=906a89b8';
-import { SAVE_STOPPED } from '../public/js/save-store.js?v=04420633';
+import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=78c32c71';
+import { SAVE_STOPPED } from '../public/js/save-store.js?v=03027f36';
 import { FORM_COPY, SETTINGS_COPY, resetLinkFrom } from '../public/js/account-forms.js?v=6729bb05';
-import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=bd025882';
-import { FEATURES } from '../public/js/features/index.js?v=ad9735ff';
+import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=b1b0fc20';
+import { FEATURES } from '../public/js/features/index.js?v=c8f82f4c';
 import { multiplayerEntryUrl } from '../public/js/game-mode.js?v=1ecf2899';
-import { SAVE_ENTRY_NAMES, createMultiplayerSaveStore } from '../public/js/save-store.js?v=04420633';
+import { SAVE_ENTRY_NAMES, createMultiplayerSaveStore } from '../public/js/save-store.js?v=03027f36';
 import { HAS_SITE, SITE_DIR, serverPath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -285,9 +285,12 @@ describe('online-boot', () => {
 
   it('a stopped save always says so over the game, with a way out for each state (ticket 21)', () => {
     for (const state of SAVE_STOPPED) {
+      // G737: a held save is said by the game's own save card (js/save-trouble.js), not a second card here.
+      if (state === 'held') continue;
       const said = saveAlertFor(state, {});
       assert.ok(said?.title && said.body && said.buttons.length, state);
     }
+    assert.equal(saveAlertFor('held', {}), null, 'held: the game card says it');
     for (const state of ['saved', 'pending', 'saving', 'offline']) assert.equal(saveAlertFor(state, {}), null, state);
     const two = saveAlertFor('elsewhere', { confirmedAt: '2026-11-01T06:52:00Z', otherUpdatedAt: '2026-11-01T06:53:00Z' });
     assert.deepEqual(two.buttons.map(([c]) => c), ['load', 'keep'], 'loading the other save first; keeping this one replaces it');

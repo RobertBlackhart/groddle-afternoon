@@ -21,7 +21,7 @@ import {
 } from '../public/js/tools.js?v=48542c24';
 import { addItem, countItem, createInventory, ensureItem } from '../public/js/inventory.js?v=f49c8998';
 import { createVendorSellQuote, listSellOffers, vendorSell } from '../public/js/vendor.js?v=dc7d6463';
-import { createShrineState, donateToShrine, listShrineDonationOptions, quoteShrineDonation } from '../public/js/shrines.js?v=4d558b8b';
+import { createShrineState, donateToShrine, listShrineDonationOptions, quoteShrineDonation } from '../public/js/shrines.js?v=f3d90859';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => fs.readFileSync(path.join(root, 'public', p), 'utf8');

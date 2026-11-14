@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 import { CONSUME_FLAVOUR_LINES, getItemUseInfo, useItem } from '../public/js/inventory.js?v=f49c8998';
-import { useItemMany } from '../public/js/eat-many.js?v=9d9c92b7';
+import { useItemMany } from '../public/js/eat-many.js?v=6a4480d6';
 import { moodScaledXp } from '../public/js/mood-xp.js?v=22648ec0';
 
 const game = fs.readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');

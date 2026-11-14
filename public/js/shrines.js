@@ -22,7 +22,7 @@ import {
 import {
   GAMESHOW_TICKET_ID,
   gameshowTicketChance,
-} from './spinning-wheel.js?v=afbea251';
+} from './spinning-wheel.js?v=c95e49d7';
 import { metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';

@@ -56,9 +56,9 @@ import { ecologyForStreet } from '../street-ecology.js?v=02dd7dda';
 import { worldToScreen } from '../street-model.js?v=b6cb6a4e';
 import { signArmWidth } from '../street-render.js?v=9b11451f';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { GIANTS } from '../shrines.js?v=4d558b8b';
+import { GIANTS } from '../shrines.js?v=f3d90859';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=4ab5dbdc';
+import { teleportationFeature } from './teleportation-feature.js?v=7165051a';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,
@@ -115,7 +115,7 @@ import { PAPERS_BADGE } from '../subway.js?v=e6995db8';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=e7b68f54';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
-import { saveStore, savedThrough } from '../save-store.js?v=04420633';
+import { saveStore, savedThrough } from '../save-store.js?v=03027f36';
 import {
   HALL_TEXT,
   MP_TEXT,
