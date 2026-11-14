@@ -215,7 +215,7 @@ describe('one throw no longer stops the game loop (report 116)', () => {
 
   it('game.js runs the frame inside one guard and keeps the ticker going', () => {
     const game = read('public/game.js');
-    assert.match(game, /import \{ createErrorOnce, createFeatureHost \} from '\.\/js\/feature-host\.js/);
+    assert.match(game, /import \{ createErrorOnce, createFeatureHost[^}]*\} from '\.\/js\/feature-host\.js/);
     assert.match(game, /const frameFailed = createErrorOnce\(\);\n\s*const gameFrame = \(ticker\) => \{\n\s*syncStreetFront\(\);/);
     assert.match(game, /app\.ticker\.add\(\(ticker\) => \{\n\s*try \{\n\s*gameFrame\(ticker\);\n\s*\} catch \(err\) \{\n\s*frameFailed\('game loop', err\);\n\s*\}\n\s*\}\);/);
     // The features tick inside the frame, each in the host's own guard.

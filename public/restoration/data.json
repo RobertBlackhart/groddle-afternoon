@@ -2792,9 +2792,34 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2128,
+  "commits": 2135,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Online game pages carry the test levers only on a developer's own machine"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A game page left open across a release no longer saves over the newer version's save"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A saved game the game cannot read, or one a newer version saved, is kept and never saved over"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A save that does not go in says so at the top of the game and keeps trying"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "One part of the game that cannot save or load its own data no longer stops the rest saving or loading"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2889,34 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Jethimadh's and Kalavana's shrines stand where the 2012 street pictures show them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Legalize It's application is made in Gregarious Grange's shared Bureaucratic Hall, with everyone else in it"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Aranna, Balzare, Baqala, Besara, Bortola, Brillah, Callopee, Cauda, Chakra Phool and Choru's maps are Tiny Speck's 2012 paintings, restored and matched to 2012's colour"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Swoonerflies show their name on hover"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Shrines, trees, vendors and animals keep off the Peat Bogs, Jellisacs, Barnacles and Paper Trees the snaps place"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A felled street tree's Patch is drawn once, not twice, when you join its street"
    }
   ]
  },
- "tests": 980,
+ "tests": 985,
  "generatedAt": "2026-11-14"
 }
