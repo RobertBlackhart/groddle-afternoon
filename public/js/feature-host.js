@@ -42,8 +42,9 @@
  *   mapCards(engine)                      // -> [HTMLElement] cards shown above the Map canvas
  *   furnitureRow(street, base, engine)    // -> street furniture row (base = the archived row or null),
  *                                         //    row.at[classTsid] = fixed screen points (engine.query)
- *   save()                                // -> JSON-safe slice
- *   restore(slice, engine)                // slice may be undefined on a fresh game
+ *   save()                                // -> JSON-safe slice (a throw keeps the last good slice)
+ *   restore(slice, engine)                // slice may be undefined on a fresh game; a throw keeps
+ *                                         //    the raw slice, saved back unchanged
  * }
  *
  * Targets a feature registers carry `featureId`, so verbs route back to it.
@@ -110,6 +111,10 @@ export function createFeatureHost(features = [], { onError } = {}) {
   };
   // Every-frame hooks: one feature's throw is reported once (with its id) and the rest still run.
   const failed = createErrorOnce(onError ? { report: onError } : {});
+  /** Feature id -> its last slice known good (restored from, or saved), for a save() that throws. */
+  const lastGood = new Map();
+  /** Feature id -> the saved slice its restore() could not take, written back unchanged. */
+  const kept = new Map();
   const eachGuarded = (hook, ...args) => {
     for (const feature of list) {
       if (typeof feature[hook] !== 'function') continue;
@@ -270,22 +275,52 @@ export function createFeatureHost(features = [], { onError } = {}) {
       }
       return false;
     },
-    /** { [featureId]: slice } for the player save. */
+    /**
+     * { [featureId]: slice } for the player save (G737). Each feature is guarded on its own: one
+     * whose save() throws is reported once and its last good slice (the one it was restored from,
+     * or its last save) goes in instead, so the rest still save and its own data is not lost. A
+     * feature whose restore() threw is never asked: the slice it could not take goes back as it came.
+     */
     save() {
       const out = {};
       for (const feature of list) {
+        if (kept.has(feature.id)) {
+          out[feature.id] = kept.get(feature.id);
+          continue;
+        }
         if (typeof feature.save !== 'function') continue;
-        const slice = feature.save();
-        if (slice !== undefined) out[feature.id] = JSON.parse(JSON.stringify(slice));
+        try {
+          const slice = feature.save();
+          if (slice === undefined) continue;
+          out[feature.id] = JSON.parse(JSON.stringify(slice));
+          lastGood.set(feature.id, out[feature.id]);
+        } catch (err) {
+          failed(`${feature.id}.save`, err);
+          if (lastGood.has(feature.id)) out[feature.id] = lastGood.get(feature.id);
+        }
       }
       return out;
     },
+    /**
+     * Each feature takes its own slice (G737). One that throws is reported once and the rest still
+     * restore; its raw slice is kept and written back unchanged by every save of this page.
+     */
     restore(slices = {}, engine) {
       for (const feature of list) {
-        if (typeof feature.restore === 'function') {
-          feature.restore(slices?.[feature.id], engine);
+        const raw = slices?.[feature.id];
+        if (raw !== undefined) lastGood.set(feature.id, raw);
+        if (typeof feature.restore !== 'function') continue;
+        try {
+          feature.restore(raw, engine);
+        } catch (err) {
+          failed(`${feature.id}.restore`, err);
+          if (raw !== undefined) kept.set(feature.id, raw);
         }
       }
+    },
+    /** QA and tests: the features whose saved slice is held as it was because their restore threw. */
+    keptSlices() {
+      return [...kept.keys()];
     },
   };
 }

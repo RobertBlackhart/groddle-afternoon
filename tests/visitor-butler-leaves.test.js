@@ -24,7 +24,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=7723b459';
-import { createErrorOnce, createFeatureHost, reportPageError } from '../public/js/feature-host.js?v=06bb8b74';
+import { createErrorOnce, createFeatureHost, reportPageError } from '../public/js/feature-host.js?v=a0bd032a';
 import { pageErrorLine, rememberError } from '../public/js/features/bug-report-feature.js?v=0d553804';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

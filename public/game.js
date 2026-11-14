@@ -3,7 +3,7 @@
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3b682793';
-import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=06bb8b74';
+import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
 import { FEATURES, questFlagsFeature } from './js/features/index.js?v=66999f9f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
@@ -517,7 +517,7 @@ import {
   parsePlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=477fdb26';
+} from './js/player-save.js?v=da2082ba';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,

@@ -23,7 +23,7 @@ import {
   streetOwner,
 } from '../public/js/location-events.js?v=05663361';
 import { inOriginalOrder } from '../tools/stable-json.mjs';
-import { createFeatureHost } from '../public/js/feature-host.js?v=06bb8b74';
+import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
