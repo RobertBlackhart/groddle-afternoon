@@ -19,6 +19,10 @@
  */
 
 import { HOME_POOL_REFRESH_MS, collectAmount, createPoolSite, normalizePool, poolView } from '../home-pool-mp.js?v=d04553e2';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+
+/** The QA handle is offered once a page. */
+let qaExposed = false;
 
 export const HOME_POOL_MP_FEATURE_ID = 'home-pool-mp';
 
@@ -95,12 +99,14 @@ export const homePoolMpFeature = {
     const home = onOwnStreet(engine);
     if (home && (!wasHome || Date.now() - askedAt > HOME_POOL_REFRESH_MS)) refresh(engine);
     wasHome = home;
-    if (!globalThis.groddleHomePool) {
-      globalThis.groddleHomePool = {
+    if (!qaExposed) {
+      qaExposed = true;
+      // G738: a QA lever (js/qa-gate.js): online on a local host only.
+      exposeQA('groddleHomePool', {
         refresh: () => refresh(engine),
         collect: (opts) => collect(engine, opts),
         get state() { return pool; },
-      };
+      });
     }
   },
 

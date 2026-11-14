@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { HOME_POOL_REFRESH_MS, collectAmount, normalizePool, poolView } from '../public/js/home-pool-mp.js?v=d04553e2';
-import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=575920f2';
+import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=eda3419c';
 import { CULTIVATION_REWARDS_CAP, imgRewards, imgRewardLine } from '../public/js/magic-rock-home.js?v=c07b2327';
 import { DROP_TEXT, eatenStack, normalizeGroundStack, pigAnimalKey } from '../public/js/drops-mp.js?v=3207d36c';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=b156f075';

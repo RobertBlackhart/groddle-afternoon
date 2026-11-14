@@ -62,6 +62,7 @@
  */
 
 import { performPlotVerb, plotArtPath, plotLabel, plotStatusLabel, plotVerbs } from '../patches.js?v=0d8e92b4';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { trantStatusLabel } from '../trants.js?v=4d6f5593';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=ee35a30a';
 import { animalAnchorX, animalAnchorY, animalStatusLabel } from '../animals.js?v=95b338f6';
@@ -1144,7 +1145,8 @@ function ensure(engine) {
   const client = engine.query?.('realtimeClient');
   if (!client) return null;
   session = createSession(engine, client);
-  globalThis.groddleYard = session;
+  // G738: a QA lever that moves the player and sends acts (js/qa-gate.js): online on a local host only.
+  exposeQA('groddleYard', session);
   return session;
 }
 

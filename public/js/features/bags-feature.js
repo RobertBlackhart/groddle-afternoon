@@ -93,6 +93,7 @@
  */
 
 import { ITEM_CATALOG, addItem, isToolItem, removeItem } from '../inventory.js?v=f49c8998';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import {
   BAG_DEFS,
   PACK_CAPACITY,
@@ -760,7 +761,8 @@ export const bagsFeature = {
   init(engine) {
     engineRef = engine || null;
     if (typeof globalThis === 'undefined') return;
-    globalThis.groddlePack = {
+    // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+    exposeQA('groddlePack', {
       layout: () => layoutPack(engine.inv, slice.prefs, opts()),
       /** Everything held per class, slotted or rock-held (the inventory counts). */
       counts: () => Object.fromEntries(Object.entries(engine.inv).filter(([, n]) => n > 0)),
@@ -772,7 +774,7 @@ export const bagsFeature = {
       // Solo QA only: gain something as any reward would (a full pack's magic rock takes it).
       ...(engine?.mode === 'multiplayer' ? {} : { grant: (cls, n = 1) => { addItem(engine.inv, String(cls), Math.max(1, Math.floor(n))); engine.updateHud?.(); } }),
       get slice() { return JSON.parse(JSON.stringify(slice)); },
-    };
+    });
   },
 
   onTick(_dt, _now, engine) {

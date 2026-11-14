@@ -66,6 +66,7 @@ import {
   seedFitsGarden,
 } from '../garden.js?v=1420a6d6';
 import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=48542c24';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';
 import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
@@ -669,7 +670,8 @@ export const sharedGardensFeature = {
     multiplayer = engine.mode === 'multiplayer';
     if (!multiplayer) return;
     if (typeof window !== 'undefined') {
-      window.groddleSharedGardens = {
+      // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+      exposeQA('groddleSharedGardens', {
         plots: () => Object.fromEntries(copy.plots),
         beds: () => Object.fromEntries([...copy.beds].map(([bed, g]) => [bed, g.plots])),
         dev: (opts = {}) => client?.send('garden_dev', { lock: Number(opts.lock) || 0, water: Number(opts.water) || 0, skip: Number(opts.skip) || 0 }),
@@ -696,7 +698,7 @@ export const sharedGardensFeature = {
           const k = rect.width / (engine.camera?.w || 960);
           return { x: rect.left + g.x * k, y: rect.top + g.y * k };
         },
-      };
+      });
     }
     publish(engine);
   },

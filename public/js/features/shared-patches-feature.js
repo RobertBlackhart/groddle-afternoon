@@ -71,6 +71,7 @@
  */
 
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { patchesFeature } from './patches-feature.js?v=090141ad';
 import {
@@ -691,7 +692,8 @@ export const sharedPatchesFeature = {
     enabled = multiplayer && sharedPatchesOn();
     if (!multiplayer) return;
     if (enabled && typeof window !== 'undefined') {
-      window.groddleSharedPatches = {
+      // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+      exposeQA('groddleSharedPatches', {
         plots: () => Object.fromEntries(copy.server),
         view: () => Object.fromEntries([...copy.plots].map(([k, p]) => [k, { stage: p.stage, kind: p.kind, dead: p.deadClass, seedling: p.seedling, tree: p.tree ? { classId: p.tree.classId, ...p.tree.state } : null, tender: p.tender || 0 }])),
         state: () => ({ street: copy.street, snap: copy.snap, none: copy.none, serverOff, pending: pending.size, applied: applied.length, stripped: [...strippedStreets], timers: copy.timers }),
@@ -711,7 +713,7 @@ export const sharedPatchesFeature = {
           const k = rect.width / (engine.camera?.w || 960);
           return { x: rect.left + g.x * k, y: rect.top + g.y * k };
         },
-      };
+      });
     }
     publish(engine);
   },

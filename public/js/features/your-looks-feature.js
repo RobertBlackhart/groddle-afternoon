@@ -31,6 +31,7 @@ import {
   recordLook, removeLook, totalLine, wearLook,
 } from '../your-looks.js?v=89b5ca2e';
 import { APPEARANCE_PRESETS } from '../character-builder.js?v=ffa761e9';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 
 export const YOUR_LOOKS_FEATURE_ID = 'your-looks';
 
@@ -279,12 +280,13 @@ export const yourLooksFeature = {
     demo(engine);
     mount(engine);
     if (typeof window !== 'undefined') {
-      window.groddleYourLooks = {
+      // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+      exposeQA('groddleYourLooks', {
         state: () => JSON.parse(JSON.stringify(state)),
         keepNow: () => { const r = noteWear(state, engine.wornLook || {}, YOUR_LOOKS_KEEP_MS, Date.now()); engine.save?.(); if (panelOpen()) render(engine); return r; },
         wear: (i) => wearAt(engine, i),
         remove: (i) => askRemove(engine, i),
-      };
+      });
     }
     publish(engine);
   },

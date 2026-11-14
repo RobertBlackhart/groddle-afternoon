@@ -11,7 +11,7 @@ import {
   normalizeYourLooks, noteWear, pastLooks, recordLook, removeLook, totalLine, wearLook,
 } from '../public/js/your-looks.js?v=89b5ca2e';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
-import { yourLooksFeature, YOUR_LOOKS_FEATURE_ID } from '../public/js/features/your-looks-feature.js?v=251c4b73';
+import { yourLooksFeature, YOUR_LOOKS_FEATURE_ID } from '../public/js/features/your-looks-feature.js?v=7f0af1c8';
 import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=b7b9edba';
 import { APPEARANCE_PRESETS } from '../public/js/character-builder.js?v=ffa761e9';
 

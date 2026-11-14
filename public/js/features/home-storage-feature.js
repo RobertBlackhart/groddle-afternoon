@@ -42,6 +42,7 @@
  */
 
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=f49c8998';
 import { displayRefusal, furnitureDef, furnitureSize, isFurniture } from '../home-decor.js?v=06be9c65';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
@@ -1116,7 +1117,8 @@ function runVerb(target, verbId, engine) {
 
 function qa(engine) {
   if (typeof window === 'undefined') return;
-  window.groddleHomeStorage = {
+  // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+  exposeQA('groddleHomeStorage', {
     state: () => ({ where: where(engine), currants: engine.pc?.currants ?? null, drawn: [...drawn.keys()], window: storageWindowKind(), win: win ? { kind: win.kind, uid: win.uid, owner: win.owner, slots: win.slots } : null, ownBoxes: Object.fromEntries(ownBoxes), visit: visit ? { owner: visit.owner, key: visit.key, boxes: visit.data?.boxes || [] } : null, pending: pending.map((p) => p.op), last }),
     act(uid, verbId) {
       const e = drawn.get(Number(uid));
@@ -1169,7 +1171,7 @@ function qa(engine) {
       p.vx = 0;
       return true;
     },
-  };
+  });
 }
 
 export const homeStorageFeature = {

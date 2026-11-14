@@ -37,7 +37,8 @@
  * snapsCount, snapsLast. window.groddleSnaps in multiplayer.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
+import { createMinnAccount } from '../minn-account.js?v=c15f0ecf';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=f49c8998';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=18b181ad';
 import {
@@ -147,13 +148,14 @@ function createSession(engine) {
     if (before && before.parentElement === menu) menu.insertBefore(btn, before);
     else menu.append(btn);
   }
-  globalThis.groddleSnaps = {
+  // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+  exposeQA('groddleSnaps', {
     state: () => ({ stage: s.travel?.stage || 'idle', dialog: s.dialog?.stage || 'closed', album: s.album, last: s.last, travelSnap: s.travel?.snap || null }),
     album: () => loadAlbum(s, true),
     openAlbum: () => openAlbum(engine, s),
     takePicture: () => openTravel(engine, s),
     snap: () => snapNow(engine, s, {}),
-  };
+  });
   publish(engine, s);
   return s;
 }

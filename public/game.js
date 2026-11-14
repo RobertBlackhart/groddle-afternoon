@@ -1073,6 +1073,7 @@ import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
 import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=cd053443';
+import { pickReadOnly, qaHandlesAllowed } from './js/qa-gate.js?v=f4e2cd82';
 import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
@@ -14981,6 +14982,18 @@ const LOCATION_STORAGE_KEY = 'location';
 const DROPPED_ITEMS_STORAGE_KEY = 'droppedItems';
 /** Pack and metabolics must persist with street stacks to keep moves atomic across reloads: 'groddle_player_state_v1'. */
 const PLAYER_STATE_STORAGE_KEY = 'playerState';
+/**
+ * G738: the groddleQA entries an online page off a local host keeps: they read what is drawn and
+ * held, and change nothing (tools/qa/online-smoke.mjs waits on snapshot; street-memory reads the
+ * stats). No grant, quest, travel, avatar move, pinch, speech, Imagination pick or Mayhem lever.
+ */
+const READ_ONLY_QA = Object.freeze([
+  'groundSkirt', 'edgeMirrors', 'recolourStats', 'signArms', 'memoryStats', 'renderStats', 'drawnArt', 'itemOverlays',
+  'drawnTextures', 'spinningWheel', 'cameraFrame', 'speech', 'pickups', 'streetDeco', 'animDecos', 'quoins',
+  'vectorBakes', 'idleState', 'snapshot',
+  ['notify', ['notices', 'entries', 'stats', 'screensPending']],
+  ['audio', ['state']],
+]);
 let lastSerializedPlayerState = '';
 /**
  * G737: a save that does not go in shows the save card (js/save-trouble.js) and retries; a held
@@ -33385,7 +33398,9 @@ async function main() {
     setTimeout(play, 1500);
     setInterval(play, 4000);
   }
-  window.groddleQA = {
+  // G738: every QA lever where they may be (js/qa-gate.js: solo, or online on a local host);
+  // online elsewhere only the read-only inspectors (READ_ONLY_QA), which change nothing.
+  const fullQA = {
     /**
      * PINCH PREVIEW QA (WebKit has no two-finger touch in Playwright): drive a phone pinch as
      * js/touch-pinch.js does: 'begin', then 'level' with each level (once a frame), then 'end'.
@@ -33775,6 +33790,7 @@ async function main() {
       };
     },
   };
+  window.groddleQA = qaHandlesAllowed() ? fullQA : pickReadOnly(fullQA, READ_ONLY_QA);
   if (new URLSearchParams(location.search).has('soundtest')) {
     import('./js/sound-test.js?v=72d68256').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
       state.muted = false;
@@ -33791,7 +33807,7 @@ async function main() {
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.
   if (new URLSearchParams(location.search).has('memqa')) {
-    window.groddleQA.travel = (tsid) => enterStreetWithTransition(tsid);
+    fullQA.travel = (tsid) => enterStreetWithTransition(tsid);
   }
   // Loading card QA (js/loading-card-qa.js): ?loadcarddemo=<tsid>[,<tsid>].
   if (new URLSearchParams(location.search).has('loadcarddemo')) {

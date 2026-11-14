@@ -20,6 +20,7 @@
  */
 
 import { ITEM_CATALOG } from '../inventory.js?v=f49c8998';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { listAnimalFeedOptions } from '../animals.js?v=95b338f6';
 import { isBagClass } from '../pack-slots.js?v=4d446d78';
 import { dropFor, dropTip } from '../world-drop.js?v=d152b2bb';
@@ -175,7 +176,8 @@ function wire(engine) {
     event.preventDefault();
     runDrop(engine, over, cls, copy);
   });
-  globalThis.groddleWorldDrop = {
+  // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
+  exposeQA('groddleWorldDrop', {
     over(x, y, cls, copy = null) {
       const o = overAt(engine, canvas, x, y, cls, copy);
       return o ? { target: o.target.classId, verb: o.drop.verb.id, rule: o.drop.rule.id, ok: o.ok, tip: o.tip } : null;
@@ -203,7 +205,7 @@ function wire(engine) {
       }
       return best ? { x: best.x, y: best.y } : null;
     },
-  };
+  });
 }
 
 export const worldDropFeature = {

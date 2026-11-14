@@ -60,7 +60,7 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=e65fc5dd';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=9ad2f26e';
 import { wallsScreen } from '../street-model.js?v=b6cb6a4e';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { textureFromUrl } from '../textures.js?v=814d7926';

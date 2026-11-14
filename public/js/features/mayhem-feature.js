@@ -29,6 +29,7 @@
  */
 
 import { CROWNS_START_POINTS, CROWNS_STREET } from '../game-of-crowns.js?v=e32f35f5';
+import { qaHandlesAllowed } from '../qa-gate.js?v=f4e2cd82';
 import {
   MAYHEM_END,
   MAYHEM_ID,
@@ -50,6 +51,9 @@ import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from 
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { saveStore } from '../save-store.js?v=cd053443';
+
+/** G738: whether this page may carry the Mayhem QA levers. */
+const QA_ALLOWED = qaHandlesAllowed();
 
 const PIG_CLASS = 'test_game_starter';
 const PIG_ART = 'assets/sprites/races/test_game_starter@3x.webp';
@@ -897,7 +901,8 @@ export const mayhemFeature = {
   onTick(dtMs, now, engine) {
     if (engine.mode === 'multiplayer' && !client) attach(engine);
     const qa = globalThis.groddleQA;
-    if (engine.mode === 'multiplayer' && qa && !qa.mayhem) {
+    // G738: the Mayhem levers only where QA handles may be (js/qa-gate.js); online elsewhere groddleQA is read-only.
+    if (engine.mode === 'multiplayer' && qa && !qa.mayhem && QA_ALLOWED) {
       qa.mayhem = {
         join: () => join(engine),
         admire: () => admire(engine),
