@@ -760,6 +760,20 @@ function mpRefund(engine) {
 }
 
 /**
+ * crown_waiting for this page's own challenge (G734): the ticket the server's ledger spent leaves the
+ * pack, once by the ledger's op (ledgerReceipt: false when a load already took it out), held for a refund.
+ */
+function mpTicketSpent(engine, msg) {
+  if (!mpChallenging || Number(msg?.from) !== Number(mpClient?.me?.id)) return;
+  const use = msg.use && typeof msg.use === 'object' ? msg.use : null;
+  const taken = use?.spent && engine.query?.('ledgerReceipt', String(use.op || ''), engine) === false;
+  if (!taken && countItem(engine.inv, CROWNS_TICKET) > 0) removeItem(engine.inv, CROWNS_TICKET, 1);
+  record.pendingTicket = CROWNS_TICKET;
+  engine.updateHud();
+  engine.save();
+}
+
+/**
  * race_ticket.js activate for a Game of Crowns Ticket in multiplayer:
  * challenge the street (inc_games.js games_invite_create). races-feature
  * routes the ticket here. True when the challenge went out.
@@ -781,16 +795,13 @@ export function crownsMpChallenge(classTsid, engine) {
     return false;
   }
   if (countItem(engine.inv, classTsid) < 1) return false;
-  removeItem(engine.inv, classTsid, 1);
-  record.pendingTicket = classTsid;
-  engine.updateHud();
-  engine.save();
+  // G734: the server has the site's ledger spend the ticket (race_ticket.js:150) before the street hears
+  // the challenge; it stays in the pack until crown_waiting says so (mpTicketSpent), and a refusal keeps it.
   mpChallenging = true;
   if (!c.send('crown_challenge', {})) {
-    // The challenge never went out: say so, and that the ticket came back.
+    // The challenge never went out: say so (the ticket never left the pack).
     mpChallenging = false;
-    mpRefund(engine);
-    engine.toast(`${CROWNS_MP_TEXT.offline} Your ticket is back in your pack.`, 3200);
+    engine.toast(CROWNS_MP_TEXT.offline, 3200);
     return false;
   }
   engine.pushActivity('You activated a Game of Crowns Ticket.');
@@ -908,6 +919,7 @@ function mpAttach(engine) {
     if (msg.text) engine.pushActivity(String(msg.text));
   });
   c.on('msg:crown_waiting', (msg) => {
+    mpTicketSpent(engine, msg);
     mpChallenging = false;
     mpAccepting = false;
     mpStarting = true;
@@ -957,8 +969,8 @@ function mpAttach(engine) {
       return;
     }
     if (mpChallenging) {
+      // Refused before anything was spent (G734): the ticket never left the pack.
       mpChallenging = false;
-      mpRefund(engine);
       engine.toast(text, 3000);
     } else if (mpAccepting) {
       mpAccepting = false;

@@ -229,7 +229,7 @@ describe('the multiplayer branch of crowns-feature', () => {
   const sharedEngine = fakeEngine(shared);
 
   it('challenges the street with a ticket, and needs someone else there', async () => {
-    const { crownsMpChallenge, crownsFeature } = await import('../public/js/features/crowns-feature.js?v=cd104b3a');
+    const { crownsMpChallenge, crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
     // One realtime client for the whole module, as in the game (crowns-feature attaches once).
     shared.players = [];
     const e1 = sharedEngine;
@@ -240,19 +240,27 @@ describe('the multiplayer branch of crowns-feature', () => {
     shared.players = [{ id: 8 }];
     assert.equal(crownsMpChallenge(CROWNS_TICKET, e1), true);
     assert.deepEqual(shared.sent.at(-1), ['crown_challenge', {}]);
-    assert.equal(e1.inv[CROWNS_TICKET], 0, 'spent on the challenge');
+    assert.equal(e1.inv[CROWNS_TICKET], 1, 'in the pack until the server spends it (G734)');
     assert.equal(crownsMpChallenge(CROWNS_TICKET, e1), false, 'one challenge at a time');
+    // The server's ledger took it: crown_waiting says so, once by its op.
+    const use = { op: 'use-00112233aabbccdd', c: CROWNS_TICKET, left: 0, spent: true, n: 1 };
+    shared.fire('crown_waiting', { from: 7, title: 'Game of Crowns', text: 'Waiting for other players...', timeout: 60, have: 0, need: 3, use });
+    assert.equal(e1.inv[CROWNS_TICKET], 0, 'spent on the challenge');
+    assert.deepEqual(e1.log.receipts.splice(0), [use.op]);
+    shared.fire('crown_waiting', { from: 7, title: 'Game of Crowns', text: 'Waiting for other players...', timeout: 60, have: 1, need: 2 });
+    assert.equal(e1.inv[CROWNS_TICKET], 0, 'a later waiting spends nothing more');
     // Nobody came: the ticket comes back (games_invite_timeout 2448-2450).
     shared.fire('crown_failed', { text: 'Not enough players accepted your challenge. Try again later?', refund: true });
     assert.equal(e1.inv[CROWNS_TICKET], 1);
   });
 
   it('keeps a ticket spent on a challenge in flight through a street change (G349)', async () => {
-    const { crownsMpChallenge, crownsFeature } = await import('../public/js/features/crowns-feature.js?v=cd104b3a');
+    const { crownsMpChallenge, crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
     const e1 = sharedEngine;
     shared.players = [{ id: 8 }];
     e1.inv[CROWNS_TICKET] = 1;
     assert.equal(crownsMpChallenge(CROWNS_TICKET, e1), true);
+    shared.fire('crown_waiting', { from: 7, title: 'Game of Crowns', text: 'Waiting for other players...', timeout: 60, have: 0, need: 3 });
     assert.equal(e1.inv[CROWNS_TICKET], 0);
     // A croak sends the challenger to Hell One while the challenge is open: no refund.
     crownsFeature.onStreetEnter({ tsid: 'GA5PPFP86NF2FOS' }, { ...e1, param: () => null, instanceHold: null });
@@ -261,8 +269,20 @@ describe('the multiplayer branch of crowns-feature', () => {
     assert.equal(e1.inv[CROWNS_TICKET], 1, 'the server saying it failed gives it back');
   });
 
+  it('keeps the ticket when the server refuses the challenge (G734)', async () => {
+    const { crownsMpChallenge, crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
+    const e1 = sharedEngine;
+    crownsFeature.restore({}, e1);
+    shared.players = [{ id: 8 }];
+    e1.inv[CROWNS_TICKET] = 1;
+    assert.equal(crownsMpChallenge(CROWNS_TICKET, e1), true);
+    shared.fire('crown_refused', { why: 'no_item', text: "You don't have enough of that item." });
+    assert.equal(e1.inv[CROWNS_TICKET], 1);
+    assert.equal(crownsFeature._state().record.pendingTicket, null);
+  });
+
   it('applies a reward once: the iMG, the currants through ledgerReceipt, then acks', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=cd104b3a');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
     const c = shared;
     c.players = [{ id: 8 }];
     const e = sharedEngine; // the handlers belong to the engine they were attached with, as in the game
@@ -281,7 +301,7 @@ describe('the multiplayer branch of crowns-feature', () => {
   });
 
   it('shares the arena on the match street only while a game is on', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=cd104b3a');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
     assert.equal(crownsFeature.realtimeStreet({ streetTsid: CROWNS_STREET }), null, 'no match: the arena is private as before');
     // No hub line: getLoadingInfo sends instances no hub_name (locations/location.js 3311).
     assert.deepEqual(crownsFeature.labelFor('CROWNS_00000000000000A1'), { street: 'Game of Crowns', hub: '', hubId: 'it_game' });
@@ -302,7 +322,7 @@ describe('solo Game of Crowns stays solo', () => {
   });
 
   it('keeps the solo save as it was', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=cd104b3a');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=f73a04b8');
     crownsFeature.restore({ wins: 2, losses: 1, applied: ['crowns-00000000000000a1-1-7'] }, { mode: 'solo' });
     assert.deepEqual(Object.keys(crownsFeature.save()).sort(), ['losses', 'pendingTicket', 'returnTo', 'wins']);
   });

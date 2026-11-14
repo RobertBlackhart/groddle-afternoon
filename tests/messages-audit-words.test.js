@@ -51,9 +51,9 @@ describe('messages audit wording', () => {
     assert.match(read('public/game.js'), /bearReminisceQuote\?\.reason === 'active'\n\s+\? 'You are reminiscing right now\.'/);
   });
 
-  it('a Game of Crowns challenge that never went out says the ticket came back', () => {
+  it('a Game of Crowns challenge that never went out says so, and the ticket never left the pack (G734)', () => {
     const src = read('public/js/features/crowns-feature.js');
-    assert.match(src, /mpRefund\(engine\);\n\s+engine\.toast\(`\$\{CROWNS_MP_TEXT\.offline\} Your ticket is back in your pack\.`/);
+    assert.match(src, /\/\/ The challenge never went out: say so \(the ticket never left the pack\)\.\n\s+mpChallenging = false;\n\s+engine\.toast\(CROWNS_MP_TEXT\.offline, 3200\);/);
     assert.ok(src.indexOf("engine.pushActivity('You activated a Game of Crowns Ticket.')") > src.indexOf("c.send('crown_challenge'"), 'activated only once it went out');
   });
 

@@ -89,7 +89,7 @@ import { runStreetTransition } from '../screen-fx.js?v=ebdb038b';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=ebe52dc8';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=cd104b3a';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=f73a04b8';
 import { startHogHaulMp } from './hog-haul-mp-feature.js?v=2a1f68b2';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
@@ -164,6 +164,8 @@ const mpInvites = new Map();
 let mpWaitUid = null; // "Waiting for other players..."
 let mpMustWaitUid = null; // "You must wait for more players before this game can begin."
 let mpChallenging = false; // race_challenge sent, no answer yet
+/** The ticket a race_challenge names, still in the pack until the server's race_waiting says it was spent. */
+let mpTicket = null;
 let mpAccepting = false; // race_accept sent, no answer yet
 let mpReadyAt = 0;
 let mpFinishAt = 0;
@@ -1206,6 +1208,23 @@ function mpAskPending(engine) {
   mpNote(engine, `pending:${course}`);
 }
 
+/**
+ * race_waiting for this page's own challenge: the ticket the server's ledger spent leaves the pack, once
+ * by the ledger's op (ledgerReceipt: false when a load already took it out), and is held for a refund.
+ */
+function mpTicketSpent(engine, msg) {
+  if (!mpTicket || Number(msg?.from) !== mpMyId()) return;
+  const { classTsid, raceId } = mpTicket;
+  mpTicket = null;
+  const use = msg.use && typeof msg.use === 'object' ? msg.use : null;
+  const taken = use?.spent && engine.query?.('ledgerReceipt', String(use.op || ''), engine) === false;
+  if (!taken && countItem(engine.inv, classTsid) > 0) removeItem(engine.inv, classTsid, 1);
+  record.pendingTicket = classTsid;
+  if (classTsid === RACE_GENERIC_TICKET) record.ticketRace = raceId;
+  engine.updateHud();
+  engine.save();
+}
+
 /** race_ticket.js activate in multiplayer: challenge the street (inc_games.js games_invite_create). */
 function mpChallenge(classTsid, raceId, engine) {
   const c = mpClient || engine.query('realtimeClient');
@@ -1218,18 +1237,16 @@ function mpChallenge(classTsid, raceId, engine) {
     engine.toast('You need at least one other player here.', 2600);
     return false;
   }
-  removeItem(engine.inv, classTsid, 1);
-  record.pendingTicket = classTsid;
-  if (classTsid === RACE_GENERIC_TICKET) record.ticketRace = raceId;
-  engine.updateHud();
-  engine.save();
+  // G734: the server has the site's ledger spend the ticket (race_ticket.js:150) before the street hears
+  // the challenge; it stays in the pack until race_waiting says so (mpTicketSpent), and a refusal keeps it.
+  mpTicket = { classTsid, raceId };
   engine.pushActivity(`You activated a ${ITEM_LABEL(classTsid)}.`);
   mpChallenging = true;
   starting = true;
-  if (!c.send('race_challenge', { course: raceId })) {
+  if (!c.send('race_challenge', { course: raceId, ticket: classTsid })) {
     mpChallenging = false;
     starting = false;
-    mpRefund(engine);
+    mpTicket = null;
     return false;
   }
   mpNote(engine, `challenge:${raceId}`);
@@ -1280,6 +1297,7 @@ function mpAttach(engine) {
     if (msg.text) engine.pushActivity(String(msg.text));
   });
   c.on('msg:race_waiting', (msg) => {
+    mpTicketSpent(engine, msg);
     mpChallenging = false;
     mpAccepting = false;
     starting = true;
@@ -1310,9 +1328,10 @@ function mpAttach(engine) {
   c.on('msg:race_refused', (msg) => {
     const text = String(msg.text || '');
     if (mpChallenging) {
+      // Refused before anything was spent (G734): the ticket never left the pack.
       mpChallenging = false;
       starting = false;
-      mpRefund(engine);
+      mpTicket = null;
       engine.toast(text, 3000);
     } else if (mpAccepting) {
       mpAccepting = false;
@@ -1460,6 +1479,7 @@ function mpAttach(engine) {
   c.on('hello', () => {
     mpAsked = false;
     if (!run && (mpChallenging || mpAccepting || starting)) {
+      mpTicket = null;
       mpChallenging = false;
       mpAccepting = false;
       starting = false;

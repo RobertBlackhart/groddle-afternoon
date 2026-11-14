@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-import { racesFeature } from '../public/js/features/races-feature.js?v=3760bba1';
+import { racesFeature } from '../public/js/features/races-feature.js?v=a0858fe6';
 import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=2a1f68b2';
 import {
   HOG_MP_TEXT,
@@ -129,10 +129,29 @@ describe('G349: the challenger\'s ticket in multiplayer', () => {
     engine.inv[HOG_TICKET] = 1;
     engine.startHogHaulRace = () => { throw new Error('the solo stand-in must not run in multiplayer'); };
     assert.equal(racesFeature.runPackVerb(HOG_TICKET, 'activate', engine), true);
-    assert.deepEqual(client.sent.at(-1), { kind: 'race_challenge', course: 'hogtie_piggy' });
-    assert.equal(engine.inv[HOG_TICKET] || 0, 0, 'spent at activation');
-    client.fire('msg:race_refused', { t: 'race_refused', why: 'alone', text: 'You need at least one other player here.' });
-    assert.equal(engine.inv[HOG_TICKET], 1, 'a refused challenge gives it back');
+    assert.deepEqual(client.sent.at(-1), { kind: 'race_challenge', course: 'hogtie_piggy', ticket: HOG_TICKET });
+    assert.equal(engine.inv[HOG_TICKET], 1, 'in the pack until the server spends it (G734)');
+    client.fire('msg:race_refused', { t: 'race_refused', why: 'no_item', text: "You don't have enough of that item." });
+    assert.equal(engine.inv[HOG_TICKET], 1, 'a refused challenge keeps it');
+    assert.equal(racesFeature._state().record.pendingTicket, null);
+  });
+
+  it('the ticket leaves the pack once, when race_waiting says the ledger spent it (G734)', () => {
+    engine.inv[TICKET] = 2;
+    assert.equal(racesFeature.runPackVerb(TICKET, 'activate', engine), true);
+    assert.deepEqual(client.sent.at(-1), { kind: 'race_challenge', course: 'canyon_run', ticket: TICKET });
+    assert.equal(engine.inv[TICKET], 2);
+    const use = { op: 'use-00112233aabbccdd', c: TICKET, left: 0, spent: true, n: 1 };
+    client.fire('msg:race_waiting', { t: 'race_waiting', from: 7, course: 'canyon_run', ticket: TICKET, use, text: 'Waiting for other players...', timeout: 60 });
+    assert.equal(engine.inv[TICKET], 1, 'spent');
+    assert.equal(racesFeature._state().record.pendingTicket, TICKET, 'held for a refund');
+    // Another waiting (an accepter joined) spends nothing more.
+    client.fire('msg:race_waiting', { t: 'race_waiting', from: 7, course: 'canyon_run', text: 'Waiting for other players...', timeout: 60 });
+    assert.equal(engine.inv[TICKET], 1);
+    // Nobody came: the ticket comes back (the server credits it to the ledger).
+    client.fire('msg:race_failed', { t: 'race_failed', course: 'canyon_run', text: 'Not enough players accepted your challenge. Try again later?', refund: true });
+    assert.equal(engine.inv[TICKET], 2);
+    assert.equal(racesFeature._state().record.pendingTicket, null);
   });
 });
 
