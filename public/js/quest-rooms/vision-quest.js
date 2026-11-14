@@ -328,7 +328,9 @@ export const room = {
 
   runVerb(ctx, target, verbId) {
     if (target.classId !== 'npc_myopic_frog' || verbId !== 'talk_to') return false;
-    if (!ctx.data.introDone) intro(ctx).then(() => askForHelp(ctx));
+    // #329 (G749) npc_myopic_frog.js 186-190: a talk before the introduction is done plays only the
+    // introduction (it asks for Camera Mode); the question comes on a later talk, after the look.
+    if (!ctx.data.introDone) intro(ctx);
     else askForHelp(ctx);
     return true;
   },
