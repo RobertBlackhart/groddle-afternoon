@@ -154,7 +154,7 @@ describe('game.js wiring', () => {
     const keys = [...game.matchAll(/enter-chooser\.js\?v=([\w-]+)/g)].map((m) => m[1]);
     assert.equal(new Set(keys).size, 1, 'one key for enter-chooser.js');
     assert.match(game, /const plan = planEnter\(enterChoicesHere\(\)\);/);
-    assert.match(game, /tryOpenNearestMenu\(\{ nearestFirst: e\.isTrusted === false \}\)/);
+    assert.match(game, /tryOpenNearestMenu\(\{ nearestFirst: e\.isTrusted === false( && !e\.touchAct)? \}\)/);
   });
 
   it('keeps nearest-first for &enterchooser=nearest and blocks play while open', () => {
