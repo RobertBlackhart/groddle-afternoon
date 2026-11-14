@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2135,
+  "commits": 2140,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "The same two players are paid for up to 20 wins of each multiplayer game a day"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A race or Game of Crowns challenge opens only once the server has taken the ticket"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A game of Charades starts only once the server has taken the Charades Potion"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2899,21 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Ormonos, Muufo, Haraiva, Massadoe and Pollokoo shrines stand where the 2012 street pictures show them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Drifa's and Nottis's shrines stand where the 2012 street pictures show them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The Ilmenskie and Ix shrines stand where the 2012 street pictures show them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Jethimadh's and Kalavana's shrines stand where the 2012 street pictures show them"
    }
   ]
  },
