@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a7855cd0';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ae75c390';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3b4a4a7e';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1033,6 +1033,7 @@ import {
 import { loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodLossNotice } from './js/metabolics.js?v=1383e6fd';
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=165dbd6e';
+import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
 import { installHiresDecos } from './js/deco-hires.js?v=8dbbe0f7';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
@@ -6108,6 +6109,13 @@ function drawQuestLogCard(p) {
     fill.style.width = `${Math.min(100, (r.num ? (r.current / r.num) * 100 : 0))}%`;
     bar.appendChild(fill);
     card.appendChild(bar);
+  }
+  // G757: It Takes Two's step keeps Tiny Speck's words; our hint says who clicks Help dig (dirt_pile.js 481-483).
+  if (p.active && p.def.classTsid === IT_TAKES_TWO_QUEST) {
+    const hint = document.createElement('div');
+    hint.className = 'q-req q-hint';
+    hint.textContent = IT_TAKES_TWO_HINT;
+    card.appendChild(hint);
   }
   if (p.active && p.def.classTsid === PHANTOM_QUEST_ID) {
     const story = ghostQuestStory();

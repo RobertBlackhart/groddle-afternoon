@@ -10,6 +10,9 @@
  */
 import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import {
   POUR_VERBS,
@@ -27,14 +30,14 @@ import {
   streetPigIndex,
   takeObjs,
 } from '../public/js/street-objects.js?v=90fcd047';
-import { HELP_DIG_COUNTER, HELP_DIG_LABEL, digHelpFrom, helpDigMessage, othersDigging } from '../public/js/help-dig.js?v=93d6358d';
+import { HELP_DIG_COUNTER, HELP_DIG_LABEL, IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST, digHelpFrom, helpDigMessage, othersDigging } from '../public/js/help-dig.js?v=ca0cc848';
 import { MULTIPLAYER_QUESTS, MULTIPLAYER_QUESTS_LEFT_OUT, creditedMultiplayerQuests, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=7f9f1d80';
 import { isPoisoned, TREE_ANTIDOTE, TREE_POISON, BOTANY_SKILL } from '../public/js/tree-poison.js?v=d8fb42c9';
 import { treeDeathFeature } from '../public/js/features/tree-death-feature.js?v=75ae621e';
 import { patchesFeature } from '../public/js/features/patches-feature.js?v=090141ad';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=57076e6a';
-import { helpMineFeature } from '../public/js/features/help-mine-feature.js?v=9501a465';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=039b84f7';
+import { helpMineFeature, relabelOpenDig } from '../public/js/features/help-mine-feature.js?v=c6838475';
 import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=2fe51c33';
 
 // ---------------------------------------------------------------------------
@@ -178,6 +181,42 @@ describe('help digging (G329)', () => {
     const alone = digEngine();
     helpMineFeature.resourceNodeUsed(pile, { ok: true, verbId: 'dig' }, alone.engine);
     assert.deepEqual([alone.engine.inv, alone.engine.counters], [{}, []]);
+  });
+
+  it('G757: an open Dirt Pile menu follows the crew, Dig to Help dig and back', () => {
+    const { engine, pile } = digEngine({ diggers: [7] });
+    let diggers = [7];
+    engine.query = (hook) => (hook === 'realtimeClient' ? { me: { id: 7 } } : hook === 'sharedDiggers' ? diggers : null);
+    engine.interactionTarget = () => pile;
+    const text = { textContent: 'Dig' };
+    const attrs = { 'aria-label': 'Dig, 2 energy' };
+    const row = { dataset: {}, querySelector: () => text, getAttribute: (k) => attrs[k], setAttribute: (k, v) => { attrs[k] = v; } };
+    const menu = { hidden: false, querySelector: (sel) => (sel === '.vm-row[data-verb="dig"]' ? row : null) };
+    const doc = { getElementById: (id) => (id === 'verb-menu' ? menu : null) };
+    assert.equal(relabelOpenDig(engine, doc), 'Dig', 'only you');
+    diggers = [7, 3];
+    assert.equal(relabelOpenDig(engine, doc), HELP_DIG_LABEL);
+    assert.deepEqual([text.textContent, attrs['aria-label']], ['Help dig', 'Help dig, 2 energy']);
+    diggers = [7];
+    assert.equal(relabelOpenDig(engine, doc), 'Dig');
+    assert.equal(text.textContent, 'Dig');
+    menu.hidden = true;
+    diggers = [3];
+    assert.equal(relabelOpenDig(engine, doc), null, 'a closed menu is left alone');
+    assert.equal(relabelOpenDig({ ...engine, mode: 'solo' }, { getElementById: () => ({ ...menu, hidden: false }) }), null, 'solo');
+  });
+
+  it('G757: It Takes Two keeps its words and adds a hint: the friend clicks Help dig, the digger counts', () => {
+    assert.equal(IT_TAKES_TWO_QUEST, 'soilappreciation_help_digging');
+    assert.match(IT_TAKES_TWO_HINT, /friend clicks Help dig/);
+    assert.match(IT_TAKES_TWO_HINT, /counts for you, the one helped/);
+    assert.doesNotMatch(IT_TAKES_TWO_HINT, /\u2014/);
+    const quests = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/assets/content/quests.json'), 'utf8'));
+    const def = (quests.quests || quests)[IT_TAKES_TWO_QUEST];
+    assert.equal(def.desc, 'Get someone to help you while digging a <b>Dirt Pile</b>, three times.');
+    const game = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/game.js'), 'utf8');
+    const card = game.slice(game.indexOf('function drawQuestLogCard('), game.indexOf('function drawQuestLogCard(') + 4000);
+    assert.match(card, /if \(p\.active && p\.def\.classTsid === IT_TAKES_TWO_QUEST\) \{\n\s+const hint = document\.createElement\('div'\);\n\s+hint\.className = 'q-req q-hint';\n\s+hint\.textContent = IT_TAKES_TWO_HINT;/);
   });
 
   it('solo: no crew, no label, nothing counted', () => {

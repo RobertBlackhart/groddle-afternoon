@@ -52,7 +52,7 @@ import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { frameTexture, loadTexture } from '../textures.js?v=814d7926';
 import { acceptOffer } from '../quest-offers.js?v=77816a7d';
-import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=93d6358d';
+import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=ca0cc848';
 import {
   COMPANION_MINE_RULES,
   HELP_MINE_COUNTER,
@@ -385,6 +385,34 @@ function sharedMined(target, result, engine) {
   }
 }
 
+/**
+ * G757 (It Takes Two): dirt_pile.js getVerbLabel 273-281 names the verb when the menu opens, so a
+ * menu opened a moment before a friend started still read "Dig". An open Dirt Pile menu follows
+ * the crew: its dig row reads "Help dig" while someone else digs, "Dig" when no one does. The
+ * row runs the same verb either way (verbStarted asks the server at the start).
+ */
+const RELABEL_MS = 250;
+let relabelAt = 0;
+export function relabelOpenDig(engine, doc = globalThis.document) {
+  const target = engine?.interactionTarget?.();
+  if (target?.classId !== 'dirt_pile' || engine.mode !== 'multiplayer' || !doc) return null;
+  const menu = doc.getElementById?.('verb-menu');
+  if (!menu || menu.hidden) return null;
+  const row = menu.querySelector('.vm-row[data-verb="dig"]');
+  const text = row?.querySelector('.vm-label');
+  const crew = sharedDigCrew(engine, target);
+  if (!text || !crew) return null;
+  if (!row.dataset.vmDigLabel) row.dataset.vmDigLabel = text.textContent === HELP_DIG_LABEL ? 'Dig' : text.textContent;
+  const label = crew.others.length ? HELP_DIG_LABEL : row.dataset.vmDigLabel;
+  if (text.textContent !== label) {
+    text.textContent = label;
+    const said = String(row.getAttribute('aria-label') || '').split(', ').slice(1);
+    row.setAttribute('aria-label', [label, ...said].join(', '));
+    engine.setData?.('helpDigLabel', crew.others.length ? label : '');
+  }
+  return label;
+}
+
 /** Multiplayer: the server's crew at a shared node ({ diggers, others }: js/help-dig.js CREW_NODES), or null. */
 function sharedDigCrew(engine, target) {
   if (!CREW_NODES.has(target?.classId) || engine.mode !== 'multiplayer' || !engine.query?.('realtimeClient')) return null;
@@ -636,6 +664,10 @@ export const helpMineFeature = {
     stageDemo(now, engine);
     for (const session of [...sessions.values()]) tickSession(session, now, engine);
     lookForRocks(now, engine);
+    if (now - relabelAt >= RELABEL_MS) {
+      relabelAt = now;
+      relabelOpenDig(engine);
+    }
   },
 
   /**

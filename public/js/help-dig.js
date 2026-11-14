@@ -22,6 +22,16 @@ import { helpString } from './help-mine.js?v=27f9d276';
 /** quests/soilappreciation_help_digging.js r277: the counter It Takes Two reads. */
 export const HELP_DIG_COUNTER = 'helped_dig';
 
+/** It Takes Two (quests/soilappreciation_help_digging.js). */
+export const IT_TAKES_TWO_QUEST = 'soilappreciation_help_digging';
+
+/**
+ * G757: our hint under the quest's step, beside Tiny Speck's words (kept as they were). Players
+ * thought the helper got the count; dirt_pile.js 481-483 counts helped_dig for the digger who was
+ * helped, so the friend is the one who clicks Help dig.
+ */
+export const IT_TAKES_TWO_HINT = 'Hint: you dig a Dirt Pile, and while your dig runs a friend clicks Help dig on the same pile. The dig counts for you, the one helped. To count for your friend, swap.';
+
 /** dirt_pile.js getVerbLabel 278. */
 export const HELP_DIG_LABEL = 'Help dig';
 
