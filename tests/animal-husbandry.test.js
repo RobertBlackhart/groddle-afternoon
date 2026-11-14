@@ -52,7 +52,7 @@ import {
 import { animalStatusLabel, piggyFeedTip, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=95b338f6';
 import { getVerbsFor, runVerb } from '../public/content.js?v=a7855cd0';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=09c0f7f0';
+import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=ec5bfd55';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -535,5 +535,36 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
     let src = '';
     try { src = readFileSync(new URL('../../glitch-GameServerJS/items/npc_chicken.js', import.meta.url), 'latin1'); } catch { return; }
     assert.ok(src.includes(`this.sendBubble("I'm almost done with this thing.", 10*1000);`));
+  });
+});
+
+describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
+  it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=2fe51c33');
+    const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
+    assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
+    assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');
+    assert.equal(ownsPlace(at('RH_HOME_EXT', { inHome: true, owned: true, room: 'street' })), true, 'front yard');
+    assert.equal(ownsPlace(at('RH_HOME_EXT', { inHome: false, owned: true })), false, "someone else's home");
+    assert.equal(ownsPlace(at('GA51DOIHSK626VM', { inHome: false, owned: true })), false, 'a street');
+    assert.equal(ownsPlace(at('RH_HOME_EXT')), true, 'no home context: the home street');
+  });
+
+  it('npc_piggy.js 384, 459, 501: an owner captures again at once, with no XP and no cooldown', () => {
+    const learned = [HERDKEEPING.skill];
+    const t0 = 10 ** 12;
+    const pc = { energy: 90, mood: 10, xp: 0, imagination: 0 };
+    const inv = { pig_bait: 3 };
+    const first = capturePiggy({}, { pc, inv, learned, streetTsid: 'RH_HOME_INT', now: t0, ownYard: true, rng: () => 0.1 });
+    assert.equal(first.ok, true);
+    assert.equal(pc.xp, 0, 'no capture XP at home');
+    assert.equal(first.questCounter, null);
+    inv.hogtied_piggy = 0;
+    assert.equal(captureVerbState({ inv, learned, energy: 70, streetTsid: 'RH_HOME_INT', now: t0 + 1000, ownYard: true }).enabled, true);
+    assert.equal(captureVerbState({ inv, learned, energy: 70, streetTsid: 'RH_HOME_INT', now: t0 + 1000 }).reason, HERDKEEPING.locationLimit, 'not owned: the limit');
+    for (const file of ['features/animal-husbandry-feature.js', 'features/animal-mood-feature.js']) {
+      const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js', file), 'utf8');
+      assert.match(src, /ownYard: ownsPlace\(engine\),/, file);
+    }
   });
 });

@@ -159,6 +159,18 @@ import {
 
 export const ANIMAL_MOOD_FEATURE_ID = 'animal-mood';
 const YARD_TSID = 'RH_HOME_EXT';
+
+/**
+ * #336 (G753): somewhere the player owns: their house, both yards and their Tower (homeContext
+ * inHome and owned; a visit to someone else's home is not). npc_piggy.js 384, 459 and 501 skip the
+ * location limit, the capture XP and the capture cooldown where container.pols_is_owner(pc).
+ * Without a home context (tests), the home street.
+ */
+export function ownsPlace(engine) {
+  const home = engine?.homeContext?.();
+  return home ? Boolean(home.inHome && home.owned) : engine?.streetTsid === YARD_TSID;
+}
+
 /** apiFindPath on a street: food much higher or lower than the piggy is out of reach. */
 const REACH_DY = EAT_RADIUS;
 
@@ -1662,7 +1674,7 @@ export const animalMoodFeature = {
             learned: engine.learnedSkills,
             energy: engine.pc?.energy || 0,
             streetTsid: engine.streetTsid,
-            ownYard: engine.streetTsid === YARD_TSID,
+            ownYard: ownsPlace(engine),
             depressing: isSadIn('npc_piggy', depressing),
           });
           return { ...v, enabled: gate.enabled, reason: gate.reason };

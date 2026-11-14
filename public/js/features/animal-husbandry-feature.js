@@ -114,7 +114,7 @@ import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-
 import { loseEnergy, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=68b6b7d8';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=2fe51c33';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot } from '../yard-wander.js?v=6d39956f';
@@ -1192,7 +1192,7 @@ function capture(engine, target) {
     inv: engine.inv,
     learned: engine.learnedSkills,
     streetTsid: engine.streetTsid,
-    ownYard: isYard(engine),
+    ownYard: ownsPlace(engine),
     // A sad piggy is happy to be captured (439-444): somewhere depressing (and
     // then with no location cooldown, 383-386) or sulking from crowding (G64).
     sad: isSadIn('npc_piggy', animalPlaceIsDepressing(engine)) || animalCrowdSad(target),
