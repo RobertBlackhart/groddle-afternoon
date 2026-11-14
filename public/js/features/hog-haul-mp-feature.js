@@ -330,7 +330,13 @@ function onEnd(engine, msg) {
   if (winner && !mp.resultApplied) {
     mp.resultApplied = true;
     const won = winner.id === me;
-    if (won) {
+    if (won && msg.prize === false) {
+      // G734: past the pair's daily count of paid wins (races.go, prizes.go) the win stands but pays nothing.
+      engine.achievement?.('hogtie_piggy:won', 1);
+      engine.questFlag?.('multiplayer_quest_win');
+      engine.pushActivity(`You won ${HOG_MP_TEXT.title}!`);
+      engine.playSound?.('YOU_WIN', { volume: 0.7 });
+    } else if (won) {
       // games_end_hogtie_piggy 2131-2137: +50 iMG (stats_add_xp, false: the mood bonus), +100 currants, won.
       engine.pc.currants = (engine.pc.currants || 0) + WIN.currants;
       const xp = grantMoodXp(engine.pc, WIN.xp);

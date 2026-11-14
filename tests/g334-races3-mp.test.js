@@ -140,6 +140,15 @@ describe('The Great Hog Haul quest in multiplayer (quests/hogtie_piggy.js)', () 
     assert.match(src, /engine\.achievement\?\.\('hogtie_piggy:lost', 1\)/);
   });
 
+  it('a win past the pair\'s daily count of paid wins pays nothing (G734, races.go prize)', () => {
+    const hog = read('public/js/features/hog-haul-mp-feature.js');
+    assert.match(hog, /if \(won && msg\.prize === false\) \{/);
+    assert.ok(hog.indexOf('if (won && msg.prize === false) {') < hog.indexOf('engine.pc.currants = (engine.pc.currants || 0) + WIN.currants;'));
+    const races = read('public/js/features/races-feature.js');
+    assert.match(races, /run\.noPrize = msg\.prize === false;/);
+    assert.match(races, /if \(run\.noPrize\) settled\.reward = \{ \.\.\.settled\.reward, currants: 0, xp: 0 \};\n\s+const spentRoll/);
+  });
+
   it('keeps solo\'s bot race to solo (game.js)', () => {
     const game = read('public/game.js');
     assert.match(game, /if \(isSolo\(\) && p\.active && p\.def\.classTsid === HOG_HAUL_QUEST_ID && !hogHaulIsInstanced\(\)\) \{/);
@@ -161,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=a0858fe6');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=61289065');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {

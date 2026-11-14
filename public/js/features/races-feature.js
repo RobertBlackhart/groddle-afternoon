@@ -90,7 +90,7 @@ import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=ebe52dc8';
 import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=f73a04b8';
-import { startHogHaulMp } from './hog-haul-mp-feature.js?v=2a1f68b2';
+import { startHogHaulMp } from './hog-haul-mp-feature.js?v=4f36ab00';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
 import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
@@ -1063,6 +1063,7 @@ function showResult(engine) {
   soonTimer = null;
   hud.countdown.classList.remove('race-soon');
   const settled = settleRace(run, record);
+  if (run.noPrize) settled.reward = { ...settled.reward, currants: 0, xp: 0 };
   const spentRoll = record.pendingTicket === RACE_GENERIC_TICKET;
   record = { ...settled.record, returnTo: record.returnTo, pendingTicket: null };
   if (spentRoll) record.ticketRace = null;
@@ -1651,6 +1652,8 @@ function mpEnd(engine, msg) {
   mpNote(engine, `end:${msg.why || ''}`);
   if (!run || !raceIsLive(run)) return;
   const { outcome, winnerName, leftName } = endOutcome(msg, mp.myId);
+  // G734: past the pair's daily count of paid wins (races.go, prizes.go) the win stands but pays nothing.
+  run.noPrize = msg.prize === false;
   const now = Date.now();
   if (outcome === 'won') {
     run.status = 'won';
