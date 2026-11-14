@@ -14,8 +14,8 @@ import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, serverPath, skipWithoutSite, skipWithoutServer, HAS_SITE } from '../tools/repos.mjs';
 import { ADMIN_TEXT, ADMIN_TEXT_MAX, adminGiveGoods, adminMessageText, applyAdminGive, applyAdminRefill, bootedLine, showAdminMessage, showBooted } from '../public/js/admin-console-mp.js?v=bcbbb8fc';
 import { CLOSE_BANNED, CLOSE_BOOTED, createRealtimeClient } from '../public/js/realtime-client.js?v=2663e2d3';
-import { statusText } from '../public/js/features/realtime-feature.js?v=b787af61';
-import { GATE_COPY, suspendedNow } from '../public/js/online-boot.js?v=91e01718';
+import { statusText } from '../public/js/features/realtime-feature.js?v=d5db17bf';
+import { GATE_COPY, suspendedNow } from '../public/js/online-boot.js?v=906a89b8';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

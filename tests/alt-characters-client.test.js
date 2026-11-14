@@ -15,12 +15,12 @@ import { join } from 'node:path';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 import { CHARACTER_CHANGED, CHARACTER_CHANGED_EVENT, CHARACTER_HEADER, characterHeaders, characterOf, isCharacterChanged } from '../public/js/character-guard.js?v=510034a7';
-import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=63758d34';
+import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=bd210eb9';
 import { createSaveSync } from '../public/js/save-store.js?v=04420633';
 import { CLOSE_OTHER_CHARACTER, createRealtimeClient } from '../public/js/realtime-client.js?v=2663e2d3';
-import { OTHER_CHARACTER_TEXT, statusText } from '../public/js/features/realtime-feature.js?v=b787af61';
-import { CHARACTER_COPY, FRESH_HASH, SAVE_ALERT_COPY, characterChoices, continuesAs, createRefusalText, saveAlertFor } from '../public/js/online-boot.js?v=91e01718';
-import { SWITCHER_COPY, STYLE as SWITCHER_STYLE, cardUrl, popoverPlace, switcherChoices } from '../public/js/character-switcher.js?v=d951e892';
+import { OTHER_CHARACTER_TEXT, statusText } from '../public/js/features/realtime-feature.js?v=d5db17bf';
+import { CHARACTER_COPY, FRESH_HASH, SAVE_ALERT_COPY, characterChoices, continuesAs, createRefusalText, saveAlertFor } from '../public/js/online-boot.js?v=906a89b8';
+import { SWITCHER_COPY, STYLE as SWITCHER_STYLE, cardUrl, popoverPlace, switcherChoices } from '../public/js/character-switcher.js?v=832ec16e';
 import { LOCAL_STATES } from '../public/js/shared-quoins.js?v=89d7b201';
 import { menuRowFor } from '../public/js/ui/topbar.js?v=23c2cb54';
 

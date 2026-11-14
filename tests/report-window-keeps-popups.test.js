@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 
 import { isZoneDialog } from '../public/js/notify-view.js?v=993ffafc';
 import { REPORT_WINDOW_SELECTOR } from '../public/js/window-stack.js?v=a7104f02';
-import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=35a740cc';
+import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=0d553804';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 

@@ -18,8 +18,8 @@ import assert from 'node:assert/strict';
 import { resolveTokens } from './css-tokens.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { quietSession } from '../public/js/online-boot.js?v=91e01718';
-import { createMinnAccount } from '../public/js/minn-account.js?v=c15f0ecf';
+import { quietSession } from '../public/js/online-boot.js?v=906a89b8';
+import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
 import { buildOnlinePage, ONLINE_BOOT_SRC } from '../tools/play-online/build.mjs';
 
 const root = join(import.meta.dirname, '..');

@@ -15,12 +15,12 @@ import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 
-import { createMinnAccount, minnUrls } from '../public/js/minn-account.js?v=c15f0ecf';
-import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=91e01718';
+import { createMinnAccount, minnUrls } from '../public/js/minn-account.js?v=00f3eadb';
+import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=906a89b8';
 import { SAVE_STOPPED } from '../public/js/save-store.js?v=04420633';
-import { FORM_COPY, SETTINGS_COPY, resetLinkFrom } from '../public/js/account-forms.js?v=29e9e2c3';
-import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=2339d3be';
-import { FEATURES } from '../public/js/features/index.js?v=0cb5b709';
+import { FORM_COPY, SETTINGS_COPY, resetLinkFrom } from '../public/js/account-forms.js?v=6729bb05';
+import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=bd025882';
+import { FEATURES } from '../public/js/features/index.js?v=66999f9f';
 import { multiplayerEntryUrl } from '../public/js/game-mode.js?v=1ecf2899';
 import { SAVE_ENTRY_NAMES, createMultiplayerSaveStore } from '../public/js/save-store.js?v=04420633';
 import { HAS_SITE, SITE_DIR, serverPath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
@@ -187,7 +187,7 @@ describe('minn-account', () => {
       const json = (status, body) => ({ status, ok: status < 300, headers: { get: () => null }, json: async () => body, text: async () => JSON.stringify(body) });
       if (url.endsWith(NONCE_PATH)) return { status: 200, ok: true, headers: { get: () => null }, text: async () => 'fedcba9876' };
       if (url.endsWith('account/password')) return init.body.includes('wrong') ? json(400, { code: 'incorrect_password', message: "That isn't your current password.", fields: { current: "That isn't your current password." } }) : json(200, { signedIn: true, player: { id: 4, name: 'Rae' } });
-      if (url.endsWith('account/email')) return json(200, { email: 'rae@example.com' });
+      if (url.endsWith('account/email')) return json(202, { pending: true, email: 'rae@example.com', current: 'rae-old@example.com' });
       return json(404, {});
     };
     const account = createMinnAccount({ baseUri: BASE, fetch, nonce: '0123456789' });
@@ -197,7 +197,7 @@ describe('minn-account', () => {
     assert.equal(ok.ok, true);
     assert.equal(account.nonce, 'fedcba9876', 'the new session\'s nonce');
     assert.equal(calls.find((c) => c.url.endsWith('account/password')).method, 'PUT');
-    assert.deepEqual(await account.changeEmail({ current: 'zz-new-pass-1', email: 'rae@example.com' }), { ok: true, email: 'rae@example.com' });
+    assert.deepEqual(await account.changeEmail({ current: 'zz-new-pass-1', email: 'rae@example.com' }), { ok: true, pending: true, email: 'rae@example.com', current: 'rae-old@example.com' }, 'nothing changes until the link is opened');
   });
 
   it('a nonce from a session that ended is refused even on the open routes: asked again with none', async () => {
@@ -402,7 +402,7 @@ describe('Groddle extension: accounts (groddle-afternoon-site)', { skip: skipWit
   const src = (f) => readFileSync(join(ext, 'src', f), 'utf8');
 
   it('declares its tables under its own names, with the keys the routes rely on', () => {
-    assert.deepEqual(Object.keys(manifest.tables).sort(), ['groddle_admin_actions', 'groddle_admin_teleports', 'groddle_analytics_daily', 'groddle_analytics_seen', 'groddle_auctions', 'groddle_bans', 'groddle_board_notes', 'groddle_board_reports', 'groddle_boards', 'groddle_buddies', 'groddle_builder_assets', 'groddle_builder_drafts', 'groddle_builder_keys', 'groddle_builder_nonces', 'groddle_builder_revisions', 'groddle_butler_gift', 'groddle_butler_gifted', 'groddle_butler_parcels', 'groddle_butler_visits', 'groddle_character_logins', 'groddle_chat_lines', 'groddle_community_bans', 'groddle_community_boards', 'groddle_community_edits', 'groddle_community_notices', 'groddle_community_posts', 'groddle_community_reactions', 'groddle_community_reports', 'groddle_community_threads', 'groddle_drops', 'groddle_furniture_sales', 'groddle_gifts', 'groddle_group_halls', 'groddle_group_invites', 'groddle_group_members', 'groddle_groups', 'groddle_home_box_ops', 'groddle_home_boxes', 'groddle_home_machines', 'groddle_home_pool', 'groddle_home_pool_marks', 'groddle_home_signposts', 'groddle_home_tending', 'groddle_home_visitors', 'groddle_home_yard', 'groddle_house_keys', 'groddle_ignores', 'groddle_im_lines', 'groddle_ledger', 'groddle_ledger_credited', 'groddle_ledger_items', 'groddle_ledger_log', 'groddle_ledger_outcomes', 'groddle_mail_sends', 'groddle_mod_actions', 'groddle_mod_reports', 'groddle_mod_restrictions', 'groddle_mod_tokens', 'groddle_mp_saves', 'groddle_play_batches', 'groddle_player_mail', 'groddle_player_renames', 'groddle_players', 'groddle_profiles', 'groddle_report_credits', 'groddle_signups', 'groddle_snaps', 'groddle_solo_backups', 'groddle_ticket_message_revisions', 'groddle_ticket_messages', 'groddle_ticket_pictures', 'groddle_tickets', 'groddle_trades']);
+    assert.deepEqual(Object.keys(manifest.tables).sort(), ['groddle_admin_actions', 'groddle_admin_teleports', 'groddle_analytics_daily', 'groddle_analytics_seen', 'groddle_auctions', 'groddle_bans', 'groddle_board_notes', 'groddle_board_reports', 'groddle_boards', 'groddle_buddies', 'groddle_builder_assets', 'groddle_builder_drafts', 'groddle_builder_keys', 'groddle_builder_nonces', 'groddle_builder_revisions', 'groddle_butler_gift', 'groddle_butler_gifted', 'groddle_butler_parcels', 'groddle_butler_visits', 'groddle_character_logins', 'groddle_chat_lines', 'groddle_community_bans', 'groddle_community_boards', 'groddle_community_edits', 'groddle_community_notices', 'groddle_community_posts', 'groddle_community_reactions', 'groddle_community_reports', 'groddle_community_threads', 'groddle_drops', 'groddle_email_changes', 'groddle_furniture_sales', 'groddle_gifts', 'groddle_group_halls', 'groddle_group_invites', 'groddle_group_members', 'groddle_groups', 'groddle_home_box_ops', 'groddle_home_boxes', 'groddle_home_machines', 'groddle_home_pool', 'groddle_home_pool_marks', 'groddle_home_signposts', 'groddle_home_tending', 'groddle_home_visitors', 'groddle_home_yard', 'groddle_house_keys', 'groddle_ignores', 'groddle_im_lines', 'groddle_ledger', 'groddle_ledger_credited', 'groddle_ledger_items', 'groddle_ledger_log', 'groddle_ledger_outcomes', 'groddle_mail_sends', 'groddle_mod_actions', 'groddle_mod_reports', 'groddle_mod_restrictions', 'groddle_mod_tokens', 'groddle_mp_saves', 'groddle_play_batches', 'groddle_player_mail', 'groddle_player_renames', 'groddle_players', 'groddle_profiles', 'groddle_report_credits', 'groddle_signups', 'groddle_snaps', 'groddle_solo_backups', 'groddle_ticket_message_revisions', 'groddle_ticket_messages', 'groddle_ticket_pictures', 'groddle_tickets', 'groddle_trades']);
     assert.ok(manifest.tables.groddle_players.includes('UNIQUE KEY name_key (name_key)'), 'no two characters share a name, whatever its letter case');
     assert.ok(manifest.tables.groddle_mp_saves.includes('PRIMARY KEY  (user_id)'), 'one multiplayer save per user');
     assert.ok(manifest.tables.groddle_solo_backups.includes('PRIMARY KEY  (user_id,slot)'), 'one backup per slot');
@@ -432,6 +432,7 @@ describe('Groddle extension: accounts (groddle-afternoon-site)', { skip: skipWit
       'Get /groddle/v1/buddies SignedIn',
       'Get /groddle/v1/me Public',
       'Get /groddle/v1/save SignedIn',
+      'Post /groddle/v1/account/email/confirm Public',
       'Post /groddle/v1/buddies SignedIn',
       'Post /groddle/v1/buddies/ignores SignedIn',
       'Post /groddle/v1/password-reset Public',
@@ -540,7 +541,7 @@ describe('createMinnAccount: the core and the game\'s calls', () => {
   const answer = (nonce) => ({ status: 200, ok: true, headers: { get: () => nonce }, json: async () => ({}), text: async () => '' });
 
   it('one account with every call: the core\'s and the game\'s', async () => {
-    const { createMinnAccountCore, minnUrls: coreUrls } = await import('../public/js/minn-account-core.js?v=63758d34');
+    const { createMinnAccountCore, minnUrls: coreUrls } = await import('../public/js/minn-account-core.js?v=bd210eb9');
     const core = createMinnAccountCore(opts);
     const full = createMinnAccount(opts);
     for (const name of Object.keys(core)) assert.ok(name in full, name);
@@ -548,7 +549,7 @@ describe('createMinnAccount: the core and the game\'s calls', () => {
       assert.equal(typeof full[name], 'function', name);
       assert.equal(core[name], undefined, `${name} stays out of the phone`);
     }
-    assert.equal(Object.keys(full).length, 87, 'no call lost in the move (G567 added deleteChannelLine; alternate characters seven)');
+    assert.equal(Object.keys(full).length, 88, 'no call lost in the move (G567 added deleteChannelLine; alternate characters seven; confirmEmail)');
     assert.equal(minnUrls, coreUrls, 'one minnUrls, whichever file it is imported from');
   });
 

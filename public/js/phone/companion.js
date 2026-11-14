@@ -20,11 +20,11 @@
  * [data-friend=<id>], #pc-report-text, #pc-photo, #pc-reply-text.
  */
 
-import { createMinnAccountCore } from '../minn-account-core.js?v=63758d34';
-import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=29e9e2c3';
+import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
+import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=cfcaca31';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, fitPhoto, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=9e02f28c';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=550c5fbf';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, fitPhoto, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=0e47ff20';
 
 const doc = globalThis.document;
 

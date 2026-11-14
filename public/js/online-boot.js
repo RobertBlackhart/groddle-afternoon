@@ -27,8 +27,8 @@
  * game (js/features/account-backup-feature.js) saves and comes back here.
  */
 
-import { createMinnAccountCore } from './minn-account-core.js?v=63758d34';
-import { FORM_COPY, characterNameProblem, mountAccountForms, resetLinkFrom, verifyLinkFrom } from './account-forms.js?v=29e9e2c3';
+import { createMinnAccountCore } from './minn-account-core.js?v=bd210eb9';
+import { EMAIL_LINK_COPY, FORM_COPY, characterNameProblem, emailLinkFrom, emailLinkOutcome, mountAccountForms, resetLinkFrom, verifyLinkFrom } from './account-forms.js?v=6729bb05';
 import { claimCharacter, newWriterId, takeHandoff } from './save-claim.js?v=30cf5250';
 import { gateFor, quietSession, suspendedNow } from './online-session.js?v=6f1348c8';
 
@@ -194,6 +194,9 @@ export const GATE_COPY = {
     title: 'Account suspended',
     body: ['This account is suspended.', 'It cannot play with others. Solo play in this browser still works.'],
   },
+  // A new email's link (#email=<token>, js/account-forms.js emailLinkFrom): the answer's words follow the title.
+  'email-changed': { title: EMAIL_LINK_COPY.changed.title, body: [] },
+  'email-failed': { title: EMAIL_LINK_COPY.failed.title, body: [] },
   'load-failed': {
     title: 'Oh no!',
     body: [
@@ -514,7 +517,7 @@ function appendRetired(card, { account, choices, onChanged }) {
   card.append(box);
 }
 
-function showGate(gate, state, { account, onSignedIn, onSignedOut = onSignedIn, session = null, onPlay = null, characters = null, onSwitched = null, onRefresh = null }) {
+function showGate(gate, state, { account, onSignedIn, onSignedOut = onSignedIn, session = null, onPlay = null, characters = null, onSwitched = null, onRefresh = null, message = '' }) {
   const copy = GATE_COPY[state] || GATE_COPY.checking;
   gate.dataset.online = state;
   const card = gate.querySelector('.card');
@@ -563,6 +566,13 @@ function showGate(gate, state, { account, onSignedIn, onSignedOut = onSignedIn, 
       }
     });
     card.append(out);
+  }
+  if (state === 'email-changed' || state === 'email-failed') {
+    card.append(el('p', { 'data-online-email-said': '' }, message));
+    const next = el('button', { type: 'button', class: 'online-play', 'data-online-email-next': '' }, EMAIL_LINK_COPY.next);
+    next.addEventListener('click', () => onSignedIn());
+    card.append(next);
+    return;
   }
   if (state === 'offline' || state === 'load-failed') {
     const retry = el('button', { type: 'button', class: 'online-play', 'data-online-retry': '' }, 'Try again');
@@ -693,6 +703,16 @@ async function boot({ account = createMinnAccountCore({ baseUri: document.baseUR
   const onSignedOut = () => { boot(); };
   showGate(gate, 'checking', { account, onSignedIn });
   const session = await quietSession(account);
+  // A new email's link: confirmed once (the session's nonce in hand, so a browser playing one of the login's
+  // characters stays signed in), the link leaves the address bar, and Continue carries on as usual.
+  const emailLink = emailLinkFrom(location.hash);
+  if (emailLink) {
+    gate.querySelector('.card p')?.replaceChildren(EMAIL_LINK_COPY.checking);
+    const { outcome, message } = emailLinkOutcome(await account.confirmEmail(emailLink).catch(() => null));
+    history.replaceState(history.state, '', location.pathname);
+    showGate(gate, `email-${outcome}`, { account, onSignedIn: () => boot({ account }), message });
+    return;
+  }
   const state = gateFor(session);
   // A sign-up link opened in a browser signed in already (as anyone): the link still finishes its character.
   if (state === 'ready' && verifyLinkFrom(location.hash)) {
@@ -783,6 +803,6 @@ if (typeof document !== 'undefined' && document.getElementById('online-boot')) {
   boot();
   // A reset or sign-up link opened in a tab already on the gate changes only the hash: show its form.
   window.addEventListener('hashchange', () => {
-    if (document.getElementById('online-gate')?.dataset.online === 'signed-out' && (resetLinkFrom(location.hash) || verifyLinkFrom(location.hash))) boot();
+    if (document.getElementById('online-gate')?.dataset.online === 'signed-out' && (resetLinkFrom(location.hash) || verifyLinkFrom(location.hash) || emailLinkFrom(location.hash))) boot();
   });
 }

@@ -325,10 +325,34 @@ export function accountParts({ baseUri, fetch: fetchFn = globalThis.fetch?.bind(
       return signedIn(await post('account/password', { current, password }, 'PUT'));
     },
 
-    /** A new sign-in email, the current password first: { ok, email } or a refusal. */
+    /**
+     * A new sign-in email, the current password first. Nothing changes yet:
+     * the site mails a link to the new address, { ok, pending: true, email,
+     * current } (current is the email the account keeps until the link is
+     * opened), or a refusal (email_change_wait, email_change_spent,
+     * email_exists, email_same, incorrect_password, ...).
+     */
     async changeEmail({ current, email }) {
       const r = await post('account/email', { current, email }, 'PUT');
-      return r.ok ? { ok: true, email: String(r.data?.email || email) } : refusal(r);
+      if (!r.ok) return refusal(r);
+      return { ok: true, pending: r.data?.pending === true, email: String(r.data?.email || email), current: String(r.data?.current || '') };
+    },
+
+    /**
+     * Opens a new email's link (its token from /play/online/#email=): the
+     * account signs in with that email from now on and its other sessions
+     * end. { ok, email, signedIn } (signedIn when this browser was playing
+     * one of the login's characters and stays so; its nonce is fetched
+     * again), or a refusal: email_change_used, email_change_expired,
+     * email_change_unknown, email_exists.
+     */
+    async confirmEmail({ token }) {
+      const r = await post('account/email/confirm', { token });
+      if (!r.ok || r.data?.changed !== true) return refusal(r);
+      nonce = '';
+      const stays = r.data.signedIn === true;
+      if (stays) await refreshNonce();
+      return { ok: true, email: String(r.data.email || ''), signedIn: stays };
     },
 
     /** Mails a password reset link. { ok, message }: the same answer whether or not the address has an account. */

@@ -20,8 +20,8 @@ import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 
-import { createMinnAccount } from '../public/js/minn-account.js?v=c15f0ecf';
-import { FORM_COPY, fillCopy, signUpOutcome, verifyLinkFrom, verifyOutcome, resetLinkFrom } from '../public/js/account-forms.js?v=29e9e2c3';
+import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
+import { FORM_COPY, fillCopy, signUpOutcome, verifyLinkFrom, verifyOutcome, resetLinkFrom } from '../public/js/account-forms.js?v=6729bb05';
 import { HAS_SITE, SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -139,7 +139,7 @@ describe('the game: signing up waits for the email', () => {
     assert.match(src, /if \(state === 'ready' && verifyLinkFrom\(location\.hash\)\) \{\n\s*showGate\(gate, 'signed-out', \{ account, onSignedIn \}\);/);
     assert.match(src, /if \(verifyLinkFrom\(location\.hash\)\) history\.replaceState\(history\.state, '', location\.pathname\);\n\s*boot\(\);/, 'spent before the gate looks again, so it never loops');
     assert.match(src, /location\.hash\.startsWith\('#verify='\)\) history\.replaceState/);
-    assert.match(src, /resetLinkFrom\(location\.hash\) \|\| verifyLinkFrom\(location\.hash\)\)\) boot\(\);/, 'a link opened in a tab already on the gate');
+    assert.match(src, /resetLinkFrom\(location\.hash\) \|\| verifyLinkFrom\(location\.hash\) \|\| emailLinkFrom\(location\.hash\)\)\) boot\(\);/, 'a link opened in a tab already on the gate');
   });
 });
 

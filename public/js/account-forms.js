@@ -266,6 +266,27 @@ export function verifyLinkFrom(hash) {
   return m ? { token: m[1] } : null;
 }
 
+/** A new email's confirmation link from a location hash (#email=<48 hex>), or null. */
+export function emailLinkFrom(hash) {
+  const m = /^#email=([0-9a-f]{48})$/.exec(String(hash || ''));
+  return m ? { token: m[1] } : null;
+}
+
+/** The start card's words for a new email's link, by the answer (plain remake copy, no em-dashes). */
+export const EMAIL_LINK_COPY = Object.freeze({
+  checking: 'Confirming your new email…',
+  changed: { title: 'Your email changed', body: 'You sign in with {email} from now on. Every other device was signed out, and the old address was told.' },
+  failed: { title: 'Your email didn\'t change', retry: 'The Groddle site didn\'t answer. Open the link again in a moment.' },
+  next: 'Continue',
+});
+
+/** What a new email's link answered: 'changed', or 'failed' with the site's own words (or ours when it didn't answer). */
+export function emailLinkOutcome(r) {
+  if (r?.ok) return { outcome: 'changed', message: fillCopy(EMAIL_LINK_COPY.changed.body, { email: r.email }) };
+  const known = typeof r?.code === 'string' && (r.code.startsWith('email_change_') || r.code === 'email_exists');
+  return { outcome: 'failed', message: known && r.message ? String(r.message) : EMAIL_LINK_COPY.failed.retry };
+}
+
 /** Fills {email} and {name} in a line of FORM_COPY. */
 export function fillCopy(line, values = {}) {
   return String(line).replace(/\{(\w+)\}/g, (all, key) => (key in values ? String(values[key]) : all));
@@ -846,7 +867,15 @@ export const SETTINGS_COPY = Object.freeze({
     off: 'You show as online again.',
     failed: "That didn't change. Try again in a moment.",
   },
-  email: { title: 'Email', help: 'You sign in with it, and password resets go to it.', submit: 'Change email', busy: 'Changing…', done: 'Your email changed. The old address was told.' },
+  email: {
+    title: 'Email',
+    help: 'You sign in with it, and password resets go to it.',
+    submit: 'Change email',
+    busy: 'Sending…',
+    // The site holds the change until the link mailed to the new address is opened (groddle-afternoon-site EmailChanges).
+    sent: 'We sent a link to {email}. Open it to confirm, and your email changes then. Until then you sign in with {current}.',
+    done: 'Your email changed. The old address was told.',
+  },
   password: { title: 'Password', submit: 'Change password', busy: 'Changing…', done: 'Your password changed. Other devices were signed out.' },
 });
 
@@ -973,9 +1002,14 @@ export function mountAccountSettings(host, { account, email = '', onChanged = ()
       if (!mailCurrent.input.value) return show({ fields: { current: 'Enter your current password.' } }, fields);
       const r = await account.changeEmail({ current: mailCurrent.input.value, email: value });
       if (!r.ok) return show(r, fields);
+      mailForm.reset();
+      if (r.pending) {
+        // Nothing changed yet: the link in the new address's inbox makes the change.
+        say(fillCopy(SETTINGS_COPY.email.sent, { email: r.email, current: r.current || shownEmail }));
+        return;
+      }
       shownEmail = r.email;
       mailNow.textContent = `Now: ${shownEmail}`;
-      mailForm.reset();
       say(SETTINGS_COPY.email.done);
       onChanged({ what: 'email', email: shownEmail });
     });

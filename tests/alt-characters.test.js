@@ -257,7 +257,7 @@ describe('alternate characters in the site\'s source (groddle-afternoon-site)', 
   it('the email and password are the login\'s: account routes, reset, /me and report replies', () => {
     const acct = src('src/PlayerAccount.php');
     assert.match(acct, /changePassword\(Response::json\(\[\]\), \$login,/);
-    assert.match(acct, /changeEmail\(\$this->loginUser\(\$this->minn->user\(\)\)/);
+    assert.match(acct, /\$login = \$this->loginUser\(\$me\);\n[\s\S]*?\$changes->hold\(\$login->id, \$email,/, 'a new email is held for the login');
     assert.match(acct, /\$this->endSessions\(\(new Logins\(\$this->minn->db\)\)->siblings\(\$user->id\)\);/, 'a reset signs every character out');
     assert.match(acct, /\$this->endSessions\(\$siblings\);/);
     assert.match(src('src/Player.php'), /'account' => \['email' => self::loginEmail\(\$this->minn->db, \$user\)\]/);
