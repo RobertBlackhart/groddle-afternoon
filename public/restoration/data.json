@@ -2792,9 +2792,59 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2140,
+  "commits": 2150,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "new",
+    "text": "Phones get an Act button beside Jump that does what Enter does"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "It Takes Two says who clicks Help dig, and an open Dirt Pile menu turns to Help dig as a friend starts digging"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "The 42-game-day Piggy capture limit no longer applies in your own house, yards or Tower"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "The shrine donate window says tools go one at a time and greys out its count for them"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Buying an upgrade card plays Glitch's YOU_WIN fanfare, ready the moment the card is bought"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Firebog, Groddle and Uralia Street Spirit cubimals can be given to the Street Spirits"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "The myopic frog's first Talk to plays only its introduction; the question waits for Camera Mode"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "The Meal Vendor and Helga no longer turn into black squares on Android phones"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A Qurazy found on a Ramble day counts once the server takes it, not before"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Fenneq, Groddle Heights and Haoma's maps are Tiny Speck's 2012 paintings, restored, and Andra's restore is the closer redo"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2864,59 +2914,9 @@
     "date": "2026-11-14",
     "kind": "improve",
     "text": "Drifa and Firozi's maps are Tiny Speck's 2012 paintings, restored and matched to 2012's colour"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The Kinsta deploy hands a child page's folder to Minn (restoration/maps)"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The Maps page shows the fourteen restored regions"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "new",
-    "text": "Maps joins History and Known gaps under Restoration in the header menu"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "new",
-    "text": "A Maps page beside the restoration report: every map beside the picture it replaced or was made from"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The Make window links the skill a recipe needs to that skill"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A cabinet's storage window fits a small phone without a sideways scroll"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The Make window links the achievement a recipe needs to its badge"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "An Autumn Day plays its own sad music, looped, with the hub music silent"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Kajuu, Karnata, Lida and Cauda shrines stand where the 2012 street pictures show them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Ormonos, Muufo, Haraiva, Massadoe and Pollokoo shrines stand where the 2012 street pictures show them"
    }
   ]
  },
- "tests": 985,
+ "tests": 986,
  "generatedAt": "2026-11-14"
 }
