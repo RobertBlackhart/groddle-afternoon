@@ -12,7 +12,7 @@ import { BUILD_FILE, PLAY_PAGES, buildIdOf, pageBuildId, stamp, stampBuild, unst
 import {
   BACKOFF_MAX_MS, CHECK_EVERY_MS, JITTER, MIN_GAP_MS, RECONNECT_SPREAD_MS, REMIND_GAP_MS, UPDATE_TEXT,
   blockingUi, buildUrl, createReachReminder, createUpdateCheck, nextDelay, ownBuild, saveThenReload,
-} from '../public/js/update-check.js?v=2496f20a';
+} from '../public/js/update-check.js?v=dc5ab3e0';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 

@@ -3,8 +3,8 @@
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3b682793';
-import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=66999f9f';
+import { createErrorOnce, createFeatureHost, reportPageError } from './js/feature-host.js?v=a0bd032a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ad9735ff';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1073,6 +1073,7 @@ import { hidesChatBubble } from './js/hi-signs.js?v=f365ab8d';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
 import { saveStore } from './js/save-store.js?v=04420633';
+import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide } from './js/speech-placement.js?v=09802fc5';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
@@ -14980,6 +14981,20 @@ const DROPPED_ITEMS_STORAGE_KEY = 'droppedItems';
 /** Pack and metabolics must persist with street stacks to keep moves atomic across reloads: 'groddle_player_state_v1'. */
 const PLAYER_STATE_STORAGE_KEY = 'playerState';
 let lastSerializedPlayerState = '';
+/**
+ * G737: a save that does not go in shows the save card (js/save-trouble.js) and retries; a held
+ * save (a stored one this page must not write over) refuses every write before it starts.
+ */
+const saveTroubleCard = mountSaveTrouble(document, { onRetry: () => saveHealth.retryNow() });
+const saveHealth = createSaveHealth({
+  retry: () => savePlayerState(),
+  onChange: (s) => {
+    saveTroubleCard(s);
+    if (app?.canvas) app.canvas.dataset.saveTrouble = s;
+  },
+  say: (text) => toast(text),
+  report: (err) => reportPageError('savePlayerState', err),
+});
 
 function persistentSystems() {
   return {
@@ -15046,7 +15061,7 @@ function loadPlayerState() {
 }
 
 function savePlayerState() {
-  if (!state.started) return false;
+  if (!state.started || saveHealth.held) return false;
   try {
     syncAnimalWorldState();
     syncToolCopies(toolState);
@@ -15059,11 +15074,14 @@ function savePlayerState() {
     }));
     // savedAt changes each capture; compare gameplay payloads before writing.
     const comparable = serialized.replace(/"savedAt":\d+/, '"savedAt":0');
-    if (comparable === lastSerializedPlayerState) return true;
-    saveStore.set(PLAYER_STATE_STORAGE_KEY, serialized);
-    lastSerializedPlayerState = comparable;
+    if (comparable !== lastSerializedPlayerState) {
+      saveStore.set(PLAYER_STATE_STORAGE_KEY, serialized);
+      lastSerializedPlayerState = comparable;
+    }
+    saveHealth.ok();
     return true;
-  } catch {
+  } catch (err) {
+    saveHealth.failed(err);
     return false;
   }
 }

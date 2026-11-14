@@ -240,7 +240,8 @@ export function blockingUi(engine, doc = globalThis.document) {
  */
 export async function saveThenReload({ engine, store, reload, say = () => {} }) {
   try {
-    engine?.save?.();
+    // G737: game.js savePlayerState says false when the save did not go in; the page must not reload then.
+    if (engine?.save?.() === false) throw new Error('not saved');
   } catch {
     say(UPDATE_TEXT.notSaved);
     return false;

@@ -3242,6 +3242,15 @@
 :root[data-ui="classic"] #game-root #make-panel .make-detail-body .make-why-link { font: inherit; color: inherit; text-decoration: underline; }
 /* === end chk4 === */
 
+/* === saves (lane) === */
+/* G737: the save card (js/save-trouble.js) as a small 2012 window: the panel's cream, the title face, a minor button. */
+:root[data-ui="classic"] #save-trouble { border: 1px solid var(--c-classic-rule); border-radius: var(--radius-sm); background: var(--c-classic-panel); color: var(--c-classic-text); box-shadow: 0 2px 8px color-mix(in srgb, var(--c-classic-ink) 35%, transparent); font: var(--fs-classic-body)/var(--lh-normal) var(--font-classic-body); }
+:root[data-ui="classic"] #save-trouble h2 { color: var(--text-danger); font: 800 var(--fs-classic-pane)/var(--lh-tight) var(--font-classic-title); }
+:root[data-ui="classic"] #save-trouble p { color: var(--c-classic-text); }
+:root[data-ui="classic"] #save-trouble .save-trouble-btn { min-height: 0; padding: calc(4 * var(--cu)) calc(12 * var(--cu)); border: 1px solid var(--c-classic-btn-minor-border); border-radius: var(--radius-xs); background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom)); color: var(--c-classic-btn-minor-label); font: 800 var(--fs-classic-body)/var(--lh-tight) var(--font-classic-title); }
+:root[data-ui="classic"] #save-trouble .save-trouble-btn:focus-visible { outline: 2px solid var(--c-classic-focus); outline-offset: 1px; }
+/* === end saves === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

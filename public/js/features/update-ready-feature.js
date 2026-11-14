@@ -24,7 +24,7 @@
  * { check(), latest, own, reload(), remind() }.
  */
 
-import { UPDATE_TEXT, blockingUi, buildUrl, createReachReminder, createUpdateCheck, ownBuild, saveThenReload } from '../update-check.js?v=2496f20a';
+import { UPDATE_TEXT, blockingUi, buildUrl, createReachReminder, createUpdateCheck, ownBuild, saveThenReload } from '../update-check.js?v=dc5ab3e0';
 import { saveStore } from '../save-store.js?v=04420633';
 
 export const UPDATE_READY_FEATURE_ID = 'update-ready';
