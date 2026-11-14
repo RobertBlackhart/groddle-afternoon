@@ -107,7 +107,8 @@ export const GOT_QUEST_TEXT = "I've got something for you...";
  * The idle_stand recordings run 180-357 frames of holds and gestures; each
  * keeps one run that ends on its first pose, so it loops without a seam
  * (the Tool Vendor's is two periods of its 18-frame fidget, frames 117-152). Strips are
- * 8 columns of crop-sized cells at assets/sprites/vendors/<class>_<state>.webp.
+ * 8 columns of crop-sized cells at assets/sprites/vendors/<class>_<state>.webp, or more
+ * columns where 8 would run past 4096 px (stripCols).
  */
 export const VENDOR_NPC_ART = Object.freeze({
   npc_gardening_vendor: {
@@ -202,6 +203,19 @@ export const VENDOR_NPC_MOTION_ART = Object.freeze({
 export const VENDOR_ART_DIR = 'assets/sprites/vendors/';
 const STRIP_COLS = 8;
 
+/**
+ * #326 (G748): the largest texture side every GPU takes. Many Android GPUs stop at 4096 px and
+ * draw a taller texture black: the Meal Vendor's 193-frame idle strip was 1432x5300 at 8 columns
+ * and Helga's 1560x4632, and a phone draws these 1x strips (js/render-density.js).
+ */
+export const MAX_SHEET_SIDE = 4096;
+
+/** A strip's columns: 8, or the fewest that keep it at most MAX_SHEET_SIDE tall. */
+export function stripCols(frames, fh) {
+  const rows = Math.max(1, Math.floor(MAX_SHEET_SIDE / Math.max(1, fh)));
+  return Math.max(STRIP_COLS, Math.ceil(Math.max(1, frames) / rows));
+}
+
 /** A state's strip def (VENDOR_NPC_ART idle/talk, else VENDOR_NPC_MOTION_ART). */
 export function vendorStrip(classTsid, state) {
   return VENDOR_NPC_ART[classTsid]?.states?.[state] || VENDOR_NPC_MOTION_ART[classTsid]?.[state] || null;
@@ -220,7 +234,7 @@ export function vendorSheet(classTsid, state) {
     path: `${VENDOR_ART_DIR}${classTsid}_${state}.webp`,
     fw: sheet.crop.w,
     fh: sheet.crop.h,
-    cols: STRIP_COLS,
+    cols: stripCols(sheet.frames, sheet.crop.h),
     frames: sheet.frames,
   };
 }

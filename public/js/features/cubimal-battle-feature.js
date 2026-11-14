@@ -32,7 +32,7 @@
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { copyForVerb, copyTag, setCopyTag, takeToolCopy } from '../tools.js?v=48542c24';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b4abfbf2';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=92383208';
 import { CUBIMAL_RACE, cubimalArticle, cubimalInfo, cubimalRaceSheet } from '../cubimals.js?v=4e084d08';

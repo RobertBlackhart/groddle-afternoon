@@ -261,7 +261,7 @@
    {"path": "assets/sprites/vendors/npc_gardening_vendor_talk.webp", "label": "talk", "fw": 155, "fh": 183, "cols": 8, "frames": 26}
   ] },
   {"name": "meal-vendor", "swf": "inhabitants/meal_vendor/npc_cooking_vendor.swf", "sprite": 116, "sheets": [
-   {"path": "assets/sprites/vendors/npc_cooking_vendor_idle.webp", "label": "idle_stand", "fw": 179, "fh": 212, "cols": 8, "frames": 193},
+   {"path": "assets/sprites/vendors/npc_cooking_vendor_idle.webp", "label": "idle_stand", "fw": 179, "fh": 212, "cols": 11, "frames": 193},
    {"path": "assets/sprites/vendors/npc_cooking_vendor_talk.webp", "label": "talk", "fw": 179, "fh": 212, "cols": 8, "frames": 36}
   ] },
   {"name": "tool-vendor", "swf": "inhabitants/tool_vendor/npc_tool_vendor.swf", "sprite": 102, "sheets": [
@@ -277,7 +277,7 @@
    {"path": "assets/sprites/vendors/npc_sno_cone_vending_machine_talk.webp", "label": "talk", "fw": 167, "fh": 193, "cols": 8, "frames": 20}
   ] },
   {"name": "helga", "swf": "inhabitants/helga/npc_jabba2.swf", "sprite": 251, "sheets": [
-   {"path": "assets/sprites/vendors/npc_jabba2_idle.webp", "label": "idle_stand", "fw": 195, "fh": 193, "cols": 8, "frames": 185},
+   {"path": "assets/sprites/vendors/npc_jabba2_idle.webp", "label": "idle_stand", "fw": 195, "fh": 193, "cols": 9, "frames": 185},
    {"path": "assets/sprites/vendors/npc_jabba2_talk.webp", "label": "talk", "fw": 195, "fh": 193, "cols": 8, "frames": 72}
   ] },
   {"name": "tool-vendor-motion", "character": "tool-vendor-motion", "swf": "inhabitants/tool_vendor/npc_tool_vendor.swf", "sprite": 102, "sheets": [

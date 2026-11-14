@@ -61,7 +61,7 @@
  * spiritReminisceLast.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b4abfbf2';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import { STREET_SPIRIT_SPEECH_OFFSET } from '../speech-placement.js?v=09802fc5';
 import {
@@ -100,10 +100,10 @@ import {
   resumeTarget,
   setCurrentState,
 } from '../conversations.js?v=7cbdfea4';
-import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=89511e1e';
+import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=77816a7d';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { questRoomConverse } from './quest-instances-feature.js?v=0ca6d5e3';
-import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=ce10eaf5';
+import { questRoomConverse } from './quest-instances-feature.js?v=16f51a5d';
+import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=9f830971';
 import { questDoneAt } from '../quests.js?v=40c71a37';
 
 export const STREET_SPIRITS_FEATURE_ID = 'street-spirits';

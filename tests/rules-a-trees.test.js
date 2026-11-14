@@ -17,7 +17,7 @@ import { harvestWoodTree, noteWoodCare, quoteWoodTreeHarvest, WOOD_TREE_MATURITY
 import { growStreetTrant, maturityCycleMs } from '../public/js/patches.js?v=0d8e92b4';
 import { createToolConditionState } from '../public/js/tools.js?v=48542c24';
 import { patchesFeature } from '../public/js/features/patches-feature.js?v=090141ad';
-import { treeDeathFeature, WOOD_CLEARED_TO_PATCH_MS } from '../public/js/features/tree-death-feature.js?v=fcd3e440';
+import { treeDeathFeature, WOOD_CLEARED_TO_PATCH_MS } from '../public/js/features/tree-death-feature.js?v=75ae621e';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 setTrantTables(JSON.parse(fs.readFileSync(path.join(root, 'public/assets/content/trants.json'), 'utf8')));

@@ -40368,7 +40368,7 @@
   "faintMin": 1,
   "drift": [],
   "status": "ok",
-  "cols": 8,
+  "cols": 11,
   "parts": [
    {
     "hires": "assets/sprites/vendors/npc_cooking_vendor_idle.p1@3x.webp",
@@ -41188,7 +41188,7 @@
   "faintMin": 1,
   "drift": [],
   "status": "ok",
-  "cols": 8,
+  "cols": 9,
   "parts": [
    {
     "hires": "assets/sprites/vendors/npc_jabba2_idle.p1@3x.webp",

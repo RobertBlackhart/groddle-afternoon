@@ -5,35 +5,39 @@
  * opengameart/extracted_vendors): the Gardening Tools Vendor, Meal Vendor,
  * Tool Vendor, Uncle Friendly and Helga. Each x1 sheet is a fixed grid
  * (js/vendor-npcs.js VENDOR_NPC_ART: cell, frames); every state is cropped
- * to the union of its frames and written as a lossless WebP strip, 8 columns.
+ * to the union of its frames and written as a lossless WebP strip, 8 columns (more where 8
+ * would run past 4096 px: stripCols, #326).
  * The crop offsets live in VENDOR_NPC_ART so the feet anchor stays the
  * source cell's. The walk, turn, stop and impatient strips (VENDOR_NPC_MOTION_ART,
  * G680) are cut the same way, on the class's cell grid.
  *
  *   node tools/vendor-npc-art.mjs            write the strips
  *   node tools/vendor-npc-art.mjs --measure  print each state's union crop
+ *   --class <class,...> / --only <state,...>  just those classes / states
  */
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, rmSync, mkdtempSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import { VENDOR_NPC_ART, VENDOR_NPC_MOTION_ART } from '../public/js/vendor-npcs.js?v=7cfca6a9';
+import { VENDOR_NPC_ART, VENDOR_NPC_MOTION_ART, stripCols } from '../public/js/vendor-npcs.js?v=7d756a6d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OGA = join(os.homedir(), 'Documents/glitch-audit/opengameart/extracted_vendors/glitch-assets');
 const OUT = join(root, 'public/assets/sprites/vendors');
-const COLS = 8;
 const measure = process.argv.includes('--measure');
 // --only <state,...>: just those states (the strips already cut stay as they are).
 const onlyAt = process.argv.indexOf('--only');
 const only = onlyAt > 0 ? new Set(process.argv[onlyAt + 1].split(',')) : null;
+const classAt = process.argv.indexOf('--class');
+const onlyClass = classAt > 0 ? new Set(process.argv[classAt + 1].split(',')) : null;
 const magick = (args) => execFileSync('magick', args, { stdio: ['ignore', 'pipe', 'pipe'] }).toString();
 
 mkdirSync(OUT, { recursive: true });
 const tmp = mkdtempSync(join(os.tmpdir(), 'vendors-'));
 try {
   for (const [classTsid, art] of Object.entries(VENDOR_NPC_ART)) {
+    if (onlyClass && !onlyClass.has(classTsid)) continue;
     const dir = join(OGA, classTsid);
     const files = readdirSync(dir);
     const states = { ...art.states, ...(VENDOR_NPC_MOTION_ART[classTsid] || {}) };
@@ -60,10 +64,11 @@ try {
       } else {
         const { x, y, w, h } = sheet.crop;
         const out = join(OUT, `${classTsid}_${state}.webp`);
-        const rows = Math.ceil(frames.length / COLS);
+        const cols = stripCols(frames.length, h);
+        const rows = Math.ceil(frames.length / cols);
         const args = [];
         for (let r = 0; r < rows; r += 1) {
-          args.push('(', ...frames.slice(r * COLS, r * COLS + COLS).flatMap((f) => ['(', f, '-crop', `${w}x${h}+${x}+${y}`, '+repage', '-background', 'none', '-extent', `${w}x${h}`, ')']), '+append', ')');
+          args.push('(', ...frames.slice(r * cols, r * cols + cols).flatMap((f) => ['(', f, '-crop', `${w}x${h}+${x}+${y}`, '+repage', '-background', 'none', '-extent', `${w}x${h}`, ')']), '+append', ')');
         }
         magick([...args, '-background', 'none', '-gravity', 'northwest', '-append', '-define', 'webp:lossless=true', out]);
         console.log(`wrote ${out}`);

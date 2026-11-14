@@ -21,13 +21,16 @@ import {
   VENDOR_NPC_CLASSES,
   VENDOR_NPC_LABELS,
   VENDOR_PLACEMENT_KEY,
+  MAX_SHEET_SIDE,
+  stripCols,
+  vendorStates,
   vendorAnchor,
   vendorNpcList,
   vendorNpcPlacementGroups,
   vendorNpcStoreProfile,
   vendorNpcsFor,
   vendorSheet,
-} from '../public/js/vendor-npcs.js?v=7cfca6a9';
+} from '../public/js/vendor-npcs.js?v=7d756a6d';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=dc7d6463';
 import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
@@ -40,7 +43,7 @@ import {
   pendingQuestOffers,
   syncItemRequirements,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=89511e1e';
+} from '../public/js/quest-offers.js?v=77816a7d';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=72b2b22a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -176,13 +179,23 @@ describe('vendor NPC art', () => {
         assert.equal(h, sheet.fh * Math.ceil(sheet.frames / sheet.cols), `${sheet.path} height`);
         assert.ok(h <= 8192, `${sheet.path} fits a WebGL texture`);
       }
+      // #326 (G748): every strip, idle, talk and the walks, fits a 4096 px GPU (many Android phones).
+      for (const state of vendorStates(cls)) {
+        const sheet = vendorSheet(cls, state);
+        const buf = readFileSync(join(PUBLIC, sheet.path));
+        const bits = buf.readUInt32LE(21);
+        const w = (bits & 0x3fff) + 1;
+        const h = ((bits >> 14) & 0x3fff) + 1;
+        assert.equal(w, sheet.fw * Math.min(sheet.cols, sheet.frames), `${sheet.path} width`);
+        assert.ok(w <= MAX_SHEET_SIDE && h <= MAX_SHEET_SIDE, `${sheet.path} ${w}x${h} over ${MAX_SHEET_SIDE} px`);
+      }
       const a = vendorAnchor(cls);
       assert.ok(a.x > 0 && a.x < 1 && a.y === 1, cls);
     }
   });
 
   it('swaps every strip to a 3x render of its vector SWF on first draw, frame for frame', async () => {
-    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=add7b764');
+    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=b59156cf');
     const results = JSON.parse(readFileSync(join(PUBLIC, '../tools/vector-sprites/results.json'), 'utf8'));
     for (const cls of VENDOR_NPC_CLASSES) {
       for (const [state, art] of Object.entries(VENDOR_NPC_ART[cls].states)) {
@@ -271,5 +284,18 @@ describe('shop and Make tile names are never cut mid-line', () => {
     const rule = css.slice(css.indexOf('.vendor-tile .tile-label,\n.make-tile .tile-label {'));
     const assert = (await import('node:assert/strict')).default;
     assert.match(rule.slice(0, rule.indexOf('}')), /flex-shrink: 0;/);
+  });
+});
+
+describe('vendor strip columns (#326, G748)', () => {
+  it('stays 8 columns unless 8 would run past 4096 px tall', () => {
+    assert.equal(MAX_SHEET_SIDE, 4096);
+    assert.equal(stripCols(36, 212), 8);
+    // The Meal Vendor's idle: 193 frames of 179x212 were 25 rows (5300 px) at 8.
+    assert.equal(stripCols(193, 212), 11);
+    assert.ok(Math.ceil(193 / 11) * 212 <= 4096);
+    // Helga's idle: 185 frames of 195x193 were 24 rows (4632 px) at 8.
+    assert.equal(stripCols(185, 193), 9);
+    assert.ok(Math.ceil(185 / 9) * 193 <= 4096);
   });
 });
