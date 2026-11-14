@@ -29332,6 +29332,9 @@ function renderShrinePanel() {
     quote.atDailyFavorCap ? `Today's ${giant.name} favor limit is full.` : '',
     quote.atDailyXpCap ? `Today's shrine donation iMG limit is full.` : '',
   ].filter(Boolean);
+  // #334 (G752): a tool goes one at a time (quoteShrineDonation maxQty 1, js/shrines.js), so the
+  // count's -, +, Max and box are not live there; the window says why.
+  const oneOnly = quote.maxQty <= 1 ? ' disabled' : '';
   detail.hidden = false;
   detail.innerHTML = `
     <div class="shrine-detail-icon"><img src="${itemIconUrl(quote.classTsid)}" alt="" /></div>
@@ -29343,11 +29346,12 @@ function renderShrinePanel() {
         <span>+${quote.favor} ${escapeHtml(giant.name)} favor</span>
       </div>
       ${capNotes.map((note) => `<p class="shrine-cap-note">${escapeHtml(note)}</p>`).join('')}
+      ${quote.tool ? '<p class="shrine-cap-note" data-shrine-one>Tools go one at a time.</p>' : ''}
       <div class="qty-row">
-        <button type="button" data-shrine-dec aria-label="Donate one fewer">−</button>
-        <input type="number" data-shrine-qty min="1" max="${quote.maxQty}" value="${quote.qty}" aria-label="Donation quantity" />
-        <button type="button" data-shrine-inc aria-label="Donate one more">+</button>
-        <button type="button" class="btn-max" data-shrine-max>Max</button>
+        <button type="button" data-shrine-dec aria-label="Donate one fewer"${oneOnly}>−</button>
+        <input type="number" data-shrine-qty min="1" max="${quote.maxQty}" value="${quote.qty}" aria-label="Donation quantity"${oneOnly} />
+        <button type="button" data-shrine-inc aria-label="Donate one more"${oneOnly}>+</button>
+        <button type="button" class="btn-max" data-shrine-max${oneOnly}>Max</button>
         <button type="button" class="btn-glitch-primary" data-shrine-donate>Donate ${quote.qty}</button>
       </div>
     </div>`;

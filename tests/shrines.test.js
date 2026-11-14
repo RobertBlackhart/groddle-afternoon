@@ -299,4 +299,22 @@ describe('the donation window opens with the count filled in (G630, report #168)
     const give = game.slice(game.indexOf('function performShrineDonation('), game.indexOf('function shrineToolOpts('));
     assert.match(give, /closeShrinePanel\(\);/);
   });
+
+  it('#334 (G752): a tool goes one at a time, so its -, +, Max and number box are not live and the window says so', () => {
+    const state = createShrineState();
+    const inv = { pick: 7 };
+    const quote = quoteShrineDonation(state, 'spriggan', inv, 'pick', 7, { toolBaseCost: () => 100 });
+    assert.equal(quote.ok, true);
+    assert.equal(quote.tool, true);
+    assert.equal(quote.qty, 1);
+    assert.equal(quote.maxQty, 1);
+    const game = readFileSync(join(publicRoot, 'game.js'), 'utf8');
+    const draw = game.slice(game.indexOf('function renderShrinePanel('), game.indexOf('function performShrineDonation('));
+    assert.match(draw, /const oneOnly = quote\.maxQty <= 1 \? ' disabled' : '';/);
+    assert.match(draw, /\$\{quote\.tool \? '<p class="shrine-cap-note" data-shrine-one>Tools go one at a time\.<\/p>' : ''\}/);
+    for (const hook of ['data-shrine-dec aria-label="Donate one fewer"\\$\\{oneOnly\\}', 'aria-label="Donation quantity"\\$\\{oneOnly\\}', 'data-shrine-inc aria-label="Donate one more"\\$\\{oneOnly\\}', 'data-shrine-max\\$\\{oneOnly\\}>Max']) {
+      assert.match(draw, new RegExp(hook), hook);
+    }
+    assert.doesNotMatch(draw, /data-shrine-donate[^>]*oneOnly/, 'Donate stays live');
+  });
 });
