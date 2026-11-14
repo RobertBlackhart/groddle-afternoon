@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HUB_COLOURS, WORLD_MAP } from '../public/js/map-views-data.js?v=bf881f35';
 import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=31437f5b';
-import { CARD_PICTURE, CARDS_MANIFEST, hubColours, readWorldMap } from '../tools/map-views/build.mjs';
+import { CARD_PICTURE, CARD_PICTURE_MAX, CARDS_MANIFEST, hubColours, readWorldMap } from '../tools/map-views/build.mjs';
 import { STATIONS } from '../public/js/subway.js?v=e6995db8';
 import {
   MAP_VIEW_TITLES,
@@ -269,6 +269,16 @@ describe('world map (world_map.fla)', () => {
         assert.ok(bytes < 120 * 1024, `card ${id} ${bytes} bytes`);
       }
       assert.ok(total < 4.5 * 1024 * 1024, `${total} bytes`);
+    });
+
+    it('a picture CARD_RECIPE leaves over 80 KB is encoded again at a lower quality, and its row says which (Haoma, lane maps5)', () => {
+      assert.equal(CARD_PICTURE_MAX, 80 * 1024);
+      const lowered = Object.entries(manifest.cards).filter(([, row]) => row.picture?.quality);
+      assert.ok(lowered.some(([id]) => id === '131'), 'Haoma\'s restored painting came to 81,992 bytes at quality 75');
+      for (const [id, row] of lowered) {
+        assert.ok(row.picture.quality < 75 && row.picture.quality % 5 === 0, `card ${id} quality ${row.picture.quality}`);
+        assert.ok(row.picture.bytes < CARD_PICTURE_MAX, `card ${id}`);
+      }
     });
 
     it('Baqala\'s card drew Zhambu\'s thumbnail in the FLA; it now carries Baqala\'s own painting', () => {

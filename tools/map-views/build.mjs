@@ -84,6 +84,10 @@ export const CARDS_MANIFEST = `${WORLD_DIR}/cards/cards.json`;
 export const CARD_PICTURE = Object.freeze([750, 455]);
 /** The painting (its 1520 x 920 @2x file) to CARD_PICTURE: ImageMagick steps, WebP to stdout. */
 export const CARD_RECIPE = Object.freeze(['-filter', 'Lanczos', '-resize', `${CARD_PICTURE[0]}x${CARD_PICTURE[1]}!`, '-strip', '-quality', '75', '-define', 'webp:method=6']);
+/** A card's picture stays under this (a card loads per hover); one that CARD_RECIPE leaves over it is encoded again at a
+ * lower quality, in steps of 5, and its manifest row says which (`picture.quality`). Haoma's restored painting (lane maps5,
+ * its spires and mushroom caps) came to 81,992 bytes at 75. */
+export const CARD_PICTURE_MAX = 80 * 1024;
 const sha256 = (buf) => createHash('sha256').update(buf).digest('hex');
 
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -355,13 +359,19 @@ export function cardPictures({ encode = false } = {}) {
     const was = old?.cards?.[id];
     let pic = sameRecipe && was?.painting?.sha256 === paintingSha
       ? embeddedPictures(id).find((b) => sha256(b) === was.picture?.sha256) : null;
-    if (!pic && encode) pic = execFileSync('magick', [join(spike, 'public', r.x2), ...CARD_RECIPE, 'webp:-'], { maxBuffer: 1 << 24 });
+    if (pic && pic.length >= CARD_PICTURE_MAX) pic = null;
+    let quality = pic ? was.picture.quality : undefined;
+    if (!pic && encode) {
+      const at = (q) => execFileSync('magick', [join(spike, 'public', r.x2), ...CARD_RECIPE.map((v, i) => (CARD_RECIPE[i - 1] === '-quality' ? String(q) : v)), 'webp:-'], { maxBuffer: 1 << 24 });
+      pic = at(75);
+      for (let q = 70; pic.length >= CARD_PICTURE_MAX && q >= 50; q -= 5) { pic = at(q); quality = q; }
+    }
     pic ||= Buffer.alloc(0);
     cards[id] = {
       hubName: r.hubName,
       ...drew,
       painting: { file: r.x2, kind: r.repainted ? 'made for Groddle' : 'Tiny Speck\'s thumbnail enlarged', provenance: r.repainted || BACKGROUNDS.replace(/^public\//, ''), sha256: paintingSha },
-      picture: { type: 'image/webp', w: CARD_PICTURE[0], h: CARD_PICTURE[1], bytes: pic.length, sha256: sha256(pic) },
+      picture: { type: 'image/webp', w: CARD_PICTURE[0], h: CARD_PICTURE[1], bytes: pic.length, sha256: sha256(pic), ...(quality ? { quality } : {}) },
     };
     return `data:image/webp;base64,${pic.toString('base64')}`;
   };

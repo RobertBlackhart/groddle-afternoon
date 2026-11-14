@@ -58,10 +58,10 @@
    ]
   },
   "public/assets/made-art/maps-painted.webp": {
-   "what": "The paintings of Vantalu, Uralia and Haoma made again for Groddle",
+   "what": "The paintings of Vantalu, Uralia and Zhambu made again for Groddle",
    "w": 600,
    "h": 1116,
-   "sha256": "38d47f9939796f6e3faa1fc561c890f9b7328b619f1c1d9928c4f0f9072024e9",
+   "sha256": "778c7870454cbd0fbe4280aa4bde89c8c246e4a5e08d2769538190ed80e66f54",
    "made": "the three repainted maps (2x files) at four times the thumbnails, one above the other, 12 px apart (tools/provenance/repainted-maps.json)",
    "from": [
     {
@@ -73,16 +73,16 @@
      "sha256": "73afd4d527b4a508af9b261d893355888b89710be14cff61cf2b27883b12dd18"
     },
     {
-     "file": "public/assets/maps/art/bg/haoma@2x.webp",
-     "sha256": "291aa1c076dbcc98f4d92cf6d2bfe65ea5eb9cb1ad7ebe0042b85f8832b02aa5"
+     "file": "public/assets/maps/art/bg/zhambu@2x.webp",
+     "sha256": "e92206bf1a1922e322b0ad0af51e063720f5e4c3d59934ddd4e55949d944bdaa"
     }
    ]
   },
   "public/assets/made-art/maps-thumbs.webp": {
-   "what": "Tiny Speck's thumbnails of Vantalu, Uralia and Haoma",
+   "what": "Tiny Speck's thumbnails of Vantalu, Uralia and Zhambu",
    "w": 150,
    "h": 279,
-   "sha256": "47266c482f1d0e149bc6e23f4ec1fa2e60e00f6dc455704c779d0dd7b2f45747",
+   "sha256": "fc1a51224f7cb136db3f93aedd2af664d7bc70fd397a05d8dbee4177fc1e6e64",
    "made": "the three CC0 thumbnails as they are, one above the other, 3 px apart",
    "from": [
     {
@@ -96,8 +96,8 @@
      "licence": "CC0 1.0, Tiny Speck"
     },
     {
-     "file": "public/assets/maps/art/thumbs/sm_haoma.jpg",
-     "sha256": "2a10fb6dfcbc0a9db3a2b746a63632dbd56e0c672313786db72c02c551d47805",
+     "file": "public/assets/maps/art/thumbs/sm_zhambu.jpg",
+     "sha256": "ef74632bc1c0d5313efbcd7aecaf75b42659dcb52cc6d378107e41c23d133dae",
      "licence": "CC0 1.0, Tiny Speck"
     }
    ]

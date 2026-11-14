@@ -174,10 +174,10 @@
       "x1": "assets/maps/art/bg/groddleheights.webp",
       "x2": "assets/maps/art/bg/groddleheights@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 25944,
-      "x1Sha256": "b4002bc80e983774cfb4eb945b764af8991bca3a6de05fdb4ddb53c7bf6a5ded",
-      "x2Bytes": 83588,
-      "x2Sha256": "c2be8d9dd2630f6900f608bc5d77a13a241a1cd1f5290248b6f3654abe94fa1f"
+      "x1Bytes": 61422,
+      "x1Sha256": "84c4ddb9ed0baae53c4289e046cc10e4b07b91a225bbc2886849f3dc0abe4d93",
+      "x2Bytes": 196154,
+      "x2Sha256": "4a7f44fd01145d140983cb7042821faa16511bcbb027256e30e8ddd80bff8deb"
     },
     "66": {
       "hubName": "The Seams",
@@ -324,10 +324,10 @@
       "x1": "assets/maps/art/bg/andra.webp",
       "x2": "assets/maps/art/bg/andra@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 53650,
-      "x1Sha256": "544b7c85a3f59c76f9ee58af24fbddd5374c57bc572c895305d16911ce0da394",
-      "x2Bytes": 196712,
-      "x2Sha256": "3344fc9c22dfc3a9c64cfdbeb4b74570831a2e8d459d90bbcac82cdf9b7afd70"
+      "x1Bytes": 60116,
+      "x1Sha256": "7d6317f69c1debbd4856251095fb70e4d0bd0fe902c773f8944d54025bdbb601",
+      "x2Bytes": 208508,
+      "x2Sha256": "5cfb551f273462d01f0b20d90738d494ce6f94e063d0530bc16ad93d9a0ecdf2"
     },
     "90": {
       "hubName": "Choru",
@@ -708,10 +708,10 @@
       "x1": "assets/maps/art/bg/fenneq.webp",
       "x2": "assets/maps/art/bg/fenneq@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 36486,
-      "x1Sha256": "725397aca6155836121501e43ef8f99e61210faad90143744d1a451406e4049f",
-      "x2Bytes": 130026,
-      "x2Sha256": "661229dbab500d303bb00f8f34c98fe2180c77a510a0da92d108e678cb321314"
+      "x1Bytes": 77796,
+      "x1Sha256": "49765ca0f7aac6d24678646329798f2b2d580a4b7db192110186b9c4bc06a71f",
+      "x2Bytes": 261628,
+      "x2Sha256": "ef68b729d65b521f485dc7e4e97abf7b9fa7482d9e3155657ca30e94e8aaee1e"
     },
     "126": {
       "hubName": "Roobrik",
@@ -756,10 +756,10 @@
       "x1": "assets/maps/art/bg/haoma.webp",
       "x2": "assets/maps/art/bg/haoma@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 59832,
-      "x1Sha256": "5f5d1c06923104bf44e1adf1aad9d843ae724b44535377f79aae6f27a085bc8d",
-      "x2Bytes": 167820,
-      "x2Sha256": "291aa1c076dbcc98f4d92cf6d2bfe65ea5eb9cb1ad7ebe0042b85f8832b02aa5"
+      "x1Bytes": 112134,
+      "x1Sha256": "78e67e8228900bde260f50fa047a495f21e8377997fa196b9e62595b01d263e4",
+      "x2Bytes": 358118,
+      "x2Sha256": "2fe16b9bd5fd41b975ee8981d2f8a558b5a79830c0d4241288a0455713915197"
     },
     "133": {
       "hubName": "Kloro",

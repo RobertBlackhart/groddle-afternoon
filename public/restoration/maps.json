@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 20,
-    "painted": 28,
+    "restored": 23,
+    "painted": 25,
     "layout": 3
   },
   "world": {
@@ -116,11 +116,11 @@
       "anchor": "map-andra",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Andra, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The layout holds, but the model added two dark squiggles in the bottom sand where a street name ran in 2012. It returned the land more saturated; the toning step brings it back to 2012's colour.",
+      "differences": "The cliff terraces, both dune bands, the caves at Firdaus Finds and Boonbi Books, every bush and rock, and the two dark brown hollows in the bottom sand (Tiny Speck's own, under the 2012 Annam Angst and Murrukku Meander labels) sit where 2012 had them; the dune band above the hollows lies within 3 px of 2012's at 2x. The upper Firdaus Finds cave runs a little higher than 2012's, as a crevice along the line its road took. Returned more saturated; the toning step brings it back.",
       "facts": [
         {
           "label": "Made",
-          "text": "13 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
         },
         {
           "label": "Replaced",
@@ -639,6 +639,50 @@
       "place": "/encyclopedia/places/drifa/"
     },
     {
+      "id": "123",
+      "name": "Fenneq",
+      "anchor": "map-fenneq",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Fenneq, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "All ten wooden boards and signposts at its Habitat and Park places, the firs, bushes, cracks, grass patches and the cliff edge at the bottom sit where 2012 had them. Returned more saturated and a little darker; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/fenneq.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Fenneq, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/fenneq.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Fenneq restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/fenneq@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/123.svg",
+        "w": 151,
+        "h": 126,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/fenneq/"
+    },
+    {
       "id": "114",
       "name": "Firozi",
       "anchor": "map-firozi",
@@ -771,6 +815,50 @@
       "place": "/encyclopedia/places/groddle-forest/"
     },
     {
+      "id": "64",
+      "name": "Groddle Heights",
+      "anchor": "map-groddle-heights",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Groddle Heights, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The pale grey-white paper sea keeps its faint dashed lines; the three clouds and the haze in the middle sit at their 2012 size and place with hazy land under them; the tan-grey rock, the boulder fields, the cliff edge and the firs along the bottom sit where 2012 had them. The rock between the boulders reads a little streakier than 2012's haze. Returned a little darker and more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/groddleheights.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Groddle Heights, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/groddleheights.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Groddle Heights restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/groddleheights@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/64.svg",
+        "w": 150,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/groddle-heights/"
+    },
+    {
       "id": "58",
       "name": "Groddle Meadow",
       "anchor": "map-groddle-meadow",
@@ -813,6 +901,50 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/groddle-meadow/"
+    },
+    {
+      "id": "131",
+      "name": "Haoma",
+      "anchor": "map-haoma",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Haoma, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The spires, the moss and dark shadows between them, the brown ground along the bottom and the paper border sit where 2012 had them. The red and dark blue mushroom caps stand along the paths at 2012's size, but about 11 of 2012's 67 red caps and about 8 of its roughly 50 dark blue ones did not come back, nearly all where a road ribbon or label lay over them (Russula Involutii, Kazaka Boviss, Agarrec Bowetic, Volvacea Grifolla, Clavatus Stippe, Delika Nudha, Bhuva Lamella, Flammulina Gigantea); the paths still read dotted with caps. The shadows read a little greener than 2012's dark teal. Returned more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/haoma.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Haoma, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/haoma.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Haoma restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/haoma@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/131.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/haoma/"
     },
     {
       "id": "116",
@@ -940,126 +1072,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/ix/"
-    },
-    {
-      "id": "123",
-      "name": "Fenneq",
-      "anchor": "map-fenneq",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Fenneq survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/fenneq.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Fenneq, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/fenneq.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Fenneq painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/fenneq@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/123.svg",
-        "w": 151,
-        "h": 126,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/fenneq/"
-    },
-    {
-      "id": "64",
-      "name": "Groddle Heights",
-      "anchor": "map-groddle-heights",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Groddle Heights survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/groddleheights.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Groddle Heights, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/groddleheights.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Groddle Heights painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/groddleheights@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/64.svg",
-        "w": 150,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/groddle-heights/"
-    },
-    {
-      "id": "131",
-      "name": "Haoma",
-      "anchor": "map-haoma",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Haoma survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/haoma.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Haoma, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/haoma.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Haoma painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/haoma@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/131.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/haoma/"
     },
     {
       "id": "136",

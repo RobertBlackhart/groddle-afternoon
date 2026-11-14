@@ -112,14 +112,14 @@
         "file": "assets/maps/art/bg/groddleheights@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "c2be8d9dd2630f6900f608bc5d77a13a241a1cd1f5290248b6f3654abe94fa1f"
+        "sha256": "4a7f44fd01145d140983cb7042821faa16511bcbb027256e30e8ddd80bff8deb"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 15726,
-        "sha256": "e72f911090006c7e2ed61a6b0e06502adc39c9c57d8ae32535333a31a878ea8e"
+        "bytes": 40998,
+        "sha256": "d08c56f3013e910a68449c80efb90030fc1c03892b2ffade39491358f085e7ec"
       }
     },
     "71": {
@@ -249,14 +249,14 @@
         "file": "assets/maps/art/bg/andra@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "3344fc9c22dfc3a9c64cfdbeb4b74570831a2e8d459d90bbcac82cdf9b7afd70"
+        "sha256": "5cfb551f273462d01f0b20d90738d494ce6f94e063d0530bc16ad93d9a0ecdf2"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 33146,
-        "sha256": "5feffc927866dbd9da35be91b7493789fa787e9435ecf9878ffe54639a7227d0"
+        "bytes": 38796,
+        "sha256": "0bdee28b2266d4b7a1e4538282e35c50af88a854271421da95764adfed945c4e"
       }
     },
     "90": {
@@ -657,14 +657,14 @@
         "file": "assets/maps/art/bg/fenneq@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "661229dbab500d303bb00f8f34c98fe2180c77a510a0da92d108e678cb321314"
+        "sha256": "ef68b729d65b521f485dc7e4e97abf7b9fa7482d9e3155657ca30e94e8aaee1e"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 23150,
-        "sha256": "2848e37b25fe8047bb88d1c8b7de36faa45b6d05d52ea136568ef2a00c49a202"
+        "bytes": 52784,
+        "sha256": "2171a2448fb05da7afeef1dfc67fbe9e8462c78fdf46e2abf5e80742ca021377"
       }
     },
     "126": {
@@ -708,14 +708,15 @@
         "file": "assets/maps/art/bg/haoma@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "291aa1c076dbcc98f4d92cf6d2bfe65ea5eb9cb1ad7ebe0042b85f8832b02aa5"
+        "sha256": "2fe16b9bd5fd41b975ee8981d2f8a558b5a79830c0d4241288a0455713915197"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 41828,
-        "sha256": "9a4dc43f54db718b53e17d190fd991e2f214c7461fd5b18a9521abd4f369c7d3"
+        "bytes": 77014,
+        "sha256": "2311327c8959f8c6dc58f2558f464ab275b60c2daf8a1d3e29ba8d177ca9a45e",
+        "quality": 70
       }
     },
     "133": {
