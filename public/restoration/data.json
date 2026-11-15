@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2223,
+  "commits": 2225,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Vortex of Random's map is Tiny Speck's own painting, restored, so every region now shows its original"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "Join the Club's shut door can no longer be jumped over: it is shut up to the roof"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The start card names the street you really start on, and sits centred on a phone"
    }
   ]
  },
