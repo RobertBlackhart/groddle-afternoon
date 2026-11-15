@@ -22,7 +22,7 @@ import {
   vitalRing,
   volumeLevel,
   soundChannelToggle,
-} from '../public/js/ui/topbar.js?v=e344c81a';
+} from '../public/js/ui/topbar.js?v=c41e4388';
 
 import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=d2c88987';
 
@@ -367,6 +367,6 @@ describe('the favor panel opens clear of an open side sheet and the Social drawe
     // Esc closes the panel first: the popover's own key handler stops the key before the sheet's.
     assert.match(topbar, /if \(e\.key !== 'Escape' \|\| !isOpen\(\)\) return;\n\s+e\.stopPropagation\(\);\n\s+close\(true\);/);
     // The bar still lifts over the drawer while the panel is open (a token, no raw layer number).
-    assert.match(read('style.css'), /#favor-pop:not\(\[hidden\]\)\) \{\n\s+z-index: var\(--z-hud-pop\);/);
+    assert.match(read('style.css'), /#favor-pop:not\(\[hidden\]\), #vendor-finder-pop:not\(\[hidden\]\)\) \{\n\s+z-index: var\(--z-hud-pop\);/);
   });
 });

@@ -26,6 +26,7 @@ import { PHONE_ZOOM_HINT, ZOOM_FIXED_NOTE, ZOOM_KEYS_HINT, clampZoom, phoneSidew
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=39a3b47c';
 import { focusBack } from './focus-return.js?v=da190597';
+import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=814ba28e';
 
 /** The Menu's groups, in the mock's order; Social shows only when something is in it. */
 export const MENU_GROUPS = Object.freeze([
@@ -347,6 +348,8 @@ export function renderTopBar(doc, state = {}) {
   }
   // The open favor panel follows the game (a donation, an emblem claimed); it closes with its chip.
   favorPanel?.sync();
+  // The open vendor finder follows you from street to street.
+  currantsPanel?.sync();
   if ('unread' in state) {
     const mail = doc.getElementById('mail-btn');
     const m = mailText(state.unread, state.parcels);
@@ -506,6 +509,71 @@ function installFavor(doc, favor) {
         // A sheet opened or closed by its key while the panel is up: it steps clear again.
         p.place();
       }
+    },
+  };
+}
+
+/** The installed vendor finder (installCurrants), for renderTopBar: { sync() } or null. */
+let currantsPanel = null;
+
+/**
+ * G774 (report #351): a click on the currants (or Enter or Space) opens a small panel of the
+ * vendors near you, one row for each kind by what it sells, with the nearest street that has one;
+ * a row sets it as your destination, as a Giant's row in the favor panel finds its Shrine (#258).
+ * Glitch's currants opened nothing (YouDisplayManager.as 131-132). Modern and Classic, a tap on a
+ * phone. `finder`: { rows() } (features/vendor-finder-feature.js) and find(key).
+ */
+function installCurrants(doc, finder) {
+  const chip = doc.querySelector?.('header.top-bar .meta-stat.currants');
+  const bar = chip?.closest('header.top-bar');
+  if (!chip || !bar || !finder?.rows || doc.getElementById('vendor-finder-pop')) return null;
+  const pop = doc.createElement('div');
+  pop.id = 'vendor-finder-pop';
+  pop.className = 'hud-pop vendor-finder-pop';
+  pop.hidden = true;
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-label', VENDOR_FINDER_TEXT.title);
+  bar.append(pop);
+  chip.id ||= 'currants-stat';
+  chip.setAttribute('role', 'button');
+  chip.setAttribute('aria-haspopup', 'dialog');
+  chip.setAttribute('aria-controls', 'vendor-finder-pop');
+  chip.setAttribute('aria-expanded', 'false');
+  chip.dataset.sub = VENDOR_FINDER_TEXT.chipSub;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const draw = () => {
+    const rows = finder.rows() || [];
+    const key = rows.map((r) => `${r.key}:${r.where}`).join(',');
+    if (pop.dataset.key === key && pop.childElementCount) return;
+    pop.dataset.key = key;
+    pop.innerHTML = `<h3 class="hud-pop-title">${esc(VENDOR_FINDER_TEXT.title)}</h3><ul class="vf-list">${rows.map((r) => (
+      `<li class="vf-row" data-store="${esc(r.key)}"${r.here ? ' data-here' : ''} role="button" tabindex="0" title="${esc(r.tip || '')}">`
+      + `<span class="vf-name">${esc(r.label)}</span><span class="vf-where">${esc(r.where || '')}</span></li>`
+    )).join('')}</ul>`;
+  };
+  const p = popover(doc, chip, pop, { onOpen: draw, clear: true });
+  const findFrom = (e) => {
+    const li = e.target?.closest?.('.vf-row[data-store]');
+    if (!li || !finder.find) return;
+    e.preventDefault();
+    e.stopPropagation();
+    p.close();
+    finder.find(li.dataset.store);
+  };
+  pop.addEventListener('click', findFrom);
+  pop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') findFrom(e); });
+  chip.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    // Not the game's Enter (verbs) or Space (jump).
+    e.preventDefault();
+    e.stopPropagation();
+    chip.click();
+  });
+  return {
+    sync() {
+      if (!p.isOpen()) return;
+      draw();
+      p.place();
     },
   };
 }
@@ -1335,6 +1403,7 @@ function installStreetMap(doc, setting) {
  *   nightTint: { get(), set(bool), onChange(fn) } (js/night-tint.js)
  *   streetMap: { get(), set(bool), onChange(fn) } (js/ui/street-minimap.js)
  *   favor: { rows() } the favor panel's eleven Giants (js/shrines.js favorPanelRows)
+ *   currants: { rows(), find(key) } the vendor finder (G774, features/vendor-finder-feature.js)
  *   onImagination(), onMail(), onPlayerCard(): what those controls open.
  */
 export function installTopBar(doc, opts = {}) {
@@ -1351,6 +1420,7 @@ export function installTopBar(doc, opts = {}) {
   installNightTint(doc, opts.nightTint);
   installStreetMap(doc, opts.streetMap);
   favorPanel = installFavor(doc, opts.favor);
+  currantsPanel = installCurrants(doc, opts.currants);
   const tips = installTooltips(doc, [bar, doc.getElementById('street-nameplate')]);
   adoptTitles(bar);
   shapeStreetName(doc);

@@ -6,6 +6,8 @@
  * Browser check (WebKit 874 x 402 and 402 x 812, DPR 3): elementFromPoint finds the iMG from y 0 to
  * 48 over it and over the currants, favor's centre is still favor, and a tap 1 px under the bar's
  * old target opens Upgrades; the bar looks the same.
+ * G774 (#351): the currants open the vendor finder now, so they are positioned too and keep their
+ * own taps; the stretched iMG area still covers the rest of the bar's height.
  * Run: node --test tests/phone-img-tap.test.js
  */
 import { describe, it } from 'node:test';
@@ -35,7 +37,7 @@ describe('the iMG on a phone bar', () => {
     assert.ok(top < 0 && bottom < 0, 'it reaches past the drawn pill both ways');
     assert.ok(drawn - top - bottom >= 44, `tap height ${drawn - top - bottom}`);
   });
-  it('favor is positioned too, so it paints over the stretched area and keeps its own taps', () => {
-    assert.match(css, /\.hud-stats \.hud-img,\s*:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats #favor-stat \{ position: relative; \}/);
+  it('favor and the currants (G774) are positioned too, so they paint over the stretched area and keep their own taps', () => {
+    assert.match(css, /\.hud-stats \.hud-img,\s*:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats \.hud-cur\.currants,\s*:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats #favor-stat \{ position: relative; \}/);
   });
 });

@@ -3256,6 +3256,37 @@
 :root[data-ui="classic"] .quest-dialogue[data-size="bubble"] .quest-dialogue-card :is(h2, .fam-head) { display: none; }
 /* === end chk7b === */
 
+/* === ideasa (lane) === */
+/* G774 (#351): the vendor finder from the currants, a 2012 panel over the currants corner. */
+:root[data-ui="classic"] .top-bar .meta-stat.currants[role="button"] { cursor: pointer; }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop {
+  position: absolute;
+  top: calc(var(--cvy) + var(--cvh) - 80 * var(--cu));
+  transform: translateY(-100%);
+  box-sizing: border-box;
+  width: calc(340 * var(--cu));
+  max-height: calc(var(--cvh) - 120 * var(--cu));
+  overflow-y: auto;
+  padding: calc(6 * var(--cu)) calc(8 * var(--cu));
+  border-radius: 5px;
+  background: var(--c-classic-page);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--c-classic-ink) 15%, transparent);
+  color: var(--c-classic-text);
+  font: var(--fs-classic-body)/var(--lh-normal) var(--font-classic-body);
+  pointer-events: auto;
+  z-index: var(--z-notice);
+}
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .hud-pop-title { margin: 0 0 calc(4 * var(--cu)); color: var(--c-classic-title); font: 800 var(--fs-classic-body)/var(--lh-tight) var(--font-classic-title); }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-list { list-style: none; margin: 0; padding: 0; }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-row {
+  display: flex; justify-content: space-between; gap: calc(8 * var(--cu));
+  padding: calc(3 * var(--cu)) calc(4 * var(--cu)); border-radius: 3px; cursor: pointer;
+}
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-row:is(:hover, :focus-visible) { color: var(--c-classic-link); background: color-mix(in srgb, var(--c-classic-panel) 60%, transparent); outline: none; }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-name { flex: none; white-space: nowrap; }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-where { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.8; }
+/* === end ideasa === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

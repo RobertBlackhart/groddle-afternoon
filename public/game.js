@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=9b7d28a8';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=81a569ce';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=305f2df8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1040,7 +1040,7 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=e344c81a';
+import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=c41e4388';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -34070,6 +34070,8 @@ async function main() {
     nightTint,
     streetMap: streetMapSetting,
     favor: { rows: () => favorPanelRows(shrineState, favorGiantHere()?.id || null), find: (giant) => findNearestShrine(giant) },
+    // G774 (#351): the currants open the vendor finder (features/vendor-finder-feature.js).
+    currants: { rows: () => features.query('vendorFinderRows', engine) || [], find: (key) => features.query('vendorFinderFind', key, engine) },
     onImagination: () => (modernUi() && imaginationHub ? imaginationHub.toggle() : document.getElementById('img-btn')?.click()),
     onMail: () => { if (state.started) openMailboxPanel(); },
     onPlayerCard: () => document.getElementById('player-menu-btn')?.click(),

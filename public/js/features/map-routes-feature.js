@@ -30,6 +30,9 @@
  *   engine.query('mapRoute', 'set', { to, from, source, quest }, engine)  -> { ok, error, route }
  *   engine.query('mapRoute', 'clear', { source, reason }, engine)          -> { cleared }
  *   engine.query('mapRoute', 'get', null, engine)                         -> route | null
+ *   engine.query('mapRoute', 'find', { to }, engine)                      -> { destination, hops } | { unknown } | null
+ *     (G774, the vendor finder: the route set would take, from where you stand, without setting it;
+ *     { unknown: true } at home, off the map or while the roads load; null when no way gets there)
  *
  * QA (see tests/map-routes.test.js):
  *   &routedemo=<tsid>        set a player route from the street you load on
@@ -61,6 +64,7 @@ import {
   doorRooms,
   doorToward,
   enterStreet,
+  findRoute,
   gpsText,
   graphKey,
   hubRouteDrawing,
@@ -262,6 +266,17 @@ function setRoute(engine, opts = {}) {
   refresh(engine);
   redrawOpenMap(engine);
   return res;
+}
+
+/** G774: where a route to the nearest of `opts.to` would end and how many streets away, without setting it. */
+function findNearest(engine, opts = {}) {
+  if (!graph) {
+    loadGraph();
+    return { unknown: true };
+  }
+  if (offWorld(engine) || engine.homeContext?.().inHome) return { unknown: true };
+  const path = findRoute(graph, engine.streetTsid, opts.to, { blocked: closedRoads(engine), locked: lockedDoors, rides, oneWay, startCut: cutHere(engine) });
+  return path ? { destination: path[path.length - 1], hops: path.length - 1 } : null;
 }
 
 /** A route set or cleared while the Map is open: draw it again. */
@@ -1160,6 +1175,7 @@ export const mapRoutesFeature = {
    */
   mapRoute(action, opts, engine) {
     if (action === 'get') return state.route;
+    if (action === 'find') return findNearest(engine, opts || {});
     if (action === 'clear') return dropRoute(engine, opts || {});
     if (action === 'set') {
       if (graph) return setRoute(engine, opts || {});
