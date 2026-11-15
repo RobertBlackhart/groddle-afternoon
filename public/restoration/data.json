@@ -2792,9 +2792,44 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2204,
+  "commits": 2212,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Number keys do emotes again: 1 surprised, 2 angry, 3 happy, 4 AFK"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The \"A new day\" line comes with the New Day screen and its fanfare"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "An online Heli Kitty no longer flies under the grass on Marylpole Mount"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Achievements Category list stays where you scroll it while open"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The delivery frog draws over a vendor, and its yoga line is a small bubble beside it"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Finding the nearest shrine no longer ends on a street under construction"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Greedy Street Spirit shows one wall button per act, not a row of seven"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2879,41 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Only a single level-up is credited outside the daily room; a jump of several levels waits for room like the rest"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A jump of several levels is credited the final level's currants, and the day's first level-up is never held back"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The server's log notes steps longer than any walk or fall and joins far from every way onto a street"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Level, quest and badge currants are credited up to 40,000 a day, levels in order, quests after their prerequisites"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The earning budget refills at 60 a minute of play, and selling or giving things away no longer refills it"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Moderator tokens end after 90 days and act on at most 10 players a day; suspended players leave the public pages"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Naraka's and Ilmenskie Caverns' maps are Tiny Speck's 2012 paintings, restored"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Big street scenery and the Glitchmas Cracker no longer draw black on phones with small graphics chips"
    }
   ]
  },
