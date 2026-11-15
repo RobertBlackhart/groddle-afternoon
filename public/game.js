@@ -15338,12 +15338,11 @@ async function maybeNewDay(opts = {}) {
   resetStreetCollectiblesForNewDay();
   features.newDay(Date.now(), engine);
   updateHud();
-  if (showScreen) pushActivity(
+  const newDayLine =
     `A new day: energy refilled (+${Math.round(refill.energyGained)}) · mood restored` +
-      (trantN ? ` · ${trantN} tree${trantN === 1 ? '' : 's'} ready for care` : '') +
-      (animalN ? ` · ${animalN} animal${animalN === 1 ? '' : 's'} ready for care` : '') +
-      (quoinReset.hitLimit ? ` · quoin-limit streak ${quoinReset.limitStreak}` : '')
-  );
+    (trantN ? ` · ${trantN} tree${trantN === 1 ? '' : 's'} ready for care` : '') +
+    (animalN ? ` · ${animalN} animal${animalN === 1 ? '' : 's'} ready for care` : '') +
+    (quoinReset.hitLimit ? ` · quoin-limit streak ${quoinReset.limitStreak}` : '');
 
   if (el) {
     const dateEl = el.querySelector('[data-nd-date]');
@@ -15356,12 +15355,16 @@ async function maybeNewDay(opts = {}) {
           : 'You were already full. Still, a new day!';
     }
     // G364: through the screen queue, without its focus gate (NCMsgHandler.as do_NEW_DAY 2764-2768).
+    // #357: the line waits in the queue with the screen and its fanfare (it came first, the screen
+    // minutes later behind other screens); do_NEW_DAY sends only the screen to the queue.
     await queueScreen(async () => {
+      pushActivity(newDayLine);
       playSfx('newDay', { volume: 0.75 });
       await showNewDayScreen(el);
     }, { requiresFocus: false });
     showNewDayBubble(refill);
   } else if (showScreen) {
+    pushActivity(newDayLine);
     toast('A new day: energy refilled!', 4000);
     playSfx('newDay', { volume: 0.75 });
   }

@@ -185,7 +185,10 @@ describe('game.js wires the gates', () => {
     assert.match(q, /waitForScreenGates\(screenGateState, \{ requiresFocus, closedAt: screenClosedAt, onHold: noteScreenHold \}\)/);
     assert.match(q, /screenClosedAt = performance\.now\(\);/);
     assert.match(game, /function isAwardScreenUp\(\) \{\s*if \(awardsPending > 0\) return true;/);
-    assert.match(fn('maybeNewDay'), /await queueScreen\(async \(\) => \{\n\s*playSfx\('newDay', \{ volume: 0\.75 \}\);\n\s*await showNewDayScreen\(el\);\n\s*\}, \{ requiresFocus: false \}\);\n\s*showNewDayBubble\(refill\);/);
+    // #357: the "A new day" line comes with the screen and its fanfare, not before them.
+    assert.match(fn('maybeNewDay'), /await queueScreen\(async \(\) => \{\n\s*pushActivity\(newDayLine\);\n\s*playSfx\('newDay', \{ volume: 0\.75 \}\);\n\s*await showNewDayScreen\(el\);\n\s*\}, \{ requiresFocus: false \}\);\n\s*showNewDayBubble\(refill\);/);
+    assert.equal((fn('maybeNewDay').match(/pushActivity\(/g) || []).length, 2, 'once in the queued screen, once with the toast when there is no screen');
+    assert.match(fn('maybeNewDay'), /\} else if \(showScreen\) \{\n\s*pushActivity\(newDayLine\);\n\s*toast\('A new day: energy refilled!', 4000\);/);
     assert.match(game, /queueScreen: \(show, opts\) => queueScreen\(show, opts\),/);
     // The screen modules load under one key each.
     assert.match(game, /from '\.\/js\/screen-queue\.js\?v=[0-9a-f]{8}';/);
