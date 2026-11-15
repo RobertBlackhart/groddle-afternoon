@@ -3451,79 +3451,124 @@
         "file": "assets/maps/art/bg/rasana.webp",
         "w": 760,
         "h": 460,
-        "bytes": 33546,
-        "sha256": "9fca5211bbb65a3e4c9e7547839dbc606c55f2829db84b0f258574107cfe4b68"
+        "bytes": 73602,
+        "sha256": "96648ac1b27257429ad53362ef2124f2de3fae8492b5db6d8f9dde7b85e4ee4d"
       },
       "x2": {
         "file": "assets/maps/art/bg/rasana@2x.webp",
         "w": 1520,
         "h": 920,
-        "bytes": 108356,
-        "sha256": "bcc047fb3f68af73d5e8e8c9d6d1ac4bb90dab1492f1956b1f320bd8dfa77d09"
+        "bytes": 264044,
+        "sha256": "43a01b4cab12d1d01961f1f7d8b12a47bc6a8ce723d8834771f117cfed3f0287"
       },
       "licence": "ai-generated",
       "author": "Austin Ginder (directed and chose it)",
+      "madeBy": "Grok Bot, for Austin Ginder, who directed it",
       "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas (t3.chat/canvas)",
       "model": "GPT Image 2.6 Sunburst",
-      "made": "2026-11-06",
+      "made": "2026-11-15",
+      "method": "restored: Tiny Speck's own 2012 painting, as the 2012 Encyclopedia drew it under the game's roads, names, icons and GO buttons, given to the model to take the markings off and sharpen without moving anything (research/map-art/regions-restore). Unlike the paintings made from thumbnails, the 2012 picture is the model's input here.",
       "chosen": {
         "by": "Austin Ginder",
-        "on": "2026-11-06",
-        "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        "on": "2026-11-14",
+        "of": "1 generation, toned to its 2012 picture's colour (Austin: 'matched to 2012', set first on Groddle Meadow and then for every restored region); it replaces the painting made from the thumbnail"
       },
-      "prompt": "Paint ONE image: the background painting for an in-game region map of \"Rasana\", a region in a whimsical 2D browser game. Size 1520 x 920 pixels (landscape, exactly this ratio; if only fixed ratios are offered, use 16:10). This is the painted landscape that sits UNDER the game's map interface. The game draws its own street lines, names, buttons and markers on top later, so the painting must contain none of them.\n\nVIEW AND FEEL\nSeen from directly above, like a painted map: not from a side or three-quarter angle. Trees read as small round canopies or small pointed tops with a soft shadow; no trunks showing. Hills, cliffs and slopes read by their light and shadow. Like a hand-painted miniature diorama, quiet and gentle: muted natural colours, soft shadows, a fine even texture over the ground (like felt or fine brush strokes), and only a little scattered detail. Fewer and smaller features is better than more: most of the land is calm open ground, so thin street lines and small labels drawn on top stay easy to read. Storybook, never grim, never photographic, never neon.\n\nWHAT TO PAINT\nOne area of two grassy tablelands split by a dry gorge, below a high rocky plateau. Its shape must follow attachment 02 closely (same outline, same position, same proportions), because the game's streets are fixed to those positions (attachment 03).\n- The top 40 percent: a broad, high plateau of pale grey-beige rock, softly worn and finely crackled, from edge to edge.\n- Below the plateau: a long dark brown cliff face runs across the whole width; near the centre a natural stone arch spans a dark hollow, with a few flat stepping stones along its top.\n- The middle left and middle right: two broad grassy tablelands in soft yellow-green, with a few small dark conifers, low bushes and a handful of grey boulders.\n- The centre: between the tablelands, a narrow dry gorge with a sandy floor runs from under the arch down to the bottom edge, with a lower rock ledge across it about two thirds of the way down.\n- The bottom: both tablelands end in steep dark brown cliffs that step down in two layers to a strip of pale sandy ground along the bottom edge.\n- Light: soft daylight from the upper left; the cliff faces in shadow.\n\nSTYLE\nMatch attachment 05: Tiny Speck's own painted plants and scenery for this region (soft painterly shapes, gentle shading, no hard black outlines), but much smaller and simpler, as seen on a map from high above.\n\nDO NOT INCLUDE\nNo text, letters, numbers or labels of any kind. No roads, paths, lines, grids or street markings. No circles, buttons, pins, arrows, icons, stars or \"you are here\" markers. No compass, legend, scale bar, border, frame, title or vignette. No people or characters. No UI of any kind.\n\nATTACHMENTS\n01  the original 150 x 91 thumbnail of this region's painting (Tiny Speck, public domain). The colours and the layout to follow.\n02  that thumbnail enlarged to 1520 x 920 with no extra detail. Follow its shapes closely: coastlines, cliffs, water, forest and open ground in the same places and proportions; repaint everything with real detail.\n03  where the game will draw the streets (dark lines) and region exits (yellow circles), at the same 1520 x 920 scale. For placement only: do NOT paint these lines or circles.\n04  a screenshot of how the game shows this map today: a blurry enlargement of the thumbnail with the game's interface drawn on top (street lines, street names, green GO buttons, panel and buttons). It is here only so you can see what the painting is for. Do NOT copy any of the interface; paint only the landscape underneath it.\n05  Tiny Speck's own painted trees, plants and scenery from this region's streets (public domain). The style and palette to match, drawn smaller and simpler.\n\nReturn the single painted landscape image only.\n",
-      "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+      "prompt": "This is a restoration job, not an illustration job. The attachment is a 2012 game map: an original hand-painted landscape with game markings drawn on top of it. Give me back the same painting with every game marking removed, and sharper. Do not move or redraw anything else.\n\nRemove completely, and paint in what lies underneath so it matches the painting around it:\n- the pale yellow-white road lines and ribbons that join the places, and their joints;\n- every street name and every word, including \"To: ...\" labels;\n- the small grey sign and house icons along the roads;\n- the round \"GO\" buttons and the small round blue-and-red station badge.\nKeep, because they are part of the painting, not markings: the small wooden boards and signposts that stand at some places (parks, preserves, habitats), huts, fences, bridges, ladders and every other painted object, but only the ones you can see in the attachment: never add a board, fence, hut or ladder where the attachment shows a name, an icon or plain ground. Only the markings listed above go.\n\nWhere a marking covered something, continue the grass, rock, sand, water, trees or cliffs that surround it, in the same style. Do not add anything new where a marking was: no new trees, rocks, buildings or paths.\n\nThe attachment is already the exact size and shape I want back (16:9). The painting fills the middle; the two flat bands at the left and right edges are padding: leave them flat, the same colour, and do not extend the painting into them. Do not stretch, scale, crop, shift or re-frame anything.\n\nEverything that is part of the painting must come back at exactly the same position, size, angle and shape, so that the result laid over the attachment matches line for line: every coastline, cliff edge, river, field edge, tree, bush, rock, cloud, building and shadow. Keep the colours, the lighting and the overall brightness exactly as they are; do not make it more saturated, darker or more contrasty.\n\nMake it crisper than a plain enlargement: remove the JPEG blocks and blur, make the existing edges crisp, and bring out the brushwork and texture already there. If you are unsure whether something is part of the painting or a marking, keep it.\n\nNo text of your own, no lines, no border, no frame, no watermark.",
+      "promptNote": "The prompt as given to the model: research/map-art/regions-restore/prompt.txt (outside git), with input 1 alone (drop/model.txt).",
       "inputs": [
         {
           "n": 1,
-          "file": "01-thumbnail-150x91.jpg",
-          "sha256": "c01a04e8034adcdbdc862b723186a46e7d4746bc01dbaec67fb9470ae23f7fa7",
-          "what": "the region’s own 150 x 91 thumbnail of the lost painting",
-          "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_rasana.jpg (byte for byte public/assets/maps/art/thumbs/sm_rasana.jpg)"
-        },
-        {
-          "n": 2,
-          "file": "02-thumbnail-enlarged-1520x920.png",
-          "sha256": "c9bcbde37502364bf1823af42c9a779293957fe49c148c6f26c1776cdb33c591",
-          "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
-          "source": "made from input 1, CC0"
-        },
-        {
-          "n": 3,
-          "file": "03-street-layout-1520x920.png",
-          "sha256": "f4bd5845d34b178421fd7436e6e8afb8be8aa936db02d5a668f2d301fbadce82",
-          "what": "where the map draws the 37 visible streets (dark lines) and 4 exits (yellow circles), at 2x",
-          "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-109.json, from GSJS inc_data_maps_prod.js)"
-        },
-        {
-          "n": 4,
-          "file": "04-our-map-window-with-ui.png",
-          "sha256": "39a6dbc58688f0236f4887eabca2956b43748ed35c4cda459324416ee523032c",
-          "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
-          "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
-        },
-        {
-          "n": 5,
-          "file": "05-style-cc0-decos.png",
-          "sha256": "0bc98b81534df16f1108855d40f991ed12afa1c3bab65f5fd171e9301bc6c45b",
-          "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
-          "source": "Tiny Speck decos, CC0"
+          "file": "38-rasana-2012-2x-on-16x9-1636x920.jpg",
+          "sha256": "e738a4b143e69bc1967a5dd502fc44f892b632b8c9afa55996f2c44f4c3aba58",
+          "what": "Tiny Speck's 2012 Encyclopedia map of Rasana (760 x 460: the painting with the game's roads, street names, icons, GO buttons and station badge), enlarged to 1520 x 920 (Lanczos) and centred on a 1636 x 920 canvas with flat side bands of its edge colour, so the 16:9 canvas does not stretch it",
+          "source": "Tiny Speck: c1.glitch.bz/img/maps_encyclopedia/rasana_100685.jpg (2012), saved from the Wayback Machine (research/wayback/raw/c1-img/maps_encyclopedia, outside git; sha256 17eb75dbd60289847e8f521b2297bf403c9d6f85d852427d7395e8333f69f3de)"
         }
       ],
       "references": [
-        "A player’s capture of the original Rasana map window (Glitch Strategy wiki): reference only, never given to the model and never in the repo",
-        "A frame of the original painting from the 2012 video \"tour: The Map of Ur\" (YouTube bXxXB6GUoMU at 437.8 s): reference only, never given to the model and never in the repo; the prompt describes its composition in words"
+        "The painting it replaces (made from the thumbnail; its record is under replaces): reference only, used to compare, never given to the model"
       ],
       "source": {
-        "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/rasana-1.png",
-        "dropSha256": "81eae5461929762b8aa0767ccedb3716dbbfc05c280f3823e1b3de91b38adc83",
-        "toning": "magick rasana-1.png -modulate 100,62,98 -fill #8a8a5a -colorize 8% master.png (calmer, toward the original’s muted olive)",
-        "masterSha256": "0cac70d51a686af24e206ef609f16f44dfdc7d973fe6cc94fe11d8f073f0e76a",
+        "generated": "2048 x 1152 (16:9, High 2K, opaque, 1 image): research/map-art/drop/regions/38-rasana-restored-raw.png",
+        "dropSha256": "0d3039b320316859aaf79d6df9d170a72038f6eb775387b27d7df742b158b781",
+        "crop": "the side bands cut off (raw x 72.606 to 1975.394), Lanczos to 1520 x 920, shifted -1 px across and 0 px down onto the 2012 picture's lines (worst drift after alignment 2 px at 2x in a 4 x 3 grid of tiles (tiles: 2 1 0 0 1 1 0 0 2 1 2 2)); the painting ended a few raw px inside the cut, so the 2 left and 3 right columns of band colour were filled with the painting's first clean column beside them",
+        "toning": "magick master.png -modulate 100,84,100 -gamma 1.16 toned.png (matched to the 2012 picture: saturation and lightness of its mid pixels, lightness 0.12 to 0.78, so the 2012 roads, text and paper sea do not count; gamma rather than brightness so the paper sea keeps its grain)",
         "encode": {
-          "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 rasana.webp",
-          "x2": "magick master.png -quality 82 -define webp:method=6 rasana@2x.webp"
+          "x1": "magick toned.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 rasana.webp",
+          "x2": "magick toned.png -quality 82 -define webp:method=6 rasana@2x.webp"
         },
-        "pack": "research/zone-art/map-rasana (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        "pack": "research/map-art/regions-restore (outside git): readme.md, prompt.txt, attach/, order.txt; intake: intake/work/38-rasana (the steps of intake-maps3.sh, run by the lane tool intake-sub.sh, edge columns measured on the cut, intake/tone2.py)"
+      },
+      "differences": "The upper rock plateau with its cave arch and the stepping stones at Edavam Vam, both grass plateaus, the sunken sandy ravine between them with the pale stones along its walls and the boulder at its top, the lower ledges with their flat stones, the shore and its surf, both wooden boards (at Luma Preserve and Kermu Park), the boulders, the log at the left, the trees and the bushes sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: a small wooden bench stands on the ravine floor just right of where Thulam Twist, Thithi Thrust and Ghara Gulley meet, read from the dark shape 2012 draws under that junction; by Medam Mads one flat stone where 2012 has two side by side (the second under the grey icons); the small dark bush at the end of Hariali Alley is gone.",
+      "replaces": {
+        "made": "2026-11-06",
+        "x1": {
+          "file": "assets/maps/art/bg/rasana.webp",
+          "w": 760,
+          "h": 460,
+          "bytes": 33546,
+          "sha256": "9fca5211bbb65a3e4c9e7547839dbc606c55f2829db84b0f258574107cfe4b68"
+        },
+        "x2": {
+          "file": "assets/maps/art/bg/rasana@2x.webp",
+          "w": 1520,
+          "h": 920,
+          "bytes": 108356,
+          "sha256": "bcc047fb3f68af73d5e8e8c9d6d1ac4bb90dab1492f1956b1f320bd8dfa77d09"
+        },
+        "chosen": {
+          "by": "Austin Ginder",
+          "on": "2026-11-06",
+          "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        },
+        "source": {
+          "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/rasana-1.png",
+          "dropSha256": "81eae5461929762b8aa0767ccedb3716dbbfc05c280f3823e1b3de91b38adc83",
+          "toning": "magick rasana-1.png -modulate 100,62,98 -fill #8a8a5a -colorize 8% master.png (calmer, toward the original’s muted olive)",
+          "masterSha256": "0cac70d51a686af24e206ef609f16f44dfdc7d973fe6cc94fe11d8f073f0e76a",
+          "encode": {
+            "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 rasana.webp",
+            "x2": "magick master.png -quality 82 -define webp:method=6 rasana@2x.webp"
+          },
+          "pack": "research/zone-art/map-rasana (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        },
+        "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+        "inputs": [
+          {
+            "n": 1,
+            "file": "01-thumbnail-150x91.jpg",
+            "sha256": "c01a04e8034adcdbdc862b723186a46e7d4746bc01dbaec67fb9470ae23f7fa7",
+            "what": "the region’s own 150 x 91 thumbnail of the lost painting",
+            "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_rasana.jpg (byte for byte public/assets/maps/art/thumbs/sm_rasana.jpg)"
+          },
+          {
+            "n": 2,
+            "file": "02-thumbnail-enlarged-1520x920.png",
+            "sha256": "c9bcbde37502364bf1823af42c9a779293957fe49c148c6f26c1776cdb33c591",
+            "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
+            "source": "made from input 1, CC0"
+          },
+          {
+            "n": 3,
+            "file": "03-street-layout-1520x920.png",
+            "sha256": "f4bd5845d34b178421fd7436e6e8afb8be8aa936db02d5a668f2d301fbadce82",
+            "what": "where the map draws the 37 visible streets (dark lines) and 4 exits (yellow circles), at 2x",
+            "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-109.json, from GSJS inc_data_maps_prod.js)"
+          },
+          {
+            "n": 4,
+            "file": "04-our-map-window-with-ui.png",
+            "sha256": "39a6dbc58688f0236f4887eabca2956b43748ed35c4cda459324416ee523032c",
+            "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
+            "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
+          },
+          {
+            "n": 5,
+            "file": "05-style-cc0-decos.png",
+            "sha256": "0bc98b81534df16f1108855d40f991ed12afa1c3bab65f5fd171e9301bc6c45b",
+            "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
+            "source": "Tiny Speck decos, CC0"
+          }
+        ]
       }
     },
     "110": {
@@ -5192,78 +5237,124 @@
         "file": "assets/maps/art/bg/samudra.webp",
         "w": 760,
         "h": 460,
-        "bytes": 17994,
-        "sha256": "8fe2c3025dfeafea5538c9d483103c5c6e048b3fbef3e9be64ce7cbf3450efda"
+        "bytes": 54880,
+        "sha256": "a8113401b71302827594e3a6db348008c3ca7b81a0aa2d9311d79382ec5d5a0f"
       },
       "x2": {
         "file": "assets/maps/art/bg/samudra@2x.webp",
         "w": 1520,
         "h": 920,
-        "bytes": 51272,
-        "sha256": "94cda3214ad49f4b8c345eba97694a864bbec84b12a08d0c83102278cf4173b3"
+        "bytes": 184828,
+        "sha256": "bc892507a690f02b24dbaceb7622195e627dc64325314c5cdd807a5a9d7b540a"
       },
       "licence": "ai-generated",
       "author": "Austin Ginder (directed and chose it)",
+      "madeBy": "Grok Bot, for Austin Ginder, who directed it",
       "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas (t3.chat/canvas)",
       "model": "GPT Image 2.6 Sunburst",
-      "made": "2026-11-06",
+      "made": "2026-11-15",
+      "method": "restored: Tiny Speck's own 2012 painting, as the 2012 Encyclopedia drew it under the game's roads, names, icons and GO buttons, given to the model to take the markings off and sharpen without moving anything (research/map-art/regions-restore). Unlike the paintings made from thumbnails, the 2012 picture is the model's input here.",
       "chosen": {
         "by": "Austin Ginder",
-        "on": "2026-11-06",
-        "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        "on": "2026-11-14",
+        "of": "1 generation, toned to its 2012 picture's colour (Austin: 'matched to 2012', set first on Groddle Meadow and then for every restored region); it replaces the painting made from the thumbnail"
       },
-      "prompt": "Paint ONE image: the background painting for an in-game region map of \"Samudra\", a region in a whimsical 2D browser game. Size 1520 x 920 pixels (landscape, exactly this ratio; if only fixed ratios are offered, use 16:10). This is the painted landscape that sits UNDER the game's map interface. The game draws its own street lines, names, buttons and markers on top later, so the painting must contain none of them.\n\nVIEW AND FEEL\nSeen from directly above, like a painted map: not from a side or three-quarter angle. Trees read as small round canopies or small pointed tops with a soft shadow; no trunks showing. Hills, cliffs and slopes read by their light and shadow. Like a hand-painted miniature diorama, quiet and gentle: muted natural colours, soft shadows, a fine even texture over the ground (like felt or fine brush strokes), and only a little scattered detail. Fewer and smaller features is better than more: most of the land is calm open ground, so thin street lines and small labels drawn on top stay easy to read. Storybook, never grim, never photographic, never neon.\n\nWHAT TO PAINT\nOne area of deeper sea floor seen from above through water. Its layout must follow attachment 02 closely (same shapes, same positions, same proportions), because the game's streets are fixed to those positions (attachment 03).\n- No land, no coast and no margin: the sea floor fills the whole picture to every edge.\n- The left half: deep, dark navy water and shadow, the sea floor fading into darkness toward the left edge and the top-left corner.\n- The right third: open sandy sea floor in lighter muted teal, with faint rippled patterns of light on it.\n- The centre and left: a dense mass of dark slate-blue rock ridges, jagged outcrops and boulders running from the top edge down to the bottom, darkest on the left; smaller rock clusters spread over the right side.\n- Tucked beside some rocks: a few small muted yellow-green sponge or coral tufts.\n- Light: dim, cool light from above, stronger on the right, so the whole picture shades from dark on the left to light on the right.\n\nSTYLE\nMatch attachment 05: Tiny Speck's own painted plants and scenery for this region (soft painterly shapes, gentle shading, no hard black outlines), but much smaller and simpler, as seen on a map from high above.\n\nDO NOT INCLUDE\nNo text, letters, numbers or labels of any kind. No roads, paths, lines, grids or street markings. No circles, buttons, pins, arrows, icons, stars or \"you are here\" markers. No compass, legend, scale bar, border, frame, title or vignette. No people or characters. No UI of any kind.\n\nATTACHMENTS\n01  the original 150 x 91 thumbnail of this region's painting (Tiny Speck, public domain). The colours and the layout to follow.\n02  that thumbnail enlarged to 1520 x 920 with no extra detail. Follow its shapes closely: coastlines, cliffs, water, forest and open ground in the same places and proportions; repaint everything with real detail.\n03  where the game will draw the streets (dark lines) and region exits (yellow circles), at the same 1520 x 920 scale. For placement only: do NOT paint these lines or circles.\n04  a screenshot of how the game shows this map today: a blurry enlargement of the thumbnail with the game's interface drawn on top (street lines, street names, green GO buttons, panel and buttons). It is here only so you can see what the painting is for. Do NOT copy any of the interface; paint only the landscape underneath it.\n05  Tiny Speck's own painted trees, plants and scenery from this region's streets (public domain). The style and palette to match, drawn smaller and simpler.\n\nReturn the single painted landscape image only.\n",
-      "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+      "prompt": "This is a restoration job, not an illustration job. The attachment is a 2012 game map: an original hand-painted landscape with game markings drawn on top of it. Give me back the same painting with every game marking removed, and sharper. Do not move or redraw anything else.\n\nRemove completely, and paint in what lies underneath so it matches the painting around it:\n- the pale yellow-white road lines and ribbons that join the places, and their joints;\n- every street name and every word, including \"To: ...\" labels;\n- the small grey sign and house icons along the roads;\n- the round \"GO\" buttons and the small round blue-and-red station badge.\nKeep, because they are part of the painting, not markings: the small wooden boards and signposts that stand at some places (parks, preserves, habitats), huts, fences, bridges, ladders and every other painted object, but only the ones you can see in the attachment: never add a board, fence, hut or ladder where the attachment shows a name, an icon or plain ground. Only the markings listed above go.\n\nWhere a marking covered something, continue the grass, rock, sand, water, trees or cliffs that surround it, in the same style. Do not add anything new where a marking was: no new trees, rocks, buildings or paths.\n\nThe attachment is already the exact size and shape I want back (16:9). The painting fills the middle; the two flat bands at the left and right edges are padding: leave them flat, the same colour, and do not extend the painting into them. Do not stretch, scale, crop, shift or re-frame anything.\n\nEverything that is part of the painting must come back at exactly the same position, size, angle and shape, so that the result laid over the attachment matches line for line: every coastline, cliff edge, river, field edge, tree, bush, rock, cloud, building and shadow. Keep the colours, the lighting and the overall brightness exactly as they are; do not make it more saturated, darker or more contrasty.\n\nMake it crisper than a plain enlargement: remove the JPEG blocks and blur, make the existing edges crisp, and bring out the brushwork and texture already there. If you are unsure whether something is part of the painting or a marking, keep it.\n\nNo text of your own, no lines, no border, no frame, no watermark.",
+      "promptNote": "The prompt as given to the model: research/map-art/regions-restore/prompt.txt (outside git), with input 1 alone (drop/model.txt).",
       "inputs": [
         {
           "n": 1,
-          "file": "01-thumbnail-150x91.jpg",
-          "sha256": "a19661d375046d0b8488b4fc8bb452d3a900f248406b735ef333148ee7d872c0",
-          "what": "the region’s own 150 x 91 thumbnail of the lost painting",
-          "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_samudra.jpg (byte for byte public/assets/maps/art/thumbs/sm_samudra.jpg)"
-        },
-        {
-          "n": 2,
-          "file": "02-thumbnail-enlarged-1520x920.png",
-          "sha256": "fa2f635fbc2257995e7930a9acb6dd814ae313cb168d96c8aaf342e1434fbdfb",
-          "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
-          "source": "made from input 1, CC0"
-        },
-        {
-          "n": 3,
-          "file": "03-street-layout-1520x920.png",
-          "sha256": "da8aefc2c97f2fbfd025d68419cc1a9a2d1ede709d9275f6e15cdead15eeee81",
-          "what": "where the map draws the 20 visible streets (dark lines) and 2 exits (yellow circles), at 2x",
-          "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-140.json, from GSJS inc_data_maps_prod.js)"
-        },
-        {
-          "n": 4,
-          "file": "04-our-map-window-with-ui.png",
-          "sha256": "f304a36dce67b48b956d05ddb3651e33649cba69be440ef763f99239580ef70f",
-          "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
-          "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
-        },
-        {
-          "n": 5,
-          "file": "05-style-cc0-decos.png",
-          "sha256": "847f0738940d4d76a10b21873c1e59a05bc63370ac5b6de50cdd58478ce05485",
-          "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
-          "source": "Tiny Speck decos, CC0"
+          "file": "41-samudra-2012-2x-on-16x9-1636x920.jpg",
+          "sha256": "bddf0ce9e0861a4ffaf9d147428379ba902f70a3dd5028345170699a2b703ef4",
+          "what": "Tiny Speck's 2012 Encyclopedia map of Samudra (760 x 460: the painting with the game's roads, street names, icons, GO buttons and station badge), enlarged to 1520 x 920 (Lanczos) and centred on a 1636 x 920 canvas with flat side bands of its edge colour, so the 16:9 canvas does not stretch it",
+          "source": "Tiny Speck: c1.glitch.bz/img/maps_encyclopedia/samudra_124454.jpg (2012), saved from the Wayback Machine (research/wayback/raw/c1-img/maps_encyclopedia, outside git; sha256 6496352a73ac5797db8549b38ef00572e70987e656f53839b6019570264c9d7d)"
         }
       ],
       "references": [
-        "A frame of the original painting from the 2012 video \"tour: The Map of Ur\" (YouTube bXxXB6GUoMU at 329.8 s): reference only, never given to the model and never in the repo; the prompt describes its composition in words"
+        "The painting it replaces (made from the thumbnail; its record is under replaces): reference only, used to compare, never given to the model"
       ],
       "source": {
-        "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/samudra-1.png",
-        "dropSha256": "9f2bec58c3d1c4ff5101f6f3047802ac0eed21713d7a84cbfdff241cb3218942",
-        "toning": "magick samudra-1.png -modulate 82,92,98 master.png (darker, with no olive wash: the original sea is deeper blue than the generation)",
-        "masterSha256": "f446e101c002ab5dc8edfb6ac1078b0b5bfdc437ce24a005960e5c25b818df61",
+        "generated": "2048 x 1152 (16:9, High 2K, opaque, 1 image): research/map-art/drop/regions/41-samudra-restored-raw.png",
+        "dropSha256": "4f8851086eeac64f51a9c36b76968b9154e3723f7d0d4bffedd7c8e9f5bde0d0",
+        "crop": "the side bands cut off (raw x 72.606 to 1975.394), Lanczos to 1520 x 920, shifted -1 px across and 1 px down onto the 2012 picture's lines (worst drift after alignment 2 px at 2x in a 4 x 3 grid of tiles (tiles: 1 2 1 1 0 2 1 1 1 2 1 0)); the painting ended a few raw px inside the cut, so the 2 left and 3 right columns of band colour were filled with the painting's first clean column beside them",
+        "toning": "magick master.png -modulate 100,80,100 -gamma 0.98 toned.png (matched to the 2012 picture's unmarked pixels: mean lightness and saturation of every pixel lighter than 0.02 where 2012 has no road ribbon, name or button, since most of this dark map is darker than the usual mid-pixel band of 0.12 to 0.78 and that band holds mainly the pale 2012 road ribbons; intake/work/tone2-dark.py; gamma allowed below 1)",
         "encode": {
-          "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 samudra.webp",
-          "x2": "magick master.png -quality 82 -define webp:method=6 samudra@2x.webp"
+          "x1": "magick toned.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 samudra.webp",
+          "x2": "magick toned.png -quality 82 -define webp:method=6 samudra@2x.webp"
         },
-        "pack": "research/zone-art/map-samudra (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        "pack": "research/map-art/regions-restore (outside git): readme.md, prompt.txt, attach/, order.txt; intake: intake/work/41-samudra (the steps of intake-maps3.sh, run by the lane tool intake-sub.sh, edge columns measured on the cut, intake/tone2.py, intake/work/tone2-dark.py)"
+      },
+      "differences": "The dark sea floor with its crowded rock spires, the deep pit right of the middle, the spires and rock masses at the top right, the scattered small rocks and the green-gold sea plants sit where 2012 had them (worst tile drift 2 px at 2x); the dark left half, blurred in 2012, comes back with sharp spires in the same places. Known difference: a tiny hut (about 12 by 10 px at 1x) stands among the rocks just below the start of the Parashurama name, where 2012 has plain rock. Toned to 2012 on its unmarked pixels: the usual middle-lightness match, on this dark map, reads mainly 2012's pale road ribbons and lifted the dark left side about half again too light (median lightness 39 to 44 against 2012's 22 to 28 in the left tiles); the dark toner keeps it near 2012's (26 to 30).",
+      "replaces": {
+        "made": "2026-11-06",
+        "x1": {
+          "file": "assets/maps/art/bg/samudra.webp",
+          "w": 760,
+          "h": 460,
+          "bytes": 17994,
+          "sha256": "8fe2c3025dfeafea5538c9d483103c5c6e048b3fbef3e9be64ce7cbf3450efda"
+        },
+        "x2": {
+          "file": "assets/maps/art/bg/samudra@2x.webp",
+          "w": 1520,
+          "h": 920,
+          "bytes": 51272,
+          "sha256": "94cda3214ad49f4b8c345eba97694a864bbec84b12a08d0c83102278cf4173b3"
+        },
+        "chosen": {
+          "by": "Austin Ginder",
+          "on": "2026-11-06",
+          "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        },
+        "source": {
+          "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/samudra-1.png",
+          "dropSha256": "9f2bec58c3d1c4ff5101f6f3047802ac0eed21713d7a84cbfdff241cb3218942",
+          "toning": "magick samudra-1.png -modulate 82,92,98 master.png (darker, with no olive wash: the original sea is deeper blue than the generation)",
+          "masterSha256": "f446e101c002ab5dc8edfb6ac1078b0b5bfdc437ce24a005960e5c25b818df61",
+          "encode": {
+            "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 samudra.webp",
+            "x2": "magick master.png -quality 82 -define webp:method=6 samudra@2x.webp"
+          },
+          "pack": "research/zone-art/map-samudra (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        },
+        "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+        "inputs": [
+          {
+            "n": 1,
+            "file": "01-thumbnail-150x91.jpg",
+            "sha256": "a19661d375046d0b8488b4fc8bb452d3a900f248406b735ef333148ee7d872c0",
+            "what": "the region’s own 150 x 91 thumbnail of the lost painting",
+            "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_samudra.jpg (byte for byte public/assets/maps/art/thumbs/sm_samudra.jpg)"
+          },
+          {
+            "n": 2,
+            "file": "02-thumbnail-enlarged-1520x920.png",
+            "sha256": "fa2f635fbc2257995e7930a9acb6dd814ae313cb168d96c8aaf342e1434fbdfb",
+            "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
+            "source": "made from input 1, CC0"
+          },
+          {
+            "n": 3,
+            "file": "03-street-layout-1520x920.png",
+            "sha256": "da8aefc2c97f2fbfd025d68419cc1a9a2d1ede709d9275f6e15cdead15eeee81",
+            "what": "where the map draws the 20 visible streets (dark lines) and 2 exits (yellow circles), at 2x",
+            "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-140.json, from GSJS inc_data_maps_prod.js)"
+          },
+          {
+            "n": 4,
+            "file": "04-our-map-window-with-ui.png",
+            "sha256": "f304a36dce67b48b956d05ddb3651e33649cba69be440ef763f99239580ef70f",
+            "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
+            "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
+          },
+          {
+            "n": 5,
+            "file": "05-style-cc0-decos.png",
+            "sha256": "847f0738940d4d76a10b21873c1e59a05bc63370ac5b6de50cdd58478ce05485",
+            "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
+            "source": "Tiny Speck decos, CC0"
+          }
+        ]
       }
     },
     "141": {

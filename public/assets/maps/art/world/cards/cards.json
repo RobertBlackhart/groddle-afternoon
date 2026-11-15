@@ -504,14 +504,14 @@
         "file": "assets/maps/art/bg/rasana@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "bcc047fb3f68af73d5e8e8c9d6d1ac4bb90dab1492f1956b1f320bd8dfa77d09"
+        "sha256": "43a01b4cab12d1d01961f1f7d8b12a47bc6a8ce723d8834771f117cfed3f0287"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 22056,
-        "sha256": "6d2bb1df43fda8c8c91e948e72f51784df575825b4c1e64100b442112a962a99"
+        "bytes": 49950,
+        "sha256": "072917818c6ae9f46655c764e9ff7dca657976fd9770184bb837d0c03b71d2d9"
       }
     },
     "110": {
@@ -777,14 +777,14 @@
         "file": "assets/maps/art/bg/samudra@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "94cda3214ad49f4b8c345eba97694a864bbec84b12a08d0c83102278cf4173b3"
+        "sha256": "bc892507a690f02b24dbaceb7622195e627dc64325314c5cdd807a5a9d7b540a"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 11400,
-        "sha256": "7b576567c56d7b7a4671d2d078655d8346f94f42805f20e9bd75b1979f8e4ad3"
+        "bytes": 35218,
+        "sha256": "216603a22972b30ced893e38b1b97692465e223eb74223c8ce49e80278c7768e"
       }
     },
     "141": {

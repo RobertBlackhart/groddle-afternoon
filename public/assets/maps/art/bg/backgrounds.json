@@ -564,10 +564,10 @@
       "x1": "assets/maps/art/bg/rasana.webp",
       "x2": "assets/maps/art/bg/rasana@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 33546,
-      "x1Sha256": "9fca5211bbb65a3e4c9e7547839dbc606c55f2829db84b0f258574107cfe4b68",
-      "x2Bytes": 108356,
-      "x2Sha256": "bcc047fb3f68af73d5e8e8c9d6d1ac4bb90dab1492f1956b1f320bd8dfa77d09"
+      "x1Bytes": 73602,
+      "x1Sha256": "96648ac1b27257429ad53362ef2124f2de3fae8492b5db6d8f9dde7b85e4ee4d",
+      "x2Bytes": 264044,
+      "x2Sha256": "43a01b4cab12d1d01961f1f7d8b12a47bc6a8ce723d8834771f117cfed3f0287"
     },
     "110": {
       "hubName": "Massadoe",
@@ -820,10 +820,10 @@
       "x1": "assets/maps/art/bg/samudra.webp",
       "x2": "assets/maps/art/bg/samudra@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 17994,
-      "x1Sha256": "8fe2c3025dfeafea5538c9d483103c5c6e048b3fbef3e9be64ce7cbf3450efda",
-      "x2Bytes": 51272,
-      "x2Sha256": "94cda3214ad49f4b8c345eba97694a864bbec84b12a08d0c83102278cf4173b3"
+      "x1Bytes": 54880,
+      "x1Sha256": "a8113401b71302827594e3a6db348008c3ca7b81a0aa2d9311d79382ec5d5a0f",
+      "x2Bytes": 184828,
+      "x2Sha256": "bc892507a690f02b24dbaceb7622195e627dc64325314c5cdd807a5a9d7b540a"
     },
     "141": {
       "hubName": "Drifa",
