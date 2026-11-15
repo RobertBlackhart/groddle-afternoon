@@ -620,6 +620,25 @@ export function tutorialPillSpot(canvas, stats, { gap = 8, inset = 10, pillWidth
   return { left, top };
 }
 
+/**
+ * Where an instruction overlay sits so it never covers the avatar (lane clouds, Austin 2026-11-15):
+ * on a phone the instruction keeps over the stick and Jump, which is where the avatar stands, and
+ * "Tap the ground to walk there!" hid the very Glitch it spoke to (portrait and landscape). `box`
+ * is the instruction ({ top, left, width, height }, page px), `avatar` the avatar's drawn box
+ * ({ top, bottom, left, right }) or null, `minTop` the highest it may go. Overlapping, it moves
+ * above the head, or under the feet when there is no room above. Returns the top.
+ */
+export function instructionClearTop(box, avatar, { gap = 10, minTop = 0 } = {}) {
+  const top = box.top;
+  if (!avatar || !(box.height > 0)) return top;
+  const across = box.left < avatar.right && box.left + box.width > avatar.left;
+  const down = top < avatar.bottom && top + box.height > avatar.top;
+  if (!across || !down) return top;
+  const above = avatar.top - gap - box.height;
+  if (above >= minTop) return Math.round(above);
+  return Math.round(avatar.bottom + gap);
+}
+
 /** The Gentle Island Exit box only fires once leave_gentle_island is accepted. */
 export function islandExitOpen(island) {
   return island === 'leaving';

@@ -9,8 +9,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { LINES } from '../public/js/newxp.js?v=963b3d7d';
-import { newxpFeature, EGG_GIVE_REACH } from '../public/js/features/newxp-feature.js?v=55eefe67';
+import { LINES } from '../public/js/newxp.js?v=3ab7e2f9';
+import { newxpFeature, EGG_GIVE_REACH } from '../public/js/features/newxp-feature.js?v=df0f8057';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(join(root, 'public/js/features/newxp-feature.js'), 'utf8');

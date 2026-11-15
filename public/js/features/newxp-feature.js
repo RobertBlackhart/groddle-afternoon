@@ -115,6 +115,7 @@ import {
   shouldResume,
   tutorialPillSpot,
   instructionFor,
+  instructionClearTop,
   markStage,
   markStep,
   startNewxp,
@@ -128,7 +129,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=963b3d7d';
+} from '../newxp.js?v=3ab7e2f9';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=61be601c';
@@ -144,7 +145,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=b59156cf';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=dc1c6ad1';
+import { HOME_MACHINE } from '../home-ticket.js?v=0025dfb3';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=18353eaa';
 import {
   AK_ANIMALS,
@@ -438,6 +439,17 @@ function positionBubbles() {
   // TOUCH: on a phone the instruction sits over the stick and Jump (js/touch-controls.js), never on them.
   const thumbs = globalThis.GRODDLE_DEVICE === 'phone' ? document.querySelector('#touch-controls .touch-stick')?.getBoundingClientRect() : null;
   if (thumbs?.height > 0) instrTop = Math.min(instrTop, thumbs.top - ui.instr.offsetHeight - 8);
+  // Never over the avatar (instructionClearTop): above its head, under the HUD's top row.
+  if (!ui.instr.hidden) {
+    const p = P();
+    const avatar = p && !rooted ? (() => {
+      const head = pageOf(p.x - 34, p.y - INSTR_AVATAR_H);
+      const feet = pageOf(p.x + 34, p.y);
+      return { top: head.y, bottom: feet.y, left: head.x, right: feet.x };
+    })() : null;
+    const w = ui.instr.offsetWidth;
+    instrTop = instructionClearTop({ top: instrTop, left: r.left + r.width / 2 - w / 2, width: w, height: ui.instr.offsetHeight }, avatar, { minTop: r.top + 56 });
+  }
   ui.instr.style.top = `${instrTop}px`;
   // Under the energy, mood and level (#hud-stats), never over them (player report 2026-11-01).
   // TOUCH: a phone's pill keeps to the screen's top-left, inside the safe area (js/touch-controls.js).
@@ -446,6 +458,9 @@ function positionBubbles() {
   ui.pill.style.left = `${pill.left}px`;
   ui.pill.style.top = `${pill.top}px`;
 }
+
+/** The avatar's drawn height above its feet (world px, hair included) that an instruction keeps clear of. */
+const INSTR_AVATAR_H = 125;
 
 const plain = (html) => String(html || '').replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
