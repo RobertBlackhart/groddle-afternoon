@@ -649,8 +649,10 @@ export function getVerbsFor(target, ctx) {
       learned: ctx.skills?.learned || ctx.learned || [],
     };
     const milk = quoteAnimalKinship(s, classId, 'milk', kinshipCtx);
+    // #375: Massage before Milk, in doing order (massage readies the milking), as piggies list pet before
+    // nibble. Ours: npc_butterfly.js had milk sort_on 59 (703) before massage 60 (761).
     add('milk', 'milk', {
-      sort: 10,
+      sort: 20,
       energy: milk.profile?.energyCost || 5,
       durationMs: milk.profile?.durationMs,
       tooltip: milk.ok
@@ -660,7 +662,7 @@ export function getVerbsFor(target, ctx) {
     });
     const massage = quoteAnimalKinship(s, classId, 'massage', kinshipCtx);
     add('massage', 'massage', {
-      sort: 20,
+      sort: 10,
       energy: massage.profile?.energyCost || 5,
       durationMs: massage.profile?.durationMs,
       tooltip: massage.rank >= 6
