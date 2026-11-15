@@ -2446,7 +2446,8 @@ body.nx-hide-mood.nx-hide-energy .meta-vitals { visibility: hidden; }
   box-shadow: 0 12px 40px var(--shadow);
   border: 1px solid var(--c-slate-83);
   border-top: 0;
-  background: var(--c-sky-80);
+  /* --stage-sky (#348, game.js syncLocationViewHeight): a short street's own sky in the band above it. */
+  background: var(--stage-sky, var(--c-sky-80));
 }
 
 .street-nameplate {
@@ -14054,6 +14055,10 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 }
 /* The route card (To: / Next:) stacks under the map: --minimap-h is what the map takes (0 when hidden). */
 [data-ui="modern"] #game-root .route-gps { top: calc(var(--hud-h) + var(--space-3) + var(--minimap-h, 0px)); }
+/* #348: under 760 px the street's name drops under the pills (and the map under it): the card goes under both. */
+@media (max-width: 760px) {
+  [data-ui="modern"] #game-root .route-gps { top: calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + var(--minimap-h, 0px)); }
+}
 /* PHONE MAP (Austin 2026-11-13, p13; js/features/street-minimap-feature.js): a phone has no corner card;
    a map button at the front of the street's name opens the same map full screen, the signposts'
    destinations listed under it (beside it, sideways). Both skins; a phone only. */

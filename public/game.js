@@ -2080,6 +2080,9 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
       root.style.removeProperty('--stage-w');
       delete root.dataset.stageBordered;
     }
+    // #348: the band above a short street is the street's own sky, not the page's blue.
+    if (band >= 1 && viewSceneLayer?.skyTop) root.style.setProperty('--stage-sky', viewSceneLayer.skyTop);
+    else root.style.removeProperty('--stage-sky');
   }
   STAGE_SCALE = stage.scale;
   // PINCH PREVIEW: the stage draws at the new scale inside the renderer's old size.

@@ -1301,6 +1301,16 @@ function evictRecolours(cache, now) {
   }
 }
 
+/**
+ * PURE (#348): the colour at the top of a street's sky, as CSS: its gradient's top colour, or the
+ * painted fallback sky's top (0x8eb8d8) on a street without one. A view held under the window's
+ * height (a portrait phone on a short street) paints the band above the canvas with it.
+ */
+export function stageSkyColour(street) {
+  const top = String(street?.gradient?.top || '').replace(/^(#|0x)/i, '');
+  return /^[0-9a-f]{6}$/i.test(top) ? `#${top.toLowerCase()}` : '#8eb8d8';
+}
+
 /** Vertical sky gradient texture from the location's top/bottom colours. */
 function gradientTexture(PIXI, top, bottom) {
   const canvas = document.createElement('canvas');
@@ -2836,6 +2846,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
   // MINIMAP (G370, js/ui/street-minimap.js snapshotStreetView): every layer, and the sky it leaves out.
   root.layerContainers = layerContainers;
   root.skyView = skyView;
+  root.skyTop = stageSkyColour(street);
   // The client filters the whole middleground plane, so avatars and items on
   // it share the decos' treatment (Hell One's greyscale Glitches).
   const middleground = (street.layers || []).find((layer) => layer.id === 'middleground');
