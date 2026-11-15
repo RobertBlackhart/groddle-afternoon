@@ -20,7 +20,7 @@ import { readThumbs, regionThumbs, repaints } from '../tools/map-backgrounds/bui
 import { HUB_MAP_BACKGROUNDS } from '../public/js/hub-map-backgrounds.js?v=d6a23c90';
 import { buildHubMapView, hubMapRefusal, isPlaceholderMap, PLACEHOLDER_MAP_COLOURS, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=31437f5b';
 import { hubMapArtNote } from '../public/js/panel-copy.js?v=85c3e029';
-import { CHECKLIST } from '../tools/restoration/checklist.mjs';
+import { CHECKLIST, mapArtLine } from '../tools/restoration/checklist.mjs';
 import { MAP_ART_NOTE } from '../tools/encyclopedia/streets.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -162,13 +162,26 @@ describe('region map backgrounds (tools/map-backgrounds/build.mjs)', () => {
     // The map says so in its QA note, the restoration report and the encyclopedia in words.
     assert.equal(hubMapArtNote(buildHubMapView(hub(58), '', STREETS)), 'repainted painting');
     const blurb = CHECKLIST.find((c) => c.id === 'map').blurb;
-    assert.match(blurb, /map paintings are lost, so each region’s map shows their small thumbnail of it, enlarged/);
-    for (const id of ids) assert.ok(blurb.includes(`${REPAINTS.regions[id].hubName}’s`), `the report names ${REPAINTS.regions[id].hubName}`);
+    // Lanes maps15-maps18: every region is Tiny Speck's 2012 painting restored, and the report says so from the data.
+    const restored = ids.filter((id) => /^restored/.test(REPAINTS.regions[id].method || ''));
+    if (restored.length === Object.keys(HUB_MAP_BACKGROUNDS).length) {
+      assert.match(blurb, new RegExp(`All ${restored.length} region maps show Tiny Speck’s own 2012 paintings, restored from the 2012 Encyclopedia`));
+      assert.doesNotMatch(blurb, /thumbnail|repainted|are lost/, 'no stale thumbnail or repaint words');
+    } else for (const id of ids.filter((i) => !restored.includes(i))) assert.ok(blurb.includes(`${REPAINTS.regions[id].hubName}’s`), `the report names ${REPAINTS.regions[id].hubName}`);
     assert.match(MAP_ART_NOTE.repainted, /repainted for the remake/);
     assert.match(MAP_ART_NOTE.thumbnail, /thumbnail of it, enlarged/);
     assert.match(MAP_ART_NOTE.layout, /no thumbnail of it; this one was painted for the remake from its streets/);
-    assert.match(blurb, /Naraka’s, Ilmenskie Caverns’s, The Seams’s and Ilmenskie Deeps’s had no thumbnail, so they are painted for the remake from the streets alone/);
     for (const note of [blurb, ...Object.values(MAP_ART_NOTE)]) assert.doesNotMatch(note, /—|Glitch/, 'player words: no em-dash, no trademark');
+  });
+
+  it('the report line follows each region\'s method: restored, repainted, painted from streets, or the thumbnail', () => {
+    assert.equal(
+      mapArtLine([{ name: 'Ix', thumb: true, restored: true }, { name: 'Muufo', thumb: true, restored: true }]),
+      'All 2 region maps show Tiny Speck’s own 2012 paintings, restored from the 2012 Encyclopedia, which drew them under the game’s roads and names.',
+    );
+    const mixed = mapArtLine([{ name: 'Ix', thumb: true, restored: true }, { name: 'Muufo', thumb: true }, { name: 'Naraka', thumb: false }], 4);
+    assert.match(mixed, /^1 of 4 region maps show Tiny Speck’s own 2012 painting, restored/);
+    assert.match(mixed, /Muufo’s is repainted for the remake from its thumbnail; Naraka’s had no thumbnail, so it is painted for the remake from the streets alone; the rest show Tiny Speck’s small thumbnail of the region, enlarged\.$/);
   });
 
   it('the map draws it under the streets, labels, GO buttons and star', () => {

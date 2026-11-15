@@ -30,28 +30,41 @@
 import { readFileSync } from 'node:fs';
 
 /**
- * What the region maps' paintings are (G471, G522): Tiny Speck's are lost, so a map shows the
- * region's thumbnail enlarged (tools/map-backgrounds/build.mjs), or a painting repainted from it
- * for the remake (tools/provenance/repainted-maps.json). A region with no thumbnail (G569: Naraka,
- * the Ilmenskies, The Seams) is painted from its street layout. The sentence follows those files.
- * Each region is { name, thumb } (a bare name is a region with a thumbnail).
+ * What the region maps' paintings are (G471, G522, G569, lanes maps15-maps18): each region in
+ * tools/provenance/repainted-maps.json is Tiny Speck's own 2012 painting restored from the 2012
+ * Encyclopedia (method "restored: ..."), a painting made for the remake from its thumbnail, or one
+ * painted from its street layout when it had no thumbnail (public/assets/maps/index.json thumbLocal).
+ * A region with a map background but no row shows its thumbnail enlarged. The sentence follows
+ * those files: 51 of 51 restored since 2026-11-15.
+ * Each region is { name, thumb, restored } (a bare name is a region with a thumbnail).
  */
 export function repaintedRegions() {
   const read = (rel) => JSON.parse(readFileSync(new URL(rel, import.meta.url), 'utf8'));
   const index = read('../../public/assets/maps/index.json').hubs || {};
-  return Object.entries(read('../provenance/repainted-maps.json').regions).map(([id, r]) => ({ name: r.hubName, thumb: Boolean(index[id]?.thumbLocal) }));
+  return Object.entries(read('../provenance/repainted-maps.json').regions).map(([id, r]) => ({
+    name: r.hubName,
+    thumb: Boolean(index[id]?.thumbLocal),
+    restored: /^restored/.test(r.method || ''),
+  }));
 }
 
-export function mapArtLine(repainted = repaintedRegions()) {
-  const lost = 'Tiny Speck’s map paintings are lost, so each region’s map shows their small thumbnail of it, enlarged';
+/** The map row's art sentence. `total`: the regions with a map painting (default: every row). */
+export function mapArtLine(repainted = repaintedRegions(), total = null) {
   const rows = repainted.map((r) => (typeof r === 'string' ? { name: r, thumb: true } : r));
+  const all = Math.max(total ?? rows.length, rows.length);
   const and = (names) => (names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`);
-  const withThumb = rows.filter((r) => r.thumb).map((r) => `${r.name}’s`);
-  const noThumb = rows.filter((r) => !r.thumb).map((r) => `${r.name}’s`);
+  const restored = rows.filter((r) => r.restored);
+  const restoredLine = 'Tiny Speck’s own 2012 painting, restored from the 2012 Encyclopedia, which drew it under the game’s roads and names';
+  if (restored.length && restored.length === all) return `All ${all} region maps show Tiny Speck’s own 2012 paintings, restored from the 2012 Encyclopedia, which drew them under the game’s roads and names.`;
   const parts = [];
+  if (restored.length) parts.push(`${restored.length} of ${all} region maps show ${restoredLine}`);
+  const made = rows.filter((r) => !r.restored);
+  const withThumb = made.filter((r) => r.thumb).map((r) => `${r.name}’s`);
+  const noThumb = made.filter((r) => !r.thumb).map((r) => `${r.name}’s`);
   if (withThumb.length) parts.push(`${and(withThumb)} ${withThumb.length === 1 ? 'is repainted for the remake from its thumbnail' : 'are repainted for the remake from their thumbnails'}`);
   if (noThumb.length) parts.push(`${and(noThumb)} ${noThumb.length === 1 ? 'had no thumbnail, so it is painted' : 'had no thumbnail, so they are painted'} for the remake from the streets alone`);
-  return parts.length ? `${lost}; ${parts.join('; ')}.` : `${lost}.`;
+  if (rows.length < all) parts.push('the rest show Tiny Speck’s small thumbnail of the region, enlarged');
+  return parts.length ? `${parts.join('; ')}.`.replace(/^./, (c) => c.toUpperCase()) : 'Each region’s map shows Tiny Speck’s small thumbnail of it, enlarged.';
 }
 
 export const STATUS = Object.freeze({

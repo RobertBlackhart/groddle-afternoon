@@ -243,6 +243,9 @@ describe('Made for Groddle on the restoration page (tools/made-art/to-minn.mjs)'
     assert.match(band, /<section class="wp-block-group band band-alt" id="made">/);
     assert.match(band, /<h2 class="wp-block-heading" id="made-h">Made for Groddle<\/h2>/);
     assert.match(band, /Tiny Speck’s own art/);
+    // Lanes maps15-maps18: every region map is Tiny Speck's 2012 painting restored, so none is "lost".
+    assert.match(band, /where the original survives only under the game’s markings or too small to show well, like the region maps restored from 2012 and the quest book\./);
+    assert.doesNotMatch(band, /nothing usable survived/);
     assert.doesNotMatch(band, /wp:html|—/);
   });
 
