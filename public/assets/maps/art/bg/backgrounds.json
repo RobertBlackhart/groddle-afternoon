@@ -83,10 +83,10 @@
       "x1": "assets/maps/art/bg/naraka.webp",
       "x2": "assets/maps/art/bg/naraka@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 29390,
-      "x1Sha256": "9f2a2786bdc7ea5b8305c2220f497ee032006921eaa8a4e0123fc0d4372bdf3c",
-      "x2Bytes": 88470,
-      "x2Sha256": "095c01e4eb0a21f2e7cb8688c3d46dfe9a2b9a148c8a80cb9a5c6b699b750eac"
+      "x1Bytes": 32648,
+      "x1Sha256": "6e79e88544a5cbab7128f0ff34b783bc7e1b42e0206eb710c458dae68deb7de2",
+      "x2Bytes": 113016,
+      "x2Sha256": "21621ee6df13e047bed53cc39ca75bbf35988c9cc47e5a5bda9794172fc7e9a6"
     },
     "50": {
       "hubName": "Ilmenskie Caverns",
@@ -94,10 +94,10 @@
       "x1": "assets/maps/art/bg/ilmenskiecaverns.webp",
       "x2": "assets/maps/art/bg/ilmenskiecaverns@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 23876,
-      "x1Sha256": "60cc36345dcd609c7b75cdd627559ab47be9f8c06dbfeeca73cae1c667c777ed",
-      "x2Bytes": 91754,
-      "x2Sha256": "1e415be337b7bf03621bfa32145cd991e8d12f811ca016b2f8c93bfa3da535a9"
+      "x1Bytes": 58784,
+      "x1Sha256": "ebc062e8493a386bf892a5f7f14184ed2d0234b7f5f427dc99713842cac13c56",
+      "x2Bytes": 169078,
+      "x2Sha256": "2239923d3f70144603fc360b7007169aa8462fedefc3e27b8ef3aeeed4288520"
     },
     "51": {
       "hubName": "Uralia",

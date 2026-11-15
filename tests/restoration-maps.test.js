@@ -65,7 +65,9 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
         assert.equal(m.before.src, `/${old.shipped.file}`, `${id} beside its 2012 map`);
         assert.equal(m.before.src2, undefined, `${id}: the 2012 map has no 2x`);
         assert.equal(m.before.label, '2012', id);
-        assert.match(m.before.alt, /2012 Encyclopedia map .*roads and names/, id);
+        // Naraka's 2012 map has no roads or names on it (markings2012 'none'); every other one does.
+        if (r.markings2012 === 'none') assert.match(m.before.alt, /^Tiny Speck’s 2012 Encyclopedia map of [^,]+$/, id);
+        else assert.match(m.before.alt, /2012 Encyclopedia map .*roads and names/, id);
         assert.equal(sha256(readFileSync(pub(m.before.src))), old.shipped.sha256, `${id} 2012 map bytes`);
         assert.ok(m.facts.some((f) => f.label === '2012' && /Internet Archive saved it on \d+ \w+ 201[23]$/.test(f.text)), `${id} says when it was saved`);
       } else if (m.before) assert.match(m.before.src, /^\/assets\/maps\/art\/thumbs\/sm_[a-z]+\.jpg$/, `${id} beside its CC0 thumbnail`);
@@ -117,17 +119,30 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
   it('a region with no 2012 map keeps its thumbnail (or nothing) and says so on its card', () => {
     const index = readJson(join(GAME_DIR, 'public/assets/maps/index.json'));
     const fs = { read: (f) => (existsSync(pub(f)) ? readFileSync(pub(f)) : null), exists: (f) => existsSync(pub(f)) };
-    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '100' && id !== '40')) };
+    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '100' && id !== '66')) };
     const data = build(provenance, null, index, fs, only);
     // Vantalu, still painted from its thumbnail (Ix was the example until lane maps4 restored it from 2012).
     const vantalu = data.regions.find((r) => r.id === '100');
     assert.equal(vantalu.before.src, `/${index.hubs['100'].thumbLocal}`);
     assert.match(vantalu.caption, /No 2012 Encyclopedia map of Vantalu survives, so it is shown beside that thumbnail\./);
     assert.ok(!vantalu.facts.some((f) => f.label === '2012'));
-    const naraka = data.regions.find((r) => r.id === '40');
-    assert.equal(naraka.before, null);
-    assert.match(naraka.caption, /No 2012 Encyclopedia map of Naraka survives/);
+    // The Seams, still painted from its street layout (Naraka was the example until lane maps10 restored it from 2012).
+    const seams = data.regions.find((r) => r.id === '66');
+    assert.equal(seams.before, null);
+    assert.match(seams.caption, /No 2012 Encyclopedia map of The Seams survives/);
     assert.deepEqual(wordProblems(data), []);
+  });
+
+  it('a 2012 map drawn with no roads or names (Naraka) is not said to have had markings taken off (lane maps10)', () => {
+    const unmarked = Object.entries(provenance.regions).filter(([, r]) => r.markings2012 === 'none').map(([id]) => id);
+    assert.deepEqual(unmarked, ['40']);
+    const naraka = maps.regions.find((r) => r.id === '40');
+    assert.equal(naraka.state, 'restored');
+    assert.match(naraka.caption, /drew no roads, names or buttons/);
+    assert.doesNotMatch(`${naraka.caption} ${naraka.before.alt}`, /took those markings off|roads and names on it/);
+    const other = maps.regions.find((r) => r.state === 'restored' && r.id !== '40');
+    assert.match(other.caption, /took those markings off/);
+    assert.match(other.before.alt, /roads and names on it/);
   });
 
   it('opens each pair in Wipe', () => {

@@ -134,65 +134,111 @@
         "file": "assets/maps/art/bg/naraka.webp",
         "w": 760,
         "h": 460,
-        "bytes": 29390,
-        "sha256": "9f2a2786bdc7ea5b8305c2220f497ee032006921eaa8a4e0123fc0d4372bdf3c"
+        "bytes": 32648,
+        "sha256": "6e79e88544a5cbab7128f0ff34b783bc7e1b42e0206eb710c458dae68deb7de2"
       },
       "x2": {
         "file": "assets/maps/art/bg/naraka@2x.webp",
         "w": 1520,
         "h": 920,
-        "bytes": 88470,
-        "sha256": "095c01e4eb0a21f2e7cb8688c3d46dfe9a2b9a148c8a80cb9a5c6b699b750eac"
+        "bytes": 113016,
+        "sha256": "21621ee6df13e047bed53cc39ca75bbf35988c9cc47e5a5bda9794172fc7e9a6"
       },
       "licence": "ai-generated",
-      "author": "Grok Bot, for Austin Ginder (who directed and chose it)",
+      "author": "Austin Ginder (directed and chose it)",
+      "madeBy": "Grok Bot, for Austin Ginder, who directed it",
       "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas (t3.chat/canvas)",
       "model": "GPT Image 2.6 Sunburst",
-      "made": "2026-11-13",
+      "made": "2026-11-14",
+      "method": "restored: Tiny Speck's own 2012 painting, as the 2012 Encyclopedia drew it under the game's roads, names, icons and GO buttons, given to the model to take the markings off and sharpen without moving anything (research/map-art/regions-restore). Unlike the paintings made from thumbnails, the 2012 picture is the model's input here.",
+      "markings2012": "none",
       "chosen": {
         "by": "Austin Ginder",
-        "on": "2026-11-13",
-        "of": "1 generation, kept as made; the small carved stone head on the ledge is on Austin's word (2026-11-13); register G569"
+        "on": "2026-11-14",
+        "of": "1 generation, toned to its 2012 picture's colour (Austin: 'matched to 2012', set first on Groddle Meadow and then for every restored region); it replaces the painting made from the thumbnail"
       },
-      "prompt": "Paint ONE image: the background painting for an in-game region map of \"Naraka\", a region in a whimsical 2D browser game. Size 1520 x 920 pixels (landscape, exactly this ratio; if only fixed ratios are offered, use 16:10). This is the painted landscape that sits UNDER the game's map interface. The game draws its own street lines, names, buttons and markers on top later, so the painting must contain none of them.\n\nVIEW AND FEEL\nSeen from high above and a little in front, like looking down into a great cavern from its roof: the flat tops of rock pillars read as rounded shapes, and their sides fall away below them as tall walls. Like a hand-painted miniature diorama, quiet and gentle: soft shadows, a fine even texture over every surface (like felt or fine brush strokes), and only a little scattered detail. Most of the walkable ledge is calm, plain stone, so thin street lines and small labels drawn on top stay easy to read. Storybook and moody, never gory, never grim, never photographic, never neon.\n\nCOLOUR AND TEXTURE\nA warm underworld of reds: ledge tops a dusty rose-red stone with a fine pitted, felt-like texture; pillar sides deep crimson and maroon with soft vertical ribs; the depths glowing orange and amber; shadows a dark wine red, never pure black. A little smoky grey-brown haze at the far left. No blues or greens.\n\nWHAT TO PAINT\nOne deep cavern with a single broad, flat-topped rock pillar in the middle whose top is cut into a path that spirals inward. The spiral must sit where attachment 02 shows it (the light band), because the game's streets (attachment 01) are fixed to it.\n- The spiral ledge: a wide, flat ledge of dusty rose-red stone with a slightly darker raised lip and a soft shadow along its edges. It runs as a rounded triangular spiral: along the top from the upper left to the upper right, down the right side to the lower centre, back up toward the left, then inward in a smaller turn that ends near the middle. Each turn is separated from the next by a narrow drop.\n- The centre: inside the innermost turn, the stone falls away into a deep shaft glowing warm orange and amber from far below. On the far wall of the shaft, just under the top stretch of the ledge, a faint fan of red light.\n- The pillar's sides: below the ledge, tall ribbed walls of deep crimson fall toward the bottom of the picture, with streaks of orange glow rising from below between the ribs.\n- Left and right thirds: a crowd of smaller rock columns of different heights around the big pillar, each with a flat rounded top of the same rose stone; between them deep red shadow and hazy orange glow from the depths. The far left fades into smoky grey-brown haze with dimmer, greyer columns.\n- The top edge: a row of long, dark red stalactites hanging from the cavern roof across the whole top, a few reaching down beside the upper ledge.\n- Small details: a few thin, bare, twiggy dead shrubs on the column tops along the upper left and top; one small carved stone head (a weathered, rounded face of dark grey stone, eyes closed, calm, not scary) resting on the ledge at the lower left of the spiral, small enough that a thin street line and a name over it still read.\n- The bottom edge: more flat-topped rock stumps in the foreground, darker, cut off by the bottom edge.\n- Light: no daylight and no sky. Warm orange-red glow rises from below; the tops of the rocks catch a dull rose light.\n\nSTYLE\nMatch attachment 03: Tiny Speck's own painted rock spires, stalactites, rock platforms and bare shrubs from this region's streets (public domain), shown here tinted red as the region shows them (soft painterly shapes, gentle shading, no hard black outlines), but smaller and simpler, as seen on a map from high above.\n\nDO NOT INCLUDE\nNo text, letters, numbers or labels of any kind. No roads, street markings, painted lines or grids: the spiral ledge is plain stone with nothing drawn on it. No circles, buttons, pins, arrows, icons, stars or \"you are here\" markers. No compass, legend, scale bar, border, frame, title or vignette. No people, faces, skulls or characters. No UI of any kind.\n\nATTACHMENTS\n01  where the game will draw the streets (dark lines), at the same 1520 x 920 scale. This region has no exits. For placement only: do NOT paint these lines.\n02  the same streets widened into a light band: roughly where the flat spiral ledge goes and how wide it is, on a dark field for everything else. For placement only: paint real stone, not a flat band.\n03  Tiny Speck's own painted rocks, spires, platforms and shrubs from this region's streets (public domain), tinted red. The style and palette to match, drawn smaller and simpler.\n\nReturn the single painted landscape image only.\n",
-      "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt rewritten for a region with no thumbnail (VIEW AND FEEL, COLOUR AND TEXTURE, WHAT TO PAINT, ATTACHMENTS; built by research/zone-art/tools/make-lost-map-pack.py naraka). WHAT TO PAINT was written from looking at the 2012 encyclopedia copy of the lost painting (reference only).",
+      "prompt": "This is a restoration job, not an illustration job. The attachment is a 2012 game map: an original hand-painted landscape with game markings drawn on top of it. Give me back the same painting with every game marking removed, and sharper. Do not move or redraw anything else.\n\nRemove completely, and paint in what lies underneath so it matches the painting around it:\n- the pale yellow-white road lines and ribbons that join the places, and their joints;\n- every street name and every word, including \"To: ...\" labels;\n- the small grey sign and house icons along the roads;\n- the round \"GO\" buttons and the small round blue-and-red station badge.\nKeep, because they are part of the painting, not markings: the small wooden boards and signposts that stand at some places (parks, preserves, habitats), huts, fences, bridges, ladders and every other painted object, but only the ones you can see in the attachment: never add a board, fence, hut or ladder where the attachment shows a name, an icon or plain ground. Only the markings listed above go.\n\nWhere a marking covered something, continue the grass, rock, sand, water, trees or cliffs that surround it, in the same style. Do not add anything new where a marking was: no new trees, rocks, buildings or paths.\n\nThe attachment is already the exact size and shape I want back (16:9). The painting fills the middle; the two flat bands at the left and right edges are padding: leave them flat, the same colour, and do not extend the painting into them. Do not stretch, scale, crop, shift or re-frame anything.\n\nEverything that is part of the painting must come back at exactly the same position, size, angle and shape, so that the result laid over the attachment matches line for line: every coastline, cliff edge, river, field edge, tree, bush, rock, cloud, building and shadow. Keep the colours, the lighting and the overall brightness exactly as they are; do not make it more saturated, darker or more contrasty.\n\nMake it crisper than a plain enlargement: remove the JPEG blocks and blur, make the existing edges crisp, and bring out the brushwork and texture already there. If you are unsure whether something is part of the painting or a marking, keep it.\n\nNo text of your own, no lines, no border, no frame, no watermark.",
+      "promptNote": "The prompt as given to the model: research/map-art/regions-restore/prompt.txt (outside git), with input 1 alone (drop/model.txt).",
       "inputs": [
         {
           "n": 1,
-          "file": "01-street-layout-1520x920.png",
-          "sha256": "9ed06098e75c8ec1cbacf54ffe4cdd742d60103a3f3b0fe29bb61b99296c2166",
-          "what": "where the map draws the 7 streets (dark lines), at 2x; Naraka has no exits",
-          "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-40.json, from GSJS inc_data_maps_prod.js)"
-        },
-        {
-          "n": 2,
-          "file": "02-ledge-mask-1520x920.png",
-          "sha256": "3a6351cf286b9d6ea584a1b4679764226b38891884616d56290690ffec2fe0c2",
-          "what": "the same 7 lines widened to 70 px: where the flat spiral ledge goes, drawn from input 1 only (no reference picture traced)",
-          "source": "made from input 1, CC0"
-        },
-        {
-          "n": 3,
-          "file": "03-style-cc0-decos-tinted.png",
-          "sha256": "f5267feab116f2e329da3f69642f82bac2fdcc9b9560c5442828040224e71280",
-          "what": "a sheet of 12 rock, spire, stalactite, platform and bare-shrub decos from Naraka’s streets, greyscaled and mapped to dark red (#1c0707 to #d9806c), as the street files tint them: the style and palette",
-          "source": "Tiny Speck decos, CC0 (the tint is ours)"
+          "file": "34-naraka-2012-2x-on-16x9-1636x920.jpg",
+          "sha256": "0b08939e84eb70849b9aff6ffe6a17799b73eb1801b8efb4699962dba6d1b584",
+          "what": "Tiny Speck's 2012 Encyclopedia map of Naraka (760 x 460: the painting alone, since the Encyclopedia drew no roads, street names, icons or GO buttons on this region), enlarged to 1520 x 920 (Lanczos) and centred on a 1636 x 920 canvas with flat side bands of its edge colour, so the 16:9 canvas does not stretch it",
+          "source": "Tiny Speck: c1.glitch.bz/img/maps_encyclopedia/naraka_124737.jpg (2012), saved from the Wayback Machine (research/wayback/raw/c1-img/maps_encyclopedia, outside git; sha256 538098b532957868a9e0cf94a4049c0c4c09aadd895268c2fb5039861e886295)"
         }
       ],
       "references": [
-        "The 2012 encyclopedia copy of the lost painting (c1.glitch.bz/img/maps_encyclopedia/naraka_124737.jpg, via Wayback): reference only, never given to the model and never in the repo; WHAT TO PAINT was written from looking at it",
-        "A player's 2012 picture of the map window (Glitch Strategy wiki, via Wayback): reference only, never given to the model and never in the repo"
+        "The painting it replaces (made from the thumbnail; its record is under replaces): reference only, used to compare, never given to the model"
       ],
       "source": {
-        "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/naraka-1.png",
-        "dropSha256": "af26e5866f6a84d99181766acd1cd5422edac3c92a913688a65e799f6875b14c",
-        "toning": "magick naraka-1.png master.png (untoned: the drop's dusty reds already sit under the street lines)",
-        "masterSha256": "fe8b465462ab8fd2e6618ce2310f7c61cfc47e4e6af404bf53a2624034ac6b3e",
+        "generated": "2048 x 1152 (16:9, High 2K, opaque, 1 image): research/map-art/drop/regions/34-naraka-restored-raw.png",
+        "dropSha256": "47f29059d827a5ef2625921bccefb3f0451b2006e0dcc1fde605a535f70bb841",
+        "crop": "the side bands cut off (raw x 72.606 to 1975.394), Lanczos to 1520 x 920, shifted -2 px across and 0 px down onto the 2012 picture's lines (worst drift after alignment 4 px at 2x in a 4 x 3 grid of tiles (tiles: 4 1 1 0 1 1 1 4 1 1 4 2)); the painting ended a few raw px inside the cut, so the 0 left and 1 right columns of band colour were filled with the painting's first clean column beside them",
+        "toning": "magick master.png -modulate 100,98,100 -gamma 1.0 toned.png (matched to the 2012 picture: saturation and lightness of its mid pixels, lightness 0.12 to 0.78, so the 2012 roads, text and paper sea do not count; gamma rather than brightness so the paper sea keeps its grain)",
         "encode": {
-          "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 naraka.webp",
-          "x2": "magick master.png -quality 82 -define webp:method=6 naraka@2x.webp"
+          "x1": "magick toned.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 naraka.webp",
+          "x2": "magick toned.png -quality 82 -define webp:method=6 naraka@2x.webp"
         },
-        "pack": "research/zone-art/map-naraka (outside git): pack.md, prompt.txt, attach/, drop/, reference-only/ (never attached or shipped); brief research/zone-art/lost-maps-2026-11-13.md"
+        "pack": "research/map-art/regions-restore (outside git): readme.md, prompt.txt, attach/, order.txt; intake: intake/work/34-naraka (the steps of intake-maps3.sh, run by the lane tool intake-sub.sh, edge columns measured on the cut, intake/tone2.py)"
+      },
+      "differences": "2012 had no markings; the restore only adds detail at 2x. The spiral path round the pit, the stone face on its lower ledge, every dead tree on the ledges, the grey stone between the top trees, the red glow and its rays in the pit, the stalactites, the red columns and the grey pillars at the left sit where 2012 had them (worst tile drift 4 px at 2x in the dark top-left and lower tiles; the rest 0 to 1 px). The sharpening drew a dark bare trunk at the top of the path as a branched dead tree like its neighbours. Returned slightly lighter than 2012 (mean mid lightness 0.245 against 0.221); the toning matched its saturation and, using gamma only, does not darken (gamma 1.0).",
+      "replaces": {
+        "made": "2026-11-13",
+        "x1": {
+          "file": "assets/maps/art/bg/naraka.webp",
+          "w": 760,
+          "h": 460,
+          "bytes": 29390,
+          "sha256": "9f2a2786bdc7ea5b8305c2220f497ee032006921eaa8a4e0123fc0d4372bdf3c"
+        },
+        "x2": {
+          "file": "assets/maps/art/bg/naraka@2x.webp",
+          "w": 1520,
+          "h": 920,
+          "bytes": 88470,
+          "sha256": "095c01e4eb0a21f2e7cb8688c3d46dfe9a2b9a148c8a80cb9a5c6b699b750eac"
+        },
+        "chosen": {
+          "by": "Austin Ginder",
+          "on": "2026-11-13",
+          "of": "1 generation, kept as made; the small carved stone head on the ledge is on Austin's word (2026-11-13); register G569"
+        },
+        "source": {
+          "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/naraka-1.png",
+          "dropSha256": "af26e5866f6a84d99181766acd1cd5422edac3c92a913688a65e799f6875b14c",
+          "toning": "magick naraka-1.png master.png (untoned: the drop's dusty reds already sit under the street lines)",
+          "masterSha256": "fe8b465462ab8fd2e6618ce2310f7c61cfc47e4e6af404bf53a2624034ac6b3e",
+          "encode": {
+            "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 naraka.webp",
+            "x2": "magick master.png -quality 82 -define webp:method=6 naraka@2x.webp"
+          },
+          "pack": "research/zone-art/map-naraka (outside git): pack.md, prompt.txt, attach/, drop/, reference-only/ (never attached or shipped); brief research/zone-art/lost-maps-2026-11-13.md"
+        },
+        "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt rewritten for a region with no thumbnail (VIEW AND FEEL, COLOUR AND TEXTURE, WHAT TO PAINT, ATTACHMENTS; built by research/zone-art/tools/make-lost-map-pack.py naraka). WHAT TO PAINT was written from looking at the 2012 encyclopedia copy of the lost painting (reference only).",
+        "inputs": [
+          {
+            "n": 1,
+            "file": "01-street-layout-1520x920.png",
+            "sha256": "9ed06098e75c8ec1cbacf54ffe4cdd742d60103a3f3b0fe29bb61b99296c2166",
+            "what": "where the map draws the 7 streets (dark lines), at 2x; Naraka has no exits",
+            "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-40.json, from GSJS inc_data_maps_prod.js)"
+          },
+          {
+            "n": 2,
+            "file": "02-ledge-mask-1520x920.png",
+            "sha256": "3a6351cf286b9d6ea584a1b4679764226b38891884616d56290690ffec2fe0c2",
+            "what": "the same 7 lines widened to 70 px: where the flat spiral ledge goes, drawn from input 1 only (no reference picture traced)",
+            "source": "made from input 1, CC0"
+          },
+          {
+            "n": 3,
+            "file": "03-style-cc0-decos-tinted.png",
+            "sha256": "f5267feab116f2e329da3f69642f82bac2fdcc9b9560c5442828040224e71280",
+            "what": "a sheet of 12 rock, spire, stalactite, platform and bare-shrub decos from Naraka’s streets, greyscaled and mapped to dark red (#1c0707 to #d9806c), as the street files tint them: the style and palette",
+            "source": "Tiny Speck decos, CC0 (the tint is ours)"
+          }
+        ]
       }
     },
     "50": {
@@ -201,72 +247,117 @@
         "file": "assets/maps/art/bg/ilmenskiecaverns.webp",
         "w": 760,
         "h": 460,
-        "bytes": 23876,
-        "sha256": "60cc36345dcd609c7b75cdd627559ab47be9f8c06dbfeeca73cae1c667c777ed"
+        "bytes": 58784,
+        "sha256": "ebc062e8493a386bf892a5f7f14184ed2d0234b7f5f427dc99713842cac13c56"
       },
       "x2": {
         "file": "assets/maps/art/bg/ilmenskiecaverns@2x.webp",
         "w": 1520,
         "h": 920,
-        "bytes": 91754,
-        "sha256": "1e415be337b7bf03621bfa32145cd991e8d12f811ca016b2f8c93bfa3da535a9"
+        "bytes": 169078,
+        "sha256": "2239923d3f70144603fc360b7007169aa8462fedefc3e27b8ef3aeeed4288520"
       },
       "licence": "ai-generated",
-      "author": "Grok Bot, for Austin Ginder (who directed and chose it)",
+      "author": "Austin Ginder (directed and chose it)",
+      "madeBy": "Grok Bot, for Austin Ginder, who directed it",
       "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas (t3.chat/canvas)",
       "model": "GPT Image 2.6 Sunburst",
-      "made": "2026-11-13",
+      "made": "2026-11-14",
+      "method": "restored: Tiny Speck's own 2012 painting, as the 2012 Encyclopedia drew it under the game's roads, names, icons and GO buttons, given to the model to take the markings off and sharpen without moving anything (research/map-art/regions-restore). Unlike the paintings made from thumbnails, the 2012 picture is the model's input here.",
       "chosen": {
         "by": "Austin Ginder",
-        "on": "2026-11-13",
-        "of": "2 generations: round 1 (its long diagonal tunnel sat above the streets) and round 2, chosen: the same look with the left descent and the diagonal tunnel moved under the streets (prompt-2.txt with input 4); register G569"
+        "on": "2026-11-15",
+        "of": "4 generations: its first try (research/map-art/drop/regions/22-ilmenskie-caverns-restored-raw.png) and r2, r3, r4; r4, toned to its 2012 picture's colour (Austin: 'matched to 2012'). Why r4: four tries in, Austin shipped r4 with its one wrong stone recorded (2026-11-15); an r5 would replace it if a clean one comes. The first try took two of the spiral shell fossils and two pale stones off; r2 lost the Level 4 East fossil and the stone above Level 3 West; r3 added a fossil beside a stone that should have been it."
       },
-      "prompt": "Paint ONE image: the background painting for an in-game region map of \"Ilmenskie Caverns\", a region in a whimsical 2D browser game. Size 1520 x 920 pixels (landscape, exactly this ratio; if only fixed ratios are offered, use 16:10). This is the painted landscape that sits UNDER the game's map interface. The game draws its own street lines, names, buttons and markers on top later, so the painting must contain none of them.\n\nVIEW AND FEEL\nA side view cut straight through the ground, like a slice of a hillside or an ant farm: open sky above, solid rock below, and tunnels cut through the rock seen from the side. Like a hand-painted miniature diorama, quiet and gentle: soft natural colours, soft shadows, a fine even texture over the rock (like felt or fine brush strokes), and only a little scattered detail. Fewer and smaller features is better than more: the tunnels are calm and plain inside, so thin street lines and small labels drawn on top stay easy to read. Storybook, never grim, never photographic, never neon.\n\nCOLOUR AND TEXTURE\nCool and soft: the rock a muted blue-grey with a fine gravelly, speckled texture, frostier and paler near the surface, a little darker and bluer lower down; the tunnels a deep slate blue, darker than the rock but never black; pale grey-white rime along the tunnel edges; the sky a very pale misty blue-green fading to white.\n\nWHAT TO PAINT\nA cutaway through a hill of blue-grey rock with a winding cave system inside it. The tunnels must run exactly where attachment 02 shows them (the dark bands), because the game's streets (attachment 01) run along the tunnel floors.\n- The sky: the top-left part of the picture, above the rock, is pale misty sky; it narrows to a thin strip along the top toward the right.\n- The surface: the rock's top edge is rough and frosted with a pale grey-white crust. It starts about two fifths of the way down at the left edge, rises gently to the right, steps up near the centre where the main tunnel opens to the surface (just above the middle of the top tunnel, near the upper-centre yellow exit circle in 01), and runs on close to the top edge across the right half. At the top-right corner a narrow vertical shaft opens up through the surface.\n- The tunnels: smooth-walled passages of deep slate blue, about as wide as the dark bands in 02. From the surface opening at the upper centre, one tunnel descends to the left in long steps to a short level stretch, then drops straight down near the left edge; another descends to the right in a long gentle slope and meets a tall vertical shaft near the right edge that climbs to the top. A separate straight tunnel climbs diagonally from the lower left toward the centre, and the bottom of the left drop and the foot of this diagonal tunnel open into one low chamber near the bottom-left corner.\n- Tunnel edges: thin pale ledges of rime along the floors and some ceilings of the tunnels, and a few small pale stones lying in them.\n- The rock between the tunnels: plain and solid, with faint cracks, a few embedded pebbles and softly lit bulges, especially the large rock mass in the centre under the surface opening.\n- Lower right: below the right-hand tunnel, one small dark hollow pocket in the solid rock, like a tiny closed cave, with a few pale old bones lying in it.\n- The bottom third: plain solid rock to the bottom edge, gently textured.\n- Light: soft, cool daylight from the upper left over the surface; the tunnels dim and even inside.\n\nSTYLE\nMatch attachment 03: Tiny Speck's own painted cave walls, stalactites, rock platforms, crystals and pools from this region's streets (public domain), with soft painterly shapes, gentle shading and no hard black outlines, but much smaller and simpler, as seen on a map.\n\nDO NOT INCLUDE\nNo text, letters, numbers or labels of any kind. No roads, street markings, painted lines or grids: the tunnels are plain open rock with nothing drawn in them. No circles, buttons, pins, arrows, icons, stars or \"you are here\" markers. No compass, legend, scale bar, border, frame, title or vignette. No people or characters. No UI of any kind.\n\nATTACHMENTS\n01  where the game will draw the streets (dark lines) and region exits (yellow circles), at the same 1520 x 920 scale. For placement only: do NOT paint these lines or circles.\n02  the same streets widened into dark bands on a grey field: roughly where the open tunnels go (dark) and where solid rock is (grey), and how wide the tunnels are. For placement only: paint real rock and tunnels, not flat bands. The surface and sky are not shown in it; place them as described above.\n03  Tiny Speck's own painted cave walls, stalactites, platforms, crystals and pools from this region's streets (public domain). The style and palette to match, drawn smaller and simpler.\n\nROUND 2 (attachment 04)\nAttachment 04 is our first painting of this map with the game's streets (dark lines, yellow circles) drawn over it. Keep its look exactly: the same colours, light, frost, sky, rock and the bone pocket. Change only where the tunnels run. In 04 the long diagonal tunnel from the lower left toward the centre, and the tunnel that descends from the surface opening to the left, sit too high: the street lines run over solid rock below them. Move those tunnels so every street line in 04 runs along a tunnel floor, as attachment 02's dark bands show, with the tunnel about as wide as the bands. The surface may rise a little where a tunnel needs room under it.\n04  our first painting of this map with the streets drawn over it, for the look and to show where the tunnels must move. Do NOT paint the lines or circles.\n\nReturn the single painted landscape image only.\n",
-      "promptNote": "The round-2 prompt exactly as given to the model (prompt-2.txt: round 1's prompt plus a ROUND 2 paragraph): research/zone-art/tools/prompt-template.txt rewritten for a region with no thumbnail, a side cutaway (VIEW AND FEEL, COLOUR AND TEXTURE, WHAT TO PAINT, ATTACHMENTS; built by research/zone-art/tools/make-lost-map-pack.py ilmenskie-caverns). WHAT TO PAINT was written from looking at the 2012 encyclopedia copy of the lost painting and a player's 2012 picture of it (reference only).",
+      "prompt": "This is a restoration job, not an illustration job. The attachment is a 2012 game map: an original hand-painted landscape with game markings drawn on top of it. Give me back the same painting with every game marking removed, and sharper. Do not move or redraw anything else.\n\nRemove completely, and paint in what lies underneath so it matches the painting around it:\n- the pale yellow-white road lines and ribbons that join the places, and their joints;\n- every street name and every word, including \"To: ...\" labels;\n- the small grey sign and house icons along the roads;\n- the round \"GO\" buttons and the small round blue-and-red station badge.\nKeep, because they are part of the painting, not markings: the small wooden boards and signposts that stand at some places (parks, preserves, habitats), huts, fences, bridges, ladders and every other painted object, but only the ones you can see in the attachment: never add a board, fence, hut or ladder where the attachment shows a name, an icon or plain ground. Only the markings listed above go.\n\nWhere a marking covered something, continue the grass, rock, sand, water, trees or cliffs that surround it, in the same style. Do not add anything new where a marking was: no new trees, rocks, buildings or paths.\n\nThe attachment is already the exact size and shape I want back (16:9). The painting fills the middle; the two flat bands at the left and right edges are padding: leave them flat, the same colour, and do not extend the painting into them. Do not stretch, scale, crop, shift or re-frame anything.\n\nEverything that is part of the painting must come back at exactly the same position, size, angle and shape, so that the result laid over the attachment matches line for line: every coastline, cliff edge, river, field edge, tree, bush, rock, cloud, building and shadow. Keep the colours, the lighting and the overall brightness exactly as they are; do not make it more saturated, darker or more contrasty.\n\nMake it crisper than a plain enlargement: remove the JPEG blocks and blur, make the existing edges crisp, and bring out the brushwork and texture already there. If you are unsure whether something is part of the painting or a marking, keep it.\n\nNo text of your own, no lines, no border, no frame, no watermark.\n\nSame picture again. Keep every small pale stone and both spiral shell fossils in the water exactly where they are in the attachment (one beside 'The Other Drop' on the right, one where 'Level 2 West' ends); they are part of the painting. Remove only the blue road lines, words and GO buttons; do not move or redraw anything else.\n\nSame picture again. Keep all four small spiral shell fossils in the water exactly where they are in the attachment: beside 'The Other Drop' on the right, beside 'Level 2 East', at the end of 'Level 2 West', and the one just above the words 'To: Ilmenskie Deeps' beside 'Level 4 East' (a spiral fossil, not a plain stone). Keep every small pale stone, also the one just above the end of the words 'Level 3 West'. Remove only the blue road lines, words and GO buttons; do not move or redraw anything else.\n\nRemove the new spiral fossil on the ledge just above the words 'To: Ilmenskie Deeps', and turn the plain pale stone just up and left of it into that spiral fossil, in the stone's place and size. Add one small pale stone just above the end of the words 'Level 3 West', like the two stones to its left. Change nothing else.",
+      "promptNote": "The prompt as given to the model: research/map-art/regions-restore/prompt.txt (outside git) with input 1 alone, then, one paragraph each, the asks of regions-restore/redo.md row 22 that led to the try that ships (r2: a fresh chat; r3: an edit of r2 with the 2012 map attached; r4: an edit of r3 with the 2012 map attached; drop/model.txt). An edit starts from the model's own previous try in the drop, never from anything else.",
       "inputs": [
         {
           "n": 1,
-          "file": "01-street-layout-1520x920.png",
-          "sha256": "01b44958dfb67469f10319e53674381dc8759d992980ad6775fda0a543d900ea",
-          "what": "where the map draws the 11 streets (dark lines) and 4 exits (yellow circles), at 2x",
-          "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-50.json, from GSJS inc_data_maps_prod.js)"
-        },
-        {
-          "n": 2,
-          "file": "02-tunnel-mask-1520x920.png",
-          "sha256": "5aab2fcbcfd0a9ba2f0f8fdaf756bb8844a747ff1edd87e68356c4de5aff5e98",
-          "what": "the same 11 lines widened to 56 px, dark on grey: where the tunnels go, drawn from input 1 only (no reference picture traced)",
-          "source": "made from input 1, CC0"
-        },
-        {
-          "n": 3,
-          "file": "03-style-cc0-decos.png",
-          "sha256": "5a39c7e3336cce1590c7d267622d1ce837ecb2d66d2510900bb0f2df537aaf13",
-          "what": "a sheet of 18 cave decos from this region’s streets (walls, ground edges, platforms, stalactites, crystals, a pit, a shaft of light, a lake, a rock, an icicle): the style and palette",
-          "source": "Tiny Speck decos, CC0"
-        },
-        {
-          "n": 4,
-          "file": "04-round1-with-streets-1520x920.png",
-          "sha256": "c0a57a95ca84a8bd8969a082c589d9c8a38349011a1ba96002433876fd14721b",
-          "what": "our round-1 painting of this map with input 1's streets drawn over it: the look to keep and where the tunnels must move",
-          "source": "made for Groddle (round 1, CC0 1.0) with Tiny Speck's CC0 map data drawn on"
+          "file": "22-ilmenskie-caverns-2012-2x-on-16x9-1636x920.jpg",
+          "sha256": "d3dd40d8f727969ca9a1c972d50373878fde004f8a5db03e4ffc60edf755eb78",
+          "what": "Tiny Speck's 2012 Encyclopedia map of Ilmenskie Caverns (760 x 460: the painting with the game's roads, street names, icons, GO buttons and station badge), enlarged to 1520 x 920 (Lanczos) and centred on a 1636 x 920 canvas with flat side bands of its edge colour, so the 16:9 canvas does not stretch it",
+          "source": "Tiny Speck: c1.glitch.bz/img/maps_encyclopedia/ilmenskie_caverns_77122.jpg (2012), saved from the Wayback Machine (research/wayback/raw/c1-img/maps_encyclopedia, outside git; sha256 c1f7574f2f5d09272c3a62c47d885cc06e6fdf78c0d3d3a6d2456e3ac7ff3dd8)"
         }
       ],
       "references": [
-        "The 2012 encyclopedia copy of the lost painting (c1.glitch.bz/img/maps_encyclopedia/ilmenskie_caverns_77122.jpg, via Wayback): reference only, never given to the model and never in the repo; WHAT TO PAINT was written from looking at it",
-        "A player's 2012 picture of the map window (Glitch Strategy wiki, via Wayback): reference only, never given to the model and never in the repo"
+        "The painting it replaces (made from the thumbnail; its record is under replaces): reference only, used to compare, never given to the model"
       ],
       "source": {
-        "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/ilmenskie-caverns-2.png (round 2; round 1 was drop/ilmenskie-caverns-1.png)",
-        "dropSha256": "ac5e240447e21c76a8a6299d0b76a64fe976e4616722cfb8279989ae52d2c067",
-        "toning": "magick ilmenskie-caverns-2.png master.png (untoned: the drop's blue-grey rock already sits under the street lines)",
-        "masterSha256": "107f05d37463bac512447522f9685f9323e5e0ae417c1a49441505b46e7d0bd7",
+        "generated": "2048 x 1152 (16:9, High 2K, opaque, 1 image): research/map-art/drop/regions/22-ilmenskie-caverns-restored-raw-r4.png",
+        "dropSha256": "7b03d93dfebf7be1c94b784a2c1b6859f3d5117a3faefbba4410404c7ba98955",
+        "crop": "the side bands cut off (raw x 72.606 to 1975.394), Lanczos to 1520 x 920, shifted 0 px across and 0 px down onto the 2012 picture's lines (worst drift after alignment 4 px at 2x in a 4 x 3 grid of tiles (tiles: 4 4 2 1 2 1 1 2 4 1 1 1)); the painting ended a few raw px inside the cut, so the 1 left and 0 right columns of band colour were filled with the painting's first clean column beside them",
+        "toning": "magick master.png -modulate 100,102,100 -gamma 1.0 toned.png (matched to the 2012 picture: saturation and lightness of its mid pixels, lightness 0.12 to 0.78, so the 2012 roads, text and paper sea do not count; gamma rather than brightness so the paper sea keeps its grain)",
         "encode": {
-          "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 ilmenskiecaverns.webp",
-          "x2": "magick master.png -quality 82 -define webp:method=6 ilmenskiecaverns@2x.webp"
+          "x1": "magick toned.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 ilmenskiecaverns.webp",
+          "x2": "magick toned.png -quality 82 -define webp:method=6 ilmenskiecaverns@2x.webp"
         },
-        "pack": "research/zone-art/map-ilmenskie-caverns (outside git): pack.md, prompt.txt, attach/, drop/, reference-only/ (never attached or shipped); brief research/zone-art/lost-maps-2026-11-13.md"
+        "pack": "research/map-art/regions-restore (outside git): readme.md, prompt.txt, redo.md, attach/, order.txt; intake: intake/work/22-ilmenskie-caverns/r4 (the steps of intake-maps3.sh, run by the lane tool intake-sub.sh, edge columns measured on the cut, intake/tone2.py)"
+      },
+      "differences": "The flooded cave river with its rock banks and ledges, the cave with the bones, the snow above and the small pale stones in the water sit where 2012 had them (worst tile drift 4 px at 2x). Three of the four spiral shell fossils are where 2012 has them: beside The Other Drop, beside Level 2 East and at the end of Level 2 West. The fourth is in the wrong stone: the plain pale stone just below the end of Level 3 East came back as a spiral fossil, while the stone in 2012's fossil place, just below Level 4 East and above the end of To: Ilmenskie Deeps, is still a plain stone. The small pale stone above the end of Level 3 West sits about 13 px higher than 2012's (at 1x). Shipped after four tries (Austin 2026-11-15); a clean r5 would replace it.",
+      "replaces": {
+        "made": "2026-11-13",
+        "x1": {
+          "file": "assets/maps/art/bg/ilmenskiecaverns.webp",
+          "w": 760,
+          "h": 460,
+          "bytes": 23876,
+          "sha256": "60cc36345dcd609c7b75cdd627559ab47be9f8c06dbfeeca73cae1c667c777ed"
+        },
+        "x2": {
+          "file": "assets/maps/art/bg/ilmenskiecaverns@2x.webp",
+          "w": 1520,
+          "h": 920,
+          "bytes": 91754,
+          "sha256": "1e415be337b7bf03621bfa32145cd991e8d12f811ca016b2f8c93bfa3da535a9"
+        },
+        "chosen": {
+          "by": "Austin Ginder",
+          "on": "2026-11-13",
+          "of": "2 generations: round 1 (its long diagonal tunnel sat above the streets) and round 2, chosen: the same look with the left descent and the diagonal tunnel moved under the streets (prompt-2.txt with input 4); register G569"
+        },
+        "source": {
+          "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/ilmenskie-caverns-2.png (round 2; round 1 was drop/ilmenskie-caverns-1.png)",
+          "dropSha256": "ac5e240447e21c76a8a6299d0b76a64fe976e4616722cfb8279989ae52d2c067",
+          "toning": "magick ilmenskie-caverns-2.png master.png (untoned: the drop's blue-grey rock already sits under the street lines)",
+          "masterSha256": "107f05d37463bac512447522f9685f9323e5e0ae417c1a49441505b46e7d0bd7",
+          "encode": {
+            "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 ilmenskiecaverns.webp",
+            "x2": "magick master.png -quality 82 -define webp:method=6 ilmenskiecaverns@2x.webp"
+          },
+          "pack": "research/zone-art/map-ilmenskie-caverns (outside git): pack.md, prompt.txt, attach/, drop/, reference-only/ (never attached or shipped); brief research/zone-art/lost-maps-2026-11-13.md"
+        },
+        "promptNote": "The round-2 prompt exactly as given to the model (prompt-2.txt: round 1's prompt plus a ROUND 2 paragraph): research/zone-art/tools/prompt-template.txt rewritten for a region with no thumbnail, a side cutaway (VIEW AND FEEL, COLOUR AND TEXTURE, WHAT TO PAINT, ATTACHMENTS; built by research/zone-art/tools/make-lost-map-pack.py ilmenskie-caverns). WHAT TO PAINT was written from looking at the 2012 encyclopedia copy of the lost painting and a player's 2012 picture of it (reference only).",
+        "inputs": [
+          {
+            "n": 1,
+            "file": "01-street-layout-1520x920.png",
+            "sha256": "01b44958dfb67469f10319e53674381dc8759d992980ad6775fda0a543d900ea",
+            "what": "where the map draws the 11 streets (dark lines) and 4 exits (yellow circles), at 2x",
+            "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-50.json, from GSJS inc_data_maps_prod.js)"
+          },
+          {
+            "n": 2,
+            "file": "02-tunnel-mask-1520x920.png",
+            "sha256": "5aab2fcbcfd0a9ba2f0f8fdaf756bb8844a747ff1edd87e68356c4de5aff5e98",
+            "what": "the same 11 lines widened to 56 px, dark on grey: where the tunnels go, drawn from input 1 only (no reference picture traced)",
+            "source": "made from input 1, CC0"
+          },
+          {
+            "n": 3,
+            "file": "03-style-cc0-decos.png",
+            "sha256": "5a39c7e3336cce1590c7d267622d1ce837ecb2d66d2510900bb0f2df537aaf13",
+            "what": "a sheet of 18 cave decos from this region’s streets (walls, ground edges, platforms, stalactites, crystals, a pit, a shaft of light, a lake, a rock, an icicle): the style and palette",
+            "source": "Tiny Speck decos, CC0"
+          },
+          {
+            "n": 4,
+            "file": "04-round1-with-streets-1520x920.png",
+            "sha256": "c0a57a95ca84a8bd8969a082c589d9c8a38349011a1ba96002433876fd14721b",
+            "what": "our round-1 painting of this map with input 1's streets drawn over it: the look to keep and where the tunnels must move",
+            "source": "made for Groddle (round 1, CC0 1.0) with Tiny Speck's CC0 map data drawn on"
+          }
+        ]
       }
     },
     "51": {

@@ -125,11 +125,13 @@ export function build(maps, world, index, fs, encyclopedia = { regions: {} }) {
     need(r.x2.file, r.x2.sha256, `${name} painting at 2x`);
     // Before: Tiny Speck's own 2012 map when the list has one, else the thumbnail, else nothing.
     const old = encyclopedia.regions?.[id] || null;
+    // A 2012 map the Encyclopedia drew without roads or names (Naraka): its record says markings2012 'none'.
+    const unmarked = r.markings2012 === 'none';
     let before = null;
     if (old) {
       before = pic(old.shipped.file, old.shipped.sha256, `${name} 2012 map`, {
         label: '2012',
-        alt: `Tiny Speck’s 2012 Encyclopedia map of ${name}, with the game’s roads and names on it`,
+        alt: `Tiny Speck’s 2012 Encyclopedia map of ${name}${unmarked ? '' : ', with the game’s roads and names on it'}`,
       });
     } else if (thumbFile) {
       before = pic(thumbFile, null, `${name} thumbnail`, { label: 'Thumbnail', alt: `Tiny Speck’s 150 x 91 thumbnail of ${name}, all that survived` });
@@ -147,7 +149,9 @@ export function build(maps, world, index, fs, encyclopedia = { regions: {} }) {
       anchor: `map-${slug(name)}`,
       state,
       caption: restored
-        ? `Tiny Speck’s own painting of ${name}, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.`
+        ? unmarked
+          ? `Tiny Speck’s own painting of ${name}, restored from its 2012 Encyclopedia map, which drew no roads, names or buttons on this region. An image model sharpened it without moving anything, then it was toned back to the 2012 colour.`
+          : `Tiny Speck’s own painting of ${name}, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.`
         : state === 'painted'
           ? old
             ? `Tiny Speck’s painting of ${name} survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.`

@@ -17,9 +17,9 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 29,
+    "restored": 31,
     "painted": 19,
-    "layout": 3
+    "layout": 1
   },
   "world": {
     "made": "13 November 2026",
@@ -991,6 +991,45 @@
       "place": "/encyclopedia/places/haraiva/"
     },
     {
+      "id": "50",
+      "name": "Ilmenskie Caverns",
+      "anchor": "map-ilmenskie-caverns",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Ilmenskie Caverns, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The flooded cave river with its rock banks and ledges, the cave with the bones, the snow above and the small pale stones in the water sit where 2012 had them (worst tile drift 4 px at 2x). Three of the four spiral shell fossils are where 2012 has them: beside The Other Drop, beside Level 2 East and at the end of Level 2 West. The fourth is in the wrong stone: the plain pale stone just below the end of Level 3 East came back as a spiral fossil, while the stone in 2012's fossil place, just below Level 4 East and above the end of To: Ilmenskie Deeps, is still a plain stone. The small pale stone above the end of Level 3 West sits about 13 px higher than 2012's (at 1x). Shipped after four tries (Austin 2026-11-15); a clean r5 would replace it.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 13 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 18 September 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/ilmenskiecaverns.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ilmenskie Caverns, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/ilmenskiecaverns.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Ilmenskie Caverns restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/ilmenskiecaverns@2x.webp"
+      },
+      "card": null,
+      "place": "/encyclopedia/places/ilmenskie-caverns/"
+    },
+    {
       "id": "78",
       "name": "Ilmenskie Deeps",
       "anchor": "map-ilmenskie-deeps",
@@ -1336,6 +1375,45 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/massadoe/"
+    },
+    {
+      "id": "40",
+      "name": "Naraka",
+      "anchor": "map-naraka",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Naraka, restored from its 2012 Encyclopedia map, which drew no roads, names or buttons on this region. An image model sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "2012 had no markings; the restore only adds detail at 2x. The spiral path round the pit, the stone face on its lower ledge, every dead tree on the ledges, the grey stone between the top trees, the red glow and its rays in the pit, the stalactites, the red columns and the grey pillars at the left sit where 2012 had them (worst tile drift 4 px at 2x in the dark top-left and lower tiles; the rest 0 to 1 px). The sharpening drew a dark bare trunk at the top of the path as a branched dead tree like its neighbours. Returned slightly lighter than 2012 (mean mid lightness 0.245 against 0.221); the toning matched its saturation and, using gamma only, does not darken (gamma 1.0).",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 13 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/naraka.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Naraka"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/naraka.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Naraka restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/naraka@2x.webp"
+      },
+      "card": null,
+      "place": "/encyclopedia/places/naraka/"
     },
     {
       "id": "71",
@@ -2096,76 +2174,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/zhambu/"
-    },
-    {
-      "id": "50",
-      "name": "Ilmenskie Caverns",
-      "anchor": "map-ilmenskie-caverns",
-      "state": "layout",
-      "caption": "Ilmenskie Caverns had no thumbnail on the World map, so the painting in the game now was made from its street layout alone, in the style of the decos Tiny Speck painted its streets with. The 2012 Encyclopedia map shows Tiny Speck’s own painting, under the game’s roads and names.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "13 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 18 September 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/ilmenskiecaverns.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ilmenskie Caverns, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/ilmenskiecaverns.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Ilmenskie Caverns painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/ilmenskiecaverns@2x.webp"
-      },
-      "card": null,
-      "place": "/encyclopedia/places/ilmenskie-caverns/"
-    },
-    {
-      "id": "40",
-      "name": "Naraka",
-      "anchor": "map-naraka",
-      "state": "layout",
-      "caption": "Naraka had no thumbnail on the World map, so the painting in the game now was made from its street layout alone, in the style of the decos Tiny Speck painted its streets with. The 2012 Encyclopedia map shows Tiny Speck’s own painting, under the game’s roads and names.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "13 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/naraka.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Naraka, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/naraka.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Naraka painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/naraka@2x.webp"
-      },
-      "card": null,
-      "place": "/encyclopedia/places/naraka/"
     },
     {
       "id": "66",
