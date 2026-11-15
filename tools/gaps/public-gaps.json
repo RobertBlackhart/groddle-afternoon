@@ -1383,6 +1383,109 @@
       ]
     },
     {
+      "id": "G777",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Visitors could not plant, water or pick the gardens on another player's home street, which Glitch left open to everyone.",
+      "report": 354,
+      "commits": [
+        "game:9028830e21",
+        "site:9dc5c15"
+      ]
+    },
+    {
+      "id": "G778",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Home rocks wore out after 40 swings instead of 40 mine-outs, and a fresh restoration could refuse items at first.",
+      "report": 360,
+      "commits": [
+        "game:3d7e8473b4",
+        "site:225d0f6"
+      ]
+    },
+    {
+      "id": "G779",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "The Greedy Street Spirit showed a row of seven buttons for each act instead of one.",
+      "report": 359,
+      "commits": [
+        "game:e00a020192"
+      ]
+    },
+    {
+      "id": "G780",
+      "area": "Navigation",
+      "show": "fixing",
+      "text": "Finding the nearest shrine could lead to a street still under construction.",
+      "report": 355,
+      "commits": [
+        "game:9701df4b99"
+      ]
+    },
+    {
+      "id": "G781",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "The delivery frog could hide behind a vendor, and its yoga line came in a card far too big for it.",
+      "report": 356,
+      "commits": [
+        "game:c8f31e1748"
+      ]
+    },
+    {
+      "id": "G782",
+      "area": "Panels",
+      "show": "fixing",
+      "text": "The Achievements Category list jumped back while you scrolled it.",
+      "report": 358,
+      "commits": [
+        "game:53b382142d"
+      ]
+    },
+    {
+      "id": "G783",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "An online Heli Kitty could fly under the grass on Marylpole Mount.",
+      "report": 363,
+      "commits": [
+        "game:6855620345"
+      ]
+    },
+    {
+      "id": "G784",
+      "area": "Days",
+      "show": "fixing",
+      "text": "The \"A new day\" line arrived before the New Day screen and its fanfare.",
+      "report": 357,
+      "commits": [
+        "game:f427668873"
+      ]
+    },
+    {
+      "id": "G786",
+      "area": "Feats",
+      "show": "fixing",
+      "text": "A Feat donation counted only one stack of what you gave.",
+      "report": 361,
+      "commits": [
+        "game:a3e32c758c",
+        "server:df2679c",
+        "site:c4d9139"
+      ]
+    },
+    {
+      "id": "G787",
+      "area": "Controls",
+      "show": "fixing",
+      "text": "Number keys did not do emotes as they did in Glitch.",
+      "commits": [
+        "game:aae6557e25"
+      ]
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."

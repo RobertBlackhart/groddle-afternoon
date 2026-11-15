@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.41.0",
+  "release": "v0.41.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 14,
     "unreleased": 0,
-    "fixed": 140,
+    "fixed": 150,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -115,6 +115,13 @@
           "report": 353,
           "state": "fixed",
           "version": "v0.41.0"
+        },
+        {
+          "id": "G779",
+          "text": "The Greedy Street Spirit showed a row of seven buttons for each act instead of one.",
+          "report": 359,
+          "state": "fixed",
+          "version": "v0.41.1"
         }
       ]
     },
@@ -476,6 +483,20 @@
           "version": "v0.39.0"
         },
         {
+          "id": "G777",
+          "text": "Visitors could not plant, water or pick the gardens on another player's home street, which Glitch left open to everyone.",
+          "report": 354,
+          "state": "fixed",
+          "version": "v0.41.1"
+        },
+        {
+          "id": "G778",
+          "text": "Home rocks wore out after 40 swings instead of 40 mine-outs, and a fresh restoration could refuse items at first.",
+          "report": 360,
+          "state": "fixed",
+          "version": "v0.41.1"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -697,6 +718,20 @@
           "report": 331,
           "state": "fixed",
           "version": "v0.40.0"
+        },
+        {
+          "id": "G781",
+          "text": "The delivery frog could hide behind a vendor, and its yoga line came in a card far too big for it.",
+          "report": 356,
+          "state": "fixed",
+          "version": "v0.41.1"
+        },
+        {
+          "id": "G783",
+          "text": "An online Heli Kitty could fly under the grass on Marylpole Mount.",
+          "report": 363,
+          "state": "fixed",
+          "version": "v0.41.1"
         }
       ]
     },
@@ -1222,6 +1257,65 @@
           "report": 338,
           "state": "fixed",
           "version": "v0.41.0"
+        }
+      ]
+    },
+    {
+      "name": "Navigation",
+      "items": [
+        {
+          "id": "G780",
+          "text": "Finding the nearest shrine could lead to a street still under construction.",
+          "report": 355,
+          "state": "fixed",
+          "version": "v0.41.1"
+        }
+      ]
+    },
+    {
+      "name": "Panels",
+      "items": [
+        {
+          "id": "G782",
+          "text": "The Achievements Category list jumped back while you scrolled it.",
+          "report": 358,
+          "state": "fixed",
+          "version": "v0.41.1"
+        }
+      ]
+    },
+    {
+      "name": "Days",
+      "items": [
+        {
+          "id": "G784",
+          "text": "The \"A new day\" line arrived before the New Day screen and its fanfare.",
+          "report": 357,
+          "state": "fixed",
+          "version": "v0.41.1"
+        }
+      ]
+    },
+    {
+      "name": "Feats",
+      "items": [
+        {
+          "id": "G786",
+          "text": "A Feat donation counted only one stack of what you gave.",
+          "report": 361,
+          "state": "fixed",
+          "version": "v0.41.1"
+        }
+      ]
+    },
+    {
+      "name": "Controls",
+      "items": [
+        {
+          "id": "G787",
+          "text": "Number keys did not do emotes as they did in Glitch.",
+          "state": "fixed",
+          "version": "v0.41.1"
         }
       ]
     }
