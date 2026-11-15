@@ -198,7 +198,7 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
     const tomorrow = write(counts({}, 500), waiting, save({ currants: 500 + reward, level: 10, xp: XP_FOR_LEVEL[8] }));
     assert.deepEqual(tomorrow.reconciled.clamped, none);
     assert.equal(tomorrow.after.currants, 500 + reward);
-    assert.deepEqual(tomorrow.rows, [['lvlwait', '10', 0], ['lvlday', 'level', 1], ['progday', 'free', 1]]);
+    assert.deepEqual(tomorrow.rows, [['lvlwait', '10', 0], ['lvlday', 'level', 1], ['progday', 'currants', reward]], 'a level that waited goes through the room');
     const paid = { ...base, level: { level: 10 }, lvlwait: { 10: 0 }, lvlday: { level: 1 } };
     assert.deepEqual(write(counts({}, 500 + reward), paid, save({ currants: 500 + reward, level: 10, xp: XP_FOR_LEVEL[8] })).credits.goods, none, 'credited once');
   });
@@ -350,14 +350,22 @@ describe('progression credits: a day\'s room, levels in order, quest prerequisit
     assert.deepEqual(q.held, counts({}, r45 - PROGRESSION_DAILY + 10_000));
   });
 
-  it('a jump from level 25 to 60 is paid the final level only, and never past the xp', () => {
-    const credited = { ...base, level: { level: 25 } };
-    const w = write(ledger, credited, save({ currants: 500 + currantRewardForLevel(60), level: 60, xp: XP_FOR_LEVEL[58] }));
-    assert.equal(w.credits.goods.currants, currantRewardForLevel(60));
-    assert.deepEqual(w.reconciled.clamped, none);
-    const short = write(ledger, credited, save({ currants: 500 + currantRewardForLevel(60), level: 60, xp: XP_FOR_LEVEL[57] }));
+  it('a forged jump from level 21 to 60 pays at most the day\'s room, the rest waiting; an honest 39 to 40 is paid at once', () => {
+    const r60 = currantRewardForLevel(60);
+    const credited = { ...base, level: { level: 21 } };
+    const w = write(ledger, credited, save({ currants: 500 + r60, level: 60, xp: XP_FOR_LEVEL[58] }));
+    assert.equal(w.credits.goods.currants, PROGRESSION_DAILY, 'a jump of two or more levels is not the day\'s free level-up');
+    assert.deepEqual(w.reconciled.clamped, none, 'what waits stays in the pack, out of trades');
+    assert.deepEqual(w.held, counts({}, r60 - PROGRESSION_DAILY));
+    assert.deepEqual(w.rows, [['level', 'level', 60], ['progwait', 'level:60', r60 - PROGRESSION_DAILY], ['lvlday', 'level', 1], ['progday', 'currants', PROGRESSION_DAILY]]);
+    // The free level-up is still there for a single step that day.
+    const honest = write(ledger, { ...base, level: { level: 39 } }, save({ currants: 500 + 97_570, level: 40, xp: XP_FOR_LEVEL[38] }));
+    assert.equal(honest.credits.goods.currants, 97_570);
+    assert.deepEqual(honest.held, none);
+    // Never past the xp.
+    const short = write(ledger, credited, save({ currants: 500 + r60, level: 60, xp: XP_FOR_LEVEL[57] }));
     assert.equal(short.credits.goods.currants, 0);
-    assert.equal(short.reconciled.clamped.currants, currantRewardForLevel(60));
+    assert.equal(short.reconciled.clamped.currants, r60);
   });
 
   it('pays a quest only when the save shows its prerequisites done (or the skill that stands in for one)', () => {
