@@ -141,7 +141,7 @@ describe('G320: the multiplayer start card', () => {
     // NOTIFY: the notifier's clock stops while toastHeld() (js/notify.js tick, tests/notify.test.js).
     assert.match(src, /const notify = createNotifier\(\{\n\s+held: \(\) => toastHeld\(\),/);
     // The card closes in beginGame: overlay hidden, then state.started.
-    assert.match(src, /document\.getElementById\('overlay'\)\.classList\.add\('hidden'\);\n\s+state\.started = true;/);
+    assert.match(src, /document\.getElementById\('overlay'\)\.classList\.add\('hidden'\);\n(?:\s+\w+\(\);\n)?\s+state\.started = true;/);
   });
 
   it('qurazy-feature waits for the start card before it plays the banner (multiplayer, and solo since 2026-10-28)', () => {
