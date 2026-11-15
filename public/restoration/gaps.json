@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.40.0",
+  "release": "v0.40.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 15,
     "unreleased": 0,
-    "fixed": 125,
+    "fixed": 129,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -101,6 +101,13 @@
           "report": 329,
           "state": "fixed",
           "version": "v0.40.0"
+        },
+        {
+          "id": "G762",
+          "text": "In Le Misérable II you could walk through the crawl-space doors before being shrunk.",
+          "report": 340,
+          "state": "fixed",
+          "version": "v0.40.1"
         }
       ]
     },
@@ -559,6 +566,13 @@
           "report": 302,
           "state": "fixed",
           "version": "v0.37.1"
+        },
+        {
+          "id": "G761",
+          "text": "While a street rested after finishing a project, its signpost still sent you to the Street Spirit, which had nothing to give yet.",
+          "report": 339,
+          "state": "fixed",
+          "version": "v0.40.1"
         }
       ]
     },
@@ -667,7 +681,7 @@
           "text": "The once-every-42-game-days Piggy capture limit applied in your own house and yards, where Glitch had no limit.",
           "report": 336,
           "state": "fixed",
-          "version": "v0.40.0"
+          "version": "v0.40.1"
         },
         {
           "id": "G755",
@@ -923,6 +937,20 @@
           "report": 327,
           "state": "fixed",
           "version": "v0.40.0"
+        },
+        {
+          "id": "G763",
+          "text": "The Act chooser showed blank tiles for things in your house.",
+          "report": 341,
+          "state": "fixed",
+          "version": "v0.40.1"
+        },
+        {
+          "id": "G764",
+          "text": "On a phone held sideways, Social covered Jump, the menu and the report window were cramped, and the keyboard hid what you typed.",
+          "report": 343,
+          "state": "fixed",
+          "version": "v0.40.1"
         }
       ]
     },

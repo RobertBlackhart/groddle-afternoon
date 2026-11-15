@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2163,
+  "commits": 2165,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Massadoe's map is Tiny Speck's 2012 painting, restored"
+   },
    {
     "date": "2026-11-14",
     "kind": "fix",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "A game page left open across a release no longer saves over the newer version's save"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A saved game the game cannot read, or one a newer version saved, is kept and never saved over"
    }
   ]
  },

@@ -1189,7 +1189,8 @@
       "text": "The once-every-42-game-days Piggy capture limit applied in your own house and yards, where Glitch had no limit.",
       "report": 336,
       "commits": [
-        "game:18782df1e3"
+        "game:18782df1e3",
+        "game:8ef1fbd62d"
       ]
     },
     {
@@ -1237,6 +1238,46 @@
       "area": "Streets",
       "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
       "report": 337
+    },
+    {
+      "id": "G761",
+      "area": "Street projects",
+      "show": "fixing",
+      "text": "While a street rested after finishing a project, its signpost still sent you to the Street Spirit, which had nothing to give yet.",
+      "report": 339,
+      "commits": [
+        "game:4eb9ca76b5"
+      ]
+    },
+    {
+      "id": "G762",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "In Le Misérable II you could walk through the crawl-space doors before being shrunk.",
+      "report": 340,
+      "commits": [
+        "game:181ca7d734"
+      ]
+    },
+    {
+      "id": "G763",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The Act chooser showed blank tiles for things in your house.",
+      "report": 341,
+      "commits": [
+        "game:0fc0b7c16d"
+      ]
+    },
+    {
+      "id": "G764",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone held sideways, Social covered Jump, the menu and the report window were cramped, and the keyboard hid what you typed.",
+      "report": 343,
+      "commits": [
+        "game:e370595011"
+      ]
     },
     {
       "id": "G665",
