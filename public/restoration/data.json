@@ -2792,9 +2792,34 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2269,
+  "commits": 2276,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Phones send a failed picture upload to the GPU again instead of drawing a black box, and a street's decorations come back after the graphics context does"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Password managers' fill lists show on the /play/online/ sign-in (Proton Pass in desktop Chrome)"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Ladders drawn from loose pieces have all their rungs: Peatland Moors and 20 other streets get their missing steps"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "A jump beside a ladder is a jump: Up gets on a ladder only on a fresh press, not in mid-air or from its top deck"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Chats tab no longer shows a new-message badge for a group's \"You are the only person here.\""
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2889,31 +2914,6 @@
     "date": "2026-11-15",
     "kind": "new",
     "text": "A report or a reply carries up to four pictures of any kind: drop, paste, pick or take them, see them as thumbnails first"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The upgrade reveal sits above notices, so a fresh toast never covers its words"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Buying an upgrade card shows Glitch's full reveal over the play area"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The Rook's HEALTH line sits above its stun stars, and the badge stays clear of the street minimap"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "Friends can help build a Tower floor once its owner starts it at the Workbench"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "A reply on your report can carry a picture, and Shift+R or Take a picture catches a bug before it goes"
    }
   ]
  },
