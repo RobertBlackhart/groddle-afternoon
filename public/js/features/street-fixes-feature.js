@@ -5,7 +5,7 @@
  * QA: ?autostart=1&questoffer=off&streetdemo=GTJ102GGGJK1VDO&streetx=868&streety=643 (Harbinger
  * Heath's leftmost ladder, the spot of report #161). Canvas data: streetFixes (decos added here).
  */
-import { applyStreetFixes } from '../street-fixes.js?v=536481c5';
+import { applyStreetFixes } from '../street-fixes.js?v=ec61843c';
 
 export const STREET_FIXES_FEATURE_ID = 'street-fixes';
 

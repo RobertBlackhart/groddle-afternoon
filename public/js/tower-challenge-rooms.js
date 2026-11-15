@@ -43,7 +43,7 @@
  * ladder, plaque, lantern and wall helpers are exported for js/tower-mid-rooms.js.
  */
 
-import { BRIDGE_LINE, WALKWAY_LINE, decoPoint, hangingSign, stepsPiece, TOWER_ROOMS, towerRoomIndexEntry, towerRoomStreet } from './tower-rooms.js?v=845686ac';
+import { BRIDGE_LINE, WALKWAY_LINE, decoPoint, hangingSign, stepsPiece, TOWER_ROOMS, towerRoomIndexEntry, towerRoomStreet, vineTiles } from './tower-rooms.js?v=4f1f6af7';
 import { TOWER_ROOM_4_FILES } from './tower-room-4-art.js?v=6a934af6';
 import { TOWER_ROOM_16_FILES } from './tower-room-16-art.js?v=eaafb5f7';
 
@@ -159,7 +159,20 @@ export function ladder(c, id, x, bottom, top, why) {
   for (let i = 0; i < segs; i += 1) {
     c.decos.push({ sprite: 'ladder_interior_3steps', x, y: bottom + 11 - i * 198, w: 72, h: 199, z: 10 + i, r: 0, layer: 'mg' });
   }
-  c.decos.push({ sprite: 'ladder_tile_cap_1_interior', x, y: top + 34, w: 97, h: 50, z: 10 + segs, r: 0, layer: 'mg' });
+  // #381 (G826): whole 3-step pieces seldom reach the cap; the stretch between gets the corridors' own
+  // centre piece, as many as fit, each squeezed to fill it exactly (as tools/ladder-gaps.mjs mends a
+  // street's loose pieces), so the ladder has no stretch without rungs.
+  const capBottom = top + 34;
+  const piecesTop = bottom + 11 - segs * 198 - 1;
+  const gap = piecesTop - capBottom;
+  if (gap > 1.5) {
+    const count = Math.max(1, Math.round(gap / 50));
+    const each = gap / count;
+    for (let i = 0; i < count; i += 1) {
+      c.decos.push({ sprite: 'ladder_tile_center_01_interior', x, y: Math.round((piecesTop - i * each) * 10) / 10, w: 97, h: Math.round(each * 10) / 10, z: 9 + segs, r: 0, layer: 'mg' });
+    }
+  }
+  c.decos.push({ sprite: 'ladder_tile_cap_1_interior', x, y: capBottom, w: 97, h: 50, z: 10 + segs, r: 0, layer: 'mg' });
   return { id: `ladder_${id}`, x, y: bottom, w: LADDER_W, h, why };
 }
 
@@ -434,8 +447,8 @@ function buildRoom8() {
   const vineTop = -630;
   const ladders = [{ id: 'ladder_r8_vine', x: vineX, y: vineBottom, w: LADDER_W, h: vineBottom - vineTop, why: ladderWhy }];
   // Tiles up to the ledge's underside; the leafy cap tucks under its lip (the ledge art hides the rest).
-  const tiles = Math.floor((vineBottom - vineTop - 100) / 120);
-  for (let i = 0; i < tiles; i += 1) c.decos.push(mg('firebog_ladder_tile_center_01_vine', vineX, vineBottom - i * 120, 44, 122, 4));
+  // #381 (G826): the tiles reach the cap (tower-rooms.js vineTiles), no bare stretch of wall between.
+  for (const t of vineTiles(vineBottom, vineTop + 122)) c.decos.push({ ...mg('firebog_ladder_tile_center_01_vine', vineX, 0, 44, 0, 4), y: t.y, h: t.h });
   c.decos.push(mg('firebog_ladder_tile_cap_1_vine', vineX, vineTop + 122, 44, 122, 4));
 
   // The key: "Contains a Teal-Red Hexagon Key" (W rooms table; W Key: once per instance). The Snap has it on the deck.

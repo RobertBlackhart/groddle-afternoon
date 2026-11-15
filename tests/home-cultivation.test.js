@@ -23,8 +23,8 @@ import {
   placementCheck,
   quoteYardExpansion,
   removeCultivation,
-} from '../public/js/home-cultivation.js?v=852caeb8';
-import { cultivationIcon } from '../public/js/features/homes-feature.js?v=aceb3287';
+} from '../public/js/home-cultivation.js?v=5d66e832';
+import { cultivationIcon } from '../public/js/features/homes-feature.js?v=ee54f16c';
 
 const root = join(import.meta.dirname, '..', 'public');
 const rich = () => ({ level: 60, imagination: 1_000_000 });

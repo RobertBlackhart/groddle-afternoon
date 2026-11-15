@@ -22,9 +22,9 @@ import {
   towerRoomByTsid,
   towerRoomStreet,
   turned,
-} from '../public/js/tower-rooms.js?v=845686ac';
-import { inTowerSpot, towerSpotsFor } from '../public/js/home-tower.js?v=10aced50';
-import { restockGarden, towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=354d6c4c';
+} from '../public/js/tower-rooms.js?v=4f1f6af7';
+import { inTowerSpot, towerSpotsFor } from '../public/js/home-tower.js?v=2d71091c';
+import { restockGarden, towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=3515a4a7';
 import {
   ALL_TOWER_ROOMS,
   CHALLENGE_ROOMS,
@@ -39,7 +39,7 @@ import {
   anyTowerRoomByTsid,
   anyTowerRoomStreet,
   flats,
-} from '../public/js/tower-challenge-rooms.js?v=a13fd855';
+} from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
 import { ladderTopDeck } from '../public/js/street-model.js?v=b6cb6a4e';
 import { GRAVITY, JUMP_SPEED, TERMINAL_VY, WALK_MAX, jumpApex } from '../public/js/avatar-step.js?v=43b1182e';
 

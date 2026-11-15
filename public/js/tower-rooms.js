@@ -31,6 +31,19 @@
  * TowerSpot code handles them like any imported street.
  */
 
+/**
+ * #381 (G826): a vine ladder's centre tiles from its foot up to its cap's bottom edge: as many 120 px
+ * steps as it takes to reach, each a little shorter to land on the cap exactly, drawn 2 px taller
+ * so the tiles meet. Rows { y, h } (y the tile's bottom, 0.1 px).
+ */
+export function vineTiles(bottom, capBottom, step = 120) {
+  const span = bottom - capBottom;
+  if (!(span > 0)) return [];
+  const count = Math.max(1, Math.ceil(span / step - 0.01));
+  const each = span / count;
+  return Array.from({ length: count }, (_, i) => ({ y: Math.round((bottom - i * each) * 10) / 10, h: Math.round((each + 2) * 10) / 10 }));
+}
+
 export const ROOM_15_TSID = 'GIF1G7Q75312T8B';
 export const VENT_ROOM_TSID = 'GIF102JCHL027DO';
 export const TOWER_ROOM_HUB = Object.freeze({ hubId: '77', hubName: 'Jethimadh Tower: Base' });
@@ -242,8 +255,8 @@ function buildRoom15() {
   const vineX = bounds.l + 60;
   const vineTop = Math.round(lineY(deck.platforms, vineX));
   const ladders = [{ id: 'ladder_r15_vine', x: vineX, y: pit, w: 50, h: pit - vineTop, why: pitWhy }];
-  const tiles = Math.floor((pit - vineTop - 100) / 120);
-  for (let i = 0; i < tiles; i += 1) decos.push(mg('firebog_ladder_tile_center_01_vine', vineX, pit - i * 120, 44, 122, 4));
+  // #381 (G826): the tiles reach the cap (vineTiles), no bare stretch between.
+  for (const t of vineTiles(pit, vineTop + 122)) decos.push({ ...mg('firebog_ladder_tile_center_01_vine', vineX, 0, 44, 0, 4), y: t.y, h: t.h });
   decos.push(mg('firebog_ladder_tile_cap_1_vine', vineX, vineTop + 122, 44, 122, 4));
   platforms.push(flat('r15_ceiling', bounds.l + 40, bounds.r - 40, bounds.t + 35, 'Chamber roof (solid from below).', 1));
 

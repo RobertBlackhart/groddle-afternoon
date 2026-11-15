@@ -48,7 +48,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
-import { TOWER_JOBS, towerFloorClass } from '../public/js/home-tower.js?v=10aced50';
+import { TOWER_JOBS, towerFloorClass } from '../public/js/home-tower.js?v=2d71091c';
 import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, SUBWAY_STREETS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=d0ca0659';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

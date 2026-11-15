@@ -30,7 +30,7 @@ import {
   setHomeTexture,
   wallSlots,
 } from '../public/js/home-decor.js?v=06be9c65';
-import { TOWER_GEO } from '../public/js/home-tower.js?v=10aced50';
+import { TOWER_GEO } from '../public/js/home-tower.js?v=2d71091c';
 
 const root = join(import.meta.dirname, '..');
 const pub = join(root, 'public');

@@ -30,9 +30,9 @@ import {
   boxToScreen,
   midTowerRoomByTsid,
   midTowerRoomStreet,
-} from '../public/js/tower-mid-rooms.js?v=e1b9f5dc';
-import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=2211580f';
-import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=354d6c4c';
+} from '../public/js/tower-mid-rooms.js?v=22bef2ca';
+import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=059d7a80';
+import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=3515a4a7';
 import { populationForStreet } from '../public/js/street-ecology.js?v=02dd7dda';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';
 

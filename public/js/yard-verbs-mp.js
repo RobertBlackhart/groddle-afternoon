@@ -45,11 +45,11 @@ import { fruitCapacityAt, resetTrantDay } from './trants.js?v=4d6f5593';
 import { ensureWoodTreeState, noteWoodCare } from './woodcutting.js?v=b43edbd8';
 import { GROWN_TREE_LABELS, SEASONED_BEANS, SOIL_TIMERS, growTree, seedlingTimings } from './patches.js?v=5a38514c';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=72f37c7e';
-import { isNodeId, isRockId } from './yard-stock-mp.js?v=b1d2519d';
+import { isNodeId, isRockId } from './yard-stock-mp.js?v=6be85a2a';
 import { STICK_ANIMAL } from './yard-wander.js?v=b4356a97';
 import { normalizeYardMachines } from './yard-fixtures-mp.js?v=dd022fe8';
 import { capYardAnimals, yardClassCap } from './animal-crowding.js?v=3ee9671d';
-import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=852caeb8';
+import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=5d66e832';
 import { HOME_LIMITS } from './homes-catalog.js?v=10ac34b6';
 
 export const YARD_VERBS_MP_ID = 'yard-verbs-mp';

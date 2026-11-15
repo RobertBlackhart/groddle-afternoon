@@ -7,7 +7,12 @@
  * A fix adds decos to a street's middleground when the street loads
  * (features/street-fixes-feature.js prepareStreet). Rows are in the street file's own space: x the
  * deco's middle, y its bottom edge, as every deco row.
+ *
+ * The missing steps of loose-piece ladders on every street (#381, G826) are found and written by
+ * tools/ladder-gaps.mjs into js/ladder-gap-fixes.js; this table keeps the fixes made by hand.
  */
+import { LADDER_GAP_FIXES } from './ladder-gap-fixes.js?v=6da8a701';
+
 export const STREET_FIXES = Object.freeze({
   // Harbinger Heath (register G615, live report #161; Austin 2026-11-09: add the missing step).
   // The leftmost ladder (ladder_1300532628840: x -2132, y -153, h 322) is drawn by three decos:
@@ -28,17 +33,23 @@ export function streetFixFor(tsid) {
   return STREET_FIXES[String(tsid || '')] || null;
 }
 
+/** Every deco a street's fixes add: the hand fix's, then its ladders' missing steps. */
+export function streetFixDecos(tsid) {
+  const key = String(tsid || '');
+  return [...(STREET_FIXES[key]?.decos || []), ...(LADDER_GAP_FIXES[key] || [])];
+}
+
 /**
  * Add a street's fixes to its middleground, once (a deco id already there is left alone).
  * Returns how many decos were added.
  */
 export function applyStreetFixes(street) {
-  const fix = streetFixFor(street?.tsid);
-  if (!fix) return 0;
+  const decos = streetFixDecos(street?.tsid);
+  if (!decos.length) return 0;
   const mg = (street.layers || []).find((layer) => layer.id === 'middleground');
   if (!mg || !Array.isArray(mg.decos)) return 0;
   let added = 0;
-  for (const deco of fix.decos || []) {
+  for (const deco of decos) {
     if (mg.decos.some((d) => d.id === deco.id)) continue;
     mg.decos.push({ ...deco });
     added += 1;

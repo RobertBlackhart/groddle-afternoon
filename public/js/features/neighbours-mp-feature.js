@@ -111,12 +111,12 @@ import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { runStreetTransition } from '../screen-fx.js?v=8c1be96c';
 import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=f49c8998';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=852caeb8';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=5d66e832';
 import { getPlot, tickGarden } from '../garden.js?v=a5191e8b';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=57456a7f';
-import { butlerApi } from './butler-feature.js?v=f9812809';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=aceb3287';
+import { butlerApi } from './butler-feature.js?v=063fe927';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=ee54f16c';
 import {
   BUTLER_MESSAGE_MAX,
   KEY_VERB,
@@ -167,7 +167,7 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=46fce774';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS, towerLabel } from '../home-tower.js?v=10aced50';
+import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS, towerLabel } from '../home-tower.js?v=2d71091c';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
 const OWN_VERBS = new Set([VISIT_VERB.id, KEY_VERB.id, 'neighbour_noop']);
