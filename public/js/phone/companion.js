@@ -17,14 +17,17 @@
  * [data-phone-tab=reports|mail|friends] with .pc-badge, panels
  * [data-phone-panel=...] with data-view, [data-phone-signout],
  * [data-phone-full], [data-ticket=<id>], [data-letter=<id>],
- * [data-friend=<id>], #pc-report-text, #pc-photo, #pc-reply-text.
+ * [data-friend=<id>], #pc-report-text, #pc-photo, #pc-reply-text, #pc-reply-photo.
+ *
+ * G791 (#216, #281): a reply takes a photo too (Add a photo under the reply box, the same
+ * picker and size as a new report's), and each message shows the picture it carries.
  */
 
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=550c5fbf';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, fitPhoto, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=0e47ff20';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=89f2ea17';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, fitPhoto, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=e10084ac';
 
 const doc = globalThis.document;
 
@@ -401,11 +404,15 @@ function drawThread(answer, status = '') {
     const head = el('div', { class: 'pc-message-head' });
     head.append(el('strong', {}, m.author === 'admin' ? REPORT_TEXT.admin : REPORT_TEXT.you), el('span', { class: 'pc-muted' }, whenWords(m.at)));
     li.append(head, el('p', { class: 'pc-message-body' }, m.body));
-    if (i === 0 && pic) {
-      const a = el('a', { href: pic, target: '_blank', rel: 'noopener', class: 'pc-thread-picture', title: REPORT_TEXT.pictureOpen });
-      a.append(el('img', { src: pic, alt: REPORT_TEXT.pictureAlt, loading: 'lazy', width: answer.picture.width || '', height: answer.picture.height || '' }));
-      li.append(a);
-    }
+    const pictureLink = (src, p, alt) => {
+      const a = el('a', { href: src, target: '_blank', rel: 'noopener', class: 'pc-thread-picture', title: REPORT_TEXT.pictureOpen });
+      a.append(el('img', { src, alt, loading: 'lazy', width: p.width || '', height: p.height || '' }));
+      return a;
+    };
+    if (i === 0 && pic) li.append(pictureLink(pic, answer.picture, REPORT_TEXT.pictureAlt));
+    // G791: a reply's own picture.
+    const own = pictureSrc(m.picture);
+    if (own) li.append(pictureLink(own, m.picture, REPORT_TEXT.replyPictureAlt));
     msgs.append(li);
   });
   panel.append(msgs);
@@ -417,6 +424,8 @@ function drawThread(answer, status = '') {
   const send = el('button', { type: 'submit', class: 'pc-button', 'data-phone-send-reply': '' }, REPORT_TEXT.replySend);
   const row = el('div', { class: 'pc-form-row' });
   row.append(send);
+  // G791: a photo with the reply, as a new report takes one.
+  const photo = photoPicker('pc-reply-photo', msg);
   if (t.status !== 'closed') {
     const close = el('button', { type: 'button', class: 'pc-linkish', 'data-phone-close-ticket': '' }, REPORT_TEXT.closeTicket);
     close.addEventListener('click', async () => {
@@ -425,15 +434,26 @@ function drawThread(answer, status = '') {
     });
     row.append(close);
   }
-  form.append(label, box, row, msg);
+  form.append(label, box, photo.row, photo.preview, row, msg);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = box.value.trim();
     if (!text) { msg.textContent = REPORT_TEXT.replyEmpty; return; }
     send.disabled = true;
     msg.textContent = REPORT_TEXT.sending;
+    const url = photo.photo?.url || null;
     try {
-      drawThread(await reports.reply(t.id, text), REPORT_TEXT.replySent);
+      let answer;
+      let words = REPORT_TEXT.replySent;
+      try {
+        answer = await reports.reply(t.id, text, url);
+      } catch (err) {
+        // A refused picture never costs the words.
+        if (!url || !pictureRefused(err)) throw err;
+        answer = await reports.reply(t.id, text, null);
+        words = REPORT_TEXT.replySentNoPicture;
+      }
+      drawThread(answer, words);
     } catch (err) {
       msg.textContent = refusalWords(err);
       send.disabled = false;
@@ -468,21 +488,12 @@ async function photoFrom(file) {
   }
 }
 
-function newReport() {
-  const panel = panels.reports;
-  panel.dataset.view = 'new';
-  panel.dataset.ticket = '';
-  panel.replaceChildren();
-  panelHead(panel, REPORT_TEXT.title, { back: { label: REPORT_TEXT.back, go: backToReports } });
-  const form = el('form', { class: 'pc-form' });
-  const label = el('label', { for: 'pc-report-text' }, REPORT_TEXT.label);
-  const box = el('textarea', { id: 'pc-report-text', rows: '6', maxlength: String(REPORT_MAX), 'data-phone-report-text': '' });
+/** A photo picker (Add a photo, its preview with Remove): what a new report and a reply take. */
+function photoPicker(id, msg) {
   let photo = null;
-  const pick = el('input', { type: 'file', id: 'pc-photo', accept: 'image/*', class: 'pc-file' });
-  const pickLabel = el('label', { for: 'pc-photo', class: 'pc-button pc-button-quiet' }, T.photo);
+  const pick = el('input', { type: 'file', id, accept: 'image/*', class: 'pc-file' });
+  const pickLabel = el('label', { for: id, class: 'pc-button pc-button-quiet' }, T.photo);
   const preview = el('div', { class: 'pc-photo-preview', hidden: true, 'data-phone-photo-preview': '' });
-  const hint = el('p', { class: 'pc-hint' }, T.photoHint);
-  const msg = el('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' });
   pick.addEventListener('change', async () => {
     const file = pick.files?.[0];
     pick.value = '';
@@ -501,10 +512,25 @@ function newReport() {
     remove.addEventListener('click', () => { photo = null; drawPreview(); });
     preview.append(el('img', { src: photo.url, alt: T.photoAlt, width: photo.width, height: photo.height }), remove);
   }
+  const row = el('div', { class: 'pc-form-row' });
+  row.append(pickLabel, pick);
+  return { row, preview, get photo() { return photo; } };
+}
+
+function newReport() {
+  const panel = panels.reports;
+  panel.dataset.view = 'new';
+  panel.dataset.ticket = '';
+  panel.replaceChildren();
+  panelHead(panel, REPORT_TEXT.title, { back: { label: REPORT_TEXT.back, go: backToReports } });
+  const form = el('form', { class: 'pc-form' });
+  const label = el('label', { for: 'pc-report-text' }, REPORT_TEXT.label);
+  const box = el('textarea', { id: 'pc-report-text', rows: '6', maxlength: String(REPORT_MAX), 'data-phone-report-text': '' });
+  const hint = el('p', { class: 'pc-hint' }, T.photoHint);
+  const msg = el('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' });
+  const picker = photoPicker('pc-photo', msg);
   const send = el('button', { type: 'submit', class: 'pc-button', 'data-phone-send-report': '' }, REPORT_TEXT.send);
-  const photoRow = el('div', { class: 'pc-form-row' });
-  photoRow.append(pickLabel, pick);
-  form.append(label, box, photoRow, preview, hint, send, msg);
+  form.append(label, box, picker.row, picker.preview, hint, send, msg);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = box.value.trim();
@@ -512,6 +538,7 @@ function newReport() {
     send.disabled = true;
     msg.textContent = REPORT_TEXT.sending;
     const context = phoneContext(globalThis);
+    const photo = picker.photo;
     let sent;
     let words = REPORT_TEXT.sent;
     try {

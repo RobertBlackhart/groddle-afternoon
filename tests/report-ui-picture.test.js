@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_TEXT } from '../public/js/reports.js?v=550c5fbf';
-import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=3f35504f';
+import { REPORT_TEXT } from '../public/js/reports.js?v=89f2ea17';
+import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=7a8ce516';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -41,7 +41,8 @@ describe('the picture with the game UI', () => {
     assert.equal(mail.children[0].style.visibility, 'hidden');
     assert.equal(pack.style.color, undefined, 'the rest of the UI is drawn as it is');
     for (const s of ['#local-chat-stream', '.social-log', '#mail-reader', '#mail-list', '#activity-history', '.grp-lines']) assert.ok(REPORT_MASK.includes(s), s);
-    assert.deepEqual([...REPORT_LEAVE_OUT], ['bug-report-panel', 'bug-btn-lift']);
+    // G791: the bar while a picture waits to be taken is never in it either.
+    assert.deepEqual([...REPORT_LEAVE_OUT], ['bug-report-panel', 'bug-btn-lift', 'report-shutter']);
   });
 
   it('names the open windows for the report context', () => {

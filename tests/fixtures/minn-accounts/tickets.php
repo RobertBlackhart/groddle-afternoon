@@ -27,6 +27,7 @@ use Groddle\Minn\BugReports;
 use Groddle\Minn\PlayerMail;
 use Groddle\Minn\ReportPicture;
 use Groddle\Minn\TicketMigration;
+use Groddle\Minn\TicketPictures;
 use Groddle\Minn\TicketStore;
 
 $row = static fn (string $author, ?string $playerRead, ?string $adminRead): array => [
@@ -142,6 +143,17 @@ echo json_encode([
         'cut' => $refusal(base64_encode(substr($good, 0, 400))),
         'notString' => $refusal(['a']),
         'limits' => ['maxBytes' => ReportPicture::MAX_BYTES, 'maxW' => ReportPicture::MAX_W, 'maxH' => ReportPicture::MAX_H],
+    ],
+    // G791 (#216, #281): a reply's picture, where it is shown and how each message carries it.
+    'replyPictures' => [
+        'reportUrl' => TicketPictures::url(3),
+        'replyUrl' => TicketPictures::url(3, 9),
+        'out' => TicketStore::messagesOut([
+            ['id' => 8, 'author_role' => 'player', 'body' => 'Pigs float', 'created_at' => '2026-11-15 10:00:00', 'edited_at' => null],
+            ['id' => 9, 'author_role' => 'player', 'body' => 'Here it is again', 'created_at' => '2026-11-15 10:05:00', 'edited_at' => null],
+        ], null, [9 => ['url' => TicketPictures::url(3, 9), 'width' => 640, 'height' => 360]]),
+        'adminOut' => TicketStore::messagesOut([['id' => 9, 'author_role' => 'player', 'body' => 'Again', 'created_at' => '2026-11-15 10:05:00', 'edited_at' => null]], [], [9 => ['url' => TicketPictures::url(3, 9), 'width' => 640, 'height' => 360]]),
+        'limits' => ['perWindow' => \Groddle\Minn\Tickets::REPLY_PICTURE_PER_WINDOW, 'perDay' => \Groddle\Minn\Tickets::REPLY_PICTURE_PER_DAY],
     ],
     'subject' => [
         'short' => TicketStore::subject("  Pigs float\nmore words"),

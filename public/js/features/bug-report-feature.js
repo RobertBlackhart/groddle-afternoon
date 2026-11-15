@@ -55,13 +55,25 @@
  * open. While anything covers it, a copy of the icon (#bug-btn-lift) sits on
  * top at the same place and opens the sheet over the window.
  *
+ * A picture taken on purpose (G791, #216 and #281: a bug can be gone before
+ * the Reports window opens): Shift+R anywhere in the game (not while typing,
+ * not with the window open) takes the picture at once, the whole game window
+ * as Include the game's UI draws it (the world only when that cannot be
+ * drawn), and holds it for the next reply or new report; a toast says so.
+ * Take a picture in a thread (js/ui/reports-sheet.js) closes the window and
+ * shows a small bar (#report-shutter): play on, show the problem, then Take
+ * the picture (or Shift+R), or Cancel (or Esc); the window comes back where it
+ * was with the picture. The bar is never in the picture (REPORT_LEAVE_OUT).
+ * The client had no such key (GameHeaderUI.as 47-69, a button); Shift+R was free.
+ *
  * QA: canvas data bugReport (closed|open|sending), bugReportLast (the last
  * line shown), reportsView (list|thread|new), reportsUnread (n);
+ * reportPicture (''|taking|held), reportShutter ('0'|'1');
  * window.groddleBugReport.open('list'|'new'), .openTicket(id), .refresh() in multiplayer.
  */
 
-import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, pictureSize, reportFromHash } from '../reports.js?v=550c5fbf';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=e4c1ea97';
+import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=89f2ea17';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=bc84ff2b';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -141,8 +153,8 @@ export const REPORT_MASK = Object.freeze([
   '.grp-lines', '#mp-log', '#mail-list', '#mail-reader', '.mail-compose-form',
 ]);
 
-/** Never in the picture: the Reports window itself and the icon's copy over windows. */
-export const REPORT_LEAVE_OUT = Object.freeze(['bug-report-panel', 'bug-btn-lift']);
+/** Never in the picture: the Reports window itself, the icon's copy over windows, and the picture bar (G791). */
+export const REPORT_LEAVE_OUT = Object.freeze(['bug-report-panel', 'bug-btn-lift', 'report-shutter']);
 
 /** The names a report gives the windows (their element ids without "-panel", unless named here). */
 const PANEL_NAMES = Object.freeze({ 'shrine-panel': 'donate', 'quest-dialogue': 'conversation', 'verb-menu': 'verbs', 'pack-popover': 'item' });
@@ -378,6 +390,19 @@ const REDRAWS = 4;
  * picture, images that never load (closed windows' lazy ones) are not waited on, and a blank
  * result is refused.
  */
+/**
+ * G791: a picture of the game taken on purpose, now: the whole game window as Include the game's
+ * UI draws it, from the canvas read at once (captureFrame), else the location view alone. Null
+ * when the game cannot be drawn.
+ */
+export async function takePictureNow(engine, doc = globalThis.document, limits = REPORT_PICTURE) {
+  const frame = captureFrame(engine, doc, limits);
+  if (!frame) return null;
+  let pic = null;
+  try { pic = await capturePictureWithUi(engine, doc, limits, frame); } catch { pic = null; }
+  return pic || encodePicture(frame, doc, limits, viewRows(frame.width, frame.height, engine?.camera));
+}
+
 export async function capturePictureWithUi(engine, doc = globalThis.document, limits = REPORT_PICTURE, frame = null) {
   const root = doc?.getElementById?.('wrap') || doc?.body;
   const canvas = doc?.querySelector?.('#game-root canvas');
@@ -430,6 +455,17 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
 }
 
 const STYLE = `
+/* G791: the bar while a picture for a report waits to be taken (both skins). */
+.report-shutter { position: fixed; top: calc(var(--hud-h) + 10px); left: 50%; transform: translateX(-50%); z-index: calc(var(--z-modal) + 40); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-2); max-width: calc(100vw - 16px); box-sizing: border-box; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); font: var(--fw-bold) var(--fs-s)/var(--lh-tight) var(--font-ui); pointer-events: auto; }
+.report-shutter[hidden] { display: none !important; }
+.report-shutter-text { flex: 1 1 12rem; min-width: 0; }
+.report-shutter button { flex: none; min-height: 32px; margin: 0; padding: 0 var(--space-4); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); background: var(--surface-raised); color: var(--text); font: inherit; cursor: pointer; }
+.report-shutter .report-shutter-take { border-color: var(--accent); background: var(--accent); color: var(--text-inverse); }
+.report-shutter button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.report-shutter .kcap { margin-left: var(--space-1); }
+/* G791: Take a picture and Remove under the reply box (both skins lay them out the same way). */
+#bug-report-panel .reports-take-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+#bug-report-panel .reports-reply-picture[hidden] { display: none !important; }
 .bug-btn { display: inline-flex; align-items: center; justify-content: center; padding: var(--sp-2) 0.45rem; position: relative; }
 .bug-btn img { width: 23px; height: 20px; display: block; }
 .bug-btn .bug-unread[hidden], .reports-panel[hidden], .reports-view[hidden], .reports-panel [hidden] { display: none !important; }
@@ -596,17 +632,23 @@ function createSession(engine, errors) {
   else document.querySelector?.('.top-actions')?.append(btn);
 
   const host = document.getElementById('game-root') || document.body;
+  // G791: a picture being taken, and the bar while one waits to be taken (openShutter).
+  let taking = false;
+  let shutter = null;
   const sheet = mountReportsSheet({
     host,
     api,
     context: () => reportContext(engine, errors),
     // The picture with the UI draws the canvas as the world picture found it when the form opened (ticket 73).
     capture: ({ ui = false, world = null } = {}) => (ui ? capturePictureWithUi(engine, document, REPORT_PICTURE, world?.frame) : capturePicture(engine)),
+    // G791: Take a picture under the reply box: the bar over the game until the player takes it.
+    takePicture: (handlers) => openShutter(handlers),
     toast: (t, ms) => engine.toast?.(t, ms),
     opener: () => btn,
     // REPORTSMENU: the rows' menu (js/ui/report-row-menu.js) names itself in the canvas data.
     setData: (k, v) => engine.setData?.(k, v),
-    onState: ({ state, view, unread, last }) => {
+    onState: ({ state, view, unread, last, held }) => {
+      engine.setData?.('reportPicture', taking ? 'taking' : held ? 'held' : '');
       engine.setData?.('bugReport', state);
       engine.setData?.('bugReportLast', last);
       engine.setData?.('reportsView', view);
@@ -623,6 +665,75 @@ function createSession(engine, errors) {
       btn.setAttribute('aria-expanded', state === 'closed' ? 'false' : 'true');
     },
   });
+  // == G791: a picture taken on purpose ==
+  /** The picture now, held for the next reply or new report; null when it could not be drawn. */
+  async function takeNow() {
+    if (taking) return null;
+    taking = true;
+    engine.setData?.('reportPicture', 'taking');
+    let pic = null;
+    try { pic = await takePictureNow(engine, document); } catch { pic = null; }
+    taking = false;
+    const kept = Boolean(pic && sheet.hold(pic));
+    engine.setData?.('reportPicture', kept ? 'held' : (sheet.held ? 'held' : ''));
+    return kept ? pic : null;
+  }
+  /** Shift+R in the game: the picture at once, and a toast that says where it went. */
+  async function holdNow() {
+    const pic = await takeNow();
+    engine.toast?.(pic ? REPORT_TEXT.takeTaken : REPORT_TEXT.takeFailed, pic ? 4200 : 3200);
+  }
+  /** The bar over the game after Take a picture: Take the picture (or Shift+R), or Cancel (or Esc). */
+  function openShutter({ done, cancel }) {
+    closeShutter();
+    const bar = el('div', { id: 'report-shutter', class: 'report-shutter', role: 'group', 'aria-label': REPORT_TEXT.take, 'data-report-shutter': '' });
+    const words = el('span', { class: 'report-shutter-text', 'aria-live': 'polite' }, REPORT_TEXT.shutterTitle);
+    const take = el('button', { type: 'button', class: 'report-shutter-take', 'aria-keyshortcuts': 'Shift+R', 'data-report-shutter-take': '' }, REPORT_TEXT.shutterTake);
+    take.append(el('span', { class: 'kcap', 'aria-hidden': 'true' }, '⇧R'));
+    const no = el('button', { type: 'button', class: 'report-shutter-cancel', 'aria-keyshortcuts': 'Escape', 'data-report-shutter-cancel': '' }, REPORT_TEXT.shutterCancel);
+    bar.append(words, take, no);
+    document.body.append(bar);
+    const go = async () => {
+      if (taking || shutter?.bar !== bar) return;
+      take.disabled = true;
+      words.textContent = REPORT_TEXT.takeDrawing;
+      // Out of sight while the page is copied (it is left out too: REPORT_LEAVE_OUT).
+      bar.hidden = true;
+      const pic = await takeNow();
+      closeShutter();
+      done(pic);
+    };
+    const stop = () => {
+      if (taking || shutter?.bar !== bar) return;
+      closeShutter();
+      cancel();
+    };
+    take.addEventListener('click', go);
+    no.addEventListener('click', stop);
+    shutter = { bar, take: go, cancel: stop };
+    engine.setData?.('reportShutter', '1');
+  }
+  function closeShutter() {
+    shutter?.bar.remove();
+    shutter = null;
+    engine.setData?.('reportShutter', '0');
+  }
+  // Shift+R (and Esc while the bar is up), ahead of the game's own keys; never while typing or with the window open.
+  window.addEventListener('keydown', (e) => {
+    if (sheet.state !== 'closed') return;
+    if (shutter && e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      shutter.cancel();
+      return;
+    }
+    if (!isPictureKey(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (shutter) shutter.take();
+    else holdNow();
+  }, true);
+
   // The shell's centred size, like Mail: it hands focus back to the icon when it closes.
   engine.panelShell?.add?.({ id: 'bug-report-panel', kind: 'center', close: () => sheet.close() });
   btn.addEventListener('click', () => (sheet.state === 'closed' ? sheet.open('list') : sheet.close()));
@@ -679,7 +790,7 @@ function createSession(engine, errors) {
   openLinked();
   globalThis.addEventListener?.('hashchange', openLinked);
 
-  return { ...sheet, placeLift, stop: () => { clearInterval(timer); clearInterval(liftTimer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
+  return { ...sheet, placeLift, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, stop: () => { clearInterval(timer); clearInterval(liftTimer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
 }
 
 let session = null;

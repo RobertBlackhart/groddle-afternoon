@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 import { ZOOM_KEYS_HINT, createWorldZoom, nextZoom, zoomKeyAction, zoomKeyToast } from '../public/js/world-zoom.js?v=38816228';
 import { zoomSlider } from '../public/js/ui/topbar.js?v=c41e4388';
-import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=f507beec';
+import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=7a2676ac';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => fs.readFileSync(path.join(root, 'public', rel), 'utf8');

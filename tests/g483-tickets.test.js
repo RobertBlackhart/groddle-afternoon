@@ -16,9 +16,9 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=550c5fbf';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=e4c1ea97';
-import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=3f35504f';
+import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=89f2ea17';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=bc84ff2b';
+import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=7a8ce516';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -216,7 +216,7 @@ describe('the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.ok(rows[0].find((n) => n.className === 'reports-dot'));
     assert.ok(rows[0].find((n) => n.className === 'reports-chip is-answered' && n.textContent === 'Answered'));
     assert.ok(rows[0].textContent.includes('Report #3 · Administrator replied 1 min ago'), rows[0].textContent);
-    assert.deepEqual(states.at(-1), { state: 'open', view: 'list', unread: 1, ticket: 0, last: '2 reports' });
+    assert.deepEqual(states.at(-1), { state: 'open', view: 'list', unread: 1, ticket: 0, last: '2 reports', held: false });
   });
 
   it('a thread sets what people wrote as text, marks it read and replies; a reply opens a closed report again', async () => {
@@ -704,7 +704,9 @@ describe('the site keeps a report\'s picture (groddle-afternoon-site)', { skip: 
     const create = t.slice(t.indexOf('public function create('), t.indexOf('public function reply('));
     assert.ok(create.indexOf('openedSince(') > 0 && create.indexOf('openedSince(') < create.indexOf('ReportPicture::accept('), 'the rate limit first');
     assert.match(create, /\$store->open\(\$me->id, \$message, \$context, \$now, null, \$picture\)/);
-    assert.doesNotMatch(t.slice(t.indexOf('public function reply(')), /ReportPicture/, 'no picture with a reply');
+    // G791: a reply may carry one too, checked after the reply's own limits (tests/g791-report-reply-pictures.test.js).
+    const reply = t.slice(t.indexOf('public function reply('), t.indexOf('public function close('));
+    assert.ok(reply.indexOf('writtenSince(') < reply.indexOf('ReportPicture::accept('), 'the reply limit first');
     assert.match(src('src/TicketStore.php'), /INSERT INTO ' \. \$this->db->table\(self::PICTURES\) \. ' \(ticket_id, player_user_id, picture, width, height, bytes, created_at\)/);
     // Binary as base64 through FROM_BASE64, as Profiles writes its pictures: raw bytes bound as a string never stored (QA 2026-10-30).
     assert.match(src('src/TicketStore.php'), /VALUES \(\?, \?, FROM_BASE64\(\?\), \?, \?, \?, \?\)', \[\$id, \$player, base64_encode\(\$picture\['bytes'\]\)/);
@@ -714,8 +716,8 @@ describe('the site keeps a report\'s picture (groddle-afternoon-site)', { skip: 
     const php = src('src/TicketPictures.php');
     assert.match(php, /#\[Route\(Method::Get, '\/report-pictures\/\{id:\\d\+\}', policy: new Policy\(Access::Public\)\)\]/);
     assert.match(php, /if \(\$user === null\) \{\s*throw new RouteMiss\(\);/);
-    assert.match(php, /\$mine = \(int\) \$row\['player_user_id'\] === \$user->id;/);
-    assert.match(php, /if \(!\$mine && !Capabilities::fromDb\(\$this->minn->db\)->can\(\$user->id, 'manage_options'\)\) \{\s*throw new RouteMiss\(\);/);
+    assert.match(php, /\$mine = \(int\) \$row\['player_user_id'\] === \$userId;/);
+    assert.match(php, /if \(!\$mine && !Capabilities::fromDb\(\$this->minn->db\)->can\(\$userId, 'manage_options'\)\) \{\s*throw new RouteMiss\(\);/);
     for (const h of ["'Content-Type' => 'image/jpeg'", "'Cache-Control' => 'private, no-store'", "'X-Content-Type-Options' => 'nosniff'", "default-src 'none'; sandbox"]) assert.ok(php.includes(h), h);
     assert.match(src('src/Extension.php'), /\$minn->routes\(new TicketPictures\(\$minn\)\);/);
     // Both threads carry where it is, never the bytes.
@@ -1022,8 +1024,8 @@ describe('Working on it and Edit until read (ticket 49)', () => {
       const write = store.slice(store.indexOf('public function editFirst('), store.indexOf('public function markRead('));
       assert.ok(/INSERT INTO ' \. \$this->db->table\(self::REVISIONS\) \. ' \(message_id, ticket_id, player_user_id, body, written_at, replaced_at\)/.test(write), 'the old text is stored');
       assert.ok(write.indexOf('self::REVISIONS') < write.indexOf('SET body = ?, edited_at = ?'), 'before it is replaced, in the same locked write');
-      assert.match(src('src/AdminTickets.php'), /TicketStore::messagesOut\(\$store->messages\(\$id\), \$store->revisions\(\$id\)\)/);
-      assert.match(src('src/Tickets.php'), /'messages' => TicketStore::messagesOut\(\$store->messages\(\$id\)\),/, 'the player gets no history');
+      assert.match(src('src/AdminTickets.php'), /TicketStore::messagesOut\(\$store->messages\(\$id\), \$store->revisions\(\$id\), \$store->messagePictures\(\$id\)\)/);
+      assert.match(src('src/Tickets.php'), /'messages' => TicketStore::messagesOut\(\$store->messages\(\$id\), null, \$store->messagePictures\(\$id\)\),/, 'the player gets no history');
       const table = JSON.parse(src('minn.json')).tables.groddle_ticket_message_revisions;
       assert.ok(table && table.includes('player_user_id bigint(20) unsigned NOT NULL'), 'a *user_id column: the throwaway cleanup finds its rows');
       const mod = await import(pathToFileURL(sitePath('console/console.js')).href);

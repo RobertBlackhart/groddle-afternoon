@@ -137,6 +137,8 @@ export function hotkeySections({ keyring = false, hub = false, reports = false }
         ['Chat', [['/']]],
         // Ticket 62: Report a bug had no key in the client (GameHeaderUI.as 47-69 was a button); R is free here.
         ...(reports ? [['Report a Bug', [['R']]]] : []),
+        // G791 (#216, #281): a picture of the game now, for the next report or reply (features/bug-report-feature.js).
+        ...(reports ? [['Report Picture', [['Shift', 'R']], '(A picture of the game now, for your next report or reply)']] : []),
         ['Preferences', [[',']]],
         ['Verbs', [['Enter'], ['E']]],
         // RIGHTCLICK (Austin 2026-11-03): the right-click menu from the keys (js/ui/context-menu.js); on the world it is Enter.

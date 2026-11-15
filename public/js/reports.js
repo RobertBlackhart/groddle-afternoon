@@ -7,7 +7,7 @@
  *
  * A ticket: { id, status: open|answered|working|closed, subject, createdAt, updatedAt,
  * lastMessageAt, lastAuthor: player|admin, unread, adminReplied, readByTeamAt }; a message: { id, author:
- * player|admin, body, at, edited }. Who wrote is a role: an administrator is never named.
+ * player|admin, body, at, edited, picture: { url, width, height }|null }. Who wrote is a role: an administrator is never named.
  *
  * Ticket 49 (2026-11-02, a player's two ideas): Working on it is a status an
  * administrator sets (its own chip), and the report's first message can be
@@ -23,6 +23,13 @@
  * with chat, mail and Activity blanked and the Reports window left out.
  * The site checks it again (src/ReportPicture.php) and shows it only to you
  * and the administrators (src/TicketPictures.php).
+ *
+ * G791 (#216, #281: a bug gone before the report window opened): a reply can
+ * carry a picture too, and a picture can be taken on purpose (Take a picture
+ * in the window, or Shift+R anywhere in the game); it waits for your next
+ * reply or new report. The site keeps a reply's picture per message (a
+ * message's picture, /report-pictures/<report>/<message>), with a new
+ * report's limits.
  */
 
 import { minnUrls } from './minn-account-core.js?v=bd210eb9';
@@ -96,6 +103,22 @@ export const REPORT_TEXT = Object.freeze({
   readByTeamHint: 'An administrator has opened this report since your last message',
   // #261 (Friendly, 2026-11-13): each report's number, so a reply or a note can refer to it.
   number: (id) => `Report #${id}`,
+  // G791 (#216, #281): a picture with a reply, and one taken on purpose.
+  take: 'Take a picture',
+  takeAgain: 'Take another',
+  takeHint: 'This window closes so you can show us the problem, then take the picture. Shift+R takes one any time in the game.',
+  takeRemove: 'Remove',
+  takeReply: 'This picture goes with your reply.',
+  takeNewHint: 'You took this picture for a report. Untick it to send your words without it.',
+  takeAlt: 'The picture you took for a report',
+  takeTaken: 'Picture taken. It goes with your next report or reply: open Reports with R.',
+  takeFailed: 'The game could not be drawn, so no picture was taken.',
+  takeDrawing: 'Taking the picture…',
+  shutterTitle: 'Show us the problem, then take the picture.',
+  shutterTake: 'Take the picture',
+  shutterCancel: 'Cancel',
+  replyPictureAlt: 'The picture you sent with this reply',
+  replySentNoPicture: 'Reply sent, without the picture.',
 });
 
 /**
@@ -133,10 +156,22 @@ export function pictureRefused(err) {
   return typeof err?.code === 'string' && err.code.startsWith('groddle_report_picture');
 }
 
-/** A thread's picture address from the site (src/TicketPictures.php), or ''. */
+/** A thread's picture address from the site (src/TicketPictures.php), or a reply's (G791: /<report>/<message>), or ''. */
 export function pictureSrc(picture) {
   const url = typeof picture?.url === 'string' ? picture.url : '';
-  return /^\/report-pictures\/\d{1,12}$/.test(url) ? url : '';
+  return /^\/report-pictures\/\d{1,12}(?:\/\d{1,12})?$/.test(url) ? url : '';
+}
+
+/**
+ * G791: whether a keydown is Shift+R, a picture of the game for the next report or reply. Not
+ * while typing in a box (there it is a capital R), and never with Ctrl, Alt or Cmd.
+ */
+export function isPictureKey(e) {
+  if (!e || !e.shiftKey || e.ctrlKey || e.altKey || e.metaKey || e.repeat) return false;
+  if (String(e.key || '').toLowerCase() !== 'r' && e.code !== 'KeyR') return false;
+  const t = e.target;
+  const tag = String(t?.tagName || '').toUpperCase();
+  return !(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t?.isContentEditable);
 }
 
 /** The status chip's words. */
@@ -363,8 +398,8 @@ export function createReportsApi({ baseUri, fetch: fetchFn = globalThis.fetch?.b
     thread: (id) => call(`tickets/${Number(id)}`),
     /** { status: sent, id, ticket }; picture: a JPEG data URL, or nothing. */
     create: (message, context = {}, picture = null) => call('tickets', { method: 'POST', body: picture ? { message, context, picture } : { message, context } }),
-    /** { ticket, messages } */
-    reply: (id, message) => call(`tickets/${Number(id)}/messages`, { method: 'POST', body: { message } }),
+    /** { ticket, messages }; picture (G791): a JPEG data URL, or nothing. */
+    reply: (id, message, picture = null) => call(`tickets/${Number(id)}/messages`, { method: 'POST', body: picture ? { message, picture } : { message } }),
     /** { ticket, messages } */
     close: (id) => call(`tickets/${Number(id)}/close`, { method: 'POST' }),
     /** { ticket, messages, editable }: new words for the report's first message, until an administrator reads it. */

@@ -3287,6 +3287,12 @@
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-where { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.8; }
 /* === end ideasa === */
 
+/* === ideasb (lane) === */
+/* G791: the reply's picture row under the reply box, its buttons side by side. */
+:root[data-ui="classic"] #bug-report-panel .reports-reply-picture { margin-top: calc(4 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .reports-take-actions { gap: calc(6 * var(--cu)); }
+/* === end ideasb === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;
