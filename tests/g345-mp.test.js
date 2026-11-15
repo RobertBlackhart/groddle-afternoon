@@ -41,7 +41,7 @@ import {
 } from '../public/js/feats-mp.js?v=92c56f81';
 import { FEAT_BY_ID, WIRED_FEATS, vogTextFor } from '../public/js/solo-feats.js?v=2b83c824';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=31c5a141';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=29110368';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/solo-feats-feature.js'), 'utf8');
@@ -300,6 +300,8 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
     assert.equal(engine.calls.award.length, 1);
     assert.equal(engine.calls.award[0].title, 'Feat Completed!');
     assert.match(engine.calls.award[0].body, /^The ancient Feat "Heebo's Happy Accident" has been successfully recreated by modern Glitches/);
+    // Lane momentart: the biggest rock's sharp render.
+    assert.equal(engine.calls.award[0].iconUrl, 'assets/sprites/moment/petrified_rock_large.webp');
     const save = soloFeatsFeature.save();
     assert.deepEqual(save.applied, ['feat-f-8-7', 'feat-r-44k-8-7']);
     assert.deepEqual(save.rewarded, ['feat-r-44k-8-7']);

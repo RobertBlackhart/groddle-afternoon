@@ -141,7 +141,11 @@ import {
 const POLL_MS = 500;
 /** How often an open panel redraws its "Opens again in" lines. */
 const COUNTDOWN_MS = 30_000;
-const ROCK_ICON = 'assets/sprites/icons/petrified_rock_small@3x.webp';
+/**
+ * The Feat Completed card's rock: a 498 px render of Tiny Speck's vector SWF (assets/sprites/moment,
+ * tools/icon-hires/hires.py --moment), not the 60 px pack icon the card stretched (lane momentart).
+ */
+const ROCK_ICON = 'assets/sprites/moment/petrified_rock_small.webp';
 /** Archived street TSIDs (assets/streets/index.json): homes, neighbours and instances use other ids. */
 const REAL_STREET = /^G[A-Z0-9]{12,14}$/;
 /** G754: the Ramble's Qurazys, owed to the server until it answers (feats.go add). */
@@ -615,9 +619,9 @@ function applyDemo(engine) {
 
 const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 const ROCK_ICONS = Object.freeze({
-  petrified_rock_small: 'assets/sprites/icons/petrified_rock_small@3x.webp',
-  petrified_rock_medium: 'assets/sprites/icons/petrified_rock_medium@3x.webp',
-  petrified_rock_large: 'assets/sprites/icons/petrified_rock_large@3x.webp',
+  petrified_rock_small: 'assets/sprites/moment/petrified_rock_small.webp',
+  petrified_rock_medium: 'assets/sprites/moment/petrified_rock_medium.webp',
+  petrified_rock_large: 'assets/sprites/moment/petrified_rock_large.webp',
 });
 
 /** Writes the save now and waits for it to land (as street-jobs-feature persist): true once saved. */

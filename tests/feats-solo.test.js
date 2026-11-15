@@ -43,8 +43,8 @@ import {
   reopensAt,
 } from '../public/js/solo-feats.js?v=2b83c824';
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=31c5a141';
-import { FEATURES } from '../public/js/features/index.js?v=a3fb0148';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=29110368';
+import { FEATURES } from '../public/js/features/index.js?v=b5cbdf86';
 import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=f1bb3a3e';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=7f9f1d80';
 
@@ -254,6 +254,8 @@ describe('Solo Feats feature', () => {
     assert.equal(engine.calls.award.length, 1);
     assert.equal(engine.calls.award[0].title, 'Feat Completed!');
     assert.match(engine.calls.award[0].body, /The ancient Feat "Heebo's Happy Accident" has been successfully recreated/);
+    // Lane momentart: the card shows the 498 px render, not the 60 px pack icon it stretched.
+    assert.equal(engine.calls.award[0].iconUrl, 'assets/sprites/moment/petrified_rock_small.webp');
     assert.ok(engine.calls.achievement.some(([c]) => c === 'feats:contributed'));
     soloFeatsFeature.onEvent('npc_piggy:pet', 1, engine);
     assert.equal(engine.inv.petrified_rock_small, 1);

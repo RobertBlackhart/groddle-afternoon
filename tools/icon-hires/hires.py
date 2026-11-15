@@ -40,6 +40,16 @@ icon (aspect within 12%, and `diff`: RMSE of the render shrunk to 1x against the
 exactly 3x the 1x file so sizes and anchors do not move. Without --write the
 results go to WORKDIR/hi; WORKDIR/report.json lists every id with its diff.
 Look at a contact sheet before shipping: a low diff does not prove the right art.
+
+Moment card art (lane momentart, 2026-11-15: the Feat Completed card stretched the 60 px rock
+over about 500 device px on an iPhone):
+    python3 -I tools/icon-hires/hires.py --moment tools/icon-hires/moment-plan.json WORKDIR [--write] [id ...]
+renders each plan id the same way (same SWF rewrite, FFDec, aspect and diff checks against its
+small art: `one`, a path from the repo root, default the pack icon icons/<id>.webp) but at a zoom
+whose trimmed render is at least MOMENT_SIDE px on its long side, then trims it and fits the long
+side to MOMENT_SIDE (the card draws art at --moment-art 166 CSS px, 498 device px at 3x). Written
+as public/assets/sprites/moment/<id>.webp (lossless WebP); the pack icons are never touched.
+With --write it also rewrites js/moment-art-list.js (MOMENT_SHARP) from the files on disk.
 """
 import json, glob, math, os, re, shutil, subprocess, sys
 
@@ -57,6 +67,10 @@ from java_path import JAVA  # noqa: E402  (tools/java_path.py: $GRODDLE_JAVA, el
 FFDEC = os.path.expanduser('~/Documents/glitch-audit/tools/ffdec/ffdec.jar')
 MAX_DIFF = 0.16
 SEED_MAX = 160  # the largest OGA pack icons (still, metalmaker, rock_*_1) are about 160 px
+MOMENT = os.path.join(SPIKE, 'public/assets/sprites/moment')
+MOMENT_JS = os.path.join(SPIKE, 'public/js/moment-art-list.js')
+MOMENT_SIDE = 498  # js/ui/moment-card.js: --moment-art 166 CSS px at 3x
+MOMENT_ZOOM_MAX = 60  # a 20 px icon needs about 27
 
 
 def box(path):
@@ -265,10 +279,100 @@ def write_list():
     print(f'{len(ids)} icons listed in {HIRES_JS}')
 
 
+def moment(plan_path, work, write, only):
+    """Moment card art: each plan id rendered so its long side is MOMENT_SIDE px (see the docstring)."""
+    plan = json.load(open(plan_path))
+    if only:
+        plan = {i: p for i, p in plan.items() if i in only}
+    work = os.path.abspath(work)  # export() symlinks the rewritten SWFs by this path
+    os.makedirs(os.path.join(work, 'swf'), exist_ok=True)
+    out_dir = MOMENT if write else os.path.join(work, 'moment')
+    os.makedirs(out_dir, exist_ok=True)
+    jobs, report, ones = [], {}, {}
+    for i, p in sorted(plan.items()):
+        src = os.path.expanduser(p['swf'])
+        info = swfinfo.read(src)
+        frame = p.get('frame', 1)
+        if not isinstance(frame, int):
+            frame = {**info['labels'], **info['scenes']}.get(frame)
+            if not frame:
+                report[i] = {'ok': False, 'why': f'no label {p["frame"]!r} in {os.path.basename(src)}'}
+                continue
+        one = os.path.join(SPIKE, p['one']) if p.get('one') else os.path.join(ICONS, f'{i}.webp')
+        if not os.path.exists(one):
+            report[i] = {'ok': False, 'why': f'no small art {one}'}
+            continue
+        ones[i] = one
+        swf = os.path.join(work, 'swf', f'm-{i}.swf')
+        swfinfo.rewrite(src, swf, pad=1.0, swaps=p.get('swap'))
+        ow, oh = box(one)[:2]
+        zoom = p.get('zoom') or min(MOMENT_ZOOM_MAX, math.ceil(1.1 * MOMENT_SIDE / max(ow, oh, 1)))
+        jobs.append((i, {'swf': swf, 'frame': frame, 'zoom': zoom}))
+        report[i] = {'swf': src, 'frame': frame, 'zoom': zoom, 'one': os.path.relpath(one, SPIKE)}
+    renders = export(jobs, work, 'm')
+    again = []
+    for i, j in jobs:
+        r = renders.get(i) and box(renders[i])
+        if r and r[0] >= 3 and r[1] >= 3 and max(r[0], r[1]) < MOMENT_SIDE and j['zoom'] < MOMENT_ZOOM_MAX:
+            again.append((i, {**j, 'zoom': min(MOMENT_ZOOM_MAX, math.ceil(j['zoom'] * 1.1 * MOMENT_SIDE / max(r[0], r[1])))}))
+    renders.update(export(again, work, 'm2'))
+    zooms = {i: j['zoom'] for i, j in jobs}
+    zooms.update({i: j['zoom'] for i, j in again})
+    for i, _ in jobs:
+        rep, p = report[i], plan[i]
+        rep['zoom'] = zooms[i]
+        src = renders.get(i)
+        r = src and box(src)
+        if not r or r[0] < 3 or r[1] < 3:
+            rep.update(ok=False, why='empty render'); continue
+        rw, rh = r[0], r[1]
+        ow, oh = box(ones[i])[:2]
+        aspect = abs(rw / rh - ow / oh) / (ow / oh)
+        d = diff(src, ones[i], ow, oh, bool(p.get('flop')))
+        rep.update(render=[rw, rh], icon=[ow, oh], aspect=round(aspect, 3), diff=d)
+        if max(rw, rh) < MOMENT_SIDE:
+            rep.update(ok=False, why=f'render {rw}x{rh} smaller than {MOMENT_SIDE} px'); continue
+        if aspect > 0.12:
+            rep.update(ok=False, why=f'aspect: small art {ow}x{oh}, render {rw}x{rh}'); continue
+        if d > MAX_DIFF:
+            rep.update(ok=False, why=f'art differs from its small art (diff {d})'); continue
+        dst = os.path.join(out_dir, f'{i}.webp')
+        tmp = os.path.join(work, f'm-{i}.tmp.png')
+        subprocess.run(['magick', src, *(['-flop'] if p.get('flop') else []), '-trim', '+repage', '-filter', 'Lanczos',
+                        '-resize', f'{MOMENT_SIDE}x{MOMENT_SIDE}', '-define', 'png:compression-level=9', '-strip', tmp], check=True)
+        webp_lossless.encode(tmp, dst)
+        os.unlink(tmp)
+        rep.update(ok=True, out=dst, size=list(box(dst)[4:6]))
+    json.dump(report, open(os.path.join(work, 'moment-report.json'), 'w'), indent=1)
+    ok = [i for i, r in report.items() if r.get('ok')]
+    print(f'{len(ok)} moment renders, {len(report) - len(ok)} rejected')
+    for i, r in sorted(report.items()):
+        print(('  ok  ' if r.get('ok') else '  --  ') + i, r.get('size', ''), r.get('diff', ''), r.get('why', ''))
+    if write:
+        write_moment_list()
+
+
+def write_moment_list():
+    """Rewrite js/moment-art-list.js (MOMENT_SHARP) from the files in assets/sprites/moment."""
+    ids = sorted(f[:-5] for f in os.listdir(MOMENT) if f.endswith('.webp'))
+    src = ('/**\n'
+           ' * Moment card art with a sharp render (assets/sprites/moment/<id>.webp, about 498 px on the long\n'
+           ' * side): Tiny Speck\'s vector SWFs (glitch-items, CC0) rendered by tools/icon-hires/hires.py\n'
+           ' * --moment from tools/icon-hires/moment-plan.json. js/ui/moment-card.js momentSharpUrl swaps a\n'
+           ' * small icon for its render on the award card. Generated; do not edit by hand.\n'
+           ' */\n'
+           'export const MOMENT_SHARP = new Set(' + json.dumps(ids, separators=(', ', ': ')) + ');\n')
+    open(MOMENT_JS, 'w').write(src)
+    print(f'{len(ids)} moment renders listed in {MOMENT_JS}')
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
     if args == ['--list']:
         write_list()
+    elif args[:1] == ['--moment']:
+        rest = [a for a in args[3:] if a != '--write']
+        moment(args[1], args[2], '--write' in args[3:], set(rest))
     else:
         rest = [a for a in args[2:] if a != '--write']
         run(args[0], args[1], '--write' in args[2:], set(rest))

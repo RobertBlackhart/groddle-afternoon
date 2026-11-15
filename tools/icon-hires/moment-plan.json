@@ -1,0 +1,14 @@
+{
+ "petrified_rock_large": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_large/petrified_rock_large.swf",
+  "frame": "iconic"
+ },
+ "petrified_rock_medium": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_medium/petrified_rock_medium.swf",
+  "frame": "iconic"
+ },
+ "petrified_rock_small": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_small/petrified_rock_small.swf",
+  "frame": "iconic"
+ }
+}
