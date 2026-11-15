@@ -220,6 +220,8 @@ export function applyStockAct({ rocks = [], nodes = {}, items = [] } = {}, act, 
     }
     const rock = slot.rock;
     tickMineRock(rock, act.at);
+    // G778: whether this swing mined it out (include/mining.js 388-389: the only swing that wears the rock).
+    let minedOut = false;
     if (!rock.depleted) {
       rock.chunksRemaining -= Math.max(0, act.took);
       if (rock.chunksRemaining <= 0) {
@@ -227,10 +229,12 @@ export function applyStockAct({ rocks = [], nodes = {}, items = [] } = {}, act, 
         rock.depleted = true;
         rock.respawnAt = act.at + ROCK_RESPAWN_MS;
         rock.respawnChunks = 0;
+        minedOut = true;
       }
     }
     tickMineRock(rock, now);
-    return { kind: 'rock', what: stockLabel(row.classId), wearItem: row.itemId, rock };
+    return { kind: 'rock', what: stockLabel(row.classId), wearItem: row.itemId, rock, minedOut };
+
   }
   if (act.kind === 'node') {
     const row = homeNodes(items, act.at).find((r) => r.id === act.target);

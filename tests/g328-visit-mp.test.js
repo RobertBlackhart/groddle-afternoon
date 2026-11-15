@@ -24,9 +24,9 @@ import {
   normalizeStockView,
   visitorNode,
   visitorRock,
-} from '../public/js/yard-stock-mp.js?v=2f78d6b5';
-import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=93921485';
-import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=03ad07fb';
+} from '../public/js/yard-stock-mp.js?v=1c2fcf7b';
+import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=71b771ae';
+import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=2136c2a5';
 import { homeStreetFor, readVisitScene, sharedHomeStreet, visitSceneTsid } from '../public/js/neighbours-mp.js?v=adb9bd43';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=81422c6f';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
@@ -122,9 +122,11 @@ describe('a home street\'s rocks and nodes (js/yard-stock-mp.js)', () => {
     const swing = (took, at, left) => applyStockAct({ rocks, nodes: {}, items: ITEMS }, { kind: 'rock', target: 'rock:0', verb: 'mine', took, at, left }, at);
     const a = swing(4, 1000);
     assert.equal(a.rock.chunksRemaining, 6);
-    assert.equal(a.wearItem, 1, 'a swing wears the cultivation');
+    assert.equal(a.wearItem, 1);
+    assert.equal(a.minedOut, false, 'G778 (#360): a swing that leaves chunks wears nothing (include/mining.js 388-389)');
     const b = swing(9, 2000);
     assert.equal(b.rock.depleted, true);
+    assert.equal(b.minedOut, true, 'the swing that mines it out wears the cultivation once');
     assert.equal(b.rock.respawnAt, 2000 + ROCK_RESPAWN_MS);
     const c = applyStockAct({ rocks, nodes: {}, items: ITEMS }, { kind: 'rock', target: 'rock:0', verb: 'mine', took: 3, at: 2000 + ROCK_RESPAWN_MS + 1 }, 2000 + ROCK_RESPAWN_MS + 1);
     assert.equal(c.rock.chunksRemaining, 47, 'reformed with 50, then the swing');
@@ -214,12 +216,15 @@ describe('the site decides a swing or a harvest (HomeYard::judgeStock)', { skip:
     assert.equal(judge([], '[]', '[]', 'node', 'node:peat_1:0', 'dig').why, 'gone', 'only the node\'s own verb');
   });
 
-  it('a worn-out cultivation takes no more (cultivation.js addWear)', () => {
+  it('a worn-out cultivation takes no more (cultivation.js addWear); only a mine-out wears a rock (G778)', () => {
     const worn = JSON.parse(JSON.stringify(state));
     worn.systems.features.homes.cult.items[0].wear = 39;
-    const r = php(`$s = json_decode(${JSON.stringify(JSON.stringify(worn))}, false); echo json_encode([HomeYard::judgeStock(HomeYard::rules(), $s, [], [], [], 'rock', 'rock:0', 'mine', ${now}, fn($a, $b) => $a), HomeYard::judgeStock(HomeYard::rules(), $s, [['id' => 'yd-3', 'kind' => 'rock', 'target' => 'rock:0', 'verb' => 'mine', 'took' => 3, 'at_ms' => ${now - 10}]], [], [], 'rock', 'rock:0', 'mine', ${now}, fn($a, $b) => $a)]);`);
+    const waitingSwing = (took) => `[['id' => 'yd-3', 'kind' => 'rock', 'target' => 'rock:0', 'verb' => 'mine', 'took' => ${took}, 'at_ms' => ${now - 10}]]`;
+    const r = php(`$s = json_decode(${JSON.stringify(JSON.stringify(worn))}, false); echo json_encode([HomeYard::judgeStock(HomeYard::rules(), $s, [], [], [], 'rock', 'rock:0', 'mine', ${now}, fn($a, $b) => $a), HomeYard::judgeStock(HomeYard::rules(), $s, ${waitingSwing(3)}, [], [], 'rock', 'rock:0', 'mine', ${now}, fn($a, $b) => $a), HomeYard::judgeStock(HomeYard::rules(), $s, ${waitingSwing(5)}, [], [], 'rock', 'rock:0', 'mine', ${now}, fn($a, $b) => $a)]);`);
     assert.equal(r[0].took, 3);
-    assert.equal(r[1].why, 'worn');
+    // #360: a swing that leaves chunks wears nothing (include/mining.js 388-389).
+    assert.equal(r[1].took, 3, 'a waiting swing that left 2 chunks is no wear');
+    assert.equal(r[2].why, 'worn', 'the waiting swing that mined it out was the 40th wear');
   });
 
   it('acts the owner\'s save already applied are not counted again', () => {

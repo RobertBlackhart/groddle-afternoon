@@ -70,7 +70,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=a3135ffd';
 import { readVisitScene } from '../neighbours-mp.js?v=adb9bd43';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=03ad07fb';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=2136c2a5';
 import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=31222985';
 import {
   YARD_STREET,
@@ -88,7 +88,7 @@ import {
   treeSnapshot,
   visitorAnimalState,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=93921485';
+} from '../yard-verbs-mp.js?v=71b771ae';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, stickForClass } from '../yard-wander.js?v=6d39956f';
@@ -108,7 +108,7 @@ import {
   normalizeStockView,
   visitorNode,
   visitorRock,
-} from '../yard-stock-mp.js?v=2f78d6b5';
+} from '../yard-stock-mp.js?v=1c2fcf7b';
 
 export { YARD_VERBS_MP_ID };
 
@@ -982,8 +982,10 @@ function createSession(engine, client) {
     if (!cult || !world) return;
     const changed = applyStockAct({ rocks: world.rocks, nodes: nodesSlot.nodes, items: cult.items }, act);
     if (!changed) return;
-    // A home rock wears a use a swing, as the owner's own (homes-feature wearFromEvent); nodes wear from their harvests (wearFromNodes).
-    if (changed.kind === 'rock' && changed.wearItem != null) wearHomeCultivation(engine, changed.wearItem, 1);
+    // G778 (#360): a home rock wears once when a swing mines it out (include/mining.js 388-389), as the
+    // owner's own (homes-feature wearFromEvent); nodes wear from their harvests (wearFromNodes).
+    if (changed.kind === 'rock' && changed.minedOut && changed.wearItem != null) wearHomeCultivation(engine, changed.wearItem, 1);
+
     const line = STOCK_TEXT.acted(act.from.name, act.verb, changed.what);
     lastLine = line;
     engine.pushActivity?.(line);

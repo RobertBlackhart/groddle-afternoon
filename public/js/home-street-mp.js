@@ -373,7 +373,30 @@ export function restoreWireId(ownerId, item, yard = 'street') {
   return wire.length <= 16 ? wire : '';
 }
 
+/**
+ * G778 (#360): my worn-out cultivations (home street and back yard) whose restoration the realtime
+ * server has no token for yet. A rock or garden that wears out now is in my save on this page only;
+ * the site signs its token (HomeStreet.php restores) once the save that holds it is stored.
+ * `tokens` is the Map or Set of wire ids already sent.
+ */
+export function missingRestoreWires(homes, ownerId, tokens) {
+  const out = [];
+  for (const [yard, cult] of [['street', homes?.cult], ['back', homes?.backCult]]) {
+    for (const item of Array.isArray(cult?.items) ? cult.items : []) {
+      if (!item?.depleted) continue;
+      const wire = restoreWireId(ownerId, item, yard);
+      if (wire && !tokens?.has?.(wire)) out.push(wire);
+    }
+  }
+  return out;
+}
+
+/** How often, and how many times, a missing restoration asks the site again (ours). */
+export const RESTORE_RETRY_MS = 5000;
+export const RESTORE_RETRIES = 6;
+
 /** { owner, item, cycle, yard } a wire id names, or null. */
+
 export function readWireId(wire) {
   const m = /^([hy])([0-9a-z]{1,8})-([0-9a-z]{1,4})-([0-9a-z]{1,2})$/.exec(String(wire || ''));
   if (!m) return null;

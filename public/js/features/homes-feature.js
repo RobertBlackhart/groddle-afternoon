@@ -6603,7 +6603,10 @@ function keepInsideWalls(engine) {
 function wearFromEvent(engine, counter) {
   if (!scene || (scene.room !== 'street' && !inHouse())) return;
   let kinds = null;
-  if (/^rock_[a-z]+_\d+:mine$/.test(counter)) kinds = ['rock'];
+  // G778 (#360): a rock wears once each time it is mined out, not each swing (include/mining.js
+  // 388-389: addWear only when chunks_remaining reaches 0; game.js emits rocks_depleted then).
+  if (/^rocks_depleted:rock_[a-z]+_\d+$/.test(counter)) kinds = ['rock'];
+
   else if (/^(garden_harvest|herb_harvest):/.test(counter)) kinds = ['garden'];
   if (!kinds) return;
   const item = nearestCultivation(engine, kinds);

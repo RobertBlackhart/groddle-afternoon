@@ -54,10 +54,10 @@ import { textureFromUrl } from '../textures.js?v=814d7926';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=987fe292';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=adb9bd43';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=03ad07fb';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=2136c2a5';
 import { projectApi } from './street-jobs-feature.js?v=42645b7d';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=f3a313ad';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=c2d7137c';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -76,8 +76,11 @@ import {
   normalizeListings,
   normalizePiles,
   normalizePole,
+  missingRestoreWires,
   normalizeRestores,
   noteSold,
+  RESTORE_RETRIES,
+  RESTORE_RETRY_MS,
   parsePrice,
   philanthropicReward,
   salePlacementKey,
@@ -89,7 +92,7 @@ import {
   saleVerbs,
   signpostArms,
   signpostCandidates,
-} from '../home-street-mp.js?v=471534af';
+} from '../home-street-mp.js?v=f2673e38';
 
 export { HOME_STREET_MP_ID };
 
@@ -220,6 +223,9 @@ function createSession(engine, client) {
   const slice = normalizeHomeStreetSlice(savedSlice);
   /** My own home: the post's arms, my pieces on sale, my piles, the restorations I sent tokens for. */
   const own = { neighbors: null, listed: new Map(), piles: [], tokens: new Map(), loading: false, loadedAt: 0 };
+  /** G778: worn-out cultivations still waiting for their token: wire id -> times asked. */
+  const restoreAsked = new Map();
+  let restoreAskAt = 0;
   /** The home I visit now: { owner, name, room, key, view, data, listed, pieces, roomX, houseX }. */
   let visit = null;
   /** What this feature drew in the scene now (the engine clears sprites and targets with the scene). */
@@ -558,6 +564,21 @@ function createSession(engine, client) {
       own.loading = false;
     }
     if (where() === 'street' || where() === 'house') drawOwn();
+  }
+
+  /**
+   * G778 (#360): a cultivation that just wore out (homes-feature wearItem) had no restoration on the
+   * realtime server, so putting things in said "There is no such project here" (projects.go) until the
+   * next load. Store the save that holds it, then ask the site for its token at once (a few times,
+   * while the save is still on its way).
+   */
+  function ensureRestoreTokens(now) {
+    if (own.loading || client.state !== 'online' || now - restoreAskAt < RESTORE_RETRY_MS) return;
+    const missing = missingRestoreWires(homesFeature._state?.(), me(), own.tokens).filter((w) => (restoreAsked.get(w) || 0) < RESTORE_RETRIES);
+    if (!missing.length) return;
+    restoreAskAt = now;
+    for (const w of missing) restoreAsked.set(w, (restoreAsked.get(w) || 0) + 1);
+    flush(engine).catch(() => false).finally(() => loadOwn({ force: true }));
   }
 
   function goodNeighbour() {
@@ -1257,6 +1278,8 @@ function createSession(engine, client) {
       } else if (!w && lastSceneKey) {
         lastSceneKey = '';
       }
+      if (w === 'street' || w === 'house') ensureRestoreTokens(now);
+
       // Ticket 55: a piece moved (or restyled) in the house takes its price tag and hit box along.
       if (w === 'house' && st?.houseDecor && salePlacementKey(st.houseDecor.placed, ownGeometry().house.roomX) !== salesKey) drawOwnSales();
       if (now - tickAt < 250) return;

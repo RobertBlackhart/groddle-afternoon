@@ -23,7 +23,7 @@ import {
   sadnessMax,
   yardClassCap,
 } from '../public/js/animal-crowding.js?v=3ee9671d';
-import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=93921485';
+import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=71b771ae';
 import { homeStreetLayout, normalizeCultivationState } from '../public/js/home-cultivation.js?v=a3135ffd';
 import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=037cb3cd';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
