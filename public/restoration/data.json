@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2215,
+  "commits": 2220,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Zhambu's and The Seams' maps are Tiny Speck's 2012 paintings, restored"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Award cards show Giant emblems and the job sign sharp, and small icons stay crisp at a smaller size"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The Feat Completed card shows the Petrified Rock sharp instead of a blurred, stretched icon"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "On a phone, Act chooses in the menu it opened, and a drag on Act moves the light"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2894,29 +2914,9 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "A short street on an upright phone shows its own sky above it, and the route card no longer covers the street's name"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A phone held sideways keeps the pack row low but clear of the iPhone home-bar strip"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A narrow street like Semsan Simile draws at actual size between plain borders instead of magnified"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Mining takes Glitch's time again (20, 14, 10 and 8 s for Mining I to IV) and the pick swings on the rock"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Only a single level-up is credited outside the daily room; a jump of several levels waits for room like the rest"
    }
   ]
  },
- "tests": 999,
+ "tests": 1000,
  "generatedAt": "2026-11-15"
 }
