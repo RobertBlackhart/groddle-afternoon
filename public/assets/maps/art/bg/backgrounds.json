@@ -185,10 +185,10 @@
       "x1": "assets/maps/art/bg/theseams.webp",
       "x2": "assets/maps/art/bg/theseams@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 16144,
-      "x1Sha256": "a22b6796b0d1a09afb46785fbff1a41513cb0377924b77cfbca4db9e13b37bd3",
-      "x2Bytes": 52134,
-      "x2Sha256": "ba012b27e8b101c491a4c768b7642ed930f3bd87cd79a027929d67ee73b7005d"
+      "x1Bytes": 89220,
+      "x1Sha256": "43deb4b1196b094cec1e688cf9d0aee5e90825a994639081f11919e6ff3febfd",
+      "x2Bytes": 219502,
+      "x2Sha256": "517c4386d14b0c6148599982262c8e732dcfae7aeb34fe5abf682021ba95edbb"
     },
     "71": {
       "hubName": "Jethimadh",
@@ -356,10 +356,10 @@
       "x1": "assets/maps/art/bg/zhambu.webp",
       "x2": "assets/maps/art/bg/zhambu@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 27792,
-      "x1Sha256": "306d9ca865bb2fcdc70457dc25b7aa303be70d75affa2c34f78795f5a1d31641",
-      "x2Bytes": 95784,
-      "x2Sha256": "e92206bf1a1922e322b0ad0af51e063720f5e4c3d59934ddd4e55949d944bdaa"
+      "x1Bytes": 70592,
+      "x1Sha256": "dcf4f25cd25051d77315fd2258cb762460589fb42a89ae217fdd79eaedcf8114",
+      "x2Bytes": 247606,
+      "x2Sha256": "c2c713dda78588de95363bae5b6accc3100c1acce7f60fe3766b6481f4e699ef"
     },
     "92": {
       "hubName": "Tamila",

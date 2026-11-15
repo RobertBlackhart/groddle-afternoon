@@ -207,24 +207,24 @@
       ]
     },
     {
-      "id": "maps:143,91",
-      "name": "More region maps",
-      "caption": "The last two region paintings made again from their thumbnails: Vortex of Random and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
+      "id": "maps:143",
+      "name": "Vortex of Random map",
+      "caption": "The one region painting still made again from its thumbnail: Vortex of Random. It kept the region's own shape and colours. Every other region now shows Tiny Speck's own painting, restored from its 2012 Encyclopedia map.",
       "display": {
-        "w": 161,
-        "h": 199
+        "w": 304,
+        "h": 184
       },
       "image": {
         "file": "public/assets/made-art/maps-painted.webp",
         "label": "Painted again for Groddle",
-        "alt": "Two painted top-down maps: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky, and a golden savanna dotted with scrub, boulders and a small blue pool."
+        "alt": "A painted map: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky."
       },
       "original": {
         "file": "public/assets/made-art/maps-thumbs.webp",
         "kind": "original",
         "pixelated": true,
-        "label": "Tiny Speck's thumbnails, 150 by 91 pixels each, shown at the same size",
-        "alt": "Tiny Speck's two small thumbnails of the same maps, enlarged so their pixels show."
+        "label": "Tiny Speck's thumbnail, {w} by {h} pixels, shown at the same size",
+        "alt": "Tiny Speck's small thumbnail of the same map, enlarged so its pixels show."
       },
       "parts": {
         "original": {
@@ -239,15 +239,15 @@
       "facts": [
         {
           "label": "How it was made",
-          "text": "Painted by an image model ({tool}) under Austin's direction, each given its region's own thumbnail and a drawing of where the game puts the region's streets, so they still land in the right places, then toned down a little."
+          "text": "Painted by an image model ({tool}) under Austin's direction, given the region's own thumbnail and a drawing of where the game puts the region's streets, so they still land in the right places, then toned down a little."
         },
         {
           "label": "How it was checked",
-          "text": "Austin looked at each beside its thumbnail and kept it. {regions} regions in all were painted again, four of them with no thumbnail to follow, from their streets alone."
+          "text": "Austin looked at it beside its thumbnail and kept it. {regions} regions in all were painted again, four of them with no thumbnail to follow, from their streets alone; all the others have since been restored from their 2012 Encyclopedia maps."
         },
         {
           "label": "In the game",
-          "text": "The backgrounds of the Vortex of Random and Zhambu region maps."
+          "text": "The background of the Vortex of Random region map."
         }
       ]
     }

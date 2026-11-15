@@ -283,14 +283,14 @@
         "file": "assets/maps/art/bg/zhambu@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "e92206bf1a1922e322b0ad0af51e063720f5e4c3d59934ddd4e55949d944bdaa"
+        "sha256": "c2c713dda78588de95363bae5b6accc3100c1acce7f60fe3766b6481f4e699ef"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 16820,
-        "sha256": "a3a0e95db3093bdd07e1917c3dd01873e9c40e95d4398022787f18855cb4a45c"
+        "bytes": 46930,
+        "sha256": "ed10a45d39ec51557e548693daf0f99afc1fcffaf72dd478591b40a8adbee4d7"
       }
     },
     "92": {

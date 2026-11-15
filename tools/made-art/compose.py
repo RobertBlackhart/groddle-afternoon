@@ -118,9 +118,10 @@ def props_scene():
 
 
 # Region maps: the thumbnails and their paintings, one column each (the regions still painted from their thumbnails;
-# the rest show Tiny Speck's own 2012 paintings, restored)
+# the rest show Tiny Speck's own 2012 paintings, restored). Since lane maps16 restored Zhambu, only Vortex of Random,
+# which has no 2012 map, is left.
 
-MAPS = [('143', 'vortex'), ('91', 'zhambu')]
+MAPS = [('143', 'vortex')]
 GAP = 3  # px between thumbnails (12 between paintings)
 
 
@@ -186,10 +187,10 @@ def main():
 
     # Region maps.
     a, b, ta, pb = maps_columns()
-    put('maps-thumbs', webp(a, 'maps-thumbs', lossless=True), "Tiny Speck's thumbnails of Vortex of Random and Zhambu",
-        f'the two CC0 thumbnails as they are, one above the other, {GAP} px apart', [t | {'licence': 'CC0 1.0, Tiny Speck'} for t in ta])
-    put('maps-painted', webp(b, 'maps-painted', q=86), 'The paintings of Vortex of Random and Zhambu made again for Groddle',
-        f'the two repainted maps (2x files) at four times the thumbnails, one above the other, {GAP * 4} px apart (tools/provenance/repainted-maps.json)', pb)
+    put('maps-thumbs', webp(a, 'maps-thumbs', lossless=True), "Tiny Speck's thumbnail of Vortex of Random",
+        'the CC0 thumbnail as it is', [t | {'licence': 'CC0 1.0, Tiny Speck'} for t in ta])
+    put('maps-painted', webp(b, 'maps-painted', q=86), 'The painting of Vortex of Random made again for Groddle',
+        'the repainted map (2x file) at four times the thumbnail (tools/provenance/repainted-maps.json)', pb)
 
     doc = {'format': 'groddle-made-showcase/1',
            'about': 'Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and three game screenshots; tools/made-art/build-data.mjs checks each against its sha256.',

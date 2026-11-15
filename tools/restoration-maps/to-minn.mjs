@@ -30,7 +30,7 @@ export function mapsContent() {
     group('header', 'masthead', null, [group('div', 'wrap', null, [
       p('kicker', 'Groddle Field Notes · Restoration report'),
       h(1, 'Maps'),
-      p('lead', 'Every map in Groddle Afternoon beside Tiny Speck’s own map of the same place. Each region’s “before” is the map the Glitch Encyclopedia showed in 2012: Tiny Speck’s painting with the game’s roads and names on it, saved by the Internet Archive. The paintings themselves were lost as files when Glitch closed. Some are back, restored from those 2012 maps, the rest were painted again from the small pictures that survived, and the World map was sharpened for today’s screens. Wipe across, flip or enlarge any of them to see the difference.'),
+      p('lead', 'Every map in Groddle Afternoon beside Tiny Speck’s own map of the same place. Each region’s “before” is the map the Glitch Encyclopedia showed in 2012: Tiny Speck’s painting with the game’s roads and names on it, saved by the Internet Archive. The paintings themselves were lost as files when Glitch closed. All but one are back, restored from those 2012 maps, the last one was painted again from the small picture that survived, and the World map was sharpened for today’s screens. Wipe across, flip or enlarge any of them to see the difference.'),
       data('summary'),
       p('jump', '<a href="#world">The World map</a> <a href="#restored">Restored from 2012</a> <a href="#painted">Painted again</a> <a href="#how">How they were made</a> <a href="/restoration/">The restoration report</a>'),
     ])]),
@@ -39,16 +39,16 @@ export function mapsContent() {
       data('world'),
     ]),
     band('restored', true, 'Restored from 2012', [
-      p('section-lead', 'For these regions Tiny Speck’s own painting came back. The 2012 Encyclopedia showed each region’s map with the game’s roads, names and buttons drawn on top, and that map is the picture on the left. It was the starting point: an image model took the markings off and sharpened it without moving anything, and the result was toned back to 2012’s colour.'),
+      p('section-lead', 'For these regions Tiny Speck’s own painting came back. The 2012 Encyclopedia showed nearly every region’s map with the game’s roads, names and buttons drawn on top, and that map is the picture on the left. It was the starting point: an image model took the markings off and sharpened it without moving anything, and the result was toned back to 2012’s colour. Where the Encyclopedia drew no markings, the painting was only sharpened.'),
       data('restored'),
     ]),
     band('painted', false, 'Painted again', [
-      p('section-lead', 'These regions were painted again before the 2012 maps were put to use: each from the small thumbnail on the World map and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, and a few with no thumbnail from their street layout alone. Beside each is Tiny Speck’s 2012 map of it, so you can see how far the new painting strays. As more are restored from their 2012 maps, they move up to the section above.'),
+      p('section-lead', 'A region listed here was painted again before the 2012 maps were put to use: from the small thumbnail on the World map and the region’s street layout, in the style of the decos Tiny Speck painted its streets with. Beside it is Tiny Speck’s 2012 map of it, so you can see how far the new painting strays. Once it is restored from its 2012 map, it moves up to the section above.'),
       data('painted'),
     ]),
     band('how', true, 'How they were made', [
       p('section-lead', 'Each restore is toned to its own 2012 picture: the average saturation and lightness of its middle tones are matched, leaving out the 2012 roads, white lettering and pale paper sea, so they do not count. Gamma is used rather than a brightness boost, so the light paper sea keeps its grain.'),
-      p('', 'Before a restore ships it is laid beside its 2012 map at the same size and checked by eye: every cliff, rock, hollow, pool and building has to sit where 2012 had it, and nothing may stand where 2012 had only a road or a name. A try that moves, adds or loses something goes back with the change asked for in words and is painted again. Anything still different after that is written on the region’s card, and a region that has not passed yet keeps its painting from the thumbnail until it does.'),
+      p('', 'Before a restore ships it is laid beside its 2012 map at the same size and checked by eye: every cliff, rock, hollow, pool and building has to sit where 2012 had it, and nothing may stand where 2012 had only a road or a name. A try that moves, adds or loses something goes back with the change asked for in words and is painted again. Anything still different after that is written on the region’s card; a restore that still differs ships with its differences written there unless it is worse than the painting it replaces, and a later try that passes takes its place.'),
       p('', 'The before pictures are Tiny Speck’s own 2012 Encyclopedia maps, shown as Tiny Speck made them, with the game’s roads and names on them, the same way the game plays Tiny Speck’s original recordings. Every other picture on this page is CC0: Tiny Speck’s own art, which they gave to the public domain, or a picture made for Groddle Afternoon and given to the public domain the same way. The record of how each map was made, from what, and who chose it, and the list of the 2012 maps with where each was saved from, ship with the game’s source.'),
     ]),
     group('div', 'wrap report-foot', null, [

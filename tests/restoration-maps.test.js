@@ -119,28 +119,42 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
   it('a region with no 2012 map keeps its thumbnail (or nothing) and says so on its card', () => {
     const index = readJson(join(GAME_DIR, 'public/assets/maps/index.json'));
     const fs = { read: (f) => (existsSync(pub(f)) ? readFileSync(pub(f)) : null), exists: (f) => existsSync(pub(f)) };
-    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '91' && id !== '66')) };
-    const data = build(provenance, null, index, fs, only);
-    // Zhambu, still painted from its thumbnail (Ix was the example until lane maps4 restored it from 2012, then Vantalu until lane maps15).
-    const zhambu = data.regions.find((r) => r.id === '91');
-    assert.equal(zhambu.before.src, `/${index.hubs['91'].thumbLocal}`);
-    assert.match(zhambu.caption, /No 2012 Encyclopedia map of Zhambu survives, so it is shown beside that thumbnail\./);
-    assert.ok(!zhambu.facts.some((f) => f.label === '2012'));
-    // The Seams, still painted from its street layout (Naraka was the example until lane maps10 restored it from 2012).
+    // Vortex of Random, the one region still painted from its thumbnail (Ix was the example until lane maps4 restored it
+    // from 2012, then Vantalu until lane maps15, then Zhambu until lane maps16), with its 2012 map left out of the list.
+    // The Seams, with no thumbnail and no 2012 map, would show nothing before (no region is left so since lane maps16
+    // restored it; its record from before, kept under replaces, stands in, with the files the game ships now).
+    const now = provenance.regions['66'];
+    const old = { ...now, ...now.replaces, x1: now.x1, x2: now.x2 };
+    delete old.method;
+    delete old.replaces;
+    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '143' && id !== '66')) };
+    const data = build({ ...provenance, regions: { ...provenance.regions, 66: old } }, null, index, fs, only);
+    const vortex = data.regions.find((r) => r.id === '143');
+    assert.equal(vortex.state, 'painted');
+    assert.equal(vortex.before.src, `/${index.hubs['143'].thumbLocal}`);
+    assert.match(vortex.caption, /No 2012 Encyclopedia map of Vortex of Random survives, so it is shown beside that thumbnail\./);
+    assert.ok(!vortex.facts.some((f) => f.label === '2012'));
     const seams = data.regions.find((r) => r.id === '66');
+    assert.equal(seams.state, 'layout');
     assert.equal(seams.before, null);
     assert.match(seams.caption, /No 2012 Encyclopedia map of The Seams survives/);
     assert.deepEqual(wordProblems(data), []);
+    // The real data: no region is left painted from its street layout, so the page's summary has no chip for it.
+    assert.equal(maps.counts.layout, 0);
   });
 
   it('a 2012 map drawn with no roads or names (Naraka) is not said to have had markings taken off (lane maps10)', () => {
     const unmarked = Object.entries(provenance.regions).filter(([, r]) => r.markings2012 === 'none').map(([id]) => id);
-    assert.deepEqual(unmarked, ['40']);
+    assert.deepEqual(unmarked, ['40', '66'], 'Naraka and The Seams (lane maps16)');
+    const seams = maps.regions.find((r) => r.id === '66');
+    assert.equal(seams.state, 'restored');
+    assert.match(seams.caption, /drew no roads, names or buttons/);
+    assert.match(seams.before.alt, /^Tiny Speck’s 2012 Encyclopedia map of The Seams$/);
     const naraka = maps.regions.find((r) => r.id === '40');
     assert.equal(naraka.state, 'restored');
     assert.match(naraka.caption, /drew no roads, names or buttons/);
     assert.doesNotMatch(`${naraka.caption} ${naraka.before.alt}`, /took those markings off|roads and names on it/);
-    const other = maps.regions.find((r) => r.state === 'restored' && r.id !== '40');
+    const other = maps.regions.find((r) => r.state === 'restored' && !unmarked.includes(r.id));
     assert.match(other.caption, /took those markings off/);
     assert.match(other.before.alt, /roads and names on it/);
   });
@@ -227,6 +241,8 @@ describe('the Maps block (site src/RestorationMaps.php)', { skip: skipWithoutSit
   it('draws each part alone, and keeps anything but the game\'s pictures and site pages out of src and href', () => {
     assert.match(draw(maps, 'summary'), /<b>\d+<\/b> region maps and the World map/);
     assert.doesNotMatch(draw(maps, 'summary'), /maps-card/);
+    // An empty group has no chip (none is left painted from its street layout since lane maps16).
+    if (maps.counts.layout === 0) assert.doesNotMatch(draw(maps, 'summary'), /Painted from the street layout/);
     assert.equal((draw(maps, 'world').match(/maps-card maps-world/g) || []).length, maps.world.charts.length);
     assert.equal((draw(maps, 'restored').match(/<article/g) || []).length, maps.counts.restored);
     assert.equal((draw(maps, 'painted').match(/<article/g) || []).length, maps.counts.painted + maps.counts.layout);

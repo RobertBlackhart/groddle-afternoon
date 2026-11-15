@@ -275,44 +275,44 @@
       ]
     },
     {
-      "id": "maps:143,91",
-      "anchor": "made-more-region-maps",
-      "name": "More region maps",
+      "id": "maps:143",
+      "anchor": "made-vortex-of-random-map",
+      "name": "Vortex of Random map",
       "made": "2026-11-06",
       "madeLabel": "6 November 2026",
-      "caption": "The last two region paintings made again from their thumbnails: Vortex of Random and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
+      "caption": "The one region painting still made again from its thumbnail: Vortex of Random. It kept the region's own shape and colours. Every other region now shows Tiny Speck's own painting, restored from its 2012 Encyclopedia map.",
       "display": {
-        "w": 161,
-        "h": 199
+        "w": 304,
+        "h": 184
       },
       "image": {
         "src": "/assets/made-art/maps-painted.webp",
         "w": 600,
-        "h": 740,
+        "h": 364,
         "label": "Painted again for Groddle",
-        "alt": "Two painted top-down maps: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky, and a golden savanna dotted with scrub, boulders and a small blue pool."
+        "alt": "A painted map: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky."
       },
       "original": {
         "src": "/assets/made-art/maps-thumbs.webp",
         "w": 150,
-        "h": 185,
+        "h": 91,
         "kind": "original",
-        "alt": "Tiny Speck's two small thumbnails of the same maps, enlarged so their pixels show.",
+        "alt": "Tiny Speck's small thumbnail of the same map, enlarged so its pixels show.",
         "pixelated": true,
-        "label": "Tiny Speck's thumbnails, 150 by 91 pixels each, shown at the same size"
+        "label": "Tiny Speck's thumbnail, 150 by 91 pixels, shown at the same size"
       },
       "facts": [
         {
           "label": "How it was made",
-          "text": "Painted by an image model (GPT Image 2.6 Sunburst) under Austin's direction, each given its region's own thumbnail and a drawing of where the game puts the region's streets, so they still land in the right places, then toned down a little."
+          "text": "Painted by an image model (GPT Image 2.6 Sunburst) under Austin's direction, given the region's own thumbnail and a drawing of where the game puts the region's streets, so they still land in the right places, then toned down a little."
         },
         {
           "label": "How it was checked",
-          "text": "Austin looked at each beside its thumbnail and kept it. 51 regions in all were painted again, four of them with no thumbnail to follow, from their streets alone."
+          "text": "Austin looked at it beside its thumbnail and kept it. 51 regions in all were painted again, four of them with no thumbnail to follow, from their streets alone; all the others have since been restored from their 2012 Encyclopedia maps."
         },
         {
           "label": "In the game",
-          "text": "The backgrounds of the Vortex of Random and Zhambu region maps."
+          "text": "The background of the Vortex of Random region map."
         },
         {
           "label": "Licence",
@@ -336,24 +336,6 @@
             "h": 920,
             "label": "Vortex of Random: painted again for Groddle",
             "alt": "The Vortex of Random region map, painted again for Groddle from that thumbnail."
-          }
-        },
-        {
-          "name": "Zhambu",
-          "original": {
-            "src": "/assets/maps/art/thumbs/sm_zhambu.jpg",
-            "w": 150,
-            "h": 91,
-            "pixelated": true,
-            "label": "Zhambu: Tiny Speck's thumbnail, 150 by 91 pixels",
-            "alt": "Tiny Speck's small thumbnail of the Zhambu map, enlarged so its pixels show."
-          },
-          "image": {
-            "src": "/assets/maps/art/bg/zhambu@2x.webp",
-            "w": 1520,
-            "h": 920,
-            "label": "Zhambu: painted again for Groddle",
-            "alt": "The Zhambu region map, painted again for Groddle from that thumbnail."
           }
         }
       ]

@@ -17,9 +17,9 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 48,
-    "painted": 2,
-    "layout": 1
+    "restored": 50,
+    "painted": 1,
+    "layout": 0
   },
   "world": {
     "made": "13 November 2026",
@@ -2032,6 +2032,45 @@
       "place": "/encyclopedia/places/tamila/"
     },
     {
+      "id": "66",
+      "name": "The Seams",
+      "anchor": "map-the-seams",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of The Seams, restored from its 2012 Encyclopedia map, which drew no roads, names or buttons on this region. An image model sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "2012 had no markings; the restore only adds detail at 2x. The green wormhole grid and its two planes, the funnel with its bright yellow-green waist, the green lettering along the funnel's rim, the two faint ghost funnels at the left and right, and the bright stars with their sparkles sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the grid lines are crisp and evenly bright where 2012's glow softly and fade into the dark toward the right of both planes; the ghost funnels are clearer than 2012's faint ones; the dark sky carries many more tiny stars than 2012 and less of its soft brown haze; the lettering along the rim is redrawn in the same style, and neither copy reads as words. Toned a little lighter than 2012 overall (mean lightness 0.176 against 0.163), which keeps the grid at 2012's brightness.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 13 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/theseams.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of The Seams"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/theseams.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "The Seams restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/theseams@2x.webp"
+      },
+      "card": null,
+      "place": "/encyclopedia/places/the-seams/"
+    },
+    {
       "id": "51",
       "name": "Uralia",
       "anchor": "map-uralia",
@@ -2164,6 +2203,50 @@
       "place": "/encyclopedia/places/xalanga/"
     },
     {
+      "id": "91",
+      "name": "Zhambu",
+      "anchor": "map-zhambu",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Zhambu, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The savanna, its darker grass mounds, the small blue pool with its bushes, every scrub clump, the boulders at the bottom left and by To: Baqala, the rock outcrops at the top right and the small stones sit where 2012 had them (worst tile drift 2 px at 2x), and no road ghosts show with the contrast raised. Known differences: two small dark hollows in the grass just above the start of the words 'Rube's Way 3', below where Boor Bane C meets Boor Bane D, are gone (plain grass there); the darker grass mounds by Chuff Chase 3, Swain Way 4 and Rustic Rd NE are a little softer and lighter than 2012's; along the top edge, where the model copied the 2012 Encyclopedia's thin white frame, the outermost rows were filled from the row beside them, so the bushes the edge cuts show a few pixels of streaks at 2x.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/zhambu.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Zhambu, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/zhambu.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Zhambu restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/zhambu@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/91.svg",
+        "w": 151,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/zhambu/"
+    },
+    {
       "id": "143",
       "name": "Vortex of Random",
       "anchor": "map-vortex-of-random",
@@ -2202,81 +2285,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/vortex-of-random/"
-    },
-    {
-      "id": "91",
-      "name": "Zhambu",
-      "anchor": "map-zhambu",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Zhambu survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/zhambu.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Zhambu, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/zhambu.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Zhambu painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/zhambu@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/91.svg",
-        "w": 151,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/zhambu/"
-    },
-    {
-      "id": "66",
-      "name": "The Seams",
-      "anchor": "map-the-seams",
-      "state": "layout",
-      "caption": "The Seams had no thumbnail on the World map, so the painting in the game now was made from its street layout alone, in the style of the decos Tiny Speck painted its streets with. The 2012 Encyclopedia map shows Tiny Speck’s own painting, under the game’s roads and names.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "13 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/theseams.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of The Seams, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/theseams.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "The Seams painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/theseams@2x.webp"
-      },
-      "card": null,
-      "place": "/encyclopedia/places/the-seams/"
     }
   ]
 }
