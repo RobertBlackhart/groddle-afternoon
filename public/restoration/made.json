@@ -275,29 +275,29 @@
       ]
     },
     {
-      "id": "maps:100,143,91",
+      "id": "maps:143,91",
       "anchor": "made-more-region-maps",
       "name": "More region maps",
       "made": "2026-11-06",
       "madeLabel": "6 November 2026",
-      "caption": "Three more of the region paintings made again from their thumbnails: Vantalu, Vortex of Random and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
+      "caption": "The last two region paintings made again from their thumbnails: Vortex of Random and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
       "display": {
         "w": 161,
-        "h": 300
+        "h": 199
       },
       "image": {
         "src": "/assets/made-art/maps-painted.webp",
         "w": 600,
-        "h": 1116,
+        "h": 740,
         "label": "Painted again for Groddle",
-        "alt": "Three painted top-down maps: a pale cracked cliff above a green meadow of hedges, a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky, and a golden savanna dotted with scrub, boulders and a small blue pool."
+        "alt": "Two painted top-down maps: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky, and a golden savanna dotted with scrub, boulders and a small blue pool."
       },
       "original": {
         "src": "/assets/made-art/maps-thumbs.webp",
         "w": 150,
-        "h": 279,
+        "h": 185,
         "kind": "original",
-        "alt": "Tiny Speck's three small thumbnails of the same maps, enlarged so their pixels show.",
+        "alt": "Tiny Speck's two small thumbnails of the same maps, enlarged so their pixels show.",
         "pixelated": true,
         "label": "Tiny Speck's thumbnails, 150 by 91 pixels each, shown at the same size"
       },
@@ -312,7 +312,7 @@
         },
         {
           "label": "In the game",
-          "text": "The backgrounds of the Vantalu, Vortex of Random and Zhambu region maps."
+          "text": "The backgrounds of the Vortex of Random and Zhambu region maps."
         },
         {
           "label": "Licence",
@@ -320,24 +320,6 @@
         }
       ],
       "parts": [
-        {
-          "name": "Vantalu",
-          "original": {
-            "src": "/assets/maps/art/thumbs/sm_vantalu.jpg",
-            "w": 150,
-            "h": 91,
-            "pixelated": true,
-            "label": "Vantalu: Tiny Speck's thumbnail, 150 by 91 pixels",
-            "alt": "Tiny Speck's small thumbnail of the Vantalu map, enlarged so its pixels show."
-          },
-          "image": {
-            "src": "/assets/maps/art/bg/vantalu@2x.webp",
-            "w": 1520,
-            "h": 920,
-            "label": "Vantalu: painted again for Groddle",
-            "alt": "The Vantalu region map, painted again for Groddle from that thumbnail."
-          }
-        },
         {
           "name": "Vortex of Random",
           "original": {

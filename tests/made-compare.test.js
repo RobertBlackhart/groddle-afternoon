@@ -15,7 +15,7 @@ import { boxOf, compareSteps, openingStep, partView, stepFrom } from '../public/
 
 const readJson = (file) => JSON.parse(readFileSync(join(GAME_DIR, file), 'utf8'));
 const made = readJson('public/restoration/made.json');
-const gallery = made.pieces.find((p) => p.id === 'maps:100,143,91');
+const gallery = made.pieces.find((p) => p.id === 'maps:143,91');
 const pairsOf = (piece) => (piece.parts
   ? piece.parts.map((p) => [partView(p.original, false), partView(p.image, true)])
   : [[piece.original, piece.image].filter(Boolean)]);
@@ -26,14 +26,13 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
     assert.deepEqual(compareSteps(pairsOf(book)), [[0, 0], [0, 1]]);
     const pairs = pairsOf(gallery);
     const steps = compareSteps(pairs);
-    assert.equal(steps.length, 6, 'three regions, two pictures each: "1 of 6" to "6 of 6"');
+    assert.equal(steps.length, 4, 'two regions, two pictures each: "1 of 4" to "4 of 4"');
     assert.deepEqual(steps.map(([pi, vi]) => pairs[pi][vi].label), [
-      "Vantalu: Tiny Speck's thumbnail, 150 by 91 pixels", 'Vantalu: painted again for Groddle',
       "Vortex of Random: Tiny Speck's thumbnail, 150 by 91 pixels", 'Vortex of Random: painted again for Groddle',
       "Zhambu: Tiny Speck's thumbnail, 150 by 91 pixels", 'Zhambu: painted again for Groddle',
     ]);
-    assert.equal(stepFrom(5, 1, 6), 0);
-    assert.equal(stepFrom(0, -1, 6), 5);
+    assert.equal(stepFrom(3, 1, 4), 0);
+    assert.equal(stepFrom(0, -1, 4), 3);
     assert.equal(stepFrom(0, 1, 1), 0, 'a card of one picture does not step');
   });
 
@@ -42,10 +41,10 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
     assert.equal(openingStep(book, 0), 0);
     assert.equal(openingStep(book, 1), 1);
     const pairs = pairsOf(gallery);
-    assert.equal(openingStep(pairs, 0, 0, true), 0, 'Enter on the thumbnails: Vantalu');
-    assert.equal(openingStep(pairs, 1, 0.5, true), 3, 'the middle of the paintings: Vortex of Random painted');
-    assert.equal(openingStep(pairs, 0, 0.99, true), 4, 'the bottom of the thumbnails: Zhambu');
-    assert.equal(openingStep(pairs, 1, 1.4, true), 5, 'clamped to the last region');
+    assert.equal(openingStep(pairs, 0, 0, true), 0, 'Enter on the thumbnails: Vortex of Random');
+    assert.equal(openingStep(pairs, 1, 0.25, true), 1, 'the top of the paintings: Vortex of Random painted');
+    assert.equal(openingStep(pairs, 0, 0.99, true), 2, 'the bottom of the thumbnails: Zhambu');
+    assert.equal(openingStep(pairs, 1, 1.4, true), 3, 'clamped to the last region');
     assert.equal(openingStep([[{ w: 1, h: 1 }]], 1), 0, 'a card with no original opens on its one picture');
   });
 
@@ -61,7 +60,7 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
   });
 
   it('made.json gives the gallery each region\'s own thumbnail and painting, the same shape, the thumbnail pixels kept', () => {
-    assert.deepEqual(gallery.parts.map((p) => p.name), ['Vantalu', 'Vortex of Random', 'Zhambu'], 'top to bottom, as the card and its caption list them');
+    assert.deepEqual(gallery.parts.map((p) => p.name), ['Vortex of Random', 'Zhambu'], 'top to bottom, as the card and its caption list them');
     for (const part of gallery.parts) {
       for (const v of [part.original, part.image]) assert.ok(existsSync(join(GAME_DIR, 'public', v.src)), v.src);
       assert.match(part.original.src, /^\/assets\/maps\/art\/thumbs\/sm_[a-z]+\.jpg$/);
@@ -78,7 +77,7 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
     const curated = readJson('tools/made-art/pieces.json');
     const maps = readJson('tools/provenance/repainted-maps.json');
     const odd = structuredClone(curated);
-    delete odd.pieces.find((p) => p.id === 'maps:100,143,91').parts;
+    delete odd.pieces.find((p) => p.id === 'maps:143,91').parts;
     assert.throws(() => build(provenance, odd, undefined, maps, readMore()), /a gallery needs parts/);
   });
 

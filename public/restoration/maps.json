@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 34,
-    "painted": 16,
+    "restored": 48,
+    "painted": 2,
     "layout": 1
   },
   "world": {
@@ -1157,6 +1157,50 @@
       "place": "/encyclopedia/places/jal/"
     },
     {
+      "id": "71",
+      "name": "Jethimadh",
+      "anchor": "map-jethimadh",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Jethimadh, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The tower, the cliffs, all six of 2012's pools, the trees, the sea edge and the small garden plot with its green rows at Tallus Gardens sit where 2012 had them (worst tile drift 4 px at 2x). Known differences: ten small wooden objects stand where the 2012 map has none, most of them where its street names, road ends and grey icons lay: a ladder on the cliff just left of and below the To: Shimla Mirch button; a board under the start of the To: Jethimadh Tower: Base name and a fence at its end; a board with a fence in the trees left of the tower, above Tuntsa Coze; a board just above the start of Simo Steer; a fence beside Konsenaen Jaunt; a board and post where Tower St South, Onto Parada and Bean Stravenue meet; a hut with a fence at the start of Svarta Swale; a fence between Kishiman Course and Bean Stravenue; and a hut just below Kyron Kreep.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/jethimadh.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Jethimadh, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/jethimadh.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Jethimadh restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/jethimadh@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/71.svg",
+        "w": 151,
+        "h": 126,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/jethimadh/"
+    },
+    {
       "id": "85",
       "name": "Kajuu",
       "anchor": "map-kajuu",
@@ -1289,6 +1333,50 @@
       "place": "/encyclopedia/places/karnata/"
     },
     {
+      "id": "133",
+      "name": "Kloro",
+      "anchor": "map-kloro",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Kloro, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The island outline, the sea, the crowded rock spires, the grey boulders (the big grey mass by Arvensis Harris and the sea rock off the right shore), the blue-grey rocks along the top and the small glowing lights among the spires sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the glowing lights are small bright white points with a tight halo, where 2012's are wide, dim, warm hazes; three wooden things stand where 2012 has plain rock: a ladder on the rock face above the right end of Gomphus Comatus, a fence at the To: Haoma button at the top left, and a few fence posts just below Ganos Lucidum.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/kloro.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kloro, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/kloro.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Kloro restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/kloro@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/133.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/kloro/"
+    },
+    {
       "id": "105",
       "name": "Lida",
       "anchor": "map-lida",
@@ -1377,6 +1465,50 @@
       "place": "/encyclopedia/places/massadoe/"
     },
     {
+      "id": "97",
+      "name": "Muufo",
+      "anchor": "map-muufo",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Muufo, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cliff shelf, the woods, the pond, the Nowaa Holler cave, the Zaruu Zilch hole, the Nira Nooks notch and the two small slatted wooden benches in the woods at Tuara Park and Naama Habitat sit where 2012 had them (worst tile drift 4 px at 2x in one tile, 0 to 2 px in the rest). Known differences: the small dark hole just below Odena Odes and the dark hollow under the middle of Patchouli Preamble are gone, plain rock in their place; a small wooden bench stands where Nowaa Holler, Okara Cast and Chuma Chore meet, just right of the cave at the top left, where 2012 has none.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/muufo.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Muufo, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/muufo.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Muufo restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/muufo@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/97.svg",
+        "w": 151,
+        "h": 123,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/muufo/"
+    },
+    {
       "id": "40",
       "name": "Naraka",
       "anchor": "map-naraka",
@@ -1414,6 +1546,138 @@
       },
       "card": null,
       "place": "/encyclopedia/places/naraka/"
+    },
+    {
+      "id": "137",
+      "name": "Nottis",
+      "anchor": "map-nottis",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Nottis, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The ice pit, its icicles, both frozen ponds, the snowy trees and bushes, the tunnel arch, the stone blocks and the little figure sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the small round snow hollow with a grey rim just below Brilyn Chelyn is gone; the low pale ledges inside the pit came back darker and much softer: the wide shelf below the icicle wall along Myndun Snun and Hellinum Dum and the shelf along the inside of the left wall at Stornur Sezzez are faint steps, and the ridge along Stenina Jora that divides the pit floor in two is barely there.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 18 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/nottis.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Nottis, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/nottis.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Nottis restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/nottis@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/137.svg",
+        "w": 57,
+        "h": 39,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/nottis/"
+    },
+    {
+      "id": "102",
+      "name": "Ormonos",
+      "anchor": "map-ormonos",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Ormonos, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The plateau ledges, the left cliff, the trees, the grassy patches and four of the five dark pits (at Tachyl Grit, Fluore Vaes, Eosphr Meso and Bukovs Gossan) sit where 2012 had them (worst tile drift 1 px at 2x). Known difference: the dark pit with a pale stone rim at Seugal Elba, at the top left, came back as a raised flat rock slab.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/ormonos.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ormonos, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/ormonos.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Ormonos restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/ormonos@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/102.svg",
+        "w": 151,
+        "h": 116,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/ormonos/"
+    },
+    {
+      "id": "106",
+      "name": "Pollokoo",
+      "anchor": "map-pollokoo",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Pollokoo, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cave rim with its stalactites, every stalagmite, the flat stones, the rock pile at Intale Treats, the big stones on the front ledge at Kikal Kalzo and Sambossa Bossa, the smaller ones at Tibsii Wibbs and Zigni Zags, and most of the raised ledges the roads ran along sit where 2012 had them, bare, with no pale ribbon on them (worst tile drift 2 px at 2x). Known differences: two ledges at the top left are gone, which changes the crossing pattern there: the pale shelf under Timtim Timm (from where Kotleletti Kota and Hamli Egza meet, up and left to the back wall) came back as cave floor, and the raised ledge under Masod Match (from where Tilssi Sill and Kotleletti Kota meet, up and right to the back wall) is gone; the Tilssi Sill ledge ends a little short of that meeting point; the small dark hole in the rim face just above the start of Awasa Wash, at the bottom left, is gone.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/pollokoo.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Pollokoo, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/pollokoo.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Pollokoo restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/pollokoo@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/106.svg",
+        "w": 57,
+        "h": 39,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/pollokoo/"
     },
     {
       "id": "109",
@@ -1460,6 +1724,94 @@
       "place": "/encyclopedia/places/rasana/"
     },
     {
+      "id": "126",
+      "name": "Roobrik",
+      "anchor": "map-roobrik",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Roobrik, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The forest, its edge against the grey woods at the left, the pale inlet at the To: Balzare button, the sand shore with its small trees and the paper sea sit where 2012 had them (worst tile drift 2 px at 2x). Known difference: the sunken brown trails through the trees are gone, unbroken forest in their place. In 2012 a narrow dark brown channel runs under Flammeu Pew and on past its lower-left end, beside Xanthien Awn from Kinabarr Kan down past Ignee Tye, along Kinabarr Kan, under Atrove Grove, along Kuben Ruben and Castan Nella, along Rhystosto Motto up from the To: Balzare button, and beside Cheiri Ami toward the To: Rasana button.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/roobrik.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Roobrik, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/roobrik.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Roobrik restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/roobrik@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/126.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/roobrik/"
+    },
+    {
+      "id": "93",
+      "name": "Salatu",
+      "anchor": "map-salatu",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Salatu, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cliff bands top and bottom, the cave at Bebingka Bridge, the shore, the wooden board at Jansin Park, the stones, the curved log, the mossy rocks at Kalp Clips, Wali Hoppers and Xacut Cross, the trees and the shrubs sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the chain of small dark sunken trenches with lit rims that runs down from the cave along Via Velaya and Paatol Press is lost: the one just below and left of the cave came back as a raised flat stone, and the ones under the middle of Via Velaya, where Sanna Salts and Dodol Dwells meet, and under the start of Paatol Press are gone, with only faint pale streaks in the grass just below the cave; the dark shadowed notch at the foot of the cliff where Seeyam Far, Puran Pills and Lunu Lane meet is gone, plain cliff foot in its place.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/salatu.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Salatu, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/salatu.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Salatu restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/salatu@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/93.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/salatu/"
+    },
+    {
       "id": "140",
       "name": "Samudra",
       "anchor": "map-samudra",
@@ -1502,6 +1854,182 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/samudra/"
+    },
+    {
+      "id": "63",
+      "name": "Shimla Mirch",
+      "anchor": "map-shimla-mirch",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Shimla Mirch, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The headland, its cliffs and shore, the rock slabs, the four ponds, the stones and pebbles, the haystacks, the basket where Ortolana meets Marga Mooch and most of the herb pots sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the sea came back as pale water with small waves, where 2012 draws grey-white paper with faint dashed lines; wooden things stand where the 2012 map has none: a round thatched hut with a ladder on the rock just below the end of Niiske Kook (2012 has a plain pale rock there), a ladder on the right edge of the flat rock slab just right of Leeteg, a board with a fence just below Mucid Memes, a short fence beside the basket where Ortolana and Marga Mooch meet, a board under Palsa Mosch, a board on the headland at the To: Groddle Forest button, a board at the right end of Quinmchary and a fence on the rock ledge beside Blotnass.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/shimlamirch.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Shimla Mirch, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/shimlamirch.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Shimla Mirch restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/shimlamirch@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/63.svg",
+        "w": 151,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/shimla-mirch/"
+    },
+    {
+      "id": "121",
+      "name": "Sura",
+      "anchor": "map-sura",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Sura, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The hedge blocks, the grass lanes between them, the rock at the top right, the stones, the bushes and the wooden boards at the Habitat and Preserve places sit where 2012 had them (worst tile drift 1 px at 2x). Known differences: the small dark board at Gyerean Park, just right of Ramyeon Kon, is gone; the wide flat board where Gimbap Bop, Dorji Park and Ojangi Chimi meet came back as a slatted crate with a lid, in the same place and size.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/sura.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Sura, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/sura.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Sura restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/sura@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/121.svg",
+        "w": 151,
+        "h": 119,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/sura/"
+    },
+    {
+      "id": "113",
+      "name": "Tahli",
+      "anchor": "map-tahli",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Tahli, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The Z-shaped trenches at Jee Guru, Musaka Sakes and Chengaav Gavel, the blue pool by the waterfall cliff, the big hole at the top, the ravine, the savanna, the Veruppu Vellums slot, the Arupu Rupu and Pacca Pax trenches and the boulders sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: three small dark holes are gone: just right of the lower end of Tsava Tsokola, under the grey icons just left of Tsava Tsokola, and just below Bon'thu Bins; the small brown bin at the start of Bon'thu Bins came back as a pale stone; the long dark trench along Kaiya Kit came back as a short oval hollow at its left end.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/tahli.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Tahli, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/tahli.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Tahli restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/tahli@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/113.svg",
+        "w": 151,
+        "h": 121,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/tahli/"
+    },
+    {
+      "id": "92",
+      "name": "Tamila",
+      "anchor": "map-tamila",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Tamila, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The yellow meadow with its bushes, stones and boulders, the stream, the forest with its hedge clumps, the rock at the top right and the boards at Samga Preserve and Jansib Preserve sit where 2012 had them (worst tile drift 2 px at 2x). Known difference: the third preserve board, small and dark, where Ambo Alms meets the start of Manoq Preserve, is gone.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/tamila.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Tamila, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/tamila.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Tamila restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/tamila@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/92.svg",
+        "w": 151,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/tamila/"
     },
     {
       "id": "51",
@@ -1548,496 +2076,20 @@
       "place": "/encyclopedia/places/uralia/"
     },
     {
-      "id": "71",
-      "name": "Jethimadh",
-      "anchor": "map-jethimadh",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Jethimadh survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/jethimadh.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Jethimadh, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/jethimadh.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Jethimadh painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/jethimadh@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/71.svg",
-        "w": 151,
-        "h": 126,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/jethimadh/"
-    },
-    {
-      "id": "133",
-      "name": "Kloro",
-      "anchor": "map-kloro",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Kloro survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/kloro.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Kloro, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/kloro.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Kloro painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/kloro@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/133.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/kloro/"
-    },
-    {
-      "id": "97",
-      "name": "Muufo",
-      "anchor": "map-muufo",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Muufo survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/muufo.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Muufo, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/muufo.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Muufo painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/muufo@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/97.svg",
-        "w": 151,
-        "h": 123,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/muufo/"
-    },
-    {
-      "id": "137",
-      "name": "Nottis",
-      "anchor": "map-nottis",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Nottis survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 18 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/nottis.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Nottis, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/nottis.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Nottis painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/nottis@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/137.svg",
-        "w": 57,
-        "h": 39,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/nottis/"
-    },
-    {
-      "id": "102",
-      "name": "Ormonos",
-      "anchor": "map-ormonos",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Ormonos survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/ormonos.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Ormonos, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/ormonos.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Ormonos painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/ormonos@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/102.svg",
-        "w": 151,
-        "h": 116,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/ormonos/"
-    },
-    {
-      "id": "106",
-      "name": "Pollokoo",
-      "anchor": "map-pollokoo",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Pollokoo survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/pollokoo.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Pollokoo, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/pollokoo.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Pollokoo painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/pollokoo@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/106.svg",
-        "w": 57,
-        "h": 39,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/pollokoo/"
-    },
-    {
-      "id": "126",
-      "name": "Roobrik",
-      "anchor": "map-roobrik",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Roobrik survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/roobrik.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Roobrik, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/roobrik.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Roobrik painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/roobrik@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/126.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/roobrik/"
-    },
-    {
-      "id": "93",
-      "name": "Salatu",
-      "anchor": "map-salatu",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Salatu survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/salatu.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Salatu, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/salatu.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Salatu painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/salatu@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/93.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/salatu/"
-    },
-    {
-      "id": "63",
-      "name": "Shimla Mirch",
-      "anchor": "map-shimla-mirch",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Shimla Mirch survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/shimlamirch.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Shimla Mirch, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/shimlamirch.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Shimla Mirch painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/shimlamirch@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/63.svg",
-        "w": 151,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/shimla-mirch/"
-    },
-    {
-      "id": "121",
-      "name": "Sura",
-      "anchor": "map-sura",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Sura survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/sura.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Sura, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/sura.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Sura painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/sura@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/121.svg",
-        "w": 151,
-        "h": 119,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/sura/"
-    },
-    {
-      "id": "113",
-      "name": "Tahli",
-      "anchor": "map-tahli",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Tahli survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/tahli.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Tahli, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/tahli.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Tahli painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/tahli@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/113.svg",
-        "w": 151,
-        "h": 121,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/tahli/"
-    },
-    {
-      "id": "92",
-      "name": "Tamila",
-      "anchor": "map-tamila",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Tamila survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/tamila.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Tamila, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/tamila.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Tamila painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/tamila@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/92.svg",
-        "w": 151,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/tamila/"
-    },
-    {
       "id": "100",
       "name": "Vantalu",
       "anchor": "map-vantalu",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Vantalu survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Vantalu, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cliff bands, the two dark slots in the rock, the small cave holes, the stepping stones, the ledges under Quozee Quanta, Masquff Greets and Jameeda Meds, every bush clump and the stones in the meadow sit where 2012 had them (worst tile drift 4 px at 2x). Known differences: the wide pale rock ledge that sticks out of the cliff under Gersal Gemony, with its shadowed underside, is gone except for a thin sliver, bare cliff wall in its place; along Mutta Maart, where 2012 has a short ledge ending before the M and then dark rock with a long dark slot under the name, one long raised ledge runs on from that short ledge to the stepping stones at Balleet Berm, and the slot shrank to a small cave arch behind it.",
       "facts": [
         {
           "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
         },
         {
           "label": "2012",
@@ -2056,7 +2108,7 @@
         "w": 760,
         "h": 460,
         "label": "Now",
-        "alt": "Vantalu painted for Groddle, as the game draws it now",
+        "alt": "Vantalu restored, as the game draws it now",
         "src2": "/assets/maps/art/bg/vantalu@2x.webp"
       },
       "card": {
@@ -2066,6 +2118,50 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/vantalu/"
+    },
+    {
+      "id": "95",
+      "name": "Xalanga",
+      "anchor": "map-xalanga",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Xalanga, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The savanna, its rocks and boulders, the shrubs, the small pond, the two big rock outcrops and the faint darker patches of grass between the roads (near Distant Drag B, Hazy Gate 5, Ardent Ave 4 and Deadpan Dike 3) sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: six small dark hollows, soft dark grey patches in the grass beside street names, lost their look: five are gone (just right of the end of Zealous Rd W, under the start of Languid Line W, just right of Hazy Gate 1, under Languid Line S, and just right of the end of Distant Drag D) and the one under Tack of Fervor Tack C came back as a pale stone.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/xalanga.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Xalanga, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/xalanga.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Xalanga restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/xalanga@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/95.svg",
+        "w": 151,
+        "h": 124,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/xalanga/"
     },
     {
       "id": "143",
@@ -2106,46 +2202,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/vortex-of-random/"
-    },
-    {
-      "id": "95",
-      "name": "Xalanga",
-      "anchor": "map-xalanga",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Xalanga survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/xalanga.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Xalanga, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/xalanga.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Xalanga painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/xalanga@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/95.svg",
-        "w": 151,
-        "h": 124,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/xalanga/"
     },
     {
       "id": "91",

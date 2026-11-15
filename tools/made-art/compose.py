@@ -117,9 +117,10 @@ def props_scene():
     return img, used
 
 
-# Region maps: three thumbnails and their paintings, one column each
+# Region maps: the thumbnails and their paintings, one column each (the regions still painted from their thumbnails;
+# the rest show Tiny Speck's own 2012 paintings, restored)
 
-MAPS = [('100', 'vantalu'), ('143', 'vortex'), ('91', 'zhambu')]
+MAPS = [('143', 'vortex'), ('91', 'zhambu')]
 GAP = 3  # px between thumbnails (12 between paintings)
 
 
@@ -127,8 +128,9 @@ def maps_columns():
     thumbs = [os.path.join(PUB, f'assets/maps/art/thumbs/sm_{s}.jpg') for _, s in MAPS]
     paint = [os.path.join(PUB, f'assets/maps/art/bg/{s}@2x.webp') for _, s in MAPS]
     tw, th = 150, 91
-    a = Image.new('RGBA', (tw, th * 3 + GAP * 2), (0, 0, 0, 0))
-    b = Image.new('RGBA', (tw * 4, (th * 3 + GAP * 2) * 4), (0, 0, 0, 0))
+    n = len(MAPS)
+    a = Image.new('RGBA', (tw, th * n + GAP * (n - 1)), (0, 0, 0, 0))
+    b = Image.new('RGBA', (tw * 4, (th * n + GAP * (n - 1)) * 4), (0, 0, 0, 0))
     for i, (t, p) in enumerate(zip(thumbs, paint)):
         ti = Image.open(t).convert('RGBA')
         assert ti.size == (tw, th), t
@@ -184,10 +186,10 @@ def main():
 
     # Region maps.
     a, b, ta, pb = maps_columns()
-    put('maps-thumbs', webp(a, 'maps-thumbs', lossless=True), "Tiny Speck's thumbnails of Vantalu, Vortex of Random and Zhambu",
-        f'the three CC0 thumbnails as they are, one above the other, {GAP} px apart', [t | {'licence': 'CC0 1.0, Tiny Speck'} for t in ta])
-    put('maps-painted', webp(b, 'maps-painted', q=86), 'The paintings of Vantalu, Vortex of Random and Zhambu made again for Groddle',
-        f'the three repainted maps (2x files) at four times the thumbnails, one above the other, {GAP * 4} px apart (tools/provenance/repainted-maps.json)', pb)
+    put('maps-thumbs', webp(a, 'maps-thumbs', lossless=True), "Tiny Speck's thumbnails of Vortex of Random and Zhambu",
+        f'the two CC0 thumbnails as they are, one above the other, {GAP} px apart', [t | {'licence': 'CC0 1.0, Tiny Speck'} for t in ta])
+    put('maps-painted', webp(b, 'maps-painted', q=86), 'The paintings of Vortex of Random and Zhambu made again for Groddle',
+        f'the two repainted maps (2x files) at four times the thumbnails, one above the other, {GAP * 4} px apart (tools/provenance/repainted-maps.json)', pb)
 
     doc = {'format': 'groddle-made-showcase/1',
            'about': 'Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and three game screenshots; tools/made-art/build-data.mjs checks each against its sha256.',

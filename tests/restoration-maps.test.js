@@ -119,13 +119,13 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
   it('a region with no 2012 map keeps its thumbnail (or nothing) and says so on its card', () => {
     const index = readJson(join(GAME_DIR, 'public/assets/maps/index.json'));
     const fs = { read: (f) => (existsSync(pub(f)) ? readFileSync(pub(f)) : null), exists: (f) => existsSync(pub(f)) };
-    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '100' && id !== '66')) };
+    const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '91' && id !== '66')) };
     const data = build(provenance, null, index, fs, only);
-    // Vantalu, still painted from its thumbnail (Ix was the example until lane maps4 restored it from 2012).
-    const vantalu = data.regions.find((r) => r.id === '100');
-    assert.equal(vantalu.before.src, `/${index.hubs['100'].thumbLocal}`);
-    assert.match(vantalu.caption, /No 2012 Encyclopedia map of Vantalu survives, so it is shown beside that thumbnail\./);
-    assert.ok(!vantalu.facts.some((f) => f.label === '2012'));
+    // Zhambu, still painted from its thumbnail (Ix was the example until lane maps4 restored it from 2012, then Vantalu until lane maps15).
+    const zhambu = data.regions.find((r) => r.id === '91');
+    assert.equal(zhambu.before.src, `/${index.hubs['91'].thumbLocal}`);
+    assert.match(zhambu.caption, /No 2012 Encyclopedia map of Zhambu survives, so it is shown beside that thumbnail\./);
+    assert.ok(!zhambu.facts.some((f) => f.label === '2012'));
     // The Seams, still painted from its street layout (Naraka was the example until lane maps10 restored it from 2012).
     const seams = data.regions.find((r) => r.id === '66');
     assert.equal(seams.before, null);

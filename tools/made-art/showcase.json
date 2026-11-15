@@ -58,16 +58,12 @@
    ]
   },
   "public/assets/made-art/maps-painted.webp": {
-   "what": "The paintings of Vantalu, Vortex of Random and Zhambu made again for Groddle",
+   "what": "The paintings of Vortex of Random and Zhambu made again for Groddle",
    "w": 600,
-   "h": 1116,
-   "sha256": "843ac10b1a231ce673d11b3ecb51c46cff5ad3d407feeae16422acf770a0ab31",
-   "made": "the three repainted maps (2x files) at four times the thumbnails, one above the other, 12 px apart (tools/provenance/repainted-maps.json)",
+   "h": 740,
+   "sha256": "fe82e0f546d1f572809d50697f7d0c4011bd189c0d4ba4ae379f91d1836ad6b0",
+   "made": "the two repainted maps (2x files) at four times the thumbnails, one above the other, 12 px apart (tools/provenance/repainted-maps.json)",
    "from": [
-    {
-     "file": "public/assets/maps/art/bg/vantalu@2x.webp",
-     "sha256": "ad8106733dff822e53e83374de9791353c0b816d7c4f353a472c624ceb74c2bb"
-    },
     {
      "file": "public/assets/maps/art/bg/vortex@2x.webp",
      "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
@@ -79,17 +75,12 @@
    ]
   },
   "public/assets/made-art/maps-thumbs.webp": {
-   "what": "Tiny Speck's thumbnails of Vantalu, Vortex of Random and Zhambu",
+   "what": "Tiny Speck's thumbnails of Vortex of Random and Zhambu",
    "w": 150,
-   "h": 279,
-   "sha256": "80999608f758cafff96c04314953329878760cc8b2f9fcafa8ebfed2944fa68d",
-   "made": "the three CC0 thumbnails as they are, one above the other, 3 px apart",
+   "h": 185,
+   "sha256": "262f751e23d78ed268def31cac1d2c58f803a8a3da3eecd303dfb791c5e0ec28",
+   "made": "the two CC0 thumbnails as they are, one above the other, 3 px apart",
    "from": [
-    {
-     "file": "public/assets/maps/art/thumbs/sm_vantalu.jpg",
-     "sha256": "e3134672e4819628a996e654250ec9cc66675d6b581bbad32e8fdddeb1df872a",
-     "licence": "CC0 1.0, Tiny Speck"
-    },
     {
      "file": "public/assets/maps/art/thumbs/sm_vortex.jpg",
      "sha256": "999e7706fd7dbf04ceaaa70485814bd89e4b9ab66764cf583ad881177c162d0e",
