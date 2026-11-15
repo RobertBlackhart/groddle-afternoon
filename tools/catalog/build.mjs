@@ -909,6 +909,8 @@ function itemPage(e, ctx) {
     return [
       ...(withTool ? [r.tool ? esc(`with ${nameOf(r.tool)}`) : 'by hand'] : []),
       ...c.skills.map(skillWord),
+      // Report #338: the achievement the Make window asks for (Wavy Gravy: Super Saucier).
+      ...(r.achievements || []).map((a) => esc(`the ${ency.entries.get(`achievements:${a}`)?.name || a.replace(/_/g, ' ')} achievement`)),
       c.energy ? `${fmt(c.energy)} energy` : 'no energy',
       esc(c.time.replace(/ seconds?\b/, ' s')),
     ].join(', ');

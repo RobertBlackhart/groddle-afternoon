@@ -98,7 +98,17 @@ export function makeParts(p, info, nameOf = () => null) {
     return s ? chip(`needs ${esc(s.name)}`, { pic: s.icon, link: href(`skills:${id}`) }) : chip(`needs ${esc(nameOf(`skills:${id}`) || id)}`);
   };
   /**
-   * A recipe as ingredients, an arrow and the result, with the tool and skill as chips.
+   * An achievement a recipe asks for, worded as the Make window words it ("You need to get the
+   * Super Saucier achievement.", js/making.js craftBlockedLine; inc_making.js 1715), linking its
+   * page. Report #338: Wavy Gravy's Super Saucier gate was on no item page.
+   */
+  const achievementChip = (id) => {
+    const a = info(`achievements:${id}`);
+    const name = a?.name || nameOf(`achievements:${id}`) || String(id).replace(/_/g, ' ');
+    return chip(`needs the ${esc(name)} achievement`, { pic: a?.icon, link: a ? href(`achievements:${id}`) : null });
+  };
+  /**
+   * A recipe as ingredients, an arrow and the result, with the tool, skill and achievement as chips.
    * opts.skills: every skill it needs (else the recipe's own skill, when it has a page);
    * opts.chips: more chips after them (the item pages' energy and time).
    */
@@ -110,6 +120,7 @@ export function makeParts(p, info, nameOf = () => null) {
     else extras.push(chip('by hand'));
     if (skills) extras.push(...skills.map(skillChip));
     else if (r.skill && info(`skills:${r.skill}`)) extras.push(skillChip(r.skill));
+    for (const a of r.achievements || []) extras.push(achievementChip(a));
     if (note) extras.push(chip(note));
     extras.push(...more);
     return `<div class="ency-recipe"${id ? ` id="${esc(id)}"` : ''}>
@@ -125,7 +136,7 @@ export function makeParts(p, info, nameOf = () => null) {
     return it ? `<li><a class="ency-vendor" href="${href(key)}">${body}</a></li>` : `<li><span class="ency-vendor">${body}</span></li>`;
   };
   const vendors = (list) => (list.length ? `<ul class="ency-vendors">${list.join('')}</ul>` : '');
-  return { href, img, tile, tiles, chip, chips, chipRow, recipeRow, skillChip, vendorCard, vendors, currants };
+  return { href, img, tile, tiles, chip, chips, chipRow, recipeRow, skillChip, achievementChip, vendorCard, vendors, currants };
 }
 
 /**

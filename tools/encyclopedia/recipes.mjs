@@ -67,7 +67,8 @@ function recipeBlock(r, P, info, name) {
   for (const s of new Set([r.skill, ...(r.skills || [])].filter(Boolean))) {
     chips.push(info(`skills:${s}`) ? P.chip(`needs ${esc(info(`skills:${s}`).name)}`, { pic: info(`skills:${s}`).icon, link: P.href(`skills:${s}`) }) : P.chip('needs a skill'));
   }
-  for (const a of r.achievements || []) if (info(`achievements:${a}`)) chips.push(P.chip(`after ${esc(info(`achievements:${a}`).name)}`, { pic: info(`achievements:${a}`).icon, link: P.href(`achievements:${a}`) }));
+  // As the Make window says it (report #338).
+  for (const a of r.achievements || []) chips.push(P.achievementChip(a));
   if (r.taughtBy && info(`quests:${r.taughtBy}`)) chips.push(P.chip(`taught by ${esc(info(`quests:${r.taughtBy}`).name)}`, { link: P.href(`quests:${r.taughtBy}`) }));
   if (r.energyCost) chips.push(P.chip(`${fmt(r.energyCost)} energy`));
   if (r.waitMs) chips.push(P.chip(seconds(r.waitMs)));
