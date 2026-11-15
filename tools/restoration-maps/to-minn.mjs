@@ -48,6 +48,7 @@ export function mapsContent() {
     ]),
     band('how', true, 'How they were made', [
       p('section-lead', 'Each restore is toned to its own 2012 picture: the average saturation and lightness of its middle tones are matched, leaving out the 2012 roads, white lettering and pale paper sea, so they do not count. Gamma is used rather than a brightness boost, so the light paper sea keeps its grain.'),
+      p('', 'Before a restore ships it is laid beside its 2012 map at the same size and checked by eye: every cliff, rock, hollow, pool and building has to sit where 2012 had it, and nothing may stand where 2012 had only a road or a name. A try that moves, adds or loses something goes back with the change asked for in words and is painted again. Anything still different after that is written on the region’s card, and a region that has not passed yet keeps its painting from the thumbnail until it does.'),
       p('', 'The before pictures are Tiny Speck’s own 2012 Encyclopedia maps, shown as Tiny Speck made them, with the game’s roads and names on them, the same way the game plays Tiny Speck’s original recordings. Every other picture on this page is CC0: Tiny Speck’s own art, which they gave to the public domain, or a picture made for Groddle Afternoon and given to the public domain the same way. The record of how each map was made, from what, and who chose it, and the list of the 2012 maps with where each was saved from, ship with the game’s source.'),
     ]),
     group('div', 'wrap report-foot', null, [
