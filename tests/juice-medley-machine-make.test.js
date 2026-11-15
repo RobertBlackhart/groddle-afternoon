@@ -20,8 +20,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=77816a7d';
-import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=202c452e';
+import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=0f1ad5d0';
+import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=a819b30f';
 import { stationForRecipe } from '../public/js/make-tools.js?v=86877c3e';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

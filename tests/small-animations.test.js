@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { POWDER_SHAKE, powderShakerSheet } from '../public/js/powder-shakers.js?v=fcd18855';
-import { POWDERS } from '../public/js/powders.js?v=6f3d6671';
+import { POWDERS } from '../public/js/powders.js?v=4ae449b0';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedDurationMs, packedFrameAt } from '../public/js/packed-sheets.js?v=e3d07c14';
 import { itemOverlayPlacement } from '../public/js/item-overlay.js?v=4adc2ae6';

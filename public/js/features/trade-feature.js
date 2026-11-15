@@ -41,7 +41,7 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, itemIcon, listPackSlots, removeItem } from '../inventory.js?v=f49c8998';
-import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, leavingToolWear, moveToolCopy, receiveToolCopies, receiveToolCopy, setCopyTag, setToolRemaining, toolCopies } from '../tools.js?v=48542c24';
+import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, leavingToolWear, moveToolCopy, receiveToolCopies, receiveToolCopy, setCopyTag, setToolRemaining, toolCopies } from '../tools.js?v=1bc47590';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { playOverlay } from '../overlays.js?v=4cbbb0c6';
@@ -69,7 +69,7 @@ import {
   tradeCommand,
   untradeableReason,
   goodsWithHeldTags,
-} from '../trade.js?v=d11f874b';
+} from '../trade.js?v=05bcc16c';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 
 export const TRADE_FEATURE_ID = 'trade';

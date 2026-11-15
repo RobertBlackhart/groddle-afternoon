@@ -31,7 +31,7 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { copyForVerb, copyTag, setCopyTag, takeToolCopy } from '../tools.js?v=48542c24';
+import { copyForVerb, copyTag, setCopyTag, takeToolCopy } from '../tools.js?v=1bc47590';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=b054ca5c';

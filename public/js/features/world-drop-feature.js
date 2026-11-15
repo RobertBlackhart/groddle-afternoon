@@ -21,10 +21,10 @@
 
 import { ITEM_CATALOG } from '../inventory.js?v=f49c8998';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { listAnimalFeedOptions } from '../animals.js?v=95b338f6';
+import { listAnimalFeedOptions } from '../animals.js?v=fa8b4dd3';
 import { isBagClass } from '../pack-slots.js?v=4d446d78';
 import { dropFor, dropTip } from '../world-drop.js?v=d152b2bb';
-import { canUseTool } from '../tools.js?v=48542c24';
+import { canUseTool } from '../tools.js?v=1bc47590';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 
 export const WORLD_DROP_FEATURE_ID = 'world-drop';

@@ -34,11 +34,11 @@ import {
 } from '../public/js/cubimal-battle.js?v=4f6e2301';
 import { ensureCubimalItems } from '../public/js/cubimals.js?v=4e084d08';
 import { addItem, countItem, createInventory } from '../public/js/inventory.js?v=f49c8998';
-import { bindToolInventory, copyTags, createToolConditionState, setCopyTag } from '../public/js/tools.js?v=48542c24';
+import { bindToolInventory, copyTags, createToolConditionState, setCopyTag } from '../public/js/tools.js?v=1bc47590';
 import { cleanCopyTagOf } from '../public/js/copy-tags.js?v=7eec7d48';
-import { FEATURES } from '../public/js/features/index.js?v=74fb71b6';
-import { cubimalBattleFeature, CUBIMAL_BATTLE_FEATURE_ID } from '../public/js/features/cubimal-battle-feature.js?v=29ffa84a';
-import { cubimalRaceFeature } from '../public/js/features/cubimal-race-feature.js?v=ecd38e86';
+import { FEATURES } from '../public/js/features/index.js?v=dd45c58b';
+import { cubimalBattleFeature, CUBIMAL_BATTLE_FEATURE_ID } from '../public/js/features/cubimal-battle-feature.js?v=2efc8013';
+import { cubimalRaceFeature } from '../public/js/features/cubimal-race-feature.js?v=286e3e18';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=e4e5edd0';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

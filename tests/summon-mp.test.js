@@ -23,10 +23,10 @@ import {
   rollTeleportDay,
 } from '../public/js/teleportation.js?v=e95cf7cb';
 import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '../public/js/summon-mp.js?v=7598f381';
-import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=adb9bd43';
-import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=6dc099c4';
-import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=11aa2caa';
-import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=250fea2d';
+import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=db9514ae';
+import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=da3a980d';
+import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=a17d2d41';
+import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=fc7413ab';
 
 const ROOT = join(import.meta.dirname, '..');
 const V = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];

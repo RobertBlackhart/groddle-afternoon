@@ -50,8 +50,8 @@
 
 import { playOverlay } from '../overlays.js?v=4cbbb0c6';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=f49c8998';
-import { canUseTool, useToolCondition } from '../tools.js?v=48542c24';
-import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=77816a7d';
+import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=1bc47590';
+import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=0f1ad5d0';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
 import {
@@ -929,7 +929,7 @@ function renderProject(engine, q, body) {
     text.append(el('b', {}, r.type === 'work' ? `${r.desc}: ${r.verb} with a ${itemLabel(r.classIds[0])}` : `${r.desc}: ${r.need} ${itemLabel(r.classId, r.need)}`));
     const meta = [`${r.got.toLocaleString()} / ${r.need.toLocaleString()}`];
     if (r.type === 'item') meta.push(`you have ${countItem(engine.inv, r.classId)}`);
-    if (r.type === 'work') meta.push(`${r.energy} energy · ${r.wear} wear a unit`);
+    if (r.type === 'work') meta.push(workStepCost(r));
     if (!r.done && !r.open) meta.push('opens after the earlier steps');
     text.append(el('small', {}, meta.join(' · ')));
     const acts = el('div');

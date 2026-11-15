@@ -20,7 +20,7 @@ import {
   mineRock,
   createMineRock,
   crushOre,
-} from '../public/js/mining.js?v=3780da12';
+} from '../public/js/mining.js?v=930d9d80';
 import {
   createGarden,
   gardenActionProfile,
@@ -30,7 +30,7 @@ import {
   clearPlot,
   SEED_CATALOG,
   GARDEN_HARVEST_FAILED_LINES,
-} from '../public/js/garden.js?v=811f9459';
+} from '../public/js/garden.js?v=cd94ccca';
 import {
   loadRecipeCatalogFromFile,
   ensureMakingItems,
@@ -44,9 +44,9 @@ import {
   craftRecipeBatch,
   craftUnitDurations,
   MACHINE_EXTRA_WAIT_MS,
-} from '../public/js/making.js?v=202c452e';
+} from '../public/js/making.js?v=a819b30f';
 import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
-import { createToolConditionState, getToolCondition } from '../public/js/tools.js?v=48542c24';
+import { createToolConditionState, getToolCondition } from '../public/js/tools.js?v=1bc47590';
 
 const root = join(import.meta.dirname, '..', 'public');
 

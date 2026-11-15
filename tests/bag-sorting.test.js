@@ -32,8 +32,8 @@ import {
 } from '../public/js/pack-slots.js?v=4d446d78';
 import { SORT_TAG_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=f49c8998';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=663192f8';
-import { createToolConditionState } from '../public/js/tools.js?v=48542c24';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=f87e91a7';
+import { createToolConditionState } from '../public/js/tools.js?v=1bc47590';
 import { remakeStatus, isOfferedInRemake } from '../public/js/imagination-remake.js?v=c37ad887';
 
 const ROOT = join(import.meta.dirname, '..');

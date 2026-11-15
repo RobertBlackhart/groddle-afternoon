@@ -164,6 +164,24 @@ export function isWearTool(classTsid) {
   return Boolean(def && !def.charges && !def.tags && !def.bits && !def.jar);
 }
 
+/**
+ * The wear one unit of project work takes, for the work-step line: 0 when none of the step's tools
+ * wears. Tools with GSJS points_capacity 0 and display_wear 0 (focusing_orb.js 25-26, beaker,
+ * spice_mill, test_tube, gassifier...) are not in the catalog and canUseTool spends nothing on
+ * them, so the line names no wear for them (#366).
+ */
+export function workUnitWear(classIds, wear) {
+  const n = points(wear);
+  const list = Array.isArray(classIds) ? classIds : [classIds];
+  return n > 0 && list.some((c) => isWearTool(c) && !TOOL_CONDITION_CATALOG[c].contents) ? n : 0;
+}
+
+/** A project work step's cost line (street projects, the home tower): "8 energy · 2 wear a unit", or "8 energy" with a tool that never wears. */
+export function workStepCost(req) {
+  const wear = workUnitWear(req.classIds?.length ? req.classIds : [req.classId], req.wear);
+  return wear ? `${req.energy} energy · ${wear} wear a unit` : `${req.energy} energy`;
+}
+
 /** Whether a class's copies run down and empty (potions, powders). */
 export function isChargesClass(classTsid) {
   return TOOL_CONDITION_CATALOG[classTsid]?.charges === true;

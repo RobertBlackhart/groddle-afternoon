@@ -37,7 +37,7 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
-import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=48542c24';
+import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=1bc47590';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { ITEM_BASE_COSTS } from '../store-catalog.js?v=74b56af3';
 import { saveStore } from '../save-store.js?v=cd053443';

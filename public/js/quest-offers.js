@@ -72,7 +72,7 @@
 import { VENDOR_NPCS, VENDOR_NPC_CLASSES } from './vendor-npcs.js?v=7d756a6d';
 import { getBuffCatalog, getQuestCatalog } from './content-catalogs.js?v=10b118dd';
 import { levelInfoForXp } from './progression.js?v=72b2b22a';
-import { brokenToolCopies } from './tools.js?v=48542c24';
+import { brokenToolCopies } from './tools.js?v=1bc47590';
 import { offerableMultiplayerQuest } from './quests-mp.js?v=1fc5ff58';
 import {
   assignQuest,

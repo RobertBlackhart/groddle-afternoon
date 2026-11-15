@@ -93,21 +93,21 @@ import {
   expireSolo,
   tankOf,
   TAKEN_KEEP,
-} from '../home-machines.js?v=bc3d0938';
-import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=62bf02ed';
+} from '../home-machines.js?v=3ba06d9f';
+import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=9eb50c30';
 import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=7b47d630';
-import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=e96d8d3b';
+import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=8d4764a6';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
-import { receiveToolCopy, takeToolCopy } from '../tools.js?v=48542c24';
-import { RECIPE_CATALOG } from '../making.js?v=202c452e';
+import { receiveToolCopy, takeToolCopy } from '../tools.js?v=1bc47590';
+import { RECIPE_CATALOG } from '../making.js?v=a819b30f';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=a3135ffd';
-import { readVisitScene } from '../neighbours-mp.js?v=adb9bd43';
+import { readVisitScene } from '../neighbours-mp.js?v=db9514ae';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { createSheetLoader } from '../sprite-sheets.js?v=0b1e96e6';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=2a31d56d';
-import { payAltarBonus } from './machine-rooms-feature.js?v=804205c4';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=3ca5c827';
+import { payAltarBonus } from './machine-rooms-feature.js?v=cec867ca';
 import { worldToScreen } from '../street-model.js?v=b6cb6a4e';
 import { nearestSurfaceY } from '../walk-surface.js?v=106bfdc5';
 

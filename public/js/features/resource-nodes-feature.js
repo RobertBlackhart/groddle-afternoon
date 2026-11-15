@@ -58,7 +58,7 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=f49c8998';
-import { setToolRemaining, toolCopies } from '../tools.js?v=48542c24';
+import { setToolRemaining, toolCopies } from '../tools.js?v=1bc47590';
 import { isItemFloor, platformYAt } from '../street-model.js?v=b6cb6a4e';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=b59156cf';
 import { rollResourceNodeDrop } from './drops-feature.js?v=b2af6a72';
@@ -92,9 +92,9 @@ import {
   starterResourceTools,
   swimmingSalmonCount,
   tickResourceNode,
-} from '../resource-nodes.js?v=7f9f1d80';
+} from '../resource-nodes.js?v=5590beb4';
 import { frameTexture as sheetFrameTexture, loadTexture, textureFromUrl } from '../textures.js?v=814d7926';
-import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=77816a7d';
+import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=0f1ad5d0';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=b054ca5c';
 import { playItemOverlay } from '../item-overlay.js?v=4adc2ae6';

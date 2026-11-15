@@ -23,11 +23,11 @@ import {
   relabelWeeHarvest,
   woodTreeSide,
 } from '../public/js/pack-tree-verbs.js?v=bfcb87be';
-import { packTreeVerbsFeature, runPackTreeVerb } from '../public/js/features/pack-tree-verbs-feature.js?v=e7f7d84a';
-import { getVerbsFor } from '../public/content.js?v=b65f9567';
-import { plotVerbs } from '../public/js/patches.js?v=0d8e92b4';
-import { createToolConditionState, setToolRemaining } from '../public/js/tools.js?v=48542c24';
-import { FEATURES } from '../public/js/features/index.js?v=74fb71b6';
+import { packTreeVerbsFeature, runPackTreeVerb } from '../public/js/features/pack-tree-verbs-feature.js?v=a4ae400c';
+import { getVerbsFor } from '../public/content.js?v=6e9c4da1';
+import { plotVerbs } from '../public/js/patches.js?v=f8cbc02a';
+import { createToolConditionState, setToolRemaining } from '../public/js/tools.js?v=1bc47590';
+import { FEATURES } from '../public/js/features/index.js?v=dd45c58b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');
