@@ -2792,9 +2792,44 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2182,
+  "commits": 2191,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Add to Home Screen opens Groddle Afternoon full screen, as an app"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Social drawer held sideways on a phone runs to the foot of the screen and shows several lines of chat"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Speech bubbles no longer bounce back and forth: each moves once a frame, smoothly"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Join the Club's shut door can no longer be jumped over: it is shut up to the roof"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The start card names the street you really start on, and sits centred on a phone"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The iMG on a phone's top bar takes a tap anywhere over the bar's height, sideways or upright"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "A short street on an upright phone shows its own sky above it, and the route card no longer covers the street's name"
+   },
    {
     "date": "2026-11-14",
     "kind": "fix",
@@ -2879,44 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Capture is offered for a Piggy in your own back yard again after a capture there"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Lida's map is Tiny Speck's 2012 painting, restored"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Karnata's map is Tiny Speck's 2012 painting, restored"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Jal, Kajuu and Kalavana's maps are Tiny Speck's 2012 paintings, restored"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "new",
-    "text": "Phones get an Act button beside Jump that does what Enter does"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "It Takes Two says who clicks Help dig, and an open Dirt Pile menu turns to Help dig as a friend starts digging"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The 42-game-day Piggy capture limit no longer applies in your own house, yards or Tower"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The shrine donate window says tools go one at a time and greys out its count for them"
    }
   ]
  },
- "tests": 989,
- "generatedAt": "2026-11-14"
+ "tests": 996,
+ "generatedAt": "2026-11-15"
 }
