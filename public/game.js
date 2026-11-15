@@ -18371,14 +18371,50 @@ function applyGreedySceneEvent(eventId) {
   return { hidden, shown, missing };
 }
 
+// The wall_button art is two 7-frame strips of one 36x35 button (wall_button.js getAssetInfo
+// 168): "in" presses it, "out" lets it back up. Glitch shows one frame at a time, one button per act.
+const GREEDY_BUTTON_FRAME_W = 36;
+const GREEDY_BUTTON_FRAME_H = 35;
+const GREEDY_BUTTON_FRAMES = 7;
+const greedyButtonStrips = {};
+
+function greedyButtonFrames(state) {
+  if (!greedyButtonStrips[state]) {
+    const url = state === 'in'
+      ? 'assets/sprites/quests/greedy-street-spirit/wall_button__x1_in_png_1354839762.webp'
+      : 'assets/sprites/quests/greedy-street-spirit/wall_button__x1_out_png_1354839763.webp';
+    const source = textureFromUrl(url).source;
+    greedyButtonStrips[state] = Array.from({ length: GREEDY_BUTTON_FRAMES }, (_, index) =>
+      frameTexture(source, new PIXI.Rectangle(index * GREEDY_BUTTON_FRAME_W, 0, GREEDY_BUTTON_FRAME_W, GREEDY_BUTTON_FRAME_H))
+    );
+  }
+  return greedyButtonStrips[state];
+}
+
+// Press: "in" over 500 ms, held in (lockIn) until the 1000 ms reset, then "out" over 500 ms and
+// lockOut (wall_button.js setState 140-150, reset_timer 1000).
+function animateGreedyButton(art) {
+  const token = (art._pressToken || 0) + 1;
+  art._pressToken = token;
+  const steps = [
+    ...greedyButtonFrames('in').map((frame, index) => [index * 71, frame]),
+    ...greedyButtonFrames('out').map((frame, index) => [1000 + index * 71, frame]),
+  ];
+  for (const [at, frame] of steps) {
+    window.setTimeout(() => {
+      if (!art.destroyed && art._pressToken === token) art.texture = frame;
+    }, at);
+  }
+}
+
 function greedyButtonSprite(actIndex, x, y) {
   const root = new PIXI.Container();
   root.name = `greedy-story-act-${actIndex + 1}`;
   root.sortableChildren = true;
-  const button = new PIXI.Sprite(textureFromUrl('assets/sprites/quests/greedy-street-spirit/wall_button__x1_out_png_1354839763.webp'));
+  const button = new PIXI.Sprite(greedyButtonFrames('out')[GREEDY_BUTTON_FRAMES - 1]);
   button.anchor.set(0.5, 1);
-  button.width = 126;
-  button.height = 18;
+  button.width = GREEDY_BUTTON_FRAME_W;
+  button.height = GREEDY_BUTTON_FRAME_H;
   button.zIndex = 1;
   root.addChild(button);
   const label = new PIXI.Text({ text: `ACT ${['I', 'II', 'III', 'IV', 'V'][actIndex]}`, style: {
@@ -18390,7 +18426,7 @@ function greedyButtonSprite(actIndex, x, y) {
     dropShadow: { blur: 2, color: 0x24172e, distance: 1 },
   } });
   label.anchor.set(0.5, 1);
-  label.y = -20;
+  label.y = -GREEDY_BUTTON_FRAME_H - 4;
   label.zIndex = 2;
   root.addChild(label);
   root.x = x;
@@ -18604,15 +18640,7 @@ function pressGreedyStoryButton(target) {
     return false;
   }
   applyGreedySceneEvent(result.eventId);
-  if (target.sprite?._buttonArt) {
-    const art = target.sprite._buttonArt;
-    art.texture = textureFromUrl('assets/sprites/quests/greedy-street-spirit/wall_button__x1_in_png_1354839762.webp');
-    window.setTimeout(() => {
-      if (!art.destroyed) {
-        art.texture = textureFromUrl('assets/sprites/quests/greedy-street-spirit/wall_button__x1_out_png_1354839763.webp');
-      }
-    }, 240);
-  }
+  if (target.sprite?._buttonArt) animateGreedyButton(target.sprite._buttonArt);
   if (result.actCompleted) {
     const activeId = greedyStreetState.repeat
       ? GREEDY_STREET_SPIRIT_REPEAT_ID

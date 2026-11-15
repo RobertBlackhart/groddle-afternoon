@@ -183,4 +183,16 @@ describe('The Greedy Street Spirit source-authored story', () => {
       }
     }
   });
+
+  it('draws one wall button per act, a single frame of the 7-frame strip (#359)', () => {
+    const game = readFileSync(join(PUBLIC, 'game.js'), 'utf8');
+    const start = game.indexOf('function greedyButtonSprite(');
+    const body = game.slice(start, game.indexOf('\n}\n', start));
+    // wall_button.js getAssetInfo: one button is 36x35; the strips hold 7 of them.
+    assert.match(game, /const GREEDY_BUTTON_FRAME_W = 36;/);
+    assert.match(game, /const GREEDY_BUTTON_FRAME_H = 35;/);
+    assert.match(body, /greedyButtonFrames\('out'\)\[GREEDY_BUTTON_FRAMES - 1\]/);
+    assert.doesNotMatch(body, /textureFromUrl\(/, 'the whole strip is never the button texture');
+    assert.doesNotMatch(body, /button\.width = 126/);
+  });
 });
