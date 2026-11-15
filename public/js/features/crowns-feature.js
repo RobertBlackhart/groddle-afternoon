@@ -26,7 +26,7 @@
 
 import { pluralize } from '../words.js?v=ee4e72f8';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
-import { OVERLAY_USES, playCountdownArt, playWindowOverlay } from '../overlays.js?v=219965d5';
+import { OVERLAY_USES, playCountdownArt, playWindowOverlay } from '../overlays.js?v=4cbbb0c6';
 import {
   CROWNS_ID,
   CROWNS_LADDERS,
@@ -60,12 +60,12 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=9ad2f26e';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=48217b49';
 import { wallsScreen } from '../street-model.js?v=b6cb6a4e';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=ebe52dc8';
+import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=b5ad80ff';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
   CROWNS_MP_TEXT,

@@ -95,11 +95,11 @@ import {
 } from '../resource-nodes.js?v=7f9f1d80';
 import { frameTexture as sheetFrameTexture, loadTexture, textureFromUrl } from '../textures.js?v=814d7926';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=77816a7d';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=219965d5';
-import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=92383208';
-import { playItemOverlay } from '../item-overlay.js?v=2d84ca39';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
+import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=b054ca5c';
+import { playItemOverlay } from '../item-overlay.js?v=4adc2ae6';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=cf9012f1';
-import { vpSequence } from '../quest-rooms/vp-overlay.js?v=f5ad729b';
+import { vpSequence } from '../quest-rooms/vp-overlay.js?v=5fd3abb8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { salmonSwimAt } from '../street-creatures.js?v=e70bafd5';
 import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';

@@ -38,8 +38,8 @@
  *   packVerbNet, packVerbDefect.
  */
 
-import { displayTopOf } from '../overlay-art.js?v=92383208';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=219965d5';
+import { displayTopOf } from '../overlay-art.js?v=b054ca5c';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
@@ -53,7 +53,7 @@ import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husba
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=814d7926';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
-import { overlayOrStandIn } from '../overlay-stand-in.js?v=907bbd7c';
+import { overlayOrStandIn } from '../overlay-stand-in.js?v=fe186806';
 import {
   BUNDLE_OF_JOY,
   BUTTERFLY_NET,

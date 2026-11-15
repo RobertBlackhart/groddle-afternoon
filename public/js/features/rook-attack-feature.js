@@ -108,8 +108,8 @@ import {
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
-import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=92383208';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=219965d5';
+import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=b054ca5c';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
 import {
   MP_ROOK,
   MP_ROOK_TEXT,
@@ -127,7 +127,7 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=c821e9fa';
 import { migrateClassValue } from '../tools.js?v=48542c24';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=758287f5';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=b0b7be8c';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=2bb00dfd';
 
 export const ROOK_FEATURE_ID = 'rook-attack';

@@ -209,16 +209,16 @@ import {
 } from '../home-cultivation.js?v=a3135ffd';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
-import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=92383208';
+import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=b054ca5c';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
-import { fadeInNewNear } from '../poof-fade.js?v=2705d584';
-import { projectApi } from './street-jobs-feature.js?v=3564567e';
+import { fadeInNewNear } from '../poof-fade.js?v=6616ca0e';
+import { projectApi } from './street-jobs-feature.js?v=5023316b';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=0962d6c8';
-import { drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=c8e43f6e';
+import { drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=21dc26e7';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
-import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=8dbbe0f7';
+import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=99caccdc';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=7e5ffc80';
 import { patchesFeature } from './patches-feature.js?v=090141ad';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=0d8e92b4';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
@@ -242,7 +242,7 @@ import {
 } from '../home-styles.js?v=13fe0aaa';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
-import { oneArmSignpost } from '../street-render.js?v=9b11451f';
+import { oneArmSignpost } from '../street-render.js?v=e8f3b090';
 import { ROCK_CATALOG } from '../mining.js?v=b28fef74';
 import {
   HOUSE_SIGN,

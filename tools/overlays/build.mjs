@@ -25,6 +25,11 @@
  * at about 4 device px per stage px) js/overlays.js draws these frames at the
  * screen's own density instead.
  *
+ * G765: a config with `pages: true` (the Glitchmas Cracker, 110 cells of 769 x 394) splits a sheet
+ * taller than PAGE_MAX into pages of whole rows, <key>-1.webp, <key>-2.webp ... (the row's `pages`
+ * and `pageRows`; js/overlay-art.js cellRect says which page a cell is on): many Android GPUs take
+ * textures up to 4096 px on a side and draw a bigger one black (#326).
+ *
  * Usage: node tools/overlays/build.mjs [key...]   (all by default; needs Chrome)
  *        node tools/overlays/build.mjs --vector [key...]   (only the SVG frames, from the built box; no Chrome)
  *        node tools/overlays/build.mjs --check    (the manifest matches the FLAs and the files)
@@ -45,6 +50,8 @@ const audit = join(spike, '..');
 export const OUT_DIR = join(spike, 'public/assets/sprites/overlays');
 export const MANIFEST = join(OUT_DIR, 'overlays-more.json');
 const fla = (k) => `glitch-overlays/${k}.fla`;
+/** Longest side of a paged sheet's page (G765: a small GPU's texture limit). */
+export const PAGE_MAX = 4096;
 const small = (k, extra = {}) => ({ fla: fla(k), scale: 2, step: 1, webp: 0.85, ...extra });
 // The skill-package pictures (pig_pet, trant_harvest and the rest) fade their one
 // clip in and out with a CS4 motion object (motionObjectXML Alpha_Amount 0, 100 at
@@ -101,7 +108,8 @@ export const OVERLAYS = Object.freeze({
   target_effect_powder_extreme: { fla: fla('target_effect_powder_extreme'), scale: 1.5, step: 1, webp: 0.85, vector: true },
   target_effect_powder_mild: { fla: fla('target_effect_powder_mild'), scale: 1.5, step: 1, webp: 0.85, vector: true },
   // G381: waiting loops, grab plays into pull.
-  glitchmas_cracker: { fla: fla('glitchmas_cracker'), scale: 1, step: 1, webp: 0.85, states: { symbol: 'glitchmasCracker', labels: ['waiting', 'grab'] }, vector: true },
+  // G765: 22 rows of 394 px, in pages of 10 rows (a pc_overlay drawn by Pixi on phones: the sheet must fit 4096).
+  glitchmas_cracker: { fla: fla('glitchmas_cracker'), scale: 1, step: 1, webp: 0.85, states: { symbol: 'glitchmasCracker', labels: ['waiting', 'grab'] }, vector: true, pages: true },
   // G382: click_to_prime is the clickable prompt to prime (shrines.js showPrimeOverlay 750-783), the same stage as click_to_donate.
   click_to_prime: { fla: fla('click_to_prime'), scale: 1.5, step: 1, webp: 0.85 },
   click_to_donate: { fla: fla('click_to_donate'), scale: 1.5, step: 1, webp: 0.85 },
@@ -297,14 +305,20 @@ window.addFrame = async (src) => {
   frames.push({ c, data, sig });
   return frames.length - 1;
 };
-window.pack = (cols, quality) => {
+window.pack = (cols, quality, pageRows = 0) => {
   const w = frames[0].c.width, h = frames[0].c.height;
-  const s = document.createElement('canvas');
-  s.width = w * Math.min(cols, frames.length); s.height = h * Math.ceil(frames.length / cols);
-  const ctx = s.getContext('2d');
-  frames.forEach((f, i) => ctx.drawImage(f.c, (i % cols) * w, Math.floor(i / cols) * h));
+  const per = pageRows > 0 ? pageRows * cols : frames.length;
+  const out = [];
+  for (let first = 0; first < frames.length; first += per) {
+    const page = frames.slice(first, first + per);
+    const s = document.createElement('canvas');
+    s.width = w * Math.min(cols, page.length); s.height = h * Math.ceil(page.length / cols);
+    const ctx = s.getContext('2d');
+    page.forEach((f, i) => ctx.drawImage(f.c, (i % cols) * w, Math.floor(i / cols) * h));
+    out.push(s.toDataURL('image/webp', quality));
+  }
   frames = [];
-  return s.toDataURL('image/webp', quality);
+  return out;
 };
 `;
 
@@ -344,12 +358,19 @@ async function buildOne(page, key, cfg) {
   const cellH = Math.ceil(box[3] * cfg.scale);
   const cols = Math.max(1, Math.min(unique, Math.floor(4096 / cellW)));
   if (Math.ceil(unique / cols) * cellH > 16383) throw new Error(`${key}: sheet too tall for WebP (box ${box.join(",")}, ${unique} cells)`);
-  const dataUrl = await page.evaluate(([c, q]) => window.pack(c, q), [cols, cfg.webp]);
-  const out = cfg.scale === 1 ? `${key}.webp` : `${key}@${cfg.scale}x.webp`;
-  const buf = Buffer.from(dataUrl.split(',')[1], 'base64');
-  if (buf.subarray(8, 12).toString('latin1') !== 'WEBP') throw new Error(`${key}: Chrome did not write a WebP`);
-  writeFileSync(join(OUT_DIR, out), buf);
-  console.log(`${key}: ${plan.picks.length} frames (${unique} unique), cell ${cellW}x${cellH}, ${cols} cols, ${(buf.length / 1024).toFixed(0)} KB`);
+  const pageRows = cfg.pages && Math.ceil(unique / cols) * cellH > PAGE_MAX ? Math.floor(PAGE_MAX / cellH) : 0;
+  const dataUrls = await page.evaluate(([c, q, r]) => window.pack(c, q, r), [cols, cfg.webp, pageRows]);
+  const suffix = cfg.scale === 1 ? '.webp' : `@${cfg.scale}x.webp`;
+  const pages = dataUrls.map((dataUrl, i) => {
+    const out = `${key}${pageRows ? `-${i + 1}` : ''}${suffix}`;
+    const buf = Buffer.from(dataUrl.split(',')[1], 'base64');
+    if (buf.subarray(8, 12).toString('latin1') !== 'WEBP') throw new Error(`${key}: Chrome did not write a WebP`);
+    writeFileSync(join(OUT_DIR, out), buf);
+    return { file: out, bytes: buf.length, sha256: sha(buf) };
+  });
+  const out = pages[0].file;
+  const bytes = pages.reduce((n, p) => n + p.bytes, 0);
+  console.log(`${key}: ${plan.picks.length} frames (${unique} unique), cell ${cellW}x${cellH}, ${cols} cols${pageRows ? `, ${pages.length} pages of ${pageRows} rows` : ''}, ${(bytes / 1024).toFixed(0)} KB`);
   return {
     kind: 'sheet',
     src: cfg.fla,
@@ -365,8 +386,9 @@ async function buildOne(page, key, cfg) {
     cell: [cellW, cellH],
     cols,
     order,
-    bytes: buf.length,
-    sha256: sha(buf),
+    bytes: pages[0].bytes,
+    sha256: pages[0].sha256,
+    ...(pageRows ? { pageRows, pages } : {}),
   };
 }
 
@@ -421,13 +443,22 @@ export function checkOverlays() {
   for (const [key, cfg] of Object.entries(OVERLAYS)) {
     const m = manifest[key];
     if (!m) { bad.push(`${key}: not built`); continue; }
-    const out = join(OUT_DIR, m.file);
-    if (!existsSync(out)) { bad.push(`${key}: no ${m.file}`); continue; }
-    const buf = readFileSync(out);
-    if (buf.length !== m.bytes || sha(buf) !== m.sha256) bad.push(`${key}: ${m.file} differs from the manifest`);
-    const [w, h] = webpSize(buf);
     const unique = Math.max(...m.order) + 1;
-    if (w !== m.cell[0] * Math.min(m.cols, unique) || h !== m.cell[1] * Math.ceil(unique / m.cols)) bad.push(`${key}: sheet ${w}x${h}`);
+    if (Boolean(m.pageRows) !== Boolean(cfg.pages && m.cell[1] * Math.ceil(unique / m.cols) > PAGE_MAX)) bad.push(`${key}: pages ${m.pageRows ? 'built' : 'not built'}`);
+    const pages = m.pageRows ? m.pages : [{ file: m.file, bytes: m.bytes, sha256: m.sha256 }];
+    if (m.pageRows && (pages[0].file !== m.file || pages[0].sha256 !== m.sha256 || pages.length !== Math.ceil(unique / (m.cols * m.pageRows)))) bad.push(`${key}: page list`);
+    let missing = false;
+    pages.forEach((p, i) => {
+      const out = join(OUT_DIR, p.file);
+      if (!existsSync(out)) { bad.push(`${key}: no ${p.file}`); missing = true; return; }
+      const buf = readFileSync(out);
+      if (buf.length !== p.bytes || sha(buf) !== p.sha256) bad.push(`${key}: ${p.file} differs from the manifest`);
+      const [w, h] = webpSize(buf);
+      const cells = m.pageRows ? Math.min(m.cols * m.pageRows, unique - i * m.cols * m.pageRows) : unique;
+      if (w !== m.cell[0] * Math.min(m.cols, cells) || h !== m.cell[1] * Math.ceil(cells / m.cols)) bad.push(`${key}: sheet ${p.file} ${w}x${h}`);
+      if (m.pageRows && Math.max(w, h) > PAGE_MAX) bad.push(`${key}: ${p.file} ${w}x${h} is over ${PAGE_MAX}`);
+    });
+    if (missing) continue;
     if (m.scale !== cfg.scale || m.src !== cfg.fla) bad.push(`${key}: config changed`);
     if (m.order.length !== m.frames) bad.push(`${key}: order`);
     if (Boolean(m.states) !== Boolean(cfg.states)) bad.push(`${key}: states`);

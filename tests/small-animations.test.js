@@ -16,7 +16,7 @@ import { POWDER_SHAKE, powderShakerSheet } from '../public/js/powder-shakers.js?
 import { POWDERS } from '../public/js/powders.js?v=6f3d6671';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedDurationMs, packedFrameAt } from '../public/js/packed-sheets.js?v=e3d07c14';
-import { itemOverlayPlacement } from '../public/js/item-overlay.js?v=2d84ca39';
+import { itemOverlayPlacement } from '../public/js/item-overlay.js?v=4adc2ae6';
 import { PLAYER_VERBS } from '../public/js/player-verbs-mp.js?v=4d0315f5';
 import { imageSize } from '../tools/image-size.mjs';
 

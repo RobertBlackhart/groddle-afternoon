@@ -4,14 +4,14 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3fca895d';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=325d0de0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=88e3b356';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
 import { createVogOverlay } from './js/vog-overlay.js?v=d977c132';
 import { createPromptStack } from './js/prompt-stack.js?v=6b79ae9b';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
-import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=ebe52dc8';
+import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=b5ad80ff';
 import {
   actionDurationFor,
   createTimedAction,
@@ -20,7 +20,7 @@ import {
 } from './js/action-timing.js?v=5db4e91b';
 import { createWordProgressView, wordAnchor, heldActionDelta, MAX_PUSH_DOWN } from './js/word-progress.js?v=98366023';
 // G374/G375/G378: Tiny Speck's quoin-limit and super-harvest rainbows and the musicblock notes.
-import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=219965d5';
+import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=4cbbb0c6';
 import {
   createQuestState,
   assignQuest,
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=e6995db8';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=8f5d057b';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=912f7fbb';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,
@@ -679,7 +679,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=18b181ad';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=20f16426';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=2e624216';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -708,7 +708,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=9b11451f';
+} from './js/street-render.js?v=e8f3b090';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -1013,7 +1013,7 @@ import {
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=e70bafd5';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=7de20c1a';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=2d84ca39';
+import { itemOverlayStats } from './js/item-overlay.js?v=4adc2ae6';
 import { isCrowdSad } from './js/animal-crowding.js?v=3ee9671d';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=e3634838';
 import {
@@ -1034,7 +1034,7 @@ import { loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodL
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=165dbd6e';
 import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
-import { installHiresDecos } from './js/deco-hires.js?v=8dbbe0f7';
+import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=23c2cb54';
@@ -1065,9 +1065,9 @@ import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=5edfbb12';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=814d7926';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
-import { sceneAnim, syncAnim } from './js/deco-anim.js?v=6f478d81';
+import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5c630896';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
-import { cancelAllOverlays, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=92383208';
+import { cancelAllOverlays, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=b054ca5c';
 import * as textureUrls from './js/textures.js?v=814d7926';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';

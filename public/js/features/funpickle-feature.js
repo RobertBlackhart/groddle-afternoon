@@ -42,7 +42,7 @@ import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=81
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
 import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=b89001c1';
-import { OVERLAY_BASE, cellRect, loadOverlayManifest, overlayAlpha, overlayFrameAt, standPlacement, trackOverlay } from '../overlay-art.js?v=92383208';
+import { OVERLAY_BASE, cellRect, loadOverlayManifest, overlayAlpha, overlayFrameAt, standPlacement, trackOverlay } from '../overlay-art.js?v=b054ca5c';
 import {
   AWARD_ITEM,
   AWARD_LINE,

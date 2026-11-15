@@ -8,14 +8,19 @@
  *
  * KNOWN_OVER is what was still over when this test was written (2026-11-14): it may only shrink.
  * A new picture over 4096 fails here; one fixed must come off the list.
+ *
+ * G765: a street deco's 2x file may stay over 4096 when js/deco-small-list.js gives it a copy that
+ * fits (<name>@<res>x.webp, tools/deco-pipeline/small-gpu.py): js/deco-hires.js decoUrl loads the
+ * copy where the GPU's limit is below the 2x file, so a small GPU never gets the big one.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { closeSync, openSync, readSync, readdirSync } from 'node:fs';
+import { closeSync, openSync, readFileSync, readSync, readdirSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { imageSize } from '../tools/image-size.mjs';
+import { SMALL_GPU_DECOS, SMALL_GPU_MAX_SIDE } from '../public/js/deco-small-list.js?v=5d29e2f1';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const MAX_SIDE = 4096;
@@ -23,27 +28,8 @@ const MAX_SIDE = 4096;
 const SHARP_COPY = /@(?:1\.5|2|2\.75|3)x\.(?:webp|png|jpe?g)$/i;
 
 const KNOWN_OVER = new Map([
-  // Street decos (2x art, the file every screen under 2.25 density draws).
-  ['assets/decos/groddle/alakol_house_big_shadow.webp', 'deco'],
-  ['assets/decos/groddle/apartment_xsection_bottom_1.webp', 'deco'],
-  ['assets/decos/groddle/apartment_xsection_top_1.webp', 'deco'],
-  ['assets/decos/groddle/blur_landscape_piece_01.webp', 'deco'],
-  ['assets/decos/groddle/blur_landscape_piece_02.webp', 'deco'],
-  ['assets/decos/groddle/bureaucratic_hall_bg.webp', 'deco'],
-  ['assets/decos/groddle/cityscape_asset_01.webp', 'deco'],
-  ['assets/decos/groddle/cityscape_asset_02.webp', 'deco'],
-  ['assets/decos/groddle/cl2_fat_ground_2250px_01.webp', 'deco'],
-  ['assets/decos/groddle/cl2_fat_ground_2250px_02.webp', 'deco'],
-  ['assets/decos/groddle/ground_front_2500px_02.webp', 'deco'],
-  ['assets/decos/groddle/haze_gradient_01.webp', 'deco'],
-  ['assets/decos/groddle/k04_lamp_02.webp', 'deco'],
-  ['assets/decos/groddle/landscape_piece_01.webp', 'deco'],
-  ['assets/decos/groddle/organs_wall_black2.webp', 'deco'],
-  ['assets/decos/groddle/patch_rough8.webp', 'deco'],
-  ['assets/decos/groddle/stripes_background.webp', 'deco'],
-  ['assets/decos/groddle/top_overlay_01.webp', 'deco'],
-  // pc_overlay sheet (seasons-feature.js Glitchmas Cracker): 110 cells of 769x394 cannot fit one 4096 texture.
-  ['assets/sprites/overlays/glitchmas_cracker.webp', 'overlay sheet'],
+  // G765: the 18 street decos have small-GPU copies (SMALL_GPU_DECOS) and the Glitchmas Cracker's
+  // sheet is in pages (tools/overlays/build.mjs `pages`).
   // vp_overlay: drawn on a 2D canvas (overlays.js playWindowOverlay), not a GPU texture.
   ['assets/sprites/overlays/overlay_sparkle_powder@0.5x.webp', 'window overlay'],
   // avatar-lab.html only; the game draws the vector avatar sheets.
@@ -76,14 +62,42 @@ describe('1x pictures fit a 4096 px texture (#326, G748)', () => {
     if (size && (size.w > MAX_SIDE || size.h > MAX_SIDE)) over.set(relative(ROOT, file), `${size.w}x${size.h}`);
   }
 
+  const smallCopy = (path) => {
+    const m = /^assets\/decos\/groddle\/([^/@]+)\.webp$/.exec(path);
+    const row = m && SMALL_GPU_DECOS.get(m[1]);
+    return row ? `assets/decos/groddle/${m[1]}@${row[0]}x.webp` : null;
+  };
+
   it('no sprite sheet or picture a phone loads is over 4096 px, beyond the known list', () => {
-    const fresh = [...over].filter(([path]) => !KNOWN_OVER.has(path)).map(([p, s]) => `${p} ${s}`);
+    const fresh = [...over].filter(([path]) => !KNOWN_OVER.has(path) && !smallCopy(path)).map(([p, s]) => `${p} ${s}`);
     assert.deepEqual(fresh, [], 'over 4096 px on a side: re-cut under 4096 (vendor-npcs.js stripCols)');
   });
 
   it('the known list only shrinks: every entry is still over 4096', () => {
     const gone = [...KNOWN_OVER.keys()].filter((path) => !over.has(path));
     assert.deepEqual(gone, [], 'now fits: take it off KNOWN_OVER');
+  });
+
+  it('G765: every deco 2x file over 4096 has a small-GPU copy that fits, at its logical size', () => {
+    assert.equal(SMALL_GPU_MAX_SIDE, MAX_SIDE);
+    const decos = [...over.keys()].filter((p) => p.startsWith('assets/decos/'));
+    assert.equal(decos.length, SMALL_GPU_DECOS.size);
+    for (const path of decos) {
+      const copy = smallCopy(path);
+      assert.ok(copy, `${path}: no copy in js/deco-small-list.js`);
+      const big = headerSize(join(ROOT, path));
+      const small = headerSize(join(ROOT, copy));
+      assert.ok(small.w <= MAX_SIDE && small.h <= MAX_SIDE, `${copy} ${small.w}x${small.h}`);
+      const res = SMALL_GPU_DECOS.get(path.split('/').pop().slice(0, -5))[0];
+      assert.ok(Math.abs(small.w / res - big.w) <= 0.5 && Math.abs(small.h / res - big.h) <= 0.5, `${copy} at ${res}`);
+    }
+  });
+
+  it('G765: the Glitchmas Cracker sheet ships in pages that fit', () => {
+    const more = JSON.parse(readFileSync(join(ROOT, 'assets/sprites/overlays/overlays-more.json'), 'utf8'));
+    const c = more.glitchmas_cracker;
+    assert.ok(c.pageRows > 0 && c.pages.length > 1);
+    for (const p of c.pages) assert.ok(!over.has(`assets/sprites/overlays/${p.file}`), p.file);
   });
 
   it('no vendor or NPC sheet is on the known list', () => {

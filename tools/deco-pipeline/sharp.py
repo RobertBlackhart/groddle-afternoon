@@ -571,6 +571,14 @@ def visible_diff(ref, other, k=None):
 
 # ---------- build ----------
 
+def small_copies():
+    """File names of small-gpu.py's copies (<name>@<res>x.webp, res under 1): not this tool's to remove."""
+    path = os.path.join(HERE, 'plan-small.json')
+    if not os.path.exists(path):
+        return set()
+    return {f"{n}@{r['res']:g}x.webp" for n, r in json.load(open(path))['decos'].items()}
+
+
 def read_sharp():
     if not os.path.exists(SHARP_PLAN):
         return {'settings': None, 'decos': [], 'skipped': [], 'soft': []}
@@ -746,7 +754,7 @@ def build_chunk(work, chunk, args):
             open(dst, 'w').write(r['_svg'])
             r['bytes'] = os.path.getsize(dst)
             r['sha'] = sha(dst)
-            stale = [f for f in os.listdir(OUT) if f.startswith(r['name'] + '@') and f.endswith('x.webp') and f != r['name'] + '@1.5x.webp']
+            stale = [f for f in os.listdir(OUT) if f.startswith(r['name'] + '@') and f.endswith('x.webp') and f != r['name'] + '@1.5x.webp' and f not in small_copies()]
             for f in stale:
                 os.remove(os.path.join(OUT, f))
         else:
@@ -785,7 +793,7 @@ def build_chunk(work, chunk, args):
                     img = build.stage_resample(ren, r['stage'], z, r['size'])
                 dst = os.path.join(OUT, f"{r['name']}@{r['res']:g}x.webp")
                 for f in os.listdir(OUT):
-                    if f.startswith(r['name'] + '@') and f.endswith('x.webp') and f not in (r['name'] + '@1.5x.webp', os.path.basename(dst)):
+                    if f.startswith(r['name'] + '@') and f.endswith('x.webp') and f not in (r['name'] + '@1.5x.webp', os.path.basename(dst)) and f not in small_copies():
                         os.remove(os.path.join(OUT, f))
                 svg_old = os.path.join(OUT, r['name'] + '.svg')
                 if os.path.exists(svg_old) and r['name'] not in HAND_SVGS:
@@ -881,6 +889,7 @@ def cmd_check(args):
     for r in have.values():
         shipped |= {os.path.basename(f) for f in out_files(r)}
     extra_svgs = {'moon_asset_smile.svg', 'moon_asset_plain.svg'}  # hand-exported, see the skill (Paradise)
+    shipped |= small_copies()  # small-gpu.py's (its --check covers them)
     for f in os.listdir(OUT):
         if f.endswith('.svg') and f not in shipped and f not in extra_svgs:
             problems.append(f'{f}: stray SVG')

@@ -180,11 +180,15 @@ export function easeOutBack(t, s = 1.70158) {
   return u * u * ((s + 1) * u + s) + 1;
 }
 
-/** A sheet cell's rect, in logical (stage) px of the sheet: { x, y, w, h }. */
+/** A sheet cell's rect, in logical (stage) px of the sheet: { x, y, w, h }, and `page` (meta.pages index) on a paged sheet. */
 export function cellRect(meta, cell) {
   const w = meta.cell[0] / meta.scale;
   const h = meta.cell[1] / meta.scale;
-  return { x: (cell % meta.cols) * w, y: Math.floor(cell / meta.cols) * h, w, h };
+  const row = Math.floor(cell / meta.cols);
+  if (!(meta.pageRows > 0)) return { x: (cell % meta.cols) * w, y: row * h, w, h };
+  // G765: a paged sheet (tools/overlays/build.mjs `pages`): the cell's page and its place on it.
+  const page = Math.floor(row / meta.pageRows);
+  return { x: (cell % meta.cols) * w, y: (row - page * meta.pageRows) * h, w, h, page };
 }
 
 /**
@@ -326,7 +330,8 @@ export function sheetTexture(PIXI, key, meta, cell) {
   let t = sheetFrames.get(id);
   if (!t || t.destroyed) {
     const c = cellRect(meta, cell);
-    t = frameTexture(sourceFromUrl(`${OVERLAY_BASE}${meta.file}?v=${meta.fla.slice(0, 8)}`), new PIXI.Rectangle(c.x, c.y, c.w, c.h));
+    const file = c.page ? meta.pages[c.page].file : meta.file;
+    t = frameTexture(sourceFromUrl(`${OVERLAY_BASE}${file}?v=${meta.fla.slice(0, 8)}`), new PIXI.Rectangle(c.x, c.y, c.w, c.h));
     sheetFrames.set(id, t);
   }
   return t;

@@ -22,7 +22,7 @@ import {
 } from '../public/js/potion-bottles.js?v=17925871';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedDurationMs, packedFrameAt } from '../public/js/packed-sheets.js?v=e3d07c14';
-import { KEEP_SHEETS, itemOverlayPlacement, pcOverlayPoint } from '../public/js/item-overlay.js?v=2d84ca39';
+import { KEEP_SHEETS, itemOverlayPlacement, pcOverlayPoint } from '../public/js/item-overlay.js?v=4adc2ae6';
 import { POTIONS } from '../public/js/potions.js?v=4f4c996d';
 import { GARDEN_POTIONS } from '../public/js/master-garden.js?v=ff6ca66a';
 import { TREE_ANTIDOTE, TREE_POISON } from '../public/js/tree-poison.js?v=d8fb42c9';

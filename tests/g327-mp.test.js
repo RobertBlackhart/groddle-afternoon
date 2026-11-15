@@ -31,8 +31,8 @@ import {
   yourSignLine,
 } from '../public/js/hi-signs-mp.js?v=24b2d923';
 import { HI_VARIANTS, HI_VARIANT_COLORS, HI_VARIANT_NAMES, hiDay } from '../public/js/hi-signs.js?v=0436d54a';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=b031e028';
-import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=b4507828';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=b56aca1c';
+import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=c74175d7';
 import { addItem, countItem } from '../public/js/inventory.js?v=f49c8998';
 import { applyAchievementProgress, createAchievementState, getAchievementProgress, seedAchievementNearCompletion } from '../public/js/achievements.js?v=e4e5edd0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';

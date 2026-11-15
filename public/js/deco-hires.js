@@ -18,6 +18,12 @@
  * 114 x 382 logical deco). Those ship an SVG, rasterised at the screen's need, or a WebP sized to
  * the largest placement; js/street-render.js asks sharpDeco() for them on the layers that are
  * drawn sharp (middleground and in front of it, unblurred).
+ *
+ * Small GPUs (G765): many Android phones take textures up to 4096 px on a side and draw a bigger
+ * one black (#326). The decos whose 2x file is longer than that (js/deco-small-list.js) also ship
+ * <name>@<res>x.webp, the same picture scaled to fit (tools/deco-pipeline/small-gpu.py), and
+ * decoUrl loads it where the renderer's MAX_TEXTURE_SIZE is below the 2x file; every other GPU
+ * draws the 2x file as before.
  */
 import { HIRES_DECOS, HIRES_DECOS_BIG } from './deco-hires-list.js?v=60fcf361';
 import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=bf75b325';
@@ -25,6 +31,7 @@ import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=bf75b325';
 /** A published zone's new art (gz_ decos, js/deco-new-list.js): drawn like library decos. */
 export { NEW_DECOS };
 import { SHARP_DECOS } from './deco-sharp-list.js?v=28262069';
+import { SMALL_GPU_DECOS } from './deco-small-list.js?v=5d29e2f1';
 
 const DECO_PNG = /^(.*?(?:^|\/)assets\/decos\/groddle\/)([^/?#]+)\.png([?#].*)?$/;
 
@@ -33,16 +40,39 @@ export const HIRES_DECO_SCALE = 2.25;
 /** Hysteresis: once on 3x, stay there until the scale drops below this. */
 export const HIRES_DECO_SCALE_OFF = 2.05;
 
+/** The GPU's texture limit once a renderer is known (null until then; Infinity when it says none). */
+let gpuMaxSide = null;
+
 /**
- * The URL to load for a deco PNG URL, or null for any other URL.
- * @param {string} url
- * @param {{ hires?: boolean, bigTextures?: boolean }} [opts]
+ * The largest texture side the game's renderer takes: Infinity until there is one (or when it
+ * does not say), so the 2x files load as before.
  */
-export function decoUrl(url, { hires = false, bigTextures = true } = {}) {
+export function decoTextureLimit() {
+  if (gpuMaxSide === null) {
+    const r = routeRenderer();
+    if (r) gpuMaxSide = maxTextureSizeOf(r) || Infinity;
+  }
+  return gpuMaxSide ?? Infinity;
+}
+
+/** Test seam: treat the GPU's limit as `n` px (null: ask the renderer again). */
+export function setDecoTextureLimit(n) {
+  gpuMaxSide = n === null ? null : Number(n) > 0 ? Number(n) : Infinity;
+}
+
+/**
+ * The URL to load for a deco PNG URL, or null for any other URL. `maxTexture` (the renderer's
+ * limit by default): a 2x file longer than it loads its small-GPU copy (js/deco-small-list.js).
+ * @param {string} url
+ * @param {{ hires?: boolean, bigTextures?: boolean, maxTexture?: number }} [opts]
+ */
+export function decoUrl(url, { hires = false, bigTextures = true, maxTexture = decoTextureLimit() } = {}) {
   const m = DECO_PNG.exec(String(url || ''));
   if (!m) return null;
   const [, dir, name, query = ''] = m;
   const three = hires && (HIRES_DECOS.has(name) || NEW_DECOS_HIRES.has(name) || (bigTextures && HIRES_DECOS_BIG.has(name)));
+  const small = three ? null : SMALL_GPU_DECOS.get(name);
+  if (small && small[1] > maxTexture) return `${dir}${name}@${small[0]}x.webp${query}`;
   return `${dir}${name}${three ? '@1.5x' : ''}.webp${query}`;
 }
 
@@ -70,13 +100,15 @@ let routeRenderer = () => null;
  * Route every deco PNG URL in js/textures.js to its WebP, at 3x when the screen needs it.
  * `renderer()` returns the Pixi renderer (or nothing yet): its resolution is the effective scale
  * (device pixel ratio when there is none), and 3x files over 4096 px only load where the GPU takes
- * 8192 px textures. Decided per URL, so streets built after a resize pick up the change; textures
- * already made keep theirs.
+ * 8192 px textures, and 2x files longer than its limit load their small-GPU copy (decoUrl).
+ * Decided per URL, so streets built after a resize pick up the change; textures already made keep
+ * theirs.
  * @param {{ addUrlRoute: Function }} textures the js/textures.js module
  * @param {{ renderer?: () => any }} [opts]
  */
 export function installHiresDecos(textures, { renderer = () => null } = {}) {
   routeRenderer = renderer;
+  gpuMaxSide = null;
   let hires = false;
   let maxSize = null;
   const route = (url) => {

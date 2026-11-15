@@ -20,7 +20,7 @@ import {
   parallaxLayerOffset,
   parallaxRestX,
   parallaxRestY,
-} from '../public/js/street-render.js?v=9b11451f';
+} from '../public/js/street-render.js?v=e8f3b090';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const grimssea = JSON.parse(readFileSync(join(here, '../public/assets/streets/GDODG1KQLOS2GNO.json'), 'utf8'));

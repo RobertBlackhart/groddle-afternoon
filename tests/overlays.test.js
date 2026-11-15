@@ -76,7 +76,7 @@ const G448_ART = ['overlay_sneezing_powder', 'focusing_orb_laser_beam', 'shrine_
 const SHARP1_MORE = ['trading', 'fox_bait_ignite', 'dice_overlay', 'twelve_sided_die', 'petrified_rock_open_overlay', 'right_arrow', 'crown_game_indicator_you', 'crown_game_indicator_someone_else', 'game_of_crowns_throbber'];
 const SHARP1_ART = ['poisoned', 'rooked', 'amorous_philtre_heart', 'play_glitch'];
 
-const overlays = () => import('../public/js/overlays.js?v=219965d5');
+const overlays = () => import('../public/js/overlays.js?v=4cbbb0c6');
 const flush = async (n = 3) => {
   for (let i = 0; i < n; i += 1) {
     await new Promise((r) => setTimeout(r, 0));
@@ -99,13 +99,17 @@ describe('tools/overlays/build.mjs', () => {
     for (const [key, m] of Object.entries(manifest)) {
       assert.match(m.src, /^glitch-overlays\/[A-Za-z0-9_]+\.fla$/, key); // G678: letter_A_overlay ...
       assert.match(m.fla, /^[0-9a-f]{40}$/, key);
-      const buf = readFileSync(join(pub, 'assets/sprites/overlays', m.file));
-      const [w, h] = webpSize(buf);
-      assert.ok(w <= 4096 && h <= 16383, `${key} ${w}x${h}`);
-      assert.ok(buf.length <= 1_600_000, `${key} is ${buf.length} bytes`);
-      // @Nx names carry the scale (textures.js resolutionOfUrl), so the logical size is the stage box.
-      if (m.scale !== 1) assert.match(m.file, new RegExp(`@${m.scale}x\\.webp$`), key);
-      total += buf.length;
+      // G765: a paged sheet (the Glitchmas Cracker) is several files, each within 4096 px.
+      for (const file of m.pages ? m.pages.map((p) => p.file) : [m.file]) {
+        const buf = readFileSync(join(pub, 'assets/sprites/overlays', file));
+        const [w, h] = webpSize(buf);
+        assert.ok(w <= 4096 && h <= (m.pages ? 4096 : 16383), `${key} ${file} ${w}x${h}`);
+        // @Nx names carry the scale (textures.js resolutionOfUrl), so the logical size is the stage box.
+        if (m.scale !== 1) assert.match(file, new RegExp(`@${m.scale}x\\.webp$`), key);
+        total += buf.length;
+      }
+      const bytes = m.pages ? m.pages.reduce((n, p) => n + p.bytes, 0) : m.bytes;
+      assert.ok(bytes <= 1_600_000, `${key} is ${bytes} bytes`);
     }
     // 17.7 MB as built (the seven rainbows are 1.25-1.5 MB each at 30 fps, as overlay-art's are; each loads when first
     // shown). Lane art 2026-11-08 added 1.8 MB: the slather splatter, click_to_prime, eyeballing, the teleporter, the subway window.
@@ -250,6 +254,23 @@ describe('js/overlays.js players', () => {
     assert.ok(s.destroyed);
   });
 
+  it('G765: the Glitchmas Cracker draws each cell from its page (every page fits a 4096 px texture)', async () => {
+    const { cellRect, sheetTexture } = await import('../public/js/overlay-art.js?v=b054ca5c');
+    const c = manifest.glitchmas_cracker;
+    const perPage = c.cols * c.pageRows;
+    const last = Math.max(...c.order);
+    assert.deepEqual(cellRect(c, 0), { x: 0, y: 0, w: c.cell[0], h: c.cell[1], page: 0 });
+    assert.deepEqual(cellRect(c, perPage + 7), { x: 2 * c.cell[0], y: c.cell[1], w: c.cell[0], h: c.cell[1], page: 1 });
+    const r = cellRect(c, last);
+    assert.equal(r.page, c.pages.length - 1);
+    assert.equal(r.y, (Math.floor(last / c.cols) - r.page * c.pageRows) * c.cell[1]);
+    for (const [cell, page] of [[3, 0], [perPage, 1], [last, c.pages.length - 1]]) {
+      const t = sheetTexture(FAKE_PIXI, 'glitchmas_cracker', c, cell);
+      const label = String(t.source?.label || t.label || '');
+      assert.match(label, new RegExp(`overlays/${c.pages[page].file.replace('.', '\\.')}\\?`), `cell ${cell}`);
+    }
+  });
+
   it('the dice: two overlays spin, then each lands on its own roll state', async () => {
     const { playDice } = await overlays();
     const layer = { destroyed: false, addChild() {} };
@@ -387,7 +408,7 @@ describe('G441: the super harvest arc drawn from its SVG frames on dense screens
     // Nothing shows the race winner's rainbow (desk decisions), so it has no SVG frames.
     assert.ok(!art.rainbow_winner.vector);
     for (const f of ['player-verbs-mp-feature', 'rook-attack-feature', 'secret-spots-feature']) assert.match(read(`js/features/${f}.js`), /resolution: engine\.resolution \|\| 1/, f);
-    const oa = await import('../public/js/overlay-art.js?v=92383208');
+    const oa = await import('../public/js/overlay-art.js?v=b054ca5c');
     const ov = await overlays();
     assert.equal(ov.vectorDensity, oa.vectorDensity, 'one vector path');
     const y = art.rainbow_youdidit;
@@ -551,7 +572,7 @@ describe('G441: the super harvest arc drawn from its SVG frames on dense screens
 
   it('G448: playOverlay uses the default resolution when given none; the countdown window overlay draws SVG frames on a dense screen', async () => {
     const ov = await overlays();
-    const oa = await import('../public/js/overlay-art.js?v=92383208');
+    const oa = await import('../public/js/overlay-art.js?v=b054ca5c');
     const m = manifest['321_countdown'];
     const vtext = readFileSync(join(pub, 'assets/sprites/overlays', m.vector.file), 'utf8');
     const savedFetch = globalThis.fetch;

@@ -18,10 +18,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from '../public/js/quest-rooms/radiant-glare.js?v=d743533a';
-import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=fcd9882e';
-import { glitchLayerMatrix } from '../public/js/street-render.js?v=9b11451f';
-import { MOON, WASHING, WASHING_LINE } from '../public/js/purple-journey-scene.js?v=cc24f07a';
+import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from '../public/js/quest-rooms/radiant-glare.js?v=a73e457a';
+import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=856ea7ef';
+import { glitchLayerMatrix } from '../public/js/street-render.js?v=e8f3b090';
+import { MOON, WASHING, WASHING_LINE } from '../public/js/purple-journey-scene.js?v=69436688';
 import * as esq from '../public/js/quest-rooms/esquibeth.js?v=998c8925';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from '../public/js/quest-rooms/esquibeth-art.js?v=fe515887';
 

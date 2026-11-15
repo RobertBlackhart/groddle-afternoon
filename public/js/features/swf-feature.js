@@ -47,8 +47,8 @@ import {
   standPlacement,
   trackOverlay,
   vectorDensity,
-} from '../overlay-art.js?v=92383208';
-import { vpOverlay } from '../quest-rooms/vp-overlay.js?v=f5ad729b';
+} from '../overlay-art.js?v=b054ca5c';
+import { vpOverlay } from '../quest-rooms/vp-overlay.js?v=5fd3abb8';
 import {
   GAME_BOX,
   GAME_STAGES,

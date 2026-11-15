@@ -46,7 +46,7 @@ import {
   vectorArtStats,
   vectorDensity,
   vectorFrameSvgs,
-} from './overlay-art.js?v=92383208';
+} from './overlay-art.js?v=b054ca5c';
 
 // G446: the SVG-frame helpers live in overlay-art.js (playSheetOverlay draws its rainbows the same way).
 // G448: an overlay holds its decoded frames only while it plays (holdVectorTexture).

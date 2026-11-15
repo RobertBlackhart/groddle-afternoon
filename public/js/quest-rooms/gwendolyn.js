@@ -67,7 +67,7 @@ import { ensureQuestOfferState } from '../quest-offers.js?v=77816a7d';
 import { MEDITATION_MUSIC, ORB_TOOL_SHEET } from '../meditation.js?v=96f23682';
 import { gainMetabolic, loseMood } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=92383208';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=b054ca5c';
 import { GWENDOLYN_INNER_FILES } from './gwendolyn-inner-art.js?v=06b4d5d6';
 
 export const ROOM_ID = 'gwendolyn';

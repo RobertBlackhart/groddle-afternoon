@@ -10,9 +10,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HIRES_DECOS, HIRES_DECOS_BIG } from '../public/js/deco-hires-list.js?v=60fcf361';
-import { decoUrl, installHiresDecos, wantsHiresDecos } from '../public/js/deco-hires.js?v=8dbbe0f7';
+import { decoTextureLimit, decoUrl, installHiresDecos, setDecoTextureLimit, wantsHiresDecos } from '../public/js/deco-hires.js?v=dbfc79a6';
+import { SMALL_GPU_DECOS } from '../public/js/deco-small-list.js?v=5d29e2f1';
 import { resolutionOfUrl } from '../public/js/textures.js?v=814d7926';
-import { recolourBudgetBytes } from '../public/js/street-render.js?v=9b11451f';
+import { recolourBudgetBytes } from '../public/js/street-render.js?v=e8f3b090';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const decoDir = join(root, 'public/assets/decos/groddle');
@@ -121,6 +122,41 @@ describe('deco WebP pipeline', () => {
     resolution = 3.3;
     assert.equal(route(`assets/decos/groddle/${hi}.png`), `assets/decos/groddle/${hi}@1.5x.webp`);
     assert.equal(route('assets/sprites/icons/apple.webp'), null);
+  });
+
+  it('G765: a 2x file over the GPU texture limit loads its small copy; other GPUs keep the 2x file', () => {
+    const [name, [res, side]] = [...SMALL_GPU_DECOS][0];
+    const url = `assets/decos/groddle/${name}.png`;
+    assert.ok(side > 4096 && res < 1);
+    assert.equal(decoUrl(url, { maxTexture: 16384 }), `assets/decos/groddle/${name}.webp`);
+    assert.equal(decoUrl(url, { maxTexture: side }), `assets/decos/groddle/${name}.webp`);
+    assert.equal(decoUrl(url, { maxTexture: 4096 }), `assets/decos/groddle/${name}@${res}x.webp`);
+    assert.equal(decoUrl(`../${url}?v=3`, { maxTexture: 4096 }), `../assets/decos/groddle/${name}@${res}x.webp?v=3`);
+    // The copy keeps the deco's logical size: resolution from its name.
+    assert.equal(resolutionOfUrl(`assets/decos/groddle/${name}@${res}x.webp`), res);
+    // A deco that fits keeps its 2x file on a small GPU.
+    const fits = plan.decos.find((r) => !SMALL_GPU_DECOS.has(r.name)).name;
+    assert.equal(decoUrl(`assets/decos/groddle/${fits}.png`, { maxTexture: 4096 }), `assets/decos/groddle/${fits}.webp`);
+    // The default is the renderer's limit: the route and street-render's far layers (decoUrl(url)) both follow it.
+    const routes = [];
+    let max = 4096;
+    const route = installHiresDecos({ addUrlRoute: (n, fn) => routes.push([n, fn]) }, {
+      renderer: () => ({ resolution: 1, gl: { MAX_TEXTURE_SIZE: 1, getParameter: () => max } }),
+    });
+    assert.equal(decoTextureLimit(), 4096);
+    assert.equal(route(url), `assets/decos/groddle/${name}@${res}x.webp`);
+    assert.equal(decoUrl(url), `assets/decos/groddle/${name}@${res}x.webp`);
+    // A desktop GPU (and no renderer yet: Infinity) draws the 2x file, as before.
+    max = 16384;
+    installHiresDecos({ addUrlRoute: () => {} }, { renderer: () => ({ resolution: 1, gl: { MAX_TEXTURE_SIZE: 1, getParameter: () => max } }) });
+    assert.equal(route(url), `assets/decos/groddle/${name}.webp`);
+    installHiresDecos({ addUrlRoute: () => {} });
+    assert.equal(decoTextureLimit(), Infinity);
+    assert.equal(decoUrl(url), `assets/decos/groddle/${name}.webp`);
+    setDecoTextureLimit(4096);
+    assert.equal(decoUrl(url), `assets/decos/groddle/${name}@${res}x.webp`);
+    setDecoTextureLimit(null);
+    assert.equal(decoUrl(url), `assets/decos/groddle/${name}.webp`);
   });
 
   it('counts recolour bakes at logical size, so 3x decos keep layers baked', () => {
