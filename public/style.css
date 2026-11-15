@@ -11687,6 +11687,56 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 [data-ui="modern"] .award-screen[data-paged="true"] .award-body {
   flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
 }
+/* When the words still need more room, screen-fx.js fitAwardBody sizes the body in whole lines and
+   marks the edge it continues past (data-more): that edge fades over most of a line, its last sliver
+   clear so the tips of the next line's letters never peek in (2026-11-15). */
+[data-ui="modern"] .award-screen .award-body[data-more="end"] {
+  -webkit-mask-image: linear-gradient(to bottom, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+  mask-image: linear-gradient(to bottom, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+}
+[data-ui="modern"] .award-screen .award-body[data-more="start"] {
+  -webkit-mask-image: linear-gradient(to top, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+  mask-image: linear-gradient(to top, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+}
+[data-ui="modern"] .award-screen .award-body[data-more="both"] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0.15em, var(--c-black) 1.2em, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+  mask-image: linear-gradient(to bottom, transparent 0.15em, var(--c-black) 1.2em, var(--c-black) calc(100% - 1.2em), transparent calc(100% - 0.15em));
+}
+/* Not even one whole line of the words fits (a short phone held sideways): screen-fx.js fitAwardBody
+   marks the screen data-tight and the whole card scrolls in it at its full height instead. */
+[data-ui="modern"] .award-screen[data-tight="true"],
+[data-ui="modern"] .award-screen[data-tight="true"][data-kind],
+[data-ui="modern"] .award-screen[data-tight="true"][data-paged="true"] {
+  place-items: start center;
+  overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+}
+[data-ui="modern"] .award-screen[data-tight="true"] .award-card,
+[data-ui="modern"] .award-screen[data-tight="true"][data-paged="true"] .award-card { max-height: none; }
+[data-ui="modern"] .award-screen[data-tight="true"] .award-body,
+[data-ui="modern"] .award-screen[data-tight="true"][data-paged="true"] .award-body { overflow: visible; }
+/* An upright phone (Austin's iPhone in Chrome, 2026-11-15: 393x663 with the browser bars; Safari is
+   about 660-750): the 166 px art and its burst took the room, so the words shrank to one line and were
+   cut through the letters. Up to 760 px tall: smaller art and burst, the burst over the HUD (the
+   scrim covers it), tighter spacing, so the words get the room. (Before the 500 px rules, which win.) */
+@media (orientation: portrait) and (max-height: 760px) {
+  [data-ui="modern"] .award-screen { --moment-burst: 128px; --moment-art: 104px; --moment-art-book: 88px; }
+  [data-ui="modern"] .award-screen,
+  [data-ui="modern"] .award-screen[data-kind="quest"],
+  [data-ui="modern"] .award-screen[data-kind="level"],
+  [data-ui="modern"] .award-screen[data-paged="true"] { padding: var(--space-4); }
+  [data-ui="modern"] .award-screen .award-card,
+  [data-ui="modern"] .award-screen[data-paged="true"] .award-card { padding: var(--space-5) var(--space-5) var(--space-5); }
+  [data-ui="modern"] .award-screen .award-badge,
+  [data-ui="modern"] .award-screen[data-paged="true"] .award-badge { margin: calc(var(--space-5) * -1 - var(--moment-burst) * 0.5) auto var(--space-1); }
+  [data-ui="modern"] .award-screen .award-badge::before { inset: -22px; }
+  [data-ui="modern"] .award-screen .award-title,
+  [data-ui="modern"] .award-screen[data-paged="true"] .award-title { margin: var(--space-1) 0 var(--space-2); font-size: var(--fs-4xl); }
+  [data-ui="modern"] .award-screen .award-body,
+  [data-ui="modern"] .award-screen[data-paged="true"] .award-body { margin-bottom: var(--space-3); }
+  [data-ui="modern"] .award-screen .award-next,
+  [data-ui="modern"] .award-screen[data-okin="true"] .award-next,
+  [data-ui="modern"] .award-screen[data-paged="true"] .award-next { margin-top: var(--space-4); }
+}
 /* A short screen (the mobile QA, 2026-11-12: a phone held sideways, 343 px; Austin's iPhone in Chrome
    sideways, about 320 px): the card's button ("Yeah! I am!") sat under the bottom edge and the screen
    did not scroll. Up to 500 px tall: smaller art and burst, tighter spacing, no room kept for the HUD

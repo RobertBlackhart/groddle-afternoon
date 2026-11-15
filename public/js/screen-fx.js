@@ -9,7 +9,7 @@
 
 import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBounce, mountPetRock } from './familiar.js?v=b9597cd3';
 import { formatLoadingTime, ordinal } from './exploration.js?v=68f27989';
-import { artDensity, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=1af38c9a';
+import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3f08b37c';
 
 /**
  * Street-load timings (seconds).
@@ -1223,6 +1223,10 @@ async function showAwardPages(el, { payload, pages, next, close, body, sub }) {
       next.textContent = page.response;
       next.hidden = false;
       if (close) close.hidden = false;
+      if (modern && body) {
+        body.scrollTop = 0;
+        fitAwardBody(body, el);
+      }
       payload.onPage?.({ index: pageIndex + 1, total: pages.length, final });
     };
     renderPage();
@@ -1290,6 +1294,55 @@ function capMomentArt(img) {
  *   onDismiss?: () => void,
  * }} payload
  */
+/**
+ * The modern card's words (Austin's iPhone, 2026-11-15): when the card leaves the body less room
+ * than its words need, the body is sized in whole lines and fades at the edge it continues past
+ * (style.css .award-body[data-more]), so no line is cut through its letters and the player can
+ * see that it scrolls; the title and the button stay in view. When not even one line fits, the
+ * whole card scrolls in the screen instead (data-tight).
+ */
+export function fitAwardBody(body, screen = null) {
+  if (!body) return;
+  body.style.removeProperty('max-height');
+  if (screen) delete screen.dataset.tight;
+  if (!body.hidden) {
+    const lineHeight = parseFloat(globalThis.getComputedStyle?.(body)?.lineHeight);
+    const fit = bodyFit(body.clientHeight, body.scrollHeight, lineHeight);
+    if (fit.scrollCard && screen) screen.dataset.tight = 'true';
+    else if (fit.height) body.style.maxHeight = `${fit.height}px`;
+  }
+  markAwardBodyFade(body);
+}
+
+function markAwardBodyFade(body) {
+  const fade = body.hidden ? '' : bodyFade({ top: body.scrollTop, height: body.clientHeight, full: body.scrollHeight });
+  if (fade) body.dataset.more = fade;
+  else delete body.dataset.more;
+}
+
+/** Fit the body while the card shows: when it first lays out, when the screen turns or resizes. */
+function watchAwardBody(el, body) {
+  if (!el || !body) return () => {};
+  const card = el.querySelector('.award-card') || el;
+  const refit = () => fitAwardBody(body, el);
+  const onScroll = () => markAwardBodyFade(body);
+  body.scrollTop = 0;
+  body.addEventListener('scroll', onScroll, { passive: true });
+  const Observer = globalThis.ResizeObserver;
+  const observer = Observer ? new Observer(refit) : null;
+  observer?.observe(card);
+  globalThis.window?.addEventListener?.('resize', refit);
+  return () => {
+    observer?.disconnect();
+    globalThis.window?.removeEventListener?.('resize', refit);
+    body.removeEventListener('scroll', onScroll);
+    body.style.removeProperty('max-height');
+    delete body.dataset.more;
+    delete el.dataset.tight;
+    el.scrollTop = 0;
+  };
+}
+
 export async function showAwardScreen(el, payload) {
   if (!el) return;
   const kind = payload.kind || 'generic';
@@ -1390,6 +1443,7 @@ export async function showAwardScreen(el, payload) {
     delete el.dataset.pages;
   }
   el.dataset.screen = paged ? 'pages' : screen;
+  const stopFit = modern ? watchAwardBody(el, body) : () => {};
   if (paged) {
     await showAwardPages(el, { payload, pages, next, close, body, sub });
   } else {
@@ -1400,6 +1454,7 @@ export async function showAwardScreen(el, payload) {
   }
 
   stopFamiliar();
+  stopFit();
   if (fam) fam.hidden = true;
   if (next) next.hidden = true;
   if (close) close.hidden = true;

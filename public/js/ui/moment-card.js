@@ -117,3 +117,28 @@ export function momentMoreText(waiting) {
   const n = Math.max(0, Math.floor(Number(waiting) || 0));
   return n ? `${n} more` : '';
 }
+
+/**
+ * The card's words when they need more room than the card has (Austin's iPhone, 2026-11-15: the
+ * body shrank to part of a line and was cut through the letters). `room` is the height the card
+ * leaves the body, `full` the words' own height, `lineHeight` one line (all CSS px). Returns
+ * { height: 0 } when the words fit, { height } in whole lines when the body scrolls, and
+ * { scrollCard: true } when not even one whole line fits (a short screen sideways): then the whole
+ * card scrolls in the screen instead, at its full height.
+ */
+export function bodyFit(room, full, lineHeight) {
+  if (!(lineHeight > 0) || !(full > room + 1)) return { height: 0 };
+  const lines = Math.floor((room + 0.5) / lineHeight);
+  return lines >= 1 ? { height: lines * lineHeight } : { scrollCard: true };
+}
+
+/**
+ * Which edge of a body that scrolls fades to say there is more: 'end' (more below), 'start'
+ * (more above), 'both', or '' (all of it shows).
+ */
+export function bodyFade({ top = 0, height = 0, full = 0 } = {}) {
+  if (!(full > height + 1)) return '';
+  const above = top > 1;
+  const below = top + height < full - 1;
+  return above && below ? 'both' : above ? 'start' : below ? 'end' : '';
+}
