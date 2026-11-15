@@ -2792,9 +2792,19 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2220,
+  "commits": 2223,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Sura's and Tamila's restored maps have their missing preserve and park boards back"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The award card's words read whole on a phone instead of being cut to one line"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2904,16 +2914,6 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "The start card names the street you really start on, and sits centred on a phone"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The iMG on a phone's top bar takes a tap anywhere over the bar's height, sideways or upright"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "A short street on an upright phone shows its own sky above it, and the route card no longer covers the street's name"
    }
   ]
  },
