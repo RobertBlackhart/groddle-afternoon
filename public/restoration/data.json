@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2200,
+  "commits": 2204,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Fourteen more region maps are Tiny Speck's 2012 paintings, restored, with their differences written on the Maps page"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Sparkly donated for the Feat counts every chunk, not one stack per donation"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Home rocks wear out after 40 mine-outs, not 40 swings, and a fresh restoration takes items at once"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Visitors can plant, water and pick the gardens on another player's home street"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2894,29 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Big street scenery and the Glitchmas Cracker no longer draw black on phones with small graphics chips"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Massadoe's map is Tiny Speck's 2012 painting, restored"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A phone held sideways keeps Jump clear of Social, a Menu with room, and a report window you can see while typing"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A closed road says when its project opens while the street rests, and the Street Spirit gives it once the server says so"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The Act chooser shows a picture for your home furniture"
    }
   ]
  },
- "tests": 996,
+ "tests": 999,
  "generatedAt": "2026-11-15"
 }
