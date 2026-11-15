@@ -1486,6 +1486,16 @@
       ]
     },
     {
+      "id": "G789",
+      "area": "Street projects",
+      "show": "fixing",
+      "text": "Project steps said the Focusing Orb and other tools with no wear used one wear a unit.",
+      "report": 366,
+      "commits": [
+        "game:62094c44db"
+      ]
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."

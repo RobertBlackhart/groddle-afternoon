@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.41.1",
+  "release": "v0.41.2",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 14,
     "unreleased": 0,
-    "fixed": 150,
+    "fixed": 151,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -602,6 +602,13 @@
           "report": 339,
           "state": "fixed",
           "version": "v0.40.1"
+        },
+        {
+          "id": "G789",
+          "text": "Project steps said the Focusing Orb and other tools with no wear used one wear a unit.",
+          "report": 366,
+          "state": "fixed",
+          "version": "v0.41.2"
         }
       ]
     },
