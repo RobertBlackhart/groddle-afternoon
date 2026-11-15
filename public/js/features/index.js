@@ -35,7 +35,7 @@ import { animalHusbandryFeature } from './animal-husbandry-feature.js?v=f4374fd8
 import { questInstancesFeature } from './quest-instances-feature.js?v=c93203fe';
 import { partySpacesFeature } from './party-spaces-feature.js?v=463ab573';
 import { seasonsFeature } from './seasons-feature.js?v=89d9d45a';
-import { cameraModeFeature } from './camera-mode-feature.js?v=b14e26ef';
+import { cameraModeFeature } from './camera-mode-feature.js?v=b8bab6bd';
 import { newxpFeature } from './newxp-feature.js?v=d28d04c7';
 import { streetMinimapFeature } from './street-minimap-feature.js?v=39e14c5c';
 

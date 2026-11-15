@@ -353,34 +353,81 @@ function placeMenuRow(engine) {
   list.append(row);
 }
 
+/** One finger's move on the street (CSS px), as the look's drag (dragLook): the street follows the finger. */
+function dragBy(engine, dx, dy) {
+  const rect = engine.canvas?.getBoundingClientRect?.();
+  const cam = engine.camera;
+  const scale = rect?.width > 0 && cam?.w > 0 ? cam.w / rect.width : 1;
+  const range = cameraRange(engine.learnedSkills);
+  const next = dragLook(look, dx, dy, scale, range);
+  // As the keys do: the look stops growing once the street's edge holds the view.
+  if (next.x < look.x && cam.x <= 0) next.x = look.x;
+  if (next.x > look.x && cam.x + cam.w >= engine.worldW) next.x = look.x;
+  look = next;
+  engine.setCameraLook(look.x, look.y);
+  publish(engine);
+}
+
+/**
+ * #372 (iPhone Safari, upright and sideways: "dragging it does not work, it just stays where it is"):
+ * Safari ends a touch's pointer stream early with pointercancel and the drag dropped, where Chrome's
+ * touch kept panning. Where the browser has touch events (every phone) the drag follows them
+ * instead: one finger on the street, its touchmove taken (preventDefault) while Camera Mode is on so
+ * Safari never turns it into a pan or a cancel. Two fingers are still the pinch's zoom (pointer
+ * events, js/touch-pinch.js). Elsewhere the pointer stream drives it as before.
+ */
+export function cameraTouchMode(win = globalThis) {
+  return Boolean(win && ('ontouchstart' in win || typeof win.TouchEvent === 'function'));
+}
+
 function attachTouch(engine) {
   placeMenuRow(engine);
   const fingers = new Map();
+  const step = (id, x, y) => {
+    const f = fingers.get(id);
+    if (!f) return null;
+    const d = { dx: x - f.x, dy: y - f.y };
+    f.x = x;
+    f.y = y;
+    return d;
+  };
+  if (cameraTouchMode(window)) {
+    window.addEventListener('touchstart', (e) => {
+      for (const t of e.changedTouches) if (t.target === engine.canvas) fingers.set(t.identifier, { x: t.clientX, y: t.clientY });
+    }, { capture: true, passive: true });
+    window.addEventListener('touchmove', (e) => {
+      let dx = 0;
+      let dy = 0;
+      let ours = false;
+      for (const t of e.changedTouches) {
+        const d = step(t.identifier, t.clientX, t.clientY);
+        if (!d) continue;
+        ours = true;
+        dx += d.dx;
+        dy += d.dy;
+      }
+      // One finger looks; two are the pinch's zoom.
+      if (!ours || !active || fingers.size !== 1) return;
+      if (e.cancelable) e.preventDefault();
+      if (dx || dy) dragBy(engine, dx, dy);
+      engine.setData?.('cameraDrag', 'touch');
+    }, { capture: true, passive: false });
+    const lift = (e) => { for (const t of e.changedTouches) fingers.delete(t.identifier); };
+    window.addEventListener('touchend', lift, true);
+    window.addEventListener('touchcancel', lift, true);
+    return;
+  }
   const onStreet = (e) => e.pointerType === 'touch' && e.target === engine.canvas;
   window.addEventListener('pointerdown', (e) => {
     if (!onStreet(e)) return;
     fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   }, true);
   window.addEventListener('pointermove', (e) => {
-    const f = fingers.get(e.pointerId);
-    if (!f) return;
-    const dx = e.clientX - f.x;
-    const dy = e.clientY - f.y;
-    f.x = e.clientX;
-    f.y = e.clientY;
+    const d = step(e.pointerId, e.clientX, e.clientY);
     // One finger looks; two are the pinch's zoom (js/touch-pinch.js).
-    if (!active || fingers.size !== 1 || (!dx && !dy)) return;
-    const rect = engine.canvas?.getBoundingClientRect?.();
-    const cam = engine.camera;
-    const scale = rect?.width > 0 && cam?.w > 0 ? cam.w / rect.width : 1;
-    const range = cameraRange(engine.learnedSkills);
-    const next = dragLook(look, dx, dy, scale, range);
-    // As the keys do: the look stops growing once the street's edge holds the view.
-    if (next.x < look.x && cam.x <= 0) next.x = look.x;
-    if (next.x > look.x && cam.x + cam.w >= engine.worldW) next.x = look.x;
-    look = next;
-    engine.setCameraLook(look.x, look.y);
-    publish(engine);
+    if (!d || !active || fingers.size !== 1 || (!d.dx && !d.dy)) return;
+    dragBy(engine, d.dx, d.dy);
+    engine.setData?.('cameraDrag', 'pointer');
   }, true);
   const lift = (e) => fingers.delete(e.pointerId);
   window.addEventListener('pointerup', lift, true);
