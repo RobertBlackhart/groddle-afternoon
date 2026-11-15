@@ -72,6 +72,8 @@ export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
 export const LOG_LINES = 40;
 const BUBBLE_MS = 7200;
+/** #349: another player's rise and fall (js/avatar-anims.js; Ticket 71's liftTriple), when bubbles keep off where they stood. */
+const SPEECH_AIRBORNE = new Set(['lift', 'liftTriple', 'fall']);
 const LOOK_CHECK_MS = 2000;
 const PLATE_Y = -150;
 /** G366: the mark lasts this long (main.js:1682 duration 5000) unless the line comes first. */
@@ -471,6 +473,8 @@ function createSession(engine) {
       if (!at) continue;
       r.root.x = at.x;
       r.root.y = at.y;
+      // #349: speech bubbles keep off where a jumping player stood (game.js speechAvoidBoxes).
+      r.target.airborne = SPEECH_AIRBORNE.has(at.anim);
       r.body.scale.set(crowdScaleX(1, at.dir, true), 1);
       const standing = at.anim === 'stand' || /^idle\d$/.test(at.anim);
       applyAnim(r, r.emote && wall < r.emoteUntil && standing ? r.emote : at.anim);

@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a74490a9';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=12cefcc1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=41ff58ce';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1081,7 +1081,7 @@ import { pickReadOnly, qaHandlesAllowed } from './js/qa-gate.js?v=f4e2cd82';
 import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
-import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide } from './js/speech-placement.js?v=1c44a5a3';
+import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=80ecc626';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=130338f9';
@@ -7881,15 +7881,23 @@ function hudColumnViewBox() {
  * and the street's companion Glitches, each as a world box from its feet up;
  * the speaker's own is left out.
  */
+// #349: where each avatar last stood (js/speech-placement.js standingFeet), so a jump never moves a bubble.
+const speechStandY = new WeakMap();
 function speechAvoidBoxes(speaker) {
   const targets = [playerSpeechTarget, ...(features.query('speechAvoidTargets', engine) || []), ...localCompanions];
   const out = [];
+  const now = performance.now();
   for (const t of targets) {
     const spr = t?.sprite;
     if (!spr || spr.destroyed || spr === speaker?.sprite || spr.visible === false) continue;
     const art = Number(t.artHeight) > 0 ? Number(t.artHeight) : clamp(Math.abs(spr.height || 110), 60, 170);
     const half = clamp(Math.abs(spr.width || 50) / 2, 14, 26); // a Glitch's body, not its name plate or pack
-    out.push({ left: spr.x - half, right: spr.x + half, top: spr.y - art, bottom: spr.y });
+    // In the air (the player off the ground and not on a ladder; another player's rise or fall), its standing head.
+    const airborne = spr === player ? player.onGround === false && !climb.active : t.airborne === true;
+    let st = speechStandY.get(spr);
+    if (!st) speechStandY.set(spr, (st = {}));
+    const feet = standingFeet(st, { y: spr.y, airborne, now });
+    out.push({ left: spr.x - half, right: spr.x + half, top: feet - art, bottom: feet });
   }
   return out;
 }

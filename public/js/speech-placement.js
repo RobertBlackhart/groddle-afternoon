@@ -542,6 +542,30 @@ export function slideOffAvatars({
   return best === null ? { dx: 0, covered: true } : { dx: best, covered: false };
 }
 
+/*
+ * #349 (a phone, a butterfly's answer up): a jump, a big triple one most of all, carried the jumper's
+ * head box up into the bubble, which slid aside, dropped under its speaker and came back as the jump
+ * fell, faster than the 180 ms reverse hold. Glitch never moved a bubble off avatars at all
+ * (ChatBubble.as keepInBounds 98-205), so a jump must not move one either: while an avatar is in the
+ * air its head box stays where it stood. A long time up (a jetpack, a float) uses where it is.
+ */
+export const SPEECH_AIR_HOLD_MS = 2500;
+
+/**
+ * PURE but for `state` (the avatar's own record, {} at first): the feet y its head box is measured
+ * from. On the ground (or first seen) that is where it is; in the air it is where it last stood,
+ * unless it has dropped below that (walked off a ledge) or has been up SPEECH_AIR_HOLD_MS.
+ */
+export function standingFeet(state, { y, airborne = false, now = 0, holdMs = SPEECH_AIR_HOLD_MS }) {
+  if (!airborne || !Number.isFinite(state.y)) {
+    state.y = y;
+    state.at = now;
+    return y;
+  }
+  if (now - state.at > holdMs) return y;
+  return Math.max(y, state.y);
+}
+
 
 /*
  * #344 (a phone held sideways, Your Home Street): bubbles bounced. Each frame stacked several nudges
