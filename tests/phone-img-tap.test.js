@@ -1,8 +1,8 @@
 /**
  * #350 (a phone held sideways): the iMG on the top bar is a 20 px line at the screen's top edge, and a
  * tap often missed it. Its tap area (style.css, .hud-img::before on a touch phone) runs the bar's
- * height: at least 44 px from the screen's top edge down over the currants (which open nothing on a
- * phone), while favor, positioned after it in the page, keeps its own taps.
+ * height: at least 44 px from the screen's top edge down, while favor and the currants beside it
+ * (#372: one row) keep their own taps.
  * Browser check (WebKit 874 x 402 and 402 x 812, DPR 3): elementFromPoint finds the iMG from y 0 to
  * 48 over it and over the currants, favor's centre is still favor, and a tap 1 px under the bar's
  * old target opens Upgrades; the bar looks the same.
@@ -29,13 +29,15 @@ const px = (expr) => {
 };
 
 describe('the iMG on a phone bar', () => {
-  it('is drawn 20 px tall and tapped over at least 44 px', () => {
-    const drawn = Number(rule(`${PHONE} .hud-cur`).match(/height: (\d+)px/)[1]);
+  it('is drawn 20 px tall and tapped over at least 44 px, centred in the 44 px bar (#372: one row)', () => {
+    // #372: one row now; the 20 px line is the phone's .hud-cur rule (the upright one only tightens it).
+    const drawn = Number(css.match(/:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats \.hud-cur \{ height: (\d+)px;/)[1]);
     const before = rule(`${PHONE} .hud-img::before`);
     const top = px(before.match(/top: ([^;]+);/)[1]);
     const bottom = px(before.match(/bottom: ([^;]+);/)[1]);
     assert.ok(top < 0 && bottom < 0, 'it reaches past the drawn pill both ways');
     assert.ok(drawn - top - bottom >= 44, `tap height ${drawn - top - bottom}`);
+    assert.ok(Math.abs(top - bottom) < 1, 'as far up as down: the line sits in the middle of the bar now');
   });
   it('favor and the currants (G774) are positioned too, so they paint over the stretched area and keep their own taps', () => {
     assert.match(css, /\.hud-stats \.hud-img,\s*:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats \.hud-cur\.currants,\s*:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats #favor-stat \{ position: relative; \}/);

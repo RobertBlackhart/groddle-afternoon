@@ -145,6 +145,26 @@ export function ringDash(share) {
 const whole = (n) => Math.round(Number(n) || 0);
 const fmt = (n) => whole(n).toLocaleString('en-US');
 
+/** #372: above this a phone's top bar shortens a count (17.2K). */
+export const HUD_SHORT_OVER = 9999;
+
+/**
+ * PURE (#372, Austin 2026-11-15): a top bar count. On a phone (`short`) a count over 9,999 is
+ * shortened to one decimal with no trailing .0, cut rather than rounded so it never shows more
+ * than you have: 17,230 is 17.2K, 110,510 is 110.5K, 20,000 is 20K, 1,234,567 is 1.2M. A desktop
+ * (or a small count) keeps the number as it was.
+ */
+export function hudCount(n, short = false) {
+  const v = Math.floor(Number(n) || 0);
+  if (!short || Math.abs(v) <= HUD_SHORT_OVER) return String(short ? v : n ?? 0);
+  for (const [size, unit] of [[1e9, 'B'], [1e6, 'M'], [1e3, 'K']]) {
+    if (Math.abs(v) < size) continue;
+    const tenths = Math.trunc((v * 10) / size);
+    return `${tenths % 10 ? (tenths / 10).toFixed(1) : String(tenths / 10)}${unit}`;
+  }
+  return String(v);
+}
+
 /**
  * What an energy or mood ring shows: the number inside, the state (js/vitals.js), the
  * tooltip and its second line, and the accessible name (vitalTitle: the numbers, the
@@ -334,7 +354,9 @@ export function renderTopBar(doc, state = {}) {
     const f = favorChip(state.favor);
     chip.hidden = !f;
     if (f) {
-      setText(doc.getElementById('stat-favor'), f.num);
+      // #372: shortened over 9,999 on a phone, as the iMG and currants beside it.
+      const short = !f.neutral && doc.documentElement?.classList?.contains('touch-phone') && whole(state.favor.points) > HUD_SHORT_OVER;
+      setText(doc.getElementById('stat-favor'), short ? hudCount(state.favor.points, true) : f.num);
       setAttr(chip, 'data-tip', f.tip);
       setAttr(chip, 'data-sub', f.sub);
       setAttr(chip, 'aria-label', f.label);

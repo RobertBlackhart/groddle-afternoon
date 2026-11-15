@@ -148,23 +148,25 @@ describe('#264 Send shows in the report window on a phone', () => {
   });
 });
 
-// #264 (Friendly): "currants and favor aren't seen on the HUD in mobile. Currants do display in the main
-// menu but favor does not." The phone bar stacks them under the iMG in the left pill.
-describe('#264 currants and favor on the phone bar', () => {
-  const p = ':root.touch-phone[data-ui="modern"] .top-bar .hud-stats';
-  const area = (sel) => css.match(new RegExp(`${p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} ${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\{ grid-area: ([^;]+); \\}`))?.[1];
+// #264: "currants and favor aren't seen on the HUD in mobile. Currants do display in the main menu but favor
+// does not." #372 (Austin 2026-11-15): one row beside the rings, iMG, currants and favor side by side; upright
+// the row fits beside the right pill's three 44 px buttons (WebKit 402 x 660: the pill ends at 245, the right
+// pill starts at 253, with 17.2K, 110.5K and 250).
+describe('#264 / #372 currants and favor on the phone bar', () => {
+  const block = css.slice(css.indexOf('/* #264 (an upright phone)'), css.indexOf('/* The Menu\'s currants line repeats the bar on a phone. */'));
 
-  it('the pill is two short lines beside the rings and keeps the bar\'s height', () => {
-    const rows = css.match(/:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-stats \{ display: grid; grid-template-rows: (\d+)px (\d+)px;/);
-    const hud = Number(css.match(/--hud-h: (\d+)px;/)[1]);
-    assert.ok(rows && Number(rows[1]) + Number(rows[2]) <= hud - 2, 'two rows inside the pill\'s border');
+  it('one row: the stacked grid is gone, the bar keeps its height', () => {
+    assert.ok(block.length > 100);
+    assert.doesNotMatch(block, /grid-template-rows|grid-area/);
+    assert.match(block, /\.hud-stats \.hud-cur \{ height: 20px;/);
   });
 
-  it('rings span both lines; iMG on top, currants and favor under it', () => {
-    for (const r of ['.ring.energy', '.ring.mood', '#player-menu-btn']) assert.match(area(r) || '', /^1 \/ \d \/ 3 \/ \d$/, r);
-    assert.equal(area('.hud-img'), '1 / 6 / 2 / 8');
-    assert.equal(area('.hud-cur.currants'), '2 / 6 / 3 / 7');
-    assert.equal(area('#favor-stat'), '2 / 7 / 3 / 8');
+  it('upright it sits tighter, the right pill\'s buttons untouched', () => {
+    const upright = block.slice(block.indexOf('@media (orientation: portrait) {'));
+    assert.match(upright, /\.hud-stats \{ gap: 0; padding-left: 2px; \}/);
+    assert.match(upright, /\.hud-stats \.ring \{ width: 32px; height: 32px; \}/);
+    assert.match(upright, /\.hud-stats \.hud-cur strong \{ font-size: var\(--fs-xs\); \}/);
+    assert.doesNotMatch(upright, /hud-actions|#quest-btn|#bug-btn|#more-btn/);
   });
 
   it('they show on a phone (over the narrow-window rules), but the tour\'s hide and favor\'s own hidden still win', () => {

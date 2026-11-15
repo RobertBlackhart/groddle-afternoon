@@ -1040,7 +1040,7 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=c41e4388';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=53a19e1d';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -6529,7 +6529,8 @@ function updateHud() {
   updateFeatChrome();
   refreshPackPanels();
 
-  document.getElementById('stat-img').textContent = pc.imagination;
+  // #372: a phone's bar shortens counts over 9,999 (17.2K); the pack and the vendor keep the whole number.
+  document.getElementById('stat-img').textContent = hudCount(pc.imagination, TOUCH_PHONE);
   const levelInfo = levelUpdate.info || levelInfoForXp(pc.xp);
   const levelEl = document.getElementById('stat-level');
   const xpEl = document.getElementById('stat-xp');
@@ -6545,7 +6546,7 @@ function updateHud() {
   }
   const cur = String(pc.currants || 0);
   const curEl = document.getElementById('stat-currants');
-  if (curEl) curEl.textContent = cur;
+  if (curEl) curEl.textContent = hudCount(cur, TOUCH_PHONE);
   const packCur = document.getElementById('pack-currants');
   if (packCur) packCur.textContent = cur;
   const vCur = document.getElementById('vendor-currants');
