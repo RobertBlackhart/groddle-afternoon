@@ -2788,13 +2788,18 @@
   ]
  },
  "release": {
-  "game": "0.41.2",
+  "game": "0.42.0",
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2264,
+  "commits": 2269,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The upgrade reveal lets the street show faintly through, like the other award moments"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "new",
     "text": "A reply on your report can carry a picture, and Shift+R or Take a picture catches a bug before it goes"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The Funpickle's Broken Teleporter no longer picks a street still under construction"
    }
   ]
  },
