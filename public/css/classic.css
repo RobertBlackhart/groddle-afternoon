@@ -3324,6 +3324,51 @@
 :root[data-ui="classic"] #game-root .img-reveal-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
 /* === end imgreveal === */
 
+/* === reportpics (lane) === */
+/* Several pictures a message (Austin 2026-11-15): the thumbnails under the box with their x, a message's
+   pictures side by side, Previous and Next in the picture over the game, the window lit for a drop. */
+:root[data-ui="classic"] #bug-report-panel .reports-tray .reports-picture-thumb { width: auto; max-width: none; }
+:root[data-ui="classic"] #bug-report-panel .reports-tray .reports-picture-thumb img { width: auto; max-width: calc(120 * var(--cu)); height: auto; max-height: calc(80 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .reports-thumb-remove {
+  position: absolute;
+  top: calc(-7 * var(--cu));
+  right: calc(-7 * var(--cu));
+  display: inline-grid;
+  place-items: center;
+  width: calc(24 * var(--cu));
+  height: calc(24 * var(--cu));
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--c-classic-btn-minor-border);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom));
+  color: var(--c-classic-close);
+  font: 800 calc(var(--fs-classic-button) * var(--cu-n, 1))/1 var(--font-classic-title);
+  cursor: pointer;
+}
+:root[data-ui="classic"] #bug-report-panel .reports-thumb-remove:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #bug-report-panel .reports-tray { margin-top: calc(4 * var(--cu)); gap: calc(12 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .reports-msg-pictures { display: flex; flex-wrap: wrap; gap: calc(6 * var(--cu)); margin-top: calc(6 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .reports-msg-pictures .reports-picture { margin-top: 0; }
+:root[data-ui="classic"] #bug-report-panel .reports-msg-pictures[data-count]:not([data-count="1"]) .reports-picture img { max-height: calc(96 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel[data-dropping] .reports-card { outline: 3px dashed var(--c-classic-link); outline-offset: -3px; }
+:root[data-ui="classic"] #bug-report-panel .reports-new-pictures .reports-take-actions { display: flex; flex-wrap: wrap; gap: calc(6 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .picture-lightbox-nav {
+  width: calc(36 * var(--cu));
+  height: calc(36 * var(--cu));
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--c-classic-btn-minor-border);
+  border-radius: var(--radius-xs);
+  background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom));
+  color: var(--c-classic-btn-minor-label);
+  font: 800 calc(var(--fs-classic-window) * var(--cu-n, 1))/1 var(--font-classic-title);
+  cursor: pointer;
+}
+:root[data-ui="classic"] #bug-report-panel .picture-lightbox-nav:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #bug-report-panel .picture-lightbox-count { padding: calc(3 * var(--cu)) calc(10 * var(--cu)); border-radius: var(--radius-xs); background: var(--c-classic-panel); color: var(--c-classic-text); font: 800 calc(var(--fs-classic-button) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-title); }
+/* === end reportpics === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

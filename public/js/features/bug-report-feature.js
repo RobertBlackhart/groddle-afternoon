@@ -66,14 +66,20 @@
  * was with the picture. The bar is never in the picture (REPORT_LEAVE_OUT).
  * The client had no such key (GameHeaderUI.as 47-69, a button); Shift+R was free.
  *
+ * Several pictures, any kind (Austin 2026-11-15): a message carries up to four, the game's own
+ * picture among them; the rest are added by Take a picture or Shift+R (one each), the file picker,
+ * a drop or a paste (js/report-pictures.js reads each into the same JPEG; js/ui/reports-sheet.js
+ * shows them as thumbnails). A picture taken with four already waiting is not kept; the toast says so.
+ *
  * QA: canvas data bugReport (closed|open|sending), bugReportLast (the last
  * line shown), reportsView (list|thread|new), reportsUnread (n);
  * reportPicture (''|taking|held), reportShutter ('0'|'1');
  * window.groddleBugReport.open('list'|'new'), .openTicket(id), .refresh() in multiplayer.
  */
 
-import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=89f2ea17';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=bc84ff2b';
+import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=aa93fc78';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=5c292919';
+import { PICTURE_TEXT } from '../report-pictures.js?v=d98e235d';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -557,6 +563,28 @@ const STYLE = `
 [data-ui="modern"] #bug-report-panel .reports-picture:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 [data-ui="modern"] #bug-report-panel .reports-picture img { display: block; max-width: 100%; width: auto; height: auto; max-height: 180px; }
 [data-ui="modern"] #bug-report-panel .reports-status.is-error { color: var(--text-danger); white-space: normal; }
+/* Several pictures a message (Austin 2026-11-15): a row of thumbnails under the box, each opening the
+   pictures over the game, each with its x; the window lit while pictures are dragged over it. */
+#bug-report-panel .reports-tray { list-style: none; margin: 0; padding: var(--space-1) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+#bug-report-panel .reports-tray[hidden], #bug-report-panel .reports-thumb[hidden] { display: none; }
+#bug-report-panel .reports-thumb { position: relative; flex: none; display: block; }
+#bug-report-panel .reports-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+[data-ui="modern"] #bug-report-panel .reports-tray .reports-picture-thumb { width: auto; max-width: none; }
+[data-ui="modern"] #bug-report-panel .reports-tray .reports-picture-thumb img { width: auto; max-width: 120px; height: auto; max-height: 80px; }
+[data-ui="modern"] #bug-report-panel .reports-thumb-remove { position: absolute; top: calc(-1 * var(--space-2)); right: calc(-1 * var(--space-2)); display: inline-grid; place-items: center; width: 26px; height: 26px; margin: 0; padding: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-pill); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); font: var(--fw-heavy) var(--fs-l)/var(--lh-none) var(--font-ui); cursor: pointer; }
+[data-ui="modern"] #bug-report-panel .reports-thumb-remove:hover { background: var(--surface-hover); }
+[data-ui="modern"] #bug-report-panel .reports-thumb-remove:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[data-ui="modern"] #bug-report-panel .reports-msg-pictures { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+[data-ui="modern"] #bug-report-panel .reports-msg-pictures .reports-picture { margin-top: 0; }
+[data-ui="modern"] #bug-report-panel .reports-msg-pictures[data-count]:not([data-count="1"]) .reports-picture img { max-height: 96px; }
+[data-ui="modern"] #bug-report-panel[data-dropping] .reports-card { outline: 3px dashed var(--accent); outline-offset: -3px; }
+[data-ui="modern"] #bug-report-panel .reports-take-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.picture-lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+.picture-lightbox-prev { left: var(--space-4); }
+.picture-lightbox-next { right: var(--space-4); }
+.picture-lightbox-count { position: absolute; left: 50%; bottom: var(--space-4); transform: translateX(-50%); margin: 0; }
+[data-ui="modern"] #bug-report-panel .picture-lightbox-nav { width: 44px; height: 44px; }
+[data-ui="modern"] #bug-report-panel .picture-lightbox-count { padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); font: var(--fw-bold) var(--fs-s)/var(--lh-tight) var(--font-ui); }
 [data-ui="modern"] .top-bar .top-actions .bug-btn .bug-unread { pointer-events: none; }
 #bug-btn-lift { position: fixed; z-index: calc(var(--z-modal) + 31); margin: 0; box-sizing: border-box; }
 #bug-btn-lift[hidden] { display: none !important; }
@@ -594,6 +622,8 @@ const STYLE = `
 :root.touch-phone[data-ui="modern"] #bug-report-panel .reports-new-view .reports-text { min-height: 6rem; }
 :root.touch-phone[data-ui="modern"] #bug-report-panel .reports-picture-thumb { width: auto; max-width: 35%; }
 :root.touch-phone[data-ui="modern"] #bug-report-panel .reports-picture-thumb img { width: auto; max-width: 100%; max-height: 96px; }
+:root.touch-phone[data-ui="modern"] #bug-report-panel .reports-tray .reports-picture-thumb { max-width: none; }
+:root.touch-phone[data-ui="modern"] #bug-report-panel .reports-tray .reports-picture-thumb img { max-width: 88px; max-height: 60px; }
 `;
 
 function el(tag, attrs = {}, text = '') {
@@ -666,7 +696,9 @@ function createSession(engine, errors) {
     },
   });
   // == G791: a picture taken on purpose ==
-  /** The picture now, held for the next reply or new report; null when it could not be drawn. */
+  // Why the last picture was not kept: it could not be drawn (''), or four were already waiting ('full').
+  let notKept = '';
+  /** The picture now, held for the next reply or new report; null when it could not be drawn or there is no room. */
   async function takeNow() {
     if (taking) return null;
     taking = true;
@@ -675,13 +707,14 @@ function createSession(engine, errors) {
     try { pic = await takePictureNow(engine, document); } catch { pic = null; }
     taking = false;
     const kept = Boolean(pic && sheet.hold(pic));
+    notKept = pic && !kept ? 'full' : '';
     engine.setData?.('reportPicture', kept ? 'held' : (sheet.held ? 'held' : ''));
     return kept ? pic : null;
   }
   /** Shift+R in the game: the picture at once, and a toast that says where it went. */
   async function holdNow() {
     const pic = await takeNow();
-    engine.toast?.(pic ? REPORT_TEXT.takeTaken : REPORT_TEXT.takeFailed, pic ? 4200 : 3200);
+    engine.toast?.(pic ? REPORT_TEXT.takeTaken : notKept === 'full' ? PICTURE_TEXT.full : REPORT_TEXT.takeFailed, pic ? 4200 : 3200);
   }
   /** The bar over the game after Take a picture: Take the picture (or Shift+R), or Cancel (or Esc). */
   function openShutter({ done, cancel }) {
@@ -790,7 +823,7 @@ function createSession(engine, errors) {
   openLinked();
   globalThis.addEventListener?.('hashchange', openLinked);
 
-  return { ...sheet, placeLift, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, stop: () => { clearInterval(timer); clearInterval(liftTimer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
+  return { ...sheet, placeLift, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, get pictures() { return sheet.pictures; }, get room() { return sheet.room; }, stop: () => { clearInterval(timer); clearInterval(liftTimer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
 }
 
 let session = null;

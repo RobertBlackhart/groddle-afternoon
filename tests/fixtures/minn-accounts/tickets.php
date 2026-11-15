@@ -144,17 +144,50 @@ echo json_encode([
         'notString' => $refusal(['a']),
         'limits' => ['maxBytes' => ReportPicture::MAX_BYTES, 'maxW' => ReportPicture::MAX_W, 'maxH' => ReportPicture::MAX_H],
     ],
-    // G791 (#216, #281): a reply's picture, where it is shown and how each message carries it.
-    'replyPictures' => [
-        'reportUrl' => TicketPictures::url(3),
-        'replyUrl' => TicketPictures::url(3, 9),
-        'out' => TicketStore::messagesOut([
+    // G791 (#216, #281): a reply's picture, where it is shown and how each message carries it;
+    // reportpics (Austin 2026-11-15): up to four a message, each at /<ticket>/<message>/<n>.
+    'replyPictures' => (static function () use ($good, $png, $refusal): array {
+        $rows = [['message_id' => 9, 'position' => 0, 'width' => 640, 'height' => 360], ['message_id' => 9, 'position' => 1, 'width' => 300, 'height' => 200], ['message_id' => 8, 'position' => 0, 'width' => 64, 'height' => 64], ['message_id' => 9, 'position' => 7, 'width' => 1, 'height' => 1]];
+        $byMessage = TicketStore::picturesOut(3, $rows);
+        $msgs = [
             ['id' => 8, 'author_role' => 'player', 'body' => 'Pigs float', 'created_at' => '2026-11-15 10:00:00', 'edited_at' => null],
             ['id' => 9, 'author_role' => 'player', 'body' => 'Here it is again', 'created_at' => '2026-11-15 10:05:00', 'edited_at' => null],
-        ], null, [9 => ['url' => TicketPictures::url(3, 9), 'width' => 640, 'height' => 360]]),
-        'adminOut' => TicketStore::messagesOut([['id' => 9, 'author_role' => 'player', 'body' => 'Again', 'created_at' => '2026-11-15 10:05:00', 'edited_at' => null]], [], [9 => ['url' => TicketPictures::url(3, 9), 'width' => 640, 'height' => 360]]),
-        'limits' => ['perWindow' => \Groddle\Minn\Tickets::REPLY_PICTURE_PER_WINDOW, 'perDay' => \Groddle\Minn\Tickets::REPLY_PICTURE_PER_DAY],
-    ],
+            ['id' => 10, 'author_role' => 'admin', 'body' => 'Thanks', 'created_at' => '2026-11-15 10:06:00', 'edited_at' => null],
+        ];
+        $many = static function (array $body): array {
+            try {
+                return ['n' => count(ReportPicture::fromBody($body))];
+            } catch (Minn\RestError $e) {
+                return ['code' => $e->errorCode, 'status' => $e->status];
+            }
+        };
+        $b64 = base64_encode($good);
+        return [
+            'reportUrl' => TicketPictures::url(3),
+            'replyUrl' => TicketPictures::url(3, 9),
+            'nthUrl' => TicketPictures::url(3, 9, 2),
+            'byMessage' => $byMessage,
+            'out' => TicketStore::messagesOut($msgs, null, $byMessage),
+            'adminOut' => TicketStore::messagesOut([$msgs[1]], [], $byMessage),
+            'limits' => ['perWindow' => \Groddle\Minn\Tickets::PICTURES_PER_WINDOW, 'perDay' => \Groddle\Minn\Tickets::PICTURES_PER_DAY, 'perMessage' => ReportPicture::MAX_PER_MESSAGE],
+            'fit' => [
+                'room' => \Groddle\Minn\Tickets::picturesFit(4, 16, 0),
+                'windowFull' => \Groddle\Minn\Tickets::picturesFit(4, 17, 17),
+                'dayFull' => \Groddle\Minn\Tickets::picturesFit(1, 0, 60),
+                'dayEdge' => \Groddle\Minn\Tickets::picturesFit(3, 0, 57),
+            ],
+            'body' => [
+                'none' => $many([]),
+                'one' => $many(['picture' => $b64]),
+                'list' => $many(['pictures' => [$b64, 'data:image/jpeg;base64,' . $b64, '']]),
+                'listWins' => $many(['pictures' => [$b64, $b64], 'picture' => $b64]),
+                'four' => $many(['pictures' => array_fill(0, 4, $b64)]),
+                'five' => $many(['pictures' => array_fill(0, 5, $b64)]),
+                'notList' => $many(['pictures' => ['a' => $b64]]),
+                'oneBad' => $many(['pictures' => [$b64, base64_encode($png)]]),
+            ],
+        ];
+    })(),
     'subject' => [
         'short' => TicketStore::subject("  Pigs float\nmore words"),
         'long' => TicketStore::subject(str_repeat('a', 80)),

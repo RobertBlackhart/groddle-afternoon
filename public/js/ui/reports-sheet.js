@@ -68,8 +68,24 @@
  * form opens; Attach a picture unticked leaves it out). A refused picture never costs the
  * words: they go again without it. Each message shows its own picture under its words.
  * QA hooks: [data-reports-reply-picture] (the row), [data-reports-take] (Take a picture),
- * [data-reports-take-remove], [data-reports-reply-preview] (the held picture's link),
  * [data-reports-msg-picture] (a reply's picture in the thread), data-held on the panel.
+ *
+ * Several pictures, any kind (Austin 2026-11-15): a new report and a reply carry up to four
+ * (js/report-pictures.js), a row of thumbnails under the box. Ways in: drop pictures anywhere on
+ * this window (on the list it opens Write to us with them), Add pictures (the file picker, several
+ * at once), paste one (Ctrl or Cmd+V), and Take a picture or Shift+R (one each). Each is read here
+ * and made into the JPEG the site keeps, the file's own bytes never sent; one that cannot be read
+ * is named in a plain line. A new report's own picture of the game is the first thumbnail and
+ * counts as one of the four; its x unticks Attach a picture. Every thumbnail opens the pictures
+ * over the game (js/ui/picture-lightbox.js gallery: Esc, the close button, Left and Right between
+ * them) and has a remove button. The pictures wait together (the held list) for the next reply or
+ * new report, as G791's one did. In a thread each message shows its own pictures as thumbnails,
+ * opened the same way. A refused picture never costs the words: they go again without them.
+ * QA hooks: [data-reports-tray=reply|new] (the thumbnails), [data-reports-thumb=<n>] (each,
+ * data-lead on the game's own), [data-reports-thumb-remove], [data-reports-add] and
+ * [data-reports-new-add] (Add pictures), [data-reports-new-take], #reports-file
+ * [data-reports-file] (the picker), data-dropping on the panel while pictures are dragged over,
+ * data-held (how many wait) and data-reading (how many are being read).
  *
  * REPORTSMENU (Austin 2026-11-12): each row has a menu (js/ui/report-row-menu.js): right-click, a
  * long press, or Shift+F10 or the Menu key on a focused row; Open, Add a message (Reopen when
@@ -77,9 +93,10 @@
  * the rows, Enter opens one. A redrawn list keeps the focused row focused.
  */
 
-import { REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=89f2ea17';
+import { REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=d98e235d';
 import { focusBack } from './focus-return.js?v=da190597';
-import { lightboxLink } from './picture-lightbox.js?v=0d2814c8';
+import { lightboxLink } from './picture-lightbox.js?v=b2cba91b';
 import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=9c54829f';
 
 /** How long Send waits for a picture still drawing before it sends the world-only one (ms). */
@@ -114,7 +131,7 @@ function el(doc, tag, attrs = {}, text = '') {
  *   toast?: (text: string, ms?: number) => void, opener?: () => HTMLElement|null, now?: () => number, pictureWait?: number,
  *   setData?: (k: string, v: string) => void }} opts  setData: the rows' menu's QA data (canvas data contextMenu, reportMenu).
  */
-export function mountReportsSheet({ doc = globalThis.document, host, api, context = () => ({}), capture = () => null, takePicture: takeOnPurpose = null, onState = () => {}, toast = () => {}, opener = () => null, now = () => Date.now(), pictureWait = PICTURE_WAIT_MS, uiIdle = UI_IDLE_MS, setData = () => {} } = {}) {
+export function mountReportsSheet({ doc = globalThis.document, host, api, context = () => ({}), capture = () => null, takePicture: takeOnPurpose = null, onState = () => {}, toast = () => {}, opener = () => null, now = () => Date.now(), pictureWait = PICTURE_WAIT_MS, uiIdle = UI_IDLE_MS, setData = () => {}, convert = (file) => convertPicture(file, { doc }) } = {}) {
   let state = 'closed';
   let view = 'list';
   let tickets = [];
@@ -144,10 +161,12 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   let idleTimer = null;
   // The preview's addresses this report (blob: URLs of its pictures, so Open in a new tab works), by picture.
   let previewUrls = new Map();
-  // G791: the picture taken on purpose ({ url, width, height }), waiting for the next reply or new report.
-  let held = null;
-  // G791: this new report carries the held picture in place of the one drawn as the form opened.
-  let usingHeld = false;
+  // G791: the pictures taken on purpose, added, dropped or pasted ({ url, width, height }), waiting for
+  // the next reply or new report (up to REPORT_PICTURES.max; a new report's own picture counts too).
+  let held = [];
+  // Pictures being read (js/report-pictures.js convertPicture), and the work Send waits for.
+  let reading = 0;
+  let readingJob = Promise.resolve();
 
   const e = (tag, attrs, text) => el(doc, tag, attrs, text);
   const panel = e('div', { id: 'bug-report-panel', class: 'reports-panel ui-sheet ui-sheet-center', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'bug-report-title', hidden: true, 'data-bug-report': '', 'data-reports-view': 'list' });
@@ -193,24 +212,22 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   const closedNote = e('p', { class: 'reports-closed-note', hidden: true }, T.closed);
   const replyLabel = e('label', { for: 'reports-reply-text', class: 'reports-label' }, T.replyLabel);
   const reply = e('textarea', { id: 'reports-reply-text', class: 'reports-text', maxlength: String(REPORT_MAX), rows: '3', 'data-reports-reply-text': '' });
-  // G791: a picture with the reply: Take a picture, and the held one small beside it.
-  const replyPicRow = e('div', { class: 'reports-picture-row reports-reply-picture', hidden: !takeOnPurpose, 'data-reports-reply-picture': '' });
+  // G791: pictures with the reply: their thumbnails under the box, then Add pictures and Take a picture.
+  const replyTray = e('ul', { class: 'reports-tray', 'aria-label': T.trayLabel, hidden: true, 'data-reports-tray': 'reply' });
+  const replyPicRow = e('div', { class: 'reports-picture-row reports-reply-picture', 'data-reports-reply-picture': '' });
   const replyPicText = e('div', { class: 'reports-picture-text' });
   const takeActs = e('div', { class: 'reports-take-actions' });
+  const addBtn = e('button', { type: 'button', class: 'reports-btn is-quiet', 'aria-describedby': 'reports-take-hint', 'data-reports-add': '' }, P.add);
   const takeBtn = e('button', { type: 'button', class: 'reports-btn is-quiet', 'aria-describedby': 'reports-take-hint', hidden: !takeOnPurpose, 'data-reports-take': '' }, T.take);
-  const takeRemove = e('button', { type: 'button', class: 'reports-btn is-quiet', hidden: true, 'data-reports-take-remove': '' }, T.takeRemove);
-  takeActs.append(takeBtn, takeRemove);
-  const takeHint = e('p', { id: 'reports-take-hint', class: 'reports-hint' }, T.takeHint);
+  takeActs.append(addBtn, takeBtn);
+  const takeHint = e('p', { id: 'reports-take-hint', class: 'reports-hint' }, takeOnPurpose ? T.takeHint : P.addHint);
   replyPicText.append(takeActs, takeHint);
-  const replyPreview = e('a', { class: 'reports-picture-thumb', href: '#', target: '_blank', rel: 'noopener', 'aria-label': T.pictureOpen, title: T.pictureOpen, hidden: true, 'data-reports-reply-preview': '' });
-  const replyPreviewImg = e('img', { alt: T.takeAlt });
-  replyPreview.append(replyPreviewImg);
-  replyPicRow.append(replyPicText, replyPreview);
+  replyPicRow.append(replyPicText);
   const threadActs = e('div', { class: 'reports-actions' });
   const closeTicket = e('button', { type: 'button', class: 'reports-btn is-quiet', 'data-reports-close-ticket': '' }, T.closeTicket);
   const sendReply = e('button', { type: 'button', class: 'reports-btn', 'data-reports-send-reply': '' }, T.replySend);
   threadActs.append(closeTicket, sendReply);
-  threadView.append(threadHead, msgs, threadRead, closedNote, replyLabel, reply, replyPicRow, threadActs);
+  threadView.append(threadHead, msgs, threadRead, closedNote, replyLabel, reply, replyTray, replyPicRow, threadActs);
   // Editing the report's first message in place (ticket 49): one box, kept across redraws.
   const editLabel = e('label', { for: 'reports-edit-text', class: 'reports-label' }, T.editLabel);
   const editBox = e('textarea', { id: 'reports-edit-text', class: 'reports-text reports-edit-text', maxlength: String(REPORT_MAX), rows: '4', 'data-reports-edit-text': '' });
@@ -237,14 +254,30 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   uiLabel.append(uiBox, doc.createTextNode(` ${T.pictureUi}`));
   picText.append(picLabel, uiLabel, picHint);
   // Ticket 73: the picture at its own shape, a link that opens it over the game (the lightbox).
+  // 2026-11-15: the first thumbnail of the new report's pictures, its x unticks Attach a picture.
   const picPreview = e('a', { class: 'reports-picture-thumb', href: '#', target: '_blank', rel: 'noopener', 'aria-label': T.pictureOpen, title: T.pictureOpen, hidden: true, 'data-reports-picture-preview': '' });
   const picPreviewImg = e('img', { alt: T.pictureAlt });
   picPreview.append(picPreviewImg);
-  picRow.append(picText, picPreview);
+  const picRemove = e('button', { type: 'button', class: 'reports-thumb-remove', 'aria-label': P.remove(1), title: P.remove(1), 'data-reports-thumb-remove': '' }, '×');
+  const leadThumb = e('li', { class: 'reports-thumb', 'data-reports-thumb': '1', 'data-lead': '' });
+  leadThumb.append(picPreview, picRemove);
+  picRow.append(picText);
+  const newTray = e('ul', { class: 'reports-tray', 'aria-label': T.trayLabel, hidden: true, 'data-reports-tray': 'new' });
+  const newPicRow = e('div', { class: 'reports-picture-row reports-new-pictures' });
+  const newPicText = e('div', { class: 'reports-picture-text' });
+  const newTakeActs = e('div', { class: 'reports-take-actions' });
+  const newAddBtn = e('button', { type: 'button', class: 'reports-btn is-quiet', 'aria-describedby': 'reports-new-pictures-hint', 'data-reports-new-add': '' }, P.add);
+  const newTakeBtn = e('button', { type: 'button', class: 'reports-btn is-quiet', 'aria-describedby': 'reports-new-pictures-hint', hidden: !takeOnPurpose, 'data-reports-new-take': '' }, T.take);
+  newTakeActs.append(newAddBtn, newTakeBtn);
+  const newPicHint = e('p', { id: 'reports-new-pictures-hint', class: 'reports-hint' }, P.addHint);
+  newPicText.append(newTakeActs, newPicHint);
+  newPicRow.append(newPicText);
   const newActs = e('div', { class: 'reports-actions' });
   const sendBtn = e('button', { type: 'button', class: 'reports-btn', 'data-bug-report-send': '' }, T.send);
   newActs.append(sendBtn);
-  newView.append(newTitle, label, text, picRow, newActs);
+  newView.append(newTitle, label, text, picRow, newTray, newPicRow, newActs);
+  // Add pictures: the browser's file picker, several at once (any image; js/report-pictures.js reads each).
+  const fileInput = e('input', { type: 'file', id: 'reports-file', class: 'reports-file', accept: REPORT_PICTURES.accept, multiple: true, tabindex: '-1', 'aria-hidden': 'true', 'data-reports-file': '' });
   body.append(listView, threadView, newView);
 
   const foot = e('div', { class: 'reports-foot ui-sheet-foot' });
@@ -253,12 +286,12 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   esc.append(e('span', { class: 'kcap' }, 'Esc'), doc.createTextNode(' close'));
   foot.append(status, esc);
   card.append(head, body, foot);
-  panel.append(card);
+  panel.append(card, fileInput);
   host.append(panel);
 
   function publish() {
     panel.dataset.reportsView = view;
-    onState({ state, view, unread, ticket: ticket?.id || 0, last, held: Boolean(held) });
+    onState({ state, view, unread, ticket: ticket?.id || 0, last, held: held.length > 0 });
   }
   function say(line, error = false) {
     last = line || '';
@@ -384,20 +417,25 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       li.append(who);
       if (i === 0 && editing) li.append(editLabel, editBox, editActs);
       else li.append(e('p', { class: 'reports-msg-body' }, m.body));
-      // G791: a reply's own picture, under its words, opened over the game as the report's is.
-      const own = pictureSrc(m.picture);
-      if (own) li.append(pictureLink(own, m.picture, T.replyPictureAlt, 'data-reports-msg-picture'));
+      // Under its words, each message's pictures as thumbnails, opened over the game together: the
+      // report's own picture first under the report itself, then the message's own (G791, up to four).
+      // Over the game, not a new tab (Austin 2026-11-03). After a pointer open or close focus goes
+      // to this window's title: the window stays open, so the keys stay in it.
+      const own = messagePictures(m).map((p) => ({ pic: p, alt: i === 0 ? T.reportPictureAlt : T.replyPictureAlt, hook: 'data-reports-msg-picture' }));
+      if (i === 0 && pictureSrc(picture)) own.unshift({ pic: picture, alt: T.pictureAlt, hook: 'data-reports-thread-picture' });
+      if (own.length) {
+        const gallery = own.map((x) => ({ src: pictureSrc(x.pic), width: Number(x.pic.width) || 0, height: Number(x.pic.height) || 0, alt: x.alt }));
+        const row = e('div', { class: 'reports-msg-pictures', 'data-count': String(own.length) });
+        own.forEach((x, n) => {
+          const a = pictureLink(gallery[n].src, x.pic, x.alt, x.hook, gallery, n);
+          if (x.hook === 'data-reports-thread-picture') picLink = a;
+          row.append(a);
+        });
+        li.append(row);
+      }
       return li;
     }));
-    // The report's picture, under its first message (the report itself).
-    const src = pictureSrc(picture);
-    const first = msgs.children[0];
-    if (src && first) {
-      // Over the game, not a new tab (Austin 2026-11-03). After a pointer open or close focus
-      // goes to this window's title: the window stays open, so the keys stay in it.
-      picLink = pictureLink(src, picture, T.pictureAlt, 'data-reports-thread-picture');
-      first.append(picLink);
-    } else picLink = null;
+    if (!pictureSrc(picture) || !msgs.children[0]) picLink = null;
     const read = readByTeamWords(ticket, now());
     threadRead.textContent = read;
     threadRead.hidden = !read;
@@ -413,9 +451,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     });
   }
 
-  /** A picture from the site as a link that opens it in this window's lightbox (the report's and each reply's). */
-  function pictureLink(src, pic, alt, hook) {
-    const a = e('a', { class: 'reports-picture', href: src, target: '_blank', rel: 'noopener', 'aria-label': T.pictureOpen, title: T.pictureOpen, [hook]: '' });
+  /**
+   * A picture from the site as a link that opens it in this window's lightbox (the report's and each
+   * message's); `gallery` (the message's pictures) and `n` its place, so the lightbox goes between them.
+   */
+  function pictureLink(src, pic, alt, hook, gallery = null, n = 0) {
+    const many = Array.isArray(gallery) && gallery.length > 1;
+    const words = many ? P.open(n + 1, gallery.length) : T.pictureOpen;
+    const a = e('a', { class: 'reports-picture', href: src, target: '_blank', rel: 'noopener', 'aria-label': words, title: words, [hook]: '' });
     a.append(e('img', { src, alt, width: String(Number(pic?.width) || ''), height: String(Number(pic?.height) || ''), loading: 'lazy' }));
     lightboxLink(a, {
       doc,
@@ -424,6 +467,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       height: pic?.height,
       alt,
       label: T.pictureLabel,
+      gallery,
+      index: n,
       opener: () => a,
       fallback: () => title,
       onOpen: (lb) => { lightbox = lb; },
@@ -432,36 +477,161 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     return a;
   }
 
-  /** G791: the held picture beside the reply box, and Take a picture's words. */
-  function drawHeld() {
-    const pic = held;
-    panel.dataset.held = pic ? '1' : '0';
-    replyPicRow.hidden = !takeOnPurpose && !pic;
-    takeBtn.textContent = pic ? T.takeAgain : T.take;
-    takeRemove.hidden = !pic;
-    takeHint.textContent = pic ? T.takeReply : T.takeHint;
-    replyPreview.hidden = !pic;
-    if (pic) {
-      const href = previewHref(pic);
-      replyPreview.setAttribute('href', href);
-      replyPreviewImg.setAttribute('src', href);
-      replyPreviewImg.setAttribute('width', String(pic.width || ''));
-      replyPreviewImg.setAttribute('height', String(pic.height || ''));
-    }
+  /** The new report's own picture of the game as its thumbnail shows it (drawPicture), while Attach a picture is ticked, or null. */
+  function leadShot() {
+    return view === 'new' && picBox.checked && leadPic?.url ? leadPic : null;
   }
 
-  /** G791: keep a picture taken on purpose for the next reply or new report (null drops it). */
-  function hold(pic) {
-    const next = okShot(pic);
-    if (held && held !== next && previewUrls.has(held)) {
-      const url = previewUrls.get(held);
-      previewUrls.delete(held);
-      if (url.startsWith('blob:')) { try { globalThis.URL.revokeObjectURL(url); } catch { /* gone */ } }
+  /** Whether the new report's own picture takes one of the four (ticked, and drawn or still drawing). */
+  function leadCounts() {
+    if (!picBox.checked) return false;
+    const want = mode();
+    return Boolean(shots[want] || shots.world || jobs[want] || jobs.world || queued.size);
+  }
+
+  /** How many more pictures the message being written can take. */
+  function room() {
+    return roomFor(held.length + reading + (view === 'new' && leadCounts() ? 1 : 0));
+  }
+
+  /** A tray's pictures for the lightbox, in order (the new report's own picture first). */
+  function trayGallery(which) {
+    const list = [];
+    const lead = which === 'new' ? leadShot() : null;
+    if (lead) list.push({ src: previewHref(lead), width: lead.width || 0, height: lead.height || 0, alt: T.pictureAlt });
+    held.forEach((p, i) => list.push({ src: previewHref(p), width: p.width || 0, height: p.height || 0, alt: P.thumbAlt(i + 1 + (lead ? 1 : 0)) }));
+    return list;
+  }
+
+  /** One waiting picture's thumbnail: a link to the lightbox (the tray's pictures) and its remove button. */
+  function heldThumb(pic, i, which, offset) {
+    const n = i + 1 + offset;
+    const href = previewHref(pic);
+    const li = e('li', { class: 'reports-thumb', 'data-reports-thumb': String(n) });
+    const a = e('a', { class: 'reports-picture-thumb', href, target: '_blank', rel: 'noopener', 'aria-label': P.open(n, held.length + offset), title: P.open(n, held.length + offset), 'data-reports-held-picture': '' });
+    a.append(e('img', { src: href, alt: P.thumbAlt(n), width: String(pic.width || ''), height: String(pic.height || '') }));
+    lightboxLink(a, {
+      doc,
+      host: panel,
+      width: pic.width,
+      height: pic.height,
+      alt: P.thumbAlt(n),
+      label: T.pictureLabel,
+      gallery: () => trayGallery(which),
+      index: () => Math.max(0, held.indexOf(pic)) + offset,
+      fallback: () => (which === 'new' ? text : reply),
+      onOpen: (lb) => { lightbox = lb; },
+      onClose: () => { lightbox = null; },
+    });
+    const x = e('button', { type: 'button', class: 'reports-thumb-remove', 'aria-label': P.remove(n), title: P.remove(n), 'data-reports-thumb-remove': '' }, '×');
+    x.addEventListener('click', () => {
+      unhold(pic);
+      // The next picture's remove button, else Add pictures: the keys stay where the player was.
+      const tray = which === 'new' ? newTray : replyTray;
+      const next = tray.children[Math.min(n - 1, tray.children.length - 1)];
+      (next?.lastElementChild || (which === 'new' ? newAddBtn : addBtn)).focus?.();
+    });
+    li.append(a, x);
+    return li;
+  }
+
+  /** G791: the waiting pictures as thumbnails under both boxes, and the buttons' state (the room left). */
+  function drawHeld() {
+    panel.dataset.held = String(held.length);
+    panel.dataset.reading = String(reading);
+    // A new report's own picture and four waiting ones: the four the player chose go (ticked off).
+    if (view === 'new' && picBox.checked && held.length >= REPORT_PICTURES.max) {
+      picBox.checked = false;
+      drawPicture();
     }
-    held = next;
+    const left = room();
+    const full = left === 0;
+    for (const b of [addBtn, newAddBtn, takeBtn, newTakeBtn]) b.disabled = full || state === 'sending';
+    takeBtn.textContent = held.length ? T.takeAgain : T.take;
+    newTakeBtn.textContent = takeBtn.textContent;
+    const hint = reading ? P.reading : full ? P.full : held.length ? T.takeReply : takeOnPurpose ? T.takeHint : P.addHint;
+    takeHint.textContent = hint;
+    newPicHint.textContent = reading ? P.reading : full ? P.full : P.addHint;
+    replyTray.replaceChildren(...held.map((p, i) => heldThumb(p, i, 'reply', 0)));
+    replyTray.hidden = held.length === 0;
+    const lead = leadShot();
+    const leadOn = Boolean(lead) && !picPreview.hidden;
+    picRemove.setAttribute('aria-label', P.remove(1));
+    // The game's own picture's thumbnail stays in the row (hidden while there is none), so its link keeps its place.
+    leadThumb.hidden = !leadOn;
+    newTray.replaceChildren(leadThumb, ...held.map((p, i) => heldThumb(p, i, 'new', leadOn ? 1 : 0)));
+    newTray.hidden = !leadOn && held.length === 0;
+  }
+
+  /**
+   * G791: keep a picture for the next reply or new report (one taken on purpose, or read from a
+   * file); null lets them all go. True when it is kept (a JPEG data URL, and room for it).
+   */
+  function hold(pic) {
+    if (pic === null || pic === undefined) {
+      const was = held;
+      held = [];
+      for (const p of was) forget(p);
+      drawHeld();
+      publish();
+      return false;
+    }
+    const next = okShot(pic);
+    if (next && held.includes(next)) return true;
+    if (!next || held.length >= REPORT_PICTURES.max) return false;
+    held = [...held, next];
     drawHeld();
     publish();
-    return Boolean(held);
+    return true;
+  }
+
+  /** One waiting picture let go (its thumbnail's x). */
+  function unhold(pic) {
+    if (!held.includes(pic)) return;
+    held = held.filter((p) => p !== pic);
+    forget(pic);
+    drawHeld();
+    publish();
+  }
+
+  /** A picture's preview address goes with it. */
+  function forget(pic) {
+    const url = previewUrls.get(pic);
+    previewUrls.delete(pic);
+    if (url?.startsWith('blob:')) { try { globalThis.URL.revokeObjectURL(url); } catch { /* gone */ } }
+  }
+
+  /**
+   * Files dropped, pasted or picked: each read into the report's JPEG (js/report-pictures.js), in
+   * order, as many as there is room for; what was left out or could not be read is said plainly.
+   */
+  function addFiles(files) {
+    const list = Array.from(files || []);
+    if (!list.length || state === 'closed') return readingJob;
+    if (view === 'list') open('new');
+    if (state === 'sending') return readingJob;
+    const { take, over } = takeForRoom(list, room());
+    const notes = over ? [take.length ? P.leftOut(over) : P.full] : [];
+    if (!take.length) { say(notes.join(' '), true); return readingJob; }
+    reading += take.length;
+    drawHeld();
+    say(P.reading);
+    const job = readingJob.then(async () => {
+      for (const file of take) {
+        try {
+          const pic = await convert(file);
+          if (!hold(pic)) notes.push(P.full);
+        } catch (err) {
+          notes.push(pictureRefusal(err, file));
+        }
+        reading -= 1;
+        drawHeld();
+      }
+      publish();
+      if (state !== 'closed') say(notes.join(' '), notes.length > 0);
+    });
+    readingJob = job.catch(() => {});
+    return readingJob;
   }
 
   /** G791: Take a picture: this window closes, the feature takes the picture, and the window comes back where it was. */
@@ -476,12 +646,13 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
         open('list');
         openTicket(back).then(() => { if (line) say(line, true); });
       } else {
-        open('new');
+        // The new report as it was: its own picture of the game and the words stay.
+        open('new', { keep: true });
         if (line) say(line, true);
       }
     };
     takeOnPurpose({
-      done: (pic) => resume(pic && hold(pic) ? '' : T.takeFailed),
+      done: (pic) => resume(!pic ? T.takeFailed : hold(pic) ? '' : P.full),
       cancel: () => resume(),
     });
   }
@@ -496,6 +667,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     newBtn.hidden = view === 'new';
     if (view === 'list') title.textContent = T.sheet;
     if (view === 'new') title.textContent = T.newReport;
+    drawHeld();
     publish();
   }
 
@@ -549,6 +721,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   }
 
   const okShot = (x) => (x && typeof x.url === 'string' && x.url.startsWith('data:image/jpeg;base64,') ? x : null);
+  // The new report's own picture as its thumbnail shows it (the world one while the UI one is still to come).
+  let leadPic = null;
   // Ticket 58: Include the game's UI shows unticked (and greyed) while Attach a picture is
   // unticked; the choice is kept in wantUi and comes back when the picture is ticked again.
   let wantUi = true;
@@ -567,12 +741,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     previewUrls.set(pic, url);
     return url;
   }
-  /** A report's preview addresses go with it (a new report, or one sent). */
+  /** A report's preview addresses go with it (a new report, or one sent); the waiting pictures keep theirs. */
   function releasePreview() {
-    for (const url of previewUrls.values()) {
-      if (url.startsWith('blob:')) { try { globalThis.URL.revokeObjectURL(url); } catch { /* gone */ } }
+    const keep = new Map();
+    for (const [pic, url] of previewUrls) {
+      if (held.includes(pic)) keep.set(pic, url);
+      else if (url.startsWith('blob:')) { try { globalThis.URL.revokeObjectURL(url); } catch { /* gone */ } }
     }
-    previewUrls = new Map();
+    previewUrls = keep;
   }
 
   /** The preview and the two boxes as the pictures stand. Both boxes stay usable while a picture draws. */
@@ -586,16 +762,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     if (none) picBox.checked = false;
     uiBox.disabled = !picBox.checked;
     uiBox.checked = picBox.checked && wantUi;
-    // G791: the picture taken on purpose is the picture; there is no other to choose.
-    uiLabel.hidden = usingHeld;
-    picPreviewImg.setAttribute('alt', usingHeld ? T.takeAlt : T.pictureAlt);
+    picPreviewImg.setAttribute('alt', T.pictureAlt);
     // Ticket 73: the world picture shows while the one with the UI is still to come, the hint beside it.
     const which = previewWhich({ attach: picBox.checked, want, has: { world: Boolean(shots.world?.url), ui: Boolean(shots.ui?.url) }, pending });
     const shown = which ? shots[which] : null;
-    if (usingHeld) picHint.textContent = T.takeNewHint;
-    else if (pending && picBox.checked) picHint.textContent = T.pictureDrawing;
+    if (pending && picBox.checked) picHint.textContent = T.pictureDrawing;
     else picHint.textContent = has ? (wantUi ? T.pictureHintUi : T.pictureHint) : T.pictureNone;
     picPreview.hidden = !shown;
+    leadPic = shown;
     if (shown) {
       const href = previewHref(shown);
       picPreview.setAttribute('href', href);
@@ -604,6 +778,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       picPreviewImg.setAttribute('width', String(shown.width || ''));
       picPreviewImg.setAttribute('height', String(shown.height || ''));
     }
+    // The new report's pictures: its own first, then the waiting ones (2026-11-15).
+    drawHeld();
   }
 
   /** The next paint: a line just set ("Sending…", "Drawing the picture…") shows before a long drawing starts. */
@@ -666,17 +842,10 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     shots = { ui: null, world: null };
     jobs = { ui: null, world: null };
     queued = new Set(['world', 'ui']);
-    picBox.checked = true;
+    // The game's own picture is one of the four (2026-11-15): ticked while there is room beside the waiting ones.
+    picBox.checked = held.length < REPORT_PICTURES.max;
     wantUi = true;
-    uiBox.checked = true;
-    // G791: a picture taken on purpose goes in place of one drawn now.
-    usingHeld = Boolean(held);
-    if (usingHeld) {
-      shots = { ui: held, world: held };
-      queued = new Set();
-      drawPicture();
-      return;
-    }
+    uiBox.checked = picBox.checked;
     const mine = round;
     // After the form has painted and the box has the caret: typing never waits on a picture.
     const start = () => {
@@ -709,7 +878,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     return shots.world?.url || null;
   }
 
-  function open(which = 'list') {
+  function open(which = 'list', { keep = false } = {}) {
     closePicture();
     if (state === 'closed') {
       state = 'open';
@@ -719,7 +888,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     if (which === 'new') {
       show('new');
       sendBtn.disabled = false;
-      newPictures();
+      // Back from Take a picture: the form's own picture stays as it was (a new one only for a new form).
+      if (keep && round > 0) { drawPicture(); idleUi(); } else newPictures();
       setTimeout(() => text.focus(), 0);
     } else {
       show('list');
@@ -773,22 +943,26 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     sendBtn.disabled = true;
     say(T.sending);
     const words = message.slice(0, REPORT_MAX);
-    const pic = await pictureToSend();
+    // Pictures still being read go too (2026-11-15): the game's own first, then the waiting ones.
+    drawHeld();
+    await readingJob;
+    const own = await pictureToSend();
+    const urls = [own, ...held.map((p) => p.url)].filter(Boolean).slice(0, REPORT_PICTURES.max);
+    const pic = urls.length > 1 ? urls : urls[0] || null;
     try {
       let r;
       let without = false;
       try {
         r = await api.create(words, context(), pic);
       } catch (err) {
-        // The site refused the picture, not the report: send the words without it.
+        // The site refused a picture, not the report: send the words without them.
         if (!pic || !pictureRefused(err)) throw err;
         r = await api.create(words, context());
         without = true;
       }
-      const sentWords = without ? T.sentNoPicture : T.sent;
-      // G791: the picture taken on purpose went with it.
-      if (usingHeld && pic && !without) hold(null);
-      usingHeld = false;
+      const sentWords = without ? (urls.length > 1 ? P.sentWithout : T.sentNoPicture) : T.sent;
+      // G791: the waiting pictures went with it (a refusal keeps them for another try).
+      if (held.length && !without) hold(null);
       shot = null;
       round += 1;
       stopIdle();
@@ -812,6 +986,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     } catch (err) {
       state = 'open';
       sendBtn.disabled = false;
+      drawHeld();
       say(refusalWords(err), true);
     }
   }
@@ -827,9 +1002,12 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     state = 'sending';
     sendReply.disabled = true;
     say(T.sending);
+    drawHeld();
     try {
-      // G791: the picture taken on purpose goes with it; a refused picture never costs the words.
-      const pic = held?.url || null;
+      // G791: the waiting pictures go with it (any still being read first); a refused picture never costs the words.
+      await readingJob;
+      const urls = held.map((p) => p.url).slice(0, REPORT_PICTURES.max);
+      const pic = urls.length > 1 ? urls : urls[0] || null;
       let r;
       let without = false;
       try {
@@ -849,13 +1027,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       state = 'open';
       drawThread();
       drawList();
-      say(without ? T.replySentNoPicture : T.replySent);
+      say(without ? (urls.length > 1 ? P.replyWithout : T.replySentNoPicture) : T.replySent);
       reply.focus();
     } catch (err) {
       state = 'open';
       say(refusalWords(err), true);
     } finally {
       sendReply.disabled = false;
+      drawHeld();
     }
   }
 
@@ -1046,7 +1225,12 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   editBox.addEventListener('input', () => { if (status.classList.contains('is-error')) say(''); });
   editCancel.addEventListener('click', () => cancelEdit());
   editSave.addEventListener('click', () => saveEdit());
-  picBox.addEventListener('change', () => { drawPicture(); idleUi(); });
+  picBox.addEventListener('change', () => {
+    // The game's own picture is one of the four: no room beside four waiting ones.
+    if (picBox.checked && held.length + reading >= REPORT_PICTURES.max) { picBox.checked = false; say(P.full, true); }
+    drawPicture();
+    idleUi();
+  });
   filter.addEventListener('input', () => { drawList(); if (view === 'list') say(listMeta()); });
   uiBox.addEventListener('change', () => {
     wantUi = uiBox.checked;
@@ -1056,11 +1240,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     else drawPicture();
   });
   // Ticket 73: the preview opens over the game as a thread's picture does; after a pointer close the caret goes back to the box.
+  // 2026-11-15: with the waiting pictures, the first of them.
   lightboxLink(picPreview, {
     doc,
     host: panel,
     alt: T.pictureAlt,
     label: T.pictureLabel,
+    gallery: () => trayGallery('new'),
+    index: 0,
     fallback: () => text,
     onOpen: (lb) => { lightbox = lb; },
     onClose: () => { lightbox = null; },
@@ -1071,16 +1258,55 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   sendBtn.addEventListener('click', () => send());
   sendReply.addEventListener('click', () => sendTheReply());
   takeBtn.addEventListener('click', () => startTake());
-  takeRemove.addEventListener('click', () => { hold(null); takeBtn.focus?.(); });
-  // G791: the held picture opens over the game too; after a pointer close the caret goes back to the reply box.
-  lightboxLink(replyPreview, {
-    doc,
-    host: panel,
-    alt: T.takeAlt,
-    label: T.pictureLabel,
-    fallback: () => reply,
-    onOpen: (lb) => { lightbox = lb; },
-    onClose: () => { lightbox = null; },
+  newTakeBtn.addEventListener('click', () => startTake());
+  // The game's own picture's x: Attach a picture unticked (ticking it again brings it back).
+  picRemove.addEventListener('click', () => {
+    picBox.checked = false;
+    drawPicture();
+    // The next picture's x, else the Attach a picture box: the keys stay where the player was.
+    ((held.length ? newTray.children[1]?.lastElementChild : null) || picBox).focus?.();
+  });
+  // Add pictures: the file picker (several at once); what it gives is read like a drop.
+  for (const b of [addBtn, newAddBtn]) b.addEventListener('click', () => { if (room() > 0) fileInput.click?.(); });
+  fileInput.addEventListener('change', () => {
+    const files = Array.from(fileInput.files || []);
+    fileInput.value = '';
+    addFiles(files);
+  });
+  // Pictures dropped anywhere on the window (on the list, Write to us opens with them), or pasted.
+  let dragDepth = 0;
+  const dropping = (on) => { if (on) panel.setAttribute('data-dropping', ''); else panel.removeAttribute('data-dropping'); };
+  panel.addEventListener('dragenter', (ev) => {
+    if (state !== 'open' || !dragHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    dragDepth += 1;
+    dropping(true);
+  });
+  panel.addEventListener('dragover', (ev) => {
+    if (state !== 'open' || !dragHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    if (ev.dataTransfer) ev.dataTransfer.dropEffect = room() > 0 || view === 'list' ? 'copy' : 'none';
+  });
+  panel.addEventListener('dragleave', () => {
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (!dragDepth) dropping(false);
+  });
+  panel.addEventListener('drop', (ev) => {
+    dragDepth = 0;
+    dropping(false);
+    if (state !== 'open' || !dragHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    addFiles(filesOf(ev.dataTransfer));
+  });
+  // A picture dropped beside the window (the top bar) must not open in place of the game.
+  for (const kind of ['dragover', 'drop']) {
+    doc.defaultView?.addEventListener?.(kind, (ev) => { if (state !== 'closed' && dragHasFiles(ev.dataTransfer)) ev.preventDefault(); });
+  }
+  panel.addEventListener('paste', (ev) => {
+    const files = filesOf(ev.clipboardData);
+    if (state !== 'open' || !files.length) return;
+    ev.preventDefault();
+    addFiles(files);
   });
   closeTicket.addEventListener('click', () => closeTheTicket());
 
@@ -1094,11 +1320,18 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     openTicket: (id) => { open('list'); return openTicket(Number(id)); },
     refresh,
     setUnread,
-    /** G791: keep a picture taken on purpose for the next reply or new report (null drops it); true when kept. */
+    /** G791: keep a picture for the next reply or new report (null lets them all go); true when kept. */
     hold,
     /** G791: Take a picture, as the button under the reply box does. */
     take: () => startTake(),
-    get held() { return held; },
+    /** Files (a drop, a paste, the picker) read into waiting pictures; resolves once they are read. */
+    addFiles,
+    /** The first waiting picture, or null (G791's one). */
+    get held() { return held[0] || null; },
+    /** Every waiting picture, in order (up to four). */
+    get pictures() { return held.slice(); },
+    /** How many more the message being written can take. */
+    get room() { return room(); },
     get state() { return state; },
     get view() { return view; },
     get unread() { return unread; },

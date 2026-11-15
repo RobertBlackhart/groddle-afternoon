@@ -20,7 +20,7 @@
  *   player's game on another device.
  */
 
-import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=89f2ea17';
+import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=aa93fc78';
 import { listMailboxMessages, mailSender, normalizeMailboxState } from '../mailbox.js?v=a3e833ba';
 import { addedYouOnly, normalizeList } from '../buddies.js?v=cff7bf6e';
 import { letterRow, normalizePlayerMailSlice } from '../player-mail.js?v=af6a8b00';
@@ -81,12 +81,9 @@ export const PHONE_TEXT = Object.freeze({
   refresh: 'Refresh',
   loading: 'Loading…',
   failed: 'That did not load. Try again in a moment.',
-  photo: 'Add a photo',
-  photoChange: 'Choose another photo',
-  photoRemove: 'Remove the photo',
-  photoHint: 'A photo or screenshot helps us see the problem. Only you and the administrators see it.',
-  photoFailed: 'That photo could not be read, so it will not go with this one.',
-  photoAlt: 'The photo going with your report',
+  photo: 'Add photos',
+  photoMore: 'Add more photos',
+  photoHint: 'Photos or screenshots help us see the problem (up to 4). Only you and the administrators see them.',
   mailNote: 'Reading here changes nothing in your game. Collect items at your mailbox there.',
   mailEmpty: 'No letters yet.',
   mailNoSave: 'Your mailbox opens once you have played online.',

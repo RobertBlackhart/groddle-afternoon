@@ -16,9 +16,9 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=89f2ea17';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=bc84ff2b';
-import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=7a8ce516';
+import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=aa93fc78';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=5c292919';
+import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=7678606f';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -479,7 +479,8 @@ describe('a picture of the game with a report (Austin 2026-10-30)', () => {
     assert.equal(a.getAttribute('target'), '_blank');
     assert.equal(a.getAttribute('rel'), 'noopener');
     assert.equal(a.getAttribute('aria-label'), REPORT_TEXT.pictureOpen);
-    assert.equal(a.parentNode.dataset.author, 'player', 'under the report itself');
+    // 2026-11-15: in the report's row of pictures (js/ui/reports-sheet.js reports-msg-pictures), under the report itself.
+    assert.equal(a.parentNode.parentNode.dataset.author, 'player', 'under the report itself');
     const img = a.children[0];
     assert.equal(img.getAttribute('src'), '/report-pictures/7');
     assert.equal(img.getAttribute('alt'), REPORT_TEXT.pictureAlt);
@@ -702,11 +703,13 @@ describe('the site keeps a report\'s picture (groddle-afternoon-site)', { skip: 
     // Only with a new report, after the report's own limits.
     const t = src('src/Tickets.php');
     const create = t.slice(t.indexOf('public function create('), t.indexOf('public function reply('));
-    assert.ok(create.indexOf('openedSince(') > 0 && create.indexOf('openedSince(') < create.indexOf('ReportPicture::accept('), 'the rate limit first');
-    assert.match(create, /\$store->open\(\$me->id, \$message, \$context, \$now, null, \$picture\)/);
-    // G791: a reply may carry one too, checked after the reply's own limits (tests/g791-report-reply-pictures.test.js).
+    // 2026-11-15: the pictures (Tickets::pictures, ReportPicture::fromBody and accept) after the report's own limits.
+    assert.ok(create.indexOf('openedSince(') > 0 && create.indexOf('openedSince(') < create.indexOf('$this->pictures('), 'the rate limit first');
+    assert.match(create, /\$store->open\(\$me->id, \$message, \$context, \$now, null, \$pictures\[0\] \?\? null, array_slice\(\$pictures, 1\)\)/);
+    assert.match(php, /return array_map\(static fn \(mixed \$v\): array => self::accept\(\$v\), \$raw\);/, 'each picture has the checks');
+    // G791: a reply may carry them too, checked after the reply's own limits (tests/g791-report-reply-pictures.test.js).
     const reply = t.slice(t.indexOf('public function reply('), t.indexOf('public function close('));
-    assert.ok(reply.indexOf('writtenSince(') < reply.indexOf('ReportPicture::accept('), 'the reply limit first');
+    assert.ok(reply.indexOf('writtenSince(') < reply.indexOf('$this->pictures('), 'the reply limit first');
     assert.match(src('src/TicketStore.php'), /INSERT INTO ' \. \$this->db->table\(self::PICTURES\) \. ' \(ticket_id, player_user_id, picture, width, height, bytes, created_at\)/);
     // Binary as base64 through FROM_BASE64, as Profiles writes its pictures: raw bytes bound as a string never stored (QA 2026-10-30).
     assert.match(src('src/TicketStore.php'), /VALUES \(\?, \?, FROM_BASE64\(\?\), \?, \?, \?, \?\)', \[\$id, \$player, base64_encode\(\$picture\['bytes'\]\)/);

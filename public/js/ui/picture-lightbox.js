@@ -17,11 +17,15 @@
  *   nothing walks, jumps or reaches the window behind while it is open.
  * - The link itself keeps its href and target: Cmd, Ctrl, Shift or a middle click still open a
  *   tab (as the site's console does, groddle-afternoon-site console/console.js openPicture).
+ * - Several pictures (Austin 2026-11-15: up to four a message, and the ones about to be sent): a
+ *   `gallery` opens at its `index` with Previous and Next beside the picture and "2 of 4"; the Left
+ *   and Right arrow keys (while the picture is fitted; at actual size they still move it) and a
+ *   swipe across it go round them.
  *
  * Styles: features/bug-report-feature.js STYLE (base and Modern), css/classic.css (Classic).
- * QA hooks: [data-picture-lightbox] (data-zoomable, data-zoomed), [data-picture-lightbox-img],
+ * QA hooks: [data-picture-lightbox] (data-zoomable, data-zoomed, data-index, data-count), [data-picture-lightbox-img],
  * [data-picture-lightbox-stage], [data-picture-lightbox-zoom], [data-picture-lightbox-tab],
- * [data-picture-lightbox-close].
+ * [data-picture-lightbox-close], [data-picture-lightbox-prev], [data-picture-lightbox-next], [data-picture-lightbox-count].
  */
 
 import { focusBackTarget, lastInput, pressedBy } from './focus-return.js?v=da190597';
@@ -32,7 +36,21 @@ export const LIGHTBOX_TEXT = Object.freeze({
   zoomIn: 'Actual size (+)',
   zoomOut: 'Fit to the window (-)',
   newTab: 'Open in a new tab',
+  prev: 'Previous picture (Left arrow)',
+  next: 'Next picture (Right arrow)',
+  count: (n, of) => `${n} of ${of}`,
 });
+
+/** A swipe across the picture at least this long (px) goes to the next or previous one. */
+export const LIGHTBOX_SWIPE = 40;
+
+/** PURE: the picture `step` away from `index` in a gallery of `count`, going round. */
+export function galleryStep(index, step, count) {
+  const n = Math.max(0, Math.floor(Number(count) || 0));
+  if (!n) return 0;
+  const i = Math.floor(Number(index) || 0) + Math.trunc(Number(step) || 0);
+  return ((i % n) + n) % n;
+}
 
 /** The share of the window a fitted picture may take (Austin 2026-11-03: about 92vw by 88vh). */
 export const LIGHTBOX_FIT = Object.freeze({ w: 0.92, h: 0.88 });
@@ -110,8 +128,12 @@ const pick = (x) => (typeof x === 'function' ? x() : x) || null;
  *   label?: string, opener?: HTMLElement|(() => HTMLElement|null), fallback?: HTMLElement|(() => HTMLElement|null),
  *   onClose?: (to: string) => void, win?: Window }} opts
  */
-export function openLightbox({ doc = globalThis.document, host = doc?.body, src, width = 0, height = 0, alt = '', label = LIGHTBOX_TEXT.label, opener = null, fallback = null, onClose = () => {}, win = doc?.defaultView || globalThis.window } = {}) {
+export function openLightbox({ doc = globalThis.document, host = doc?.body, src, width = 0, height = 0, alt = '', label = LIGHTBOX_TEXT.label, opener = null, fallback = null, onClose = () => {}, win = doc?.defaultView || globalThis.window, gallery = null, index = 0 } = {}) {
   const T = LIGHTBOX_TEXT;
+  // Several pictures: each { src, width, height, alt }; one alone is the picture given.
+  const pics = (Array.isArray(gallery) ? gallery : []).filter((p) => p && typeof p.src === 'string' && p.src);
+  let at = pics.length ? galleryStep(index, 0, pics.length) : 0;
+  if (pics.length) ({ src, width = 0, height = 0, alt = '' } = { alt, ...pics[at] });
   const e = (tag, attrs, text) => el(doc, tag, attrs, text);
   // One at a time in a host: a second open replaces the first.
   host?.__lightbox?.close({ focus: false });
@@ -126,6 +148,14 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   const x = e('button', { type: 'button', class: 'picture-lightbox-btn picture-lightbox-x', 'aria-label': T.close, title: T.close, 'data-picture-lightbox-close': '' }, '×');
   bar.append(zoomBtn, tab, x);
   root.append(stage, bar);
+  const many = pics.length > 1;
+  const prevBtn = e('button', { type: 'button', class: 'picture-lightbox-btn picture-lightbox-nav picture-lightbox-prev', 'aria-label': T.prev, title: T.prev, hidden: !many, 'data-picture-lightbox-prev': '' }, '‹');
+  const nextBtn = e('button', { type: 'button', class: 'picture-lightbox-btn picture-lightbox-nav picture-lightbox-next', 'aria-label': T.next, title: T.next, hidden: !many, 'data-picture-lightbox-next': '' }, '›');
+  const counter = e('p', { class: 'picture-lightbox-count', 'aria-live': 'polite', hidden: !many, 'data-picture-lightbox-count': '' });
+  if (many) {
+    root.append(prevBtn, nextBtn, counter);
+    root.setAttribute('data-count', String(pics.length));
+  }
 
   let natW = Number(width) || 0;
   let natH = Number(height) || 0;
@@ -175,7 +205,32 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   }
 
   function focusables() {
-    return [zoomBtn, tab, x].filter((n) => !n.hidden);
+    return [prevBtn, nextBtn, zoomBtn, tab, x].filter((n) => !n.hidden && n.parentNode);
+  }
+
+  /** The gallery's words and attributes for the picture shown. */
+  function drawCount() {
+    if (!many) return;
+    counter.textContent = T.count(at + 1, pics.length);
+    root.setAttribute('data-index', String(at));
+  }
+
+  /** Another picture of the gallery (step -1 or 1, going round): fitted, measured again. */
+  function go(step) {
+    if (!many) return at;
+    at = galleryStep(at, step, pics.length);
+    const p = pics[at];
+    zoom(false);
+    natW = Number(p.width) || 0;
+    natH = Number(p.height) || 0;
+    img.setAttribute('src', p.src);
+    img.setAttribute('alt', p.alt || alt);
+    if (natW && natH) { img.setAttribute('width', String(natW)); img.setAttribute('height', String(natH)); }
+    else { img.removeAttribute?.('width'); img.removeAttribute?.('height'); }
+    tab.setAttribute('href', p.src);
+    drawCount();
+    measure();
+    return at;
   }
 
   function close({ focus = true } = {}) {
@@ -217,6 +272,8 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
       if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
       if (k === '+' || k === '=') { ev.preventDefault(); zoom(true); return; }
       if (k === '-' || k === '_') { ev.preventDefault(); zoom(false); return; }
+      // Several pictures: Left and Right go between them while the picture is fitted.
+      if (many && !zoomed && (k === 'ArrowLeft' || k === 'ArrowRight')) { ev.preventDefault(); go(k === 'ArrowLeft' ? -1 : 1); return; }
       const pan = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[k];
       if (pan) {
         ev.preventDefault();
@@ -231,6 +288,23 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
     });
   }
 
+  // Several pictures, fitted: a swipe across the picture goes to the next or previous one.
+  let swipe = null;
+  img.addEventListener('pointerdown', (ev) => {
+    if (!many || zoomed || (ev.button ?? 0) !== 0) return;
+    swipe = { id: ev.pointerId, x: ev.clientX, y: ev.clientY };
+  });
+  img.addEventListener('pointerup', (ev) => {
+    const s = swipe;
+    swipe = null;
+    if (!s || ev.pointerId !== s.id) return;
+    const dx = ev.clientX - s.x;
+    if (Math.abs(dx) >= LIGHTBOX_SWIPE && Math.abs(dx) > Math.abs(ev.clientY - s.y)) {
+      dragged = true;
+      go(dx < 0 ? 1 : -1);
+    }
+  });
+  img.addEventListener('pointercancel', () => { swipe = null; });
   // At actual size the picture drags; a drag is not a click.
   img.addEventListener('pointerdown', (ev) => {
     if (!zoomed || (ev.button ?? 0) !== 0) return;
@@ -277,6 +351,8 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   });
   zoomBtn.addEventListener('click', () => zoom(!zoomed));
   x.addEventListener('click', () => close());
+  prevBtn.addEventListener('click', (ev) => { ev.stopPropagation?.(); go(-1); });
+  nextBtn.addEventListener('click', (ev) => { ev.stopPropagation?.(); go(1); });
   win?.addEventListener?.('resize', measure);
 
   const api = {
@@ -286,11 +362,16 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
     get open() { return open; },
     get zoomed() { return zoomed; },
     get zoomable() { return zoomable; },
+    /** Several pictures: go(-1 | 1), and which one shows. */
+    go,
+    get index() { return at; },
+    get count() { return pics.length || 1; },
   };
   if (host) {
     host.append(root);
     host.__lightbox = api;
   }
+  drawCount();
   measure();
   // Focus moves in, on the dialog itself: a stray Space or Enter (a jump, a habit) presses nothing,
   // Esc closes, Tab reaches the buttons.
@@ -301,11 +382,14 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
 /**
  * Makes a picture link open the lightbox: a plain click, Enter (the link's own click) or Space.
  * Modified and middle clicks keep the link's new tab. `opts` go to openLightbox (src from the href);
- * onOpen(box) hears each open. Returns a function that opens it.
+ * onOpen(box) hears each open. `gallery`, when given, is a function giving the pictures the link
+ * is one of (read at each open: the list can change) and `index` its place. Returns a function that opens it.
  */
-export function lightboxLink(link, { onOpen = () => {}, ...opts } = {}) {
+export function lightboxLink(link, { onOpen = () => {}, gallery = null, index = 0, ...opts } = {}) {
   const show = () => {
-    const box = openLightbox({ src: link.getAttribute('href'), opener: link, doc: link.ownerDocument || globalThis.document, ...opts });
+    const list = typeof gallery === 'function' ? gallery() : gallery;
+    const at = typeof index === 'function' ? index() : index;
+    const box = openLightbox({ src: link.getAttribute('href'), opener: link, doc: link.ownerDocument || globalThis.document, ...opts, ...(Array.isArray(list) && list.length > 1 ? { gallery: list, index: at } : {}) });
     onOpen(box);
     return box;
   };

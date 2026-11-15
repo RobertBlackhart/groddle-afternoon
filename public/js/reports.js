@@ -7,7 +7,8 @@
  *
  * A ticket: { id, status: open|answered|working|closed, subject, createdAt, updatedAt,
  * lastMessageAt, lastAuthor: player|admin, unread, adminReplied, readByTeamAt }; a message: { id, author:
- * player|admin, body, at, edited, picture: { url, width, height }|null }. Who wrote is a role: an administrator is never named.
+ * player|admin, body, at, edited, pictures: [{ url, width, height }], picture: the first of them|null }.
+ * Who wrote is a role: an administrator is never named.
  *
  * Ticket 49 (2026-11-02, a player's two ideas): Working on it is a status an
  * administrator sets (its own chip), and the report's first message can be
@@ -30,6 +31,11 @@
  * reply or new report. The site keeps a reply's picture per message (a
  * message's picture, /report-pictures/<report>/<message>), with a new
  * report's limits.
+ *
+ * Several pictures a message (Austin 2026-11-15): a new report or a reply
+ * carries up to four (js/report-pictures.js: any picture the browser opens,
+ * dropped, pasted, picked or taken, made into the same JPEG), sent as
+ * "pictures"; each message lists its own (/report-pictures/<report>/<message>/<n>).
  */
 
 import { minnUrls } from './minn-account-core.js?v=bd210eb9';
@@ -107,10 +113,7 @@ export const REPORT_TEXT = Object.freeze({
   take: 'Take a picture',
   takeAgain: 'Take another',
   takeHint: 'This window closes so you can show us the problem, then take the picture. Shift+R takes one any time in the game.',
-  takeRemove: 'Remove',
-  takeReply: 'This picture goes with your reply.',
-  takeNewHint: 'You took this picture for a report. Untick it to send your words without it.',
-  takeAlt: 'The picture you took for a report',
+  takeReply: 'These pictures go with your next reply or report.',
   takeTaken: 'Picture taken. It goes with your next report or reply: open Reports with R.',
   takeFailed: 'The game could not be drawn, so no picture was taken.',
   takeDrawing: 'Taking the picture…',
@@ -119,6 +122,9 @@ export const REPORT_TEXT = Object.freeze({
   shutterCancel: 'Cancel',
   replyPictureAlt: 'The picture you sent with this reply',
   replySentNoPicture: 'Reply sent, without the picture.',
+  // Several pictures a message (Austin 2026-11-15).
+  trayLabel: 'Pictures going with your message',
+  reportPictureAlt: 'A picture you sent with this report',
 });
 
 /**
@@ -156,10 +162,26 @@ export function pictureRefused(err) {
   return typeof err?.code === 'string' && err.code.startsWith('groddle_report_picture');
 }
 
-/** A thread's picture address from the site (src/TicketPictures.php), or a reply's (G791: /<report>/<message>), or ''. */
+/** A thread's picture address from the site (src/TicketPictures.php), or a message's (G791: /<report>/<message>, then /<n>), or ''. */
 export function pictureSrc(picture) {
   const url = typeof picture?.url === 'string' ? picture.url : '';
-  return /^\/report-pictures\/\d{1,12}(?:\/\d{1,12})?$/.test(url) ? url : '';
+  return /^\/report-pictures\/\d{1,12}(?:\/\d{1,12}(?:\/[1-9])?)?$/.test(url) ? url : '';
+}
+
+/** A message's pictures as the site lists them (up to four), else G791's one; only the ones with a picture address. */
+export function messagePictures(m) {
+  const list = Array.isArray(m?.pictures) ? m.pictures : m?.picture ? [m.picture] : [];
+  return list.filter((p) => pictureSrc(p)).slice(0, 4);
+}
+
+/**
+ * The body's pictures: none, one as "picture" (every site takes it), or several as "pictures"
+ * with the first again as "picture" for a site from before 2026-11-15, which keeps that one.
+ */
+export function picturesBody(pictures) {
+  const list = (Array.isArray(pictures) ? pictures : [pictures]).filter((p) => typeof p === 'string' && p);
+  if (!list.length) return {};
+  return list.length === 1 ? { picture: list[0] } : { pictures: list, picture: list[0] };
 }
 
 /**
@@ -396,10 +418,10 @@ export function createReportsApi({ baseUri, fetch: fetchFn = globalThis.fetch?.b
     unread: () => call('tickets/unread'),
     /** { ticket, messages, picture }; marks it read. */
     thread: (id) => call(`tickets/${Number(id)}`),
-    /** { status: sent, id, ticket }; picture: a JPEG data URL, or nothing. */
-    create: (message, context = {}, picture = null) => call('tickets', { method: 'POST', body: picture ? { message, context, picture } : { message, context } }),
-    /** { ticket, messages }; picture (G791): a JPEG data URL, or nothing. */
-    reply: (id, message, picture = null) => call(`tickets/${Number(id)}/messages`, { method: 'POST', body: picture ? { message, picture } : { message } }),
+    /** { status: sent, id, ticket }; pictures: a JPEG data URL or a list of up to four, or nothing. */
+    create: (message, context = {}, pictures = null) => call('tickets', { method: 'POST', body: { message, context, ...picturesBody(pictures) } }),
+    /** { ticket, messages }; pictures (G791): a JPEG data URL or a list of up to four, or nothing. */
+    reply: (id, message, pictures = null) => call(`tickets/${Number(id)}/messages`, { method: 'POST', body: { message, ...picturesBody(pictures) } }),
     /** { ticket, messages } */
     close: (id) => call(`tickets/${Number(id)}/close`, { method: 'POST' }),
     /** { ticket, messages, editable }: new words for the report's first message, until an administrator reads it. */

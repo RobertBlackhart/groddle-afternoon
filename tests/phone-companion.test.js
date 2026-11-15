@@ -18,7 +18,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import vm from 'node:vm';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
-import { REPORT_PICTURE } from '../public/js/reports.js?v=89f2ea17';
+import { REPORT_PICTURE } from '../public/js/reports.js?v=aa93fc78';
 import {
   DEVICE_KEY,
   PHONE_TEXT,
@@ -40,7 +40,7 @@ import {
   takenMailIds,
   unreadLetters,
   whereWords,
-} from '../public/js/phone/companion-data.js?v=e10084ac';
+} from '../public/js/phone/companion-data.js?v=08a0ae0e';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(pub, p), 'utf8');
@@ -176,14 +176,19 @@ describe('the phone gate on /play/ and /play/online/', () => {
 
 // —— the companion never loads the game ——
 
-/** Every module a module imports, transitively (relative specifiers, the ?v= keys dropped). */
-function importGraph(entry) {
+/**
+ * Every module a module imports, transitively (relative specifiers, the ?v= keys dropped); with
+ * { lazy: false } only what loads with the page (an import() waits for its moment, e.g. the
+ * picture lightbox at the first tap on a picture).
+ */
+function importGraph(entry, { lazy = true } = {}) {
   const seen = new Set();
   const walk = (file) => {
     if (seen.has(file)) return;
     seen.add(file);
     const src = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
     for (const m of src.matchAll(/(?:import|export)\s[^;]*?from\s*['"](\.{1,2}\/[^'"?]+)[^'"]*['"]|import\(\s*['"](\.{1,2}\/[^'"?]+)[^'"]*['"]\s*\)/g)) {
+      if (m[2] && !lazy) continue;
       walk(resolve(dirname(file), m[1] || m[2]));
     }
   };
@@ -191,10 +196,14 @@ function importGraph(entry) {
   return [...seen].map((f) => relative(pub, f));
 }
 
+/** js/ui modules the phone may load: plain DOM, no game (2026-11-15: the pictures over the page, at the first tap). */
+const PHONE_UI = ['js/ui/picture-lightbox.js', 'js/ui/focus-return.js'];
+
 describe('play/phone/ (the companion page)', () => {
   const html = read('play/phone/index.html');
   const entry = html.match(/<script type="module" src="(js\/phone\/companion\.js)\?v=[^"]+"><\/script>/)?.[1];
   const graph = entry ? importGraph(join(pub, entry)) : [];
+  const eager = entry ? importGraph(join(pub, entry), { lazy: false }) : [];
 
   it('loads its module, the site theme switch and its own stylesheet, nothing of the game', () => {
     assert.ok(entry);
@@ -208,8 +217,11 @@ describe('play/phone/ (the companion page)', () => {
   it('its import graph never reaches game.js, Pixi, the save store or a feature', () => {
     assert.ok(graph.includes('js/account-forms.js') && graph.includes('js/reports.js') && graph.includes('js/mailbox.js'), graph.join(' '));
     for (const f of graph) {
+      if (PHONE_UI.includes(f)) continue;
       assert.doesNotMatch(f, /^(game\.js|vendor\/|js\/features\/|js\/ui\/|js\/save-store\.js|js\/game-mode\.js|js\/player-save\.js)/, f);
     }
+    for (const f of PHONE_UI) assert.ok(!eager.includes(f), `${f} loads at the first tap on a picture, not with the page`);
+    assert.doesNotMatch(read('js/ui/focus-return.js').replace(/\/\*[\s\S]*?\*\//g, ''), /^import /m, 'focus-return.js imports nothing');
     for (const f of graph) assert.doesNotMatch(readFileSync(join(pub, f), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, ''), /\bPIXI\./, `${f} draws nothing with Pixi`);
   });
 
@@ -228,10 +240,12 @@ describe('play/phone/ (the companion page)', () => {
   });
 
   // 250 KB from 240 (2026-11-11): site/theme.js gained the Analytics pageview beacon (about 1 KB).
-  it('stays small: everything it loads before a panel opens is under 250 KB', () => {
-    const files = ['play/phone/index.html', 'play/phone/phone.css', 'site/theme.js', 'site/site-nav.css', 'favicon.svg', ...graph];
+  // 2026-11-15: up to four photos a report (js/report-pictures.js reads any picture into the report's
+  // JPEG, about 10 KB); the pictures' lightbox loads at the first tap on one, so it is not counted.
+  it('stays small: everything it loads before a panel opens is under 265 KB', () => {
+    const files = ['play/phone/index.html', 'play/phone/phone.css', 'site/theme.js', 'site/site-nav.css', 'favicon.svg', ...eager];
     const bytes = files.reduce((n, f) => n + statSync(join(pub, f)).size, 0);
-    assert.ok(bytes < 250 * 1024, `${bytes} bytes`);
+    assert.ok(bytes < 265 * 1024, `${bytes} bytes`);
   });
 
   it('signs in with the game\'s own forms and the /play/online/ gate\'s session check', () => {

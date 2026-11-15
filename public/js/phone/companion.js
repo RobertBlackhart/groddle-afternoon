@@ -21,13 +21,21 @@
  *
  * G791 (#216, #281): a reply takes a photo too (Add a photo under the reply box, the same
  * picker and size as a new report's), and each message shows the picture it carries.
+ *
+ * Several pictures (Austin 2026-11-15): a new report and a reply take up to four from the photo
+ * picker (several at once, any picture the phone's browser opens, each made into the report's
+ * JPEG by js/report-pictures.js), shown as thumbnails with an x each; a thumbnail, and each picture
+ * in a thread, opens the pictures over the page (js/ui/picture-lightbox.js: swipe or the arrows
+ * between them, the close button; loaded at the first tap, so the page stays small). QA hooks: [data-phone-photo-preview] (the thumbnails),
+ * [data-phone-photo-thumb=<n>], [data-phone-photo-remove], [data-phone-message-picture].
  */
 
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=89f2ea17';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, fitPhoto, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=e10084ac';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
+import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=d98e235d';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=08a0ae0e';
 
 const doc = globalThis.document;
 
@@ -404,15 +412,20 @@ function drawThread(answer, status = '') {
     const head = el('div', { class: 'pc-message-head' });
     head.append(el('strong', {}, m.author === 'admin' ? REPORT_TEXT.admin : REPORT_TEXT.you), el('span', { class: 'pc-muted' }, whenWords(m.at)));
     li.append(head, el('p', { class: 'pc-message-body' }, m.body));
-    const pictureLink = (src, p, alt) => {
-      const a = el('a', { href: src, target: '_blank', rel: 'noopener', class: 'pc-thread-picture', title: REPORT_TEXT.pictureOpen });
-      a.append(el('img', { src, alt, loading: 'lazy', width: p.width || '', height: p.height || '' }));
-      return a;
-    };
-    if (i === 0 && pic) li.append(pictureLink(pic, answer.picture, REPORT_TEXT.pictureAlt));
-    // G791: a reply's own picture.
-    const own = pictureSrc(m.picture);
-    if (own) li.append(pictureLink(own, m.picture, REPORT_TEXT.replyPictureAlt));
+    // The report's own picture under the report, then each message's own (G791; up to four), as
+    // thumbnails that open the message's pictures over the page.
+    const own = messagePictures(m).map((p) => ({ src: pictureSrc(p), width: Number(p.width) || 0, height: Number(p.height) || 0, alt: i === 0 ? REPORT_TEXT.reportPictureAlt : REPORT_TEXT.replyPictureAlt }));
+    if (i === 0 && pic) own.unshift({ src: pic, width: Number(answer.picture.width) || 0, height: Number(answer.picture.height) || 0, alt: REPORT_TEXT.pictureAlt });
+    if (own.length) {
+      const row = el('div', { class: 'pc-thread-pictures', 'data-count': String(own.length) });
+      own.forEach((p, n) => {
+        const a = el('a', { href: p.src, target: '_blank', rel: 'noopener', class: 'pc-thread-picture', title: REPORT_TEXT.pictureOpen, 'data-phone-message-picture': String(n + 1) });
+        a.append(el('img', { src: p.src, alt: p.alt, loading: 'lazy', width: p.width || '', height: p.height || '' }));
+        pictureOpener(a, own, n);
+        row.append(a);
+      });
+      li.append(row);
+    }
     msgs.append(li);
   });
   panel.append(msgs);
@@ -434,14 +447,16 @@ function drawThread(answer, status = '') {
     });
     row.append(close);
   }
-  form.append(label, box, photo.row, photo.preview, row, msg);
+  form.append(label, box, photo.preview, photo.row, row, msg);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = box.value.trim();
     if (!text) { msg.textContent = REPORT_TEXT.replyEmpty; return; }
     send.disabled = true;
     msg.textContent = REPORT_TEXT.sending;
-    const url = photo.photo?.url || null;
+    await photo.settled();
+    const urls = photo.photos.map((p) => p.url);
+    const url = urls.length > 1 ? urls : urls[0] || null;
     try {
       let answer;
       let words = REPORT_TEXT.replySent;
@@ -451,7 +466,7 @@ function drawThread(answer, status = '') {
         // A refused picture never costs the words.
         if (!url || !pictureRefused(err)) throw err;
         answer = await reports.reply(t.id, text, null);
-        words = REPORT_TEXT.replySentNoPicture;
+        words = urls.length > 1 ? PICTURE_TEXT.replyWithout : REPORT_TEXT.replySentNoPicture;
       }
       drawThread(answer, words);
     } catch (err) {
@@ -462,59 +477,82 @@ function drawThread(answer, status = '') {
   panel.append(form);
 }
 
-/** A picked photo drawn into a JPEG the size a report keeps. */
-async function photoFrom(file) {
-  if (!file || !/^image\//.test(file.type || 'image/')) return null;
-  const url = URL.createObjectURL(file);
-  try {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = url;
-    await img.decode();
-    const canvas = doc.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    return fitPhoto(img.naturalWidth, img.naturalHeight, (w, h, q) => {
-      canvas.width = w;
-      canvas.height = h;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
-      return canvas.toDataURL('image/jpeg', q);
-    });
-  } catch {
-    return null;
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+/** The pictures over the page (js/ui/picture-lightbox.js, plain DOM), loaded at the first tap on a picture. */
+let lightboxModule = null;
+const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=b2cba91b').catch((err) => { lightboxModule = null; throw err; }));
+
+/**
+ * A picture link that opens `gallery` (each { src, width, height, alt }) at `index` over the page on
+ * a plain tap or click; a modified click keeps the link's own tab (as lightboxLink does in the game).
+ */
+function pictureOpener(a, gallery, index) {
+  a.addEventListener('click', (ev) => {
+    if ((ev.button ?? 0) !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+    ev.preventDefault();
+    const list = typeof gallery === 'function' ? gallery() : gallery;
+    loadLightbox().then(({ openLightbox }) => {
+      openLightbox({ doc, host: doc.body, src: list[index]?.src || a.getAttribute('href'), alt: list[index]?.alt || '', label: REPORT_TEXT.pictureLabel, opener: a, gallery: list, index });
+    }).catch(() => { globalThis.open?.(a.getAttribute('href'), '_blank', 'noopener'); });
+  });
 }
 
-/** A photo picker (Add a photo, its preview with Remove): what a new report and a reply take. */
+/**
+ * A photo picker (Add photos, several at once, up to four; thumbnails each with an x, each opening
+ * the photos over the page): what a new report and a reply take. Each photo is read into the
+ * report's JPEG (js/report-pictures.js convertPicture: any picture the browser opens, never the
+ * file's own bytes); one that cannot be read is named in the line under the form.
+ */
 function photoPicker(id, msg) {
-  let photo = null;
-  const pick = el('input', { type: 'file', id, accept: 'image/*', class: 'pc-file' });
+  let photos = [];
+  let reading = 0;
+  let job = Promise.resolve();
+  const pick = el('input', { type: 'file', id, accept: REPORT_PICTURES.accept, multiple: true, class: 'pc-file' });
   const pickLabel = el('label', { for: id, class: 'pc-button pc-button-quiet' }, T.photo);
-  const preview = el('div', { class: 'pc-photo-preview', hidden: true, 'data-phone-photo-preview': '' });
-  pick.addEventListener('change', async () => {
-    const file = pick.files?.[0];
+  const preview = el('ul', { class: 'pc-photo-preview', hidden: true, 'aria-label': REPORT_TEXT.trayLabel, 'data-phone-photo-preview': '' });
+  const gallery = () => photos.map((p, i) => ({ src: p.url, width: p.width, height: p.height, alt: PICTURE_TEXT.thumbAlt(i + 1) }));
+  pick.addEventListener('change', () => {
+    const files = Array.from(pick.files || []);
     pick.value = '';
-    if (!file) return;
-    msg.textContent = T.loading;
-    photo = await photoFrom(file);
-    msg.textContent = photo ? '' : T.photoFailed;
+    if (!files.length) return;
+    const { take, over } = takeForRoom(files, roomFor(photos.length + reading));
+    const notes = over ? [take.length ? PICTURE_TEXT.leftOut(over) : PICTURE_TEXT.full] : [];
+    reading += take.length;
+    msg.textContent = take.length ? T.loading : notes.join(' ');
     drawPreview();
+    job = job.then(async () => {
+      for (const file of take) {
+        try {
+          const p = await convertPicture(file, { doc });
+          if (photos.length < REPORT_PICTURES.max) photos = [...photos, p];
+        } catch (err) {
+          notes.push(pictureRefusal(err, file));
+        }
+        reading -= 1;
+        drawPreview();
+      }
+      msg.textContent = notes.join(' ');
+    }).catch(() => {});
   });
   function drawPreview() {
-    preview.replaceChildren();
-    preview.hidden = !photo;
-    pickLabel.textContent = photo ? T.photoChange : T.photo;
-    if (!photo) return;
-    const remove = el('button', { type: 'button', class: 'pc-linkish', 'data-phone-photo-remove': '' }, T.photoRemove);
-    remove.addEventListener('click', () => { photo = null; drawPreview(); });
-    preview.append(el('img', { src: photo.url, alt: T.photoAlt, width: photo.width, height: photo.height }), remove);
+    const full = photos.length + reading >= REPORT_PICTURES.max;
+    preview.hidden = photos.length === 0;
+    pickLabel.textContent = photos.length ? T.photoMore : T.photo;
+    pickLabel.toggleAttribute?.('data-disabled', full);
+    pick.disabled = full;
+    preview.replaceChildren(...photos.map((p, i) => {
+      const li = el('li', { class: 'pc-photo-thumb', 'data-phone-photo-thumb': String(i + 1) });
+      const a = el('a', { href: p.url, class: 'pc-photo-open', 'aria-label': PICTURE_TEXT.open(i + 1, photos.length), title: PICTURE_TEXT.open(i + 1, photos.length) });
+      a.append(el('img', { src: p.url, alt: PICTURE_TEXT.thumbAlt(i + 1), width: p.width, height: p.height }));
+      pictureOpener(a, gallery, i);
+      const remove = el('button', { type: 'button', class: 'pc-photo-remove', 'aria-label': PICTURE_TEXT.remove(i + 1), title: PICTURE_TEXT.remove(i + 1), 'data-phone-photo-remove': '' }, '×');
+      remove.addEventListener('click', () => { photos = photos.filter((x) => x !== p); drawPreview(); });
+      li.append(a, remove);
+      return li;
+    }));
   }
   const row = el('div', { class: 'pc-form-row' });
   row.append(pickLabel, pick);
-  return { row, preview, get photo() { return photo; } };
+  return { row, preview, get photos() { return photos; }, get photo() { return photos[0] || null; }, settled: () => job };
 }
 
 function newReport() {
@@ -530,7 +568,7 @@ function newReport() {
   const msg = el('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' });
   const picker = photoPicker('pc-photo', msg);
   const send = el('button', { type: 'submit', class: 'pc-button', 'data-phone-send-report': '' }, REPORT_TEXT.send);
-  form.append(label, box, picker.row, picker.preview, hint, send, msg);
+  form.append(label, box, picker.preview, picker.row, hint, send, msg);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = box.value.trim();
@@ -538,16 +576,18 @@ function newReport() {
     send.disabled = true;
     msg.textContent = REPORT_TEXT.sending;
     const context = phoneContext(globalThis);
-    const photo = picker.photo;
+    await picker.settled();
+    const urls = picker.photos.map((p) => p.url);
+    const photo = urls.length > 1 ? urls : urls[0] || null;
     let sent;
     let words = REPORT_TEXT.sent;
     try {
-      sent = await reports.create(text, context, photo?.url || null);
+      sent = await reports.create(text, context, photo);
     } catch (err) {
       if (photo && pictureRefused(err)) {
         try {
           sent = await reports.create(text, context, null);
-          words = REPORT_TEXT.sentNoPicture;
+          words = urls.length > 1 ? PICTURE_TEXT.sentWithout : REPORT_TEXT.sentNoPicture;
         } catch (again) {
           msg.textContent = refusalWords(again);
           send.disabled = false;

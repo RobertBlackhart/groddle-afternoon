@@ -7,9 +7,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LIGHTBOX_FIT, LIGHTBOX_PAN_STEP, LIGHTBOX_TEXT, fitPicture, lightboxFocusTarget, lightboxLink, openLightbox, plainClick, zoomScroll } from '../public/js/ui/picture-lightbox.js?v=0d2814c8';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=bc84ff2b';
-import { REPORT_TEXT } from '../public/js/reports.js?v=89f2ea17';
+import { LIGHTBOX_FIT, LIGHTBOX_PAN_STEP, LIGHTBOX_TEXT, fitPicture, lightboxFocusTarget, lightboxLink, openLightbox, plainClick, zoomScroll } from '../public/js/ui/picture-lightbox.js?v=b2cba91b';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=5c292919';
+import { REPORT_TEXT } from '../public/js/reports.js?v=aa93fc78';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -129,7 +129,7 @@ describe('the picture lightbox: the rules', () => {
   });
 
   it('has its words, with no em dashes', () => {
-    for (const v of Object.values(LIGHTBOX_TEXT)) assert.doesNotMatch(v, /—/);
+    for (const v of Object.values(LIGHTBOX_TEXT)) assert.doesNotMatch(typeof v === 'function' ? v(2, 4) : v, /—/);
     assert.equal(REPORT_TEXT.pictureLabel, 'Report picture');
     assert.equal(LIGHTBOX_TEXT.newTab, 'Open in a new tab');
   });

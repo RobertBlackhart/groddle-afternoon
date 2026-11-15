@@ -6,6 +6,8 @@
 // report's size and type checks (ReportPicture) and a limit of its own, shows it to the player and
 // the administrators only (TicketPictures /report-pictures/<report>/<message>), and both threads
 // (the player's and the console's admin/tickets/{id}, which /groddle-check reads) carry it per message.
+// Since 2026-11-15 (lane reportpics, tests/report-pictures.test.js) a message carries up to four: the
+// picture taken is one of them, held in a list with any added, dropped or pasted.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -13,9 +15,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=bc84ff2b';
-import { REPORT_TEXT as T, createReportsApi, isPictureKey, pictureSrc } from '../public/js/reports.js?v=89f2ea17';
-import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=7a8ce516';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=5c292919';
+import { REPORT_TEXT as T, createReportsApi, isPictureKey, pictureSrc } from '../public/js/reports.js?v=aa93fc78';
+import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=7678606f';
 import { hotkeySections } from '../public/js/client-hotkeys.js?v=7a2676ac';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
@@ -51,7 +53,7 @@ function fakeDoc() {
   doc.createTextNode = (t) => Object.assign(new Node('#text', doc), { _text: String(t) });
   return doc;
 }
-const byData = (r, k) => r.all().find((n) => k in n.dataset);
+const byData = (r, k, ok = () => true) => r.all().find((n) => k in n.dataset && ok(n));
 const allData = (r, k) => r.all().filter((n) => k in n.dataset);
 const ticket = { id: 3, subject: 'Pigs float', status: 'open', lastAuthor: 'player', lastMessageAt: '2026-11-15T10:00:00Z', unread: false };
 
@@ -88,7 +90,9 @@ describe('G791: the rules (js/reports.js)', () => {
   it('a reply\'s picture address is the report\'s and the message\'s number; nothing else is shown', () => {
     assert.equal(pictureSrc({ url: '/report-pictures/3/9' }), '/report-pictures/3/9');
     assert.equal(pictureSrc({ url: '/report-pictures/3' }), '/report-pictures/3');
-    for (const bad of ['/report-pictures/3/9/1', '/report-pictures/3/x', '//evil.example/report-pictures/3/9', '/report-pictures//9']) assert.equal(pictureSrc({ url: bad }), '', bad);
+    // 2026-11-15: a message's nth picture (1 to 9) too.
+    assert.equal(pictureSrc({ url: '/report-pictures/3/9/2' }), '/report-pictures/3/9/2');
+    for (const bad of ['/report-pictures/3/9/0', '/report-pictures/3/9/12', '/report-pictures/3/9/1/1', '/report-pictures/3/x', '//evil.example/report-pictures/3/9', '/report-pictures//9']) assert.equal(pictureSrc({ url: bad }), '', bad);
   });
 
   it('Shift+R is the picture key, never while typing and never with Ctrl, Alt or Cmd', () => {
@@ -111,7 +115,7 @@ describe('G791: the rules (js/reports.js)', () => {
   });
 
   it('the words are plain, with no dashes', () => {
-    for (const k of ['take', 'takeAgain', 'takeHint', 'takeRemove', 'takeReply', 'takeNewHint', 'takeAlt', 'takeTaken', 'takeFailed', 'takeDrawing', 'shutterTitle', 'shutterTake', 'shutterCancel', 'replyPictureAlt', 'replySentNoPicture']) {
+    for (const k of ['take', 'takeAgain', 'takeHint', 'takeReply', 'takeTaken', 'takeFailed', 'takeDrawing', 'shutterTitle', 'shutterTake', 'shutterCancel', 'replyPictureAlt', 'replySentNoPicture', 'trayLabel', 'reportPictureAlt']) {
       assert.ok(typeof T[k] === 'string' && T[k], k);
       assert.doesNotMatch(T[k], /[—–]/, k);
     }
@@ -127,7 +131,7 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(row.hidden, false);
     const take = byData(host, 'reportsTake');
     assert.equal(take.textContent, T.take);
-    assert.equal(byData(host, 'reportsTakeRemove').hidden, true);
+    assert.equal(byData(host, 'reportsTray').hidden, true, 'no thumbnails yet');
     byData(host, 'reportsReplyText').value = 'It happened again';
     take.click();
     assert.equal(sheet.state, 'closed', 'out of the way while the player shows the problem');
@@ -137,11 +141,13 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(sheet.state, 'open');
     assert.equal(sheet.view, 'thread');
     assert.equal(sheet.held, PIC);
+    assert.deepEqual(sheet.pictures, [PIC], 'taken twice over (the feature holds it, then done): kept once');
     assert.equal(states.at(-1).held, true);
     assert.equal(byData(host, 'reportsReplyText').value, 'It happened again', 'the words typed stay');
-    const preview = byData(host, 'reportsReplyPreview');
-    assert.equal(preview.hidden, false);
-    assert.equal(byData(host, 'reportsTakeRemove').hidden, false);
+    const tray = byData(host, 'reportsTray');
+    assert.equal(tray.hidden, false);
+    assert.equal(allData(tray, 'reportsThumb').length, 1, 'its thumbnail under the reply box');
+    assert.ok(byData(tray, 'reportsThumbRemove'));
     assert.equal(byData(host, 'reportsTake').textContent, T.takeAgain);
   });
 
@@ -158,7 +164,7 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(pics.length, 1);
     assert.equal(pics[0].getAttribute('href'), '/report-pictures/3/9');
     assert.equal(pics[0].children[0].getAttribute('alt'), T.replyPictureAlt);
-    assert.equal(byData(host, 'reportsReplyPreview').hidden, true);
+    assert.equal(byData(host, 'reportsTray').hidden, true);
   });
 
   it('a refused picture never costs the words: they go again without it, and the picture stays held', async () => {
@@ -173,11 +179,11 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(sheet.held, PIC);
   });
 
-  it('Remove lets the picture go; a reply then carries none', async () => {
+  it('its thumbnail\'s x lets the picture go; a reply then carries none', async () => {
     const { host, sheet, calls } = mount({ takePicture: () => {} });
     await sheet.openTicket(3);
     sheet.hold(PIC);
-    byData(host, 'reportsTakeRemove').click();
+    byData(byData(host, 'reportsTray'), 'reportsThumbRemove').click();
     assert.equal(sheet.held, null);
     byData(host, 'reportsReplyText').value = 'Words';
     byData(host, 'reportsSendReply').click();
@@ -185,13 +191,14 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(calls.reply[0].picture, null);
   });
 
-  it('a new report carries the held picture in place of one drawn as the form opens', async () => {
+  it('a new report carries the held picture beside the one drawn as the form opens (2026-11-15: one of the four)', async () => {
     const { host, sheet, calls } = mount({ takePicture: () => {} });
     sheet.hold(PIC);
     sheet.open('new');
     await wait(20);
-    assert.equal(byData(host, 'reportsPicturePreview').hidden, false);
-    assert.equal(byData(host, 'reportsPictureUi').parentNode.hidden, true, 'no UI choice for a picture already taken');
+    // The fake capture draws nothing here: the held picture is the report's only one.
+    const tray = byData(host, 'reportsTray', (n) => n.dataset.reportsTray === 'new');
+    assert.equal(tray.hidden, false);
     byData(host, 'bugReportText').value = 'The pig froze';
     byData(host, 'bugReportSend').click();
     await wait(40);
@@ -199,16 +206,21 @@ describe('G791: the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(sheet.held, null);
   });
 
-  it('without a way to take one (an older host), the row stays out of sight', async () => {
+  it('without a way to take one (an older host), Take a picture stays out of sight and Add pictures shows', async () => {
     const { host, sheet } = mount();
     await sheet.openTicket(3);
-    assert.equal(byData(host, 'reportsReplyPicture').hidden, true);
+    assert.equal(byData(host, 'reportsReplyPicture').hidden, false);
+    assert.equal(byData(host, 'reportsTake').hidden, true);
+    assert.equal(byData(host, 'reportsAdd').hidden, false);
   });
 
-  it('a picture that is not a JPEG data URL is never held', () => {
+  it('a picture that is not a JPEG data URL is never held, and four is the most', () => {
     const { sheet } = mount({ takePicture: () => {} });
     assert.equal(sheet.hold({ url: 'data:image/png;base64,AAAA', width: 1, height: 1 }), false);
     assert.equal(sheet.held, null);
+    for (let i = 0; i < 4; i++) assert.equal(sheet.hold({ ...PIC }), true);
+    assert.equal(sheet.hold({ ...PIC }), false, 'a fifth is not kept');
+    assert.equal(sheet.pictures.length, 4);
   });
 });
 
@@ -232,7 +244,8 @@ describe('G791: the game wiring', () => {
     const c = read('public/js/phone/companion.js');
     assert.match(c, /const photo = photoPicker\('pc-reply-photo', msg\);/);
     assert.match(c, /reports\.reply\(t\.id, text, url\)/);
-    assert.match(c, /const own = pictureSrc\(m\.picture\);/);
+    // 2026-11-15: each message's pictures (its list, else G791's one: js/reports.js messagePictures).
+    assert.match(c, /const own = messagePictures\(m\)\.map\(/);
     assert.match(c, /const picker = photoPicker\('pc-photo', msg\);/, 'the new report keeps its picker');
   });
 });
@@ -242,30 +255,35 @@ describe('G791: the site keeps a reply\'s picture (groddle-afternoon-site)', { s
 
   it('one row a message in a new table, declared additively with a schema bump', () => {
     const m = JSON.parse(src('minn.json'));
-    const t = m.tables.groddle_ticket_message_pictures;
-    for (const col of ['message_id', 'ticket_id', 'player_user_id', 'picture', 'width', 'height', 'bytes', 'created_at']) assert.ok(t.some((l) => l.startsWith(`${col} `)), col);
+    // 2026-11-15: up to four a message, by position (G791's one-a-message table was never released).
+    const t = m.tables.groddle_message_pictures;
+    for (const col of ['message_id', 'position', 'ticket_id', 'player_user_id', 'picture', 'width', 'height', 'bytes', 'created_at']) assert.ok(t.some((l) => l.startsWith(`${col} `)), col);
     assert.ok(t.includes('picture mediumblob NOT NULL'));
-    assert.ok(t.includes('PRIMARY KEY  (message_id)'));
+    assert.ok(t.includes('UNIQUE KEY message_position (message_id,position)'));
     assert.ok(t.includes('KEY player_created (player_user_id,created_at)'), 'the limit counts by player and time');
+    assert.equal(m.tables.groddle_ticket_message_pictures, undefined, 'G791\'s table is copied in by bin/message-pictures.php');
     const [a, b, c] = m.version.split('.').map(Number);
-    assert.ok(a > 0 || b > 5 || (b === 5 && c >= 52), m.version);
+    assert.ok(a > 0 || b > 5 || (b === 5 && c >= 53), m.version);
     assert.ok(m.tables.groddle_ticket_pictures.includes('PRIMARY KEY  (ticket_id)'), 'the report\'s own picture table is unchanged');
   });
 
   it('a reply takes a picture after its own limits, with a picture limit and a new report\'s checks', () => {
     const php = src('src/Tickets.php');
     const reply = php.slice(php.indexOf('public function reply('), php.indexOf('public function close('));
-    const order = ['writtenSince(', 'picturesSince(', 'ReportPicture::accept(', '$store->add('];
+    const order = ['writtenSince(', '$this->pictures(', '$store->add('];
     const at = order.map((k) => reply.indexOf(k));
     assert.ok(at.every((n, i) => n > 0 && (i === 0 || n > at[i - 1])), `in order: ${order.join(' ')}`);
-    assert.match(reply, /throw new RestError\(ReportPicture::CODE \. '_slow',/, 'a groddle_report_picture code: the game sends the words again');
-    assert.match(reply, /\$store->add\(\(int\) \$row\['id'\], \$me->id, TicketStore::PLAYER, \$message, \$now, \$picture\);/);
-    assert.match(php, /REPLY_PICTURE_PER_WINDOW = 5;/);
-    assert.match(php, /REPLY_PICTURE_PER_DAY = 30;/);
+    const pics = php.slice(php.indexOf('private function pictures('), php.indexOf('public static function picturesFit('));
+    assert.ok(pics.indexOf('ReportPicture::fromBody(') < pics.indexOf('picturesSince('), 'every picture checked before any is counted');
+    assert.match(pics, /throw new RestError\(ReportPicture::CODE \. '_slow',/, 'a groddle_report_picture code: the game sends the words again');
+    assert.match(reply, /\$store->add\(\(int\) \$row\['id'\], \$me->id, TicketStore::PLAYER, \$message, \$now, \$pictures\);/);
+    assert.match(php, /PICTURES_PER_WINDOW = 20;/);
+    assert.match(php, /PICTURES_PER_DAY = 60;/);
     const store = src('src/TicketStore.php');
     const add = store.slice(store.indexOf('public function add('), store.indexOf('public function setStatus('));
     assert.match(add, /Ledger::atomically/, 'written with the message');
-    assert.match(add, /INSERT INTO ' \. \$this->db->table\(self::MESSAGE_PICTURES\) \. ' \(message_id, ticket_id, player_user_id, picture, width, height, bytes, created_at\) VALUES \(\?, \?, \?, FROM_BASE64\(\?\), \?, \?, \?, \?\)/);
+    assert.match(add, /\$this->writePictures\(\$ticket, \$id, \$author, \$pictures, \$at\);/);
+    assert.match(store, /INSERT INTO ' \. \$this->db->table\(self::MESSAGE_PICTURES\) \. ' \(message_id, position, ticket_id, player_user_id, picture, width, height, bytes, created_at\) VALUES \(\?, \?, \?, \?, FROM_BASE64\(\?\), \?, \?, \?, \?\)/);
     // Only a player's own reply route passes one; an administrator's reply never does.
     assert.match(src('src/AdminTickets.php'), /->add\(\(int\) \$row\['id'\], \$admin->id, TicketStore::ADMIN, \$message, \$now\);/);
   });
@@ -273,22 +291,27 @@ describe('G791: the site keeps a reply\'s picture (groddle-afternoon-site)', { s
   it('served to the report\'s player and the administrators only, a message only within its own report', () => {
     const php = src('src/TicketPictures.php');
     assert.match(php, /#\[Route\(Method::Get, '\/report-pictures\/\{id:\\d\+\}\/\{message:\\d\+\}', policy: new Policy\(Access::Public\)\)\]/);
-    assert.match(php, /->messagePicture\(\(int\) \$id, \(int\) \$message\), \$user->id\)/);
+    assert.match(php, /#\[Route\(Method::Get, '\/report-pictures\/\{id:\\d\+\}\/\{message:\\d\+\}\/\{n:\\d\}', policy: new Policy\(Access::Public\)\)\]/);
+    assert.match(php, /->messagePicture\(\(int\) \$id, \(int\) \$message, \(int\) \$n\), \$user->id\)/);
     const store = src('src/TicketStore.php');
-    assert.match(store, /WHERE message_id = \? AND ticket_id = \?', \[\$message, \$ticket\]/);
+    assert.match(store, /WHERE message_id = \? AND position = \? AND ticket_id = \?', \[\$message, \$n - 1, \$ticket\]/);
     // Both threads carry where each is, never the bytes.
     assert.match(src('src/Tickets.php'), /TicketStore::messagesOut\(\$store->messages\(\$id\), null, \$store->messagePictures\(\$id\)\)/);
     assert.match(src('src/AdminTickets.php'), /TicketStore::messagesOut\(\$store->messages\(\$id\), \$store->revisions\(\$id\), \$store->messagePictures\(\$id\)\)/);
-    assert.match(store, /SELECT message_id, width, height FROM ' \. \$this->db->table\(self::MESSAGE_PICTURES\)/);
+    assert.match(store, /SELECT message_id, position, width, height FROM ' \. \$this->db->table\(self::MESSAGE_PICTURES\)/);
   });
 
-  it('the console shows a reply\'s picture under its words, opened in the popup', async () => {
+  it('the console shows a message\'s pictures under its words, each opened in the popup', async () => {
     const js = src('console/console.js');
-    assert.match(js, /replyPicture\(m\),\s*messageHistory\(m, when\)/);
+    assert.match(js, /replyPictures\(m\),\s*messageHistory\(m, when\)/);
     assert.match(js, /'data-console-msg-picture': ''/);
     const mod = await import(pathToFileURL(sitePath('console/console.js')).href);
     assert.equal(mod.pictureSrc({ url: '/report-pictures/3/9' }), '/report-pictures/3/9');
-    assert.equal(mod.pictureSrc({ url: '/report-pictures/3/9/2' }), '');
+    assert.equal(mod.pictureSrc({ url: '/report-pictures/3/9/2' }), '/report-pictures/3/9/2');
+    assert.equal(mod.pictureSrc({ url: '/report-pictures/3/9/2/1' }), '');
+    assert.deepEqual(mod.messagePictures({ pictures: [{ url: '/report-pictures/3/9/1' }, { url: 'https://x.example/a.jpg' }, { url: '/report-pictures/3/9/2' }] }).map((p) => p.url), ['/report-pictures/3/9/1', '/report-pictures/3/9/2']);
+    assert.deepEqual(mod.messagePictures({ picture: { url: '/report-pictures/3/9' } }).map((p) => p.url), ['/report-pictures/3/9'], 'G791\'s one');
+    assert.match(src('console/console.css'), /\.console-msg-pictures \{/);
     assert.match(src('console/console.css'), /\.console-msg-picture img \{/);
   });
 
@@ -296,10 +319,12 @@ describe('G791: the site keeps a reply\'s picture (groddle-afternoon-site)', { s
     const out = JSON.parse(execFileSync('php', [join(root, 'tests/fixtures/minn-accounts/tickets.php'), engine, SITE_DIR], { encoding: 'utf8' })).replyPictures;
     assert.equal(out.reportUrl, '/report-pictures/3');
     assert.equal(out.replyUrl, '/report-pictures/3/9');
-    assert.deepEqual(out.out.map((m) => m.picture), [null, { url: '/report-pictures/3/9', width: 640, height: 360 }]);
+    assert.equal(out.nthUrl, '/report-pictures/3/9/2');
+    // "picture" stays for older readers: the first, at G791's address.
+    assert.deepEqual(out.out.map((m) => m.picture), [{ url: '/report-pictures/3/8', width: 64, height: 64 }, { url: '/report-pictures/3/9', width: 640, height: 360 }, null]);
     assert.equal(pictureSrc(out.out[1].picture), '/report-pictures/3/9', 'the game shows what the site sends');
     assert.deepEqual(out.adminOut[0].picture, { url: '/report-pictures/3/9', width: 640, height: 360 });
     assert.deepEqual(out.adminOut[0].revisions, []);
-    assert.deepEqual(out.limits, { perWindow: 5, perDay: 30 });
+    assert.deepEqual(out.limits, { perWindow: 20, perDay: 60, perMessage: 4 });
   });
 });

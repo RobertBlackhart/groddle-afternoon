@@ -25,7 +25,7 @@ import { join } from 'node:path';
 
 import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=7e5da3e9';
 import { createErrorOnce, createFeatureHost, reportPageError } from '../public/js/feature-host.js?v=a0bd032a';
-import { pageErrorLine, rememberError } from '../public/js/features/bug-report-feature.js?v=7a8ce516';
+import { pageErrorLine, rememberError } from '../public/js/features/bug-report-feature.js?v=7678606f';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');
