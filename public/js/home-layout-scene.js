@@ -13,7 +13,7 @@
  * plain objects; `collectHomeLayout(engine)` is the game's call.
  */
 import { AVATAR_STILL } from './profiles.js?v=054ca723';
-import { buildHomeLayout, describeHomeThing, homeViewFrame, splitFrameToSheet } from './home-layout.js?v=e0dee401';
+import { buildHomeLayout, describeHomeThing, homeViewFrame, splitFrameToSheet } from './home-layout.js?v=68c51c94';
 import { sceneViewCap } from './location-view.js?v=10371e26';
 
 /** The URL a texture source was loaded from (js/textures.js labels sources with it), or ''. */

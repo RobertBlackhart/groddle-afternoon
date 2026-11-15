@@ -20,7 +20,7 @@ import {
   homePlotHeld,
   mayTendYard,
   normalizeTendActs,
-} from '../public/js/neighbours-mp.js?v=89e6bb70';
+} from '../public/js/neighbours-mp.js?v=46fce774';
 import { LOCK_LINE } from '../public/js/shared-gardens.js?v=c1f90bc0';
 import { createGarden, harvestPlot, sowPlot } from '../public/js/garden.js?v=a5191e8b';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';

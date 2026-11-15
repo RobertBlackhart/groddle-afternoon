@@ -11,8 +11,8 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { applyStockAct } from '../public/js/yard-stock-mp.js?v=210a2e30';
-import { RESTORE_RETRIES, RESTORE_RETRY_MS, missingRestoreWires, restoreWireId } from '../public/js/home-street-mp.js?v=7fe07f98';
+import { applyStockAct } from '../public/js/yard-stock-mp.js?v=b1d2519d';
+import { RESTORE_RETRIES, RESTORE_RETRY_MS, missingRestoreWires, restoreWireId } from '../public/js/home-street-mp.js?v=9c88a952';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

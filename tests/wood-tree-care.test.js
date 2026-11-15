@@ -22,7 +22,7 @@ import {
 } from '../public/js/woodcutting.js?v=b43edbd8';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { applyWoodState } from '../public/js/street-objects.js?v=e3a6de31';
-import { applyYardAct, treeActs, treeSnapshot, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=65206af6';
+import { applyYardAct, treeActs, treeSnapshot, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=533cf3a9';
 import { fertilizeTree } from '../public/js/powders.js?v=ffca4adb';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

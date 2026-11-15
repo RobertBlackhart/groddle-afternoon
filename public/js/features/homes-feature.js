@@ -212,9 +212,9 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=b054ca5c';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { fadeInNewNear } from '../poof-fade.js?v=6616ca0e';
-import { projectApi } from './street-jobs-feature.js?v=7bcd488c';
+import { projectApi } from './street-jobs-feature.js?v=53f9e4c8';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=10aced50';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=d133be33';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=6f21477c';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
