@@ -182,12 +182,15 @@ export function artViewBox(box, pad = 4) {
 
 const CSS = `
 .img-reveal{position:absolute;z-index:var(--z-screen);box-sizing:border-box;display:flex;overflow:hidden auto;overscroll-behavior:contain;
-  border-radius:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);background:var(--c-sky-88) url(assets/classic/repeating_clouds.webp) 0 0 / 204px 156px repeat;
-  box-shadow:var(--shadow-3);opacity:0;transition:opacity ${REVEAL_FADE_MS}ms linear;font-family:var(--font-round);color:var(--text);text-align:center}
+  border-radius:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);background:color-mix(in srgb,var(--c-sky-88) 72%,transparent);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:var(--shadow-3);opacity:0;transition:opacity ${REVEAL_FADE_MS}ms linear;font-family:var(--font-round);color:var(--text);text-align:center}
 .img-reveal[hidden]{display:none!important}
 .img-reveal.is-shown{opacity:1}
-.img-reveal.is-keepable{background:var(--c-white)}
-.img-reveal-col{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:var(--sp-4);width:100%;max-width:40rem;height:100%;margin:0 auto;padding:var(--sp-8) var(--sp-8)}
+/* Austin 2026-11-15: the street shows faintly through, as behind the other award moments; the clouds at half strength. */
+.img-reveal::before{content:"";position:absolute;inset:0;background:url(assets/classic/repeating_clouds.webp) 0 0 / 204px 156px repeat;opacity:.5;pointer-events:none}
+.img-reveal.is-keepable{background:color-mix(in srgb,var(--c-white) 86%,transparent)}
+.img-reveal.is-keepable::before{display:none}
+.img-reveal-col{position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:var(--sp-4);width:100%;max-width:40rem;height:100%;margin:0 auto;padding:var(--sp-8) var(--sp-8)}
 .img-reveal-col > :first-child{margin-top:auto}
 .img-reveal-col > :last-child{margin-bottom:auto}
 .img-reveal-col > *{flex:none;max-width:100%}

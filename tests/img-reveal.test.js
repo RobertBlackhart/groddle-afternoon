@@ -16,7 +16,7 @@ import {
   createLabelPicker,
   playAreaRect,
   revealContent,
-} from '../public/js/img-reveal.js?v=50274442';
+} from '../public/js/img-reveal.js?v=0386b354';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '..', 'public');
@@ -190,7 +190,7 @@ describe('upgrade reveal: show and close', () => {
     const reveal = createImgReveal({ document: doc });
     reveal.show(revealContent({ name: 'Reshuffle', config: { bg: 'keepable' } }));
     assert.ok(reveal.element().classes.has('is-keepable'));
-    assert.match(read('js/img-reveal.js'), /\.img-reveal\.is-keepable\{background:var\(--c-white\)\}/);
+    assert.match(read('js/img-reveal.js'), /\.img-reveal\.is-keepable\{background:color-mix\(in srgb,var\(--c-white\) 86%,transparent\)\}/);
   });
 });
 

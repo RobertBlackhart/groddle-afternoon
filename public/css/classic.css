@@ -3300,10 +3300,14 @@
 :root[data-ui="classic"] #game-root .img-reveal {
   border-radius: calc(3 * var(--cu)) 0 0 calc(3 * var(--cu));
   box-shadow: none;
-  background-size: calc(204 * var(--cu)) calc(156 * var(--cu));
+  /* Opaque, as the client drew it (Modern's reveal lets the street show through). */
+  background: var(--c-sky-88) url(../assets/classic/repeating_clouds.webp?v=4774a7f0) 0 0 / calc(204 * var(--cu)) calc(156 * var(--cu)) repeat;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   font-family: var(--font-classic-title);
   color: var(--c-classic-title);
 }
+:root[data-ui="classic"] #game-root .img-reveal::before { display: none; }
 :root[data-ui="classic"] #game-root .img-reveal.is-keepable { background: var(--c-white); }
 :root[data-ui="classic"] #game-root .img-reveal-col { max-width: calc(880 * var(--cu)); gap: calc(8 * var(--cu)); padding: calc(20 * var(--cu)) calc(40 * var(--cu)); }
 :root[data-ui="classic"] #game-root .img-reveal-got { font-size: calc(var(--fs-classic-window) * var(--cu-n, 1)); color: var(--c-classic-title); }
