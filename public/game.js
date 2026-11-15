@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=5262230c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=626f2c0a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0110b23a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1079,7 +1079,7 @@ import { pickReadOnly, qaHandlesAllowed } from './js/qa-gate.js?v=f4e2cd82';
 import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
-import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide } from './js/speech-placement.js?v=09802fc5';
+import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide } from './js/speech-placement.js?v=1c44a5a3';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=130338f9';
@@ -7953,10 +7953,13 @@ function positionSpeechBubble(bubble) {
     if (clearZone) meta.overNotices = true;
   }
   meta.slideWant = slide.dx;
-  const shown = Number(meta.slide) || 0;
-  const nextSlide = Math.abs(slide.dx - shown) < 0.5 ? slide.dx : shown + (slide.dx - shown) * 0.3;
-  meta.slide = Math.round(nextSlide * 2) / 2;
-  bubble.x += meta.slide;
+  meta.slide = slide.dx;
+  // #344: the nudges above add up to one place; the bubble moves there once a frame, eased from where
+  // it was drawn and measured from its speaker, and never shakes back and forth (js/speech-placement.js
+  // settleSpeechMove; Glitch moved a bubble once, ChatBubble.as keepInBounds 158-169).
+  const drawn = settleSpeechMove(meta.settle || (meta.settle = {}), { x: bubble.x + slide.dx, y: place.tip, anchorX: speakerX, anchorY: spr.y, flip: place.flip }, performance.now());
+  bubble.x = Math.round(drawn.x * 2) / 2;
+  const drawnTip = Math.round(drawn.y * 2) / 2;
   // Clamped at the edge, the tail still points at the speaker (G233, ChatBubble.as 179-193).
   const tail = placeSpeechTail({ bubbleX: bubble.x, width: meta.width, speakerX });
   const flip = place.flip;
@@ -7967,7 +7970,7 @@ function positionSpeechBubble(bubble) {
     meta.shapeAt = shape;
     drawSpeechBubble(meta.bg, meta.width, meta.height, tail, flip);
   }
-  bubble.y = place.tip;
+  bubble.y = drawnTip;
   if (meta.flipped !== flip) {
     meta.flipped = flip;
     bubble.pivot.y = flip ? -11 : meta.height + 11;

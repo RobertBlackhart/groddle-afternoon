@@ -542,3 +542,70 @@ export function slideOffAvatars({
   return best === null ? { dx: 0, covered: true } : { dx: best, covered: false };
 }
 
+
+/*
+ * #344 (a phone held sideways, Your Home Street): bubbles bounced. Each frame stacked several nudges
+ * (the view's edge, the buff strip, the notices and their zone, the slide off heads, the held side)
+ * and drew the result at once; only the slide was eased, so two nudges that disagreed frame to frame
+ * threw a bubble 40 to 80 px back and forth. Glitch moved a bubble once, at most 100 px (ChatBubble.as
+ * keepInBounds 158-169). Now every frame's nudges add up to one place, and the bubble's drawn place
+ * eases there (SPEECH_SETTLE_EASE of the way a frame), measured from its speaker so a walking speaker
+ * still carries it. A move back the way it just came waits until the new place has held for
+ * SPEECH_REVERSE_MS, so a place that flickers between two answers never shakes the bubble.
+ */
+export const SPEECH_SETTLE_EASE = 0.3;
+export const SPEECH_REVERSE_MS = 180;
+/** Changes of the wanted place smaller than this (px) count as the same place. */
+export const SPEECH_SETTLE_JITTER = 3;
+
+function settleAxis(axis, want, now, { ease, reverseMs, jitter }) {
+  const d = want - axis.goal;
+  if (Math.abs(d) >= 0.5) {
+    const dir = Math.sign(d);
+    if (!axis.dir || dir === axis.dir || Math.abs(d) <= jitter) {
+      axis.goal = want;
+      if (Math.abs(d) > jitter) axis.dir = dir;
+      axis.pend = null;
+    } else {
+      // Back the way it came: only once the new place holds.
+      if (axis.pend === null || Math.abs(want - axis.pend) > jitter) {
+        axis.pend = want;
+        axis.pendSince = now;
+      }
+      if (now - axis.pendSince >= reverseMs) {
+        axis.goal = want;
+        axis.dir = dir;
+        axis.pend = null;
+      }
+    }
+  } else {
+    axis.pend = null;
+  }
+  const gap = axis.goal - axis.shown;
+  axis.shown = Math.abs(gap) < 0.5 ? axis.goal : axis.shown + gap * ease;
+  return axis.shown;
+}
+
+/**
+ * PURE but for `state` (the bubble's own record, {} at first): where to draw a bubble this frame.
+ * `x`/`y` are where this frame's placement wants it, `anchorX`/`anchorY` its speaker (the move is
+ * measured from it), `flip` its side. The first frame draws it where it is wanted; a change of side
+ * (already held by holdSpeechSide) moves y at once; everything else eases. Returns { x, y }.
+ */
+export function settleSpeechMove(state, { x, y, anchorX = 0, anchorY = 0, flip = false }, now, { ease = SPEECH_SETTLE_EASE, reverseMs = SPEECH_REVERSE_MS, jitter = SPEECH_SETTLE_JITTER } = {}) {
+  const ox = x - anchorX;
+  const oy = y - anchorY;
+  const axis = (v) => ({ goal: v, shown: v, dir: 0, pend: null, pendSince: 0 });
+  if (!state.x || !state.y) {
+    state.x = axis(ox);
+    state.y = axis(oy);
+    state.flip = flip;
+    return { x, y };
+  }
+  if (state.flip !== flip) {
+    state.y = axis(oy);
+    state.flip = flip;
+  }
+  const opts = { ease, reverseMs, jitter };
+  return { x: anchorX + settleAxis(state.x, ox, now, opts), y: anchorY + settleAxis(state.y, oy, now, opts) };
+}
