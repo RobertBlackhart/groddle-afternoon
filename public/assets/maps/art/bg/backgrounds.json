@@ -500,10 +500,10 @@
       "x1": "assets/maps/art/bg/ormonos.webp",
       "x2": "assets/maps/art/bg/ormonos@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 84274,
-      "x1Sha256": "cb5198f854083012545a3553c630ccfd860fa20744cb9fcd2ce563183ffc4e28",
-      "x2Bytes": 271124,
-      "x2Sha256": "b6f6f3a63853a24311f932f96efade44e57e8a962953635ff3b2e219acc6fe11"
+      "x1Bytes": 68282,
+      "x1Sha256": "c0084337e91c2c03a035f413bf542124b35f774ce3151fa67c21d2ad83318bfa",
+      "x2Bytes": 202816,
+      "x2Sha256": "0cf68da054a08ffe26359c3c1559a63dccf59c9407efccdf5ba78d64891e889c"
     },
     "105": {
       "hubName": "Lida",

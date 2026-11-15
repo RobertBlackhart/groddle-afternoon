@@ -436,14 +436,14 @@
         "file": "assets/maps/art/bg/ormonos@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "b6f6f3a63853a24311f932f96efade44e57e8a962953635ff3b2e219acc6fe11"
+        "sha256": "0cf68da054a08ffe26359c3c1559a63dccf59c9407efccdf5ba78d64891e889c"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 57010,
-        "sha256": "a9ca466480657e1d590b0e431ac2f751989098f8786b0ecf51bfa1c924eed592"
+        "bytes": 45632,
+        "sha256": "e30b7d5ae3b2e7ea99a901031cb573ea6af7af338c644544dea623142410b0a0"
       }
     },
     "105": {
