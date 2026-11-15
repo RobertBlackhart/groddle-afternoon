@@ -41,7 +41,10 @@
  *    once per character: quests the remake can complete (assets/content/
  *    quests.json rewards: currants, tradeable items; not street jobs or the
  *    quests js/quest-offers.js leaves out, but the multiplayer quests
- *    js/quests-mp.js makes completable online, G329), badges (achievements.json rewards.currants;
+ *    js/quests-mp.js makes completable online, G329; p: the quest's prereqQuests,
+ *    which the site's ledger asks the save to show done too, G739 ("<quest>/<skill>"
+ *    when the learned skill counts instead, prereqProxy), except for the
+ *    quests the game itself starts without them, QUESTS_STARTED_WITHOUT_PREREQS), badges (achievements.json rewards.currants;
  *    the remake pays no badge items), level-ups (players/inc_stats.js via
  *    js/progression.js: the final level's currants) and imagination cards
  *    that hand out an item (inc_imagination.js reward type 8, js/imagination
@@ -75,6 +78,17 @@ import { SPINDLE_TOOLS } from '../public/js/making.js?v=202c452e';
 import { creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { FURNITURE_STARTER_KIT } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { GIANTS } from '../public/js/shrines.js?v=d2c88987';
+import { FOUR_LETTER_QUEST_ID } from '../public/js/four-letter-quest.js?v=a5574ac7';
+import { LEGALIZE_QUEST_ID } from '../public/js/legalize-it.js?v=9afd2e68';
+import { GREEDY_STREET_SPIRIT_QUEST_ID, GREEDY_STREET_SPIRIT_REPEAT_ID } from '../public/js/greedy-street-spirit.js?v=4d19b0e9';
+import { WINTER_WALK_QUEST_ID, WINTER_WALK_REPEAT_QUEST_ID } from '../public/js/winter-walk.js?v=a5c63b75';
+import { SUMMERS_DAY_QUEST_ID, SUMMERS_DAY_REPEAT_QUEST_ID } from '../public/js/summers-day.js?v=680eca6e';
+import { ROOK_QUEST_ID } from '../public/js/rook-woods.js?v=1b765560';
+import { ROOK_HALL_QUEST_ID, ROOK_HALL_START_QUEST_ID } from '../public/js/rook-museum.js?v=cc091e1c';
+import { DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID } from '../public/js/de-embiggenify.js?v=db347ac1';
+import { PHANTOM_QUEST_ID, REMEMBER_QUEST_ID } from '../public/js/ghost-quest.js?v=5f3cc133';
+import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
+import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const OUT = sitePath('data', 'economy.json');
@@ -87,6 +101,18 @@ export const BEST_HAGGLE = 0.9;
 export const CAPPED_ROLLS = 5;
 /** js/buffs.js syncPcBuffFlags: the best reward buff (Gift of Gab, 20%; Silvertongue is 5%). */
 export const BEST_REWARD_BUFF = 1.2;
+
+/**
+ * G739: quests game.js starts with assignQuest(..., { ignorePrereq }) (its scripted quest rooms,
+ * their repeats and the quest demos): a save may finish one without its prereqQuests, so the ledger
+ * never asks for them. tests/ledger-explained-mp.test.js keeps this list in step with game.js.
+ */
+export const STARTS_WITHOUT_PREREQS = Object.freeze({
+  FOUR_LETTER_QUEST_ID, LEGALIZE_QUEST_ID, GREEDY_STREET_SPIRIT_QUEST_ID, GREEDY_STREET_SPIRIT_REPEAT_ID, WINTER_WALK_QUEST_ID, WINTER_WALK_REPEAT_QUEST_ID,
+  SUMMERS_DAY_QUEST_ID, SUMMERS_DAY_REPEAT_QUEST_ID, ROOK_QUEST_ID, ROOK_HALL_QUEST_ID, ROOK_HALL_START_QUEST_ID,
+  DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID, PHANTOM_QUEST_ID, REMEMBER_QUEST_ID, HOG_HAUL_QUEST_ID, ILMENSKIE_QUEST_ID,
+});
+export const QUESTS_STARTED_WITHOUT_PREREQS = Object.freeze(Object.values(STARTS_WITHOUT_PREREQS).sort());
 /** inc_quests.js:844 / inc_achievements.js:331 (js/imagination-effects.js): Fit for a King and Overachiever I-V. */
 const BONUS_TIERS = [0.02, 0.04, 0.06, 0.08, 0.1];
 
@@ -212,7 +238,12 @@ export function economyCredits(tradeable) {
     const r = def.rewards || {};
     const c = Math.max(0, Math.floor(Number(r.currants) || 0));
     const i = rewardItems(r.items);
-    if (c || Object.keys(i).length) quests[id] = { ...(c ? { c } : {}), ...(Object.keys(i).length ? { i: sortKeys(i) } : {}) };
+    // G739: the quests a save must show done before this one's reward is credited (quests.js assignQuest).
+    // A prereq the game also counts as done for a learned skill (js/quest-offers.js questDone, its
+    // prereqProxy, ticket 28) is written "<quest>/<skill>": either one in the save will do.
+    const proxied = (q) => (questDefs[q]?.prereqProxy?.skill ? `${q}/${questDefs[q].prereqProxy.skill}` : q);
+    const p = QUESTS_STARTED_WITHOUT_PREREQS.includes(id) ? [] : [...new Set((def.prereqQuests || []).filter((q) => typeof q === 'string' && q).map(proxied))].sort();
+    if (c || Object.keys(i).length) quests[id] = { ...(c ? { c } : {}), ...(Object.keys(i).length ? { i: sortKeys(i) } : {}), ...(p.length ? { p } : {}) };
   }
   const badges = {};
   const badgeDefs = content('achievements.json');

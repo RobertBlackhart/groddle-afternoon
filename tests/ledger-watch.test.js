@@ -80,7 +80,7 @@ const at = (h, m = 0) => `2026-11-13 ${String(h).padStart(2, '0')}:${String(m).p
 const kinds = (flags) => flags.map((f) => f.kind).sort();
 
 describe('the Ledger tab flags only what is past the honest maxima (LedgerWatch)', { skip }, () => {
-  const questIds = () => Object.entries(economy().credits.quests).filter(([, q]) => q.c > 0 && !q.i).map(([id]) => id);
+  const questIds = () => Object.entries(economy().credits.quests).filter(([, q]) => q.c > 0 && !q.i && !q.p).map(([id]) => id);
 
   it('the plan\'s two players: A plays honestly, B forges 20 quests and 5 levels; only B is flagged', () => {
     const ids = questIds();
@@ -249,7 +249,7 @@ describe('the console carries the Ledger tab (console/ledger.js)', { skip: skipW
 
   it('draws a day of the report in its columns', { skip }, async () => {
     const { dayCells, hours } = await import(pathToFileURL(sitePath('console', 'ledger.js')).href);
-    const ids = Object.entries(economy().credits.quests).filter(([, q]) => q.c > 0 && !q.i).map(([id]) => id).slice(0, 20);
+    const ids = Object.entries(economy().credits.quests).filter(([, q]) => q.c > 0 && !q.i && !q.p).map(([id]) => id).slice(0, 20);
     const r = watch({ writes: [{ user: 3, at: at(14), entries: save({ level: 6, quests: ids }) }] });
     const cells = dayCells(r.characters[0].days[0]);
     assert.equal(cells.length, 9);

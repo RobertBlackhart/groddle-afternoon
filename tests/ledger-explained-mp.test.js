@@ -15,7 +15,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
-import { CAPPED_ROLLS } from '../tools/build-economy.mjs';
+import { CAPPED_ROLLS, STARTS_WITHOUT_PREREQS, QUESTS_STARTED_WITHOUT_PREREQS } from '../tools/build-economy.mjs';
 import { currantRewardForLevel, XP_FOR_LEVEL } from '../public/js/progression.js?v=72b2b22a';
 
 const hasPhp = spawnSync('php', ['-v']).status === 0;
@@ -47,13 +47,13 @@ const counts = (items = {}, currants = 0) => ({ items, currants });
 const none = counts();
 
 /** A multiplayer save's entries the way the game writes them. */
-function save({ inv = {}, currants = 0, level = 5, xp = 5000, mult = 1, owned = [], quests = [], badges = [], cards = {} } = {}) {
+function save({ inv = {}, currants = 0, level = 5, xp = 5000, mult = 1, owned = [], quests = [], badges = [], cards = {}, skills = [] } = {}) {
   return {
     playerState: JSON.stringify({
       version: 7,
       inventory: inv,
       player: { currants, energy: 50, mood: 50, xp, level, rewardMultiplier: mult, imaginationUpgrades: owned },
-      systems: { quests: { completed: quests, active: {} }, achievements: { unlocked: badges, progress: {} }, features: { imagination: { counts: cards } } },
+      systems: { quests: { completed: quests, active: {} }, achievements: { unlocked: badges, progress: {} }, skills: { learned: skills }, features: { imagination: { counts: cards } } },
       world: {},
       savedAt: 1,
     }),
@@ -73,6 +73,8 @@ function write(ledger, credited, entries, budget = 0) {
   return php('check', [ledger, credited, [], entries, budget, 50_000]);
 }
 
+// The site's daily room for progression currants (LedgerMath::PROGRESSION_DAILY, G739), read from the source.
+const PROGRESSION_DAILY = skip ? 0 : Number(/PROGRESSION_DAILY = (\d+);/.exec(readFileSync(join(SITE_DIR, 'src/LedgerMath.php'), 'utf8'))?.[1]);
 // The site's daily count of credited paying level-ups (LedgerMath::LEVELS_DAILY), read from the source.
 const LEVELS_DAILY = skip ? 0 : Number(/LEVELS_DAILY = (\d+);/.exec(readFileSync(join(SITE_DIR, 'src/LedgerMath.php'), 'utf8'))?.[1]);
 
@@ -140,7 +142,7 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
     const w = write(ledger, base, done);
     assert.deepEqual(w.reconciled.clamped, none);
     assert.equal(w.after.currants, 10_500);
-    assert.deepEqual(w.rows, [['quest', 'mini_me_mini_you', 1]]);
+    assert.deepEqual(w.rows, [['quest', 'mini_me_mini_you', 1], ['progday', 'currants', 10_000]]);
     assert.deepEqual(w.credits.detail, { quests: { mini_me_mini_you: 10_000 } });
     // Twin 1: the currants with no quest. Twin 2: the same quest paid again on a later write.
     assert.equal(write(ledger, base, save({ currants: 10_500 })).reconciled.clamped.currants, 10_000);
@@ -167,15 +169,22 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
     assert.deepEqual(q.credits.goods, counts({ element_blue: 100, element_green: 100, element_red: 100 }, 125));
   });
 
-  it('a level-up pays the final level\'s currants when the xp agrees; a forged level is clamped', () => {
+  it('a level-up pays its currants when the xp agrees, levels in order; a forged level is clamped', () => {
     const reward = currantRewardForLevel(6);
     const up = write(ledger, base, save({ currants: 500 + reward, level: 6, xp: XP_FOR_LEVEL[4] }));
     assert.deepEqual(up.reconciled.clamped, none);
-    assert.deepEqual(up.rows, [['level', 'level', 6], ['lvlday', 'level', 1]]);
-    // A jump of several levels pays the final one only (inc_stats.js, js/progression.js).
+    assert.deepEqual(up.rows, [['level', 'level', 6], ['lvlday', 'level', 1], ['progday', 'currants', reward]]);
+    // G739: several level-ups in one save pay each level reached, in order, each a place in the day's count.
+    const each = [6, 7, 8, 9].reduce((n, lv) => n + currantRewardForLevel(lv), 0);
+    const steps = write(ledger, base, save({ currants: 500 + each, level: 9, xp: XP_FOR_LEVEL[7] }));
+    assert.deepEqual(steps.reconciled.clamped, none);
+    assert.equal(steps.credits.goods.currants, each);
+    assert.deepEqual(steps.rows, [['level', 'level', 9], ['lvlday', 'level', 4], ['progday', 'currants', each]]);
+    // One jump pays the final level only in the game (inc_stats.js, js/progression.js): the pack is never corrected,
+    // and the ledger follows the save down to it.
     const jump = write(ledger, base, save({ currants: 500 + currantRewardForLevel(9), level: 9, xp: XP_FOR_LEVEL[7] }));
     assert.deepEqual(jump.reconciled.clamped, none);
-    assert.equal(jump.credits.goods.currants, currantRewardForLevel(9));
+    assert.equal(jump.after.currants, 500 + currantRewardForLevel(9));
     // The level without the xp for it is not credited.
     const forged = write(ledger, base, save({ currants: 500 + reward, level: 6, xp: 5000 }));
     assert.equal(forged.reconciled.clamped.currants, reward);
@@ -184,7 +193,7 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
 
   it('credits at most LEVELS_DAILY paying level-ups a day; the next waits, kept in the save, never clamped (report #246)', () => {
     const reward = currantRewardForLevel(10);
-    const busy = { ...base, lvlday: { level: LEVELS_DAILY } };
+    const busy = { ...base, level: { level: 9 }, lvlday: { level: LEVELS_DAILY } };
     const today = write(ledger, busy, save({ currants: 500 + reward, level: 10, xp: XP_FOR_LEVEL[8] }));
     assert.deepEqual(today.reconciled.clamped, none, 'the pack keeps the level\'s currants');
     assert.equal(today.after.currants, 500, 'but the ledger has not credited them yet');
@@ -195,7 +204,7 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
     const tomorrow = write(counts({}, 500), waiting, save({ currants: 500 + reward, level: 10, xp: XP_FOR_LEVEL[8] }));
     assert.deepEqual(tomorrow.reconciled.clamped, none);
     assert.equal(tomorrow.after.currants, 500 + reward);
-    assert.deepEqual(tomorrow.rows, [['lvlwait', '10', 0], ['lvlday', 'level', 1]]);
+    assert.deepEqual(tomorrow.rows, [['lvlwait', '10', 0], ['lvlday', 'level', 1], ['progday', 'currants', reward]]);
     const paid = { ...base, level: { level: 10 }, lvlwait: { 10: 0 }, lvlday: { level: 1 } };
     assert.deepEqual(write(counts({}, 500 + reward), paid, save({ currants: 500 + reward, level: 10, xp: XP_FOR_LEVEL[8] })).credits.goods, none, 'credited once');
   });
@@ -214,7 +223,13 @@ describe('exact credits once per character (LedgerMath::credits, check)', { skip
     }
     const w35 = write(ledgerNow, { ...credited, level: { level: 34 } }, save({ currants: 500 + 61_860, level: 35, xp: XP_FOR_LEVEL[33] }));
     assert.deepEqual(w35.reconciled.clamped, none);
-    assert.equal(w35.credits.goods.currants, 61_860, 'credited at once: the count was not used up');
+    // G739: the day's 40,000 progression currants are credited at once, the other 21,860 wait for tomorrow's room, kept in the pack.
+    assert.equal(w35.credits.goods.currants, PROGRESSION_DAILY, 'the count was not used up; the day\'s room was');
+    assert.deepEqual(w35.held, counts({}, 61_860 - PROGRESSION_DAILY));
+    assert.deepEqual(w35.rows, [['level', 'level', 35], ['progwait', 'level:35', 61_860 - PROGRESSION_DAILY], ['lvlday', 'level', 1], ['progday', 'currants', PROGRESSION_DAILY]]);
+    const next = write(w35.after, { ...credited, level: { level: 35 }, progwait: { 'level:35': 61_860 - PROGRESSION_DAILY } }, save({ currants: 500 + 61_860, level: 35, xp: XP_FOR_LEVEL[33] }));
+    assert.deepEqual(next.reconciled.clamped, none);
+    assert.equal(next.after.currants, 500 + 61_860, 'the next day credits the rest; the ledger and the save agree');
     // Even when the day's count is used up by paying levels, the currants stay in the pack.
     const full = write(ledgerNow, { ...credited, level: { level: 34 }, lvlday: { level: LEVELS_DAILY } }, save({ currants: 500 + 61_860, level: 35, xp: XP_FOR_LEVEL[33] }));
     assert.deepEqual(full.reconciled.clamped, none);
@@ -297,5 +312,87 @@ describe('the pack keeps a class it ran out of at 0', { skip }, () => {
     assert.equal(php('round5', [12.5]), 15);
     assert.equal(php('round5', [12.4]), 10);
     assert.equal(php('round5', [26_000]), 26_000);
+  });
+});
+
+describe('progression credits: a day\'s room, levels in order, quest prerequisites (G739)', { skip }, () => {
+  const ledger = counts({}, 500);
+  const base = skip ? {} : creditedFrom(php('baseline', [save({ currants: 500 })]));
+
+  it('levels, quests and badges share PROGRESSION_DAILY currants a day; the rest waits, kept in the pack, never clamped', () => {
+    assert.equal(PROGRESSION_DAILY, 40_000, 'ours: about twice the honest 90th percentile best day (about 19,000) on live');
+    const late = { ...base, progday: { currants: 35_000 } };
+    const w = write(ledger, late, save({ currants: 10_500, quests: ['mini_me_mini_you'] }));
+    assert.deepEqual(w.reconciled.clamped, none);
+    assert.equal(w.credits.goods.currants, 5_000);
+    assert.deepEqual(w.held, counts({}, 5_000));
+    assert.deepEqual(w.rows, [['quest', 'mini_me_mini_you', 1], ['progwait', 'quest:mini_me_mini_you', 5_000], ['progday', 'currants', 40_000]]);
+    // The next day: the waiting 5,000 first, then the ledger and the pack agree.
+    const next = write(w.after, { ...base, quest: { mini_me_mini_you: 1 }, progwait: { 'quest:mini_me_mini_you': 5_000 } }, save({ currants: 10_500, quests: ['mini_me_mini_you'] }));
+    assert.deepEqual(next.reconciled.clamped, none);
+    assert.equal(next.after.currants, 10_500);
+    assert.deepEqual(next.rows, [['progwait', 'quest:mini_me_mini_you', 0], ['progday', 'currants', 5_000]]);
+    // A full day credits nothing more; a waiting row still stands in the pack.
+    const full = write(ledger, { ...base, progday: { currants: 40_000 } }, save({ currants: 10_500, quests: ['mini_me_mini_you'] }));
+    assert.equal(full.credits.goods.currants, 0);
+    assert.deepEqual(full.reconciled.clamped, none);
+  });
+
+  it('a save that jumps from level 25 to 60 in one write is credited at most a day\'s room, in order', () => {
+    const credited = { ...base, level: { level: 25 } };
+    let all = 0;
+    for (let lv = 26; lv <= 60; lv++) all += currantRewardForLevel(lv);
+    const w = write(ledger, credited, save({ currants: 500 + all, level: 60, xp: XP_FOR_LEVEL[58] }));
+    assert.equal(w.credits.goods.currants, PROGRESSION_DAILY);
+    assert.deepEqual(w.reconciled.clamped, none, 'what waits stays in the pack, out of trades');
+    assert.equal(w.after.currants, 500 + PROGRESSION_DAILY);
+    // Paid lowest level first (every fifth past 25 pays): the level that fills the day's room waits for its rest, the later ones whole.
+    let room = PROGRESSION_DAILY;
+    let filling = 0;
+    for (let lv = 26; lv <= 60 && !filling; lv++) {
+      if (currantRewardForLevel(lv) > room) filling = lv;
+      else room -= currantRewardForLevel(lv);
+    }
+    const waits = w.rows.filter((r) => r[0] === 'progwait');
+    assert.deepEqual(waits[0], ['progwait', `level:${filling}`, currantRewardForLevel(filling) - room]);
+    assert.equal(waits.reduce((n, r) => n + r[2], 0) + w.rows.filter((r) => r[0] === 'lvlwait').reduce((n, r) => n + r[2], 0), all - PROGRESSION_DAILY, 'nothing lost');
+    assert.deepEqual(w.rows.at(-1), ['progday', 'currants', PROGRESSION_DAILY]);
+    // Never past the level the xp reaches.
+    const short = write(ledger, credited, save({ currants: 500 + all, level: 60, xp: XP_FOR_LEVEL[57] }));
+    assert.equal(short.credits.goods.currants, 0);
+  });
+
+  it('pays a quest only when the save shows its prerequisites done (or the skill that stands in for one)', () => {
+    const q = ECON.credits.quests.animalkinship_milk_butterflies;
+    assert.deepEqual(q.p, ['animalkinship_massage_butterflies']);
+    const without = write(ledger, base, save({ currants: 500 + q.c, quests: ['animalkinship_milk_butterflies'] }));
+    assert.equal(without.reconciled.clamped.currants, q.c);
+    assert.deepEqual(without.rows, [], 'not marked: it is paid once the prerequisite shows');
+    const withPre = write(ledger, base, save({ currants: 500 + q.c + ECON.credits.quests.animalkinship_massage_butterflies.c, quests: ['animalkinship_massage_butterflies', 'animalkinship_milk_butterflies'] }));
+    assert.deepEqual(withPre.reconciled.clamped, none);
+    // js/quest-offers.js questDone: a learned skill counts for its tutorial quest (prereqProxy).
+    const pig = ECON.credits.quests.animalkinship_pet_piggies;
+    assert.deepEqual(pig.p, ['animalkinship_1/animalkinship_1']);
+    assert.deepEqual(write(ledger, base, save({ currants: 500 + pig.c, quests: ['animalkinship_pet_piggies'], skills: ['animalkinship_1'] })).reconciled.clamped, none);
+    assert.equal(write(ledger, base, save({ currants: 500 + pig.c, quests: ['animalkinship_pet_piggies'] })).reconciled.clamped.currants, pig.c);
+  });
+
+  it('never asks for the prerequisites of a quest the game starts without them (game.js ignorePrereq)', () => {
+    const game = readFileSync(join(import.meta.dirname, '..', 'public', 'game.js'), 'utf8');
+    const named = new Set();
+    // Every assignQuest(questState, <id>, { ignorePrereq ... }) call; a questId variable is read from its const.
+    for (const m of game.matchAll(/assignQuest\(questState, ([\w.]+), \{\s*ignorePrereq: ([^}]*)\}/g)) {
+      const [, id, how] = m;
+      if (/^[A-Z_]+_ID$/.test(id)) named.add(id);
+      else if (id === 'questId') {
+        const decl = game.slice(0, m.index).lastIndexOf('const questId =');
+        for (const n of game.slice(decl, game.indexOf(';', decl)).match(/\b[A-Z_]+_ID\b/g) || []) named.add(n);
+      } else if (id === 'def.classTsid') {
+        for (const n of how.match(/\b[A-Z_]+_ID\b/g) || []) named.add(n);
+      }
+    }
+    assert.ok(named.size >= 10, [...named].join(' '));
+    for (const n of named) assert.ok(n in STARTS_WITHOUT_PREREQS, `${n} starts without its prerequisites: add it to tools/build-economy.mjs STARTS_WITHOUT_PREREQS`);
+    for (const id of QUESTS_STARTED_WITHOUT_PREREQS) assert.equal(ECON.credits.quests[id]?.p, undefined, id);
   });
 });
