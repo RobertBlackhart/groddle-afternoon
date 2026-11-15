@@ -44,6 +44,15 @@ export const sep = (mark = ',') => `<span class="ency-sep">${mark}</span>`;
 /** A chip's label ends in its last <span>: the comma goes inside it (a flex item of its own would add a gap). */
 const sepChip = (html) => html.replace(/<\/span>(<\/(?:a|span)>)$/, `${sep()}</span>$1`);
 
+/**
+ * #379: an entry page's own search box, beside its kicker. A plain form to the encyclopedia's home,
+ * whose search already reads ?q= (public/encyclopedia/encyclopedia.js), so it works without script.
+ * `home` is the path from the page to the encyclopedia (an entry page: '../../').
+ */
+export const entrySearch = (home) => `<form class="ency-jump" action="${esc(home)}" method="get" role="search">
+        <label class="history-search ency-jump-box"><span class="visually-hidden">Search the encyclopedia</span><input type="search" name="q" placeholder="Search the encyclopedia" autocomplete="off" spellcheck="false" enterkeyhint="search" /></label>
+      </form>`;
+
 export const badge = (s) => `<span class="pill st-${esc(s)}">${esc(statusLabel(s))}</span>`;
 
 /** The site-root path of an entry key: item:<id> or <section>:<id>. */

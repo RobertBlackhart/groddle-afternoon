@@ -28,7 +28,7 @@ import { GIANTS, PUB, SECTIONS, giantIcon, loadEncyclopedia, picture, questTakes
 import { SOUND_GROUPS } from './sounds.mjs';
 import { MORE_PAGES } from './sections.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from './never-released.mjs';
-import { STATUS, andList, article, badge, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
+import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
 import { regionMoreStreets, regionStreetName, streetPage, streetsIndex } from './streets.mjs';
 import { storePage } from './stores.mjs';
 
@@ -147,7 +147,10 @@ function entryHead(e, P, { kickerExtra = '', subline = '', hero = '', frame = ''
   return `
   <header class="masthead note-head cat-item-head">
     <div class="wrap">
+      <div class="ency-entry-top">
       <p class="kicker"><a href="../../">Groddle Encyclopedia</a> · <a href="../">${esc(sec.label)}</a>${e.group && e.group !== sec.label && e.group !== `${sec.label} of Ur` ? ` · ${esc(e.group)}` : ''}${kickerExtra}</p>
+      ${entrySearch('../../')}
+      </div>
       <div class="cat-hero">
         <div class="cat-hero-frame${frame ? ` ${frame}` : ''}">${pic}</div>
         <div>

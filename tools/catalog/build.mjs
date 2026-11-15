@@ -42,7 +42,7 @@ import { supplyConversions } from '../job-obtainable.mjs';
 import { loadEncyclopedia } from '../encyclopedia/data.mjs';
 import { imageSize } from '../image-size.mjs';
 import { whereToFind } from '../encyclopedia/where-to-find.mjs';
-import { inRemake, makeParts, sep } from '../encyclopedia/parts.mjs';
+import { entrySearch, inRemake, makeParts, sep } from '../encyclopedia/parts.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from '../encyclopedia/never-released.mjs';
 import { loadCosts } from './costs.mjs';
 import { loadHero } from './hero.mjs';
@@ -1031,7 +1031,10 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const body = `
   <header class="masthead note-head cat-item-head">
     <div class="wrap">
+      <div class="ency-entry-top">
       <p class="kicker"><a href="../../">Groddle Encyclopedia</a> · <a href="../">Items</a> · ${esc(e.category)}</p>
+      ${entrySearch('../../')}
+      </div>
       <div class="cat-hero">
         <div class="cat-hero-frame">${icon}</div>
         <div>

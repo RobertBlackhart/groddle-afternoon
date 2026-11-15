@@ -258,6 +258,13 @@ a.ency-vendor:hover { border-color: var(--moss); }
 .ency-group h2 { font-size: 24px; margin: 22px 0 12px; }
 .ency-group h2 .count, .ency-card-name .count { font-family: var(--font-body); font-size: 15px; color: var(--muted); font-weight: 700; }
 .ency-search { margin-top: 18px; max-width: 640px; }
+/* #379: an entry page's search box, beside its kicker (tools/encyclopedia/parts.mjs entrySearch). */
+.ency-entry-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 8px; }
+.ency-entry-top .kicker { margin: 0; flex: 1 1 auto; min-width: 0; }
+.ency-jump { flex: 0 1 280px; margin: 0; }
+.ency-jump .history-search { display: block; max-width: none; }
+.ency-jump input { padding: 6px 14px; font-size: 14px; }
+@media (max-width: 560px) { .ency-jump { flex-basis: 100%; } }
 .ency-filter { margin-top: 12px; }
 .ency-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; }
 .ency-card {
