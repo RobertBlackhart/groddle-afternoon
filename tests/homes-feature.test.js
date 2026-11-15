@@ -27,7 +27,7 @@ import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOf
 import { INTERIOR } from '../public/js/home-decor.js?v=06be9c65';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { gardenLayout, gardenStyle } from '../public/js/garden-view.js?v=04fe8467';
-import { listCultivationClasses } from '../public/js/home-cultivation.js?v=a3135ffd';
+import { listCultivationClasses } from '../public/js/home-cultivation.js?v=852caeb8';
 
 const root = join(import.meta.dirname, '..', 'public');
 

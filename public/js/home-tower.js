@@ -732,6 +732,92 @@ export function endExpansion(state) {
   return { ok: true, floors: state.floors };
 }
 
+/* ------------------------------------------------------------------ */
+/* G795: a floor built together (multiplayer)                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * G795 (chat 2026-11-14): friends help build a Tower floor once its owner has started it at the
+ * Workbench. In Glitch the floor was a Workbench job (items/tower_expander.js configureJob /
+ * offerJobs, quests/job_tower_floor_3..9.js, quest type 5) and items/include/jobs.js has no owner
+ * check for putting items or work into a job, so anyone in the Tower could help; starting a floor
+ * (tower.js tower_start_expand) and the Tower's other verbs stayed the owner's
+ * (furniture_tower_chassis.js pols_is_owner). Online the floor is a project the realtime server
+ * keeps for everyone on the floor under construction (groddle-afternoon-server home_projects.go,
+ * kind "tower"), made from the site's word on the owner's save (src/HomeStreet.php towers).
+ */
+
+/** G795: the realtime server's id for the floor a Tower with `floors` floors is building: t<owner>-<floor>, base 36. */
+export function towerFloorWire(owner, floors) {
+  const id = Math.floor(Number(owner));
+  const next = Math.floor(Number(floors)) + 1;
+  if (!(id > 0) || !Number.isSafeInteger(id) || !floorJobFor(next - 1)) return '';
+  return `t${id.toString(36)}-${next.toString(36)}`;
+}
+
+/** G795: { owner, floor } a floor's wire id names, or null. */
+export function readTowerFloorWire(wire) {
+  const m = /^t([0-9a-z]{1,12})-([0-9a-z])$/.exec(String(wire || ''));
+  if (!m) return null;
+  const owner = parseInt(m[1], 36);
+  const floor = parseInt(m[2], 36);
+  return owner > 0 && floor >= 3 && floor <= TOWER_CONFIG.MAX_FLOORS ? { owner, floor } : null;
+}
+
+/**
+ * G795: a floor job as the street-jobs catalog keeps a phase class (assets/content/street-jobs.json:
+ * type 5, the requirements with string buckets, no rewards: quests/job_tower_floor_N.js onComplete
+ * and applyPerformanceRewards give nothing), so the shared project panel and the server's table
+ * (tools/build-realtime-projects.mjs) read the same rows the solo Workbench does.
+ */
+export function towerFloorClass(jobId) {
+  const def = TOWER_JOBS[jobId];
+  if (!def || jobId === TOWER_JOB) return null;
+  return {
+    type: 5,
+    title: def.title,
+    desc: def.desc,
+    completion: def.completion,
+    requirements: def.requirements.map((r) => ({ ...r, bucket: String(r.bucket) })),
+    rewards: {},
+    performance: {},
+    performancePercent: 0,
+    performanceCutoff: 0,
+  };
+}
+
+/** G795: the floor a Tower is building as a shared project (street-jobs-feature projectApi.register), or null. */
+export function towerFloorProject(floors, wire) {
+  const jobId = floorJobFor(floors);
+  const cls = jobId ? towerFloorClass(jobId) : null;
+  if (!cls || !wire) return null;
+  return {
+    // A type 5 home project, as a restoration is (street-jobs-feature finishRestore: no top five, the owner's hook).
+    kind: 'restore',
+    title: cls.title,
+    label: cls.title,
+    desc: cls.desc,
+    phases: [{ classTsid: jobId, order: 1, delaySeconds: 0, label: cls.title }],
+    divisor: 1,
+    rewardMultiplier: 1,
+    wire,
+    classes: { [jobId]: cls },
+  };
+}
+
+/**
+ * G795: the realtime server says the floor everyone built is finished (home_tower_floor): the Tower
+ * grows a floor (tower.js tower_end_expand) whatever the owner's own copy of the project holds,
+ * once, and only for the floor it names.
+ */
+export function finishSharedExpansion(state, floor) {
+  if (!state?.built || !state.expanding || whole(floor) !== state.floors + 1) return { ok: false };
+  state.floors += 1;
+  state.expanding = false;
+  state.expansion = {};
+  return { ok: true, floors: state.floors };
+}
+
 /** tower.js tower_get_expand_costs: floors left, locked while building, next project's totals. */
 export function expandCosts(state) {
   const count = Math.max(TOWER_CONFIG.MAX_FLOORS - state.floors, 0);

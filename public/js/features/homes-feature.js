@@ -206,15 +206,15 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=a3135ffd';
+} from '../home-cultivation.js?v=852caeb8';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=b054ca5c';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
 import { fadeInNewNear } from '../poof-fade.js?v=6616ca0e';
-import { projectApi } from './street-jobs-feature.js?v=ccd12c71';
-import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=0962d6c8';
-import { drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=63141f1a';
+import { projectApi } from './street-jobs-feature.js?v=7bcd488c';
+import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=10aced50';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=d133be33';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
@@ -7164,9 +7164,12 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
   });
   if (room === 'tower') {
     // MPVISIT: a floor of the owner's Tower (towerFloorScene, read-only: furniture_base's verbs are the owner's).
-    const floor = Math.max(0, Math.min(Math.max(0, v.tower.floors - 1), Math.floor(Number(opts.floor) || 0)));
+    // G795: the floor under construction too, with its Workbench (items/tower_expander.js: anyone may help build).
+    const asked = Math.floor(Number(opts.floor) || 0);
+    const construction = v.tower.built && v.tower.expanding && asked === v.tower.floors;
+    const floor = construction ? v.tower.floors : Math.max(0, Math.min(Math.max(0, v.tower.floors - 1), asked));
     return withOwnersHome(v, () => {
-      decor = v.towerDecor[floor] || createHomeDecorState({
+      decor = construction ? constructionDecor() : v.towerDecor[floor] || createHomeDecorState({
         wall: TOWER_CONFIG.START_TEXTURE_WALL,
         floor: TOWER_CONFIG.START_TEXTURE_FLOOR,
         ceiling: TOWER_CONFIG.START_TEXTURE_CEILING,
@@ -7175,7 +7178,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
         starterKit: true,
       });
       const floorDecorNow = decor;
-      const background = interiorBackground(shim, {});
+      const background = interiorBackground(shim, construction ? { construction } : {});
       const width = interiorWidth(floorDecorNow);
       const furniture = renderOrder(floorDecorNow).map((item) => ({ ...item }));
       return {
@@ -7187,6 +7190,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
         // tower_get_teleport_point (w - 150) from outside; the elevator (x 200) between floors.
         spawnX: opts.via === 'elevator' ? TOWER_GEO.elevatorX + 70 : TOWER_GEO.arriveX,
         floor,
+        construction,
         populate(eng) {
           const { PIXI } = eng;
           const layers = addFurnitureLayers(eng, 0);
@@ -7197,7 +7201,8 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
           });
           const elevator = drawTowerElevator(eng, { floor, groundY: GROUND_Y });
           const exit = floor === 0 ? drawTowerExit(eng, { doorX: TOWER_GEO.exitX, groundY: GROUND_Y }) : null;
-          return { elevator, exit, gardens: [] };
+          const workbench = construction ? drawTowerBench(eng, { groundY: GROUND_Y }) : null;
+          return { elevator, exit, workbench, gardens: [] };
         },
       };
     });

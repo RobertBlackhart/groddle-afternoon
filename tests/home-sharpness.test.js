@@ -25,7 +25,7 @@ async function stageScale() {
 
 /** Every sharpened home graphic: { name, paths (1x URLs from public/), scale (largest world scale it is drawn at) }. */
 async function homeArt() {
-  const { TOWER_ART, TOWER_ART_DIR, TOWER_STYLES, TOWER_VARIANT_ART, PROTO_ART, composeTower } = await import('../public/js/home-tower.js?v=0962d6c8');
+  const { TOWER_ART, TOWER_ART_DIR, TOWER_STYLES, TOWER_VARIANT_ART, PROTO_ART, composeTower } = await import('../public/js/home-tower.js?v=10aced50');
   const { PROTO_DEPLETED_ART } = await import('../public/js/home-proto-art.js?v=9309e9f3');
   const { NOTE_POLE_PARTS } = await import('../public/js/note-pole-art.js?v=fbda2f8a');
   const { moduleConsts } = await import('./sheet-sources.js');
@@ -116,7 +116,8 @@ test('the Tower draws its articles and scaffolding at their 1x size, the Workben
   assert.match(src, /spr\.scale\.set\(op\.scaleX, op\.scaleY\);/);
   assert.doesNotMatch(src, /op\.scaleX \* 0\.5/);
   assert.match(src, /function protoSprite[\s\S]*?spr\.anchor\.set\(0\.5, PROTO_ART\.footY\);\n  return spr;/);
-  assert.match(src, /new PIXI\.Sprite\(benchTexture\(engine\)\)[\s\S]*?bench\.scale\.set\(BENCH_SCALE\)/);
+  // G795: drawTowerBench draws it for the owner and a visitor alike.
+  assert.match(src, /new engine\.PIXI\.Sprite\(benchTexture\(engine\)\)[\s\S]*?bench\.scale\.set\(BENCH_SCALE\)/);
 });
 
 test('the Tower name-sign scaffolding overlay keeps its frames as SVG for dense screens', () => {

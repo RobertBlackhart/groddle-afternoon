@@ -31,6 +31,17 @@
  *   get a restore verb), and grants the Philanthropic Member of the Social
  *   Construct badge when the server says your share of someone else's was
  *   over half. home_restored brings your item back.
+ * - G795 Tower floors (quests/job_tower_floor_N.js, quest type 5, run by
+ *   items/tower_expander.js; items/include/jobs.js lets anyone put items and
+ *   work in): once you start a floor at the Workbench, the site signs its
+ *   project from your stored save (src/HomeStreet.php towers, carrying what
+ *   you had put in so far) and this feature hands the token to the realtime
+ *   server (home_projects.go kind "tower"); your Workbench then opens that
+ *   shared project (towerFloorOwn), and a friend's Workbench on their floor
+ *   under construction opens theirs (towerFloorVisit). Items given leave the
+ *   giver's ledger as a street project's do (projects.go project_give).
+ *   home_tower_floor tells you the floor is built (until acked), whether or
+ *   not you were there. Starting a floor stays yours (tower.js tower_start_expand).
  *
  * Multiplayer only (engine.mode and engine.query('realtimeClient')): solo
  * never runs any of it, and the recipe is added only in multiplayer.
@@ -46,18 +57,20 @@ import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../makin
 import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=06be9c65';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=a3135ffd';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=852caeb8';
 import { signpostX as fixtureSignpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note-pole-art.js?v=fbda2f8a';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=987fe292';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
-import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=89e6bb70';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=2a050b5e';
-import { projectApi } from './street-jobs-feature.js?v=ccd12c71';
+import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=c6725950';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=56b37e51';
+import { BENCH_ART, towerApi } from './home-tower-feature.js?v=d133be33';
+import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=10aced50';
+import { projectApi } from './street-jobs-feature.js?v=7bcd488c';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=33a91a2c';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=198aa7cb';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -78,6 +91,7 @@ import {
   normalizePole,
   missingRestoreWires,
   normalizeRestores,
+  normalizeTowers,
   noteSold,
   RESTORE_RETRIES,
   RESTORE_RETRY_MS,
@@ -222,7 +236,9 @@ function createSession(engine, client) {
   const site = createSite();
   const slice = normalizeHomeStreetSlice(savedSlice);
   /** My own home: the post's arms, my pieces on sale, my piles, the restorations I sent tokens for. */
-  const own = { neighbors: null, listed: new Map(), piles: [], tokens: new Map(), loading: false, loadedAt: 0 };
+  const own = { neighbors: null, listed: new Map(), piles: [], tokens: new Map(), loading: false, loadedAt: 0, towers: [] };
+  // G795: how often the site was asked for my floor's token since it started (towerFloorOwn).
+  const towerAsked = new Map();
   /** G778: worn-out cultivations still waiting for their token: wire id -> times asked. */
   const restoreAsked = new Map();
   let restoreAskAt = 0;
@@ -555,6 +571,10 @@ function createSession(engine, client) {
       own.piles = normalizePiles(sales?.piles);
       own.loadedAt = Date.now();
       sendTokens(normalizeRestores(street?.restores));
+      // G795: my Tower's floor under construction, shared once the server has it.
+      own.towers = normalizeTowers(street?.towers);
+      sendTokens(own.towers);
+      registerOwnTower();
       applySales();
       // locations/home.js:35-37: coming home to a post with five friends on it.
       if (own.neighbors.length >= GOOD_NEIGHBOUR_AT) goodNeighbour();
@@ -603,6 +623,80 @@ function createSession(engine, client) {
       sent += 1;
     }
     if (sent) setTimeout(() => globalThis.groddleProjects?.sync?.(), 400);
+  }
+
+  // —— G795: a Tower floor built together ——
+
+  /** The shared project's hooks for a floor: where it is and what it opens, on my Tower or a friend's. */
+  function registerTowerFloor(t, { mine, name = '', target = () => null } = {}) {
+    if (projectApi.registered(t.job)) return true;
+    const job = towerFloorProject(t.floor - 1, t.job);
+    if (!job) return false;
+    return projectApi.register(t.job, job, {
+      kicker: mine ? 'Your Tower' : `${possessive(name)} Tower`,
+      kindLabel: 'Tower Project',
+      place: mine ? 'in your Tower' : `in ${possessive(name)} Tower`,
+      iconUrl: BENCH_ART,
+      target,
+      // The project's own end (you put something in): the Tower grows now; home_tower_floor then finds it done.
+      onDone: mine ? (eng) => { towerApi.finishShared(eng, t.floor); return ''; } : undefined,
+    });
+  }
+
+  /** My floor under construction, as the site signed it: registered under the server's id. */
+  function registerOwnTower() {
+    const tw = towerApi.state();
+    const wire = tw?.built && tw.expanding ? towerFloorWire(me(), tw.floors) : '';
+    const t = wire ? own.towers.find((row) => row.job === wire) : null;
+    if (t) projectApi.ready().then(() => registerTowerFloor(t, { mine: true }));
+  }
+
+  /**
+   * My Workbench's construct (home-tower-feature, multiplayer): the shared floor when the server has
+   * it (true); while it is on its way, the save goes up and the site is asked again (true, with a
+   * line); null once the site has been asked enough and keeps none (no realtime secret), so the
+   * Workbench runs the floor alone as before.
+   */
+  function openOwnTower() {
+    const tw = towerApi.state();
+    const wire = tw?.built && tw.expanding ? towerFloorWire(me(), tw.floors) : '';
+    if (!wire) return null;
+    if (projectApi.registered(wire)) {
+      projectApi.open(engine, wire);
+      return true;
+    }
+    const asked = towerAsked.get(wire) || 0;
+    if (asked >= RESTORE_RETRIES && own.loadedAt && !own.towers.some((row) => row.job === wire)) return null;
+    towerAsked.set(wire, asked + 1);
+    engine.toast?.(T.towerReady, 3200);
+    flush(engine).catch(() => false).finally(() => loadOwn({ force: true }).then(() => {
+      if (projectApi.registered(wire)) projectApi.open(engine, wire);
+    }));
+    return true;
+  }
+
+  /** A friend's Workbench on their floor under construction: their shared floor (true), or null while it cannot be had. */
+  function openVisitTower({ owner, name, target }) {
+    const ownerId = Number(owner) || 0;
+    if (!ownerId || client.state !== 'online') return null;
+    (async () => {
+      let towers = [];
+      try {
+        towers = normalizeTowers((await site.street(ownerId))?.towers);
+      } catch (err) {
+        console.warn('[home-street]', err?.message || err);
+      }
+      const t = towers.find((row) => row.owner === ownerId);
+      if (!t) {
+        engine.toast?.(T.towerNotNow, 3200);
+        return;
+      }
+      await projectApi.ready();
+      if (!registerTowerFloor(t, { mine: false, name, target: () => target })) return;
+      sendTokens([t]);
+      projectApi.open(engine, t.job);
+    })();
+    return true;
   }
 
   /** furn_sold, or a sale I missed: the piece leaves my house (once: the trade slice remembers op-o). */
@@ -1206,6 +1300,17 @@ function createSession(engine, client) {
     // players/inc_jobs.js:459-463, decided by the realtime server.
     if (philanthropicReward(msg, me())) engine.grantAchievement?.(PHILANTHROPIC_BADGE);
   });
+  // G795: the realtime server says my floor is built (owed until acked): the Tower grows, once.
+  client.on('msg:home_tower_floor', (msg) => {
+    const id = String(msg.id || '');
+    const parsed = readTowerFloorWire(msg.job);
+    if (!parsed || parsed.owner !== me()) return;
+    towerApi.finishShared(engine, parsed.floor);
+    projectApi.unregister(String(msg.job));
+    engine.save?.();
+    flush(engine).catch(() => {}).finally(() => client.send('project_ack', { id }));
+  });
+
   client.on('msg:home_restored', (msg) => {
     const id = String(msg.id || '');
     // doJobEffects type 5: my item comes back through its Restore project's own hook; acked once it took.
@@ -1254,6 +1359,10 @@ function createSession(engine, client) {
     restoreWire(item, yard) {
       return restoreWireId(me(), item, yard) || null;
     },
+    /** G795: my Workbench's construct (towerFloorOwn). */
+    openOwnTower,
+    /** G795: a friend's Workbench's construct (towerFloorVisit). */
+    openVisitTower,
     /** The home street I stand on, mine or one I visit: whose it is and the house's x as drawn here. */
     streetOrigin() {
       const w = where();
@@ -1408,6 +1517,18 @@ export const homeStreetMpFeature = {
   homeRestoreWire(item, yard, engine) {
     if (engine?.mode !== 'multiplayer') return null;
     return ensure(engine)?.restoreWire(item, yard) || null;
+  },
+
+  /** G795: home-tower-feature's Workbench, multiplayer: my floor's shared project (true), or null to run it alone. */
+  towerFloorOwn(engine) {
+    if (engine?.mode !== 'multiplayer') return null;
+    return ensure(engine)?.openOwnTower() || null;
+  },
+
+  /** G795: neighbours-mp-feature's Workbench on a friend's floor under construction. */
+  towerFloorVisit(info, engine) {
+    if (engine?.mode !== 'multiplayer') return null;
+    return ensure(engine)?.openVisitTower(info || {}) || null;
   },
 
   /** homes-feature runFurnitureAction: a piece on sale can't be picked up. */

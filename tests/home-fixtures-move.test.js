@@ -22,7 +22,7 @@ import {
   homeStreetLayout,
   normalizeCultivationState,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=a3135ffd';
+} from '../public/js/home-cultivation.js?v=852caeb8';
 import {
   MOVABLE_FIXTURES,
   MOVABLE_FIXTURE_IDS,

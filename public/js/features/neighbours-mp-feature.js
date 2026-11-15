@@ -90,6 +90,13 @@
  * the owner's alone (furniture_tower_chassis.js:64-339), so a visitor looks.
  * Each floor is TOWER_<id>_<floor> on the realtime server, the owner's too,
  * so the owner and visitors on a floor see each other.
+ * G795: once the owner starts a floor at the Workbench, a visitor may ride to
+ * the floor under construction and help build it: its Workbench's construct
+ * (items/tower_expander.js offerJobs; items/include/jobs.js has no owner
+ * check) opens the floor's shared project (features/home-street-mp-feature.js
+ * towerFloorVisit, the realtime server's kind "tower"). Starting a floor and
+ * the Tower's other verbs stay the owner's. On that floor a visitor keeps to
+ * the planks, as the owner does (tower_build_expansion, clampToExpansion).
  *
  * QA: canvas data neighboursVisit (owner:room), neighboursKeys (given/received
  * counts), neighboursLast, neighboursButler (the visitor Butler: name@x),
@@ -160,7 +167,7 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=89e6bb70';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { elevatorStops, towerLabel } from '../home-tower.js?v=0962d6c8';
+import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS, towerLabel } from '../home-tower.js?v=10aced50';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
 const OWN_VERBS = new Set([VISIT_VERB.id, KEY_VERB.id, 'neighbour_noop']);
@@ -171,6 +178,8 @@ const CLASS_FRONT = 'mp_home_front_door';
 const CLASS_TOWER = 'mp_home_tower';
 const CLASS_LIFT = 'mp_home_tower_elevator';
 const CLASS_TOWER_EXIT = 'mp_home_tower_exit';
+/** G795: the Workbench on the floor under construction (tower_expander). */
+const CLASS_BENCH = 'mp_home_tower_bench';
 /** gifts-feature's wrapped Gift Box (js/gifts.js GIFT_WRAPPED). */
 const GIFT_WRAPPED_CLASS = 'bag_gift_box_wrapped';
 
@@ -395,6 +404,7 @@ function createSession(engine, client) {
       if (!visit) return;
       visit.room = room;
       visit.floor = room === 'tower' ? built.floor : 0;
+      visit.construction = room === 'tower' && built.construction === true;
       engine.enterScene(scene);
       dropButler();
       const spots = built.populate(engine);
@@ -443,6 +453,8 @@ function createSession(engine, client) {
       const here = elevatorStops(tw).find((row) => row.index === visit.floor);
       t.lift = engine.register({ classId: CLASS_LIFT, featureId: NEIGHBOURS_MP_FEATURE_ID, label: 'Elevator', subtitle: `${here?.label || 'Ground Floor'} · ${towerStops(tw).length} stops`, sprite: spots.elevator, state: { owner: visit.owner } });
       if (spots.exit) t.exit = engine.register({ classId: CLASS_TOWER_EXIT, featureId: NEIGHBOURS_MP_FEATURE_ID, label: 'Exit', subtitle: `Back to ${homeStreetName(visit.name)}`, sprite: spots.exit, state: { owner: visit.owner } });
+      // G795: the floor going up has its Workbench, and anyone here may help build it.
+      if (spots.workbench) t.bench = engine.register({ classId: CLASS_BENCH, featureId: NEIGHBOURS_MP_FEATURE_ID, label: 'Workbench', subtitle: `Construct ${TOWER_JOBS[floorJobFor(tw.floors)]?.title || 'a new floor'}`, sprite: spots.workbench, state: { owner: visit.owner } });
     } else {
       t.front = engine.register({ classId: CLASS_FRONT, featureId: NEIGHBOURS_MP_FEATURE_ID, label: 'Front Door', subtitle: `Back to ${homeStreetName(visit.name)}`, sprite: spots.door, state: { owner: visit.owner } });
     }
@@ -1024,9 +1036,9 @@ function createSession(engine, client) {
     show('street', { arrive: 'door' });
   }
 
-  /** MPVISIT: the floors a visitor may ride to (not one still being built: its Workbench is the owner's project). */
+  /** MPVISIT: the floors a visitor may ride to; G795: the floor under construction too (its Workbench takes help). */
   function towerStops(tw) {
-    return elevatorStops(tw).filter((row) => !row.construction);
+    return elevatorStops(tw);
   }
 
   function enterTower() {
@@ -1040,6 +1052,24 @@ function createSession(engine, client) {
     const stops = towerStops(visitorHomeState(visit.view).tower);
     if (!stops.some((row) => row.index === floor) || floor === visit.floor) return;
     show('tower', { floor, via: 'elevator' });
+  }
+
+  /** G795: the Workbench's construct: the floor's shared project (features/home-street-mp-feature.js). */
+  function helpBuild(target) {
+    if (!visit || visit.room !== 'tower' || !visit.construction) return;
+    const opened = engine.query?.('towerFloorVisit', { owner: visit.owner, name: visit.name, target }, engine);
+    if (!opened) notice(T.benchNotReady, 3200);
+  }
+
+  /** G795: tower_build_expansion, the floor under construction is walkable only from 130 to 290 (the owner's keepOnPlanks). */
+  function keepOnPlanks() {
+    if (!visit?.construction || visit.room !== 'tower' || readVisitScene(engine.streetTsid)?.owner !== visit.owner) return;
+    const p = engine.player;
+    if (!p || !Number.isFinite(p.x)) return;
+    const x = clampToExpansion(p.x);
+    if (x === p.x) return;
+    if ((x > p.x && p.vx < 0) || (x < p.x && p.vx > 0)) p.vx = 0;
+    p.x = x;
   }
 
   function leaveTower() {
@@ -1508,6 +1538,8 @@ function createSession(engine, client) {
       if (target.classId === CLASS_FRONT) return [{ id: 'go_outside', label: T.outsideVerb, tooltip: `Back to ${homeStreetName(visit.name)}`, enabled: true, reason: '' }];
       if (target.classId === CLASS_TOWER) return [{ id: 'enter_tower', label: 'enter', tooltip: `Go inside ${target.label}`, enabled: true, reason: '' }];
       if (target.classId === CLASS_TOWER_EXIT) return [{ id: 'leave_tower', label: 'leave tower', tooltip: `Back to ${homeStreetName(visit.name)}`, enabled: true, reason: '' }];
+      // G795: tower_expander construct, "Construct a new floor" (anyone; the owner alone starts one).
+      if (target.classId === CLASS_BENCH) return [{ id: 'construct', label: 'construct', tooltip: 'Construct a new floor', enabled: true, reason: '', primary: true }];
       if (target.classId === CLASS_LIFT) {
         return towerStops(visitorHomeState(visit.view).tower).map((row) => ({ id: `ride:${row.index}`, label: `ride to ${row.label}`, tooltip: 'Go to another floor', enabled: row.index !== visit.floor, reason: row.index === visit.floor ? 'You are here.' : '' }));
       }
@@ -1518,6 +1550,7 @@ function createSession(engine, client) {
       if (String(verbId).startsWith('ride:')) rideTo(Number(String(verbId).slice(5)));
       else if (verbId === 'enter_tower') enterTower();
       else if (verbId === 'leave_tower') leaveTower();
+      else if (verbId === 'construct' && target.classId === CLASS_BENCH) helpBuild(target);
       else if (verbId === 'enter') goInside();
       else if (verbId === 'knock') knock();
       else if (verbId === 'go_back') goBack();
@@ -1548,6 +1581,7 @@ function createSession(engine, client) {
     tick(dtMs, now) {
       tickButler(dtMs);
       scanGardens(now);
+      keepOnPlanks();
     },
     butlerVerbs() {
       if (!vb || !visit) return [];

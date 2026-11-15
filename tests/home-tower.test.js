@@ -61,7 +61,7 @@ import {
   towerSecretText,
   towerSpotsFor,
   workCheck,
-} from '../public/js/home-tower.js?v=0962d6c8';
+} from '../public/js/home-tower.js?v=10aced50';
 import {
   countCultivations,
   createCultivationState,
@@ -70,7 +70,7 @@ import {
   cultivationCost,
   removeCultivation,
   towerItem,
-} from '../public/js/home-cultivation.js?v=a3135ffd';
+} from '../public/js/home-cultivation.js?v=852caeb8';
 
 const root = join(import.meta.dirname, '..', 'public');
 const GS = join(import.meta.dirname, '..', '..', 'glitch-GameServerJS');

@@ -49,7 +49,7 @@ import { isNodeId, isRockId } from './yard-stock-mp.js?v=210a2e30';
 import { STICK_ANIMAL } from './yard-wander.js?v=6d39956f';
 import { normalizeYardMachines } from './yard-fixtures-mp.js?v=dd022fe8';
 import { capYardAnimals, yardClassCap } from './animal-crowding.js?v=3ee9671d';
-import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=a3135ffd';
+import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=852caeb8';
 import { HOME_LIMITS } from './homes-catalog.js?v=10ac34b6';
 
 export const YARD_VERBS_MP_ID = 'yard-verbs-mp';

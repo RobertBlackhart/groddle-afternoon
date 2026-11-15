@@ -28,7 +28,7 @@ import {
   homeStreetLayout,
   normalizeCultivationState,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=a3135ffd';
+} from '../public/js/home-cultivation.js?v=852caeb8';
 import { DISPATCHER_TEXT, SIGNPOST, dispatcherDefaultRx, dispatcherFits, signpostX, streetFixtures } from '../public/js/home-street-fixtures.js?v=bad831a1';
 import { sceneSignMarks } from '../public/js/ui/street-minimap.js?v=39a3b47c';
 import { HUB_TILES, hubTileBackground, hubTileForKey, hubTileState } from '../public/js/ui/imagination-hub.js?v=6928c5b7';

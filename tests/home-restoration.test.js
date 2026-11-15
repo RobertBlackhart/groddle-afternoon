@@ -27,7 +27,7 @@ import {
   restoreJobId,
   restoreRewardMultiplier,
   usesLeft,
-} from '../public/js/home-cultivation.js?v=a3135ffd';
+} from '../public/js/home-cultivation.js?v=852caeb8';
 import {
   cancelJob,
   contributeItems,

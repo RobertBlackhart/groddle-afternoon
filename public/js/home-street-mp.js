@@ -82,6 +82,9 @@ export const NOTE_POLE_ITEM = Object.freeze({
 });
 
 export const HOME_STREET_TEXT = Object.freeze({
+  // G795 (ours): the Workbench while the floor's shared project is on its way, and a friend's floor with none.
+  towerReady: 'The Workbench is getting ready. Try again in a moment.',
+  towerNotNow: 'This floor is not taking help right now. Try again in a moment.',
   // SignpostDialog.as 85, 37, 541; main.js 6974, 6979, 6987.
   signpost: 'Signpost',
   editTitle: 'Edit your signpost',
@@ -410,6 +413,23 @@ export function normalizeRestores(list) {
     const parsed = readWireId(r?.job);
     if (!parsed || typeof r.token !== 'string' || !/^proto_[a-z_]+$/.test(String(r.proto || ''))) continue;
     out.push({ job: String(r.job), proto: String(r.proto), yard: parsed.yard, item: parsed.item, cycle: parsed.cycle, mult: Number(r.mult) || 1, token: r.token });
+  }
+  return out;
+}
+
+/**
+ * G795: the floor a Tower is building, from the site (src/HomeStreet.php towers): [{ job, owner,
+ * floor, token }], each job the realtime server's t<owner>-<floor> (js/home-tower.js towerFloorWire).
+ */
+export function normalizeTowers(list) {
+  const out = [];
+  for (const r of Array.isArray(list) ? list : []) {
+    const m = /^t([0-9a-z]{1,12})-([0-9a-z])$/.exec(String(r?.job || ''));
+    if (!m || typeof r.token !== 'string' || !r.token) continue;
+    const owner = parseInt(m[1], 36);
+    const floor = parseInt(m[2], 36);
+    if (!(owner > 0) || floor < 3 || floor > 9 || Number(r.floor) !== floor) continue;
+    out.push({ job: String(r.job), owner, floor, token: r.token });
   }
   return out;
 }

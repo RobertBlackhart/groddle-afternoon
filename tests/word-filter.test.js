@@ -33,7 +33,7 @@ import { nameAnimal, namedAnimalLabel } from '../public/js/animal-husbandry.js?v
 import { kittyLabel, nameKitty } from '../public/js/heli-kitties.js?v=addb573f';
 import { nameCubimal } from '../public/js/cubimals.js?v=4e084d08';
 import { createButlerState, renameButler, teachButler } from '../public/js/butler.js?v=57456a7f';
-import { cleanTowerName } from '../public/js/home-tower.js?v=0962d6c8';
+import { cleanTowerName } from '../public/js/home-tower.js?v=10aced50';
 import { PENMANSHIP_SKILL, editNote, writePaperNote } from '../public/js/street-furniture.js?v=cf1d21b1';
 import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=a3e833ba';
 import { teachPhrase } from '../public/js/seasons.js?v=1978c3f3';

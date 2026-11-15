@@ -3238,13 +3238,18 @@ export const projectApi = {
   catalog: () => catalog,
   /**
    * job: { kind: 'restore', title, label, desc, phases: [{ classTsid, order, delaySeconds, label }],
-   *        divisor, rewardMultiplier }
+   *        divisor, rewardMultiplier, classes? }  classes (G795): phase classes to add to the catalog when missing
    * hooks: { onDone(engine, { jobId, out, job }) -> extra text, kicker, kindLabel, place, note, target() -> target }
    */
   register(jobId, job, hooks = {}) {
     if (!catalog) return false;
-    if (!job?.phases?.every((p) => catalog.classes?.[p.classTsid])) return false;
-    catalog.jobs[jobId] = { street: '', label: job.label || job.title, hub: '', connecting: [], ...job };
+    // G795: a job may bring phase classes the catalog lacks (a Tower floor's, js/home-tower.js towerFloorClass).
+    const { classes: own, ...rest } = job || {};
+    for (const [cls, def] of Object.entries(own && typeof own === 'object' ? own : {})) {
+      if (catalog.classes && !catalog.classes[cls] && def?.requirements) catalog.classes[cls] = def;
+    }
+    if (!rest.phases?.every((p) => catalog.classes?.[p.classTsid])) return false;
+    catalog.jobs[jobId] = { street: '', label: rest.label || rest.title, hub: '', connecting: [], ...rest };
     external.set(jobId, hooks);
     if (typeof job.wire === 'string' && job.wire) {
       wireIds.set(jobId, job.wire);

@@ -65,7 +65,7 @@ import {
   TOWER_PLACEMENT_WARNING,
   TOWER_PROTO,
   TOWER_WIDTH,
-} from './home-tower.js?v=0962d6c8';
+} from './home-tower.js?v=10aced50';
 import {
   DISPATCHER_AWAY_KEY,
   DISPATCHER_HALF,

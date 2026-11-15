@@ -86,6 +86,7 @@ import {
   elevatorStops,
   endExpansion,
   expandCosts,
+  finishSharedExpansion,
   extraFloors,
   finishTower,
   floorJobFor,
@@ -112,7 +113,7 @@ import {
   towerSecretText,
   towerSpotsFor,
   workCheck,
-} from '../home-tower.js?v=0962d6c8';
+} from '../home-tower.js?v=10aced50';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { pieceUrl } from '../home-wallpaper.js?v=f1969400';
@@ -433,6 +434,18 @@ function benchTexture(engine) {
   return textureFromUrl(dense?.parts.length === 1 ? dense.parts[0][0] : BENCH_ART);
 }
 
+/** The Workbench on the floor under construction (tower_get_bounds expansion.job: x 260 + 80, on the planks the floor is walkable to, 290); G795: a visitor's floor draws it too. */
+export function drawTowerBench(engine, { groundY }) {
+  const bench = new engine.PIXI.Sprite(benchTexture(engine));
+  bench.anchor.set(0.5, 1);
+  bench.scale.set(BENCH_SCALE);
+  bench.x = TOWER_GEO.workbenchX;
+  bench.y = groundY + 2;
+  bench.zIndex = 20;
+  engine.entityLayer.addChild(bench);
+  return bench;
+}
+
 function isConstructionFloor(floor = tower.floor) {
   return tower.built && tower.expanding && floor === tower.floors;
 }
@@ -503,14 +516,7 @@ function spawnFloor(engine, { width, groundY, doorX }) {
     });
   }
   if (isConstructionFloor(floor)) {
-    const bench = new PIXI.Sprite(benchTexture(engine));
-    bench.anchor.set(0.5, 1);
-    bench.scale.set(BENCH_SCALE);
-    // tower_get_bounds expansion.job: x 260 + 80, on the planks the floor is walkable to (290).
-    bench.x = TOWER_GEO.workbenchX;
-    bench.y = groundY + 2;
-    bench.zIndex = 20;
-    engine.entityLayer.addChild(bench);
+    const bench = drawTowerBench(engine, { groundY });
     targets.workbench = engine.register({
       classId: TOWER_EXPANDER,
       featureId: HOME_TOWER_FEATURE_ID,
@@ -718,6 +724,28 @@ function completeProject(engine) {
   // Rebuild the scene: the proto becomes the chassis, the construction floor a real floor.
   setTimeout(() => {
     // tower_end_expand -> tower_move_players: the owner goes to the (new) top floor.
+    if (tower.floor != null) goToFloor(engine, ownerReloadFloor(tower));
+    else engine.refreshHomeScene?.();
+  }, 0);
+  publish(engine, true);
+  return true;
+}
+
+/**
+ * G795: the floor everyone built is finished (the realtime server's home_tower_floor, or the shared
+ * project's own end): the Tower grows a floor as completeProject's does, once. False when the
+ * Tower is not building that floor (already applied).
+ */
+function finishShared(engine, floor) {
+  const res = finishSharedExpansion(tower, floor);
+  if (!res.ok) return false;
+  if (work) stopWork(engine, '');
+  engine.pushActivity(`Your Tower now has ${tower.floors} floors.`);
+  closePanel();
+  engine.save();
+  const def = TOWER_JOBS[`job_tower_floor_${tower.floors}`];
+  if (def) engine.scriptedDialogue?.({ kicker: 'Tower Project', title: def.title, beats: [{ text: def.completion, response: 'OK' }] });
+  setTimeout(() => {
     if (tower.floor != null) goToFloor(engine, ownerReloadFloor(tower));
     else engine.refreshHomeScene?.();
   }, 0);
@@ -1270,6 +1298,8 @@ export const towerApi = {
   rockOffer: (engine) => rockOffers(engine).length > 0,
   projectStarted,
   cancelProject: (engine) => cancelProject(engine),
+  /** G795: the shared floor is finished (features/home-street-mp-feature.js): true when the Tower grew. */
+  finishShared: (engine, floor) => finishShared(engine, floor),
   /** butler_hints.js:393: how many times you have gone into your Tower. */
   visits: () => tower.visits || 0,
   expandCosts: () => expandCosts(tower),
@@ -1559,6 +1589,9 @@ export const homeTowerFeature = {
         leaveTower(engine);
         return true;
       case TOWER_EXPANDER:
+        // G795 (multiplayer): the floor is a project everyone in the Tower shares (features/home-street-mp-feature.js
+        // towerFloorOwn opens it, or says it is on its way); solo, and a site that keeps no shared floor, run it here.
+        if (engine.mode === 'multiplayer' && tower.expanding && engine.query?.('towerFloorOwn', engine)) return true;
         openPanel(engine, 'project');
         return true;
       default:

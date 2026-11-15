@@ -52,6 +52,8 @@ export const VISIT_VERB = Object.freeze({
 export const KEY_VERB = Object.freeze({ id: 'house_keys', label: 'Keys', tooltip: 'Manage your keyring' });
 
 export const NEIGHBOURS_TEXT = Object.freeze({
+  // G795: the Workbench while the floor's shared project is still on its way from the site (ours).
+  benchNotReady: 'The Workbench is getting ready. Try again in a moment.',
   // port/ACLDialog.as 105, 123, 157, 168, 179, 256, 313.
   keyringTitle: 'Manage your keyring',
   keysFromFriends: 'Keys from friends',
