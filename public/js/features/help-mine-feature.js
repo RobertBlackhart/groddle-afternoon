@@ -46,7 +46,7 @@
  *     data-help-mine-companion (the last companion swing: name:chunks).
  */
 
-import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=b28fef74';
+import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=3780da12';
 import { addItem } from '../inventory.js?v=f49c8998';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
@@ -71,7 +71,7 @@ import {
   removeMiner,
 } from '../help-mine.js?v=27f9d276';
 
-// game.js PICK_TOOL_SHEETS.pick / PICK_TOOL_DEF / PICK_SWING_FRAMES (the SWF's 30 fps swing).
+// js/node-tools.js PICK_SHEETS.pick (the SWF's 30 fps swing). A companion's pick stays beside it.
 const PICK_SHEET = 'assets/sprites/tools/pick-tool@3x.webp';
 const PICK_DEF = { fw: 115, fh: 63, cols: 11 };
 const PICK_FRAMES = 33;
@@ -119,8 +119,8 @@ function playerCanMine(engine) {
 }
 
 function swingMs() {
-  // The companions swing at Mining I: the package's 20 s, scaled like yours (mining.js miningProfile).
-  return miningProfile(['mining_1'], 'pick')?.durationMs || 1800;
+  // The companions swing at Mining I: the package's 20 s, as yours does (mining.js miningProfile).
+  return miningProfile(['mining_1'], 'pick')?.durationMs || 20000;
 }
 
 function rockRows(engine) {
@@ -214,7 +214,7 @@ function aimPick(session) {
   const tool = session.tool;
   if (!tool || tool.destroyed) return;
   const left = session.target.sprite.x < session.actor.sprite.x;
-  // game.js playPickAnimation: 50 px toward the rock, 46 px up, flipped for a rock on the left.
+  // 50 px toward the rock, 46 px up, flipped for a rock on the left (your own pick plays on the rock).
   tool.x = left ? -50 : 50;
   tool.y = -46;
   tool.scale.set(left ? -1 : 1, 1);

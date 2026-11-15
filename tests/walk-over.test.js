@@ -157,7 +157,8 @@ describe('game.js wiring', () => {
   });
 
   it('in reach runs at once; else a dry run of the walk, then the walk or the refusal', () => {
-    assert.match(game, /if \(verbReachFrom\(target, verb\.id\)\) return go\(\);/);
+    // In reach, a miner first steps to the rock's stand (report #330, js/node-tools.js mineStandX).
+    assert.match(game, /if \(verbReachFrom\(target, verb\.id\)\) return stepToMineStand\(target, verb, go\) \|\| go\(\);/);
     assert.match(game, /const \{ goalX, ahead \} = walkOverStop\(target, verb\.id, verbWalkRange\(target, verb\.id\) \?\? 300\);\s*if \(!ahead \|\| !verbReachFrom\(target, verb\.id, ahead\)\) \{\s*toast\(FAILED_LINE/);
     // Report #232: each of walkOverGoals' stops is dry run; the first that reaches is taken.
     assert.match(game, /function walkOverStop\(target, verbId, range = 300\) \{[\s\S]{0,300}walkOverGoals\(\{[\s\S]{0,200}for \(const goalX of goals\) \{\s*const ahead = dryRunWalk\(goalX\);\s*if \(ahead && verbReachFrom\(target, verbId, ahead\)\) return \{ goalX, ahead \};/);

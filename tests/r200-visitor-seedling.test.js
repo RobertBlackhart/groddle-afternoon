@@ -18,7 +18,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { GROWN_TREE_LABELS, SOIL_TIMERS, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=0d8e92b4';
-import { allowedVerbs, applyYardAct, growIfReady, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=7eba472b';
+import { allowedVerbs, applyYardAct, growIfReady, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=93921485';
 import { GAME_DIR, HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
 

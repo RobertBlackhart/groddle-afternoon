@@ -42,7 +42,7 @@ import {
   tickBuffs,
 } from '../public/js/buffs.js?v=c499cf1a';
 import { getSkillPackageOverride, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { miningProfile } from '../public/js/mining.js?v=b28fef74';
+import { miningProfile } from '../public/js/mining.js?v=3780da12';
 import { resolveAnimalKinshipPackage } from '../public/js/animal-kinship.js?v=e2a94c13';
 import { RECIPE_CATALOG, buildCraftBatchResult, craftRecipe, ensureMakingItems, makingSkillAdjustments } from '../public/js/making.js?v=202c452e';
 import { sessionPackage } from '../public/js/meditation.js?v=96f23682';

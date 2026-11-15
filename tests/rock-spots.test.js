@@ -19,7 +19,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 import { imageSize } from '../tools/image-size.mjs';
-import { ROCK_CATALOG, ROCK_SHAPES, ROCK_SHAPE_SHEETS, rockShapeSheet } from '../public/js/mining.js?v=b28fef74';
+import { ROCK_CATALOG, ROCK_SHAPES, ROCK_SHAPE_SHEETS, rockShapeSheet } from '../public/js/mining.js?v=3780da12';
 import {
   BIG_THING_GROUPS,
   BIG_THING_MAX_SLOPE,

@@ -20,7 +20,7 @@ import {
   mineRock,
   createMineRock,
   crushOre,
-} from '../public/js/mining.js?v=b28fef74';
+} from '../public/js/mining.js?v=3780da12';
 import {
   createGarden,
   gardenActionProfile,
@@ -88,10 +88,11 @@ describe('Mining I to IV and Refining II', () => {
   it('scales swing time, energy, wear, and xp by rank', () => {
     const ranks = ['mining_1', 'mining_2', 'mining_3', 'mining_4'];
     const want = [
-      { durationMs: 1800, energy: 12, toolWear: 2, xp: 2 },
-      { durationMs: 1260, energy: 10, toolWear: 2, xp: 2 },
-      { durationMs: 900, energy: 8, toolWear: 1, xp: 5 },
-      { durationMs: 720, energy: 7, toolWear: 1, xp: 10 },
+      // Glitch's own swing times (catalog_skill_packages.js 1924-1953, report #330).
+      { durationMs: 20000, energy: 12, toolWear: 2, xp: 2 },
+      { durationMs: 14000, energy: 10, toolWear: 2, xp: 2 },
+      { durationMs: 10000, energy: 8, toolWear: 1, xp: 5 },
+      { durationMs: 8000, energy: 7, toolWear: 1, xp: 10 },
     ];
     ranks.forEach((_, i) => {
       const profile = miningProfile(ranks.slice(0, i + 1), 'pick');

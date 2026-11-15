@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { CREATURE_PATHS, PATH_STEP, PIGGY_PLAN_ROOTS, PIGGY_ROOT, followPath, pathFrom, pathTime, piggyPlan, piggyWalkAt, chickenSeed } from '../public/js/street-creatures.js?v=e70bafd5';
-import { createStreetCopy, reconcile, streetPigIndex, takeObjs } from '../public/js/street-objects.js?v=90fcd047';
+import { createStreetCopy, reconcile, streetPigIndex, takeObjs } from '../public/js/street-objects.js?v=7ee3b836';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
 
 const root = join(import.meta.dirname, '..');

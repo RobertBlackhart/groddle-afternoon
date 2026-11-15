@@ -36,7 +36,7 @@ import {
   routeQuestEvent,
   turnInQuest,
 } from '../public/js/quest-offers.js?v=77816a7d';
-import { createMineRock } from '../public/js/mining.js?v=b28fef74';
+import { createMineRock } from '../public/js/mining.js?v=3780da12';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 
 const here = import.meta.dirname;
@@ -292,7 +292,7 @@ describe('features/help-mine-feature.js', () => {
       s.start();
       // Amp's swing lands while you mine: its top roll (9) plus 1 for you on its stack.
       const left = s.rock.chunksRemaining;
-      s.feature.onTick(16, now + COMPANION_MINE_RULES.lookMs + 40 + 1800, s.engine);
+      s.feature.onTick(16, now + COMPANION_MINE_RULES.lookMs + 40 + 20000, s.engine); // Mining I's 20 s swing (#330)
       assert.equal(s.data.helpMineCompanion, 'Amp:10');
       assert.equal(s.rock.chunksRemaining, left - 10);
       s.land(5);

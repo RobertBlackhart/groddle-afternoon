@@ -50,7 +50,7 @@ import {
   noPickLine,
   rockStatusLabel,
   ensureMiningItems,
-} from './js/mining.js?v=b28fef74';
+} from './js/mining.js?v=3780da12';
 import { takeToolChoice } from './js/tool-choice.js?v=e0dcb60e';
 import {
   ANIMAL_CLASS_IDS,

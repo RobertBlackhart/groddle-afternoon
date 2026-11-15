@@ -2,7 +2,7 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3fca895d';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=5262230c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
 import { FEATURES, questFlagsFeature } from './js/features/index.js?v=88e3b356';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
@@ -17,7 +17,7 @@ import {
   createTimedAction,
   advanceTimedAction,
   cancelTimedAction,
-} from './js/action-timing.js?v=5db4e91b';
+} from './js/action-timing.js?v=b6ce9561';
 import { createWordProgressView, wordAnchor, heldActionDelta, MAX_PUSH_DOWN } from './js/word-progress.js?v=98366023';
 // G374/G375/G378: Tiny Speck's quoin-limit and super-harvest rainbows and the musicblock notes.
 import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=4cbbb0c6';
@@ -671,7 +671,8 @@ import {
   STARTER_MINING_SKILLS,
   findWorkingPick,
   miningToolWear,
-} from './js/mining.js?v=b28fef74';
+} from './js/mining.js?v=3780da12';
+import { PICK_SHEETS, mineStandX, nodeToolOverlay } from './js/node-tools.js?v=47a93d54';
 import {
   loadStreetData,
   STREET_INDEX,
@@ -820,7 +821,7 @@ import { AFK_TIMEOUT_MS, ANIMS, ANIM_FPS, CORE_FRAMES, EMOTIONS, EMOTION_MS, IDL
 import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=106bfdc5';
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=43b1182e';
-import { createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
+import { PATH_END_ALLOWANCE, createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=455f4dc0';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
@@ -874,7 +875,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=dc7d6463';
+} from './js/vendor.js?v=863bc2ac';
 import {
   animalAnchorX,
   animalAnchorY,
@@ -1067,7 +1068,7 @@ import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, te
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5c630896';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
-import { cancelAllOverlays, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=b054ca5c';
+import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=92383208';
 import * as textureUrls from './js/textures.js?v=814d7926';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';
@@ -9142,7 +9143,7 @@ function playVerbStartAnimation(target, verbId, durationMs = 0) {
   if (baseVerb === 'water' || baseVerb === 'water_all') {
     playWateringCanAnimation(target, durationMs);
   }
-  if (ROCK_CATALOG[target.classId] && baseVerb === 'mine') playPickAnimation(target, durationMs);
+  if (ROCK_CATALOG[target.classId] && baseVerb === 'mine') playPickAnimation(target);
 }
 
 function playButterflyCareAnimation(target, verbId, durationMs = 0) {
@@ -9234,40 +9235,36 @@ async function playWateringCanAnimation(target, durationMs = 0) {
   return tool;
 }
 
-/** pick.swf / fancy_pick.swf tool_animation scene (root frames 1-33) at 3x, loaded on the first swing. */
-const PICK_TOOL_SHEETS = Object.freeze({
-  pick: 'assets/sprites/tools/pick-tool@3x.webp',
-  fancy_pick: 'assets/sprites/tools/fancy-pick-tool@3x.webp',
-});
-const PICK_TOOL_DEF = Object.freeze({ fw: 115, fh: 63, cols: 11, rows: 3 });
-const PICK_SWING_FRAMES = 33;
 const pickToolFrames = new Map();
 
-/** The pick swings beside the avatar for the whole timed mine verb (the source overlay loops). */
-async function playPickAnimation(target, durationMs = 0) {
+/**
+ * The pick swings on the rock for the whole timed mine verb, as the scraper and shovel do on their
+ * nodes (js/node-tools.js PICK_SHEETS, nodeToolOverlay: an itemstack_overlay 10 px toward you and
+ * 20 px down from the rock's top, mirrored for a rock on your left). Report #330.
+ */
+async function playPickAnimation(target) {
   const pick = findWorkingPick(inv, toolState, miningToolWear(skillState.learned)) || 'pick';
+  const def = PICK_SHEETS[pick] || PICK_SHEETS.pick;
   if (!pickToolFrames.has(pick)) {
-    const tex = await loadTexture(PICK_TOOL_SHEETS[pick]).catch(() => null);
+    const tex = await loadTexture(def.path).catch(() => null);
     if (!tex) return null;
-    pickToolFrames.set(pick, sliceSheet(tex.source, PICK_TOOL_DEF, PICK_SWING_FRAMES));
+    pickToolFrames.set(pick, sliceSheet(tex.source, { fw: def.fw, fh: def.fh, cols: def.cols, rows: Math.ceil(def.frames / def.cols) }, def.frames));
   }
   // The verb may have finished or been cancelled while the sheet loaded.
-  if (!fxLayer || !player || !target?.sprite || currentAction?.target !== target) return null;
+  const spr = target?.sprite;
+  if (!fxLayer || !player || !spr || spr.destroyed || currentAction?.target !== target) return null;
   clearActionToolFx('replaced');
   const swing = pickToolFrames.get(pick);
-  const seconds = Math.max(1.1, (Number(durationMs) || 2000) / 1000);
-  // Whole swings at the SWF's 30 fps, stretched slightly to end with the verb.
-  const swings = Math.max(1, Math.round(seconds / (PICK_SWING_FRAMES / 30)));
-  const frames = Array.from({ length: swings }, () => swing).flat();
-  const tool = new PIXI.AnimatedSprite(frames);
-  const targetIsLeft = target.sprite.x < player.x;
-  tool.anchor.set(0.5);
-  // The source drew it on the rock (itemstack_overlay); between avatar and rock keeps it off the face.
-  tool.x = player.x + (targetIsLeft ? -50 : 50);
-  tool.y = player.y - 46;
-  tool.scale.set(targetIsLeft ? -1 : 1, 1);
-  tool.animationSpeed = frames.length / (60 * seconds);
-  tool.loop = false;
+  const tool = new PIXI.AnimatedSprite(swing);
+  const place = nodeToolOverlay(target.classId, spr.x, player.x);
+  const at = itemstackOverlayPoint(spr.x, displayTopOf(spr), { dx: place.deltaX, dy: place.deltaY });
+  tool.anchor.set(0.5, 1);
+  tool.x = at.x;
+  tool.y = at.y;
+  tool.scale.set(place.flipped ? -1 : 1, 1);
+  // The SWF's 30 fps on the 60 fps ticker, looping until the verb ends (SSCollection.as 123).
+  tool.animationSpeed = def.fps / 60;
+  tool.loop = true;
   tool.zIndex = 100000;
   tool.eventMode = 'none';
   tool._toolAnimationDataset = 'pickAnimation';
@@ -9276,13 +9273,8 @@ async function playPickAnimation(target, durationMs = 0) {
   if (app?.canvas) {
     app.canvas.dataset.pickAnimation = 'playing';
     app.canvas.dataset.pickAnimationTool = pick;
+    app.canvas.dataset.pickAnimationAt = `${Math.round(at.x - spr.x)},${Math.round(at.y - displayTopOf(spr))}`;
   }
-  tool.onComplete = () => {
-    if (actionToolFx === tool) actionToolFx = null;
-    if (tool.parent) tool.parent.removeChild(tool);
-    if (!tool.destroyed) tool.destroy();
-    if (app?.canvas) app.canvas.dataset.pickAnimation = 'complete';
-  };
   tool.play();
   return tool;
 }
@@ -9345,7 +9337,7 @@ function dryRunWalk(goalX) {
 function requestVerb(target, verb, { label = '', run = null } = {}) {
   const go = run || (() => beginVerbAction(target, verb));
   if (!target?.sprite || target.sprite.destroyed || !player || !verb) return go();
-  if (verbReachFrom(target, verb.id)) return go();
+  if (verbReachFrom(target, verb.id)) return stepToMineStand(target, verb, go) || go();
   const { goalX, ahead } = walkOverStop(target, verb.id, verbWalkRange(target, verb.id) ?? 300);
   if (!ahead || !verbReachFrom(target, verb.id, ahead)) {
     toast(FAILED_LINE, 2600);
@@ -9360,6 +9352,28 @@ function requestVerb(target, verb, { label = '', run = null } = {}) {
   toast(said, 2600);
   setCanvasData('verbWalk', `${target.classId || ''}:${verb.id}`);
   setCanvasData('verbWalkEnd', '');
+  return true;
+}
+
+/**
+ * Report #330 (G758): a miner stands at the rock's pc_action_distance, so the pick swinging on the
+ * rock is clear of the avatar (js/node-tools.js mineStandX, inc_skill_packages.js 213-246). A short
+ * walk there first, then the swing; true when the walk began. No walk when the stand is out of
+ * reach of the street (a wall, an edge): you mine where you are.
+ */
+function stepToMineStand(target, verb, go) {
+  if (!ROCK_CATALOG[target.classId] || String(verb.id).split(':')[0] !== 'mine' || currentAction) return false;
+  const standX = mineStandX(target.sprite.x, player.x);
+  if (standX == null) return false;
+  // A walk ends PATH_END_ALLOWANCE short of its point (js/user-path.js), so it aims that much past.
+  const goalX = standX + Math.sign(standX - player.x) * PATH_END_ALLOWANCE;
+  const ahead = dryRunWalk(goalX);
+  if (!ahead || Math.abs(ahead.x - standX) > PATH_END_ALLOWANCE || !verbReachFrom(target, verb.id, ahead)) return false;
+  if (!startUserWalk({ kind: 'point', x: goalX })) return false;
+  avatarWalk.verbWalk = { target, verb, go, street: currentStreetTsid };
+  setCanvasData('verbWalk', `${target.classId || ''}:${verb.id}`);
+  setCanvasData('verbWalkEnd', '');
+  setCanvasData('mineStand', String(Math.round(standX - target.sprite.x)));
   return true;
 }
 
@@ -9495,6 +9509,8 @@ function updateCurrentAction(deltaMs) {
   currentAction = null;
   stopActionSoundLoop();
   stopTrantHarvestAnimation(completed.target, 'complete');
+  // The pick loops on the rock until the swing lands (playPickAnimation).
+  if (actionToolFx?._toolAnimationDataset === 'pickAnimation') clearActionToolFx('complete');
   renderCurrentAction();
   verbAnimationAlreadyStarted = true;
   try {

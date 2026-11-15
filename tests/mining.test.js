@@ -4,6 +4,7 @@
  */
 import { describe, it } from 'node:test';
 import { imageSize } from '../tools/image-size.mjs';
+import { PICK_SHEETS } from '../public/js/node-tools.js?v=47a93d54';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -26,7 +27,7 @@ import {
   starterMiningTools,
   miningVendorOffers,
   STARTER_MINING_SKILLS,
-} from '../public/js/mining.js?v=b28fef74';
+} from '../public/js/mining.js?v=3780da12';
 import {
   createInventory,
   countItem,
@@ -41,7 +42,7 @@ import {
   ensureMakingItems,
   TOOL_CATALOG,
 } from '../public/js/making.js?v=202c452e';
-import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=dc7d6463';
+import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=863bc2ac';
 import { bindToolInventory, createToolConditionState, getToolCondition, toolCopies } from '../public/js/tools.js?v=48542c24';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -386,11 +387,12 @@ describe('pick swing', () => {
     }
   });
 
-  it('swings the working pick while the mine verb runs', () => {
+  it('swings the working pick on the rock while the mine verb runs (report #330)', () => {
     const game = readFileSync(join(pub, 'game.js'), 'utf8');
     assert.match(game, /ROCK_CATALOG\[target\.classId\] && baseVerb === 'mine'\) playPickAnimation/);
     assert.match(game, /findWorkingPick\(inv, toolState, miningToolWear\(skillState\.learned\)\)/);
-    assert.match(game, /pick-tool@3x\.webp/);
-    assert.match(game, /fancy-pick-tool@3x\.webp/);
+    assert.match(game, /const def = PICK_SHEETS\[pick\] \|\| PICK_SHEETS\.pick;/);
+    assert.match(game, /const place = nodeToolOverlay\(target\.classId, spr\.x, player\.x\);\s+const at = itemstackOverlayPoint\(spr\.x, displayTopOf\(spr\)/);
+    assert.deepEqual(Object.values(PICK_SHEETS).map((d) => d.path), ['assets/sprites/tools/pick-tool@3x.webp', 'assets/sprites/tools/fancy-pick-tool@3x.webp']);
   });
 });

@@ -11,7 +11,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { NODE_TOOLS, NODE_TOOL_DELTAS, nodeToolOverlay, nodeToolSheet } from '../public/js/node-tools.js?v=cf9012f1';
+import { MINE_STAND_X, NODE_TOOLS, NODE_TOOL_DELTAS, mineStandX, nodeToolOverlay, nodeToolSheet } from '../public/js/node-tools.js?v=47a93d54';
+import { miningProfile } from '../public/js/mining.js?v=3780da12';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedFrameAt } from '../public/js/packed-sheets.js?v=e3d07c14';
 import { RESOURCE_NODE_CATALOG } from '../public/js/resource-nodes.js?v=7f9f1d80';
@@ -133,5 +134,43 @@ describe('the feature', () => {
     assert.match(src, /itemstackOverlayPoint\(spr\.x, displayTopOf\(spr\), \{ dx: place\.deltaX, dy: place\.deltaY \}\)/);
     assert.match(src, /verbCancelled\(target\) \{\s+if \(entities\.some\(\(row\) => row\.target === target\)\) stopNodeTool\(\);/);
     assert.match(src, /onStreetClear\(\) \{\s+stopNodeTool\(\);/);
+  });
+});
+
+describe('mining as Glitch ran it (report #330, G758)', () => {
+  it('a swing takes the package time: 20, 14, 10 and 8 s for Mining I to IV, either pick', () => {
+    const ranks = ['mining_1', 'mining_2', 'mining_3', 'mining_4'];
+    for (const pick of ['pick', 'fancy_pick']) {
+      const times = ranks.map((_, i) => miningProfile(ranks.slice(0, i + 1), pick).durationMs);
+      assert.deepEqual(times, [20000, 14000, 10000, 8000], pick);
+    }
+    // Manic Mining (mining_time_3) still halves it through the package overlay.
+    assert.equal(miningProfile(['mining_1'], 'pick', ['mining_time_3']).durationMs, 10000);
+  });
+
+  it('the pick plays on the rock with the default deltas, mirrored for a rock on your left', () => {
+    assert.deepEqual(nodeToolOverlay('rock_beryl_1', 400, 500), { flipped: true, deltaX: 10, deltaY: 20 });
+    assert.deepEqual(nodeToolOverlay('rock_metal_1', 600, 500), { flipped: false, deltaX: -10, deltaY: 20 });
+  });
+
+  it('the miner stands at the rock\'s pc_action_distance when nearer, or more than twice it away', () => {
+    assert.equal(MINE_STAND_X, 75);
+    assert.equal(mineStandX(1000, 1000), 925, 'on the middle: to its left');
+    assert.equal(mineStandX(1000, 1020), 1075, 'just right of the middle: to its right');
+    assert.equal(mineStandX(1000, 960), 925);
+    assert.equal(mineStandX(1000, 920), null, 'about there already');
+    assert.equal(mineStandX(1000, 1110), null);
+    assert.equal(mineStandX(1000, 1150), null, 'twice the distance is still near enough');
+    assert.equal(mineStandX(1000, 1260), 1075, 'far off in reach: walks in');
+    assert.equal(mineStandX(Number.NaN, 0), null);
+  });
+});
+
+describe('the rock\'s own numbers (source)', { skip: existsSync(join(GSJS, 'items/rock_beryl_1.js')) ? false : 'clone tinyspeck/glitch-GameServerJS beside the repo' }, () => {
+  it('every mineable rock stands its miner at 75 and mines with the pick as tool_item, no deltas', () => {
+    for (const rock of ['rock_beryl_1', 'rock_dullite_1', 'rock_metal_1', 'rock_sparkly_1']) {
+      assert.match(readFileSync(join(GSJS, 'items', `${rock}.js`), 'utf8'), /"pc_action_distance"\s*: "75"/, rock);
+    }
+    assert.match(readFileSync(join(GSJS, 'items/include/mining.js'), 'utf8'), /runSkillPackage\(package_name, this, \{word_progress: [^,]+, tool_item: pick, callback: 'onMiningComplete', msg: msg\}\)/);
   });
 });

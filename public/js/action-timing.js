@@ -21,7 +21,8 @@ export const ACTION_DURATION_MS = Object.freeze({
   plant: 1100,
   clear: 1050,
   fertilize: 2000,
-  mine: 1800,
+  // Mining I (catalog_skill_packages.js mining_1); a mine verb carries its own rank's time.
+  mine: 20000,
 });
 
 const ACTION_GERUNDS = Object.freeze({

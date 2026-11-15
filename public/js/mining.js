@@ -8,7 +8,7 @@
  * - catalog_recipes.js (alchemy tongs metals, metalmaker rod/bar)
  * - catalog_skill_packages.js mining / smelting / refining
  *
- * Demo-scaled: mine wait is short (not 20s); rock chunks 50 → deplete/respawn.
+ * A swing takes the package's own time (20 s at Mining I, report #330); rock chunks 50 → deplete/respawn.
  */
 
 import {
@@ -159,7 +159,7 @@ export const MINING_COSTS = {
   energy: 12,
   xp: 2,
   toolWear: 2,
-  waitMs: 2500, // original 20000; demo-scaled
+  waitMs: 20000, // the swing (miningProfile has the rank's own)
   skill: 'mining_1',
 };
 
@@ -219,12 +219,11 @@ export const PICK_TOOLS = {
   },
 };
 
-/** Demo-scaled verb time for the source 20-second Mining I swing. */
-export const MINING_DEMO_DURATION_MS = 1800;
-
 /**
  * Exact `mining` / `mining_fancypick` package row for the player's highest
- * Mining rank (1–4): swing time, energy, xp, and pick wear. Without a learned
+ * Mining rank (1–4): swing time, energy, xp, and pick wear. The swing takes the package's own
+ * duration, as in Glitch: 20, 14, 10 and 8 s for Mining I to IV (catalog_skill_packages.js
+ * 1924-1953; report #330, G758: until v0.40 the remake ran it at 1.8 s x that). Without a learned
  * list the Mining I row applies (legacy callers that skip the skill gate).
  * @param {string[]|undefined} learned
  * @param {'pick'|'fancy_pick'|string} [pick]
@@ -241,7 +240,7 @@ export function miningProfile(learned, pick = 'pick', upgrades = []) {
     skill: details.skill,
     rank: details.rank,
     sourceDurationMs: details.duration,
-    durationMs: Math.round(MINING_DEMO_DURATION_MS * (details.duration / 20000)),
+    durationMs: Math.round(details.duration),
     energy: details.energy_cost,
     xp: details.xp_bonus || 0,
     toolWear: details.tool_wear,

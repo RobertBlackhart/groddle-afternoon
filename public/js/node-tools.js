@@ -66,3 +66,35 @@ export function nodeToolOverlay(classTsid, nodeX, playerX) {
   if (Number(nodeX) < Number(playerX)) return { flipped: true, deltaX: d.dx, deltaY: d.dy };
   return { flipped: false, deltaX: -d.dx, deltaY: d.dy };
 }
+
+/**
+ * The Pick's and Fancy Pick's tool_animation (pick.swf / fancy_pick.swf root frames 1-33, at 3x),
+ * in a packed sheet's shape. Mining runs the same skill routine as the scraper and shovel
+ * (include/mining.js 230: runSkillPackage('mining', this, { tool_item: pick, ... }) with no
+ * deltas), so the pick swings on the rock (nodeToolOverlay's default 10 and 20), not beside you.
+ * Report #330 (G758): until v0.40 it swung 50 px in front of the avatar.
+ */
+export const PICK_SHEETS = Object.freeze({
+  pick: Object.freeze({ path: 'assets/sprites/tools/pick-tool@3x.webp', fw: 115, fh: 63, cols: 11, frames: 33, plays: 33, cell: Object.freeze([115, 63]), at: Object.freeze([0, 0]), fps: 30, loop: true }),
+  fancy_pick: Object.freeze({ path: 'assets/sprites/tools/fancy-pick-tool@3x.webp', fw: 115, fh: 63, cols: 11, frames: 33, plays: 33, cell: Object.freeze([115, 63]), at: Object.freeze([0, 0]), fps: 30, loop: true }),
+});
+
+/** rock_*.js classProps pc_action_distance ("defined by mineable_rock"): where a miner stands. */
+export const MINE_STAND_X = 75;
+
+/**
+ * Where the avatar stands to mine a rock at `rockX`, or null to stay put. inc_skill_packages.js
+ * 213-246 moves the miner to the rock's pc_action_distance on its own side when it stands too near
+ * or too far (at most twice that). Closer than the stand, the pick on the rock would cover the
+ * avatar, so any spot nearer than MINE_STAND_X takes the step; one past 2 x MINE_STAND_X does too.
+ */
+export function mineStandX(rockX, playerX, { stand = MINE_STAND_X, slack = 8 } = {}) {
+  const rx = Number(rockX);
+  const px = Number(playerX);
+  if (!Number.isFinite(rx) || !Number.isFinite(px)) return null;
+  const d = Math.abs(px - rx);
+  if (d >= stand - slack && d <= stand * 2) return null;
+  // A miner on the rock's very middle steps to its left.
+  const side = px > rx ? 1 : -1;
+  return rx + side * stand;
+}

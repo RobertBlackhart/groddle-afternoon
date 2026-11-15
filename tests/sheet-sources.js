@@ -9,7 +9,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as acorn from 'acorn';
-import { ROCK_SHAPE_SHEETS } from '../public/js/mining.js?v=b28fef74';
+import { ROCK_SHAPE_SHEETS } from '../public/js/mining.js?v=3780da12';
 
 // Spread rows in game.js's SHEETS, built by code the syntax-tree evaluator cannot run.
 const SHEET_SPREADS = { ROCK_SHAPE_SHEETS };
@@ -369,8 +369,9 @@ export async function collectSheets() {
   const game = moduleConsts('game.js');
   const irr = game.get('IRRIGATOR_TOOL_SHEET');
   rows.push(row('game.js irrigator tool', irr.url, { fw: irr.fw, fh: irr.fh, cols: irr.cols, n: 30 }));
-  const pickDef = game.get('PICK_TOOL_DEF');
-  for (const [k, url] of Object.entries(game.get('PICK_TOOL_SHEETS'))) rows.push(row(`game.js ${k} tool`, url, { fw: pickDef.fw, fh: pickDef.fh, cols: pickDef.cols, n: game.get('PICK_SWING_FRAMES') }));
+  // The picks game.js playPickAnimation swings on a rock (js/node-tools.js PICK_SHEETS, report #330).
+  const { PICK_SHEETS } = await imp('js/node-tools.js');
+  for (const [k, d] of Object.entries(PICK_SHEETS)) rows.push(row(`game.js ${k} tool`, d.path, { fw: d.fw, fh: d.fh, cols: d.cols, n: d.frames }));
   // ensureShrineTextures: one grid per region, giant and motion (js/shrine-variants.js shrineSheet: the plain
   // shrines' 151 x 188, and the Firebog, Ix and Uralia sheets, lane art 2026-11-08).
   const { SHRINE_REGIONS, shrineSheet } = await imp('js/shrine-variants.js');
