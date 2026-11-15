@@ -887,6 +887,11 @@ function makeButton(ctx, b, y) {
   return { ...b, target, out, inn, upAt: 0 };
 }
 
+/** PURE (#353): feet at `y` are in the shut door's way: on the club deck or anywhere above it (the roof is at CLUBHOUSE.roofUp). */
+export function shutDoorColumn(y) {
+  return Number.isFinite(y) && y <= DECKS.club.y + 4;
+}
+
 function setDoor(ctx, open) {
   const door = ctx.data.door;
   if (!door || door.destroyed) return;
@@ -1101,9 +1106,11 @@ export const room = {
       const shaking = ctx.data.shakeUntil && now < ctx.data.shakeUntil;
       f.plaque.x = f.x + (shaking ? Math.sin(now / 30 + i) * 3 : 0);
     }
-    // The shut door is solid from both sides.
+    // The shut door is solid from both sides, and with the wall over it up to the roof (236 px) and past
+    // it: #353, it stopped only feet under the door's 150 px, so a triple jump (up to about 250 px) cleared
+    // it into the clubhouse. Nothing walks over the roof, so the column above the deck is all shut.
     const p = ctx.player;
-    if (p && !ctx.data.solved && p.y > DECKS.club.y - CLUBHOUSE.door.h && p.y <= DECKS.club.y + 4) {
+    if (p && !ctx.data.solved && shutDoorColumn(p.y)) {
       const { x1, x2 } = CLUBHOUSE.door;
       if (p.x > x1 - 14 && p.x < x2 + 14) {
         p.x = (ctx.data.prevX ?? p.x) <= (x1 + x2) / 2 ? x1 - 14 : x2 + 14;
