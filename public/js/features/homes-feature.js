@@ -218,8 +218,8 @@ import { drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=7e5ffc80';
-import { patchesFeature } from './patches-feature.js?v=090141ad';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=716c93cc';
+import { patchesFeature } from './patches-feature.js?v=31222985';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=0d8e92b4';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
@@ -243,7 +243,7 @@ import {
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
 import { oneArmSignpost } from '../street-render.js?v=e8f3b090';
-import { ROCK_CATALOG } from '../mining.js?v=b28fef74';
+import { ROCK_CATALOG } from '../mining.js?v=3780da12';
 import {
   HOUSE_SIGN,
   IMG_BUBBLE_MS,

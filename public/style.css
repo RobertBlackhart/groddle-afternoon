@@ -10655,6 +10655,13 @@ html:not(.stage-pinned) #game-root > canvas[role="application"] {
   height: var(--stage-h, 100%) !important;
   margin-top: var(--stage-gap, 0px);
 }
+/* NARROW STREETS (#337, G759): a street narrower than the window (Semsan Simile) draws at actual
+   size, its canvas centred between plain borders (js/location-view.js computerStage, --stage-w). */
+html:not(.stage-pinned) #game-root[data-stage-bordered] { background: var(--c-grey-29); }
+html:not(.stage-pinned) #game-root[data-stage-bordered] > canvas[role="application"] {
+  width: var(--stage-w, 100%) !important;
+  margin-inline: auto;
+}
 
 /* ===== VITALS (g458, UI audit 2): low energy and mood you can see =====
    game.js sets data-vital on the top bar's Energy and Mood (js/vitals.js): amber under 20%,

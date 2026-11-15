@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=5262230c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=88e3b356';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=405657ad';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -769,7 +769,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor } from './js/location-view.js?v=cfef3b43';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor } from './js/location-view.js?v=10371e26';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -799,12 +799,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=df448740';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=72d000ac';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=9705b783';
+import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=6012d3c7';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=b91ef38a';
-import './js/classic/classic-zoom.js?v=cd7c918c';
+import './js/classic/classic-zoom.js?v=2691dc07';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1068,7 +1068,7 @@ import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, te
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5c630896';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
-import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=92383208';
+import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=b054ca5c';
 import * as textureUrls from './js/textures.js?v=814d7926';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';
@@ -1086,7 +1086,7 @@ import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, f
 import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own word filter
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=49541b78';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=312acd45';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -2013,6 +2013,8 @@ function stageArgs() {
     height: root.clientHeight,
     packReserve: PACK_VIEW_RESERVE,
     sceneWidth: sceneViewWidthCap(bgLayer, WORLD_W),
+    // NARROW STREETS (#337): a street narrower than the window draws at actual size between borders.
+    sceneBorders: Array.isArray(bgLayer?.street?.layers),
     sceneHeight,
     // TOUCH PORTRAIT: an upright phone fits the scene's height to the screen (location-view phoneStage).
     phone: TOUCH_PHONE,
@@ -2069,6 +2071,14 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
     } else {
       root.style.removeProperty('--stage-h');
       root.style.removeProperty('--stage-gap');
+    }
+    // NARROW STREETS (#337): the canvas as wide as the street, centred between plain borders.
+    if (stage.bordered) {
+      root.style.setProperty('--stage-w', `${stage.cssWidth.toFixed(2)}px`);
+      root.dataset.stageBordered = '1';
+    } else {
+      root.style.removeProperty('--stage-w');
+      delete root.dataset.stageBordered;
     }
   }
   STAGE_SCALE = stage.scale;
@@ -2211,9 +2221,11 @@ function syncCameraSafeArea() {
   const drawerCss = Math.max(0, Number(socialDrawer?.inset()?.right) || 0);
   const rail = document.getElementById('play-context');
   const railCss = rail && rail.offsetParent !== null ? Math.max(0, rootRect.right - rail.getBoundingClientRect().left) : 0;
-  const overlapCss = Math.max(drawerCss, railCss);
+  // NARROW STREETS (#337): a bordered canvas stops short of the root's right; only what covers it counts.
+  const canvasRect = root.dataset.stageBordered && app?.canvas ? app.canvas.getBoundingClientRect() : rootRect;
+  const overlapCss = Math.max(drawerCss, railCss) - Math.max(0, rootRect.right - canvasRect.right);
   cameraRightInset = overlapCss > 0
-    ? clamp(overlapCss * (VIEW_W / rootRect.width) + CAMERA_RAIL_CLEARANCE, 0, VIEW_W * CAMERA_RESERVE_SHARE)
+    ? clamp(overlapCss * (VIEW_W / (canvasRect.width || rootRect.width)) + CAMERA_RAIL_CLEARANCE, 0, VIEW_W * CAMERA_RESERVE_SHARE)
     : 0;
   drawerInsetSeen = root.style.getPropertyValue('--inset-r');
   return cameraRightInset;
@@ -9083,7 +9095,8 @@ function renderCurrentAction() {
   const top = (at.y - (camY || 0)) * scale;
   const y = top < 66 ? Math.min(66, top + MAX_PUSH_DOWN * scale) : top;
   const clampX = (x, width) => cameraOverlayCenterX(x, width, canvas.clientWidth || VIEW_W, cameraRightInset * scale, 10);
-  const shown = wordProgressView.show(currentAction, { x: (at.x - camTarget) * scale, y, clampX }, scale);
+  // NARROW STREETS (#337): a bordered canvas starts offsetLeft into #game-root.
+  const shown = wordProgressView.show(currentAction, { x: (at.x - camTarget) * scale + (canvas.offsetLeft || 0), y, clampX: (x, width) => clampX(x - (canvas.offsetLeft || 0), width) + (canvas.offsetLeft || 0) }, scale);
   canvas.dataset.actionScreenX = shown.x.toFixed(2);
   canvas.dataset.actionSafeRight = (horizontalLocationViewWidth() * scale).toFixed(2);
   canvas.dataset.actionWidth = shown.width.toFixed(2);

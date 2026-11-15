@@ -98,7 +98,7 @@ import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } fr
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=b054ca5c';
 import { playItemOverlay } from '../item-overlay.js?v=4adc2ae6';
-import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=cf9012f1';
+import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=5fd3abb8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { salmonSwimAt } from '../street-creatures.js?v=e70bafd5';

@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { stepIndex, packKey } from '../public/js/classic/classic-pack.js?v=8c2dccd0';
+import { stepIndex, packKey } from '../public/js/classic/classic-pack.js?v=32c990d0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 

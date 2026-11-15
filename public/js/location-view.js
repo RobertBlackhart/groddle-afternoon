@@ -207,7 +207,9 @@ export function phoneZoomSpan(args = {}) {
  * - Under LOCATION_VIEW_W x VIEW_FLOOR_H it shrinks, so the smallest view
  *   every room was tuned for always fits.
  * - A scene narrower or shorter than that view magnifies until it fills it
- *   (homes, short rooms), never past the floors.
+ *   (homes, short rooms), never past the floors; with `sceneBorders` (a
+ *   street) a narrow one keeps the scale instead and shows plain borders at
+ *   its sides (computerStage, #337). Phones keep the magnifying rule.
  * - The canvas fills the room exactly, so the page never scrolls; only a view
  *   held at VIEW_HOLD_H (a portrait phone, where the width floor wins) leaves
  *   a band above.
@@ -233,6 +235,7 @@ export function stageFor({
   zoom = 0,
   phone = false,
   closeup = 0,
+  sceneBorders = false,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
@@ -240,11 +243,20 @@ export function stageFor({
   const pinned = finite(pinnedHeight);
   if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup });
-  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom });
+  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders });
 }
 
-/** PURE: stageFor's rule for a computer's window (and the pinned QA page), without the phone stages. */
-function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom }) {
+/**
+ * PURE: stageFor's rule for a computer's window (and the pinned QA page), without the phone stages.
+ *
+ * NARROW STREETS (#337, G759): with `borders` (a street's own layers: game.js stageArgs), a street
+ * narrower than the view (sceneViewWidthCap: its narrowest layer) is not magnified to fill the
+ * window. It draws at the scale any other street gets here, the view is capped at the street's
+ * width (never under LOCATION_VIEW_W) and the canvas is that much narrower (cssWidth < width,
+ * `bordered`), centred, with a plain border at each side (style.css NARROW STREETS). Semsan Simile
+ * (its far layer 960 wide) drew 1.76 times bigger than its neighbours in a 1687 px window.
+ */
+function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false }) {
   if (pinned > 0 || !(W > 0) || !(H > 0)) {
     const viewW = LOCATION_VIEW_W;
     const viewH = locationViewHeightFor({ forced: pinned > 0 ? pinned : NaN, sceneHeight });
@@ -254,17 +266,20 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
   const floorH = VIEW_FLOOR_H + pack;
   const sw = finite(sceneWidth) > 0 ? Math.max(LOCATION_VIEW_W, finite(sceneWidth)) : Infinity;
   const sh = finite(sceneHeight) > 0 ? Math.max(VIEW_FLOOR_H, finite(sceneHeight)) : Infinity;
+  const border = Boolean(borders) && Number.isFinite(sw);
   const ruleScale = (capW, capH) => {
     let s = W < LOCATION_VIEW_W || H < floorH
       ? Math.min(W / LOCATION_VIEW_W, H / floorH)
       : Math.max(1, W / capW, H / (capH + pack));
-    s = Math.max(s, W / sw, H / (sh + pack));
+    s = Math.max(s, border ? 0 : W / sw, H / (sh + pack));
     return Math.min(s, W / LOCATION_VIEW_W, H / floorH);
   };
   const z = Math.min(1, Math.max(0, finite(zoom, 0)));
   let scale = ruleScale(VIEW_MAX_W, VIEW_CEIL_H);
   if (z > 0) scale *= (ruleScale(ORIGINAL_VIEW_W, ORIGINAL_VIEW_H) / scale) ** z;
-  const viewW = Math.round(W / scale);
+  const fullW = Math.round(W / scale);
+  const bordered = border && fullW > Math.round(sw);
+  const viewW = bordered ? Math.round(sw) : fullW;
   const room = Math.floor(H / scale + 1e-6) - pack;
   // A scene a few px shorter than the floors leave shows its ground skirt (the camera frames it);
   // only a portrait window, where the width floor wins, is held (VIEW_HOLD_H).
@@ -275,9 +290,10 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
     viewW,
     viewH,
     canvasH: viewH + pack,
-    cssWidth: W,
+    cssWidth: bordered ? viewW * scale : W,
     cssHeight: held ? (viewH + pack) * scale : H,
     pinned: false,
+    ...(bordered ? { bordered: true } : {}),
   };
 }
 
