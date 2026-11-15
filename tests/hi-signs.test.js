@@ -47,7 +47,7 @@ import {
   stepMissile,
 } from '../public/js/hi-signs.js?v=0436d54a';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=a18ddb11';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=d868a787';
 import { getAchievementCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -407,6 +407,17 @@ describe('a chat line that is just "hi" (RightSideManager.as 232-235, Emotes.as 
     assert.match(say, /if \(hidesChatBubble\(text\)\) \{[^}]*\} else if \(participant === 'Ur'\) \{\s*showSpeechBubble/);
     const feature = readFileSync(join(PUBLIC, 'js/features/hi-signs-feature.js'), 'utf8');
     assert.match(feature, /String\(input\?\.value \|\| ''\)\.toLowerCase\(\) === 'hi'\) sayHi\(eng\)/, 'the hi itself still goes');
+  });
+
+  it('a phone has a Hi button beside the Local tab emotes that does what key 5 does', () => {
+    const realtime = readFileSync(join(PUBLIC, 'js/features/realtime-feature.js'), 'utf8');
+    assert.match(realtime, /import \{ isPhoneDevice \} from '\.\.\/touch-controls\.js\?v=[0-9a-f]{8}';/);
+    assert.match(realtime, /if \(isPhoneDevice\(\)\) emoteRow\.append\(el\('button', \{ type: 'button', 'data-say-hi': ''[^}]*\}, 'Hi'\)\);/, 'phones only, in the emote row');
+    const feature = readFileSync(join(PUBLIC, 'js/features/hi-signs-feature.js'), 'utf8');
+    assert.match(feature, /document\.addEventListener\('click', onHiButton\)/);
+    const handler = feature.slice(feature.indexOf('function onHiButton('), feature.indexOf('function onSubmit('));
+    assert.match(handler, /closest\?\.\('\[data-say-hi\]'\)/);
+    assert.match(handler, /sayHi\(eng\);/, 'the same call as key 5 (onKey)');
   });
 
   it('matches the client source', { skip: !existsSync(CLIENT) && 'glitch-client not present' }, () => {

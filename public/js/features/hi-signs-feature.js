@@ -980,6 +980,12 @@ function onKey(e) {
   if (e.key === '5' || e.code === 'Digit5' || e.code === 'Numpad5') sayHi(eng);
 }
 
+/** A phone's Hi button (realtime-feature.js, the Local tab's emotes) does what key 5 does. */
+function onHiButton(e) {
+  if (!eng?.started || !e.target?.closest?.('[data-say-hi]')) return;
+  sayHi(eng);
+}
+
 /** Emotes.showEmote: a chat line that is just "hi" says hi. */
 function onSubmit(e) {
   if (!eng?.started || e.target?.id !== 'local-chat-form') return;
@@ -1196,6 +1202,7 @@ export const hiSignsFeature = {
       window.addEventListener('keydown', onKey);
       // Capture, so the line is read before the chat form clears it.
       document.addEventListener('submit', onSubmit, true);
+      document.addEventListener('click', onHiButton);
     }
   },
 

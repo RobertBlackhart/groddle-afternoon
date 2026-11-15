@@ -67,6 +67,7 @@ import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
+import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
@@ -274,6 +275,9 @@ function createSession(engine) {
     b.addEventListener('click', () => emote(e));
     emoteRow.append(b);
   }
+  // A phone has no key 5: Hi sits beside the emotes and does what the key does (hi-signs-feature.js
+  // listens for [data-say-hi]).
+  if (isPhoneDevice()) emoteRow.append(el('button', { type: 'button', 'data-say-hi': '', title: 'Say hi (key 5)' }, 'Hi'));
   const social = engine.social || null;
   if (social) {
     // The drawer's Local tab is the chat log: the pill and Play here go in its head, the emotes over Local.
