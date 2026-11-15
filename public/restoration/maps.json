@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 26,
-    "painted": 22,
+    "restored": 27,
+    "painted": 21,
     "layout": 3
   },
   "world": {
@@ -1206,6 +1206,50 @@
       "place": "/encyclopedia/places/kalavana/"
     },
     {
+      "id": "88",
+      "name": "Karnata",
+      "anchor": "map-karnata",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Karnata, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cliff edge and the raised plateau on the right, the grassy hill in the top left corner and the dry ground around it, the stones, shrubs and trees, the pink flowers and the log near the bottom sit where 2012 had them (worst tile drift 2 px at 2x). Where the Maka Murh road climbs the cliff, 2012 shows a small brown block and two pale stones half under the road; the restore reads them as a small wooden ramp with one stone. Where the Mino Kree road meets the cliff, 2012's few pale blocks under the road came back as one stone. Returned darker and more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/karnata.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Karnata, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/karnata.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Karnata restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/karnata@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/88.svg",
+        "w": 151,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/karnata/"
+    },
+    {
       "id": "71",
       "name": "Jethimadh",
       "anchor": "map-jethimadh",
@@ -1244,46 +1288,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/jethimadh/"
-    },
-    {
-      "id": "88",
-      "name": "Karnata",
-      "anchor": "map-karnata",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Karnata survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/karnata.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Karnata, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/karnata.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Karnata painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/karnata@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/88.svg",
-        "w": 151,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/karnata/"
     },
     {
       "id": "133",

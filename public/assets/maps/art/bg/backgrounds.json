@@ -308,10 +308,10 @@
       "x1": "assets/maps/art/bg/karnata.webp",
       "x2": "assets/maps/art/bg/karnata@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 26364,
-      "x1Sha256": "f3120e1d1e9317e0a5d260f0d7cfa7706383bdd4a3926a6400d267bc85bef5f4",
-      "x2Bytes": 89306,
-      "x2Sha256": "953e1f96f8db2329159d9a90858c3b6a91c3d1f19b3c24b58fdbb243267aa52a"
+      "x1Bytes": 70400,
+      "x1Sha256": "72f4829518dff621a43be81b5bc53bcf254bcab4d5686311137a0dd01524f577",
+      "x2Bytes": 236434,
+      "x2Sha256": "644e4e4854a5e45dbb3d720067d82c2a1a4d774c2265aea4eb8377315b50defe"
     },
     "89": {
       "hubName": "Andra",

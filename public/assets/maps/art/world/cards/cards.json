@@ -232,14 +232,14 @@
         "file": "assets/maps/art/bg/karnata@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "953e1f96f8db2329159d9a90858c3b6a91c3d1f19b3c24b58fdbb243267aa52a"
+        "sha256": "644e4e4854a5e45dbb3d720067d82c2a1a4d774c2265aea4eb8377315b50defe"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 15122,
-        "sha256": "03cd7a68502c151d4cbbb903ff5df77198625214a79bddf9051b9acdb4563ecc"
+        "bytes": 46524,
+        "sha256": "1b9f9f07dad1c9155a153d9676066181956e8feb7b0781182d8a66a126ba346e"
       }
     },
     "89": {
