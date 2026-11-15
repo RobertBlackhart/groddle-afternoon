@@ -302,3 +302,6 @@ p { margin: 0; }
 .pc-account { margin-top: 4px; }
 .pc-account .acct-field input { font-size: 16px; }
 @media (prefers-reduced-motion: reduce) { .pc-button:active { transform: none; } }
+/* #372: Edit on your report until the team reads it (companion.js editFirst). */
+.pc-message-head .pc-message-edit { padding: 0 2px; font-size: inherit; }
+.pc-edit-form { margin-top: 2px; }

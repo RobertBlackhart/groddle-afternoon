@@ -33,7 +33,7 @@
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
 import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=d98e235d';
 import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=08a0ae0e';
 
@@ -407,11 +407,19 @@ function drawThread(answer, status = '') {
   panel.append(meta);
   const msgs = el('ol', { class: 'pc-messages', 'data-phone-messages': '' });
   const pic = pictureSrc(answer?.picture);
+  // #372: Edit as the game's window has it (js/ui/reports-sheet.js startEdit): your report's words, until the team reads it.
+  const canEdit = canEditFirst(answer);
   (Array.isArray(answer?.messages) ? answer.messages : []).forEach((m, i) => {
-    const li = el('li', { class: `pc-message pc-message-${m.author === 'admin' ? 'admin' : 'you'}` });
+    const li = el('li', { class: `pc-message pc-message-${m.author === 'admin' ? 'admin' : 'you'}`, 'data-edited': m.edited ? '1' : null });
     const head = el('div', { class: 'pc-message-head' });
-    head.append(el('strong', {}, m.author === 'admin' ? REPORT_TEXT.admin : REPORT_TEXT.you), el('span', { class: 'pc-muted' }, whenWords(m.at)));
-    li.append(head, el('p', { class: 'pc-message-body' }, m.body));
+    head.append(el('strong', {}, m.author === 'admin' ? REPORT_TEXT.admin : REPORT_TEXT.you), el('span', { class: 'pc-muted' }, `${whenWords(m.at)}${m.edited ? ` · ${REPORT_TEXT.edited}` : ''}`));
+    const body = el('p', { class: 'pc-message-body' }, m.body);
+    li.append(head, body);
+    if (i === 0 && canEdit) {
+      const edit = el('button', { type: 'button', class: 'pc-linkish pc-message-edit', title: REPORT_TEXT.editHint, 'data-phone-edit': '' }, REPORT_TEXT.edit);
+      edit.addEventListener('click', () => editFirst(t, m, li, body, edit));
+      head.append(edit);
+    }
     // The report's own picture under the report, then each message's own (G791; up to four), as
     // thumbnails that open the message's pictures over the page.
     const own = messagePictures(m).map((p) => ({ src: pictureSrc(p), width: Number(p.width) || 0, height: Number(p.height) || 0, alt: i === 0 ? REPORT_TEXT.reportPictureAlt : REPORT_TEXT.replyPictureAlt }));
@@ -475,6 +483,52 @@ function drawThread(answer, status = '') {
     }
   });
   panel.append(form);
+}
+
+/**
+ * #372: the report's words in a box in their place, Save and Cancel under it (the game's window,
+ * js/ui/reports-sheet.js startEdit / saveEdit). Read by the team meanwhile: the site refuses (409),
+ * says so, and Edit goes.
+ */
+function editFirst(t, m, li, body, edit) {
+  if (li.querySelector('[data-phone-edit-form]')) return;
+  const form = el('form', { class: 'pc-form pc-edit-form', 'data-phone-edit-form': '' });
+  const label = el('label', { for: 'pc-edit-text' }, REPORT_TEXT.editLabel);
+  const box = el('textarea', { id: 'pc-edit-text', rows: '4', maxlength: String(REPORT_MAX), 'data-phone-edit-text': '' });
+  box.value = String(m.body || '');
+  const msg = el('p', { class: 'pc-status', role: 'status', 'aria-live': 'polite' }, REPORT_TEXT.editHint);
+  const save = el('button', { type: 'submit', class: 'pc-button', 'data-phone-edit-save': '' }, REPORT_TEXT.editSave);
+  const cancel = el('button', { type: 'button', class: 'pc-linkish', 'data-phone-edit-cancel': '' }, REPORT_TEXT.editCancel);
+  const row = el('div', { class: 'pc-form-row' });
+  row.append(save, cancel);
+  form.append(label, box, row, msg);
+  body.hidden = true;
+  edit.hidden = true;
+  li.append(form);
+  box.focus();
+  cancel.addEventListener('click', () => {
+    form.remove();
+    body.hidden = false;
+    edit.hidden = false;
+    edit.focus();
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = box.value.trim();
+    if (!text) { msg.textContent = REPORT_TEXT.editEmpty; box.focus(); return; }
+    save.disabled = true;
+    msg.textContent = REPORT_TEXT.editSaving;
+    try {
+      drawThread(await reports.edit(t.id, text), REPORT_TEXT.editDone);
+    } catch (err) {
+      if (err?.status === 409) {
+        // Read meanwhile: the thread again, without Edit, and the site's words.
+        try { drawThread(await reports.thread(t.id), refusalWords(err)); return; } catch { /* the words below */ }
+      }
+      msg.textContent = refusalWords(err);
+      save.disabled = false;
+    }
+  });
 }
 
 /** The pictures over the page (js/ui/picture-lightbox.js, plain DOM), loaded at the first tap on a picture. */
