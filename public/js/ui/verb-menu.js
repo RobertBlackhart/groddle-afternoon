@@ -491,3 +491,61 @@ export function refuseVerbRow(el, row) {
   setDetail(el, row);
   shake(el);
 }
+
+/**
+ * ACTPRESS (Austin 2026-11-15, the phone's Act button: "can another press on the action also select
+ * the menu item? ... press and drag on action could move the menu selection up/down"): the menu's
+ * highlighted row as Act sees it. The row with focus (the keys' own), else the footer's row (.cur),
+ * else none.
+ */
+export function highlightedVerbRow(el) {
+  if (!el) return null;
+  const rows = menuRows(el);
+  const focused = el.ownerDocument?.activeElement?.closest?.('.vm-row');
+  if (focused && rows.includes(focused)) return focused;
+  return rows.find((r) => r.classList.contains('cur')) || null;
+}
+
+/** A row Act can step onto: shown and not locked (a locked row says why only when it is chosen). */
+export function usableVerbRow(row) {
+  return Boolean(row) && row.getAttribute('aria-disabled') !== 'true' && !row.disabled;
+}
+
+/**
+ * ACTPRESS: move the highlight `n` usable rows (down for a positive n), skipping locked rows; the
+ * footer line is not a row. It stops at either end (a long drag rests on the last row, never wraps).
+ * Returns the row it rests on, or null when the menu has no usable row.
+ */
+export function stepVerbRow(el, n) {
+  const rows = menuRows(el);
+  const usable = rows.filter(usableVerbRow);
+  if (!usable.length) return null;
+  const cur = highlightedVerbRow(el);
+  const steps = Math.trunc(Number(n) || 0);
+  let at = usable.indexOf(cur);
+  if (at < 0) {
+    // On a locked row (or none): the nearest usable row the drag's way is its first step.
+    const from = rows.indexOf(cur);
+    const ahead = steps < 0
+      ? usable.filter((r) => rows.indexOf(r) < from).pop() || usable[0]
+      : usable.find((r) => rows.indexOf(r) > from) || usable[usable.length - 1];
+    at = usable.indexOf(ahead) - Math.sign(steps);
+  }
+  const to = Math.max(0, Math.min(usable.length - 1, at + steps));
+  return focusVerbRow(el, rows.indexOf(usable[to]));
+}
+
+/**
+ * ACTPRESS: choose what the highlight is on, exactly as a click on it: the same click handlers, so a
+ * locked row only says why (bindVerbMenu's refusal) and a picture, Back or a count's OK does its own
+ * thing. A focused control inside the menu that is not a row (How many's OK) is clicked; with nothing
+ * highlighted the first usable row is. Returns what was clicked, or null.
+ */
+export function chooseVerbRow(el) {
+  if (!el) return null;
+  const active = el.ownerDocument?.activeElement;
+  let pick = active && active !== el && el.contains?.(active) && active.matches?.('button') ? active : null;
+  if (!pick) pick = highlightedVerbRow(el) || focusVerbRow(el);
+  pick?.click?.();
+  return pick || null;
+}

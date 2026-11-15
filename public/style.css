@@ -14285,6 +14285,18 @@ body.is-booting .touch-controls { display: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .touch-act.is-held { background: var(--surface-moss); transform: scale(0.94); }
+/* ACTPRESS (Austin 2026-11-15): a menu is open, so Act chooses its lit row (and a drag on it moves the
+   light): it reads Choose in the lit row's own lavender with the accent's ring. */
+.touch-act[data-menu="open"] {
+  background: var(--accent-soft); color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent), var(--shadow-2);
+  font-size: var(--fs-xs);
+}
+.touch-act[data-menu="open"].is-held { background: var(--surface-moss); }
+/* The chooser of several things (z-hud + 15, its shade over the HUD) covered Act: Act alone comes up
+   over it to choose; the stick and Jump stay under the shade, where a tap cancels as before. */
+#game-root:has(#enter-chooser:not([hidden])) .touch-controls { z-index: calc(var(--z-hud) + 16); }
+#game-root:has(#enter-chooser:not([hidden])) :is(.touch-stick, .touch-jump) { pointer-events: none; opacity: 0.4; }
 /* The on-screen keyboard is up (js/touch-controls.js watchPhoneKeyboard; the mobile QA, 2026-11-12: the
    pack row jumped to the middle of the shrunken screen): the stick, Jump and the pack row wait, unless
    the typing is in the pack's own search. */

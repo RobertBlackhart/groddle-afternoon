@@ -499,6 +499,10 @@ export function createEnterChooser(opts) {
     open: show,
     close,
     isOpen: () => open,
+    // ACTPRESS (the phone's Act, js/touch-controls.js): a drag on Act steps through the tiles in order
+    // (Cancel last, no wrap) and a tap or the lift chooses the lit one, as Enter does.
+    step: (n) => { if (open) focus(index + Math.trunc(Number(n) || 0), { sound: true }); },
+    choose: () => { if (open) choose(); },
     focusIndex: () => index,
     choices: () => choices.slice(),
   };

@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { bindVerbMenu } from '../public/js/ui/verb-menu.js?v=94936f9c';
-import { STICK_TAP_MS, isTapThrough } from '../public/js/touch-controls.js?v=455f4dc0';
+import { bindVerbMenu } from '../public/js/ui/verb-menu.js?v=96e06e9d';
+import { STICK_TAP_MS, isTapThrough } from '../public/js/touch-controls.js?v=77a55da7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

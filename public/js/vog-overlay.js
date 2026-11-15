@@ -28,7 +28,7 @@
  *   cancelAllOverlaysWeCan, so a street change drops it (no done_payload).
  */
 
-import { touchWords } from './touch-controls.js?v=455f4dc0';
+import { touchWords } from './touch-controls.js?v=77a55da7';
 
 export const VOG_WIDTH = 500;
 export const VOG_FADE_COLOR = '#000000';

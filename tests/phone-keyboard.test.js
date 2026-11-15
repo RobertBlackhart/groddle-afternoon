@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isTypingField, keyboardBox, keyboardUp, watchPhoneKeyboard } from '../public/js/touch-controls.js?v=455f4dc0';
+import { isTypingField, keyboardBox, keyboardUp, watchPhoneKeyboard } from '../public/js/touch-controls.js?v=77a55da7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const css = readFileSync(join(root, 'public/style.css'), 'utf8');

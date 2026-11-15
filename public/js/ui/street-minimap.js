@@ -89,7 +89,7 @@
  * streetMapWalk (the last click's kind:x, or "refused").
  */
 
-import { bindContextTrigger } from './context-menu.js?v=55c84488';
+import { bindContextTrigger } from './context-menu.js?v=400bbb32';
 
 export const MAP_WIDTH = 160;
 export const MAX_CONTRACTED_H = 70;

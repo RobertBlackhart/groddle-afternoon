@@ -79,7 +79,7 @@ import { sourceFromUrl } from '../textures.js?v=814d7926';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { rainbowSound, showRainbow } from '../overlays.js?v=4cbbb0c6';
 import { moodScaledXp } from '../mood-xp.js?v=22648ec0';
-import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=455f4dc0';
+import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=77a55da7';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { getSkillPackageOverride } from '../skill-packages.js?v=bfb87281';
 import {

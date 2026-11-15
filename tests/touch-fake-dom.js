@@ -3,7 +3,7 @@
  * listeners, classes, style and a rect, and the controls built into it with the keys they hold.
  * Shared by tests/touch-stick-fingers.test.js and tests/touch-float-stick.test.js.
  */
-import { installTouchControls } from '../public/js/touch-controls.js?v=455f4dc0';
+import { installTouchControls } from '../public/js/touch-controls.js?v=77a55da7';
 
 /** A fake element: listeners, classes, style, dataset, a rect. */
 export function fakeEl(rect = { left: 0, top: 0, width: 132, height: 132 }) {
@@ -30,6 +30,10 @@ export function fakeEl(rect = { left: 0, top: 0, width: 132, height: 132 }) {
     },
     getBoundingClientRect: () => ({ ...rect, right: rect.left + rect.width, bottom: rect.top + rect.height }),
     setPointerCapture() {},
+    releasePointerCapture() {},
+    attrs: {},
+    setAttribute(k, v) { this.attrs[k] = String(v); },
+    getAttribute(k) { return this.attrs[k] ?? null; },
     appendChild() {},
     after() {},
     remove() {},

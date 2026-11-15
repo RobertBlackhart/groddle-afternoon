@@ -203,6 +203,31 @@ export function keepFloatStickSwitch(doc, setting, { win = globalThis.window } =
   };
 }
 
+/**
+ * ACTPRESS (Austin 2026-11-15): a drag on Act moves a menu's highlight one row per this many CSS px
+ * up or down (a little under the 40 px a verb row stands on a phone, so a thumb walks the rows as it
+ * passes them).
+ */
+export const ACT_DRAG_STEP = 32;
+/** Sideways this far (CSS px) from where Act was pressed lets go without choosing. */
+export const ACT_CANCEL_X = 90;
+/** Act's words while a menu is open (the cue that a tap there chooses). */
+export const ACT_CHOOSE_LABEL = 'Choose';
+/** How often (ms) Act looks whether a menu is open, for its words. */
+export const ACT_MENU_WATCH_MS = 150;
+
+/**
+ * PURE: what a drag on Act means, from where it was pressed (dx right, dy down, CSS px): the rows it
+ * has stepped (down positive, toward zero, so a thumb must pass a whole step), or a cancel.
+ * @returns {{ steps: number, cancel: boolean }}
+ */
+export function actDragPlan(dx, dy, { step = ACT_DRAG_STEP, cancelX = ACT_CANCEL_X } = {}) {
+  const x = Number(dx) || 0;
+  const y = Number(dy) || 0;
+  if (Math.abs(x) >= cancelX) return { steps: 0, cancel: true };
+  return { steps: Math.trunc(y / step) || 0, cancel: false };
+}
+
 /** A tap on the stick's corner shorter than this (ms) that never moved it goes to the street behind. */
 export const STICK_TAP_MS = 300;
 
@@ -270,10 +295,11 @@ export function touchWords(text, touch = isPhoneDevice()) {
 
 /**
  * Builds the stick and the Jump and Act buttons into `root` (the game's wrap) and wires them.
- * press(key) / release(key): the held keys (game.js `keys`); jump(): a jump's edge; act(): Enter.
+ * press(key) / release(key): the held keys (game.js `keys`); jump(): a jump's edge; act(): Enter;
+ * actMenu(): the open menu Act drives ({ step(n), choose() }), or null (ACTPRESS).
  * Returns { el, releaseAll, destroy }.
  */
-export function installTouchControls({ root, press, release, jump, act = null, tapThrough = null, floatStick = null, doc = globalThis.document, win = globalThis.window } = {}) {
+export function installTouchControls({ root, press, release, jump, act = null, actMenu = null, tapThrough = null, floatStick = null, doc = globalThis.document, win = globalThis.window } = {}) {
   if (!root || !doc) return null;
   const el = doc.createElement('div');
   el.id = 'touch-controls';
@@ -417,21 +443,107 @@ export function installTouchControls({ root, press, release, jump, act = null, t
   }
   // The button never takes focus or a click of its own (Space on a focused button would press it).
   jumpBtn.addEventListener('click', (e) => e.preventDefault());
-  // Act: one press is one Enter (a held thumb does not repeat it).
+  // Act: one press is one Enter (a held thumb does not repeat it). ACTPRESS: with a menu open, Act
+  // drives it (actMenu: the open menu's { step(n), choose() }, or null): a tap chooses the lit row,
+  // a drag up or down steps it a row per ACT_DRAG_STEP, and the lift after a drag chooses. A press
+  // with no menu opens one as before, and the same finger can drag on into it. Sideways a long way
+  // (ACT_CANCEL_X), a second finger or the browser's cancel lets go without choosing.
+  let actPress = null;
+  const actMenuNow = () => { try { return actMenu?.() || null; } catch (err) { console.error(err); return null; } };
+  const drawActMenu = () => {
+    if (!actBtn) return;
+    const open = Boolean(actMenuNow());
+    if ((actBtn.dataset.menu === 'open') === open) return;
+    if (open) actBtn.dataset.menu = 'open';
+    else delete actBtn.dataset.menu;
+    actBtn.textContent = open ? ACT_CHOOSE_LABEL : 'Act';
+    actBtn.setAttribute('aria-label', open ? 'Choose the lit row; drag up or down to move it' : 'Act on what is nearby');
+  };
+  const endAct = (choose) => {
+    const p = actPress;
+    actPress = null;
+    actBtn?.classList.remove('is-held');
+    if (p) try { actBtn.releasePointerCapture?.(p.id); } catch { /* already let go */ }
+    if (choose && p && !p.cancelled && (p.steps !== 0 || p.dragged || !p.opened)) actMenuNow()?.choose?.();
+    drawActMenu();
+  };
   actBtn?.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    // A WebKit cancel whose click never came: that press is over.
+    if (actPress?.cancelPending) endAct(false);
+    if (actPress) {
+      // A second finger on Act: the press lets go without choosing.
+      if (e.pointerId !== actPress.id) actPress.cancelled = true;
+      return;
+    }
     actBtn.classList.add('is-held');
-    act?.();
+    const had = actMenuNow();
+    const press = { id: e.pointerId, x: e.clientX, y: e.clientY, steps: 0, dragged: false, opened: !had, ready: Boolean(had), cancelled: false, cancelPending: false };
+    actPress = press;
+    try { actBtn.setPointerCapture(e.pointerId); } catch { /* a synthetic pointer */ }
+    if (!had) {
+      act?.();
+      // A menu this press opened lights its first row on the next frame (game.js openVerbMenu, the
+      // chooser's show): the drag steps from there, so it waits for that frame (asked for after it).
+      win.requestAnimationFrame?.(() => { press.ready = true; });
+    }
+    drawActMenu();
     try { win.navigator?.vibrate?.(8); } catch { /* no haptics */ }
   });
-  for (const type of ['pointerup', 'pointercancel', 'pointerleave']) actBtn?.addEventListener(type, () => actBtn.classList.remove('is-held'));
-  actBtn?.addEventListener('click', (e) => e.preventDefault());
+  actBtn?.addEventListener('pointermove', (e) => {
+    const p = actPress;
+    if (!p || e.pointerId !== p.id || p.cancelled) return;
+    e.preventDefault();
+    const plan = actDragPlan(e.clientX - p.x, e.clientY - p.y);
+    if (plan.cancel) {
+      p.cancelled = true;
+      actBtn.classList.remove('is-held');
+      return;
+    }
+    if (plan.steps === p.steps || !p.ready) return;
+    const menu = actMenuNow();
+    if (!menu) return;
+    menu.step?.(plan.steps - p.steps);
+    p.steps = plan.steps;
+    p.dragged = true;
+    try { win.navigator?.vibrate?.(4); } catch { /* no haptics */ }
+  });
+  actBtn?.addEventListener('pointerup', (e) => { if (actPress && e.pointerId === actPress.id) endAct(true); });
+  // WebKit can end a tap with pointercancel before its click (the stick's note above): a still press
+  // waits for that click; anything else is a cancel.
+  actBtn?.addEventListener('pointercancel', (e) => {
+    const p = actPress;
+    if (!p || e.pointerId !== p.id) return;
+    if (!p.cancelled && !p.dragged && !p.opened) p.cancelPending = true;
+    else endAct(false);
+  });
+  actBtn?.addEventListener('lostpointercapture', (e) => {
+    const p = actPress;
+    if (p && e.pointerId === p.id && !p.cancelPending) endAct(false);
+  });
+  actBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (actPress?.cancelPending) endAct(true);
+  });
+  // A second finger anywhere else (a pinch, a tap on the street) while Act drags: no choice.
+  const onOtherFinger = (e) => {
+    if (actPress && e.pointerId !== actPress.id && e.target !== actBtn) actPress.cancelled = true;
+  };
+  doc.addEventListener?.('pointerdown', onOtherFinger, true);
+  // The cue (Act reads Choose while a menu is open) follows menus that open and close by other ways.
+  let actMenuWatch = 0;
+  const watchActMenu = () => {
+    drawActMenu();
+    actMenuWatch = win.setTimeout?.(watchActMenu, ACT_MENU_WATCH_MS) || 0;
+  };
+  if (actBtn && actMenu) watchActMenu();
   // iOS: no long-press callout or text selection on the controls.
   el.addEventListener('contextmenu', (e) => e.preventDefault());
 
   const releaseAll = () => {
     endStick();
     endJump();
+    if (actPress) endAct(false);
     others.clear();
     tapReady = false;
   };
@@ -443,6 +555,8 @@ export function installTouchControls({ root, press, release, jump, act = null, t
     destroy() {
       releaseAll();
       win.removeEventListener('blur', releaseAll);
+      doc.removeEventListener?.('pointerdown', onOtherFinger, true);
+      if (actMenuWatch) win.clearTimeout?.(actMenuWatch);
       keyboard.destroy();
       if (typeof offFloat === 'function') offFloat();
       floatSwitch?.destroy?.();

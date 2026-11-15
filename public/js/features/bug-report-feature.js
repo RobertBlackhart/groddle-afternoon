@@ -61,7 +61,7 @@
  */
 
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, pictureSize, reportFromHash } from '../reports.js?v=550c5fbf';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=3ddcd373';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=e4c1ea97';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 

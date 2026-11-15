@@ -4,11 +4,11 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b65f9567';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8d505994';
-import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a3fb0148';
+import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
-import { createVogOverlay } from './js/vog-overlay.js?v=d977c132';
+import { createVogOverlay } from './js/vog-overlay.js?v=e6959148';
 import { createPromptStack } from './js/prompt-stack.js?v=6b79ae9b';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=b5ad80ff';
@@ -803,7 +803,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=6012d
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=b91ef38a';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=39a3b47c';
 import './js/classic/classic-zoom.js?v=2691dc07';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -822,7 +822,7 @@ import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=106bf
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=43b1182e';
 import { PATH_END_ALLOWANCE, createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
-import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=455f4dc0';
+import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=77a55da7';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
 import { hellBuffDesc, isInHell } from './js/hell.js?v=df2b4357';
@@ -1038,7 +1038,7 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=23c2cb54';
+import { installTopBar, renderTopBar } from './js/ui/topbar.js?v=fbb4445f';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1048,15 +1048,15 @@ import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=1fb97b21';
 import { bubbleMs } from './js/read-time.js?v=be140198';
 import { mountNotifyView } from './js/notify-view.js?v=993ffafc';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=99cc04a6';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=88e1253a';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=c5465bbe';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=36a9983f';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=55c84488';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=66a1b1e6';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=db74c49b';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=400bbb32';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { bindVerbMenu, centerVerbMenu, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=94936f9c';
+import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=96e06e9d';
 import { createPromptSettler, promptId } from './js/prompt-settle.js?v=509ba9cc';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=d09771ed';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
@@ -1087,7 +1087,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=312acd45';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=66c279c5';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -32460,6 +32460,8 @@ async function main() {
   document.addEventListener('pointerdown', (e) => {
     const menu = document.getElementById('verb-menu');
     if (!menuTarget || !menu || menu.hidden || menu.contains(e.target)) return;
+    // ACTPRESS: the phone's Act chooses in the menu (js/touch-controls.js), so its press keeps it open.
+    if (e.target?.closest?.('[data-touch-act]')) return;
     closeVerbMenu();
     verbMenuClosedByPointerAt = e.timeStamp;
   }, true);
@@ -33288,6 +33290,14 @@ async function main() {
         down.touchAct = true;
         window.dispatchEvent(down);
         window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+      },
+      // ACTPRESS (Austin 2026-11-15): with the chooser or a verb menu open, Act drives it: a tap chooses
+      // the lit row as a click on it would (js/ui/verb-menu.js chooseVerbRow), a drag steps it.
+      actMenu: () => {
+        if (enterChooser?.isOpen()) return enterChooser;
+        const menu = document.getElementById('verb-menu');
+        if (!menuTarget || !menu || menu.hidden) return null;
+        return { step: (n) => stepVerbRow(menu, n), choose: () => chooseVerbRow(menu) };
       },
       floatStick: createFloatStick({ win: window }),
       // A quick tap on the stick's corner on a thing behind it (an animal under it) is a tap on that thing;

@@ -65,8 +65,8 @@
  * Canvas data: hiMpLast, hiBoard (sign:count,...), hiBoardOpen, hiYesterday.
  */
 
-import { isPhoneDevice } from '../touch-controls.js?v=455f4dc0';
-import { butlerApi } from './butler-feature.js?v=f68d4329';
+import { isPhoneDevice } from '../touch-controls.js?v=77a55da7';
+import { butlerApi } from './butler-feature.js?v=ab9a7a41';
 import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=814d7926';
 import {

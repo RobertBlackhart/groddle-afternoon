@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CAMERA_MENU_ID, CAMERA_PHONE_COPY, CAMERA_RANGE, EYEBALLERY_SKILL, cameraRange, dragLook, stepLook } from '../public/js/features/camera-mode-feature.js?v=0968fa2f';
+import { CAMERA_MENU_ID, CAMERA_PHONE_COPY, CAMERA_RANGE, EYEBALLERY_SKILL, cameraRange, dragLook, stepLook } from '../public/js/features/camera-mode-feature.js?v=b14e26ef';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -69,7 +69,7 @@ describe('#271: Camera Mode on a phone, without a keyboard', () => {
     assert.deepEqual(dragLook({ x: 1, y: 2 }, 0, 0, 0, 400), { x: 1, y: 2 });
   });
   it('the phone Menu has a Camera Mode row in World, before Snaps', async () => {
-    const { MENU_ROWS, menuRowFor } = await import('../public/js/ui/topbar.js?v=23c2cb54');
+    const { MENU_ROWS, menuRowFor } = await import('../public/js/ui/topbar.js?v=fbb4445f');
     assert.equal(CAMERA_MENU_ID, 'menu-camera-btn');
     assert.deepEqual(menuRowFor(CAMERA_MENU_ID, { phone: true }), { group: 'world', rank: 2.5 });
     assert.ok(MENU_ROWS[CAMERA_MENU_ID].rank < MENU_ROWS['snaps-btn'].rank);

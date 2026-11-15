@@ -49,7 +49,7 @@
  */
 
 import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
-import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=455f4dc0';
+import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=77a55da7';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
 import {
   CARD_RETURN_TEXT,
