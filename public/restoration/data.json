@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2192,
+  "commits": 2193,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Rasana's and Samudra's maps are Tiny Speck's 2012 paintings, restored"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "Le Misérable II's small doors let only a shrunk Glitch through"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Capture is offered for a Piggy in your own back yard again after a capture there"
    }
   ]
  },
