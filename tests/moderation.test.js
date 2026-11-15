@@ -149,6 +149,36 @@ describe('the site: the queue, the token and the routes', { skip: skipWithoutSit
     assert.match(tokens, /\$id, \$label, implode\(',', \$caps\), self::hash\(\$secret\)/, 'only the hash of the secret is stored');
   });
 
+  it('a moderator token ends 90 days after it was made, and the console says so', { skip: !hasPhp }, () => {
+    const php = `require ${JSON.stringify(SITE_DIR + '/src/ModTokens.php')}; use Groddle\\Minn\\ModTokens as T;
+      $made = '2026-11-01 00:00:00'; $t = strtotime($made . ' UTC');
+      echo json_encode(['days' => T::EXPIRE_DAYS, 'day89' => T::expired($made, $t + 89 * 86400), 'day90' => T::expired($made, $t + 90 * 86400), 'at' => T::expiresAt($made) - $t]);`;
+    const out = JSON.parse(execFileSync('php', ['-r', php]).toString());
+    assert.deepEqual(out, { days: 90, day89: false, day90: true, at: 90 * 86400 });
+    const tokens = site('src/ModTokens.php');
+    const verify = tokens.slice(tokens.indexOf('public function verify('), tokens.indexOf('public static function expiresAt('));
+    assert.match(verify, /\|\| self::expired\(\(string\) \$row\['created_at'\], \$now\)\) \{\s+return null;/, 'an old token is refused like a revoked one');
+    assert.match(tokens, /'expiresAt' => SaveShape::time/);
+    assert.match(site('console/moderation.js'), /t\.expired \? `expired \$\{when\(t\.expiresAt\)\}`/);
+  });
+
+  it('a moderator token bans or purges at most 10 different players a day; administrators have no cap', { skip: !hasPhp }, () => {
+    const php = `foreach (['ModTokens', 'Moderation'] as $c) require ${JSON.stringify(SITE_DIR)} . "/src/$c.php"; use Groddle\\Minn\\Moderation as M;
+      $nine = range(1, 9); $ten = range(1, 10);
+      echo json_encode(['cap' => M::TOKEN_DAILY_PLAYERS, 'ninth' => M::withinDaily($nine, 50), 'eleventh' => M::withinDaily($ten, 50), 'again' => M::withinDaily($ten, 3), 'repeats' => M::withinDaily([1, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8, 9], 50)]);`;
+    const out = JSON.parse(execFileSync('php', ['-r', php]).toString());
+    assert.deepEqual(out, { cap: 10, ninth: true, eleventh: false, again: true, repeats: true });
+    const mod = site('src/Moderation.php');
+    for (const fn of ['ban', 'purge']) {
+      const body = mod.slice(mod.indexOf(`public function ${fn}(`), mod.indexOf('public function', mod.indexOf(`public function ${fn}(`) + 10));
+      assert.match(body, new RegExp(`\\$this->tokenDaily\\(\\$actor, \\$player\\['id'\\], '${fn}'\\);`), `${fn} counts toward the token's day`);
+    }
+    const daily = mod.slice(mod.indexOf('private function tokenDaily('), mod.indexOf('public static function withinDaily('));
+    assert.match(daily, /if \(\$actor\['kind'\] !== 'token'\) \{\s+return;/, 'an administrator is never capped');
+    assert.match(daily, /result <> 'refused' AND at >= \?/);
+    assert.match(daily, /429/);
+  });
+
   it('restrictions reach the ticket, the web\'s say and IMs; a purge and a delete reach the server', () => {
     assert.match(site('src/RealtimeTicket.php'), /\$payload\['mod'\] = \$mod;/);
     const hist = site('src/ChatHistory.php');

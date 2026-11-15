@@ -262,7 +262,26 @@ describe('the site side (groddle-afternoon-site)', { skip: skipWithoutSite }, ()
     assert.match(pages, /'Content-Type' => \$contentType,/);
     assert.match(site('src/HomePicture.php'), /public const TYPES = \['png' => 'image\/png', 'jpeg' => 'image\/jpeg', 'webp' => 'image\/webp'\];/);
     assert.match(pages, /'X-Content-Type-Options' => 'nosniff'/);
-    assert.match(pages, /\$request->query\('v'\) === \$stamp \? 'public, max-age=31536000, immutable'/);
+    // An hour, never immutable: a suspended player's pictures must leave caches (G744).
+    assert.match(pages, /\$request->query\('v'\) === \$stamp \? 'public, max-age=' \. self::IMAGE_KEEP/);
+    assert.match(pages, /public const IMAGE_KEEP = 3600;/);
+    assert.doesNotMatch(pages, /immutable'/);
+  });
+
+  it('a suspended player is off the Players page, and their page and pictures answer 404 briefly cached', () => {
+    const pages = site('src/PlayerPages.php');
+    assert.match(pages, /\$listed \.= ' AND NOT ' \. AdminConsole::bannedSql\(\$db, 'c\.user_id'\);/);
+    const tab = pages.slice(pages.indexOf('private function tab('), pages.indexOf('public function buddy('));
+    assert.match(tab, /if \(AdminConsole::banned\(\$db, \$id\) !== null\) \{\s+throw new RouteMiss\(\);/);
+    const image = pages.slice(pages.indexOf('public function image('), pages.indexOf('private function find('));
+    assert.match(image, /AdminConsole::banned\(\$db, \(int\) \$id\) !== null\) \{\s+return new Response\(404, \[[^\]]*'Cache-Control' => 'public, max-age=' \. self::MISS_KEEP/);
+    assert.match(pages, /public const MISS_KEEP = 60;/);
+    assert.match(site('src/Snaps.php'), /' AND NOT ' \. AdminConsole::bannedSql\(\$db, 's\.user_id'\)/, 'the Camera never offers a suspended player\'s Snap');
+    // The ban covers the login (a row on it or on any of its characters), as AdminConsole::banned reads it.
+    const admin = site('src/AdminConsole.php');
+    const sql = admin.slice(admin.indexOf('public static function bannedSql('), admin.indexOf('public static function banLogin('));
+    assert.match(sql, /COALESCE\(\(SELECT bl\.login_id FROM \{\$logins\} bl WHERE bl\.user_id = \{\$col\}\), \{\$col\}\)/);
+    assert.match(sql, /bb\.user_id = \{\$login\} OR bb\.user_id IN \(SELECT bs\.user_id FROM \{\$logins\} bs WHERE bs\.login_id = \{\$login\}\)/);
   });
 
   it('escapes what players wrote and never shows an email or a username', () => {
