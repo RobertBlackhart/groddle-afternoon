@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2166,
+  "commits": 2168,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Big street scenery and the Glitchmas Cracker no longer draw black on phones with small graphics chips"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "improve",
     "text": "Online game pages carry the test levers only on a developer's own machine"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A game page left open across a release no longer saves over the newer version's save"
    }
   ]
  },
