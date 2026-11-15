@@ -2792,9 +2792,44 @@
   "deployed": "2026-11-14"
  },
  "git": {
-  "commits": 2155,
+  "commits": 2163,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A phone held sideways keeps Jump clear of Social, a Menu with room, and a report window you can see while typing"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A closed road says when its project opens while the street rests, and the Street Spirit gives it once the server says so"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "The Act chooser shows a picture for your home furniture"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Le Misérable II's small doors let only a shrunk Glitch through"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Capture is offered for a Piggy in your own back yard again after a capture there"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Lida's map is Tiny Speck's 2012 painting, restored"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Karnata's map is Tiny Speck's 2012 painting, restored"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2879,41 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "A saved game the game cannot read, or one a newer version saved, is kept and never saved over"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A save that does not go in says so at the top of the game and keeps trying"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "One part of the game that cannot save or load its own data no longer stops the rest saving or loading"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "A new email takes effect only once a link sent to it is opened, and then signs out other devices"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Sign-up checks Turnstile before it looks up the email"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Folivoria, Haraiva, Ilmenskie Deeps and Ix's maps are Tiny Speck's 2012 paintings, restored and matched to 2012's colour"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The Maps page shows Tiny Speck's own 2012 Encyclopedia map as each region's before, and opens in Wipe"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The fourteen restored region maps lose the pale strips at their left and right edges"
    }
   ]
  },
