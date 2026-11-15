@@ -328,7 +328,8 @@ describe('edge mirror lifecycle', () => {
     root.addChild(ground);
     attachEdgeMirrors(PIXI, renderer, root, [ground], 6000, 1200, () => 0.42);
     root.edgeMirrorFrame(5000, 1000);
-    await tick();
+    // The strip renders on a later tick; under a loaded full suite one tick is not always enough.
+    for (let i = 0; i < 100 && !made.length; i++) await tick();
     const [rt] = made;
     const res = rt.resolution;
     // 444 px at 1.9 is 843.6 texels: Pixi would keep 844 (fine) but 1.8 or 1.52 lose the last.
