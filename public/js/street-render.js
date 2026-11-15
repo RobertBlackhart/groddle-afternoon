@@ -2127,6 +2127,57 @@ export function wholeTexels(size, res = 1) {
   return Math.max(1, Math.ceil((Number(size) || 0) * (Number(res) > 0 ? Number(res) : 1) - 1e-6));
 }
 
+/**
+ * EDGE MIRROR (#380, Austin 2026-11-15): art that looks like something to use (ladders, signposts,
+ * doors, stairs, climbing trees and ropes) is left out of the reflection, so nothing past a
+ * street's real end invites a walk there.
+ */
+export const EDGE_MIRROR_USABLE = /ladder|signpost|sign_|_sign|door|stairs|steps?(?:_|\d|$)|climb|elevator|portal|vine_rope/i;
+
+/** PURE (EDGE MIRROR, #380): a deco sprite (or a ladder's tiling) left out of the reflection. */
+export function edgeMirrorLeavesOut(child) {
+  if (!child) return false;
+  if (child.glitchLadderId !== undefined) return true;
+  return EDGE_MIRROR_USABLE.test(String(child.glitchDecoSprite || ''));
+}
+
+/** EDGE MIRROR (#380): the share of a strip's width, from the seam out, over which the walkable layers fade away. */
+export const EDGE_MIRROR_FADE = 0.85;
+
+/**
+ * PURE (EDGE MIRROR, #380): how much of a walkable layer's reflection shows at `t` (0 at the street's
+ * end, 1 at the strip's outer edge): all of it at the seam, so the art still meets itself there,
+ * easing to none by EDGE_MIRROR_FADE of the way out. The far layers behind keep their reflection
+ * whole, so the space past the end still reads as scenery.
+ */
+export function edgeMirrorKeep(t, fade = EDGE_MIRROR_FADE) {
+  const x = Math.min(1, Math.max(0, (Number(t) || 0) / (fade > 0 ? fade : 1)));
+  return 1 - x * x * (3 - 2 * x);
+}
+
+/** PURE (EDGE MIRROR, #380): the layers whose reflection fades: the middleground and every layer at or in front of it. */
+export function edgeMirrorFades(lc, middleZ) {
+  if (!lc) return false;
+  if (lc.label === 'middleground' || lc.inFront) return true;
+  return Number.isFinite(middleZ) && Number(lc.zIndex) >= middleZ;
+}
+
+/** EDGE MIRROR (#380): a 64 x 1 ramp, erase alpha 0 at its right end to 1 at its left (edgeMirrorKeep). */
+function edgeMirrorFadeTexture(PIXI) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 1;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(64, 1);
+  for (let i = 0; i < 64; i++) {
+    // Column i: t runs 1 (left, the outer edge of a right strip) to 0 (right, the seam).
+    const t = 1 - (i + 0.5) / 64;
+    img.data[i * 4 + 3] = Math.round((1 - edgeMirrorKeep(t)) * 255);
+  }
+  ctx.putImageData(img, 0, 0);
+  return PIXI.Texture.from(canvas);
+}
+
 /** PURE (EDGE MIRROR): the strips' render resolution: the renderer's (2 at most), lowered to fit `budget`. */
 export function edgeMirrorResolution(strips, base = 1, budget = EDGE_MIRROR_BYTES) {
   let res = Math.min(2, Number(base) || 1);
@@ -2157,14 +2208,21 @@ function layerArtBoxes(PIXI, lc) {
  * tiles and recoloured copies there baked, nothing culled), the layer alone in a throwaway parent
  * (as buildGroundSkirt does), then put it back where it was.
  */
-function renderEdgeStrip(PIXI, renderer, root, lc, strip, boxes, res, texels) {
+function renderEdgeStrip(PIXI, renderer, root, lc, strip, boxes, res, texels, fade = false) {
   const x0 = texels.x0;
   const x1 = x0 + texels.width;
   const y1 = strip.y0 + texels.height;
   const unculled = [];
+  // #380: ladders, signposts, doors and the like stay out of the reflection.
+  const hidden = [];
   for (const b of boxes) {
     if (b.x1 <= x0 || b.x0 >= x1 || b.y1 <= strip.y0 || b.y0 >= y1) continue;
     const child = b.child;
+    if (child.visible && edgeMirrorLeavesOut(child)) {
+      child.visible = false;
+      hidden.push(child);
+      continue;
+    }
     if (child.blurTile && root.blurStats) bakeBlurTile(child.blurTile, root.blurStats);
     else if (child.recolour && !child.recolour.entry.texture && root.recolourCache) ensureRecoloured(PIXI, renderer, root.recolourCache, child);
     if (child.culled) {
@@ -2186,6 +2244,26 @@ function renderEdgeStrip(PIXI, renderer, root, lc, strip, boxes, res, texels) {
     if (home.parent) home.parent.addChildAt(lc, Math.min(home.index, home.parent.children.length));
     shell.destroy();
     for (const child of unculled) child.culled = true;
+    for (const child of hidden) child.visible = true;
+  }
+  if (fade) {
+    // #380: the walkable layers fade out toward the strip's outer edge (edgeMirrorKeep), erased
+    // from the texture once, so nothing past the street's end looks like ground to walk on.
+    root.edgeMirrorFade ||= edgeMirrorFadeTexture(PIXI);
+    const ramp = new PIXI.Sprite(root.edgeMirrorFade);
+    ramp.blendMode = 'erase';
+    ramp.width = texels.width;
+    ramp.height = texels.height;
+    // The ramp's seam end is its right: a right strip's seam is the texture's right edge, a left one's its left.
+    if (strip.side === 'left') {
+      ramp.scale.x = -Math.abs(ramp.scale.x);
+      ramp.x = texels.width;
+    }
+    try {
+      renderer.render({ container: ramp, target: rt, clear: false });
+    } finally {
+      ramp.destroy();
+    }
   }
   return rt;
 }
@@ -2256,13 +2334,14 @@ export function attachEdgeMirrors(PIXI, renderer, root, layers, W, sourceH, inse
       }
     }
     const res = edgeMirrorResolution(strips, base);
+    const middleZ = layers.find((lc) => lc.label === 'middleground')?.zIndex ?? NaN;
     const views = new Map();
     for (const s of strips) {
       const lc = s.plan.lc;
       const texels = edgeMirrorTexels(s, s.plan.lw, res);
       let rt;
       try {
-        rt = renderEdgeStrip(PIXI, renderer, root, lc, s, s.boxes, res, texels);
+        rt = renderEdgeStrip(PIXI, renderer, root, lc, s, s.boxes, res, texels, edgeMirrorFades(lc, middleZ));
       } catch {
         continue;
       }
@@ -2290,7 +2369,7 @@ export function attachEdgeMirrors(PIXI, renderer, root, layers, W, sourceH, inse
       spr.edgeSide = s.side;
       spr.edgeLayerW = s.plan.lw;
       view.addChild(spr);
-      state.strips.push({ layer: lc.label, side: s.side, w: s.w, h: s.h, y: s.y0 });
+      state.strips.push({ layer: lc.label, side: s.side, w: s.w, h: s.h, y: s.y0, fades: edgeMirrorFades(lc, middleZ) });
     }
     // Art that overhangs a mirrored end (Groddle Forest Junction's dirt lip runs 133 px on, higher
     // than its reflection) would show over the reflection's clear pixels: those layers are clipped
@@ -2369,6 +2448,8 @@ export function attachEdgeMirrors(PIXI, renderer, root, layers, W, sourceH, inse
     if (state.timer !== null) clearTimeout(state.timer);
     state.timer = null;
     free();
+    root.edgeMirrorFade?.destroy(true);
+    root.edgeMirrorFade = null;
   });
   // Wait for the layers' art (and, a turn later, their colour and blur bakes) as the skirt does.
   const sprites = [];
@@ -2723,6 +2804,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
       if (deco.r) spr.angle = deco.r;
       spr.glitchDecoId = deco.id || '';
       spr.glitchDecoName = deco.name || '';
+      spr.glitchDecoSprite = deco.sprite || '';
       if (spr.glitchDecoId) decoViews.set(spr.glitchDecoId, spr);
       lc.addChild(spr);
       if (sharp && !blur) sharpViews.push({ spr, url, far, pick, size: sizeDeco });

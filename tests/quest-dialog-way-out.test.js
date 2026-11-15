@@ -26,7 +26,7 @@ import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=1
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { markOffered, waitingOffers } from '../public/js/quest-offers.js?v=38a0cac5';
 import { questOffersFeature, EMERGENCY_SNOOZE_MS } from '../public/js/features/quest-offers-feature.js?v=ba74a8de';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=9b03304d';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=19d4d4d1';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=657cce8b';
 import { HELL_LOCATION, createHellState, croak } from '../public/js/hell.js?v=df2b4357';
 

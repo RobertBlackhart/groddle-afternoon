@@ -16,10 +16,13 @@ import {
   edgeMirrorResolution,
   edgeMirrorStrip,
   edgeMirrorTexels,
+  edgeMirrorFades,
+  edgeMirrorKeep,
+  edgeMirrorLeavesOut,
   edgeMirrorWidths,
   parallaxLayerOffset,
   wholeTexels,
-} from '../public/js/street-render.js?v=987fe292';
+} from '../public/js/street-render.js?v=f706f930';
 import { cameraTargetX } from '../public/js/movement.js?v=b30f84eb';
 
 describe('edge mirror widths', () => {
@@ -250,7 +253,14 @@ function fakePixi() {
       return rt;
     },
   };
-  return { PIXI: { Container, Sprite, Graphics, Matrix, RenderTexture }, made };
+  // #380: the fade ramp is a 64 x 1 canvas (street-render edgeMirrorFadeTexture).
+  const Texture = { from: (canvas) => ({ canvas, destroyed: false, destroy() { this.destroyed = true; } }) };
+  globalThis.document ||= {
+    createElement: () => ({
+      getContext: () => ({ createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }), putImageData() {} }),
+    }),
+  };
+  return { PIXI: { Container, Sprite, Graphics, Matrix, RenderTexture, Texture }, made };
 }
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 5));
@@ -285,7 +295,12 @@ describe('edge mirror lifecycle', () => {
     assert.equal(stats.builds, 1);
     assert.deepEqual(stats.strips.map((s) => `${s.layer}:${s.side}:${s.w}`).sort(), ['bg_1:right:394', 'middleground:right:444']);
     assert.equal(made.length, 2);
-    assert.equal(renders.length, 2);
+    // #380: two strips, and the middleground's faded once (an erase ramp over its texture); the far layer keeps its whole reflection.
+    assert.equal(renders.length, 3);
+    const ramps = renders.filter((r) => r.clear === false);
+    assert.equal(ramps.length, 1);
+    assert.equal(ramps[0].container.blendMode, 'erase');
+    assert.deepEqual(stats.strips.map((s) => `${s.layer}:${s.fades}`).sort(), ['bg_1:false', 'middleground:true']);
     // Each strip in its own container beside its layer, moving with it, over it.
     assert.equal(ground.edgeMirror.parent, root);
     assert.equal(ground.edgeMirror.zIndex, 0.5);
@@ -308,9 +323,11 @@ describe('edge mirror lifecycle', () => {
     assert.equal(root.edgeMirrorStats().builds, 2);
     assert.equal(made.length, 4);
     assert.ok(made.slice(0, 2).every((t) => t.destroyed));
-    // Leaving the street frees every strip.
+    // Leaving the street frees every strip, and the fade ramp.
+    const fadeRamp = root.edgeMirrorFade;
     root.destroy({ children: true });
     assert.ok(made.every((t) => t.destroyed));
+    assert.ok(fadeRamp.destroyed);
     assert.equal(root.edgeMirrorStats().textures, 0);
   });
 
@@ -354,5 +371,62 @@ describe('edge mirror lifecycle', () => {
     await tick();
     assert.equal(made.length, 0);
     assert.equal(root.edgeMirrorStats().builds, 1);
+  });
+});
+
+describe('edge mirror leaves out what looks usable and fades the walkable layers (#380)', () => {
+  it('leaves out ladders, ladder tiling, signposts, doors and stairs, keeps ground and scenery', () => {
+    for (const sprite of ['zutto_ladder_tile_center_01_stone', 'ladder_tile_cap_1_stone', 'trunk_ladder_3', 'heights_ladderbed_2', 'signpost_asset_elevator',
+      'groddle_sign_blank', 'door_asset_yellow', 'cliff_cover_door_2', 'stairs_blue_1', 'jethimadh_int_steps_2', 'climbingtree_1_piece_2', 'vine_rope', 'apartment_hall_elevator']) {
+      assert.equal(edgeMirrorLeavesOut({ glitchDecoSprite: sprite }), true, sprite);
+    }
+    for (const sprite of ['cave_gr_platform_1', 'cave_gr_patch_4', 'ground_stepped_2', 'cave_crystal_4', 'back_wall_5', 'hanging_vine_2', '']) {
+      assert.equal(edgeMirrorLeavesOut({ glitchDecoSprite: sprite }), false, sprite);
+    }
+    // A ladder's tiling (addLadderTiles) carries its ladder id, even an empty one.
+    assert.equal(edgeMirrorLeavesOut({ glitchLadderId: '' }), true);
+    assert.equal(edgeMirrorLeavesOut(null), false);
+  });
+
+  it('keeps the seam whole and is gone before the outer edge', () => {
+    assert.equal(edgeMirrorKeep(0), 1);
+    assert.equal(edgeMirrorKeep(0.85), 0);
+    assert.equal(edgeMirrorKeep(1), 0);
+    assert.ok(edgeMirrorKeep(0.2) > 0.8 && edgeMirrorKeep(0.6) < 0.25);
+    // Arjun Plunge: its right ladder stands 207 px in from the end; at 1280 x 800 with the Social drawer open the strip is about 260 px.
+    assert.ok(edgeMirrorKeep(207 / 260) < 0.02);
+  });
+
+  it('fades the middleground and the layers at or in front of it, never the far ones', () => {
+    assert.equal(edgeMirrorFades({ label: 'middleground', zIndex: 0 }, 0), true);
+    assert.equal(edgeMirrorFades({ label: 'T_1', zIndex: 10, inFront: true }, 0), true);
+    assert.equal(edgeMirrorFades({ label: 'middle_plus', zIndex: 5 }, 0), true);
+    assert.equal(edgeMirrorFades({ label: 'bg_1', zIndex: -10 }, 0), false);
+    assert.equal(edgeMirrorFades({ label: 'bg_1', zIndex: -10 }, NaN), false);
+  });
+
+  it('hides the usable decos only while the strip renders', async () => {
+    const { PIXI, made } = fakePixi();
+    const seen = [];
+    const root = new PIXI.Container();
+    const ground = new PIXI.Container();
+    ground.label = 'middleground';
+    const mk = (sprite, x) => {
+      const spr = new PIXI.Sprite({ orig: { width: 60, height: 200 }, source: {} });
+      spr.x = x;
+      spr.y = 900;
+      spr.glitchDecoSprite = sprite;
+      return spr;
+    };
+    const ladder = mk('zutto_ladder_tile_center_01_stone', 5800);
+    const rock = mk('cave_gr_platform_1', 5850);
+    ground.addChild(ladder, rock);
+    root.addChild(ground);
+    const renderer = { resolution: 1, render: (o) => { if (o.clear !== false) seen.push([ladder.visible, rock.visible]); } };
+    attachEdgeMirrors(PIXI, renderer, root, [ground], 6000, 1200, () => 0.42);
+    root.edgeMirrorFrame(5000, 1000);
+    for (let i = 0; i < 100 && !made.length; i++) await tick();
+    assert.deepEqual(seen, [[false, true]]);
+    assert.equal(ladder.visible, true, 'back in the street after');
   });
 });
