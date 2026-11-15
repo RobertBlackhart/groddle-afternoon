@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2177,
+  "commits": 2182,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A phone held sideways keeps the pack row low but clear of the iPhone home-bar strip"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A narrow street like Semsan Simile draws at actual size between plain borders instead of magnified"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Mining takes Glitch's time again (20, 14, 10 and 8 s for Mining I to IV) and the pick swings on the rock"
+   },
    {
     "date": "2026-11-14",
     "kind": "fix",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "The shrine donate window says tools go one at a time and greys out its count for them"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Buying an upgrade card plays Glitch's YOU_WIN fanfare, ready the moment the card is bought"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Firebog, Groddle and Uralia Street Spirit cubimals can be given to the Street Spirits"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The myopic frog's first Talk to plays only its introduction; the question waits for Camera Mode"
    }
   ]
  },
- "tests": 987,
+ "tests": 989,
  "generatedAt": "2026-11-14"
 }
