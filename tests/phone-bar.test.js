@@ -88,8 +88,8 @@ describe('the phone bar', () => {
     assert.match(game, /if \(chip\) chip\.dataset\.progress = String\(Math\.round\(active\.progress \* 1000\) \/ 1000\);/);
     assert.match(game, /if \(chip\) delete chip\.dataset\.progress;\s*if \(chip\) paintIdleSkillChip/);
   });
-  it('Skills is the Now row on a phone, and Report over a window draws as the bar button', () => {
+  it('Skills is the Now row on a phone, and no copy of the Report icon floats over windows', () => {
     assert.match(block, /:root\.touch-phone\[data-ui="modern"\] \.more-list #skills-btn \{ display: none; \}/);
-    assert.match(block, /\[data-ui="modern"\] #bug-btn-lift \.hud-badge \{/);
+    assert.doesNotMatch(block, /#bug-btn-lift/);
   });
 });

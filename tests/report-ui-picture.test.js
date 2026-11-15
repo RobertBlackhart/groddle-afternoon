@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { REPORT_TEXT } from '../public/js/reports.js?v=aa93fc78';
-import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=7678606f';
+import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=ccbe6838';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -42,7 +42,7 @@ describe('the picture with the game UI', () => {
     assert.equal(pack.style.color, undefined, 'the rest of the UI is drawn as it is');
     for (const s of ['#local-chat-stream', '.social-log', '#mail-reader', '#mail-list', '#activity-history', '.grp-lines']) assert.ok(REPORT_MASK.includes(s), s);
     // G791: the bar while a picture waits to be taken is never in it either.
-    assert.deepEqual([...REPORT_LEAVE_OUT], ['bug-report-panel', 'bug-btn-lift', 'report-shutter']);
+    assert.deepEqual([...REPORT_LEAVE_OUT], ['bug-report-panel', 'report-shutter']);
   });
 
   it('names the open windows for the report context', () => {
@@ -79,8 +79,15 @@ describe('the picture with the game UI', () => {
     assert.equal(REPORT_TEXT.pictureUi, 'Include the game\'s UI');
     for (const k of ['pictureUi', 'pictureHintUi', 'pictureDrawing']) assert.doesNotMatch(REPORT_TEXT[k], /—|Glitch/, k);
     const f = read('public/js/features/bug-report-feature.js');
-    assert.match(f, /lift\.id = 'bug-btn-lift';/);
-    assert.match(f, /#bug-btn-lift \{ position: fixed; z-index: calc\(var\(--z-modal\) \+ 31\);/);
+    // Austin 2026-11-15: the icon is a plain top-bar icon that windows cover; no copy floats over them.
+    assert.doesNotMatch(f, /bug-btn-lift|bugReportLift|data-bug-report-lift/);
+    // R opens Reports over any open window: the sheet sits over every window's layer (quest cards are --z-modal + 30).
+    assert.match(f, /#game-root #bug-report-panel \{ position: absolute; inset: 0; z-index: calc\(var\(--z-modal\) \+ 32\);/);
+    // and the key is read before a quest card, a modal window or a verb menu keeps the keys.
+    const game = read('public/game.js');
+    const r = game.indexOf("if (isPlainKey(e, 'r')) {");
+    assert.ok(r > 0 && r < game.indexOf('if (isQuestDialogueOpen()) return;', game.indexOf('if (encyclopediaKey(e)) return;')), 'R before the quest card');
+    assert.match(game.slice(r, r + 260), /const bug = document\.getElementById\('bug-btn'\);\s*if \(bug && !bug\.disabled\) \{\s*e\.preventDefault\(\);\s*keys\.delete\(e\.key\);\s*if \(!e\.repeat\) bug\.click\(\);\s*return;/);
   });
 
   it('the site keeps the open windows with the report and the console shows them', { skip: skipWithoutSite }, () => {

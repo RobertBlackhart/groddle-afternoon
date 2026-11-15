@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a74490a9';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=cb660021';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c13dda6a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -32717,6 +32717,18 @@ async function main() {
     }
     // ENCYC: i opens the Encyclopedia on what you are looking at, over any menu or sheet (encyclopediaKey).
     if (encyclopediaKey(e)) return;
+    // Ticket 62: R opens Report a bug (the Reports sheet, multiplayer: features/bug-report-feature.js), or
+    // closes it. The client had no key for it (GameHeaderUI.as 47-69); R is free in every mode here.
+    // Over any window, card or verb (Austin 2026-11-15: the icon is covered there, R is the way in).
+    if (isPlainKey(e, 'r')) {
+      const bug = document.getElementById('bug-btn');
+      if (bug && !bug.disabled) {
+        e.preventDefault();
+        keys.delete(e.key);
+        if (!e.repeat) bug.click();
+        return;
+      }
+    }
     if (isQuestDialogueOpen()) return;
     if (isEmotionalBearPickerOpen()) return;
     // Bug report #5: while tending a garden its plots take the arrows, WASD, Enter and E.
@@ -32964,15 +32976,6 @@ async function main() {
     // day, ticket 42): V runs a vendor in reach's own Browse goods; the client had no store key
     // (TSMainView.as: V is only a god build's Q+V render switch, 1916-1921), so this one is ours.
     if (isPlainKey(e, 'v')) vendorKey();
-    // Ticket 62: R opens Report a bug (the Reports sheet, multiplayer: features/bug-report-feature.js), or
-    // closes it. The client had no key for it (GameHeaderUI.as 47-69); R is free in every mode here.
-    if (isPlainKey(e, 'r') && !e.repeat) {
-      const bug = document.getElementById('bug-btn');
-      if (bug && !bug.disabled) {
-        e.preventDefault();
-        bug.click();
-      }
-    }
     if (e.key === 'l' || e.key === 'L') openAvatarPanel();
   });
   // A letter let go after Shift comes up lower case: drop both (G221, Shift+S held then Shift let go).

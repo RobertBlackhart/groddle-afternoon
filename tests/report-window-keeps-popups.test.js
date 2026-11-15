@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 
 import { isZoneDialog } from '../public/js/notify-view.js?v=993ffafc';
 import { REPORT_WINDOW_SELECTOR } from '../public/js/window-stack.js?v=a7104f02';
-import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=7678606f';
+import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=ccbe6838';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
@@ -56,6 +56,5 @@ describe('the report window moves nothing under it', () => {
 
   it('the picture still leaves the report window out', () => {
     assert.ok(REPORT_LEAVE_OUT.includes('bug-report-panel'));
-    assert.ok(REPORT_LEAVE_OUT.includes('bug-btn-lift'));
   });
 });

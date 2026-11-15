@@ -50,10 +50,9 @@
  * properties are copied (STYLE_NAMES): the custom ones are already resolved
  * into the standard values.
  *
- * Over other windows (the same report): a window's scrim covers the top bar,
- * so the bug icon could not be clicked while Donate or another window was
- * open. While anything covers it, a copy of the icon (#bug-btn-lift) sits on
- * top at the same place and opens the sheet over the window.
+ * Over other windows: the bug icon is a plain top-bar icon that windows and
+ * full-window moments cover (Austin 2026-11-15: no copy of it floating over
+ * them). R opens Reports from anywhere, over open windows too.
  *
  * A picture taken on purpose (G791, #216 and #281: a bug can be gone before
  * the Reports window opens): Shift+R anywhere in the game (not while typing,
@@ -159,8 +158,8 @@ export const REPORT_MASK = Object.freeze([
   '.grp-lines', '#mp-log', '#mail-list', '#mail-reader', '.mail-compose-form',
 ]);
 
-/** Never in the picture: the Reports window itself, the icon's copy over windows, and the picture bar (G791). */
-export const REPORT_LEAVE_OUT = Object.freeze(['bug-report-panel', 'bug-btn-lift', 'report-shutter']);
+/** Never in the picture: the Reports window itself and the picture bar (G791). */
+export const REPORT_LEAVE_OUT = Object.freeze(['bug-report-panel', 'report-shutter']);
 
 /** The names a report gives the windows (their element ids without "-panel", unless named here). */
 const PANEL_NAMES = Object.freeze({ 'shrine-panel': 'donate', 'quest-dialogue': 'conversation', 'verb-menu': 'verbs', 'pack-popover': 'item' });
@@ -586,8 +585,6 @@ const STYLE = `
 [data-ui="modern"] #bug-report-panel .picture-lightbox-nav { width: 44px; height: 44px; }
 [data-ui="modern"] #bug-report-panel .picture-lightbox-count { padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); font: var(--fw-bold) var(--fs-s)/var(--lh-tight) var(--font-ui); }
 [data-ui="modern"] .top-bar .top-actions .bug-btn .bug-unread { pointer-events: none; }
-#bug-btn-lift { position: fixed; z-index: calc(var(--z-modal) + 31); margin: 0; box-sizing: border-box; }
-#bug-btn-lift[hidden] { display: none !important; }
 #bug-report-panel .reports-check-sub { margin-left: var(--space-5); font-weight: var(--fw-regular); }
 #bug-report-panel .reports-check:has(.reports-checkbox:disabled) { opacity: 0.55; cursor: default; }
 #bug-report-panel .reports-filter { flex: none; }
@@ -771,35 +768,6 @@ function createSession(engine, errors) {
   engine.panelShell?.add?.({ id: 'bug-report-panel', kind: 'center', close: () => sheet.close() });
   btn.addEventListener('click', () => (sheet.state === 'closed' ? sheet.open('list') : sheet.close()));
 
-  // Over other windows: a copy of the icon on top of whatever covers it, in the same place.
-  const lift = btn.cloneNode(true);
-  lift.id = 'bug-btn-lift';
-  lift.hidden = true;
-  lift.removeAttribute('data-bug-report-open');
-  lift.setAttribute('data-bug-report-lift', '');
-  lift.addEventListener('click', () => btn.click());
-  document.body.append(lift);
-  const placeLift = () => {
-    const r = btn.getBoundingClientRect();
-    const shown = r.width > 0 && r.height > 0 && btn.getClientRects().length;
-    // What is on top there, the copy itself aside (it sits exactly over the icon while shown).
-    const stack = shown ? document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2) : [];
-    const top = stack.find((n) => n !== lift && !lift.contains(n)) || null;
-    const covered = Boolean(shown && top && !btn.contains(top));
-    if (covered) {
-      const cs = getComputedStyle(btn);
-      Object.assign(lift.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, background: cs.backgroundColor, borderRadius: cs.borderRadius, color: cs.color });
-      lift.title = `${btn.dataset.tip || btn.title || BUG_TEXT.tip} (${REPORT_KEY})`;
-      lift.setAttribute('aria-label', btn.getAttribute('aria-label') || BUG_TEXT.tip);
-      const b = lift.querySelector('[data-reports-badge]');
-      const src = btn.querySelector('[data-reports-badge]');
-      if (b && src) { b.hidden = src.hidden; b.textContent = src.textContent; }
-    }
-    if (lift.hidden === covered) lift.hidden = !covered;
-    engine.setData?.('bugReportLift', covered ? '1' : '0');
-  };
-  // Its own clock: the game's tick stops while a window holds the game.
-  const liftTimer = setInterval(placeLift, 200);
 
   async function poll() {
     if (sheet.state !== 'closed' || document.hidden || globalThis.navigator?.onLine === false) return;
@@ -823,7 +791,7 @@ function createSession(engine, errors) {
   openLinked();
   globalThis.addEventListener?.('hashchange', openLinked);
 
-  return { ...sheet, placeLift, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, get pictures() { return sheet.pictures; }, get room() { return sheet.room; }, stop: () => { clearInterval(timer); clearInterval(liftTimer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
+  return { ...sheet, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, get pictures() { return sheet.pictures; }, get room() { return sheet.room; }, stop: () => { clearInterval(timer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
 }
 
 let session = null;
