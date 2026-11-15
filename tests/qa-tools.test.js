@@ -213,5 +213,6 @@ test('lock: parseFlags', () => {
 test('browser: the project flags, plus local network access for online', () => {
   assert.deepEqual(browserArgs().slice(0, 2), ['--use-angle=metal', '--enable-gpu']);
   assert.equal(browserArgs().some((a) => a.includes('LocalNetworkAccessChecks')), false);
+  assert.ok(browserArgs().includes('--mute-audio'), 'QA browsers are silent unless GRODDLE_BROWSER_SOUND=1');
   assert.ok(browserArgs({ online: true }).some((a) => /^--disable-features=.*LocalNetworkAccessChecks/.test(a)));
 });
