@@ -28,7 +28,7 @@ import {
   splitChat,
   withTimeLines,
   writeChoice,
-} from '../public/js/ui/social-drawer.js?v=88e1253a';
+} from '../public/js/ui/social-drawer.js?v=813ed1f5';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
 import { resolveTokens } from './css-tokens.js';
 
@@ -189,6 +189,9 @@ describe('the Social drawer: mounted', () => {
     t.drawer.channel('party', { label: 'Party', prefix: '/p ', placeholder: 'Message your party' });
     assert.deepEqual(t.drawer.tabs, ['activity', 'local', 'global', 'buddies', 'chats'], 'the row never grows');
     assert.deepEqual(t.drawer.chats, ['party']);
+    // A server note (the roster line on joining a chat) is shown but is not news.
+    t.drawer.push('party', { note: true, text: 'You are the only person here.' });
+    assert.equal(t.drawer.unread('party'), 0, 'a note does not count as unread');
     t.drawer.push('party', { name: 'Bramble', text: 'meet at Gregarious Grange in 5?' });
     t.drawer.localLine('Tiramisu', 'anyone got spare cherries?');
     assert.equal(t.drawer.unread('party'), 1);

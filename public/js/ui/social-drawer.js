@@ -1909,7 +1909,8 @@ export function mountSocialDrawer({
       const l = normal(line);
       t.lines.push(l);
       trim(t.lines);
-      if (!l.mine && !visible(id)) t.unread += 1;
+      // A server note (the roster line on joining, "X has joined") is not news: only a player's line counts.
+      if (!l.mine && !l.note && !visible(id)) t.unread += 1;
       if (l.mine && !l.note) saidOwn(id);
       render();
       return true;
