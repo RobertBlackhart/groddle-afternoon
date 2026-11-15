@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a7855cd0';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3fca895d';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=82dabb39';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d1025cba';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -8444,6 +8444,8 @@ function menuVerbsFor(target) {
     imaginationUpgrades: pc.imaginationUpgrades || [],
     achievements: achieveState.unlocked || [],
     streetTsid: currentStreetTsid,
+    // #336 (G753): the capture row's 42-game-day limit, as animal-mood-feature ownsPlace (house, yards, Tower).
+    ownsPlace: (({ inHome, owned }) => Boolean(inHome && owned))(engine.homeContext()),
   }), engine);
   // Another player you block (buddies-feature realtimeHidden): only the rows Glitch kept (js/ui/player-menu.js).
   if (target?.classId === 'pc_remote' && target.playerId && features.query('realtimeHidden', Number(target.playerId), engine)) return blockedPlayerVerbs(verbs);

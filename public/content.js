@@ -98,13 +98,20 @@ import { ITEM_CATALOG, countItem } from './js/inventory.js?v=f49c8998';
 import { slugsFromEffects } from './js/speech-slugs.js?v=130338f9';
 import { animalResponseKey, failureResponseKey, trantCareResponseKey, rockResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 
-/** Naming / capture context for an animal target (the back yard counts as yours). */
+/**
+ * Naming / capture context for an animal target. ownYard (naming, set free): the home street.
+ * ownsPlace (capture: the 42-game-day limit, XP and cooldown): anywhere the player owns, as
+ * animal-mood-feature ownsPlace decides it (game.js passes it; #336, G753: house, both yards and
+ * the Tower; npc_piggy.js 384, 459, 501 pols_is_owner). Without it (tests), the home street.
+ */
 function husbandryCtx(ctx) {
+  const ownYard = ctx.streetTsid === 'RH_HOME_EXT';
   return {
     learned: ctx.skills?.learned || ctx.learned || [],
     playerId: 'player',
     nowS: Math.floor(Date.now() / 1000),
-    ownYard: ctx.streetTsid === 'RH_HOME_EXT',
+    ownYard,
+    ownsPlace: typeof ctx.ownsPlace === 'boolean' ? ctx.ownsPlace : ownYard,
   };
 }
 
@@ -540,7 +547,7 @@ export function getVerbsFor(target, ctx) {
       learned: hk.learned,
       energy: pc?.energy || 0,
       streetTsid: ctx.streetTsid || '',
-      ownYard: hk.ownYard,
+      ownYard: hk.ownsPlace,
     });
     add('capture', 'capture', {
       sort: 55,

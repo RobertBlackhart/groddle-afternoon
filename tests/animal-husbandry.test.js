@@ -50,9 +50,9 @@ import {
   takePlop,
 } from '../public/js/animal-husbandry.js?v=d524c1f7';
 import { animalStatusLabel, piggyFeedTip, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=95b338f6';
-import { getVerbsFor, runVerb } from '../public/content.js?v=a7855cd0';
+import { getVerbsFor, runVerb } from '../public/content.js?v=3fca895d';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=ec5bfd55';
+import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=f6218e47';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -566,5 +566,22 @@ describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
       const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js', file), 'utf8');
       assert.match(src, /ownYard: ownsPlace\(engine\),/, file);
     }
+  });
+
+  it('#336 follow-up: the verb menu offers Capture in an owned back yard after a capture there; a visit keeps the limit', () => {
+    normalizeHusbandryPack({});
+    const learned = [HERDKEEPING.skill];
+    const t0 = Date.now();
+    const pc = { energy: 90, mood: 10, xp: 0, imagination: 0 };
+    const inv = { pig_bait: 3 };
+    assert.equal(capturePiggy({}, { pc, inv, learned, streetTsid: 'RH_HOME_INT', now: t0, ownYard: true, rng: () => 0.1 }).ok, true);
+    inv.hogtied_piggy = 0;
+    const piggy = { classId: 'npc_piggy', state: createAnimalState('npc_piggy') };
+    const row = (ctx) => getVerbsFor(piggy, { pc: { energy: 90, mood: 50 }, inv, learned, streetTsid: 'RH_HOME_INT', ...ctx }).find((v) => v.id === 'capture');
+    assert.equal(row({ ownsPlace: true }).enabled, true, 'own back yard: Capture offered');
+    assert.equal(row({ ownsPlace: false }).reason, HERDKEEPING.locationLimit, "someone else's back yard: limited");
+    assert.equal(row({}).reason, HERDKEEPING.locationLimit, 'no owner flag off the home street: limited');
+    const game = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/game.js'), 'utf8');
+    assert.match(game, /ownsPlace: \(\(\{ inHome, owned \}\) => Boolean\(inHome && owned\)\)\(engine\.homeContext\(\)\),/);
   });
 });

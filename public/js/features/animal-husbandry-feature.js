@@ -1165,7 +1165,7 @@ function capture(engine, target) {
     && engine.query?.('sharedPiggy', target, engine) === true;
   const grant = shared ? engine.query?.('sharedVerbGrant', target, 'capture') : null;
   if (shared && !grant) {
-    let check = captureVerbState({ inv: engine.inv, learned: engine.learnedSkills, energy: Number(engine.pc?.energy) || 0, streetTsid: engine.streetTsid, depressing: isSadIn('npc_piggy', animalPlaceIsDepressing(engine)) });
+    let check = captureVerbState({ inv: engine.inv, learned: engine.learnedSkills, energy: Number(engine.pc?.energy) || 0, streetTsid: engine.streetTsid, ownYard: ownsPlace(engine), depressing: isSadIn('npc_piggy', animalPlaceIsDepressing(engine)) });
     // No Pig Bait in the pack: the source's line (npc_piggy.js 536); the ledger checks it again.
     if (check.enabled && !((Number(engine.inv?.pig_bait) || 0) > 0)) {
       check = { enabled: false, reason: "The piggy ran away! You'll need something in your inventory with which to lure it." };
