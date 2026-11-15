@@ -13,7 +13,7 @@ import { HIRES_DECOS, HIRES_DECOS_BIG } from '../public/js/deco-hires-list.js?v=
 import { decoTextureLimit, decoUrl, installHiresDecos, setDecoTextureLimit, wantsHiresDecos } from '../public/js/deco-hires.js?v=dbfc79a6';
 import { SMALL_GPU_DECOS } from '../public/js/deco-small-list.js?v=5d29e2f1';
 import { resolutionOfUrl } from '../public/js/textures.js?v=814d7926';
-import { recolourBudgetBytes } from '../public/js/street-render.js?v=e8f3b090';
+import { recolourBudgetBytes } from '../public/js/street-render.js?v=987fe292';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const decoDir = join(root, 'public/assets/decos/groddle');

@@ -11241,6 +11241,12 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 :root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-cur strong { font-size: var(--fs-s); }
 :root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-cur img { height: 14px; }
 :root.touch-phone[data-ui="modern"] .top-bar .hud-stats #favor-stat[data-neutral] img { width: 11px; height: 11px; }
+/* #350 (sideways): the iMG is a 20 px line at the top of the bar and a tap often missed it. Its tap area
+   runs the bar's whole height, from the screen's top edge down over the currants beside it (a tap on
+   currants opens nothing on a phone); favor, positioned after it, keeps its own taps. Looks the same. */
+:root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-img,
+:root.touch-phone[data-ui="modern"] .top-bar .hud-stats #favor-stat { position: relative; }
+:root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-img::before { content: ""; position: absolute; top: calc(-1 * (var(--space-1) + var(--safe-t, 0px) + 2px)); bottom: calc(-1 * (20px + var(--space-1))); left: calc(-1 * var(--sp-2)); right: 0; }
 /* The Menu's currants line repeats the bar on a phone. */
 :root.touch-phone[data-ui="modern"] .more-list #menu-currants { display: none; }
 [data-ui="modern"] .more-list .menu-currants { display: none; }
