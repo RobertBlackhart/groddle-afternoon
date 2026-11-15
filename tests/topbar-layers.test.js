@@ -29,7 +29,7 @@ const z = (sel, sheet = css) => {
   }
   assert.fail(`${sel} has no rule with a z-index`);
 };
-const POPS = ['#more-list', '#sound-pop', '#vitals-menu', '#player-menu', '#favor-pop'];
+const POPS = ['#more-list', '#sound-pop', '#vitals-menu', '#player-menu', '#favor-pop', '#vendor-finder-pop'];
 const LIFT = `#wrap > header.top-bar:has(${POPS.map((id) => `${id}:not([hidden])`).join(', ')})`;
 // Every sheet and window a popover may open over: the side sheets (Quests, Make, the vendor in
 // Modern's panel shell), the old side panels and Glitch modals, the Map and the pack.
