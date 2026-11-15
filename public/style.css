@@ -14575,10 +14575,12 @@ body.is-booting .touch-controls { display: none; }
 @media (max-height: 500px) and (orientation: landscape) {
   /* #342: the Social rail (online it runs most of the screen's height) lay over Jump. The rail keeps
      the right edge; Jump and Act stand left of it (--inset-r: the drawer's width and gap, js/ui/
-     social-drawer.js), and the pack row and the controls over it sit lower, half into the home
-     indicator's inset, so the thumb's corner has more room. */
-  :root.touch-phone #game-root .touch-controls { bottom: calc(var(--pack-live-height, 72px) + env(safe-area-inset-bottom, 0px) / 2); }
-  :root.touch-phone[data-ui="modern"] #game-root .pack-bar:not([data-hb-dock]) { bottom: calc(var(--safe-b) / 2); }
+     social-drawer.js), and the pack row and the controls over it sit lower, so the thumb's corner has
+     more room: the band's 8 px foot goes into the home indicator's inset, the row itself stays 4 px
+     clear of it (Austin 2026-11-15: a tap in the strip can send Safari home), and nothing moves on a
+     phone without the strip. */
+  :root.touch-phone #game-root .touch-controls { bottom: calc(var(--pack-live-height, 72px) + max(0px, var(--safe-b) - 4px)); }
+  :root.touch-phone[data-ui="modern"] #game-root .pack-bar:not([data-hb-dock]) { bottom: max(0px, var(--safe-b) - 4px); }
   :root.touch-phone .touch-jump { right: max(var(--sp-6), env(safe-area-inset-right, 0px), var(--inset-r, 0px)); }
   :root.touch-phone .touch-act { right: calc(max(var(--sp-6), env(safe-area-inset-right, 0px), var(--inset-r, 0px)) + 76px + var(--sp-5)); }
   /* #342: the Menu squeezed between the top bar and the pack row (a 260 px window on a 402 px screen).

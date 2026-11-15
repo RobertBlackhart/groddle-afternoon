@@ -133,8 +133,28 @@ describe('#342 and #343: a phone held sideways (PHONE SIDEWAYS 2)', () => {
   it('#342: Jump and Act stand left of the Social rail; the pack row and the controls sit lower', () => {
     assert.match(block, /\.touch-jump \{ right: max\(var\(--sp-6\), env\(safe-area-inset-right, 0px\), var\(--inset-r, 0px\)\); \}/);
     assert.match(block, /\.touch-act \{ right: calc\(max\(var\(--sp-6\), env\(safe-area-inset-right, 0px\), var\(--inset-r, 0px\)\) \+ 76px \+ var\(--sp-5\)\); \}/);
-    assert.match(block, /\.pack-bar:not\(\[data-hb-dock\]\) \{ bottom: calc\(var\(--safe-b\) \/ 2\); \}/);
-    assert.match(block, /\.touch-controls \{ bottom: calc\(var\(--pack-live-height, 72px\) \+ env\(safe-area-inset-bottom, 0px\) \/ 2\); \}/);
+    assert.match(block, /\.pack-bar:not\(\[data-hb-dock\]\) \{ bottom: max\(0px, var\(--safe-b\) - 4px\); \}/);
+    assert.match(block, /\.touch-controls \{ bottom: calc\(var\(--pack-live-height, 72px\) \+ max\(0px, var\(--safe-b\) - 4px\)\); \}/);
+  });
+
+  it('the pack row clears the iPhone home-bar strip by 4 px, sideways (Austin 2026-11-15)', () => {
+    // Read the rule's own value and work it out for an iPhone held sideways (safe-area-inset-bottom
+    // 21) and a phone without the strip (0). The band's foot is 8 px under the row (measured in
+    // WebKit at 874 x 402 and 956 x 440: band 64 px, row 56 px; rules-shots packrow-after-*).
+    const value = block.match(/\.pack-bar:not\(\[data-hb-dock\]\) \{ bottom: ([^;]+); \}/)[1];
+    const px = (safe) => {
+      const m = value.match(/^max\(0px, var\(--safe-b\) - (\d+)px\)$/);
+      assert.ok(m, value);
+      return Math.max(0, safe - Number(m[1]));
+    };
+    const FOOT = 8;
+    for (const safe of [21, 34]) {
+      const rowBottom = px(safe) + FOOT;
+      assert.ok(rowBottom >= safe + 4, `safe ${safe}: the row's foot ${rowBottom} px up, the strip ${safe}`);
+      assert.ok(rowBottom <= safe + 8, `safe ${safe}: still as low as it can sit (${rowBottom})`);
+      assert.ok(px(safe) < safe, 'lower than before chk6 (the band sat on the strip)');
+    }
+    assert.equal(px(0), 0, 'a phone without the strip keeps the band at the foot');
   });
 
   it('#342: the Menu is wide, its groups side by side, down to the foot, and never see-through', () => {
