@@ -188,7 +188,7 @@ export function artViewBox(box, pad = 4) {
 }
 
 const CSS = `
-.img-reveal{position:absolute;z-index:calc(var(--z-panel) + 6);box-sizing:border-box;display:flex;overflow:hidden auto;overscroll-behavior:contain;
+.img-reveal{position:absolute;z-index:calc(var(--z-notice) + 2);box-sizing:border-box;display:flex;overflow:hidden auto;overscroll-behavior:contain;
   border-radius:var(--radius-xl);background:var(--c-sky-88) url(assets/classic/repeating_clouds.webp) 0 0 / 204px 156px repeat;
   box-shadow:var(--shadow-3);opacity:0;transition:opacity ${REVEAL_FADE_MS}ms linear;font-family:var(--font-round);color:var(--text);text-align:center}
 .img-reveal[hidden]{display:none!important}
