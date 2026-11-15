@@ -1553,11 +1553,11 @@
       "anchor": "map-nottis",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Nottis, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The ice pit, its icicles, both frozen ponds, the snowy trees and bushes, the tunnel arch, the stone blocks and the little figure sit where 2012 had them (worst tile drift 2 px at 2x). Known differences: the small round snow hollow with a grey rim just below Brilyn Chelyn is gone; the low pale ledges inside the pit came back darker and much softer: the wide shelf below the icicle wall along Myndun Snun and Hellinum Dum and the shelf along the inside of the left wall at Stornur Sezzez are faint steps, and the ridge along Stenina Jora that divides the pit floor in two is barely there.",
+      "differences": "The ice pit, its icicles, both frozen ponds, the snowy trees and bushes, the tunnel arch, the stone blocks and the little figure sit where 2012 had them, and the pale ledges inside the pit are clear again: the wide shelf below the icicle wall along Myndun Snun and Hellinum Dum, the shelf along the inside of the left wall at Stornur Sezzez and the ridge along Stenina Jora that divides the pit floor in two (worst tile drift 2 px at 2x). Known differences, small: the hollow just below Brilyn Chelyn is back in its place and about its size, but as a crisp grey stone ring, where 2012 paints a soft round snow dip with a grey shadow at its rim; the pit's ledges are smoother and more even than 2012's.",
       "facts": [
         {
           "label": "Made",
-          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
         },
         {
           "label": "Replaced",
@@ -1641,11 +1641,11 @@
       "anchor": "map-pollokoo",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Pollokoo, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The cave rim with its stalactites, every stalagmite, the flat stones, the rock pile at Intale Treats, the big stones on the front ledge at Kikal Kalzo and Sambossa Bossa, the smaller ones at Tibsii Wibbs and Zigni Zags, and most of the raised ledges the roads ran along sit where 2012 had them, bare, with no pale ribbon on them (worst tile drift 2 px at 2x). Known differences: two ledges at the top left are gone, which changes the crossing pattern there: the pale shelf under Timtim Timm (from where Kotleletti Kota and Hamli Egza meet, up and left to the back wall) came back as cave floor, and the raised ledge under Masod Match (from where Tilssi Sill and Kotleletti Kota meet, up and right to the back wall) is gone; the Tilssi Sill ledge ends a little short of that meeting point; the small dark hole in the rim face just above the start of Awasa Wash, at the bottom left, is gone.",
+      "differences": "The cave rim with its stalactites, every stalagmite, the flat stones, the rock pile at Intale Treats, the big stones on the front ledge at Kikal Kalzo and Sambossa Bossa, the smaller ones at Tibsii Wibbs and Zigni Zags, and the raised ledges the roads ran along sit where 2012 had them, bare, with no pale ribbon on them: among them the pale shelf under Timtim Timm, up and left to the back wall above the two small stalagmites, and the raised ledge under Masod Match, up and right to the back wall behind the tall stalagmite, with the Tilssi Sill ledge reaching their meeting point; the small dark hole in the rim face just above the start of Awasa Wash is back (worst tile drift 4 px at 2x in the top left tile, where the back wall meets the new shelf, 0 to 2 px in the rest). Known differences, small: the two put-back ledges are wider, smoother bands than 2012's rocky shelves, and the back wall's edge moves a few pixels where the Timtim Timm shelf meets it; the Awasa Wash hole is a neat arched opening, a little smaller than 2012's ragged dark notch.",
       "facts": [
         {
           "label": "Made",
-          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
         },
         {
           "label": "Replaced",

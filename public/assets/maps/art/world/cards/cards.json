@@ -470,14 +470,14 @@
         "file": "assets/maps/art/bg/pollokoo@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "30e2c2211b1bcf1abad0b69b81baa7590cb111945d04cc3853e2c8f045b93518"
+        "sha256": "8276f006032b95e5bdea5662cd82eb3a000dd47ec5901d77f8dc8bf1be97cd1b"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 42314,
-        "sha256": "5690d78f026dffb71f7fda5650d973cdfb436e28e5b27a40778b5b123d838d57"
+        "bytes": 39244,
+        "sha256": "4615ae1228dfdba7faf97cf0e9419568bbb046c64f25052d513639248f1a295d"
       }
     },
     "107": {
@@ -760,14 +760,14 @@
         "file": "assets/maps/art/bg/nottis@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "add0486b3354bc32d6a720ed1acf27cee1a89afda64c00dfdd529d278a3be0cb"
+        "sha256": "d799377b0f821a5a59694c342be1311830bff94c26042f0b28d678871f9d84b1"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 40254,
-        "sha256": "8845fa602d2ef6a5c06cf449d5491fb078be6ba7dc32bfccd92928355b430671"
+        "bytes": 36410,
+        "sha256": "995001ad63d2a64c640a82906c68c6bca5059892eb62e878ccbf178662664f69"
       }
     },
     "140": {
