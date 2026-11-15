@@ -1905,7 +1905,7 @@
       "anchor": "map-sura",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Sura, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The hedge blocks, the grass lanes between them, the rock at the top right, the stones, the bushes and the wooden boards at the Habitat and Preserve places sit where 2012 had them (worst tile drift 1 px at 2x). Known differences: the small dark board at Gyerean Park, just right of Ramyeon Kon, is gone; the wide flat board where Gimbap Bop, Dorji Park and Ojangi Chimi meet came back as a slatted crate with a lid, in the same place and size.",
+      "differences": "The hedge blocks, the grass lanes between them, the rock at the top right, the stones, the bushes and all twelve of 2012's wooden boards sit where 2012 had them (worst tile drift 1 px at 2x). Known differences, both small: the board at Gyerean Park, just right of Ramyeon Kon, stands a few pixels up and left of 2012's, with its bush tucked close under it where 2012's sits a little lower; the wide flat board where Gimbap Bop, Dorji Park and Ojangi Chimi meet is slatted like the other boards.",
       "facts": [
         {
           "label": "Made",
@@ -1993,7 +1993,7 @@
       "anchor": "map-tamila",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Tamila, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The yellow meadow with its bushes, stones and boulders, the stream, the forest with its hedge clumps, the rock at the top right and the boards at Samga Preserve and Jansib Preserve sit where 2012 had them (worst tile drift 2 px at 2x). Known difference: the third preserve board, small and dark, where Ambo Alms meets the start of Manoq Preserve, is gone.",
+      "differences": "The yellow meadow with its bushes, stones and boulders, the stream, the forest with its hedge clumps, the rock at the top right and all three preserve boards, at Samga Preserve, Jansib Preserve and where Ambo Alms meets the start of Manoq Preserve, sit where 2012 had them (worst tile drift 2 px at 2x). Known difference, small: the Manoq Preserve board stands a few pixels left of and below 2012's and is lighter wood than 2012's dark one.",
       "facts": [
         {
           "label": "Made",

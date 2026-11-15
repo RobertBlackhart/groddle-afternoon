@@ -372,10 +372,10 @@
       "x1": "assets/maps/art/bg/tamila.webp",
       "x2": "assets/maps/art/bg/tamila@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 88188,
-      "x1Sha256": "d359444562c835c1687b7586355f5c52999c60205944798ef8a8234d82e6ae5c",
-      "x2Bytes": 292038,
-      "x2Sha256": "8e4f1e3fe8483dd2e2e7209a25b816af2f10f3481c3b82c16badd581b18f118f"
+      "x1Bytes": 69690,
+      "x1Sha256": "c449d716b454f428202c54bde6bdd871ba7758a8f3de349e6918ed4a126c2863",
+      "x2Bytes": 219156,
+      "x2Sha256": "ce3af8f63a3385de4af35292095052073d624908dcca7b948743e822782ca23b"
     },
     "93": {
       "hubName": "Salatu",
@@ -692,10 +692,10 @@
       "x1": "assets/maps/art/bg/sura.webp",
       "x2": "assets/maps/art/bg/sura@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 101744,
-      "x1Sha256": "9c067d5d2198a4f17fe8a34019bed4ee72c80a6f7a74fa347c580e71fa3d698b",
-      "x2Bytes": 325554,
-      "x2Sha256": "e99946bf06d70c5cf84385eded403238412cff6ef28be07ed9f81db6870cae92"
+      "x1Bytes": 84288,
+      "x1Sha256": "ca995da8566c44535f8df00f04528c62179d86956c369384c92eb3970cd7d470",
+      "x2Bytes": 251684,
+      "x2Sha256": "9c140f5165cf3c55990fc7564f49f9a8d52ea401bad003cc472356b1d0faa20f"
     },
     "123": {
       "hubName": "Fenneq",
