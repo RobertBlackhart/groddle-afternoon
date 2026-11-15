@@ -29,8 +29,8 @@ import {
   routeStopsLine,
   ROUTE_STOPS_SHOWN,
   signpostToward,
-} from '../public/js/map-routes.js?v=4e58e71a';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=202999f3';
+} from '../public/js/map-routes.js?v=f23b16a2';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=f265122e';
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=9b03304d';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=657cce8b';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
@@ -39,10 +39,10 @@ import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/c
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=df2b4357';
 import { SUBWAY_STREETS } from '../public/js/quest-rooms/back-alley.js?v=06685feb';
-import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=4e58e71a';
+import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
 import { afterStreetCard, runStreetTransition, streetCardUp } from '../public/js/screen-fx.js?v=8c1be96c';
 import { EMITTED_EVENTS } from '../public/js/quest-offers.js?v=38a0cac5';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=fc80efc8';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=148ce137';
 import { addItem } from '../public/js/inventory.js?v=f49c8998';
 import { resurrect } from '../public/js/hell.js?v=df2b4357';
 
@@ -126,16 +126,17 @@ describe('finding a route over signposts', () => {
   it('goes round a closed road, never through one (Austin, Wintry Place 2026-11-03)', () => {
     assert.deepEqual(findRoute(TOY, 'GA', 'GD', { blocked: ['GC'] }), ['GA', 'GB', 'GE', 'GD']);
     assert.equal(findRoute(TOY, 'GA', 'GD', { blocked: ['GC', 'GE'] }), null, 'Glitch hid the arms: no road through');
-    assert.deepEqual(findRoute(TOY, 'GA', 'GC', { blocked: ['GC'] }), ['GA', 'GB', 'GC'], 'a closed destination is still the destination');
+    // Austin 2026-11-15: never through a crossed arm onto a street still being built (not_a_destination).
+    assert.equal(findRoute(TOY, 'GA', 'GC', { blocked: ['GC'] }), null, 'a closed destination is no route');
     // #355: of several destinations (the nearest shrine), an open one wins over a nearer closed one.
     assert.deepEqual(findRoute(TOY, 'GA', ['GC', 'GD'], { blocked: ['GC'] }), ['GA', 'GB', 'GE', 'GD']);
     assert.deepEqual(findRoute(TOY, 'GA', ['GC', 'GE'], { blocked: ['GC'] }), ['GA', 'GB', 'GE']);
-    assert.deepEqual(findRoute(TOY, 'GA', ['GC'], { blocked: ['GC'] }), ['GA', 'GB', 'GC'], 'only closed ones: the nearest still ends the route');
+    assert.equal(findRoute(TOY, 'GA', ['GC'], { blocked: ['GC'] }), null, 'only closed ones: no route');
     assert.equal(planRoute(createRouteState(), TOY, { from: 'GA', to: ['GC', 'GD'], blocked: ['GC'] }).route.destination, 'GD');
     // planRoute: no route, and the streets still being built that stand in the way.
     const res = planRoute(createRouteState(), TOY, { from: 'GA', to: 'GD', blocked: ['GC', 'GE'] });
     assert.equal(res.ok, false);
-    assert.equal(res.error, ROUTE_TEXT.notFound);
+    assert.equal(res.error, ROUTE_TEXT.noRoad);
     assert.deepEqual(res.through, ['GC']);
   });
 

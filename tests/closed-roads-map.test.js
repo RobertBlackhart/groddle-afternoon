@@ -10,7 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=d0ca0659';
-import { findRoute } from '../public/js/map-routes.js?v=4e58e71a';
+import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -82,9 +82,8 @@ describe('ticket 37: a road under construction says what is true', () => {
   });
 
   it('a street beyond a closed road: the route goes round it, or the Map says which street is in the way', () => {
-    const route = findRoute(graph, index.default, job.street, { blocked: [...shut] });
-    assert.ok(route && route.at(-1) === job.street, 'a closed destination still routes (the menu greys it, quests may not)');
-    for (const t of route.slice(1, -1)) assert.equal(shut.has(t), false, 'never through a closed road');
+    // Austin 2026-11-15: a street still being built is no destination at all (location.js not_a_destination).
+    assert.equal(findRoute(graph, index.default, job.street, { blocked: [...shut] }), null, 'a closed destination is no route');
     const game = read('public/game.js');
     assert.match(game, /const building = here \? null : features\.query\('streetUnderConstruction', street\.tsid, engine\);/);
     assert.match(game, /label: 'Set as Destination',\n\s+tip: 'Get a guided path to this location',\n\s+disabled: here \|\| Boolean\(building\),\n\s+reason: here \? MAP_ALREADY_HERE : building \? building\.note : '',/);

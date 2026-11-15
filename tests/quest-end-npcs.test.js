@@ -20,7 +20,7 @@ import { join } from 'node:path';
 import { getQuestCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { classifyQuests, heldForNpcTurnIn } from '../public/js/quest-offers.js?v=38a0cac5';
 import { vendorStreetsFor } from '../public/js/vendor-npcs.js?v=7d756a6d';
-import { findRoute, routeGraph, ROUTE_SOURCES } from '../public/js/map-routes.js?v=4e58e71a';
+import { findRoute, routeGraph, ROUTE_SOURCES } from '../public/js/map-routes.js?v=f23b16a2';
 import { MERCHANT_ROUTE_SOURCE, routeHeldQuests } from '../public/js/features/vendor-npcs-feature.js?v=6a7ee8c7';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');

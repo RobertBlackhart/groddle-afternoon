@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=814ba28e';
 import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=2c5b9ca6';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
-import { findRoute } from '../public/js/map-routes.js?v=4e58e71a';
+import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=18b181ad';
 import { selectVendorProfile } from '../public/js/vendor.js?v=6b499efc';
 

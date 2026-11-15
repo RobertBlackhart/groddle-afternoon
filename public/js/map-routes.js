@@ -75,6 +75,8 @@ export const ROUTE_TEXT = Object.freeze({
   fromHome: 'Return to the world to continue on your path',
   /** player.js buildPath 2546. */
   notFound: 'Path not found',
+  /** The remake's own (Austin 2026-11-15): the destination is still under construction, or only closed roads lead there. */
+  noRoad: 'No road there yet',
   /** GpsUI.as moveMoveEnded 347-352 growl. */
   rerouteFailed: 'Creating path failed: Path not found',
   /** items/contraband.js check_address 71. */
@@ -201,9 +203,11 @@ export function doorRooms(json = {}) {
  * (street projects, js/street-jobs.js closedStreets): the route goes round
  * them and never through one (Glitch hid their signpost arms, so its global
  * path finding had no road there: locations/inc_jobs.js jobs_modify_connections,
- * jobs_unlock apiReloadDataForGlobalPathFinding); a closed destination is
- * still the end of a route, but of several destinations (the nearest shrine) an open one wins:
- * with its arms hidden, apiFindShortestGlobalPath could not reach a closed street at all (#355).
+ * jobs_unlock apiReloadDataForGlobalPathFinding), and never ends on one either: with its arms
+ * hidden, apiFindShortestGlobalPath could not reach a closed street at all (#355), and the Map
+ * marked it not_a_destination (location.js 2915-2935). Of several destinations (the nearest
+ * shrine, the nearest vendor) the nearest open one wins; only closed ones is no route (Austin
+ * 2026-11-15: a route to Middle Arbor ran through its crossed signpost arm).
  * `locked` lists door edges ("from>to", routeGraph) that need a key: the
  * route takes one only when nothing else gets there (G192).
  * `oneWay` (oneWayRoads) and `startCut` (startCut) keep a route off the roads a one-way street
@@ -221,13 +225,8 @@ export function findRoute(graph, from, to, { blocked = null, locked = null, ride
   if (targets.has(start)) return [start];
   const closed = new Set();
   for (const t of blocked || []) for (const a of tsidAliases(t)) closed.add(a);
-  if (targets.size > 1 && closed.size) {
-    const open = [...targets].filter((t) => !closed.has(t));
-    if (open.length && open.length < targets.size) {
-      const path = findRoute(graph, from, open, { blocked, locked, rides, oneWay, startCut });
-      if (path) return path;
-    }
-  }
+  for (const t of [...targets]) if (closed.has(t)) targets.delete(t);
+  if (!targets.size) return null;
   const keyed = locked && locked.size ? locked : null;
   const ways = { oneWay: oneWay && Object.keys(oneWay).length ? oneWay : null, startCut: startCut ? new Set(startCut) : null };
   const noKey = (extra) => bfs(graph, start, targets, closed, keyed, extra, ways);
@@ -359,7 +358,7 @@ function bfs(graph, start, targets, closed, locked, rides = null, { oneWay = nul
     for (const next of on) {
       if (cut && cut.has(next)) continue;
       if (locked && locked.has(`${street}>${next}`)) continue;
-      if (closed.has(next) && !targets.has(next)) continue;
+      if (closed.has(next)) continue;
       // A ride comes up the station stairs, not off a signpost: an arrival the file does not know.
       const came = roads.includes(next) ? street : '';
       const state = stateOf(next, came);
@@ -421,13 +420,14 @@ export function planRoute(state, graph, { from, to, source = 'player', quest = '
   if (!list.length) return { ok: false, state: s, error: ROUTE_TEXT.notFound };
   if (from && list.some((t) => sameStreet(t, from))) return { ok: false, state: s, error: ROUTE_TEXT.alreadyThere };
   const path = from ? findRoute(graph, from, list, { blocked, locked, rides, oneWay, startCut }) : null;
-  // Only closed roads in the way (street projects): no route, and which streets are still being built.
   if (!path && from && graphKey(graph, from) && blocked) {
-    const open = findRoute(graph, from, list, { locked, rides, oneWay, startCut });
-    if (open) {
-      const shut = new Set([...blocked].flatMap((t) => tsidAliases(t)));
-      return { ok: false, state: s, error: ROUTE_TEXT.notFound, through: open.slice(1).filter((t) => shut.has(t)) };
-    }
+    const shut = new Set([...blocked].flatMap((t) => tsidAliases(t)));
+    const open = list.filter((t) => !shut.has(graphKey(graph, t) || t));
+    // Every destination still under construction: no route through its crossed arm (not_a_destination).
+    if (!open.length) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, closed: graphKey(graph, list[0]) || String(list[0]), through: [] };
+    // Only closed roads in the way (street projects): no route, and which streets are still being built.
+    const any = findRoute(graph, from, open, { locked, rides, oneWay, startCut });
+    if (any) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, through: any.slice(1).filter((t) => shut.has(t)) };
   }
   // A route from somewhere off the graph (an instance, Hell One) still keeps its
   // destination: the GPS says "Return to world for directions" until a street on
