@@ -207,9 +207,9 @@
       ]
     },
     {
-      "id": "maps:100,51,91",
+      "id": "maps:100,143,91",
       "name": "More region maps",
-      "caption": "Three more of the region paintings made again from their thumbnails: Vantalu, Uralia and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
+      "caption": "Three more of the region paintings made again from their thumbnails: Vantalu, Vortex of Random and Zhambu, from top to bottom. Each kept its region's own shape and colours.",
       "display": {
         "w": 161,
         "h": 300
@@ -217,7 +217,7 @@
       "image": {
         "file": "public/assets/made-art/maps-painted.webp",
         "label": "Painted again for Groddle",
-        "alt": "Three painted top-down maps: a pale cracked cliff above a green meadow of hedges, a small teal island scattered with stones on pale paper, and a golden savanna dotted with scrub, boulders and a small blue pool."
+        "alt": "Three painted top-down maps: a pale cracked cliff above a green meadow of hedges, a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky, and a golden savanna dotted with scrub, boulders and a small blue pool."
       },
       "original": {
         "file": "public/assets/made-art/maps-thumbs.webp",
@@ -247,7 +247,7 @@
         },
         {
           "label": "In the game",
-          "text": "The backgrounds of the Vantalu, Uralia and Zhambu region maps."
+          "text": "The backgrounds of the Vantalu, Vortex of Random and Zhambu region maps."
         }
       ]
     }

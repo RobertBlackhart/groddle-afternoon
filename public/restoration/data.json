@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2193,
+  "commits": 2195,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Uralia's map is Tiny Speck's 2012 painting, restored"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "The Act chooser shows a picture for your home furniture"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "Le Misérable II's small doors let only a shrunk Glitch through"
    }
   ]
  },

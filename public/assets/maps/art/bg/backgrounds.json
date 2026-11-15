@@ -110,10 +110,10 @@
       "x1": "assets/maps/art/bg/uralia.webp",
       "x2": "assets/maps/art/bg/uralia@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 29148,
-      "x1Sha256": "1c9993753b61bc579298e0798c9a2297019f2073e325fa0d7033a353d32c0530",
-      "x2Bytes": 90252,
-      "x2Sha256": "73afd4d527b4a508af9b261d893355888b89710be14cff61cf2b27883b12dd18"
+      "x1Bytes": 70278,
+      "x1Sha256": "882446fed7d7301803b9355c13c8efe12bb620e6b76f085804c84efb7bf50ce1",
+      "x2Bytes": 224558,
+      "x2Sha256": "b29f4fd72af8c5f066da35c3cb7c53860470620bf6984106b767a13b25f7b0cf"
     },
     "56": {
       "hubName": "Groddle Forest",

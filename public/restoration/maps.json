@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 33,
-    "painted": 17,
+    "restored": 34,
+    "painted": 16,
     "layout": 1
   },
   "world": {
@@ -1504,6 +1504,50 @@
       "place": "/encyclopedia/places/samudra/"
     },
     {
+      "id": "51",
+      "name": "Uralia",
+      "anchor": "map-uralia",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Uralia, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The island's coast, its purple cliff band and gold rim with the pale glow round it, the raised ledges and flat stone slabs at the left, the mushroom rocks, the purple plants and their curled roots, the boulders and grass mounds, the big grass clump at the right, the rumpled hills at the bottom and the round raised ledge under the station badge sit where 2012 had them (worst tile drift 2 px at 2x; nothing added where 2012 drew roads, names, icons or GO buttons). Known differences: the paper sea came back as plain grained paper without 2012's faint dashed contour lines (as Chakra Phool and Firozi did); the grass is a little greener than 2012's teal (median hue 164 degrees against 172: the toning matches saturation and lightness, not hue); the small glowing cyan plants came back pale grey-green, and the one beside the ledge just above the start of the name Ilmenskie is only a tiny sprout.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/uralia.webp",
+        "w": 760,
+        "h": 460,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Uralia, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/uralia.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Uralia restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/uralia@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/51.svg",
+        "w": 151,
+        "h": 123,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/uralia/"
+    },
+    {
       "id": "71",
       "name": "Jethimadh",
       "anchor": "map-jethimadh",
@@ -1982,46 +2026,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/tamila/"
-    },
-    {
-      "id": "51",
-      "name": "Uralia",
-      "anchor": "map-uralia",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Uralia survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/uralia.webp",
-        "w": 760,
-        "h": 460,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Uralia, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/uralia.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Uralia painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/uralia@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/51.svg",
-        "w": 151,
-        "h": 123,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/uralia/"
     },
     {
       "id": "100",

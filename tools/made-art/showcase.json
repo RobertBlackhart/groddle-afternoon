@@ -58,10 +58,10 @@
    ]
   },
   "public/assets/made-art/maps-painted.webp": {
-   "what": "The paintings of Vantalu, Uralia and Zhambu made again for Groddle",
+   "what": "The paintings of Vantalu, Vortex of Random and Zhambu made again for Groddle",
    "w": 600,
    "h": 1116,
-   "sha256": "778c7870454cbd0fbe4280aa4bde89c8c246e4a5e08d2769538190ed80e66f54",
+   "sha256": "843ac10b1a231ce673d11b3ecb51c46cff5ad3d407feeae16422acf770a0ab31",
    "made": "the three repainted maps (2x files) at four times the thumbnails, one above the other, 12 px apart (tools/provenance/repainted-maps.json)",
    "from": [
     {
@@ -69,8 +69,8 @@
      "sha256": "ad8106733dff822e53e83374de9791353c0b816d7c4f353a472c624ceb74c2bb"
     },
     {
-     "file": "public/assets/maps/art/bg/uralia@2x.webp",
-     "sha256": "73afd4d527b4a508af9b261d893355888b89710be14cff61cf2b27883b12dd18"
+     "file": "public/assets/maps/art/bg/vortex@2x.webp",
+     "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
     },
     {
      "file": "public/assets/maps/art/bg/zhambu@2x.webp",
@@ -79,10 +79,10 @@
    ]
   },
   "public/assets/made-art/maps-thumbs.webp": {
-   "what": "Tiny Speck's thumbnails of Vantalu, Uralia and Zhambu",
+   "what": "Tiny Speck's thumbnails of Vantalu, Vortex of Random and Zhambu",
    "w": 150,
    "h": 279,
-   "sha256": "fc1a51224f7cb136db3f93aedd2af664d7bc70fd397a05d8dbee4177fc1e6e64",
+   "sha256": "80999608f758cafff96c04314953329878760cc8b2f9fcafa8ebfed2944fa68d",
    "made": "the three CC0 thumbnails as they are, one above the other, 3 px apart",
    "from": [
     {
@@ -91,8 +91,8 @@
      "licence": "CC0 1.0, Tiny Speck"
     },
     {
-     "file": "public/assets/maps/art/thumbs/sm_uralia.jpg",
-     "sha256": "4d4ddccb5d659d2b945f7d70dbf6eb1b2818e3dc461faa54647468502582ce2d",
+     "file": "public/assets/maps/art/thumbs/sm_vortex.jpg",
+     "sha256": "999e7706fd7dbf04ceaaa70485814bd89e4b9ab66764cf583ad881177c162d0e",
      "licence": "CC0 1.0, Tiny Speck"
     },
     {

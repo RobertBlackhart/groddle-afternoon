@@ -44,14 +44,14 @@
         "file": "assets/maps/art/bg/uralia@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "73afd4d527b4a508af9b261d893355888b89710be14cff61cf2b27883b12dd18"
+        "sha256": "b29f4fd72af8c5f066da35c3cb7c53860470620bf6984106b767a13b25f7b0cf"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 18052,
-        "sha256": "f8f771135735167d0f94e9cbdb93a7c6d5460a0d494a6489787bbfbfa2659ee3"
+        "bytes": 46386,
+        "sha256": "231e9edd6b0f65963b9c35131edff52276139edf6e2b93d8a2d1d77f9a1d32d4"
       }
     },
     "56": {
