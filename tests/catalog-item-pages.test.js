@@ -94,7 +94,7 @@ describe('recipes: skills, energy and time', () => {
         rows += 1;
         assert.ok(m[2].includes(c.energy ? `${c.energy.toLocaleString('en-US')} energy each` : 'no energy'), `${item.id} ${m[1]}: energy`);
         assert.ok(m[2].includes(c.time), `${item.id} ${m[1]}: ${c.time}`);
-        assert.equal((m[2].match(/<span>needs /g) || []).length, c.skills.length, `${item.id} ${m[1]}: skills`);
+        assert.equal((m[2].match(/<span>needs (?!the [^<]* achievement)/g) || []).length, c.skills.length, `${item.id} ${m[1]}: skills`);
       }
     }
     assert.ok(rows > 300, `${rows} recipe rows`);
