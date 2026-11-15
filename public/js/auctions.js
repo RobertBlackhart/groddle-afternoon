@@ -52,6 +52,8 @@ export const AUCTION_TEXT = Object.freeze({
   searchHint: 'Give us at least 3 letters to search for',
   none: 'No active auctions',
   forbidden: 'This type of item can not be auctioned.',
+  // Ours (#362): tradeable, but the site has not counted this stack yet (the ledger catches up with the pack at its own pace).
+  notCounted: 'This is not counted for trading yet. New items usually count within a few minutes, so try again soon.',
   feeDesc: (r) => `All auctions have a non-refundable listing fee of ${r.listPercent}% (minimum ${r.listMin} currants)`,
   commissionDesc: (r) => `Successful auctions are charged a commission of ${r.commission}% at time of sale`,
   snooze: 'You snooze, you lose... Someone purchased this auction.',

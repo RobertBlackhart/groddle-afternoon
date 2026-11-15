@@ -72,7 +72,7 @@ import {
   splitEnded,
   suggestedPrice,
   unitPrice,
-} from '../auctions.js?v=71aecd32';
+} from '../auctions.js?v=9a1488e7';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 
 export const AUCTIONS_FEATURE_ID = 'auctions';
@@ -651,7 +651,9 @@ function createSession(engine) {
   async function choose(c) {
     const s = sellables().find((x) => x.c === c);
     if (!s) {
-      pick = { c, n: 0, cost: 0, forbidden: true };
+      // #362: a tradeable class the pack holds but the site has not counted yet is not "forbidden".
+      const pending = countItem(engine.inv, c) > 0 && (!table || !!table.items?.[c]);
+      pick = { c, n: 0, cost: 0, forbidden: true, pending };
       render();
       return;
     }
@@ -720,7 +722,7 @@ function createSession(engine) {
   function sellBox(s) {
     const box = el('div', { class: 'auc-sell', 'data-auctions-sell': pick.c });
     if (!s || pick.forbidden) {
-      box.append(el('h3', {}, label(pick.c, 1)), el('p', {}, T.forbidden));
+      box.append(el('h3', {}, label(pick.c, 1)), el('p', { 'data-auctions-why': pick.pending ? 'not-counted' : 'forbidden' }, pick.pending ? T.notCounted : T.forbidden));
       return box;
     }
     const one = label(pick.c, 1);
@@ -953,7 +955,8 @@ export const auctionsFeature = {
     if (t && !t.items?.[c]) return null;
     const out = [{ id: 'auctions_find', label: T.find, enabled: true, reason: '', tooltip: T.findTip }];
     const can = session.sellables().some((s) => s.c === c);
-    out.push({ id: 'auctions_sell', label: T.sell, enabled: can, reason: can ? '' : T.forbidden, tooltip: T.sellTip });
+    // #362: the table lists this class, so a stack in the pack the site cannot sell yet is waiting to be counted.
+    out.push({ id: 'auctions_sell', label: T.sell, enabled: can, reason: can ? '' : T.notCounted, tooltip: T.sellTip });
     return out;
   },
 

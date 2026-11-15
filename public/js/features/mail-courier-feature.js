@@ -121,7 +121,7 @@ import {
   sendCarriedToMailbox,
   sendDueToMailbox,
 } from '../mail-courier.js?v=68125101';
-import { AUCTION_SENDER, mailSubject, mailText } from '../auctions.js?v=71aecd32';
+import { AUCTION_SENDER, mailSubject, mailText } from '../auctions.js?v=9a1488e7';
 import { formatStack } from '../gifts.js?v=8b3debd1';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 
