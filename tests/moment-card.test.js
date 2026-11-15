@@ -18,8 +18,8 @@ import {
   momentMoreText,
   rewardChips,
   rewardIcon,
-} from '../public/js/ui/moment-card.js?v=df448740';
-import { awardRewardTokens } from '../public/js/screen-fx.js?v=ebdb038b';
+} from '../public/js/ui/moment-card.js?v=1af38c9a';
+import { awardRewardTokens } from '../public/js/screen-fx.js?v=56593d84';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -117,7 +117,7 @@ describe('the big moment card in the page', () => {
 
   it('leaves the screens\' rules to screen-fx.js (art and chips only in the modern skin)', () => {
     const fx = read('js/screen-fx.js');
-    assert.match(fx, /const modern = isModernSkin\(\);\n\s+const art = modern \? momentArt\(payload\) : payload\.iconUrl;/);
+    assert.match(fx, /const modern = isModernSkin\(\);\n\s+const art = modern \? momentArt\(payload\) : momentSharpUrl\(payload\.iconUrl\);/);
     assert.match(fx, /const chips = modern && !paged \? rewardChips\(/);
     assert.match(fx, /await holdScreenUntilDismissed\(el, \{ button: next, autoCloseMs: awardAutoCloseMs\(\) \}\);/);
   });

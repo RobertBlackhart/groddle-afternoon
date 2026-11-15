@@ -4,12 +4,12 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b65f9567';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b5cbdf86';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=98b6e41a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
 import { createVogOverlay } from './js/vog-overlay.js?v=e6959148';
-import { createPromptStack } from './js/prompt-stack.js?v=6b79ae9b';
+import { createPromptStack } from './js/prompt-stack.js?v=08f1b4fa';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=b5ad80ff';
 import {
@@ -795,8 +795,8 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=ebdb038b';
-import { momentMoreText } from './js/ui/moment-card.js?v=df448740';
+} from './js/screen-fx.js?v=56593d84';
+import { momentMoreText } from './js/ui/moment-card.js?v=1af38c9a';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=72d000ac';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
 import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=6012d3c7';
@@ -809,7 +809,7 @@ import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=ce86b5b6';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=94c8840a';
 import {
   planTravel,
   listMapDestinations,

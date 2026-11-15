@@ -1,4 +1,37 @@
 {
+ "emblem_alph": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_alph/emblem_alph.swf"
+ },
+ "emblem_cosma": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_cosma/emblem_cosma.swf"
+ },
+ "emblem_friendly": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_friendly/emblem_friendly.swf"
+ },
+ "emblem_grendaline": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_grendaline/emblem_grendaline.swf"
+ },
+ "emblem_humbaba": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_humbaba/emblem_humbaba.swf"
+ },
+ "emblem_lem": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_lem/emblem_lem.swf"
+ },
+ "emblem_mab": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_mab/emblem_mab.swf"
+ },
+ "emblem_pot": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_pot/emblem_pot.swf"
+ },
+ "emblem_spriggan": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_spriggan/emblem_spriggan.swf"
+ },
+ "emblem_ti": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_ti/emblem_ti.swf"
+ },
+ "emblem_zille": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_zille/emblem_zille.swf"
+ },
  "petrified_rock_large": {
   "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_large/petrified_rock_large.swf",
   "frame": "iconic"
@@ -10,5 +43,9 @@
  "petrified_rock_small": {
   "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_small/petrified_rock_small.swf",
   "frame": "iconic"
+ },
+ "sign_stake": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/sign_stake/sign_stake.swf",
+  "one": "public/assets/sprites/street-jobs/sign_stake.webp"
  }
 }

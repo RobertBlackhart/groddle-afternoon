@@ -11,6 +11,8 @@
  * Pure helpers, tested without a DOM (tests/moment-card.test.js).
  */
 
+import { MOMENT_SHARP } from '../moment-art-list.js?v=e51336e6';
+
 /**
  * The award card's quest book (2026-11-12, Austin: "ship it if it matches"): a faithful 6x redraw
  * of Tiny Speck's graphics/quest_book.png (86x58), made solid so the card's rays don't show through
@@ -38,8 +40,45 @@ export function isModernSkin(doc = globalThis.document) {
 
 /** The art the card shows: the payload's own, else the kind's, else null (the glyph). */
 export function momentArt(payload = {}) {
-  if (payload.iconUrl) return /(^|\/)quest-book\.webp$/.test(payload.iconUrl) ? QUEST_BOOK_SOLID : payload.iconUrl;
+  if (payload.iconUrl) return /(^|\/)quest-book\.webp$/.test(payload.iconUrl) ? QUEST_BOOK_SOLID : momentSharpUrl(payload.iconUrl);
   return MOMENT_ART[payload.kind] || null;
+}
+
+const SMALL_ART = /^(.*?)assets\/sprites\/(?:icons|street-jobs)\/([a-z0-9_]+)(?:@3x)?\.webp(?:\?.*)?$/;
+
+/**
+ * A small icon's sharp render for the card, when there is one (lane momentart, 2026-11-15: the
+ * Feat Completed card drew the 60 px @3x Small Petrified Rock across about 500 device px on an
+ * iPhone). js/moment-art-list.js lists the renders (assets/sprites/moment/<id>.webp, 498 px on the
+ * long side, from Tiny Speck's vector SWFs); any other URL comes back as it is. Both skins use it.
+ */
+export function momentSharpUrl(url) {
+  const m = SMALL_ART.exec(String(url || ''));
+  return m && MOMENT_SHARP.has(m[2]) ? `${m[1]}assets/sprites/moment/${m[2]}.webp` : url;
+}
+
+/** Device pixels the card may spend on one pixel of raster art before it reads as blurred. */
+export const MOMENT_ART_STRETCH = 3;
+
+/**
+ * The density a loaded card image was picked at: 3 when js/icon-hires.js gave it a `3x` srcset and
+ * the browser took the @3x file (its natural size is then a third of the file's), else 1.
+ */
+export function artDensity(currentSrc = '', hasSrcset = false) {
+  return hasSrcset && /@3x\.webp(\?|$)/.test(String(currentSrc)) ? 3 : 1;
+}
+
+/**
+ * The largest CSS size (px, the long side) the card should draw raster art at: at most
+ * MOMENT_ART_STRETCH device pixels for each of its own pixels, so small art stays crisp at a
+ * smaller size instead of blurring at the card's full 166 px. null for vector art (SVG) or an
+ * image with no size yet. `width`/`height` are the image's natural size at `density`.
+ */
+export function momentArtCap({ width = 0, height = 0, density = 1, dpr = 1, url = '' } = {}) {
+  if (/\.svg(\?|#|$)|^data:image\/svg/i.test(String(url))) return null;
+  const long = Math.max(Number(width) || 0, Number(height) || 0) * (Number(density) || 1);
+  if (!long) return null;
+  return Math.floor((long * MOMENT_ART_STRETCH) / Math.max(1, Number(dpr) || 1));
 }
 
 /** Which art it is, for its size: the quest book is wide (86x58), the rest square. */

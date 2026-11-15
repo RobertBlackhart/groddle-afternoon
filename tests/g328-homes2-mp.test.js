@@ -43,7 +43,7 @@ import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden 
 import { butlerApi } from '../public/js/features/butler-feature.js?v=ab9a7a41';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=77816a7d';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=af8a177c';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=be4a7318';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 

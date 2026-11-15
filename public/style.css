@@ -7373,6 +7373,9 @@ header.top-bar + .sub { display: none; }
 .award-badge img {
   width: 100%;
   height: 100%;
+  /* Small raster art stays crisp smaller (js/screen-fx.js capMomentArt sets the cap). */
+  max-width: var(--moment-art-cap, none);
+  max-height: var(--moment-art-cap, none);
   object-fit: cover;
   display: block;
 }

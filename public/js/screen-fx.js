@@ -9,7 +9,7 @@
 
 import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBounce, mountPetRock } from './familiar.js?v=b9597cd3';
 import { formatLoadingTime, ordinal } from './exploration.js?v=68f27989';
-import { isModernSkin, momentArt, momentArtShape, rewardChips } from './ui/moment-card.js?v=df448740';
+import { artDensity, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=1af38c9a';
 
 /**
  * Street-load timings (seconds).
@@ -1258,6 +1258,20 @@ async function showAwardPages(el, { payload, pages, next, close, body, sub }) {
   }
 }
 
+/** Cap the award art's drawn size from its natural size (style.css .award-badge img max-width). */
+function capMomentArt(img) {
+  const cap = momentArtCap({
+    width: img.naturalWidth,
+    height: img.naturalHeight,
+    density: artDensity(img.currentSrc, img.hasAttribute('srcset')),
+    dpr: globalThis.devicePixelRatio || 1,
+    url: img.currentSrc || img.getAttribute('src') || '',
+  });
+  if (cap) img.style.setProperty('--moment-art-cap', `${cap}px`);
+  else img.style.removeProperty('--moment-art-cap');
+  img.dataset.artCap = cap ? String(cap) : '';
+}
+
 /**
  * Full-screen award / quest complete celebration. It stays until the player
  * closes it (holdScreenUntilDismissed: its OK button, Enter or Escape once the
@@ -1293,7 +1307,7 @@ export async function showAwardScreen(el, payload) {
   const screen = awardScreenKind(payload);
   // The modern skin's big moment card (js/ui/moment-card.js): art for every moment, reward chips.
   const modern = isModernSkin();
-  const art = modern ? momentArt(payload) : payload.iconUrl;
+  const art = modern ? momentArt(payload) : momentSharpUrl(payload.iconUrl);
   if (modern && art) el.dataset.art = momentArtShape(art);
   else delete el.dataset.art;
 
@@ -1329,6 +1343,9 @@ export async function showAwardScreen(el, payload) {
     if (art) {
       img.hidden = false;
       img.alt = payload.title || 'Badge';
+      // Raster art is drawn no bigger than 3 device px per pixel of its own (moment-card.js momentArtCap).
+      img.style.removeProperty('--moment-art-cap');
+      img.onload = () => capMomentArt(img);
       img.src = art;
       glyph.hidden = true;
       img.onerror = () => {
