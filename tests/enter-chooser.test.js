@@ -290,6 +290,28 @@ describe('tile art at the tile\'s pixel size', () => {
     assert.equal(drawTileArt({ bounds }), null);
   });
 
+  it('#341 (G763): a home piece behind a hit box shows its catalog art, else its pack icon', async () => {
+    const at = game.indexOf('function enterChoiceIcon(');
+    const icon = game.slice(at, game.indexOf('\n}\n', at));
+    assert.match(icon, /const named = choice\.target\?\.chooserIcon \|\| null;\n\s+if \(named\) return named;/);
+    assert.ok(icon.indexOf('chooserIcon') < icon.indexOf('renderer.extract'), 'before any drawing');
+    assert.match(icon, /return drawn \? trimmedIconUrl\(drawn\) : fallback;/);
+    const storage = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/features/home-storage-feature.js'), 'utf8');
+    assert.match(storage, /const chooserIcon = pieceArt\(row\.classTsid, row\.upgradeId\)\?\.path \|\| itemIcon\(row\.classTsid\);/);
+    assert.match(storage, /sprite: box, chooserIcon,/);
+    // Online: a piece you may sell (the report's chair and Fire) and a friend's worn-out cultivation.
+    const homeMp = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/features/home-street-mp-feature.js'), 'utf8');
+    assert.match(homeMp, /addTarget\(\{ classId: CLASS_SALE, label, subtitle, sprite: box, chooserIcon,/);
+    assert.match(homeMp, /addTarget\(\{ classId: CLASS_PROTO, label, subtitle: T\.wornOut, sprite: box, chooserIcon,/);
+    // The pictures of the report's pieces are on disk: a plain chair, the Fire and the storage box upgrades.
+    const { pieceArt } = await import('../public/js/home-decor.js?v=06be9c65');
+    const pub = join(dirname(fileURLToPath(import.meta.url)), '../public/');
+    for (const [cls, id] of [['furniture_chair', ''], ['furniture_tabledeco', '708'], ['furniture_chair', '15'], ['bag_furniture_sdb', '550']]) {
+      const art = pieceArt(cls, id);
+      assert.ok(art?.path && existsSync(pub + art.path), `${cls} ${id}: ${art?.path}`);
+    }
+  });
+
   it('game.js draws each tile through drawTileArt at the device pixel ratio', () => {
     const at = game.indexOf('function enterChoiceIcon(');
     const icon = game.slice(at, game.indexOf('\n}\n', at));

@@ -44,7 +44,7 @@
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=f49c8998';
-import { displayRefusal, furnitureDef, furnitureSize, isFurniture } from '../home-decor.js?v=06be9c65';
+import { displayRefusal, furnitureDef, furnitureSize, isFurniture, pieceArt } from '../home-decor.js?v=06be9c65';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { textureFromUrl } from '../textures.js?v=814d7926';
 import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=4d446d78';
@@ -265,7 +265,10 @@ function draw(engine) {
         subtitle = `${shown.stock.toLocaleString('en-US')} ${pluralOf(row.display?.classTsid || shown.class)} at ${shown.price.toLocaleString('en-US')}c each`;
       } else if (row.display?.count) subtitle = `${row.display.count.toLocaleString('en-US')} ${row.display.count === 1 ? labelOf(row.display.classTsid) : pluralOf(row.display.classTsid)}`;
       // itemClass: the piece's Glitch item, so a click on a cabinet opens it (G661, js/world-context-menu.js).
-      e.target = engine.register({ featureId: HOME_STORAGE_ID, classId: CLASS_STORAGE, label: name, subtitle, sprite: box, state: { uid: row.id, owner, itemClass: row.classTsid } });
+      // chooserIcon (#341, G763): the box is an invisible hit box, so the Act/Enter chooser shows the
+      // piece's catalog art (its upgrade's when upgraded), else its pack icon.
+      const chooserIcon = pieceArt(row.classTsid, row.upgradeId)?.path || itemIcon(row.classTsid);
+      e.target = engine.register({ featureId: HOME_STORAGE_ID, classId: CLASS_STORAGE, label: name, subtitle, sprite: box, chooserIcon, state: { uid: row.id, owner, itemClass: row.classTsid } });
     }
     if (shown?.selling) {
       // sdb_cost (getExtraConfig 944-957): the sale price over the box, 55 px up.

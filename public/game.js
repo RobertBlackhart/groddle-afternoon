@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3fca895d';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d38fed20';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=94c2a8b7';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -10012,7 +10012,12 @@ function enterChoiceIcon(choice) {
   const spr = choice.kind === 'signpost'
     ? (bgLayer?.signViews || []).find((v) => v.signpost === choice.signpost)
     : choice.target?._gardenRoot || choice.target?.sprite;
-  if (!spr || spr.destroyed || !app?.renderer) return null;
+  // #341 (G763): a target whose sprite is only a hit box (home furniture: home-storage-feature)
+  // names its own art; else its Glitch item's icon when it is nothing to draw.
+  const named = choice.target?.chooserIcon || null;
+  if (named) return named;
+  const fallback = choice.target?.state?.itemClass ? itemIconUrl(choice.target.state.itemClass) : null;
+  if (!spr || spr.destroyed || !app?.renderer) return fallback;
   // A bare (animated) sprite is drawn from its current frame: extract renders a
   // leaf with its own street transform, which lands outside the frame. A sprite with a
   // count badge (a guano pile) is drawn from its frame too, without the badge.
@@ -10032,9 +10037,9 @@ function enterChoiceIcon(choice) {
         ...(frame ? { frame: new PIXI.Rectangle(frame.x, frame.y, frame.width, frame.height) } : {}),
       }),
     });
-    return drawn ? trimmedIconUrl(drawn) : null;
+    return drawn ? trimmedIconUrl(drawn) : fallback;
   } catch (_) {
-    return null;
+    return fallback;
   } finally {
     if (art !== spr) art.destroy();
   }

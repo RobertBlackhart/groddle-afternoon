@@ -41,9 +41,9 @@
  */
 
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=f49c8998';
 import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=202c452e';
-import { furnitureDef, furnitureScale, furnitureSize } from '../home-decor.js?v=06be9c65';
+import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=06be9c65';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=a3135ffd';
@@ -467,7 +467,9 @@ function createSession(engine, client) {
       }
       const label = pieceLabel(row, def.label) || ITEM_CATALOG[row.classTsid]?.label || row.classTsid;
       const subtitle = listing ? T.buyTip(listing.price) : 'Yours';
-      const target = box ? addTarget({ classId: CLASS_SALE, label, subtitle, sprite: box, state: { uid: row.uid, owner } }) : null;
+      // chooserIcon (#341, G763): the box is an invisible hit box; the Act/Enter chooser shows the piece's art.
+      const chooserIcon = pieceArt(row.classTsid, row.upgradeId)?.path || itemIcon(row.classTsid);
+      const target = box ? addTarget({ classId: CLASS_SALE, label, subtitle, sprite: box, chooserIcon, state: { uid: row.uid, owner } }) : null;
       drawn.sales.set(row.uid, { target, box, tag, uid: row.uid, classTsid: row.classTsid, label, listing, x: row.x, row: row.source || null });
     }
   }
@@ -680,7 +682,9 @@ function createSession(engine, client) {
       box._worldHitH = h;
       engine.entityLayer.addChild(box);
       const label = cultivationDef(r.proto)?.label || 'Worn out';
-      const target = addTarget({ classId: CLASS_PROTO, label, subtitle: T.wornOut, sprite: box, state: { wire: r.job } });
+      // #341: the hit box has no art of its own; the chooser shows the proto's worn-out frame.
+      const chooserIcon = art ? `assets/sprites/cultivation/proto/${art[0]}` : null;
+      const target = addTarget({ classId: CLASS_PROTO, label, subtitle: T.wornOut, sprite: box, chooserIcon, state: { wire: r.job } });
       drawn.protos.set(r.job, { target, wire: r.job });
     }
     sendTokens(restores);
