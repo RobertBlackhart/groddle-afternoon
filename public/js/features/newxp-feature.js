@@ -115,6 +115,8 @@ import {
   shouldResume,
   tutorialPillSpot,
   instructionFor,
+  markStage,
+  markStep,
   startNewxp,
   street4Check,
   questQueueLine,
@@ -126,7 +128,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=b89001c1';
+} from '../newxp.js?v=96c67fcc';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=61be601c';
@@ -142,7 +144,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=b59156cf';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=11d72678';
+import { HOME_MACHINE } from '../home-ticket.js?v=90bd1836';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=18353eaa';
 import {
   AK_ANIMALS,
@@ -255,6 +257,10 @@ function nameVars(extra = {}) {
 function setStep(step) {
   if (run) run.step = step;
   engineRef?.setData('newxpStep', step);
+  // The step marker (newxp.step, stepAt): saved as it changes, so a scan can see where a player stopped.
+  const before = save.step;
+  markStep(save, step);
+  if (save.step !== before && active()) engineRef?.save?.();
 }
 
 /* ------------------------------------------------------------------ */
@@ -3518,6 +3524,9 @@ async function beginStage(engine, stage) {
   run = newRun(stage);
   save.stage = stage;
   save.status = 'active';
+  markStage(save, stage);
+  save.step = '';
+  save.stepAt = Date.now();
   engine.save();
   showPill(true);
   engine.setData('newxpStage', stage);

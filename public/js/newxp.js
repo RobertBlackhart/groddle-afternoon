@@ -665,7 +665,45 @@ export function normalizeNewxpSave(seed = {}) {
     leftAt: Number.isFinite(s.leftAt) ? s.leftAt : 0,
     startedAt: Number.isFinite(s.startedAt) ? s.startedAt : 0,
     doneAt: Number.isFinite(s.doneAt) ? s.doneAt : 0,
+    stageAt: normalizeStageAt(s.stageAt),
+    step: typeof s.step === 'string' && STEP_RE.test(s.step) ? s.step : '',
+    stepAt: Number.isFinite(s.stepAt) ? s.stepAt : 0,
   };
+}
+
+/** A step name the stage runners set (setStep): short and plain, never free text. */
+const STEP_RE = /^[a-z0-9_:]{1,32}$/;
+
+/** stageAt keeps only known stages with a time. */
+function normalizeStageAt(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const stage of STAGES) if (Number.isFinite(raw[stage]) && raw[stage] > 0) out[stage] = raw[stage];
+  return out;
+}
+
+/**
+ * PURE: the step marker as a stage begins (Austin 2026-11-15, lane clouds). stageAt holds when the
+ * player first reached each stage of this run (a reload that starts the stage again keeps the
+ * first time), so a later scan of the saves can tell how long people spent on each one. The same
+ * idea as the original's progress callback (players/inc_newxp.js 104-109 newxpProgressCallback;
+ * locations/newxp_intro.js 43-58 posts enter_ts and exit_ts for stage 'clouds'), kept in the save
+ * instead of a new route: times and stage names only, nothing personal.
+ */
+export function markStage(save, stage, now = Date.now()) {
+  if (!STAGES.includes(stage)) return save;
+  if (!save.stageAt || typeof save.stageAt !== 'object') save.stageAt = {};
+  if (!save.stageAt[stage]) save.stageAt[stage] = now;
+  return save;
+}
+
+/** PURE: the step inside a stage the player is on (setStep), and since when. */
+export function markStep(save, step, now = Date.now()) {
+  const name = String(step || '');
+  if (!STEP_RE.test(name) || save.step === name) return save;
+  save.step = name;
+  save.stepAt = now;
+  return save;
 }
 
 /** Begin (or restart) the tutorial at a stage. */
@@ -681,7 +719,10 @@ export function startNewxp(save, stage = 'clouds', now = Date.now()) {
     next.island = 'arrive';
     next.exit = null;
     next.leftAt = 0;
+    next.stageAt = {};
   }
+  next.step = '';
+  next.stepAt = 0;
   next.startedAt = now;
   return next;
 }

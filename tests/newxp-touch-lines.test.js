@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LINES, TOUCH_LINES, instructionFor } from '../public/js/newxp.js?v=b89001c1';
+import { LINES, TOUCH_LINES, instructionFor } from '../public/js/newxp.js?v=96c67fcc';
 import { touchPrompt } from '../public/js/touch-controls.js?v=b10f17bb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

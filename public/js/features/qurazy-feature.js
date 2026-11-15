@@ -24,7 +24,7 @@
  * (`x,y` or empty), qurazyFoundToday, qurazyCollected.
  */
 
-import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=b89001c1';
+import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=96c67fcc';
 import { qurazyMarkersFor } from '../qurazy-markers.js?v=f7a8124b';
 import { OVERLAY_FADE, loadOverlayManifest, overlayPlacement, playVectorOverlay } from '../overlay-art.js?v=98606052';
 import {
