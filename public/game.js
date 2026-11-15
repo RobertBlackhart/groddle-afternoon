@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=9b7d28a8';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=707196c1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a5cbd0f2';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -13142,6 +13142,8 @@ const engine = {
   quoinGotText: (x, y, text, color) => quoinGotText(x, y, text, color),
   /** NOTIFY zones: a banner's box in #game-root px (null releases it); notices, the Enter hint and speech keep off it. */
   reserveZone: (name, rect) => notifyView?.reserve(name, rect),
+  /** The location viewport in #game-root px (the canvas above the pack), as a VOG covers it (the upgrade reveal, js/img-reveal.js). */
+  locationViewRect: () => locationViewRect(),
   /** NOTIFY: the notifier itself (js/notify.js), for a feature that wants a lane by name. */
   notify,
   /** updateHud re-renders both pack rows. */

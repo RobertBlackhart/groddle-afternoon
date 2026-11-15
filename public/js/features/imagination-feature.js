@@ -59,6 +59,7 @@ import { betterLearningDiscount } from '../better-learning.js?v=044ff9ff';
 import { rescaleStudiesForLearningModifier } from '../skills.js?v=4542bdf9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
 import { hellFeature } from './hell-feature.js?v=657cce8b';
+import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=a22ea2da';
 
 const ART = 'assets/imagination/cards/';
 const UI = 'assets/imagination/ui/';
@@ -97,6 +98,9 @@ let busyAnim = false;
 let lastResult = '';
 let autoplayDone = false;
 let rng = Math.random;
+/** The upgrade reveal (js/img-reveal.js) and its button's label picker (setCloseButton). */
+let reveal = null;
+let labels = null;
 
 // ---------------------------------------------------------------------------
 // Context and stats
@@ -262,7 +266,10 @@ function buySlot(slot, engine = engineRef) {
   // #333 (G751): ImaginationPurchaseUpgradeUI.as 226 show(): "play a sound to celebrate", YOU_WIN.
   play(PURCHASE_SOUND, { volume: 0.7 });
   const name = result.text?.name || result.card.class_tsid;
-  engine.pushActivity(`You got the ${name} upgrade!`);
+  // The reveal is the announcement when it shows (the open shop): the line goes to the log only,
+  // with no notice over the reveal saying it again.
+  if (panel && !panel.hidden && engine.notify?.log) engine.notify.log(`You got the ${name} upgrade!`, { kind: 'info' });
+  else engine.pushActivity(`You got the ${name} upgrade!`);
   lastResult = `bought:${result.card.class_tsid}`;
   engine.updateHud();
   engine.save();
@@ -336,8 +343,12 @@ const PANEL_CSS = `
 @keyframes img-deal{from{transform:translateY(-90px) rotate(-8deg) scale(.7);opacity:0}to{transform:none;opacity:1}}
 .img-card:hover:not(.flipped){transform:translateY(-6px)}
 .img-card.flipped{transform:rotateY(180deg) scale(1.05);animation:none}
-.img-card.bought{animation:img-bought .9s ease-in forwards;pointer-events:none}
-@keyframes img-bought{0%{transform:rotateY(0) scale(1)}35%{transform:translateY(-24px) scale(1.12);filter:brightness(1.4)}100%{transform:translateY(-180px) scale(.4);opacity:0}}
+/* ImaginationHandUI.as showPurchase 339-347: the bought card zooms off (rotation 20, scale 4, fading, .3 s easeInExpo). */
+.img-card.bought{animation:img-bought ${CARD_ZOOM_MS}ms cubic-bezier(.95,.05,.795,.035) forwards;pointer-events:none;z-index:var(--z-raised)}
+@keyframes img-bought{from{transform:none;opacity:1}to{transform:rotate(20deg) scale(4);opacity:0}}
+/* onPurchaseTweenComplete / closePurchaseScreen: the hand fades out (.2 s) while the reveal shows, and back in after. */
+#imagination-panel{transition:opacity .2s linear}
+#imagination-panel.img-revealing{opacity:0;pointer-events:none}
 .img-face{position:absolute;inset:0;border-radius:var(--radius-md);overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;
   box-shadow:0 6px 16px color-mix(in srgb, var(--c-black) 45%, transparent);background:var(--c-grey-94)}
 .img-face::after{content:"";position:absolute;inset:0;border-radius:var(--radius-md);box-shadow:inset 0 0 0 4.5px color-mix(in srgb, var(--c-white) 30%, transparent);pointer-events:none}
@@ -390,14 +401,6 @@ const PANEL_CSS = `
 .img-mini b{display:block;color:var(--text-inverse)}
 .img-mini .img-tag{display:inline-block;margin-top:var(--sp-1);padding:1px var(--sp-3);border-radius:var(--radius-pill);background:color-mix(in srgb, var(--surface-bright) 14%, transparent);font-size:var(--fs-2xs);color:var(--c-violet-88)}
 .img-mini .img-count{position:absolute;top:2px;right:calc(50% - 50px);background:var(--c-gold-89);color:var(--c-umber-30);font-weight:800;border-radius:var(--radius-pill);padding:0 var(--sp-3);font-size:var(--fs-xs)}
-.img-celebrate{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-5);
-  background:color-mix(in srgb, var(--c-navy-16) 78%, transparent);border-radius:inherit;z-index:calc(var(--z-raised) + 2);animation:img-fade .25s ease-out;text-align:center;padding:var(--sp-8)}
-.img-celebrate .img-card{pointer-events:none;animation:img-pop .6s cubic-bezier(.2,1.4,.4,1) both}
-@keyframes img-pop{from{transform:scale(.4) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
-@keyframes img-fade{from{opacity:0}to{opacity:1}}
-.img-celebrate h3{margin:0;font-size:var(--fs-2xl);color:var(--text-inverse)}
-.img-celebrate p{margin:0;font-size:var(--fs-base);color:var(--c-violet-88)}
-.img-celebrate button{font:inherit;font-weight:800;border:0;border-radius:var(--radius-pill);padding:7px var(--sp-9);background:var(--c-gold-89);color:var(--c-umber-30);cursor:pointer}
 .img-sparkle{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,color-mix(in srgb, var(--surface-bright) 95%, transparent) 0 1.4px,transparent 2px);
   background-size:38px 46px;opacity:.0;animation:img-sparkle 2.4s linear infinite}
 @keyframes img-sparkle{0%{opacity:0;background-position:0 0}50%{opacity:.55}100%{opacity:0;background-position:19px 23px}}
@@ -532,12 +535,6 @@ function onPanelClick(e) {
     render();
     return;
   }
-  if (e.target.closest('[data-img-continue]')) {
-    panel.querySelector('.img-celebrate')?.remove();
-    busyAnim = false;
-    render(true);
-    return;
-  }
   const buy = e.target.closest('[data-buy]');
   if (buy) {
     e.stopPropagation();
@@ -592,14 +589,18 @@ function onKeyDown(e) {
   if (e.target?.closest?.('.img-owned-bar') && (e.key !== 'Escape' || e.target.getAttribute('aria-expanded') === 'true')) return;
   // The shop is modal: keep keys away from the avatar while it is open.
   e.stopImmediatePropagation();
+  if (reveal?.isOpen()) {
+    // The reveal holds the keys: Esc and Enter close it (the focused button takes Space itself).
+    if (e.key === 'Escape' || e.key === 'Enter') {
+      e.preventDefault();
+      closeReveal();
+    }
+    return;
+  }
   // Report 135: an X typed in the search box is a letter; Esc closes the window from there too.
   if (e.key === 'Escape' || (!typing && (e.key === 'x' || e.key === 'X'))) {
     e.preventDefault();
-    if (panel.querySelector('.img-celebrate')) {
-      panel.querySelector('.img-celebrate').remove();
-      busyAnim = false;
-      render(true);
-    } else closePanel();
+    closePanel();
   } else if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) && e.target?.closest?.('[data-img-tab]')) {
     // MPANELS: the tabs move with the arrow keys (the tab follows focus).
     e.preventDefault();
@@ -637,7 +638,8 @@ function closePanel() {
   panel.hidden = true;
   ownedQuery = '';
   ownedKind = '';
-  panel.querySelector('.img-celebrate')?.remove();
+  reveal?.hide({ immediate: true });
+  panel.classList.remove('img-revealing');
   busyAnim = false;
   flipped = -1;
   if (engineRef) publish(engineRef);
@@ -765,26 +767,82 @@ function ownedCards(list) {
   return grid;
 }
 
+/** The play area the reveal fills (js/img-reveal.js playAreaRect), in #game-root px. */
+function revealRect() {
+  const root = document.getElementById('game-root');
+  if (!root) return null;
+  const rr = root.getBoundingClientRect();
+  const cs = getComputedStyle(root);
+  const px = (name, fallback) => {
+    const v = parseFloat(cs.getPropertyValue(name));
+    return Number.isFinite(v) ? v : fallback;
+  };
+  const bar = document.querySelector('.top-bar')?.getBoundingClientRect();
+  return playAreaRect({
+    view: engineRef?.locationViewRect?.() || null,
+    classic: document.documentElement.dataset.ui === 'classic',
+    rootW: rr.width,
+    rootH: rr.height,
+    topBarBottom: bar && bar.height > 0 ? bar.bottom - rr.top : 0,
+    insetL: px('--inset-l', 0),
+    insetR: px('--inset-r', 0),
+    gap: px('--hud-inset', 8),
+  });
+}
+
+function ensureReveal() {
+  reveal ||= createImgReveal({
+    document,
+    mount: () => document.getElementById('game-root'),
+    rect: revealRect,
+    onClose: () => closeReveal(),
+    setData: (key, value) => engineRef?.setData?.(key, value),
+  });
+  labels ||= createLabelPicker(rng);
+  return reveal;
+}
+
+/**
+ * A bought card (ImaginationHandUI.as showPurchase 334-353): the card zooms off, the hand fades
+ * out and the reveal fills the play area (js/img-reveal.js).
+ */
 function celebrate(slot, result, notes) {
   if (!panel || panel.hidden) return;
   busyAnim = true;
   const node = panel.querySelector(`.img-hand .img-card[data-slot="${slot}"]`);
   node?.classList.add('bought');
-  const shell = panel.querySelector('.img-card-shell');
-  const overlay = el('div', { class: 'img-celebrate' });
-  const card = buildCard({ ...result.card }, -2, ctxFor(engineRef));
-  card.classList.remove('poor');
-  overlay.append(card, el('h3', {}, `You got the ${result.text?.name || 'upgrade'} upgrade!`));
   const status = remakeStatus(result.card.class_tsid);
-  const lines = [result.text?.desc?.replace(/ Your current .*$/, ''), ...notes];
-  if (status.status === 'partial') lines.push(status.note);
-  overlay.append(el('p', {}, lines.filter(Boolean).join(' · ')));
-  overlay.append(el('button', { type: 'button', dataset: { imgContinue: '1' } }, 'Nice!'));
+  const extra = [...notes];
+  if (status.status === 'partial') extra.push(status.note);
+  const content = revealContent({
+    name: result.text?.name || 'Upgrade',
+    desc: result.text?.desc?.replace(/ Your current .*$/, ''),
+    notes: extra,
+    config: result.text?.config || result.card.config || {},
+    artBase: ART,
+  });
+  // Measure the art while the card zooms, so it is ready when the reveal shows.
+  measureArt(document, content.art);
   setTimeout(() => {
     if (!panel || panel.hidden) return;
-    shell.append(overlay);
     panel.querySelector('[data-img-balance]').textContent = (Number(engineRef.pc.imagination) || 0).toLocaleString('en-US');
-  }, node ? 420 : 0);
+    panel.classList.add('img-revealing');
+    ensureReveal().show(content, { label: labels.next() });
+    engineRef?.setData?.('imgRevealLabelIndex', String(labels.index));
+  }, node ? CARD_ZOOM_MS : 0);
+}
+
+/** closePurchaseScreen 654-666: the reveal fades out and the hand comes back, re-dealt. */
+function closeReveal({ quiet = false } = {}) {
+  const was = reveal?.hide() || false;
+  if (!panel) return was;
+  panel.classList.remove('img-revealing');
+  if (!was && !busyAnim) return false;
+  busyAnim = false;
+  if (was && !quiet) play('CLICK_SUCCESS');
+  render(true);
+  if (was) panel.querySelector('#img-title')?.focus({ preventScroll: true });
+  return was;
 }
 
 // ---------------------------------------------------------------------------
@@ -906,9 +964,7 @@ function runAutoplay(engine, mode) {
       if (slot >= 0) buySlot(slot, engine);
     },
     () => {
-      panel.querySelector('.img-celebrate')?.remove();
-      busyAnim = false;
-      render(true);
+      closeReveal({ quiet: true });
       freeRedeal(engine);
     },
     () => {
@@ -917,8 +973,7 @@ function runAutoplay(engine, mode) {
     },
     () => {
       if (mode === 'owned') {
-        panel.querySelector('.img-celebrate')?.remove();
-        busyAnim = false;
+        closeReveal({ quiet: true });
         view = 'owned';
         render();
       }

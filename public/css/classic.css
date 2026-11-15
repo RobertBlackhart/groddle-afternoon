@@ -3293,6 +3293,37 @@
 :root[data-ui="classic"] #bug-report-panel .reports-take-actions { gap: calc(6 * var(--cu)); }
 /* === end ideasb === */
 
+/* === imgreveal (lane) === */
+/* The upgrade reveal (js/img-reveal.js) as the client drew it: the whole location viewport, square
+   but for the viewport's left corners (ImaginationPurchaseUpgradeUI.as refresh 251-258,
+   loc_vp_elipse_radius 6 / 2), the repeating clouds at their own size, the client's minor button. */
+:root[data-ui="classic"] #game-root .img-reveal {
+  border-radius: calc(3 * var(--cu)) 0 0 calc(3 * var(--cu));
+  box-shadow: none;
+  background-size: calc(204 * var(--cu)) calc(156 * var(--cu));
+  font-family: var(--font-classic-title);
+  color: var(--c-classic-title);
+}
+:root[data-ui="classic"] #game-root .img-reveal.is-keepable { background: var(--c-white); }
+:root[data-ui="classic"] #game-root .img-reveal-col { max-width: calc(880 * var(--cu)); gap: calc(8 * var(--cu)); padding: calc(20 * var(--cu)) calc(40 * var(--cu)); }
+:root[data-ui="classic"] #game-root .img-reveal-got { font-size: calc(var(--fs-classic-window) * var(--cu-n, 1)); color: var(--c-classic-title); }
+:root[data-ui="classic"] #game-root .img-reveal-title { font-size: calc(var(--fs-5xl) * var(--cu-n, 1)); color: var(--c-classic-title); }
+:root[data-ui="classic"] #game-root :is(.img-reveal-desc, .img-reveal-note) { max-width: calc(800 * var(--cu)); font-family: var(--font-classic-body); font-size: calc(var(--fs-classic-row-title) * var(--cu-n, 1)); color: var(--c-classic-title); }
+:root[data-ui="classic"] #game-root .img-reveal-note { font-size: calc(var(--fs-classic-row) * var(--cu-n, 1)); }
+:root[data-ui="classic"] #game-root .img-reveal-btn {
+  min-height: calc(29 * var(--cu));
+  min-width: 0;
+  padding: 0 calc(16 * var(--cu));
+  border: 1px solid var(--c-classic-btn-minor-border);
+  border-radius: var(--radius-xs);
+  background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom));
+  box-shadow: none;
+  color: var(--c-classic-btn-minor-label);
+  font: 800 calc(var(--fs-classic-button, var(--fs-md)) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-title);
+}
+:root[data-ui="classic"] #game-root .img-reveal-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+/* === end imgreveal === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;
