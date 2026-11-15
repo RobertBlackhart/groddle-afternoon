@@ -47,7 +47,7 @@ import {
   spiritCryBox,
   spiritCrySheet,
 } from '../public/js/street-spirits.js?v=f9e88445';
-import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=39ef7811';
+import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=ddaa6311';
 import { ROUTE_SOURCES } from '../public/js/map-routes.js?v=f23b16a2';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=18b181ad';

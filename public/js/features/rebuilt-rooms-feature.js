@@ -34,7 +34,7 @@
 import { isRebuiltRoomTsid, rebuiltRoomEcology } from '../rebuilt-rooms.js?v=8c2eaf24';
 import { isLouiseVillaTsid, louiseVillaEcology } from '../louise-pasture-villa.js?v=01066f39';
 import { isPracticeStreetTsid, practiceExitSign, practiceStreetEcology } from '../practice-streets.js?v=557238c1';
-import { textureFromUrl } from '../textures.js?v=814d7926';
+import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import {
   ICICLE_PILLAR_ASPECT,
   ICICLE_PILLAR_SPRITE,

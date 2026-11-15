@@ -25,7 +25,7 @@
  * returns. The avatar stays put while looking.
  */
 
-import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=814d7926';
+import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 
 export const STREET = 'GNV1T7PCUM53T25';
 const BOUNDS = { l: -1500, t: -600 };

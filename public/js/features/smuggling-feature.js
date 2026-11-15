@@ -44,8 +44,8 @@ import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=18b181ad';
 import { isStandable, worldToScreen } from '../street-model.js?v=b6cb6a4e';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
-import { hellFeature } from './hell-feature.js?v=657cce8b';
-import { questRoomConverse } from './quest-instances-feature.js?v=9830656b';
+import { hellFeature } from './hell-feature.js?v=55547e57';
+import { questRoomConverse } from './quest-instances-feature.js?v=04940118';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,
@@ -82,7 +82,7 @@ import {
   spawnOffset,
   sparedBySignpost,
 } from '../smuggling.js?v=ab6ee12a';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=814d7926';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 
 export const SMUGGLING_FEATURE_ID = 'smuggling';

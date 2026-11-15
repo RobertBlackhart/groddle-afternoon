@@ -44,8 +44,8 @@
  * cameraEyeballSent.
  */
 
-import { textureFromUrl } from '../textures.js?v=814d7926';
-import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=4cbbb0c6';
+import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=eda942a8';
 import { SPEECH_BUBBLE_Z } from '../fx-z.js?v=18dda7e3';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 

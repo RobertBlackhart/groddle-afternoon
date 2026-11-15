@@ -385,3 +385,56 @@ export function textureStats() {
   }
   return { urls: sources.size, loaded, mpx: +(pixels / 1e6).toFixed(1) };
 }
+
+const UPLOAD_GUARD = Symbol('groddleUploadGuard');
+/** #312 (G708): how many times one image is sent to the GPU again after a failed upload. */
+export const UPLOAD_RETRIES = 3;
+
+/**
+ * #312 (G708): on an iPhone two rocks drew as opaque black boxes the size of their frame. WebGL
+ * samples a texture that never got its pixels as opaque black (an incomplete texture), and Pixi
+ * never sends an image again once it has tried. A long phone session runs the GPU close to the
+ * memory WebKit allows (G663), so an upload can fail with OUT_OF_MEMORY: the rock sheets were the
+ * newest art (Yan Jaggery had just opened), so the first to be uploaded after the memory ran out.
+ * This checks each image upload's GL error and, on one, frees what Pixi's texture GC can and
+ * unloads the source, so its next draw uploads it again (UPLOAD_RETRIES at most). getError waits
+ * for the GPU, so the game turns it on for phones only. Returns the stats object (checked, failed,
+ * retried, gaveUp), or null when the renderer is not WebGL.
+ */
+export function guardImageUploads(renderer, { retries = UPLOAD_RETRIES, later = (fn) => setTimeout(fn, 0) } = {}) {
+  const sys = renderer?.texture;
+  const gl = renderer?.gl;
+  if (!sys || !gl || typeof gl.getError !== 'function' || typeof sys.onSourceUpdate !== 'function') return null;
+  if (sys[UPLOAD_GUARD]) return sys[UPLOAD_GUARD];
+  const stats = { checked: 0, failed: 0, retried: 0, gaveUp: 0, last: '' };
+  const tries = new WeakMap();
+  const upload = sys.onSourceUpdate;
+  // An instance property: Pixi's initSource listens with this.onSourceUpdate, so sources first
+  // drawn from now on (every street's art) report here.
+  sys.onSourceUpdate = function guardedUpload(source) {
+    const out = upload.call(this, source);
+    if (!source?.[LOAD]?.loaded || source.destroyed) return out;
+    stats.checked += 1;
+    const err = gl.getError();
+    if (err === gl.NO_ERROR || gl.isContextLost?.()) return out;
+    stats.failed += 1;
+    stats.last = `${source[LOAD].url} 0x${err.toString(16)}`;
+    const n = (tries.get(source) || 0) + 1;
+    tries.set(source, n);
+    if (n > retries) {
+      stats.gaveUp += 1;
+      return out;
+    }
+    later(() => {
+      try {
+        renderer.textureGC?.run?.();
+      } catch { /* nothing to free */ }
+      if (source.destroyed) return;
+      source.unload();
+      stats.retried += 1;
+    });
+    return out;
+  };
+  sys[UPLOAD_GUARD] = stats;
+  return stats;
+}

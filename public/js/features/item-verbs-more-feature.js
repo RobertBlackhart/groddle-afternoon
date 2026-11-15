@@ -38,8 +38,8 @@
  *   packVerbNet, packVerbDefect.
  */
 
-import { displayTopOf } from '../overlay-art.js?v=b054ca5c';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
+import { displayTopOf } from '../overlay-art.js?v=98606052';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
@@ -50,10 +50,10 @@ import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=8516a0c3';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
 import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=bf1c94f9';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
-import { sourceFromUrl, frameTexture } from '../textures.js?v=814d7926';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
+import { sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=106bfdc5';
-import { overlayOrStandIn } from '../overlay-stand-in.js?v=fe186806';
+import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
 import {
   BUNDLE_OF_JOY,
   BUTTERFLY_NET,

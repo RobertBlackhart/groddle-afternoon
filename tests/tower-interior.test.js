@@ -21,8 +21,8 @@ import {
 import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.js?v=18b181ad';
 import { TOWER_ROOMS, VENT } from '../public/js/tower-rooms.js?v=4f1f6af7';
 import { ALL_TOWER_ROOMS } from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
-import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=3515a4a7';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=c9b91c96';
+import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=b877dfb6';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=4c4d3f2f';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));

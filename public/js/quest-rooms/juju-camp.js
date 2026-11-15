@@ -41,7 +41,7 @@
  * clue streets are the archived streets with their `juju_dig` boxes.
  */
 
-import { onLoaded, textureFromUrl } from '../textures.js?v=814d7926';
+import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { loseMood } from '../metabolics.js?v=1383e6fd';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
 

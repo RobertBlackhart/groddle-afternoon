@@ -54,7 +54,7 @@ before(async () => {
   globalThis.PIXI = { ImageSource, Texture };
   globalThis.Image = FakeImage;
   globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage() {} }) }) };
-  T = await import('../public/js/textures.js?v=814d7926');
+  T = await import('../public/js/textures.js?v=8e0a8c38');
 });
 after(() => {
   for (const [k, v] of Object.entries(saved)) globalThis[k] = v;
@@ -177,3 +177,66 @@ describe('#284: a street trip unloads the street left behind from the GPU at onc
     assert.equal(T.unloadGpuCopies({ match }), 0, 'no managed list: nothing');
   });
 });
+
+describe('#312 (G708): a failed image upload is sent again (guardImageUploads)', () => {
+  const fakeRenderer = () => {
+    const gl = { NO_ERROR: 0, OUT_OF_MEMORY: 0x505, errors: [], getError() { return this.errors.shift() ?? 0; }, isContextLost: () => false };
+    const sys = { uploads: 0, onSourceUpdate(source) { this.uploads += 1; this.last = source; } };
+    return { gl, texture: sys, gcRuns: 0, textureGC: { run() { this.owner.gcRuns += 1; } } };
+  };
+
+  it('on OUT_OF_MEMORY frees what the GC can and unloads the source so its next draw uploads it again', async () => {
+    const r = fakeRenderer();
+    r.textureGC.owner = r;
+    const later = [];
+    const stats = T.guardImageUploads(r, { later: (fn) => later.push(fn) });
+    assert.equal(T.guardImageUploads(r), stats, 'installed once');
+    const tex = await T.loadTexture('assets/sprites/mining/rock_sparkly_2_755x150.webp');
+    r.gl.errors.push(r.gl.OUT_OF_MEMORY);
+    r.texture.onSourceUpdate(tex.source);
+    assert.equal(r.texture.uploads, 1, 'the upload itself still runs');
+    assert.deepEqual([stats.checked, stats.failed, stats.retried], [1, 1, 0]);
+    assert.match(stats.last, /rock_sparkly_2.*0x505$/);
+    later.shift()();
+    assert.equal(r.gcRuns, 1);
+    assert.equal(tex.source.unloads, 1);
+    assert.equal(stats.retried, 1);
+    // A clean upload is only counted.
+    r.texture.onSourceUpdate(tex.source);
+    assert.deepEqual([stats.checked, stats.failed], [2, 1]);
+  });
+
+  it('gives up after UPLOAD_RETRIES, and skips sources it did not load (placeholders, render textures)', async () => {
+    const r = fakeRenderer();
+    r.textureGC.owner = r;
+    const later = [];
+    const stats = T.guardImageUploads(r, { later: (fn) => later.push(fn) });
+    const tex = await T.loadTexture('assets/sprites/mining/rock_metal_2_780x137.webp');
+    for (let i = 0; i <= T.UPLOAD_RETRIES; i += 1) {
+      r.gl.errors.push(r.gl.OUT_OF_MEMORY);
+      r.texture.onSourceUpdate(tex.source);
+    }
+    assert.equal(later.length, T.UPLOAD_RETRIES);
+    assert.equal(stats.gaveUp, 1);
+    const bake = new ImageSource({ resource: null, label: 'render texture' });
+    r.gl.errors.push(r.gl.OUT_OF_MEMORY);
+    r.texture.onSourceUpdate(bake);
+    assert.equal(stats.checked, T.UPLOAD_RETRIES + 1, 'a render texture is not checked');
+    assert.equal(T.guardImageUploads({}), null, 'no WebGL renderer, no guard');
+  });
+
+  it('is on for phones in game.js, and G714 drops the street bakes after a restored context', async () => {
+    const { readFileSync } = await import('node:fs');
+    const game = readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');
+    const render = readFileSync(new URL('../public/js/street-render.js', import.meta.url), 'utf8');
+    assert.match(game, /uploadGuard = uploadGuardParam === '1' \|\| \(TOUCH_PHONE && uploadGuardParam !== '0'\) \? textureUrls\.guardImageUploads\(app\.renderer\) : null;/);
+    assert.match(game, /app\.canvas\.addEventListener\('webglcontextrestored', \(\) => \{[\s\S]{0,400}bgLayer\?\.dropBakes\?\.\(\)/);
+    // Every colour bake and blur tile is forgotten, the next cull bakes what is near again.
+    assert.match(render, /root\.dropBakes = \(\) => \{[\s\S]{0,900}entry\.texture = null;[\s\S]{0,400}freeBlurTile\(tile, blurState\);[\s\S]{0,200}root\.edgeMirrorRebuild\?\.\(\);\s*cullAgain = true;/);
+    assert.match(render, /if \(cullAgain\) \{\s*cullAgain = false;\s*force = true;\s*\}/);
+    // cullLayer bakes again a near deco with no bake, and a near blur tile with no texture.
+    assert.match(render, /if \(!out && child\.recolour && !child\.recolour\.entry\.texture\) rebake\(child\);/);
+    assert.match(render, /if \(!tile\.texture\) rebake\(child\);/);
+  });
+});
+

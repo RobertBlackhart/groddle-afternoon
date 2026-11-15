@@ -8,7 +8,7 @@
  */
 
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=781ad57f';
-import { textureFromUrl } from '../textures.js?v=814d7926';
+import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { sharpRoomDeco } from '../deco-hires.js?v=dbfc79a6';
 
 const DECO = 'assets/decos/groddle/';

@@ -36,9 +36,9 @@
  *  5. The crab, and the door.
  */
 
-import { COLORS, JUMP_RISE, lastCheckpoint, makeSwitch, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=db2de257';
+import { COLORS, JUMP_RISE, lastCheckpoint, makeSwitch, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=8ce993fd';
 import { COLOR_UNBLOCKING_FILES } from '../color-unblocking-art.js?v=ea2b7e7f';
-import { textureFromUrl } from '../textures.js?v=814d7926';
+import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 
 const W = 3700;
 const H = 1040;

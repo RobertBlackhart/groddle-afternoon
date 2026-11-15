@@ -55,7 +55,7 @@ import {
   stepRide,
   ticketOffer,
 } from '../public/js/subway.js?v=43b4d658';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=bfa7e9b2';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=ea3c14d1';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

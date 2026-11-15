@@ -73,7 +73,7 @@
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { patchesFeature } from './patches-feature.js?v=dd7fb968';
+import { patchesFeature } from './patches-feature.js?v=bb451e9e';
 import {
   COPY,
   GRANT_CLASSES,

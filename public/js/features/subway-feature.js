@@ -40,9 +40,9 @@
  */
 
 import { countItem } from '../inventory.js?v=f49c8998';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
-import { doorsFeature } from './doors-feature.js?v=f33f8abc';
-import { frameTexture, textureFromUrl } from '../textures.js?v=814d7926';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
+import { doorsFeature } from './doors-feature.js?v=21c4005f';
+import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import {
   CAR_FLOOR,
   CAR_FLOOR_LIGHTS,

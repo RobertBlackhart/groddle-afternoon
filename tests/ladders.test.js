@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt } from '../public/js/street-model.js?v=b6cb6a4e';
 import { ladderMount, LADDER_UP_PRESS_MS } from '../public/js/movement.js?v=0a356337';
-import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=856ea7ef';
+import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=160693c7';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const streets = join(here, '../public/assets/streets');

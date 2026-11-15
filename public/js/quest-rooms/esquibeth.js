@@ -81,7 +81,7 @@
  *    on its marks as the song is played.
  */
 
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=814d7926';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { loseEnergy, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from './esquibeth-art.js?v=fe515887';

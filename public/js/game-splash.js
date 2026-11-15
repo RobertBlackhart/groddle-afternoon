@@ -53,7 +53,7 @@
  * the splash hides; the sheet stays for 1x screens and as the fallback.
  */
 
-import { OVERLAY_BASE, holdVectorArt, loadOverlayManifest, sheetCell, stateFrameAt, vectorDensity } from './overlay-art.js?v=b054ca5c';
+import { OVERLAY_BASE, holdVectorArt, loadOverlayManifest, sheetCell, stateFrameAt, vectorDensity } from './overlay-art.js?v=98606052';
 
 /** An art URL with its content key (js/data-urls.js groddleDataUrl); as it is in Node and on a page without the map. */
 const keyedArt = (url) => (typeof globalThis.groddleDataUrl === 'function' ? globalThis.groddleDataUrl(url) : url);

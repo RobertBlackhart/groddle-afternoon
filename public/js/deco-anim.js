@@ -22,7 +22,7 @@
  */
 import { ANIM_DECOS } from './deco-anim-list.js?v=ecfee655';
 import { wantsHiresDecos } from './deco-hires.js?v=dbfc79a6';
-import { isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=814d7926';
+import { isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=8e0a8c38';
 
 export const ANIM_BASE = 'assets/decos/animated/';
 /** TSEngineConstants.TARGET_FRAMERATE: Flash played deco timelines at the stage's rate. */

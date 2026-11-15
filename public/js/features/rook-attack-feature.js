@@ -60,7 +60,7 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=5bc894c8';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=0b1e96e6';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=106bfdc5';
 import { donationValueFor } from '../shrines.js?v=945cc7c4';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -108,8 +108,8 @@ import {
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
-import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=b054ca5c';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=4cbbb0c6';
+import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import {
   MP_ROOK,
   MP_ROOK_TEXT,
@@ -127,7 +127,7 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
 import { migrateClassValue } from '../tools.js?v=8516a0c3';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=b0b7be8c';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=266dbeec';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e7c389ef';
 
 export const ROOK_FEATURE_ID = 'rook-attack';

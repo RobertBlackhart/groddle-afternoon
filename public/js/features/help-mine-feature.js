@@ -50,7 +50,7 @@ import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMining
 import { addItem } from '../inventory.js?v=f49c8998';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
-import { frameTexture, loadTexture } from '../textures.js?v=814d7926';
+import { frameTexture, loadTexture } from '../textures.js?v=8e0a8c38';
 import { acceptOffer } from '../quest-offers.js?v=38a0cac5';
 import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=ca0cc848';
 import {

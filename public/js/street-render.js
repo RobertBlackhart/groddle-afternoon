@@ -11,10 +11,10 @@ import {
   pickConnection,
 } from './street-model.js?v=b6cb6a4e';
 import { availableStreetTsids } from './street-loader.js?v=18b181ad';
-import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=814d7926';
+import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=8e0a8c38';
 import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDeco, NEW_DECOS } from './deco-hires.js?v=dbfc79a6';
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
-import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=5c630896';
+import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=08e7deaa';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 
 const DECO_BASE = 'assets/decos/groddle/';
@@ -2399,6 +2399,10 @@ export function attachEdgeMirrors(PIXI, renderer, root, layers, W, sourceH, inse
     if (state.timer !== null) clearTimeout(state.timer);
     state.timer = setTimeout(build, ms);
   };
+  /** G714: after a lost and restored WebGL context the strips' render textures are empty: draw them again. */
+  root.edgeMirrorRebuild = () => {
+    if (state.ready && state.vpW) schedule(0);
+  };
   /** Once a frame from updateParallax: follow the layers, hide strips off screen, rebuild on a new width or resolution. */
   root.edgeMirrorFrame = (camX, vpW) => {
     const share = shareNow();
@@ -2940,8 +2944,42 @@ export function buildStreetView(street, PIXI, opts = {}) {
    * camera has moved a quarter of the margin.
    */
   let lastCull = null;
+  let cullAgain = false;
+  /**
+   * G714 (#312): a lost and restored WebGL context (WebKit drops it under memory pressure or in a
+   * background tab) gives back every image texture, which uploads again from its image, but a
+   * render texture comes back empty: the layers' colour bakes and blur tiles, so a street's
+   * decorations went and stayed gone. Forget every bake; the next cull bakes again what is near
+   * the camera (the path a deco takes coming back into view), and the edge mirrors draw again.
+   * Returns how many bakes it dropped.
+   */
+  root.dropBakes = () => {
+    let dropped = 0;
+    for (const entry of recolourCache.entries.values()) {
+      if (!entry.texture) continue;
+      for (const user of entry.users) if (!user.destroyed) setDecoTexture(PIXI, user, user.recolour.original);
+      entry.texture.destroy(true);
+      entry.texture = null;
+      recolourCache.textures.delete(entry.id);
+      dropped += 1;
+    }
+    for (const layer of blurState.layers) {
+      for (const tile of layer.tiles) {
+        if (!tile.texture) continue;
+        freeBlurTile(tile, blurState);
+        dropped += 1;
+      }
+    }
+    root.edgeMirrorRebuild?.();
+    cullAgain = true;
+    return dropped;
+  };
   root.cullDecos = (camX, camY, vpW, vpH, force = false) => {
     const now = performance.now();
+    if (cullAgain) {
+      cullAgain = false;
+      force = true;
+    }
     if (now - recolourCache.lastEvict > 2000) {
       recolourCache.lastEvict = now;
       evictRecolours(recolourCache, now);

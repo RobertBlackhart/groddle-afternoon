@@ -26,8 +26,8 @@ import {
   prunePortals,
   useDoorDrink,
 } from '../public/js/door-drink.js?v=15add3b8';
-import { doorDrinkFeature, completePour } from '../public/js/features/door-drink-feature.js?v=ce1cb6d1';
-import { FEATURES } from '../public/js/features/index.js?v=82276f18';
+import { doorDrinkFeature, completePour } from '../public/js/features/door-drink-feature.js?v=3876e218';
+import { FEATURES } from '../public/js/features/index.js?v=f726a7b1';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

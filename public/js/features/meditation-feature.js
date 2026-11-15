@@ -75,9 +75,9 @@ import {
 import { energyMax, metabolicGain, moodMax, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
 import { levitationCards } from '../imagination-effects.js?v=70169933';
 import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=05663361';
-import { sourceFromUrl } from '../textures.js?v=814d7926';
+import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
-import { rainbowSound, showRainbow } from '../overlays.js?v=4cbbb0c6';
+import { rainbowSound, showRainbow } from '../overlays.js?v=eda942a8';
 import { moodScaledXp } from '../mood-xp.js?v=22648ec0';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
