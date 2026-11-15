@@ -199,7 +199,7 @@ describe('the profiles feature', () => {
     assert.match(src, /engine\.snapshotView\?\.\(\{ resolution: HOME_RESOLUTION, \.\.\.\(frame \? \{ frame \} : \{\}\) \}\)/);
     assert.match(read('public/game.js'), /snapshotView\(\{ resolution = 1, frame = null \} = \{\}\) \{\n\s*if \(!app\?\.renderer \|\| !app\.stage\) return null;/);
     // The Pixi stage only: the HUD (top bar, pack, chat) is DOM, never in the picture.
-    assert.match(read('public/game.js'), /app\.renderer\.extract\.canvas\(\{ target: app\.stage, frame: new PIXI\.Rectangle\(0, 0, w, h\), resolution \}\)/);
+    assert.match(read('public/game.js'), /const shot = \(w, h\) => stageCanvas\(w, h, resolution\);/);
   });
 
   it('writes WebP, and JPEG where the canvas cannot (Safari hands back a PNG for WebP)', () => {

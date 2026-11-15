@@ -296,7 +296,7 @@ describe('ticket 73: the canvas is read once per report', () => {
     assert.match(fn, /let world = frame\?\.width && frame\?\.height \? frame : null;\n\s+if \(!world\) \{ try \{ world = engine\?\.snapshotCanvas\?\.\(\{ width: cssW \}\);/);
     assert.match(f, /capture: \(\{ ui = false, world = null \} = \{\}\) => \(ui \? capturePictureWithUi\(engine, document, REPORT_PICTURE, world\?\.frame\) : capturePicture\(engine\)\),/);
     // The "Enter: choose" prompt is left out of the one read-back, as snapshotView leaves it.
-    assert.match(read('public/game.js'), /snapshotCanvas\(\{ width = VIEW_W \} = \{\}\) \{[\s\S]*?if \(prompt\) prompt\.visible = false;[\s\S]*?frame: new PIXI\.Rectangle\(0, 0, VIEW_W, VIEW_H\)[\s\S]*?finally \{\n\s+if \(prompt\) prompt\.visible = hint;/);
+    assert.match(read('public/game.js'), /snapshotCanvas\(\{ width = VIEW_W \} = \{\}\) \{[\s\S]*?if \(prompt\) prompt\.visible = false;[\s\S]*?return stageCanvas\(VIEW_W, VIEW_H, resolution\);[\s\S]*?finally \{\n\s+if \(prompt\) prompt\.visible = hint;/);
   });
 
   it('the page copy carries only the standard CSS properties: WebKit listed the 815 design tokens on every element', () => {

@@ -7842,6 +7842,26 @@ function clearSpeechBubbles() {
 }
 
 /**
+ * #380b (Firefox, Arjun Plunge at its right end: the report's picture was only the sky): the stage,
+ * from the view's top left, drawn into a new canvas `w` x `h` view px at `resolution` (engine
+ * snapshotCanvas and snapshotView). A layer clipped at its end (street-render's edge clip, a
+ * stencil mask) drew nothing into an off-screen target in Firefox: Pixi adds the target's stencil
+ * once the first mask is met, mid-draw. The target gets its depth and stencil before drawing, as
+ * the screen has them, so it draws what the screen draws. Transparent where nothing is drawn, as
+ * extract's own target was.
+ */
+function stageCanvas(w, h, resolution) {
+  const rt = PIXI.RenderTexture.create({ width: w, height: h, resolution });
+  try {
+    app.renderer.renderTarget.getRenderTarget(rt)?.ensureDepthStencilTexture?.();
+    app.renderer.render({ container: app.stage, target: rt, clear: true, clearColor: [0, 0, 0, 0] });
+    return app.renderer.extract.canvas(rt);
+  } finally {
+    rt.destroy(true);
+  }
+}
+
+/**
  * The street nameplate (the pill over the location) in view pixels, so a
  * speech bubble near the top stays out from under it. Re-measured at most
  * every half second while bubbles are up (the clock and resizes move it).
@@ -13064,7 +13084,7 @@ const engine = {
     const hint = prompt?.visible;
     if (prompt) prompt.visible = false;
     try {
-      const shot = (w, h) => app.renderer.extract.canvas({ target: app.stage, frame: new PIXI.Rectangle(0, 0, w, h), resolution });
+      const shot = (w, h) => stageCanvas(w, h, resolution);
       return frame ? engine.viewAt(frame, () => shot(frame.w, frame.h)) : shot(VIEW_W, LOCATION_VIEW_H);
     } finally {
       if (prompt) prompt.visible = hint;
@@ -13106,7 +13126,7 @@ const engine = {
     const hint = prompt?.visible;
     if (prompt) prompt.visible = false;
     try {
-      return app.renderer.extract.canvas({ target: app.stage, frame: new PIXI.Rectangle(0, 0, VIEW_W, VIEW_H), resolution });
+      return stageCanvas(VIEW_W, VIEW_H, resolution);
     } finally {
       if (prompt) prompt.visible = hint;
     }
@@ -33970,6 +33990,20 @@ async function main() {
           return { x: r.left + (player.x + world.x) * (r.width / VIEW_W), y: r.top + (player.y + world.y) * (r.height / VIEW_H), scale: r.width / VIEW_W };
         })() : null,
       };
+    },
+    /** #380b QA: the report's read-back of the canvas (snapshotCanvas), as a small summary and a data URL. */
+    reportSnapshot(width = 640) {
+      const c = engine.snapshotCanvas({ width });
+      if (!c) return null;
+      const g = document.createElement('canvas');
+      g.width = c.width;
+      g.height = c.height;
+      const x = g.getContext('2d');
+      x.drawImage(c, 0, 0);
+      const d = x.getImageData(0, 0, g.width, g.height).data;
+      const colours = new Set();
+      for (let i = 0; i < d.length; i += 4 * 97) colours.add((d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | (d[i + 2] >> 3));
+      return { width: g.width, height: g.height, colours: colours.size, url: g.toDataURL('image/jpeg', 0.5) };
     },
     snapshot() {
       const rect = app.canvas.getBoundingClientRect();

@@ -69,7 +69,7 @@ describe('the picture with the game UI', () => {
     assert.doesNotMatch(f, /^import .*modern-screenshot/m);
     // The canvas comes from the stage (render then extract), not the WebGL buffer.
     assert.match(f, /engine\?\.snapshotCanvas\?\.\(\{ width: cssW \}\)/);
-    assert.match(read('public/game.js'), /snapshotCanvas\(\{ width = VIEW_W \} = \{\}\) \{[\s\S]*?frame: new PIXI\.Rectangle\(0, 0, VIEW_W, VIEW_H\)/);
+    assert.match(read('public/game.js'), /snapshotCanvas\(\{ width = VIEW_W \} = \{\}\) \{[\s\S]*?return stageCanvas\(VIEW_W, VIEW_H, resolution\);/);
   });
 
   it('lets the player choose the world only, and opens over other windows', () => {
