@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.41.2",
+  "release": "v0.42.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 14,
     "unreleased": 0,
-    "fixed": 151,
+    "fixed": 163,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -288,6 +288,13 @@
           "report": 337,
           "state": "fixed",
           "version": "v0.41.0"
+        },
+        {
+          "id": "G819",
+          "text": "Past a street's end the mirrored scenery showed ladders and signs you could not reach.",
+          "report": 380,
+          "state": "fixed",
+          "version": "v0.42.0"
         }
       ]
     },
@@ -442,6 +449,13 @@
           "version": "v0.38.0"
         },
         {
+          "id": "G821",
+          "text": "Shake, Compress, Age and Shuck had a second More row instead of asking how many, as Glitch did.",
+          "report": 374,
+          "state": "fixed",
+          "version": "v0.42.0"
+        },
+        {
           "id": "G174",
           "text": "A few dozen items in the encyclopedia have no icon, because their art was never archived.",
           "state": "lost"
@@ -495,6 +509,12 @@
           "report": 360,
           "state": "fixed",
           "version": "v0.41.1"
+        },
+        {
+          "id": "G795",
+          "text": "Friends could not help build a Tower floor, which Glitch let anyone on the floor do.",
+          "state": "fixed",
+          "version": "v0.42.0"
         },
         {
           "id": "G48",
@@ -1049,6 +1069,27 @@
           "report": 350,
           "state": "fixed",
           "version": "v0.41.0"
+        },
+        {
+          "id": "G812",
+          "text": "On an iPhone the report window could sit behind the keyboard.",
+          "report": 370,
+          "state": "fixed",
+          "version": "v0.42.0"
+        },
+        {
+          "id": "G813",
+          "text": "Dragging in Camera Mode did not move the view on an iPhone.",
+          "report": 372,
+          "state": "fixed",
+          "version": "v0.42.0"
+        },
+        {
+          "id": "G815",
+          "text": "On a phone held upright the Menu could run off the screen without scrolling.",
+          "report": 378,
+          "state": "fixed",
+          "version": "v0.42.0"
         }
       ]
     },
@@ -1276,6 +1317,18 @@
           "report": 355,
           "state": "fixed",
           "version": "v0.41.1"
+        },
+        {
+          "id": "G793",
+          "text": "The Funpickle's Broken Teleporter could pick a street still under construction.",
+          "state": "fixed",
+          "version": "v0.42.0"
+        },
+        {
+          "id": "G818",
+          "text": "Routes could lead through a road still under construction.",
+          "state": "fixed",
+          "version": "v0.42.0"
         }
       ]
     },
@@ -1323,6 +1376,48 @@
           "text": "Number keys did not do emotes as they did in Glitch.",
           "state": "fixed",
           "version": "v0.41.1"
+        }
+      ]
+    },
+    {
+      "name": "Tools",
+      "items": [
+        {
+          "id": "G794",
+          "text": "Dropping a tool onto a Tinkertool did not repair it, as it did in Glitch.",
+          "state": "fixed",
+          "version": "v0.42.0"
+        }
+      ]
+    },
+    {
+      "name": "Speech",
+      "items": [
+        {
+          "id": "G811",
+          "text": "Speech bubbles near you slid aside and back each time you jumped.",
+          "report": 349,
+          "state": "fixed",
+          "version": "v0.42.0"
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "items": [
+        {
+          "id": "G817",
+          "text": "A report's picture at a street's end could show only the sky in Firefox.",
+          "report": 380,
+          "state": "fixed",
+          "version": "v0.42.0"
+        },
+        {
+          "id": "G824",
+          "text": "Reports could not be edited from the phone page.",
+          "report": 372,
+          "state": "fixed",
+          "version": "v0.42.0"
         }
       ]
     }

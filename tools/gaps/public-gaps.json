@@ -1496,6 +1496,124 @@
       ]
     },
     {
+      "id": "G794",
+      "area": "Tools",
+      "show": "fixing",
+      "text": "Dropping a tool onto a Tinkertool did not repair it, as it did in Glitch.",
+      "commits": [
+        "game:1a6806470e"
+      ]
+    },
+    {
+      "id": "G795",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Friends could not help build a Tower floor, which Glitch let anyone on the floor do.",
+      "commits": [
+        "game:100df36426",
+        "site:694a74f",
+        "server:bc8bd20"
+      ]
+    },
+    {
+      "id": "G793",
+      "area": "Navigation",
+      "show": "fixing",
+      "text": "The Funpickle's Broken Teleporter could pick a street still under construction.",
+      "commits": [
+        "game:0cdfb5afed"
+      ]
+    },
+    {
+      "id": "G811",
+      "area": "Speech",
+      "show": "fixing",
+      "text": "Speech bubbles near you slid aside and back each time you jumped.",
+      "report": 349,
+      "commits": [
+        "game:0c1322e79e"
+      ]
+    },
+    {
+      "id": "G812",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an iPhone the report window could sit behind the keyboard.",
+      "report": 370,
+      "commits": [
+        "game:0c9f9159d5"
+      ]
+    },
+    {
+      "id": "G813",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Dragging in Camera Mode did not move the view on an iPhone.",
+      "report": 372,
+      "commits": [
+        "game:83e839aa63"
+      ]
+    },
+    {
+      "id": "G815",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone held upright the Menu could run off the screen without scrolling.",
+      "report": 378,
+      "commits": [
+        "game:be030bc122"
+      ]
+    },
+    {
+      "id": "G817",
+      "area": "Reports",
+      "show": "fixing",
+      "text": "A report's picture at a street's end could show only the sky in Firefox.",
+      "report": 380,
+      "commits": [
+        "game:43c7f6e4e1"
+      ]
+    },
+    {
+      "id": "G818",
+      "area": "Navigation",
+      "show": "fixing",
+      "text": "Routes could lead through a road still under construction.",
+      "commits": [
+        "game:b807037be2"
+      ]
+    },
+    {
+      "id": "G819",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Past a street's end the mirrored scenery showed ladders and signs you could not reach.",
+      "report": 380,
+      "commits": [
+        "game:016123a72f"
+      ]
+    },
+    {
+      "id": "G821",
+      "area": "Items",
+      "show": "fixing",
+      "text": "Shake, Compress, Age and Shuck had a second More row instead of asking how many, as Glitch did.",
+      "report": 374,
+      "commits": [
+        "game:acfffc55be"
+      ]
+    },
+    {
+      "id": "G824",
+      "area": "Reports",
+      "show": "fixing",
+      "text": "Reports could not be edited from the phone page.",
+      "report": 372,
+      "commits": [
+        "game:ef2161582a"
+      ]
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."
