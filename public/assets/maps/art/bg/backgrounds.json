@@ -420,10 +420,10 @@
       "x1": "assets/maps/art/bg/muufo.webp",
       "x2": "assets/maps/art/bg/muufo@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 85832,
-      "x1Sha256": "16eb6dea58b10660cea6250cba2483283e3fa80c7e194dfaf8074466242928b9",
-      "x2Bytes": 283478,
-      "x2Sha256": "902ad921ef7eddb8627590292d7c8b4d3a9cb94d2232bb3d0dce19a117d4bb57"
+      "x1Bytes": 71400,
+      "x1Sha256": "db120b413bb7c6ab8765be900a2a289a8b0880766414f7b45068d45e255bddd5",
+      "x2Bytes": 216258,
+      "x2Sha256": "08c7df41c44309bfcd2ba8d020a0fc4beb841741ad83fd608c4d969ddd2f70d5"
     },
     "98": {
       "hubName": "Besara",
@@ -468,10 +468,10 @@
       "x1": "assets/maps/art/bg/vantalu.webp",
       "x2": "assets/maps/art/bg/vantalu@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 70980,
-      "x1Sha256": "61bbbcb5c704b0b3de801043c2dfc447e725cebf4c3607d865713095a2ca71b0",
-      "x2Bytes": 238010,
-      "x2Sha256": "7e1b36c0cdd02d78601ca57d8355714e1123f244be7056d61e566c51a0c4496d"
+      "x1Bytes": 54012,
+      "x1Sha256": "0475735e1198d7f3ad93749f8a4da914a8aff538fe4f9d1ddcc44ea05c472948",
+      "x2Bytes": 165220,
+      "x2Sha256": "129b1641a49b119c8e73376f1b01ec55c79418b91106a170da74678623112027"
     },
     "101": {
       "hubName": "Aranna",
