@@ -10984,6 +10984,13 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
     overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
   }
 }
+/* #378: a phone held upright is taller than 760 px (a Home Screen app is 874 px), and its 44 px rows
+   still run the Menu past the pack row, so a phone caps and scrolls the Menu at any height, inside
+   the notch and the home indicator too. */
+:root.touch-phone[data-ui="modern"] .top-bar .more-list {
+  max-height: calc(100dvh - var(--hud-h) - 16px - 80px - var(--safe-t) - var(--safe-b));
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+}
 /* A phone: rows are thumb targets. */
 :root.touch-phone[data-ui="modern"] .top-bar .more-list .chrome-btn { min-height: 44px; }
 /* MORE BELOW (topbar.js installMenu): a scrolling Menu fades at its foot while rows wait below it. */
