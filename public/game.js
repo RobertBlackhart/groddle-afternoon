@@ -1084,6 +1084,7 @@ import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=130338f9';
 import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own word filter
+import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=312acd45';
@@ -3099,6 +3100,8 @@ const socialDrawer = MODERN_UI
   : null;
 // LINKS (js/chat-links.js): an address in a chat line is a link; one to another site asks first.
 bindChatLinks(document.getElementById('game-root'));
+// #349: "You start on <street>." follows the nameplate of the street loading under the start card.
+const stopStartStreet = mountStartStreet();
 
 /**
  * "/" may put the keyboard in the drawer's input: the game runs, nothing modal is up, not in the tutorial's clouds.
@@ -33235,6 +33238,7 @@ async function main() {
   async function beginGame() {
     if (state.started) return;
     document.getElementById('overlay').classList.add('hidden');
+    stopStartStreet();
     state.started = true;
     // LOOKHOLD: with "Customize look first" it all waits for the builder to close instead.
     if (openBuilderOnStart) startLookHold = true;

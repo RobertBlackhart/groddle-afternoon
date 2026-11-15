@@ -305,9 +305,11 @@ describe('the start card layout', () => {
     assert.deepEqual(order, [...order].sort((a, b) => a - b));
     assert.equal(card.match(/<p class="start-lede">/g).length, 1, 'one welcome line');
     assert.match(card, /<p class="start-lede">[^<]{20,80}<\/p>/, 'a short one');
-    // The goals keep Hechey Track, the gathering, the cooking and the Triple Jump.
+    // The goals keep the gathering, the cooking and the Triple Jump; the street is the save's own,
+    // filled in by js/start-street.js (#349: it named Hechey Track to a player starting elsewhere).
     const goal = text(card.slice(at('<section class="start-goal"'), at('<section class="start-keys"')));
-    assert.match(goal, /grain or meat.*flour and sammiches.*Triple Jump.*Hechey Track/);
+    assert.match(goal, /grain or meat.*flour and sammiches.*Triple Jump\. You start on \./);
+    assert.doesNotMatch(goal, /Hechey Track/);
   });
 
   it('groups every key in Move, Do and Open: lists of a keycap and a label', () => {

@@ -1425,6 +1425,9 @@ kbd {
 .start-keys { padding: var(--sp-9) var(--sp-10) var(--sp-8); border-radius: var(--radius-xl); background: var(--surface-parchment); }
 /* A phone has no keys (the mobile QA, 2026-11-12: the list took about 705 px of an upright iPhone). */
 :root.touch-phone .start-keys { display: none; }
+/* #349: with the keys gone the card was the left column of two, its right half empty (sideways): one column,
+   a reading width, centred in the frame. */
+:root.touch-phone .start-card { grid-template-columns: minmax(0, 1fr); width: min(560px, 100%); }
 .start-key-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--sp-10); row-gap: var(--sp-8); }
 .start-key-move { grid-column: 1; grid-row: 1; }
 .start-key-do { grid-column: 1; grid-row: 2; }
