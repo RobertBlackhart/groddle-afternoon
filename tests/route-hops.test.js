@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { SIGN_ARMS, doorToward, findRoute, isRide, planRoute, createRouteState, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=c7e7dc80';
+import { SIGN_ARMS, doorToward, findRoute, isRide, planRoute, createRouteState, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=4e58e71a';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=d0ca0659';
 import { stationByTsid } from '../public/js/subway.js?v=e6995db8';
 import { reachRoutes, reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';

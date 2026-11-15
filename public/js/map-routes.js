@@ -202,7 +202,8 @@ export function doorRooms(json = {}) {
  * them and never through one (Glitch hid their signpost arms, so its global
  * path finding had no road there: locations/inc_jobs.js jobs_modify_connections,
  * jobs_unlock apiReloadDataForGlobalPathFinding); a closed destination is
- * still the end of a route.
+ * still the end of a route, but of several destinations (the nearest shrine) an open one wins:
+ * with its arms hidden, apiFindShortestGlobalPath could not reach a closed street at all (#355).
  * `locked` lists door edges ("from>to", routeGraph) that need a key: the
  * route takes one only when nothing else gets there (G192).
  * `oneWay` (oneWayRoads) and `startCut` (startCut) keep a route off the roads a one-way street
@@ -220,6 +221,13 @@ export function findRoute(graph, from, to, { blocked = null, locked = null, ride
   if (targets.has(start)) return [start];
   const closed = new Set();
   for (const t of blocked || []) for (const a of tsidAliases(t)) closed.add(a);
+  if (targets.size > 1 && closed.size) {
+    const open = [...targets].filter((t) => !closed.has(t));
+    if (open.length && open.length < targets.size) {
+      const path = findRoute(graph, from, open, { blocked, locked, rides, oneWay, startCut });
+      if (path) return path;
+    }
+  }
   const keyed = locked && locked.size ? locked : null;
   const ways = { oneWay: oneWay && Object.keys(oneWay).length ? oneWay : null, startCut: startCut ? new Set(startCut) : null };
   const noKey = (extra) => bfs(graph, start, targets, closed, keyed, extra, ways);

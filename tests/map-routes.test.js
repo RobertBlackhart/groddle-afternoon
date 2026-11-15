@@ -29,8 +29,8 @@ import {
   routeStopsLine,
   ROUTE_STOPS_SHOWN,
   signpostToward,
-} from '../public/js/map-routes.js?v=c7e7dc80';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=d9770111';
+} from '../public/js/map-routes.js?v=4e58e71a';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=6f3e7130';
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=4ff5bb1e';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=657cce8b';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
@@ -39,10 +39,10 @@ import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/c
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=df2b4357';
 import { SUBWAY_STREETS } from '../public/js/quest-rooms/back-alley.js?v=06685feb';
-import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=c7e7dc80';
+import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=4e58e71a';
 import { afterStreetCard, runStreetTransition, streetCardUp } from '../public/js/screen-fx.js?v=ebdb038b';
 import { EMITTED_EVENTS } from '../public/js/quest-offers.js?v=77816a7d';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=a2bd431e';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=b60fefc5';
 import { addItem } from '../public/js/inventory.js?v=f49c8998';
 import { resurrect } from '../public/js/hell.js?v=df2b4357';
 
@@ -127,6 +127,11 @@ describe('finding a route over signposts', () => {
     assert.deepEqual(findRoute(TOY, 'GA', 'GD', { blocked: ['GC'] }), ['GA', 'GB', 'GE', 'GD']);
     assert.equal(findRoute(TOY, 'GA', 'GD', { blocked: ['GC', 'GE'] }), null, 'Glitch hid the arms: no road through');
     assert.deepEqual(findRoute(TOY, 'GA', 'GC', { blocked: ['GC'] }), ['GA', 'GB', 'GC'], 'a closed destination is still the destination');
+    // #355: of several destinations (the nearest shrine), an open one wins over a nearer closed one.
+    assert.deepEqual(findRoute(TOY, 'GA', ['GC', 'GD'], { blocked: ['GC'] }), ['GA', 'GB', 'GE', 'GD']);
+    assert.deepEqual(findRoute(TOY, 'GA', ['GC', 'GE'], { blocked: ['GC'] }), ['GA', 'GB', 'GE']);
+    assert.deepEqual(findRoute(TOY, 'GA', ['GC'], { blocked: ['GC'] }), ['GA', 'GB', 'GC'], 'only closed ones: the nearest still ends the route');
+    assert.equal(planRoute(createRouteState(), TOY, { from: 'GA', to: ['GC', 'GD'], blocked: ['GC'] }).route.destination, 'GD');
     // planRoute: no route, and the streets still being built that stand in the way.
     const res = planRoute(createRouteState(), TOY, { from: 'GA', to: 'GD', blocked: ['GC', 'GE'] });
     assert.equal(res.ok, false);
