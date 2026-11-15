@@ -121,7 +121,9 @@ import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { GIANTS } from '../shrines.js?v=d2c88987';
 import {
+  MP_DONATIONS,
   MP_TEXT,
+  donationOp,
   endedLine,
   endsText,
   goalLine,
@@ -134,7 +136,7 @@ import {
   runFromServer,
   vogFor,
   youLine,
-} from '../feats-mp.js?v=5ff2be5b';
+} from '../feats-mp.js?v=92c56f81';
 
 const POLL_MS = 500;
 /** How often an open panel redraws its "Opens again in" lines. */
@@ -639,7 +641,15 @@ async function persist(engine) {
 /** pc.feats_increment in multiplayer: today's Feat only, counted by the server. Returns 0 (the answer comes as feat_counted). */
 function mpReport(engine, featId, amount, opts = {}) {
   const s = ensureMp(engine);
-  const report = s ? reportFor(s.run, featId, amount, opts) : null;
+  // G786 (#361): a donation goes through the ledger: its spend id, marked applied with the trades
+  // as the items have just left the pack (trade-feature ledgerReceipt), so the ledger counts them
+  // once and the realtime server can count every one (feats-mp.js MP_DONATIONS).
+  let op = '';
+  if (s?.run?.feat === featId && MP_DONATIONS[featId]) {
+    const id = donationOp();
+    if (engine.query?.('ledgerReceipt', id, engine) === true) op = id;
+  }
+  const report = s ? reportFor(s.run, featId, amount, op ? { ...opts, op } : opts) : null;
   if (!report) return 0;
   // The source's per-animal limits (hugged_for_feat and the rest), kept here as in solo (incrementFeat opts.cap).
   if (opts?.cap?.key) {

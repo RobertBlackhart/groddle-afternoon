@@ -120,7 +120,9 @@ export const MP_PACE = Object.freeze({
   // location.js:255: no more than 5 found a game day, on repeat visits only (G754: a first visit always
   // spawns one, location.js 213-217, and counts at no pace: MP_ACTS quoin first-street).
   qurazy_quoin_collecting: pace(5, GAME_DAY_MS, 5, 'location.js:255 five a game day (repeat visits)'),
-  donate_sparkly: pace(1, 3_000, 50, 'ours: a chunk every 3 s, a stack at once'),
+  // G786: only for what the ledger cannot confirm (MP_DONATIONS); a settled donation counts in full.
+  donate_sparkly: pace(1, 3_000, 50, 'ours: a chunk every 3 s, a stack at once, the rest carried over'),
+
   reminscequests: pace(1, 60_000, 3, 'ours: a quest a minute'),
   // TSFrontController.as 3165-3178: one hi per two seconds.
   hi_signs_1: pace(1, 2_000, 3, 'TSFrontController.as:3165-3178 one hi per 2 s'),
@@ -151,6 +153,27 @@ export const MP_ACTS = Object.freeze({
     package: Object.freeze({ n: 2, dedupe: 'street', source: 'bag_butler.js 3802-3805: +2, the first package left with this Butler' }),
   }),
 });
+
+/**
+ * G786 (#361): the Feats whose count is items donated, and the class. Glitch counted every one
+ * (groups/feat.js increment adds the full amount, its clamp at line 29 commented out;
+ * players/inc_feats.js feats_increment passes it through; inc_data_feats_prod.js donate_sparkly's
+ * vog_text counts each chunk donated). A donation's report carries a spend id: the realtime server
+ * spends that many from the player's ledger (the site's LedgerSpend.php, why feat_donation) and,
+ * settled, counts all of it at no pace; what it cannot confirm counts at MP_PACE and the rest is
+ * carried over, never dropped (feats.go donation). The page marks the spend applied (the trade
+ * slice, trade-feature ledgerReceipt) as the items leave its pack, so the ledger counts them once.
+ */
+export const MP_DONATIONS = Object.freeze({ donate_sparkly: 'sparkly' });
+
+/** A donation's spend id (LedgerSpend.php opId, feats.go featDonationRe). */
+export const DONATION_OP_RE = /^fdon-[0-9a-f]{16}$/;
+
+export function donationOp(rng = Math.random) {
+  let hex = '';
+  for (let i = 0; i < 16; i += 1) hex += Math.floor(rng() * 16).toString(16);
+  return `fdon-${hex}`;
+}
 
 function pace(n, everyMs, burst, source) {
   return Object.freeze({ n, everyMs, burst, source });
@@ -370,5 +393,11 @@ export function reportFor(run, featId, amount, opts = {}) {
     out.act = act;
     if (acts[act].dedupe) out.street = String(opts.street || '').slice(0, 32);
   }
+  // G786: a donation names its spend and the class given (MP_DONATIONS).
+  if (MP_DONATIONS[featId] && DONATION_OP_RE.test(String(opts.op || ''))) {
+    out.op = String(opts.op);
+    out.c = MP_DONATIONS[featId];
+  }
   return out;
 }
+

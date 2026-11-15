@@ -220,6 +220,6 @@ describe('the site\'s spend route takes the teleporter\'s 50 (LedgerSpend.php)',
       ]);`;
     const out = JSON.parse(execFileSync('php', ['-r', code]).toString());
     assert.deepEqual(out, { price: 50, fifty: true, more: false, items: false, op: true, mine: true, party: false, atm: false });
-    assert.match(readFileSync(sitePath('src/LedgerSpend.php'), 'utf8'), /private const WHY = \['party_pack', 'party_atm', 'game_teleporter'\];/);
+    assert.match(readFileSync(sitePath('src/LedgerSpend.php'), 'utf8'), /private const WHY = \['party_pack', 'party_atm', 'game_teleporter', 'feat_donation'\];/);
   });
 });

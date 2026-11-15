@@ -28,7 +28,7 @@ import {
 import { UNNAMED_PLAYER, playerNameOr } from '../public/js/player-names.js?v=f9b78094';
 import { listPlayerTarget } from '../public/js/ui/player-menu.js?v=6dc099c4';
 import { BUDDY_TEXT, normalizeList } from '../public/js/buddies.js?v=cff7bf6e';
-import { youLine } from '../public/js/feats-mp.js?v=5ff2be5b';
+import { youLine } from '../public/js/feats-mp.js?v=92c56f81';
 import { fillName } from '../public/js/foxes.js?v=dca56213';
 import { APPEARANCE_PRESETS, BODY_STYLES } from '../public/js/character-builder.js?v=ffa761e9';
 import { boardsData } from '../tools/build-realtime-boards.mjs';
