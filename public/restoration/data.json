@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2168,
+  "commits": 2170,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Naraka's and Ilmenskie Caverns' maps are Tiny Speck's 2012 paintings, restored"
+   },
    {
     "date": "2026-11-14",
     "kind": "fix",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "A game of Charades starts only once the server has taken the Charades Potion"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Online game pages carry the test levers only on a developer's own machine"
    }
   ]
  },
