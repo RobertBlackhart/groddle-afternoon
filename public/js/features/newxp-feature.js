@@ -143,7 +143,7 @@ import { upgradeSource } from '../sprite-hires.js?v=b59156cf';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=b054ca5c';
 import { HOME_MACHINE } from '../home-ticket.js?v=11d72678';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=f65cefab';
+import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=18353eaa';
 import {
   AK_ANIMALS,
   AK_BUBBLE,

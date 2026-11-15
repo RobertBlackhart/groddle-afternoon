@@ -324,3 +324,28 @@ export function cameraWorldHeightForGround(
   const ground = Math.max(0, finite(deepestGroundY));
   return Math.max(base, ground + cameraBottomSlack(view, anchorRatio));
 }
+
+/** #382: how long after the Up key goes down it still counts as a press that gets on a ladder (the jump's own buffer). */
+export const LADDER_UP_PRESS_MS = JUMP_BUFFER_MS;
+
+/**
+ * PURE (#382): which way a ladder in reach is mounted this frame, 'up', 'down' or '' (none).
+ * Glitch got on a ladder on the Up or Down key press (AvatarController.as onUpKey 445, _beginInteractionAfterUpKey
+ * 453-468; onDownKey 419, _beginInteractionAfterDownKey 433-443), never on a key held from before. Up:
+ * - only a fresh press (`upPressedMs` ago, LADDER_UP_PRESS_MS at most), so Up held through a jump
+ *   or a walk does not catch a ladder you pass;
+ * - not in the air after a jump (`jumpedSinceFloor`): no grabbing by flying (the remake's Up/W also
+ *   jumps, which Glitch's Up never did);
+ * - not from the deck at a ladder's top (`onTopDeck`): there it would only lift you onto the floor
+ *   you stand on, so Up jumps instead (the switches in Walk Toward the Light stand beside them).
+ * Down is as before: held is enough, but not at the very bottom (`atBase`), where it walks on.
+ * `near`: the avatar is within 28 px of the ladder. `locked`: just got off, keys not yet released.
+ */
+export function ladderMount({ up = false, down = false, near = false, locked = false, upPressedMs = Infinity, onGround = false, jumpedSinceFloor = false, onTopDeck = false, atBase = false } = {}) {
+  if (!near || locked || up === down) return '';
+  if (down) return atBase ? '' : 'down';
+  if (!(upPressedMs >= 0 && upPressedMs <= LADDER_UP_PRESS_MS)) return '';
+  if (!onGround && jumpedSinceFloor) return '';
+  if (onGround && onTopDeck) return '';
+  return 'up';
+}

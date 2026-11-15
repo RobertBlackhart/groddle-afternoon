@@ -31,7 +31,7 @@ import {
 } from '../public/js/street-ecology.js?v=02dd7dda';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SHEETS } from '../public/js/shrine-variants.js?v=7f11c97d';
-import { adoptedPlan } from '../public/js/features/patches-feature.js?v=0233ef48';
+import { adoptedPlan } from '../public/js/features/patches-feature.js?v=dd7fb968';
 import { createPlot } from '../public/js/patches.js?v=5a38514c';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

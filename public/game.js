@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a74490a9';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=4ddcd5c8';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=972cfb84';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6af043b7';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -136,7 +136,7 @@ import {
   travelToGregarious,
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
-import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=e6995db8';
+import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=43b4d658';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=912f7fbb';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -497,8 +497,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=64e4a567';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=f65cefab';
-import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=f65cefab';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=18353eaa';
+import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=18353eaa';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -757,6 +757,7 @@ import {
   noteGrounded,
   noteJumped,
   resolveQueuedJump,
+  ladderMount,
   dampingAlpha,
   cameraTargetX,
   cameraLocationViewWidth,
@@ -766,7 +767,7 @@ import {
   cameraBottomSlack,
   cameraWorldHeightForGround,
   MIN_GROUND_CLEARANCE,
-} from './js/movement.js?v=b30f84eb';
+} from './js/movement.js?v=0a356337';
 import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
@@ -884,7 +885,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=f65cefab';
+} from './js/animals.js?v=18353eaa';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -993,9 +994,9 @@ import {
   PUBLIC_HUBS,
 } from './js/map-graph.js?v=31437f5b';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=75d5f9a0';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=caa40dc5';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=6a7e5c37';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=3d82e2d9';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
@@ -1016,7 +1017,7 @@ import {
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=02dd7dda';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=e70bafd5';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=80832efe';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=7de20c1a';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=4adc2ae6';
@@ -2392,6 +2393,9 @@ let streetArrival = null;
 // one, a still-held Up/Down must not pull the avatar straight back on.
 // goalY (TOUCH, js/touch-controls.js): a tapped ladder climbs to that height with no key held.
 let climb = { active: false, wall: null, regrabLock: false, goalY: null };
+// #382 (js/movement.js ladderMount): Up gets on a ladder only on a fresh press. Kept apart from `climb`,
+// which each street load resets, so an Up held through a trip is not a new press.
+const ladderUp = { held: false, pressAt: -Infinity };
 let homeMailboxTarget = null;
 let homeDoorTarget = null;
 let homeReturnTarget = null;
@@ -12389,6 +12393,15 @@ function setPlayerAnim(state) {
   applyPlayerFacing();
 }
 
+/**
+ * #382: the avatar stands on the deck a ladder tops out at, so climbing it would only hand it back
+ * to the same floor (the top hand-off in handleInput, street-model.js ladderTopDeck).
+ */
+function standsOnLadderTop(hit) {
+  const deck = ladderTopDeck(streetPlatforms, hit.x, hit.yTop + 4, hit.yBot);
+  return deck != null && Math.abs(deck - player.y) <= 8;
+}
+
 function startClimb(wallHit) {
   if (!player || !wallHit) return;
   clearJumpQueue(jumpState);
@@ -15697,6 +15710,9 @@ function handleInput() {
     else if (step === 'down') down = true;
     else climb.goalY = null;
   }
+  // #382: when Up went down (keys, the stick, a tap), for ladderMount's fresh press.
+  if (up && !ladderUp.held) ladderUp.pressAt = now;
+  ladderUp.held = up;
   if ((left || right) && (recentInteractionTarget || hoverTarget)) forgetInteractionFocus();
   if (avatarWalk && !climb.active) {
     const steer = avatarWalkSteer(left || right || up || down);
@@ -15771,8 +15787,21 @@ function handleInput() {
   // Up or Down over a ladder gets on it (AvatarController onUpKey/onDownKey);
   // there is no grabbing by flying or falling into one. Down at the very
   // bottom would only stand you on its last rung, so it walks on instead.
+  // #382: Up only on a fresh press, never in the air after a jump, and not from the deck at its top
+  // (js/movement.js ladderMount), so a jump beside a ladder is a jump.
   const atBase = climbHit && player.onGround && player.y >= climbHit.yBot - 4;
-  if (climbHit && !climb.regrabLock && (up !== down) && Math.abs(player.x - climbHit.x) < 28 && !(down && atBase)) {
+  const onTopDeck = Boolean(climbHit && up && player.onGround && standsOnLadderTop(climbHit));
+  const mountArgs = {
+    up,
+    down,
+    locked: climb.regrabLock,
+    upPressedMs: now - ladderUp.pressAt,
+    onGround: player.onGround,
+    jumpedSinceFloor: jumpState.jumpedSinceFloor,
+    onTopDeck,
+    atBase: Boolean(atBase),
+  };
+  if (climbHit && ladderMount({ ...mountArgs, near: Math.abs(player.x - climbHit.x) < 28 })) {
     startClimb(climbHit);
     return;
   }
@@ -15806,7 +15835,7 @@ function handleInput() {
     player.vx = coastX(player.vx, player.onGround, movementBuff);
   }
   applyPlayerFacing();
-  if (jumpRequested && player.onGround && climbHit && up && !climb.regrabLock) {
+  if (jumpRequested && player.onGround && climbHit && up && !climb.regrabLock && ladderMount({ ...mountArgs, down: false, near: true }) === 'up') {
     clearJumpQueue(jumpState);
     startClimb(climbHit);
     return;

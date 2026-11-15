@@ -18,7 +18,7 @@ import {
   settleOnDevice,
   snapToDevice,
 } from '../public/js/camera-feel.js?v=e668afc5';
-import { dampingAlpha } from '../public/js/movement.js?v=b30f84eb';
+import { dampingAlpha } from '../public/js/movement.js?v=0a356337';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=f706f930';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

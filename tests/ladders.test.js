@@ -8,6 +8,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt } from '../public/js/street-model.js?v=b6cb6a4e';
+import { ladderMount, LADDER_UP_PRESS_MS } from '../public/js/movement.js?v=0a356337';
+import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=856ea7ef';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const streets = join(here, '../public/assets/streets');
@@ -53,8 +55,8 @@ describe('climbing input (game.js)', () => {
     // Hopping off sideways or jumping while Up/Down is held must not flip back onto the ladder next frame.
     assert.match(game, /climb\.wall = null;(\s*climb\.goalY = null;)?\s*\/\/[^\n]*\n[^\n]*\n\s*climb\.regrabLock = true;/); // goalY: a tapped ladder's height (touch-controls)
     assert.match(game, /if \(!up && !down\) climb\.regrabLock = false;/);
-    assert.match(game, /climbHit && !climb\.regrabLock && \(up !== down\)/);
-    assert.match(game, /climbHit && up && !climb\.regrabLock\)/);
+    assert.match(game, /locked: climb\.regrabLock,/);
+    assert.match(game, /climbHit && up && !climb\.regrabLock && ladderMount\(/);
   });
 
   it('treats Up/W as climb, not jump, while on a ladder (only Space jumps off)', () => {
@@ -67,5 +69,62 @@ describe('climbing input (game.js)', () => {
     assert.match(game, /if \(player\.vy !== 0 \|\| player\.anims\) setPlayerAnim\('climb'\);\s*(?:\/\/[^\n]*\s*)?else if \(player\.playing\) player\.stop\(\);/);
     assert.match(game, /return ladderAnimState\(player\.vy\);/);
     assert.match(game, /if \(swap === 'stop'\) player\.stop\(\);\s*else player\.play\(\);/);
+  });
+});
+
+describe('getting on a ladder (#382, movement.js ladderMount)', () => {
+  const fresh = { near: true, up: true, upPressedMs: 0, onGround: true };
+
+  it('gets on with a fresh Up press or a held Down, as AvatarController onUpKey/onDownKey', () => {
+    assert.equal(ladderMount(fresh), 'up');
+    assert.equal(ladderMount({ ...fresh, upPressedMs: LADDER_UP_PRESS_MS }), 'up');
+    assert.equal(ladderMount({ near: true, down: true, onGround: true }), 'down');
+    assert.equal(ladderMount({ near: true, down: true, upPressedMs: Infinity }), 'down');
+  });
+
+  it('does not catch a ladder with an Up held from before', () => {
+    assert.equal(ladderMount({ ...fresh, upPressedMs: LADDER_UP_PRESS_MS + 1 }), '');
+    assert.equal(ladderMount({ ...fresh, upPressedMs: 2000 }), '');
+    assert.equal(ladderMount({ ...fresh, upPressedMs: Infinity }), '');
+  });
+
+  it('does not grab in the air after a jump, even on a fresh press', () => {
+    assert.equal(ladderMount({ ...fresh, onGround: false, jumpedSinceFloor: true }), '');
+    // Off a ledge without jumping the press still takes it (no jump to keep).
+    assert.equal(ladderMount({ ...fresh, onGround: false, jumpedSinceFloor: false }), 'up');
+  });
+
+  it('lets Up jump from the deck at a ladder top (the switches in Walk Toward the Light)', () => {
+    assert.equal(ladderMount({ ...fresh, onTopDeck: true }), '');
+    assert.equal(ladderMount({ near: true, down: true, onGround: true, onTopDeck: true }), 'down');
+  });
+
+  it('keeps the old limits: in reach, not just off, one direction, Down not at the bottom', () => {
+    assert.equal(ladderMount({ ...fresh, near: false }), '');
+    assert.equal(ladderMount({ ...fresh, locked: true }), '');
+    assert.equal(ladderMount({ ...fresh, down: true }), '');
+    assert.equal(ladderMount({ near: true, down: true, atBase: true }), '');
+  });
+
+  it('is what handleInput asks before startClimb (game.js)', () => {
+    const game = readFileSync(join(here, '..', 'public/game.js'), 'utf8');
+    assert.match(game, /if \(up && !ladderUp\.held\) ladderUp\.pressAt = now;\s*ladderUp\.held = up;/);
+    // Not on `climb`, which a street load replaces ({ active: false, wall: null }).
+    assert.match(game, /const ladderUp = \{ held: false, pressAt: -Infinity \};/);
+    assert.match(game, /if \(climbHit && ladderMount\(\{ \.\.\.mountArgs, near: Math\.abs\(player\.x - climbHit\.x\) < 28 \}\)\) \{\s*startClimb\(climbHit\);/);
+    assert.match(game, /jumpedSinceFloor: jumpState\.jumpedSinceFloor,/);
+    assert.match(game, /onTopDeck = Boolean\(climbHit && up && player\.onGround && standsOnLadderTop\(climbHit\)\)/);
+  });
+
+  it('finds the top deck of the ladders beside the switches in Walk Toward the Light', () => {
+    const layout = lightLayout();
+    for (const id of ['d', 'e']) {
+      const l = layout.ladders.find((it) => it.id === id);
+      const slab = layout.slabs.find((it) => it.id === id);
+      const plats = [{ x1: slab.x1, y1: slab.y, x2: slab.x2, y2: slab.y }, { x1: 0, y1: LOW, x2: 8000, y2: LOW }];
+      // The room's ladder wall tops out 24 px over the slab (kit.ladder(l.x, l.top - 24, ...)).
+      const deck = ladderTopDeck(plats, l.x, l.top - 24 + 4, LOW);
+      assert.equal(deck, slab.y, id);
+    }
   });
 });
