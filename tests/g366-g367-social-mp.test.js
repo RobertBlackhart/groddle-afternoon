@@ -11,11 +11,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=2663e2d3';
-import { TYPING_EVERY_MS, TYPING_MS, typingCounts, typingDotAlpha } from '../public/js/features/realtime-feature.js?v=c7156ab2';
+import { TYPING_EVERY_MS, TYPING_MS, typingCounts, typingDotAlpha } from '../public/js/features/realtime-feature.js?v=9eeaef79';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, commandHelp, imDelayMs, imLine, imText, normalizeImPrefs, parseButlerIm } from '../public/js/butler-im.js?v=44783638';
 import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=2cd62e6f';
 import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=e1aab2e4';
-import { FEATURES } from '../public/js/features/index.js?v=4023e5e2';
+import { FEATURES } from '../public/js/features/index.js?v=8d505994';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

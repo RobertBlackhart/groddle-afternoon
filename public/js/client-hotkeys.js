@@ -68,6 +68,21 @@ export function clientKeyAction(e) {
   return null;
 }
 
+/**
+ * G787 (Austin 2026-11-15): the number keys' emotes, as LocationInputHandler.as 134-185 had them:
+ * NUMBER_1 / NUMPAD_1 surprised, 2 angry, 3 happy, 4 AFK on and off (toggleAFK); 5 is Say Hi
+ * (hi-signs-feature). At a signpost with that arm the key takes the arm instead (game.js signpostArmKey
+ * runs first). The emote names are the wire's (realtime-client.js EMOTES).
+ * @returns {'surprise'|'angry'|'happy'|'afk'|null}
+ */
+export function emoteKeyAction(e) {
+  if (!e || e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return null;
+  const digit = /^[1-4]$/.test(String(e.key || '')) ? String(e.key) : /^(?:Digit|Numpad)([1-4])$/.exec(String(e.code || ''))?.[1];
+  return digit ? EMOTE_KEYS[digit] : null;
+}
+
+const EMOTE_KEYS = Object.freeze({ 1: 'surprise', 2: 'angry', 3: 'happy', 4: 'afk' });
+
 /** A letter with no modifier, either case (caps lock), as KeyBeacon's plain KEY_DOWN_. */
 export function isPlainKey(e, letter) {
   return Boolean(e) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey && String(e.key || '').toLowerCase() === letter;
@@ -131,7 +146,7 @@ export function hotkeySections({ keyring = false, hub = false, reports = false }
         // Austin 2026-11-01: at a post, the number on an arm takes it (game.js signpostArmKey).
         // SIGNFOCUS (2026-11-02): Enter holds a post of several arms, as the client did (SignpostView.as 382-462).
         ['Signpost', [['Enter'], ['↑', '↓']], '(Enter holds a post of several arms; ↑↓ or W/S choose, Enter goes, Esc lets go)'],
-        ['Signpost Arm', [['1-9']], '(At a signpost: arms numbered from the top)'],
+        ['Signpost Arm', [['1-9']], '(At a signpost: arms numbered from the top; an arm comes before an emote)'],
       ],
     },
     {
@@ -141,7 +156,17 @@ export function hotkeySections({ keyring = false, hub = false, reports = false }
         ['Decorate Mode', [['Shift', 'D']], '(Only inside your house or tower)'],
       ],
     },
-    { title: 'Emotions', rows: [['Say Hi!', [['5']]]] },
+    // G787: LocationInputHandler.as 134-185, the client's number keys.
+    {
+      title: 'Emotions',
+      rows: [
+        ['Surprised', [['1']]],
+        ['Angry', [['2']]],
+        ['Happy', [['3']]],
+        ['AFK', [['4']], '(On and off)'],
+        ['Say Hi!', [['5']]],
+      ],
+    },
     // ZOOM (js/world-zoom.js): the remake's world zoom, Wide to Original.
     { title: 'View', rows: [['Camera Mode', [['C']]], ['Zoom In', [['='], ['+']]], ['Zoom Out', [['-']]], ['Zoom to Original', [['0']]]] },
   ];

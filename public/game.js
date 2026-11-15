@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b65f9567';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4023e5e2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8d505994';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=4a3ea327';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1058,7 +1058,7 @@ import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typ
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
 import { bindVerbMenu, centerVerbMenu, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=94936f9c';
 import { createPromptSettler, promptId } from './js/prompt-settle.js?v=509ba9cc';
-import { clientKeyAction, createHotkeysSheet, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=2922915e';
+import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=d09771ed';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
@@ -12211,8 +12211,22 @@ function retireTextures(release) {
 }
 
 /** AvatarController: a key or click restarts the AFK timer and returns from AFK. */
-function noteAvatarInput() {
+function noteAvatarInput(e = null) {
   const now = Date.now();
+  afkState.lastInputAt = now;
+  if (!afkState.afk) return;
+  // G787: 4 toggles AFK itself (playEmoteKey), so it does not wake here first.
+  if (e?.type === 'keydown' && isAfkKey(e)) return;
+  wakeFromAfk(now);
+}
+
+/** True for a keydown that playEmoteKey will take as the AFK toggle (not typed, not a signpost's arm). */
+function isAfkKey(e) {
+  if (e.repeat || e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) return false;
+  return emoteKeyAction(e) === 'afk' && !signpostArmFor(e.key);
+}
+
+function wakeFromAfk(now = Date.now()) {
   afkState.lastInputAt = now;
   if (!afkState.afk) return;
   afkState.afk = false;
@@ -12225,6 +12239,30 @@ function noteAvatarInput() {
   toast("You've returned from AFK", 2000);
 }
 
+function goAfk(now = Date.now()) {
+  afkState.afk = true;
+  afkState.since = now;
+  afkState.wakeUntil = 0;
+  if (app?.canvas) app.canvas.dataset.playerAfk = '1';
+  pushActivity("You've gone AFK");
+  toast("You've gone AFK", 2500);
+}
+
+/**
+ * G787: a number key's emote (client-hotkeys.js emoteKeyAction). LocationInputHandler.as 166-185:
+ * 1 to 3 goNotAFK and play the emotion, 4 toggleAFK. On a street session the emote goes to the street
+ * as the Local tab's buttons send it (realtime-feature emote); solo it plays on your Glitch alone.
+ */
+function playEmoteKey(kind) {
+  setCanvasData('emoteKey', kind);
+  if (kind === 'afk') {
+    if (afkState.afk) wakeFromAfk();
+    else goAfk();
+    return;
+  }
+  if (features.query('emote', kind, engine) !== true) engine.playEmotion(kind);
+}
+
 /** TSFrontController.goAFK after AFK_TIMEOUT without input: not while moving or in a quest instance. */
 function tickAvatarAfk() {
   if (!player || !state.started) return;
@@ -12232,14 +12270,7 @@ function tickAvatarAfk() {
   if (app?.canvas && app.canvas.dataset.playerAfk == null) app.canvas.dataset.playerAfk = afkState.afk ? '1' : '0';
   if (!afkState.afk && !AFK_QA_OFF && now - afkState.lastInputAt > IDLE_TIMING.afkMs) {
     const moving = Math.abs(player.vx) > 0.35 || !player.onGround || climb.active || player.climbing;
-    if (!moving && !isScreenFxBlocking() && !engine.transientInstance()) {
-      afkState.afk = true;
-      afkState.since = now;
-      afkState.wakeUntil = 0;
-      if (app?.canvas) app.canvas.dataset.playerAfk = '1';
-      pushActivity("You've gone AFK");
-      toast("You've gone AFK", 2500);
-    }
+    if (!moving && !isScreenFxBlocking() && !engine.transientInstance()) goAfk(now);
   }
   // Keep standing stand-ins current while input is blocked (dialogs freeze handleInput).
   if (player.anims && STANDING_STATES.has(player.glitchState || 'stand') && player.onGround && Math.abs(player.vx) <= 0.35 && !climb.active) {
@@ -32813,6 +32844,14 @@ async function main() {
     if (!e.repeat && !e.shiftKey && signpostArmKey(e.key)) {
       e.preventDefault();
       keys.delete(e.key);
+      return;
+    }
+    // G787: away from an arm with that number, 1 surprised, 2 angry, 3 happy, 4 AFK (5 is hi-signs-feature's).
+    const emoteKey = e.repeat ? null : emoteKeyAction(e);
+    if (emoteKey) {
+      e.preventDefault();
+      keys.delete(e.key);
+      playEmoteKey(emoteKey);
       return;
     }
     if (e.key === 'g' || e.key === 'G' || isPlainKey(e, 'm')) {

@@ -810,6 +810,11 @@ export const realtimeFeature = {
     return session ? session.client.players.map((p) => p.name) : null;
   },
 
+  /** G787: the number keys' emotes (game.js playEmoteKey); null when no street session is open. */
+  emote(e) {
+    return session ? session.emote(e) : null;
+  },
+
   /** /happy, /surprise, /angry, /emote <name>. */
   chatCommand(text) {
     if (!session) return null;

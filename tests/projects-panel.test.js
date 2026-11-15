@@ -31,7 +31,7 @@ import {
 import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=759adbfe';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=23c2cb54';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
-import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=2922915e';
+import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=d09771ed';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { walkUpSignpostStreet } from '../public/js/ladder-top-signposts.js?v=046013b4';
 import { navigableSignposts, signpostNear, worldToScreen } from '../public/js/street-model.js?v=b6cb6a4e';
 import { SIGN_MAX_ARMS, setSignpostKeys } from '../public/js/street-render.js?v=987fe292';
-import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=2922915e';
+import { emoteKeyAction, hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=d09771ed';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(spike, 'public', p), 'utf8');
@@ -113,7 +113,7 @@ describe('signpost arm keys: the keys', () => {
 
   it('the hotkey sheet (?) lists them', () => {
     const rows = hotkeySections().flatMap((s) => s.rows.map(([label, alts, note]) => `${label}: ${hotkeyText(alts)} ${note || ''}`.trim()));
-    assert.ok(rows.includes('Signpost Arm: 1-9 (At a signpost: arms numbered from the top)'), rows.join('\n'));
+    assert.ok(rows.includes('Signpost Arm: 1-9 (At a signpost: arms numbered from the top; an arm comes before an emote)'), rows.join('\n'));
   });
 
   it('a number with no arm keeps its own use: 5 says hi unless a fifth arm takes it', () => {
@@ -122,3 +122,46 @@ describe('signpost arm keys: the keys', () => {
     assert.match(hi, /if \(eng\.signpostTakesKey\?\.\(e\.key\)\) return;\n\s*if \(e\.key === '5'/);
   });
 });
+
+describe('G787: the number keys emote again (LocationInputHandler.as 134-185)', () => {
+  const lih = (() => {
+    try {
+      return readFileSync(join(spike, '..', 'glitch-client/com/tinyspeck/engine/view/renderer/LocationInputHandler.as'), 'utf8');
+    } catch {
+      return '';
+    }
+  })();
+
+  it('1 surprised, 2 angry, 3 happy, 4 AFK, top row or keypad; never with a modifier', () => {
+    assert.equal(emoteKeyAction({ key: '1', code: 'Digit1' }), 'surprise');
+    assert.equal(emoteKeyAction({ key: '2', code: 'Digit2' }), 'angry');
+    assert.equal(emoteKeyAction({ key: '3', code: 'Numpad3' }), 'happy');
+    assert.equal(emoteKeyAction({ key: 'End', code: 'Numpad1' }), 'surprise', 'the keypad with Num Lock off');
+    assert.equal(emoteKeyAction({ key: '4', code: 'Digit4' }), 'afk');
+    assert.equal(emoteKeyAction({ key: '5', code: 'Digit5' }), null, '5 is hi-signs-feature\'s');
+    assert.equal(emoteKeyAction({ key: '!', code: 'Digit1', shiftKey: true }), null);
+    assert.equal(emoteKeyAction({ key: '1', code: 'Digit1', ctrlKey: true }), null);
+    if (lih) {
+      assert.match(lih, /number1KeyHandler[\s\S]{0,160}playSurprisedAnimation/);
+      assert.match(lih, /number2KeyHandler[\s\S]{0,160}playAngryAnimation/);
+      assert.match(lih, /number3KeyHandler[\s\S]{0,160}playHappyAnimation/);
+      assert.match(lih, /number4KeyHandler[\s\S]{0,120}toggleAFK/);
+    }
+  });
+
+  it('an arm with that number goes first; then the emote, sent to the street online, played solo', () => {
+    const arm = game.indexOf('if (!e.repeat && !e.shiftKey && signpostArmKey(e.key)) {');
+    const emote = game.indexOf('const emoteKey = e.repeat ? null : emoteKeyAction(e);');
+    assert.ok(arm > 0 && emote > arm, 'signpostArmKey runs before the emote keys');
+    assert.match(game, /if \(features\.query\('emote', kind, engine\) !== true\) engine\.playEmotion\(kind\);/);
+    assert.match(read('js/features/realtime-feature.js'), /emote\(e\) \{\n\s+return session \? session\.emote\(e\) : null;/);
+  });
+
+  it('4 toggles AFK without the keydown waking it first; the sheet lists the emotes', () => {
+    assert.match(game, /if \(e\?\.type === 'keydown' && isAfkKey\(e\)\) return;/);
+    assert.match(game, /if \(afkState\.afk\) wakeFromAfk\(\);\n\s+else goAfk\(\);/);
+    const emotions = hotkeySections().find((s) => s.title === 'Emotions').rows.map(([label, alts]) => `${label}: ${hotkeyText(alts)}`);
+    assert.deepEqual(emotions, ['Surprised: 1', 'Angry: 2', 'Happy: 3', 'AFK: 4', 'Say Hi!: 5']);
+  });
+});
+
