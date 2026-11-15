@@ -20,8 +20,8 @@ import { newPlayerInventory, newPlayerStats } from '../public/js/new-player.js?v
 import { createInventory } from '../public/js/inventory.js?v=f49c8998';
 import { PARADISE_TICKET_IDS } from '../public/js/paradise-flight.js?v=b41e12a0';
 import { createPlayerSave, parsePlayerSave, restorePlayerSave, serializePlayerSave, normalizePlayerSnapshot } from '../public/js/player-save.js?v=fa6f7859';
-import { cloudsLayout, SCENE_TSIDS, GENTLE_ISLAND } from '../public/js/newxp.js?v=3ab7e2f9';
-import { newxpFeature, __newxpTest, cloudEdge, cloudStepOff, cloudStepOffAny, CLOUD_BODY_DEPTH, CLOUD_EDGE_CLEAR, CLOUD_END_PUFFS } from '../public/js/features/newxp-feature.js?v=df0f8057';
+import { cloudsLayout, SCENE_TSIDS, GENTLE_ISLAND } from '../public/js/newxp.js?v=7cbc4aa6';
+import { newxpFeature, __newxpTest, cloudEdge, cloudStepOff, cloudStepOffAny, CLOUD_BODY_DEPTH, CLOUD_EDGE_CLEAR, CLOUD_END_PUFFS } from '../public/js/features/newxp-feature.js?v=709ffee7';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -192,7 +192,7 @@ describe('3. a reload mid-tutorial goes straight back into it', () => {
     await new Promise((r) => setTimeout(r, 20));
     assert.equal(clicks.length, 1, 'the game starts by itself');
     // onTick's resume (shouldResume) then begins the saved stage; the scene stages restart at their top.
-    assert.match(feature, /\} else if \(shouldResume\(save, \{ fresh: engine\.param\('fresh'\) != null, resetgame: engine\.param\('resetgame'\) != null \}\)\) \{\n[^\n]*\n\s+if \(SCENE_STAGES\.includes\(save\.stage\)/);
+    assert.match(feature, /\} else if \(shouldResume\(save, \{ fresh: engine\.param\('fresh'\) != null, resetgame: engine\.param\('resetgame'\) != null \}\)\) \{\n(?:\s*\/\/[^\n]*\n)*\s*cloudsResumeAt = cloudsResume\(save\);\n\s+if \(SCENE_STAGES\.includes\(save\.stage\)/);
   });
 
   it('the arrival lines stay quiet until the stage is back (no "Hechey Track loaded" over Training)', () => {

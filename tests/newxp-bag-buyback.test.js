@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { CHEAP_BAG_PRICE, cheapBagPrice } from '../public/js/newxp.js?v=3ab7e2f9';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=df0f8057';
+import { CHEAP_BAG_PRICE, cheapBagPrice } from '../public/js/newxp.js?v=7cbc4aa6';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=709ffee7';
 import { vendorBuy, vendorSell, vendorSellValue } from '../public/js/vendor.js?v=6b499efc';
 import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
 

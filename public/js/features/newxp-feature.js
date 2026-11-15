@@ -103,6 +103,8 @@ import {
   cloudLetterDeco,
   cloudWordDeco,
   cloudsLayout,
+  cloudsResume,
+  cloudUnder,
   firstSkill,
   inBox,
   inHitBox,
@@ -129,7 +131,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=3ab7e2f9';
+} from '../newxp.js?v=7cbc4aa6';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=61be601c';
@@ -145,7 +147,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=b59156cf';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=0025dfb3';
+import { HOME_MACHINE } from '../home-ticket.js?v=16b73363';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=18353eaa';
 import {
   AK_ANIMALS,
@@ -200,6 +202,8 @@ let pendingStage = null;
 let resumeChecked = false;
 /** A reload found the tutorial in progress: the game starts straight back into it (no welcome card). */
 let resumeQueued = false;
+/** A reload in the Cloud Level after the chain was pulled: where runClouds puts the player back (cloudsResume). */
+let cloudsResumeAt = null;
 let lastTsid = '';
 let lastData = 0;
 let auto = false;
@@ -1389,6 +1393,9 @@ async function runClouds(t) {
   const engine = engineRef;
   hud({ meta: true, energy: true, mood: true, pack: true, actions: true, chat: true });
   const L = buildClouds(engine);
+  const back = cloudsResumeAt;
+  cloudsResumeAt = null;
+  if (back) return resumeClouds(t, L, back);
   fadeIn();
   // newxp_chain: you wait hidden above the ceiling until the chain is pulled.
   setStep('chain');
@@ -1442,12 +1449,39 @@ async function runClouds(t) {
   await until(t, () => P()?.onGround && Math.abs(P().y - first.y) < 12, { help: () => place(L.spawn.x, first.y) });
   run.data.landedAt = Date.now();
   run.data.terraces = L.terraces;
-  setStep('move');
-  instruction(LINES.moveInstructions);
-  const startX = P().x;
-  // checkMovement: dismissed once the avatar is 50 px right of where it landed.
-  await until(t, () => P().x - startX > 50, { help: () => place(startX + 80, P().y) });
-  clearInstruction();
+  return cloudsWalk(t, L, 'move');
+}
+
+/**
+ * A reload after the chain was pulled (cloudsResume): no chain, no perch; the player stands on the
+ * cloud they reached with the stone letters lit, and carries on from the step they were on.
+ */
+async function resumeClouds(t, L, back) {
+  const engine = engineRef;
+  run.data.pulled = true;
+  const { chain, arrow } = run.views;
+  if (chain && !chain.destroyed) {
+    chain.visible = false;
+    chain.eventMode = 'none';
+  }
+  if (arrow) arrow.visible = false;
+  const i = engine.platforms.findIndex((p) => p.id === 'perch');
+  if (i >= 0) engine.platforms.splice(i, 1);
+  place(back.x, back.y - 2);
+  setStep(back.step);
+  rooted = false;
+  fadeIn();
+  engine.setData('newxpLast', `resume:cloud_${back.cloud}`);
+  const land = L.terraces[back.cloud];
+  await until(t, () => P()?.onGround && Math.abs(P().y - land.y) < 12, { help: () => place(back.x, land.y) });
+  run.data.landedAt = Date.now() - 10000;
+  run.data.terraces = L.terraces;
+  return cloudsWalk(t, L, back.step);
+}
+
+/** From standing on a cloud: the move instruction (unless already past it), then walk off the last edge. */
+async function cloudsWalk(t, L, from) {
+  if (from === 'move') await cloudsMove(t);
   setStep('walk');
   // Past the last edge and falling: on to training1. Testing the edge itself (not dropX, 10 px on)
   // means an avatar that steps off slowly never lands on the catch floor below and stands
@@ -1456,6 +1490,15 @@ async function runClouds(t) {
   run.data.cloudEdge = edge;
   await until(t, () => P().x > edge && P().y > L.dropY, { help: () => place(L.dropX + 60, L.dropY + 60) });
   return 'training1';
+}
+
+async function cloudsMove(t) {
+  setStep('move');
+  instruction(LINES.moveInstructions);
+  const startX = P().x;
+  // checkMovement: dismissed once the avatar is 50 px right of where it landed.
+  await until(t, () => P().x - startX > 50, { help: () => place(startX + 80, P().y) });
+  clearInstruction();
 }
 
 /* ------------------------------------------------------------------ */
@@ -3875,7 +3918,9 @@ export const newxpFeature = {
         pendingStage = null;
         startTutorial(engine, stage);
       } else if (shouldResume(save, { fresh: engine.param('fresh') != null, resetgame: engine.param('resetgame') != null })) {
-        // Training scenes restart at the top (reset()); the island resumes in place.
+        // Training scenes restart at the top (reset()); the island resumes in place; the Cloud
+        // Level, once its chain is pulled, on the cloud the player reached (cloudsResume).
+        cloudsResumeAt = cloudsResume(save);
         if (SCENE_STAGES.includes(save.stage) || ['house', 'skill'].includes(save.stage)) beginStage(engine, save.stage);
         else beginStage(engine, save.stage);
       }
@@ -3911,6 +3956,12 @@ export const newxpFeature = {
       if (x != null) {
         p.x = x;
         p.onGround = false;
+      }
+      // The furthest cloud stood on, saved so a reload lands there (cloudsResume).
+      const under = cloudUnder(run.data.terraces, p);
+      if (under > save.cloud) {
+        save.cloud = under;
+        engine.save();
       }
       lightLetters(Date.now());
       revealPhrases(Date.now(), p);

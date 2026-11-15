@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GENTLE_ISLAND_TSIDS } from '../public/js/newxp.js?v=3ab7e2f9';
+import { GENTLE_ISLAND_TSIDS } from '../public/js/newxp.js?v=7cbc4aa6';
 import { DOONBOGGLE_KEY, DOONBOGGLE_TSID, ETHEREAL_TSID } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 
 const here = dirname(fileURLToPath(import.meta.url));

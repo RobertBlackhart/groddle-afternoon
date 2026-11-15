@@ -692,7 +692,33 @@ export function normalizeNewxpSave(seed = {}) {
     stageAt: normalizeStageAt(s.stageAt),
     step: typeof s.step === 'string' && STEP_RE.test(s.step) ? s.step : '',
     stepAt: Number.isFinite(s.stepAt) ? s.stepAt : 0,
+    cloud: Number.isInteger(s.cloud) && s.cloud >= 0 && s.cloud < CLOUD_COUNT ? s.cloud : 0,
   };
+}
+
+/** The Cloud Level's clouds (cloudsLayout terraces). */
+const CLOUD_COUNT = 5;
+
+/**
+ * PURE: where a reload puts a player back in the Cloud Level (lane clouds, Austin 2026-11-15). The
+ * scene used to start again from its top, so a player who had pulled the chain and walked three
+ * clouds down was back hidden above the ceiling, waiting at the chain. Once the chain is pulled
+ * (step move or walk) the player lands again on the furthest cloud they stood on (save.cloud):
+ * the first at the spawn, a lower one just past where you land on it (its `box`). Before the pull,
+ * or on any other stage, null: the scene starts at the chain as before.
+ */
+export function cloudsResume(save, layout = cloudsLayout()) {
+  if (save?.stage !== 'clouds' || !['move', 'walk'].includes(save?.step)) return null;
+  const i = Math.max(0, Math.min(layout.terraces.length - 1, Number(save.cloud) || 0));
+  const t = layout.terraces[i];
+  const x = i === 0 ? layout.spawn.x : Math.min(t.x2 - 120, t.box + 40);
+  return { cloud: i, x, y: t.y, step: save.step };
+}
+
+/** PURE: which cloud the feet stand on (index into the terraces), or -1. */
+export function cloudUnder(terraces, p) {
+  if (!p?.onGround) return -1;
+  return (terraces || []).findIndex((t) => Math.abs(p.y - t.y) <= 12 && p.x >= t.x1 && p.x <= t.x2);
 }
 
 /** A step name the stage runners set (setStep): short and plain, never free text. */
@@ -745,6 +771,7 @@ export function startNewxp(save, stage = 'clouds', now = Date.now()) {
     next.leftAt = 0;
     next.stageAt = {};
   }
+  next.cloud = 0;
   next.step = '';
   next.stepAt = 0;
   next.startedAt = now;

@@ -14,8 +14,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { BAGS_NEEDED, CHEAP_BAG_PRICE, ISLAND_CURRANTS, cheapBagPrice } from '../public/js/newxp.js?v=3ab7e2f9';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=df0f8057';
+import { BAGS_NEEDED, CHEAP_BAG_PRICE, ISLAND_CURRANTS, cheapBagPrice } from '../public/js/newxp.js?v=7cbc4aa6';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=709ffee7';
 import { vendorBuy } from '../public/js/vendor.js?v=6b499efc';
 import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
 
