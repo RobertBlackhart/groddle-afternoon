@@ -70,4 +70,12 @@ describe('badge art coverage', () => {
     assert.match(panel, /Reimagined badge art/);
     assert.match(readFileSync(join(publicRoot, 'style.css'), 'utf8'), /\.badge-reimagined/);
   });
+
+  it('#358: the HUD redraw never resets the open Category list', () => {
+    const game = readFileSync(join(publicRoot, 'game.js'), 'utf8');
+    const panel = game.slice(game.indexOf('function renderAchievePanel'), game.indexOf('function openAchievePanel'));
+    assert.match(panel, /if \(category && category\.value !== achievementBrowser\.category && document\.activeElement !== category\) \{\n\s+category\.value = achievementBrowser\.category;/);
+    assert.doesNotMatch(panel, /if \(category\) category\.value = /);
+  });
 });
+

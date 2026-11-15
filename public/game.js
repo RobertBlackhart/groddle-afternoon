@@ -27436,7 +27436,11 @@ function renderAchievePanel() {
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
   const category = document.getElementById('achieve-category');
-  if (category) category.value = achievementBrowser.category;
+  // #358: updateHud redraws this panel every few frames; setting the select's value while its list is
+  // open threw the list back to the chosen row. Only a changed value, and never under the player's hand.
+  if (category && category.value !== achievementBrowser.category && document.activeElement !== category) {
+    category.value = achievementBrowser.category;
+  }
   const search = document.getElementById('achieve-search');
   if (search && search.value !== achievementBrowser.query) search.value = achievementBrowser.query;
 
