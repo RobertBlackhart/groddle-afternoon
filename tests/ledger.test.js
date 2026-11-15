@@ -114,7 +114,33 @@ describe('ledger reconcile (LedgerMath::reconcile)', { skip }, () => {
     assert.deepEqual(r.clamped, empty);
     assert.equal(r.budget, 900);
     const loss = php('reconcile', ledger, counts({}, 100), 49_990, 50_000);
-    assert.equal(loss.budget, 50_000, 'losses refund, up to the capacity');
+    assert.equal(loss.budget, 49_990, 'a loss alone puts nothing into the budget (G742)');
+  });
+
+  it('lets a write\'s losses pay for its own gains (a sale, a purchase), and never banks what is left (G742)', () => {
+    const apple = php('value', 'apple');
+    // A sale below value: ten apples go, fewer currants than they are worth come in; nothing is banked.
+    const sale = php('reconcile', ledger, counts({}, 100 + 10 * apple - 10), 500, 50_000);
+    assert.deepEqual(sale.clamped, empty);
+    assert.equal(sale.budget, 500, 'the apples paid for the currants; the rest is gone');
+    // A purchase: currants go, apples come in; the currants pay for the apples.
+    const buy = php('reconcile', ledger, counts({ apple: 20 }, 100 - 10 * apple), 0, 50_000);
+    assert.deepEqual(buy.clamped, empty);
+    assert.equal(buy.budget, 0);
+    // Giving things away earns nothing, and a gain past the write's own losses comes out of the budget.
+    const gift = php('reconcile', ledger, counts({}, 0), 300, 50_000);
+    assert.equal(gift.budget, 300);
+    const more = php('reconcile', ledger, counts({ apple: 0 }, 100 + 10 * apple + 40), 300, 50_000);
+    assert.deepEqual(more.clamped, empty);
+    assert.equal(more.budget, 260);
+  });
+
+  it('refills at 60 a minute of connected time by default (G742, ours: honest play measured at most about 39)', () => {
+    const ledgerSrc = readFileSync(join(SITE_DIR, 'src/Ledger.php'), 'utf8');
+    assert.match(ledgerSrc, /public const RATE = 60\.0;/);
+    assert.match(ledgerSrc, /public const CAPACITY = 50000\.0;/);
+    // The site options, when set, are read the same way for both (a number, 0 or more), else the default.
+    assert.match(ledgerSrc, /\$num\('groddle_ledger_rate', self::RATE\), \$num\('groddle_ledger_capacity', self::CAPACITY\)/);
   });
 
   it('never accepts a credit-only class as a gain', () => {

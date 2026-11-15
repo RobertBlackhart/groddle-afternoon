@@ -88,11 +88,11 @@ describe('transforms a write\'s losses explain (LedgerMath::explain)', { skip },
     assert.deepEqual(forged.clamped, counts({ simple_slaw: 1 }));
   });
 
-  it('follows a chain inside one write (grain to flour to a bun), and refunds what the chain did not use', () => {
+  it('follows a chain inside one write (grain to flour to a bun); what the chain did not use refunds nothing (G742)', () => {
     const r = php('reconcile', [counts({ grain: 7, pinch_of_salt: 1 }), counts({ bun: 1 }), 0, 50_000]);
     assert.deepEqual(r.clamped, none);
     assert.deepEqual(r.runs, { 'recipe:bun': 1, 'recipe:flour': 1 });
-    assert.equal(r.budget, 2 * ECON.items.grain.v, 'the two grains left over refund as an ordinary loss');
+    assert.equal(r.budget, 0, 'the two grains left over are an ordinary loss, which is never banked');
   });
 
   it('opens a Cubimal box into a figure of its series, and only from a box the save gave up', () => {
