@@ -18,7 +18,7 @@ import {
   routeQuestEvent,
   tickQuestTimers,
   HERB_GARDEN_STREETS,
-} from '../public/js/quest-offers.js?v=0f1ad5d0';
+} from '../public/js/quest-offers.js?v=38a0cac5';
 import { retireDeadQuests, retiredQuestLine } from '../public/js/retired-quests.js?v=61758261';
 import { questRemovedBy } from '../public/js/unlearning.js?v=20672dff';
 

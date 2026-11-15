@@ -35,8 +35,8 @@ import {
 } from '../../public/js/seasons.js?v=1978c3f3';
 import { SEASON_DATA } from '../../public/js/seasons-data.js?v=b5174bc9';
 import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=72f37c7e';
-import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=cd94ccca';
-import { SEASONAL_RECIPES } from '../../public/js/making.js?v=a819b30f';
+import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=a5191e8b';
+import { SEASONAL_RECIPES } from '../../public/js/making.js?v=66c4f499';
 import { SKILL_PACKAGES } from '../../public/js/skill-packages-data.js?v=cb4e9ab3';
 import { TRANT_META } from '../../public/js/trants.js?v=4d6f5593';
 import { playHref } from './play-links.mjs';

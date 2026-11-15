@@ -17,7 +17,7 @@ import {
   ensureItem,
   registerItemUse,
 } from './inventory.js?v=f49c8998';
-import { GRINDER_TOOLS, TOOL_CONDITION_CATALOG, brokenToolIcon, canUseTool, firstWorkingTool, setToolRemaining, toolCopies, useToolCondition } from './tools.js?v=1bc47590';
+import { GRINDER_TOOLS, TOOL_CONDITION_CATALOG, brokenToolIcon, canUseTool, firstWorkingTool, setToolRemaining, toolCopies, useToolCondition } from './tools.js?v=8516a0c3';
 import { getSkillPackageOverride, highestSkillLevel, skillPackageDetails } from './skill-packages.js?v=bfb87281';
 import {
   adjustedTaskLimit,

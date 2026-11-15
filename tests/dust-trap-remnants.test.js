@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DUST_TRAP_ORGANELLES, ORGANELLE_OVERLAY, organelleFlight } from '../public/js/resource-nodes.js?v=5590beb4';
+import { DUST_TRAP_ORGANELLES, ORGANELLE_OVERLAY, organelleFlight } from '../public/js/resource-nodes.js?v=6ef2797a';
 import { OVERLAY_USES } from '../public/js/overlays.js?v=4cbbb0c6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

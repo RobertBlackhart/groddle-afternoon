@@ -764,7 +764,10 @@ export function quoteToolRepair(state, classTsid, learned = [], opts = {}) {
   if (!condition.needsRepair) return { ok: false, reason: 'full', condition };
   const tinkering = highestTinkeringRank(learned);
   if (!tinkering) return { ok: false, reason: 'skill', condition };
-  if (classTsid === 'tinkertool' && tinkering.rank < 3) {
+  // A Tinkertool fixing itself needs Tinkering III; one dropped onto another (opts.by, G794) is
+  // repaired by that one and needs Tinkering I, as any tool does (tinkertool.js repair conditions
+  // 214-223: the drop_stack branch asks for tinkering_1).
+  if (classTsid === 'tinkertool' && !repairsOther(classTsid, condition.copy, opts) && tinkering.rank < 3) {
     return { ok: false, reason: 'self_skill', condition, tinkering };
   }
   const missing = condition.capacity - condition.remaining;
@@ -819,7 +822,13 @@ export function tinkertoolRefusal() {
  * working Tinkertool in pack order (findFirst isWorking, 297-299).
  * Returns { self, copy, points } or null when there is none.
  */
-export function repairingTinkertool(state, classTsid, quote = null) {
+export function repairingTinkertool(state, classTsid, quote = null, opts = {}) {
+  // G794: a drop names the Tinkertool that does it (opts.by, its place in pack order).
+  if (Number.isInteger(opts?.by) && opts.by >= 0 && repairsOther(classTsid, quote?.condition?.copy, opts)) {
+    if (!state || (state.inv && heldCount(state, 'tinkertool') < 1)) return null;
+    const by = toolCopies(state, 'tinkertool')[opts.by];
+    return by && by.remaining >= 1 ? { self: false, copy: opts.by, points: by.remaining } : null;
+  }
   if (classTsid === 'tinkertool') {
     const c = quote?.condition || getToolCondition(state, 'tinkertool');
     return { self: true, copy: c.copy, points: c.remaining };
@@ -951,11 +960,11 @@ export function mostWornToolCopy(state, classTsid) {
 export function repairToolCondition(state, classTsid, pc, opts = {}) {
   const quote = quoteToolRepair(state, classTsid, opts.learned || [], opts);
   if (!quote.ok) return quote;
-  const self = classTsid === 'tinkertool';
+  const self = classTsid === 'tinkertool' && !repairsOther(classTsid, quote.condition.copy, opts);
   if (!self && opts.hasTinkertool !== true) {
     return { ok: false, reason: 'tinkertool', quote, msg: tinkertoolRefusal() };
   }
-  const tinker = repairingTinkertool(state, classTsid, quote);
+  const tinker = repairingTinkertool(state, classTsid, quote, opts);
   if (!tinker) return { ok: false, reason: 'tinkertool', quote, msg: tinkertoolRefusal() };
   // tinkertool.js onTick: the repair runs while the energy lasts and keeps what it fixed.
   const plan = toolRepairPlan(quote, pc?.energy, { self, tinkertool: tinker.points });
@@ -1010,6 +1019,65 @@ export function repairToolCondition(state, classTsid, pc, opts = {}) {
     moodGained,
     msg: `${said} You spent ${energyUsed} energy.${broke}`,
   };
+}
+
+/**
+ * G794: a repair done by a named Tinkertool (opts.by, from a drop) that is not the tool itself.
+ * A Tinkertool's own Repair (no `by`, or `by` on itself) is the self repair.
+ */
+function repairsOther(classTsid, copy, opts = {}) {
+  const by = opts?.by;
+  if (!Number.isInteger(by) || by < 0) return false;
+  return classTsid !== 'tinkertool' || by !== copy;
+}
+
+/** The words a drop onto (or with) a Tinkertool shows (tinkertool.js repair drop_tip 166). */
+export const TINKERTOOL_DROP_TIP = 'Repair with your Tinkertool';
+
+/**
+ * PURE (G794): what dropping one pack tool onto another does, as Glitch's repair verb did (GSJS
+ * items/tinkertool.js 154-311, tool_base: is_drop_target, drop_ok_code 167-181, handler 273-311;
+ * main.js 5464-5516 asks the target's verbs with the dragged stack). A worn or broken tool dropped
+ * onto a Tinkertool, or a Tinkertool dropped onto a worn or broken tool, is a repair by that
+ * Tinkertool; one Tinkertool onto another: the working one repairs the worn one (the target first,
+ * handler 276-284; a broken target is repaired by the dragged one, 291-309).
+ * `dragged`, `target`: { cls, copy } (copy: its place among its class's tools in pack order).
+ * Returns null when the drop is no repair (it stays a move), { classTsid, copy, by } for one, or
+ * { refuse } with why not (only a broken Tinkertool, which can do no repair: handler 293-295).
+ * Ours: a whole Tinkertool dropped onto a broken one repairs it too; Glitch's drop_ok_code read the
+ * dragged stack's wear there (170-173) and turned that drop away, though its handler (291-309) has
+ * the dragged Tinkertool repair the broken one whenever the drop is let through.
+ */
+export function dropRepair(state, dragged, target) {
+  const cls = (s) => String(s?.cls || '');
+  const copyOf = (s) => (Number.isInteger(s?.copy) && s.copy >= 0 ? s.copy : 0);
+  if (!state || !cls(dragged) || !cls(target)) return null;
+  if (cls(dragged) === cls(target) && copyOf(dragged) === copyOf(target)) return null;
+  const isTink = (s) => cls(s) === 'tinkertool';
+  if (!isTink(dragged) && !isTink(target)) return null;
+  // can_repair "0" and a tool with no wear are no drop target (drop_ok_code 167-181, conditions 183-212).
+  const needs = (s) => {
+    const def = TOOL_CONDITION_CATALOG[cls(s)];
+    if (!def || def.repairable === false) return false;
+    const c = getToolCondition(state, cls(s), { copy: copyOf(s) });
+    return Boolean(c.tracked && c.repairable !== false && c.needsRepair);
+  };
+  // isWorking: a Tinkertool with a point left.
+  const works = (s) => {
+    const c = getToolCondition(state, 'tinkertool', { copy: copyOf(s) });
+    return Boolean(c.tracked && !c.broken && c.remaining >= 1);
+  };
+  const repair = (tool, by) => ({ classTsid: cls(tool), copy: copyOf(tool), by: copyOf(by) });
+  const broken = { refuse: 'This Tinkertool has become broken, and must be repaired.' };
+  if (isTink(dragged) && isTink(target)) {
+    if (works(target) && needs(dragged)) return repair(dragged, target);
+    if (works(dragged) && needs(target)) return repair(target, dragged);
+    return needs(dragged) || needs(target) ? broken : null;
+  }
+  const tink = isTink(target) ? target : dragged;
+  const tool = isTink(target) ? dragged : target;
+  if (!needs(tool)) return null;
+  return works(tink) ? repair(tool, tink) : broken;
 }
 
 /** The copy a repair works on: `opts.copy`, else the first (pack order) that needs one. */

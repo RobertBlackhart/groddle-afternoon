@@ -12,10 +12,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { MINE_STAND_X, NODE_TOOLS, NODE_TOOL_DELTAS, mineStandX, nodeToolOverlay, nodeToolSheet } from '../public/js/node-tools.js?v=47a93d54';
-import { miningProfile } from '../public/js/mining.js?v=930d9d80';
+import { miningProfile } from '../public/js/mining.js?v=c2964c53';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedFrameAt } from '../public/js/packed-sheets.js?v=e3d07c14';
-import { RESOURCE_NODE_CATALOG } from '../public/js/resource-nodes.js?v=5590beb4';
+import { RESOURCE_NODE_CATALOG } from '../public/js/resource-nodes.js?v=6ef2797a';
 import { imageSize } from '../tools/image-size.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

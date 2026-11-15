@@ -6,7 +6,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { AUCTION_TEXT } from '../public/js/auctions.js?v=9a1488e7';
+import { AUCTION_TEXT } from '../public/js/auctions.js?v=e857e831';
 
 const src = readFileSync(new URL('../public/js/features/auctions-feature.js', import.meta.url), 'utf8');
 

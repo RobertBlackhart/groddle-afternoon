@@ -13,14 +13,14 @@ import {
   quoteWoodTreeHarvest,
   resetWoodTreeDay,
   woodTreeStatusLabel,
-} from '../public/js/woodcutting.js?v=c27c5bc3';
+} from '../public/js/woodcutting.js?v=b43edbd8';
 import {
   TOOL_CONDITION_CATALOG,
   createToolConditionState,
   getToolCondition,
   setToolRemaining,
-} from '../public/js/tools.js?v=1bc47590';
-import { getVerbsFor, runVerb } from '../public/content.js?v=6e9c4da1';
+} from '../public/js/tools.js?v=8516a0c3';
+import { getVerbsFor, runVerb } from '../public/content.js?v=9b7d28a8';
 import { actionDurationFor } from '../public/js/action-timing.js?v=b6ce9561';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

@@ -38,12 +38,12 @@ import {
   roomMachineState,
   setMachineArtFrame,
 } from '../public/js/machine-art.js?v=7b47d630';
-import { MACHINE_IDS } from '../public/js/machines.js?v=8d4764a6';
-import { MACHINE_EXTRA_WAIT_MS, machineTank, tankFuel } from '../public/js/machine-rooms.js?v=9eb50c30';
-import { craftRecipe, ensureMakingItems, loadRecipeCatalogFromFile } from '../public/js/making.js?v=a819b30f';
+import { MACHINE_IDS } from '../public/js/machines.js?v=f1b30bc0';
+import { MACHINE_EXTRA_WAIT_MS, machineTank, tankFuel } from '../public/js/machine-rooms.js?v=991ff9b4';
+import { craftRecipe, ensureMakingItems, loadRecipeCatalogFromFile } from '../public/js/making.js?v=66c4f499';
 import { platformsScreen } from '../public/js/street-model.js?v=b6cb6a4e';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=cec867ca';
-import { machineArtFeature } from '../public/js/features/machine-art-feature.js?v=8c848f65';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=027ef301';
+import { machineArtFeature } from '../public/js/features/machine-art-feature.js?v=f992a644';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

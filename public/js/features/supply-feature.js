@@ -52,7 +52,7 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem } from '../inventory.js?v=f49c8998';
-import { getToolCondition, copyForVerb, copyTag, copyTags, migrateClassTag, setCopyTag } from '../tools.js?v=1bc47590';
+import { getToolCondition, copyForVerb, copyTag, copyTags, migrateClassTag, setCopyTag } from '../tools.js?v=8516a0c3';
 import {
   MACHINE_ASSEMBLIES,
   MACHINE_IDS,
@@ -85,7 +85,7 @@ import {
   stillOnPickup,
   stillStopsAt,
   stillWaitsToStart,
-} from '../machines.js?v=8d4764a6';
+} from '../machines.js?v=f1b30bc0';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
 import { createSheetLoader } from '../sprite-sheets.js?v=0b1e96e6';
 import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=07b416a3';

@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=9bbf8eec';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=ccd12c71';
 import {
   findWork,
   jobRewardsText,
@@ -32,7 +32,7 @@ import {
   workCheck,
   contributeItems,
 } from '../public/js/street-jobs.js?v=d0ca0659';
-import { createToolConditionState } from '../public/js/tools.js?v=1bc47590';
+import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

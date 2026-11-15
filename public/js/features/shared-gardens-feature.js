@@ -64,8 +64,8 @@ import {
   hasWateringCan,
   pickSeedToPlant,
   seedFitsGarden,
-} from '../garden.js?v=cd94ccca';
-import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=1bc47590';
+} from '../garden.js?v=a5191e8b';
+import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=8516a0c3';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';
 import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';

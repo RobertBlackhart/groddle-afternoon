@@ -20,9 +20,9 @@ import {
   homePlotHeld,
   mayTendYard,
   normalizeTendActs,
-} from '../public/js/neighbours-mp.js?v=db9514ae';
+} from '../public/js/neighbours-mp.js?v=89e6bb70';
 import { LOCK_LINE } from '../public/js/shared-gardens.js?v=c1f90bc0';
-import { createGarden, harvestPlot, sowPlot } from '../public/js/garden.js?v=cd94ccca';
+import { createGarden, harvestPlot, sowPlot } from '../public/js/garden.js?v=a5191e8b';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

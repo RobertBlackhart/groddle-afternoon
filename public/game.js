@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=6e9c4da1';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=9b7d28a8';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=05df95e9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=81a569ce';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -37,8 +37,8 @@ import {
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=7f5d761c';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=de8a12ae';
-import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=0f1ad5d0';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=c6476b8c';
+import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=38a0cac5';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -239,7 +239,7 @@ import {
   rookEggStateForProgress,
   rookWoodsObjective,
   rookWoodsRemainingMs,
-} from './js/rook-woods.js?v=9a32680d';
+} from './js/rook-woods.js?v=c8089bf8';
 import {
   ROOK_HALL_QUEST_ID,
   ROOK_HALL_START_QUEST_ID,
@@ -497,8 +497,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=64e4a567';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=fa8b4dd3';
-import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=fa8b4dd3';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=f65cefab';
+import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=f65cefab';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -517,7 +517,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=f2e95e6d';
+} from './js/player-save.js?v=cd5b638c';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -561,6 +561,8 @@ import {
   repairTip as repairTipText,
   tinkertoolRefusal,
   repairingTinkertool,
+  dropRepair,
+  TINKERTOOL_DROP_TIP,
   toolWornBaseCost,
   mostWornToolCopy,
   keepsOwnStack,
@@ -577,7 +579,7 @@ import {
   setCopyTag,
   migrateClassValue,
   brokenToolIcon,
-} from './js/tools.js?v=1bc47590';
+} from './js/tools.js?v=8516a0c3';
 import {
   listRecipes,
   listRecipesForTool,
@@ -619,11 +621,11 @@ import {
   recipeTaskLimit,
   recipeToolInUse,
   pluralizeItem,
-} from './js/making.js?v=a819b30f';
+} from './js/making.js?v=66c4f499';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=bbaeffcd';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=7233dd76';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=a1a254bc';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=be14084b';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=7b47d630';
 import {
@@ -654,7 +656,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=cd94ccca';
+} from './js/garden.js?v=a5191e8b';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -671,7 +673,7 @@ import {
   STARTER_MINING_SKILLS,
   findWorkingPick,
   miningToolWear,
-} from './js/mining.js?v=930d9d80';
+} from './js/mining.js?v=c2964c53';
 import { PICK_SHEETS, mineStandX, nodeToolOverlay } from './js/node-tools.js?v=47a93d54';
 import {
   loadStreetData,
@@ -786,7 +788,7 @@ import {
   trantStatusLabel,
   trantFootAnchorY,
 } from './js/trants.js?v=4d6f5593';
-import { growStreetTrant } from './js/patches.js?v=f8cbc02a';
+import { growStreetTrant } from './js/patches.js?v=5a38514c';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -875,21 +877,21 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=773b2b18';
+} from './js/vendor.js?v=6b499efc';
 import {
   animalAnchorX,
   animalAnchorY,
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=fa8b4dd3';
+} from './js/animals.js?v=f65cefab';
 import {
   ensureWoodTreeState,
   pickWoodTool,
   resetWoodTreeDay,
   woodToolLabel,
   woodTreeStatusLabel,
-} from './js/woodcutting.js?v=c27c5bc3';
+} from './js/woodcutting.js?v=b43edbd8';
 import {
   GIANTS,
   createShrineState,
@@ -924,7 +926,7 @@ import {
 } from './js/shrines.js?v=d2c88987';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
-import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=4ae449b0';
+import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=ffca4adb';
 import {
   GAMESHOW_TICKET_ID,
   applySpinningWheelReward,
@@ -1063,7 +1065,7 @@ import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from '
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=da3a980d';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=0bb6747a';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=814d7926';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5c630896';
@@ -4478,13 +4480,16 @@ function hideToolRepairFx() {
   document.getElementById('tool-repair-fx')?.remove();
 }
 
-/** A repair is a verb on one tool (pick.js repair 120-240): `copy` is which (its place in pack order), else the first that needs one. */
-function beginToolRepair(classTsid, copy = null) {
+/**
+ * A repair is a verb on one tool (pick.js repair 120-240): `copy` is which (its place in pack order),
+ * else the first that needs one. opts.by: the Tinkertool a drop named (G794, tools.js dropRepair).
+ */
+function beginToolRepair(classTsid, copy = null, opts = {}) {
   if (activeToolRepair) {
     toast('Finish the current repair first.');
     return false;
   }
-  const which = Number.isInteger(copy) && copy >= 0 ? { copy } : {};
+  const which = { ...(Number.isInteger(copy) && copy >= 0 ? { copy } : {}), ...(Number.isInteger(opts.by) && opts.by >= 0 ? { by: opts.by } : {}) };
   const quote = quoteToolRepair(toolState, classTsid, skillState.learned || [], which);
   if (!quote.ok) {
     // pick.js repair conditions 181-185: the source's words.
@@ -4500,7 +4505,7 @@ function beginToolRepair(classTsid, copy = null) {
   }
   // A Tinkertool repairs itself (Tinkering III); any other tool takes the first working one
   // (pick.js repair handler 296-306, tools.js repairingTinkertool).
-  const tinker = countItem(inv, 'tinkertool') >= 1 ? repairingTinkertool(toolState, classTsid, quote) : null;
+  const tinker = countItem(inv, 'tinkertool') >= 1 ? repairingTinkertool(toolState, classTsid, quote, which) : null;
   if (!tinker) {
     toast(tinkertoolRefusal());
     return false;
@@ -4520,6 +4525,7 @@ function beginToolRepair(classTsid, copy = null) {
     hideToolRepairFx();
     const result = repairToolCondition(toolState, classTsid, pc, {
       copy: quote.condition.copy,
+      ...(which.by != null ? { by: tinker.copy } : {}),
       learned: skillState.learned || [],
       hasTinkertool: countItem(inv, 'tinkertool') >= 1,
     });
@@ -5614,7 +5620,7 @@ function renderPackRow(box, slots, opts = {}) {
     }
     if (canDragToVendor || inLayout) {
       slot.addEventListener('dragstart', (event) => {
-        packDrag = inLayout ? { container: s.container, index: s.index, cls: s.classTsid, bag: s.bag?.key || '' } : null;
+        packDrag = inLayout ? { container: s.container, index: s.index, cls: s.classTsid, bag: s.bag?.key || '', copy: s.copy ?? null } : null;
         if (!isVendorOpen() || !canDragToVendor) {
           // G332: drag a pack item onto another player to give it (features/gifts-feature.js).
           if (!toolSlot && !s.bag && features.query('packDragStart', s.classTsid, event, engine)) return;
@@ -5836,7 +5842,22 @@ function closePackTray({ focusBag = false } = {}) {
   return true;
 }
 
-/** G152: drops inside the pack bar move a stack between the pack and a bag. */
+/** A tool slot's copy (its place among its class's tools in pack order), or null. */
+function packSlotCopy(el) {
+  const v = el?.dataset?.packCopy;
+  return v != null && v !== '' && Number.isInteger(Number(v)) ? Number(v) : null;
+}
+
+/**
+ * G794: the stack being dragged, dropped on `el`, is a repair when one of the two is a Tinkertool
+ * and the other needs one (tools.js dropRepair: GSJS tinkertool.js repair is_drop_target), else null.
+ */
+function packDropRepair(el) {
+  if (!packDrag?.cls || !el?.dataset?.tsid || el.dataset.packIndex == null) return null;
+  return dropRepair(toolState, { cls: packDrag.cls, copy: packDrag.copy }, { cls: el.dataset.tsid, copy: packSlotCopy(el) });
+}
+
+/** G152: drops inside the pack bar move a stack between the pack and a bag (G794: or repair a tool). */
 function setupPackDrops() {
   const bar = document.getElementById('pack-bar');
   if (!bar || bar.dataset.packDropsReady === '1') return;
@@ -5852,8 +5873,18 @@ function setupPackDrops() {
   bar.addEventListener('dragover', (event) => {
     if (!packDrag) return;
     const el = targetOf(event);
-    const dest = destFor(el);
+    const fix = packDropRepair(el);
+    const dest = fix ? null : destFor(el);
     document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== el) n.classList.remove('is-drop-target'); });
+    if (fix) {
+      // tinkertool.js repair drop_tip: "Repair with your Tinkertool" (main.js 5491-5506: the reason when it can't).
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+      el.classList.add('is-drop-target');
+      el.title = fix.refuse || TINKERTOOL_DROP_TIP;
+      if (app?.canvas) app.canvas.dataset.packDragTip = el.title;
+      return;
+    }
     if (!dest) return;
     event.preventDefault();
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
@@ -5864,8 +5895,19 @@ function setupPackDrops() {
   });
   // A drop on a slot: a move, or onto a stack of its own class a merge (pack-slots.js moveStack).
   const dropOn = (el) => {
-    const dest = destFor(el);
+    const fix = packDropRepair(el);
+    const dest = fix ? null : destFor(el);
     document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => n.classList.remove('is-drop-target'));
+    if (fix) {
+      // G794: the repair verb on the drop (tinkertool.js handler 273-311), with the Repair verb's rules and costs.
+      packDrag = null;
+      const started = fix.refuse ? false : beginToolRepair(fix.classTsid, fix.copy, { by: fix.by });
+      if (fix.refuse) toast(fix.refuse, 3000);
+      if (!started) playSound('CLICK_FAILURE', { volume: 0.45 });
+      if (app?.canvas) app.canvas.dataset.packDrop = started ? `repair:${fix.classTsid}:${fix.copy}:by${fix.by}` : 'repair:refused';
+      updateHud();
+      return true;
+    }
     if (!dest) return false;
     const from = { container: packDrag.container, index: packDrag.index };
     packDrag = null;
@@ -5879,7 +5921,7 @@ function setupPackDrops() {
   bar.addEventListener('drop', (event) => {
     if (!packDrag) return;
     const el = targetOf(event);
-    if (!destFor(el)) {
+    if (!packDropRepair(el) && !destFor(el)) {
       document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => n.classList.remove('is-drop-target'));
       return;
     }
@@ -5913,7 +5955,7 @@ function setupPackDrops() {
       if (!touch || touch.slot !== slot) return;
       touch.on = true;
       closePackPopover();
-      packDrag = { container: slot.dataset.packContainer, index: Number(slot.dataset.packIndex), cls: slot.dataset.tsid, bag: slot.dataset.packBag || '' };
+      packDrag = { container: slot.dataset.packContainer, index: Number(slot.dataset.packIndex), cls: slot.dataset.tsid, bag: slot.dataset.packBag || '', copy: packSlotCopy(slot) };
       slot.classList.add('is-dragging');
       const r = slot.getBoundingClientRect();
       const ghost = slot.cloneNode(true);
@@ -5936,7 +5978,7 @@ function setupPackDrops() {
     touch.ghost.style.top = `${event.clientY - r.height / 2}px`;
     const el = under(event.clientX, event.clientY);
     document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== el) n.classList.remove('is-drop-target'); });
-    if (destFor(el)) el.classList.add('is-drop-target');
+    if (packDropRepair(el) || destFor(el)) el.classList.add('is-drop-target');
   });
   // Lifted, the finger drags the stack: no scrolling, no long-press menu, no native drag on top.
   bar.addEventListener('touchmove', (event) => { if (touch?.on) event.preventDefault(); }, { passive: false });
@@ -33962,7 +34004,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=99f0d8bb').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=371b08bc').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

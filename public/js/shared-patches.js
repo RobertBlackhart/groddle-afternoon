@@ -44,12 +44,12 @@
  *   landed first reads CLEARED_FIRST_LINE.
  */
 
-import { DEAD_TRANT_CLASSES, GROWN_TREE_LABELS, SEASONED_BEANS, SOIL_CLASSES, resolveSoilPackage, resolveTendPackage, seedlingTimings } from './patches.js?v=f8cbc02a';
+import { DEAD_TRANT_CLASSES, GROWN_TREE_LABELS, SEASONED_BEANS, SOIL_CLASSES, resolveSoilPackage, resolveTendPackage, seedlingTimings } from './patches.js?v=5a38514c';
 import { TRANT_META, fruitCapacityAt } from './trants.js?v=4d6f5593';
-import { ensureWoodTreeState, quoteWoodTreeHarvest } from './woodcutting.js?v=c27c5bc3';
-import { POISON_DURATION_MS } from './tree-poison.js?v=59382dc6';
-import { treeReady, treeSkill } from './street-objects.js?v=9cfb6327';
-import { highestLightGreenThumbRank, quoteTrantCare } from './trant-care.js?v=ee2bf9bd';
+import { ensureWoodTreeState, quoteWoodTreeHarvest } from './woodcutting.js?v=b43edbd8';
+import { POISON_DURATION_MS } from './tree-poison.js?v=3bc48e3e';
+import { treeReady, treeSkill } from './street-objects.js?v=e3a6de31';
+import { highestLightGreenThumbRank, quoteTrantCare } from './trant-care.js?v=44269e93';
 
 /** The release switch: on since game v0.24.0 (G564; false = dark, shared Patches off for everyone but the QA flag below). */
 export const SHARED_PATCHES_ON = true;

@@ -26,7 +26,7 @@ import {
 import { KITTY_SHEETS, heliKittiesFeature, kittyPlacementGroups, sharedKittyFloorY } from '../public/js/features/heli-kitties-feature.js?v=b349c9f1';
 import { platformsScreen } from '../public/js/street-model.js?v=b6cb6a4e';
 import { walkSurfaceY } from '../public/js/walk-surface.js?v=106bfdc5';
-import { foxesFeature } from '../public/js/features/foxes-feature.js?v=40da23fc';
+import { foxesFeature } from '../public/js/features/foxes-feature.js?v=c31e8c4e';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { setWildlifeCatalog } from '../public/js/wildlife.js?v=670c3a7f';
 import { readFileSync } from 'node:fs';

@@ -49,10 +49,10 @@ import {
   stickPlaceState,
   takePlop,
 } from '../public/js/animal-husbandry.js?v=d524c1f7';
-import { animalStatusLabel, piggyFeedTip, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=fa8b4dd3';
-import { getVerbsFor, runVerb } from '../public/content.js?v=6e9c4da1';
+import { animalStatusLabel, piggyFeedTip, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=f65cefab';
+import { getVerbsFor, runVerb } from '../public/content.js?v=9b7d28a8';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=12f95104';
+import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=7ee38207';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -540,7 +540,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=41d73c7e');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=1beae552');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');

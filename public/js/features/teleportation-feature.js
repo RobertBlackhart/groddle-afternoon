@@ -50,7 +50,7 @@
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=1bc47590';
+import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=8516a0c3';
 import {
   PAPER_CLASS,
   QUILL_CLASS,

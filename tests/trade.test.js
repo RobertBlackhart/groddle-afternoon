@@ -28,9 +28,9 @@ import {
   settleDone,
   tradeCommand,
   untradeableReason,
-} from '../public/js/trade.js?v=05bcc16c';
-import { tradeFeature } from '../public/js/features/trade-feature.js?v=3865cdbf';
-import { FEATURES } from '../public/js/features/index.js?v=05df95e9';
+} from '../public/js/trade.js?v=ad258d88';
+import { tradeFeature } from '../public/js/features/trade-feature.js?v=b63b8999';
+import { FEATURES } from '../public/js/features/index.js?v=81a569ce';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { GSJS } from '../tools/build-realtime-trade.mjs';
 
