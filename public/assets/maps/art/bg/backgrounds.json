@@ -516,10 +516,10 @@
       "x1": "assets/maps/art/bg/lida.webp",
       "x2": "assets/maps/art/bg/lida@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 37596,
-      "x1Sha256": "8bed196789e4fc2b0dc7281453351c58feb97a46f6f7896a5ec6ebe50d1242e6",
-      "x2Bytes": 119964,
-      "x2Sha256": "addf222af98b7745a635ac2bb6e25156ed474053eea1111708ee90231285ec7d"
+      "x1Bytes": 91232,
+      "x1Sha256": "8abd6baf6a5eec6c40e878b6a8c8f8c1723b5e119d88e4e63471a9ebad05f6b1",
+      "x2Bytes": 305668,
+      "x2Sha256": "10c3f572b28b114491a3b3d59356f56c79160623d92941842aae5486920d9dc9"
     },
     "106": {
       "hubName": "Pollokoo",

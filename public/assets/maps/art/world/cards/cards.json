@@ -453,14 +453,14 @@
         "file": "assets/maps/art/bg/lida@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "addf222af98b7745a635ac2bb6e25156ed474053eea1111708ee90231285ec7d"
+        "sha256": "10c3f572b28b114491a3b3d59356f56c79160623d92941842aae5486920d9dc9"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 23966,
-        "sha256": "d7fe7d6a5bb58e00c678e41b8765360bc929dee06c3c76f36696e75d37d51ec3"
+        "bytes": 63268,
+        "sha256": "1d7ebcea6af6c8b2d7fd882198a9438ef9b30b31eb20e22b8c834ae5f5aff596"
       }
     },
     "106": {
