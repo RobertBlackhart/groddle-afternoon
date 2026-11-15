@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2262,
+  "commits": 2264,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Muufo's and Vantalu's restored maps have their lost hollows and ledges back"
+   },
    {
     "date": "2026-11-15",
     "kind": "new",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "The Funpickle's Broken Teleporter no longer picks a street still under construction"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "Clicking the currants opens the vendors near you, each with Set as destination"
    }
   ]
  },
