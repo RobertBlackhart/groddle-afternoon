@@ -20,8 +20,10 @@
  *    puzzle_N_off then puzzle_N_checks.
  *  - The machine at -845,-458 (beam shown by win_condition) fires pc_scale
  *    (x0.5); the one at 2157,-186 fires pc_scale_normal. Between them the
- *    crawl space runs under two walls that stop 69 px above the floor: they
- *    open only while you are small.
+ *    crawl space runs under two walls that stop 69 px above the floor. The
+ *    walls never open (#340, G762): the avatar's 80 px collision height
+ *    shrinks with pc_scale (location-events-feature avatarBodyScale), so only
+ *    a shrunk avatar (40 px) fits under them, both ways, as in Glitch.
  *  - npc_maintenance_bot: a 600 x 600 hit box. Bumping into it turns in part 1
  *    and offers part 2, and turns part 2 in once the machine is on
  *    (onPlayerCollision -> talk_to -> offerQuests).
@@ -85,13 +87,13 @@ function machineQuest(ctx) {
   return ctx.quest(PART_2);
 }
 
+/**
+ * Whether the avatar is shrunk (the objective and the crawl-space quoins). The crawl walls stay
+ * solid whatever this says (#340): Glitch let a 0.5 pc_scale avatar under them by its size, and
+ * a scale compared against one saved on entry let a full-size avatar walk through.
+ */
 function setSmall(ctx, small) {
-  if (ctx.data.small === small) return;
   ctx.data.small = small;
-  // Open the crawl walls while small (pc_perm 0 is open, null solid both ways).
-  for (const wall of ctx.engine.street?.barriers || []) {
-    if (CRAWL_WALLS.includes(wall.id)) wall.pc_perm = small ? 0 : null;
-  }
 }
 
 function useBot(ctx, sheet) {
@@ -215,7 +217,7 @@ function stepMachines(ctx) {
   const atGrow = inBox(GROW);
   if (atGrow && !ctx.data.atGrow && ctx.data.small) ctx.events.fire('pc_scale_normal');
   ctx.data.atGrow = atGrow;
-  // Small is whatever the avatar really is: the crawl walls follow it.
+  // Small is whatever the avatar really is (the walls ignore it: the body height decides).
   const small = Boolean(ctx.data.normalScale) && Math.abs(p.baseScale || 0) < ctx.data.normalScale * 0.75;
   if (small !== Boolean(ctx.data.small)) {
     ctx.activity(small ? 'The machine hums and you shrink down to crawl-space size.' : 'The second machine makes you big again.');
