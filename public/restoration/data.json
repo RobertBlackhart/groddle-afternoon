@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2225,
+  "commits": 2230,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The Make window says how many of the product you already carry"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Project work steps name tool wear only for tools that wear"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Ormonos's restored map has its dark pit at Seugal Elba back"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "Add to Home Screen opens Groddle Afternoon full screen, as an app"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The Social drawer held sideways on a phone runs to the foot of the screen and shows several lines of chat"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Speech bubbles no longer bounce back and forth: each moves once a frame, smoothly"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Join the Club's shut door can no longer be jumped over: it is shut up to the roof"
    }
   ]
  },
- "tests": 1000,
+ "tests": 1002,
  "generatedAt": "2026-11-15"
 }
