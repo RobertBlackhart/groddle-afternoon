@@ -37,13 +37,13 @@ import {
   tendAct,
   tendCounters,
   tendedText,
-} from '../public/js/neighbours-mp.js?v=46d0c065';
+} from '../public/js/neighbours-mp.js?v=adb9bd43';
 import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=57456a7f';
-import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=1420a6d6';
+import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=811f9459';
 import { butlerApi } from '../public/js/features/butler-feature.js?v=25b30a69';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=77816a7d';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=75022209';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=c7e731a2';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
@@ -181,7 +181,7 @@ describe('key-holders tending the owner\'s gardens', () => {
     assert.equal(neighboursMpFeature.save(), undefined);
     const src = read('public/js/features/neighbours-mp-feature.js');
     assert.match(src, /player_streets_visited:\$\{visitSceneTsid\(visit\.owner, 'street'\)\}/);
-    assert.match(src, /if \(session\.mayTend\(\)\) return null;/);
+    assert.match(src, /if \(session\.mayTend\(\) \|\| session\.publicBed\(target\)\) return null;/);
   });
 });
 

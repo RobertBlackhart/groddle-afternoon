@@ -14,8 +14,9 @@
  *
  * Slice 2 (below): the owner's Butler for visitors (items/bag_butler.js
  * leave_package / leave_message; the site's src/ButlerParcels.php, the
- * server's homes_help.go), key-holders tending the owner's gardens
- * (items/garden_new.js tend; src/HomeTending.php), and the counters the
+ * server's homes_help.go), tending the owner's gardens (items/garden_new.js
+ * tend; src/HomeTending.php: the home street's are public, the back yard's
+ * need a key, G777), and the counters the
  * neighbour quests and the hosting badges read. Ticket 112: the gift the
  * owner leaves with the Butler for visitors and who came (bag_butler.js
  * giveGift, onPlayerEnter; the site's src/ButlerGifts.php keeps both).
@@ -23,7 +24,7 @@
  * Solo never loads any of this: solo's neighbours are js/neighbours.js.
  */
 
-import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=1420a6d6';
+import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=811f9459';
 import { normalizeParcelBox } from './butler.js?v=57456a7f';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
 
@@ -106,6 +107,35 @@ export const NEIGHBOURS_TEXT = Object.freeze({
   offline: 'You are offline, so you cannot visit anyone right now.',
   failed: "That didn't work. Try again in a moment.",
 });
+
+/**
+ * G777 (#354, #364): a garden on the outdoor home street is public, as in Glitch (the exterior
+ * is_public, players/inc_houses.js 847; include/garden.js isPublic 1244-1247; main.js
+ * doGardenAction 6513-6518 asks no key of a public garden): any visitor plants, waters, Guanos,
+ * clears and picks it. The back yard's (the house) need a key.
+ */
+export function mayTendYard(yard, key) {
+  return key === true || yard === 'street';
+}
+
+/** include/garden.js 1045: pushEvent(plot, 0.0167 h, 'unlock'): the planter's minute on a ripe public crop. */
+export const HOME_PLANTER_HOLD_MS = 60_000;
+
+/** GardenView.as 484 (js/shared-gardens.js LOCK_LINE). */
+export const HOME_PLANTER_HOLD_LINE = 'Another player planted those seeds, give them time to snag them up!';
+
+/**
+ * Whether a public home-street plot's ripe crop is still its planter's for `me` (include/garden.js
+ * 1042-1046, 1229-1231; GardenView.as 481-486): a minute from when it ripened (the crop stage's
+ * start). A plot with no planter is the owner's own planting. The site refuses the same
+ * (src/HomeTending.php held).
+ */
+export function homePlotHeld(plot, me, owner, now = Date.now()) {
+  if (plot?.state !== 'crop') return false;
+  const planter = Number(plot.planter) > 0 ? Number(plot.planter) : Number(owner) || 0;
+  const ripe = Number(plot.stageStartedAt) || 0;
+  return planter !== Number(me) && now - ripe < HOME_PLANTER_HOLD_MS;
+}
 
 /** StringUtil.nameApostrophe: Ada's, James'. */
 export function possessive(name) {
@@ -509,8 +539,13 @@ export function applyTendAct(garden, act, tick = null) {
   if (act.act === 'plant') {
     // The key-holder's seed goes in on today's garden clock, as the owner's own would (sowPlot).
     sowPlot(plot, String(act.seed || '') || null, at, 1);
+    // G777: a public plot keeps its planter for the minute after it ripens (include/garden.js 384).
+    const planter = positiveId(act.from?.id);
+    if (act.yard === 'street' && planter) plot.planter = planter;
     return true;
   }
+  // include/garden.js 551: the pick ends the planter's claim.
+  delete plot.planter;
   plot.state = act.act === 'clear' ? 'clean' : 'dirty';
   plot.seed = null;
   plot.stageStartedAt = at;
@@ -519,10 +554,11 @@ export function applyTendAct(garden, act, tick = null) {
 }
 
 /** The site's waiting acts (groddle/v1/homes/tending), checked. */
-export function normalizeTendActs(list) {
+export function normalizeTendActs(list, from = null) {
   return (Array.isArray(list) ? list : []).map((a) => ({
     id: String(a?.id || ''),
-    from: { id: positiveId(a?.from?.id), name: String(a?.from?.name || 'Someone').slice(0, 40) },
+    // The realtime server's home_tended names who tended once for all its acts (homes_help.go).
+    from: { id: positiveId(a?.from?.id ?? from?.id), name: String(a?.from?.name || from?.name || 'Someone').slice(0, 40) },
     yard: a?.yard === 'back' ? 'back' : 'street',
     garden: String(a?.garden || a?.g || ''),
     plot: String(a?.plot || a?.p || ''),

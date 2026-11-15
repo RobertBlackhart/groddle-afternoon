@@ -58,14 +58,18 @@
  *   "who visited?", gives through the site (butlerApi.setGiftHook), and
  *   brings a gift its save held from before into the site's stock once
  *   (butler/stock/adopt).
- * - Key-holders tend the owner's gardens (garden_new.js tend: the owner or
- *   a key-holder): their garden verbs run on their copy of the plots, and
+ * - Visitors tend the owner's gardens: the home street's are public (G777,
+ *   #354, #364: include/garden.js isPublic 1244-1247, main.js doGardenAction
+ *   6513-6518), the back yard's need a key (garden_new.js tend: the owner or
+ *   a key-holder). Their garden verbs run on their copy of the plots, and
  *   each water, plant, clear or harvest goes to the site
  *   (src/HomeTending.php), which checks it against the owner's stored
  *   gardens and keeps it; the owner's game applies the waiting acts to its
  *   own gardens (on load, and at once through home_tend_tell), and the
- *   others on that street see it too. Without a key a garden still says
- *   "That belongs to <name>."
+ *   others on that street see it too. A back yard garden without a key
+ *   still says "That belongs to <name>." On the home street the planter
+ *   has the first minute on the ripe crop (include/garden.js 1042-1046,
+ *   GardenView.as 481-486; homePlotHeld), the owner's own planting too.
  * - Counted from these acts: neighbors_resources_tended, water_garden_for_others,
  *   give_bag_butler (reimagined: GSJS never counts them),
  *   herb_seeds_planted_for_others (include/garden.js:394-396), and the
@@ -101,7 +105,7 @@ import { runStreetTransition } from '../screen-fx.js?v=ebdb038b';
 import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=f49c8998';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=a3135ffd';
-import { tickGarden } from '../garden.js?v=1420a6d6';
+import { getPlot, tickGarden } from '../garden.js?v=811f9459';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=57456a7f';
 import { butlerApi } from './butler-feature.js?v=25b30a69';
@@ -121,6 +125,8 @@ import {
   doorVerbs,
   givenLine,
   holdsKeyFrom,
+  HOME_PLANTER_HOLD_LINE,
+  homePlotHeld,
   homeStreetFor,
   homeStreetName,
   hostedCounters,
@@ -128,6 +134,7 @@ import {
   isButlerVisitOp,
   isSiteParcel,
   keyCandidates,
+  mayTendYard,
   mergeParcels,
   normalizeHomeView,
   normalizeKeys,
@@ -151,7 +158,7 @@ import {
   tendedText,
   TENDED_KEEP,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=46d0c065';
+} from '../neighbours-mp.js?v=adb9bd43';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { elevatorStops, towerLabel } from '../home-tower.js?v=0962d6c8';
 
@@ -476,15 +483,19 @@ function createSession(engine, client) {
     engine.achievement?.(counter, n);
   }
 
-  /** A key-holder's garden verbs changed their copy: what changed goes to the site. */
+  /** A visitor's garden verbs changed their copy: what changed goes to the site (G777: the home street's beds need no key). */
   function scanGardens(now) {
-    if (!visit?.key || !visit.beds.size || now - lastGardenScan < 300) return;
+    if (!visit?.beds.size || now - lastGardenScan < 300) return;
     lastGardenScan = now;
     for (const [e, bed] of visit.beds) {
+      if (!mayTendYard(bed.yard, visit.key)) continue;
       const after = plotsSnapshot(e.state?.garden);
       for (const key of Object.keys(after)) {
         const a = tendAct(bed.snap[key], after[key]);
-        if (a) tendQueue.push({ yard: bed.yard, garden: bed.id, plot: key, act: a.act, seed: a.seed, entity: e });
+        if (!a) continue;
+        tendQueue.push({ yard: bed.yard, garden: bed.id, plot: key, act: a.act, seed: a.seed, entity: e });
+        // include/garden.js 384: my planting on the public street is mine for its minute (the site keeps the same).
+        if (a.act === 'plant' && bed.yard === 'street' && me()) e.state.garden.plots[key].planter = me();
       }
       bed.snap = after;
     }
@@ -533,7 +544,7 @@ function createSession(engine, client) {
     if (text) notice(text, 3200);
   }
 
-  /** Another key-holder's acts (home_tended) on the copy this visit shows. */
+  /** Another visitor's acts (home_tended) on the copy this visit shows. */
   function applyToCopy(acts) {
     if (!visit) return;
     for (const act of acts) {
@@ -1348,7 +1359,7 @@ function createSession(engine, client) {
   client.on('msg:home_tended', (msg) => {
     const owner = Number(msg.owner) || 0;
     if (owner === me()) loadTending();
-    else if (visit?.owner === owner) applyToCopy(normalizeTendActs(msg.acts));
+    else if (visit?.owner === owner) applyToCopy(normalizeTendActs(msg.acts, msg.from));
   });
   client.on('msg:home_hosted', (msg) => {
     for (const counter of hostedCounters(msg)) engine.achievement?.(counter, 1);
@@ -1516,6 +1527,23 @@ function createSession(engine, client) {
     },
     ownsGarden: (target) => Boolean(bedOf(target) || visit?.gardens?.has(target)),
     mayTend: () => visit?.key === true,
+    /** G777: a garden bed on the visited home street (public), not the back yard's. */
+    publicBed: (target) => {
+      const e = bedOf(target);
+      return Boolean(e && visit?.beds.get(e)?.yard === 'street');
+    },
+    /**
+     * G777: the planter's minute on a ripe public crop (include/garden.js 1042-1046, GardenView.as
+     * 481-486): on a visit, a home-street plot held for someone else; at home, a plot on my own
+     * street a visitor planted. The feed line, or null.
+     */
+    heldLine(target, now = Date.now()) {
+      if (target?.classId !== 'garden_plot') return null;
+      const plot = getPlot(target.state?.garden, target.state?.plotKey);
+      if (visit) return this.publicBed(target) && homePlotHeld(plot, me(), visit.owner, now) ? HOME_PLANTER_HOLD_LINE : null;
+      const mine = Object.values(homesFeature._state?.()?.cult?.gardens || {});
+      return mine.includes(target.state?.garden) && homePlotHeld(plot, me(), me(), now) ? HOME_PLANTER_HOLD_LINE : null;
+    },
     ownerName: () => visit?.name || '',
     tick(dtMs, now) {
       tickButler(dtMs);
@@ -1721,15 +1749,23 @@ export const neighboursMpFeature = {
       return [...base, { ...KEY_VERB, enabled: true, reason: '' }];
     }
     if (session.ownsGarden(target)) {
-      // garden_new.js tend conditions: the owner or a key-holder; the copy's own verbs run, and the site keeps the change.
-      if (session.mayTend()) return null;
+      // garden_new.js tend conditions: the owner or a key-holder; G777: a home-street garden is public
+      // (include/garden.js isPublic, main.js doGardenAction). The copy's own verbs run, and the site keeps the change.
+      if (session.mayTend() || session.publicBed(target)) return null;
       return [{ id: 'neighbour_noop', label: 'Tend', tooltip: 'Do some gardening', enabled: false, reason: T.belongs(session.ownerName()) }];
     }
     return null;
   },
 
+  /** game.js beginVerbAction: G777, a public home-street crop in its planter's minute. */
+  verbRefusedNow(target, verbId, engine) {
+    if (verbId !== 'harvest' || !session || engine?.mode !== 'multiplayer') return null;
+    return session.heldLine(target) || null;
+  },
+
   runVerbOverride(target, verbId) {
     if (!session || !OWN_VERBS.has(verbId)) return null;
+
     if (verbId === VISIT_VERB.id && target?.playerId) {
       session.visitHome(target.playerId, { name: target.label || target.name || '' });
       return true;

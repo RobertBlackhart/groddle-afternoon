@@ -127,6 +127,8 @@ export function sowPlot(plot, seedId, now = Date.now(), growModifier = 1) {
   plot.state = 'seeds';
   plot.seed = seedId;
   plot.fertilized = false;
+  // A home-street plot's planter (G777, js/neighbours-mp.js homePlotHeld) is the new crop's to set.
+  delete plot.planter;
   plot.growModifier = Number(growModifier) > 0 ? Number(growModifier) : 1;
   plot.pace = GARDEN_SPEEDUP;
   startStage(plot, now);
@@ -1566,13 +1568,15 @@ export function harvestPlot(garden, key, inv, pc, opts = {}) {
   const now = opts.now ?? Date.now();
   plot.state = 'dirty';
   plot.seed = null;
-  // include/garden.js 553: picking ends the fertilizer with the crop.
+  // include/garden.js 553: picking ends the fertilizer with the crop (and 551, the planter's claim).
   plot.fertilized = false;
   plot.guanoAt = null;
+  delete plot.planter;
   startStage(plot, now);
   return {
     ok: true,
     reason: 'harvested',
+
     plotKey: key,
     cropId: seed.cropId,
     count: n + bonus,

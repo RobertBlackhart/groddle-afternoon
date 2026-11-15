@@ -16,10 +16,10 @@ import {
   plantPlot,
   plantSeedChoices,
   seedDropCheck,
-} from '../public/js/garden.js?v=1420a6d6';
-import { getVerbsFor, runVerb } from '../public/content.js?v=5262230c';
-import { plotDragClass, seedOver } from '../public/js/features/garden-guano-feature.js?v=45d52804';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=4fe6b786';
+} from '../public/js/garden.js?v=811f9459';
+import { getVerbsFor, runVerb } from '../public/content.js?v=b65f9567';
+import { plotDragClass, seedOver } from '../public/js/features/garden-guano-feature.js?v=ed5f4831';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=baa14db4';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const COMMUNITY = 'GCR101NQ4BU1SKS';

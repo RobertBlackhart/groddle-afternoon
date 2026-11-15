@@ -33,8 +33,8 @@
 
 import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=1420a6d6';
-import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=1420a6d6';
+import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=811f9459';
+import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=811f9459';
 import { setSeasonalRecipeCheck } from '../making.js?v=202c452e';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=48542c24';
 
