@@ -23,13 +23,13 @@ import {
   advanceStill,
   collectHooch,
 } from '../public/js/machines.js?v=f1b30bc0';
-import { runTransform, listTransformVerbs, transformCountMax, transformEdges, transformVerbCount } from '../public/js/item-transforms.js?v=07b416a3';
+import { runTransform, listTransformVerbs, transformCountMax, transformEdges, transformVerbCount } from '../public/js/item-transforms.js?v=051e04b6';
 import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=66c4f499';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6b499efc';
 import { SEED_CATALOG } from '../public/js/garden.js?v=a5191e8b';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 import { supplyReport } from '../tools/supply-report.mjs';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=c9d31c98';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=099b5e05';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const ENGINEER = ['engineering_1'];
@@ -223,10 +223,10 @@ describe('pack transforms', () => {
     const inv = createInventory({ milk_butterfly: 172 });
     const pc = { energy: 1000, mood: 100 };
     const verbs = listTransformVerbs('milk_butterfly', inv, pc, [], { stackCount: 80 });
-    assert.deepEqual(verbs.map((v) => v.id), ['shake:1', 'shake:count']);
+    assert.deepEqual(verbs.map((v) => v.id), ['shake:count']);
     assert.ok(!verbs.some((v) => /all/i.test(v.label)), 'no "all" that reaches past the stack');
     const more = verbs.find((v) => v.id === 'shake:count');
-    assert.equal(more.label, 'Shake more');
+    assert.equal(more.label, 'Shake');
     assert.deepEqual([more.count.max, more.count.verb, more.count.plural, more.count.idPrefix], [80, 'Shake', 'Butterfly Milks', 'shake']);
     assert.deepEqual(more.count.quote(25), { ok: true, reason: '', tip: 'Make butter. Costs 50 energy.' });
     // milk_butterfly.js shake 130: refused when energy <= 2 * count.
@@ -252,6 +252,31 @@ describe('pack transforms', () => {
     // Shuck, Compress and Age share the chooser; Poke and Bundle stay one at a time.
     assert.ok(listTransformVerbs('rookswort', createInventory({ rookswort: 9 }), pc, [], { stackCount: 9 }).some((v) => v.id === 'shuck:count' && v.count.max === 9));
     assert.ok(!listTransformVerbs('cheese_very_stinky', createInventory({ cheese_very_stinky: 9 }), pc).some((v) => v.id === 'poke:count'));
+  });
+
+  it('report #374: one verb per transform, as Glitch: it asks How many when the stack holds more than one, and acts at once on one', () => {
+    // milk_butterfly.js 95-106 has one shake verb; InteractionMenuController.as 976-990 asked "Shake how many...?".
+    const pc = { energy: 1000, mood: 100 };
+    const cases = [
+      ['milk_butterfly', 'shake', 'Shake'],
+      ['butterfly_butter', 'compress', 'Compress'],
+      ['cheese', 'age', 'Age'],
+      ['cheese_stinky', 'age', 'Age'],
+      ['grain_bushel', 'unbundle', 'Unbundle'],
+      ['rookswort', 'shuck', 'Shuck'],
+    ];
+    for (const [classTsid, id, label] of cases) {
+      const many = listTransformVerbs(classTsid, createInventory({ [classTsid]: 5 }), pc, [], { stackCount: 5 });
+      const rows = many.filter((v) => v.id.startsWith(`${id}:`));
+      assert.deepEqual(rows.map((v) => [v.id, v.label]), [[`${id}:count`, label]], classTsid);
+      assert.equal(rows[0].count.max, 5, classTsid);
+      assert.ok(!many.some((v) => / more$/i.test(v.label)), `${classTsid}: no "${label} more" row`);
+      const single = listTransformVerbs(classTsid, createInventory({ [classTsid]: 5 }), pc, [], { stackCount: 1 });
+      assert.deepEqual(single.filter((v) => v.id.startsWith(`${id}:`)).map((v) => [v.id, v.label]), [[`${id}:1`, label]], classTsid);
+    }
+    // Poke (is_single) stays one row that acts on one.
+    const poke = listTransformVerbs('cheese_very_stinky', createInventory({ cheese_very_stinky: 5 }), pc, [], { stackCount: 5 });
+    assert.deepEqual(poke.filter((v) => v.id.startsWith('poke:')).map((v) => v.id), ['poke:1']);
   });
 
   it('report #101: the pack menu draws the How many for a verb with count, in both interfaces', () => {

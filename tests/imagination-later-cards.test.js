@@ -55,10 +55,10 @@ import {
 import { skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
 import { strikeDamageFor } from '../public/js/rook-attack.js?v=c12e825f';
 import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=c2964c53';
-import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=07b416a3';
+import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=051e04b6';
 import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=9b5a4fe8';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=ac6375de';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=c9d31c98';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=099b5e05';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

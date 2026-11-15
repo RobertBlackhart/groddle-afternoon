@@ -122,11 +122,16 @@ export function transformCountMax(have, stackCount = null) {
   return Number.isFinite(stack) && stack > 0 ? Math.min(all, stack) : all;
 }
 
-/** The How many chooser of a verb (game.js renderPackPopover reads `count`). */
+/**
+ * The How many chooser of a verb (game.js renderPackPopover reads `count`). It is the verb's only row
+ * when the stack holds more than one: one "Shake" that asks "Shake how many...?", as Glitch did
+ * (milk_butterfly.js 95-106 one shake verb; InteractionMenuController.as 976-990), not "Shake" plus
+ * "Shake more" (report #374).
+ */
 function countRow(classTsid, id, label, max, plural, inv, pc, learned, tip, one) {
   return {
     id: `${id}:count`,
-    label: `${label} more`,
+    label,
     enabled: one.ok,
     reason: one.msg || '',
     tooltip: `Choose how many to ${label.toLowerCase()} (up to ${max})`,
@@ -145,7 +150,8 @@ function countRow(classTsid, id, label, max, plural, inv, pc, learned, tip, one)
 
 /**
  * Pack buttons for one class: [{ id, label, enabled, reason, tooltip, count? }]. `opts.stackCount` is
- * the stack the menu was opened on: "<Verb> more" asks how many of it (report #101).
+ * the stack the menu was opened on: with more than one, the verb asks how many of it (reports #101,
+ * #374); with one, it acts at once.
  */
 export function listTransformVerbs(classTsid, inv, pc, learned = [], opts = {}) {
   const have = countItem(inv, classTsid);
@@ -158,17 +164,18 @@ export function listTransformVerbs(classTsid, inv, pc, learned = [], opts = {}) 
     // grain.js bundle conditions: state null (hidden) below a full 250.
     if (have < per) continue;
     const one = transformCheck(classTsid, t.id, 1, inv, pc, learned);
-    out.push({ id: `${t.id}:1`, label: t.label, enabled: one.ok, reason: one.msg || '', tooltip: costTip(t, 1) });
     const most = Math.floor(max / per);
     if (most > 1 && !t.single) {
       out.push(countRow(classTsid, t.id, t.label, most, t.names?.[2] || plural, inv, pc, learned, (n) => costTip(t, n), one));
+    } else {
+      out.push({ id: `${t.id}:1`, label: t.label, enabled: one.ok, reason: one.msg || '', tooltip: costTip(t, 1) });
     }
   }
   if (HERB_SEEDS[classTsid]) {
     const one = transformCheck(classTsid, 'shuck', 1, inv, pc, learned);
     const energy = shuckDetails(learned).energy;
-    out.push({ id: 'shuck:1', label: 'Shuck', enabled: one.ok, reason: one.msg || '', tooltip: `Pull the herb vigorously, destroying it but gaining seeds. Costs ${energy} energy.` });
     if (max > 1) out.push(countRow(classTsid, 'shuck', 'Shuck', max, plural, inv, pc, learned, (n) => `Costs ${energy * n} energy.`, one));
+    else out.push({ id: 'shuck:1', label: 'Shuck', enabled: one.ok, reason: one.msg || '', tooltip: `Pull the herb vigorously, destroying it but gaining seeds. Costs ${energy} energy.` });
   }
   return out;
 }

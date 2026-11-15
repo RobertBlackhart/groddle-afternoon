@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ITEM_CATALOG, createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
-import { listTransformVerbs, runTransform, transformEdges } from '../public/js/item-transforms.js?v=07b416a3';
+import { listTransformVerbs, runTransform, transformEdges } from '../public/js/item-transforms.js?v=051e04b6';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
