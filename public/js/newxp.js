@@ -251,6 +251,10 @@ export const LINES = Object.freeze({
   jumpAcrossInstructions: 'Use Space Bar & Arrow Keys to jump across!',
   climbInstructions: 'Use Up/Down Keys to climb ladders!',
   interactInstructions: 'Use Enter to interact with glowing objects or players',
+  // The Cloud Level's chain (items/newxp_chain.js verb pull, its oneclick_verb): the words are the
+  // arrow's own lettering under the handle (newxp_clicktopull_arrow, "click to pull"), said where
+  // every instruction is said; Enter is the remake's key for it (lane clouds, Austin 2026-11-15).
+  pullChain: 'Click to pull the chain!<br>(or press Enter)',
   // newxp_training1.js
   t1Talk1: 'Well, well — welcome.<br><br>I’m a “Welcoming Flamingo”.<br>But I am not a patient Flamingo.',
   t1Talk2: '… not patient at all, he isn\'t. So, let\'s get a move on. This way!',
@@ -370,6 +374,7 @@ export const TOUCH_LINES = Object.freeze({
   jumpAcrossInstructions: 'Hold the Stick & tap Jump to jump across!',
   climbInstructions: 'Hold Up on the Stick (or tap the ladder) to climb!',
   interactInstructions: 'Tap glowing objects or players to interact',
+  pullChain: 'Tap the chain to pull it!<br>(or tap Act)',
 });
 
 /** PURE: the instruction for this device: a LINES instruction's touch words on a phone, else as given. */

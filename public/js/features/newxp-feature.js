@@ -128,7 +128,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=96c67fcc';
+} from '../newxp.js?v=963b3d7d';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=61be601c';
@@ -144,7 +144,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=b59156cf';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=90bd1836';
+import { HOME_MACHINE } from '../home-ticket.js?v=dc1c6ad1';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=18353eaa';
 import {
   AK_ANIMALS,
@@ -571,7 +571,7 @@ function instruction(keysText) {
   ensureUi();
   // A phone reads the touch controls' words (js/newxp.js TOUCH_LINES).
   const text = instructionFor(keysText, { touch: globalThis.GRODDLE_DEVICE === 'phone' });
-  ui.instr.innerHTML = text.replace(/(Arrow Keys|Space Bar|Up\/Down Keys|Enter|the Stick|Jump|Tap)/g, '<b>$1</b>');
+  ui.instr.innerHTML = text.replace(/(Arrow Keys|Space Bar|Up\/Down Keys|Enter|the Stick|Jump|Tap|Click|\bAct\b)/g, '<b>$1</b>');
   ui.instr.hidden = false;
   ui.instrSince = Date.now();
   engineRef?.setData('newxpInstruction', text);
@@ -1144,6 +1144,23 @@ export function styleRingHint(label) {
 const CHAIN_LOOK_Y = 370;
 
 /**
+ * Lane clouds (Austin 2026-11-15): the first screen lost new players at the chain. Its only cue was
+ * the white "click to pull" arrow on a pale sky, 4 s in, half the time at a third of its alpha, and a
+ * phone had a thumb-wide handle to find. Now the arrow and the instruction (LINES.pullChain) come
+ * 1.5 s in, or at once when the player presses or taps anything; the arrow blinks between 0.6 and 1
+ * over a soft dark copy of itself so it reads on the sky; and the chain takes a tap anywhere on its
+ * handle or the arrow under it.
+ */
+export const CHAIN_HINT_MS = 1500;
+/** The chain's hit area in its frame (x, y, w, h): the handle (frame y ~440-475) and the arrow below it (world y ~500-615). */
+export const CHAIN_HIT = Object.freeze([-60, 230, 120, 410]);
+/** PURE: the arrow's alpha `ms` after the hint is due (0 before it): a soft blink, never faint. */
+export function chainArrowAlpha(ms) {
+  if (!(ms >= 0)) return 0;
+  return 0.8 + 0.2 * Math.cos((ms / 900) * Math.PI * 2);
+}
+
+/**
  * newxp_chain's 58 x 505 x1 sheets (OGA extracted_newxp newxp_chain, CC0): hang loops, pull plays once.
  * Each has a 3x twin rendered from glitch-items misc/newxp_chain/newxp_chain.swf (sprite 17, labels
  * hang 1-60, pull 61-105; tools/vector-sprites/newxp-chain.json), used when the view is magnified
@@ -1181,15 +1198,21 @@ function buildClouds(engine) {
   chain.y = L.chain.top;
   chain.eventMode = 'static';
   chain.cursor = 'pointer';
-  chain.hitArea = new PIXI.Rectangle(-29, 230, 58, 250);
+  chain.hitArea = new PIXI.Rectangle(...CHAIN_HIT);
   chain.on('pointertap', () => pullChain(engine));
   world.addChild(chain);
   // The pull sheet is cut now and swapped to its 3x twin before the click (it is first drawn mid-pull,
   // which would show its opening frames soft); upgradeSource does nothing on small views.
   const pull = kit.sheetFrames(PIXI, CHAIN_ART.pull.url, CHAIN_ART.pull.cols, CHAIN_ART.pull.rows, CHAIN_ART.pull.count, { insetLeft: CHAIN_INSET_LEFT });
   upgradeSource(pull.base, CHAIN_ART.pull.url, whenLoaded);
-  // newxp_clicktopull_arrow: blinks under the handle while you wait (K2q5GXruLvE 0:22-0:24).
-  const arrow = stageDeco(PIXI, 'newxp_clicktopull_arrow', L.chain.x, L.chain.top + 540, { alpha: 0 });
+  // newxp_clicktopull_arrow: blinks under the handle while you wait (K2q5GXruLvE 0:22-0:24), over a
+  // soft dark copy of itself so its white reads on the pale sky (CHAIN_HINT_MS).
+  const arrow = new PIXI.Container();
+  arrow.alpha = 0;
+  const shade = stageDeco(PIXI, 'newxp_clicktopull_arrow', L.chain.x + 1, L.chain.top + 542, { alpha: 0.95, scale: 1.04 });
+  shade.tint = 0x143857;
+  shade.filters = [new PIXI.BlurFilter({ strength: 3, quality: 2 })];
+  arrow.addChild(shade, stageDeco(PIXI, 'newxp_clicktopull_arrow', L.chain.x, L.chain.top + 540));
   world.addChild(arrow);
   // The stone GLITCH, unlit, with its lit copy over it (CLOUD_LETTERS).
   const letters = new PIXI.Container();
@@ -1297,6 +1320,7 @@ function pullChain(engine) {
   run.data.pulled = true;
   const { chain, arrow } = run.views;
   if (arrow) arrow.visible = false;
+  clearInstruction();
   if (chain && !chain.destroyed) {
     const pull = run.views.pull || kit.sheetFrames(engine.PIXI, CHAIN_ART.pull.url, CHAIN_ART.pull.cols, CHAIN_ART.pull.rows, CHAIN_ART.pull.count, { insetLeft: CHAIN_INSET_LEFT });
     const go = () => {
@@ -1358,27 +1382,45 @@ async function runClouds(t) {
   // the camera stops at the level's top, which left the arrow under the bottom edge.
   engine.setCameraLook?.(0, CHAIN_LOOK_Y);
   engine.snapCamera?.();
-  const waitAt = Date.now();
-  // Enter pulls it; taken first (capture) so the game's own Enter does not say "Nothing nearby".
+  let hintAt = Date.now() + CHAIN_HINT_MS;
+  let hinted = false;
+  // Enter (or Act on a phone, the same keydown) pulls it; taken first (capture) so the game's own
+  // Enter does not say "Nothing nearby". Any other key or a tap that misses brings the hint at once.
   const onKey = (e) => {
-    if (e.key !== 'Enter' || run?.stage !== 'clouds' || run.data.pulled) return;
+    if (run?.stage !== 'clouds' || run.data.pulled) return;
+    if (e.key !== 'Enter') {
+      hintAt = Math.min(hintAt, Date.now());
+      return;
+    }
     e.preventDefault();
     e.stopImmediatePropagation();
     pullChain(engine);
   };
-  if (typeof window !== 'undefined') window.addEventListener('keydown', onKey, true);
+  const onPoke = () => { hintAt = Math.min(hintAt, Date.now()); };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', onKey, true);
+    window.addEventListener('pointerdown', onPoke, true);
+  }
   try {
     await until(t, () => {
       const arrow = run.views.arrow;
-      // The arrow shows after a few seconds and blinks (reconstructed from K2q5GXruLvE 0:22-0:24).
+      // The arrow blinks under the handle (reconstructed from K2q5GXruLvE 0:22-0:24), with the
+      // instruction where every instruction is said (CHAIN_HINT_MS).
       if (arrow && !run.data.pulled) {
-        const ms = Date.now() - waitAt - 4000;
-        arrow.alpha = ms < 0 ? 0 : (Math.floor(ms / 600) % 2 ? 0.35 : 1);
+        const ms = Date.now() - hintAt;
+        arrow.alpha = chainArrowAlpha(ms);
+        if (ms >= 0 && !hinted) {
+          hinted = true;
+          instruction(LINES.pullChain);
+        }
       }
       return run.data.pulled;
-    }, { help: () => pullChain(engine) });
+    }, { help: () => pullChain(engine), every: 60 });
   } finally {
-    if (typeof window !== 'undefined') window.removeEventListener('keydown', onKey, true);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('pointerdown', onPoke, true);
+    }
     engine.setCameraLook?.(0, 0);
   }
   const first = L.terraces[0];

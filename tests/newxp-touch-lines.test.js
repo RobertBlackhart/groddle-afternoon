@@ -9,13 +9,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LINES, TOUCH_LINES, instructionFor } from '../public/js/newxp.js?v=96c67fcc';
+import { LINES, TOUCH_LINES, instructionFor } from '../public/js/newxp.js?v=963b3d7d';
 import { touchPrompt } from '../public/js/touch-controls.js?v=b10f17bb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const feature = readFileSync(join(root, 'public/js/features/newxp-feature.js'), 'utf8');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
-const INSTRUCTIONS = ['moveInstructions', 'buttonInstructions', 'jumpInstructions', 'jumpAcrossInstructions', 'climbInstructions', 'interactInstructions'];
+const INSTRUCTIONS = ['moveInstructions', 'buttonInstructions', 'jumpInstructions', 'jumpAcrossInstructions', 'climbInstructions', 'interactInstructions', 'pullChain'];
 
 describe('tutorial instructions on a phone', () => {
   it('every instruction overlay has touch words, and none of them name a key', () => {
