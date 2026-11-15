@@ -373,7 +373,7 @@ describe('mail courier feature', () => {
   it('calls the frog with the source prompt once a letter is due, and waits in an instance', async () => {
     mock.timers.enable({ apis: ['Date'], now: 1_000_000 });
     try {
-      const { mailCourierFeature } = await import('../public/js/features/mail-courier-feature.js?v=df931c66');
+      const { mailCourierFeature } = await import('../public/js/features/mail-courier-feature.js?v=39fa243f');
       const st = createMailboxState();
       const prompts = [];
       let instance = false;
@@ -538,5 +538,28 @@ describe('ticket 86: a long subject wraps in the inbox list', () => {
     assert.doesNotMatch(subject, /nowrap/);
     assert.match(rule('.mail-row-copy strong,\n.mail-row-copy span'), /overflow-wrap: anywhere;/);
     assert.match(rule('.mail-row time'), /white-space: nowrap;/);
+  });
+});
+
+describe('#356: the frog\'s yoga line is a talk bubble beside it (npc_yoga_frog.js doYoga 293)', () => {
+  const feature = readFileSync(join(root, 'public/js/features/mail-courier-feature.js'), 'utf8');
+  const qi = readFileSync(join(root, 'public/js/features/quest-instances-feature.js'), 'utf8');
+  const css = readFileSync(join(root, 'public/style.css'), 'utf8');
+
+  it('the yoga line asks for the bubble size and the frog as its speaker; the other lines keep the card', () => {
+    assert.match(feature, /say3\(engine, escapeHtml\(COURIER_TEXT\.yoga\), \[\{ label: COURIER_TEXT\.yogaReply, value: 'ok-yoga' \}\], \{ bubble: true \}\)/);
+    assert.match(feature, /\.\.\.\(bubble \? \{ size: 'bubble', look: 'plain', speaker: frog\?\.target \|\| null \} : \{\}\)/);
+    assert.equal((feature.match(/\{ bubble: true \}/g) || []).length, 1);
+  });
+
+  it('the conversation card marks a bubble and clears the mark when it closes', () => {
+    assert.match(qi, /if \(size === 'bubble' && look === 'plain'\) dialog\.modal\.dataset\.size = 'bubble';/);
+    assert.match(qi, /dialog\.modal\.hidden = true;\n\s+delete dialog\.modal\.dataset\.size;/);
+  });
+
+  it('a bubble is as wide as its words, with no title and no shade', () => {
+    assert.match(css, /\.quest-dialogue\[data-size="bubble"\] \.quest-dialogue-shade \{ display: none; \}/);
+    assert.match(css, /\.quest-dialogue\[data-size="bubble"\] \.quest-dialogue-card \{\n\s+width: fit-content;\n\s+max-width: min\(300px/);
+    assert.match(css, /\.quest-dialogue\[data-size="bubble"\] \.quest-dialogue-copy \{ min-height: 0;/);
   });
 });

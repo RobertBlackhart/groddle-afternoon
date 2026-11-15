@@ -86,7 +86,11 @@ describe('world items and NPCs draw under the player', () => {
     const nodes = read('public/js/features/resource-nodes-feature.js');
     assert.match(nodes, /root\.zIndex = itemZ\(entity\.classTsid, Z\.firefly\);/);
     assert.equal(itemBand('npc_firefly'), 'foreground');
-    assert.ok(Number(/const FROG_Z = (\d+);/.exec(read('public/js/features/mail-courier-feature.js'))[1]) < 49);
+    // #356: the frog arrives last, so it draws over the vendor street spirit (both foreground, 40).
+    assert.match(read('public/js/features/mail-courier-feature.js'), /const FROG_Z = itemZ\(FROG_CLASS, 12\);/);
+    assert.equal(itemBand('npc_yoga_frog'), 'foreground');
+    assert.ok(itemZ('npc_yoga_frog', 12) < 49);
+    assert.ok(itemZ('npc_yoga_frog', 12) > itemZ('street_spirit_groddle', 5), 'over a vendor');
     assert.ok(Number(/const RACER_Z = (\d+);/.exec(read('public/js/features/cubimal-race-feature.js'))[1]) < 49);
   });
 

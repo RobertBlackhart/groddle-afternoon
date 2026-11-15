@@ -4555,6 +4555,18 @@ html[data-street-cards] .quest-dialogue { visibility: hidden; }
   top: var(--speaker-card-y, 0);
   margin: 0;
 }
+/* #356: a one-line conversation (the delivery frog's "Check this out.") is a talk bubble as wide as
+   its words beside the speaker, with no title and no shade (ChoicesDialog chat_bubble, ChatBubble.as
+   MAX_WIDTH 276). */
+.quest-dialogue[data-size="bubble"] .quest-dialogue-shade { display: none; }
+.quest-dialogue[data-size="bubble"] .quest-dialogue-card {
+  width: fit-content;
+  max-width: min(300px, calc(100% - 2rem));
+  padding: var(--sp-5) var(--sp-6) var(--sp-6);
+}
+.quest-dialogue[data-size="bubble"] .quest-dialogue-card :is(h2, .fam-head, .mr-kicker) { display: none; }
+.quest-dialogue[data-size="bubble"] .quest-dialogue-copy { min-height: 0; margin: 0 0 var(--sp-5); font-size: var(--fs-base); }
+.quest-dialogue[data-size="bubble"] .quest-dialogue-card .btn-glitch-primary { min-width: 0; }
 .qi-choice-list {
   display: flex;
   flex-direction: column;

@@ -92,7 +92,7 @@
 
 import { ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=814d7926';
-import { questRoomConverse } from './quest-instances-feature.js?v=5ccd8282';
+import { questRoomConverse } from './quest-instances-feature.js?v=f7ed00e6';
 import { hellFeature } from './hell-feature.js?v=657cce8b';
 import { DISPATCHER_ART, FROG_ART, MAIL_NPC_ART_DIR } from '../mail-npc-art.js?v=1ed97a5d';
 import { DISPATCHER_GAP, DISPATCHER_HALF, DISPATCHER_TEXT, SIGNPOST } from '../home-street-fixtures.js?v=bad831a1';
@@ -140,8 +140,10 @@ const MAILBOX_POST_DX = 170;
 /**
  * in_foreground (the frog) and in_background (the station): both under the avatar's 50, since the
  * client's item holders sit below the avatar holders (MiddleGroundRenderer.setupEndShapes 111-171).
+ * #356: the frog is the newest stack in the foreground holder, so it drew over the vendor and the
+ * other foreground items already there (stack order); near the top of the band, not tied at 40.
  */
-const FROG_Z = 40;
+const FROG_Z = itemZ(FROG_CLASS, 12);
 /** npc_mail_dispatcher is a background item, over the mailbox beside it (item-bands.js). */
 const DISPATCHER_Z = itemZ(DISPATCHER_CLASS, 5);
 
@@ -484,7 +486,7 @@ async function handOverAuctions(engine, f) {
 }
 
 /** One conversation_start / conversation_reply: resolves with the chosen value (null if closed). */
-async function say3(engine, html, choices) {
+async function say3(engine, html, choices, { bubble = false } = {}) {
   if (autoplayMode(engine) === 'talk' && autoStep === 0) {
     autoStep = 1;
     engine.setData?.('mailCourierAutoplay', 'talk');
@@ -496,6 +498,7 @@ async function say3(engine, html, choices) {
     kicker: '',
     beats: [{ text: html, response: choices[0].label }],
     choices,
+    ...(bubble ? { size: 'bubble', look: 'plain', speaker: frog?.target || null } : {}),
   });
 }
 
@@ -663,7 +666,8 @@ function finishDelivery(engine, f) {
   f.mode = 'yoga';
   setFrogClip(engine, f, 'idle');
   last = `frog:delivered:${f.pose}`;
-  say3(engine, escapeHtml(COURIER_TEXT.yoga), [{ label: COURIER_TEXT.yogaReply, value: 'ok-yoga' }]).then(() => doYoga(engine, f));
+  // #356: npc_yoga_frog.js doYoga 293 is one short line: a talk bubble beside the frog, not the full card.
+  say3(engine, escapeHtml(COURIER_TEXT.yoga), [{ label: COURIER_TEXT.yogaReply, value: 'ok-yoga' }], { bubble: true }).then(() => doYoga(engine, f));
 }
 
 function doYoga(engine, f) {

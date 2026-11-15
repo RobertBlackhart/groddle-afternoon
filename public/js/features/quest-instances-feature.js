@@ -560,8 +560,10 @@ export function cancelChoice(choices, cancel) {
  * with several ([{ label, value }]). Resolves with the chosen value.
  * `timeout` (source seconds) closes it on its own and resolves with
  * `timeoutValue` or null (G198, js/prompt-timeout.js).
+ * `size: 'bubble'` (#356): a one-line conversation as Glitch drew it, a talk bubble no wider than
+ * its words beside the speaker, with no title and no shade over the world (ChoicesDialog chat_bubble).
  */
-function converse(engine, { title = '', kicker = '', text = '', beats = null, choices = null, timeout = 0, timeoutValue = null, look: lookOpt = '', width = 0, note = '', cancel: cancelOpt, speaker = null } = {}) {
+function converse(engine, { title = '', kicker = '', text = '', beats = null, choices = null, timeout = 0, timeoutValue = null, look: lookOpt = '', width = 0, note = '', cancel: cancelOpt, speaker = null, size = '' } = {}) {
   // G225: Magic Rock lines take the FamiliarDialog CONVERSATION panel unless the caller names a look.
   const look = familiarLook({ look: lookOpt, kicker });
   buildChrome(engine);
@@ -576,6 +578,7 @@ function converse(engine, { title = '', kicker = '', text = '', beats = null, ch
       timer?.cancel();
       timer = null;
       dialog.modal.hidden = true;
+      delete dialog.modal.dataset.size;
       dialog.resolve = null;
       dialog.cancel = undefined;
       dialog.escape = null;
@@ -621,6 +624,8 @@ function converse(engine, { title = '', kicker = '', text = '', beats = null, ch
       });
       engine.setData('qiDialog', `${title}:${index + 1}/${pages.length}`);
       const opening = dialog.modal.hidden;
+      if (size === 'bubble' && look === 'plain') dialog.modal.dataset.size = 'bubble';
+      else delete dialog.modal.dataset.size;
       dialog.modal.hidden = false;
       // G220: `look: 'vog'` is the source's voice-of-rock overlay (bubble_familiar,
       // inc_announcements.js 375-482): the rock with rays at the top, the bubble under it.

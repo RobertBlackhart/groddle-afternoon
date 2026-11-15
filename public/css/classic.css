@@ -3250,6 +3250,11 @@
 :root[data-ui="classic"] #save-trouble .save-trouble-btn { min-height: 0; padding: calc(4 * var(--cu)) calc(12 * var(--cu)); border: 1px solid var(--c-classic-btn-minor-border); border-radius: var(--radius-xs); background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom)); color: var(--c-classic-btn-minor-label); font: 800 var(--fs-classic-body)/var(--lh-tight) var(--font-classic-title); }
 :root[data-ui="classic"] #save-trouble .save-trouble-btn:focus-visible { outline: 2px solid var(--c-classic-focus); outline-offset: 1px; }
 /* === end saves === */
+/* === chk7b (lane) === */
+/* #356: a one-line conversation in Classic is the dark box sized to its words beside the speaker, no header. */
+:root[data-ui="classic"] .quest-dialogue[data-size="bubble"] .quest-dialogue-card { width: fit-content; max-width: min(calc(300 * var(--cu)), calc(100% - 32px)); padding: calc(12 * var(--cu)) calc(16 * var(--cu)); }
+:root[data-ui="classic"] .quest-dialogue[data-size="bubble"] .quest-dialogue-card :is(h2, .fam-head) { display: none; }
+/* === end chk7b === */
 
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
