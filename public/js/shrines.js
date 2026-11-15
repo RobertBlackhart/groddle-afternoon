@@ -655,6 +655,25 @@ export const FAVOR_SPEND_COPY = Object.freeze({
 });
 
 /**
+ * #377 (Austin 2026-11-15): the shrine's Learn Faster? box folds. Closed it is one line: its title and
+ * this summary, the favor it would spend (or, in a few words, why it can't).
+ */
+export function learnFasterSummary(quote) {
+  if (quote?.ok) return `Spend ${quote.spendPoints} favor`;
+  if (quote?.reason === 'not_learning') return 'Not learning a skill';
+  if (quote?.reason === 'no_favor') return 'No favor yet';
+  if (quote?.reason === 'max_acceleration') return 'Learning at full speed';
+  return "Can't spend now";
+}
+
+/** PURE (#377): open on a desktop, closed on a phone, unless the player chose this session. */
+export function learnFasterOpen({ stored = null, phone = false } = {}) {
+  if (stored === '1') return true;
+  if (stored === '0') return false;
+  return !phone;
+}
+
+/**
  * The client's StringUtil.formatTime(sec) with its defaults, used for the
  * speed-up figure in both spend dialogs: "5 mins", "2 hours 46 mins 40 secs".
  */

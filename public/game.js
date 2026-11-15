@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a74490a9';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=476087c2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=62cc6b67';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -517,7 +517,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=cd5b638c';
+} from './js/player-save.js?v=fa6f7859';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -923,7 +923,10 @@ import {
   favorRelationNote,
   emblemRelationNote,
   formatSpeedUpTime,
-} from './js/shrines.js?v=d2c88987';
+  learnFasterOpen,
+  learnFasterSummary,
+} from './js/shrines.js?v=945cc7c4';
+import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=ffca4adb';
@@ -29721,13 +29724,25 @@ function renderShrineLearnFaster(giantId, giant) {
     ? `Spend your ${quote.spendPoints} favor points with <b>${escapeHtml(giant.name)}</b> to speed up learning <b>${escapeHtml(skillName)}</b> by <b>${escapeHtml(formatSpeedUpTime(quote.speedUp))}.</b>`
     : escapeHtml(quote.text || '');
   const note = quote.ok ? `<b>Note!</b> ${escapeHtml(favorRelationNote(giant.name, quote.giantRel))}` : '';
+  // #377: the box folds to one line (the favor it would spend), closed on a phone, open on a desktop;
+  // the player's choice holds for the session.
+  const open = learnFasterOpen({ stored: loadLearnFasterOpen(), phone: TOUCH_PHONE });
+  box.toggleAttribute('data-collapsed', !open);
   box.innerHTML = `
-    <h3 class="shrine-section-title" style="margin-top:0">${escapeHtml(FAVOR_SPEND_COPY.title)}</h3>
+    <h3 class="shrine-section-title shrine-learn-head" style="margin-top:0"><button type="button" class="shrine-learn-toggle" aria-expanded="${open}" data-shrine-learn-toggle><span class="shrine-learn-chev" aria-hidden="true"></span><span>${escapeHtml(FAVOR_SPEND_COPY.title)}</span><span class="shrine-learn-sum" data-shrine-learn-sum>${escapeHtml(learnFasterSummary(quote))}</span></button></h3>
     ${shrineFavorSpent ? `<p class="shrine-daily" data-shrine-spent><b>${escapeHtml(FAVOR_SPEND_COPY.spent)}</b></p>` : ''}
     <p class="shrine-daily" data-shrine-learn-text>${text}</p>
     ${note ? `<p class="shrine-cap-note">${note}</p>` : ''}
     <button type="button" class="btn-glitch-primary" data-shrine-learn-spend ${quote.ok ? '' : 'disabled'}>${escapeHtml(quote.ok ? `Spend ${quote.spendPoints} favor points` : FAVOR_SPEND_COPY.cannot)}</button>`;
   box.querySelector('[data-shrine-learn-spend]')?.addEventListener('click', confirmShrineFavorSpend);
+  box.querySelector('[data-shrine-learn-toggle]')?.addEventListener('click', (e) => {
+    const next = box.hasAttribute('data-collapsed');
+    saveLearnFasterOpen(next);
+    box.toggleAttribute('data-collapsed', !next);
+    e.currentTarget.setAttribute('aria-expanded', String(next));
+    app.canvas.dataset.shrineLearnOpen = next ? '1' : '0';
+  });
+  app.canvas.dataset.shrineLearnOpen = open ? '1' : '0';
   app.canvas.dataset.shrineLearn = quote.reason;
   app.canvas.dataset.shrineLearnPoints = String(quote.spendPoints || 0);
   app.canvas.dataset.shrineLearnSpeedUp = String(quote.ok ? quote.speedUp : 0);

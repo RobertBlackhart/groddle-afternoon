@@ -5554,6 +5554,21 @@ body.buff-purple-pulse::after {
 .shrine-learn > [data-shrine-learn-spend] { grid-column: 2; grid-row: 1 / span 4; margin: 0; }
 .shrine-learn > h3.shrine-section-title { margin: 0; }
 .shrine-learn > .shrine-daily { margin-top: var(--sp-1); }
+/* #377 (Austin 2026-11-15): the box folds to its title and a one-line summary (the favor it would spend),
+   closed by default on a phone so the item grid has the room, open on a desktop (game.js
+   renderShrineLearnFaster, the choice kept for the session). */
+.shrine-learn-toggle {
+  display: flex; align-items: baseline; gap: var(--sp-3); width: 100%; margin: 0; padding: 0;
+  border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.shrine-learn-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-sm); }
+.shrine-learn-chev { flex: none; align-self: center; width: 0.45em; height: 0.45em; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg) translate(-2px, -2px); transition: transform var(--motion-fast) var(--ease-out); }
+.shrine-learn[data-collapsed] .shrine-learn-chev { transform: rotate(-45deg); }
+@media (prefers-reduced-motion: reduce) { .shrine-learn-chev { transition: none; } }
+.shrine-learn-sum { margin-left: auto; color: var(--text-muted); font-size: var(--fs-s); font-weight: var(--fw-bold); white-space: nowrap; }
+.shrine-learn:not([data-collapsed]) .shrine-learn-sum { display: none; }
+.shrine-learn[data-collapsed] { grid-template-columns: minmax(0, 1fr); padding-bottom: var(--sp-3); }
+.shrine-learn[data-collapsed] > :not(.shrine-learn-head) { display: none; }
 /* A narrow window (Austin's iPhone, 2026-11-12: the text went one word a line beside "You can't
    spend points right now"): the words take the width and the button goes under them. The favor
    chips scroll sideways there, so their row fades at the edge it scrolls toward. */

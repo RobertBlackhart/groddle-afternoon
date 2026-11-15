@@ -38,7 +38,7 @@ import { spawnSync } from 'node:child_process';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=6fe817bc';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
 import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=72f37c7e';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=cd5b638c';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=fa6f7859';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');
@@ -983,7 +983,7 @@ describe('every save read and write goes through the store', () => {
   // js/ui/quest-sheet.js keeps the Quests sheet's sort (ticket 77, groddle.questSort), a device preference.
   // js/touch-controls.js keeps a phone's "Stick follows your thumb" setting (02c12d4bf2), a device preference;
   // js/shared-patches.js reads one QA flag (groddle.qa.sharedPatches, G564) that turns the dark shared Patches on in this browser, never a save.
-  const ALLOWED = new Set(['js/touch-controls.js', 'js/shared-patches.js', 'js/ui/quest-sheet.js', 'js/save-store.js', 'js/practice-mode.js', 'js/audio-pref.js', 'js/online-boot.js', 'js/features/groups-feature.js', 'js/ui/social-drawer.js', 'js/classic/ui-mode.js', 'js/world-zoom.js', 'js/night-tint.js', 'js/ui/street-minimap.js', 'js/builder/editor.js', 'js/phone/companion.js', 'js/save-claim.js']);
+  const ALLOWED = new Set(['js/touch-controls.js', 'js/shared-patches.js', 'js/ui/quest-sheet.js', 'js/save-store.js', 'js/practice-mode.js', 'js/audio-pref.js', 'js/online-boot.js', 'js/features/groups-feature.js', 'js/ui/social-drawer.js', 'js/classic/ui-mode.js', 'js/world-zoom.js', 'js/night-tint.js', 'js/ui/street-minimap.js', 'js/builder/editor.js', 'js/phone/companion.js', 'js/save-claim.js', 'js/ui/learn-faster-pref.js']);
 
   it('game.js and js/ make no direct localStorage or sessionStorage calls', () => {
     const offenders = [];

@@ -29,7 +29,7 @@ import {
 import {
   createShrineState,
   donateToShrine,
-} from '../public/js/shrines.js?v=d2c88987';
+} from '../public/js/shrines.js?v=945cc7c4';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
