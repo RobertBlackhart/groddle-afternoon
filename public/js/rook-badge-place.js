@@ -25,12 +25,12 @@
 
 /**
  * The badge's parts around its centre, in view px (rook-attack-feature buildHud):
- * the disc (r 38) and its seven stars (r 50 + 7), the phase line above (to -62),
+ * the disc (r 38) and its seven stars (r 50 + 7), the phase line above them (to -72),
  * the clock under (to 63), the STUN! stamp and Rook Armor growing left from -50,
  * and the event feed's 300 px box from y 62, centred on `feedX`.
  */
 export const BADGE_PARTS = Object.freeze({
-  core: Object.freeze({ left: -66, right: 66, top: -64, bottom: 66 }),
+  core: Object.freeze({ left: -66, right: 66, top: -72, bottom: 66 }),
   stampLeft: -180,
   feedW: 300,
   feedTop: 62,

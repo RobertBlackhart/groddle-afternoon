@@ -128,7 +128,7 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
 import { migrateClassValue } from '../tools.js?v=8516a0c3';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=b0b7be8c';
-import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=2bb00dfd';
+import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e7c389ef';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */
@@ -722,7 +722,8 @@ function buildHud(engine) {
   clock.y = 44;
   const phase = new PIXI.Text({ text: '', style: textStyle(11, { fill: 0xffe7a8, fontWeight: '800', letterSpacing: 1 }) });
   phase.anchor.set(0.5, 1);
-  phase.y = -46;
+  // Above the stun stars (ring 50, the lit star 7: tips at -57), not over them.
+  phase.y = -59;
   const stamp = new PIXI.Text({ text: 'STUN!', style: textStyle(24, { fill: 0xffffff, stroke: { color: 0x2a1438, width: 5 } }) });
   stamp.anchor.set(1, 0.5);
   stamp.x = -52; // left of the docked badge, so it grows inward
@@ -882,9 +883,9 @@ function placeBadge(engine, t = now()) {
   };
   const classic = document.documentElement?.dataset?.ui === 'classic';
   // The top bar's whole row (not only its pills: the badge never sits in a gap between them), the
-  // pills themselves, and the nameplate and the route GPS when they hang under the bar.
+  // pills themselves, and the nameplate, the route GPS and the street minimap (G370) when they hang under the bar.
   const blockers = [];
-  for (const el of [document.querySelector('.top-bar'), ...document.querySelectorAll('.top-bar .hud-pill'), document.getElementById('street-nameplate'), document.querySelector('.route-gps')]) {
+  for (const el of [document.querySelector('.top-bar'), ...document.querySelectorAll('.top-bar .hud-pill'), document.getElementById('street-nameplate'), document.querySelector('.route-gps'), document.getElementById('street-minimap')]) {
     const r = rootRect(el, rr);
     if (r) blockers.push(r);
   }
