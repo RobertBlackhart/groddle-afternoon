@@ -59,7 +59,7 @@ import { betterLearningDiscount } from '../better-learning.js?v=044ff9ff';
 import { rescaleStudiesForLearningModifier } from '../skills.js?v=4542bdf9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
 import { hellFeature } from './hell-feature.js?v=657cce8b';
-import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=ce0e1582';
+import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=50274442';
 
 const ART = 'assets/imagination/cards/';
 const UI = 'assets/imagination/ui/';

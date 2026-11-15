@@ -16,7 +16,7 @@ import {
   createLabelPicker,
   playAreaRect,
   revealContent,
-} from '../public/js/img-reveal.js?v=ce0e1582';
+} from '../public/js/img-reveal.js?v=50274442';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '..', 'public');
@@ -143,13 +143,13 @@ describe('upgrade reveal: the play area', () => {
   it('fills the whole location viewport in Classic', () => {
     assert.deepEqual(playAreaRect({ view: { left: 20, top: 0, width: 960, height: 520 }, classic: true, topBarBottom: 90 }), { left: 20, top: 0, width: 960, height: 520 });
   });
-  it('keeps clear of the Modern top bar, side sheets and pack', () => {
+  it('covers the whole Modern game window, the top bar, side sheets and pack included', () => {
     const r = playAreaRect({ view, rootW: 1280, rootH: 800, topBarBottom: 60, insetL: 0, insetR: 300, gap: 8 });
-    assert.deepEqual(r, { left: 8, top: 68, width: 1280 - 300 - 16, height: 700 - 68 - 8 });
+    assert.deepEqual(r, { left: 0, top: 0, width: 1280, height: 800 });
   });
-  it('falls back to the root when the view is unknown', () => {
+  it('covers the root on a phone too', () => {
     const r = playAreaRect({ view: null, rootW: 402, rootH: 660, topBarBottom: 50, gap: 8 });
-    assert.deepEqual(r, { left: 8, top: 58, width: 386, height: 594 });
+    assert.deepEqual(r, { left: 0, top: 0, width: 402, height: 660 });
   });
 });
 

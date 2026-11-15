@@ -155,25 +155,18 @@ export function revealContent({ name = '', desc = '', notes = [], config = {}, a
 
 /**
  * The play area the reveal fills, in #game-root px. `view` is the location viewport (the canvas
- * above the pack, game.js locationViewRect). Classic fills it all, as the client did. Modern's
- * HUD floats over the street, so the reveal keeps clear of it: below the top bar, inside the side
- * sheets (--inset-l, --inset-r), with the HUD inset on every side.
+ * above the pack, game.js locationViewRect). Classic fills it all, as the client did. Modern covers
+ * the whole game window, top bar, pack and Social rail included (Austin 2026-11-15: like the other
+ * award moments), so nothing of the HUD shows through.
  */
 export function playAreaRect({ view = null, classic = false, rootW = 0, rootH = 0, topBarBottom = 0, insetL = 0, insetR = 0, gap = 8 } = {}) {
   const base = view && view.width > 0 && view.height > 0
     ? view
     : { left: 0, top: 0, width: Math.max(0, rootW), height: Math.max(0, rootH) };
   if (classic) return { left: Math.round(base.left), top: Math.round(base.top), width: Math.round(base.width), height: Math.round(base.height) };
-  const right = Math.min(base.left + base.width, (rootW || base.left + base.width) - Math.max(0, insetR)) - gap;
-  const bottom = base.top + base.height - gap;
-  const left = Math.max(base.left, Math.max(0, insetL)) + gap;
-  const top = Math.max(base.top, topBarBottom) + gap;
-  return {
-    left: Math.round(left),
-    top: Math.round(top),
-    width: Math.max(0, Math.round(right - left)),
-    height: Math.max(0, Math.round(bottom - top)),
-  };
+  const w = rootW || base.left + base.width;
+  const h = rootH || base.top + base.height;
+  return { left: 0, top: 0, width: Math.max(0, Math.round(w)), height: Math.max(0, Math.round(h)) };
 }
 
 /** The art's own box inside the card frame, padded a little; the whole frame when unknown. */
@@ -188,8 +181,8 @@ export function artViewBox(box, pad = 4) {
 }
 
 const CSS = `
-.img-reveal{position:absolute;z-index:calc(var(--z-notice) + 2);box-sizing:border-box;display:flex;overflow:hidden auto;overscroll-behavior:contain;
-  border-radius:var(--radius-xl);background:var(--c-sky-88) url(assets/classic/repeating_clouds.webp) 0 0 / 204px 156px repeat;
+.img-reveal{position:absolute;z-index:var(--z-screen);box-sizing:border-box;display:flex;overflow:hidden auto;overscroll-behavior:contain;
+  border-radius:0;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);background:var(--c-sky-88) url(assets/classic/repeating_clouds.webp) 0 0 / 204px 156px repeat;
   box-shadow:var(--shadow-3);opacity:0;transition:opacity ${REVEAL_FADE_MS}ms linear;font-family:var(--font-round);color:var(--text);text-align:center}
 .img-reveal[hidden]{display:none!important}
 .img-reveal.is-shown{opacity:1}
