@@ -44,3 +44,18 @@ describe('the website\'s /chat/ sign-in', { skip: skipWithoutSite }, () => {
     assert.match(js, /id="csignin-pass" name="password" type="password" autocomplete="current-password" required/);
   });
 });
+
+describe('the sign-in gate leaves a password manager\'s fill list visible (#245, G831)', () => {
+  const css = readFileSync(join(root, 'public/style.css'), 'utf8');
+  const online = readFileSync(join(root, 'public/play/online/index.html'), 'utf8');
+
+  it('the loading rule does not hide what is added after #wrap while the gate is up', () => {
+    // Proton Pass in desktop Chrome adds its list at the end of the body; the page starts booting and gated.
+    assert.match(online, /<body class="is-booting online-gated">/);
+    assert.match(css, /body\.is-booting:not\(\.online-gated\) #wrap ~ \* \{ visibility: hidden; \}/);
+    assert.doesNotMatch(css, /body\.is-booting #wrap ~ \*/);
+    // The gate's own styles hide nothing after #wrap either.
+    assert.doesNotMatch(online, /online-gated[^{\n]*(~|>\s*\*)/);
+  });
+});
+

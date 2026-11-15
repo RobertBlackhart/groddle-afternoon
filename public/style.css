@@ -1016,9 +1016,12 @@ body {
     radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--surface-moss) 96%, transparent), color-mix(in srgb, var(--c-lime-87) 98%, transparent) 48%, var(--c-lime-85) 100%);
 }
 .boot-loader[hidden] { display: none; }
-/* Nothing else shows through while loading; visibility keeps the layout for sizing. */
+/* Nothing else shows through while loading; visibility keeps the layout for sizing. Not under the
+   /play/online/ sign-in gate (#245): a password manager adds its fill list at the end of the body,
+   after #wrap, and hidden there it never showed (Proton Pass in desktop Chrome: its icon, drawn by
+   the field, showed; the list did not). The game is not loaded yet while the gate is up. */
 body.is-booting #wrap > :not(#boot-loader),
-body.is-booting #wrap ~ * { visibility: hidden; }
+body.is-booting:not(.online-gated) #wrap ~ * { visibility: hidden; }
 .boot-loader-card {
   display: flex;
   align-items: center;
