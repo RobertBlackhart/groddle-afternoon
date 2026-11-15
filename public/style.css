@@ -14564,6 +14564,72 @@ body.is-booting .touch-controls { display: none; }
 [data-ui="modern"] .more-list .menu-float-stick small { color: var(--text-muted); font-size: var(--fs-xs); font-weight: var(--fw-regular); line-height: var(--lh-snug); }
 /* === end LANDSCAPE-PANELS === */
 
+/* === PHONE SIDEWAYS 2 (chk6: #342, #343, iPhone Safari held sideways) === */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* #342: the Social rail (online it runs most of the screen's height) lay over Jump. The rail keeps
+     the right edge; Jump and Act stand left of it (--inset-r: the drawer's width and gap, js/ui/
+     social-drawer.js), and the pack row and the controls over it sit lower, half into the home
+     indicator's inset, so the thumb's corner has more room. */
+  :root.touch-phone #game-root .touch-controls { bottom: calc(var(--pack-live-height, 72px) + env(safe-area-inset-bottom, 0px) / 2); }
+  :root.touch-phone[data-ui="modern"] #game-root .pack-bar:not([data-hb-dock]) { bottom: calc(var(--safe-b) / 2); }
+  :root.touch-phone .touch-jump { right: max(var(--sp-6), env(safe-area-inset-right, 0px), var(--inset-r, 0px)); }
+  :root.touch-phone .touch-act { right: calc(max(var(--sp-6), env(safe-area-inset-right, 0px), var(--inset-r, 0px)) + 76px + var(--sp-5)); }
+  /* #342: the Menu squeezed between the top bar and the pack row (a 260 px window on a 402 px screen).
+     Sideways it is as wide as the screen allows, its groups stand side by side, its rows are a little
+     shorter, and it runs to the foot of the screen over the pack row (the lifted top bar is over it). */
+  :root.touch-phone[data-ui="modern"] .top-bar .more-list {
+    width: min(760px, calc(100vw - 2 * var(--hud-inset) - var(--safe-l) - var(--safe-r)));
+    max-height: calc(100dvh - var(--hud-h) - 14px - var(--safe-t) - var(--safe-b) / 2);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  :root.touch-phone[data-ui="modern"] .top-bar .more-list .chrome-btn { min-height: 38px; }
+  :root.touch-phone[data-ui="modern"] .more-list .menu-group[data-menu-group="now"]:not([hidden]) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  :root.touch-phone[data-ui="modern"] .more-list .menu-group[data-menu-group="now"] #menu-study-btn { grid-column: auto; }
+  /* #343: the report window was a small card in the middle of the space under the top bar. Sideways it
+     takes the whole screen (it is modal), the "We'd love to hear from you!" line goes (the head says
+     Write to us), and the box stands beside the picture's options and Send. */
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel.reports-panel {
+    place-items: stretch center;
+    padding: calc(4px + var(--safe-t)) calc(var(--sp-2) + var(--safe-r)) calc(4px + var(--safe-b) / 2) calc(var(--sp-2) + var(--safe-l));
+  }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-card { width: min(760px, 100%); height: 100%; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 36%);
+    grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "label label" "text pic" "text send";
+    gap: var(--space-2) var(--space-3);
+  }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-new-title { display: none; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-label { grid-area: label; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-text { grid-area: text; height: 100%; min-height: 5.5rem; resize: none; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-picture-row { grid-area: pic; flex-direction: column; align-items: stretch; min-height: 0; overflow-y: auto; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view .reports-picture-thumb { max-width: 100%; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view .reports-picture-thumb img { max-height: 72px; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-actions { grid-area: send; position: static; margin: 0; padding: 0; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-actions .reports-btn { flex: 1 1 auto; min-height: 40px; }
+}
+/* #342: a Menu with rows below the fold was see-through at its foot (MORE BELOW masked it into the
+   street). On a phone the foot fades into the Menu's own colour instead, so nothing shows through. */
+:root.touch-phone[data-ui="modern"] .top-bar .more-list[data-more-below] { -webkit-mask-image: none; mask-image: none; }
+:root.touch-phone[data-ui="modern"] .top-bar .more-list[data-more-below]::after {
+  content: ""; grid-column: 1 / -1; position: sticky; bottom: calc(-1 * var(--space-2)); height: 40px; margin: -40px calc(-1 * var(--space-2)) 0; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--surface-card));
+}
+/* #343: with the keyboard up, the report window fills the box above it (--kbd-top, --kbd-h:
+   js/touch-controls.js watchPhoneKeyboard, as the Social drawer does), either way up, and keeps only
+   what typing needs: the box you type in with Send beside it (sideways only about 100 px is left), so
+   the words you type stay in sight. The rest comes back when the keyboard goes. */
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within {
+  inset: var(--kbd-top, 0px) 0 auto 0; height: var(--kbd-h, 100%); padding: 0 calc(var(--sp-2) + var(--safe-r)) 0 calc(var(--sp-2) + var(--safe-l)); place-items: stretch center;
+}
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-card { height: 100%; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-head, .reports-new-title, .reports-label, .reports-picture-row, .reports-foot) { display: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-body { padding: var(--space-2); overflow: hidden; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view { display: flex; flex-direction: row; align-items: stretch; gap: var(--space-2); }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-text { flex: 1 1 auto; height: auto; min-height: 0; resize: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions { flex: none; position: static; align-items: flex-end; margin: 0; padding: 0; background: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions .reports-btn { min-height: 40px; }
+/* === end PHONE SIDEWAYS 2 === */
+
 /* PHONEKEYS (Austin 2026-11-12, on his iPhone): a phone (html.touch-phone, the phone gate's
    device) has no keyboard, so no key letter shows on it: the key caps on the bar's buttons, in sheet
    heads, in the Menu's rows (data-key), the verb menu's numbers, "Esc close" and "Esc back", and the

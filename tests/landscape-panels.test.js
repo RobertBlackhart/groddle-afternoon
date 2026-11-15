@@ -118,3 +118,35 @@ describe('Cultivate and Decorate sideways (#6)', () => {
     assert.match(rule, /\.hb-tray:not\(:has\(\.hb-aside\)\) \{ grid-template-columns: auto minmax\(0, 1fr\) auto; grid-template-areas: "tabs filters foot" "panel panel panel"; \}/);
   });
 });
+
+describe('#342 and #343: a phone held sideways (PHONE SIDEWAYS 2)', () => {
+  const at = css.indexOf('/* === PHONE SIDEWAYS 2 (chk6');
+  const end = css.indexOf('/* === end PHONE SIDEWAYS 2 === */');
+  const block = css.slice(at, end);
+
+  it('the block is in style.css, and its sideways rules are for a short phone only', () => {
+    assert.ok(at > 0 && end > at);
+    assert.match(block, /@media \(max-height: 500px\) and \(orientation: landscape\) \{/);
+    for (const line of block.split('\n').filter((l) => /^\s+:root/.test(l))) assert.match(line, /:root\.touch-phone/, line);
+  });
+
+  it('#342: Jump and Act stand left of the Social rail; the pack row and the controls sit lower', () => {
+    assert.match(block, /\.touch-jump \{ right: max\(var\(--sp-6\), env\(safe-area-inset-right, 0px\), var\(--inset-r, 0px\)\); \}/);
+    assert.match(block, /\.touch-act \{ right: calc\(max\(var\(--sp-6\), env\(safe-area-inset-right, 0px\), var\(--inset-r, 0px\)\) \+ 76px \+ var\(--sp-5\)\); \}/);
+    assert.match(block, /\.pack-bar:not\(\[data-hb-dock\]\) \{ bottom: calc\(var\(--safe-b\) \/ 2\); \}/);
+    assert.match(block, /\.touch-controls \{ bottom: calc\(var\(--pack-live-height, 72px\) \+ env\(safe-area-inset-bottom, 0px\) \/ 2\); \}/);
+  });
+
+  it('#342: the Menu is wide, its groups side by side, down to the foot, and never see-through', () => {
+    assert.match(block, /\.top-bar \.more-list \{\n\s+width: min\(760px,[^\n]+\n\s+max-height: calc\(100dvh - var\(--hud-h\)[^\n]+\n\s+grid-template-columns: repeat\(auto-fit, minmax\(150px, 1fr\)\);/);
+    assert.match(block, /\.more-list\[data-more-below\] \{ -webkit-mask-image: none; mask-image: none; \}/);
+    assert.match(block, /\.more-list\[data-more-below\]::after \{[^}]*background: linear-gradient\(to bottom, transparent, var\(--surface-card\)\);/);
+  });
+
+  it('#343: the report window takes the screen sideways, and the box above the keyboard while typing', () => {
+    assert.match(block, /#bug-report-panel \.reports-new-view \{\n\s+display: grid;/);
+    assert.match(block, /\.reports-new-view > \.reports-new-title \{ display: none; \}/);
+    assert.match(block, /:root\.touch-phone\.kbd-up\[data-ui="modern"\] #game-root #bug-report-panel\.reports-panel:focus-within \{\n\s+inset: var\(--kbd-top, 0px\) 0 auto 0; height: var\(--kbd-h, 100%\);/);
+    assert.match(block, /:focus-within :is\(\.reports-head, \.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-foot\) \{ display: none; \}/);
+  });
+});
