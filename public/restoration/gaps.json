@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.40.1",
+  "release": "v0.41.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 1,
-    "known": 15,
+    "known": 14,
     "unreleased": 0,
-    "fixed": 129,
+    "fixed": 140,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -108,6 +108,13 @@
           "report": 340,
           "state": "fixed",
           "version": "v0.40.1"
+        },
+        {
+          "id": "G776",
+          "text": "In Join the Club a good jump could clear the shut door.",
+          "report": 353,
+          "state": "fixed",
+          "version": "v0.41.0"
         }
       ]
     },
@@ -231,12 +238,6 @@
           "state": "known"
         },
         {
-          "id": "G759",
-          "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
-          "report": 337,
-          "state": "known"
-        },
-        {
           "id": "G678",
           "text": "In Thornfad Layers, the letter or heart that shows over your head by the locked door is not drawn yet.",
           "state": "fixed",
@@ -273,6 +274,13 @@
           "text": "Shrines in sixteen regions stood where the game guessed, often far from where Tiny Speck's 2012 street pictures show them.",
           "state": "fixed",
           "version": "v0.39.0"
+        },
+        {
+          "id": "G759",
+          "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
+          "report": 337,
+          "state": "fixed",
+          "version": "v0.41.0"
         }
       ]
     },
@@ -951,6 +959,54 @@
           "report": 343,
           "state": "fixed",
           "version": "v0.40.1"
+        },
+        {
+          "id": "G765",
+          "text": "Big street scenery and the Glitchmas Cracker could draw black on phones with small graphics chips.",
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G768",
+          "text": "Speech bubbles bounced back and forth on phone screens.",
+          "report": 344,
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G769",
+          "text": "Adding the game to a phone's home screen opened it in the browser instead of full screen.",
+          "report": 345,
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G770",
+          "text": "The Social drawer held sideways on a phone showed only its header, with no room for chat.",
+          "report": 346,
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G771",
+          "text": "On an upright phone a short street left a band of plain blue above it, and the route card covered the street's name.",
+          "report": 348,
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G772",
+          "text": "The start card sat off centre on a phone and always named the same first street.",
+          "report": 349,
+          "state": "fixed",
+          "version": "v0.41.0"
+        },
+        {
+          "id": "G773",
+          "text": "The iMG button on a phone's top bar was hard to tap.",
+          "report": 350,
+          "state": "fixed",
+          "version": "v0.41.0"
         }
       ]
     },
@@ -1142,6 +1198,30 @@
           "report": 321,
           "state": "fixed",
           "version": "v0.38.1"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "id": "G758",
+          "text": "Mining took a fraction of Glitch's time, and the pick swung beside you instead of on the rock.",
+          "report": 330,
+          "state": "fixed",
+          "version": "v0.41.0"
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "items": [
+        {
+          "id": "G760",
+          "text": "The encyclopedia did not say that some recipes, such as Wavy Gravy, need an achievement first.",
+          "report": 338,
+          "state": "fixed",
+          "version": "v0.41.0"
         }
       ]
     }

@@ -1236,8 +1236,12 @@
     {
       "id": "G759",
       "area": "Streets",
+      "show": "fixing",
       "text": "A few narrow streets, such as Semsan Simile, are shown zoomed in on wide screens.",
-      "report": 337
+      "report": 337,
+      "commits": [
+        "game:97223bc94d"
+      ]
     },
     {
       "id": "G761",
@@ -1277,6 +1281,105 @@
       "report": 343,
       "commits": [
         "game:e370595011"
+      ]
+    },
+    {
+      "id": "G758",
+      "area": "Skills",
+      "show": "fixing",
+      "text": "Mining took a fraction of Glitch's time, and the pick swung beside you instead of on the rock.",
+      "report": 330,
+      "commits": [
+        "game:5941629826"
+      ]
+    },
+    {
+      "id": "G760",
+      "area": "Recipes",
+      "show": "fixing",
+      "text": "The encyclopedia did not say that some recipes, such as Wavy Gravy, need an achievement first.",
+      "report": 338,
+      "commits": [
+        "game:89c4fd673b"
+      ]
+    },
+    {
+      "id": "G765",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Big street scenery and the Glitchmas Cracker could draw black on phones with small graphics chips.",
+      "commits": [
+        "game:0d2c91ba0d"
+      ]
+    },
+    {
+      "id": "G768",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Speech bubbles bounced back and forth on phone screens.",
+      "report": 344,
+      "commits": [
+        "game:ee72969f98"
+      ]
+    },
+    {
+      "id": "G769",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Adding the game to a phone's home screen opened it in the browser instead of full screen.",
+      "report": 345,
+      "commits": [
+        "game:be3624f718"
+      ]
+    },
+    {
+      "id": "G770",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The Social drawer held sideways on a phone showed only its header, with no room for chat.",
+      "report": 346,
+      "commits": [
+        "game:904558e569"
+      ]
+    },
+    {
+      "id": "G771",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an upright phone a short street left a band of plain blue above it, and the route card covered the street's name.",
+      "report": 348,
+      "commits": [
+        "game:cfa408213b"
+      ]
+    },
+    {
+      "id": "G772",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The start card sat off centre on a phone and always named the same first street.",
+      "report": 349,
+      "commits": [
+        "game:7d34a157c4"
+      ]
+    },
+    {
+      "id": "G773",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The iMG button on a phone's top bar was hard to tap.",
+      "report": 350,
+      "commits": [
+        "game:026b09b1bb"
+      ]
+    },
+    {
+      "id": "G776",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "In Join the Club a good jump could clear the shut door.",
+      "report": 353,
+      "commits": [
+        "game:6d372e9256"
       ]
     },
     {
