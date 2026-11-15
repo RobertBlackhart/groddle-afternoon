@@ -65,6 +65,8 @@ export const MENU_ROWS = Object.freeze({
   // A phone only (js/ui/featured-project.js renderFeaturedMenuRow): the featured street project, in place of its pill.
   'menu-featured-btn': { group: 'now', rank: 4 },
   'home-btn': { group: 'world', rank: 0 },
+  // G792: "I'm stuck" runs /stuck (features/slash-commands-feature.js placeStuckRow), beside Home.
+  'stuck-btn': { group: 'world', rank: 0.5 },
   'feat-btn': { group: 'world', rank: 1, key: 'H' },
   // Ticket 81: the Projects panel (features/street-jobs-feature.js).
   'projects-btn': { group: 'world', rank: 2, key: 'P' },

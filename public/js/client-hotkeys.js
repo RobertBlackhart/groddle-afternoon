@@ -16,7 +16,7 @@
  * answers, so it never names a key that does nothing here.
  */
 
-import { COMMAND_HELP } from './slash-commands.js?v=ec0e84ee';
+import { COMMAND_HELP } from './slash-commands.js?v=7c4d5a44';
 
 /**
  * Every client key the coverage row G254 named, with the remake's answer:

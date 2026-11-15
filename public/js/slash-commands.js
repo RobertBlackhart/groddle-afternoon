@@ -81,7 +81,7 @@ export const STUCK_TEXT = Object.freeze({
   leave: "/stuck doesn't work here. Use Leave to get out.",
   dead: "You are dead. Squish Hellish Grapes to get out of Naraka.",
   /** G528: once, on a floor a plain jump doesn't get off. */
-  hint: "Can't get back up? Type /stuck in chat to go back to where you arrived on this street.",
+  hint: "Can't get back up? Choose I'm stuck in the Menu, or type /stuck in chat, to go back to where you arrived on this street.",
   /** The cooldown's time left, in whole minutes (seconds under one). */
   wait: (ms) => {
     const s = Math.max(1, Math.ceil(ms / 1000));
@@ -89,6 +89,17 @@ export const STUCK_TEXT = Object.freeze({
     const m = Math.ceil(s / 60);
     return `You can use /stuck again in ${m} ${m === 1 ? 'minute' : 'minutes'}.`;
   },
+});
+
+/**
+ * G792: the Menu's row that runs /stuck (features/slash-commands-feature.js placeStuckRow), for
+ * players who never find the command: its words are what a stuck player looks for, its tip says
+ * what it does. The remake's own, like /stuck.
+ */
+export const STUCK_MENU = Object.freeze({
+  id: 'stuck-btn',
+  label: "I'm stuck",
+  tip: 'Go back to where you arrived on this street, the same as typing /stuck (once every 5 minutes)',
 });
 
 /** /stuck once every 5 minutes (Austin 2026-11-01). */

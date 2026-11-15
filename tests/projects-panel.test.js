@@ -29,9 +29,9 @@ import {
   statusLine,
 } from '../public/js/projects-tracker.js?v=3621eb75';
 import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=759adbfe';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=fbb4445f';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=e344c81a';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
-import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=d09771ed';
+import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=f507beec';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

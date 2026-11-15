@@ -37,6 +37,9 @@
  *   (js/street-traps-data.js, by your jump), a one-time hint names /stuck. The /
  *   key opens the box without its slash, so a line that is only a command's name
  *   typed in a box it opened runs that command (js/slash-commands.js bareCommand).
+ *   G792: nine players got stuck and most never found /stuck, so the Menu (Modern and
+ *   Classic share #more-list; phones too) has an "I'm stuck" row that runs /stuck itself,
+ *   with every rule above (cooldown, quest room, refusals), after the Menu has closed.
  * - /tp: the administrators' teleport (js/admin-teleport.js, v0.2.2), multiplayer
  *   only; the site's admin/teleport route decides who may, and anyone else sees
  *   the ordinary Unknown command line. Solo says /tp is not available.
@@ -62,7 +65,7 @@ import { hellFeature } from './hell-feature.js?v=657cce8b';
 import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
 import { towerApi } from './home-tower-feature.js?v=6b48262e';
 import { platformYAt, platformsScreen } from '../street-model.js?v=b6cb6a4e';
-import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=ec0e84ee';
+import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=7c4d5a44';
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=fa56e8df';
 import { minnUrls } from '../minn-account.js?v=00f3eadb';
 import { saveStore } from '../save-store.js?v=cd053443';
@@ -304,6 +307,39 @@ function teleportCommand(engine, text, args) {
   });
 }
 
+/**
+ * G792: the Menu's "I'm stuck" row (js/slash-commands.js STUCK_MENU). It clicks like the Menu's
+ * other rows: the Menu closes (it holds the avatar while open), then /stuck runs as if typed, so
+ * its cooldown, its quest-room exit and its refusals all stay as they are. Made once #more-list
+ * is there (the bar can come after the feature); js/ui/topbar.js MENU_ROWS places it in World.
+ */
+export function placeStuckRow(engine, doc = globalThis.document) {
+  if (!doc?.getElementById || doc.getElementById(STUCK_MENU.id)) return false;
+  const list = doc.getElementById('more-list');
+  if (!list) return false;
+  const row = doc.createElement('button');
+  row.type = 'button';
+  row.id = STUCK_MENU.id;
+  row.className = 'chrome-btn';
+  row.textContent = STUCK_MENU.label;
+  row.title = STUCK_MENU.tip;
+  row.addEventListener('click', () => {
+    const more = doc.getElementById('more-btn');
+    if (more && !list.hidden) more.click();
+    setTimeout(() => runStuckFromMenu(engine), 0);
+  });
+  list.append(row);
+  return true;
+}
+
+/** The row's click, after the Menu closed: /stuck, as typed. */
+export function runStuckFromMenu(engine) {
+  if (!engine?.started) return false;
+  runSlashCommand(engine, '/stuck');
+  engine.setData?.('stuckMenu', last);
+  return true;
+}
+
 /** Answer one slash line; null when this feature does not know it. */
 export function runSlashCommand(engine, text) {
   if (isCommandHelp(text)) {
@@ -406,6 +442,7 @@ export const slashCommandsFeature = {
 
   init(engine) {
     engineRef = engine;
+    placeStuckRow(engine);
     if (!hintBound && typeof document !== 'undefined') {
       document.addEventListener('submit', onChatSubmit, true);
       document.addEventListener('keydown', onSlashKey, true);
@@ -425,6 +462,7 @@ export const slashCommandsFeature = {
     trapLines = [];
     trapMs = 0;
     trapCheckAt = 0;
+    placeStuckRow(engineRef);
     if (stuckHinted || !street?.tsid) return undefined;
     trapStreet = street;
     return loadTraps().then((traps) => {
