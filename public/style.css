@@ -14652,6 +14652,31 @@ body.is-booting .touch-controls { display: none; }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions { flex: none; position: static; align-items: flex-end; margin: 0; padding: 0; background: none; }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions .reports-btn { min-height: 40px; }
 /* === end PHONE SIDEWAYS 2 === */
+/* === PHONE SIDEWAYS 3 (phone2: #346, the Social drawer held sideways) === */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* #346: open sideways the drawer stopped above the pack row (about 276 px of a 402 px screen) and its four
+     head rows left room for one or two chat lines. It runs to the foot of the screen now (the pack row makes
+     way, js/ui/pack-row.js packRowClearance), the who's-here row shares the close arrow's row (the title
+     "Social" steps aside, still read aloud), and the rows under it are shorter, so several lines show. */
+  :root.touch-phone:not(.kbd-up)[data-ui="modern"] #game-root .local-chat-dock.social-drawer.is-open {
+    height: calc(100% - var(--social-top, 8px) - var(--safe-b) / 2 - var(--sp-2));
+    max-height: none;
+  }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-body {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-status { grid-area: 1 / 1 / 2 / 2; align-self: center; min-width: 0; margin: var(--sp-1) 0 var(--sp-1) var(--sp-3); }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-head { grid-area: 1 / 2 / 2 / 3; padding: 0 var(--sp-1) 0 0; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-body:not(:has(> .social-status:not([hidden]))) .social-head { grid-column: 1 / 3; padding-left: var(--sp-6); }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-body:has(> .social-status:not([hidden])) .social-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-presence { min-width: 0; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-presence-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-tabs { grid-area: 2 / 1 / 3 / 3; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-view { grid-area: 3 / 1 / 4 / 3; }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-compose { grid-area: 4 / 1 / 5 / 3; padding: var(--sp-2) var(--sp-3); }
+  :root.touch-phone[data-ui="modern"] .social-drawer .social-view-head { max-height: 30%; padding: var(--sp-2) var(--sp-4) 0; }
+}
+/* === end PHONE SIDEWAYS 3 === */
 
 /* PHONEKEYS (Austin 2026-11-12, on his iPhone): a phone (html.touch-phone, the phone gate's
    device) has no keyboard, so no key letter shows on it: the key caps on the bar's buttons, in sheet
