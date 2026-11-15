@@ -289,6 +289,22 @@ describe('the Maps block (site src/RestorationMaps.php)', { skip: skipWithoutSit
     assert.doesNotMatch(out, /javascript:|wp-config|example\.com|<b>x<\/b>|<script/);
   });
 
+  it('Austin 2026-11-15: a restored map\'s compare spans the card, its words under it in two columns', () => {
+    const html = draw(maps, 'restored');
+    const cards = html.split('<article').slice(1);
+    assert.ok(cards.length > 0);
+    for (const card of cards) {
+      // The pair first, then the words: the name, chip, caption and differences, then the facts, card and link.
+      assert.match(card, /^[^>]*>\s*<div class="maps-pair[^"]*"[^>]*>[\s\S]*<\/div><div class="maps-words"><div class="maps-words-main"><h3 /);
+      if (/maps-facts|maps-more/.test(card)) assert.match(card, /<\/div><div class="maps-words-side">(<dl class="maps-facts">|<div class="maps-more">)/);
+    }
+    const css = readFileSync(join(SITE_DIR, 'style.css'), 'utf8');
+    assert.match(css, /\.maps-list-wide \.maps-card \{ grid-template-columns: minmax\(0, 1fr\); \}/);
+    assert.match(css, /\.maps-list-wide \.maps-words \{ display: grid; grid-template-columns: minmax\(0, 3fr\) minmax\(0, 2fr\);/);
+    assert.match(css, /@media \(max-width: 860px\) \{ \.maps-list-wide \.maps-words \{ grid-template-columns: minmax\(0, 1fr\); \} \}/);
+    assert.doesNotMatch(css, /maps-list-wide \.maps-card \{ grid-template-columns: minmax\(0, 2fr\)/);
+  });
+
   it('is registered: block.json, minn.json and the extension', () => {
     const block = readJson(join(SITE_DIR, 'blocks/restoration-maps/block.json'));
     assert.equal(block.name, 'groddle/restoration-maps');
