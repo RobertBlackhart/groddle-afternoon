@@ -620,7 +620,7 @@ import {
   recipeToolInUse,
   pluralizeItem,
 } from './js/making.js?v=a819b30f';
-import { outputIconsHtml, outputsPhrase, recipeOutputRows } from './js/ui/recipe-outputs.js?v=73e19baf';
+import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
 import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=bbaeffcd';
 import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=7233dd76';
@@ -28569,6 +28569,10 @@ function showMakeResult(result, key) {
   const xpCls = xp > 0 ? 'gain' : xp < 0 ? 'loss' : '';
   const eText = e ? `${e < 0 ? e : `+${e}`} energy` : '';
   const xpText = xp ? `${xp > 0 ? `+${xp}` : xp} iMG` : '';
+  // #365: what you carry of the product now, as the recipe view says it.
+  const haveLine = productHaveRows(gotRows.length ? gotRows : result.outputs, (cls) => countItem(inv, cls), (cls) => ITEM_CATALOG[cls]?.label || cls)
+    .map((h) => h.text)
+    .join(', ');
 
   const usedHtml = (result.used || [])
     .map(
@@ -28592,6 +28596,7 @@ function showMakeResult(result, key) {
     <p class="mr-kicker">${result.made < result.qtyRequested ? 'Stopped' : 'Nice'}</p>
     <p class="mr-headline">${escapeHtml(result.headline)}</p>
     ${gotLine ? `<p class="mr-got" data-mr-got>${escapeHtml(gotLine)}</p>` : ''}
+    ${haveLine ? `<p class="mr-used" data-mr-have>${escapeHtml(haveLine)}</p>` : ''}
     <div class="mr-deltas">
       ${eText ? `<span class="mr-delta ${eCls}">${escapeHtml(eText)}</span>` : ''}
       ${xpText ? `<span class="mr-delta ${xpCls}">${escapeHtml(xpText)}</span>` : ''}
@@ -28987,12 +28992,17 @@ function renderMakePanel() {
           return `<div class="q-req"><img src="${itemIconUrl(i.classTsid)}" alt="" width="22" height="22" style="vertical-align:middle;margin-right:4px"/> <strong>${i.qty} ${lab}</strong> · you have ${have}</div>`;
         })
         .join('');
+      // #365: how many of the product you already carry, as the ingredient lines say it.
+      const haveHtml = productHaveRows(outRows, (cls) => countItem(inv, cls), (cls) => ITEM_CATALOG[cls]?.label || cls)
+        .map((h) => `<div class="q-req" data-make-have="${escapeHtml(h.classTsid)}"><img src="${itemIconUrl(h.classTsid)}" alt="" width="22" height="22" style="vertical-align:middle;margin-right:4px"/> <strong>${escapeHtml(h.name)}</strong> · you have ${h.have}</div>`)
+        .join('');
       detail.innerHTML = `
         ${outRows.length > 1
           ? `<div class="make-detail-icon make-detail-outs">${recipeOutputsHtml(outRows)}</div>`
           : `<div class="make-detail-icon"><img src="${itemIconUrl(outId)}" alt=""/></div>`}
         <div class="make-detail-body">
           <h3>${recipe.name}</h3>
+          ${haveHtml}
           ${makesLine ? `<p class="make-outs-line" data-make-outs>${escapeHtml(makesLine)}</p>` : ''}
           ${blockedLine ? `<p class="make-why" data-make-why>${recipeBlockedHtml(blockedLine, check, { achievementName: makeAchievementName, skillName: makeSkillName, escape: escapeHtml })}</p>` : ''}
           <p>${blockedLine ? '' : `You can make up to ${maxMake}. `}Uses ${recipeEnergyCost(recipe, skillState.learned, pc.imaginationUpgrades)} energy each.</p>

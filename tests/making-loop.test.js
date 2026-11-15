@@ -39,7 +39,7 @@ import {
   starterCraftIngredients,
   pluralizeItem,
 } from '../public/js/making.js?v=a819b30f';
-import { outputIconsHtml, outputsPhrase, recipeOutputRows } from '../public/js/ui/recipe-outputs.js?v=73e19baf';
+import { outputIconsHtml, outputsPhrase, recipeOutputRows } from '../public/js/ui/recipe-outputs.js?v=610c067f';
 import {
   createInventory,
   countItem,

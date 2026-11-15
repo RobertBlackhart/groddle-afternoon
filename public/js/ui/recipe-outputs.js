@@ -22,6 +22,26 @@ export function recipeOutputRows(recipe, times = 1) {
 }
 
 /**
+ * PURE: #365 how many of each output you already carry, in the ingredient lines' words ("Bun · you
+ * have 4"), [{ classTsid, name, have, text }]. The remake's own line: the Flash client said "You have N"
+ * under each ingredient (MakingComponentUI.as 134-157 getHasString) but never the product's count;
+ * it only read it to call an ingredient's button "Make More" (MakingComponentUI.as 215).
+ * `have(classTsid)` counts the pack, `name(classTsid)` names one item.
+ */
+export function productHaveRows(rows, have, name) {
+  const seen = new Set();
+  const out = [];
+  for (const r of rows || []) {
+    if (!r?.classTsid || seen.has(r.classTsid)) continue;
+    seen.add(r.classTsid);
+    const n = Math.max(0, Math.floor(Number(have(r.classTsid))) || 0);
+    const label = name(r.classTsid);
+    out.push({ classTsid: r.classTsid, name: label, have: n, text: `${label} · you have ${n}` });
+  }
+  return out;
+}
+
+/**
  * PURE: "20 Red Elements, 2 Green Elements, and 4 Blue Elements" (MakingCompleteUI getOutputText's
  * list; common.js pretty_list). `label(classTsid, qty)` names one row ("1 Red Element").
  */
