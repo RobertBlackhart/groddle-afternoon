@@ -580,10 +580,10 @@
       "x1": "assets/maps/art/bg/massadoe.webp",
       "x2": "assets/maps/art/bg/massadoe@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 32544,
-      "x1Sha256": "148803357527651bd7656c248d60e7af14d782a004d8c408c4ec880d18cc4a49",
-      "x2Bytes": 93204,
-      "x2Sha256": "6ee9999030f6c3ff8bfad2cb0b468fd06daf045d2a9d5c52aa575eca70bfd28e"
+      "x1Bytes": 71428,
+      "x1Sha256": "e765dfc52f7efb72f1b5e31ba59f90e82c7b0ba3a58b6774cf0c1eb1ef0ac31f",
+      "x2Bytes": 234708,
+      "x2Sha256": "45f38a30d3d6ed36a4b00da07a80b65f33b7507ebd10467dbd8c9fbb7d624d21"
     },
     "112": {
       "hubName": "Brillah",

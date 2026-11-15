@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 28,
-    "painted": 20,
+    "restored": 29,
+    "painted": 19,
     "layout": 3
   },
   "world": {
@@ -1294,6 +1294,50 @@
       "place": "/encyclopedia/places/lida/"
     },
     {
+      "id": "110",
+      "name": "Massadoe",
+      "anchor": "map-massadoe",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Massadoe, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
+      "differences": "The cave pit with its rim, its sunken floors and ledges, every stalactite along the rim and stalagmite on the floor, the flat stones, the boulders on the plateau, the cliff and crevice at the left and the green bushes lower left sit where 2012 had them, with the moss on the pit floor (worst tile drift 2 px at 2x; the top tiles 2 to 3 px high on a finer search). The pale grey rock shelf at the left edge, above the Aranna exit, came back as a lower terrace the sandy colour of the plateau, its edge and cliff where 2012's crevice runs. A small rock stands on the plateau where 2012 draws the To: Callopee button and name (2012 cannot show what lay under them). Returned slightly darker and more saturated; the toning step brings it back.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/massadoe.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Massadoe, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/massadoe.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Massadoe restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/massadoe@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/110.svg",
+        "w": 52,
+        "h": 39,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/massadoe/"
+    },
+    {
       "id": "71",
       "name": "Jethimadh",
       "anchor": "map-jethimadh",
@@ -1372,46 +1416,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/kloro/"
-    },
-    {
-      "id": "110",
-      "name": "Massadoe",
-      "anchor": "map-massadoe",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Massadoe survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/massadoe.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Massadoe, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/massadoe.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Massadoe painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/massadoe@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/110.svg",
-        "w": 52,
-        "h": 39,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/massadoe/"
     },
     {
       "id": "97",

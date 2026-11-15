@@ -521,14 +521,14 @@
         "file": "assets/maps/art/bg/massadoe@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "6ee9999030f6c3ff8bfad2cb0b468fd06daf045d2a9d5c52aa575eca70bfd28e"
+        "sha256": "45f38a30d3d6ed36a4b00da07a80b65f33b7507ebd10467dbd8c9fbb7d624d21"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 20556,
-        "sha256": "78f069546e836195b5fd5c7d3f25f46147f5875c633f8a5cdda03e75e3402023"
+        "bytes": 46840,
+        "sha256": "5074772d386f1efe1f9d40a47e5667cfc5c9309fd11858bc7205b28afa1b8860"
       }
     },
     "112": {
