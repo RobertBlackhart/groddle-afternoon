@@ -409,8 +409,10 @@ function brokenTeleporter(engine) {
     clearWash();
     // QA &funpickledest=<tsid> picks the street the random teleport lands on.
     const dest = String(engine.param?.('funpickledest') || '');
+    // G793: a street still being built is skipped as Glitch skipped a job-locked one
+    // (inc_teleportation.js 574 jobs_is_street_locked); the gate refuses it only for a teleport.
     const tsid = STREET_INDEX.streets?.[dest] ? dest : pickRandomTeleport(STREET_INDEX.streets, Math.random, (t) =>
-      t !== engine.streetTsid && engine.streetExists?.(t) && engine.travelGate?.(t)?.ok !== false);
+      t !== engine.streetTsid && engine.streetExists?.(t) && engine.travelGate?.(t, { via: 'teleport' })?.ok !== false);
     last = `brokenTeleporter:${tsid || 'none'}`;
     publish(engine);
     if (tsid) engine.travel?.(tsid, { via: 'teleport' });
