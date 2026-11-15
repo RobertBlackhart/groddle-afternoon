@@ -23,7 +23,9 @@ import {
   scareChance,
   stepKitty,
 } from '../public/js/heli-kitties.js?v=addb573f';
-import { KITTY_SHEETS, heliKittiesFeature, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=0f598510';
+import { KITTY_SHEETS, heliKittiesFeature, kittyPlacementGroups, sharedKittyFloorY } from '../public/js/features/heli-kitties-feature.js?v=b349c9f1';
+import { platformsScreen } from '../public/js/street-model.js?v=b6cb6a4e';
+import { walkSurfaceY } from '../public/js/walk-surface.js?v=106bfdc5';
 import { foxesFeature } from '../public/js/features/foxes-feature.js?v=5779149f';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { setWildlifeCatalog } from '../public/js/wildlife.js?v=670c3a7f';
@@ -185,3 +187,20 @@ describe('kitty feature registers cleanly', () => {
     setWildlifeCatalog(null);
   });
 });
+
+describe('#363: an online Heli Kitty never keeps a height under the grass', () => {
+  // Marylpole Mount: the floor climbs from about 973 (left) to 571 (right); its kitty spot is 2200.5, 932.5.
+  const street = JSON.parse(readFileSync(new URL('../public/assets/streets/GLI32HBOUTD1GQV.json', import.meta.url)));
+  const plats = platformsScreen(street);
+
+  it('a small step keeps the walk\'s floor', () => {
+    assert.equal(sharedKittyFloorY(plats, 2202.5, 932.5), walkSurfaceY(plats, 2202.5, 932.5, { up: 40, down: 70 }));
+  });
+
+  it('snapped far up the slope (no floor 40 up / 70 down), it takes the nearest floor there', () => {
+    assert.equal(walkSurfaceY(plats, 5000, 973, { up: 40, down: 70 }), null, 'the old search found nothing and kept 973');
+    const y = sharedKittyFloorY(plats, 5000, 973);
+    assert.ok(Number.isFinite(y) && y < 973 - 100, `on the floor at x 5000, got ${y}`);
+  });
+});
+

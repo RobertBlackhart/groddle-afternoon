@@ -32,7 +32,7 @@ import { hellFeature } from '../public/js/features/hell-feature.js?v=657cce8b';
 import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=98791d2a';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=cc379ae5';
 import { questFlagsFeature } from '../public/js/features/quest-flags-feature.js?v=17c6ef48';
-import { FEATURES } from '../public/js/features/index.js?v=c724c1c1';
+import { FEATURES } from '../public/js/features/index.js?v=4023e5e2';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(spike, 'public/assets/content');

@@ -247,6 +247,16 @@ const HOP_MS = 800;
 const HOP_PX = 60;
 
 /**
+ * #363: the floor an online Heli Kitty stands on at x, from its feet at y. Its walk's own small step
+ * (40 up, 70 down) first; when no floor is that close (its place on the street came from this page's
+ * planner and the shared path snapped it far along, up Marylpole Mount's slope or off a ledge), the
+ * nearest floor at x, as the solo kitty is placed (setupDemo), instead of keeping a height under the grass.
+ */
+export function sharedKittyFloorY(platforms, x, y) {
+  return walkSurfaceY(platforms, x, y, { up: 40, down: 70 }) ?? nearestSurfaceY(platforms, x, y);
+}
+
+/**
  * Online (slice 2 of research/plans/street-animals-shared.md): a street Heli Kitty walks the shared
  * path street-objects-feature gives it (js/street-creatures.js kittyWalkAt from the server's spot and
  * clock, the source's pauses rolled from a seed every page shares), so everyone sees it in the same
@@ -257,7 +267,7 @@ function stepShared(engine, entity, p, dtMs) {
   const at = Date.now();
   const dt = Math.max(1, dtMs / (1000 / 60));
   kitty.x = followPath(kitty.x, p.x, dt, 1.4);
-  const y = walkSurfaceY(engine.platforms, kitty.x, Number.isFinite(kitty.y) ? kitty.y : p.y0, { up: 40, down: 70 });
+  const y = sharedKittyFloorY(engine.platforms, kitty.x, Number.isFinite(kitty.y) ? kitty.y : p.y0);
   if (y != null) kitty.y = y;
   kitty.dir = p.dir < 0 ? 'left' : 'right';
   kitty.flying = false;
