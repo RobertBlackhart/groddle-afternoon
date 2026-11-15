@@ -113,7 +113,8 @@ describe('ticket 62: F, / and R in game.js', () => {
   });
 
   it('R presses the Reports button (multiplayer only: it is there only online)', () => {
-    assert.match(keydown, /if \(isPlainKey\(e, 'r'\) && !e\.repeat\) \{\s+const bug = document\.getElementById\('bug-btn'\);/);
+    // R is handled before open windows take the key (lane chk10): the press is kept, a held key repeats nothing.
+    assert.match(keydown, /if \(isPlainKey\(e, 'r'\)\) \{\s+const bug = document\.getElementById\('bug-btn'\);[\s\S]{0,160}if \(!e\.repeat\) bug\.click\(\);/);
     const feature = readFileSync(join(root, 'public/js/features/bug-report-feature.js'), 'utf8');
     assert.match(feature, /export const REPORT_KEY = 'R';/);
     assert.match(feature, /'data-key': REPORT_KEY/, 'the tooltip shows the key cap');
