@@ -59,7 +59,7 @@ import {
 import { husbandryPack } from '../animal-husbandry.js?v=d524c1f7';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
 // The same module instances js/features/index.js registers (tests/buff-triggers.test.js checks the tags).
-import { meditationFeature } from './meditation-feature.js?v=499ccd99';
+import { meditationFeature } from './meditation-feature.js?v=46a28c1e';
 import { teleportationFeature } from './teleportation-feature.js?v=aacf3423';
 import { rookAttackFeature } from './rook-attack-feature.js?v=f71e531d';
 import { rubeFeature } from './rube-feature.js?v=43cb0b61';

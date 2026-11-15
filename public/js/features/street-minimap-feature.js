@@ -70,7 +70,7 @@ import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMap
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=6012d3c7';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
-import { isPhoneDevice } from '../touch-controls.js?v=77a55da7';
+import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=814d7926';
 
 export const STREET_MINIMAP_FEATURE_ID = 'street-minimap';

@@ -4,11 +4,11 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a74490a9';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=dd971979';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7c555a09';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
-import { createVogOverlay } from './js/vog-overlay.js?v=e6959148';
+import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
 import { createPromptStack } from './js/prompt-stack.js?v=e0baeb42';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=b5ad80ff';
@@ -824,7 +824,7 @@ import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=106bf
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=43b1182e';
 import { PATH_END_ALLOWANCE, createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
-import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=77a55da7';
+import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=b10f17bb';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
 import { hellBuffDesc, isInHell } from './js/hell.js?v=df2b4357';

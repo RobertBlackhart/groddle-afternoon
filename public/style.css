@@ -14747,19 +14747,32 @@ body.is-booting .touch-controls { display: none; }
   background: linear-gradient(to bottom, transparent, var(--surface-card));
 }
 /* #343: with the keyboard up, the report window fills the box above it (--kbd-top, --kbd-h:
-   js/touch-controls.js watchPhoneKeyboard, as the Social drawer does), either way up, and keeps only
-   what typing needs: the box you type in with Send beside it (sideways only about 100 px is left), so
-   the words you type stay in sight. The rest comes back when the keyboard goes. */
+   js/touch-controls.js watchPhoneKeyboard, as the Social drawer does) and keeps what typing needs, so
+   the words you type stay in sight. The rest comes back when the keyboard goes.
+   #368/#370/#371: the box sat a scroll's height too low, under the keyboard (--kbd-top counted Safari's
+   own scroll twice; fixed in watchPhoneKeyboard), the body clipped a reply's box (overflow hidden), and
+   upright the window lost its head. Upright: the head stays, the box fills the room with Send under
+   it, and a reply keeps the newest messages scrolling above its box. Sideways (only about 100 px is
+   left): the box alone with Send beside it, for a new report and a reply alike. Nothing is clipped. */
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within {
   inset: var(--kbd-top, 0px) 0 auto 0; height: var(--kbd-h, 100%); padding: 0 calc(var(--sp-2) + var(--safe-r)) 0 calc(var(--sp-2) + var(--safe-l)); place-items: stretch center;
 }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-card { height: 100%; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-head, .reports-new-title, .reports-label, .reports-picture-row, .reports-foot) { display: none; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-body { padding: var(--space-2); overflow: hidden; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view { display: flex; flex-direction: row; align-items: stretch; gap: var(--space-2); }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-text { flex: 1 1 auto; height: auto; min-height: 0; resize: none; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions { flex: none; position: static; align-items: flex-end; margin: 0; padding: 0; background: none; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-new-view > .reports-actions .reports-btn { min-height: 40px; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-title, .reports-label, .reports-picture-row, .reports-tray, .reports-foot) { display: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-body { padding: var(--space-2); overflow-y: auto; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 1 0; min-height: 0; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-thread-view:has(> #reports-reply-text:focus) .reports-messages { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) > .reports-text { flex: 1 1 auto; height: auto; min-height: 3.6rem; margin: 0; resize: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-thread-view:has(> #reports-reply-text:focus) > .reports-text { flex: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) > .reports-actions { flex: none; position: static; margin: 0; padding: 0; background: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) > .reports-actions .reports-btn { min-height: 40px; }
+@media (max-height: 500px) and (orientation: landscape) {
+  :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-head { display: none; }
+  :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) { flex-direction: row; align-items: stretch; }
+  :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-thread-view:has(> #reports-reply-text:focus) > :not(#reports-reply-text, .reports-actions) { display: none; }
+  :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) > .reports-text { flex: 1 1 auto; min-height: 0; }
+  :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) > .reports-actions { flex-direction: column; justify-content: flex-end; align-items: stretch; }
+}
 /* === end PHONE SIDEWAYS 2 === */
 /* === PHONE SIDEWAYS 3 (phone2: #346, the Social drawer held sideways) === */
 @media (max-height: 500px) and (orientation: landscape) {

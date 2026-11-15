@@ -167,6 +167,6 @@ describe('#342 and #343: a phone held sideways (PHONE SIDEWAYS 2)', () => {
     assert.match(block, /#bug-report-panel \.reports-new-view \{\n\s+display: grid;/);
     assert.match(block, /\.reports-new-view > \.reports-new-title \{ display: none; \}/);
     assert.match(block, /:root\.touch-phone\.kbd-up\[data-ui="modern"\] #game-root #bug-report-panel\.reports-panel:focus-within \{\n\s+inset: var\(--kbd-top, 0px\) 0 auto 0; height: var\(--kbd-h, 100%\);/);
-    assert.match(block, /:focus-within :is\(\.reports-head, \.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-foot\) \{ display: none; \}/);
+    assert.match(block, /:focus-within :is\(\.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-tray, \.reports-foot\) \{ display: none; \}/);
   });
 });

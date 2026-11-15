@@ -589,8 +589,8 @@ export function keyboardUp({ typing, height, visualHeight, baseHeight }) {
 /**
  * PURE: the box the screen leaves above the on-screen keyboard, in the game root's px (landscape audit
  * #5): `top` and `height` are the visual viewport's (iOS keeps the window and shrinks it; Android
- * shrinks the window too), `rootTop` where the game root's top is on the screen, `gap` the margin kept
- * all round.
+ * shrinks the window too), `top` its page top (visualViewport.pageTop), `rootTop` the game root's
+ * page top (its box's top plus the page's scroll; #368), `gap` the margin kept all round.
  * @returns {{ top: number, height: number }}
  */
 export function keyboardBox({ top = 0, height = 0, innerHeight = 0, rootTop = 0, gap = 4 } = {}) {
@@ -624,8 +624,13 @@ export function watchPhoneKeyboard({ doc = globalThis.document, win = globalThis
       style.removeProperty('--kbd-h');
       return;
     }
-    const rootTop = Number(doc.getElementById?.('game-root')?.getBoundingClientRect?.().top) || 0;
-    const box = keyboardBox({ top: vv?.offsetTop, height: vv?.height ?? win.innerHeight, innerHeight: win.innerHeight, rootTop });
+    // #368/#370: both in page px. Safari measures the root from the view it has scrolled to show the
+    // field, so the root's own top already holds that scroll, and adding the view's offsetTop to it
+    // counted the scroll twice (the window sat a scroll's height too low, under the keyboard).
+    const scrolled = Number(win.scrollY ?? win.pageYOffset) || 0;
+    const rootTop = (Number(doc.getElementById?.('game-root')?.getBoundingClientRect?.().top) || 0) + scrolled;
+    const pageTop = Number.isFinite(vv?.pageTop) ? vv.pageTop : (Number(vv?.offsetTop) || 0) + scrolled;
+    const box = keyboardBox({ top: pageTop, height: vv?.height ?? win.innerHeight, innerHeight: win.innerHeight, rootTop });
     style.setProperty('--kbd-top', `${box.top}px`);
     style.setProperty('--kbd-h', `${box.height}px`);
   };
