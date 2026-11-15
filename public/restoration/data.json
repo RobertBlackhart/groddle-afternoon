@@ -2792,131 +2792,131 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2232,
+  "commits": 2262,
   "since": "2026-10-19",
   "recent": [
    {
     "date": "2026-11-15",
+    "kind": "new",
+    "text": "The phone report page can edit your report until the team reads it"
+   },
+   {
+    "date": "2026-11-15",
     "kind": "improve",
-    "text": "The Make window says how many of the product you already carry"
+    "text": "The shrine's Learn Faster box folds to one line, closed on a phone, open on a desktop"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "A phone's top bar shows iMG, currants and favor side by side, big counts shortened (17.2K)"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Past a street's end the mirrored art leaves out ladders, signs and doors and fades away"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The Report icon is a plain top-bar icon again; R opens Reports over any window"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "Phones have a Hi button beside Happy, Surprised and Angry in the Local chat tab"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Shake, Compress, Age, Unbundle and Shuck are one verb that asks How many when the stack holds more than one"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "Project work steps name tool wear only for tools that wear"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Ormonos's restored map has its dark pit at Seugal Elba back"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Vortex of Random's map is Tiny Speck's own painting, restored, so every region now shows its original"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Sura's and Tamila's restored maps have their missing preserve and park boards back"
+    "text": "A report's picture keeps the street at a street's clipped end in Firefox, not just the sky"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "The award card's words read whole on a phone instead of being cut to one line"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Zhambu's and The Seams' maps are Tiny Speck's 2012 paintings, restored"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Award cards show Giant emblems and the job sign sharp, and small icons stay crisp at a smaller size"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The Feat Completed card shows the Petrified Rock sharp instead of a blurred, stretched icon"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "On a phone, Act chooses in the menu it opened, and a drag on Act moves the light"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Number keys do emotes again: 1 surprised, 2 angry, 3 happy, 4 AFK"
+    "text": "Routes never cross a closed signpost arm: a street still being built says No road there yet"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "The \"A new day\" line comes with the New Day screen and its fanfare"
+    "text": "On iPhone the report window sits above the keyboard again, upright and sideways, for a new report and a reply"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "An online Heli Kitty no longer flies under the grass on Marylpole Mount"
+    "text": "On a phone a drag in Camera Mode moves the view again, on iPhone too"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "Every encyclopedia entry page has a search box in its header"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "The Achievements Category list stays where you scroll it while open"
+    "text": "Jumping beside someone talking no longer pushes their bubble aside and back"
    },
    {
     "date": "2026-11-15",
     "kind": "fix",
-    "text": "The delivery frog draws over a vendor, and its yoga line is a small bubble beside it"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Finding the nearest shrine no longer ends on a street under construction"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The Greedy Street Spirit shows one wall button per act, not a row of seven"
+    "text": "On a phone held upright the Menu stops above the pack row and scrolls, so Settings can be reached"
    },
    {
     "date": "2026-11-15",
     "kind": "improve",
-    "text": "Fourteen more region maps are Tiny Speck's 2012 paintings, restored, with their differences written on the Maps page"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Sparkly donated for the Feat counts every chunk, not one stack per donation"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Home rocks wear out after 40 mine-outs, not 40 swings, and a fresh restoration takes items at once"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Visitors can plant, water and pick the gardens on another player's home street"
+    "text": "Butterflies list Massage before Milk, so quick clicks go in doing order"
    },
    {
     "date": "2026-11-15",
     "kind": "improve",
-    "text": "Uralia's map is Tiny Speck's 2012 painting, restored"
+    "text": "The upgrade reveal covers the whole game window in Modern, top bar and pack included"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "A report or a reply carries up to four pictures of any kind: drop, paste, pick or take them, see them as thumbnails first"
    },
    {
     "date": "2026-11-15",
     "kind": "improve",
-    "text": "Rasana's and Samudra's maps are Tiny Speck's 2012 paintings, restored"
+    "text": "The upgrade reveal sits above notices, so a fresh toast never covers its words"
    },
    {
     "date": "2026-11-15",
     "kind": "improve",
-    "text": "Add to Home Screen opens Groddle Afternoon full screen, as an app"
+    "text": "Buying an upgrade card shows Glitch's full reveal over the play area"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Rook's HEALTH line sits above its stun stars, and the badge stays clear of the street minimap"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "Friends can help build a Tower floor once its owner starts it at the Workbench"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "A reply on your report can carry a picture, and Shift+R or Take a picture catches a bug before it goes"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The Funpickle's Broken Teleporter no longer picks a street still under construction"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "new",
+    "text": "Clicking the currants opens the vendors near you, each with Set as destination"
    }
   ]
  },
- "tests": 1002,
+ "tests": 1022,
  "generatedAt": "2026-11-15"
 }
