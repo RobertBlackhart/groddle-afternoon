@@ -104,6 +104,15 @@
   <link rel="icon" href="favicon.svg?v=4774a7f0" type="image/svg+xml" />
   <link rel="icon" href="favicon.ico?v=arch" sizes="32x32" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=4774a7f0" />
+  <!-- #345: Add to Home Screen opens the game full screen, as an app (manifest.webmanifest: display standalone,
+       no start_url, so it opens the page it was added from). black-translucent runs the page under the status
+       bar; the HUD keeps inside the notch with --safe-* (env(safe-area-inset-*)). -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Groddle" />
+  <meta name="theme-color" content="#dcefc9" />
   <style>
     /* The sign-in gate (js/online-boot.js) covers the shell until the save is loaded. */
     body.online-gated #wrap { display: none; }

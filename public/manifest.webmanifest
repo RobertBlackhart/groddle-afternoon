@@ -1,0 +1,15 @@
+{
+  "name": "Groddle Afternoon",
+  "short_name": "Groddle",
+  "description": "A fan remake of Tiny Speck's Glitch.",
+  "display": "standalone",
+  "scope": "/",
+  "orientation": "any",
+  "theme_color": "#dcefc9",
+  "background_color": "#dcefc9",
+  "icons": [
+    { "src": "favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
