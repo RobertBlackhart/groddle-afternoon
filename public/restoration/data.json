@@ -2792,9 +2792,39 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2170,
+  "commits": 2177,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "Only a single level-up is credited outside the daily room; a jump of several levels waits for room like the rest"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "fix",
+    "text": "A jump of several levels is credited the final level's currants, and the day's first level-up is never held back"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "The server's log notes steps longer than any walk or fall and joins far from every way onto a street"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Level, quest and badge currants are credited up to 40,000 a day, levels in order, quests after their prerequisites"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "The earning budget refills at 60 a minute of play, and selling or giving things away no longer refills it"
+   },
+   {
+    "date": "2026-11-14",
+    "kind": "improve",
+    "text": "Moderator tokens end after 90 days and act on at most 10 players a day; suspended players leave the public pages"
+   },
    {
     "date": "2026-11-14",
     "kind": "improve",
@@ -2884,39 +2914,9 @@
     "date": "2026-11-14",
     "kind": "fix",
     "text": "The myopic frog's first Talk to plays only its introduction; the question waits for Camera Mode"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "The Meal Vendor and Helga no longer turn into black squares on Android phones"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A Qurazy found on a Ramble day counts once the server takes it, not before"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "Fenneq, Groddle Heights and Haoma's maps are Tiny Speck's 2012 paintings, restored, and Andra's restore is the closer redo"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "improve",
-    "text": "The same two players are paid for up to 20 wins of each multiplayer game a day"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A race or Game of Crowns challenge opens only once the server has taken the ticket"
-   },
-   {
-    "date": "2026-11-14",
-    "kind": "fix",
-    "text": "A game of Charades starts only once the server has taken the Charades Potion"
    }
   ]
  },
- "tests": 986,
+ "tests": 987,
  "generatedAt": "2026-11-14"
 }
