@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=28cb70d0';
+import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=d0ca0659';
 import { findRoute } from '../public/js/map-routes.js?v=c7e7dc80';
 
 const root = join(import.meta.dirname, '..');
@@ -52,6 +52,33 @@ describe('ticket 37: a road under construction says what is true', () => {
       assert.doesNotMatch(text, /Map|—/, via);
     }
     assert.equal(closedRoadText(state, catalog, null), '');
+  });
+
+  it('#339 (G761): while the street rests after a project, the sign says when it opens, not to help now', () => {
+    const resting = fresh();
+    const now = 10 ** 12;
+    // inc_jobs.js jobs_get_available 457-461: 30 minutes after the offering street's last project.
+    resting.streetDone[open] = now - 5 * 60_000;
+    const sign = closedRoadText(resting, catalog, closed, { here: open, label, opts, now, giver: () => 'the Street Spirit' });
+    assert.equal(sign, `The road to ${job.label} is still under construction. ${label(open)} just finished a project, so this one opens for help in about 25 minutes. The road opens when the project is done.`);
+    assert.doesNotMatch(sign, /Help build it|Street Spirit/);
+    assert.match(closedRoadText(resting, catalog, closed, { here: open, via: 'teleport', label, opts, now }), /can't teleport there yet\. .* opens for help in about 25 minutes\.$/);
+    assert.match(closedRoadText(resting, catalog, closed, { via: 'map', label, opts, now }), /^Still under construction\. .* in about 25 minutes\.$/);
+    // The rest over, it says to help again.
+    assert.match(closedRoadText(resting, catalog, closed, { here: open, label, opts, now: now + 26 * 60_000 }), /Help build it at the project board here/);
+    // Between steps (readyAt) it says so too.
+    const between = fresh();
+    between.jobs[jobId] = { ...(between.jobs[jobId] || {}), startedAt: now - 1000, readyAt: now + 90_000 };
+    assert.match(closedRoadText(between, catalog, closed, { here: open, label, opts, now }), /resting between steps and opens for help again in about 2 minutes\./);
+  });
+
+  it('#339 (G761): online, the spirit gives once the server says it has a project (not only on arrival)', () => {
+    const feature = read('public/js/features/street-jobs-feature.js');
+    assert.match(feature, /const refresh = \(\) => \{\n\s+\/\/ #339[^\n]*\n\s+syncGiver\(engine\);/);
+    assert.match(feature, /\} else syncGiver\(engine\);/);
+    const body = feature.slice(feature.indexOf('function syncGiver('), feature.indexOf('function spawnGiver('));
+    assert.match(body, /if \(want && !giver\) spawnGiver\(engine, spirit\);/);
+    assert.match(body, /else if \(!want && giver\) \{\n\s+giver\.indicator\.destroy\(\);\n\s+giver = null;/);
   });
 
   it('a street beyond a closed road: the route goes round it, or the Map says which street is in the way', () => {

@@ -11,7 +11,7 @@
  * into its state.
  */
 
-import { phaseBaseCost } from './street-jobs.js?v=28cb70d0';
+import { phaseBaseCost } from './street-jobs.js?v=d0ca0659';
 import { UNNAMED_PLAYER } from './player-names.js?v=f9b78094';
 
 /** items/include/jobs.js getJobLeaderboard: the top ten. */

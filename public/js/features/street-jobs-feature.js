@@ -110,7 +110,7 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=28cb70d0';
+} from '../street-jobs.js?v=d0ca0659';
 import { PAPERS_BADGE } from '../subway.js?v=e6995db8';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=2253b78a';
@@ -137,7 +137,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=7bbac683';
+} from '../street-jobs-mp.js?v=9cdbc04b';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -149,8 +149,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=c7e7dc80';
 import { TELEPORTERS } from '../hidden-floors.js?v=732a2610';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=56ccc824';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=bdd10ac0';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=3621eb75';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=759adbfe';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
@@ -559,6 +559,27 @@ export function topClearOver(boxes, left, right) {
   let y = 0;
   for (const b of boxes || []) if (b.left < right && b.right > left) y = Math.max(y, b.bottom);
   return y;
+}
+
+/**
+ * #339 (G761): the street's spirit gives a project here while one it offers is not built (resting
+ * included: its bubble shows the rest). Run on arrival and, online, whenever the server's project
+ * state changes after it (createMp refresh), so a spirit whose state came late still gives.
+ */
+function syncGiver(engine) {
+  if (!catalog || demo) return;
+  const spirit = streetSpirit(engine);
+  const want = Boolean(spirit) && streetJobs(state, catalog, engine.streetTsid, Date.now(), opts())
+    .some((r) => spiritOffers(r.jobId) && r.status !== 'built' && r.status !== 'done');
+  if (want && giver && giver.target !== spirit) {
+    giver.indicator.destroy();
+    giver = null;
+  }
+  if (want && !giver) spawnGiver(engine, spirit);
+  else if (!want && giver) {
+    giver.indicator.destroy();
+    giver = null;
+  }
 }
 
 function spawnGiver(engine, target) {
@@ -1959,6 +1980,8 @@ function createMp(engine, client) {
     if (Number(msg?.now) > 0) offset = Number(msg.now) - Date.now();
   };
   const refresh = () => {
+    // #339: the spirit's giver follows the server's project state, not only the state on arrival.
+    syncGiver(engine);
     drawPlate(engine);
     renderPanel(engine);
     publish(engine);
@@ -2969,9 +2992,9 @@ export const streetJobsFeature = {
       const tsid = engine.streetTsid;
       // Gap 3: the street's spirit gives its projects (a QA demo's too, when one stands here).
       const spiritHere = streetSpirit(engine);
-      if (spiritHere && (demo ? spiritOffers(demo.jobId) : streetJobs(state, catalog, tsid, Date.now(), opts()).some((r) => spiritOffers(r.jobId) && r.status !== 'built' && r.status !== 'done'))) {
-        spawnGiver(engine, spiritHere);
-      }
+      if (demo) {
+        if (spiritHere && spiritOffers(demo.jobId)) spawnGiver(engine, spiritHere);
+      } else syncGiver(engine);
       if (demo && !giver) {
         const p = engine.player;
         const x = p.x + 110;

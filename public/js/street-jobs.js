@@ -861,7 +861,7 @@ export function roadClosure(state, catalog, toTsid, signpostTsids = [], opts = {
  * street ("the Street Spirit"); empty means the project board.
  * @param {{ here?: string, via?: 'signpost'|'door'|'teleport'|'map', label?: (tsid: string) => string, giver?: (tsid: string) => string, opts?: object }} [o]
  */
-export function closedRoadText(state, catalog, closed, { here = '', via = 'signpost', label = (t) => t, giver = () => '', opts = {} } = {}) {
+export function closedRoadText(state, catalog, closed, { here = '', via = 'signpost', label = (t) => t, giver = () => '', opts = {}, now = Date.now() } = {}) {
   if (!closed?.job) return '';
   const name = closed.job.label || label(closed.job.street);
   const connecting = (closed.job.connecting || []).map(gTsid);
@@ -870,6 +870,19 @@ export function closedRoadText(state, catalog, closed, { here = '', via = 'signp
   const board = connecting.includes(at) ? at : connecting.find((t) => !shut.has(t)) || connecting[0] || '';
   const who = board ? giver(board) || 'the project board' : '';
   const where = !board ? 'at its project board' : board === at ? `at ${who} here on ${label(board)}` : `at ${who} on ${label(board)}`;
+  // #339 (G761): resting (30 minutes after the street's last project, inc_jobs.js jobs_get_available
+  // 457-461; or between phases) nobody can help yet, so the sign says when it starts, not to help now.
+  const rest = closed.jobId && board ? jobStatus(state, catalog, closed.jobId, now, { ...opts, street: board }) : null;
+  if (rest && (rest.status === 'cooldown' || rest.status === 'delayed') && rest.until > now) {
+    const mins = Math.max(1, Math.ceil((rest.until - now) / 60_000));
+    const wait = `${mins} minute${mins === 1 ? '' : 's'}`;
+    const why = rest.status === 'cooldown'
+      ? `${label(board)} just finished a project, so this one opens for help in about ${wait}.`
+      : `Its project is resting between steps and opens for help again in about ${wait}.`;
+    if (via === 'teleport') return `${name} is still under construction, so you can't teleport there yet. ${why}`;
+    if (via === 'map') return `Still under construction. ${why}`;
+    return `The road to ${name} is still under construction. ${why} The road opens when the project is done.`;
+  }
   if (via === 'teleport') return `${name} is still under construction, so you can't teleport there yet. Help build it ${where}.`;
   if (via === 'map') return `Still under construction. Help build it ${where}.`;
   return `The road to ${name} is still under construction. Help build it ${where}, and the road opens when the project is done.`;
