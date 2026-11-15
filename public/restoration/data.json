@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2276,
+  "commits": 2278,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Nottis's and Pollokoo's restored maps have their lost ledges, hollow and rim hole back"
+   },
    {
     "date": "2026-11-15",
     "kind": "fix",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "The upgrade reveal covers the whole game window in Modern, top bar and pack included"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "A report or a reply carries up to four pictures of any kind: drop, paste, pick or take them, see them as thumbnails first"
    }
   ]
  },
