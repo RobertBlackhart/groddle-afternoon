@@ -127,6 +127,9 @@ export function build(maps, world, index, fs, encyclopedia = { regions: {} }) {
     const old = encyclopedia.regions?.[id] || null;
     // A 2012 map the Encyclopedia drew without roads or names (Naraka): its record says markings2012 'none'.
     const unmarked = r.markings2012 === 'none';
+    // A region whose 2012 map is another region's painting under its own markings shares that region's restore
+    // (Vortex of Random, The Seams' painting; lane maps17): its record names that region in restoredFrom.
+    const shared = restored ? r.restoredFrom?.hubName || '' : '';
     let before = null;
     if (old) {
       before = pic(old.shipped.file, old.shipped.sha256, `${name} 2012 map`, {
@@ -149,7 +152,9 @@ export function build(maps, world, index, fs, encyclopedia = { regions: {} }) {
       anchor: `map-${slug(name)}`,
       state,
       caption: restored
-        ? unmarked
+        ? shared
+          ? `Tiny Speck’s own painting of ${name}. Its 2012 Encyclopedia map is the same painting as ${shared}’s, with this region’s roads, names and buttons on it, so it shares ${shared}’s restore: an image model sharpened ${shared}’s 2012 map without moving anything, then it was fitted to this map’s frame and toned back to the 2012 colour.`
+          : unmarked
           ? `Tiny Speck’s own painting of ${name}, restored from its 2012 Encyclopedia map, which drew no roads, names or buttons on this region. An image model sharpened it without moving anything, then it was toned back to the 2012 colour.`
           : `Tiny Speck’s own painting of ${name}, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.`
         : state === 'painted'

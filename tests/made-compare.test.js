@@ -15,7 +15,29 @@ import { boxOf, compareSteps, openingStep, partView, stepFrom } from '../public/
 
 const readJson = (file) => JSON.parse(readFileSync(join(GAME_DIR, file), 'utf8'));
 const made = readJson('public/restoration/made.json');
-const gallery = made.pieces.find((p) => p.id === 'maps:143');
+/**
+ * A gallery card stand-in (lane maps17): made.json has no gallery since Vortex of Random, the last region painted again from
+ * its thumbnail, took The Seams' restore. The builder still makes galleries (maps:<hub>,...), so this one is built by it from
+ * the words the retired Vortex of Random card had, over the files the game ships now.
+ */
+const galleryWords = {
+  id: 'maps:143',
+  name: 'Vortex of Random map',
+  caption: 'A stand-in gallery of one region.',
+  display: { w: 304, h: 184 },
+  image: { file: 'public/assets/maps/art/bg/vortex@2x.webp', label: 'Painted again for Groddle', alt: 'A painted map.' },
+  original: { file: 'public/assets/maps/art/thumbs/sm_vortex.jpg', kind: 'original', pixelated: true, label: "Tiny Speck's thumbnail, {w} by {h} pixels, shown at the same size", alt: "Tiny Speck's small thumbnail of the same map." },
+  parts: {
+    original: { label: "{name}: Tiny Speck's thumbnail, {w} by {h} pixels", alt: "Tiny Speck's small thumbnail of the {name} map, enlarged so its pixels show." },
+    image: { label: '{name}: painted again for Groddle', alt: 'The {name} region map, painted again for Groddle from that thumbnail.' },
+  },
+  facts: [{ label: 'How it was made', text: 'Painted by an image model ({tool}).' }],
+};
+const buildWith = (words) => {
+  const curated = readJson('tools/made-art/pieces.json');
+  return build(readJson('tools/provenance/made-sprites.json'), { ...curated, pieces: [...curated.pieces, words] }, undefined, readJson('tools/provenance/repainted-maps.json'), readMore());
+};
+const gallery = buildWith(galleryWords).pieces.find((p) => p.id === 'maps:143');
 const pairsOf = (piece) => (piece.parts
   ? piece.parts.map((p) => [partView(p.original, false), partView(p.image, true)])
   : [[piece.original, piece.image].filter(Boolean)]);
@@ -30,7 +52,7 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
   it('steps through a card original first, then made, and a gallery region by region, round the ends', () => {
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.deepEqual(compareSteps(pairsOf(book)), [[0, 0], [0, 1]]);
-    // The gallery is one region now (Vortex of Random; lane maps16 restored Zhambu): its two pictures.
+    // A gallery of one region (the stand-in): its two pictures.
     const one = pairsOf(gallery);
     assert.deepEqual(compareSteps(one).map(([pi, vi]) => one[pi][vi].label), [
       "Vortex of Random: Tiny Speck's thumbnail, 150 by 91 pixels", 'Vortex of Random: painted again for Groddle',
@@ -74,8 +96,8 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
     }
   });
 
-  it('made.json gives the gallery each region\'s own thumbnail and painting, the same shape, the thumbnail pixels kept', () => {
-    assert.deepEqual(gallery.parts.map((p) => p.name), ['Vortex of Random'], 'the one region still painted from its thumbnail, as the card and its caption name it');
+  it('the builder gives a gallery each region\'s own thumbnail and painting, the same shape, the thumbnail pixels kept', () => {
+    assert.deepEqual(gallery.parts.map((p) => p.name), ['Vortex of Random'], 'the stand-in\'s one region');
     for (const part of gallery.parts) {
       for (const v of [part.original, part.image]) assert.ok(existsSync(join(GAME_DIR, 'public', v.src)), v.src);
       assert.match(part.original.src, /^\/assets\/maps\/art\/thumbs\/sm_[a-z]+\.jpg$/);
@@ -84,16 +106,13 @@ describe('Made for Groddle compare popup (public/restoration/made-compare.js)', 
       assert.ok(Math.abs(part.original.w / part.original.h - part.image.w / part.image.h) < 0.01, part.name);
       assert.ok(part.original.alt && part.image.alt, part.name);
     }
-    assert.ok(made.pieces.filter((p) => p.parts).length === 1, 'only galleries have parts');
+    assert.ok(made.pieces.every((p) => !p.parts), 'no gallery on the page since lane maps17, and only galleries have parts');
   });
 
   it('the builder wants words for a gallery\'s parts', () => {
-    const provenance = readJson('tools/provenance/made-sprites.json');
-    const curated = readJson('tools/made-art/pieces.json');
-    const maps = readJson('tools/provenance/repainted-maps.json');
-    const odd = structuredClone(curated);
-    delete odd.pieces.find((p) => p.id === 'maps:143').parts;
-    assert.throws(() => build(provenance, odd, undefined, maps, readMore()), /a gallery needs parts/);
+    const odd = structuredClone(galleryWords);
+    delete odd.parts;
+    assert.throws(() => buildWith(odd), /a gallery needs parts/);
   });
 
   it('is wired by restoration.js before data.json, styled from the page\'s tokens, and still with reduced motion', () => {

@@ -6264,78 +6264,136 @@
         "file": "assets/maps/art/bg/vortex.webp",
         "w": 760,
         "h": 460,
-        "bytes": 26746,
-        "sha256": "935b99f1ea0fb09af8f77cce9b1546b628628b5bf09762ff55bdd8ce0bc7c738"
+        "bytes": 89174,
+        "sha256": "eb219e3839e12a1a9ecae8f82fe688c6122af2ba66cd4196aefcbe976ecc52f4"
       },
       "x2": {
         "file": "assets/maps/art/bg/vortex@2x.webp",
         "w": 1520,
         "h": 920,
-        "bytes": 69714,
-        "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
+        "bytes": 223844,
+        "sha256": "e6a2459e1acf3d2fa95ce7877569edfa9575506d229ca421b2283ba77ce44044"
       },
       "licence": "ai-generated",
       "author": "Austin Ginder (directed and chose it)",
+      "madeBy": "Grok Bot, for Austin Ginder, who directed it",
       "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas (t3.chat/canvas)",
       "model": "GPT Image 2.6 Sunburst",
-      "made": "2026-11-06",
+      "made": "2026-11-15",
+      "method": "restored: Tiny Speck's own 2012 painting, as the 2012 Encyclopedia drew it under the game's roads, names, icons and GO buttons, given to the model to take the markings off and sharpen without moving anything (research/map-art/regions-restore). Unlike the paintings made from thumbnails, the 2012 picture is the model's input here.",
+      "restoredFrom": {
+        "hub": "66",
+        "hubName": "The Seams",
+        "why": "Vortex of Random's 2012 Encyclopedia map (c1.glitch.bz/img/maps_encyclopedia/vortex_of_random_124454.jpg) is the same Tiny Speck painting as The Seams' 2012 map: the green wormhole grid and its two planes, the funnel, the lettering on its rim, the stars and the two ghost funnels, with Vortex's roads, street names and one GO button (To: Samudra) and the Encyclopedia's thin white frame drawn on top (found by lane maps16, confirmed by eye, measured by lane maps17: The Seams' 2012 picture laid onto Vortex's with Vortex's markings masked correlates 0.949 on fine detail, every tile within 0 px at 2x after the frame fit). So The Seams' restore is Tiny Speck's own painting for Vortex of Random too, and no separate restore was generated."
+      },
       "chosen": {
         "by": "Austin Ginder",
-        "on": "2026-11-06",
-        "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        "on": "2026-11-15",
+        "of": "The Seams' restore as chosen for hub 66 (r2; see its record), taken for Vortex of Random on lane maps17's check that Vortex's 2012 map is the same painting (restoredFrom); it replaces the painting made from the thumbnail on 2026-11-06."
       },
-      "prompt": "Paint ONE image: the background painting for an in-game region map of \"Vortex of Random\", a region in a whimsical 2D browser game. Size 1520 x 920 pixels (landscape, exactly this ratio; if only fixed ratios are offered, use 16:10). This is the painted landscape that sits UNDER the game's map interface. The game draws its own street lines, names, buttons and markers on top later, so the painting must contain none of them.\n\nVIEW AND FEEL\nSeen from directly above, like a painted map: not from a side or three-quarter angle. Trees read as small round canopies or small pointed tops with a soft shadow; no trunks showing. Hills, cliffs and slopes read by their light and shadow. Like a hand-painted miniature diorama, quiet and gentle: muted natural colours, soft shadows, a fine even texture over the ground (like felt or fine brush strokes), and only a little scattered detail. Fewer and smaller features is better than more: most of the land is calm open ground, so thin street lines and small labels drawn on top stay easy to read. Storybook, never grim, never photographic. Here the scenery itself glows: a soft green glow on the mesh is right; keep it gentle rather than harsh neon.\n\nWHAT TO PAINT\nOne strange space scene, not land: a glowing green wire-mesh funnel in a dark starry void. Its layout must follow attachment 02 closely (same shapes, same positions, same proportions), because the game's streets are fixed to those positions (attachment 03). The mesh here is the scenery itself and should be painted, unlike the street lines.\n- The background: a deep black-green void with faint drifting dust clouds of dark olive and brown and tiny scattered stars, darkest in the middle band.\n- The top fifth: a flat plane of softly glowing green wire mesh (a square net seen in perspective) spanning almost the whole width, brightest along its front edge.\n- The centre: a narrow hourglass-shaped funnel of the same mesh hanging from the middle of the top plane down to the bottom plane, pale green-white along its outer edges, narrowest a little below the middle.\n- The bottom fifth: a second plane of glowing green mesh across the full width, curving down into the foot of the funnel, which turns yellow-green and soft gold where they meet, with a few warm glowing sparks.\n- Left and right of the funnel in the middle band: open dark void, with only a faint ghostly hint of mesh near the far left and far right edges.\n- Light: the mesh glows softly from within; muted greens, not harsh or electric.\n\nSTYLE\nMatch attachment 05: Tiny Speck's own painted plants and scenery for this region (soft painterly shapes, gentle shading, no hard black outlines), but much smaller and simpler, as seen on a map from high above.\n\nDO NOT INCLUDE\nNo text, letters, numbers or labels of any kind. No roads, paths or street markings, and no straight map grid or graph-paper lines; the curved glowing mesh of the funnel described above is the scenery and should be painted. No circles, buttons, pins, arrows, icons, stars or \"you are here\" markers. No compass, legend, scale bar, border, frame, title or vignette. No people or characters. No UI of any kind.\n\nATTACHMENTS\n01  the original 150 x 91 thumbnail of this region's painting (Tiny Speck, public domain). The colours and the layout to follow.\n02  that thumbnail enlarged to 1520 x 920 with no extra detail. Follow its shapes closely: coastlines, cliffs, water, forest and open ground in the same places and proportions; repaint everything with real detail.\n03  where the game will draw the streets (dark lines) and region exits (yellow circles), at the same 1520 x 920 scale. For placement only: do NOT paint these lines or circles.\n04  a screenshot of how the game shows this map today: a blurry enlargement of the thumbnail with the game's interface drawn on top (street lines, street names, green GO buttons, panel and buttons). It is here only so you can see what the painting is for. Do NOT copy any of the interface; paint only the landscape underneath it.\n05  Tiny Speck's own painted trees, plants and scenery from this region's streets (public domain). The style and palette to match, drawn smaller and simpler.\n\nReturn the single painted landscape image only.\n",
-      "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+      "prompt": "[The ask as recorded; the exact prompt text, regions-restore/redo/46-the-seams-r2.txt, has not reached the Mac.] With the 2012 map attached (input 1): this is a restoration. The 2012 map of The Seams has no roads, names or GO buttons at all: the green wormhole grid, the green lettering across the top and the stars are the whole painting (like 34 Naraka). Keep the grid, the lettering and the stars exactly as drawn and only sharpen it at 2x; no nebula.",
+      "promptNote": "The exact prompt text did not reach the Mac: drop/model.txt names research/map-art/regions-restore/redo/46-the-seams-r2.txt (written where the model was run, with input 1 alone), which is not in the pack yet. The prompt field holds the ask as drop/model.txt and regions-restore/redo.md record it; replace it with that file's text when it arrives.",
+      "promptOwed": "research/map-art/regions-restore/redo/46-the-seams-r2.txt",
       "inputs": [
         {
           "n": 1,
-          "file": "01-thumbnail-150x91.jpg",
-          "sha256": "999e7706fd7dbf04ceaaa70485814bd89e4b9ab66764cf583ad881177c162d0e",
-          "what": "the region’s own 150 x 91 thumbnail of the lost painting",
-          "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_vortex.jpg (byte for byte public/assets/maps/art/thumbs/sm_vortex.jpg)"
-        },
-        {
-          "n": 2,
-          "file": "02-thumbnail-enlarged-1520x920.png",
-          "sha256": "2b4b5404d1ec807181497bbf5541d6a159db7257605cc0a579230fcdc3bd6acb",
-          "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
-          "source": "made from input 1, CC0"
-        },
-        {
-          "n": 3,
-          "file": "03-street-layout-1520x920.png",
-          "sha256": "0a060a335d2dbb93cdf01fc753b46855daa2140a8ae6d0f94df2711f803cdbf9",
-          "what": "where the map draws the 16 visible streets (dark lines) and 1 exit (yellow circles), at 2x",
-          "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-143.json, from GSJS inc_data_maps_prod.js)"
-        },
-        {
-          "n": 4,
-          "file": "04-our-map-window-with-ui.png",
-          "sha256": "502ba4e7d0ec8a75b1162147bff6fb2664031010c9b45c26b9ab943e4e49b49e",
-          "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
-          "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
-        },
-        {
-          "n": 5,
-          "file": "05-style-cc0-decos.png",
-          "sha256": "ab2318fc85b2d2401ee5e4e2bb0cce85e0c432e686d428c32f816f57f2130724",
-          "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
-          "source": "Tiny Speck decos, CC0"
+          "file": "46-the-seams-2012-2x-on-16x9-1636x920.jpg",
+          "sha256": "a0bd000395b75c01e2f9d298dcdceeb44b2be75a1a6fd61ea8784371e2d09b7c",
+          "what": "Tiny Speck's 2012 Encyclopedia map of The Seams, the same painting Vortex of Random's 2012 map draws under its markings (760 x 460: the painting alone, since the Encyclopedia drew no roads, street names, icons or GO buttons on this region), enlarged to 1520 x 920 (Lanczos) and centred on a 1636 x 920 canvas with flat side bands of its edge colour, so the 16:9 canvas does not stretch it",
+          "source": "Tiny Speck: c1.glitch.bz/img/maps_encyclopedia/the_seams_124751.jpg (2012), saved from the Wayback Machine (research/coverage/hunt-maps-2026-11-04/encyclopedia-760 (the 2026-11-04 map hunt), outside git; sha256 b4b5539e5ff5bbd6beba0566ecf0cf851af59b3ceb52cd356527d6a989f3ff4d)"
         }
       ],
       "references": [
-        "A frame of the original painting from the 2012 video \"tour: The Map of Ur\" (YouTube bXxXB6GUoMU at 124.9 s): reference only, never given to the model and never in the repo; the prompt describes its composition in words"
+        "The painting it replaces (made from the thumbnail; its record is under replaces): reference only, used to compare, never given to the model",
+        "Tiny Speck's 2012 Encyclopedia map of Vortex of Random (c1.glitch.bz/img/maps_encyclopedia/vortex_of_random_124454.jpg, research/coverage/hunt-maps-2026-11-04/encyclopedia-760, outside git; sha256 172e8b2b659df885016f16b00753bcac4ab82c74443051f27d2ffd4150b4c68c): reference only, the frame the restore was fitted to and the picture it was checked against, never given to the model"
       ],
       "source": {
-        "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/vortex-1.png",
-        "dropSha256": "1687513a3149bdb2f3fa03601616a5fc7ef72b0842f5c4b748994c917d227aa8",
-        "toning": "magick vortex-1.png -modulate 100,95,100 master.png (barely toned: the original is a glowing neon grid that the standard toning dulled)",
-        "masterSha256": "0588b14375f93ce9937c44a7db3671b1bc5fefa38607e32c51e980934ef96a06",
+        "generated": "2048 x 1152 (16:9, High 2K, opaque, 1 image): research/map-art/drop/regions/46-the-seams-restored-raw-r2.png",
+        "dropSha256": "c8eb5d6a663129803223dc4971730a03803d9aa387ef1df7043e0300da873a10",
+        "crop": "the side bands cut off (raw x 72.606 to 1975.394), Lanczos to 1520 x 920, shifted -3 px across and 0 px down onto the 2012 picture's lines (worst drift after alignment 2 px at 2x in a 4 x 3 grid of tiles (tiles: 2 1 0 1 1 1 0 1 2 1 1 2)); the outer 3 right columns (band colour, or the 2012 Encyclopedia's thin white frame where the model copied it) were filled with the painting's first clean column or row beside them; then (lane maps17) fitted to Vortex of Random's 2012 frame, which shows the same painting 0.35% smaller than The Seams' 2012 picture (760 x 459 against 760 x 460; measured between Tiny Speck's two 2012 pictures with Vortex's markings masked: x_seams = 1.0035 x_vortex - 0.875, y_seams = 1.0055 y_vortex + 0.25 in 2012 pixels, so the restore keeps exactly the relation it has to The Seams' 2012 map; a shift alone left 3 px of drift between the two 2012 pictures and 5 px on the restore): magick master.png -virtual-pixel edge -filter Lanczos -define distort:viewport=1520x920+0+0 -distort AffineProjection 0.996512,0,0,0.996697,1.7439,-0.4983 (a uniform scale of 0.9965 and a shift of 1.7 px across, 0.5 px up at 2x, Vortex's 2012 picture taken at 1520 x 920 as the intake takes every 2012 map); the 1.7 left, 3.6 right and 3.5 bottom columns and rows at 2x that fall outside The Seams' frame are its first clean column or row beside them (virtual-pixel edge). Checked against Vortex's 2012 picture as the intake checks: best shift 0,0, worst drift 2 px at 2x in a 4 x 3 grid of tiles (tiles: 2 1 0 2 1 1 0 2 2 1 1 2), 3 px with Vortex's labels masked",
+        "toning": "magick master.png -modulate 100,89,100 -gamma 1.28 toned.png (The Seams' own values, matched to the 2012 picture: saturation and lightness of its mid pixels, lightness 0.12 to 0.78, so the 2012 roads, text and paper sea do not count; gamma rather than brightness. Kept for Vortex of Random: under its markings Vortex's 2012 picture has The Seams' colours (its dark band within 0.005 lightness of The Seams'), and over the whole of Vortex's 2012 picture these values come closer (intake/work/tonejudge.py: RMSE 0.117, histogram distance 0.038) than tone2 run against Vortex's own picture (S 78, gamma 1.16: RMSE 0.124, distance 0.044), which its white labels and frame pull off)",
         "encode": {
-          "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 vortex.webp",
-          "x2": "magick master.png -quality 82 -define webp:method=6 vortex@2x.webp"
+          "x1": "magick toned.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 vortex.webp",
+          "x2": "magick toned.png -quality 82 -define webp:method=6 vortex@2x.webp"
         },
-        "pack": "research/zone-art/map-vortex (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        "pack": "research/map-art/regions-restore (outside git): readme.md, prompt.txt, redo.md, attach/, order.txt; intake: intake/work/46-the-seams/r2 (lane maps16: intake/work/intake16.sh with the redo sub r2, the steps of intake14.sh with the edge fill of intake/work/framefill.py, edge strips measured on the cut, intake/tone2.py); fitted for Vortex of Random in intake/work/vortex-of-random (lane maps17: fit.txt, intake/work/affinefit.py; master.png, toned.png)",
+        "fitted": {
+          "masterSha256": "64a9839bb7990d3a8013118d419c51ed1eb1e897dd712f02c571161e86d92d2c",
+          "tonedSha256": "4f1e35de5026b653f7bbe433f30b0f757167eea343faf77554e1c19d074ecc22",
+          "from": "intake/work/46-the-seams/r2/master.png"
+        }
+      },
+      "differences": "The Seams' painting, restored, under Vortex of Random's roads and names: its 2012 map is that painting with them on top, so nothing here was painted for Vortex. The green wormhole grid and its two planes, the funnel with its bright yellow-green waist, the green lettering along the funnel's rim, the two faint ghost funnels at the left and right, and the bright stars with their sparkles sit where Vortex's 2012 map has them (worst tile drift 2 px at 2x). Known differences, The Seams' own: the grid lines are crisp and evenly bright where 2012's glow softly and fade into the dark toward the right of both planes; the ghost funnels are clearer than 2012's faint ones; the dark sky carries many more tiny stars than 2012 and less of its soft brown haze; the lettering along the rim is redrawn in the same style, and neither copy reads as words. From fitting it to Vortex's frame, which shows the painting a little smaller: the outermost 2 to 4 rows and columns at 2x on the left, right and bottom repeat the row or column beside them. The faint pale road traces Vortex's 2012 map shows across the bottom plane are its markings and are not painted.",
+      "replaces": {
+        "made": "2026-11-06",
+        "x1": {
+          "file": "assets/maps/art/bg/vortex.webp",
+          "w": 760,
+          "h": 460,
+          "bytes": 26746,
+          "sha256": "935b99f1ea0fb09af8f77cce9b1546b628628b5bf09762ff55bdd8ce0bc7c738"
+        },
+        "x2": {
+          "file": "assets/maps/art/bg/vortex@2x.webp",
+          "w": 1520,
+          "h": 920,
+          "bytes": 69714,
+          "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
+        },
+        "chosen": {
+          "by": "Austin Ginder",
+          "on": "2026-11-06",
+          "of": "1 generation, toned down; Austin 2026-11-06: keep going, four per reset, landing each batch"
+        },
+        "source": {
+          "generated": "2048 x 1152 (16:9, High 2K; no 16:10 option), centre-cropped to 1520 x 920: drop/vortex-1.png",
+          "dropSha256": "1687513a3149bdb2f3fa03601616a5fc7ef72b0842f5c4b748994c917d227aa8",
+          "toning": "magick vortex-1.png -modulate 100,95,100 master.png (barely toned: the original is a glowing neon grid that the standard toning dulled)",
+          "masterSha256": "0588b14375f93ce9937c44a7db3671b1bc5fefa38607e32c51e980934ef96a06",
+          "encode": {
+            "x1": "magick master.png -filter Lanczos -resize 760x460! -quality 82 -define webp:method=6 vortex.webp",
+            "x2": "magick master.png -quality 82 -define webp:method=6 vortex@2x.webp"
+          },
+          "pack": "research/zone-art/map-vortex (outside git): pack.md, prompt.txt, attach/, drop/, review/"
+        },
+        "promptNote": "The prompt exactly as given to the model: research/zone-art/tools/prompt-template.txt with this region’s WHAT TO PAINT, written from the 2012 footage frame.",
+        "inputs": [
+          {
+            "n": 1,
+            "file": "01-thumbnail-150x91.jpg",
+            "sha256": "999e7706fd7dbf04ceaaa70485814bd89e4b9ab66764cf583ad881177c162d0e",
+            "what": "the region’s own 150 x 91 thumbnail of the lost painting",
+            "source": "Tiny Speck, CC0: glitch-overlays/world_map.fla LIBRARY/z_hub_maps_small/sm_vortex.jpg (byte for byte public/assets/maps/art/thumbs/sm_vortex.jpg)"
+          },
+          {
+            "n": 2,
+            "file": "02-thumbnail-enlarged-1520x920.png",
+            "sha256": "2b4b5404d1ec807181497bbf5541d6a159db7257605cc0a579230fcdc3bd6acb",
+            "what": "input 1 enlarged to 1520 x 920 (Lanczos), nothing added: the coastline and colour guide",
+            "source": "made from input 1, CC0"
+          },
+          {
+            "n": 3,
+            "file": "03-street-layout-1520x920.png",
+            "sha256": "0a060a335d2dbb93cdf01fc753b46855daa2140a8ae6d0f94df2711f803cdbf9",
+            "what": "where the map draws the 16 visible streets (dark lines) and 1 exit (yellow circles), at 2x",
+            "source": "drawn from Tiny Speck’s CC0 map data (public/assets/maps/hubs/hub-143.json, from GSJS inc_data_maps_prod.js)"
+          },
+          {
+            "n": 4,
+            "file": "04-our-map-window-with-ui.png",
+            "sha256": "502ba4e7d0ec8a75b1162147bff6fb2664031010c9b45c26b9ab943e4e49b49e",
+            "what": "the remake’s own map window at 2x (its UI over the enlarged thumbnail), so the model saw what the painting is for; the prompt says to copy none of the UI",
+            "source": "our own render (Groddle Afternoon UI and the CC0 thumbnail)"
+          },
+          {
+            "n": 5,
+            "file": "05-style-cc0-decos.png",
+            "sha256": "ab2318fc85b2d2401ee5e4e2bb0cce85e0c432e686d428c32f816f57f2130724",
+            "what": "a sheet of 18 decos Tiny Speck painted this region’s streets with (the most used trees, plants and scenery): the style and palette",
+            "source": "Tiny Speck decos, CC0"
+          }
+        ]
       }
     }
   }

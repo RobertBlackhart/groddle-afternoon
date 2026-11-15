@@ -119,16 +119,18 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
   it('a region with no 2012 map keeps its thumbnail (or nothing) and says so on its card', () => {
     const index = readJson(join(GAME_DIR, 'public/assets/maps/index.json'));
     const fs = { read: (f) => (existsSync(pub(f)) ? readFileSync(pub(f)) : null), exists: (f) => existsSync(pub(f)) };
-    // Vortex of Random, the one region still painted from its thumbnail (Ix was the example until lane maps4 restored it
-    // from 2012, then Vantalu until lane maps15, then Zhambu until lane maps16), with its 2012 map left out of the list.
-    // The Seams, with no thumbnail and no 2012 map, would show nothing before (no region is left so since lane maps16
-    // restored it; its record from before, kept under replaces, stands in, with the files the game ships now).
-    const now = provenance.regions['66'];
-    const old = { ...now, ...now.replaces, x1: now.x1, x2: now.x2 };
-    delete old.method;
-    delete old.replaces;
+    // No region is left painted from its thumbnail or its street layout since lane maps17, so both stand in from their records
+    // from before (kept under replaces), with the files the game ships now: Vortex of Random (the example since lane maps16;
+    // Ix, Vantalu and Zhambu before it) with its 2012 map left out of the list, painted from its thumbnail; The Seams, with no
+    // thumbnail and no 2012 map, which would show nothing before.
+    const before = (id) => {
+      const now = provenance.regions[id];
+      const old = { ...now, ...now.replaces, x1: now.x1, x2: now.x2 };
+      for (const k of ['method', 'replaces', 'restoredFrom', 'markings2012']) delete old[k];
+      return old;
+    };
     const only = { regions: Object.fromEntries(Object.entries(encyclopedia.regions).filter(([id]) => id !== '143' && id !== '66')) };
-    const data = build({ ...provenance, regions: { ...provenance.regions, 66: old } }, null, index, fs, only);
+    const data = build({ ...provenance, regions: { ...provenance.regions, 66: before('66'), 143: before('143') } }, null, index, fs, only);
     const vortex = data.regions.find((r) => r.id === '143');
     assert.equal(vortex.state, 'painted');
     assert.equal(vortex.before.src, `/${index.hubs['143'].thumbLocal}`);
@@ -139,8 +141,36 @@ describe('Maps page data (tools/restoration-maps/build-data.mjs)', () => {
     assert.equal(seams.before, null);
     assert.match(seams.caption, /No 2012 Encyclopedia map of The Seams survives/);
     assert.deepEqual(wordProblems(data), []);
-    // The real data: no region is left painted from its street layout, so the page's summary has no chip for it.
+    // The real data: no region is left painted from its street layout or its thumbnail, so the page's summary has no chip for either.
     assert.equal(maps.counts.layout, 0);
+    assert.equal(maps.counts.painted, 0);
+  });
+
+  it('Vortex of Random shares The Seams\' restore: its 2012 map is the same painting under its own markings (lane maps17)', () => {
+    const r = provenance.regions['143'];
+    const seams = provenance.regions['66'];
+    assert.equal(r.restoredFrom.hub, '66');
+    assert.equal(r.restoredFrom.hubName, 'The Seams');
+    assert.match(r.method, /^restored/);
+    // The same generation (its drop, prompt and input), fitted to Vortex's frame: so its own files, not The Seams'.
+    assert.equal(r.source.dropSha256, seams.source.dropSha256);
+    assert.equal(r.prompt, seams.prompt);
+    assert.deepEqual(r.inputs.map((i) => i.sha256), seams.inputs.map((i) => i.sha256));
+    assert.notEqual(r.x2.sha256, seams.x2.sha256);
+    assert.match(r.source.crop, /fitted to Vortex of Random's 2012 frame/);
+    // Vortex's 2012 map has its roads and names: not an unmarked map, and its own 2012 picture is a reference, never an input.
+    assert.notEqual(r.markings2012, 'none');
+    assert.ok(r.references.some((x) => /vortex_of_random_\d+\.jpg[\s\S]*reference only/.test(x)));
+    assert.equal(r.replaces.made, '2026-11-06');
+    const vortex = maps.regions.find((x) => x.id === '143');
+    assert.equal(vortex.state, 'restored');
+    assert.equal(vortex.before.src, '/restoration/maps/2012/vortex.webp');
+    assert.match(vortex.before.alt, /roads and names on it/);
+    assert.match(vortex.caption, /same painting as The Seams’s, with this region’s roads, names and buttons on it, so it shares The Seams’s restore/);
+    assert.doesNotMatch(vortex.caption, /took those markings off|drew no roads/);
+    assert.match(vortex.differences, /The Seams' painting, restored, under Vortex of Random's roads and names/);
+    assert.ok(vortex.facts.some((f) => f.label === 'Replaced'));
+    assert.equal(maps.counts.restored, 51);
   });
 
   it('a 2012 map drawn with no roads or names (Naraka) is not said to have had markings taken off (lane maps10)', () => {
@@ -192,10 +222,13 @@ describe('the Maps page in Minn (tools/restoration-maps/to-minn.mjs)', () => {
     assert.equal(SLUG, 'maps');
     assert.equal(TEMPLATE, 'page-wide');
     const content = mapsContent();
-    for (const part of ['summary', 'world', 'restored', 'painted']) assert.ok(content.includes(`<!-- wp:groddle/restoration-maps {"part":"${part}"} /-->`), part);
+    for (const part of ['summary', 'world', 'restored']) assert.ok(content.includes(`<!-- wp:groddle/restoration-maps {"part":"${part}"} /-->`), part);
+    // Every region is restored since lane maps17, so the Painted again band (an empty part draws nothing) is gone.
+    assert.ok(!content.includes('{"part":"painted"}'));
+    assert.doesNotMatch(content, /Painted again/);
     assert.match(content, /class="wp-block-group masthead"/);
     assert.match(content, /<p class="jump">/);
-    assert.equal((content.match(/<section class="wp-block-group band/g) || []).length, 4);
+    assert.equal((content.match(/<section class="wp-block-group band/g) || []).length, 3);
     assert.doesNotMatch(content, /—/);
   });
 });

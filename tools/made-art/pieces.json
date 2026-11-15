@@ -205,51 +205,6 @@
           "text": "The World view of the Map on a Retina screen or a phone, and on any screen once the map is shown larger than {w} by {h}. The region frames, cards and your star sit where they always did."
         }
       ]
-    },
-    {
-      "id": "maps:143",
-      "name": "Vortex of Random map",
-      "caption": "The one region painting still made again from its thumbnail: Vortex of Random. It kept the region's own shape and colours. Every other region now shows Tiny Speck's own painting, restored from its 2012 Encyclopedia map.",
-      "display": {
-        "w": 304,
-        "h": 184
-      },
-      "image": {
-        "file": "public/assets/made-art/maps-painted.webp",
-        "label": "Painted again for Groddle",
-        "alt": "A painted map: a glowing green grid funnelling down into a yellow-green tunnel in a dark starry sky."
-      },
-      "original": {
-        "file": "public/assets/made-art/maps-thumbs.webp",
-        "kind": "original",
-        "pixelated": true,
-        "label": "Tiny Speck's thumbnail, {w} by {h} pixels, shown at the same size",
-        "alt": "Tiny Speck's small thumbnail of the same map, enlarged so its pixels show."
-      },
-      "parts": {
-        "original": {
-          "label": "{name}: Tiny Speck's thumbnail, {w} by {h} pixels",
-          "alt": "Tiny Speck's small thumbnail of the {name} map, enlarged so its pixels show."
-        },
-        "image": {
-          "label": "{name}: painted again for Groddle",
-          "alt": "The {name} region map, painted again for Groddle from that thumbnail."
-        }
-      },
-      "facts": [
-        {
-          "label": "How it was made",
-          "text": "Painted by an image model ({tool}) under Austin's direction, given the region's own thumbnail and a drawing of where the game puts the region's streets, so they still land in the right places, then toned down a little."
-        },
-        {
-          "label": "How it was checked",
-          "text": "Austin looked at it beside its thumbnail and kept it. {regions} regions in all were painted again, four of them with no thumbnail to follow, from their streets alone; all the others have since been restored from their 2012 Encyclopedia maps."
-        },
-        {
-          "label": "In the game",
-          "text": "The background of the Vortex of Random region map."
-        }
-      ]
     }
   ]
 }

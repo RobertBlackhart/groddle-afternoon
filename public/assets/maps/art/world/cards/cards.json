@@ -811,14 +811,14 @@
         "file": "assets/maps/art/bg/vortex@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
+        "sha256": "e6a2459e1acf3d2fa95ce7877569edfa9575506d229ca421b2283ba77ce44044"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 18950,
-        "sha256": "ec6ccfce039c2efd2a8fcec073129b63779e8591308e54273e6926844f2ca859"
+        "bytes": 63904,
+        "sha256": "8821fe7b5fda350fa8fdd2992194f843a27c166c98f77e9f1400c1d4c75fa99c"
       }
     }
   }

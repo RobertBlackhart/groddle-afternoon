@@ -852,10 +852,10 @@
       "x1": "assets/maps/art/bg/vortex.webp",
       "x2": "assets/maps/art/bg/vortex@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 26746,
-      "x1Sha256": "935b99f1ea0fb09af8f77cce9b1546b628628b5bf09762ff55bdd8ce0bc7c738",
-      "x2Bytes": 69714,
-      "x2Sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
+      "x1Bytes": 89174,
+      "x1Sha256": "eb219e3839e12a1a9ecae8f82fe688c6122af2ba66cd4196aefcbe976ecc52f4",
+      "x2Bytes": 223844,
+      "x2Sha256": "e6a2459e1acf3d2fa95ce7877569edfa9575506d229ca421b2283ba77ce44044"
     }
   }
 }

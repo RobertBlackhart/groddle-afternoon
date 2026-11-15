@@ -117,27 +117,9 @@ def props_scene():
     return img, used
 
 
-# Region maps: the thumbnails and their paintings, one column each (the regions still painted from their thumbnails;
-# the rest show Tiny Speck's own 2012 paintings, restored). Since lane maps16 restored Zhambu, only Vortex of Random,
-# which has no 2012 map, is left.
-
-MAPS = [('143', 'vortex')]
-GAP = 3  # px between thumbnails (12 between paintings)
-
-
-def maps_columns():
-    thumbs = [os.path.join(PUB, f'assets/maps/art/thumbs/sm_{s}.jpg') for _, s in MAPS]
-    paint = [os.path.join(PUB, f'assets/maps/art/bg/{s}@2x.webp') for _, s in MAPS]
-    tw, th = 150, 91
-    n = len(MAPS)
-    a = Image.new('RGBA', (tw, th * n + GAP * (n - 1)), (0, 0, 0, 0))
-    b = Image.new('RGBA', (tw * 4, (th * n + GAP * (n - 1)) * 4), (0, 0, 0, 0))
-    for i, (t, p) in enumerate(zip(thumbs, paint)):
-        ti = Image.open(t).convert('RGBA')
-        assert ti.size == (tw, th), t
-        a.alpha_composite(ti, (0, i * (th + GAP)))
-        b.alpha_composite(Image.open(p).convert('RGBA').resize((tw * 4, th * 4), Image.LANCZOS), (0, i * (th + GAP) * 4))
-    return a, b, [source(t) for t in thumbs], [source(p) for p in paint]
+# Region maps: none since lane maps17. The gallery of regions painted again from their thumbnails (maps:<hub>,...) lost its
+# last region when Vortex of Random took The Seams' restore (its 2012 map is the same painting), so the piece, its two
+# composed pictures (maps-thumbs.webp, maps-painted.webp) and this part were dropped; they stay in git history.
 
 
 def main():
@@ -184,13 +166,6 @@ def main():
         put(name, webp(s, name, q=84), what,
             f"screenshot of the game (1280 x 800, deviceScaleFactor 2): the tutorial's EZ Cooking pick (?newxp=skill&newxpskill=ezcooking_1, Aiight), the avatar placed at x 1640, {how}; the HUD cropped off (x 232-1220, y 60-640), Lanczos to 720 x 423",
             [{'shot': f'room-{which}.png', 'sha256': sha(shot)}])
-
-    # Region maps.
-    a, b, ta, pb = maps_columns()
-    put('maps-thumbs', webp(a, 'maps-thumbs', lossless=True), "Tiny Speck's thumbnail of Vortex of Random",
-        'the CC0 thumbnail as it is', [t | {'licence': 'CC0 1.0, Tiny Speck'} for t in ta])
-    put('maps-painted', webp(b, 'maps-painted', q=86), 'The painting of Vortex of Random made again for Groddle',
-        'the repainted map (2x file) at four times the thumbnail (tools/provenance/repainted-maps.json)', pb)
 
     doc = {'format': 'groddle-made-showcase/1',
            'about': 'Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and three game screenshots; tools/made-art/build-data.mjs checks each against its sha256.',

@@ -8,7 +8,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -60,7 +60,7 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.deepEqual(dates, [...dates].sort().reverse());
     // 2026-11-13 leads in the curated order: the Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World
     // map at 2x; then the quest book (2026-11-12).
-    assert.deepEqual(made.pieces.map((p) => p.id), ['map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award', 'maps:143']);
+    assert.deepEqual(made.pieces.map((p) => p.id), ['map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);
@@ -81,7 +81,7 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     }
   });
 
-  it('shows the subway paper, EZ Cookin\'s made props and a gallery of region maps beside what they come from, in composed pictures it can vouch for', () => {
+  it('shows the subway paper and EZ Cookin\'s made props beside what they come from, in composed pictures it can vouch for', () => {
     const more = readMore();
     const piece = (id) => made.pieces.find((p) => p.id === id);
     // The subway paper beside a crop of Tiny Speck's sign (its little map), its pixels kept.
@@ -102,13 +102,10 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.ok(ez.facts.some((f) => f.label === 'What the 2012 street had' && /glass-topped serving counters/.test(f.text)));
     assert.deepEqual([piece('decos:ezc:room').original.src, piece('decos:ezc:room').image.src], ['/assets/made-art/ezc-room-stand-ins.webp', '/assets/made-art/ezc-room.webp']);
     assert.deepEqual(Object.keys(more.decos.art).filter((n) => n.startsWith('gz_ai_ezc_')).sort(), Object.keys(more.decos.art).sort());
-    // The gallery: the one region still painted from its thumbnail (Vortex of Random, which has no 2012 map; Zhambu left it
-    // when lane maps16 restored it) and its painting, the same shape so they show at the same size.
-    const gal = piece('maps:143');
-    assert.deepEqual(gal.parts.map((p) => p.name), ['Vortex of Random']);
-    assert.match(gal.caption, /The one region painting still made again from its thumbnail: Vortex of Random/);
-    assert.equal(gal.image.w * gal.original.h, gal.original.w * gal.image.h);
-    assert.match(gal.facts.find((f) => f.label === 'How it was checked').text, /51 regions in all were painted again, four of them with no thumbnail/);
+    // No gallery of region maps is left (lane maps17): Vortex of Random, its last region, took The Seams' restore (its 2012 map
+    // is the same painting), so every region shows Tiny Speck's own painting and the gallery and its two pictures were dropped.
+    assert.ok(!made.pieces.some((p) => p.id.startsWith('maps:') || p.parts), 'no region-map gallery');
+    for (const f of ['maps-thumbs.webp', 'maps-painted.webp']) assert.ok(!existsSync(join(GAME_DIR, 'public/assets/made-art', f)), f);
     // Each composed picture is the one tools/made-art/showcase.json records, and every recorded one is shown.
     const shownFiles = made.pieces.flatMap((p) => [p.image.src, p.original?.src]).filter((f) => f?.startsWith('/assets/made-art/')).map((f) => `public${f}`);
     assert.deepEqual(shownFiles.sort(), Object.keys(more.showcase.files).sort());

@@ -57,33 +57,6 @@
     }
    ]
   },
-  "public/assets/made-art/maps-painted.webp": {
-   "what": "The painting of Vortex of Random made again for Groddle",
-   "w": 600,
-   "h": 364,
-   "sha256": "9515346ec84a70598c809ce2987c24400e71123d625fc0ce183578d49e966a24",
-   "made": "the repainted map (2x file) at four times the thumbnail (tools/provenance/repainted-maps.json)",
-   "from": [
-    {
-     "file": "public/assets/maps/art/bg/vortex@2x.webp",
-     "sha256": "12ef58cc02bc809b889425b35805ba4e474fe6e3a185eb53694e183de7ffddac"
-    }
-   ]
-  },
-  "public/assets/made-art/maps-thumbs.webp": {
-   "what": "Tiny Speck's thumbnail of Vortex of Random",
-   "w": 150,
-   "h": 91,
-   "sha256": "82718f5f0b458923a1c45a7fd44d574c7d464f9bae73d5608427be02e0964cf5",
-   "made": "the CC0 thumbnail as it is",
-   "from": [
-    {
-     "file": "public/assets/maps/art/thumbs/sm_vortex.jpg",
-     "sha256": "999e7706fd7dbf04ceaaa70485814bd89e4b9ab66764cf583ad881177c162d0e",
-     "licence": "CC0 1.0, Tiny Speck"
-    }
-   ]
-  },
   "public/assets/made-art/subway-map-paper-line.webp": {
    "what": "The recreated Subway System paper with the Red Line and its stations drawn on it",
    "w": 752,

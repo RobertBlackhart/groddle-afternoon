@@ -17,8 +17,8 @@
   },
   "counts": {
     "regions": 51,
-    "restored": 50,
-    "painted": 1,
+    "restored": 51,
+    "painted": 0,
     "layout": 0
   },
   "world": {
@@ -2159,6 +2159,50 @@
       "place": "/encyclopedia/places/vantalu/"
     },
     {
+      "id": "143",
+      "name": "Vortex of Random",
+      "anchor": "map-vortex-of-random",
+      "state": "restored",
+      "caption": "Tiny Speck’s own painting of Vortex of Random. Its 2012 Encyclopedia map is the same painting as The Seams’s, with this region’s roads, names and buttons on it, so it shares The Seams’s restore: an image model sharpened The Seams’s 2012 map without moving anything, then it was fitted to this map’s frame and toned back to the 2012 colour.",
+      "differences": "The Seams' painting, restored, under Vortex of Random's roads and names: its 2012 map is that painting with them on top, so nothing here was painted for Vortex. The green wormhole grid and its two planes, the funnel with its bright yellow-green waist, the green lettering along the funnel's rim, the two faint ghost funnels at the left and right, and the bright stars with their sparkles sit where Vortex's 2012 map has them (worst tile drift 2 px at 2x). Known differences, The Seams' own: the grid lines are crisp and evenly bright where 2012's glow softly and fade into the dark toward the right of both planes; the ghost funnels are clearer than 2012's faint ones; the dark sky carries many more tiny stars than 2012 and less of its soft brown haze; the lettering along the rim is redrawn in the same style, and neither copy reads as words. From fitting it to Vortex's frame, which shows the painting a little smaller: the outermost 2 to 4 rows and columns at 2x on the left, right and bottom repeat the row or column beside them. The faint pale road traces Vortex's 2012 map shows across the bottom plane are its markings and are not painted.",
+      "facts": [
+        {
+          "label": "Made",
+          "text": "15 November 2026, with GPT Image 2.6 Sunburst"
+        },
+        {
+          "label": "Replaced",
+          "text": "The painting made from the thumbnail on 6 November 2026"
+        },
+        {
+          "label": "2012",
+          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
+        }
+      ],
+      "before": {
+        "src": "/restoration/maps/2012/vortex.webp",
+        "w": 760,
+        "h": 459,
+        "label": "2012",
+        "alt": "Tiny Speck’s 2012 Encyclopedia map of Vortex of Random, with the game’s roads and names on it"
+      },
+      "after": {
+        "src": "/assets/maps/art/bg/vortex.webp",
+        "w": 760,
+        "h": 460,
+        "label": "Now",
+        "alt": "Vortex of Random restored, as the game draws it now",
+        "src2": "/assets/maps/art/bg/vortex@2x.webp"
+      },
+      "card": {
+        "src": "/assets/maps/art/world/cards/143.svg",
+        "w": 184,
+        "h": 120,
+        "label": "Its card on the World map"
+      },
+      "place": "/encyclopedia/places/vortex-of-random/"
+    },
+    {
       "id": "95",
       "name": "Xalanga",
       "anchor": "map-xalanga",
@@ -2245,46 +2289,6 @@
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/zhambu/"
-    },
-    {
-      "id": "143",
-      "name": "Vortex of Random",
-      "anchor": "map-vortex-of-random",
-      "state": "painted",
-      "caption": "Tiny Speck’s painting of Vortex of Random survives only in the 2012 Encyclopedia map, under the game’s roads and names. The painting in the game now was made from the World map’s 150 x 91 thumbnail and the region’s street layout, in the style of the decos Tiny Speck painted its streets with, so the two differ.",
-      "differences": "",
-      "facts": [
-        {
-          "label": "Made",
-          "text": "6 November 2026, with GPT Image 2.6 Sunburst"
-        },
-        {
-          "label": "2012",
-          "text": "Tiny Speck’s Encyclopedia map, as the Internet Archive saved it on 19 November 2013"
-        }
-      ],
-      "before": {
-        "src": "/restoration/maps/2012/vortex.webp",
-        "w": 760,
-        "h": 459,
-        "label": "2012",
-        "alt": "Tiny Speck’s 2012 Encyclopedia map of Vortex of Random, with the game’s roads and names on it"
-      },
-      "after": {
-        "src": "/assets/maps/art/bg/vortex.webp",
-        "w": 760,
-        "h": 460,
-        "label": "Now",
-        "alt": "Vortex of Random painted for Groddle, as the game draws it now",
-        "src2": "/assets/maps/art/bg/vortex@2x.webp"
-      },
-      "card": {
-        "src": "/assets/maps/art/world/cards/143.svg",
-        "w": 184,
-        "h": 120,
-        "label": "Its card on the World map"
-      },
-      "place": "/encyclopedia/places/vortex-of-random/"
     }
   ]
 }
