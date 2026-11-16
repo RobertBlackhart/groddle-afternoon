@@ -82,6 +82,9 @@ import {
   teleporterPhase,
 } from '../party-spaces.js?v=dcc45819';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { readVisitScene } from '../neighbours-mp.js?v=895a5209';
+import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
+import { isNeighbourSceneTsid } from '../neighbours.js?v=781ad57f';
 import { loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=3821c723';
 
@@ -333,7 +336,7 @@ function buildMapCard(engine) {
   text.append(title, sub);
   const go = el('button', { type: 'button' });
   go.textContent = tpUp ? 'Open' : 'Join party';
-  const blocked = engine.transientInstance() || engine.homeContext?.().inHome;
+  const blocked = !teleporterSpot(engine);
   go.disabled = Boolean(tpUp || blocked);
   if (blocked) go.title = "You can't make a party teleporter from here.";
   go.addEventListener('click', () => {
@@ -348,10 +351,35 @@ function buildMapCard(engine) {
 /* Activation and the teleporter                                      */
 /* ------------------------------------------------------------------ */
 
+/**
+ * G901: where a party teleporter may open. Glitch made it wherever the player stood, with no check
+ * (inc_party.js party_space_prompt_callback 479-504 then party_create_teleporter 509-520:
+ * this.location.createAndReturnItem), your house or another player's included, and the way back from
+ * the space was remembered from there (inc_instances.js instances_enter 81-86: your own house itself,
+ * the street outside someone else's). 'home' is your own home (back to the same room), 'visit' a home
+ * you are visiting (back where its way out leads, as its Go back does), 'world' a street. A remake
+ * transient instance (a quest room, a race, a puzzle scene) gives '': it is built for one trip and
+ * can't be walked back into from the space.
+ */
+export function partyTeleporterSpot({ inHome = false, visit = false, transient = false } = {}) {
+  if (inHome) return 'home';
+  if (visit) return 'visit';
+  return transient ? '' : 'world';
+}
+
+function teleporterSpot(engine) {
+  const tsid = engine.streetTsid;
+  return partyTeleporterSpot({
+    inHome: Boolean(engine.homeContext?.().inHome),
+    visit: Boolean(engine.inScene?.() && (readVisitScene(tsid) || isNeighbourSceneTsid(tsid))),
+    transient: Boolean(engine.transientInstance()),
+  });
+}
+
 function activationBlock(engine, classTsid) {
   const p = party();
   if (p && partyAlive(p)) return PARTY_TEXT.alreadyGoing;
-  if (engine.transientInstance() || engine.homeContext?.().inHome || onPartyStreet(engine)) {
+  if (!teleporterSpot(engine) || onPartyStreet(engine)) {
     return "You can't start a party from here.";
   }
   const target = PARTY_SPACES[PARTY_PACKS[classTsid]?.template];
@@ -442,7 +470,7 @@ function rejoin(engine) {
     engine.toast(PARTY_TEXT.alreadyExpired);
     return false;
   }
-  if (engine.transientInstance() || engine.homeContext?.().inHome) {
+  if (!teleporterSpot(engine)) {
     engine.toast("You can't make a party teleporter from here.");
     return false;
   }
@@ -565,12 +593,16 @@ async function enterParty(engine) {
   const s = space();
   if (!p || !s) return;
   if (!onPartyStreet(engine)) {
-    p.returnTo = {
-      tsid: engine.streetTsid,
-      label: engine.street?.label || '',
-      x: Math.round(engine.player.x),
-      y: Math.round(engine.player.y),
-    };
+    // G901: from a home you are visiting, back where its way out leads (the scene can't be entered again).
+    const out = teleporterSpot(engine) === 'visit' ? engine.sceneReturnTo : null;
+    p.returnTo = out?.tsid
+      ? { tsid: out.tsid, label: out.label || STREET_INDEX.streets?.[out.tsid]?.label || '', x: Math.round(Number(out.x) || 0), y: Math.round(Number(out.y) || 0) }
+      : {
+        tsid: engine.streetTsid,
+        label: engine.street?.label || '',
+        x: Math.round(engine.player.x),
+        y: Math.round(engine.player.y),
+      };
   }
   p.inside = true;
   engine.instanceHold = HOLD;
