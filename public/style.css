@@ -3028,6 +3028,48 @@ button.play-context-head:focus-visible {
   font-size: var(--fs-md);
   white-space: nowrap;
 }
+/* G881 (#413): the search's results list, over the row by the field (js/ui/pack-row.js drawResults,
+   placeResults), as the client's result_scroller rose over its box: 282 wide, three rows before it
+   scrolls (InventorySearch.as 29, 46). Each row: the icon, the name with the match marked, "3 in your pack". */
+.pack-search-results {
+  --psr-row: 48px;
+  --psr-max: calc(var(--psr-row) * 3 + 2px);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  z-index: calc(var(--z-raised) + 1);
+  box-sizing: border-box;
+  width: min(282px, calc(100% - 16px));
+  max-height: var(--psr-max);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface-bright);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
+  color: var(--text);
+  pointer-events: auto;
+}
+.pack-search-results[hidden] { display: none; }
+.pack-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: var(--psr-row);
+  box-sizing: border-box;
+  padding: var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+.pack-search-result:first-child { border-top: 0; }
+.pack-search-result.is-active { background: var(--accent-soft); }
+.pack-search-result img { flex: none; width: 34px; height: 34px; object-fit: contain; }
+.pack-search-result-text { display: grid; min-width: 0; }
+.pack-search-result-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-md); font-weight: var(--fw-bold); }
+.pack-search-result-name mark { background: none; color: var(--accent); }
+.pack-search-result-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font-size: var(--fs-sm); }
+.pack-search-result.is-none { color: var(--text-muted); font-size: var(--fs-md); cursor: default; }
+/* The lit result's stack in the row (InventorySearch.as onElementChanged: setFocusedSlot). */
+.pack-slots .pack-slot.is-search-lit { box-shadow: 0 0 0 2px var(--accent); background: var(--accent-soft); }
 /* The open bag: a tray over the row, its left edge by its bag (js/ui/pack-row.js placeTray). */
 .pack-bag-row {
   position: absolute;

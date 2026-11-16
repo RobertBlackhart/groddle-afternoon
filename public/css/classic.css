@@ -3379,6 +3379,30 @@
 :root[data-ui="classic"] #game-root #quest-panel .qc-head .qc-count.qc-steps:has(+ .qc-step)::after { content: " steps)"; }
 /* === end chk13b === */
 
+/* === build16a (lane) === */
+/* G881 (#413): the search's results list as the client drew it (SuperSearch.as, SuperSearchElement.as):
+   white rows (super_search_base #ffffff), the lit one #e9eff1 (super_search_active, here the input grey),
+   a 40 px icon (SuperSearchElementItemstack.as 13), the name over its grey sub label, 1 px rules between
+   rows, on the search box's rounded panel with its soft dark glow (InventorySearch.as 98). */
+:root[data-ui="classic"] #game-root .pack-search-results {
+  --psr-row: calc(46 * var(--cu));
+  border: 1px solid var(--c-classic-slot-ring);
+  border-radius: 5px;
+  background: var(--c-classic-panel);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--c-classic-ink) 20%, transparent);
+  color: var(--c-classic-text);
+  font-family: var(--font-classic-body);
+}
+:root[data-ui="classic"] #game-root .pack-search-result { gap: calc(6 * var(--cu)); padding: calc(3 * var(--cu)) calc(6 * var(--cu)); border-top-color: var(--c-classic-rule); }
+:root[data-ui="classic"] #game-root .pack-search-result.is-active { background: var(--c-classic-input); }
+:root[data-ui="classic"] #game-root .pack-search-result img { width: calc(40 * var(--cu)); height: calc(40 * var(--cu)); }
+:root[data-ui="classic"] #game-root .pack-search-result-name { color: var(--c-classic-title); font: 700 var(--fs-classic-chat)/var(--lh-snug) var(--font-classic-body); }
+:root[data-ui="classic"] #game-root .pack-search-result-name mark { color: var(--c-classic-link); }
+:root[data-ui="classic"] #game-root .pack-search-result-sub { color: var(--c-classic-count); font: var(--fs-classic-body)/var(--lh-snug) var(--font-classic-body); }
+:root[data-ui="classic"] #game-root .pack-search-result.is-none { background: var(--c-classic-well); color: var(--c-classic-text); font: var(--fs-classic-body)/var(--lh-normal) var(--font-classic-body); }
+:root[data-ui="classic"] #game-root .pack-slots .pack-slot.is-search-lit { background: var(--c-classic-panel); box-shadow: 0 0 0 2px var(--c-classic-focus); }
+/* === end build16a === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

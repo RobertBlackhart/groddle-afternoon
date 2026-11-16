@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b394a5c1';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fa9cf25a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9e461b1a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -496,7 +496,7 @@ import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=3
 import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=4d446d78';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
-import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=d9041d6b';
+import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=16657c7d';
 import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=14db16f8';
 import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=14db16f8';
 import {
@@ -4010,6 +4010,7 @@ const packRow = createPackRow({
     if (anchor) positionPackPopover(document.getElementById('pack-popover'), anchor);
   },
   tipFor: (el) => packTipFor(el),
+  onPick: (result, how) => pickPackSearchResult(result, how),
 });
 
 /** A pack slot's tooltip: its name and count, and what a click and a Shift-click do. */
@@ -5932,6 +5933,33 @@ function closePackTray({ focusBag = false } = {}) {
   return true;
 }
 
+/**
+ * G881 (#413): a row picked from the pack search's results list. The search has closed (pack-row.js
+ * pickResult); as the client's InventorySearch.as onElementSelect 149-167 did, the stack's slot is
+ * lit and its menu opens (startItemstackMenu). A stack inside a bag opens that bag's tray first, so the
+ * menu has its slot to sit by; a bag opens its Options (its own menu).
+ */
+function pickPackSearchResult(r, { keys = false } = {}) {
+  if (!r) return;
+  closePackPopover();
+  if (r.container !== 'pack' && features.query('packOpenBag') !== r.container) features.query('packToggleBag', r.container, engine);
+  renderPackBar();
+  const esc = globalThis.CSS?.escape || ((v) => v);
+  const slot = document.querySelector(`#pack-bar .pack-slot[data-pack-container="${esc(r.container)}"][data-pack-index="${r.index}"]`)
+    || findPackSlotElement(r.classTsid, null, r.bagKey || null);
+  if (!slot) return;
+  // A slot paged out of the row comes into it.
+  const box = slot.closest('#pack-items');
+  if (box && (slot.offsetLeft < box.scrollLeft || slot.offsetLeft + slot.offsetWidth > box.scrollLeft + box.clientWidth)) {
+    box.scrollLeft = Math.max(0, slot.offsetLeft - 8);
+    packRow.refreshPager();
+  }
+  if (keys) slot.focus({ preventScroll: true });
+  if (r.bagKey) openPackBagOptions({ classTsid: r.classTsid, bag: { key: r.bagKey } }, slot, { keys });
+  else openPackStackMenu({ classTsid: r.classTsid }, slot, { keys });
+  if (app?.canvas) app.canvas.dataset.packSearchPicked = `${r.container}:${r.index}`;
+}
+
 /** A tool slot's copy (its place among its class's tools in pack order), or null. */
 function packSlotCopy(el) {
   const v = el?.dataset?.packCopy;
@@ -6122,6 +6150,7 @@ function renderPackBar() {
     renderPackRow(bagsBox, [], { emptyCount: 0 });
     const all = [...rows.items, ...rows.tools];
     renderPackRow(itemsBox, query ? packSearchEntries(all, query) : all, { emptyCount: 0 });
+    packRow.drawResults(null);
     return;
   }
   setupPackDrops();
@@ -6149,6 +6178,8 @@ function renderPackBar() {
     renderPackRow(itemsBox, hits, { emptyCount: 0, container: 'pack', query, rock: packLayout.rockStacks ? packLayout.rock : null });
     if (!hits.length) packRow.markNoMatches(itemsBox, query);
     if (app?.canvas) app.canvas.dataset.packSearchHits = String(hits.length);
+    // G881 (#413): the results list over the row: every match with its icon, count and bag, and the bags.
+    packRow.drawResults(packSearchResults([...bagRow, ...found], query, labelOf), query);
   } else {
     renderPackRow(itemsBox, [...itemRow, ...toolRow], {
       emptyCount: packLayout.free, fillEmpty: true, ghost: true, container: 'pack',

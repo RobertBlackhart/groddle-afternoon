@@ -22,7 +22,7 @@ import {
   packSearchMatch,
   packSlotTip,
   trayColumns,
-} from '../public/js/ui/pack-row.js?v=d9041d6b';
+} from '../public/js/ui/pack-row.js?v=16657c7d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

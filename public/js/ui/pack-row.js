@@ -15,10 +15,12 @@
  * the backquote key, shiftFKeyHandler 846-855; hotkeys.png "Inventory Search:
  * Shift+F"; InventorySearch.as onElementSelect 148-166: picking a stack opens
  * its menu). It finds stacks in the pack and inside every bag; a stack in a
- * bag carries the bag's icon. Enter opens the first match's actions.
+ * bag carries the bag's icon. From the second letter a results list over the row names every match
+ * with its icon, count and bag (G881, #413: the client's result_scroller); Up, Down and Enter pick
+ * from it, and a pick opens that stack's actions (in its bag's tray when it is in a bag).
  *
- * QA: canvas data packSearch ("" or the query), packSearchHits, packItemOverflow,
- * packItemScrollLeft, packItemScrollMax (as the old items row had).
+ * QA: canvas data packSearch ("" or the query), packSearchHits, packSearchResults (rows, "" when no
+ * list), packSearchActive (the lit row), packItemOverflow, packItemScrollLeft, packItemScrollMax.
  */
 
 import { packPageTarget, packPagerState } from '../pack-pager.js?v=ef8d9e49';
@@ -142,6 +144,86 @@ export function packSearchEntries(entries, query, labelOf = (e) => e.label) {
   return (entries || []).filter((e) => packSearchMatch(labelOf(e), query));
 }
 
+/**
+ * G881 (#413): the results list under the search, as the client's (InventorySearch.as result_scroller,
+ * SuperSearch.as). It searches from the second letter (SuperSearch.as set type 972-979; WorldModel.as
+ * searchItemstacks 470) and shows three rows before it scrolls (InventorySearch.as 46: init(TYPE_INVENTORY, 3)).
+ */
+export const PACK_RESULTS_MIN_CHARS = 2;
+export const PACK_RESULTS_ROWS = 3;
+
+const searchWords = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+/**
+ * PURE: the result rows for a query (WorldModel.as searchItemstacks 460-495, SuperSearch.as searchInventory
+ * 801-886). Names that start with the query first, then names that hold it, each in name order (then pack
+ * order: the pack, then each bag). Stacks of one item side by side in one container are one row with their
+ * counts added; a bag is always its own row. Each row says where it is: "3 in your pack", "2 in Bigger Bag".
+ * @param {{ classTsid: string, label: string, count?: number, icon?: string, container?: string, index?: number,
+ *   bag?: { key: string }, inBag?: { label: string } }[]} entries the pack's stacks and bags and every bag's stacks
+ * @returns {{ key: string, classTsid: string, label: string, count: number, icon: string, container: string,
+ *   index: number, bagKey: string, where: string, sub: string }[]}
+ */
+export function packSearchResults(entries, query, labelOf = (e) => e.label) {
+  const q = searchWords(query);
+  if (q.length < PACK_RESULTS_MIN_CHARS) return [];
+  const starts = [];
+  const holds = [];
+  (entries || []).forEach((e, order) => {
+    const label = String(labelOf(e) || e.label || '');
+    const name = searchWords(label);
+    if (name.startsWith(q)) starts.push({ e, label, name, order });
+    else if (name.includes(q)) holds.push({ e, label, name, order });
+  });
+  const byName = (a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.order - b.order);
+  const rows = [];
+  for (const r of [...starts.sort(byName), ...holds.sort(byName)]) {
+    const e = r.e;
+    const container = String(e.container ?? 'pack');
+    const last = rows[rows.length - 1];
+    if (last && !e.bag && !last.bagKey && last.classTsid === e.classTsid && last.container === container && last.label === r.label) {
+      last.count += Number(e.count) || 1;
+      last.sub = `${last.count} in ${last.where}`;
+      continue;
+    }
+    const count = Number(e.count) || 1;
+    const where = e.inBag?.label || 'your pack';
+    rows.push({
+      key: `${container}:${e.index ?? rows.length}`,
+      classTsid: e.classTsid,
+      label: r.label,
+      count,
+      icon: e.icon || '',
+      container,
+      index: Number(e.index ?? -1),
+      bagKey: e.bag?.key || '',
+      where,
+      sub: `${count} in ${where}`,
+    });
+  }
+  return rows;
+}
+
+/**
+ * PURE: a result's name cut where the query matches, every match (StringUtil.as colorCharacters 612-626,
+ * which SuperSearchElement.as setNameText 112-119 runs the name through). [[text, matched], ...]
+ */
+export function packSearchMarks(label, query) {
+  const text = String(label || '');
+  const q = String(query || '').trim().toLowerCase();
+  if (!q) return [[text, false]];
+  const lower = text.toLowerCase();
+  const out = [];
+  let at = 0;
+  for (let i = lower.indexOf(q); i >= 0; i = lower.indexOf(q, i + q.length)) {
+    if (i > at) out.push([text.slice(at, i), false]);
+    out.push([text.slice(i, i + q.length), true]);
+    at = i + q.length;
+  }
+  if (at < text.length) out.push([text.slice(at), false]);
+  return out.length ? out : [[text, false]];
+}
+
 /** The count's words: "10/16" and what it means. */
 export function packCountText({ used = 0, capacity = 16, bagFree = 0, bags = 0 } = {}) {
   const text = `${used}/${capacity}`;
@@ -168,9 +250,10 @@ export function packSlotTip({ label = '', count = 1, tool = false, bag = null, q
  *   onQuery?: (query: string) => void,
  *   onScroll?: () => void,
  *   tipFor?: (el: Element) => ({ title: string, sub?: string } | null),
+ *   onPick?: (result: object, how: { keys: boolean }) => void,
  * }} opts
  */
-export function createPackRow({ document: doc = globalThis.document, setData = () => {}, onQuery = () => {}, onScroll = () => {}, tipFor = () => null } = {}) {
+export function createPackRow({ document: doc = globalThis.document, setData = () => {}, onQuery = () => {}, onScroll = () => {}, tipFor = () => null, onPick = () => {} } = {}) {
   const $ = (id) => doc?.getElementById?.(id) || null;
   let query = '';
   let searching = false;
@@ -236,6 +319,7 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     if (input) input.value = '';
     setSearching(false);
     setData('packSearch', '');
+    drawResults(null);
     if (had) onQuery('');
     if (focusButton) $('pack-search-btn')?.focus();
   }
@@ -403,6 +487,202 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     box.append(none);
   }
 
+  /*
+   * G881 (#413): the results list (#pack-search-results), over the row by the search field, as the
+   * client's result_scroller rose above its box (InventorySearch.as 46: DIRECTION_UP). The field keeps the
+   * keys (a combobox): Up and Down move the lit row (SuperSearch.as changeSelection 485-507, no wrap), Enter
+   * picks it (onKeyDown 629-634), a click picks (onElementClick 663-669), a mouse over a row lights it
+   * (onElementOver 671-679). The lit row's stack is lit in the pack (InventorySearch.as onElementChanged
+   * 131-147: setFocusedSlot).
+   */
+  let results = [];
+  let activeResult = -1;
+  let resultsSig = '';
+  let resultsQuery = '';
+
+  function resultsBox(create = false) {
+    let box = $('pack-search-results');
+    const band = bar();
+    if (!box && create && band && doc.createElement) {
+      box = doc.createElement('div');
+      box.id = 'pack-search-results';
+      box.className = 'pack-search-results';
+      box.setAttribute('role', 'listbox');
+      box.setAttribute('aria-label', 'Search results');
+      box.hidden = true;
+      band.insertBefore(box, $('pack-tip'));
+      // A press on a row keeps the keys in the field (the client's input kept its focus).
+      box.addEventListener('mousedown', (e) => e.preventDefault());
+      box.addEventListener('click', (e) => {
+        const row = e.target?.closest?.('[data-pack-result]');
+        if (row) pickResult(Number(row.dataset.packResult), { keys: false });
+      });
+      box.addEventListener('pointermove', (e) => {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        const row = e.target?.closest?.('[data-pack-result]');
+        if (row && Number(row.dataset.packResult) !== activeResult) setActiveResult(Number(row.dataset.packResult), { scroll: false });
+      });
+    }
+    return box;
+  }
+
+  function slotOf(r) {
+    if (!r || r.index < 0) return null;
+    const esc = globalThis.CSS?.escape || ((v) => String(v).replace(/["\\]/g, '\\$&'));
+    return bar()?.querySelector?.(`.pack-slot[data-pack-container="${esc(r.container)}"][data-pack-index="${r.index}"]`) || null;
+  }
+
+  /** The lit row's stack lit in the pack, the others not (setFocusedSlot / blurFocusedSlot). */
+  function lightSlot() {
+    for (const el of bar()?.querySelectorAll?.('.pack-slot.is-search-lit') || []) el.classList.remove('is-search-lit');
+    slotOf(results[activeResult])?.classList.add('is-search-lit');
+  }
+
+  function setActiveResult(i, { scroll = true } = {}) {
+    const box = resultsBox();
+    const input = $('pack-search-input');
+    activeResult = results.length ? Math.max(0, Math.min(results.length - 1, i)) : -1;
+    let lit = null;
+    for (const row of box?.querySelectorAll?.('[data-pack-result]') || []) {
+      const on = Number(row.dataset.packResult) === activeResult;
+      row.classList.toggle('is-active', on);
+      row.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) lit = row;
+    }
+    if (lit) input?.setAttribute('aria-activedescendant', lit.id);
+    else input?.removeAttribute?.('aria-activedescendant');
+    if (lit && scroll && box) {
+      // changeSelection 503-505: the scroller follows the lit row.
+      const top = lit.offsetTop;
+      const bottom = top + lit.offsetHeight;
+      if (top < box.scrollTop) box.scrollTop = top;
+      else if (bottom > box.scrollTop + box.clientHeight) box.scrollTop = bottom - box.clientHeight;
+    }
+    setData('packSearchActive', String(activeResult));
+    lightSlot();
+  }
+
+  /** Over the row, its right edge by the search field, inside the band; above an open bag's tray it would cross. */
+  function placeResults() {
+    const box = resultsBox();
+    const band = bar();
+    const row = $('pack-row');
+    if (!box || box.hidden || !band || !row) return;
+    const b = band.getBoundingClientRect();
+    const r = row.getBoundingClientRect();
+    const field = ($('pack-search') && !$('pack-search').hidden ? $('pack-search') : row).getBoundingClientRect();
+    const w = box.offsetWidth || 0;
+    const range = packBandRange(band, w);
+    const left = Math.max(range.min, Math.min(field.right - b.left - w, range.max));
+    let floor = r.top - b.top;
+    const tray = $('pack-bag');
+    if (tray && !tray.hidden) {
+      const t = tray.getBoundingClientRect();
+      if (left < t.right - b.left && left + w > t.left - b.left) floor = Math.min(floor, t.top - b.top);
+    }
+    box.style.left = `${Math.round(left)}px`;
+    box.style.bottom = `${Math.round(b.height - floor + 8)}px`;
+    // Room above it for the rows on a short window (a phone held sideways): never over the top bar.
+    const room = Math.floor(b.top + floor - 8 - 56);
+    box.style.maxHeight = room > 0 ? `min(var(--psr-max), ${room}px)` : '';
+  }
+
+  /**
+   * The list for the drawn search: `list` from packSearchResults (game.js renderPackBar), or null to hide it.
+   * Hidden under two letters; an empty list says "No results for" (SuperSearchElementNoResult.as 30-36).
+   */
+  function drawResults(list, q = query) {
+    const box = resultsBox(Boolean(list));
+    const input = $('pack-search-input');
+    const words = String(q || '').trim();
+    if (!list || !searching || searchWords(words).length < PACK_RESULTS_MIN_CHARS) {
+      const had = results.length || activeResult >= 0 || (box && !box.hidden);
+      results = [];
+      activeResult = -1;
+      resultsSig = '';
+      if (box) { box.hidden = true; box.textContent = ''; }
+      input?.setAttribute?.('aria-expanded', 'false');
+      input?.removeAttribute?.('aria-activedescendant');
+      if (had) {
+        setData('packSearchResults', '');
+        setData('packSearchActive', '-1');
+        lightSlot();
+      }
+      return;
+    }
+    if (!box) return;
+    const sig = JSON.stringify([words, list.map((r) => [r.key, r.classTsid, r.label, r.count, r.icon, r.sub])]);
+    if (sig === resultsSig && !box.hidden) {
+      lightSlot();
+      placeResults();
+      return;
+    }
+    // A new query lights the first row (onInputChange 425); the same query after the pack changed keeps
+    // the lit stack when it is still there (onPackChange 169-173 searched again).
+    const keep = words === resultsQuery ? results[activeResult]?.key : null;
+    resultsSig = sig;
+    resultsQuery = words;
+    results = list;
+    box.textContent = '';
+    list.forEach((r, i) => {
+      const row = doc.createElement('div');
+      row.id = `pack-search-result-${i}`;
+      row.className = 'pack-search-result';
+      row.setAttribute('role', 'option');
+      row.dataset.packResult = String(i);
+      row.dataset.resultTsid = r.classTsid;
+      row.dataset.resultContainer = r.container;
+      row.setAttribute('aria-label', `${r.label}, ${r.sub}`);
+      const icon = doc.createElement('img');
+      icon.src = r.icon;
+      icon.alt = '';
+      icon.loading = 'lazy';
+      const text = doc.createElement('span');
+      text.className = 'pack-search-result-text';
+      const name = doc.createElement('span');
+      name.className = 'pack-search-result-name';
+      for (const [part, hit] of packSearchMarks(r.label, words)) {
+        if (hit) {
+          const mark = doc.createElement('mark');
+          mark.textContent = part;
+          name.append(mark);
+        } else name.append(part);
+      }
+      const sub = doc.createElement('span');
+      sub.className = 'pack-search-result-sub';
+      sub.textContent = r.sub;
+      text.append(name, sub);
+      row.append(icon, text);
+      box.append(row);
+    });
+    if (!list.length) {
+      const none = doc.createElement('div');
+      none.className = 'pack-search-result is-none';
+      none.setAttribute('role', 'option');
+      none.setAttribute('aria-disabled', 'true');
+      none.textContent = `No results for: \u201c${words}\u201d`;
+      box.append(none);
+    }
+    // A slot's tooltip would sit over the rows.
+    if (box.hidden) hideTip();
+    box.hidden = false;
+    box.scrollTop = 0;
+    input?.setAttribute?.('aria-expanded', 'true');
+    setData('packSearchResults', String(list.length));
+    const again = keep ? list.findIndex((r) => r.key === keep) : -1;
+    setActiveResult(again >= 0 ? again : 0);
+    placeResults();
+  }
+
+  /** Picking a row: the search goes, then its stack's menu opens (InventorySearch.as onElementSelect 149-167). */
+  function pickResult(i, { keys = false } = {}) {
+    const r = results[i];
+    if (!r) return false;
+    closeSearch({ focusButton: false });
+    onPick(r, { keys });
+    return true;
+  }
+
   function hideTip() {
     globalThis.clearTimeout?.(tipTimer);
     tipFrom = null;
@@ -467,6 +747,13 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     if (!band || band.dataset.packRowReady === '1') return;
     band.dataset.packRowReady = '1';
     const input = $('pack-search-input');
+    // G881: the field and its results list are a combobox (the list is made now, shown from two letters).
+    if (input && resultsBox(true)) {
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-autocomplete', 'list');
+      input.setAttribute('aria-controls', 'pack-search-results');
+      input.setAttribute('aria-expanded', 'false');
+    }
     $('pack-search-btn')?.addEventListener('click', () => openSearch());
     $('pack-search-close')?.addEventListener('click', () => closeSearch());
     input?.addEventListener('input', () => {
@@ -480,14 +767,22 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
         e.stopPropagation();
         closeSearch();
       } else if (e.key === 'Enter') {
-        // InventorySearch.as onElementSelect: the first match's menu.
+        // InventorySearch.as onElementSelect: the lit result's menu (G881), else the first match's.
         e.preventDefault();
         e.stopPropagation();
         flushQuery();
+        if (pickResult(activeResult, { keys: true })) return;
         const first = items()?.querySelector('.pack-slot[data-tsid]');
         if (first) { first.focus(); first.click(); }
-      } else if (e.key === 'ArrowDown') {
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         flushQuery();
+        // G881: Up and Down move through the results list; with no list (one letter) Down goes to the row.
+        if (results.length) {
+          e.preventDefault();
+          setActiveResult(activeResult + (e.key === 'ArrowDown' ? 1 : -1));
+          return;
+        }
+        if (e.key === 'ArrowUp') return;
         const first = items()?.querySelector('.pack-slot[data-tsid]');
         if (first) { e.preventDefault(); first.focus(); }
       }
@@ -528,6 +823,9 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     drawTray,
     settleTray,
     markNoMatches,
+    drawResults,
+    placeResults,
+    pickResult,
     hideTip,
     showTip,
   };
