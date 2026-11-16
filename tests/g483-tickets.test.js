@@ -646,7 +646,7 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
     assert.deepEqual(out.message, { fits: 4000, admin: 9000, refused: ['groddle_ticket_long', 422], words: true });
     // An old post: the words (entities read back, <br> a line, paragraphs a blank line apart), the Details as the context.
     assert.equal(out.migration.message, 'The pig & the <b>butterfly</b> froze.\nThen the street went dark.\n\nSecond paragraph.');
-    assert.deepEqual(out.migration.context, { street: 'GA5101HF7F429V5', streetName: 'Hechey Track', x: '120', y: '-30', build: 'g465-1', page: '/play/online/', agent: 'Test/1.0', screen: '1280x800', panels: '', errors: ['TypeError: boom <here>', 'second'] });
+    assert.deepEqual(out.migration.context, { street: 'GA5101HF7F429V5', streetName: 'Hechey Track', x: '120', y: '-30', build: 'g465-1', page: '/play/online/', agent: 'Test/1.0', screen: '1280x800', gpu: '', panels: '', errors: ['TypeError: boom <here>', 'second'] });
     assert.equal(out.migration.bareMessage, 'Only words');
     assert.equal(out.migration.bareContext.street, 'LIF12PMQ5121D68', 'meta fills what the Details lack');
     assert.deepEqual(out.migration.bareContext.errors, ['From meta']);
