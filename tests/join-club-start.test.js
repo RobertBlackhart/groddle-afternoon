@@ -67,7 +67,8 @@ describe('Ticket 41: Join the Club starts at home and comes back there', () => {
     assert.doesNotMatch(start, /engine\.busy\(\)/);
     assert.match(start, /homeEditMode/);
     const startInstance = between(qi, 'async function startInstance(engine, questId, opts = {}) {', 'async function gotoStage');
-    assert.match(startInstance, /const returnTo = wayBackFrom\(\{ tsid: engine\.streetTsid, x: engine\.player\?\.x, y: engine\.player\?\.y \}, save\.returnTo\);/);
+    // G886: from a quest room's own street the way back is the last ordinary street instead.
+    assert.match(startInstance, /const here = instanceKind\(engine\.streetTsid, engine\) \? null : \{ tsid: engine\.streetTsid, x: engine\.player\?\.x, y: engine\.player\?\.y \};\s*const returnTo = wayBackFrom\(here, save\.returnTo \|\| save\.lastStreet\);/);
     assert.doesNotMatch(startInstance, /homeContext/);
     // Leaving a solved room goes back home with the home card.
     assert.match(qi, /const home = back\?\.tsid === HOME_STREET_TSID \|\| back\?\.tsid === HOME_INTERIOR_TSID;/);
