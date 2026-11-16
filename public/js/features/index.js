@@ -199,5 +199,5 @@ import { chickenScareFeature } from './chicken-scare-feature.js?v=2aa4766a'; FEA
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=c5617e10'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=0a7f8316'; FEATURES.push(streetObjectsFeature);
-import { realtimeFeature } from './realtime-feature.js?v=2ff89c09'; FEATURES.push(realtimeFeature);
+import { realtimeFeature } from './realtime-feature.js?v=9513cec0'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=baf69e8d'; FEATURES.push(accountBackupFeature);

@@ -56,7 +56,7 @@
  * administrator sent you to, once there); window.groddleRealtime in multiplayer.
  */
 
-import { chatBubbleText } from '../ui/chat-input.js?v=72d000ac';
+import { chatBubbleText } from '../ui/chat-input.js?v=4cde830b';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=2663e2d3';
 import { ANIM_FPS, EMOTION_MS, animForState, crowdScaleX } from '../avatar-anims.js?v=fb921bf4';

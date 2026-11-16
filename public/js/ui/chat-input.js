@@ -21,8 +21,13 @@
  * keys, as js/held-keys.js does (their own key-ups can go missing). A single press that lands in the
  * box after it opened is ordinary typing here; slash-commands-feature runs "d/home" as /home.
  *
+ * #399 (iPhone): held, Backspace deleted one character and stopped. The on-screen keyboard sends a
+ * key-up after each delete and marks the next ones as repeats (or names the key differently on the
+ * way up), so its repeats looked stray and were dropped. Backspace and Delete never walk the avatar,
+ * so neither rule touches them (editKey): a held one deletes on, as in any text box.
+ *
  * bindChatInput(field, { form }) wires one; the pure parts (oneLine, fitHeight, historyKey, strayRepeat,
- * heldAtFocus) are tested in tests/chat-input.test.js.
+ * heldAtFocus, editKey) are tested in tests/chat-input.test.js.
  */
 
 export const MAX_ROWS = 5;
@@ -96,7 +101,15 @@ export const keyOf = (e) => String(e?.code || e?.key || '').toLowerCase();
  * keys that went down in the box.
  */
 export function strayRepeat(e, pressedHere) {
-  return Boolean(e?.repeat && !e.isComposing && !pressedHere?.has(keyOf(e)));
+  return Boolean(e?.repeat && !e.isComposing && !editKey(e) && !pressedHere?.has(keyOf(e)));
+}
+
+/** The keys that only edit the words (#399): never a walking key, so never held back. */
+export const EDIT_KEYS = new Set(['Backspace', 'Delete']);
+
+/** PURE (#399): Backspace or Delete, by the key's name (an on-screen keyboard sends no code). */
+export function editKey(e) {
+  return EDIT_KEYS.has(String(e?.key || '')) || EDIT_KEYS.has(String(e?.code || ''));
 }
 
 /**
@@ -104,7 +117,7 @@ export function strayRepeat(e, pressedHere) {
  * come up since: the walking key, which types nothing (repeat or not). `held` holds keyOf() of those keys.
  */
 export function heldAtFocus(e, held) {
-  return Boolean(e && !e.isComposing && held?.size && held.has(keyOf(e)));
+  return Boolean(e && !e.isComposing && !editKey(e) && held?.size && held.has(keyOf(e)));
 }
 
 /** KeyBeacon._keyUpFire 257 (js/held-keys.js RESET_ON_UP): their own key-ups can go missing. */
