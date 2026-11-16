@@ -106,7 +106,8 @@ describe('37: a stack dropped on a stack of its own class joins it', () => {
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
     assert.match(game, /const dropOn = \(el\) => \{/);
     assert.match(game, /bar\.addEventListener\('drop', \(event\) => \{[\s\S]{0,400}dropOn\(el\);/);
-    assert.match(game, /if \(packDrag\) dropOn\(el\);/);
+    // G865: a touch drop on a slot still goes to dropOn first; only a miss is offered to a cabinet.
+    assert.match(game, /if \(packDrag && !dropOn\(el\) && touchElsewhere\('pack-touch-drop'/);
     assert.match(game, /event\.pointerType !== 'touch'/);
   });
 
