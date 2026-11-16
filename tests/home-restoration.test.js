@@ -38,7 +38,7 @@ import {
   phaseIsComplete,
   phaseRequirements,
   settlePhase,
-} from '../public/js/street-jobs.js?v=6db7f1ad';
+} from '../public/js/street-jobs.js?v=35880b67';
 import { PROTO_DEPLETED_ART } from '../public/js/home-proto-art.js?v=9309e9f3';
 import { CULTIVATION_CLASSES } from '../public/js/homes-catalog.js?v=10ac34b6';
 import {
@@ -48,7 +48,7 @@ import {
   rekeyRocks,
   rockItems,
   soilKeyMap,
-} from '../public/js/features/homes-feature.js?v=2ec2b272';
+} from '../public/js/features/homes-feature.js?v=05eac566';
 
 const root = join(import.meta.dirname, '..', 'public');
 const catalog = JSON.parse(readFileSync(join(root, 'assets/content/street-jobs.json'), 'utf8'));

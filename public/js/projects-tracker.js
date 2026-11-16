@@ -16,7 +16,8 @@
  * and only the player's own share is read from it (`mine`). Words come from `labels`.
  */
 
-import { jobDef, jobDivisor, jobStatus, phaseBaseCost, phaseClass, phaseName, phaseRequirements, workGear } from './street-jobs.js?v=6db7f1ad';
+import { jobDef, jobDivisor, jobStatus, phaseBaseCost, phaseClass, phaseName, phaseRequirements, workGear } from './street-jobs.js?v=35880b67';
+import { SOLO_PANEL_LINE } from './street-jobs-solo.js?v=24c5b7be';
 
 /** The projects the panel follows: a street's build or upgrade, and online a group hall. Homes' restorations stay their home's. */
 export const TRACKED_KINDS = Object.freeze(['street', 'upgrade', 'hall']);
@@ -46,7 +47,8 @@ export const PROJECTS_TEXT = Object.freeze({
   // G656: the featured street project (js/featured-project.js), online only.
   featured: 'Featured',
   featuredCopy: 'The street project everyone is building together. It stays featured until it is built.',
-  solo: `Solo amounts: 1/50 of the original totals.`,
+  // Report #425: solo amounts scale by distance from the start (js/street-jobs-solo.js).
+  solo: SOLO_PANEL_LINE,
   online: 'Shared amounts: 1/50 of the original totals.',
 });
 

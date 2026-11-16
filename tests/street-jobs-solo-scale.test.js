@@ -11,7 +11,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { SKILLS_WAIVED, SOLO_CURVE, applySoloScale, hopsFromStart, soloSkill, soloTerms } from '../public/js/street-jobs-solo.js?v=19b59978';
+import { SKILLS_WAIVED, SOLO_CURVE, SOLO_PANEL_LINE, applySoloScale, hopsFromStart, soloAmountsLine, soloSkill, soloTerms } from '../public/js/street-jobs-solo.js?v=24c5b7be';
 import {
   SOLO_DIVISOR,
   jobDivisor,
@@ -22,9 +22,10 @@ import {
   settlePhase,
   soloNeed,
   workCheck,
-} from '../public/js/street-jobs.js?v=6db7f1ad';
+} from '../public/js/street-jobs.js?v=35880b67';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=e6a0c9be';
+import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=85716726';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=d2743306';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
@@ -151,6 +152,20 @@ describe('solo amounts and skills', () => {
     for (const r of reqs) assert.equal(r.got, Math.min(r.need, row.got[r.id]), r.id);
     assert.equal(JSON.stringify(save), keep, 'reading the new amounts writes nothing');
     assert.ok(reqs.filter((r) => r.done).length > 0, 'the smaller asks are already met');
+  });
+});
+
+describe('the words', () => {
+  it('the board says the amounts and why they are smaller', () => {
+    const cat = scaled();
+    assert.equal(soloAmountsLine(cat.jobs[SYLVAN]), 'Solo amounts: 1/500 of the original multiplayer totals, as Sylvan Grove is 3 streets from the start. Its work needs no skills.');
+    assert.equal(soloAmountsLine(cat.jobs[MULLAT]), 'Solo amounts: 1/200 of the original multiplayer totals, as Mullat is 9 streets from the start. Its work skills are 2 levels lower.');
+    assert.equal(soloAmountsLine(cat.jobs[VASKO]), 'Solo amounts: 1/120 of the original multiplayer totals, as Vasko Shift is 14 streets from the start. Its work skills are a level lower.');
+    assert.equal(soloAmountsLine(cat.jobs[FAR]), 'Solo amounts: 1/50 of the original multiplayer totals.');
+    assert.equal(soloAmountsLine(rawCatalog().jobs[SYLVAN]), null, 'online has none');
+    assert.equal(PROJECTS_TEXT.solo, SOLO_PANEL_LINE);
+    assert.equal(SOLO_PANEL_LINE, 'Solo amounts: 1/50 of the original totals, down to 1/500 near the start.');
+    for (const line of [SOLO_PANEL_LINE, ...[SYLVAN, MULLAT, VASKO].map((id) => soloAmountsLine(cat.jobs[id]))]) assert.ok(!line.includes('\u2014'), 'no em-dash');
   });
 });
 
@@ -283,6 +298,15 @@ describe('online is untouched', () => {
       // The phase's performance drop may add to the pack; nothing it held goes back or out.
       assert.ok(engine.inv.plank >= 4, 'nothing refunded or taken');
       assert.equal(awards.length, before + 1, 'the phase card');
+      assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /Solo amounts are 1\/200 of the original multiplayer totals, and the phase rewards scale by the same 1\/200\./);
+      // Phase 2's rows: a skill two levels lower says so, a waived one too.
+      const texts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
+      const phase2 = raw.classes[job.phases[1].classTsid].requirements.filter((r) => r.skill);
+      for (const r of phase2) {
+        const level = Number(r.skill.match(/_(\d+)$/)[1]);
+        if (level <= 2) assert.ok(texts.some((t) => t.includes('no skill needed this close to the start')), r.id);
+        else assert.ok(texts.some((t) => / \((III|IV|V|VI) further out\)/.test(t)), r.id);
+      }
       projectApi.open(engine, MULLAT);
       assert.equal(state.jobs[MULLAT].phase, 1, 'once');
       engine.mode = 'multiplayer';

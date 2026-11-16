@@ -113,3 +113,21 @@ export function applySoloScale(catalog, hops, on, curve = SOLO_CURVE) {
   }
   return catalog;
 }
+
+/**
+ * The board's line for a solo project: its amounts, and how its distance eases them. Null when the
+ * project has no solo terms (online, a restoration).
+ */
+export function soloAmountsLine(job) {
+  const s = job?.solo;
+  if (!s) return null;
+  const head = `Solo amounts: 1/${s.divisor} of the original multiplayer totals`;
+  const last = SOLO_CURVE[SOLO_CURVE.length - 1];
+  if (s.divisor === last.divisor && !s.skillDrop) return `${head}.`;
+  const where = Number.isFinite(s.hops) ? `, as ${job.label || 'this street'} is ${s.hops === 1 ? '1 street' : `${s.hops} streets`} from the start` : ', as it is near the start';
+  const skills = s.skillDrop >= SKILLS_WAIVED ? ' Its work needs no skills.' : s.skillDrop ? ` Its work skills are ${s.skillDrop === 1 ? 'a level' : `${s.skillDrop} levels`} lower.` : '';
+  return `${head}${where}.${skills}`;
+}
+
+/** The Projects panel's line for solo (projects-tracker.js PROJECTS_TEXT.solo). */
+export const SOLO_PANEL_LINE = `Solo amounts: 1/${SOLO_CURVE[SOLO_CURVE.length - 1].divisor} of the original totals, down to 1/${SOLO_CURVE[0].divisor} near the start.`;

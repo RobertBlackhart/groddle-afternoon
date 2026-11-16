@@ -110,7 +110,7 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=6db7f1ad';
+} from '../street-jobs.js?v=35880b67';
 import { PAPERS_BADGE } from '../subway.js?v=34e7e56f';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=fc51a023';
@@ -137,7 +137,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=a04bdea3';
+} from '../street-jobs-mp.js?v=c11176dc';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -149,14 +149,14 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=f23b16a2';
 import { TELEPORTERS } from '../hidden-floors.js?v=e8836c2e';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=aacb3915';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=1b4070c4';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=85716726';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=691d6f7b';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
-import { applySoloScale, hopsFromStart } from '../street-jobs-solo.js?v=19b59978';
+import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=24c5b7be';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';
@@ -1001,9 +1001,11 @@ function finishPhase(engine, jobId) {
   // quest.js 1671, 1715-1719: a type 5 job (restore) has no top five.
   if (countsForBadges(job)) engine.achievement(PHASE_WINNER_COUNTER, 1);
   const bits = [...rewardBits(paid), ...rewardBits(paidPerformance)];
+  // Report #425: a solo project's divisor is its distance from the start's (js/street-jobs-solo.js).
+  const d = jobDivisor(job);
   const solo = job.kind === 'restore'
     ? ''
-    : `Solo amounts are 1/${SOLO_DIVISOR} of the original multiplayer totals, and the phase rewards scale by the same 1/${SOLO_DIVISOR}. As the top contributor you also earned the full performance rewards.`;
+    : `Solo amounts are 1/${d} of the original multiplayer totals, and the phase rewards scale by the same 1/${d}. As the top contributor you also earned the full performance rewards.`;
   let title = `${job.title}: phase ${out.index + 1} of ${out.phaseCount}`;
   let steps;
   if (out.finalPhase) {
@@ -1727,7 +1729,9 @@ function renderPanel(engine) {
     if (r.type === 'item') meta.push(`you have ${countItem(engine.inv, r.classId)}`);
     if (r.type === 'work') {
       meta.push(workStepCost(r));
-      if (r.skill) meta.push(`needs ${skillLabel(r.skill)}`);
+      // Report #425: solo near the start a work ask's skill is lower (skillWas the source's) or waived.
+      if (r.skillWas && !r.skill) meta.push('no skill needed this close to the start');
+      else if (r.skill) meta.push(`needs ${skillLabel(r.skill)}${r.skillWas ? ` (${ROMAN[Number(String(r.skillWas).match(/_(\d+)$/)?.[1])] || skillLabel(r.skillWas)} further out)` : ''}`);
     }
     if (unclaimed) meta.push(HALL_TEXT.locked);
     else if (!r.done && !r.open) meta.push('opens after the earlier steps');
@@ -1784,8 +1788,8 @@ function renderPanel(engine) {
     built: `${job.label} is already built.`,
     delayed: `${pcx.phase.delayText || 'The next phase is getting ready.'} It opens in ${pluralize(status.until ? mins(status.until) : 1, 'minute')}.`,
     cooldown: `This street just finished a project. The next one opens in ${pluralize(status.until ? mins(status.until) : 1, 'minute')}.`,
-    active: `Solo amounts: 1/${SOLO_DIVISOR} of the original multiplayer totals.${work ? ` Working: ${work.units} units so far.` : ''}`,
-    open: `Solo amounts: 1/${SOLO_DIVISOR} of the original multiplayer totals. Every contribution counts toward this phase.`,
+    active: `${soloAmountsLine(job) || `Solo amounts: 1/${SOLO_DIVISOR} of the original multiplayer totals.`}${work ? ` Working: ${work.units} units so far.` : ''}`,
+    open: `${soloAmountsLine(job) || `Solo amounts: 1/${SOLO_DIVISOR} of the original multiplayer totals.`} Every contribution counts toward this phase.`,
   }[status.status];
   if (shared(jobId) && (status.status === 'active' || status.status === 'open')) {
     // The Leaderboard below names the contributors (items/include/jobs.js getJobLeaderboard).
