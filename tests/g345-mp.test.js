@@ -41,7 +41,7 @@ import {
 } from '../public/js/feats-mp.js?v=92c56f81';
 import { FEAT_BY_ID, WIRED_FEATS, vogTextFor } from '../public/js/solo-feats.js?v=2b83c824';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=26c2fabf';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=7b0457aa';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/solo-feats-feature.js'), 'utf8');
@@ -379,13 +379,101 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
     assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
     assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
   });
+
+  it('keeps quests owed until the server\'s count of yours reaches them, at its pace (G896, #428)', () => {
+    const realNow = Date.now;
+    let clock = realNow();
+    Date.now = () => clock;
+    try {
+      const client = fakeClient();
+      const engine = mpEngine(client);
+      engine.questState = { completed: [], doneAt: {} };
+      let now = 0;
+      const tickPoll = (ms = 1000) => { clock += ms; now += ms; soloFeatsFeature.onTick(16, now, engine); };
+      const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
+      const syncs = () => client.sent.filter((m) => m.kind === 'feat_sync').length;
+      const finish = (id) => { engine.questState.completed.push(id); engine.questState.doneAt[id] = clock; };
+      const contests = { t: 'feat_state', now: clock, run: 5350, feat: 'reminscequests', start: clock - 1000, end: clock + RUN_MS, total: 0, goal: 15, bonus: 30, super: 45, tier: 0, count: 0, mine: 0, place: 0, top: [] };
+      soloFeatsFeature.init(engine);
+      soloFeatsFeature.restore({}, engine);
+      soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
+      tickPoll(); // the quests already seen
+      // Finished before the server named today's Feat: held, not lost.
+      finish('quest_a');
+      finish('quest_b');
+      tickPoll();
+      assert.equal(adds().length, 0);
+      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: '', done: 0, held: 2 });
+      client.deliver(contests);
+      assert.deepEqual(adds(), [{ kind: 'feat_add', feat: 'reminscequests', n: 2 }]);
+      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: 'reminscequests:5350', done: 2, held: 0 });
+      // A repeat finished and taken again inside one poll still counts (quest-offers.js acceptOffer).
+      finish('quest_c');
+      tickPoll(100);
+      engine.questState.doneAt.quest_c = clock + 1;
+      engine.questState.completed = engine.questState.completed.filter((id) => id !== 'quest_c');
+      finish('quest_d');
+      engine.questState.completed = engine.questState.completed.filter((id) => id !== 'quest_d');
+      tickPoll();
+      assert.equal(soloFeatsFeature.save().questOwed.done, 4);
+      assert.equal(adds().length, 1, 'one report at a time');
+      // The pace took one of two: the rest waits a pace interval, not every tick.
+      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 1, run: 5350, total: 1, mine: 1, place: 1 });
+      assert.equal(engine.calls.data.mpFeatQuestOwed, '3');
+      tickPoll(30_000);
+      assert.equal(adds().length, 1);
+      tickPoll(31_000);
+      assert.deepEqual(adds().slice(1), [{ kind: 'feat_add', feat: 'reminscequests', n: 3 }]);
+      // Refused by the pace: asked again a minute later.
+      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 0, reason: 'pace', run: 5350, total: 1, mine: 1, place: 1 });
+      tickPoll(5_000);
+      assert.equal(adds().length, 2);
+      tickPoll(56_000);
+      assert.equal(adds().length, 3);
+      // The answer never comes (a dropped socket): the server's count decides, nothing is sent twice.
+      tickPoll(21_000);
+      assert.equal(syncs(), 2);
+      assert.equal(adds().length, 3);
+      client.deliver({ ...contests, mine: 3, total: 3 });
+      assert.deepEqual(adds().slice(3), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
+      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 1, run: 5350, total: 4, mine: 4, place: 1 });
+      assert.equal(engine.calls.data.mpFeatQuestOwed, '0');
+      tickPoll(120_000);
+      assert.equal(adds().length, 4);
+      // A new connection: owed quests wait for its count of yours, and a count above ours is taken as ours.
+      client.emit('hello');
+      finish('quest_e');
+      tickPoll();
+      assert.equal(adds().length, 4);
+      client.deliver({ ...contests, mine: 6, total: 6 });
+      assert.deepEqual(adds().slice(4), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
+      // A save that still owes one asks after the load; on another Feat's day they are dropped.
+      const client2 = fakeClient();
+      const engine2 = mpEngine(client2);
+      soloFeatsFeature.init(engine2);
+      soloFeatsFeature.restore({ questOwed: { run: 'reminscequests:5350', done: 8, held: 0 } }, engine2);
+      soloFeatsFeature.onStreetEnter({ tsid: engine2.streetTsid }, engine2);
+      client2.deliver({ ...contests, mine: 7, total: 7 });
+      assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add'), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
+      const client3 = fakeClient();
+      const engine3 = mpEngine(client3);
+      soloFeatsFeature.init(engine3);
+      soloFeatsFeature.restore({ questOwed: { run: 'reminscequests:5349', done: 3, held: 2 } }, engine3);
+      soloFeatsFeature.onStreetEnter({ tsid: engine3.streetTsid }, engine3);
+      client3.deliver({ ...contests, feat: 'animal_love' });
+      assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
+      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: '', done: 0, held: 0 });
+    } finally {
+      Date.now = realNow;
+    }
+  });
 });
 
 describe('the feature keeps solo as it was', () => {
   it('gates every shared path on multiplayer', () => {
     assert.match(feature, /function increment\(engine, featId, amount, opts = \{\}\) \{\n  \/\/ Multiplayer: today's shared Feat, counted by the server \(feats\.go\)\.\n  if \(mpMode\) return mpReport/);
     assert.match(feature, /function reopenDue\(engine, now = Date\.now\(\)\) \{\n  if \(mpMode\) return \[\];/);
-    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run, qurazyOwed: \[\.\.\.qurazyOwed\] \};\n    return state;/);
+    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run, qurazyOwed: \[\.\.\.qurazyOwed\], questOwed: \{ \.\.\.questOwed \} \};\n    return state;/);
     assert.match(feature, /if \(mpMode\) ensureMp\(engine\);\n    else applyDemo\(engine\);/);
   });
 
@@ -400,6 +488,27 @@ describe('the feature keeps solo as it was', () => {
     const save = soloFeatsFeature.save();
     assert.equal(save.progress.animal_love.value, 1);
     assert.equal('applied' in save || 'mpRun' in save, false);
+  });
+
+  it('counts a repeat quest finished and taken again inside one poll (G896, #428)', () => {
+    const engine = { ...mpEngine(fakeClient()), mode: 'solo', questState: { completed: ['quest_a'], doneAt: { quest_a: 1 } } };
+    let now = 0;
+    const tickPoll = () => { now += 1000; soloFeatsFeature.onTick(16, now, engine); };
+    soloFeatsFeature.init(engine);
+    soloFeatsFeature.restore(undefined, engine);
+    tickPoll();
+    // Finished again (completeQuest moves doneAt) and taken again (acceptOffer drops it from completed).
+    engine.questState.doneAt.quest_a = 2;
+    engine.questState.completed = [];
+    tickPoll();
+    assert.equal(soloFeatsFeature.save().progress.reminscequests.value, 1);
+    // Taking a quest again is not a finish.
+    engine.questState.completed = ['quest_a'];
+    engine.questState.doneAt.quest_a = 3;
+    tickPoll();
+    engine.questState.completed = [];
+    tickPoll();
+    assert.equal(soloFeatsFeature.save().progress.reminscequests.value, 2);
   });
 });
 
