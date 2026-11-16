@@ -11,6 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=ac404fcb';
+import { stageSkyColour } from '../public/js/street-render.js?v=66addeb7';
 import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=4c0fffec';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -54,10 +56,27 @@ describe('G863: a short room\'s band colour', () => {
 
   it('game.js: the band and the canvas clear take the scene\'s colour while there is a band, the page blue otherwise', () => {
     const game = read('public/game.js');
-    assert.match(game, /const sky = band >= 1 \? viewSceneLayer\?\.skyTop \|\| '' : '';/);
+    assert.match(game, /const sky = band >= 1 \? shortSceneBand\(viewSceneLayer\?\.skyTop\) : '';/);
     assert.match(game, /const clear = \/\^#\[0-9a-f\]\{6\}\$\/i\.test\(sky\) \? parseInt\(sky\.slice\(1\), 16\) : STAGE_CLEAR;/);
     assert.match(game, /const STAGE_CLEAR = 0x8ec8e8;/);
     assert.match(game, /background: STAGE_CLEAR,/);
     assert.match(read('public/style.css'), /--c-sky-80: #8ec8e8;/);
+  });
+});
+
+describe('G880 (Austin 2026-11-16): the band is dark everywhere a scene is shorter than the screen', () => {
+  const street = (tsid) => JSON.parse(read(`public/assets/streets/${tsid}.json`));
+  it('a scene\'s own dark top keeps it; a light one (a street\'s sky, the yard, a sunny room) gets the dark border', () => {
+    assert.equal(SHORT_SCENE_BAND, ROOM_NO_SKY);
+    // G863's dark colours stay: a Tower floor's timber, the Back Alley's forest, a room with no sky.
+    assert.equal(shortSceneBand('#2a2019'), '#2a2019');
+    assert.equal(shortSceneBand('#08150E'), '#08150e');
+    assert.equal(shortSceneBand(ROOM_NO_SKY), ROOM_NO_SKY);
+    // A street's sky (#348's Froughtful Fen olive, the painted fallback), a light room sky, the yard (no colour).
+    assert.equal(shortSceneBand(stageSkyColour(street('GTJ103U2KJK1BLG'))), SHORT_SCENE_BAND);
+    assert.equal(shortSceneBand(stageSkyColour({})), SHORT_SCENE_BAND);
+    assert.equal(shortSceneBand('#3d637a'), SHORT_SCENE_BAND, 'Operation Grow\'s sky top');
+    assert.equal(shortSceneBand(undefined), SHORT_SCENE_BAND);
+    assert.equal(shortSceneBand('rgba(0,0,0,0)'), SHORT_SCENE_BAND);
   });
 });

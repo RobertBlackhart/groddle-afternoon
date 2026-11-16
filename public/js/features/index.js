@@ -37,7 +37,7 @@ import { partySpacesFeature } from './party-spaces-feature.js?v=3a0c1efe';
 import { seasonsFeature } from './seasons-feature.js?v=46edb2bb';
 import { cameraModeFeature } from './camera-mode-feature.js?v=48c30c54';
 import { newxpFeature } from './newxp-feature.js?v=20ac87be';
-import { streetMinimapFeature } from './street-minimap-feature.js?v=5185d2fe';
+import { streetMinimapFeature } from './street-minimap-feature.js?v=1406a28e';
 
 export { questFlagsFeature };
 
@@ -148,7 +148,7 @@ import { tradeFeature } from './trade-feature.js?v=4cfc54a5'; FEATURES.push(trad
 import { ledgerFeature } from './ledger-feature.js?v=cf33ca1e'; FEATURES.push(ledgerFeature);
 import { vendorFinderFeature } from './vendor-finder-feature.js?v=5ba181bd'; FEATURES.push(vendorFinderFeature);
 import { buddiesFeature } from './buddies-feature.js?v=9508c5ab'; FEATURES.push(buddiesFeature);
-import { profilesFeature } from './profiles-feature.js?v=b540747d'; FEATURES.push(profilesFeature);
+import { profilesFeature } from './profiles-feature.js?v=a65b7d8e'; FEATURES.push(profilesFeature);
 import { neighboursMpFeature } from './neighbours-mp-feature.js?v=56e0fd81'; FEATURES.push(neighboursMpFeature);
 import { questsMpFeature } from './quests-mp-feature.js?v=8502a6a5'; FEATURES.push(questsMpFeature);
 import { peatQuestMpFeature } from './peat-quest-mp-feature.js?v=9e8083b2'; FEATURES.push(peatQuestMpFeature);

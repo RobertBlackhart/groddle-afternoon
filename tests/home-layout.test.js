@@ -17,9 +17,9 @@ import { homedir } from 'node:os';
 import {
   HOME_LAYOUT_ART_ROOTS, HOME_LAYOUT_KINDS, HOME_LAYOUT_LIMITS, HOME_LAYOUT_TEXTS, HOME_LAYOUT_VERSION,
   HOME_FRAME_WINDOW, boxFromCorners, buildHomeLayout, describeHomeThing, hexColour, homeLayoutJson, homeLayoutKeyOf, homeViewFrame, layoutArtPath, splitFrameToSheet,
-} from '../public/js/home-layout.js?v=d66e9d29';
-import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=cfdb21b5';
-import { phoneStage, stageFor } from '../public/js/location-view.js?v=10371e26';
+} from '../public/js/home-layout.js?v=48adaa55';
+import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=fb3969c4';
+import { phoneStage, stageFor } from '../public/js/location-view.js?v=ac404fcb';
 import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=c1d70e5e';
 import { AVATAR_STILL, homeKeyOf } from '../public/js/profiles.js?v=054ca723';
 import { HIRES_SPRITES, SPLIT_SPRITES } from '../public/js/sprite-hires.js?v=b59156cf';

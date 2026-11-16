@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_PACK_HEIGHT, phoneCameraAnchor, stageFor } from '../public/js/location-view.js?v=10371e26';
+import { MIN_PACK_HEIGHT, phoneCameraAnchor, stageFor } from '../public/js/location-view.js?v=ac404fcb';
 import { MIN_GROUND_CLEARANCE, cameraTargetY } from '../public/js/movement.js?v=f05bb30a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -9,8 +9,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { resolveUiMode, createUiMode, UI_STORAGE_KEY, UI_SIZE_KEY, UI_MODE_EVENT } from '../public/js/classic/ui-mode.js?v=6012d3c7';
-import { interfaceMenuLabel, isPreferencesKey, PREFS_TITLE } from '../public/js/classic/classic-prefs.js?v=248047eb';
+import { resolveUiMode, createUiMode, UI_STORAGE_KEY, UI_SIZE_KEY, UI_MODE_EVENT } from '../public/js/classic/ui-mode.js?v=610e021b';
+import { interfaceMenuLabel, isPreferencesKey, PREFS_TITLE } from '../public/js/classic/classic-prefs.js?v=b4fc3191';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -2452,7 +2452,7 @@ body.nx-hide-mood.nx-hide-energy .meta-vitals { visibility: hidden; }
   box-shadow: 0 12px 40px var(--shadow);
   border: 1px solid var(--c-slate-83);
   border-top: 0;
-  /* --stage-sky (#348, game.js syncLocationViewHeight): a short street's own sky in the band above it. */
+  /* --stage-sky (#348, G880, game.js syncLocationViewHeight): the dark band above a scene shorter than an upright phone. */
   background: var(--stage-sky, var(--c-sky-80));
 }
 

@@ -297,6 +297,28 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
   };
 }
 
+/** G880: the band's colour over a scene with no dark colour of its own (the narrow street's border, style.css --c-grey-29). */
+export const SHORT_SCENE_BAND = '#2a2a2a';
+/** G880: the most a scene's own top colour may light (relative luminance, 0 to 1) and still fill the band. */
+export const SHORT_SCENE_BAND_MAX_LUMA = 0.05;
+
+/**
+ * PURE (G880, Austin 2026-11-16): the colour of the band an upright phone leaves above a scene
+ * shorter than the screen. Dark everywhere: a scene whose own top colour is dark keeps it (a Tower
+ * floor's timber wall, the Back Alley's forest, G863), every other one (a street's light sky, #348,
+ * the ground floor's yard, a sunny quest room) gets SHORT_SCENE_BAND. `skyTop` is a #rrggbb.
+ */
+export function shortSceneBand(skyTop) {
+  const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(String(skyTop || ''));
+  if (!m) return SHORT_SCENE_BAND;
+  const lin = (h) => {
+    const c = parseInt(h, 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const luma = 0.2126 * lin(m[1]) + 0.7152 * lin(m[2]) + 0.0722 * lin(m[3]);
+  return luma <= SHORT_SCENE_BAND_MAX_LUMA ? String(skyTop).toLowerCase() : SHORT_SCENE_BAND;
+}
+
 /**
  * PURE (TOUCH PORTRAIT): the stage of an upright phone (the phone gate's phone, a window taller
  * than wide). The width floor that keeps a computer's view 960 px wide drew a portrait iPhone's

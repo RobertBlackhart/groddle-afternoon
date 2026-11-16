@@ -23,7 +23,7 @@ import {
   tabRow,
 } from '../public/js/ui/social-drawer.js?v=b3a12e19';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
-import { paneLayout } from '../public/js/classic/classic-panes.js?v=522247e9';
+import { paneLayout } from '../public/js/classic/classic-panes.js?v=099a8b97';
 import { memoryStore, page } from './social-fake-dom.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
