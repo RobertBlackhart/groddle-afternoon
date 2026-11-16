@@ -247,11 +247,13 @@ describe('gut tubes', () => {
   });
 
   test('a phone flips with its Jump button, and the toasts name it (Greyving Grays chat "stuck", 2026-11-13)', async () => {
-    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=b9d23ba0');
+    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=1d819ba5');
     const src = readFileSync(join(root, 'public/js/features/puzzles-feature.js'), 'utf8');
     // The phone has no Space key: its Jump button sends TOUCH_JUMP_EVENT (game.js installTouchControls).
     assert.match(src, /window\.addEventListener\(TOUCH_JUMP_EVENT, \(\) => flipGravity\(engine\)\);/);
-    assert.match(src, /if \(e\.code !== 'Space' \|\| e\.repeat\) return;[\s\S]{0,200}flipGravity\(engine\);/);
+    // Space on a keyboard (and Up/Down, report #390: gravityFlipKey).
+    assert.match(src, /if \(code === 'Space'\) return true;/);
+    assert.match(src, /if \(!gravityFlipKey\(e\.code, [\s\S]{0,120}\)\) return;\s*flipGravity\(engine\);/);
     const toasts = Object.values(data).flatMap((def) => [...(def.arrival || []), ...(def.triggers || [])].map((r) => r.toast).filter(Boolean));
     const spaced = toasts.filter((t) => /Space/.test(t));
     assert.ok(spaced.length >= 5);

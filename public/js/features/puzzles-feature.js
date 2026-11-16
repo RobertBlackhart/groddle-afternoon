@@ -574,10 +574,11 @@ function stepInverted(engine, p, height) {
 }
 
 /**
- * Gut tubes: Space flips which way is down. The lost boxes that flipped
- * gravity at each bend of the serpentine and spiral tubes cannot be placed
- * from the archive, so the traveller works the street's own invert/reset
- * scripts instead (def.gravityToggle names them).
+ * Gut tubes: Space flips which way is down (and Up and Down, gravityFlipKey).
+ * Where the archive lost the boxes that flipped gravity at each bend, the
+ * traveller works the street's own invert/reset scripts instead
+ * (def.gravityToggle names them); Duodenal Browns and Organish Chute have
+ * their bend boxes back.
  */
 let flipKeysBound = false;
 /**
@@ -598,13 +599,28 @@ function flipGravity(engine) {
   return true;
 }
 
+/**
+ * Whether a key flips gravity on a street with a gravity toggle: Space either way; Down (or S)
+ * puts a reversed avatar back on its feet, Up (or W) turns a right-way-up one over, a manual
+ * fallback beside the bend boxes (report #390: pinned head first in a tube's corner, Down did
+ * nothing). Never while climbing: there Up and Down are the ladder's (the gut streets have none).
+ */
+export function gravityFlipKey(code, inverted, { climbing = false } = {}) {
+  if (code === 'Space') return true;
+  if (climbing) return false;
+  if (code === 'ArrowDown' || code === 'KeyS') return inverted;
+  if (code === 'ArrowUp' || code === 'KeyW') return !inverted;
+  return false;
+}
+
 function bindGravityFlip(engine) {
   if (flipKeysBound || typeof window === 'undefined') return;
   flipKeysBound = true;
   window.addEventListener('keydown', (e) => {
-    if (e.code !== 'Space' || e.repeat) return;
+    if (e.repeat) return;
     const tag = String(e.target?.tagName || '').toLowerCase();
     if (tag === 'input' || tag === 'textarea') return;
+    if (!gravityFlipKey(e.code, locationEventsApi.gravity() < 0, { climbing: Boolean(engine.player?.climbing) })) return;
     flipGravity(engine);
   });
   window.addEventListener(TOUCH_JUMP_EVENT, () => flipGravity(engine));

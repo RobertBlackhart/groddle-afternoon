@@ -65,6 +65,7 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
   let puzzles;
   let events;
   let api;
+  let gravityFlipKey;
   before(async () => {
     class Display {
       constructor() { this.anchor = { set() {} }; this.scale = { set() {} }; this.children = []; this.x = 0; this.y = 0; }
@@ -78,7 +79,9 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     globalThis.PIXI = { Sprite, Container: Display, Graphics: Display, Text: Display, Texture, ImageSource, Rectangle: class {} };
     globalThis.Image ||= class { set src(v) { this._s = v; } decode() { return Promise.resolve(); } };
     globalThis.fetch = async () => ({ json: async () => raw });
-    ({ puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=b9d23ba0'));
+    // The flip keys listen on the window (bindGravityFlip).
+    if (typeof globalThis.window === 'undefined') globalThis.window = new EventTarget();
+    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=1d819ba5'));
     ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=f2b6c156'));
   });
 
@@ -129,7 +132,12 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     const hold = (k) => { keys.clear(); if (k) keys.add(k); };
     const steer = (tx) => hold(p.x < tx - 12 ? 'ArrowRight' : p.x > tx + 12 ? 'ArrowLeft' : null);
     const clear = () => { puzzles.onStreetClear(engine); events.onStreetClear(engine); };
-    return { engine, p, frame, hold, steer, clear };
+    // A key press as the browser sends it; the flip waits 300 ms between flips (flipGravity).
+    const press = async (code) => {
+      await new Promise((r) => setTimeout(r, 320));
+      globalThis.window.dispatchEvent(Object.assign(new Event('keydown'), { code, key: code, repeat: false }));
+    };
+    return { engine, p, frame, hold, steer, clear, press };
   }
 
   it('from the foot of the right shaft to the mouth without Space: every bend turns the traveller over', async () => {
@@ -159,6 +167,36 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
       }
     }
     assert.equal(w.engine.left, 'GA5GNCQ4T3137M7', 'out of the mouth to Indulcet Fames');
+    w.clear();
+  });
+
+  it('Down puts a reversed avatar back on its feet, Up turns it over; never while climbing', () => {
+    assert.equal(gravityFlipKey('ArrowDown', true), true);
+    assert.equal(gravityFlipKey('KeyS', true), true);
+    assert.equal(gravityFlipKey('ArrowDown', false), false, 'already the right way up');
+    assert.equal(gravityFlipKey('ArrowUp', false), true);
+    assert.equal(gravityFlipKey('KeyW', false), true);
+    assert.equal(gravityFlipKey('ArrowUp', true), false, 'already head first');
+    assert.equal(gravityFlipKey('ArrowUp', false, { climbing: true }), false, 'Up climbs a ladder');
+    assert.equal(gravityFlipKey('Space', true), true);
+    assert.equal(gravityFlipKey('ArrowLeft', true), false);
+  });
+
+  it('pinned head first in the first tube\'s top-left corner, Down drops the avatar and Up turns it over again', async () => {
+    const w = await enter(2720, 377);
+    api.fire(w.engine, 'gut_invert');
+    for (let f = 0; f < 20; f += 1) w.frame();
+    w.hold('ArrowLeft');
+    for (let f = 0; f < 90; f += 1) w.frame();
+    w.hold(null);
+    assert.ok(Math.abs(w.p.x - 2525) < 4 && w.p.y < 700, `the corner of the report (${Math.round(w.p.x)}, ${Math.round(w.p.y)})`);
+    assert.equal(api.gravity(), -1);
+    await w.press('ArrowDown');
+    assert.equal(api.gravity(), 1, 'Down: the right way up');
+    for (let f = 0; f < 200; f += 1) w.frame();
+    assert.ok(w.p.y > 2000, 'fell down the tube');
+    await w.press('ArrowUp');
+    assert.equal(api.gravity(), -1, 'Up: head first again');
     w.clear();
   });
 
