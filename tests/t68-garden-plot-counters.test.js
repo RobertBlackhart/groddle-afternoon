@@ -15,7 +15,7 @@ import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/c
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { acceptOffer, routeQuestEvent, gardenPlotEvents } from '../public/js/quest-offers.js?v=38a0cac5';
 import { createGarden, listPlotKeys } from '../public/js/garden.js?v=a5191e8b';
-import { runVerb } from '../public/content.js?v=bab1ae3f';
+import { runVerb } from '../public/content.js?v=d88e8a71';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const PUB = join(here, '../public');

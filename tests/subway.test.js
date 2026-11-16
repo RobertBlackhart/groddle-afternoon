@@ -27,7 +27,11 @@ import {
   FARE,
   RIDE_COUNTER,
   STATIONS,
+  STATION_BOUNDS,
   STATION_FLOOR,
+  STATION_SPOTS,
+  STATION_X,
+  STATION_Y_CAM_OFFSET,
   SUBWAY_ART,
   SUBWAY_BADGES,
   SUBWAY_LINE,
@@ -54,8 +58,8 @@ import {
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=d6ae04bb';
-import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=11a1d1a6';
+} from '../public/js/subway.js?v=30f38f50';
+import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=fa84aa99';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -267,6 +271,39 @@ describe('Ride badges (achievements subwayfarer, ground_hogger, commuter_mug, ch
   it('counts once per boarding in the source', () => {
     const transit = readFileSync(join(GSJS, 'locations/inc_transit.js'), 'utf8');
     assert.ok(transit.includes("pc.achievements_increment('transit', cfg.type+'s_entered');"));
+  });
+});
+
+describe('G838 (#385): the station as the 2012 snaps show it', () => {
+  const feature = readFileSync(join(pub, 'js/features/subway-feature.js'), 'utf8');
+  it('is a 1500 px street centred on x 0, the stairs flush left, the map post at the step-off spot', () => {
+    assert.deepEqual([STATION_BOUNDS.l, STATION_BOUNDS.r], [-750, 750]);
+    assert.equal(STATION_X.stairs - 132 / 2, STATION_BOUNDS.l);
+    assert.equal(STATION_SPOTS['Groddle Forest Junction'].map[0], SUBWAY_LINE.stations[0].x);
+  });
+  it('hangs each station\'s sign over the crack\'s right end, high on the wall', () => {
+    assert.equal(Object.keys(STATION_SPOTS).length, STATIONS.length);
+    for (const station of STATIONS) {
+      assert.ok(STATION_SPOTS[station.name], station.name);
+      const sign = stationArt(station).find((row) => row.piece.startsWith('sub_sign_'));
+      // GFJ snap: board 216-389 x 190-251 px, so world x -534 to -361, about 330 px over the floor.
+      assert.equal(sign.w, 174, station.name);
+      assert.ok(sign.x > STATION_X.crack && sign.x < STATION_X.column, station.name);
+      assert.ok(STATION_FLOOR - sign.y > 290, `${station.name}: ${STATION_FLOOR - sign.y} px over the floor`);
+    }
+    const gfj = stationArt(STATIONS[0]).find((row) => row.piece === 'sub_sign_groddle_forest_junction');
+    assert.deepEqual([gfj.x, gfj.y - gfj.h / 2], [-447, -498]);
+    assert.ok(!stationArt(STATIONS[0]).some((row) => row.piece === 'wallpipe_1'), 'no dripping pipe in any snap');
+  });
+  it('puts A Red Button on the green gate box under its grille, not on the stone block', () => {
+    assert.match(feature, /piece: 'subway_gate', x: STATION_X\.button, y: STATION_FLOOR - 37, w: 26, h: 45/);
+    const gate = stationArt(STATIONS[0]).find((row) => row.piece === 'subway_gate_static');
+    // The box is the left 55% of subway_gate_static; the stone block the right.
+    assert.ok(STATION_X.button < gate.x - gate.w * 0.1 && STATION_X.button > gate.x - gate.w / 2);
+  });
+  it('frames the platform as the client did, the feet low in the view', () => {
+    assert.equal(STATION_Y_CAM_OFFSET, 216);
+    assert.equal(stationStreet(STATIONS[0]).physics.setting.y_cam_offset, 216);
   });
 });
 

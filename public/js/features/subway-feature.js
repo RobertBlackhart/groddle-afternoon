@@ -89,9 +89,10 @@ import {
   stationById,
   stationByTsid,
   stationScreen,
+  stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=d6ae04bb';
+} from '../subway.js?v=30f38f50';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 
 export const SUBWAY_FEATURE_ID = 'subway';
@@ -609,8 +610,9 @@ function addSprite(engine, row, bounds) {
 function drawStation(engine, street, station) {
   const b = street.bounds;
   for (const row of stationArt(station)) addSprite(engine, row, b);
-  // A Red Button, on the gate block's face.
-  const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.gate + 26, y: STATION_FLOOR - 70, w: 27, h: 47, z: 4 }, b);
+  // A Red Button on the green gate box's face, under the grille, as the 2012 snaps show it (G838, #385);
+  // it stood on the stone block beside the box before.
+  const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 26, h: 45, z: 4 }, b);
   button.eventMode = 'static';
   button._worldHitW = 150;
   button._worldHitH = 200;
@@ -622,7 +624,9 @@ function drawStation(engine, street, station) {
     sprite: button,
     subway: 'gate',
   }));
-  const post = addSprite(engine, { piece: 'subway_map', x: STATION_X.map, y: STATION_FLOOR + 8, w: 95, h: 160, z: 4 }, b);
+  // The Subway Map post where the station's snap shows it (subway.js STATION_SPOTS).
+  const [mapX, mapY] = stationSpots(station).map;
+  const post = addSprite(engine, { piece: 'subway_map', x: mapX, y: mapY, w: 95, h: 160, z: 4 }, b);
   post.eventMode = 'static';
   targets.push(engine.register({
     classId: 'subway_map',

@@ -366,21 +366,51 @@ export const lineText = Object.freeze({
 /* ------------------------------------------------------------------ */
 
 /*
- * The station, world space (x right, y up negative), floor at the source's
- * arrival y -136. Left to right as in the footage (VVyjuuRxDUw t0000-t0012,
- * bvOH7rsQ6qo t0000-t0016, ~1.45 world px per video px): the stairs up to
- * the street, a crack with a pipe in the stone wall, the station's sign, a
- * column, the Subway Map post, the spot where riders step off (x 0), a crack
- * running down the wall, then the train's nose standing at the platform
- * with the ticket post and the gate block (A Red Button) in front of it.
- * The remake's camera shows ~330 px over the feet (the client ~480), so the
- * sign and cracks hang a little lower than in the footage.
+ * The station, world space (x right, y up negative), floor at the source's arrival y -136. G838
+ * (#385): laid out from the 2012 whole-street snaps of all 12 stations (research/eleven-snaps/Subway,
+ * 1500 x 700 renders at 1:1, reference only), each piece found by matching our own CC0 subway1.swf art
+ * against them. A Glitch street is centred on x 0, so the station runs -750 to 750 and the source's
+ * step-off spot (transit_disembark_callback x 0) falls at the Subway Map post, where riders arrive in
+ * bvOH7rsQ6qo t047. Left to right: the stairs flush with the left end, the crack with its pipes, the
+ * station's sign up above the crack's right end, the column, the Subway Map post, a crack running down
+ * the wall, then the train's nose with the ticket post and the green gate box, A Red Button on its
+ * face under the grille. Every station is the same but for its sign and the map post (STATION_SPOTS).
+ * Snap px map to world as x - 750, y - 719 (the avatar's feet in the GFJ snap at y 583).
  */
 export const STATION_FLOOR = -136;
-export const STATION_BOUNDS = Object.freeze({ l: -960, r: 850, t: -640, b: -50 });
-// The stairs' flat back stands flush with the station's left end (l -960 + 132 / 2), as in the footage;
-// 34 px further in, their cut-off side showed (Austin, 2026-10-25).
-export const STATION_X = Object.freeze({ stairs: -894, crack: -690, sign: -500, column: -330, map: -150, arrive: 0, crack2: 130, train: 210, post: 420, gate: 560 });
+export const STATION_BOUNDS = Object.freeze({ l: -750, r: 750, t: -640, b: -50 });
+// The stairs' flat back stands flush with the station's left end (l -750 + 132 / 2), as in the snaps.
+// `train` is the nose's left edge; `sign` and `map` are GFJ's (STATION_SPOTS has each station's).
+export const STATION_X = Object.freeze({ stairs: -684, crack: -627, sign: -447, column: -212, map: 0, arrive: 0, crack2: 24, train: 155, post: 377, gate: 478, button: 437, floorCrack: -544 });
+
+/**
+ * Each station's sign (centre x, centre y) and Subway Map post (centre x, foot y), world px, read off
+ * its snap: the signs hang 173 px wide at slightly different spots, Pitika Parse's post stands 72 px
+ * further right. Missing stations take GFJ's.
+ */
+export const STATION_SPOTS = Object.freeze({
+  'Groddle Forest Junction': { sign: [-447, -498], map: [0, -174] },
+  'Eastern Approach': { sign: [-445, -493], map: [0, -174] },
+  'Gregarious Grange': { sign: [-451, -488], map: [0, -174] },
+  'Jutuan Central': { sign: [-416, -466], map: [0, -174] },
+  'Kongu Hop': { sign: [-449, -489], map: [10, -165] },
+  'Mallos Means': { sign: [-451, -501], map: [8, -162] },
+  'Onto Parada': { sign: [-450, -489], map: [0, -174] },
+  'Pitika Parse': { sign: [-418, -476], map: [72, -173] },
+  'Somewhat Sump': { sign: [-390, -483], map: [0, -174] },
+  'Tallish Crest': { sign: [-444, -494], map: [0, -174] },
+  'Thiruvan Thrive': { sign: [-450, -489], map: [2, -162] },
+  'Torpan Cleft': { sign: [-449, -493], map: [0, -174] },
+});
+/** The sign's drawn width in the snaps (the art keeps its own shape). */
+export const STATION_SIGN_W = 174;
+/**
+ * The station's camera: the client framed the platform with the feet about 0.86 down the location
+ * view (bvOH7rsQ6qo t003, VVyjuuRxDUw t001), y_cam_offset 216 (movement.js yCamOffsetAnchor:
+ * 0.5 + 216 / 600). At the default 150 the sign over the crack hung above the top of the view.
+ */
+export const STATION_Y_CAM_OFFSET = 216;
+export const stationSpots = (station) => STATION_SPOTS[station?.name] || STATION_SPOTS['Groddle Forest Junction'];
 
 const art = (piece, x, y, z, extra = {}) => {
   const [, w, h] = SUBWAY_ART[piece] || [null, 0, 0];
@@ -400,18 +430,22 @@ export function stationArt(station) {
   tiles('wall_1', F - 160 - 220, -71);
   tiles('ceiling_1', F - 410, -66);
   tiles('back_platform_1', F - 120, -64);
-  rows.push(art('wall_crack_1', X.crack, F - 150, -62));
-  rows.push(art('wallpipe_1', X.crack + 10, F - 265, -61));
-  rows.push(art(signPiece(station), X.sign, F - 170, -60));
-  rows.push(art('wall_crack_2', X.crack2, F - 130, -62));
-  // The train stands in the trench: nose at the left, body running off the right end.
-  rows.push(art('train_1', X.train + SUBWAY_ART.train_1[1] / 2, F - 120, -56));
-  rows.push(art('platform_crack_1', -40, F + 30, -48));
-  // The column's foot stands 44 px nearer than the walking line, so it draws over the avatar (zIndex 50, game.js makePlayer; Austin, 2026-10-29).
-  rows.push(art('column_1', X.column, F + 44, 60, { w: 70, h: 600 }));
-  rows.push(art('ticket_post_back', X.post, F + 10, -24));
-  rows.push(art('subway_gate_static', X.gate, F + 14, -22));
-  rows.push(art('door_asset_stairs', X.stairs, F + 12, -40));
+  // The crack with its pipes, drawn 1.2 times its art in the snaps; the narrow crack at 0.8.
+  rows.push(art('wall_crack_1', X.crack, F - 238, -62, { w: 247, h: 122 }));
+  const piece = signPiece(station);
+  const [, sw, sh] = SUBWAY_ART[piece] || [null, 135, 56];
+  const signH = Math.round((STATION_SIGN_W * sh) / sw);
+  const [signX, signY] = stationSpots(station).sign;
+  rows.push(art(piece, signX, signY + signH / 2, -60, { w: STATION_SIGN_W, h: signH }));
+  rows.push(art('wall_crack_2', X.crack2, F - 203, -62, { w: 59, h: 118 }));
+  // The train stands in the trench: nose at the left, body running off the right end (0.91 of the art).
+  rows.push(art('train_1', X.train + 629 / 2, F - 129, -56, { w: 629, h: 297 }));
+  rows.push(art('platform_crack_1', X.floorCrack, F - 10, -48));
+  // The column's foot stands nearer than the walking line, so it draws over the avatar (zIndex 50, game.js makePlayer; Austin, 2026-10-29).
+  rows.push(art('column_1', X.column, F + 36, 60));
+  rows.push(art('ticket_post_back', X.post, F - 63, -24));
+  rows.push(art('subway_gate_static', X.gate, F + 40, -22));
+  rows.push(art('door_asset_stairs', X.stairs, F - 2, -40));
   return rows;
 }
 
@@ -522,7 +556,7 @@ export function carBenches() {
 
 const why = Object.freeze({
   street: 'config_prod.js transit_instances.subway_1 and inc_data_maps_prod.js; no location XML (the stations and the train are not in tinyspeck/glitch-locations).',
-  look: 'Footage VVyjuuRxDUw and bvOH7rsQ6qo (Lily Linguistic, reference only) at ~1.45 world px per video px; art from subway1.swf (js/subway-art.js).',
+  look: 'Station: the 2012 whole-street snaps of all 12 stations (1:1, reference only); car: footage VVyjuuRxDUw and bvOH7rsQ6qo (reference only) at ~1.45 world px per video px; art from subway1.swf (js/subway-art.js).',
 });
 
 export const STATION_MUSIC = 'SUBWAY_STATION_HUM';
@@ -545,7 +579,7 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
   const door = {
     id: 'door_subway_stairs',
     x: STATION_X.stairs - l,
-    y: STATION_FLOOR + 12 - t,
+    y: STATION_FLOOR - 2 - t,
     w: sw,
     h: sh,
     sprite: 'door_asset_stairs',
@@ -563,7 +597,7 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     },
   };
   return {
-    source: `reconstruction: ${station.label} (${station.tsid}, not in tinyspeck/glitch-locations); one station layout from footage with subway1.swf art`,
+    source: `reconstruction: ${station.label} (${station.tsid}, not in tinyspeck/glitch-locations); laid out from the 2012 station snaps with subway1.swf art`,
     reconstructed: true,
     tsid: station.streetTsid,
     label: station.label,
@@ -572,6 +606,7 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     swf_file: 'subway1.swf',
     musicFile: STATION_MUSIC,
     ownLight: true,
+    physics: { setting: { y_cam_offset: STATION_Y_CAM_OFFSET }, delta: {} },
     bounds: { ...STATION_BOUNDS },
     platforms,
     layers: [{ id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: stationDecos() }],
@@ -581,7 +616,7 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     gradient: { top: '3A3B36', bottom: '55564F' },
     ladders: [],
     subway: { station: station.id },
-    why: { ...why, layout: 'Stairs, wall crack and pipe, the station sign, a column, the Subway Map post, the step-off spot (x 0, y -136 as in transit_disembark_callback), the train nose with the ticket post and gate block.' },
+    why: { ...why, layout: 'Stairs, wall crack, the station sign, a column, the Subway Map post at the step-off spot (x 0, y -136 as in transit_disembark_callback), the train nose with the ticket post and the gate box with A Red Button, as the 2012 snaps show.' },
   };
 }
 
