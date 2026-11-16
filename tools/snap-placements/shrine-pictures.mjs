@@ -35,7 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { platformYAt, platformsScreen } from '../../public/js/street-model.js?v=2918abe5';
-import { FRONT_HIDE_SHARE, PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=3d348213';
+import { FRONT_HIDE_SHARE, PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=36f44f2a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const check = process.argv.includes('--check');
@@ -78,7 +78,7 @@ export function standsOnReserved(reserved, x, y) {
   const top = y - PLACEMENT_HEIGHTS.shrine;
   for (const r of reserved) {
     const b = r.block;
-    if (!b || r.front) continue;
+    if (!b || r.front || r.branch) continue;
     if (/^(node|mailbox):/.test(r.key)) {
       if (x + half > b.l && x - half < b.r && y > b.t && top < b.b) return r.key;
     } else if (x > b.l && x < b.r && y > b.t && y <= b.b + 2) {

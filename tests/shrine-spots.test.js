@@ -25,7 +25,7 @@ import {
   setStreetEcologyCatalog,
   shrinePlacementRequest,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=3d348213';
+} from '../public/js/street-ecology.js?v=36f44f2a';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 import { NUDGE_PX, SEAT_PX, seatOnFloor, standsOnReserved } from '../tools/snap-placements/shrine-pictures.mjs';

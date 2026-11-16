@@ -988,6 +988,69 @@ export const DECK_RUN_PX = 240;
 export const DECK_GROUPS = Object.freeze(['rocks']);
 
 /**
+ * G852, #394: rocks on tree branches. A deck (DECK_RUN_PX) is any upper floor 240 px wide, and a
+ * pine's branch is a floor line 242-290 px wide drawn by branch art, so Hechey Track and 15 other
+ * streets had rocks, a shrine, a vendor, patches and animals up in the trees. Of the 720 rocks
+ * players' 2012 snaps show, none stands on branch art (the spawn audit, 2026-11-16), nor any of the
+ * 172 mailboxes: Glitch set them by hand (rock_*.js, npc_mailbox.js obey_physics false) on floors.
+ * A floor spot counts as branch art when a middleground deco named like a branch (BRANCH_ART: the
+ * platform_branch_* pieces (planks laid over branches too), tree_stack_* branches and leaves, pine
+ * clusters, tree tops, bottle-tree panels: the audit's own list) and at most BRANCH_ART_MAX_H tall (a trunk or a
+ * whole tree is taller) holds the spot on its top edge (its box, BRANCH_ART_SLACK px either way),
+ * and another floor lies more than PERCH_DROP_PX under it (the spot's `under`): a branch lying on
+ * the ground is ground. The BRANCH_FREE_GROUPS (every big thing and the walking animals; small
+ * pick-ups such as quoins, apples and Musicblocks may sit in a tree) take such a spot only when no
+ * other spot is left (the plan lists it under `branch`), so none is ever left out and each keeps its
+ * index (a rock's saved ore, a tree's growth).
+ */
+export const BRANCH_ART = /(platform_branch|tree_stack_branch|tree_stack_leafy|pinecluster|treetop|bottletree_(?!body)|platform_bottletree|tree_deciduous|(^|_)branch)/i;
+export const BRANCH_ART_MAX_H = 320;
+export const BRANCH_ART_SLACK = Object.freeze({ above: 12, below: 4 });
+export const BRANCH_FREE_GROUPS = Object.freeze([
+  'trees', 'rocks', 'vendor', 'shrine', 'gardens', 'raceDispenser', 'piggies', 'chickens', 'crabs',
+  'furnitureStone', 'furnitureMailbox', 'furnitureBoard',
+  'resource:peat_1', 'resource:dirt_pile', 'resource:paper_tree',
+]);
+/** The patches feature's soil groups (patches-feature.js SOIL_GROUP_PREFIX) are big things too. */
+const BRANCH_FREE_PREFIXES = Object.freeze(['soil:']);
+
+/** PURE: whether a planner group keeps off branch art while any other spot is left. */
+export function branchFreeGroup(key) {
+  const k = String(key || '');
+  return BRANCH_FREE_GROUPS.includes(k) || BRANCH_FREE_PREFIXES.some((p) => k.startsWith(p));
+}
+
+/**
+ * The street's middleground branch art (BRANCH_ART) as `{ key, branch: true, block }` in screen
+ * space, for streetReservedSpots. Like the front decos they keep nothing clear; the planner only
+ * reads them to know which floor spots are branches (onBranchArt). Middleground decos sit in world
+ * px, bottom centre, as the floor lines do.
+ */
+export function branchArtCovers(street) {
+  const out = [];
+  if (!street?.bounds) return out;
+  for (const layer of street.layers || []) {
+    if (!(layer?.name === 'middleground' || Number(layer?.z) === 0)) continue;
+    (layer.decos || []).forEach((d, i) => {
+      const w = Number(d?.w) || 0;
+      const h = Number(d?.h) || 0;
+      if (!Number.isFinite(d?.x) || !Number.isFinite(d?.y) || d.hidden || !w || !h || h > BRANCH_ART_MAX_H) return;
+      if (!BRANCH_ART.test(String(d.sprite || ''))) return;
+      const p = worldToScreen(street, d.x, d.y);
+      out.push({ x: p.x, y: p.y, key: `branch:${i}`, branch: true, block: { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h, b: p.y } });
+    });
+  }
+  return out;
+}
+
+/** PURE: whether a planner spot (buildPlatformCandidates) is a branch over another floor (branchArtCovers). */
+export function onBranchArt(candidate, branches) {
+  if (!((candidate?.under || 0) > 0) || !branches?.length) return false;
+  const { x, y } = candidate;
+  return branches.some(({ block: b }) => b && x >= b.l && x <= b.r && y >= b.t - BRANCH_ART_SLACK.above && y <= b.b + BRANCH_ART_SLACK.below);
+}
+
+/**
  * Keep-clear fixtures (lane DOORCLEAR, 2026-10-31): a Fruit Tree planted on
  * Groddle Forest Junction's subway steps (door_1, door_asset_subway_forest_heights_1,
  * 294 x 294 at 4099, 1063) hid half the way down. The planner reserves the
@@ -1092,6 +1155,7 @@ export function streetReservedSpots(street) {
   });
   out.push(...measuredNodeCovers(street?.tsid));
   out.push(...frontDecoCovers(street));
+  out.push(...branchArtCovers(street));
   return out;
 }
 
@@ -1459,8 +1523,8 @@ export function footAtWalkway(spot, footprint, walkways) {
 export function blockingFixture(spot, fixtures, { footprint = 0, height = 0 } = {}) {
   for (const fixture of fixtures || []) {
     const b = fixture?.block;
-    // A front deco (frontDecoCovers) covers things; nothing covers it.
-    if (!b || fixture.front) continue;
+    // A front deco (frontDecoCovers) covers things; nothing covers it. Branch art (G852) only marks floors.
+    if (!b || fixture.front || fixture.branch) continue;
     if (footprint > 0 && height > 0) {
       if (spot.x - footprint / 2 < b.r && b.l < spot.x + footprint / 2 && spot.y - height < b.b && b.t < spot.y) return fixture;
     } else if (fixture.doorway && spot.x > b.l && spot.x < b.r && spot.y >= b.t && spot.y <= b.b + DOORWAY_DROP_PX) {
@@ -1651,6 +1715,12 @@ export function buildPlatformCandidates(platforms, { worldW = 2500, seed = '', u
   return candidates;
 }
 
+/**
+ * G852 measured the vertical weight (the spawn census, 2026-11-16): it is not what put big things up
+ * trees. With 1.0 instead of 1.75 planned rocks on an upper floor fell only from 63% to 60% (Glitch's
+ * snaps 48%: the deck rule and every-height pool set that), things on short high ledges rose from 5 to
+ * 10, and every street's layout moved; branch art (onBranchArt) is the rule that keeps them down.
+ */
 function scaledDistance(a, b, verticalScale = 1.75) {
   return Math.hypot(a.x - b.x, (a.y - b.y) * verticalScale);
 }
@@ -1713,7 +1783,10 @@ export function planStreetPlacements(
   // Front decos (frontDecoCovers) keep nothing clear; they only rank the spots they hide.
   const fronts = (reserved || []).filter((p) => p?.front && p.block);
   const walkways = frontDecoWalkways(platforms, fronts);
-  const occupied = (reserved || []).filter((p) => !p?.front && Number.isFinite(p?.x) && Number.isFinite(p?.y))
+  // Branch art (branchArtCovers, G852) keeps nothing clear either: it marks the spots big things take last.
+  const branches = (reserved || []).filter((p) => p?.branch && p.block);
+  const onBranch = new Set(branches.length ? candidates.filter((c) => onBranchArt(c, branches)).map((c) => c.id) : []);
+  const occupied = (reserved || []).filter((p) => !p?.front && !p?.branch && Number.isFinite(p?.x) && Number.isFinite(p?.y))
     .map((point, index) => ({ ...point, key: point.key || `reserved:${index}`, clearance: whole(point.clearance, 120, 600) }));
   // A request's `fixed` points (measured rocks, rockPlacementRequest) are seated before anything is
   // planned: every other group keeps clear of them, and big scenery never covers one (`w` x `h`).
@@ -1745,6 +1818,7 @@ export function planStreetPlacements(
   const perches = [];
   const blocked = [];
   const steep = [];
+  const branch = [];
   const hiddenCache = new Map();
   const edgeCache = new Map();
 
@@ -1761,6 +1835,7 @@ export function planStreetPlacements(
     if (request.key === 'trees') for (const point of groups.trees) canopies.push(canopyOf(point));
     const maxSlope = BIG_THING_GROUPS.includes(request.key) ? BIG_THING_MAX_SLOPE : null;
     const deck = DECK_GROUPS.includes(request.key);
+    const branchFree = request.avatar !== true && branchFreeGroup(request.key);
     const measuredQuoin = request.key === 'quoins' ? nearMeasuredQuoin(tsid) : null;
     const avatar = request.key === 'player' || request.avatar === true;
     const footprint = avatar ? 0 : Number.isFinite(request?.footprint)
@@ -1805,13 +1880,25 @@ export function planStreetPlacements(
       let need = 0;
       if (footprint > 0) {
         let clearNeed = -1;
+        // G852: the room off branch art, so a roomy branch never outranks a floor (offNeed < 0: none left).
+        let offNeed = -1;
+        let offClear = -1;
         for (const candidate of candidates) {
           if (used.has(candidate.id) || candidate.item === false || !steadyAt(candidate)) continue;
           const room = Math.min(footprint, candidate.room || 0);
           need = Math.max(need, room);
           if (!covers.has(candidate.id)) clearNeed = Math.max(clearNeed, room);
+          if (branchFree && !onBranch.has(candidate.id)) {
+            offNeed = Math.max(offNeed, room);
+            if (!covers.has(candidate.id)) offClear = Math.max(offClear, room);
+          }
         }
         if (clearNeed >= 0) need = clearNeed;
+        if (offNeed >= 0) {
+          const off = offClear >= 0 ? offClear : offNeed;
+          // A steady group would be left out on a cramped floor: it may take the roomy branch instead.
+          if (!(steady && !steady.keep && off < footprint)) need = off;
+        }
         // A steady-floor group (STEADY_FLOOR_GROUPS) never takes a cramped spot: it is left out instead.
         if (steady && !steady.keep && need < footprint) break;
         if (need < footprint) fallbacks.push({ key: request.key, index, room: Math.round(need), footprint });
@@ -1854,7 +1941,9 @@ export function planStreetPlacements(
         if (!hidden && height > 0 && footAtWalkway(candidate, footprint, walkways)) hidden = 32;
         // Big things on a floor steeper than BIG_THING_MAX_SLOPE only when nothing else is left.
         const tooSteep = maxSlope != null && (candidate.slope || 0) > maxSlope ? 64 : 0;
-        const tier = tooSteep + (footprint > 0
+        // G852: big things and walkers up a tree's branch art only when nothing else is left.
+        const onBranchArt = branchFree && onBranch.has(candidate.id) ? 128 : 0;
+        const tier = onBranchArt + tooSteep + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
           : 0) + (covers.has(candidate.id) ? (walker ? 16 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {
@@ -1866,6 +1955,7 @@ export function planStreetPlacements(
       if (!best) break;
       if (footprint > 0 && !perching && (best.under || 0) >= footprint && !(deck && (best.run || 0) >= DECK_RUN_PX)) perches.push({ key: request.key, index });
       if (covers.has(best.id)) blocked.push({ key: request.key, index, fixture: covers.get(best.id).key });
+      if (branchFree && onBranch.has(best.id)) branch.push({ key: request.key, index });
       if (maxSlope != null && (best.slope || 0) > maxSlope) steep.push({ key: request.key, index, slope: Math.round(best.slope * 100) / 100 });
       used.add(best.id);
       const point = { x: best.x, y: best.y, id: best.id, key: request.key, clearance, room: best.room || 0 };
@@ -1875,7 +1965,7 @@ export function planStreetPlacements(
     }
   }
 
-  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep };
+  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch };
 }
 
 /**

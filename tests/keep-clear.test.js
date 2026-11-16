@@ -45,7 +45,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=3d348213';
+} from '../public/js/street-ecology.js?v=36f44f2a';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=66addeb7';
@@ -122,8 +122,10 @@ describe('the keep-clear spots (streetReservedSpots)', () => {
       assert.equal(spot.doorway, undefined);
     }
     // Ticket 89: the front decos (frontDecoCovers) ride along, marked `front`, and keep nothing clear.
-    assert.equal(spots.filter((s) => !s.front).length, data.signposts.length + data.doors.length + data.ladders.length);
-    assert.ok(spots.filter((s) => s.front).every((s) => s.block && !s.clearance && !s.doorway));
+    // G852: so does the branch art (branchArtCovers), marked `branch`, keeping nothing clear either.
+    assert.equal(spots.filter((s) => !s.front && !s.branch).length, data.signposts.length + data.doors.length + data.ladders.length);
+    assert.ok(spots.filter((s) => s.front || s.branch).every((s) => s.block && !s.clearance && !s.doorway));
+    assert.ok(spots.some((s) => s.branch));
   });
 
   it('leave out hidden doors, which are never drawn', () => {
