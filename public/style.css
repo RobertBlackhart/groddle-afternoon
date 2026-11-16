@@ -11312,6 +11312,11 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
   :root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-cur img { height: 11px; }
   :root.touch-phone[data-ui="modern"] .top-bar .hud-stats .hud-cur.currants,
   :root.touch-phone[data-ui="modern"] .top-bar .hud-stats #favor-stat { margin-left: 3px; }
+  /* G856 (#405): the pill (100 to 127 px, and still 28 px as a bare bolt) pushed the Menu off the right
+     edge beside favor and the three buttons, so upright it stays off: the energy ring turns amber, then
+     red with a pulse, and a tap on the ring opens the same "something to eat" menu the pill opens
+     (topbar.js installTopBar). Glitch kept low energy on the energy arc alone (PlayerFaceUI.as). */
+  :root.touch-phone[data-ui="modern"] .top-bar .hud-lowpill { display: none; }
 }
 /* #350 (sideways): the iMG is a 20 px line in the bar and a tap often missed it. Its tap area runs the
    bar's whole height, from the screen's top edge down; currants and favor beside it keep their own taps. */

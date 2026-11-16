@@ -93,3 +93,16 @@ describe('the phone bar', () => {
     assert.doesNotMatch(block, /#bug-btn-lift/);
   });
 });
+
+describe('G856 (#405): the low-energy pill stays off the upright phone bar', () => {
+  const portrait = css.slice(css.indexOf('/* #372: upright, the row shares 402 px'), css.indexOf('/* #350 (sideways)'));
+  it('upright, the pill hides, so the Menu keeps its place on the bar', () => {
+    assert.match(portrait, /@media \(orientation: portrait\)/);
+    assert.match(portrait, /:root\.touch-phone\[data-ui="modern"\] \.top-bar \.hud-lowpill \{ display: none; \}/);
+  });
+  it('the energy ring opens what the pill opened, and the pill keeps its words elsewhere', () => {
+    assert.match(src, /getElementById\('low-energy-btn'\)\?\.addEventListener\('click', \(e\) => \{\s*e\.stopPropagation\(\);\s*doc\.querySelector\('\.top-bar \.meta-pill\.energy'\)\?\.click\(\);/);
+    const outside = css.replace(portrait, '');
+    assert.doesNotMatch(outside, /\.hud-lowpill \{ display: none; \}/);
+  });
+});
