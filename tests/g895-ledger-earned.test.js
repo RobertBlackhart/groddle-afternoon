@@ -3,7 +3,8 @@
  * the earning budget (groddle-afternoon-site src/LedgerMath.php earned / markBaseline / check, run
  * through the php CLI on made-up fixture saves), so an honest pack is never corrected for it:
  * a shrine's emblems up to the emblems the shrine record gained, and Gameshow Tickets up to one a
- * shrine donation, each a few a day. A forged pile beyond the record or the day's count is still
+ * shrine donation, each a few a day; a cracked Petrified Rock's pieces and beads up to what the
+ * cracks could give, within the rocks the realtime server's Feat rewards handed out. A forged pile beyond the record or the day's count is still
  * taken back.
  */
 import assert from 'node:assert/strict';
@@ -25,8 +26,8 @@ function php(op, args) {
     $e = Economy::shared();
     $a = $in['args'];
     $out = match ($in['op']) {
-      'check' => LedgerMath::check($a[0], $a[1], [], $a[2], (float) $a[3], 50000.0, $e),
-      'baseline' => LedgerMath::markBaseline($a[0]),
+      'check' => LedgerMath::check($a[0], $a[1], [], $a[2], (float) $a[3], 50000.0, $e, null, fn (): int => (int) ($a[4] ?? 0)),
+      'baseline' => LedgerMath::markBaseline($a[0], (int) ($a[1] ?? 0)),
     };
     echo json_encode($out);`;
   const out = execFileSync('php', ['-r', code], { input: JSON.stringify({ op, args }) });
@@ -42,13 +43,13 @@ const TICKET_WAIT = constant('TICKET_WAIT');
 const counts = (items = {}, currants = 0) => ({ items, currants });
 
 /** A multiplayer save's entries: the pack and the shrine record (js/shrines.js normalizeShrineState). */
-function save({ inv = {}, emblems = {}, donations = 0 } = {}) {
+function save({ inv = {}, emblems = {}, donations = 0, cracked = {} } = {}) {
   return {
     playerState: JSON.stringify({
       version: 7,
       inventory: inv,
       player: { currants: 0, xp: 5000, level: 5 },
-      systems: { quests: { completed: [] }, achievements: { unlocked: [] }, shrines: { emblems, favor: {}, donations } },
+      systems: { quests: { completed: [] }, achievements: { unlocked: [] }, shrines: { emblems, favor: {}, donations }, features: { artifacts: { version: 1, cracked, made: {} } } },
     }),
   };
 }
@@ -158,5 +159,56 @@ describe('G895: the ledger credits a Gameshow Ticket a shrine donation gave', { 
     const r = php('check', [counts({ emblem_zille: 2 }), credited, save({ inv: { emblem_zille: 3, gameshow_ticket: 1 }, emblems: { zille: 3 }, donations: 51 }), 0]);
     assert.deepEqual(r.reconciled.clamped, counts());
     assert.deepEqual(r.after.items, { emblem_zille: 3, gameshow_ticket: 1 });
+  });
+});
+
+describe('G895: the ledger credits the pieces a cracked Petrified Rock gives', { skip }, () => {
+  const CRACK_WAIT = constant('CRACK_WAIT');
+  const ROCKS_BASE_MAX = constant('ROCKS_BASE_MAX');
+
+  it('marks the cracks, the rocks held and the Feat rewards so far, without paying', () => {
+    const rows = php('baseline', [save({ inv: { petrified_rock_small: 2, petrified_rock_large: 1 }, cracked: { petrified_rock_small: 5 } }), 3]);
+    assert.deepEqual(rows, [['mark', 'base', 1], ['mark', 'crackyield', 15], ['mark', 'rockyield', 15 + 3 * 4], ['mark', 'feats', 3]]);
+    const many = php('baseline', [save({ inv: { petrified_rock_small: 500 } }), 0]);
+    assert.deepEqual(many.find((r) => r[1] === 'rockyield'), ['mark', 'rockyield', ROCKS_BASE_MAX * 4], 'the rocks held count only so far');
+  });
+
+  it('a small rock\'s beads stand with no budget after a Feat reward gave the rock', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'crackyield', 6], ['mark', 'rockyield', 6], ['mark', 'feats', 2]]);
+    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_redtigereye_piece: 3 }, cracked: { petrified_rock_small: 3 } }), 0, 3]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.after.items, { artifact_necklace_redtigereye_piece: 3 });
+    assert.deepEqual(rowsOf(r, 'mark'), [['mark', 'crackyield', 9]]);
+    assert.deepEqual(rowsOf(r, 'cap'), [['cap', 'artifact_necklace_redtigereye_piece', 3]], 'they count toward the class\'s daily cap');
+  });
+
+  it('no more than a crack can give: a fourth bead from one small rock is taken back with no budget', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'crackyield', 6], ['mark', 'rockyield', 6], ['mark', 'feats', 2]]);
+    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 4 }, cracked: { petrified_rock_small: 3 } }), 0, 3]);
+    assert.deepEqual(r.after.items, { artifact_necklace_onyx_piece: 3 });
+    assert.deepEqual(r.reconciled.clamped, counts({ artifact_necklace_onyx_piece: 1 }));
+  });
+
+  it('a forged crack count with no Feat reward behind it credits nothing', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'crackyield', 6], ['mark', 'rockyield', 6], ['mark', 'feats', 2]]);
+    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 3 }, cracked: { petrified_rock_small: 50 } }), 0, 2]);
+    assert.deepEqual(r.reconciled.clamped, counts({ artifact_necklace_onyx_piece: 3 }));
+    assert.deepEqual(rowsOf(r, 'mark'), []);
+  });
+
+  it('a forged pile stands at most to the class\'s daily cap, a few more waiting, whatever the rewards', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['cap', 'artifact_necklace_onyx_piece', 10]]);
+    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 400 }, cracked: { petrified_rock_large: 400 } }), 0, 1000]);
+    assert.deepEqual(r.after.items, { artifact_necklace_onyx_piece: 5 }, 'the cap of 15 a day, 10 already counted');
+    assert.deepEqual(r.held.items, { artifact_necklace_onyx_piece: CRACK_WAIT });
+    assert.deepEqual(r.reconciled.clamped, counts({ artifact_necklace_onyx_piece: 400 - 5 - CRACK_WAIT }));
+    assert.deepEqual(rowsOf(r, 'cap'), [['cap', 'artifact_necklace_onyx_piece', 15]]);
+  });
+
+  it('a medium rock\'s two artifact pieces stand, of different artifacts', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'feats', 4]]);
+    const r = php('check', [counts(), credited, save({ inv: { artifact_chicken_brick_piece2: 1, artifact_wooden_apple_piece1: 1 }, cracked: { petrified_rock_medium: 1 } }), 0, 5]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.after.items, { artifact_chicken_brick_piece2: 1, artifact_wooden_apple_piece1: 1 });
   });
 });
