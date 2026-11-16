@@ -119,6 +119,7 @@ import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { pieceUrl } from '../home-wallpaper.js?v=f1969400';
 import { wantsHiresDecos } from '../deco-hires.js?v=f0419bc5';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
+import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=5bc894c8';
 
 /** 3x tower pieces where the screen has more than 2.25 backing pixels per world pixel. */
 function hires(engine) {
@@ -144,6 +145,8 @@ let floorView = null; // { floor, construction, targets }
 let spots = [];
 let panel = null;
 let panelMode = null; // 'project' | 'elevator' | 'customize'
+/** The How many counts while the project window is open: requirement id -> count (#435). */
+const giveQty = new Map();
 let demo = null;
 let autoplay = null;
 let lastPublish = 0;
@@ -827,6 +830,9 @@ const CSS = `
 .ht-styles.is-left img{transform:scaleX(-1)}
 .ht-name input{flex:1;font:inherit;font-size:var(--fs-base);padding:.3rem .45rem;border:1px solid var(--c-gold-78);border-radius:var(--radius-md)}
 .ht-note{margin:.45rem 0 0;font-size:var(--fs-sm);color:var(--c-sand-51b)}
+.ht-give{display:flex;align-items:center;justify-content:flex-end;gap:var(--sp-3);flex-wrap:wrap}
+.ht-give .count-pop-step{gap:var(--sp-2)}
+.ht-card .ht-give .count-pop-step button{padding:.3rem var(--sp-3)}
 @media (max-width:480px){.ht-styles{grid-template-columns:repeat(2,1fr)}.ht-row{grid-template-columns:28px 1fr}.ht-row>div:last-child{grid-column:1/-1}}
 `;
 
@@ -886,6 +892,7 @@ function openPanel(engine, mode) {
 
 function closePanel() {
   if (panel) panel.hidden = true;
+  giveQty.clear();
   panelMode = null;
   releaseTowerLook();
 }
@@ -962,11 +969,7 @@ function renderProject(engine, q, body) {
     text.append(el('small', {}, meta.join(' · ')));
     const acts = el('div');
     if (r.open && r.type === 'item') {
-      const n = Math.min(countItem(engine.inv, r.classId), r.need - r.got);
-      const b = el('button', { type: 'button', class: 'primary', dataset: { htAct: 'give' } }, n ? `Add ${n}` : 'Add');
-      b.disabled = !n;
-      b.addEventListener('click', () => contribute(engine, r.classId, n));
-      acts.append(b);
+      acts.append(givePicker(engine, r, Math.min(countItem(engine.inv, r.classId), r.need - r.got)));
     } else if (r.open && r.type === 'work') {
       const check = workCheck(project.jobId, project.got, r.id, ctx);
       const b = el('button', { type: 'button', class: 'primary', dataset: { htAct: 'work' } }, 'Work');
@@ -982,6 +985,69 @@ function renderProject(engine, q, body) {
   body.append(el('p', { class: 'ht-note' }, project.key === 'project'
     ? 'Your Tower opens with two floors. Add more from inside, up to nine.'
     : `When this project is done your Tower has ${tower.floors + 1} floors.`));
+}
+
+/**
+ * A part's How many (#435): Glitch's tower floors are jobs, and JobDetailsUI.as asks with a
+ * QuantityPicker (63-75: min 1 and a Max button) that starts at 1 (131) and goes up to what you have
+ * and the step still needs (216). The step row is the game's one chooser (js/ui/count-chooser.js);
+ * the button says the count ("Add 3"). Nothing to give shows a greyed Add.
+ */
+function givePicker(engine, r, max) {
+  const top = Math.max(0, Math.floor(Number(max) || 0));
+  const box = el('div', { class: 'ht-give', dataset: { htGive: r.id } });
+  const go = el('button', { type: 'button', class: 'primary', dataset: { htAct: 'give' } }, 'Add');
+  if (!top) {
+    go.disabled = true;
+    box.append(go);
+    return box;
+  }
+  let n = countFromField(giveQty.get(r.id) ?? 1, top);
+  const give = () => {
+    giveQty.delete(r.id);
+    contribute(engine, r.classId, n);
+  };
+  go.addEventListener('click', give);
+  if (top > 1) {
+    box.insertAdjacentHTML('afterbegin', countStepMarkup({
+      value: n,
+      max: top,
+      verb: 'Add',
+      attrs: { dec: 'data-ht-qty-dec', inc: 'data-ht-qty-inc', num: 'data-ht-qty-num', max: 'data-ht-qty-max' },
+    }));
+    const input = box.querySelector('[data-ht-qty-num]');
+    const set = (v, typing = false) => {
+      n = countFromField(v, top);
+      giveQty.set(r.id, n);
+      if (!typing) input.value = String(n);
+      syncCountStep(input, n, top);
+      go.textContent = `Add ${n}`;
+    };
+    box.querySelector('[data-ht-qty-dec]').addEventListener('click', () => set(n - 1));
+    box.querySelector('[data-ht-qty-inc]').addEventListener('click', () => set(n + 1));
+    box.querySelector('[data-ht-qty-max]').addEventListener('click', () => set(top));
+    bindCountField(input, {
+      max: () => top,
+      set: (v) => set(v),
+      preview: (v) => set(v, true),
+      confirm: (v) => {
+        set(v);
+        give();
+      },
+      cancel: () => input.blur(),
+    });
+    box.querySelector('.count-pop-step').addEventListener('keydown', (e) => {
+      if (e.target === input) return;
+      const next = countKeyValue(e.key, n, top);
+      if (next == null) return;
+      e.preventDefault();
+      e.stopPropagation();
+      set(next);
+    });
+  }
+  go.textContent = `Add ${n}`;
+  box.append(go);
+  return box;
 }
 
 function renderElevator(engine, q, body) {
@@ -1418,6 +1484,8 @@ function demoStreet(engine) {
       if (kind !== 'inside' && kind !== 'expand' && Number.isFinite(look)) engine.setCameraLook?.(0, look);
       // QA &towerpanel=customize: open the Customize panel (the Tower's customize verb).
       if (built && engine.param('towerpanel') === 'customize') openPanel(engine, 'customize');
+      // QA &towerpanel=project: the project window (the plans' or the Workbench's verb).
+      if (engine.param('towerpanel') === 'project' && activeProject(tower)) openPanel(engine, 'project');
       startAutoplay(engine);
     });
   }, 0);
