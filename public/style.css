@@ -14221,6 +14221,15 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 .smm-sheet-head h2 { flex: 1 1 auto; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-base); font-weight: var(--fw-bold); }
 .smm-sheet-x { flex: none; width: 44px; height: 44px; margin-right: calc(-1 * var(--sp-3)); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); font: inherit; font-size: var(--fs-xl); line-height: 1; cursor: pointer; }
 .smm-sheet-x:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+/* G858 (#409): the Map, beside the close; a 44 px tall pill, its icon and the word. */
+.smm-sheet-mapbtn {
+  flex: none; display: inline-flex; align-items: center; gap: var(--sp-2); box-sizing: border-box; height: 44px; padding: 0 var(--space-3);
+  border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface-raised); color: var(--text);
+  font: inherit; font-size: var(--fs-s); font-weight: var(--fw-bold); cursor: pointer;
+}
+.smm-sheet-mapbtn[hidden] { display: none; }
+.smm-sheet-mapbtn svg { width: 18px; height: 18px; }
+.smm-sheet-mapbtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .smm-sheet-map { position: relative; flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
 /* The map itself: the corner card's frame, placed in the sheet at the width the feature gives it. */
 .smm-sheet .street-minimap.is-phone-sheet { position: relative; top: auto; right: auto; z-index: auto; }

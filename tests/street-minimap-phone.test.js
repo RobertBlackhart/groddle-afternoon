@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { PHONE_MAP_TEXT, phoneMapWidth, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=6e600c5d';
+import { PHONE_MAP_TEXT, phoneMapLinkAllowed, phoneMapWidth, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=5185d2fe';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -44,7 +44,7 @@ describe('the street map on a phone', () => {
   it('makes the map on open and frees it on close; closed, a tick is a street check', () => {
     assert.match(feature, /phoneInstall\(engine\);\n\s*return;/);
     assert.match(feature, /view = createStreetMinimap\(doc, mapBox, \{/);
-    assert.match(feature, /function phoneClose\(engine, \{ walked = false \} = \{\}\) \{\n\s*if \(!phone\) return;\n\s*clearSnaps\(\);\n\s*stopArt\(\);\n\s*view\?\.destroy\(\);\n\s*view = null;/);
+    assert.match(feature, /function phoneClose\(engine, \{ walked = false, map = false \} = \{\}\) \{\n\s*if \(!phone\) return;\n\s*clearSnaps\(\);\n\s*stopArt\(\);\n\s*view\?\.destroy\(\);\n\s*view = null;/);
     // A walk from the map or a destination closes it.
     assert.match(feature, /const ok = walkFromMap\(engine, goal, how\);\n\s*if \(ok\) phoneClose\(engine, \{ walked: true \}\);/);
     // A new street or a hiding moment closes it.
@@ -63,5 +63,27 @@ describe('the street map on a phone', () => {
     assert.match(block, /\.smm-sheet \{\n\s*position: fixed; inset: 0; z-index: var\(--z-dialog\);/);
     assert.match(block, /@media \(orientation: landscape\) \{\n\s*\.smm-sheet-card \{ display: grid;/);
     assert.doesNotMatch(block, /—/);
+  });
+});
+
+describe('G858 (#409): the phone street sheet opens the Map', () => {
+  const fakeDoc = ({ btn = true, disabled = false, hide = false } = {}) => ({
+    getElementById: (id) => (id === 'map-btn' && btn ? { disabled } : null),
+    body: { classList: { contains: (c) => hide && c === 'nx-hide-map' } },
+  });
+  it('offers the Map where the bar\'s Map button is live, never where the game takes the Map away', () => {
+    assert.equal(phoneMapLinkAllowed(fakeDoc()), true);
+    assert.equal(phoneMapLinkAllowed(fakeDoc({ btn: false })), false);
+    assert.equal(phoneMapLinkAllowed(fakeDoc({ disabled: true })), false);
+    assert.equal(phoneMapLinkAllowed(fakeDoc({ hide: true })), false);
+    assert.equal(phoneMapLinkAllowed(null), false);
+  });
+  it('a Map button in the head, beside the X: it closes the sheet and opens the Map', () => {
+    assert.equal(PHONE_MAP_TEXT.map, 'Map');
+    assert.match(feature, /<button type="button" class="smm-sheet-mapbtn" aria-label="\$\{PHONE_MAP_TEXT\.mapLabel\}" hidden>/);
+    assert.match(feature, /phoneClose\(engine, \{ map: true \}\);\s*engine\.openMap\(\);/);
+    assert.match(feature, /walked \? 'walked' : map \? 'map' : 'closed'/);
+    assert.match(css, /\.smm-sheet-mapbtn \{\n[^}]*height: 44px;/);
+    assert.match(read('public/game.js'), /openMap: \(hubId, opts\) => openMap\(hubId, opts\),/);
   });
 });

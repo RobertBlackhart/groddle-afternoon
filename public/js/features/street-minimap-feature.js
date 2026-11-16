@@ -487,7 +487,19 @@ export function minimapOffOnDevice(win = globalThis) {
 /* ------------------------------------------------------------ phone map */
 
 const PHONE_MAP_SVG = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="15" height="12" rx="2" /><path d="M2.5 12.5 7 9l3.5 2.5L14 8l3.5 3" /><circle cx="10.5" cy="7" r="1.4" fill="currentColor" stroke="none" /></svg>';
-export const PHONE_MAP_TEXT = Object.freeze({ open: 'Street map', close: 'Close the street map', signs: 'Signposts', none: 'No signposts on this street.' });
+export const PHONE_MAP_TEXT = Object.freeze({ open: 'Street map', close: 'Close the street map', signs: 'Signposts', none: 'No signposts on this street.', map: 'Map', mapLabel: 'Open the Map (M)' });
+/** The bar's Map icon (play/index.html #map-btn), for the sheet's Map button. */
+const WORLD_MAP_SVG = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5 7.5 3l5 2 5-2v12l-5 2-5-2-5 2z" /><path d="M7.5 3v12M12.5 5v12" /></svg>';
+
+/**
+ * PURE: whether the street sheet offers the Map (G858, #409): where the bar's Map button is there and
+ * live, as on a computer, where the street's name opens the Map (topbar.js installLocationLink). The
+ * tutorial and quest places that take the Map away (body.nx-hide-map, a disabled #map-btn) keep it away.
+ */
+export function phoneMapLinkAllowed(doc = globalThis.document) {
+  const btn = doc?.getElementById?.('map-btn');
+  return Boolean(btn && !btn.disabled && !doc.body?.classList?.contains('nx-hide-map'));
+}
 
 /**
  * PURE: the map's width (css px) in a box `availW` x `availH`, so the whole street fits without
@@ -533,7 +545,7 @@ function phoneOpen(engine) {
   sheet.dataset.ctx = 'minimap';
   sheet.innerHTML = `
     <div class="smm-sheet-card">
-      <header class="smm-sheet-head"><h2 id="smm-sheet-title"></h2><button type="button" class="smm-sheet-x" aria-label="${PHONE_MAP_TEXT.close}" title="${PHONE_MAP_TEXT.close}">×</button></header>
+      <header class="smm-sheet-head"><h2 id="smm-sheet-title"></h2><button type="button" class="smm-sheet-mapbtn" aria-label="${PHONE_MAP_TEXT.mapLabel}" hidden>${WORLD_MAP_SVG}<span>${PHONE_MAP_TEXT.map}</span></button><button type="button" class="smm-sheet-x" aria-label="${PHONE_MAP_TEXT.close}" title="${PHONE_MAP_TEXT.close}">×</button></header>
       <div class="smm-sheet-map"></div>
       <section class="smm-sheet-signs" aria-label="${PHONE_MAP_TEXT.signs}"></section>
     </div>`;
@@ -597,6 +609,15 @@ function phoneOpen(engine) {
     signsBox.append(p);
   }
   sheet.querySelector('.smm-sheet-x').addEventListener('click', () => phoneClose(engine));
+  // G858 (#409): the Map, a tap away, as the street's name is on a computer.
+  const mapBtn = sheet.querySelector('.smm-sheet-mapbtn');
+  if (typeof engine.openMap === 'function' && phoneMapLinkAllowed(doc)) {
+    mapBtn.hidden = false;
+    mapBtn.addEventListener('click', () => {
+      phoneClose(engine, { map: true });
+      engine.openMap();
+    });
+  }
   // A tap outside the card closes it; the street under it never hears the tap.
   sheet.addEventListener('pointerdown', (e) => e.stopPropagation());
   sheet.addEventListener('click', (e) => {
@@ -613,7 +634,7 @@ function phoneOpen(engine) {
   engine.setData?.('streetMapPhone', 'open');
 }
 
-function phoneClose(engine, { walked = false } = {}) {
+function phoneClose(engine, { walked = false, map = false } = {}) {
   if (!phone) return;
   clearSnaps();
   stopArt();
@@ -628,9 +649,9 @@ function phoneClose(engine, { walked = false } = {}) {
   phone.sheet = null;
   phone.btn.setAttribute('aria-expanded', 'false');
   engine.setData?.('streetMap', 'phone');
-  engine.setData?.('streetMapPhone', walked ? 'walked' : 'closed');
-  // The keys go back to the world after a walk; the button after a close.
-  if (!walked) phone.btn.focus?.({ preventScroll: true });
+  engine.setData?.('streetMapPhone', walked ? 'walked' : map ? 'map' : 'closed');
+  // The keys go back to the world after a walk; the button after a close; the Map takes them after Map.
+  if (!walked && !map) phone.btn.focus?.({ preventScroll: true });
 }
 
 /** PHONE MAP: the button at the front of the street's name (made once; kept when the name redraws). */
