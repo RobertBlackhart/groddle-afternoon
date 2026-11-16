@@ -10,8 +10,9 @@
  * Placement: one shared-planner group per node class from the street
  * population's `resourceNodeClasses`, so every node stands on a real
  * platform; spots measured on the snaps come first, and a Sloth only ever
- * hangs in its street's own tree (UNPLANNED_RESOURCE_CLASSES, G891). Node state persists per street in engine.streetSlot('resource-nodes')
- * keyed `<classTsid>:<index>`; the Firefly Jar and the one-time starter kit
+ * hangs in its street's own tree (UNPLANNED_RESOURCE_CLASSES, G891). Node
+ * state persists per street in engine.streetSlot('resource-nodes') keyed
+ * `<classTsid>:<index>`; the Firefly Jar and the one-time starter kit
  * flag live in this feature's save slice.
  *
  * Art: recovered CC0 OGA sheets under assets/sprites/resources/, loaded with

@@ -132,7 +132,7 @@ describe('the feature', () => {
     assert.match(src, /const place = nodeToolOverlay\(entity\.classTsid, spr\.x, engine\.player\?\.x\);/);
     assert.match(src, /durationMs: verb\.durationMs,/);
     assert.match(src, /itemstackOverlayPoint\(spr\.x, displayTopOf\(spr\), \{ dx: place\.deltaX, dy: place\.deltaY \}\)/);
-    assert.match(src, /verbCancelled\(target\) \{\s+if \(entities\.some\(\(row\) => row\.target === target\)\) stopNodeTool\(\);/);
+    assert.match(src, /verbCancelled\(target\) \{\s+if \(entityFor\(target\)\) stopNodeTool\(\);/);
     assert.match(src, /onStreetClear\(\) \{\s+stopNodeTool\(\);/);
   });
 });
