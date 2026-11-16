@@ -21,13 +21,13 @@
  *   (btc_room_3.js 67-76), as the room's Leave does. Saving a point there stays refused
  *   (can_set_target 313), as does summoning (can_summon 777). The other places the game
  *   holds you (races, Paradise, party spaces, the older rooms in game.js) keep their own exits.
- * - The jump plays a one-second shimmer (the source hit1 animation before
- *   teleportToLocationDelayed), then engine.enter() lands on the saved x/y.
+ * - The jump plays the avatar's hit1 for one second (playHitAnimation('hit1', 1000)
+ *   before teleportToLocationDelayed, G892), then engine.enter() lands on the saved x/y.
  *
  * - Summons (Teleportation V, multiplayer): js/summon-mp.js and
  *   features/summon-mp-feature.js ask here (teleportSummon): 'check' is the
  *   summoner's teleportation_can_summon, 'pay' spends one of the day's two and
- *   its energy once the target said yes, 'arrive' is the target's shimmer and
+ *   its energy once the target said yes, 'arrive' is the target's hit1 and
  *   landing beside the summoner.
  *
  * Source gaps: Teleportation Tokens were a paid web currency, so token map
@@ -42,7 +42,7 @@
  * ?teleportdemo=script learns Teleportation IV + Penpersonship with a Quill and
  * Paper and stays put (click Paper in the pack); &teleportautoplay=1 writes a
  * script, travels away and reads it home.
- * &teleportfx=hold freezes the departure shimmer for a screenshot.
+ * &teleportfx=hold holds the departure's hit1 (and the jump) for a screenshot.
  * Canvas data: teleportRank, teleportPoints, teleportCooldown, teleportPhase,
  * teleportLast, teleportScripts (each copy's street, - for one with none), teleportEnergyCost,
  * teleportSummons (summonses today).
@@ -90,7 +90,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const NO_EXIT = 'This place has its own way out. Teleporting will have to wait.';
 
 let state = normalizeTeleportState();
-let pending = null; // { target, events, label, startedAt, fx }
+let pending = null; // { target, events, label, startedAt }
 let arrival = null; // { target, events, label } while engine.enter() runs
 let engineRef = null;
 let lastReconcile = 0;
@@ -181,7 +181,7 @@ function summonCtx(engine, opts = {}) {
   };
 }
 
-/** The summoned player's side of teleportation_summon 673-676: the hit1 shimmer, then the summoner's street. */
+/** The summoned player's side of teleportation_summon 673-676: hit1, then the summoner's street. */
 function arriveSummoned(engine, opts = {}) {
   const tsid = String(opts.street || '');
   if (!tsid || pending || arrival || !engine.streetExists(tsid)) return false;
@@ -197,7 +197,7 @@ function arriveSummoned(engine, opts = {}) {
   engine.setData('teleportLast', `summoned:${tsid}`);
   // 676: achievements_increment('teleportation_others', 'summonee').
   pending = { target, events: [{ counter: 'teleportation_others:summonee', amount: 1 }], label: placeLabel(target), startedAt: Date.now() };
-  pending.fx = buildWarpFx(engine);
+  playWarpHit(engine);
   publish(engine);
   return true;
 }
@@ -254,44 +254,17 @@ function publish(engine) {
 /* Warp visuals                                                        */
 /* ------------------------------------------------------------------ */
 
-function buildWarpFx(engine, inbound = false) {
-  const { PIXI } = engine;
-  const g = new PIXI.Graphics();
-  g.zIndex = 42;
-  engine.fxLayer.addChild(g);
-  return { g, inbound, born: Date.now() };
-}
-
-function drawWarpFx(engine, fx, now, duration) {
-  const player = engine.player;
-  if (!fx || !player || fx.g.destroyed) return;
-  const raw = Math.min(1, (now - fx.born) / duration);
-  const p = fx.inbound ? 1 - raw : raw;
-  const h = Math.max(70, Math.min(150, Number(player.height) || 96));
-  const g = fx.g;
-  g.clear();
-  // A soft beam: stacked capsules, wide and faint to narrow and bright.
-  const width = 18 + p * 46;
-  for (const [k, color, alpha] of [[1, 0xd9c8ff, 0.07], [0.72, 0xe4d9ff, 0.1], [0.46, 0xf3eeff, 0.14], [0.22, 0xffffff, 0.22]]) {
-    const w = width * k;
-    g.roundRect(player.x - w / 2, player.y - h - 60 + (1 - k) * 20, w, h + 66 - (1 - k) * 20, w / 2);
-    g.fill({ color: color, alpha: alpha * (0.5 + p * 1.5) });
-  }
-  for (let i = 0; i < 18; i += 1) {
-    const life = ((now - fx.born) / 900 + i / 18) % 1;
-    const angle = i * 2.4 + life * 6;
-    const r = (1 - p * 0.6) * (22 + (i % 5) * 6);
-    g.circle(player.x + Math.cos(angle) * r, player.y - life * (h + 50), 1.6 + (i % 3));
-    g.fill({ color: i % 3 ? 0xe9e2ff : 0xfff3c4, alpha: Math.sin(life * Math.PI) * (0.4 + p * 0.6) });
-  }
-  player.alpha = 1 - p * 0.85;
-}
-
-function destroyWarpFx(engine, fx) {
-  if (engine?.player) engine.player.alpha = 1;
-  if (!fx || fx.g.destroyed) return;
-  fx.g.parent?.removeChild(fx.g);
-  fx.g.destroy();
+/**
+ * G892: a jump is the avatar's own hit1 for one second, nothing drawn round it:
+ * players/inc_teleportation.js 399 (point), 528 (map) and 674 (the summoned
+ * player) call playHitAnimation('hit1', 1000) before teleportToLocationDelayed,
+ * and player.js 2000-2011 sends only that play_hit to the client. (Before: a
+ * lavender beam with rising sparkles while the avatar faded, and a star float on
+ * arrival, which Glitch never had.)
+ */
+function playWarpHit(engine) {
+  engine.playHit?.('hit1', TELEPORT_HIT_ANIMATION_MS);
+  engine.setData('teleportHit', 'hit1');
 }
 
 /* ------------------------------------------------------------------ */
@@ -328,7 +301,7 @@ function launch(engine, out, how) {
   );
   engine.setData('teleportLast', `${how}:${out.target.tsid}:e${out.energyCost || 0}`);
   pending = { target: out.target, events: out.events, label: placeLabel(out.target), startedAt: Date.now() };
-  pending.fx = buildWarpFx(engine);
+  playWarpHit(engine);
   engine.save();
   publish(engine);
 }
@@ -442,7 +415,6 @@ function readAloud(engine, copy = null) {
 async function land(engine) {
   const warp = pending;
   pending = null;
-  destroyWarpFx(engine, warp.fx);
   arrival = warp;
   publish(engine);
   try {
@@ -708,29 +680,12 @@ export const teleportationFeature = {
     if (arrival) {
       const done = arrival;
       arrival = null;
-      const fx = buildWarpFx(engine, true);
-      const born = Date.now();
-      const step = () => {
-        const now = Date.now();
-        drawWarpFx(engine, fx, now, 900);
-        if (now - born < 900) requestAnimationFrame(step);
-        else destroyWarpFx(engine, fx);
-      };
-      requestAnimationFrame(step);
-      engine.floatText(engine.player.x, engine.player.y - 110, `✦ ${done.target.label || 'Teleported'}`, 0xd9c8ff);
       engine.pushActivity(`You teleported to ${done.label}.`);
       for (const event of done.events || []) engine.achievement(event.counter, event.amount);
       engine.save();
     }
     demoOnEnter(engine);
     publish(engine);
-  },
-
-  onStreetClear(engine) {
-    if (pending) {
-      destroyWarpFx(engine || engineRef, pending.fx);
-      pending.fx = null;
-    }
   },
 
   onTick(dtMs, now, engine) {
@@ -742,9 +697,8 @@ export const teleportationFeature = {
     }
     if (pending) {
       engine.player.vx = 0;
-      // QA: &teleportfx=hold freezes the shimmer at 60% for a screenshot.
-      if (engine.param('teleportfx') === 'hold') pending.fx.born = now - TELEPORT_HIT_ANIMATION_MS * 0.6;
-      drawWarpFx(engine, pending.fx, now, TELEPORT_HIT_ANIMATION_MS);
+      // QA: &teleportfx=hold keeps the avatar in hit1 and stays put, for a screenshot.
+      if (engine.param('teleportfx') === 'hold') engine.playHit?.('hit1', TELEPORT_HIT_ANIMATION_MS);
       if (engine.param('teleportfx') !== 'hold' && now - pending.startedAt >= TELEPORT_HIT_ANIMATION_MS) land(engine);
     }
     demoStep(engine, now);
@@ -769,7 +723,7 @@ export const teleportationFeature = {
    * Summons (js/summon-mp.js, features/summon-mp-feature.js):
    * 'check' -> { ok, error, energyCost, rank } for Summon <name> (opts.asking: one is out already);
    * 'pay' -> pays the summons the target said yes to (opts.name, opts.party), { ok, error, energyCost };
-   * 'arrive' -> the summoned player's shimmer and landing on opts.street at opts.x / opts.y.
+   * 'arrive' -> the summoned player's hit1 and landing on opts.street at opts.x / opts.y.
    */
   teleportSummon(action, opts = {}, engine) {
     const rank = teleportRank(learned(engine));

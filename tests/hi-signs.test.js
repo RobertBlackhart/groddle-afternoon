@@ -47,7 +47,7 @@ import {
   stepMissile,
 } from '../public/js/hi-signs.js?v=0436d54a';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=f630d894';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=7c23cf7c';
 import { getAchievementCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

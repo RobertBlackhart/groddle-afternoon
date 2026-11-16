@@ -45,7 +45,7 @@ import {
   scriptTitle,
   useScript,
 } from '../public/js/teleportation.js?v=e95cf7cb';
-import { teleportationFeature as feature } from '../public/js/features/teleportation-feature.js?v=c20e18ed';
+import { teleportationFeature as feature } from '../public/js/features/teleportation-feature.js?v=ada01ec9';
 import { cleanContents, createDroppedItemState, dropInventoryStack, pickupDroppedStack, placeDroppedBag } from '../public/js/world-items.js?v=deadf665';
 import { cabinetPut, cabinetTake, cleanHeldList, normalizeContents } from '../public/js/home-storage.js?v=b0225465';
 import { normalizeGroundStack, normalizeItem } from '../public/js/drops-mp.js?v=89c3e58e';
@@ -148,7 +148,6 @@ describe('one script, one destination', () => {
     assert.deepEqual(streets(engine), [A.tsid, C.tsid]);
     assert.deepEqual(engine.log.taken[0].slice(0, 3), [SCRIPT_CLASS, 1, 1]);
     assert.equal(engine.pc.energy, 90 - 33, 'an unimbued script charges');
-    feature.onStreetClear(engine);
   });
 
   it('an imbued script needs no skill and no energy; a vanished street refunds and takes only that one', async () => {

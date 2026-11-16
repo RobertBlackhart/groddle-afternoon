@@ -26,7 +26,7 @@ import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '
 import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=895a5209';
 import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=83a031ee';
 import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=78435230';
-import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=c20e18ed';
+import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=ada01ec9';
 
 const ROOT = join(import.meta.dirname, '..');
 const V = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];
@@ -141,7 +141,7 @@ function fakeClient() {
 }
 
 function fakeEngine(client, over = {}) {
-  const log = { prompts: [], removed: [], activity: [], toasts: [], achievements: [], entered: [], data: {}, buffs: new Set(), party: [] };
+  const log = { prompts: [], removed: [], activity: [], toasts: [], achievements: [], entered: [], data: {}, buffs: new Set(), party: [], hits: [], drawn: 0 };
   const engine = {
     mode: 'multiplayer',
     started: true,
@@ -154,8 +154,9 @@ function fakeEngine(client, over = {}) {
     inQuestRoom: false,
     partySpace: { here: false, enter: true },
     log,
-    PIXI: { Graphics: class { constructor() { this.destroyed = false; } clear() {} roundRect() {} circle() {} fill() {} destroy() { this.destroyed = true; } } },
-    fxLayer: { addChild() {} },
+    PIXI: { Graphics: class { constructor() { log.drawn += 1; this.destroyed = false; } clear() {} roundRect() {} circle() {} fill() {} destroy() { this.destroyed = true; } } },
+    fxLayer: { addChild() { log.drawn += 1; } },
+    playHit(hit, ms) { log.hits.push([hit, ms]); },
     query(hook, ...args) {
       if (hook === 'realtimeClient') return client;
       if (hook === 'isDead') return engine.dead;
@@ -307,7 +308,11 @@ describe('Summons: the world side', () => {
     client.msg({ t: 'summon_go', from: { id: 7, name: 'Ada' }, street: 'GA5B', x: 420, y: -120, party: false });
     assert.equal(engine.log.activity.at(-1), 'Ada summoned you.');
     assert.equal(engine.log.data.teleportPhase, 'warp');
-    // The shimmer runs its second (TELEPORT_HIT_ANIMATION_MS), then the landing.
+    // G892: teleportation_summon 674 playHitAnimation('hit1', 1000): the avatar's own hit1, nothing drawn, no fade.
+    assert.deepEqual(engine.log.hits.at(-1), ['hit1', 1000]);
+    assert.equal(engine.log.drawn, 0);
+    assert.equal(engine.player.alpha, 1);
+    // hit1 runs its second (TELEPORT_HIT_ANIMATION_MS), then the landing.
     teleportationFeature.onTick(16, Date.now() + 2000, engine);
     await Promise.resolve();
     assert.deepEqual(engine.log.entered.at(-1), ['GA5B', { spawnX: 420, spawnY: -120 }]);
@@ -315,6 +320,13 @@ describe('Summons: the world side', () => {
     teleportationFeature.onStreetEnter({ tsid: 'GA5B' }, { ...engine, floatText() {} });
     assert.deepEqual(engine.log.achievements.at(-1), ['teleportation_others:summonee', 1]);
     assert.equal(engine.log.activity.at(-1), 'You teleported to Sylvan Grove.');
+    assert.equal(engine.log.drawn, 0, 'no arrival beam or float');
+  });
+
+  it('G892: no beam, sparkles or float is left in the feature (inc_teleportation.js 399, 528, 674 play hit1 only)', () => {
+    const src = readFileSync(join(import.meta.dirname, '../public/js/features/teleportation-feature.js'), 'utf8');
+    assert.ok(!/new PIXI\.Graphics|floatText|✦|player\.alpha/.test(src), 'a drawn warp is back');
+    assert.match(src, /playHit\?\.\('hit1', TELEPORT_HIT_ANIMATION_MS\)/);
   });
 
   it('into a Party Space it enters the space; a street it does not know is an Oops', () => {
