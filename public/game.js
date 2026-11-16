@@ -2290,7 +2290,8 @@ function syncCameraSafeArea() {
     return cameraRightInset;
   }
   const rootRect = root.getBoundingClientRect();
-  const drawerCss = Math.max(0, Number(socialDrawer?.inset()?.right) || 0);
+  cameraRailFloats = uprightRailFloats(root);
+  const drawerCss = cameraRailFloats ? 0 : Math.max(0, Number(socialDrawer?.inset()?.right) || 0);
   const rail = document.getElementById('play-context');
   const railCss = rail && rail.offsetParent !== null ? Math.max(0, rootRect.right - rail.getBoundingClientRect().left) : 0;
   // NARROW STREETS (#337): a bordered canvas stops short of the root's right; only what covers it counts.
@@ -2302,6 +2303,21 @@ function syncCameraSafeArea() {
   drawerInsetSeen = root.style.getPropertyValue('--inset-r');
   return cameraRightInset;
 }
+
+/**
+ * G875 (#423): upright on a phone the folded rail floats over the sky at the top right, as the
+ * stat dials and the quest card do at the left, and never over the walk, so the camera reserves
+ * nothing for it: the street runs under it to the screen's edge, as at its left end. Reserving
+ * it stopped the camera with the end a fifth of the narrow screen short, and the mirrored art
+ * past the end fades away (#380), so the void showed below the rail. Sideways the rail covers most
+ * of the height and the open drawer covers the world, so both still count.
+ */
+function uprightRailFloats(root) {
+  return Boolean(TOUCH_PHONE && modernUi() && root.clientHeight > root.clientWidth && !socialDrawer?.isOpen?.());
+}
+
+/** G875: uprightRailFloats as syncCameraSafeArea last measured it (read every frame by the edge mirrors). */
+let cameraRailFloats = false;
 
 /** G582: Pixi px kept between the covered edge and the street's end (the drawer's inset already holds its gaps). */
 const CAMERA_RAIL_CLEARANCE = 6;
@@ -25216,7 +25232,8 @@ async function enterStreet(tsid, opts = {}) {
     skirtRight: SKIRT_RIGHT_PAD,
     // EDGE MIRROR (G582): each layer's art mirrored past the street's ends, where the camera can
     // show past them (the Social drawer floats over the reserve). Classic covers nothing: narrow streets only.
-    edgeMirror: { insetShare: () => (modernUi() ? CAMERA_RESERVE_SHARE : 0) },
+    // G875: nothing reserved upright on a phone with the rail folded, so only the ends a narrow street shows.
+    edgeMirror: { insetShare: () => (modernUi() && !cameraRailFloats ? CAMERA_RESERVE_SHARE : 0) },
   });
   streetPlatforms = bgLayer.platformsScreen;
   streetWalls = wallsScreen(data);

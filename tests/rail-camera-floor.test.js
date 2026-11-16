@@ -79,6 +79,30 @@ describe('G582: the camera reserves the Social drawer over the world', () => {
   });
 });
 
+describe('G875 (#423): upright on a phone the folded rail floats over the sky, so the camera reserves nothing', () => {
+  const game = read('public/game.js');
+  const src = game.slice(game.indexOf('function uprightRailFloats('), game.indexOf('/** G875: uprightRailFloats as'));
+  const floats = ({ phone = true, modern = true, w = 402, h = 812, open = false } = {}) =>
+    new Function('TOUCH_PHONE', 'modernUi', 'socialDrawer', `${src}; return uprightRailFloats;`)(phone, () => modern, { isOpen: () => open })({ clientWidth: w, clientHeight: h });
+
+  it('only an upright phone in Modern with the drawer folded', () => {
+    assert.equal(floats(), true);
+    assert.equal(floats({ w: 812, h: 402 }), false, 'sideways the rail covers most of the height');
+    assert.equal(floats({ open: true }), false, 'the open drawer covers the world');
+    assert.equal(floats({ phone: false, w: 800, h: 1200 }), false, 'a tall desktop window keeps the reserve');
+    assert.equal(floats({ modern: false }), false, 'Classic measures nothing anyway');
+  });
+
+  it('then the drawer counts 0 and the edge mirrors plan for no reserve', () => {
+    const fn = game.slice(game.indexOf('function syncCameraSafeArea()'), game.indexOf('function cameraTargetForPlayer('));
+    assert.match(fn, /cameraRailFloats = uprightRailFloats\(root\);\n  const drawerCss = cameraRailFloats \? 0 : /);
+    assert.match(game, /edgeMirror: \{ insetShare: \(\) => \(modernUi\(\) && !cameraRailFloats \? CAMERA_RESERVE_SHARE : 0\) \}/);
+    // At the right end, no reserve: the street's last pixel meets the screen's edge.
+    const cam = cameraTargetX(6000 - 20, 0, 6000, 560, 4.4, 0);
+    assert.equal(cam + 560, 6000);
+  });
+});
+
 describe('G583: trees and Chickens stand on their feet', () => {
   it('every measured trant frame matches the shipped file and lifts its foot onto the line', () => {
     for (const [classId, row] of Object.entries(TRANT_FRAME_FOOT)) {
