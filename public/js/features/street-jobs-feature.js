@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
 import { ecologyForStreet } from '../street-ecology.js?v=7435cfce';
 import { worldToScreen } from '../street-model.js?v=2918abe5';
-import { signArmWidth } from '../street-render.js?v=aba2ec8b';
+import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=aba2ec8b';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=945cc7c4';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -806,7 +806,8 @@ function drawBarricades(engine) {
       wrap.addChild(art);
     });
     const tag = new PIXI.Text({ text: closed.length === 1 ? `${closed[0].label}: under construction` : `${closed.length} roads under construction`, style: {
-      fontFamily: 'Arial',
+      // G903: the signposts' own Nunito, as the arms (street-render.js SIGN_FONT_FAMILY).
+      fontFamily: SIGN_FONT_FAMILY,
       fontSize: 11,
       fontWeight: '700',
       fill: 0xfff6dc,

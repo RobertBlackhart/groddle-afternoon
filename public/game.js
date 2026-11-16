@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=cc1b1a31';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fcd737ae';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1068,7 +1068,7 @@ import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, M
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
 import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=cd68932d';
-import { createPromptSettler, promptId } from './js/prompt-settle.js?v=509ba9cc';
+import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=c8210235';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
@@ -7645,6 +7645,7 @@ function settlePrompt(want, now) {
   prompt.setPrompt(want.key, want.label);
   prompt.x = want.x;
   prompt.y = want.y;
+  prompt._baseX = want.x;
   prompt._baseY = want.y;
   prompt.visible = true;
 }
@@ -7654,26 +7655,35 @@ function settlePrompt(want, now) {
  * just under them while that stays near its target (140 px at most), else it waits (unseen) until
  * they have gone. Rects in Pixi global px (app.screen), from #game-root px.
  */
-function promptKeepClear() {
+function promptKeepClear(arms = null) {
   if (!prompt?.visible) return;
   if (Number.isFinite(prompt._baseY)) prompt.y = prompt._baseY;
+  if (arms && Number.isFinite(prompt._baseX)) prompt.x = clampWorldOverlayX(prompt._baseX, prompt.width, 12);
   const boxes = notifyZoneGlobalBoxes();
+  // G903: a signpost's hint (`arms`, the post's boards) stays over the post, stepping sideways off the
+  // notices; moved down it would lie on the arms, so then it waits.
+  const armBoxes = (arms || []).map(({ view }) => (view && !view.destroyed ? view.getBounds() : null)).filter(Boolean)
+    .map((r) => ({ left: r.x, right: r.x + r.width, top: r.y, bottom: r.y + r.height }));
   let alpha = 1;
+  let side = null;
   if (boxes.length) {
     const b = prompt.getBounds();
     const chip = { left: b.x, right: b.x + b.width, top: b.y, bottom: b.y + b.height };
     const hit = boxes.filter((o) => chip.left < o.right + 4 && chip.right > o.left - 4 && chip.top < o.bottom + 4 && chip.bottom > o.top - 4);
-    if (hit.length) {
+    side = hit.length && arms ? promptSideStep(chip, [...boxes, ...armBoxes], hit, app?.screen?.width || VIEW_W) : null;
+    if (side !== null) {
+      prompt.x += side / (Math.abs(promptLayer?.worldTransform?.a || 1) || 1);
+    } else if (hit.length) {
       const dy = Math.max(...hit.map((o) => o.bottom)) + 6 - chip.top;
       const scale = Math.abs(promptLayer?.worldTransform?.d || 1) || 1;
       const moved = { ...chip, top: chip.top + dy, bottom: chip.bottom + dy };
-      const stillHit = boxes.some((o) => moved.left < o.right && moved.right > o.left && moved.top < o.bottom && moved.bottom > o.top);
+      const stillHit = [...boxes, ...armBoxes].some((o) => moved.left < o.right && moved.right > o.left && moved.top < o.bottom && moved.bottom > o.top);
       if (dy <= 140 && !stillHit) prompt.y += dy / scale;
       else alpha = 0;
     }
   }
   if (prompt.alpha !== alpha) prompt.alpha = alpha;
-  if (app?.canvas) app.canvas.dataset.promptZone = alpha ? (prompt.y !== prompt._baseY ? 'moved' : '') : 'waiting';
+  if (app?.canvas) app.canvas.dataset.promptZone = alpha ? (prompt.y !== prompt._baseY ? 'moved' : side !== null ? 'beside' : '') : 'waiting';
 }
 
 /** The notifier's zones (notices, banner) in Pixi global px, re-read every 100 ms. */
@@ -8095,6 +8105,17 @@ function hudColumnViewBox() {
   return hudBoxCache;
 }
 
+/** G903: the street map's corner card (js/ui/street-minimap.js) in view px, or null when it is hidden. */
+let minimapBoxCache = null;
+let minimapBoxCacheAt = -Infinity;
+function minimapViewBox() {
+  const now = performance.now();
+  if (now - minimapBoxCacheAt < 100) return minimapBoxCache;
+  minimapBoxCacheAt = now;
+  minimapBoxCache = hudColumnBox([document.getElementById('street-minimap')], app?.canvas, VIEW_W, VIEW_H);
+  return minimapBoxCache;
+}
+
 /**
  * Heads a bubble keeps off (G357): the player, other players in multiplayer
  * and the street's companion Glitches, each as a world box from its feet up;
@@ -8205,6 +8226,18 @@ function positionSpeechBubble(bubble) {
   }
   meta.zoneHow = clearZone && clearZone.how !== 'over' ? { how: clearZone.how, dx: clearZone.dx } : null;
   meta.overNotices = clearZone?.how === 'over';
+  // G903: clear of the street map's corner card too, as of the HUD column (the Butler's bubble lay over it).
+  const mapBox = !outOfView && minimapViewBox();
+  const clearMap = mapBox && clearSpeechOfBox({
+    left: bubble.x - cameraX - meta.width / 2, width: meta.width, height: meta.height,
+    tip: place.tip - cameraY, flip: place.flip, speakerX: spr.x + offset.x - cameraX, feet: spr.y - cameraY, deepest: deepest - cameraY,
+    box: mapBox, viewWidth: horizontalLocationViewWidth(), viewBottom: LOCATION_VIEW_H - 18, prefer: meta.mapHow || null,
+  });
+  if (clearMap && clearMap.how !== 'over') {
+    bubble.x += clearMap.dx;
+    place = { tip: clearMap.tip + cameraY, flip: clearMap.flip };
+  }
+  meta.mapHow = clearMap && clearMap.how !== 'over' ? { how: clearMap.how, dx: clearMap.dx } : null;
   // G357/G427: slid off a player's head as the client slid bubbles (at most 100 px, the
   // tail still on the speaker, ChatBubble.as 151-201), else hung under the speaker's feet
   // when that fits; eased so it doesn't jump. The tail never stretches (ChatBubble.as 374-379).
@@ -34694,6 +34727,7 @@ async function main() {
         ? findClimbWallNear(streetWalls, player.x, player.y, 42)
         : null;
       let want = null;
+      let wantArms = null;
       if (climb.active) {
         want = { key: '↑↓', label: 'climb · Space jump', x: player.x, y: player.y - 80 };
       } else if (armHover) {
@@ -34728,6 +34762,7 @@ async function main() {
         const arms = signpostBoardsInOrder(postAtHand);
         const lit = signpostFocus?.boards[signpostFocus.index]?.board;
         const y = nearSign.screen.y - 246 * 0.8 - 10;
+        wantArms = arms;
         want = !conn && !arms.length
           ? { key: 'G', label: 'map (no loaded link)', x: nearSign.screen.x, y }
           : lit
@@ -34740,7 +34775,7 @@ async function main() {
       settlePrompt(TOUCH_PHONE ? touchPrompt(want) : want, performance.now());
       if (prompt.visible) {
         prompt.x = clampWorldOverlayX(prompt.x, prompt.width, 12);
-        promptKeepClear();
+        promptKeepClear(wantArms);
         app.canvas.dataset.promptScreenX = (prompt.x - camTarget).toFixed(2);
         app.canvas.dataset.promptSafeRight = horizontalLocationViewWidth().toFixed(2);
         app.canvas.dataset.promptWidth = prompt.width.toFixed(2);
