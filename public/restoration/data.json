@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2389,
+  "commits": 2391,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "A solo project near the start pays a smaller top-contributor reward, scaled with its amounts"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-16",
     "kind": "new",
     "text": "Pack search lists every match under the search, bags included, as Glitch did"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Upright on a phone, the band above every scene shorter than the screen is dark"
    }
   ]
  },
