@@ -176,8 +176,32 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
   let searching = false;
   let tipTimer = 0;
   let tipFrom = null;
+  // G859 (#413): the redraw a typed letter asks for, waiting until the letter has painted.
+  let redrawOwed = false;
 
   const bar = () => $('pack-bar');
+
+  /** Draws the hits now if a letter's redraw is still waiting (Enter and Down pick from the drawn row). */
+  function flushQuery() {
+    if (!redrawOwed) return;
+    redrawOwed = false;
+    onQuery(query);
+  }
+
+  /**
+   * G859 (#413): a letter redraws the row after it has painted, not before. The redraw (game.js
+   * renderPackBar: every stack in the pack and its bags, filtered and drawn again) ran inside the
+   * input event, so on a phone the first letters showed late; letters typed before it runs share
+   * one redraw. The next frame, then a task: the letter is painted between them.
+   */
+  function queueQuery() {
+    if (redrawOwed) return;
+    redrawOwed = true;
+    const raf = globalThis.requestAnimationFrame;
+    const later = () => globalThis.setTimeout(flushQuery, 0);
+    if (typeof raf === 'function') raf(later);
+    else later();
+  }
   const items = () => $('pack-items');
 
   function setSearching(on) {
@@ -208,6 +232,7 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     const input = $('pack-search-input');
     const had = query;
     query = '';
+    redrawOwed = false;
     if (input) input.value = '';
     setSearching(false);
     setData('packSearch', '');
@@ -447,7 +472,7 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     input?.addEventListener('input', () => {
       query = input.value;
       setData('packSearch', query.trim());
-      onQuery(query);
+      queueQuery();
     });
     input?.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -458,9 +483,11 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
         // InventorySearch.as onElementSelect: the first match's menu.
         e.preventDefault();
         e.stopPropagation();
+        flushQuery();
         const first = items()?.querySelector('.pack-slot[data-tsid]');
         if (first) { first.focus(); first.click(); }
       } else if (e.key === 'ArrowDown') {
+        flushQuery();
         const first = items()?.querySelector('.pack-slot[data-tsid]');
         if (first) { e.preventDefault(); first.focus(); }
       }
