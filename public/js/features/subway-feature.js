@@ -349,6 +349,17 @@ function openMap(engine, { direction = 'forwards' } = {}) {
   el.addEventListener('click', (e) => {
     if (e.target === el) close.click();
   });
+  // G874, #373: Esc closes it as it closes the other windows. The station sign's View sent map_open
+  // with transit_tsid subway (items/subway_map.js 45), the client's HubMapDialog, a Dialog that
+  // closes on Esc (Dialog.as 133). aria-modal lets game.js escapeOpenFeatureDialog hand it the key
+  // when focus is elsewhere.
+  el.setAttribute('aria-modal', 'true');
+  el.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    e.preventDefault();
+    e.stopPropagation();
+    close.click();
+  });
   const draw = (dir) => {
     svgHost.innerHTML = mapSvg(station, dir);
     lines.replaceChildren(...['forwards', 'backwards'].map((d) => {

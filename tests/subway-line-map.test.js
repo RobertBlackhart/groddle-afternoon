@@ -90,6 +90,14 @@ describe('wiring', () => {
     assert.match(feature, /kicker: chosenStop === station\.id \? lineText\.yourStop : CAR_LABEL_KICKER,/);
   });
 
+  it('G874 (#373): Esc closes the station sign\'s Subway System map, as the client\'s Dialog did', () => {
+    const open = feature.slice(feature.indexOf('function openMap(engine'), feature.indexOf('const esc = (s)'));
+    // aria-modal: game.js escapeOpenFeatureDialog hands it the key when focus is elsewhere.
+    assert.match(open, /el\.setAttribute\('aria-modal', 'true'\);/);
+    assert.match(open, /el\.addEventListener\('keydown', \(e\) => \{\s*if \(e\.key !== 'Escape'\) return;\s*e\.preventDefault\(\);\s*e\.stopPropagation\(\);\s*close\.click\(\);/);
+    assert.match(game, /const shown = \[\.\.\.document\.querySelectorAll\('\[role="dialog"\]\[aria-modal="true"\]'\)\]/);
+  });
+
   it('cites the client\'s transit map while riding', { skip: !existsSync(client) && 'needs glitch-client beside the repo' }, () => {
     const mt = readFileSync(join(client, 'view/gameoverlay/maps/MapTransit.as'), 'utf8').split('\n');
     assert.match(mt.slice(179, 240).join('\n'), /getGreyScaleFilter[\s\S]*Next stop:/);
