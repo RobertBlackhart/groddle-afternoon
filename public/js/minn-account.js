@@ -324,6 +324,14 @@ export function createMinnAccount(opts = {}) {
     },
 
     /**
+     * Report another player (G872, groddle-afternoon-site src/PlayerReports.php): { status: reported, ticket, lines }.
+     * The site adds the public chat the reporter could see from the realtime server; a refusal throws with its words.
+     */
+    async reportPlayer(id, note = '') {
+      return buddyCall('Sending your report', `players/${Math.max(0, Math.floor(Number(id)) || 0)}/report`, { method: 'POST', body: { note: String(note || '') } });
+    },
+
+    /**
      * A bug report from the game's header (groddle-afternoon-site src/BugReports.php):
      * { status: sent, id }. A refusal (an empty message, too many just now) throws with the site's words.
      */

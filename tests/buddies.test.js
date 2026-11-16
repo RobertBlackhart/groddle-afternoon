@@ -28,13 +28,13 @@ import {
   buddyWhere,
   freshReverse,
   normalizeList,
-} from '../public/js/buddies.js?v=cff7bf6e';
-import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
-import { buddiesFeature } from '../public/js/features/buddies-feature.js?v=9508c5ab';
+} from '../public/js/buddies.js?v=16407f62';
+import { createMinnAccount } from '../public/js/minn-account.js?v=153fc423';
+import { buddiesFeature } from '../public/js/features/buddies-feature.js?v=eab6bb90';
 import { BUDDY_DESTINATION_TEXT, BUDDY_DESTINATION_VERB, buddyDestination, buddyFaceUrl, createFaceMemory } from '../public/js/buddy-list.js?v=b418f3f2';
 import { STREET_INDEX } from '../public/js/street-loader.js?v=7ed1bdfd';
-import { FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=73ef8d28';
-import { FEATURES } from '../public/js/features/index.js?v=2f297324';
+import { FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=02c5111f';
+import { FEATURES } from '../public/js/features/index.js?v=7f7090ee';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -63,9 +63,9 @@ describe('buddies rules (js/buddies.js)', () => {
 
   it('offers the source\'s player menu entries', () => {
     const l = normalizeList(ANSWER);
-    assert.deepEqual(buddyVerbs(l, { id: 2, name: 'Bo' }).map((v) => v.label), ['Remove from Friends', 'Block']);
-    assert.deepEqual(buddyVerbs(l, { id: 9, name: 'Fi' }).map((v) => [v.id, v.enabled]), [[BUDDY_VERBS.add, true], [BUDDY_VERBS.ignore, true]]);
-    assert.deepEqual(buddyVerbs(l, { id: 3, name: 'Cy' }).map((v) => v.label), ['Add to Friends', 'Un-Block Cy']);
+    assert.deepEqual(buddyVerbs(l, { id: 2, name: 'Bo' }).map((v) => v.label), ['Remove from Friends', 'Block', 'Report']);
+    assert.deepEqual(buddyVerbs(l, { id: 9, name: 'Fi' }).map((v) => [v.id, v.enabled]), [[BUDDY_VERBS.add, true], [BUDDY_VERBS.ignore, true], [BUDDY_VERBS.report, true]]);
+    assert.deepEqual(buddyVerbs(l, { id: 3, name: 'Cy' }).map((v) => v.label), ['Add to Friends', 'Un-Block Cy', 'Report']);
     assert.equal(buddyVerbs(l, { id: 9, name: 'Fi' })[1].tooltip, 'Prevent Fi from talking to you');
     // At the limit: Add is disabled with the source's reason, unless they added you first.
     const full = { ...l, limit: 2 };
@@ -366,7 +366,7 @@ describe('buddies feature (js/features/buddies-feature.js)', () => {
 
   it('adds its entries to another player\'s menu, after the others', () => {
     const verbs = buddiesFeature.verbOverride({ classId: 'pc_remote', playerId: 2, label: 'Bo' }, engine);
-    assert.deepEqual(verbs.map((v) => v.label), ['Invite to Party', 'Offer to Trade', 'Remove from Friends', 'Block']);
+    assert.deepEqual(verbs.map((v) => v.label), ['Invite to Party', 'Offer to Trade', 'Remove from Friends', 'Block', 'Report']);
     assert.equal(buddiesFeature.verbOverride({ classId: 'npc_piggy' }, engine), null);
   });
 

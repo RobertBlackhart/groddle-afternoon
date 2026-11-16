@@ -10,7 +10,7 @@
  *   the full world player menu, the same rows a click on their Glitch gives (Give, Offer to Trade,
  *   Follow, the pack emotes too).
  * - Anywhere else: the rows that work at a distance, as Glitch's list menu kept them: Open Profile
- *   Page, Invite to Party, IM, Visit Home Street, Add to / Remove from Friends, Block / Un-Block,
+ *   Page, Invite to Party, IM, Visit Home Street, Add to / Remove from Friends, Block / Un-Block, Report (G872),
  *   Summon <name> (Teleportation V: the server's row, main.js 3661-3715, so the list menu kept it),
  *   and the remake's Set as Destination for a buddy on a public street (report #178, js/buddy-list.js).
  *   The rows are the features' own (engine.targetVerbs on a target built from the id and the name),
@@ -21,7 +21,8 @@
  *   is_blocked (InteractionMenuController.as 522-523: no Give, Offer to Trade, IM, Open Profile
  *   Page, Invite to Party, Follow or Visit Home Street), and the server built no emotes for
  *   them (main.js 3557); the server's own rows stayed: Un-Block, Add to / Remove from Friends,
- *   stopping a follow and the Party Space creator's Kick out (main.js 3590-3739).
+ *   stopping a follow and the Party Space creator's Kick out (main.js 3590-3739). Report stays too
+ *   (G872: Glitch's chat menu kept Report Abuse for anyone, ChatDropdown.as 77).
  *
  * The menu is the shared one (js/ui/context-menu.js): at the pointer for a click or a right-click,
  * beside the name or the row for the keys; game.js openPlayerListMenu opens it (engine.openPlayerMenu
@@ -30,7 +31,7 @@
 
 import { PROFILE_PAGE_VERB } from '../profiles.js?v=054ca723';
 import { IM_VERB_ID } from '../player-im.js?v=da51888c';
-import { BUDDY_VERBS } from '../buddies.js?v=cff7bf6e';
+import { BUDDY_VERBS } from '../buddies.js?v=16407f62';
 import { BUDDY_DESTINATION_VERB } from '../buddy-list.js?v=b418f3f2';
 import { VISIT_VERB } from '../neighbours-mp.js?v=38232521';
 import { FOLLOW_STOP_VERB } from '../follow-mp.js?v=b007044d';
@@ -51,6 +52,7 @@ export const FROM_LIST_VERBS = Object.freeze([
   BUDDY_VERBS.remove,
   BUDDY_VERBS.ignore,
   BUDDY_VERBS.unignore,
+  BUDDY_VERBS.report,
   SUMMON_VERB,
 ]);
 
@@ -63,6 +65,7 @@ export const BLOCKED_PLAYER_VERBS = Object.freeze([
   BUDDY_VERBS.add,
   BUDDY_VERBS.remove,
   BUDDY_VERBS.unignore,
+  BUDDY_VERBS.report,
   FOLLOW_STOP_VERB,
   'party_space_kick',
 ]);

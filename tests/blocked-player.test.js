@@ -12,8 +12,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
-import { BLOCKED_PLAYER_VERBS, blockedPlayerVerbs, playerMenuRows } from '../public/js/ui/player-menu.js?v=73ef8d28';
-import { BUDDY_VERBS } from '../public/js/buddies.js?v=cff7bf6e';
+import { BLOCKED_PLAYER_VERBS, blockedPlayerVerbs, playerMenuRows } from '../public/js/ui/player-menu.js?v=02c5111f';
+import { BUDDY_VERBS } from '../public/js/buddies.js?v=16407f62';
 import { FOLLOW_STOP_VERB } from '../public/js/follow-mp.js?v=b007044d';
 import { PROFILE_PAGE_VERB } from '../public/js/profiles.js?v=054ca723';
 import { IM_VERB_ID } from '../public/js/player-im.js?v=da51888c';
@@ -45,8 +45,8 @@ const WORLD = [
 ];
 
 describe('the menu of a player you block (js/ui/player-menu.js, game.js menuVerbsFor)', () => {
-  it('keeps only the rows Glitch kept: Friends, Un-Block, Stop following, the Party Space kick', () => {
-    assert.deepEqual([...BLOCKED_PLAYER_VERBS], [BUDDY_VERBS.add, BUDDY_VERBS.remove, BUDDY_VERBS.unignore, FOLLOW_STOP_VERB, 'party_space_kick']);
+  it('keeps only the rows Glitch kept: Friends, Un-Block, Stop following, the Party Space kick, and Report (G872)', () => {
+    assert.deepEqual([...BLOCKED_PLAYER_VERBS], [BUDDY_VERBS.add, BUDDY_VERBS.remove, BUDDY_VERBS.unignore, BUDDY_VERBS.report, FOLLOW_STOP_VERB, 'party_space_kick']);
     assert.deepEqual(blockedPlayerVerbs(WORLD).map((v) => v.label), ['Stop following', 'Add to Friends', 'Un-Block Cy', 'Kick out Cy']);
     assert.deepEqual(blockedPlayerVerbs([null, undefined]), []);
     assert.deepEqual(blockedPlayerVerbs(null), []);

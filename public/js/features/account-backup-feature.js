@@ -34,7 +34,7 @@
  * QA: /play/ on groddle.localhost, Menu, Account; /play/online/, Menu, Sign out.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
+import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { mountAccountForms, mountAccountSettings, mountPresenceSetting } from '../account-forms.js?v=6729bb05';
 import { createBrowserSaveStore, freezeSoloSaves, restoreSoloSave, saveStore, savedAtOf, soloSaveSnapshot, thawSoloSaves } from '../save-store.js?v=cd053443';
 import { formatGameDayLabel } from '../game-day.js?v=72f37c7e';

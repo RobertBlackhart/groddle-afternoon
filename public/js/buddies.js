@@ -8,6 +8,7 @@
  * and the player menu in main.js (3590-3646).
  */
 import { UNNAMED_PLAYER } from './player-names.js?v=f9b78094';
+import { PLAYER_REPORT_TEXT } from './player-report.js?v=8d7e5653';
 
 /** config_prod.js:1276 buddy_limit. */
 export const BUDDY_LIMIT = 1000;
@@ -21,6 +22,7 @@ export const BUDDY_VERBS = Object.freeze({
   remove: 'buddy_remove',
   ignore: 'buddy_ignore',
   unignore: 'buddy_unignore',
+  report: 'player_report', // G872 (js/player-report.js)
 });
 
 /** Copy from the source where it has some (file:line), else short plain words. */
@@ -30,7 +32,7 @@ export const BUDDY_TEXT = Object.freeze({
   addTip: 'Add this person to your contact list', // main.js:3641
   removeVerb: 'Remove from Friends', // main.js:3620
   removeTip: 'Remove this person from your contact list', // main.js:3623
-  ignoreVerb: 'Block', // main.js:3594 'Block / Report' (there is no reporting here)
+  ignoreVerb: 'Block', // main.js:3594 'Block / Report': Report is its own row here (G872, js/player-report.js)
   ignoreTip: (name) => `Prevent ${name} from talking to you`, // main.js:3597
   unignoreVerb: (name) => `Un-Block ${name}`, // main.js:3605
   unignoreTip: (name) => `Allow ${name} to talk to you`, // main.js:3608
@@ -89,7 +91,9 @@ export const isIgnoring = (list, id) => Boolean(list?.ignoring.some((b) => b.id 
 /**
  * The player menu's buddy entries for another player (main.js:3590-3646):
  * Add to Friends (disabled at the limit unless they added you first) or
- * Remove from Friends, then Block or Un-Block at the bottom.
+ * Remove from Friends, then Block or Un-Block at the bottom, and Report
+ * under it (G872: Glitch's Block / Report, main.js:3594, as two rows; a
+ * blocked player can still be reported).
  */
 export function buddyVerbs(list, player) {
   if (!list || !player?.id) return [];
@@ -106,6 +110,7 @@ export function buddyVerbs(list, player) {
   } else {
     out.push({ id: BUDDY_VERBS.ignore, label: BUDDY_TEXT.ignoreVerb, tooltip: BUDDY_TEXT.ignoreTip(name), enabled: true, reason: '', durationMs: 0, sort: 2000 });
   }
+  out.push({ id: BUDDY_VERBS.report, label: PLAYER_REPORT_TEXT.verb, tooltip: PLAYER_REPORT_TEXT.tip(name), enabled: true, reason: '', durationMs: 0, sort: 2001 });
   return out;
 }
 

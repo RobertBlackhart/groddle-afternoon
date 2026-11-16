@@ -32,11 +32,11 @@ import {
   playerMailCost,
   sentRow,
 } from '../public/js/player-mail.js?v=af6a8b00';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=bd2bb34e';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=84d38250';
 import { createMailboxState, deliverMail, listMailboxMessages, mailCost, normalizeMailboxState, recordSentMail } from '../public/js/mailbox.js?v=a3e833ba';
 import { handOver, isExpressPending, sendDueToMailbox } from '../public/js/mail-courier.js?v=68125101';
 import { mailText } from '../public/js/ui/topbar.js?v=52534f8e';
-import { mergePlayerMail } from '../public/js/phone/companion-data.js?v=08a0ae0e';
+import { mergePlayerMail } from '../public/js/phone/companion-data.js?v=06efdd67';
 import { mailJson } from '../tools/build-mail.mjs';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';

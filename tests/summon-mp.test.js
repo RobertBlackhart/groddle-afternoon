@@ -24,7 +24,7 @@ import {
 } from '../public/js/teleportation.js?v=e95cf7cb';
 import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '../public/js/summon-mp.js?v=7598f381';
 import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=38232521';
-import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=73ef8d28';
+import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=02c5111f';
 import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=905b0272';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=c20e18ed';
 

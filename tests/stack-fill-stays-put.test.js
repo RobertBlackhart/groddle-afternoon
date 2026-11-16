@@ -28,7 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { ITEM_CATALOG, addItem, isToolItem, removeItem } from '../public/js/inventory.js?v=f49c8998';
 import { PACK_CAPACITY, layoutPack, moveStack, normalizePrefs, roomFor, stackMaxOf } from '../public/js/pack-slots.js?v=4d446d78';
 import { vendorBuy } from '../public/js/vendor.js?v=6b499efc';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=155827ff';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=c562644a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '..', 'glitch-GameServerJS');

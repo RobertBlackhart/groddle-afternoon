@@ -15,6 +15,10 @@
  *   extended through verbOverride, as trade-feature does): Add to Friends or
  *   Remove from Friends, and Block or Un-Block, as the source's player menu
  *   (main.js:3590-3646). Removing and blocking ask first (requires_confirmation).
+ *   Report (G872, js/player-report.js) sits under Block, and Added you rows have Report
+ *   beside Block. Glitch's Block confirm had a third choice, "No, just report abuse"
+ *   (InteractionMenuController.as 869-875); the modal prompt holds two buttons (game.js
+ *   prompt), so Block keeps Yes and Never mind and Report is the next row instead.
  * - Menu, Buddies: your buddies with online or offline and the street they
  *   are on, Remove; who added you (Add back); who you block (Un-block).
  * - Toasts: a buddy online or offline, "X just added you as a contact!"
@@ -53,7 +57,7 @@
  * buddiesLast (the last notice); window.groddleBuddies.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
+import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { bindContextTrigger } from '../ui/context-menu.js?v=400bbb32';
 import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 import { BUDDY_DESTINATION_TEXT, BUDDY_DESTINATION_VERB, buddyDestination, buddyFaceUrl } from '../buddy-list.js?v=b418f3f2';
@@ -72,8 +76,10 @@ import {
   isBuddy,
   isIgnoring,
   normalizeList,
-} from '../buddies.js?v=cff7bf6e';
+} from '../buddies.js?v=16407f62';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
+import { PLAYER_REPORT_TEXT, playerReportView } from '../player-report.js?v=8d7e5653';
+import { openReportView } from '../note-view.js?v=eca7de52';
 
 export const BUDDIES_FEATURE_ID = 'buddies';
 const VERB_IDS = new Set([...Object.values(BUDDY_VERBS), BUDDY_DESTINATION_VERB]);
@@ -306,7 +312,7 @@ function createSession(engine, client) {
       if (back.length) {
         panel.append(el('h3', {}, 'Added you'));
         const ul = el('ul', { 'data-buddies-reverse': '' });
-        for (const r of back) ul.append(row(r, { isNew: r.isNew, buttons: [{ kind: 'add', label: 'Add back', run: () => add(r) }, { kind: 'ignore', label: BUDDY_TEXT.ignoreVerb, run: () => confirmIgnore(r) }] }));
+        for (const r of back) ul.append(row(r, { isNew: r.isNew, buttons: [{ kind: 'add', label: 'Add back', run: () => add(r) }, { kind: 'ignore', label: BUDDY_TEXT.ignoreVerb, run: () => confirmIgnore(r) }, { kind: 'report', label: PLAYER_REPORT_TEXT.verb, run: () => report(r) }] }));
         panel.append(ul);
       }
       if (list.ignoring.length) {
@@ -494,6 +500,11 @@ function createSession(engine, client) {
   }
   const confirmRemove = (p) => ask(BUDDY_TEXT.removeConfirm(p.name), () => remove(p));
   const confirmIgnore = (p) => ask(BUDDY_TEXT.ignoreConfirm(p.name), () => ignore(p));
+  /** G872: the report window (js/player-report.js); the site adds the public chat you could see. */
+  function report(p) {
+    const view = playerReportView({ player: { id: p.id, name: p.name }, send: (id, note) => account.reportPlayer(id, note), engine });
+    return view ? openReportView(view) : null;
+  }
   const confirmUnignore = (p) => ask(BUDDY_TEXT.unignoreConfirm(p.name), () => unignore(p));
 
   // —— Messages ——
@@ -599,6 +610,7 @@ function createSession(engine, client) {
       else if (verbId === BUDDY_VERBS.remove) confirmRemove(p);
       else if (verbId === BUDDY_VERBS.ignore) confirmIgnore(p);
       else if (verbId === BUDDY_VERBS.unignore) confirmUnignore(p);
+      else if (verbId === BUDDY_VERBS.report) report(p);
       else return false;
       return true;
     },

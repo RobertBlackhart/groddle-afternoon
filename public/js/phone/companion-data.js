@@ -22,7 +22,7 @@
 
 import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=aa93fc78';
 import { listMailboxMessages, mailSender, normalizeMailboxState } from '../mailbox.js?v=a3e833ba';
-import { addedYouOnly, normalizeList } from '../buddies.js?v=cff7bf6e';
+import { addedYouOnly, normalizeList } from '../buddies.js?v=16407f62';
 import { letterRow, normalizePlayerMailSlice } from '../player-mail.js?v=af6a8b00';
 
 /** The player mail feature's save slice (js/features/player-mail-feature.js PLAYER_MAIL_FEATURE_ID). */

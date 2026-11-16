@@ -35,7 +35,7 @@ import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-for
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
 import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
 import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=d98e235d';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=08a0ae0e';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=06efdd67';
 
 const doc = globalThis.document;
 
