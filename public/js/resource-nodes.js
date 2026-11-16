@@ -1087,6 +1087,7 @@ export function createResourceNode(classTsid, opts = {}) {
     node.busyUntil = 0;
     node.sessionFeeds = 0;
     node.lastMetalizeAt = 0;
+    node.snailsDue = [];
   }
   if (def.classTsid === 'dust_trap') {
     node.readySince = time(opts.now);
@@ -1605,7 +1606,7 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
         const max = feedPlan.max;
         durationMs = feedPlan.doneMs;
         extra.slothPlan = feedPlan;
-        outputs.push({ classTsid: 'snail', qty: max });
+        outputs.push({ classTsid: 'snail', qty: max, due: true });
         achievementCounters.push({ counter: 'sloth:snails_received', amount: max });
         if (node.sessionFeeds + 1 > 7) achievementCounters.push({ counter: 'sloth:fed_until_full', amount: 1 });
       }
@@ -1646,7 +1647,8 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
     }
   }
   applyMetabolics(pc, costs);
-  for (const out of outputs) addItem(inv, out.classTsid, out.qty);
+  // A Sloth's Snails come round by round (out.due: slothSnailsDue / takeDueSnails), not at once.
+  for (const out of outputs) if (!out.due) addItem(inv, out.classTsid, out.qty);
   const toolUse = gate.toolUsed && ctx.toolState && toolWear > 0
     ? useToolCondition(ctx.toolState, gate.toolUsed, toolWear, Number.isInteger(gate.toolCopy) ? { copy: gate.toolCopy } : {})
     : null;
@@ -1744,6 +1746,7 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
         node.busyUntil = now + durationMs;
         node.lastMetalizeAt = node.busyUntil;
         node.hideAt = node.sessionFeeds > 7 ? node.busyUntil : node.busyUntil + def.session.idleHideMs;
+        node.snailsDue = [...(node.snailsDue || []), ...slothSnailsDue(extra.slothPlan, now)];
       }
       break;
     }
@@ -1969,6 +1972,29 @@ export function slothFeedPlan(rng = Math.random) {
 }
 
 /**
+ * createSnailItem (423-430): each round's Snails reach the pack 1.2 s after its spit (createSnail
+ * 395). Returns [{ at, n }] in game time.
+ */
+export function slothSnailsDue(plan, now) {
+  return (plan?.rounds || []).map((round) => ({ at: now + round.atMs + 1200, n: round.snails }));
+}
+
+/**
+ * The Snails whose time has come (taken off the node). Away from the street the rest wait for you:
+ * createSnailItem left them on the street's floor at the Sloth (location.createItemStackFromSource).
+ */
+export function takeDueSnails(node, now = Date.now()) {
+  if (!Array.isArray(node?.snailsDue) || !node.snailsDue.length) return 0;
+  let n = 0;
+  node.snailsDue = node.snailsDue.filter((due) => {
+    if (due.at > now) return true;
+    n += due.n;
+    return false;
+  });
+  return n;
+}
+
+/**
  * Which sheet + frame to draw for the node's current state.
  * Returns { art: 'raster', hidden, sheetKey, sheet, frameIndex, rect, animate, loop }
  * or { art: 'swf', state, swf } for the Sloth (its frames: js/sloth-encounter.js).
@@ -2079,6 +2105,11 @@ export function normalizeResourceNode(saved) {
     node.sessionFeeds = whole(saved.sessionFeeds, 0, 0, def.stock.max);
     node.units = Math.max(0, def.stock.max - node.sessionFeeds);
     node.lastMetalizeAt = time(saved.lastMetalizeAt);
+    // One feed's rounds at most (10), up to 4 Snails each.
+    node.snailsDue = (Array.isArray(saved.snailsDue) ? saved.snailsDue : [])
+      .map((due) => ({ at: time(due?.at), n: whole(due?.n, 0, 0, 4) }))
+      .filter((due) => due.at > 0 && due.n > 0)
+      .slice(0, 10);
   }
   if (def.classTsid === 'dust_trap') {
     node.readySince = time(saved.readySince);

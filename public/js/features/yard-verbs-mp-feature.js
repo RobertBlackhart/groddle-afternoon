@@ -70,8 +70,8 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=5d66e832';
 import { readVisitScene } from '../neighbours-mp.js?v=38232521';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=e6d1fa7e';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=ffdcc33c';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=1bf3b64c';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=1bbe1a7c';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -88,7 +88,7 @@ import {
   treeSnapshot,
   visitorAnimalState,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=864975bc';
+} from '../yard-verbs-mp.js?v=0914f0a0';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, stickForClass } from '../yard-wander.js?v=f96ea68c';
@@ -96,10 +96,10 @@ import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=4c43
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=c2964c53';
-import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=46646715';
+import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=e63ad822';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { rockReady } from '../street-objects.js?v=510eacfe';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=dec9665a';
+import { rockReady } from '../street-objects.js?v=5b52d4e4';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=ce65bdbb';
 import {
   ROCK_RESPAWN_MS,
   STOCK_NODE_VERBS,
@@ -108,7 +108,7 @@ import {
   normalizeStockView,
   visitorNode,
   visitorRock,
-} from '../yard-stock-mp.js?v=c9465c96';
+} from '../yard-stock-mp.js?v=69265558';
 
 export { YARD_VERBS_MP_ID };
 

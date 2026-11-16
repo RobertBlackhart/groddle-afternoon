@@ -5,8 +5,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
-import { SLOTH_LINES, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=db8913dd';
-import { slothFeedPlan } from '../public/js/resource-nodes.js?v=46646715';
+import { SLOTH_LINES, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=8cf4b350';
+import { slothFeedPlan } from '../public/js/resource-nodes.js?v=e63ad822';
 
 const anims = (steps) => steps.filter((s) => s.anim).map((s) => s.anim);
 
@@ -69,6 +69,18 @@ describe('Sloth encounter timeline', () => {
     assert.equal(slothTimeline('peek').at(-1).hidden, true);
     assert.deepEqual(anims(slothTimeline('peekSpit')), ['peek', 'peekSpit', 'peekIdle', 'peekWithdraw']);
     assert.equal(SLOTH_PEEK_GAP_MS, 20000);
+  });
+
+  it('swaps the rod after every spit and plays each sound at its moment', () => {
+    const plan = { max: 9, rounds: [{ atMs: 3000, snails: 2, count: 2, rod: 2 }, { atMs: 6000, snails: 4, count: 6, rod: 6 }, { atMs: 8500, snails: 3, count: 9, rod: 7 }], doneMs: 10000 };
+    const steps = slothTimeline('feed', { plan });
+    assert.deepEqual(steps.filter((s) => s.rod).map((s) => [s.at, s.rod]), [[0, 1], [3000, 2], [6000, 6], [8500, 7]]);
+    assert.deepEqual(steps.filter((s) => s.sound).map((s) => [s.at, s.sound]), [[0, 'CHOOSE_ROD'], [3000, 'SLOTH_SPIT'], [6000, 'SLOTH_SPIT'], [8500, 'SLOTH_SPIT']]);
+    // SLOTH_EAT loops while it chews: from the rod, and 1.5 s after each spit but the last; each spit stops it.
+    assert.deepEqual(steps.filter((s) => s.eatSound).map((s) => s.at), [0, 4500, 7500]);
+    assert.deepEqual(steps.filter((s) => s.stopEat).map((s) => s.at), [3000, 6000, 8500]);
+    assert.equal(slothTimeline('arrive')[0].sound, 'SLOTH_ARRIVES');
+    assert.equal(slothTimeline('peekSpit').find((s) => s.anim === 'peekSpit').sound, 'SLOTH_PEAK_AND_SPIT');
   });
 
   it('spits every round a real feed plans', () => {

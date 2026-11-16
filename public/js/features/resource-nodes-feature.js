@@ -69,7 +69,7 @@ import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
-import { SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=db8913dd';
+import { SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=8cf4b350';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -95,8 +95,9 @@ import {
   sheetFrameRect,
   starterResourceTools,
   swimmingSalmonCount,
+  takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=46646715';
+} from '../resource-nodes.js?v=e63ad822';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -913,7 +914,7 @@ function drawSloth(engine, view, now) {
   if (view.knockAt) {
     const k = SLOTH_KNOCKER_ART.knock;
     const n = Math.floor(((now - view.knockAt) * 30) / 1000);
-    if (n >= k.count) {
+    if (n >= k.count || now - view.knockAt >= 1000) {
       view.knockAt = 0;
       view.knocker.texture = textureFromUrl(`${SLOTH_ART_DIR}${SLOTH_KNOCKER_ART.still}`);
     } else {
@@ -936,10 +937,28 @@ function playSloth(engine, entity, event, opts = {}) {
   const now = Date.now();
   // setState cancels the state timers, not a line already on its way (the drop line's talk timer).
   const kept = view.steps.filter((step) => step.keep);
+  view.eatLoop?.stop();
+  view.eatLoop = null;
   view.steps = [...kept, ...slothTimeline(event, opts).map((step) => ({ ...step, at: now + step.at }))].sort((a, b) => a.at - b.at);
   view.state = 'busy';
   view.leaving = view.steps.some((step) => step.hidden);
   placeSloth(engine, entity, 0, now);
+}
+
+/**
+ * createSnail / createSnailItem (367-430): each round of 1-4 Snails goes into the pack 1.2 s after
+ * its spit (resource-nodes.js takeDueSnails), floated over the player as it lands. Rounds due while
+ * you were away are waiting when you come back, as they lay on the street's floor in Glitch.
+ */
+function paySlothSnails(engine, entity, now) {
+  const n = takeDueSnails(entity.node, now);
+  if (!n) return 0;
+  addItem(engine.inv, 'snail', n);
+  const p = engine.player;
+  if (p) floatGain(engine, p.x, (p.y || 0) - 130, 'snail', n);
+  engine.refreshPack?.();
+  engine.save?.();
+  return n;
 }
 
 function refreshSloth(engine, entity) {
@@ -956,6 +975,14 @@ function placeSloth(engine, entity, dtMs, now) {
   while (view.steps.length && now >= view.steps[0].at) {
     const step = view.steps.shift();
     if (step.anim) setSlothAnim(engine, view, step.anim, step.at);
+    if (step.rod) view.rodIndex = step.rod;
+    if (step.stopEat || step.eatSound) {
+      view.eatLoop?.stop();
+      view.eatLoop = null;
+    }
+    if (step.sound) engine.playSound?.(step.sound, { volume: 0.6 });
+    // announce_sound SLOTH_EAT with a loop count of 10 (720-727, 409), until the spit stops it.
+    if (step.eatSound) view.eatLoop = engine.playSoundLoop?.('SLOTH_EAT', { durationMs: 10000, volume: 0.5 }) || null;
     if (step.say && entity.target) {
       const line = chooseSlothLine(step.say, view.lastLine);
       view.lastLine = line;
@@ -1317,7 +1344,8 @@ export function sfxFor(result) {
   if (result.jarFull) return 'COMPLETE_QUEST_REQUIREMENT';
   if (result.classTsid === 'paper_tree') return result.verbId === 'pet' ? 'PET_TRANT' : result.verbId === 'water' ? 'WATERING_CAN' : 'PAPER_TREE';
   if (result.classTsid === 'dust_trap') return 'DUST_TRAP_SMACK_DOWN';
-  if (result.classTsid === 'npc_sloth') return result.verbId === 'knock' ? 'SLOTH_KNOCKER' : 'SLOTH_EAT';
+  // G889: the Sloth's sounds come at their own moments (the knock as it starts, js/sloth-encounter.js).
+  if (result.classTsid === 'npc_sloth') return null;
   if (result.classTsid === 'npc_salmon') return 'SALMON_CATCH';
   if (result.classTsid === 'npc_firefly') return 'BUTTERFLY_SING';
   // #310: the scraper sounded while the scrape ran (js/sound-moments.js actionLoopFor); the end is the
@@ -1380,7 +1408,8 @@ function applyResult(engine, entity, result) {
   for (const line of result.msgs || []) engine.pushActivity(line);
   let lift = 0;
   const merged = new Map();
-  for (const out of result.outputs || []) merged.set(out.classTsid, (merged.get(out.classTsid) || 0) + out.qty);
+  // A Sloth's Snails float as each round reaches the pack (paySlothSnails), not here.
+  for (const out of result.outputs || []) if (!out.due) merged.set(out.classTsid, (merged.get(out.classTsid) || 0) + out.qty);
   for (const [classTsid, qty] of merged) {
     floatGain(engine, anchorX, anchorY - lift, classTsid, qty);
     lift += 28;
@@ -1701,7 +1730,6 @@ function checkSloths(engine) {
   // setStateComplete peekSpit (825-834): the Snails come as the peekSpit ends.
   playSloth(engine, under, 'peekSpit');
   under.view.spits = Array.from({ length: snails }, (_, i) => now + 2000 + i * 260);
-  engine.playSound?.('SLOTH_PEAK_AND_SPIT');
   engine.achievement?.('sloth:got_bonus_snails', 1);
   engine.achievement?.('sloth:snails_received', snails);
   engine.pushActivity?.(`A Sloth peeks out of the leaves and spits ${snails} Snail${snails === 1 ? '' : 's'} at you. Metal!`);
@@ -1805,6 +1833,7 @@ export const resourceNodesFeature = {
     if (now - lastTickAt < TICK_MS) return;
     lastTickAt = now;
     for (const entity of entities) {
+      if (entity.classTsid === 'npc_sloth') paySlothSnails(engine, entity, now);
       if (tickResourceNode(entity.node, now)) refreshEntity(engine, entity);
       else if (entity.target) entity.target.subtitle = resourceNodeStatusLabel(entity.node, now) || entity.target.subtitle;
     }
@@ -1842,10 +1871,13 @@ export const resourceNodesFeature = {
     const entity = entities.find((row) => row.target === target);
     if (!entity) return undefined;
     stopNodeTool();
-    // sloth_knocker.js knock 49-50: the Knocker plays its tool_animation, then rests.
-    if (entity.classTsid === 'npc_sloth' && rulesVerbId(verb?.id) === 'knock' && entity.view?.knocker) entity.view.knockAt = Date.now();
     const rule = resourceNodeVerbs(entity.node, engine.inv, engine.pc, verbContext(engine, entity)).find((v) => v.id === rulesVerbId(verb?.id));
     const def = nodeToolSheet(rule?.tool);
+    // sloth_knocker.js knock 52-54: the Knocker plays its tool_animation for a second, with SLOTH_KNOCKER.
+    if (entity.classTsid === 'npc_sloth' && rulesVerbId(verb?.id) === 'knock' && entity.view?.knocker) {
+      entity.view.knockAt = Date.now();
+      engine.playSound?.('SLOTH_KNOCKER', { volume: 0.6 });
+    }
     const spr = target.sprite;
     const layer = engine.fxLayer || engine.entityLayer;
     if (!def || !spr || spr.destroyed || !layer || !(verb?.durationMs > 0)) return undefined;

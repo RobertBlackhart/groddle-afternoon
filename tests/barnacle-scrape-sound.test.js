@@ -9,7 +9,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { actionLoopFor } from '../public/js/sound-moments.js?v=ac6375de';
-import { sfxFor } from '../public/js/features/resource-nodes-feature.js?v=dec9665a';
+import { sfxFor } from '../public/js/features/resource-nodes-feature.js?v=ce65bdbb';
 
 describe('#310 scraping sounds from the start', () => {
   it('the Scraper sound loops for the whole scrape of a barnacle or an ice knob', () => {
@@ -41,5 +41,8 @@ describe('digging and peat sound from the start, as scraping', () => {
     // Others keep theirs.
     assert.equal(sfxFor({ ok: true, classTsid: 'paper_tree', verbId: 'harvest' }), 'PAPER_TREE');
     assert.equal(sfxFor({ ok: true, classTsid: 'jellisac', verbId: 'scoop' }), 'SCOOPED_JELLISAC');
+    // G889: the Sloth's sounds play at their own moments (SLOTH_KNOCKER as the knock starts; js/sloth-encounter.js).
+    assert.equal(sfxFor({ ok: true, classTsid: 'npc_sloth', verbId: 'knock' }), null);
+    assert.equal(sfxFor({ ok: true, classTsid: 'npc_sloth', verbId: 'feed' }), null);
   });
 });

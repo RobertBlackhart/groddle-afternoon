@@ -12,6 +12,9 @@
  * (onIdleTick). `hidden: true` leaves it hidden up in the leaves. `say` names one of SLOTH_LINES,
  * spoken in a bubble for `ms` (talk 852-881: an itemstack_bubble, never an Activity line); a
  * Sloth hanging idle when it speaks talks with its talk animation for that long (talk 874-877).
+ * `sound` is the key it announces then; `eatSound` starts the SLOTH_EAT loop that each spit
+ * (`stopEat`) and every new state stop (setState 652-655, createSnail 369); `rod` is the rod now in
+ * its hand (rod1 when fed, feed handler 259; rod<count> after each spit, createSnail 400-404).
  * `keep: true` marks the drop line's own timer (apiSetTimerX('talk'), 695), which a later
  * setState does not cancel: fed before it is said, the Sloth still says it.
  */
@@ -73,28 +76,30 @@ export const SLOTH_PEEK_GAP_MS = 20 * 1000;
 /**
  * Steps for one event:
  *  - 'arrive': the knock got it down (callSloth 337-346 -> setState idle from hidden 677-699):
- *    drop (1 s), then idle; 1.5 s in it says a drop line for 3 s.
- *  - 'feed' with opts.plan (resource-nodes.js slothFeedPlan): eat (looping) until each spit, the
- *    spit, eat again 1.5 s after it (createSnail 407-421); 1.5 s after the last spit
+ *    drop (1 s) with SLOTH_ARRIVES (698), then idle; 1.5 s in it says a drop line for 3 s.
+ *  - 'feed' with opts.plan (resource-nodes.js slothFeedPlan): CHOOSE_ROD and rod1 (feed handler
+ *    258-259), eat (looping, SLOTH_EAT 720-727) until each spit, the spit with SLOTH_SPIT (376) and
+ *    the next rod, eat again 1.5 s after it with SLOTH_EAT (createSnail 407-421); 1.5 s after the last spit
  *    metalizeComplete: finishedEating and a thanks line for 5 s (talking once the second of
  *    finishedEating is done), or climbUp at once after the 8th rod (opts.full, metalize_count > 7,
  *    543-546; the thanks line is the one left showing, 560).
  *  - 'hide': 20 s with no rod (hideSloth): climbUp (5 s) saying 'Yawn... See ya', hidden.
  *  - 'peek': walked under (onPlayerCollision): peek (1 s); peekIdle a second after it ends
  *    (setStateComplete peeking 818-823); peekWithdraw 5 s after that (setState hidden from peeking).
- *  - 'peekSpit': Friend of Metal (onPlayerCollision 591-601): peek, then peekSpit with its snails,
+ *  - 'peekSpit': Friend of Metal (onPlayerCollision 591-601): peek, then peekSpit with its snails
+ *    and SLOTH_PEAK_AND_SPIT (743),
  *    peekIdle 1.2 s after, hidden 3 s after (setStateComplete peekSpit 825-834).
  */
 export function slothTimeline(event, opts = {}) {
   switch (event) {
     case 'arrive':
-      return [{ at: 0, anim: 'drop' }, { at: 1000, idle: true }, { at: 1500, say: 'drop', ms: 3000, keep: true }];
+      return [{ at: 0, anim: 'drop', sound: 'SLOTH_ARRIVES' }, { at: 1000, idle: true }, { at: 1500, say: 'drop', ms: 3000, keep: true }];
     case 'feed': {
       const rounds = opts.plan?.rounds || [];
-      const steps = [{ at: 0, anim: 'eat' }];
+      const steps = [{ at: 0, anim: 'eat', sound: 'CHOOSE_ROD', rod: 1, eatSound: true }];
       rounds.forEach((round, i) => {
-        steps.push({ at: round.atMs, anim: 'spit' });
-        if (i < rounds.length - 1) steps.push({ at: round.atMs + 1500, anim: 'eat' });
+        steps.push({ at: round.atMs, anim: 'spit', sound: 'SLOTH_SPIT', stopEat: true, rod: round.rod });
+        if (i < rounds.length - 1) steps.push({ at: round.atMs + 1500, anim: 'eat', eatSound: true });
       });
       const done = opts.plan?.doneMs ?? 1500;
       if (opts.full) steps.push({ at: done, anim: 'climbUp', say: 'thanks', ms: 5000 }, { at: done + 5000, hidden: true });
@@ -108,7 +113,7 @@ export function slothTimeline(event, opts = {}) {
     case 'peekSpit':
       return [
         { at: 0, anim: 'peek' },
-        { at: 1000, anim: 'peekSpit' },
+        { at: 1000, anim: 'peekSpit', sound: 'SLOTH_PEAK_AND_SPIT' },
         { at: 3200, anim: 'peekIdle' },
         { at: 5000, anim: 'peekWithdraw' },
         { at: 6000, hidden: true },

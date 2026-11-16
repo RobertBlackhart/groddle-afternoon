@@ -20,6 +20,8 @@ import {
   resourceNodeStatusLabel,
   resourceNodeFrame,
   slothFeedPlan,
+  slothSnailsDue,
+  takeDueSnails,
   isResourceNodeHarvestable,
   normalizeResourceNode,
   normalizeResourceNodes,
@@ -35,7 +37,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=46646715';
+} from '../public/js/resource-nodes.js?v=e63ad822';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -538,10 +540,11 @@ describe('Sloth', () => {
 
     const feed = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills, rng: seq(0.99) }));
     assert.equal(feed.ok, true);
-    assert.deepEqual(feed.outputs, [{ classTsid: 'snail', qty: 10 }]);
+    assert.deepEqual(feed.outputs, [{ classTsid: 'snail', qty: 10, due: true }]);
     assert.deepEqual(feed.msgs, []);
     assert.equal(inv.metal_rod, 8);
-    assert.equal(inv.snail, 10);
+    assert.equal(inv.snail, undefined, 'the Snails come round by round (G889)');
+    assert.equal(takeDueSnails(node, node.busyUntil), 10);
     assert.ok(feed.durationMs > 2000);
     assert.equal(resourceNodeFrame(node, NOW + 1).state, 'eating');
     assert.equal(harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills, now: NOW + 1 })).reason, 'busy');
@@ -598,6 +601,24 @@ describe('Sloth feed plan (G889)', () => {
     assert.deepEqual(feed.slothPlan.rounds.map((r) => [r.atMs, r.snails, r.rod]), [[5000, 1, 1], [7500, 4, 5], [13500, 4, 7], [19500, 1, 7]]);
     assert.equal(feed.durationMs, feed.slothPlan.doneMs);
     assert.equal(feed.outputs[0].qty, 10);
+  });
+
+  it('puts each round into the pack 1.2 s after its spit (createSnailItem 395, 423-430)', () => {
+    const node = createResourceNode('npc_sloth');
+    const inv = { metal_rod: 1 };
+    const ctx = ctxBase({ skills: ['animalkinship_3'] });
+    harvestResourceNode(node, inv, {}, { ...ctx, verbId: 'knock' });
+    const feed = harvestResourceNode(node, inv, {}, { ...ctx, verbId: 'feed', rng: seq(0.99, 0.99, 0.1, 0.99, 0.99, 0.99) });
+    assert.deepEqual(node.snailsDue, slothSnailsDue(feed.slothPlan, NOW));
+    assert.deepEqual(node.snailsDue.map((d) => [d.at - NOW, d.n]), [[6200, 1], [8700, 4], [14700, 4], [20700, 1]]);
+    assert.equal(takeDueSnails(node, NOW + 6199), 0, 'not before the first spit lands');
+    assert.equal(takeDueSnails(node, NOW + 6200), 1);
+    assert.equal(takeDueSnails(node, NOW + 6200), 0, 'each round once');
+    // Saved mid-feed, the rounds still to come survive the round trip.
+    const restored = normalizeResourceNode(JSON.parse(JSON.stringify(node)));
+    assert.deepEqual(restored.snailsDue, node.snailsDue);
+    assert.equal(takeDueSnails(restored, NOW + 60_000), 9, 'away from the street, the rest wait for you');
+    assert.deepEqual(normalizeResourceNode({ ...node, snailsDue: [{ at: 'x', n: 3 }, { at: NOW, n: 99 }] }).snailsDue, [{ at: NOW, n: 4 }]);
   });
 });
 
