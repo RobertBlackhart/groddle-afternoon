@@ -10,8 +10,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { READ_MAX_MS, READ_MIN_MS, READ_PER_WORD_MS, bubbleMs, holdMs, readMs, wordCount } from '../public/js/read-time.js?v=be140198';
-import { NOTICE_KEEP_MS, createNotifier } from '../public/js/notify.js?v=1fb97b21';
+import { READ_MAX_MS, READ_MIN_MS, READ_PER_WORD_MS, bubbleMs, holdMs, readMs, wordCount } from '../public/js/read-time.js?v=3151fb1a';
+import { NOTICE_KEEP_MS, createNotifier } from '../public/js/notify.js?v=91598c67';
 import { MEDITATION_TEXT } from '../public/js/meditation.js?v=96f23682';
 import { BUTLER_STRINGS, ownerGreeting } from '../public/js/butler.js?v=57456a7f';
 
@@ -158,7 +158,9 @@ describe("inhabitants' lines keep the source's own times (G629)", () => {
     assert.ok(body.indexOf('const named =') < body.indexOf('max: bubbleMs('));
     const butler = read('public/js/features/butler-feature.js');
     assert.match(fnBody(butler, 'greetNow'), /const greetMs = holdMs\(g\.greeting, 3500\);/);
-    assert.doesNotMatch(butler, /exact: true/);
+    // G899: the Butler's one exact time is longReadMs, never under its reading time (only past the 10 s cap).
+    assert.equal(butler.match(/exact: true/g).length, 1);
+    assert.match(butler, /const holdFor = longReadMs\(text, ms\);[\s\S]{0,400}text, holdFor, \{ exact: true \}/);
     assert.doesNotMatch(read('public/js/features/realtime-feature.js'), /exact: true/);
   });
 

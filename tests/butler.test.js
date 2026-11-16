@@ -73,15 +73,16 @@ import {
 } from '../public/js/butler.js?v=57456a7f';
 import { canOptIn, stoneVog, STONE_TEXT } from '../public/js/street-furniture.js?v=b1d3e833';
 import { NEIGHBOURS, neighbourById, normalizeNeighbourState, visitorLetter } from '../public/js/neighbours.js?v=781ad57f';
-import { butlerApi, butlerFeature } from '../public/js/features/butler-feature.js?v=e4680248';
+import { butlerApi, butlerFeature } from '../public/js/features/butler-feature.js?v=a593a24f';
 // The URL clubhouse.js imports, so these share its Butler.
-import { butlerApi as clubButler, butlerFeature as clubButlerFeature } from '../public/js/features/butler-feature.js?v=e4680248';
-import { PART_1 as JOIN_CLUB, REMINISCE as JOIN_CLUB_REMINISCE, room as clubRoom } from '../public/js/quest-rooms/clubhouse.js?v=eddeaa6d';
+import { butlerApi as clubButler, butlerFeature as clubButlerFeature } from '../public/js/features/butler-feature.js?v=a593a24f';
+import { PART_1 as JOIN_CLUB, REMINISCE as JOIN_CLUB_REMINISCE, room as clubRoom } from '../public/js/quest-rooms/clubhouse.js?v=28a7e829';
 import { BUTLER_FEET, ButlerPainter, clipRange, drawList } from '../public/js/butler-rig.js?v=86bb97ad';
 import { OFFER_OVERRIDES } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { npcQuestOffers, pendingQuestOffers } from '../public/js/quest-offers.js?v=38a0cac5';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
+import { LONG_READ_MAX_MS, READ_MAX_MS, bubbleMs, longReadMs } from '../public/js/read-time.js?v=3151fb1a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
@@ -934,5 +935,50 @@ describe('turning and walking (bag_butler.js lookAtPlayer, facePlayer, chooseWal
       assert.equal(s.rt.mode, 'idle');
       assert.equal(s.rt.dir, 'right');
     });
+  });
+});
+
+describe('butler feature: long hints can be read (G899, #430)', () => {
+  const hoe = BUTLER_HINTS.find((h) => h.id === 'high_class_hoe');
+
+  it('a long hint stays up 300 ms a word past the 10 s cap, given as exact so it is not capped again', () => {
+    assert.ok(hoe.text.split(/\s+/).length >= 50);
+    assert.equal(bubbleMs(hoe.text, 6000), READ_MAX_MS, 'the cap that cut the hint off');
+    const ms = longReadMs(hoe.text, 6000);
+    assert.equal(ms, 4000 + hoe.text.split(/\s+/).length * 300);
+    assert.ok(ms > 20_000 && ms <= LONG_READ_MAX_MS);
+    assert.equal(bubbleMs(hoe.text, ms, true), ms);
+    // A short line keeps what it had: the longer of the caller's time and the reading time.
+    assert.equal(longReadMs('Good day.', 3000), bubbleMs('Good day.', 3000));
+    assert.equal(longReadMs('word '.repeat(200), 6000), LONG_READ_MAX_MS);
+    const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/features/butler-feature.js'), 'utf8');
+    assert.match(src, /const holdFor = longReadMs\(text, ms\);\n  rt\.speakUntil = rt\.lastSpeakAt \+ holdFor;/);
+    assert.match(src, /engine\.say\?\.\(view\.butler\.target, text, holdFor, \{ exact: true \}\)/);
+    // A step-away remark waits for the line to end.
+    assert.match(src, /t - rt\.lastSpeakAt > 10_000 && t >= rt\.speakUntil\) say\(engine, butlerText\('stepAwayList'\)\)/);
+  });
+
+  it('a spoken line also goes into Local chat, as sendBubbleAndChat did (items/bag_butler.js npc_local_chat)', () => {
+    const run = (extra) => {
+      const chat = [];
+      const activity = [];
+      const engine = { chatLine: (who, text) => chat.push(`${who}: ${text}`), pushActivity: (t) => activity.push(t), save() {}, setData() {}, param: () => null, player: null, ...extra };
+      butlerFeature._reset();
+      butlerFeature.restore({ owned: true, introDone: true, createdAt: NOW });
+      butlerFeature.runVerb({ classId: BUTLER.CLASS }, 'chat', engine);
+      return { chat, activity };
+    };
+    // Modern (the Social drawer): Local online, the Activity log solo, through chatLine only.
+    const modern = run({ social: {} });
+    assert.equal(modern.chat.length, 1);
+    assert.match(modern.chat[0], /^Butler: /);
+    assert.deepEqual(modern.activity, []);
+    // Classic: its Local dock fades, so the Activity log keeps the line too.
+    const classic = run({ social: null });
+    assert.equal(classic.chat.length, 1);
+    assert.deepEqual(classic.activity, classic.chat);
+    // An engine without a Local chat keeps the Activity line.
+    const bare = run({ chatLine: undefined });
+    assert.equal(bare.activity.length, 1);
   });
 });

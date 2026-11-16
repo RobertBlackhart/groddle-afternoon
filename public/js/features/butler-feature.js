@@ -140,7 +140,7 @@ import {
   visitorsReport,
 } from '../butler.js?v=57456a7f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { holdMs } from '../read-time.js?v=be140198';
+import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
 
 export const BUTLER_FEATURE_ID = 'butler';
@@ -177,6 +177,8 @@ const rt = {
   lastCommandAt: 0,
   lastTickSec: 0,
   lastSpeakAt: 0,
+  /** G899: when the line now up ends (performance.now), so a step-away remark does not cut a long hint short. */
+  speakUntil: 0,
   clicks: [],
   near: false,
   far: false,
@@ -250,8 +252,23 @@ function say(engine, text, ms = 3000, { activity = false } = {}) {
   if (!text) return;
   lastMsg = text;
   rt.lastSpeakAt = performance.now();
-  if (view?.butler?.target) engine.say?.(view.butler.target, text, ms);
-  if (activity) engine.pushActivity?.(`${butlerName(st)}: ${text}`);
+  const holdFor = longReadMs(text, ms);
+  rt.speakUntil = rt.lastSpeakAt + holdFor;
+  // G899 (#430): a Butler line stays up its reading time past the 10 s cap (a 54 word hint got
+  // 10 s), given as exact so js/read-time.js bubbleMs does not cap it again.
+  if (view?.butler?.target) engine.say?.(view.butler.target, text, holdFor, { exact: true });
+  if (activity) {
+    // sendBubbleAndChat (items/bag_butler.js): the line also goes into Local chat (npc_local_chat).
+    // engine.chatLine: Local online, the Activity log solo (social-drawer localLine); Classic's Local
+    // dock fades, so the Activity log keeps it there too.
+    const name = butlerName(st);
+    if (typeof engine.chatLine === 'function') {
+      engine.chatLine(name, text);
+      if (!engine.social) engine.pushActivity?.(`${name}: ${text}`);
+    } else {
+      engine.pushActivity?.(`${name}: ${text}`);
+    }
+  }
   publish(engine, true);
 }
 
@@ -1015,7 +1032,7 @@ function secondTick(engine, t) {
   }
   if (busy || rt.mode === 'interacting' || rt.mode === 'dance' || rt.mode === 'step') return;
   if (p && d <= BUTLER.AT_DIST && t - rt.stepAt > 3000 && reactionAllowed()) {
-    if (stepBack(engine, p.x) && Math.random() < 0.5 && t - rt.lastSpeakAt > 10_000) say(engine, butlerText('stepAwayList'));
+    if (stepBack(engine, p.x) && Math.random() < 0.5 && t - rt.lastSpeakAt > 10_000 && t >= rt.speakUntil) say(engine, butlerText('stepAwayList'));
     return;
   }
   // shouldReturnToBase: 15 s after the last command, more than 50 px off post.

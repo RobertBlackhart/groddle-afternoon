@@ -10,8 +10,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=4134d522';
-import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=244a4497';
+import { createNotifier } from '../public/js/notify.js?v=91598c67';
 import { memoryStore, page } from './social-fake-dom.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

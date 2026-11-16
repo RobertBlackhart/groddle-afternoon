@@ -24,6 +24,19 @@ export function readMs(text) {
   return Math.min(READ_MAX_MS, READ_MIN_MS + wordCount(text) * READ_PER_WORD_MS);
 }
 
+/**
+ * G899 (#430): the longest a long line (a Butler's hint) stays up. Its hints run past 50 words
+ * (High-Class Hoe, 54), which the 10 s cap took away mid-sentence; in Glitch the same line
+ * also went into the Local chat (items/bag_butler.js sendBubbleAndChat, npc_local_chat), where it
+ * stayed. Here the bubble keeps 300 ms a word up to this.
+ */
+export const LONG_READ_MAX_MS = 30000;
+
+/** A long line's time: the caller's, or 4 s plus 300 ms a word when that is longer, at most 30 s. */
+export function longReadMs(text, ms = 0) {
+  return Math.max(Number(ms) || 0, Math.min(LONG_READ_MAX_MS, READ_MIN_MS + wordCount(text) * READ_PER_WORD_MS));
+}
+
 /** The caller's time, or the reading time when that is longer. */
 export function holdMs(text, ms = 0) {
   return Math.max(readMs(text), Number(ms) || 0);
