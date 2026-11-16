@@ -25954,17 +25954,44 @@ function enterSignpost() {
   lightFocusedBoard();
 }
 
-/**
- * A key while a post is held: true when the post took it. A move key (Left/Right, A/D) lets go
- * and then walks; a number key lets go and takes its arm.
- */
-function signpostFocusKey(e) {
+/** A held post still at hand with the same arms; else it lets go (false). */
+function signpostStillHeld() {
   if (!signpostFocus) return false;
   const at = signpostAtHand();
   if (!at || !signpostFocus.boards.every((entry) => at.boards.some(({ board }) => board === entry.board))) {
     releaseSignpostFocus();
     return false;
   }
+  return true;
+}
+
+/**
+ * ACTPRESS (G851, Austin 2026-11-16): the phone's Act drives a held post as it drives a verb menu
+ * (js/touch-controls.js actMenu): a drag on Act steps the lit arm, resting on the top and bottom
+ * arms as a drag rests on a menu's ends (Up and Down still wrap), and a tap or the lift goes to the
+ * lit arm, as Enter does. Null while no post is held.
+ */
+function signpostActMenu() {
+  if (!signpostFocus) return null;
+  return {
+    step(n) {
+      if (!signpostStillHeld()) return;
+      const last = signpostFocus.boards.length - 1;
+      signpostFocus.index = Math.max(0, Math.min(last, signpostFocus.index + (Math.trunc(Number(n)) || 0)));
+      lightFocusedBoard();
+    },
+    choose() {
+      if (signpostStillHeld()) takeSignBoard(signpostFocus.boards[signpostFocus.index]);
+    },
+  };
+}
+
+/**
+ * A key while a post is held: true when the post took it. A move key (Left/Right, A/D) lets go
+ * and then walks; a number key lets go and takes its arm.
+ */
+function signpostFocusKey(e) {
+  if (!signpostStillHeld()) return false;
   const n = signpostFocus.boards.length;
   if (['ArrowUp', 'w', 'W', 'ArrowDown', 's', 'S'].includes(e.key)) {
     e.preventDefault();
@@ -32809,6 +32836,8 @@ async function main() {
     if (!isPackPopoverOpen()) return;
     const pop = document.getElementById('pack-popover');
     if (pop?.contains(e.target) || e.target?.closest?.('.pack-slot[data-tsid]')) return;
+    // G851 (ACTPRESS): the phone's Act chooses in the stack's menu, so its press keeps it open.
+    if (e.target?.closest?.('[data-touch-act]')) return;
     closePackPopover();
   });
 
@@ -33592,8 +33621,11 @@ async function main() {
       actMenu: () => {
         if (enterChooser?.isOpen()) return enterChooser;
         const menu = document.getElementById('verb-menu');
-        if (!menuTarget || !menu || menu.hidden) return null;
-        return { step: (n) => stepVerbRow(menu, n), choose: () => chooseVerbRow(menu) };
+        if (menuTarget && menu && !menu.hidden) return { step: (n) => stepVerbRow(menu, n), choose: () => chooseVerbRow(menu) };
+        // G851: a post held by Act's Enter (its roads) and a stack's own menu (the pack's item card) too.
+        if (signpostFocus) return signpostActMenu();
+        const pop = isPackPopoverOpen() ? document.getElementById('pack-popover') : null;
+        return pop ? { step: (n) => stepVerbRow(pop, n), choose: () => chooseVerbRow(pop) } : null;
       },
       floatStick: createFloatStick({ win: window }),
       // A quick tap on the stick's corner on a thing behind it (an animal under it) is a tap on that thing;

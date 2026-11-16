@@ -38,7 +38,8 @@ describe('signpost focus (ticket 21)', () => {
     assert.match(key, /if \(e\.key === 'Escape'\) \{\n\s*e\.preventDefault\(\);\n\s*releaseSignpostFocus\(\);\n\s*return true;/);
     assert.match(key, /\['ArrowLeft', 'ArrowRight', 'a', 'A', 'd', 'D'\]\.includes\(e\.key\) \|\| \/\^\[1-9\]\$\/\.test\(e\.key\)\) releaseSignpostFocus\(\);\n\s*return false;/);
     // A post left behind (a street change, walking off) lets go.
-    assert.match(key, /if \(!at \|\| !signpostFocus\.boards\.every/);
+    assert.match(key, /if \(!signpostStillHeld\(\)\) return false;/);
+    assert.match(fn('signpostStillHeld'), /if \(!at \|\| !signpostFocus\.boards\.every[^\n]*\n\s*releaseSignpostFocus\(\);/);
     assert.match(fn('clearWorldEntities'), /releaseSignpostFocus\(\);/);
     // The world's keydown asks the post first, before the key is held or a jump is queued.
     const kd = game.indexOf('if (signpostFocusKey(e)) return;');
