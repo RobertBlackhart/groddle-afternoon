@@ -14929,14 +14929,6 @@ body.is-booting .touch-controls { display: none; }
 :root.touch-phone #game-root #pack-bar:not([data-hb-dock]) #pack-count { display: none; }
 :root.touch-phone #game-root #pack-bar:not([data-hb-dock]) #pack-search-btn { width: 30px; height: 30px; }
 :root.touch-phone #game-root #pack-bar:not([data-hb-dock]) #pack-row > .save-pill.in-row:not([data-state="conflict"], [data-state="signed-out"]) { width: 28px; height: 28px; }
-/* G859 (#413, #421): upright, the open search box (150 px of field) and the bag buttons left the hits no
-   room at all, on the street and in Decoration Mode's Pack tab. While searching there, the bags and the
-   slot count step aside (a hit from a bag carries its bag's icon) and the field is narrower. */
-@media (orientation: portrait) {
-  :root.touch-phone #game-root #pack-row.is-searching :is(#pack-bags, .pack-vsep, #pack-count) { display: none; }
-  :root.touch-phone #game-root #pack-row.is-searching .pack-search { padding-left: var(--sp-3); }
-  :root.touch-phone #game-root #pack-row.is-searching .pack-search input { width: 92px; }
-}
 /* FEATURED: the featured project's pill covered the street's name ("Shiltrigg Tiers · 9:42 PM"). A
    phone shows the name with no project line in it; the project is the Menu's row instead (js/ui/featured-project.js
    renderFeaturedMenuRow) and the Feat panel's (H) as before. */
@@ -14953,6 +14945,14 @@ body.is-booting .touch-controls { display: none; }
    on a phone the stack starts above them (js/touch-controls.js: the stick's 132 px corner over the pack). */
 :root.touch-phone #game-root .prompt-stack { bottom: calc(var(--pack-live-height, 72px) + env(safe-area-inset-bottom, 0px) + 132px + var(--space-2)); }
 /* end PHONE6 */
+/* G859 (#413, #421): upright, the open search box (150 px of field) and the bag buttons left the hits no
+   room at all, on the street and in Decoration Mode's Pack tab. While searching there, the bags and the
+   slot count step aside (a hit from a bag carries its bag's icon) and the field is narrower. */
+@media (orientation: portrait) {
+  :root.touch-phone #game-root #pack-row.is-searching :is(#pack-bags, .pack-vsep, #pack-count) { display: none; }
+  :root.touch-phone #game-root #pack-row.is-searching .pack-search { padding-left: var(--sp-3); }
+  :root.touch-phone #game-root #pack-row.is-searching .pack-search input { width: 92px; }
+}
 /* Report #261 and Austin 2026-11-13: the featured project is a line inside the street name bubble now
    (js/ui/featured-project.js), so it covers nothing and stays when the name drops under the pills. In a
    quest place it goes with the rest of the bubble (.street-nameplate.is-quest > :not(.quest-plate)). */
