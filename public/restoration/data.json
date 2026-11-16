@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2374,
+  "commits": 2378,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "/who leaves out players you block, as the Who's here list does"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "A tap on the Social drawer's top line opens Local chat with Who's here open"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "Report on another player's menu sends the administrators the public chat you could see, never IMs"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "Upright on a phone, Tower floors and quest rooms have a dark band above them, not sky blue"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a phone, a full pack's refused Buy says why inside the shop"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a phone, a vendor's Buy or Sell count has a close button back to the shelf"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a narrow screen the route card sits under the pinned quests, not over them"
    }
   ]
  },
- "tests": 1051,
+ "tests": 1052,
  "generatedAt": "2026-11-16"
 }
