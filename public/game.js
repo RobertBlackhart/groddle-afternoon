@@ -1986,10 +1986,13 @@ function syncRenderResolution() {
   if (Math.abs(next - app.renderer.resolution) < RESOLUTION_STEP / 2) return;
   app.renderer.resize(VIEW_W, VIEW_H, next);
   app.canvas.dataset.renderResolution = String(next);
+  pinStageCanvasSize();
 }
 
 /** The scene whose size last held the view (syncLocationViewHeight). */
 let viewSceneLayer = null;
+/** #386: a narrow street's canvas size in CSS px ({ w, h }), null when the canvas fills the root. */
+let stageCanvasSize = null;
 
 /**
  * PINCH PREVIEW (Austin 2026-11-13 on his iPhone: "The phone zoom in/out flickers and is mostly
@@ -2087,13 +2090,20 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
     if (stage.bordered) {
       root.style.setProperty('--stage-w', `${stage.cssWidth.toFixed(2)}px`);
       root.dataset.stageBordered = '1';
+      stageCanvasSize = { w: stage.cssWidth, h: stage.cssHeight };
     } else {
       root.style.removeProperty('--stage-w');
       delete root.dataset.stageBordered;
+      stageCanvasSize = null;
     }
+    pinStageCanvasSize();
     // #348: the band above a short street is the street's own sky, not the page's blue.
     if (band >= 1 && viewSceneLayer?.skyTop) root.style.setProperty('--stage-sky', viewSceneLayer.skyTop);
     else root.style.removeProperty('--stage-sky');
+  }
+  if (stage.pinned && stageCanvasSize) {
+    stageCanvasSize = null;
+    pinStageCanvasSize();
   }
   STAGE_SCALE = stage.scale;
   // PINCH PREVIEW: the stage draws at the new scale inside the renderer's old size.
@@ -2140,6 +2150,28 @@ function resizeRendererToView(cssWidth) {
   const resolution = stageResolution(cssWidth);
   app.renderer.resize(VIEW_W, VIEW_H, resolution);
   app.canvas.dataset.renderResolution = String(resolution);
+  pinStageCanvasSize();
+}
+
+/**
+ * #386: a narrow street's canvas size, inline and !important, so it holds without style.css's
+ * NARROW STREETS rule (a cached older stylesheet with a newer game.js drew it full width, 1.5x too
+ * wide: `#game-root canvas { width: 100% !important }` won). Pixi's autoDensity rewrites the inline
+ * width and height on every renderer resize (dropping the priority), so each resize sets it again.
+ */
+function pinStageCanvasSize() {
+  const style = app?.canvas?.style;
+  if (!style) return;
+  if (stageCanvasSize) {
+    style.setProperty('width', `${stageCanvasSize.w.toFixed(2)}px`, 'important');
+    style.setProperty('height', `${stageCanvasSize.h.toFixed(2)}px`, 'important');
+    style.setProperty('margin-inline', 'auto', 'important');
+    return;
+  }
+  // Only ours (important): Pixi's own inline size stays, under the stylesheet as before.
+  for (const prop of ['width', 'height', 'margin-inline']) {
+    if (style.getPropertyPriority(prop) === 'important') style.removeProperty(prop);
+  }
 }
 
 /** ZOOM: a resize this file sends after a zoom change, so the camera keeps the framing it chose. */

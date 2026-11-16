@@ -74,4 +74,22 @@ describe('report #337: Semsan Simile at actual size between borders', () => {
     const css = readFileSync(join(here, '../public/style.css'), 'utf8');
     assert.match(css, /#game-root\[data-stage-bordered\] > canvas\[role="application"\] \{\s+width: var\(--stage-w, 100%\) !important;\s+margin-inline: auto;/);
   });
+
+  it('#386: the canvas keeps its shape without the stylesheet rule (a cached older style.css)', () => {
+    const game = readFileSync(join(here, '../public/game.js'), 'utf8');
+    // The bordered branch remembers the stage's CSS size, the other one forgets it; both pin it.
+    assert.match(game, /root\.dataset\.stageBordered = '1';\s+stageCanvasSize = \{ w: stage\.cssWidth, h: stage\.cssHeight \};\s+\} else \{[^}]*delete root\.dataset\.stageBordered;\s+stageCanvasSize = null;\s+\}\s+pinStageCanvasSize\(\);/);
+    const pin = game.slice(game.indexOf('function pinStageCanvasSize'), game.indexOf('function pinStageCanvasSize') + 900);
+    for (const [prop, value] of [['width', '`${stageCanvasSize.w.toFixed(2)}px`'], ['height', '`${stageCanvasSize.h.toFixed(2)}px`'], ['margin-inline', "'auto'"]]) {
+      assert.ok(pin.includes(`style.setProperty('${prop}', ${value}, 'important')`), `${prop} inline and important`);
+    }
+    // Off a narrow street only its own important values go: Pixi's inline size stays under the stylesheet.
+    assert.match(pin, /if \(style\.getPropertyPriority\(prop\) === 'important'\) style\.removeProperty\(prop\);/);
+    // Pixi's autoDensity rewrites the inline size on every renderer resize, so each resize pins it again.
+    const resizes = game.match(/app\.renderer\.resize\(VIEW_W, VIEW_H, \w+\);\s+app\.canvas\.dataset\.renderResolution = String\(\w+\);\s+pinStageCanvasSize\(\);/g) || [];
+    assert.equal(resizes.length, (game.match(/app\.renderer\.resize\(/g) || []).length);
+    // The rule that wins without the NARROW STREETS block is still there (kept, not replaced).
+    const css = readFileSync(join(here, '../public/style.css'), 'utf8');
+    assert.match(css, /#game-root canvas \{\s+display: block;\s+width: 100% !important;/);
+  });
 });
