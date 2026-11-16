@@ -41,6 +41,13 @@
  *  - Upgrades: the option you pick is the winning vote. The template
  *    geometry is not in the public dump, so the feature applies a clean
  *    ecology improvement read from the option's own description.
+ *  - Distance from the start (report #425, js/street-jobs-solo.js): solo, a
+ *    street build or upgrade carries `job.solo` { hops, divisor, skillDrop }
+ *    from SOLO_CURVE, put on by the feature. Its divisor stands in for
+ *    SOLO_DIVISOR (500 next to Hechey Track, 50 far out) in the amounts and
+ *    the rewards, and each work ask's skill drops skillDrop levels (waived
+ *    near the start). Online the catalog has no `job.solo`, so nothing here
+ *    changes for it.
  *  - Restorations (job type 5, kind 'restore'): a depleted cultivation's
  *    proto offers its job_cult_* class (items/proto_*.js setJobData). These
  *    were sized for a home owner and a few neighbours, so they run at the
@@ -53,6 +60,7 @@
 export const SOLO_DIVISOR = 50;
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { soloSkill } from './street-jobs-solo.js?v=19b59978';
 /** items/include/jobs.js startJobWork unit_duration. */
 export const WORK_UNIT_MS = 1500;
 /** locations/inc_jobs.js jobs_get_available: 30 * 60 seconds. */
@@ -244,8 +252,13 @@ export function soloNeed(num, divisor = SOLO_DIVISOR) {
   return Math.max(1, Math.ceil(whole(num) / (divisor > 0 ? divisor : SOLO_DIVISOR)));
 }
 
-/** A job's amount divisor: SOLO_DIVISOR, or the job's own (restorations run at 1). */
+/**
+ * A job's amount divisor: its solo distance terms' (job.solo, report #425; solo only), else the
+ * job's own (restorations run at 1), else SOLO_DIVISOR.
+ */
 export function jobDivisor(job) {
+  const solo = Number(job?.solo?.divisor);
+  if (solo > 0) return solo;
   const d = Number(job?.divisor);
   return d > 0 ? d : SOLO_DIVISOR;
 }
@@ -386,11 +399,15 @@ export function phaseRequirements(state, catalog, jobId, index = null) {
   const pc = phaseClass(catalog, jobId, at);
   if (!pc?.def) return [];
   const sameRow = at === row.phase;
-  const divisor = jobDivisor(jobDef(catalog, jobId));
+  const job = jobDef(catalog, jobId);
+  const divisor = jobDivisor(job);
+  // Report #425: solo, near the start, a work ask's skill drops levels (job.solo.skillDrop); `skillWas` keeps the source's.
+  const drop = job?.solo?.skillDrop || 0;
   const reqs = pc.def.requirements.map((r) => {
     const need = soloNeed(r.num, divisor);
     const got = sameRow ? Math.min(need, whole(row.got[r.id])) : at < row.phase || row.doneAt ? need : 0;
-    return { ...r, need, got, done: got >= need };
+    const eased = drop && r.skill ? { skill: soloSkill(r.skill, drop), skillWas: r.skill } : null;
+    return { ...r, ...eased, need, got, done: got >= need };
   });
   for (const r of reqs) r.open = !r.done && r.group <= currentReqGroup(reqs, r.bucket);
   return reqs;

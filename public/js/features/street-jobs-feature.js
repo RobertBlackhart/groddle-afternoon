@@ -110,7 +110,7 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=d0ca0659';
+} from '../street-jobs.js?v=6db7f1ad';
 import { PAPERS_BADGE } from '../subway.js?v=34e7e56f';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=fc51a023';
@@ -137,7 +137,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=9cdbc04b';
+} from '../street-jobs-mp.js?v=a04bdea3';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -149,13 +149,14 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=f23b16a2';
 import { TELEPORTERS } from '../hidden-floors.js?v=e8836c2e';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=3621eb75';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=759adbfe';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=aacb3915';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=1b4070c4';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
+import { applySoloScale, hopsFromStart } from '../street-jobs-solo.js?v=19b59978';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';
@@ -230,9 +231,11 @@ function nextPhaseName(job, next) {
  * holds: the subway between its streets and the Collision-triggered Teleporters.
  */
 let ways = null;
+/** The signpost graph, fetched once for the ways home and the solo distances (report #425). */
+let graphJson = null;
+const loadGraph = () => (graphJson ||= fetch('assets/content/signpost-graph.json?v=g198-1').then((r) => r.json()));
 function loadWays() {
-  ways ||= fetch('assets/content/signpost-graph.json?v=g198-1')
-    .then((r) => r.json())
+  ways ||= loadGraph()
     .then((json) => {
       const free = {};
       const rails = {};
@@ -395,12 +398,16 @@ function load() {
     loading = Promise.all([
       fetch('assets/content/street-jobs.json?v=jobs-6').then((r) => r.json()),
       fetch('assets/streets/index.json').then((r) => r.json()),
+      // Report #425: without the graph every project keeps the far-out amounts.
+      loadGraph().catch(() => null),
     ])
-      .then(([cat, idx]) => {
+      .then(([cat, idx, graph]) => {
         catalog = cat;
         streetIndex = idx;
         // Group halls are multiplayer only (G331): solo's board never sees them.
         if (mpMode) mergeHalls(catalog);
+        // Report #425: solo projects scale by distance from the start (js/street-jobs-solo.js); online never.
+        applySoloScale(catalog, hopsFromStart(graph, idx?.default), !mpMode);
         for (const [id, meta] of Object.entries(cat.items || {})) {
           ensureItem(id, { label: meta.label, desc: meta.desc, baseCost: meta.baseCost, stackMax: meta.stackMax });
         }
@@ -2947,6 +2954,8 @@ export const streetJobsFeature = {
     pj.badge = -1;
     if (engine) mpMode = engine.mode === 'multiplayer';
     mpLists = mpMode ? listsFrom(slice) : { applied: [], rewarded: [] };
+    // Report #425: the solo distance terms follow the mode a save loads in.
+    if (catalog) applySoloScale(catalog, null, !mpMode);
     mpMigrated = false;
     if (mp && catalog) {
       mpMigrated = true;
