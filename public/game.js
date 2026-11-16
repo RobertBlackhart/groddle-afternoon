@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a335e8c6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e1e0e72a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=03b81450';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -809,7 +809,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e0
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=e608117b';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=9501b2ee';
 import './js/classic/classic-zoom.js?v=d09cb283';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1049,7 +1049,7 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=52534f8e';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=2abf9f70';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1059,15 +1059,15 @@ import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=1fb97b21';
 import { bubbleMs } from './js/read-time.js?v=be140198';
 import { mountNotifyView } from './js/notify-view.js?v=8edb24fb';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=bf1f1a8c';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=4134d522';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=5e2424a2';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=39b7d2ae';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=400bbb32';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=9645fa07';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=92c073ec';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=c76b5244';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=96e06e9d';
+import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=cd68932d';
 import { createPromptSettler, promptId } from './js/prompt-settle.js?v=509ba9cc';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=c8210235';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
@@ -1100,7 +1100,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=b4fc3191';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=2ddac00a';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -8881,7 +8881,9 @@ function renderVerbMenu(target, verbs, level = null) {
     const picks = v.id === 'feed' || Boolean(v.picker);
     const askMax = v.id === 'pickup' ? pickupCountAsked(target) : 0;
     add({
-      key: keys[i],
+      // G891: a verb with a key of its own (keys_in_location: the Knocker's k) shows and takes that letter.
+      key: v.key ? String(v.key).toUpperCase() : keys[i],
+      letter: v.key || '',
       label: v.label,
       cost: v.energy,
       next: picks || askMax > 0,

@@ -26,7 +26,7 @@ import {
   nearFeetY,
   streetNearSkip,
   towerDoorway,
-} from '../public/js/features/homes-feature.js?v=08bf2855';
+} from '../public/js/features/homes-feature.js?v=a6d89c91';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const FIREBOG = ['firebog_1_high', 'firebog_1b_high', 'firebog_3_high', 'firebog_4_high', 'firebog_2_high', 'firebog_4a_high'];

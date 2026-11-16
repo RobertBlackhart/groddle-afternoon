@@ -34,11 +34,11 @@
  *
  * QA: ?autostart=1&fresh=1&resdemo=<classTsid> places that node beside the
  * player on the first street entered (and grants any tool, rods, or skill it
- * needs; &resdemobare=1 leaves the items out); &resautoplay=1 performs its
- * main verb once. Canvas data attributes:
+ * needs; &resdemobare=1 leaves the items out, &resdemonode=0 gives the kit
+ * and places no node); &resautoplay=1 performs its main verb once. Canvas data attributes:
  * resourceNodeCount, resourceNodeClasses, resourceLastHarvest, fireflyJar,
  * resourceDemo, slothAnim (the QA Sloth's animation, `eat:rod3` with a rod),
- * slothSpots (the street's Sloths: key@x,y,dir).
+ * slothSpots (the street's Sloths: key@x,y,dir), slothAnims (theirs: key:anim).
  *
  * Pocket Salmon online (slice 3 of research/plans/street-animals-shared.md):
  * a street's Salmon are shared nodes (street-objects-feature): one pocketed is
@@ -101,7 +101,7 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=a7d407f3';
+} from '../resource-nodes.js?v=2659c4e8';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -491,6 +491,7 @@ let lastTickAt = 0;
 let lastHarvest = '';
 let demoUsed = false;
 let demoEntity = null;
+let demoKitOnly = false;
 /** The tool overlay playing on a node (verbStarted), and its end. */
 let nodeTool = null;
 function stopNodeTool() {
@@ -662,9 +663,45 @@ function targetFor(engine, entity, sprite, extra = {}) {
   });
 }
 
+/**
+ * G891: the Knocker is its own thing, as in Glitch (sloth_knocker.js: label "Knocker", the knock verb,
+ * tooltip "Knock to call the Sloth", key k): its own target on the trunk, paired with its tree's
+ * Sloth. Glitch's knock called the Sloth nearest the player within 600 px (39, 51); on all 84 trees
+ * that is the Knocker's own tree's, so the pairing is by tree.
+ */
+export const SLOTH_KNOCKER = Object.freeze({ classId: 'sloth_knocker', label: 'Knocker', subtitle: 'Knock to call the Sloth' });
+
+function knockerTargetFor(engine, entity, sprite) {
+  return engine.register({
+    classId: SLOTH_KNOCKER.classId,
+    featureId: RESOURCE_FEATURE_ID,
+    label: SLOTH_KNOCKER.label,
+    subtitle: SLOTH_KNOCKER.subtitle,
+    sprite,
+    resourceKey: entity.key,
+    knocks: entity.key,
+  });
+}
+
+/** The node a target belongs to: the Sloth's own target or its Knocker's. */
+function entityFor(target) {
+  return target ? entities.find((row) => row.target === target || row.knockerTarget === target) || null : null;
+}
+
+/**
+ * PURE: which of a node's verbs a target shows. A Knocker shows the verbs that are its own (`on`:
+ * Knock), the node the rest, so Knock is on the Knocker only (sloth_knocker.js; npc_sloth.js verbs
+ * list feed alone).
+ */
+export function verbsForTarget(verbs, knocker) {
+  return (verbs || []).filter((verb) => (knocker ? verb.on === SLOTH_KNOCKER.classId : !verb.on));
+}
+
 function dropTarget(engine, entity) {
   if (entity.target) engine.unregister(entity.target);
+  if (entity.knockerTarget) engine.unregister(entity.knockerTarget);
   entity.target = null;
+  entity.knockerTarget = null;
   entity.view = null;
 }
 
@@ -903,6 +940,9 @@ function buildSlothView(engine, entity) {
   knocker.x = geo.knocker.x;
   knocker.y = geo.knocker.y;
   knocker.zIndex = itemZ('sloth_knocker', Z.tree);
+  // sloth_knocker.js getAssetInfo position: 34 x 52 over its point.
+  knocker._worldHitW = 34;
+  knocker._worldHitH = 52;
   engine.entityLayer.addChild(root, knocker);
   const frame = resourceNodeFrame(entity.node);
   entity.view = {
@@ -912,6 +952,7 @@ function buildSlothView(engine, entity) {
   };
   entity.target = targetFor(engine, entity, root, { airborne: true, speechOffset: { x: geo.speech.x - root.x, y: 0 } });
   entity.view.target = entity.target;
+  entity.knockerTarget = knockerTargetFor(engine, entity, knocker);
   warmSloth(engine, ['hidden', 'peek', 'peekIdle', 'peekWithdraw', 'drop', 'hangIdle1', 'hangIdle2']);
   const now = Date.now();
   if (frame?.state === 'eating') setSlothAnim(engine, entity.view, 'eat', now);
@@ -1059,9 +1100,11 @@ function placeSloth(engine, entity, dtMs, now) {
   drawSloth(engine, view, now);
   // QA: the QA Sloth's animation (and rod) as canvas data-sloth-anim.
   const shown = `${view.anim}${SLOTH_SHEETS[view.anim]?.rods ? `:rod${view.rodIndex}` : ''}`;
-  if (entity === demoEntity && view.shown !== shown) {
+  if (view.shown !== shown) {
     view.shown = shown;
-    engine.setData?.('slothAnim', shown);
+    if (entity === demoEntity) engine.setData?.('slothAnim', shown);
+    // Every Sloth's (G891 QA): key:anim, so a check can see a street's own Sloth peek or drop.
+    else engine.setData?.('slothAnims', entities.filter((e) => e.view?.kind === 'sloth' && e !== demoEntity).map((e) => `${e.key}:${e.view.shown || ''}`).join(';'));
   }
 }
 
@@ -1284,7 +1327,7 @@ function verbContext(engine, entity, verbId) {
     jar: entity.classTsid === 'npc_firefly' ? (({ copy, flies }) => ({ flies, copy }))(fireflyJarInUse(engine)) : { flies: 0 },
     nearby: entity.classTsid === 'npc_firefly' ? nearbyFireflies(engine, entity) : [],
     // The QA Sloth skips the Animal Kinship 3 gate; real Sloths keep it.
-    requireSkill: entity !== demoEntity,
+    requireSkill: entity !== demoEntity && !demoKitOnly,
     // Firefly Whistling gates the jar (firefly_jar.js); the QA Firefly skips it.
     requireAchievement: entity !== demoEntity,
   };
@@ -1644,6 +1687,13 @@ function setupDemo(engine, plan) {
     else engine.inv[classTsid] = Math.max(qty, engine.inv[classTsid] || 0);
   }
   if (engine.pc.energy < 60) engine.pc.energy = 60;
+  // &resdemonode=0: the kit only, for the street's own nodes (a street's Sloths, G891), which then
+  // skip the skill gate as the QA node does.
+  if (engine.param('resdemonode') === '0') {
+    demoKitOnly = true;
+    engine.refreshPack();
+    return plan;
+  }
   const at = demoPlacement(engine, kitInfo.classTsid);
   const extra = [{ key: `demo:${kitInfo.classTsid}`, classTsid: kitInfo.classTsid, x: at.x, y: at.y, demo: true }];
   if (kitInfo.classTsid === 'npc_sloth') {
@@ -1907,11 +1957,13 @@ export const resourceNodesFeature = {
   },
 
   verbsFor(target, engine) {
-    const entity = entities.find((row) => row.target === target);
+    const entity = entityFor(target);
     if (!entity) return [];
     const ctx = verbContext(engine, entity);
-    return resourceNodeVerbs(entity.node, engine.inv, engine.pc, ctx).map((verb) => ({
+    return verbsForTarget(resourceNodeVerbs(entity.node, engine.inv, engine.pc, ctx), target === entity.knockerTarget).map((verb) => ({
       id: menuVerbId(verb.id),
+      // A key of its own in the menu (keys_in_location: the Knocker's k).
+      ...(verb.key ? { key: verb.key } : {}),
       // Multiplayer help dig (features/help-mine-feature.js): "Help dig" while someone else digs.
       label: (engine.mode === 'multiplayer' && engine.query?.('sharedVerbLabel', target, verb.id, engine)) || verb.label,
       enabled: verb.enabled,
@@ -1923,7 +1975,7 @@ export const resourceNodesFeature = {
   },
 
   runVerb(target, verbId, engine) {
-    const entity = entities.find((row) => row.target === target);
+    const entity = entityFor(target);
     if (!entity) return true;
     performVerb(engine, entity, rulesVerbId(verbId));
     return true;
@@ -1934,7 +1986,7 @@ export const resourceNodesFeature = {
    * at work on the node for as long as the verb runs, as mining shows the pick (js/node-tools.js).
    */
   verbStarted(target, verb, engine) {
-    const entity = entities.find((row) => row.target === target);
+    const entity = entityFor(target);
     if (!entity) return undefined;
     stopNodeTool();
     const rule = resourceNodeVerbs(entity.node, engine.inv, engine.pc, verbContext(engine, entity)).find((v) => v.id === rulesVerbId(verb?.id));
@@ -1965,7 +2017,7 @@ export const resourceNodesFeature = {
 
   /** game.js cancelCurrentAction: the swing stopped before it landed. */
   verbCancelled(target) {
-    if (entities.some((row) => row.target === target)) stopNodeTool();
+    if (entityFor(target)) stopNodeTool();
     return undefined;
   },
 

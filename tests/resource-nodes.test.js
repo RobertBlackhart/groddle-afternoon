@@ -38,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=a7d407f3';
+} from '../public/js/resource-nodes.js?v=2659c4e8';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -543,7 +543,11 @@ describe('Sloth', () => {
     assert.deepEqual(knock.msgs, [], 'G889: the Sloth talks in bubbles, nothing goes to Activity');
     assert.equal(node.out, true);
     assert.equal(inv.metal_rod, 9, 'knocking does not consume a rod');
-    assert.deepEqual(resourceNodeVerbs(node, inv, pc, ctxBase({ skills })).map((v) => v.id), ['feed']);
+    // G891: Knock stays on the Knocker, greyed with its reason (sloth_knocker.js 41-43).
+    const out = resourceNodeVerbs(node, inv, pc, ctxBase({ skills }));
+    assert.deepEqual(out.map((v) => [v.id, v.enabled, v.on || '']), [['knock', false, 'sloth_knocker'], ['feed', true, '']]);
+    assert.equal(out[0].message, 'The Sloth is already here');
+    assert.equal(out[0].key, 'k');
 
     const feed = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills, rng: seq(0.99) }));
     assert.equal(feed.ok, true);

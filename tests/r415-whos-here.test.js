@@ -9,7 +9,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=bf1f1a8c';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=4134d522';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../public/js/whos-here.js?v=cb52c987';
 

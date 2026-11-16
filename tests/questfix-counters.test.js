@@ -29,7 +29,7 @@ import {
   COLD_COMFORT,
   COLD_COMFORT_LEAVE_TEXT,
 } from '../public/js/quest-offers.js?v=38a0cac5';
-import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=a7d407f3';
+import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=2659c4e8';
 import { createPlot, performPlotVerb } from '../public/js/patches.js?v=5a38514c';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { performEmotionalBearAction, createEmotionalBearState } from '../public/js/emotional-bear.js?v=172f393b';

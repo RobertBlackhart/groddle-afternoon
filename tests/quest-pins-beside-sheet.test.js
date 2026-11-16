@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { getQuestProgress } from '../public/js/quests.js?v=40c71a37';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=38a0cac5';
-import { questStep } from '../public/js/ui/quest-sheet.js?v=5e2424a2';
+import { questStep } from '../public/js/ui/quest-sheet.js?v=9645fa07';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

@@ -108,7 +108,7 @@
  * news, chats:n the Chats total); window.groddleSocial.
  */
 import { colorizeAmounts } from '../notify-view.js?v=8edb24fb';
-import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=400bbb32';
+import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=c76b5244';
 import { IM_VERB_ID } from '../player-im.js?v=da51888c';
 import { selectionCovers } from './context-guard.js?v=0f71ac17';
 import { appendLinkedText, linkifyTextNodes } from '../chat-links.js?v=b717fac7';

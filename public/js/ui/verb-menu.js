@@ -11,7 +11,8 @@
  *   footer line, so the rows stay one line high;
  * - a tail that points at the thing; the menu sits above it and flips below when there is no
  *   room, and steps sideways to keep clear of the avatar (placeVerbMenu);
- * - keys: Up/Down or W/S move, Enter picks, 1-9 pick a row, 0 or Backspace go back from a
+ * - keys: Up/Down or W/S move, Enter picks, 1-9 pick a row (or a row's own letter: the
+ *   Knocker's K), 0 or Backspace go back from a
  *   second level (Feed, Eat more, Drop some, a bag's Sort), Esc closes (game.js);
  * - a verb that takes a thing from the pack (Feed what?) shows the things as pictures in a grid
  *   (makePickTile, the original's target-item menu), walked with the arrows.
@@ -106,6 +107,7 @@ export function makeVerbRow(doc, row) {
   if (row.tip) btn.dataset.vmTip = plainWords(row.tip);
   if (row.disabled && row.reason) btn.dataset.vmReason = plainWords(row.reason);
   if (row.back) btn.dataset.vmBack = '';
+  if (row.letter) btn.dataset.vmLetter = String(row.letter).toLowerCase();
   btn.innerHTML = verbRowInner(row);
   // The words a screen reader says: the verb, its cost and why it can't be done.
   const said = [row.label];
@@ -363,6 +365,16 @@ export function verbMenuKey(el, e) {
     if (!back) return k === 'Backspace';
     back.click();
     return true;
+  }
+  // A row with a letter of its own (keys_in_location: the Knocker's k, sloth_knocker.js 116-118) takes it.
+  if (/^[a-z]$/i.test(k) && !e.shiftKey) {
+    const row = rows.find((r) => r.dataset.vmLetter === k.toLowerCase());
+    if (row) {
+      row.focus({ preventScroll: true });
+      setDetail(el, row);
+      row.click();
+      return true;
+    }
   }
   if (/^[1-9]$/.test(k) && !e.shiftKey) {
     const keyed = rows.filter((r) => !r.hasAttribute('data-vm-back'));

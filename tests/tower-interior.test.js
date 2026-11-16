@@ -22,7 +22,7 @@ import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.
 import { TOWER_ROOMS, VENT } from '../public/js/tower-rooms.js?v=4f1f6af7';
 import { ALL_TOWER_ROOMS } from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
 import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=b877dfb6';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=7f30f831';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=c0fb1a07';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));

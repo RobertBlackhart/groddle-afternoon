@@ -7,7 +7,7 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { REPORT_MENU_TEXT, reportLink, reportMenuRows } from '../public/js/ui/report-row-menu.js?v=9c54829f';
+import { REPORT_MENU_TEXT, reportLink, reportMenuRows } from '../public/js/ui/report-row-menu.js?v=b83f6f6c';
 import { createReportsApi, reportFromHash } from '../public/js/reports.js?v=aa93fc78';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 

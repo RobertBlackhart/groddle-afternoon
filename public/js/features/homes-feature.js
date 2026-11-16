@@ -150,7 +150,7 @@ import {
 } from '../home-decor.js?v=06be9c65';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=2020b29b';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
-import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=400bbb32';
+import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=c76b5244';
 import { DOCK_GAP, DOCK_W, chooseUpgrade, closeUpgradePicker, openUpgradePicker, placeUpgradePicker, saveUpgrade, upgradePickerOpen, upgradePickerState } from '../furniture-upgrade-picker.js?v=3a637ec8';
 import {
   BUILDER_TEXT,
@@ -218,8 +218,8 @@ import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowe
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=91035502';
-import { patchesFeature } from './patches-feature.js?v=d0b76589';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=e78c6e36';
+import { patchesFeature } from './patches-feature.js?v=358aadb2';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=5a38514c';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';

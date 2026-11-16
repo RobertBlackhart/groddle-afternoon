@@ -779,7 +779,10 @@ export const RESOURCE_NODE_CATALOG = Object.freeze({
       Object.freeze({
         id: 'knock',
         label: 'Knock',
-        tooltip: 'Knock on the Knocker to call the Sloth down',
+        // G891: the Knocker's own verb, on the Knocker (sloth_knocker.js verbs.knock 28-29, keys_in_location k 116-118).
+        on: 'sloth_knocker',
+        key: 'k',
+        tooltip: 'Knock to call the Sloth',
         tools: Object.freeze([]),
         // sloth_knocker.js knock 33-46 asks for Animal Kinship 3 and a hiding Sloth, never a rod:
         // without one the Sloth answers from the leaves (npc_sloth.js callSloth 328-336, G889).
@@ -1408,7 +1411,9 @@ export function resourceNodeVerbs(node, inv, pc, ctx = {}) {
   const out = [];
   for (const verb of def.verbs) {
     if (verb.auto && !ctx.includeAuto) continue;
-    if (def.classTsid === 'npc_sloth' && ((verb.id === 'knock' && node.out) || (verb.id === 'feed' && !node.out))) {
+    // G891: Knock stays on the Knocker while the Sloth is out, greyed with sloth_knocker.js's reason
+    // ("The Sloth is already here", 41-43); Feed only shows once it is down.
+    if (def.classTsid === 'npc_sloth' && verb.id === 'feed' && !node.out) {
       continue;
     }
     const gate = gateVerb(node, inv, pc, { ...ctx, verbId: verb.id });
@@ -1424,6 +1429,8 @@ export function resourceNodeVerbs(node, inv, pc, ctx = {}) {
       tool: gate.ok ? gate.toolUsed : null,
       tools: [...verb.tools],
       auto: verb.auto === true,
+      ...(verb.on ? { on: verb.on } : {}),
+      ...(verb.key ? { key: verb.key } : {}),
     });
   }
   return out;

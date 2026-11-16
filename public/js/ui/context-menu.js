@@ -32,7 +32,7 @@
  * QA: canvas data contextMenu ("<surface>:<id>", "" when closed).
  */
 
-import { bindVerbMenu, focusVerbRow, lockVerbMenuSize, makeVerbRow, verbMenuKey, verbRowKeys } from './verb-menu.js?v=96e06e9d';
+import { bindVerbMenu, focusVerbRow, lockVerbMenuSize, makeVerbRow, verbMenuKey, verbRowKeys } from './verb-menu.js?v=cd68932d';
 import { focusWorld } from './focus-return.js?v=da190597';
 
 /** How long a finger holds before the menu opens, and how far it may drift. */

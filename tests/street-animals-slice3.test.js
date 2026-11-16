@@ -16,9 +16,9 @@ import { DRAGON_PLAN_MOVES, SALMON_SWIM, creatureOf, dragonPlan, dragonWalkAt, s
 import { FIRE_DRAGON_WALK } from '../public/js/fire-dragon.js?v=b7f3d751';
 import { foxLegFrom, foxOnLeg } from '../public/js/foxes-mp.js?v=8a4cf44b';
 import { FOX_TIMING } from '../public/js/foxes.js?v=9b5a4fe8';
-import { SHARED_NODE_CLASSES, applyNodeState, freshenNode, sharedNodeVerb } from '../public/js/street-objects.js?v=75947f27';
-import { createResourceNode } from '../public/js/resource-nodes.js?v=a7d407f3';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=99298490';
+import { SHARED_NODE_CLASSES, applyNodeState, freshenNode, sharedNodeVerb } from '../public/js/street-objects.js?v=5d7747c8';
+import { createResourceNode } from '../public/js/resource-nodes.js?v=2659c4e8';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=b29d3998';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 describe('a shared Salmon', () => {
