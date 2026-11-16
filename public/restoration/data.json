@@ -2792,9 +2792,34 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2278,
+  "commits": 2284,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "A quest card covers the top bar like any window; R still opens Reports over it"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "A reload in the Cloud Level puts you back on the cloud you reached"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Tutorial instructions no longer cover your Glitch on a phone"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The first tutorial screen says how to pull the chain, on every device"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "The tutorial save records when each stage and step began"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2889,34 +2914,9 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "On a phone a drag in Camera Mode moves the view again, on iPhone too"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "Every encyclopedia entry page has a search box in its header"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Jumping beside someone talking no longer pushes their bubble aside and back"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "On a phone held upright the Menu stops above the pack row and scrolls, so Settings can be reached"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Butterflies list Massage before Milk, so quick clicks go in doing order"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The upgrade reveal covers the whole game window in Modern, top bar and pack included"
    }
   ]
  },
- "tests": 1022,
+ "tests": 1026,
  "generatedAt": "2026-11-15"
 }
