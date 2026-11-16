@@ -10,6 +10,10 @@
 
 import { dametimeParts } from '../js/game-day.js?v=72f37c7e';
 import { setupMadeCompare } from './made-compare.js?v=bbd8d187';
+import { settleHash } from './hash-settle.js?v=834e5782';
+
+// A #link lands on its heading after the sections below fill and grow the page (hash-settle.js), so it starts first.
+settleHash();
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const el = (tag, attrs = {}, ...kids) => {
