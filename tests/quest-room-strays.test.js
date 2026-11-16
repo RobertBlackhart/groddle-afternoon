@@ -19,11 +19,11 @@ import {
   STRAY_NOTICE,
   normalizeInstanceSave,
   strayWayOut,
-} from '../public/js/quest-instance.js?v=b39384f3';
+} from '../public/js/quest-instance.js?v=7b06754a';
 import { BUILT_ROOMS, ROOM_STREETS, roomForStreet, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
 import { slashPlan } from '../public/js/slash-commands.js?v=7c4d5a44';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=2a4f2911';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=5244cb18';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -262,9 +262,9 @@ describe('the normal quest flow keeps its own ways', () => {
     const stray = src.slice(src.indexOf('function strayRoom('), src.indexOf('/** Where a stray goes'));
     assert.match(stray, /if \(run \|\| entering \|\| !engine\?\.streetTsid\) return null;/);
     const leave = src.slice(src.indexOf('async function leaveInstance('), src.indexOf('/* G886: standing in a quest room'));
-    assert.match(leave, /const back = to \|\| result\.returnTo \|\| save\.returnTo \|\| strayExit\(engine\);/);
+    assert.match(leave, /const back = to \|\| liveBack\(result\.returnTo\) \|\| liveBack\(save\.returnTo\) \|\| strayExit\(engine\);/);
     const start = src.slice(src.indexOf('async function startInstance('), src.indexOf('async function gotoStage('));
-    assert.match(start, /wayBackFrom\(here, save\.returnTo \|\| save\.lastStreet\)/, 'starting from a room street comes back to a real one');
+    assert.match(start, /wayBackFrom\(here, liveBack\(save\.returnTo\) \|\| strayExit\(engine\)\)/, 'starting from a room street comes back to a real one');
   });
 
   it('the tutorial holds its practice street only while its skill stage runs or is about to', () => {

@@ -264,12 +264,46 @@ export const STRAY_DELAY_MS = 700;
 /**
  * Where a stray goes: the last ordinary street (instances_get_exit's "where you came in"), else
  * your home street when you have one, else the default street (config.default_location).
+ * G887: `ordinary(tsid)` false drops a last street that is itself a dead end (a puzzle street, a
+ * quest room), so the way out always ends on a street with roads to Ur.
  */
-export function strayWayOut({ lastStreet = null, homeTsid = null } = {}) {
+export function strayWayOut({ lastStreet = null, homeTsid = null, ordinary = null } = {}) {
   const back = cleanPoint(lastStreet);
-  if (back) return back;
+  if (back && (typeof ordinary !== 'function' || ordinary(back.tsid))) return back;
   if (homeTsid) return { tsid: String(homeTsid), x: null, y: null };
   return { tsid: STRAY_FALLBACK_TSID, x: null, y: null };
+}
+
+/**
+ * G887: the streets whose roads lead back to Hechey Track (`graph` is
+ * assets/content/signpost-graph.json: signposts and doors; road closures are ignored, a road still
+ * being built is still Ur's). A G-keyed Set, or null without a graph. Only these are kept as the
+ * last ordinary street: Orangian (its one door leads to itself) once was, and the way out of a
+ * quest room led back onto it.
+ */
+export function streetsReachingUr(graph, start = STRAY_FALLBACK_TSID) {
+  if (!graph?.streets) return null;
+  const g = (t) => { const s = String(t || ''); return s.startsWith('L') ? `G${s.slice(1)}` : s; };
+  const into = new Map();
+  const link = (from, to) => {
+    const k = g(to);
+    if (!into.has(k)) into.set(k, []);
+    into.get(k).push(g(from));
+  };
+  for (const kind of ['streets', 'doors']) {
+    for (const [from, tos] of Object.entries(graph[kind] || {})) for (const to of tos || []) link(from, to);
+  }
+  const home = g(start);
+  const seen = new Set([home]);
+  const queue = [home];
+  for (let i = 0; i < queue.length; i += 1) {
+    for (const from of into.get(queue[i]) || []) {
+      if (seen.has(from)) continue;
+      seen.add(from);
+      queue.push(from);
+    }
+  }
+  return seen;
 }
 
 /**

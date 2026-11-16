@@ -53,6 +53,7 @@ import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import {
   CARD_RETURN_TEXT,
+  NO_EXIT_PUZZLE_STREETS,
   PUZZLE_DATA_URL,
   SOURCE_PHYSICS,
   autoplaySteps,
@@ -67,7 +68,7 @@ import {
   rewardBits,
   showExitDoor,
   stepTriggers,
-} from '../puzzle-triggers.js?v=1363d17a';
+} from '../puzzle-triggers.js?v=72373665';
 import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 
@@ -770,7 +771,9 @@ function complete(engine) {
   engine.updateHud();
   engine.save();
   if (run.def.exit?.stay) return;
-  const back = save.returnTo;
+  // G887: a level with no road out goes back where you came in, never onto another dead end (the
+  // card taken from a quest room's street sent Orangian's door there), else the safe way out.
+  const back = noExit(tsid) ? wayOut(engine, tsid) : save.returnTo;
   save.returnTo = null;
   if (back && key(back.tsid) !== tsid && engine.travelGate(back.tsid)?.ok !== false) {
     setTimeout(() => engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y }), 1200);
@@ -784,13 +787,28 @@ function complete(engine) {
 /* Map card                                                            */
 /* ------------------------------------------------------------------ */
 
+/** A street with no road out (a puzzle street, a quest room's, a practice street): never a way back (G887). */
+const noExit = (tsid) => NO_EXIT_PUZZLE_STREETS.includes(key(tsid));
+const deadEnd = (engine, tsid) => noExit(tsid) || engine.query?.('deadEndStreet', tsid, engine) === true;
+
+/**
+ * G887: the way out of a puzzle street with no road out: where the card took you from, unless that
+ * is a dead end too, else the last ordinary street (quest-instances-feature safeWayOut).
+ */
+function wayOut(engine, here = engine.streetTsid, { notice = false } = {}) {
+  const r = save.returnTo;
+  const prefer = r?.tsid && key(r.tsid) !== key(here) && !deadEnd(engine, r.tsid) ? { tsid: r.tsid, x: r.x, y: r.y } : null;
+  return engine.query?.('safeWayOut', engine, { prefer, notice }) || prefer || { tsid: 'GLI2V0UN7RD1T2J', x: null, y: null };
+}
+
 /** The card is clicked for `dest`: remember this street, marked for the street the card sends to (G618). */
 function rememberReturn(engine, dest) {
   const p = engine.player;
   save.returnTo = cardDeparture(save.returnTo, {
     here: key(engine.streetTsid),
     tsid: engine.streetTsid,
-    onPuzzle: Boolean(defFor(engine.streetTsid) || engine.transientInstance()),
+    // G887: a dead end (a quest room's street) is no way back either: the return already kept stands.
+    onPuzzle: Boolean(defFor(engine.streetTsid) || engine.transientInstance() || deadEnd(engine, engine.streetTsid)),
     dest: key(dest),
     x: p?.x || 0,
     y: p?.y || 0,

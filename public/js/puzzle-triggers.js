@@ -220,6 +220,34 @@ export function rewardBits(r) {
  * way back. A player who walked in carries no mark for the street and is offered nothing.
  * The card and its words are the remake's own (the original had no Map card).
  */
+/**
+ * G887: the seven colour levels. In the source they were a quest instance, never a street of Ur:
+ * Color Unblocking (quests/puzzle_level_color_blockage.js onStarted questInstanceLocation
+ * 'color_unblocking', preserve_links) put you in, its exit door ended it, and leaving
+ * (onExitLocation instances_exit) or logging out (players/player.js onLogout 333-338) put you back
+ * where you came in. Each one's only door leads to itself, so nothing on them is a road to Ur.
+ */
+export const COLOUR_LEVEL_STREETS = Object.freeze([
+  'GHVCKEPHO403BN5', // Orangian
+  'GHVOD0F3T403694', // Griinolyza
+  'GHVP6H0KT403N8A', // Piryan
+  'GHVP7QOKT403F5Q', // Purplysa
+  'GHVP8TCLT40336S', // Blooian
+  'GHVQMS17V813FN7', // Fernucopia
+  'GHVDKQ2O6S23LVJ', // Amberlyza
+]);
+/**
+ * G887: puzzle streets with no road back to Ur (tests/puzzle-dead-ends.test.js checks the list
+ * against signpost-graph.json): the colour levels, and Umbra and Penumbra, whose way out was one of
+ * Umbra's Collision-triggered Teleporters, archived without a target (js/penumbra.js header,
+ * js/collision-teleporters.js). /stuck and the Map card's Leave take you out of these.
+ */
+export const NO_EXIT_PUZZLE_STREETS = Object.freeze([
+  ...COLOUR_LEVEL_STREETS,
+  'GDOSHD9J6NT2HUJ', // Umbra
+  'GIFM2QAIQ1C31JV', // Penumbra
+]);
+
 export const CARD_RETURN_TEXT = Object.freeze({
   button: (name) => (name ? `Back to ${name}` : 'Back to where you were'),
   // The card sits in the Map's Shortcuts (js/map-extras.js), shut after a reload.

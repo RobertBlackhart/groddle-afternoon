@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { questSceneTsid, wayBackFrom } from '../public/js/quest-instance.js?v=b39384f3';
+import { questSceneTsid, wayBackFrom } from '../public/js/quest-instance.js?v=7b06754a';
 import * as club from '../public/js/quest-rooms/clubhouse.js?v=7d2befe6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -68,7 +68,7 @@ describe('Ticket 41: Join the Club starts at home and comes back there', () => {
     assert.match(start, /homeEditMode/);
     const startInstance = between(qi, 'async function startInstance(engine, questId, opts = {}) {', 'async function gotoStage');
     // G886: from a quest room's own street the way back is the last ordinary street instead.
-    assert.match(startInstance, /const here = instanceKind\(engine\.streetTsid, engine\) \? null : \{ tsid: engine\.streetTsid, x: engine\.player\?\.x, y: engine\.player\?\.y \};\s*const returnTo = wayBackFrom\(here, save\.returnTo \|\| save\.lastStreet\);/);
+    assert.match(startInstance, /const here = deadEndStreet\(engine\.streetTsid, engine\) \? null : \{ tsid: engine\.streetTsid, x: engine\.player\?\.x, y: engine\.player\?\.y \};\s*const returnTo = wayBackFrom\(here, liveBack\(save\.returnTo\) \|\| strayExit\(engine\)\);/);
     assert.doesNotMatch(startInstance, /homeContext/);
     // Leaving a solved room goes back home with the home card.
     assert.match(qi, /const home = back\?\.tsid === HOME_STREET_TSID \|\| back\?\.tsid === HOME_INTERIOR_TSID;/);

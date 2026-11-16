@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NORMAL_BUFF, avatarGround, stepAvatar, steerX, streetPhysicsExtras } from '../public/js/avatar-step.js?v=6122a615';
 import { barriersScreen, lineEndWalled, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=2918abe5';
-import { enteredFrom, normalizePuzzleData, stepTriggers } from '../public/js/puzzle-triggers.js?v=1363d17a';
+import { enteredFrom, normalizePuzzleData, stepTriggers } from '../public/js/puzzle-triggers.js?v=72373665';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TSID = 'GA9UCEFP7LD3523';
@@ -108,7 +108,7 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     globalThis.fetch = async () => ({ json: async () => raw });
     // The flip keys listen on the window (bindGravityFlip).
     if (typeof globalThis.window === 'undefined') globalThis.window = new EventTarget();
-    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=7167951a'));
+    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=e3205870'));
     ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=dafc63f6'));
   });
 

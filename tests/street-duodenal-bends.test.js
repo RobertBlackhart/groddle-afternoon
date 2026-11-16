@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizePuzzleData, stepTriggers } from '../public/js/puzzle-triggers.js?v=1363d17a';
+import { normalizePuzzleData, stepTriggers } from '../public/js/puzzle-triggers.js?v=72373665';
 import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=05663361';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

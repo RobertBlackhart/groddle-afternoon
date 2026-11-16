@@ -37,6 +37,10 @@
  *    moves you there a beat later with the source's "moved to a safe place" line, and until then
  *    the room's EXIT box and /stuck (the Menu's I'm stuck) take you out (strayRoom, tickStray).
  *    See tests/quest-room-strays.test.js.
+ *  - G887: that way out is only ever a street whose roads lead to Ur (urReach, from
+ *    signpost-graph.json): never a quest room, practice street or puzzle street with no road out
+ *    (Orangian, whose one door leads to itself, once was, and the way out led back onto it). A save
+ *    holding one is repaired on load (deadEndStreet, ordinaryStreet). See tests/puzzle-dead-ends.test.js.
  *
  * Room module contract (all optional except id/title/build or street):
  *   { id, title, kicker, icon, theme, durationMs | durationFor(questId),
@@ -99,9 +103,10 @@ import {
   solveQuestInstance,
   stepQuestInstance,
   strayWayOut,
+  streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=b39384f3';
+} from '../quest-instance.js?v=7b06754a';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=4c0fffec';
 import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
@@ -124,6 +129,7 @@ import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { FIRST_SKILLS } from '../newxp.js?v=1f52edd5';
+import { NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=72373665';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=6122a615';
 
 let quoinFrames = null;
@@ -166,6 +172,9 @@ let strayAt = 0; // G886: when a stray in a quest room is moved out (0: not wait
 let strayLeaving = false;
 let strayNotice = false; // G886: a reload moved you out of one; say so once the game runs
 let strayData = null;
+/** G887: streets whose roads lead to Hechey Track (js/quest-instance.js streetsReachingUr), once loaded. */
+let urReach = null;
+let urLoading = null;
 
 /* ------------------------------------------------------------------ */
 /* Room loading                                                         */
@@ -1054,8 +1063,9 @@ async function startInstance(engine, questId, opts = {}) {
     // Ticket 41: from home too (join_club.js onStarted 96-117 instanced you from wherever you
     // accepted, the Butler's offer at home included): the exit signpost brings you back there.
     // G886: from a quest room's own street with no run open, the way back is your last ordinary street.
-    const here = instanceKind(engine.streetTsid, engine) ? null : { tsid: engine.streetTsid, x: engine.player?.x, y: engine.player?.y };
-    const returnTo = wayBackFrom(here, save.returnTo || save.lastStreet);
+    // G887: nor from a puzzle street with no road out.
+    const here = deadEndStreet(engine.streetTsid, engine) ? null : { tsid: engine.streetTsid, x: engine.player?.x, y: engine.player?.y };
+    const returnTo = wayBackFrom(here, liveBack(save.returnTo) || strayExit(engine));
     const durationMs = typeof room.durationFor === 'function' ? room.durationFor(questId) : room.durationMs;
     const exitPromptMs = typeof room.exitPromptFor === 'function' ? room.exitPromptFor(questId) : room.exitPromptMs;
     run = createQuestInstance({
@@ -1226,7 +1236,8 @@ async function leaveInstance(engine, opts = {}) {
   // A teleport out (opts.to) lands on its own target, not back where you came in.
   const to = opts.to?.tsid ? opts.to : null;
   // G886: never left standing in the room with nowhere to go: no way back saved goes the stray's way out.
-  const back = to || result.returnTo || save.returnTo || strayExit(engine);
+  // G887: nor sent back onto a dead end (a save from before this, a room started on one).
+  const back = to || liveBack(result.returnTo) || liveBack(save.returnTo) || strayExit(engine);
   run = null;
   const leftRoom = room;
   room = null;
@@ -1290,15 +1301,57 @@ function strayRoom(engine) {
   return { roomId, title: engine.street?.label || loaded.get(roomId)?.title || '' };
 }
 
-/** Where a stray goes (js/quest-instance.js strayWayOut). */
+/** Where a stray goes (js/quest-instance.js strayWayOut): never a dead end (G887). */
 function strayExit(engine) {
+  if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid, engine)) save.lastStreet = null;
   return strayWayOut({ lastStreet: save.lastStreet, homeTsid: engine?.homeContext?.()?.owned ? HOME_STREET_TSID : null });
+}
+
+const gKey = (tsid) => { const s = String(tsid || ''); return s.startsWith('L') ? `G${s.slice(1)}` : s; };
+
+/**
+ * G887: a street with no road out that only a quest, a puzzle card or a link puts you on: a quest
+ * room's street, a tutorial practice street, a puzzle street with no road to Ur
+ * (js/puzzle-triggers.js NO_EXIT_PUZZLE_STREETS). Never a way back.
+ */
+function deadEndStreet(tsid, engine) {
+  if (!tsid) return false;
+  return Boolean(instanceKind(tsid, engine)) || NO_EXIT_PUZZLE_STREETS.includes(gKey(tsid));
+}
+
+/** A way back that is not a dead end (home and Ur's streets are fine), else null. */
+function liveBack(point) {
+  return point?.tsid && !deadEndStreet(point.tsid) ? point : null;
+}
+
+/**
+ * G887: a street kept as the last ordinary street: no dead end, and once the signpost graph is
+ * loaded, one whose roads lead to Ur. Until then the dead-end lists alone decide.
+ */
+function ordinaryStreet(tsid, engine) {
+  if (!tsid || deadEndStreet(tsid, engine)) return false;
+  return urReach ? urReach.has(gKey(tsid)) : true;
+}
+
+/** The Map's signpost graph (same URL as map-routes-feature, so the browser keeps one copy). */
+function loadUrReach() {
+  if (urReach || urLoading || typeof fetch !== 'function' || typeof window === 'undefined') return;
+  urLoading = fetch('assets/content/signpost-graph.json?v=g198-1')
+    .then((r) => r.json())
+    .then((graph) => {
+      urReach = streetsReachingUr(graph);
+      // A last street kept before the graph came (or by an older build) that has no road to Ur goes.
+      if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid)) save.lastStreet = null;
+    })
+    .catch(() => {
+      urLoading = null;
+    });
 }
 
 /** The last ordinary street, kept as the way out (instances_get_exit's "where you came in"). */
 function noteStreet(engine, street) {
   const tsid = street?.tsid || engine.streetTsid;
-  if (!tsid || tsid !== engine.streetTsid || entering || instanceKind(tsid, engine) || engine.transientInstance?.()) return;
+  if (!tsid || tsid !== engine.streetTsid || entering || engine.transientInstance?.() || !ordinaryStreet(tsid, engine)) return;
   const p = engine.player;
   save.lastStreet = { tsid, x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
 }
@@ -1630,6 +1683,7 @@ export const questInstancesFeature = {
       engine.setData('qiStatus', 'idle');
     }
     nextRetryAt = Date.now() + 15_000;
+    loadUrReach();
   },
 
   save() {
@@ -1639,6 +1693,8 @@ export const questInstancesFeature = {
   restore(slice) {
     save = normalizeInstanceSave(slice || {});
     rubeTraded = slice?.rubeTraded === true;
+    // G887: a last street saved on a dead end (an older build kept Orangian) is repaired here.
+    if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid)) save.lastStreet = null;
     // A run open at save time was lost with the page: fail it, offer a retry.
     if (save.questId) {
       const id = save.questId;
@@ -1655,7 +1711,8 @@ export const questInstancesFeature = {
       save.questId = null;
       save.roomId = null;
       save.returnTo = null;
-      return target;
+      // G887: a way back saved on a dead end starts on the way out instead.
+      return liveBack(target) || strayExit(engine);
     }
     // G886: a save written in a quest room with no run open (a street link, then a reload) starts
     // on the way out instead, as the source moved a player out of an instance on logout.
@@ -1663,6 +1720,22 @@ export const questInstancesFeature = {
     if (engine?.query?.('practiceStreetHeld', saved.tsid, engine) === true) return null;
     strayNotice = true;
     return strayExit(engine);
+  },
+
+  /** G887: a street with no road out (deadEndStreet), for the puzzle streets' way back. */
+  deadEndStreet(tsid, engine) {
+    return deadEndStreet(tsid, engine) ? true : null;
+  },
+
+  /**
+   * G887: the way out of a dead end for other features (puzzles-feature): `prefer` (where you came
+   * in) unless it is a dead end itself, else the stray's way out; `notice` says the source's "moved
+   * to a safe place" line once the game runs.
+   */
+  safeWayOut(engine, { prefer = null, notice = false } = {}) {
+    if (notice) strayNotice = true;
+    const back = liveBack(prefer);
+    return back ? { tsid: back.tsid, x: back.x, y: back.y } : strayExit(engine);
   },
 
   holdQuestOffers() {

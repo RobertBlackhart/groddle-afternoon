@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=4c0fffec';
 import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
-import { questSceneTsid } from '../public/js/quest-instance.js?v=b39384f3';
+import { questSceneTsid } from '../public/js/quest-instance.js?v=7b06754a';
 import {
   EXIT_PROMPT_MS,
   BODY_H,
