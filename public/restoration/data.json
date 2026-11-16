@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2313,
+  "commits": 2318,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Soil patches sit on level floor instead of hanging off ledge ends"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Visiting Stones stand at their street's dead end, where the 2012 snaps show them"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Hechey Track's five starter rocks stand on the street's main floor"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Rocks, shrines, vendors, patches and animals no longer stand up in the trees on branch art"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2894,29 +2914,9 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "A quest card covers the top bar like any window; R still opens Reports over it"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "A reload in the Cloud Level puts you back on the cloud you reached"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Tutorial instructions no longer cover your Glitch on a phone"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The first tutorial screen says how to pull the chain, on every device"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The tutorial save records when each stage and step began"
    }
   ]
  },
- "tests": 1033,
+ "tests": 1037,
  "generatedAt": "2026-11-15"
 }
