@@ -1162,11 +1162,11 @@
       "anchor": "map-jethimadh",
       "state": "restored",
       "caption": "Tiny Speck’s own painting of Jethimadh, restored from its 2012 Encyclopedia map: the painting with the game’s roads, names and buttons on it. An image model took those markings off and sharpened it without moving anything, then it was toned back to the 2012 colour.",
-      "differences": "The tower, the cliffs, all six of 2012's pools, the trees, the sea edge and the small garden plot with its green rows at Tallus Gardens sit where 2012 had them (worst tile drift 4 px at 2x). Known differences: ten small wooden objects stand where the 2012 map has none, most of them where its street names, road ends and grey icons lay: a ladder on the cliff just left of and below the To: Shimla Mirch button; a board under the start of the To: Jethimadh Tower: Base name and a fence at its end; a board with a fence in the trees left of the tower, above Tuntsa Coze; a board just above the start of Simo Steer; a fence beside Konsenaen Jaunt; a board and post where Tower St South, Onto Parada and Bean Stravenue meet; a hut with a fence at the start of Svarta Swale; a fence between Kishiman Course and Bean Stravenue; and a hut just below Kyron Kreep.",
+      "differences": "The tower, the cliffs, all six of 2012's pools, the trees, the sea edge and the small garden plot with its green rows at Tallus Gardens sit where 2012 had them, with no wooden thing 2012 does not have: the cliff left of and below the To: Shimla Mirch button, the ground under the start and at the end of the To: Jethimadh Tower: Base name, the trees left of the tower above Tuntsa Coze, the ground above the start of Simo Steer, beside Konsenaen Jaunt, where Tower St South, Onto Parada and Bean Stravenue meet, at the start of Svarta Swale, between Kishiman Course and Bean Stravenue and below Kyron Kreep are bare ground, trees or rock as in 2012 (worst tile drift 4 px at 2x). Known difference, small: where the ladder stood on the cliff left of and below the To: Shimla Mirch button, faint darker streaks of its rungs stay in the rock face; at map size they read as cracks in the rock.",
       "facts": [
         {
           "label": "Made",
-          "text": "14 November 2026, with GPT Image 2.6 Sunburst"
+          "text": "16 November 2026, with GPT Image 2.6 Sunburst"
         },
         {
           "label": "Replaced",

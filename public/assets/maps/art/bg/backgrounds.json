@@ -201,10 +201,10 @@
       "x1": "assets/maps/art/bg/jethimadh.webp",
       "x2": "assets/maps/art/bg/jethimadh@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 59512,
-      "x1Sha256": "3ad0e3a886dddb73ec622156e2a2088a82dbb2bdea76f96db6934c51f7eb4dd2",
-      "x2Bytes": 187170,
-      "x2Sha256": "c91cb3419770219f3cd0a3aea8017e4bfe2bd6e7c37dee4f20349fff7ca8d41a"
+      "x1Bytes": 50628,
+      "x1Sha256": "3d55d39065ed5639a9259bfee4e7eb14459eedc333968a9e16162a18c3c0f5c7",
+      "x2Bytes": 150708,
+      "x2Sha256": "683e16ea2cff2e7c97ec4d2d16a76d6a13890cfe24e30e31e3408a71d47ccb22"
     },
     "72": {
       "hubName": "Chakra Phool",

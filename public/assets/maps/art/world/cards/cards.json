@@ -129,14 +129,14 @@
         "file": "assets/maps/art/bg/jethimadh@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "c91cb3419770219f3cd0a3aea8017e4bfe2bd6e7c37dee4f20349fff7ca8d41a"
+        "sha256": "683e16ea2cff2e7c97ec4d2d16a76d6a13890cfe24e30e31e3408a71d47ccb22"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 39726,
-        "sha256": "453e274e827a1fd95429746aeec3c0cd301a99766d5f926948d828f32d5b3637"
+        "bytes": 34074,
+        "sha256": "6d78851491512d4c0da80580312c6b5ccc0137f087967a5fa001b49c17e39736"
       }
     },
     "72": {
