@@ -2,8 +2,9 @@
  * G895 (#432): what a save's own records say it earned is credited by the site's ledger outside
  * the earning budget (groddle-afternoon-site src/LedgerMath.php earned / markBaseline / check, run
  * through the php CLI on made-up fixture saves), so an honest pack is never corrected for it:
- * a shrine's emblems up to the emblems the shrine record gained, a few a day. A forged pile beyond
- * the record or the day's count is still taken back.
+ * a shrine's emblems up to the emblems the shrine record gained, and Gameshow Tickets up to one a
+ * shrine donation, each a few a day. A forged pile beyond the record or the day's count is still
+ * taken back.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -35,17 +36,19 @@ function php(op, args) {
 const constant = (name) => (skip ? 0 : Number(new RegExp(`const ${name} = (\\d+);`).exec(readFileSync(join(SITE_DIR, 'src/LedgerMath.php'), 'utf8'))?.[1]));
 const EMBLEM_DAILY = constant('EMBLEM_DAILY');
 const EMBLEM_WAIT = constant('EMBLEM_WAIT');
+const TICKET_DAILY = constant('TICKET_DAILY');
+const TICKET_WAIT = constant('TICKET_WAIT');
 
 const counts = (items = {}, currants = 0) => ({ items, currants });
 
 /** A multiplayer save's entries: the pack and the shrine record (js/shrines.js normalizeShrineState). */
-function save({ inv = {}, emblems = {} } = {}) {
+function save({ inv = {}, emblems = {}, donations = 0 } = {}) {
   return {
     playerState: JSON.stringify({
       version: 7,
       inventory: inv,
       player: { currants: 0, xp: 5000, level: 5 },
-      systems: { quests: { completed: [] }, achievements: { unlocked: [] }, shrines: { emblems, favor: {}, donations: 0 } },
+      systems: { quests: { completed: [] }, achievements: { unlocked: [] }, shrines: { emblems, favor: {}, donations } },
     }),
   };
 }
@@ -114,5 +117,46 @@ describe('G895: the ledger credits a shrine\'s emblems from the save\'s shrine r
     const r = php('check', [counts({ emblem_lem: 2 }), credited, save({ inv: { emblem_lem: 2 }, emblems: { lem: 3 } }), 0]);
     assert.deepEqual(rowsOf(r, 'mark'), [['mark', 'emblem:lem', 3]]);
     assert.deepEqual(rowsOf(r, 'markday'), []);
+  });
+});
+
+describe('G895: the ledger credits a Gameshow Ticket a shrine donation gave', { skip }, () => {
+  it('a ticket stands with no budget when the shrine record counted a new donation', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
+    const r = php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 11 }), 0]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.after.items, { gameshow_ticket: 1 });
+    assert.deepEqual(rowsOf(r, 'mark'), [['mark', 'donations', 11]]);
+    assert.deepEqual(rowsOf(r, 'markday'), [['markday', 'ticket', 1]]);
+  });
+
+  it('one ticket a donation at most: a second ticket from the same donation is taken back with no budget', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
+    const r = php('check', [counts(), credited, save({ inv: { gameshow_ticket: 2 }, donations: 11 }), 0]);
+    assert.deepEqual(r.after.items, { gameshow_ticket: 1 });
+    assert.deepEqual(r.reconciled.clamped, counts({ gameshow_ticket: 1 }));
+  });
+
+  it('a ticket with no new donation goes through the budget, as a drop-table ticket does', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
+    assert.deepEqual(php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 10 }), 0]).reconciled.clamped, counts({ gameshow_ticket: 1 }));
+    assert.deepEqual(php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 10 }), 1000]).reconciled.clamped, counts());
+  });
+
+  it('donations that gave no ticket are not kept owed, and a forged pile stands only to the day\'s count', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
+    const quiet = php('check', [counts(), credited, save({ donations: 40 }), 0]);
+    assert.deepEqual(rowsOf(quiet, 'mark'), [['mark', 'donations', 40]]);
+    const forged = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { gameshow_ticket: 300 }, donations: 300 }), 0]);
+    assert.deepEqual(forged.after.items, { gameshow_ticket: TICKET_DAILY });
+    assert.deepEqual(forged.held.items, { gameshow_ticket: TICKET_WAIT });
+    assert.deepEqual(forged.reconciled.clamped, counts({ gameshow_ticket: 300 - TICKET_DAILY - TICKET_WAIT }));
+  });
+
+  it('a donation that filled a Giant\'s favor gives its emblem and its ticket in one write, both credited', () => {
+    const credited = creditedFrom([['mark', 'base', 1], ['mark', 'emblem:zille', 2], ['mark', 'donations', 50]]);
+    const r = php('check', [counts({ emblem_zille: 2 }), credited, save({ inv: { emblem_zille: 3, gameshow_ticket: 1 }, emblems: { zille: 3 }, donations: 51 }), 0]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.after.items, { emblem_zille: 3, gameshow_ticket: 1 });
   });
 });
