@@ -53,7 +53,7 @@ import {
   rebuiltRoomEcology,
 } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=dad750d2';
-import { FEATURES } from '../public/js/features/index.js?v=fa0e8dd7';
+import { FEATURES } from '../public/js/features/index.js?v=e668b5a9';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

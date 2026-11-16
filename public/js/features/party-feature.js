@@ -271,7 +271,12 @@ function createSession(engine, client) {
     if (party && !was) setOpen(true);
     render();
   });
-  client.on('msg:party_activity', (msg) => activity(String(msg.text || '')));
+  client.on('msg:party_activity', (msg) => {
+    const text = String(msg.text || '');
+    activity(text);
+    // #414: a notice for the whole party (the party time extended) reaches Activity too.
+    if (msg.activity === true && text) engine.pushActivity?.(text);
+  });
   client.on('msg:party_said', (msg) => {
     if (Number(msg.id) !== me() && hidden(msg.id)) return;
     const name = String(msg.name || UNNAMED_PLAYER);

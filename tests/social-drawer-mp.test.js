@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
 import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=df52476c';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
-import { partyFeature } from '../public/js/features/party-feature.js?v=4b0c9897';
+import { partyFeature } from '../public/js/features/party-feature.js?v=3d5c3798';
 import { groupsFeature } from '../public/js/features/groups-feature.js?v=fc20c899';
 
 const ANSWER = {
@@ -81,6 +81,7 @@ describe('the Social drawer online: parties and chat channels', () => {
       toast: (x) => events.push(`toast:${x}`),
       prompt: (p) => { events.push(`prompt:${p.text}`); p.onChoice?.(true); return 'uid'; },
       chatLine: (name, text) => drawer.localLine(name, text),
+      pushActivity: (x) => events.push(`activity:${x}`),
     };
   });
 
@@ -123,6 +124,11 @@ describe('the Social drawer online: parties and chat channels', () => {
   it('party notes go to the Party tab in a party, and to Local out of one; a party that ends takes its tab', () => {
     client.msg({ t: 'party_activity', text: 'Fi joined the party.' });
     assert.equal(drawer.lines('party').at(-1).note, true);
+    assert.ok(!events.includes('activity:Fi joined the party.'), 'an ordinary party note stays in the Party tab');
+    // #414: the server marks the party time extension for Activity as well.
+    client.msg({ t: 'party_activity', text: 'Fi extended the party time!', activity: true });
+    assert.equal(drawer.lines('party').at(-1).text, 'Fi extended the party time!');
+    assert.ok(events.includes('activity:Fi extended the party time!'), 'the extension reaches Activity too');
     client.msg({ t: 'party', party: null });
     assert.deepEqual(drawer.chats, []);
     assert.equal(drawer.tab, 'chats', 'the party you were looking at ended: back to the list');
