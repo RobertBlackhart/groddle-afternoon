@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.44.0",
+  "release": "v0.45.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 230,
+    "fixed": 233,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -527,6 +527,12 @@
           "text": "The save checker could take back things you had earned: a shrine's emblems, a donation's Gameshow Ticket, beads from a cracked Petrified Rock and some rare drops.",
           "state": "fixed",
           "version": "v0.43.1"
+        },
+        {
+          "id": "G905",
+          "text": "The save checker took back machine output, crops, a pouch's shaken elements, rare finds and a new player's tutorial gifts.",
+          "state": "fixed",
+          "version": "v0.45.0"
         },
         {
           "id": "G174",
@@ -1040,6 +1046,12 @@
           "text": "A party invite accepted at home refused to open the teleporter there.",
           "state": "fixed",
           "version": "v0.44.0"
+        },
+        {
+          "id": "G904",
+          "text": "A party invite couldn't be taken from a quest room, puzzle or race; in Glitch the room waited for you and a race was given up.",
+          "state": "fixed",
+          "version": "v0.45.0"
         }
       ]
     },
@@ -1775,6 +1787,12 @@
           "text": "The Maps page squeezed each picture compare beside its words instead of running it the full width.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G906",
+          "text": "A link to a heading on the restoration report landed far above it.",
+          "state": "fixed",
+          "version": "v0.45.0"
         }
       ]
     },

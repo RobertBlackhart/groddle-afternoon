@@ -2403,6 +2403,48 @@
       "commits": [
         "game:ddd71a79db5"
       ]
+    },
+    {
+      "id": "G904",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "A party invite couldn't be taken from a quest room, puzzle or race; in Glitch the room waited for you and a race was given up.",
+      "commits": [
+        "game:16f548cdde0",
+        "game:3d007a2353b",
+        "game:01663342cd6",
+        "game:2817f0ce3bc"
+      ]
+    },
+    {
+      "id": "G905",
+      "area": "Items",
+      "show": "fixing",
+      "text": "The save checker took back machine output, crops, a pouch's shaken elements, rare finds and a new player's tutorial gifts.",
+      "commits": [
+        "site:ab55794",
+        "site:10aaea2",
+        "site:403e938",
+        "site:72c7744",
+        "site:addcbe9",
+        "site:5a21aab",
+        "game:e67f4a0e54c",
+        "game:a96f0303bf0",
+        "game:4f1c11fea45",
+        "game:f92ac400f8f",
+        "game:862dcabea34",
+        "game:a3ace6eb744"
+      ]
+    },
+    {
+      "id": "G906",
+      "area": "Site",
+      "show": "fixing",
+      "text": "A link to a heading on the restoration report landed far above it.",
+      "commits": [
+        "game:07e339ffefb",
+        "site:84a56d6"
+      ]
     }
   ]
 }
