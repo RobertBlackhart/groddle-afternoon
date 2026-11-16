@@ -164,10 +164,11 @@ import {
   tendCounters,
   tendedText,
   TENDED_KEEP,
+  visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=46fce774';
+} from '../neighbours-mp.js?v=38232521';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS, towerLabel } from '../home-tower.js?v=2d71091c';
+import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=2d71091c';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
 const OWN_VERBS = new Set([VISIT_VERB.id, KEY_VERB.id, 'neighbour_noop']);
@@ -382,7 +383,7 @@ function createSession(engine, client) {
     const built = visitorHomeScene(engine, visit.view, room, { returnLabel: wayOutOf(visit.returnTo).label, floor, via });
     const tower = room === 'tower' ? visitorHomeState(visit.view).tower : null;
     const stop = tower ? elevatorStops(tower).find((row) => row.index === built.floor) : null;
-    const label = room === 'interior' ? houseName(visit.name) : room === 'tower' ? `${possessive(visit.name)} ${towerLabel(tower)}` : homeStreetName(visit.name);
+    const label = room === 'interior' ? houseName(visit.name) : room === 'tower' ? visitedTowerName(visit.name, tower) : homeStreetName(visit.name);
     let x = arrive === 'door' && room === 'street' ? built.doorX + 70 : built.spawnX;
     if (arrive === 'tower' && room === 'street' && Number.isFinite(visit.towerX)) x = visit.towerX + 60;
     // G668: summoned, beside the summoner (inc_teleportation.js:660, x + 20), inside the room.
@@ -435,7 +436,7 @@ function createSession(engine, client) {
   function registerTargets(room, spots) {
     const t = {};
     if (room === 'street') {
-      t.door = engine.register({ classId: CLASS_DOOR, featureId: NEIGHBOURS_MP_FEATURE_ID, label: houseName(visit.name), subtitle: `The indoor half of ${visit.name}'s home`, sprite: spots.door, state: { owner: visit.owner } });
+      t.door = engine.register({ classId: CLASS_DOOR, featureId: NEIGHBOURS_MP_FEATURE_ID, label: houseName(visit.name), subtitle: `The indoor half of ${possessive(visit.name)} home`, sprite: spots.door, state: { owner: visit.owner } });
       // GATESIGN2: the signpost's top arm, Back to Ur; its tip the street the visitor came from.
       const way = wayOutOf(visit.returnTo);
       t.gate = engine.register({ classId: CLASS_GATE, featureId: NEIGHBOURS_MP_FEATURE_ID, label: 'Back to Ur', subtitle: `${way.label}${way.hubName && way.hubName !== way.label ? `, ${way.hubName}` : ''}`, sprite: spots.gate, state: { owner: visit.owner } });
@@ -446,7 +447,7 @@ function createSession(engine, client) {
       visit.mailboxX = spots.mailbox?.x;
       if (spots.tower?.built) {
         const tw = visitorHomeState(visit.view).tower;
-        t.tower = engine.register({ classId: CLASS_TOWER, featureId: NEIGHBOURS_MP_FEATURE_ID, label: `${possessive(visit.name)} ${towerLabel(tw)}`, subtitle: `${tw.floors} floors`, sprite: spots.tower.box, state: { owner: visit.owner } });
+        t.tower = engine.register({ classId: CLASS_TOWER, featureId: NEIGHBOURS_MP_FEATURE_ID, label: visitedTowerName(visit.name, tw), subtitle: `${tw.floors} floors`, sprite: spots.tower.box, state: { owner: visit.owner } });
       }
     } else if (room === 'tower') {
       const tw = visitorHomeState(visit.view).tower;

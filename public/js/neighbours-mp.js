@@ -154,6 +154,16 @@ export function houseName(name) {
   return `${possessive(name)} House`;
 }
 
+/**
+ * A visited Tower's title. Unnamed, "<Name>'s Tower" (GSJS players/inc_towers.js:22
+ * tower_set_label(label + "'s Tower")); a Tower its owner named keeps that name after
+ * the possessive. Never the owner's own "Your Tower" (#422).
+ */
+export function visitedTowerName(name, tower) {
+  const own = String(tower?.name || '').trim();
+  return `${possessive(name)} ${own || 'Tower'}`;
+}
+
 function positiveId(value) {
   const n = Number(value);
   return Number.isInteger(n) && n > 0 ? n : 0;
