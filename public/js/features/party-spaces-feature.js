@@ -24,7 +24,9 @@
  * =hold to stop inside after the activities, =instructions to stop on the
  * first-use instructions, =portal to stop beside the open teleporter, =atm
  * to stop on the Party ATM's offer. &partytaster=1 uses the taster
- * pack; &partyexpire=<seconds> shortens the clock after entry.
+ * pack; &partyexpire=<seconds> shortens the clock after entry; &partydelay=<ms>
+ * starts the demo that long after the game (from a quest room, race or puzzle
+ * another demo opened: G904).
  * Canvas data: partyStatus, partyTemplate, partyRemaining, partyInside,
  * partyReturn, partyStacks, partyAtm, partyGuests, partyPhysics, partyBoost,
  * partyAmbience, partyMusic, partyLast, partyDemo, partyTeleporter,
@@ -80,13 +82,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=dcc45819';
+} from '../party-spaces.js?v=c667e9e2';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { readVisitScene } from '../neighbours-mp.js?v=895a5209';
 import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=781ad57f';
 import { loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=3821c723';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=73fd3c11';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';
@@ -357,33 +359,62 @@ function buildMapCard(engine) {
  * this.location.createAndReturnItem), your house or another player's included, and the way back from
  * the space was remembered from there (inc_instances.js instances_enter 81-86: your own house itself,
  * the street outside someone else's). 'home' is your own home (back to the same room), 'visit' a home
- * you are visiting (back where its way out leads, as its Go back does), 'world' a street. A remake
- * transient instance (a quest room, a race, a puzzle scene) gives '': it is built for one trip and
- * can't be walked back into from the space.
+ * you are visiting (back where its way out leads, as its Go back does), 'world' a street.
+ * G904 (Austin 2026-11-16: follow Glitch): an instance whose owner answers partyTrip 'plan' opens it
+ * too. 'hold' (a quest room, a puzzle level or scene with a run): the party space is another
+ * instance, so the place is kept and the way back returns you to the spot you left
+ * (groups/instance.js player_exited_location 343-363, inc_instances.js instances_left 135-180).
+ * 'forfeit' (a race or game): the same exit runs game.playerLeft(pc) (instance.js 353-355), so the
+ * game is given up and the way back is the street you joined it from.
+ * Still '' (an instance nobody holds): the hand-built game.js instances (De-Embiggenify, Four Letter
+ * Words, Storyland, Legalize It, Paradise, the Rook Museum and Woods, A Summer's Day, Winter Walk),
+ * whose state game.js keeps for one trip; the tutorial's scenes; Le Voyage Violet (its buff carries
+ * you out on its own); the Bureaucratic Hall's application; another feature scene. The dead get no
+ * teleporter at all (groups/party.js 583-584 "you have more pressing matters to attend to").
  */
-export function partyTeleporterSpot({ inHome = false, visit = false, transient = false } = {}) {
+export function partyTeleporterSpot({ inHome = false, visit = false, transient = false, plan = '' } = {}) {
   if (inHome) return 'home';
   if (visit) return 'visit';
-  return transient ? '' : 'world';
+  if (!transient) return 'world';
+  return plan === 'hold' || plan === 'forfeit' ? plan : '';
 }
 
 function teleporterSpot(engine) {
   const tsid = engine.streetTsid;
+  const transient = Boolean(engine.transientInstance());
   return partyTeleporterSpot({
     inHome: Boolean(engine.homeContext?.().inHome),
     visit: Boolean(engine.inScene?.() && (readVisitScene(tsid) || isNeighbourSceneTsid(tsid))),
-    transient: Boolean(engine.transientInstance()),
+    transient,
+    plan: transient && !onPartyStreet(engine) ? engine.query?.('partyTrip', 'plan', engine)?.kind || '' : '',
   });
+}
+
+/**
+ * G904: back from the space. A place held for you (returnTo.hold) is put back by its owner
+ * (partyTrip 'resume': the quest room or puzzle as you left it); else, or if that fails, the street.
+ */
+async function goBack(engine, back) {
+  if (back?.hold) {
+    const resumed = await engine.query?.('partyTrip', 'resume', engine, back);
+    if (resumed) return true;
+  }
+  if (!back?.tsid) return false;
+  await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true });
+  return true;
 }
 
 function activationBlock(engine, classTsid) {
   const p = party();
   if (p && partyAlive(p)) return PARTY_TEXT.alreadyGoing;
-  if (!teleporterSpot(engine) || onPartyStreet(engine)) {
+  const spot = teleporterSpot(engine);
+  if (!spot || onPartyStreet(engine)) {
     return "You can't start a party from here.";
   }
   const target = PARTY_SPACES[PARTY_PACKS[classTsid]?.template];
   if (!target || !engine.streetExists(target.streetTsid)) return 'That party space is not here yet.';
+  // G904: a room, puzzle or game you stand in keeps its own travel rule; its owner holds or gives it up.
+  if (spot === 'hold' || spot === 'forfeit') return '';
   allowEnter = true;
   const gate = engine.travelGate(target.streetTsid);
   allowEnter = false;
@@ -594,9 +625,19 @@ async function enterParty(engine) {
   if (!p || !s) return;
   if (!onPartyStreet(engine)) {
     // G901: from a home you are visiting, back where its way out leads (the scene can't be entered again).
-    const out = teleporterSpot(engine) === 'visit' ? engine.sceneReturnTo : null;
+    const visit = teleporterSpot(engine) === 'visit';
+    // G904: a quest room or puzzle is held for you (its owner answers the way back and `hold`);
+    // a race or game is given up, and the way back is the street you joined it from.
+    const trip = engine.query?.('partyTrip', 'depart', engine) || null;
+    const out = trip?.tsid ? trip : visit ? engine.sceneReturnTo : null;
     p.returnTo = out?.tsid
-      ? { tsid: out.tsid, label: out.label || STREET_INDEX.streets?.[out.tsid]?.label || '', x: Math.round(Number(out.x) || 0), y: Math.round(Number(out.y) || 0) }
+      ? {
+        tsid: out.tsid,
+        label: out.label || STREET_INDEX.streets?.[out.tsid]?.label || '',
+        x: Math.round(Number(out.x) || 0),
+        y: Math.round(Number(out.y) || 0),
+        ...(trip?.hold ? { hold: trip.hold, at: { x: Math.round(Number(trip.at?.x) || 0), y: Math.round(Number(trip.at?.y) || 0) } } : {}),
+      }
       : {
         tsid: engine.streetTsid,
         label: engine.street?.label || '',
@@ -619,9 +660,7 @@ async function leaveParty(engine, { reason = '' } = {}) {
   closeModal(engine);
   engine.save();
   if (reason) note(engine, reason);
-  if (onPartyStreet(engine)) {
-    await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true });
-  }
+  if (onPartyStreet(engine)) await goBack(engine, back);
   publish(engine, true);
 }
 
@@ -637,7 +676,7 @@ function expire(engine) {
   if (inside || onPartyStreet(engine)) {
     engine.instanceHold = null;
     closeModal(engine);
-    engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true });
+    goBack(engine, back);
   }
 }
 
@@ -1106,7 +1145,7 @@ function spaceGone(engine, why, text = '') {
   if (here) {
     engine.instanceHold = null;
     closeModal(engine);
-    engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true });
+    goBack(engine, back);
   }
   publish(engine, true);
 }
@@ -1312,6 +1351,19 @@ function packFor(template, taster) {
   return slug ? `party_pack_${taster ? 'taster_' : ''}${slug}` : null;
 }
 
+/**
+ * QA &partydelay=<ms>: the demo waits that long after the game starts, so it can begin from a
+ * place another demo opened first (G904: ?questdemo=<room>, ?racedemo=<race>, ?puzzledemo=<level>).
+ */
+let demoWaitUntil = 0;
+function demoDue(engine) {
+  if (!engine.started || !engine.param('partydemo')) return false;
+  const wait = Number(engine.param('partydelay')) || 0;
+  if (wait <= 0) return true;
+  demoWaitUntil ||= Date.now() + wait;
+  return Date.now() >= demoWaitUntil;
+}
+
 function startDemo(engine) {
   const template = engine.param('partydemo');
   if (!PARTY_SPACES[template]) {
@@ -1492,7 +1544,7 @@ export const partySpacesFeature = {
         // Nobody's party lives here: back to the saved street.
         const back = p?.returnTo || DEFAULT_STREET;
         engine.instanceHold = null;
-        setTimeout(() => engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true }), 300);
+        setTimeout(() => goBack(engine, back), 300);
         return;
       }
       p.inside = true;
@@ -1502,7 +1554,7 @@ export const partySpacesFeature = {
       if (p?.inside) p.inside = false;
       if (engine.instanceHold === HOLD) engine.instanceHold = null;
       if (p?.teleporter) spawnTeleporter(engine);
-      if (!demo && engine.param('partydemo') && engine.started && !isMp(engine)) startDemo(engine);
+      if (!demo && demoDue(engine) && !isMp(engine)) startDemo(engine);
     }
     publish(engine, true);
   },
@@ -1523,7 +1575,12 @@ export const partySpacesFeature = {
     if (target) return { ok: false, msg: 'Party spaces are private. Activate a Party Pack to throw a party.' };
     if (onPartyStreet(engine) && party()?.inside) {
       const back = party().returnTo;
-      if (meta.via === 'signpost' && back && back.tsid === tsid) return null;
+      if (meta.via === 'signpost' && back && back.tsid === tsid) {
+        if (!back.hold) return null;
+        // G904: the exit signpost back to a held room or puzzle puts you back in it.
+        leaveParty(engine);
+        return { ok: false, msg: `Back to ${back.label || 'where you were'}.` };
+      }
       return { ok: false, msg: 'This party has no map routes. Take the signpost or use Leave party.' };
     }
     return null;
@@ -1541,7 +1598,7 @@ export const partySpacesFeature = {
 
   onTick(dtMs, now, engine) {
     if (isMp(engine) && engine.started) ensureMp(engine);
-    if (demo === null && engine.started && engine.param('partydemo') && !onPartyStreet(engine) && !isMp(engine)) startDemo(engine);
+    if (demo === null && demoDue(engine) && !onPartyStreet(engine) && !isMp(engine)) startDemo(engine);
     simMs += dtMs;
     tickClock(engine, now);
     tickTeleporter(engine, now);
@@ -1643,6 +1700,17 @@ export const partySpacesFeature = {
     if (!p?.mp || !space() || !partyAlive(p) || mpOnSpace(engine)) return false;
     enterParty(engine);
     return true;
+  },
+
+  /**
+   * G904: the teleporter's contract with the instance you stand in ('plan', 'depart', 'resume' are
+   * answered by the instance's owner). Here only 'inside': in a live party's space now (a reload
+   * keeps you there, quest-instances-feature reloadLocation).
+   */
+  partyTrip(action) {
+    if (action !== 'inside') return null;
+    const p = party();
+    return Boolean(p && partyAlive(p) && p.inside);
   },
 
   /** realtime-feature sharedStreet: in multiplayer a space's members share its hub street (PARTY_<id>). */

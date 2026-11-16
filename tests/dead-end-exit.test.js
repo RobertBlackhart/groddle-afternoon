@@ -11,16 +11,16 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=533e6dc3';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=a1e8d19b';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=24145409';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=46930140';
 import { loadStreetIndexObject } from '../public/js/street-loader.js?v=7ed1bdfd';
-import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=ee574732';
+import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=2fdff4a7';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=8af3c741';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=fe390ee8';
 import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=8653e59a';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=452d983c';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=c3f16108';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=16fce15d';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=eb8e38b9';
@@ -342,7 +342,7 @@ describe('each owner answers its own check (deadEndRun)', () => {
     assert.equal(qi.deadEndRun(), null);
     const src = read('public/js/features/quest-instances-feature.js');
     const fn = src.slice(src.indexOf('  deadEndRun() {'), src.indexOf('  holdQuestOffers() {'));
-    assert.match(fn, /if \(run \|\| entering\) return 'quest-room';/);
+    assert.match(fn, /if \(run \|\| entering \|\| save\.away\) return 'quest-room';/);
   });
 
   it('colour levels: taken from the Map card and not solved yet; by a link or a reload, nothing runs', () => {

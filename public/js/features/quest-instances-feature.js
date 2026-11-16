@@ -42,6 +42,16 @@
  *    (Orangian, whose one door leads to itself, once was, and the way out led back onto it). A save
  *    holding one is repaired on load (deadEndStreet, ordinaryStreet). See tests/puzzle-dead-ends.test.js.
  *
+ *  - G904: a party teleporter (the invite, the Map card, a Party Pack) may be taken from a room, as
+ *    Glitch made it wherever you stood (players/inc_party.js 479-520). Leaving for the party space
+ *    keeps the run (groups/instance.js player_exited_location 343-363 kept an instance you left for
+ *    another instance): partyTrip 'depart' holds it (its clock and stuck wait stop, the scene is
+ *    parked whole with engine.parkScene) and the party's way back ('resume') puts you on the spot
+ *    you left with the room as it was (inc_instances.js instances_left 135-180). The held run is
+ *    saved (save.away), so a reload at the party keeps it: the room comes back at its stage with
+ *    the run's flags, its plain state and the quest's progress, and a room's one-time start (Top
+ *    of the Tree's energy) does not run again. See tests/party-trip-holds.test.js.
+ *
  * Room module contract (all optional except id/title/build or street):
  *   { id, title, kicker, icon, theme, durationMs | durationFor(questId),
  *     exitPromptMs | exitPromptFor(questId) (the source exit_delay: the
@@ -89,12 +99,16 @@ import {
   extendQuestInstance,
   finishQuestInstance,
   formatInstanceClock,
+  heldRunSave,
+  holdQuestInstance,
   inBottomBox,
   instanceRemainingMs,
   isQuestSceneTsid,
   normalizeInstanceSave,
   questSceneTsid,
   reloadTarget,
+  resumeQuestInstance,
+  runFromHeld,
   runFlag,
   scheduleStuckPrompt,
   setRunFlag,
@@ -104,7 +118,7 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=ee574732';
+} from '../quest-instance.js?v=2fdff4a7';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=816c8f3a';
 import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
@@ -168,6 +182,10 @@ let worldCtx = null;
 let rubeTraded = false;
 let strayLeaving = false;
 let strayData = null;
+// G904: away at a party with the run held ({ x, y, scale, parked }), and a held run to resume once
+// the game starts (a reload after the party ended meanwhile).
+let away = null;
+let resumeOnBoot = false;
 /** G887: streets whose roads lead to Hechey Track (js/quest-instance.js streetsReachingUr), once loaded. */
 let urReach = null;
 let urLoading = null;
@@ -1048,7 +1066,8 @@ async function buildStage(engine, stage) {
 }
 
 async function startInstance(engine, questId, opts = {}) {
-  if (run || entering) return false;
+  // G904: nor while a held run waits for the party to lead back.
+  if (run || entering || save.away) return false;
   const roomId = QUEST_ROOMS[questId];
   if (!roomId) return false;
   entering = true;
@@ -1264,6 +1283,108 @@ async function leaveInstance(engine, opts = {}) {
 }
 
 /* ------------------------------------------------------------------ */
+/* G904: away at a party with the run held                              */
+/* ------------------------------------------------------------------ */
+
+const heldNow = () => Boolean(away || run?.heldAt);
+
+/** partyTrip 'depart': hold the run, park the room's scene, and say where the party leads back. */
+function departForParty(engine) {
+  const p = engine.player;
+  closeQuestRoomConverse();
+  for (const pr of [...(ctx?.prompts || [])]) if (pr.tag === 'stuck') pr.cancel();
+  holdQuestInstance(run);
+  const base = ctx.data._scale?.base;
+  const scale = base && p?.baseScale ? p.baseScale / base : 1;
+  restorePlayerScale(engine);
+  const scene = Boolean(ctx.data._sceneTsid && engine.inScene?.() && engine.sceneTsid === ctx.data._sceneTsid);
+  const spot = { x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0), scale, data: ctx.data };
+  away = {
+    x: spot.x,
+    y: spot.y,
+    scale,
+    parked: scene ? engine.parkScene?.({ sprites: ctx.sprites, targets: ctx.targets }) || null : null,
+  };
+  if (!away.parked) {
+    // A room on an imported street (Gwendolyn's desert) goes with the street; it is built again on return.
+    room?.clear?.(ctx);
+    clearContextEntities(engine);
+  }
+  save.away = heldRunSave(run, spot);
+  if (hud) hud.bar.hidden = true;
+  engine.setData('qiAway', run.questId);
+  const out = liveBack(run.returnTo) || strayExit(engine);
+  return { hold: QUEST_INSTANCES_FEATURE_ID, tsid: out.tsid, x: out.x, y: out.y, label: room?.title || '', at: { x: spot.x, y: spot.y } };
+}
+
+/** Back from the party into the held room ('resume'); after a reload, from its save. */
+async function resumeFromParty(engine) {
+  if (!run) return resumeHeldSave(engine);
+  if (!away || !room || !ctx) return false;
+  const held = away;
+  const label = room.stageLabel?.(run.stage, ctx) || room.title;
+  await withTransition(engine, label, room.theme, async () => {
+    if (held.parked && engine.resumeScene?.(held.parked, { x: held.x, y: held.y })) return;
+    await buildStage(engine, run.stage);
+    ctx.place(held.x, held.y);
+  });
+  return backInRoom(engine, held.scale);
+}
+
+function backInRoom(engine, scale = 1) {
+  away = null;
+  save.away = null;
+  resumeQuestInstance(run);
+  if (scale > 0 && Math.abs(scale - 1) > 0.001) ctx.scalePlayer(scale);
+  engine.setData('qiAway', '');
+  engine.save();
+  renderHud(engine, true);
+  publish(engine, true);
+  return true;
+}
+
+/**
+ * The held run from its save (a reload at the party): the room at its stage, the run's flags and
+ * clock as left, the room's plain state back, the avatar on the spot you left. The room's start
+ * hook is not run again (it already ran: Top of the Tree's +50 energy, a new Juju hunt).
+ */
+async function resumeHeldSave(engine) {
+  const held = save.away;
+  if (!held || run || entering) return false;
+  if (!activeQuest(engine, held.questId)) {
+    save.away = null;
+    save.questId = null;
+    save.roomId = null;
+    save.returnTo = null;
+    engine.save();
+    return false;
+  }
+  entering = true;
+  try {
+    const def = await loadRoom(held.roomId);
+    if (!def) return false;
+    room = def;
+    run = runFromHeld(held);
+    save.returnTo = run.returnTo;
+    save.questId = run.questId;
+    save.roomId = run.roomId;
+    ctx = makeContext(engine);
+    Object.assign(ctx.data, held.data || {});
+    buildChrome(engine);
+    engine.stopFollowing?.();
+    engine.closeMap?.();
+    const label = room.loadingLabel?.(run.stage, ctx) || room.stageLabel?.(run.stage, ctx) || room.title;
+    await withTransition(engine, label, room.theme, async () => {
+      await buildStage(engine, run.stage);
+      ctx.place(held.x, held.y);
+    });
+  } finally {
+    entering = false;
+  }
+  return backInRoom(engine, held.scale);
+}
+
+/* ------------------------------------------------------------------ */
 /* G886: standing in a quest room with no run open                      */
 /* ------------------------------------------------------------------ */
 
@@ -1399,7 +1520,7 @@ function tickStray(engine) {
 
 function renderHud(engine, force = false) {
   if (!hud) return;
-  if (!run || !room || room.hud === false) {
+  if (!run || !room || room.hud === false || heldNow()) {
     hud.bar.hidden = true;
     return;
   }
@@ -1445,6 +1566,7 @@ function publish(engine, force = false) {
   engine.setData('qiStuck', run?.stuckAsking ? '1' : '');
   engine.setData('qiObjective', run && room ? room.objective?.(ctx)?.text || '' : '');
   engine.setData('qiRetry', Object.keys(save.retry).join(','));
+  engine.setData('qiAway', heldNow() ? run?.questId || '' : save.away?.questId || '');
   if (run && room?.publish) room.publish(ctx);
 }
 
@@ -1667,8 +1789,10 @@ export const questInstancesFeature = {
     rubeTraded = slice?.rubeTraded === true;
     // G887: a last street saved on a dead end (an older build kept Orangian) is repaired here.
     if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid)) save.lastStreet = null;
+    // G904: a run held while away at a party is kept (resumed when the party leads back).
+    if (save.away && save.away.questId !== save.questId) save.away = null;
     // A run open at save time was lost with the page: fail it, offer a retry.
-    if (save.questId) {
+    if (save.questId && !save.away) {
       const id = save.questId;
       if (save.memory[id]) delete save.memory[id].started;
       save.retry[id] = Date.now() - 15_000;
@@ -1678,6 +1802,14 @@ export const questInstancesFeature = {
 
   /** A reload inside a room resumes on the street the player came from. */
   reloadLocation(saved, engine) {
+    if (save.away) {
+      // G904: at the party with a run held: the party's space while it lives (its way back resumes
+      // the room); if it ended meanwhile, back into the room from the street it was entered from.
+      if (engine?.query?.('partyTrip', 'inside', engine) === true) return null;
+      resumeOnBoot = true;
+      const out = liveBack(save.away.returnTo) || strayExit(engine);
+      return { tsid: out.tsid, x: out.x, y: out.y };
+    }
     const target = reloadTarget(save, saved);
     if (target) {
       save.questId = null;
@@ -1719,12 +1851,12 @@ export const questInstancesFeature = {
    * of its street: no dead-end exit shows (features/dead-ends-feature.js deadEndActive).
    */
   deadEndRun() {
-    if (run || entering) return 'quest-room';
+    if (run || entering || save.away) return 'quest-room';
     return demo.quest && (demo.stage === 'idle' || demo.stage === 'starting') ? 'quest-room' : null;
   },
 
   holdQuestOffers() {
-    return run || entering ? true : null;
+    return run || entering || save.away ? true : null;
   },
 
   /** players/player.js 866-873: a new day waits while you are in Esquibeth's waterfalls. */
@@ -1734,8 +1866,23 @@ export const questInstancesFeature = {
 
   travelGate(tsid, engine, meta = {}) {
     // A teleport may leave (features/teleportation-feature.js land runs questRoomLeave with `to`).
-    if (!run || meta?.bypass || meta?.leavesQuestRoom) return null;
+    if (!run || heldNow() || meta?.bypass || meta?.leavesQuestRoom) return null;
     return { ok: false, msg: room?.travelText || "You can't travel from here. Use Leave to go back." };
+  },
+
+  /**
+   * G904: the party teleporter's contract (party-spaces-feature). 'plan': a run open here is held
+   * ({ kind: 'hold' }); 'depart': hold it and answer the way back; 'resume' (with the party's
+   * returnTo): back into the room. null for anything else.
+   */
+  partyTrip(action, engine, back) {
+    if (action === 'plan') {
+      if (!run || !room || entering || heldNow() || ctx?.data?._leaving) return null;
+      return run.status === 'active' || run.status === 'solved' ? { kind: 'hold', label: room.title || '' } : null;
+    }
+    if (action === 'depart') return run && room && ctx && !heldNow() ? departForParty(engine) : null;
+    if (action === 'resume') return back?.hold === QUEST_INSTANCES_FEATURE_ID ? resumeFromParty(engine) : null;
+    return null;
   },
 
   /**
@@ -1744,6 +1891,7 @@ export const questInstancesFeature = {
    * (`stray`, nothing to fail), so /stuck and the Menu's I'm stuck take you out of it.
    */
   questRoomHere(engine) {
+    if (run && heldNow()) return null;
     if (run) return { title: room?.title || '', solved: run.status === 'solved' };
     const stray = strayRoom(engine);
     return stray ? { title: stray.title, solved: true, stray: true } : null;
@@ -1756,6 +1904,7 @@ export const questInstancesFeature = {
    * Answers the leave's promise, or null with no room open.
    */
   questRoomLeave(engine, opts = {}) {
+    if (run && heldNow()) return null;
     if (run) return leaveInstance(engine, opts);
     return strayRoom(engine) ? leaveStray(engine, opts) : null;
   },
@@ -1782,11 +1931,11 @@ export const questInstancesFeature = {
    * Jumper II jumps at x1 in it (imagination-feature classicJumpPlace).
    */
   classicJumpPlace() {
-    return run ? true : null;
+    return run && !heldNow() ? true : null;
   },
 
   physics(engine) {
-    if (!run) return null;
+    if (!run || heldNow()) return null;
     const own = room?.physics?.(ctx) || null;
     // A room built as a scene was laid out for the remake's old 105 px jump (REMAKE_ROOM_PHYSICS);
     // a room on an imported street moves as the client did, like every street.
@@ -1801,7 +1950,9 @@ export const questInstancesFeature = {
 
   onStreetEnter(street, engine) {
     buildChrome(engine);
-    if (run && ctx && !entering && !ctx.data._awaitStreet && ctx.data._sceneTsid && street?.tsid !== ctx.data._sceneTsid) {
+    if (run && heldNow() && !ctx?.data?._awaitStreet) {
+      // G904: away at a party: the run waits, held (no Ticket 41 drop).
+    } else if (run && ctx && !entering && !ctx.data._awaitStreet && ctx.data._sceneTsid && street?.tsid !== ctx.data._sceneTsid) {
       // Ticket 41: a street load replaced this run's scene (a trip already under way when it
       // started). Nothing of the room is left on screen: end the run without failing the quest.
       dropReplacedRun(engine);
@@ -1822,7 +1973,8 @@ export const questInstancesFeature = {
   },
 
   onStreetClear(engine) {
-    if (run && ctx) {
+    // G904: a held room keeps its parked things (cleared already for a street room).
+    if (run && ctx && !away) {
       room?.clear?.(ctx);
       ctx.targets = [];
       ctx.sprites = [];
@@ -1846,6 +1998,14 @@ export const questInstancesFeature = {
   onTick(dtMs, now, engine) {
     if (!engine.started) return;
     handleDemo(engine);
+    if (resumeOnBoot && !entering && !run) {
+      resumeOnBoot = false;
+      resumeHeldSave(engine);
+    }
+    if (run && heldNow()) {
+      publish(engine);
+      return;
+    }
     if (run && room && ctx && !entering) {
       const { expired } = stepQuestInstance(run, now);
       if (expired) {
@@ -1862,7 +2022,7 @@ export const questInstancesFeature = {
       publish(engine);
       return;
     }
-    if (!run && !entering) {
+    if (!run && !entering && !save.away) {
       tickStray(engine);
       for (const def of activeWorldRooms(engine)) def.world.onTick?.(worldContext(engine), dtMs, now);
       settleRetries(engine);

@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=5c8d847b';
+import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=8de30c94';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');
@@ -58,7 +58,8 @@ describe('G901: the party teleporter at home', () => {
 
   it('from a visited home the way back is where its way out leads', () => {
     const enter = src.slice(src.indexOf('async function enterParty('), src.indexOf('async function leaveParty('));
-    assert.match(enter, /teleporterSpot\(engine\) === 'visit' \? engine\.sceneReturnTo : null/);
+    assert.match(enter, /const visit = teleporterSpot\(engine\) === 'visit';/);
+    assert.match(enter, /const out = trip\?\.tsid \? trip : visit \? engine\.sceneReturnTo : null;/);
   });
 
   it('Glitch checked no location before making the teleporter', { skip: !existsSync(GSJS) && 'no GSJS checkout' }, () => {

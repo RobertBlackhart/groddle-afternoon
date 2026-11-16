@@ -19,7 +19,8 @@
  * Here a run holds: which quest and room, the stage (rooms with several
  * locations), the timer, the run's own flags, and the return point. Nothing
  * of a run is saved except the return point, so a reload inside an instance
- * always resumes on the street the player left from (reloadTarget).
+ * always resumes on the street the player left from (reloadTarget). G904: a
+ * run held while you are away at a party is saved whole (heldRunSave).
  */
 
 export const QUEST_SCENE_PREFIX = 'QI_';
@@ -210,6 +211,123 @@ export function finishQuestInstance(run) {
   return { ok: true, outcome, returnTo: run.returnTo };
 }
 
+/**
+ * G904: a run held while you are away at a party. Glitch kept the instance and your place in it
+ * when you left it for another instance, the party space being one (groups/instance.js
+ * player_exited_location 343-363), and sent you back to the spot you left when you left the party
+ * (players/inc_instances.js instances_enter 71-111, instances_left 135-180). The room's clock and
+ * its "Are you stuck?" wait stop while you are away (the remake's choice: Glitch's ran on, as
+ * events_add timers on the player, so the prompt could find you at the party).
+ */
+export function holdQuestInstance(run, now = Date.now()) {
+  if (!run || (run.status !== 'active' && run.status !== 'solved') || run.heldAt) return false;
+  run.heldAt = now;
+  run.stuckAsking = false;
+  return true;
+}
+
+/** Back from the party: the clock and the stuck wait carry on from where they stopped. */
+export function resumeQuestInstance(run, now = Date.now()) {
+  if (!run?.heldAt) return 0;
+  const away = Math.max(0, now - run.heldAt);
+  if (run.expiresAt) run.expiresAt += away;
+  if (run.stuckAt) run.stuckAt += away;
+  delete run.heldAt;
+  return away;
+}
+
+/** The held run as saved, so a reload at the party neither fails nor loses it; `spot` is where you stood. */
+export function heldRunSave(run, spot = {}) {
+  if (!run?.heldAt) return null;
+  return normalizeHeldRun({
+    ...run,
+    leftMs: run.expiresAt ? Math.max(0, run.expiresAt - run.heldAt) : 0,
+    stuckInMs: run.stuckAt ? Math.max(0, run.stuckAt - run.heldAt) : 0,
+    x: spot.x,
+    y: spot.y,
+    scale: spot.scale,
+    data: spot.data,
+  });
+}
+
+export function normalizeHeldRun(src) {
+  if (!src || typeof src !== 'object') return null;
+  const questId = cleanId(src.questId);
+  const roomId = cleanId(src.roomId);
+  if (!questId || !roomId || (src.status !== 'active' && src.status !== 'solved')) return null;
+  const n = (v) => Math.max(0, Math.floor(Number(v) || 0));
+  const flags = {};
+  for (const [k, v] of Object.entries(src.flags || {})) if (String(k).trim() && Number(v) > 0) flags[String(k).trim()] = Math.floor(Number(v));
+  const scale = Number(src.scale);
+  return {
+    questId,
+    roomId,
+    stage: cleanId(src.stage) || 'main',
+    status: src.status,
+    repeat: src.repeat === true,
+    startedAt: n(src.startedAt),
+    durationMs: n(src.durationMs),
+    leftMs: n(src.leftMs),
+    returnTo: cleanPoint(src.returnTo),
+    flags,
+    bonusMs: n(src.bonusMs),
+    exitPromptMs: n(src.exitPromptMs),
+    stuckInMs: n(src.stuckInMs),
+    solvedAt: n(src.solvedAt),
+    x: Math.round(Number(src.x) || 0),
+    y: Math.round(Number(src.y) || 0),
+    scale: Number.isFinite(scale) && scale > 0 ? scale : 1,
+    data: plainRoomData(src.data),
+  };
+}
+
+/**
+ * The room's own plain state (ctx.data) worth keeping through a reload at the party: keys not
+ * starting with '_', whose values are numbers, strings, booleans or plain arrays/objects of them
+ * (sprites, functions and class instances drop out). A room's build/enter puts back the rest.
+ */
+export function plainRoomData(data, { maxChars = 20000 } = {}) {
+  const out = {};
+  const plain = (v, depth) => {
+    if (v == null || typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean') return Number.isNaN(v) ? false : true;
+    if (depth > 4) return false;
+    if (Array.isArray(v)) return v.every((x) => plain(x, depth + 1));
+    if (typeof v !== 'object') return false;
+    const proto = Object.getPrototypeOf(v);
+    if (proto !== Object.prototype && proto !== null) return false;
+    return Object.values(v).every((x) => plain(x, depth + 1));
+  };
+  let size = 0;
+  for (const [k, v] of Object.entries(data || {})) {
+    if (k.startsWith('_') || !plain(v, 0)) continue;
+    const json = JSON.stringify(v);
+    if (json === undefined || size + json.length > maxChars) continue;
+    size += json.length;
+    out[k] = JSON.parse(json);
+  }
+  return out;
+}
+
+/** A held run back from its save (still held: resumeQuestInstance starts the clock again). */
+export function runFromHeld(saved, now = Date.now()) {
+  const h = normalizeHeldRun(saved);
+  if (!h) return null;
+  const run = {
+    ...createQuestInstance({ questId: h.questId, roomId: h.roomId, now, durationMs: 0, returnTo: h.returnTo, stage: h.stage, repeat: h.repeat }),
+    status: h.status,
+    startedAt: h.startedAt || now,
+    durationMs: h.durationMs,
+    expiresAt: h.durationMs && h.leftMs ? now + h.leftMs : h.durationMs ? now : 0,
+    flags: { ...h.flags },
+    bonusMs: h.bonusMs,
+    exitPromptMs: h.exitPromptMs,
+    stuckAt: h.stuckInMs ? now + h.stuckInMs : 0,
+    heldAt: now,
+  };
+  if (h.solvedAt) run.solvedAt = h.solvedAt;
+  return run;
+}
+
 /** m:ss for the HUD (Infinity reads as a dash). */
 export function formatInstanceClock(ms) {
   if (!Number.isFinite(ms)) return '–';
@@ -242,6 +360,8 @@ export function normalizeInstanceSave(seed = {}) {
     memory,
     // G886: the last ordinary street you stood on, the way out of a quest room with no run open.
     lastStreet: cleanPoint(src.lastStreet),
+    // G904: the run held while you are away at a party (heldRunSave).
+    away: normalizeHeldRun(src.away),
   };
 }
 

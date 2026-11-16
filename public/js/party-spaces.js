@@ -601,7 +601,16 @@ export function normalizePartyRecord(seed = {}, now = Date.now()) {
       extensions: Math.max(0, Math.floor(Number(p.extensions) || 0)),
       inside: p.inside === true,
       returnTo: back && typeof back.tsid === 'string' && !isPartyStreet(back.tsid)
-        ? { tsid: back.tsid, label: typeof back.label === 'string' ? back.label : '', x: Math.round(Number(back.x) || 0), y: Math.round(Number(back.y) || 0) }
+        ? {
+          tsid: back.tsid,
+          label: typeof back.label === 'string' ? back.label : '',
+          x: Math.round(Number(back.x) || 0),
+          y: Math.round(Number(back.y) || 0),
+          // G904: the instance that holds your place (its owner puts you back on the spot `at`).
+          ...(/^[a-z][a-z-]{0,39}$/.test(String(back.hold || ''))
+            ? { hold: back.hold, at: { x: Math.round(Number(back.at?.x) || 0), y: Math.round(Number(back.at?.y) || 0) } }
+            : {}),
+        }
         : null,
       taken: Object.fromEntries(Object.entries(p.taken || {})
         .filter(([k, v]) => typeof k === 'string' && Number(v) > 0)

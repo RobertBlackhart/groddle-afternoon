@@ -222,7 +222,7 @@ describe('places laid out for the classic jump', () => {
   });
 
   it('quest runs claim it; the tutorial scenes keep their own jump', () => {
-    assert.match(read('js/features/quest-instances-feature.js'), /classicJumpPlace\(\) \{\n\s*return run \? true : null;/);
+    assert.match(read('js/features/quest-instances-feature.js'), /classicJumpPlace\(\) \{\n\s*return run && !heldNow\(\) \? true : null;/);
     // In a training level the imagination layer is x1, so the tutorial's own jump (newxp.js tutorialPhysics) is the jump.
     assert.match(read('js/features/newxp-feature.js'), /const ph = tutorialPhysics\(save\.upgrades\);/);
   });

@@ -51,7 +51,7 @@ import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { isRaceSceneTsid } from '../races.js?v=ab22a079';
 import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../winter-walk.js?v=a5c63b75';
 import { ROOK_WOODS_STREET_ID } from '../rook-woods.js?v=c8089bf8';
-import { questSceneTsid } from '../quest-instance.js?v=ee574732';
+import { questSceneTsid } from '../quest-instance.js?v=2fdff4a7';
 
 export const ITEM_VERBS_FEATURE_ID = 'item-verbs';
 /** Gwendolyn's Outer Mind (quest-rooms/gwendolyn.js INSTANCES.outer_mind: tower_quest_headspace) as a scene. */

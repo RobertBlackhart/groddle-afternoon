@@ -19,11 +19,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STRAY_FALLBACK_TSID, normalizeInstanceSave, strayWayOut } from '../public/js/quest-instance.js?v=ee574732';
+import { STRAY_FALLBACK_TSID, normalizeInstanceSave, strayWayOut } from '../public/js/quest-instance.js?v=2fdff4a7';
 import { BUILT_ROOMS, ROOM_STREETS, roomForStreet, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
 import { slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=452d983c';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=c3f16108';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

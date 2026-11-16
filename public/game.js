@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=46573c2d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=01b84d82';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -981,7 +981,7 @@ import {
   creditMetabolicReward,
   streetQuoinPoints,
 } from './js/quoins.js?v=a4208821';
-import { isPartyStreet } from './js/party-spaces.js?v=dcc45819'; // G869: a Party Space's quoins are the party classes
+import { isPartyStreet } from './js/party-spaces.js?v=c667e9e2'; // G869: a Party Space's quoins are the party classes
 import {
   buildHubMapView,
   mapClickTravel,
@@ -13965,6 +13965,8 @@ const engine = {
       signposts: [],
       ownLight: Boolean(scene.ownLight),
       musicFile: scene.musicFile || null,
+      // G904: kept so resumeScene can put the avatar's tone back after a party.
+      avatarFilters: scene.avatarFilters || null,
     };
     // #323: a scene with its own music_file plays it as its street music (looped, hub music silent:
     // location.js 481-482); the street you go back to brings its own music again.
@@ -13988,6 +13990,78 @@ const engine = {
     // A room entered from home keeps the saved street (home is resumed from homeState at boot).
     if (scene.returnTo?.tsid && scene.returnTo.tsid !== HOME_STREET_TSID && scene.returnTo.tsid !== HOME_INTERIOR_TSID) savePlayerLocation(scene.returnTo);
     updateHud();
+  },
+  /**
+   * G904: set the feature scene on screen aside whole (its background, sprites, targets and
+   * floor) for a trip to a party space, as Glitch kept an instance you left for another instance
+   * (groups/instance.js player_exited_location 343-363: "If we have left for another instance,
+   * persist this place"). `sprites` and `targets` are the owner's own (the avatar's companions
+   * and labels are the street's, rebuilt on every arrival). The next enter replaces the scene as
+   * usual without destroying it; resumeScene(parked, spot) puts it back. null outside a scene.
+   */
+  parkScene({ sprites = [], targets = [] } = {}) {
+    if (!engine.inScene() || !bgLayer || !world) return null;
+    const own = new Set([...sprites, ...targets.map((t) => t?.sprite)].filter(Boolean));
+    const parked = {
+      tsid: currentStreetTsid,
+      bg: bgLayer,
+      sprites: entityLayer.children.filter((s) => s !== player && own.has(s)),
+      targets: targets.filter(Boolean),
+      platforms: streetPlatforms,
+      walls: streetWalls,
+      width: WORLD_W,
+      groundY: GROUND_Y,
+      street: currentStreet,
+      returnTo: engine.sceneReturnTo ? { ...engine.sceneReturnTo } : null,
+      filters: entityLayer.filters || null,
+    };
+    world.removeChild(bgLayer);
+    bgLayer = new PIXI.Container();
+    world.addChildAt(bgLayer, 0);
+    for (const s of parked.sprites) entityLayer.removeChild(s);
+    return parked;
+  },
+  /** G904: the parked scene back on screen (enterScene without a rebuild), the avatar at `spot`. */
+  resumeScene(parked, spot = null) {
+    if (!parked?.bg || parked.bg.destroyed || !world) return false;
+    clearWorldEntities();
+    if (bgLayer) {
+      world.removeChild(bgLayer);
+      bgLayer.destroy({ children: true });
+    }
+    bgLayer = parked.bg;
+    world.addChildAt(bgLayer, 0);
+    WORLD_W = parked.width;
+    GROUND_Y = parked.groundY;
+    streetPlatforms = parked.platforms || [];
+    streetWalls = parked.walls || [];
+    climb = { active: false, wall: null };
+    currentStreetTsid = parked.tsid;
+    engine.sceneTsid = parked.tsid;
+    engine.sceneReturnTo = parked.returnTo ? { ...parked.returnTo } : null;
+    currentStreet = parked.street;
+    if (parked.street?.avatarFilters) setAvatarTone(parked.street.avatarFilters);
+    for (const s of parked.sprites) if (!s.destroyed) entityLayer.addChild(s);
+    if (parked.filters) entityLayer.filters = parked.filters;
+    for (const t of parked.targets) if (!interactables.includes(t)) interactables.push(t);
+    if (app?.canvas) app.canvas.dataset.ambientTheme = resolveAmbientTheme(currentStreet);
+    if (state.started && audio.ctx) setAmbientForStreet(currentStreet);
+    if (player && Number.isFinite(spot?.x) && Number.isFinite(spot?.y)) {
+      player.x = spot.x;
+      player.y = spot.y;
+      player.vx = 0;
+      player.vy = 0;
+    }
+    engine.snapCamera();
+    const name = document.getElementById('street-name');
+    if (name) {
+      name.textContent = currentStreet.hubName ? `${currentStreet.label} · ${currentStreet.hubName}` : currentStreet.label;
+      name.dataset.tsid = parked.tsid;
+    }
+    const back = engine.sceneReturnTo;
+    if (back?.tsid && back.tsid !== HOME_STREET_TSID && back.tsid !== HOME_INTERIOR_TSID) savePlayerLocation(back);
+    updateHud();
+    return true;
   },
   /**
    * player.js playEmotionAnimation: happy, surprise or angry replaces the
