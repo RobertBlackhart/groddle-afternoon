@@ -2230,6 +2230,94 @@
       "commits": [
         "game:bd317c7d96"
       ]
+    },
+    {
+      "id": "G881",
+      "area": "Pack",
+      "show": "fixing",
+      "text": "Pack search only lit up matching stacks; Glitch listed every match under the search box, items in bags included.",
+      "commits": [
+        "game:164ff17b327",
+        "game:c80d8438aca"
+      ]
+    },
+    {
+      "id": "G884",
+      "area": "Social",
+      "show": "fixing",
+      "text": "There was no way to see who was on your street.",
+      "commits": [
+        "game:5bf3638aa09",
+        "game:672f2de3d8c",
+        "game:8fefe585926"
+      ]
+    },
+    {
+      "id": "G872",
+      "area": "Social",
+      "show": "fixing",
+      "text": "Players had no way to report another player.",
+      "commits": [
+        "game:76abc770211",
+        "server:9c7456a",
+        "site:fd4da85"
+      ]
+    },
+    {
+      "id": "G882",
+      "area": "Solo play",
+      "show": "fixing",
+      "text": "Solo street projects near the start asked for nearly as much as far ones, with the same skills.",
+      "commits": [
+        "game:a8ac0f58133",
+        "game:94591a6e790",
+        "game:074cff4c414",
+        "game:6934cf067e3",
+        "game:9a2439284cb"
+      ]
+    },
+    {
+      "id": "G886",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "A quest room or puzzle street reached without its quest could leave you with no way out.",
+      "commits": [
+        "game:79f0c809a64",
+        "game:b446ae83d2b",
+        "game:cb6eaf3a630",
+        "game:2bddd20680d",
+        "game:501c21f03e9",
+        "game:25088ed177f",
+        "game:4e606843ee8",
+        "game:70916773411",
+        "game:3f0f01c9a5d"
+      ]
+    },
+    {
+      "id": "G889",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Sloths were a drawn stand-in instead of Tiny Speck's own sloth, its animations and its encounter.",
+      "commits": [
+        "game:5a114fd5bc6",
+        "game:bfc784ce223",
+        "game:c4698502368",
+        "game:c12ba0f4df8",
+        "game:0e64438b90d"
+      ]
+    },
+    {
+      "id": "G894",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Sloths stood on made-up trees at random spots instead of hanging in their own street's trees.",
+      "commits": [
+        "game:5ef8a234592",
+        "game:2ca45ee1b49",
+        "game:c814d111599",
+        "game:8024c53bb8e",
+        "server:4869566"
+      ]
     }
   ]
 }

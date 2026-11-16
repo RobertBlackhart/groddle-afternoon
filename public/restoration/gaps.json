@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.42.3",
+  "release": "v0.43.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 214,
+    "fixed": 221,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -122,6 +122,12 @@
           "report": 359,
           "state": "fixed",
           "version": "v0.41.1"
+        },
+        {
+          "id": "G886",
+          "text": "A quest room or puzzle street reached without its quest could leave you with no way out.",
+          "state": "fixed",
+          "version": "v0.43.0"
         }
       ]
     },
@@ -832,6 +838,18 @@
           "text": "Asking a chicken to incubate with no egg gave the feeding line instead of Glitch's own.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G889",
+          "text": "Sloths were a drawn stand-in instead of Tiny Speck's own sloth, its animations and its encounter.",
+          "state": "fixed",
+          "version": "v0.43.0"
+        },
+        {
+          "id": "G894",
+          "text": "Sloths stood on made-up trees at random spots instead of hanging in their own street's trees.",
+          "state": "fixed",
+          "version": "v0.43.0"
         }
       ]
     },
@@ -1443,6 +1461,12 @@
           "report": 287,
           "state": "fixed",
           "version": "v0.37.0"
+        },
+        {
+          "id": "G881",
+          "text": "Pack search only lit up matching stacks; Glitch listed every match under the search box, items in bags included.",
+          "state": "fixed",
+          "version": "v0.43.0"
         }
       ]
     },
@@ -1674,6 +1698,18 @@
           "text": "The Chats tab showed a new-message badge for a group's \"You are the only person here.\" note.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G884",
+          "text": "There was no way to see who was on your street.",
+          "state": "fixed",
+          "version": "v0.43.0"
+        },
+        {
+          "id": "G872",
+          "text": "Players had no way to report another player.",
+          "state": "fixed",
+          "version": "v0.43.0"
         }
       ]
     },
@@ -1774,6 +1810,12 @@
           "text": "Solo play had no way to report a bug.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G882",
+          "text": "Solo street projects near the start asked for nearly as much as far ones, with the same skills.",
+          "state": "fixed",
+          "version": "v0.43.0"
         }
       ]
     }
