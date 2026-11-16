@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2428,
+  "commits": 2430,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A link to a heading on the restoration report (/restoration/#made-h) lands on that heading"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2909,14 +2914,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Sloths hang from their own striped branch and move as they did in Glitch"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "new",
-    "text": "The Sloth's own animations, rendered from Tiny Speck's sloth art"
    }
   ]
  },
- "tests": 1068,
+ "tests": 1069,
  "generatedAt": "2026-11-16"
 }
