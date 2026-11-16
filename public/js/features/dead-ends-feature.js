@@ -9,7 +9,8 @@
  *   quest room's run), puzzles-feature (a colour level taken from the Map card), newxp-feature (the
  *   tutorial's island and practice streets), hell-feature (the dead), subway-feature (the car),
  *   interrogation-room-feature (its own Leave door). A new instance answers the same hook.
- * - A dead end with nothing active shows the wooden EXIT arrow near where you arrived; walking into
+ * - A dead end with nothing active shows the wooden EXIT arrow near where you arrived (where you
+ *   stand once landed, SETTLE_MS); walking into
  *   it or its Enter verb leaves by the street owner's own way out when it has one (questRoomLeave:
  *   a quest room's street, a puzzle street), else to the last ordinary street
  *   (quest-instances-feature safeWayOut). It comes and goes as the check changes (a run ending
@@ -22,7 +23,7 @@
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_GRAPH_URL, DEAD_END_TEXT, deadEndExitSpot, inExitBox, isDeadEndTsid, urReach } from '../dead-ends.js?v=ca1407c7';
+import { DEAD_END_EXIT, DEAD_END_GRAPH_URL, DEAD_END_TEXT, deadEndExitSpot, inExitBox, isDeadEndTsid, urReach } from '../dead-ends.js?v=d8dec779';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=7ed1bdfd';
 import { strayWayOut } from '../quest-instance.js?v=7b06754a';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -31,6 +32,10 @@ export const DEAD_ENDS_FEATURE_ID = 'dead-ends';
 export const DEAD_END_EXIT_CLASS = 'dead_end_exit';
 
 const CHECK_MS = 250;
+// Where you arrived is where you stand once landed: a spawn in the air (or over a puzzle street's
+// platforms that its events bring in a moment later) settles first, at most this long.
+const SETTLE_MS = 600;
+const SETTLE_MAX_MS = 4000;
 const EXIT_Z = 3;
 
 let reach = null;
@@ -38,7 +43,9 @@ let loading = null;
 let graph = null;
 let roadsKey = '';
 let exit = null; // { target, view, word, spot, armed, tsid }
-let arrival = null; // { tsid, x, y }: where this street was entered
+let arrival = null; // { tsid, x, y }: where this street was entered (where you stood once landed)
+let enteredAt = 0;
+let settled = false;
 let lastCheck = 0;
 let leaving = false;
 let status = '';
@@ -247,7 +254,19 @@ async function useExit(engine) {
 /* Each check                                                          */
 /* ------------------------------------------------------------------ */
 
-function check(engine) {
+/** The arrival, once you have landed on this street (SETTLE_MS, or SETTLE_MAX_MS at most). */
+function settleArrival(engine, now) {
+  if (settled) return true;
+  const p = engine.player;
+  const waited = now - enteredAt;
+  if (p && waited < SETTLE_MS) return false;
+  if (p && waited < SETTLE_MAX_MS && (p.onGround === false || Math.abs(Number(p.vy) || 0) > 1)) return false;
+  if (p) arrival = { tsid: engine.streetTsid, x: Number(p.x), y: Number(p.y) };
+  settled = true;
+  return true;
+}
+
+function check(engine, now = Date.now()) {
   if (!engine.started && engine.started !== undefined) return;
   // A feature's roads that came after the graph (none today) rebuild the reach once.
   if (graph && featureRoads(engine).map((r) => `${r.from}>${r.to}`).join(',') !== roadsKey) rebuild(engine);
@@ -261,9 +280,10 @@ function check(engine) {
       want = !why;
     }
   }
+  const had = Boolean(exit);
   if (exit && (!want || exit.tsid !== engine.streetTsid || !exit.view || exit.view.destroyed || !exit.view.parent)) clearExit(engine);
-  if (want && !exit && engine.entityLayer && engine.PIXI) showExit(engine);
-  if (next !== status) {
+  if (want && !exit && engine.entityLayer && engine.PIXI && settleArrival(engine, now)) showExit(engine);
+  if (next !== status || had !== Boolean(exit)) {
     status = next;
     publish(engine);
   }
@@ -282,10 +302,12 @@ export const deadEndsFeature = {
     clearExit(engine);
     const p = engine.player;
     arrival = { tsid: street?.tsid || engine.streetTsid, x: Number(p?.x), y: Number(p?.y) };
+    enteredAt = Date.now();
+    settled = false;
     autoplayAt = 0;
     lastCheck = 0;
     loadReach(engine);
-    check(engine);
+    check(engine, enteredAt);
     publish(engine);
   },
 
@@ -296,7 +318,7 @@ export const deadEndsFeature = {
   onTick(_dt, now, engine) {
     if (now - lastCheck >= CHECK_MS) {
       lastCheck = now;
-      check(engine);
+      check(engine, now);
     }
     if (!exit || leaving) return;
     const p = engine.player;
@@ -340,6 +362,8 @@ export const deadEndsFeature = {
     roadsKey = '';
     exit = null;
     arrival = null;
+    enteredAt = 0;
+    settled = false;
     lastCheck = 0;
     leaving = false;
     status = '';

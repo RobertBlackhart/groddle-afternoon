@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, inExitBox, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=ca1407c7';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=e286a90a';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, inExitBox, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=d8dec779';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=c0b99888';
 import { loadStreetIndexObject } from '../public/js/street-loader.js?v=7ed1bdfd';
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
@@ -96,6 +96,15 @@ function fakeEngine({ tsid = HECHEY, run = null, player = { x: 1000, y: 900 }, p
   return engine;
 }
 
+/** Enter the street and let the arrival settle (the exit stands where you landed, SETTLE_MS). */
+let clock = Date.now();
+const tick = (engine, ms = 1000) => { clock += ms; de.onTick(16, clock, engine); };
+function arrive(engine) {
+  de.onStreetEnter(engine.street, engine);
+  clock = Date.now();
+  tick(engine);
+}
+
 const exitOf = (engine) => [...engine.targets].find((t) => t.classId === DEAD_END_EXIT_CLASS) || null;
 
 let savedPixi;
@@ -157,7 +166,7 @@ describe('the exit over every street in the index (features/dead-ends-feature.js
       const engine = fakeEngine({ tsid });
       de._reset();
       de._setGraph(graph, engine);
-      de.onStreetEnter(engine.street, engine);
+      arrive(engine);
       const exit = exitOf(engine);
       if (!dead) {
         assert.equal(exit, null, `${tsid} reaches Ur: no exit`);
@@ -169,18 +178,18 @@ describe('the exit over every street in the index (features/dead-ends-feature.js
       shown += 1;
       // Something starts (a quest room's run, the tutorial...): the exit goes at the next check.
       engine.run = 'quest-room';
-      de.onTick(16, Date.now() + 1000, engine);
+      tick(engine);
       assert.equal(exitOf(engine), null, `${tsid}: none while active`);
       assert.equal(engine.log.data.deadEnd, 'active:quest-room', tsid);
       // It ends: the exit is back.
       engine.run = null;
-      de.onTick(16, Date.now() + 2000, engine);
+      tick(engine);
       assert.ok(exitOf(engine), `${tsid}: back once it ends`);
       // An active check from the start: never shown.
       const busy = fakeEngine({ tsid, run: 'tutorial' });
       de._reset();
       de._setGraph(graph, busy);
-      de.onStreetEnter(busy.street, busy);
+      arrive(busy);
       assert.equal(exitOf(busy), null, `${tsid}: none while the tutorial runs`);
     }
     assert.ok(shown > 80, `${shown} dead ends`);
@@ -191,30 +200,30 @@ describe('the exit over every street in the index (features/dead-ends-feature.js
     held.transientInstance = () => true;
     assert.equal(deadEndActive(held), 'instance');
     de._setGraph(graph, held);
-    de.onStreetEnter(held.street, held);
+    arrive(held);
     assert.equal(exitOf(held), null);
     const home = fakeEngine({ tsid: EZ });
     home.homeContext = () => ({ inHome: true });
     de._reset();
     de._setGraph(graph, home);
-    de.onStreetEnter(home.street, home);
+    arrive(home);
     assert.equal(exitOf(home), null);
   });
 
   it('before the signpost graph arrives nothing shows (it does once it is in)', () => {
     const engine = fakeEngine({ tsid: MARKET_ST });
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     assert.equal(exitOf(engine), null);
     assert.equal(engine.log.data.deadEnd, 'loading');
     de._setGraph(graph, engine);
-    de.onTick(16, Date.now() + 1000, engine);
+    tick(engine);
     assert.ok(exitOf(engine));
   });
 
   it('reads as a door: label Exit, verb Enter, the way out named', () => {
     const engine = fakeEngine({ tsid: MARKET_ST });
     de._setGraph(graph, engine);
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     const exit = exitOf(engine);
     assert.equal(exit.label, 'Exit');
     assert.equal(exit.subtitle, 'The way out, back to Hechey Track');
@@ -254,14 +263,14 @@ describe('going through it', () => {
   it('walking into it takes you to the last ordinary street (safeWayOut)', async () => {
     const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 400, y: 900 } });
     de._setGraph(graph, engine);
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     const spot = de._state().exit.spot;
     assert.equal(spot.x, 230);
-    de.onTick(16, Date.now(), engine);
+    tick(engine, 16);
     assert.deepEqual(engine.log.entered, [], 'not where you arrived');
     engine.player.x = spot.x;
     engine.player.y = spot.y;
-    de.onTick(16, Date.now(), engine);
+    tick(engine, 16);
     await flush();
     assert.equal(engine.log.entered.length, 1);
     assert.deepEqual(engine.log.entered[0][0], HECHEY);
@@ -275,26 +284,38 @@ describe('going through it', () => {
     let owned = 0;
     engine.query = (hook, ...args) => (hook === 'questRoomLeave' ? (owned += 1, engine.enter('GA54VETILKR26N1', {}).then(() => true)) : base(hook, ...args));
     de._setGraph(graph, engine);
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     assert.equal(de.runVerb(exitOf(engine), 'enter', engine), true);
     await flush();
     assert.equal(owned, 1);
     assert.equal(engine.log.entered[0][0], 'GA54VETILKR26N1');
   });
 
+  it('waits for you to land: it stands where you came down, not where you spawned in the air', () => {
+    const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 400, y: 300 } });
+    engine.player.onGround = false;
+    de._setGraph(graph, engine);
+    arrive(engine);
+    assert.equal(exitOf(engine), null);
+    assert.equal(engine.log.data.deadEnd, 'exit');
+    Object.assign(engine.player, { x: 600, y: 900, onGround: true });
+    tick(engine);
+    assert.equal(de._state().exit.spot.x, 430);
+  });
+
   it('arriving on top of it never sends you straight back: step off and on again', async () => {
     const ledge = [{ x1: 900, y1: 600, x2: 1100, y2: 600 }];
     const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 1000, y: 600 }, platforms: ledge });
     de._setGraph(graph, engine);
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     assert.ok(inExitBox(de._state().exit.spot, 1000, 600));
-    de.onTick(16, Date.now(), engine);
+    tick(engine, 16);
     await flush();
     assert.deepEqual(engine.log.entered, []);
     engine.player.x = 1100;
-    de.onTick(16, Date.now(), engine);
+    tick(engine, 16);
     engine.player.x = 1000;
-    de.onTick(16, Date.now(), engine);
+    tick(engine, 16);
     await flush();
     assert.equal(engine.log.entered.length, 1);
   });
@@ -302,7 +323,7 @@ describe('going through it', () => {
   it('never while something runs there', async () => {
     const engine = fakeEngine({ tsid: MARKET_ST });
     de._setGraph(graph, engine);
-    de.onStreetEnter(engine.street, engine);
+    arrive(engine);
     const exit = exitOf(engine);
     engine.run = 'quest-room';
     de.runVerb(exit, 'enter', engine);

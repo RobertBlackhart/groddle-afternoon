@@ -46,8 +46,10 @@ export const DEAD_END_EXIT = Object.freeze({
   wordDx: -7,
   // Walking into it: a box round the post, its foot on the floor.
   box: Object.freeze({ w: 70, h: 150 }),
-  // How far from where you arrived it stands, tried in this order (toward the nearer street end first).
-  offsets: Object.freeze([170, -170, 290, -290, 0]),
+  // How far from where you arrived it stands, tried in this order (toward the nearer street end
+  // first), on a floor within `step` px of your feet; else right where you stand.
+  offsets: Object.freeze([170, -170, 290, -290, 110, -110]),
+  step: 60,
 });
 
 export const DEAD_END_TEXT = Object.freeze({
@@ -144,11 +146,11 @@ export function deadEndExitSpot({ platforms = [], arrival = null, width = 0 } = 
   for (const off of DEAD_END_EXIT.offsets) {
     const x = Math.round(a.x + off * toward);
     if (x < lo || x > hi) continue;
-    const y = floorAt(platforms, x, a.y);
+    const y = floorAt(platforms, x, a.y, { above: DEAD_END_EXIT.step, below: DEAD_END_EXIT.step });
     if (y == null) continue;
-    const side = off === 0 ? toward : Math.sign(off * toward);
-    return { x, y: Math.round(y), side };
+    return { x, y: Math.round(y), side: Math.sign(off * toward) };
   }
+  // A ledge too small for it beside you (a puzzle street's floating block): on yours, under your feet.
   const x = Math.round(Math.min(hi, Math.max(lo, a.x)));
   return { x, y: Math.round(floorAt(platforms, x, a.y) ?? a.y), side: toward };
 }
