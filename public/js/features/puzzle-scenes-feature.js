@@ -14,6 +14,12 @@
  * Both leave by their EXIT door back to the street they were entered from;
  * map travel waits for the door, and a reload resumes on that street.
  *
+ * G904: a party teleporter taken in either scene holds it (Glitch kept an instance left for
+ * another instance: groups/instance.js player_exited_location 343-363): the scene is parked whole
+ * (engine.parkScene) and the party leads back to the spot you left, stars and quoins as they were.
+ * A reload at the party keeps it (save.away): the scene is built again with the stars drawn so far
+ * and the quoins already taken gone (Beam Me Down's skip the day's limit; never paid twice).
+ *
  * QA: ?autostart=1&questoffer=off&scenedemo=constellation|beam_me_down;
  * &sceneautoplay=1 solves it (constellation: clicks every star in order;
  * beam: drops through each beam's quoins, lands, and leaves; &scenehold=1
@@ -42,10 +48,11 @@ import {
   nextStarIndex,
   normalizeSceneSave,
   sceneTsid,
-} from '../puzzle-scenes.js?v=c47b9319';
+} from '../puzzle-scenes.js?v=af3c8cf9';
 import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { partySpaceForStreet } from '../party-spaces.js?v=c667e9e2';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
 const TICKET = 'paradise_ticket_beam_me_down';
@@ -57,6 +64,9 @@ let active = null; // { id, scene, views, quoins, taken, ... }
 let entering = false;
 let demo = { stage: 'idle', at: 0, queue: [] };
 let lastData = 0;
+// G904: away at a party with the scene held ({ parked, x, y, scale }).
+let away = null;
+let resumeOnBoot = false;
 
 ensureItem(TICKET, {
   label: 'Ticket To Beam Me Down',
@@ -254,10 +264,12 @@ function inMyScene(engine) {
   return Boolean(active) && engine.inScene() && engine.sceneTsid === sceneTsid(active.id);
 }
 
-function startScene(engine, id) {
+function startScene(engine, id, opts = {}) {
   const scene = SCENES[id];
   if (!scene || entering) return false;
-  if (!engine.inScene() && !isPuzzleSceneTsid(engine.streetTsid)) {
+  // G904: built again after a party keeps its own way back (not the party space).
+  if (opts.returnTo) save.returnTo = { ...opts.returnTo };
+  else if (!engine.inScene() && !isPuzzleSceneTsid(engine.streetTsid)) {
     save.returnTo = { tsid: engine.streetTsid, x: Math.round(engine.player?.x || 0), y: Math.round(engine.player?.y || 0) };
   }
   engine.closeMap?.();
@@ -318,6 +330,58 @@ function startScene(engine, id) {
   }
   engine.toast(scene.objective, 3600);
   engine.save();
+  return true;
+}
+
+/** G904: hold the scene for a party trip; answers the party's way back. */
+function departForParty(engine) {
+  const p = engine.player;
+  const spot = { x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
+  const scale = active.scaled && p?.baseScale ? p.baseScale / active.scaled.base : 1;
+  if (active.scaled && p) p.baseScale = active.scaled.base;
+  const sprites = [active.exit?.door, ...active.quoinSprites.values()];
+  away = { ...spot, scale, parked: engine.parkScene?.({ sprites, targets: [active.exit?.target] }) || null };
+  save.away = { id: active.id, ...spot, taken: [...active.taken], landed: active.landed, complete: active.complete, run: active.run };
+  engine.save();
+  const out = save.returnTo || engine.query?.('safeWayOut', engine, {}) || { tsid: 'GLI2V0UN7RD1T2J', x: 0, y: 0 };
+  return { hold: PUZZLE_SCENES_FEATURE_ID, tsid: out.tsid, x: out.x, y: out.y, label: active.scene.name, at: spot };
+}
+
+/** G904: back from the party into the scene (parked, or after a reload built again as it was). */
+function resumeFromParty(engine) {
+  const held = save.away;
+  if (away?.parked && active && engine.resumeScene?.(away.parked, { x: away.x, y: away.y })) {
+    const p = engine.player;
+    if (active.scaled && p && away.scale !== 1) p.baseScale = active.scaled.base * away.scale;
+  } else if (held) {
+    active = null;
+    const back = save.returnTo;
+    if (!back || !startScene(engine, held.id, { returnTo: back })) return false;
+    for (const id of held.taken) {
+      active.taken.add(id);
+      const spr = active.quoinSprites.get(id);
+      if (spr) spr.visible = false;
+    }
+    active.landed = held.landed;
+    active.complete = held.complete;
+    if (held.complete) active.status = 'complete';
+    if (held.run && active.run) {
+      active.run = { ...active.run, ...held.run };
+      drawConstellation(engine);
+    }
+    const p = engine.player;
+    if (p) {
+      p.x = held.x;
+      p.y = held.y;
+      p.vx = 0;
+      p.vy = 0;
+      engine.snapCamera?.();
+    }
+  } else return false;
+  away = null;
+  save.away = null;
+  engine.save();
+  engine.setData('sceneStatus', active?.status || '');
   return true;
 }
 
@@ -628,17 +692,30 @@ export const puzzleScenesFeature = {
   },
 
   onStreetEnter(street) {
-    // Any real street means the scene is over (left by door, reload, or travel).
-    if (active && !isPuzzleSceneTsid(street?.tsid)) active = null;
+    // Any real street means the scene is over (left by door, reload, or travel); G904: not while
+    // the scene is held for a party.
+    if (active && !away && !isPuzzleSceneTsid(street?.tsid)) active = null;
   },
 
   onStreetClear(engine) {
-    if (entering || !active) return;
+    if (entering || !active || away) return;
     cleanup(engine);
+  },
+
+  /** G904: the party teleporter's contract (party-spaces-feature partyTeleporterSpot). */
+  partyTrip(action, engine, back) {
+    if (action === 'plan') return active && !away && inMyScene(engine) ? { kind: 'hold', label: active.scene.name } : null;
+    if (action === 'depart') return active && !away && inMyScene(engine) ? departForParty(engine) : null;
+    if (action === 'resume') return back?.hold === PUZZLE_SCENES_FEATURE_ID ? resumeFromParty(engine) : null;
+    return null;
   },
 
   onTick(dtMs, now, engine) {
     if (!engine.started) return;
+    if (resumeOnBoot && !active) {
+      resumeOnBoot = false;
+      resumeFromParty(engine);
+    }
     demoStep(engine, now);
     if (active && inMyScene(engine)) {
       if (active.id === 'constellation') {
@@ -676,7 +753,13 @@ export const puzzleScenesFeature = {
     return null;
   },
 
-  reloadLocation(saved) {
+  reloadLocation(saved, engine) {
+    // G904: held for a party that has ended meanwhile: back into the scene from where it was entered.
+    if (save.away && partySpaceForStreet(saved?.tsid) && engine?.query?.('partyTrip', 'inside', engine) !== true) {
+      resumeOnBoot = true;
+      const back = save.returnTo;
+      return back ? { tsid: back.tsid, x: back.x, y: back.y } : null;
+    }
     if (isPuzzleSceneTsid(saved?.tsid)) {
       const back = save.returnTo;
       return back ? { tsid: back.tsid, x: back.x, y: back.y } : null;

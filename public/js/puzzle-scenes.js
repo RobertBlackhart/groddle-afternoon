@@ -284,12 +284,37 @@ export function beamPhysics(inBeam) {
 
 export const SCENES = Object.freeze({ constellation: CONSTELLATION, beam_me_down: BEAM_ME_DOWN });
 
-/** Saved slice: { done: { id: n }, returnTo }. */
+/** Saved slice: { done: { id: n }, returnTo, away? (G904) }. */
 export function normalizeSceneSave(seed) {
   const out = { done: {}, returnTo: null };
   if (!seed || typeof seed !== 'object') return out;
   for (const [k, v] of Object.entries(seed.done || {})) if (SCENES[k] && Number(v) > 0) out.done[k] = Math.floor(Number(v));
   const r = seed.returnTo;
   if (r && typeof r.tsid === 'string' && !isPuzzleSceneTsid(r.tsid)) out.returnTo = { tsid: r.tsid, x: Number(r.x) || 0, y: Number(r.y) || 0 };
+  const away = normalizeHeldScene(seed.away);
+  if (away) out.away = away;
   return out;
+}
+
+/**
+ * G904: a scene held while you are away at a party (groups/instance.js player_exited_location
+ * 343-363 kept the instance): which scene, the spot, the quoins taken (Beam Me Down's skip the day's
+ * limit, so they must not be paid twice), landed or solved, and the stars drawn so far.
+ */
+export function normalizeHeldScene(src) {
+  if (!src || typeof src !== 'object' || !SCENES[src.id]) return null;
+  const run = src.run && typeof src.run === 'object' ? src.run : null;
+  return {
+    id: src.id,
+    x: Math.round(Number(src.x) || 0),
+    y: Math.round(Number(src.y) || 0),
+    taken: (Array.isArray(src.taken) ? src.taken : []).map(String).filter(Boolean).slice(0, 200),
+    landed: src.landed === true,
+    complete: src.complete === true,
+    run: run ? {
+      connected: (Array.isArray(run.connected) ? run.connected : []).map(Number).filter(Number.isInteger).slice(0, 200),
+      misses: Math.max(0, Math.floor(Number(run.misses) || 0)),
+      complete: run.complete === true,
+    } : null,
+  };
 }

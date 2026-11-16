@@ -298,7 +298,7 @@ export function cardReturn(returnTo, def, tsid) {
   return returnTo;
 }
 
-/** Saved slice: { completed: { tsid: n }, best: { tsid: ms }, returnTo: { tsid, x, y, card?, name? } }. */
+/** Saved slice: { completed: { tsid: n }, best: { tsid: ms }, returnTo: { tsid, x, y, card?, name? }, held? (G904) }. */
 export function normalizePuzzleSave(seed) {
   const out = { completed: {}, best: {}, returnTo: null };
   if (!seed || typeof seed !== 'object') return out;
@@ -310,5 +310,28 @@ export function normalizePuzzleSave(seed) {
     if (typeof r.card === 'string' && /^[GL][A-Z0-9]+$/.test(r.card)) out.returnTo.card = r.card;
     if (typeof r.name === 'string' && r.name.trim()) out.returnTo.name = r.name.trim().slice(0, 80);
   }
+  const held = normalizeHeldPuzzle(seed.held);
+  if (held) out.held = held;
   return out;
+}
+
+/**
+ * G904: a puzzle street's run held while you are away at a party (Glitch kept the instance you
+ * left for another instance: groups/instance.js player_exited_location 343-363): the spot you left,
+ * the quoins already taken (they are not paid twice), whether it is solved, whether the Map card
+ * took you there (the level is in progress: no dead-end EXIT), how far you got and its clock.
+ */
+export function normalizeHeldPuzzle(src) {
+  if (!src || typeof src !== 'object' || !/^[GL][A-Z0-9]+$/.test(String(src.tsid || ''))) return null;
+  return {
+    tsid: String(src.tsid),
+    x: Math.round(num(src.x)),
+    y: Math.round(num(src.y)),
+    taken: (Array.isArray(src.taken) ? src.taken : []).map(String).filter((id) => id && id.length < 80).slice(0, 400),
+    complete: src.complete === true,
+    viaCard: src.viaCard === true,
+    bestX: Math.round(num(src.bestX)),
+    respawns: Math.max(0, Math.floor(num(src.respawns))),
+    elapsedMs: Math.max(0, Math.round(num(src.elapsedMs))),
+  };
 }

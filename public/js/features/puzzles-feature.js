@@ -47,6 +47,12 @@
  * (features/dead-ends-feature.js; deadEndRun here says when a level is in
  * progress).
  *
+ * G904: a party teleporter taken on a puzzle street holds its run (partyTrip 'depart': Glitch kept
+ * an instance left for another instance, groups/instance.js player_exited_location 343-363) and the
+ * party leads back to the spot you left: the quoins already taken stay taken, a solved level stays
+ * solved, a level the Map card took you to stays in progress (no dead-end EXIT), even after a reload
+ * at the party (save.held). The street's own scripts start over, as on any arrival.
+ *
  * QA: ?autostart=1&questoffer=off&puzzledemo=<tsid> travels to a puzzle
  * street and stands at its start; &puzzleautoplay=1 walks the triggers in
  * order by placing the avatar on each (1.2 s apart), collects every quoin,
@@ -81,9 +87,10 @@ import {
   rewardBits,
   showExitDoor,
   stepTriggers,
-} from '../puzzle-triggers.js?v=8af3c741';
+} from '../puzzle-triggers.js?v=221b67a9';
 import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { partySpaceForStreet } from '../party-spaces.js?v=c667e9e2';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';
 export const LIGHT_BEAM_CLASS = 'light_beam';
@@ -800,6 +807,51 @@ function complete(engine) {
 }
 
 /* ------------------------------------------------------------------ */
+/* G904: away at a party                                               */
+/* ------------------------------------------------------------------ */
+
+/** partyTrip 'depart' on a puzzle street with a course (a finish) or no road out: hold the run. */
+function departForParty(engine) {
+  if (!run || run.def.instance || !runsHere(engine, run.def) || key(engine.streetTsid) !== run.tsid) return null;
+  if (!run.def.exit && !noExit(run.tsid)) return null;
+  const p = engine.player;
+  const spot = { x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
+  save.held = {
+    tsid: run.tsid,
+    ...spot,
+    taken: [...run.taken].map(String),
+    complete: run.complete,
+    viaCard: Boolean(run.viaCard),
+    bestX: Math.round(run.bestX || 0),
+    respawns: run.respawns || 0,
+    elapsedMs: Math.max(0, Math.round(locationEventsApi.clock() - run.startedAt)),
+  };
+  engine.save?.();
+  const label = run.def.name || engine.street?.label || 'Puzzle street';
+  return { hold: PUZZLES_FEATURE_ID, tsid: engine.streetTsid, ...spot, label, at: spot };
+}
+
+/** Back on the held street: the run carries on where it was (the street's scripts start over). */
+function applyHeld(engine) {
+  const held = save.held;
+  if (!held || !run || held.tsid !== run.tsid) return false;
+  save.held = null;
+  for (const q of run.def.quoins) {
+    if (!held.taken.includes(String(q.id))) continue;
+    run.taken.add(q.id);
+    const view = run.quoinViews.get(q.id);
+    if (view?.spr && !view.spr.destroyed) view.spr.visible = false;
+  }
+  run.complete = held.complete;
+  run.viaCard = held.viaCard;
+  run.bestX = Math.max(run.bestX, held.bestX);
+  run.respawns = held.respawns;
+  run.startedAt = locationEventsApi.clock() - held.elapsedMs;
+  engine.setData?.('puzzleHeld', `back:${held.tsid}`);
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
 /* Map card                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -1098,6 +1150,9 @@ export const puzzlesFeature = {
     if (!street || engine.homeContext?.().inHome) return;
     if (engine.transientInstance() && !engine.heldInstance?.()) return;
     const tsid = street.tsid;
+    // G904: a hold is for its own street; arriving anywhere else but the party ends it (a reload
+    // into the space comes before the space sets its instance hold).
+    if (save.held && save.held.tsid !== key(tsid) && !partySpaceForStreet(tsid)) save.held = null;
     // G888: arrived by the Map card (or a ?puzzledemo= run): the level is in progress, no exit sign.
     const viaCard = cardTrip === key(tsid) || key(engine.param?.('puzzledemo')) === key(tsid);
     cardTrip = '';
@@ -1110,6 +1165,7 @@ export const puzzlesFeature = {
       if (!def || !runsHere(engine, def) || key(engine.streetTsid) !== key(tsid) || run) return;
       startRun(engine, street, def);
       run.viaCard = viaCard;
+      applyHeld(engine);
       const back = wayBack(engine);
       if (back) engine.toast(CARD_RETURN_TEXT.toast(back.name), 5000);
     };
@@ -1178,6 +1234,18 @@ export const puzzlesFeature = {
     if (verbId !== 'puzzle_exit') return null;
     complete(engine);
     return true;
+  },
+
+  /** G904: the party teleporter's depart (see departForParty); the street itself is the way back. */
+  partyTrip(action, engine) {
+    return action === 'depart' ? departForParty(engine) : null;
+  },
+
+  /** G904: a reload in a party space that has ended meanwhile goes back to the held spot. */
+  reloadLocation(saved, engine) {
+    const held = save.held;
+    if (!held || !partySpaceForStreet(saved?.tsid) || engine?.query?.('partyTrip', 'inside', engine) === true) return null;
+    return { tsid: held.tsid, x: held.x, y: held.y };
   },
 
   /**

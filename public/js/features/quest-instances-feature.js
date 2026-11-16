@@ -141,7 +141,7 @@ import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { FIRST_SKILLS } from '../newxp.js?v=1f52edd5';
-import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=8af3c741';
+import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=6122a615';
 
 let quoinFrames = null;

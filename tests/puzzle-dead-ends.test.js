@@ -13,9 +13,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=2fdff4a7';
-import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=8af3c741';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=c3f16108';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=16fce15d';
+import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=221b67a9';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=b105aeed';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=1a744e1e';
 import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -220,7 +220,8 @@ describe('a reload saved on a colour level (G888)', () => {
   });
 
   it('stays there: no level is in progress after a reload, so the EXIT sign shows (dead-ends-feature)', () => {
-    assert.equal(typeof pz.reloadLocation, 'undefined', 'G887 moved you out here');
+    // G887 moved you out here; reloadLocation now answers only a G904 hold reloaded in a party space.
+    assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, fakeEngine({ tsid: ORANGIAN })), null);
     pz.restore({ returnTo: { tsid: GIMBAP_BOP, x: 700, y: 400, card: ORANGIAN } });
     assert.equal(pz.deadEndRun(fakeEngine({ tsid: ORANGIAN })), null, 'a card mark in the save is no trip this page');
   });

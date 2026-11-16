@@ -16,7 +16,7 @@ import {
   showExitDoor,
   stepTriggers,
   triggerHit,
-} from '../public/js/puzzle-triggers.js?v=8af3c741';
+} from '../public/js/puzzle-triggers.js?v=221b67a9';
 import {
   createEventRuntime,
   dueEventTimers,
@@ -247,7 +247,7 @@ describe('gut tubes', () => {
   });
 
   test('a phone flips with its Jump button, and the toasts name it (Greyving Grays chat "stuck", 2026-11-13)', async () => {
-    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=16fce15d');
+    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=1a744e1e');
     const src = readFileSync(join(root, 'public/js/features/puzzles-feature.js'), 'utf8');
     // The phone has no Space key: its Jump button sends TOUCH_JUMP_EVENT (game.js installTouchControls).
     assert.match(src, /window\.addEventListener\(TOUCH_JUMP_EVENT, \(\) => flipGravity\(engine\)\);/);
@@ -276,7 +276,7 @@ describe('gut tubes', () => {
 });
 
 describe('lost puzzle levels (scenes)', async () => {
-  const scenes = await import('../public/js/puzzle-scenes.js?v=c47b9319');
+  const scenes = await import('../public/js/puzzle-scenes.js?v=af3c8cf9');
   const { CONSTELLATION, BEAM_ME_DOWN } = scenes;
 
   test('Constellation: stars connect only in order, and the first star closes the piggy', () => {
