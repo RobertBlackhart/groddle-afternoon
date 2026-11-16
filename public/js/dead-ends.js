@@ -17,8 +17,8 @@
  *   deadEndActive).
  * - A dead end with nothing active shows the exit: Tiny Speck's CC0 wooden arrow (sign_arrow_1,
  *   as the practice streets' EXIT, js/practice-streets.js) with the word EXIT on it, on a post,
- *   standing near where you arrived. Walking into it or its Enter verb takes you to your last
- *   ordinary street (quest-instances-feature safeWayOut, js/quest-instance.js strayWayOut).
+ *   standing near where you arrived. It works as a door: its Enter verb (not walking into it, so no
+ *   one exploring leaves by accident) takes you to your last ordinary street (quest-instances-feature safeWayOut, js/quest-instance.js strayWayOut).
  *
  * Source: Glitch never left anyone on one of these. Instances were entered through their quest
  * and left by their exit (players/inc_instances.js instances_exit / instances_get_exit), and the
@@ -44,8 +44,6 @@ export const DEAD_END_EXIT = Object.freeze({
   wordSize: 19,
   // The word sits on the shaft, left of the board's centre (practice-streets.js practiceExitSign: -8 at full size).
   wordDx: -7,
-  // Walking into it: a box round the post, its foot on the floor.
-  box: Object.freeze({ w: 70, h: 150 }),
   // How far from where you arrived it stands, tried in this order (toward the nearer street end
   // first), on a floor within `step` px of your feet; else right where you stand.
   offsets: Object.freeze([170, -170, 290, -290, 110, -110]),
@@ -153,11 +151,4 @@ export function deadEndExitSpot({ platforms = [], arrival = null, width = 0 } = 
   // A ledge too small for it beside you (a puzzle street's floating block): on yours, under your feet.
   const x = Math.round(Math.min(hi, Math.max(lo, a.x)));
   return { x, y: Math.round(floorAt(platforms, x, a.y) ?? a.y), side: toward };
-}
-
-/** Feet (x, y) inside the exit's walk-in box (bottom-centre at the spot). */
-export function inExitBox(spot, x, y) {
-  if (!spot) return false;
-  const b = DEAD_END_EXIT.box;
-  return Math.abs(x - spot.x) <= b.w / 2 && y <= spot.y + 24 && y >= spot.y - b.h;
 }

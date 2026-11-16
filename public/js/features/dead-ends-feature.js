@@ -10,20 +10,22 @@
  *   tutorial's island and practice streets), hell-feature (the dead), subway-feature (the car),
  *   interrogation-room-feature (its own Leave door). A new instance answers the same hook.
  * - A dead end with nothing active shows the wooden EXIT arrow near where you arrived (where you
- *   stand once landed, SETTLE_MS); walking into
- *   it or its Enter verb leaves by the street owner's own way out when it has one (questRoomLeave:
+ *   stand once landed, SETTLE_MS). It is a door, not a walk-in box (walking past it does nothing,
+ *   so exploring Umbra, hub 28 or a party space never sends you out by accident): its Enter verb
+ *   (Enter, E, the phone's Act or a click, with the Enter chip naming it as at a street door) leaves by the street owner's own way out when it has one (questRoomLeave:
  *   a quest room's street, a puzzle street), else to the last ordinary street
  *   (quest-instances-feature safeWayOut). It comes and goes as the check changes (a run ending
  *   shows it, one starting hides it), and a reload on a dead end stays there with the exit, in
  *   place of G886/G887's move out.
  *
- * QA: ?autostart=1&questoffer=off&streetdemo=<a dead end>; &deadendautoplay=1 walks into the exit
- * a moment after it shows. Canvas data: deadEnd ('' off a dead end, 'loading' before the graph,
+ * QA: ?autostart=1&questoffer=off&streetdemo=<a dead end>; &deadendautoplay=1 stands you at the exit
+ * a moment after it shows and uses it
+ * (=stand only stands you there, to see its Enter chip). Canvas data: deadEnd ('' off a dead end, 'loading' before the graph,
  * 'exit' with the exit up, 'active:<reason>' while something runs there), deadEndExit ('x,y' screen
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_GRAPH_URL, DEAD_END_TEXT, deadEndExitSpot, inExitBox, isDeadEndTsid, urReach } from '../dead-ends.js?v=269006c2';
+import { DEAD_END_EXIT, DEAD_END_GRAPH_URL, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=533e6dc3';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=7ed1bdfd';
 import { strayWayOut } from '../quest-instance.js?v=ee574732';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -42,7 +44,7 @@ let reach = null;
 let loading = null;
 let graph = null;
 let roadsKey = '';
-let exit = null; // { target, view, word, spot, armed, tsid }
+let exit = null; // { target, view, spot, tsid, name }
 let arrival = null; // { tsid, x, y }: where this street was entered (where you stood once landed)
 let enteredAt = 0;
 let settled = false;
@@ -51,6 +53,7 @@ let leaving = false;
 let status = '';
 let last = '';
 let autoplayAt = 0;
+let autoplayStood = false;
 
 /** A street of the index, not a builder draft (js/street-loader.js). */
 const known = (tsid) => Boolean(resolveIndexTsid(tsid)) && !isDraftStreet(tsid);
@@ -202,10 +205,11 @@ function showExit(engine) {
     subtitle: DEAD_END_TEXT.subtitle(name),
     sprite: view,
   });
-  // Armed once the feet are outside its box: arriving on top of it never sends you straight back.
-  const p = engine.player;
-  exit = { target, view, spot, armed: !(p && inExitBox(spot, p.x, p.y)), tsid: engine.streetTsid, name };
-  if (engine.param?.('deadendautoplay') === '1') autoplayAt = Date.now() + 1500;
+  exit = { target, view, spot, tsid: engine.streetTsid, name };
+  if (['1', 'stand'].includes(engine.param?.('deadendautoplay'))) {
+    autoplayAt = Date.now() + 1500;
+    autoplayStood = false;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -321,21 +325,17 @@ export const deadEndsFeature = {
       check(engine, now);
     }
     if (!exit || leaving) return;
+    // QA (&deadendautoplay=1): stand at it, then use it as its Enter verb does.
     const p = engine.player;
-    if (!p) return;
-    const inside = inExitBox(exit.spot, p.x, p.y);
-    if (!inside) exit.armed = true;
-    else if (exit.armed) {
-      useExit(engine);
+    if (!p || !autoplayAt || now < autoplayAt) return;
+    if (!autoplayStood) {
+      Object.assign(p, { x: exit.spot.x, y: exit.spot.y, vx: 0, vy: 0 });
+      autoplayStood = true;
+      autoplayAt = now + 1200;
       return;
     }
-    if (autoplayAt && now >= autoplayAt) {
-      autoplayAt = 0;
-      p.x = exit.spot.x;
-      p.y = exit.spot.y;
-      p.vx = 0;
-      p.vy = 0;
-    }
+    autoplayAt = 0;
+    if (engine.param?.('deadendautoplay') === '1') useExit(engine);
   },
 
   verbsFor(t) {

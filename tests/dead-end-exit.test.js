@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, inExitBox, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=269006c2';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=2628eca3';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=533e6dc3';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=a1e8d19b';
 import { loadStreetIndexObject } from '../public/js/street-loader.js?v=7ed1bdfd';
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=ee574732';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
@@ -260,17 +260,30 @@ describe('where it stands (js/dead-ends.js deadEndExitSpot)', () => {
 describe('going through it', () => {
   beforeEach(() => de._reset());
 
-  it('walking into it takes you to the last ordinary street (safeWayOut)', async () => {
+  it('it is a door: walking into it or standing on it does nothing (no exit by accident while exploring)', async () => {
     const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 400, y: 900 } });
     de._setGraph(graph, engine);
     arrive(engine);
     const spot = de._state().exit.spot;
     assert.equal(spot.x, 230);
-    tick(engine, 16);
-    assert.deepEqual(engine.log.entered, [], 'not where you arrived');
-    engine.player.x = spot.x;
-    engine.player.y = spot.y;
-    tick(engine, 16);
+    for (const x of [400, 300, spot.x, spot.x - 20, spot.x]) {
+      engine.player.x = x;
+      engine.player.y = spot.y;
+      tick(engine, 16);
+    }
+    tick(engine, 5000);
+    await flush();
+    assert.deepEqual(engine.log.entered, []);
+    assert.ok(exitOf(engine), 'still standing there');
+  });
+
+  it('its Enter verb (Enter, E, Act or a click) takes you to the last ordinary street (safeWayOut)', async () => {
+    const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 400, y: 900 } });
+    de._setGraph(graph, engine);
+    arrive(engine);
+    const exit = exitOf(engine);
+    assert.deepEqual(de.verbsFor(exit, engine).map((v) => v.id), ['enter']);
+    assert.equal(de.runVerb(exit, 'enter', engine), true);
     await flush();
     assert.equal(engine.log.entered.length, 1);
     assert.deepEqual(engine.log.entered[0][0], HECHEY);
@@ -278,7 +291,7 @@ describe('going through it', () => {
     assert.equal(engine.log.data.deadEndLast, `left:${HECHEY}`);
   });
 
-  it('its Enter verb does the same; a street owner with its own way out (questRoomLeave) is asked first', async () => {
+  it('a street owner with its own way out (questRoomLeave) is asked first', async () => {
     const engine = fakeEngine({ tsid: ORANGIAN });
     const base = engine.query;
     let owned = 0;
@@ -303,21 +316,12 @@ describe('going through it', () => {
     assert.equal(de._state().exit.spot.x, 430);
   });
 
-  it('arriving on top of it never sends you straight back: step off and on again', async () => {
-    const ledge = [{ x1: 900, y1: 600, x2: 1100, y2: 600 }];
-    const engine = fakeEngine({ tsid: MARKET_ST, player: { x: 1000, y: 600 }, platforms: ledge });
-    de._setGraph(graph, engine);
-    arrive(engine);
-    assert.ok(inExitBox(de._state().exit.spot, 1000, 600));
-    tick(engine, 16);
-    await flush();
-    assert.deepEqual(engine.log.entered, []);
-    engine.player.x = 1100;
-    tick(engine, 16);
-    engine.player.x = 1000;
-    tick(engine, 16);
-    await flush();
-    assert.equal(engine.log.entered.length, 1);
+  it('the practice streets keep their own walk-in EXIT box (Glitch\'s teleporter, quest-instances-feature tickStray)', () => {
+    const src = read('public/js/features/quest-instances-feature.js');
+    const fn = src.slice(src.indexOf('function tickStray('), src.indexOf('/* HUD + QA data'));
+    assert.match(fn, /startsWith\('quest:flag:'\) && inBottomBox\(b, p\.x, p\.y\)\)\) leaveStray\(engine\);/);
+    const de2 = read('public/js/features/dead-ends-feature.js');
+    assert.ok(!/inExitBox|inBottomBox/.test(de2), 'the generic exit has no walk-in box');
   });
 
   it('never while something runs there', async () => {
