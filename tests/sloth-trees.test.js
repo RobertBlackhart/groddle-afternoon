@@ -12,11 +12,12 @@ import { buildSlothSpots, slothStreets } from '../tools/build-sloth-spots.mjs';
 import { measuredNodeSpots, populationForStreet } from '../public/js/street-ecology.js?v=7435cfce';
 import { SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
 import {
+  prepareStreetResourceNodes,
   resourcePlacementGroups,
   resourceSpawnPlan,
   slothGeometry,
   slothSpotsFromArt,
-} from '../public/js/features/resource-nodes-feature.js?v=d05285f7';
+} from '../public/js/features/resource-nodes-feature.js?v=8be7e477';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ecology = JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8'));
@@ -126,5 +127,27 @@ describe('sloth trees (G891)', () => {
     assert.equal(left.speech.x, 2000 - right.speech.x);
     // The Knocker on the trunk stays outside the sloth's box, so each is its own thing to point at.
     assert.ok(right.knocker.x < right.box.left && left.knocker.x > left.box.right);
+  });
+
+  it('a save from before (planner order) keeps the state at each index, now on that tree: cooldowns and pending Snails carry over', () => {
+    const tsid = 'GA55645B8O528MI'; // Jonna Jinx, 2 Sloths
+    const pop = populationForStreet(tsid, ecology.streets[tsid]);
+    const plan = resourceSpawnPlan(pop, () => []).filter((p) => p.classTsid === 'npc_sloth');
+    const now = 5_000_000;
+    const slot = { nodes: {
+      'npc_sloth:0': { classTsid: 'npc_sloth', units: 7, out: true, hideAt: now + 20000, sessionFeeds: 1, lastMetalizeAt: now - 1000, busyUntil: now + 9000, snailsDue: [{ at: now + 3000, n: 2 }, { at: now + 6000, n: 3 }] },
+      'npc_sloth:1': { classTsid: 'npc_sloth', units: 8, out: false, lastMetalizeAt: now - 60000 },
+    } };
+    const items = prepareStreetResourceNodes(slot, plan, { tsid, now });
+    assert.deepEqual(items.map((i) => i.key), ['npc_sloth:0', 'npc_sloth:1']);
+    const [a, b] = items.map((i) => i.node);
+    assert.equal(a.out, true);
+    assert.equal(a.lastMetalizeAt, now - 1000);
+    assert.deepEqual(a.snailsDue, [{ at: now + 3000, n: 2 }, { at: now + 6000, n: 3 }], 'the pending rounds still pay out');
+    assert.equal(b.lastMetalizeAt, now - 60000);
+    // Each now sits at its tree, left to right.
+    assert.ok(items[0].x < items[1].x);
+    assert.equal(items[0].sloth.dir, 1);
+    assert.equal(items[1].sloth.dir, -1);
   });
 });

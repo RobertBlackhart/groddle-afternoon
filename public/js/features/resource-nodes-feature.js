@@ -227,6 +227,13 @@ export function resourcePlacementGroups(population) {
  * Pair spots with node keys (`<class>:<index>`, so saved nodes keep theirs): a class's measured
  * spots first (`wall: true`, drawn where the snap shows them, in the variant it shows), then the
  * planner's points; ones the planner could not seat are dropped.
+ *
+ * G891: `npc_sloth:<i>` is the i-th tree from the left, for good (js/sloth-spots-data.js), so the
+ * realtime server can share them by id later. Saves from before numbered them in the planner's
+ * order; such a save keeps each index's state, now on the tree with that index. It is all
+ * transient (out, hideAt, busyUntil, sessionFeeds, lastMetalizeAt, snailsDue: at most a 3-minute
+ * "full" on another tree), and a pending round of Snails still pays into the pack (paySlothSnails
+ * takes every Sloth's due rounds), so nothing is lost.
  */
 export function resourceSpawnPlan(population, placement, street = null) {
   const plan = [];
