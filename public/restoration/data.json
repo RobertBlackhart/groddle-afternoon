@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2311,
+  "commits": 2313,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "Shimla Mirch's restored map loses its eight added wooden things and has its paper sea back"
+   },
    {
     "date": "2026-11-15",
     "kind": "fix",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "The tutorial save records when each stage and step began"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Nottis's and Pollokoo's restored maps have their lost ledges, hollow and rim hole back"
    }
   ]
  },
