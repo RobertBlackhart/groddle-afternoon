@@ -2590,6 +2590,8 @@ let vendorDragPlace = null;
 let vendorDragBag = '';
 /** @type {null|{ label:string, qty:number, gain:number }} */
 let vendorSellReceipt = null;
+/** G862 (#420): why the last Buy or Sell was refused ({ tsid, tab, text }), said in the count pop on a phone. */
+let vendorRefusal = null;
 let vendorReceiptTimer = 0;
 /** #288: where the shelf (and the sheet's body) was scrolled, by vendor and tab, kept across a redraw. */
 const vendorShelfScroll = createScrollKeep();
@@ -30330,6 +30332,8 @@ function renderVendorList() {
 
   // MPANELS: in the modern skin the count is a popover over the shelf, by the tile it was asked from.
   const vendorPop = document.documentElement.dataset.ui === 'modern';
+  // G862: a refusal is about one item on one tab; back on the shelf, or another item, it goes.
+  if (vendorRefusal && (vendorRefusal.tsid !== vendorSelected || vendorRefusal.tab !== vendorTab)) vendorRefusal = null;
   if (detail && vendorSelected) {
     // The control with focus before this redraw (a step, the field, OK) has it again after.
     const hadFocus = detail.contains(document.activeElement)
@@ -30385,11 +30389,13 @@ function renderVendorList() {
           <button type="button" class="btn-glitch-primary" data-v-go>
             ${vendorGoLabel(isBuy, vendorQty, unit)}
           </button>
-        </div>
+        </div>${vendorRefusal ? `
+        <p class="vendor-refusal" role="alert">${escapeHtml(vendorRefusal.text)}</p>` : ''}
         <p class="count-pop-esc mp-modern-only"><span class="count-pop-key"><span class="kcap">Esc</span> back · </span>${isBuy ? `◎ ${pc.currants || 0} to spend` : `${have} in your pack`}</p>
       </div>`;
     const applyQ = (n) => {
       vendorQty = Math.max(1, Math.min(maxQ, n));
+      vendorRefusal = null;
       renderVendorList();
     };
     detail.querySelector('[data-v-back]')?.addEventListener('click', () => {
@@ -30453,6 +30459,9 @@ function renderVendorList() {
           ? vendorBuy(pc, inv, activeVendor.offers, vendorSelected, fit != null && fit < vendorQty ? fit : vendorQty)
           : sellToVendor(vendorSelected, vendorQty);
       if (isBuy && r.ok && fit != null && fit < vendorQty) r.msgs[0] += PACK_COPY.buyPartial(vendorQty - fit);
+      // G862 (#420): on a phone the toast waits behind the side sheet (js/notify-view.js noRoomBeside) until
+      // the shop closes, so a refusal is said in the count pop too, until the count or the item changes.
+      vendorRefusal = r.ok ? null : { tsid: vendorSelected, tab: vendorTab, text: String(r.msgs[0] || '') };
       toast(r.msgs[0]);
       pushActivity(r.msgs[0]);
       playSound(r.ok ? (isBuy ? 'PURCHASE_ITEM' : 'VENDOR_SELL') : 'CLICK_FAILURE', { volume: 0.55 });

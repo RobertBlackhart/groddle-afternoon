@@ -14051,6 +14051,14 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 }
 :root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .btn-glitch-back::before { content: "×" / ""; font-size: var(--fs-xl); font-weight: var(--fw-bold); }
 :root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .vendor-detail-body h3 { padding-right: var(--space-6); }
+/* G862 (#420): a refused Buy or Sell (a full pack) says why in the pop on a phone, where the notice waits
+   behind the shop until it closes (js/notify-view.js); elsewhere the notice says it at once. */
+#vendor-panel .vendor-refusal { display: none; }
+:root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .vendor-refusal {
+  display: block; margin: var(--space-2) 0 0; padding: var(--sp-2) var(--space-2);
+  border-radius: var(--radius-m); background: var(--status-warn-soft); color: var(--c-brown-44c);
+  font-size: var(--fs-s); font-weight: var(--fw-bold); line-height: var(--lh-tight);
+}
 /* A phone held sideways (the mobile QA, 2026-11-12: a 138 px shelf): the pop drops its price line
    (the Buy button says it) so the count row and Buy fit the shelf together. */
 @media (max-height: 500px) {
