@@ -42,6 +42,8 @@
  * card's Leave take you back where you came in, never to the level's finish
  * door (a reload left /stuck standing you in Orangian's exit door, a step from
  * its reward) and never paying it; a teleport out lands on its own target.
+ * A reload saved on a colour level starts back where you came in, with the
+ * source's "moved to a safe place" line (reloadLocation).
  *
  * QA: ?autostart=1&questoffer=off&puzzledemo=<tsid> travels to a puzzle
  * street and stands at its start; &puzzleautoplay=1 walks the triggers in
@@ -60,6 +62,7 @@ import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import {
   CARD_RETURN_TEXT,
+  COLOUR_LEVEL_STREETS,
   NO_EXIT_PUZZLE_STREETS,
   PUZZLE_LEAVE_TEXT,
   PUZZLE_DATA_URL,
@@ -1166,6 +1169,21 @@ export const puzzlesFeature = {
     if (verbId !== 'puzzle_exit') return null;
     complete(engine);
     return true;
+  },
+
+  /**
+   * G887: a save written on a colour level starts back where you came in (else the last ordinary
+   * street), with "You've been moved to a safe place": they were a quest instance, and the source
+   * moved a player who logged out in one to its exit (players/player.js onLogout 333-338,
+   * inc_instances.js instances_get_exit). Not with ?fresh or a ?puzzledemo= run.
+   */
+  reloadLocation(saved, engine) {
+    if (engine?.param?.('fresh') != null || engine?.param?.('puzzledemo')) return null;
+    const here = key(saved?.tsid);
+    if (!COLOUR_LEVEL_STREETS.includes(here)) return null;
+    const out = wayOut(engine, here, { notice: true });
+    save.returnTo = null;
+    return out;
   },
 
   /** G887: a puzzle street with no road out, for /stuck and teleporting (nothing to fail). */

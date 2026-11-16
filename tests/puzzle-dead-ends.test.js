@@ -12,10 +12,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
+import { STRAY_FALLBACK_TSID, STRAY_NOTICE, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=8af3c741';
 import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=78f13da3';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=f28fb98b';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=81e85b56';
 import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -208,5 +208,39 @@ describe("/stuck, I'm stuck and the Map card on a puzzle street with no road out
     const card = src.slice(src.indexOf('function buildMapCard('), src.indexOf('/* QA'));
     assert.match(card, /const stuck = noExitHere\(engine\);/);
     assert.match(card, /addEventListener\('click', \(\) => leavePuzzle\(engine\)\)/);
+  });
+});
+
+describe('a reload saved on a colour level (features/puzzles-feature.js reloadLocation)', () => {
+  const wired = (opts, params = {}) => {
+    const engine = fakeEngine(opts);
+    engine.param = (k) => params[k] ?? null;
+    engine.query = (hook, ...args) => (typeof qi[hook] === 'function' ? qi[hook](...args) : null);
+    return engine;
+  };
+  beforeEach(() => {
+    qi.restore({ lastStreet: HECHEY });
+    pz.restore({});
+  });
+
+  it('starts back where you came in, and says the safe-place line once the game runs', () => {
+    pz.restore({ returnTo: { tsid: GIMBAP_BOP, x: 700, y: 400, card: ORANGIAN } });
+    assert.deepEqual(pz.reloadLocation({ tsid: ORANGIAN, x: 100, y: 829 }, wired()), { tsid: GIMBAP_BOP, x: 700, y: 400 });
+    assert.equal(pz.save().returnTo, null);
+    const there = wired({ tsid: GIMBAP_BOP });
+    qi.onTick(16, Date.now(), there);
+    assert.deepEqual(there.log.toasts, [STRAY_NOTICE]);
+  });
+
+  it("the reported save (card taken on the practice street, last street Orangian) starts on Ur's default street", () => {
+    pz.restore({ returnTo: { tsid: EZ, x: 1443, y: 900, card: ORANGIAN } });
+    qi.restore({ lastStreet: { tsid: ORANGIAN, x: 100, y: 829 } });
+    assert.equal(pz.reloadLocation({ tsid: 'LHVCKEPHO403BN5', x: 100, y: 829 }, wired()).tsid, STRAY_FALLBACK_TSID);
+  });
+
+  it('leaves Umbra, Penumbra, ordinary streets, ?fresh and ?puzzledemo alone', () => {
+    for (const t of ['GDOSHD9J6NT2HUJ', 'GIFM2QAIQ1C31JV', HECHEY.tsid]) assert.equal(pz.reloadLocation({ tsid: t }, wired()), null, t);
+    assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { fresh: '1' })), null);
+    assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { puzzledemo: ORANGIAN })), null);
   });
 });
