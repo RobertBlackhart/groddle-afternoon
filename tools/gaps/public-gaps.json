@@ -1689,6 +1689,180 @@
       ]
     },
     {
+      "id": "G834",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Asking a chicken to incubate with no egg gave the feeding line instead of Glitch's own.",
+      "commits": [
+        "game:a53f5f73d2"
+      ]
+    },
+    {
+      "id": "G835",
+      "area": "Transit",
+      "show": "fixing",
+      "text": "The subway's stop question could take your typing while the report window was open and put you off the train.",
+      "commits": [
+        "game:11a13cb186"
+      ]
+    },
+    {
+      "id": "G836",
+      "area": "Camera",
+      "show": "fixing",
+      "text": "A narrow street could be drawn stretched to the window's width when the browser kept an older copy of the page's styles.",
+      "commits": [
+        "game:845b112dd2"
+      ]
+    },
+    {
+      "id": "G837",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Shrines and vendors could stand half hidden behind a foreground tree.",
+      "commits": [
+        "game:8daa2ccf95",
+        "server:c044539"
+      ]
+    },
+    {
+      "id": "G838",
+      "area": "Transit",
+      "show": "fixing",
+      "text": "Subway stations were laid out stretched, with the sign too low and A Red Button off the gate box.",
+      "commits": [
+        "game:461629b5a7",
+        "server:8c05cf6"
+      ]
+    },
+    {
+      "id": "G839",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "In Organish Chute gravity stayed upside down until you pressed Space, pinning you in a corner of the tubes.",
+      "commits": [
+        "game:4dae00e650",
+        "game:8b94c9a22f",
+        "game:f509ecaec9"
+      ]
+    },
+    {
+      "id": "G841",
+      "area": "Paradise",
+      "show": "fixing",
+      "text": "Half of Arbor Hollow's right-hand branches pointed away from the trunk.",
+      "commits": [
+        "game:6df9e7ffc2"
+      ]
+    },
+    {
+      "id": "G842",
+      "area": "Controls",
+      "show": "fixing",
+      "text": "Ladders whose bottom hangs a little above the floor could be climbed down but not up; Glitch's reach was longer.",
+      "commits": [
+        "game:92f36f7fba",
+        "server:e6538ef"
+      ]
+    },
+    {
+      "id": "G844",
+      "area": "Render",
+      "show": "fixing",
+      "text": "On some graphics cards the report picture came out black and the street map blank.",
+      "commits": [
+        "game:31f49c53b2",
+        "site:eea9d30"
+      ]
+    },
+    {
+      "id": "G845",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "Quest cards and Pinned Quests showed only the first step of a quest with several.",
+      "commits": [
+        "game:c710d517e5"
+      ]
+    },
+    {
+      "id": "G846",
+      "area": "Navigation",
+      "show": "fixing",
+      "text": "Any click or key stopped a walk to a destination, where Glitch kept walking while you used the Map, chat or quests.",
+      "commits": [
+        "game:27c619d943"
+      ]
+    },
+    {
+      "id": "G847",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Holding Backspace in the chat box on a phone deleted one letter at a time.",
+      "commits": [
+        "game:1b522755de"
+      ]
+    },
+    {
+      "id": "G848",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone the chat jumped up to older lines when the keyboard opened.",
+      "commits": [
+        "game:a23deda022"
+      ]
+    },
+    {
+      "id": "G849",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "In the iPhone Home Screen app the Encyclopedia replaced the game with no way back.",
+      "commits": [
+        "game:6452c746e6"
+      ]
+    },
+    {
+      "id": "G850",
+      "area": "Windows",
+      "show": "fixing",
+      "text": "A vendor's window stayed open after a Ticket's teleport.",
+      "commits": [
+        "game:12fcabca45"
+      ]
+    },
+    {
+      "id": "G851",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone a drag on Act did not move through a signpost's roads.",
+      "commits": [
+        "game:0823e07ed6"
+      ]
+    },
+    {
+      "id": "G852",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Rocks and other things could stand up in the trees on branches, and soil patches could hang off ledge ends.",
+      "commits": [
+        "game:b4eb74e7cf",
+        "game:8c5d6a1c40",
+        "game:4d184ce8bb",
+        "server:cf0335c",
+        "server:42753a5",
+        "server:9b5f9d0"
+      ]
+    },
+    {
+      "id": "G853",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Visiting Stones stood anywhere along a street instead of at its dead end, as in Glitch.",
+      "commits": [
+        "game:f8b2a3ec96",
+        "server:68882d0"
+      ]
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."

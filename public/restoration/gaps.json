@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.42.1",
+  "release": "v0.42.2",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 14,
     "unreleased": 0,
-    "fixed": 171,
+    "fixed": 189,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -223,6 +223,12 @@
           "text": "It Takes Two did not say that the player being helped is the one whose dig counts.",
           "state": "fixed",
           "version": "v0.40.0"
+        },
+        {
+          "id": "G845",
+          "text": "Quest cards and Pinned Quests showed only the first step of a quest with several.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -301,6 +307,30 @@
           "text": "Ladders drawn from loose pieces had gaps between their rungs on Peatland Moors and 20 other streets.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G837",
+          "text": "Shrines and vendors could stand half hidden behind a foreground tree.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G839",
+          "text": "In Organish Chute gravity stayed upside down until you pressed Space, pinning you in a corner of the tubes.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G852",
+          "text": "Rocks and other things could stand up in the trees on branches, and soil patches could hang off ledge ends.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G853",
+          "text": "Visiting Stones stood anywhere along a street instead of at its dead end, as in Glitch.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -765,6 +795,12 @@
           "report": 363,
           "state": "fixed",
           "version": "v0.41.1"
+        },
+        {
+          "id": "G834",
+          "text": "Asking a chicken to incubate with no egg gave the feeding line instead of Glitch's own.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -1108,6 +1144,30 @@
           "text": "After the graphics context came back, a street's decorations stayed missing.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G847",
+          "text": "Holding Backspace in the chat box on a phone deleted one letter at a time.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G848",
+          "text": "On a phone the chat jumped up to older lines when the keyboard opened.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G849",
+          "text": "In the iPhone Home Screen app the Encyclopedia replaced the game with no way back.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G851",
+          "text": "On a phone a drag on Act did not move through a signpost's roads.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -1347,6 +1407,12 @@
           "text": "Routes could lead through a road still under construction.",
           "state": "fixed",
           "version": "v0.42.0"
+        },
+        {
+          "id": "G846",
+          "text": "Any click or key stopped a walk to a destination, where Glitch kept walking while you used the Map, chat or quests.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -1400,6 +1466,12 @@
           "text": "Holding Up beside a ladder grabbed it in mid-jump; Glitch climbed only on a fresh Up press.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G842",
+          "text": "Ladders whose bottom hangs a little above the floor could be climbed down but not up; Glitch's reach was longer.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     },
@@ -1486,6 +1558,67 @@
           "text": "The Maps page squeezed each picture compare beside its words instead of running it the full width.",
           "state": "fixed",
           "version": "v0.42.1"
+        }
+      ]
+    },
+    {
+      "name": "Transit",
+      "items": [
+        {
+          "id": "G835",
+          "text": "The subway's stop question could take your typing while the report window was open and put you off the train.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        },
+        {
+          "id": "G838",
+          "text": "Subway stations were laid out stretched, with the sign too low and A Red Button off the gate box.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        }
+      ]
+    },
+    {
+      "name": "Camera",
+      "items": [
+        {
+          "id": "G836",
+          "text": "A narrow street could be drawn stretched to the window's width when the browser kept an older copy of the page's styles.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        }
+      ]
+    },
+    {
+      "name": "Paradise",
+      "items": [
+        {
+          "id": "G841",
+          "text": "Half of Arbor Hollow's right-hand branches pointed away from the trunk.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        }
+      ]
+    },
+    {
+      "name": "Render",
+      "items": [
+        {
+          "id": "G844",
+          "text": "On some graphics cards the report picture came out black and the street map blank.",
+          "state": "fixed",
+          "version": "v0.42.2"
+        }
+      ]
+    },
+    {
+      "name": "Windows",
+      "items": [
+        {
+          "id": "G850",
+          "text": "A vendor's window stayed open after a Ticket's teleport.",
+          "state": "fixed",
+          "version": "v0.42.2"
         }
       ]
     }
