@@ -1543,6 +1543,10 @@ function openPanel(engine, jobId) {
   panelJobId = jobId;
   panel.hidden = false;
   renderPanel(engine);
+  // Report #425: a save's phase that the smaller solo amounts near the start already fill finishes
+  // as you open it (a phase settles on a contribution, and none is left to give).
+  const status = catalog && !shared(jobId) ? jobStatus(state, catalog, jobId, Date.now(), { ...opts(), street: engine.streetTsid }) : null;
+  if (status?.status === 'active' && phaseIsComplete(state, catalog, jobId)) finishPhase(engine, jobId);
 }
 
 /** What the "How many?" pickers hold while the panel is open: `${jobId}:${rid}` -> count. */

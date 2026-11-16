@@ -24,7 +24,8 @@ import {
   workCheck,
 } from '../public/js/street-jobs.js?v=6db7f1ad';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=a1252c8d';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=e6a0c9be';
+import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');
@@ -180,6 +181,7 @@ describe('online is untouched', () => {
 
   describe('the feature puts the terms on in solo only', () => {
     let engine;
+    const awards = [];
     const saved = {};
     before(async () => {
       for (const k of ['document', 'window', 'fetch', 'PIXI']) saved[k] = globalThis[k];
@@ -210,8 +212,22 @@ describe('online is untouched', () => {
         unlockedAchievements: [],
         param: () => null,
         placement: () => [],
+        toolState: createToolConditionState(),
+        query: () => null,
+        register: (t) => t,
+        say() {},
         setData() {},
+        toast() {},
+        prompt() {},
+        pushActivity() {},
+        floatText() {},
+        updateHud() {},
+        refreshPack() {},
+        playSound() {},
+        award: (a) => awards.push(a),
         save() {},
+        achievement() {},
+        grantAchievement() {},
       };
       streetJobsFeature.init(engine);
       streetJobsFeature.restore({}, engine);
@@ -245,6 +261,32 @@ describe('online is untouched', () => {
       streetJobsFeature.restore({}, engine);
       assert.equal(cat.jobs[SYLVAN].solo, undefined);
       assert.equal(phaseIsComplete(normalizeStreetJobState({}), cat, SYLVAN), false);
+    });
+
+    it('solo: a save\'s phase the smaller amounts already fill finishes when its board opens, keeping every contribution', () => {
+      // Mullat (9 out, 1/200): a save from before put in at least the new amount of every ask of phase 1.
+      const raw = rawCatalog();
+      const job = raw.jobs[MULLAT];
+      const cls = job.phases[0].classTsid;
+      const got = {};
+      for (const r of raw.classes[cls].requirements) got[r.id] = Math.max(1, Math.ceil(r.num / 200));
+      const mine = { [cls]: 900 };
+      engine.mode = 'solo';
+      engine.streetTsid = job.connecting[0];
+      engine.inv = { plank: 4 };
+      streetJobsFeature.restore({ initialized: true, jobs: { [MULLAT]: { phase: 0, got, mine, startedAt: 1 } } }, engine);
+      const before = awards.length;
+      projectApi.open(engine, MULLAT);
+      const { state } = streetJobsFeature._state();
+      assert.equal(state.jobs[MULLAT].phase, 1, 'on to phase 2');
+      assert.equal(state.jobs[MULLAT].mine[cls], 900, 'the contribution stands');
+      // The phase's performance drop may add to the pack; nothing it held goes back or out.
+      assert.ok(engine.inv.plank >= 4, 'nothing refunded or taken');
+      assert.equal(awards.length, before + 1, 'the phase card');
+      projectApi.open(engine, MULLAT);
+      assert.equal(state.jobs[MULLAT].phase, 1, 'once');
+      engine.mode = 'multiplayer';
+      streetJobsFeature.restore({}, engine);
     });
   });
 });
