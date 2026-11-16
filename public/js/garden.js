@@ -1586,7 +1586,7 @@ export function harvestPlot(garden, key, inv, pc, opts = {}) {
     profile,
     msgs: [
       pickedLine(seed, n),
-      ...(bonus ? [`Super Harvest! +${bonus}× ${seed.cropLabel}.`] : []),
+      ...(bonus ? [superHarvestLine(seed, bonus)] : []),
     ],
     speech: actionTalkback(garden, 'harvest', opts, { energy: cost, ...got }),
     effects: {
@@ -1615,6 +1615,17 @@ export const CROP_PLURALS = Object.freeze({
 });
 
 /** include/garden.js 518-522: "You picked some Potatoes." (more than one) or "You picked an Onion." */
+/**
+ * The Super Harvest float (G900, #426): the extra items only, as Glitch said it ("Super Harvest! "
+ * and the item_give effect, include/garden.js 486-497: bonus_items = num * (bonus_multiplier - 1)).
+ * "+2× Herbs" read as a multiplier beside the log's "+3 Herbs" (the whole pick); "more" says it is
+ * on top of what was picked.
+ */
+export function superHarvestLine(seed, bonus) {
+  const name = bonus > 1 ? CROP_PLURALS[seed.cropId] || `${seed.cropLabel}s` : seed.cropLabel;
+  return `Super Harvest! +${bonus} more ${name}.`;
+}
+
 export function pickedLine(seed, n) {
   if (n > 1) return `You picked some ${CROP_PLURALS[seed.cropId] || `${seed.cropLabel}s`}.`;
   return `You picked ${/^[aeiou]/i.test(seed.cropLabel) ? 'an' : 'a'} ${seed.cropLabel}.`;

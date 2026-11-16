@@ -19,6 +19,7 @@ import {
   plantPlot,
   waterPlot,
   harvestPlot,
+  superHarvestLine,
   clearPlot,
   tendPlot,
   waterAllPlots,
@@ -54,10 +55,10 @@ import {
   plotNeedsWater,
   gardenNeedsWater,
   GARDEN_NO_DRY_PLOTS_LINE,
-} from '../public/js/garden.js?v=a5191e8b';
-import { getVerbsFor, runVerb } from '../public/content.js?v=a335e8c6';
+} from '../public/js/garden.js?v=73a80be0';
+import { getVerbsFor, runVerb } from '../public/content.js?v=f363070c';
 import { plotPieces } from '../public/js/garden-view.js?v=04fe8467';
-import { plotsFor } from '../public/js/master-garden.js?v=dce37d5a';
+import { plotsFor } from '../public/js/master-garden.js?v=6fa88b8a';
 import {
   createInventory,
   countItem,
@@ -65,7 +66,7 @@ import {
   listPackToolSlots,
   isToolItem,
 } from '../public/js/inventory.js?v=f49c8998';
-import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=6b499efc';
+import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=4eb4c4f7';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -185,6 +186,21 @@ describe('plot lifecycle clean → plant → water → grow → harvest → clea
     const cleared = clearPlot(garden, key, pc, { now: t2 + 10 });
     assert.equal(cleared.ok, true);
     assert.equal(getPlot(garden, key).state, 'clean');
+  });
+
+  it('the Super Harvest float names the extra items only, with no multiplier sign (G900, #426)', () => {
+    const garden = createGarden({ cols: 1, rows: 1, now: 0 });
+    Object.assign(getPlot(garden, '1-1'), { state: 'crop', seed: 'seed_potato' });
+    const r = harvestPlot(garden, '1-1', createInventory({}), { energy: 100, mood: 0, imagination: 0, xp: 0 }, { learned: ['croppery_1', 'croppery_2', 'croppery_3'], maxLuck: true, rng: () => 0 });
+    assert.equal(r.superHarvest, true);
+    // include/garden.js 486-497: "Super Harvest! " and the bonus items given, not the whole pick.
+    assert.deepEqual(r.msgs, ['You picked some Potatoes.', `Super Harvest! +${r.bonusCount} more Potatoes.`]);
+    assert.equal(r.effects.items.potato, r.baseCount + r.bonusCount);
+    assert.doesNotMatch(r.msgs.join(' '), /×/);
+    // One extra reads singular; the crops' own plurals.
+    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 1), 'Super Harvest! +1 more Purple Flower.');
+    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 2), 'Super Harvest! +2 more Purple Flowers.');
+    assert.equal(superHarvestLine({ cropId: 'tomato', cropLabel: 'Tomato' }, 3), 'Super Harvest! +3 more Tomatoes.');
   });
 
   it('crop yields are the source produces_count, halved once without Croppery', () => {

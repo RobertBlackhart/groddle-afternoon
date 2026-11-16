@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 
 import { BAGS_NEEDED, CHEAP_BAG_PRICE, ISLAND_CURRANTS, cheapBagPrice } from '../public/js/newxp.js?v=1f52edd5';
 import { __newxpTest } from '../public/js/features/newxp-feature.js?v=af84a8f3';
-import { vendorBuy } from '../public/js/vendor.js?v=6b499efc';
+import { vendorBuy } from '../public/js/vendor.js?v=4eb4c4f7';
 import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
 
 describe('1. cheapBagPrice never strands a new player', () => {

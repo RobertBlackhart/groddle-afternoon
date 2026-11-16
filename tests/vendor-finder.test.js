@@ -13,7 +13,7 @@ import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=7435cfce';
 import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=7ed1bdfd';
-import { selectVendorProfile } from '../public/js/vendor.js?v=6b499efc';
+import { selectVendorProfile } from '../public/js/vendor.js?v=4eb4c4f7';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');

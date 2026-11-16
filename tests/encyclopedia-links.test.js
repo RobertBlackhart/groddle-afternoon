@@ -26,7 +26,7 @@ import {
   isEncyclopediaKey,
 } from '../public/js/encyclopedia-links.js?v=eebc2a5d';
 import { GIANTS } from '../public/js/shrines.js?v=945cc7c4';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6b499efc';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=4eb4c4f7';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=c8210235';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=2abf9f70';
 import { questCardMenuRows } from '../public/js/ui/quest-sheet.js?v=9645fa07';

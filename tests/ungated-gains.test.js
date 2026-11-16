@@ -19,8 +19,8 @@ import { createAnimalState } from '../public/js/animals.js?v=0c6762ce';
 import { performTrantCare } from '../public/js/trant-care.js?v=44269e93';
 import { createTrantState, setTrantTables } from '../public/js/trants.js?v=4d6f5593';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
-import { createGarden, plantPlot, plotKey } from '../public/js/garden.js?v=a5191e8b';
-import { potionTendGarden } from '../public/js/master-garden.js?v=dce37d5a';
+import { createGarden, plantPlot, plotKey } from '../public/js/garden.js?v=73a80be0';
+import { potionTendGarden } from '../public/js/master-garden.js?v=6fa88b8a';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

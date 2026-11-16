@@ -49,8 +49,8 @@ import {
   writePaperNote,
 } from '../public/js/street-furniture.js?v=b1d3e833';
 import { REMAKE_NOTE_BYLINE, REMAKE_NOTE_MARKER, isRemakeNote, normalizeNote as normalizeNoteRow } from '../public/js/street-furniture.js?v=b1d3e833';
-import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=15e99b32';
-import { FEATURES } from '../public/js/features/index.js?v=04741688';
+import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=4b735eac';
+import { FEATURES } from '../public/js/features/index.js?v=742a56cc';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { setWildlifeCatalog } from '../public/js/wildlife.js?v=670c3a7f';
 

@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, HAS_SITE, serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 import { BUDDY_VERBS, buddyVerbs, normalizeList } from '../public/js/buddies.js?v=16407f62';
-import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, blockedPlayerVerbs, playerMenuRows } from '../public/js/ui/player-menu.js?v=02c5111f';
+import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, blockedPlayerVerbs, playerMenuRows } from '../public/js/ui/player-menu.js?v=83a031ee';
 import { PLAYER_REPORT_NOTE_MAX, PLAYER_REPORT_TEXT, playerReportView } from '../public/js/player-report.js?v=8d7e5653';
 import { createMinnAccount } from '../public/js/minn-account.js?v=153fc423';
 
