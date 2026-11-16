@@ -195,6 +195,8 @@ function createSession(engine, client) {
   let lastKey = '';
   let lastScene = null;
   let retryAt = 0;
+  /** #404: what was drawn when the street was cleared, for a rebuild in place (same key) to draw again at once. */
+  let kept = null;
   let tickAt = 0;
   let loop = null;
   let loopKey = '';
@@ -925,18 +927,29 @@ function createSession(engine, client) {
       demo(at);
       // Online, my own id comes with the socket's welcome: until then, nothing is mine to draw.
       if (mp && !(Number(me()) > 0)) return;
-      if (retryAt && Date.now() >= retryAt && !home) {
+      if (retryAt && Date.now() >= retryAt) {
         retryAt = 0;
-        lastKey = '';
+        // Machines still drawn from before a rebuild (#404) stay up while the fetch tries again.
+        if (mp && home && at && at.key === home.key) loadVisit(at);
+        else if (!home) lastKey = '';
       }
       const key = at ? (at.kind === 'own' || at.kind === 'room' ? `${at.key}:${engine.streetTsid}` : at.key) : '';
       const scene = at?.scene || null;
+      // Off any machine place (a cleared street keys as ''): nothing is kept for a later visit.
+      if (!at) kept = null;
       if (key !== lastKey || scene !== lastScene) {
+        // #404: the home rebuilt in place (decorate, cultivate, a door): the same place again. Draw the
+        // machines already loaded at once in the new scene's geometry; the fetch below still brings real changes.
+        const prev = home && key === lastKey ? home : kept && key === kept.key ? kept.home : null;
+        kept = null;
         lastKey = key;
         lastScene = scene;
         clearDrawn();
         home = null;
-        machines = new Map();
+        if (mp && at && prev) {
+          home = { ...prev, ...(at.kind === 'own' ? ownGeometry(at.place) : at.kind === 'room' ? roomGeometry(at.place) : {}) };
+          redraw();
+        } else machines = new Map();
         if (at) {
           if (mp) loadVisit(at);
           else enterSolo(at);
@@ -953,6 +966,7 @@ function createSession(engine, client) {
     cleared() {
       for (const e of drawn.values()) if (e.target) engine.unregister?.(e.target);
       drawn = new Map();
+      kept = home && lastKey ? { key: lastKey, home } : null;
       home = null;
       lastKey = '';
       loop?.stop?.();
