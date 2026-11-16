@@ -31,7 +31,7 @@
  * enchantedSeedlings, enchantedLast, enchantedYield.
  */
 
-import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
+import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { worldToScreen } from '../street-model.js?v=2918abe5';
 import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { ensureWoodTreeState, resetWoodTreeDay, woodTreeStatusLabel } from '../woodcutting.js?v=b43edbd8';

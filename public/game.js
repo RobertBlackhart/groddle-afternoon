@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=f363070c';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=742a56cc';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1c2786e4';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1095,7 +1095,8 @@ import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newP
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=0371ea0c';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
-import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=130338f9';
+import { outlinePoints } from './js/outline-points.js?v=c9edb089';
+import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=5c729187';
 import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own word filter
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
@@ -8281,7 +8282,9 @@ const SPEECH_FILL_ALPHA = 1;
 function drawSpeechBubble(g, width, height, tail, up) {
   if (!g || g.destroyed) return;
   g.clear();
-  for (const [op, ...args] of speechBubbleOutline({ width, height, tip: tail.tip, base: tail.base, up })) g[op](...args);
+  // G897 (#427, #433): one point list with no point repeated (js/outline-points.js); a repeated one
+  // gave NaN stroke vertices that some phone GPUs drew as lines to the middle of the screen.
+  g.poly(outlinePoints(speechBubbleOutline({ width, height, tip: tail.tip, base: tail.base, up })), true);
   g.fill({ color: 0xfffdf5, alpha: SPEECH_FILL_ALPHA }).stroke({ width: 2, color: 0x594c40, alpha: 0.34 });
 }
 

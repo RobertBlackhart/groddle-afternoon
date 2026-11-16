@@ -24,6 +24,8 @@
  * any device pixel ratio. Only mood and energy have separate loss art.
  */
 
+import { outlinePoints } from './outline-points.js?v=c9edb089';
+
 /** SortTools.as 96. */
 export const SLUG_ORDER = Object.freeze(['imagination', 'xp', 'energy', 'mood', 'currants', 'favor']);
 
@@ -214,17 +216,18 @@ export function layoutSlugRow(widths, maxWidth) {
 export function slugPillPath(g, w, h, left, right) {
   const l = Math.min(left, h / 2, w / 2);
   const r = Math.min(right, h / 2, w / 2);
-  g.moveTo(l, 0)
-    .lineTo(w - r, 0)
-    .arcTo(w, 0, w, r, r)
-    .lineTo(w, h - r)
-    .arcTo(w, h, w - r, h, r)
-    .lineTo(l, h)
-    .arcTo(0, h, 0, h - l, l)
-    .lineTo(0, l)
-    .arcTo(0, 0, l, 0, l)
-    .closePath();
-  return g;
+  // G897: one point list with no point repeated (js/outline-points.js), so the stroke has no NaN vertices.
+  return g.poly(outlinePoints([
+    ['moveTo', l, 0],
+    ['lineTo', w - r, 0],
+    ['arcTo', w, 0, w, r, r],
+    ['lineTo', w, h - r],
+    ['arcTo', w, h, w - r, h, r],
+    ['lineTo', l, h],
+    ['arcTo', 0, h, 0, h - l, l],
+    ['lineTo', 0, l],
+    ['arcTo', 0, 0, l, 0, l],
+  ]), true);
 }
 
 function star(cx, cy, outer, inner, points = 5) {

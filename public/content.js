@@ -95,7 +95,7 @@ import { getGameDayKey } from './js/game-day.js?v=72f37c7e';
 import { PACK_COPY, isElementClass } from './js/pack-slots.js?v=4d446d78';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { ITEM_CATALOG, countItem } from './js/inventory.js?v=f49c8998';
-import { slugsFromEffects } from './js/speech-slugs.js?v=130338f9';
+import { slugsFromEffects } from './js/speech-slugs.js?v=5c729187';
 import { animalResponseKey, failureResponseKey, trantCareResponseKey, rockResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 
 /**

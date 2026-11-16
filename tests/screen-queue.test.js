@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SLUG_STYLES, speechSlugList } from '../public/js/speech-slugs.js?v=130338f9';
+import { SLUG_STYLES, speechSlugList } from '../public/js/speech-slugs.js?v=5c729187';
 import {
   NEW_DAY_MESSAGES,
   SCREEN_CLOSED_RETRY_MS,

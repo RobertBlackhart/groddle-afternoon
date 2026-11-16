@@ -23,7 +23,7 @@ import {
   slugSign,
   slugsFromEffects,
   speechSlugList,
-} from '../public/js/speech-slugs.js?v=130338f9';
+} from '../public/js/speech-slugs.js?v=5c729187';
 import {
   VERB_RESPONSE_MS,
   animalResponseKey,
@@ -34,7 +34,7 @@ import {
 } from '../public/js/verb-responses.js?v=3ceb8a8c';
 import { VERB_RESPONSE_POOLS } from '../public/js/verb-responses-data.js?v=0b948684';
 import { buildVerbResponses, render } from '../tools/build-verb-responses.mjs';
-import { runVerb } from '../public/content.js?v=f363070c';
+import { runVerb } from '../public/content.js?v=662a4744';
 import { createAnimalState } from '../public/js/animals.js?v=0c6762ce';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { setTrantTables, createTrantState } from '../public/js/trants.js?v=4d6f5593';

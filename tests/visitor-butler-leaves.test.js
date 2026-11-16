@@ -23,7 +23,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=0a4c1524';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=6b41c1bb';
 import { createErrorOnce, createFeatureHost, reportPageError } from '../public/js/feature-host.js?v=a0bd032a';
 import { pageErrorLine, rememberError } from '../public/js/features/bug-report-feature.js?v=c75bb986';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';

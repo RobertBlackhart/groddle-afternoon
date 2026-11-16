@@ -41,7 +41,7 @@ import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../
 import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=f75d0a19';
 import { energyMax, loseMood, metabolicGain, moodMax, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
+import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { cleanQuestMarkup } from '../quests.js?v=40c71a37';
 import { followPath } from '../street-creatures.js?v=6d9e6816';
