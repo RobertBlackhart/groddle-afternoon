@@ -49,6 +49,7 @@ import {
   CANOPY_PHYSICS,
   ILMENSKIE_CEILINGS,
   LOST_FLOOR_LABEL,
+  TELEPORTERS,
   LOST_FLOOR_SOURCE_TSID,
   MISSING_FLOOR_LABEL,
   MISSING_FLOOR_SOURCE_TSID,
@@ -66,7 +67,7 @@ import { narakaTeleportersOn } from '../hell.js?v=df2b4357';
 import { wintryPortalTeleportersOn } from '../wintry-portal.js?v=1437deda';
 import { cavePitTeleportersOn } from '../cave-pit.js?v=81e62950';
 import { seamTeleportersOn } from '../seam-teleporters.js?v=09d11340';
-import { collisionTeleportersOn } from '../collision-teleporters.js?v=b1214a65';
+import { WIRED_TELEPORTERS, collisionTeleportersOn } from '../collision-teleporters.js?v=b1214a65';
 
 export const HIDDEN_FLOORS_FEATURE_ID = 'hidden-floors';
 const CHECK_MS = 60;
@@ -185,6 +186,15 @@ export const hiddenFloorsFeature = {
     if (isLostFloorTsid(street?.tsid)) return { label: LOST_FLOOR_LABEL, sourceTsid: LOST_FLOOR_SOURCE_TSID, counts: {}, empty: true };
     if (isMissingFloorTsid(street?.tsid)) return { label: MISSING_FLOOR_LABEL, sourceTsid: MISSING_FLOOR_SOURCE_TSID, counts: {}, empty: true };
     return null;
+  },
+
+  /**
+   * G888: the floors' teleporters are their roads back (the forgotten floor past its EXIT to Odena
+   * Odes, the lost floor to Goorsh Gam, the missing floor to Ilmenskie): no dead-end exit there
+   * (features/dead-ends-feature.js).
+   */
+  urRoads() {
+    return [...TELEPORTERS, ...WIRED_TELEPORTERS].map((t) => ({ from: t.from, to: t.to }));
   },
 
   /** Ilmenskie's ceilings are solid only from below (PlatformLine.as): not floors to land on. */

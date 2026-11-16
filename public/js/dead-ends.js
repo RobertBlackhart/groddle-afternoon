@@ -1,0 +1,161 @@
+/**
+ * G888: streets with no road back to Ur, and the exit that stands on one when nothing runs there.
+ *
+ * Austin 2026-11-16: "For the stuck quests, maybe we should do something more generic. Can we do a
+ * 'is quest active' check? If the quest isn't active there should be a visible exit that appears
+ * which takes you back to a normal street." G886 and G887 fixed dead ends one kind at a time (quest
+ * rooms, practice streets, colour levels) with hand lists and an automatic move out. This is the
+ * one rule for all of them:
+ * - A dead end is any street of the index whose roads (signpost-graph.json signposts and doors,
+ *   plus the ways out a feature runs itself, its `urRoads`) never lead to Hechey Track
+ *   (js/quest-instance.js streetsReachingUr): quest rooms, practice streets, colour levels, Umbra
+ *   and Penumbra, Old Groddle Forest (hub 28) and the other link-only streets, and any street added
+ *   later, with no list to keep. Homes, scenes and builder drafts are never one.
+ * - Active: something already runs there and owns the way out (a quest room's run, a colour level
+ *   taken from the Map card, the tutorial, a held instance, a ride, the dead in Naraka). Each owner
+ *   answers its own `deadEndRun(engine)` through the feature host (features/dead-ends-feature.js
+ *   deadEndActive).
+ * - A dead end with nothing active shows the exit: Tiny Speck's CC0 wooden arrow (sign_arrow_1,
+ *   as the practice streets' EXIT, js/practice-streets.js) with the word EXIT on it, on a post,
+ *   standing near where you arrived. Walking into it or its Enter verb takes you to your last
+ *   ordinary street (quest-instances-feature safeWayOut, js/quest-instance.js strayWayOut).
+ *
+ * Source: Glitch never left anyone on one of these. Instances were entered through their quest
+ * and left by their exit (players/inc_instances.js instances_exit / instances_get_exit), and the
+ * practice streets' EXIT teleporter took you back whatever the quest
+ * (locations/inc_skillquest.js onTeleporterCollision 27-40). The standing sign is the remake's own
+ * (the remake keeps these instance copies as plain streets anyone can reach by a link or a save).
+ */
+
+import { streetsReachingUr } from './quest-instance.js?v=7b06754a';
+
+/** The Map's signpost graph (same URL as map-routes-feature, so the browser keeps one copy). */
+export const DEAD_END_GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';
+
+/** The exit's art and words (the arrow and its word as js/practice-streets.js EZ_EXIT_SIGN). */
+export const DEAD_END_EXIT = Object.freeze({
+  sprite: 'sign_arrow_1',
+  art: 'assets/decos/groddle/sign_arrow_1.webp',
+  // The arrow board at 0.85 of its 140 x 93, on a post (ours) so it stands on the floor.
+  w: 119,
+  h: 79,
+  post: 64,
+  word: 'EXIT',
+  wordSize: 19,
+  // The word sits on the shaft, left of the board's centre (practice-streets.js practiceExitSign: -8 at full size).
+  wordDx: -7,
+  // Walking into it: a box round the post, its foot on the floor.
+  box: Object.freeze({ w: 70, h: 150 }),
+  // How far from where you arrived it stands, tried in this order (toward the nearer street end first).
+  offsets: Object.freeze([170, -170, 290, -290, 0]),
+});
+
+export const DEAD_END_TEXT = Object.freeze({
+  label: 'Exit',
+  verb: 'Enter',
+  tip: (name) => (name ? `Back to ${name}` : 'Back to a street with roads to Ur'),
+  subtitle: (name) => (name ? `The way out, back to ${name}` : 'The way out, back to a street with roads to Ur'),
+});
+
+const gKey = (tsid) => {
+  const s = String(tsid || '');
+  return s.startsWith('L') ? `G${s.slice(1)}` : s;
+};
+
+/** A tsid shaped like a street of the index (G or L and the rest), not a home, scene or draft id. */
+export const indexShaped = (tsid) => /^[GL][A-Z0-9]{8,}$/.test(String(tsid || ''));
+
+/**
+ * The streets whose roads lead to Ur: the signpost graph plus `roads` ({ from, to } rows: the ways
+ * out a feature runs itself, a hidden floor's teleporter), a G-keyed Set, or null without a graph.
+ */
+export function urReach(graph, roads = []) {
+  if (!graph?.streets) return null;
+  const extra = { ...(graph.doors || {}) };
+  for (const r of roads || []) {
+    if (!r?.from || !r?.to) continue;
+    const from = gKey(r.from);
+    extra[from] = [...(extra[from] || []), gKey(r.to)];
+  }
+  return streetsReachingUr({ ...graph, doors: extra });
+}
+
+/** A dead end: a street of the index (`known`) that `reach` (urReach) does not hold. Unknown until the graph is in. */
+export function isDeadEndTsid(tsid, reach, { known = indexShaped } = {}) {
+  if (!reach || !indexShaped(tsid) || !known(tsid)) return false;
+  return !reach.has(gKey(tsid));
+}
+
+/** The floor line's y at x (screen space), or null off it. */
+function lineY(p, x) {
+  const lo = Math.min(p.x1, p.x2);
+  const hi = Math.max(p.x1, p.x2);
+  if (x < lo || x > hi) return null;
+  const dx = p.x2 - p.x1;
+  if (Math.abs(dx) < 1e-6) return Math.min(p.y1, p.y2);
+  return p.y1 + ((x - p.x1) / dx) * (p.y2 - p.y1);
+}
+
+/** A line the avatar stands on (street-model.js isItemFloor: pc_perm and item_perm neither 1 nor 0). */
+function floorLine(p) {
+  const pc = p?.pcPerm !== undefined ? p.pcPerm : p?.pc_perm;
+  let item = p?.itemPerm !== undefined ? p.itemPerm : p?.item_perm;
+  if (item === undefined) item = pc;
+  return pc !== 1 && pc !== 0 && item !== 1 && item !== 0;
+}
+
+/**
+ * The floor at x for feet at y: the first one at or under the feet (within `below` px), else the
+ * nearest one over them (within `above` px, a step up); else null.
+ */
+export function floorAt(platforms, x, y, { above = 120, below = 420 } = {}) {
+  let under = null;
+  let over = null;
+  for (const p of platforms || []) {
+    if (!p || !floorLine(p)) continue;
+    const at = lineY(p, x);
+    if (at == null || at < y - above || at > y + below) continue;
+    if (at >= y - 8) {
+      if (under == null || at < under) under = at;
+    } else if (over == null || at > over) over = at;
+  }
+  return under ?? over;
+}
+
+/**
+ * Where the exit stands (screen space, its foot on a floor): near `arrival` (where you arrived),
+ * first toward the nearer street end so a walk into the street does not run into it, on a floor
+ * within reach of the arrival's height; else right at the arrival. With no arrival, the left end.
+ * `width` is the street's screen width. Answers { x, y, side } (side -1: it points left).
+ */
+export function deadEndExitSpot({ platforms = [], arrival = null, width = 0 } = {}) {
+  const w = Math.max(240, Number(width) || 0);
+  const lo = 70;
+  const hi = w - 70;
+  const a = arrival && Number.isFinite(arrival.x) && Number.isFinite(arrival.y)
+    ? { x: arrival.x, y: arrival.y }
+    : null;
+  if (!a) {
+    const x = lo + 50;
+    const y = floorAt(platforms, x, -Infinity, { above: 0, below: Infinity });
+    return { x, y: y ?? 0, side: -1 };
+  }
+  const toward = a.x < w / 2 ? -1 : 1;
+  for (const off of DEAD_END_EXIT.offsets) {
+    const x = Math.round(a.x + off * toward);
+    if (x < lo || x > hi) continue;
+    const y = floorAt(platforms, x, a.y);
+    if (y == null) continue;
+    const side = off === 0 ? toward : Math.sign(off * toward);
+    return { x, y: Math.round(y), side };
+  }
+  const x = Math.round(Math.min(hi, Math.max(lo, a.x)));
+  return { x, y: Math.round(floorAt(platforms, x, a.y) ?? a.y), side: toward };
+}
+
+/** Feet (x, y) inside the exit's walk-in box (bottom-centre at the spot). */
+export function inExitBox(spot, x, y) {
+  if (!spot) return false;
+  const b = DEAD_END_EXIT.box;
+  return Math.abs(x - spot.x) <= b.w / 2 && y <= spot.y + 24 && y >= spot.y - b.h;
+}

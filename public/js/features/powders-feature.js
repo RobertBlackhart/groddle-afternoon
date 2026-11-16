@@ -117,7 +117,7 @@ import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy
 import { migrateClassValue } from '../tools.js?v=8516a0c3';
 import { DEAD_TRANT_CLASSES } from '../patches.js?v=5a38514c';
 import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=91aa2d26';
-import { hellFeature } from './hell-feature.js?v=55547e57';
+import { hellFeature } from './hell-feature.js?v=5fdccf83';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=1ecb86a5';

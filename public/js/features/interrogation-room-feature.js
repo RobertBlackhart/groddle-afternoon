@@ -210,6 +210,11 @@ export const interrogationRoomFeature = {
     return null;
   },
 
+  /** G888: the room's own door (Leave) is its way out: no dead-end exit (features/dead-ends-feature.js). */
+  deadEndRun(engine) {
+    return isInterrogationTsid(engine?.streetTsid) ? 'interrogation' : null;
+  },
+
   onStreetEnter(street, engine) {
     if (isInterrogationTsid(street?.tsid)) {
       drawChair(engine);

@@ -381,6 +381,11 @@ export const hellFeature = {
     return gate.allowed ? null : { ok: false, msg: gate.text };
   },
 
+  /** G888: the dead leave Naraka by its grapes, never a dead-end exit (features/dead-ends-feature.js). */
+  deadEndRun() {
+    return state.isDead ? 'dead' : null;
+  },
+
   /** The Magic Rock leaves the dead alone. */
   holdQuestOffers() {
     return state.isDead ? true : null;

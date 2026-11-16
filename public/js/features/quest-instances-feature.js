@@ -1747,6 +1747,15 @@ export const questInstancesFeature = {
     return back ? { tsid: back.tsid, x: back.x, y: back.y } : strayExit(engine);
   },
 
+  /**
+   * G888: a quest room's run (or one starting, a QA demo about to start its room) owns the way out
+   * of its street: no dead-end exit shows (features/dead-ends-feature.js deadEndActive).
+   */
+  deadEndRun() {
+    if (run || entering) return 'quest-room';
+    return demo.quest && (demo.stage === 'idle' || demo.stage === 'starting') ? 'quest-room' : null;
+  },
+
   holdQuestOffers() {
     return run || entering ? true : null;
   },

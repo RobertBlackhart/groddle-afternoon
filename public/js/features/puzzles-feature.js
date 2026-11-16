@@ -98,6 +98,8 @@ let run = null; // per visit
 let lastData = 0;
 let demo = { stage: 'idle', at: 0, queue: [], target: '' };
 let leaving = false;
+// G888: the colour level the Map card is taking you to (this page only: a reload ends the trip).
+let cardTrip = '';
 
 function load() {
   if (data) return Promise.resolve(data);
@@ -893,6 +895,7 @@ function travelTo(engine, tsid) {
     return false;
   }
   rememberReturn(engine, tsid);
+  cardTrip = key(tsid);
   engine.closeMap?.();
   engine.enter(tsid, def.start ? { spawnX: def.start.x, spawnY: def.start.y } : {});
   return true;
@@ -1093,6 +1096,9 @@ export const puzzlesFeature = {
     if (!street || engine.homeContext?.().inHome) return;
     if (engine.transientInstance() && !engine.heldInstance?.()) return;
     const tsid = street.tsid;
+    // G888: arrived by the Map card (or a ?puzzledemo= run): the level is in progress, no exit sign.
+    const viaCard = cardTrip === key(tsid) || key(engine.param?.('puzzledemo')) === key(tsid);
+    cardTrip = '';
     // G618: a card return lasts only while the player stays on the street the card sent them to.
     const settleReturn = () => {
       if (!engine.transientInstance()) save.returnTo = cardArrival(save.returnTo, key(tsid), data);
@@ -1101,6 +1107,7 @@ export const puzzlesFeature = {
       const def = defFor(tsid);
       if (!def || !runsHere(engine, def) || key(engine.streetTsid) !== key(tsid) || run) return;
       startRun(engine, street, def);
+      run.viaCard = viaCard;
       const back = wayBack(engine);
       if (back) engine.toast(CARD_RETURN_TEXT.toast(back.name), 5000);
     };
@@ -1184,6 +1191,17 @@ export const puzzlesFeature = {
     const out = wayOut(engine, here, { notice: true });
     save.returnTo = null;
     return out;
+  },
+
+  /**
+   * G888: a colour level taken from the Map card and not yet solved is in progress (in the source
+   * the Color Unblocking quest's instance, quests/puzzle_level_color_blockage.js): its exit door,
+   * the Map card's Leave and /stuck are its ways out, so no dead-end exit shows. Reached by a link
+   * or a reload, nothing runs and the exit shows (features/dead-ends-feature.js).
+   */
+  deadEndRun(engine) {
+    if (!run?.viaCard || run.complete || key(engine?.streetTsid) !== run.tsid) return null;
+    return COLOUR_LEVEL_STREETS.includes(run.tsid) ? 'puzzle' : null;
   },
 
   /** G887: a puzzle street with no road out, for /stuck and teleporting (nothing to fail). */

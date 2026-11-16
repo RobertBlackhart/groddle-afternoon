@@ -1178,6 +1178,11 @@ export const subwayFeature = {
     return station ? { tsid: station.surfaceStreetTsid, hubId: station.surfaceHubId } : null;
   },
 
+  /** G888: the car has its own way off (a ride's stops, else back to the platform): no dead-end exit. */
+  deadEndRun(engine) {
+    return inCar(engine) ? 'subway' : null;
+  },
+
   /** A reload in the train resumes on the platform of its last stop. */
   reloadLocation(saved) {
     if (!saved || !isCarTsid(saved.tsid)) return null;

@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b394a5c1';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=31c227d5';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f6426216';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -13148,6 +13148,8 @@ const engine = {
   },
   /** First non-null answer from any feature's `hook` (feature-host query). */
   query: (hook, ...args) => features.query(hook, ...args),
+  /** G888: every feature's array answer to `hook`, joined (feature-host collect: dead-ends-feature's urRoads). */
+  collect: (hook, ...args) => features.collect(hook, ...args),
   award: (payload) => enqueueAward(payload),
   /** G364: a full screen of a feature's own (the Giant's), queued with the award screens; resolves when it closes. */
   queueScreen: (show, opts) => queueScreen(show, opts),

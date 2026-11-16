@@ -4088,6 +4088,18 @@ export const newxpFeature = {
     return active() && save.stage === 'skill' && (run?.stage === 'skill' || !resumeChecked) ? true : null;
   },
 
+  /**
+   * G888: the tutorial owns the way off its practice street while the skill stage holds it, and off
+   * Gentle Island while it runs (the island's exit box leads on): no dead-end exit shows there
+   * (features/dead-ends-feature.js deadEndActive). Once the tutorial is done, a link back to either
+   * shows it.
+   */
+  deadEndRun(engine) {
+    if (newxpFeature.practiceStreetHeld()) return 'tutorial';
+    const here = String(engine?.streetTsid || '');
+    return active() && GENTLE_ISLAND_TSIDS.some((t) => t.slice(1) === here.slice(1)) ? 'tutorial' : null;
+  },
+
   reloadLocation(saved, engine) {
     // A reload inside a training scene restarts that scene once the game starts.
     if (isNewxpSceneTsid(saved?.tsid)) return { tsid: DEFAULT_START, x: 0, y: 0 };

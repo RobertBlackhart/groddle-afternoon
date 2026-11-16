@@ -406,6 +406,11 @@ export function roomQuoinSpots(street) {
 export const midTowerFeature = {
   id: MID_TOWER_FEATURE_ID,
 
+  /** G888: unnnn's left end back to the Mezzanine (STOOT_RETURN) is its road: no dead-end exit there. */
+  urRoads() {
+    return [{ from: STOOT_RETURN.tsid, to: STOOT_RETURN.to.tsid }];
+  },
+
   /** game.js enterStreet: this room's quoins in place of the planner's (null elsewhere). */
   quoinSpots(street) {
     return roomQuoinSpots(street);
