@@ -11,9 +11,9 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GEOMETRY, OP_NAMES, OpError, applyOp, applyOps, nextDecoId, nextGeometryId, opsSummary } from '../public/js/builder/ops.js?v=27c7796f';
-import { DEFAULT_GRADIENT, forkOps, forkStreet, newTsid, relayerPosition, streetKeyFrom } from '../public/js/builder/zone.js?v=a3c830ab';
+import { DEFAULT_GRADIENT, forkOps, forkStreet, newTsid, relayerPosition, streetKeyFrom } from '../public/js/builder/zone.js?v=a82f37f6';
 import { compileSchema } from '../public/js/builder/schema-check.js?v=cc9d1af4';
-import { DECO_TWINS } from '../public/js/street-render.js?v=0259eca4';
+import { DECO_TWINS } from '../public/js/street-render.js?v=fcd73f63';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

@@ -12,11 +12,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STUCK_TEXT, bareCommand, slashPlan } from '../public/js/slash-commands.js?v=7c4d5a44';
-import { STUCK_HINT_DWELL_MS, onTrapFloor, slashCommandsFeature, trapLinesOn } from '../public/js/features/slash-commands-feature.js?v=42efae0b';
-import { STREET_TRAPS } from '../public/js/street-traps-data.js?v=b2911c49';
+import { STUCK_HINT_DWELL_MS, onTrapFloor, slashCommandsFeature, trapLinesOn } from '../public/js/features/slash-commands-feature.js?v=101764b4';
+import { STREET_TRAPS } from '../public/js/street-traps-data.js?v=f6eb19ad';
 import { TRAP_JUMPS, renderTraps, trapLinesOf } from '../tools/ecology/build-street-traps.mjs';
-import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=465c5e9a';
-import { validateShippedStreet } from '../public/js/builder/validate.js?v=b2648a05';
+import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=633a59ad';
+import { validateShippedStreet } from '../public/js/builder/validate.js?v=8b34ec15';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LEVEL_3_WEST = 'GLI107JLRU11EM2';
@@ -70,7 +70,8 @@ describe('/stuck hint: the floors it knows', () => {
     const buff = { ...streetBuff(s).buff, jump: 0.7105 };
     const arrivals = [{ x: 300, y: 1099, from: 'west' }, { x: 4700, y: 1047, from: 'east' }];
     assert.deepEqual(reachStreet(s, arrivals, { jumpGrab: true, buff }).traps, []);
-    assert.ok(reachStreet(s, arrivals, { buff }).traps.length > 0, 'off by default: the placement data is built without it');
+    // #396: the grab reaches 113 px from the floor (Glitch's hit box), so Up takes them without the jump too.
+    assert.deepEqual(reachStreet(s, arrivals, { buff }).traps, []);
   });
 
   it('G555: the level builder reports no trap on Piene Question, and still reports Level 3 West\'s; the placement data stays without the jump', () => {

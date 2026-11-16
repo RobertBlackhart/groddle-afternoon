@@ -60,16 +60,16 @@
  */
 
 import { BUTLER_STRINGS } from '../butler.js?v=57456a7f';
-import { butlerApi } from './butler-feature.js?v=da7005ed';
+import { butlerApi } from './butler-feature.js?v=5fcdb068';
 import { hellFeature } from './hell-feature.js?v=55547e57';
-import { locationEventsApi } from './location-events-feature.js?v=56c09570';
+import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
 import { towerApi } from './home-tower-feature.js?v=9c8359ad';
-import { platformYAt, platformsScreen } from '../street-model.js?v=d728092c';
+import { platformYAt, platformsScreen } from '../street-model.js?v=2918abe5';
 import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=7c4d5a44';
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=fa56e8df';
 import { minnUrls } from '../minn-account.js?v=00f3eadb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_INDEX } from '../street-loader.js?v=5e48c6dd';
+import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 
 export const SLASH_COMMANDS_FEATURE_ID = 'slash-commands';
 
@@ -175,7 +175,7 @@ export function onTrapFloor(lines, player, jump = 1) {
  */
 let trapData = null;
 function loadTraps() {
-  trapData ||= import('../street-traps-data.js?v=b2911c49').then((m) => m.STREET_TRAPS).catch(() => null);
+  trapData ||= import('../street-traps-data.js?v=f6eb19ad').then((m) => m.STREET_TRAPS).catch(() => null);
   return trapData;
 }
 

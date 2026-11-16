@@ -17,12 +17,12 @@ import {
   isInteriorHub,
   populationForStreet,
   setStreetEcologyCatalog,
-} from '../public/js/street-ecology.js?v=8bcdebd0';
-import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.js?v=5e48c6dd';
+} from '../public/js/street-ecology.js?v=3d348213';
+import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.js?v=7ed1bdfd';
 import { TOWER_ROOMS, VENT } from '../public/js/tower-rooms.js?v=4f1f6af7';
 import { ALL_TOWER_ROOMS } from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
 import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=b877dfb6';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=d09867cc';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=438d5029';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));

@@ -5,18 +5,19 @@
  * design. The reach check runs at a new player's jump (69 px), who is the one with no other way.
  *
  * Piene Question, from the same sweep, is not this kind of pit: its basin has two ladders whose
- * feet stand 82 px over the floor, and Up on the floor jumps and takes them (checked in a real
- * browser 2026-11-06). Its item list holds no teleporter, so it gets no stand-in.
+ * feet stand 82 px over the floor, and Up on the floor takes them: within the 113 px grab since #396
+ * (before, Up jumped into the old 64 px grab, checked in a real browser 2026-11-06). Its item list
+ * holds no teleporter, so it gets no stand-in.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=465c5e9a';
+import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=633a59ad';
 import { CAVE_PIT_TELEPORTERS, LEVEL_3_WEST_TELEPORTER, LEVEL_3_WEST_TSID, cavePitTeleportersOn } from '../public/js/cave-pit.js?v=81e62950';
-import { inTeleporter } from '../public/js/hidden-floors.js?v=cad64154';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=b9088fd6';
+import { inTeleporter } from '../public/js/hidden-floors.js?v=e8836c2e';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=f0362527';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = JSON.parse(readFileSync(join(spike, 'public/assets/streets', `${LEVEL_3_WEST_TSID}.json`), 'utf8'));
@@ -132,7 +133,7 @@ describe('Piene Question: not the same kind of pit', () => {
     assert.doesNotMatch(readFileSync(join(xmlDir, `L${tsid.slice(1)}.xml`), 'utf8'), /Collision-triggered Teleporter/);
   });
 
-  it('has its two ladders with feet 82 px over the basin floor, under a new player\'s jump plus the grab', () => {
+  it('has its two ladders with feet 82 px over the basin floor, within the grab from the floor', () => {
     const { l, t } = piene.bounds;
     const bottom = (id) => { const d = piene.ladders.find((x) => x.id === id); return { x: d.x - l, foot: d.y - t }; };
     const floorAt = (x) => {
@@ -143,7 +144,8 @@ describe('Piene Question: not the same kind of pit', () => {
       const { x, foot } = bottom(id);
       const gap = floorAt(x) - foot;
       assert.ok(gap > 80 && gap < 83, `${id}: ${gap}`);
-      assert.ok(gap < 64 + 69, 'a new player\'s jump lifts the feet into the 64 px grab (street-model findClimbWallNear)');
+      // #396: since the grab reaches LADDER_GRAB_BELOW (113 px, Glitch's hit box), Up on the floor takes them without a jump.
+      assert.ok(gap < 113, 'in the 113 px grab from the floor (street-model findClimbWallNear)');
     }
   });
 });

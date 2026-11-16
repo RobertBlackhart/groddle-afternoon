@@ -28,11 +28,11 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=a6585ee8';
+import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=13819ec0';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=5e48c6dd';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=8bcdebd0';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=7ed1bdfd';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=3d348213';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

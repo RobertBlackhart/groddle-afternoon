@@ -7,15 +7,15 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GAME_DIR } from '../repos.mjs';
-import { GRAVITY, JUMP_SPEED, WALK_MAX, FLOOR_ACCEL, AIR_ACCEL_RATIO, STREET_PHYSICS_TERMINAL_VY, AVATAR_BODY_H, GROUND_SNAP, NORMAL_BUFF } from '../../public/js/avatar-step.js?v=a2fade97';
-import { FLOAT_REACH, FLOAT_OPEN, FLOOR_SKIRT } from '../../public/js/builder/ground.js?v=fb481dff';
-import { RULES, LIMITS, MIN_VIEW, PARALLAX_VIEW, LICENCES, plainApex, LEDGE_RISE } from '../../public/js/builder/validate.js?v=b2648a05';
-import { REACH_LIMITS, POST_REACH_X, POST_BELOW, DOOR_REACH_X, TIGHT_MARGIN, LANDING_TRIES, AIR_JUMP_TRIES, LANDING_SHARE, streetWorld, jumpArc } from '../../public/js/builder/reach-graph.js?v=465c5e9a';
+import { GRAVITY, JUMP_SPEED, WALK_MAX, FLOOR_ACCEL, AIR_ACCEL_RATIO, STREET_PHYSICS_TERMINAL_VY, AVATAR_BODY_H, GROUND_SNAP, NORMAL_BUFF } from '../../public/js/avatar-step.js?v=6122a615';
+import { FLOAT_REACH, FLOAT_OPEN, FLOOR_SKIRT } from '../../public/js/builder/ground.js?v=064df8c4';
+import { RULES, LIMITS, MIN_VIEW, PARALLAX_VIEW, LICENCES, plainApex, LEDGE_RISE } from '../../public/js/builder/validate.js?v=8b34ec15';
+import { REACH_LIMITS, POST_REACH_X, POST_BELOW, DOOR_REACH_X, TIGHT_MARGIN, LANDING_TRIES, AIR_JUMP_TRIES, LANDING_SHARE, streetWorld, jumpArc } from '../../public/js/builder/reach-graph.js?v=633a59ad';
 import { OP_NAMES } from '../../public/js/builder/ops.js?v=27c7796f';
 import { LAYER_ROLES } from '../../public/js/builder/layer-role.js?v=e585f610';
-import { POPULATION_CLASSES } from '../../public/js/builder/zone.js?v=a3c830ab';
+import { POPULATION_CLASSES } from '../../public/js/builder/zone.js?v=a82f37f6';
 import { SCOPES, RATES, RENDER } from './limits.mjs';
-import { EFFECT_KINDS, EFFECT_WORDS, EFFECT_DEFAULTS, EFFECT_RANGES, EFFECT_LIMITS, RUMBLE_RANGES, RUMBLE_DEFAULTS, RUMBLE_SOUND } from '../../public/js/street-effects.js?v=a30418a6';
+import { EFFECT_KINDS, EFFECT_WORDS, EFFECT_DEFAULTS, EFFECT_RANGES, EFFECT_LIMITS, RUMBLE_RANGES, RUMBLE_DEFAULTS, RUMBLE_SOUND } from '../../public/js/street-effects.js?v=1e49b98d';
 
 /** Spec 2.1: where each kind of thing is measured. */
 export const SPACES = Object.freeze([

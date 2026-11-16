@@ -24,8 +24,8 @@ import {
 } from '../public/js/teleportation.js?v=e95cf7cb';
 import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '../public/js/summon-mp.js?v=7598f381';
 import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=46fce774';
-import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=4c6f79a0';
-import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=8324908f';
+import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=fb9eb6a7';
+import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=b6a24ef7';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=aacf3423';
 
 const ROOT = join(import.meta.dirname, '..');

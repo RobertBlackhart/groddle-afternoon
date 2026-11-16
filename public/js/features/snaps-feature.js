@@ -40,7 +40,7 @@
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=f49c8998';
-import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=5e48c6dd';
+import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=7ed1bdfd';
 import {
   CAMERA_CLASS, CAPTION_MAX, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY as T, SNAP_MAX_BYTES, SNAP_QUALITY, SNAP_WIDTHS, TRAVEL,
   base64Bytes, canSnap, cleanCaption, isSnapUrl, jpegBase64, snapAuthor, snapPlace, snapStreet, takePictureState, withCamera,

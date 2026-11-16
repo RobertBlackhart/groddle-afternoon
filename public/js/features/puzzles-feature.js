@@ -48,7 +48,7 @@
  * card offers the way back here).
  */
 
-import { locationEventsApi } from './location-events-feature.js?v=56c09570';
+import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
 import {

@@ -146,6 +146,14 @@ export function wallsScreen(street) {
 }
 
 /**
+ * How far over the feet a ladder's bottom may hang and still be grabbed (#396). Glitch got on a
+ * ladder when the avatar's hit box touched its LadderView (MiddleGroundRenderer.as glowRenderer
+ * hitTestObject); the box is 123 tall and sits 10 under the feet (AbstractAvatarView.as 141-148,
+ * hit_box_height 123, hit_box_offset_y 10), so it reaches 113 px above them.
+ */
+export const LADDER_GRAB_BELOW = 113;
+
+/**
  * Find a climbable wall near player feet (screen coords).
  * @param {{ x:number, yTop:number, yBot:number, id?:string }[]} walls
  * @param {number} px
@@ -157,8 +165,9 @@ export function findClimbWallNear(walls, px, py, xTol = 36) {
   let best = null;
   let bestD = xTol;
   for (const w of walls || []) {
-    // Generous vertical slack: grab from slightly above the top or below the base
-    if (py < w.yTop - 28 || py > w.yBot + 64) continue;
+    // Vertical slack: grab from slightly above the top, or with the feet up to
+    // LADDER_GRAB_BELOW under the base (Glitch's hit box)
+    if (py < w.yTop - 28 || py > w.yBot + LADDER_GRAB_BELOW) continue;
     const d = Math.abs(px - w.x);
     if (d <= bestD) {
       bestD = d;

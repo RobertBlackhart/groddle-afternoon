@@ -47,10 +47,10 @@ import {
   streetNoteSeeds,
   takePinnedNote,
   writePaperNote,
-} from '../public/js/street-furniture.js?v=6b2a63ab';
-import { REMAKE_NOTE_BYLINE, REMAKE_NOTE_MARKER, isRemakeNote, normalizeNote as normalizeNoteRow } from '../public/js/street-furniture.js?v=6b2a63ab';
-import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=7188b048';
-import { FEATURES } from '../public/js/features/index.js?v=33dd910b';
+} from '../public/js/street-furniture.js?v=70fb87a7';
+import { REMAKE_NOTE_BYLINE, REMAKE_NOTE_MARKER, isRemakeNote, normalizeNote as normalizeNoteRow } from '../public/js/street-furniture.js?v=70fb87a7';
+import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=8a1f3fe3';
+import { FEATURES } from '../public/js/features/index.js?v=7084ca72';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { setWildlifeCatalog } from '../public/js/wildlife.js?v=670c3a7f';
 

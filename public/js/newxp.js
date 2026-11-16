@@ -43,7 +43,7 @@
  * placed in front of what they point at.
  */
 
-import { WALK_MAX, flatJump } from './avatar-step.js?v=a2fade97';
+import { WALK_MAX, flatJump } from './avatar-step.js?v=6122a615';
 import { EZ_FOOD } from './practice-streets.js?v=557238c1';
 
 export const NEWXP_SAVE_VERSION = 1;

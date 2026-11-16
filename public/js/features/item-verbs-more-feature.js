@@ -45,14 +45,14 @@ import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
 import { hasPouch, POUCH_CLASS } from '../elemental-pouch.js?v=42702eda';
-import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=b77f7bc9';
+import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=1f52edd5';
 import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=8516a0c3';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
-import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=21644e20';
+import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=3a8898c6';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
-import { landingY, walkSurfaceY } from '../walk-surface.js?v=a6585ee8';
+import { landingY, walkSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
 import {
   BUNDLE_OF_JOY,

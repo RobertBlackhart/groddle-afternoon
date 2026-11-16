@@ -50,10 +50,10 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { getToolCondition } from '../tools.js?v=8516a0c3';
-import { worldToScreen } from '../street-model.js?v=d728092c';
+import { worldToScreen } from '../street-model.js?v=2918abe5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
-import { nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=a6585ee8';
+import { nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
   FIBER_ID,
@@ -88,7 +88,7 @@ import {
   stepFox,
 } from '../foxes.js?v=9b5a4fe8';
 import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=8a4cf44b';
-import { clockOffset } from '../street-creatures.js?v=45a7e80e';
+import { clockOffset } from '../street-creatures.js?v=7db4bb4c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 
 export const FOX_FEATURE_ID = 'foxes';

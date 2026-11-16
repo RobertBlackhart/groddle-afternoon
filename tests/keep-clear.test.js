@@ -23,7 +23,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { isStandable, platformYAt, platformsScreen, streetWidth, worldToScreen } from '../public/js/street-model.js?v=d728092c';
+import { isStandable, platformYAt, platformsScreen, streetWidth, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
 import {
   ANIMAL_PATROL,
   FRONT_BOXES,
@@ -45,12 +45,12 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=8bcdebd0';
+} from '../public/js/street-ecology.js?v=3d348213';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
-import { parallaxLayerOffset } from '../public/js/street-render.js?v=0259eca4';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=fcd73f63';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=5e48c6dd';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=7ed1bdfd';
 
 const root = join(import.meta.dirname, '..');
 const streetsDir = join(root, 'public/assets/streets');

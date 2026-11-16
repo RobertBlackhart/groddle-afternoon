@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=d728092c';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=2918abe5';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
 import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=1363d17a';
 import {
@@ -48,11 +48,11 @@ import {
   inTeleporter,
   jumpApex,
   teleportersOn,
-} from '../public/js/hidden-floors.js?v=cad64154';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=b9088fd6';
-import { FEATURES } from '../public/js/features/index.js?v=33dd910b';
+} from '../public/js/hidden-floors.js?v=e8836c2e';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=f0362527';
+import { FEATURES } from '../public/js/features/index.js?v=7084ca72';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=0a356337';
-import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=a2fade97';
+import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=6122a615';
 import { buffPhysics } from '../public/js/buffs.js?v=c499cf1a';
 
 /** Spinach's High Jumper buff, running (buffs.js buffPhysics). */

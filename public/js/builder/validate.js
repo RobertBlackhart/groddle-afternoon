@@ -28,15 +28,15 @@
  *   profiles     assets/content/style-profiles.json, for the STY rules (P5's js/builder/style-rules.js)
  */
 import { compileSchema } from './schema-check.js?v=cc9d1af4';
-import { reachStreet, REACH_LIMITS, TIGHT_MARGIN, LANDING_TRIES, AIR_JUMP_TRIES, LANDING_SHARE, streetBuff } from './reach-graph.js?v=465c5e9a';
-import { platformsScreen, barriersScreen, isStandable, isSolidFromBelow, isItemFloor, assertStreetGeometry, avatarHeadReach, platformYAt, worldToScreen, streetWidth, streetHeight } from '../street-model.js?v=d728092c';
-import { planStreetPlacements, populationForStreet, rockPlacementRequest, shrinePlacementRequest, streetReservedSpots, treePlacementRequest } from '../street-ecology.js?v=8bcdebd0';
-import { jumpApex } from '../avatar-step.js?v=a2fade97';
+import { reachStreet, REACH_LIMITS, TIGHT_MARGIN, LANDING_TRIES, AIR_JUMP_TRIES, LANDING_SHARE, streetBuff } from './reach-graph.js?v=633a59ad';
+import { platformsScreen, barriersScreen, isStandable, isSolidFromBelow, isItemFloor, assertStreetGeometry, avatarHeadReach, platformYAt, worldToScreen, streetWidth, streetHeight } from '../street-model.js?v=2918abe5';
+import { planStreetPlacements, populationForStreet, rockPlacementRequest, shrinePlacementRequest, streetReservedSpots, treePlacementRequest } from '../street-ecology.js?v=3d348213';
+import { jumpApex } from '../avatar-step.js?v=6122a615';
 import { STY_RULES, styleFindings } from './style-rules.js?v=abf9bfae';
-import { EFFECT_LIMITS, effectsCost, normaliseEmitter, rumbleShare, emitterAnchor } from '../street-effects.js?v=a30418a6';
+import { EFFECT_LIMITS, effectsCost, normaliseEmitter, rumbleShare, emitterAnchor } from '../street-effects.js?v=1e49b98d';
 import { LICENCE_POLICY, provenanceProblems } from './new-art.js?v=29f0b13e';
-import { postOffFloor, offFloorWords } from './posts.js?v=8f5f1e3a';
-import { floatingLines, FLOAT_REACH, FLOAT_OPEN } from './ground.js?v=fb481dff';
+import { postOffFloor, offFloorWords } from './posts.js?v=c4ed04ed';
+import { floatingLines, FLOAT_REACH, FLOAT_OPEN } from './ground.js?v=064df8c4';
 
 export const RULES = Object.freeze({
   'SCH-001': ['fatal', 'Zone does not fit the schema'],

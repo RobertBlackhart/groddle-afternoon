@@ -28,10 +28,10 @@ import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=d0ca0659';
 import { routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=cad64154';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e8836c2e';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { placeIndex, questHold, questStoryNeeds, reachableStreets } from '../public/js/quest-reach.js?v=fc51a023';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=b9b386cc';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=575d6a4e';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');

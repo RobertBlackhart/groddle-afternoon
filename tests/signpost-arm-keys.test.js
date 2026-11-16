@@ -16,9 +16,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { walkUpSignpostStreet } from '../public/js/ladder-top-signposts.js?v=0902b326';
-import { navigableSignposts, signpostNear, worldToScreen } from '../public/js/street-model.js?v=d728092c';
-import { SIGN_MAX_ARMS, setSignpostKeys } from '../public/js/street-render.js?v=0259eca4';
+import { walkUpSignpostStreet } from '../public/js/ladder-top-signposts.js?v=db8c4d21';
+import { navigableSignposts, signpostNear, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
+import { SIGN_MAX_ARMS, setSignpostKeys } from '../public/js/street-render.js?v=fcd73f63';
 import { emoteKeyAction, hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=7a2676ac';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -23,9 +23,9 @@
  *
  * Pure: no DOM, no Pixi.
  */
-import { platformsScreen, barriersScreen, wallsScreen, isStandable, platformYAt, resolveGround, ladderTopDeck, worldToScreen, streetWidth, streetHeight, navigableSignposts, isBuriedSignpost, blockBarrierCrossing } from '../street-model.js?v=d728092c';
-import { stepAvatar, avatarGround, steerX, NORMAL_BUFF, JUMP_SPEED, WALK_MAX, OFF_LADDER_RATIO } from '../avatar-step.js?v=a2fade97';
-import { ladderTopSignpostLadder } from '../ladder-top-signposts.js?v=0902b326';
+import { platformsScreen, barriersScreen, wallsScreen, isStandable, platformYAt, resolveGround, ladderTopDeck, worldToScreen, streetWidth, streetHeight, navigableSignposts, isBuriedSignpost, blockBarrierCrossing, LADDER_GRAB_BELOW } from '../street-model.js?v=2918abe5';
+import { stepAvatar, avatarGround, steerX, NORMAL_BUFF, JUMP_SPEED, WALK_MAX, OFF_LADDER_RATIO } from '../avatar-step.js?v=6122a615';
+import { ladderTopSignpostLadder } from '../ladder-top-signposts.js?v=db8c4d21';
 import { physicsMultipliers } from '../location-events.js?v=05663361';
 
 export const STAND_STEP = 8;
@@ -594,9 +594,10 @@ export function buildReachGraph(street, opts = {}) {
   for (const wall of world.walls) {
     const L = g.node(wall.x, wall.yBot, -1, 'l');
     ladders.push({ id: wall.id, node: L, wall });
-    // Grab it: Up or Down within 28 px across, between 28 px over its top and 64 px under its foot.
-    // opts.jumpGrab (tools/ecology/build-street-traps.mjs, G528): further under its foot, Up jumps
-    // (the same key) and takes the ladder from the air once the feet are in that 64 px. Piene
+    // Grab it: Up or Down within 28 px across, between 28 px over its top and LADDER_GRAB_BELOW
+    // (113 px, #396) under its foot. opts.jumpGrab (tools/ecology/build-street-traps.mjs, G528):
+    // further under its foot, Up jumps (the same key) and takes the ladder from the air once the
+    // feet are in that reach. Piene
     // Question's two ladders stand 82 px over their floor, built for the client's reach (its query
     // is the avatar's whole body, AvatarPhysicsHandler.as areaQuery 490-520). Off by default: the
     // shipped placement data (build-unreached-floors.mjs) is built without it.
@@ -607,7 +608,7 @@ export function buildReachGraph(street, opts = {}) {
       for (let k = 0; k < ln.count; k += 1) {
         const n = ln.first + k;
         if (Math.abs(g.x[n] - wall.x) >= 28 || g.y[n] < wall.yTop - 28) continue;
-        const grabY = wall.yBot + 64;
+        const grabY = wall.yBot + LADDER_GRAB_BELOW;
         if (g.y[n] <= grabY || (opts.jumpGrab && jumpArc(world, { x: g.x[n], y: g.y[n] }).minY <= grabY)) g.edge(n, L, Infinity, opts.keepSpecs ? { kind: 'mount', ladder: wall.id, x: wall.x } : null);
       }
     }
@@ -767,11 +768,11 @@ export function reachStreet(street, arrivals, opts = {}) {
   const topPosts = new Set(targets.filter((t) => t.ladder != null).map((t) => t.ladder));
   const deckless = [];
   for (const l of ladders) {
-    // A floor the climber can grab it from: Up within 64 px under its foot (findClimbWallNear).
+    // A floor the climber can grab it from: Up within LADDER_GRAB_BELOW under its foot (findClimbWallNear).
     const foot = world.col(l.wall.x).some((p) => {
       if (!isStandable(p)) return false;
       const y = platformYAt(p, l.wall.x, 4);
-      return y != null && y >= l.wall.yBot - 16 && y <= l.wall.yBot + 64;
+      return y != null && y >= l.wall.yBot - 16 && y <= l.wall.yBot + LADDER_GRAB_BELOW;
     });
     const deck = topPosts.has(l.id) ? true : ladderTopDeck(world.col(l.wall.x), l.wall.x, l.wall.yTop + 4, l.wall.yBot) != null;
     if (!foot || !deck) deckless.push({ id: l.id, x: l.wall.x, yTop: l.wall.yTop, yBot: l.wall.yBot, foot: Boolean(foot), deck: Boolean(deck) });

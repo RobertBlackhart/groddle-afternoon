@@ -22,8 +22,8 @@ import {
 import { VERB_RANGES } from '../public/js/verb-ranges-data.js?v=4d0a4515';
 import { OUT_OF_REACH_LINE, avatarHitBox, behindFloor } from '../public/js/reach.js?v=8e52df56';
 import { createUserPath, stepUserPath } from '../public/js/user-path.js?v=8880557f';
-import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=a2fade97';
-import { avatarHeadReach, groundBeneath, platformsScreen, barriersScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
+import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=6122a615';
+import { avatarHeadReach, groundBeneath, platformsScreen, barriersScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 
 const root = join(import.meta.dirname, '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
@@ -185,7 +185,7 @@ describe('game.js wiring', () => {
 
 describe('ticket 189: feet under a ledge are not put on it', () => {
   it('walking off the end of a floor over an open shaft falls instead of rising onto a line far overhead', async () => {
-    const { avatarGround, UNDER_LINE_SLACK } = await import('../public/js/avatar-step.js?v=a2fade97');
+    const { avatarGround, UNDER_LINE_SLACK } = await import('../public/js/avatar-step.js?v=6122a615');
     // Greyving Grays, screen space: the lower gut floor ends at x 2509 (y 3731); at x 2560 the only
     // standable line is the upper bend, 2,300 px over the feet.
     const platforms = [

@@ -9,10 +9,10 @@ import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=814ba28e';
-import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=f97113e6';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=8bcdebd0';
+import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=e1567f5d';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=3d348213';
 import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=5e48c6dd';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=7ed1bdfd';
 import { selectVendorProfile } from '../public/js/vendor.js?v=6b499efc';
 
 const PUB = new URL('../public/', import.meta.url);

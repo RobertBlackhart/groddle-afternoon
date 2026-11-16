@@ -19,7 +19,7 @@ import {
   snapToDevice,
 } from '../public/js/camera-feel.js?v=e668afc5';
 import { dampingAlpha } from '../public/js/movement.js?v=0a356337';
-import { parallaxLayerOffset } from '../public/js/street-render.js?v=0259eca4';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=fcd73f63';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt } from '../public/js/street-model.js?v=d728092c';
+import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt, LADDER_GRAB_BELOW, findClimbWallNear, isStandable, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
 import { ladderMount, LADDER_UP_PRESS_MS } from '../public/js/movement.js?v=0a356337';
 import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=160693c7';
 
@@ -69,6 +69,40 @@ describe('climbing input (game.js)', () => {
     assert.match(game, /if \(player\.vy !== 0 \|\| player\.anims\) setPlayerAnim\('climb'\);\s*(?:\/\/[^\n]*\s*)?else if \(player\.playing\) player\.stop\(\);/);
     assert.match(game, /return ladderAnimState\(player\.vy\);/);
     assert.match(game, /if \(swap === 'stop'\) player\.stop\(\);\s*else player\.play\(\);/);
+  });
+});
+
+describe('how far under a ladder Up reaches it (#396, street-model findClimbWallNear)', () => {
+  const walls = [{ id: 'l', x: 100, yTop: 300, yBot: 600 }];
+
+  it('reaches 113 px over the feet, the top of Glitch\'s avatar hit box', () => {
+    // AbstractAvatarView.as drawHitBox: hit_box_height 123, hit_box_offset_y 10 under the feet.
+    assert.equal(LADDER_GRAB_BELOW, 123 - 10);
+    assert.equal(findClimbWallNear(walls, 100, 600 + 70, 40)?.wall.id, 'l');
+    assert.equal(findClimbWallNear(walls, 100, 600 + 113, 40)?.wall.id, 'l');
+    assert.equal(findClimbWallNear(walls, 100, 600 + 114, 40), null);
+    // The rest is as it was: across, and over the top.
+    assert.equal(findClimbWallNear(walls, 141, 600 + 70, 40), null);
+    assert.equal(findClimbWallNear(walls, 100, 300 - 28, 40)?.wall.id, 'l');
+    assert.equal(findClimbWallNear(walls, 100, 300 - 29, 40), null);
+  });
+
+  it('takes Amlou Amoo\'s ladder from the floor 70 px under its foot with a fresh Up', () => {
+    const street = JSON.parse(readFileSync(join(streets, 'GA98LV0U3BO2FA0.json'), 'utf8'));
+    const src = street.ladders.find((l) => l.id === 'ladder_1329430830672');
+    assert.deepEqual([src.x, src.y], [1876, -725]);
+    const ladder = wallsScreen(street).find((w) => w.id === src.id);
+    const floors = platformsScreen(street).filter(isStandable).map((p) => platformYAt(p, ladder.x, 0)).filter((y) => y != null && y > ladder.yBot);
+    const floor = Math.min(...floors);
+    assert.ok(Math.abs(floor - worldToScreen(street, 0, -655).y) < 2, `floor ${floor}`);
+    assert.ok(floor - ladder.yBot > 64, 'out of the old 64 px reach');
+    const hit = findClimbWallNear(wallsScreen(street), ladder.x + 10, floor, 40);
+    assert.equal(hit?.wall.id, src.id);
+    // game.js handleInput: standing on that floor is atBase, so Down walks on and a fresh Up climbs.
+    const atBase = floor >= hit.yBot - 4;
+    assert.equal(ladderMount({ near: true, up: true, upPressedMs: 0, onGround: true, atBase }), 'up');
+    assert.equal(ladderMount({ near: true, down: true, onGround: true, atBase }), '');
+    assert.equal(ladderMount({ near: true, up: true, upPressedMs: LADDER_UP_PRESS_MS + 1, onGround: true, atBase }), '');
   });
 });
 

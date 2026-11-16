@@ -13,7 +13,7 @@ import { join } from 'node:path';
 
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, noteArrival, normalizeStreetJobState, openWayHome, roadClosure, wayHomeTerms } from '../public/js/street-jobs.js?v=d0ca0659';
 import { routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=cad64154';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e8836c2e';
 import { WINTRY_PORTAL_TELEPORTERS, WINTRY_PLACE_TSID } from '../public/js/wintry-portal.js?v=1437deda';
 
 const root = join(import.meta.dirname, '..');

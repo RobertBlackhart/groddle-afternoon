@@ -47,10 +47,10 @@ import {
   spiritCryBox,
   spiritCrySheet,
 } from '../public/js/street-spirits.js?v=f9e88445';
-import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=87f00919';
+import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=5ce1e410';
 import { ROUTE_SOURCES } from '../public/js/map-routes.js?v=f23b16a2';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=8bcdebd0';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=5e48c6dd';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=3d348213';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=7ed1bdfd';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');

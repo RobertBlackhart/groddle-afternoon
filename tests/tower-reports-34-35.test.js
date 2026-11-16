@@ -15,8 +15,8 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DOOR_LOCK_ART, doorLockArt } from '../public/js/door-lock-art.js?v=e656851c';
-import { navigableSignposts } from '../public/js/street-model.js?v=d728092c';
-import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=5e48c6dd';
+import { navigableSignposts } from '../public/js/street-model.js?v=2918abe5';
+import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=7ed1bdfd';
 import { TOWERS, TOWER_FLOORS, TOWER_NEAR_BASE, TOWER_STANDABLE, towerFloorLayout, towerPropPlatforms, towerProps } from '../public/js/tower-floors.js?v=3d1ad8b7';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -22,10 +22,10 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=5e48c6dd';
-import { isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
-import { buildPlatformCandidates, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=8bcdebd0';
-import { EDGE_MARGIN, JUMP_SPEED, NORMAL_BUFF, WALK_MAX, avatarFall } from '../public/js/avatar-step.js?v=a2fade97';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=7ed1bdfd';
+import { isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
+import { buildPlatformCandidates, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=3d348213';
+import { EDGE_MARGIN, JUMP_SPEED, NORMAL_BUFF, WALK_MAX, avatarFall } from '../public/js/avatar-step.js?v=6122a615';
 import { QUOIN_TOUCH, measuredStreetQuoins, quoinTouches } from '../public/js/quoins.js?v=61be601c';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';

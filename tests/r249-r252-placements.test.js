@@ -16,7 +16,7 @@ import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=d728092c';
+import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 import {
   GARDEN_BOX_STREETS,
   LEGACY_BOX_BEDS,
@@ -32,8 +32,8 @@ import {
   streetGardenBoxBeds,
   streetGardenBoxes,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=8bcdebd0';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=41af37db';
+} from '../public/js/street-ecology.js?v=3d348213';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=722e8d68';
 import { JELLISAC_SPOTS, PEAT_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
 import { bedKind, createGarden, fitGardenToBed, plantPlot } from '../public/js/garden.js?v=a5191e8b';
 import { bedKey, parsePlotId } from '../public/js/shared-gardens.js?v=c1f90bc0';
