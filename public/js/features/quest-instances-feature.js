@@ -129,7 +129,7 @@ import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { FIRST_SKILLS } from '../newxp.js?v=1f52edd5';
-import { NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=8af3c741';
+import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=8af3c741';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=6122a615';
 
 let quoinFrames = null;
@@ -199,7 +199,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=48e115e2'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=0de252ed'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=866407dd'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=7d2befe6'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=1ce34500'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=fb2b34e3'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=8688cb9c'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=f8740af7'),
@@ -1720,6 +1720,15 @@ export const questInstancesFeature = {
     if (engine?.query?.('practiceStreetHeld', saved.tsid, engine) === true) return null;
     strayNotice = true;
     return strayExit(engine);
+  },
+
+  /**
+   * G887: a street that was an instance in the source though the remake keeps it as a plain street
+   * (a quest room's, a practice street, a colour level): no Teleportation Point or script there
+   * (teleportation-feature unsavable, inc_teleportation.js teleportation_can_set_target 313).
+   */
+  instanceStreet(tsid, engine) {
+    return instanceKind(tsid, engine) || COLOUR_LEVEL_STREETS.includes(gKey(tsid)) ? true : null;
   },
 
   /** G887: a street with no road out (deadEndStreet), for the puzzle streets' way back. */

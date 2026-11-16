@@ -131,6 +131,10 @@ function placeLabel(target) {
 function unsavable(engine, { script = false } = {}) {
   return Boolean(
     engine.transientInstance() || String(engine.street?.hubId || '') === NARAKA_HUB_ID ||
+    // G887: the instance copies the remake keeps as plain streets (a quest room's street, a practice
+    // street, a colour level): can_set_target 313 refused any instance, and a point there was a way
+    // back onto a street with no road out (quest-instances-feature instanceStreet).
+    engine.query?.('instanceStreet', engine.streetTsid, engine) === true ||
     // Ours: a script is handed to others, and RH_HOME_EXT is each reader's own home, so none is written at home.
     (script && engine.homeContext?.().inHome)
   );

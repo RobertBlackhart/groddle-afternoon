@@ -14,7 +14,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STRAY_FALLBACK_TSID, STRAY_NOTICE, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=8af3c741';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=78f13da3';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=986b4569';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=81e85b56';
 import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
@@ -242,5 +242,26 @@ describe('a reload saved on a colour level (features/puzzles-feature.js reloadLo
     for (const t of ['GDOSHD9J6NT2HUJ', 'GIFM2QAIQ1C31JV', HECHEY.tsid]) assert.equal(pz.reloadLocation({ tsid: t }, wired()), null, t);
     assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { fresh: '1' })), null);
     assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { puzzledemo: ORANGIAN })), null);
+  });
+});
+
+describe('no Teleportation Point or script on a street that was an instance (features/teleportation-feature.js)', () => {
+  it('the source refused saving a point in any instance', () => {
+    assert.match(gsjs('players/inc_teleportation.js'), /if \(this\.location\.isInstance\(\) \|\| this\.location\.jobs_is_street_locked\(\)[\s\S]{0,200}You can't save this location as a Teleportation Point\./);
+  });
+
+  it('quest room streets, practice streets and colour levels count; Umbra and Ur do not', () => {
+    const engine = fakeEngine();
+    assert.equal(qi.instanceStreet(ORANGIAN, engine), true);
+    assert.equal(qi.instanceStreet(EZ, engine), true);
+    assert.equal(qi.instanceStreet('GHFS40864GB396O', engine), true, 'Soil Appreciation');
+    assert.equal(qi.instanceStreet('GDOSHD9J6NT2HUJ', engine), null, 'Umbra was a street of its own');
+    assert.equal(qi.instanceStreet(HECHEY.tsid, engine), null);
+  });
+
+  it('points and scripts ask it', () => {
+    const src = read('public/js/features/teleportation-feature.js');
+    const fn = src.slice(src.indexOf('function unsavable('), src.indexOf('function quillWorking('));
+    assert.match(fn, /engine\.query\?\.\('instanceStreet', engine\.streetTsid, engine\) === true/);
   });
 });
