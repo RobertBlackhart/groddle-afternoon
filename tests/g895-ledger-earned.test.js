@@ -66,7 +66,7 @@ const rowsOf = (r, kind) => r.rows.filter((x) => x[0] === kind);
 
 describe('G895: the ledger credits a shrine\'s emblems from the save\'s shrine record', { skip }, () => {
   it('marks the record the first time it is seen, without paying', () => {
-    assert.deepEqual(php('baseline', [save({ emblems: { lem: 3, zille: 0 } })]), [['mark', 'base', 1], ['mark', 'emblem:lem', 3]]);
+    assert.deepEqual(php('baseline', [save({ emblems: { lem: 3, zille: 0 } })]), [['mark', 'base', 1], ['mark', 'base905', 1], ['mark', 'emblem:lem', 3]]);
   });
 
   it('an emblem the record gained stands with no budget at all, and moves the mark', () => {
@@ -169,7 +169,7 @@ describe('G895: the ledger credits the pieces a cracked Petrified Rock gives', {
 
   it('marks the cracks, the rocks held and the Feat rewards so far, without paying', () => {
     const rows = php('baseline', [save({ inv: { petrified_rock_small: 2, petrified_rock_large: 1 }, cracked: { petrified_rock_small: 5 } }), 3]);
-    assert.deepEqual(rows, [['mark', 'base', 1], ['mark', 'crackyield', 15], ['mark', 'rockyield', 15 + 3 * 4], ['mark', 'feats', 3]]);
+    assert.deepEqual(rows, [['mark', 'base', 1], ['mark', 'base905', 1], ['mark', 'crackyield', 15], ['mark', 'rockyield', 15 + 3 * 4], ['mark', 'feats', 3]]);
     const many = php('baseline', [save({ inv: { petrified_rock_small: 500 } }), 0]);
     assert.deepEqual(many.find((r) => r[1] === 'rockyield'), ['mark', 'rockyield', ROCKS_BASE_MAX * 4], 'the rocks held count only so far');
   });
