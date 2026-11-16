@@ -1066,6 +1066,7 @@ import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerb
 import { createPromptSettler, promptId } from './js/prompt-settle.js?v=509ba9cc';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=7a2676ac';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
+import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
@@ -1639,6 +1640,13 @@ function openLookBuilderOn(slot) {
 const hotkeysSheet = createHotkeysSheet(document, { keyring: () => Boolean(document.getElementById('keys-btn')), hub: () => modernUi(), reports: () => Boolean(document.getElementById('bug-btn')) });
 
 /**
+ * #401: in an iPhone Home Screen app (one window, no tabs) the Encyclopedia opens in a sheet over the
+ * game (js/ui/encyclopedia-sheet.js), never in the game's own window; a browser tab keeps its new tab.
+ */
+const encyclopediaSheet = isHomeScreenApp(window) ? createEncyclopediaSheet({ setData: (key, value) => setCanvasData(key, value) }) : null;
+encyclopediaSheet?.catchLinks(document);
+
+/**
  * ENCYC (Austin 2026-11-05, js/encyclopedia-links.js): the Encyclopedia from the game. Its index
  * (encyclopedia/search.json) loads a few seconds after the game starts; once it is in, the open
  * item card and sheets draw their "In the Encyclopedia" links.
@@ -1648,6 +1656,7 @@ const encyclopedia = createEncyclopedia({
     updateHud();
     if (isSkillsOpen()) renderSkillsPanel();
   },
+  ...(encyclopediaSheet ? { openWindow: (url) => encyclopediaSheet.open(url) } : {}),
 });
 
 /** ENCYC: a world thing as an Encyclopedia subject (a dropped stack is its item; players have no page). */
