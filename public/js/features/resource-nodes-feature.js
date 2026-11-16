@@ -69,7 +69,7 @@ import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
-import { SLOTH_PEEK_GAP_MS, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=4e56e4cf';
+import { SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=db8913dd';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -96,7 +96,7 @@ import {
   starterResourceTools,
   swimmingSalmonCount,
   tickResourceNode,
-} from '../resource-nodes.js?v=739a3eba';
+} from '../resource-nodes.js?v=46646715';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -358,6 +358,11 @@ export const SLOTH_TREE = Object.freeze({
   knocker: Object.freeze({ x: -98, y: -62 }),
   /** Where it spits from in the hanging pose (sloth origin + the mouth in hangIdle1). */
   mouth: Object.freeze({ x: 80, y: 62 }),
+  /**
+   * Its bubbles (talk 852-881: offset 85 px to its right, higher while it hides): over its head
+   * when it hangs, over the canopy when it is up in the leaves.
+   */
+  speech: Object.freeze({ x: 22, hanging: 165, hiding: 350 }),
   hitW: 130,
   hitH: 300,
 });
@@ -867,7 +872,8 @@ function buildSlothView(engine, entity) {
     anim: '', animAt: 0, rodIndex: 1, steps: [], idleAt: 0, state: 'hidden', out: false,
     peekAt: 0, knockAt: 0, spits: [],
   };
-  entity.target = targetFor(engine, entity, root, { airborne: true });
+  entity.target = targetFor(engine, entity, root, { airborne: true, speechOffset: { x: SLOTH_TREE.speech.x, y: 0 } });
+  entity.view.target = entity.target;
   warmSloth(engine, ['hidden', 'peek', 'peekIdle', 'peekWithdraw', 'drop', 'hangIdle1', 'hangIdle2']);
   const now = Date.now();
   if (frame?.state === 'eating') setSlothAnim(engine, entity.view, 'eat', now);
@@ -882,6 +888,7 @@ function buildSlothView(engine, entity) {
 function setSlothAnim(engine, view, label, now) {
   const sheet = SLOTH_SHEETS[label];
   if (!sheet) return;
+  if (view.target) view.target.artHeight = /^(hidden|peek|climbUp)/.test(label) ? SLOTH_TREE.speech.hiding : SLOTH_TREE.speech.hanging;
   view.anim = label;
   view.animAt = now;
   const anchor = (spr, s) => spr.anchor.set(s.origin.x / s.cell.w, s.origin.y / s.cell.h);
@@ -927,7 +934,9 @@ function playSloth(engine, entity, event, opts = {}) {
   const view = entity.view;
   if (!view || view.kind !== 'sloth') return;
   const now = Date.now();
-  view.steps = slothTimeline(event, opts).map((step) => ({ ...step, at: now + step.at }));
+  // setState cancels the state timers, not a line already on its way (the drop line's talk timer).
+  const kept = view.steps.filter((step) => step.keep);
+  view.steps = [...kept, ...slothTimeline(event, opts).map((step) => ({ ...step, at: now + step.at }))].sort((a, b) => a.at - b.at);
   view.state = 'busy';
   view.leaving = view.steps.some((step) => step.hidden);
   placeSloth(engine, entity, 0, now);
@@ -947,6 +956,16 @@ function placeSloth(engine, entity, dtMs, now) {
   while (view.steps.length && now >= view.steps[0].at) {
     const step = view.steps.shift();
     if (step.anim) setSlothAnim(engine, view, step.anim, step.at);
+    if (step.say && entity.target) {
+      const line = chooseSlothLine(step.say, view.lastLine);
+      view.lastLine = line;
+      engine.say?.(entity.target, line, step.ms, { exact: true });
+      // talk 874-877: hanging idle, it talks for as long as the line shows, then idles again.
+      if (view.state === 'idle') {
+        setSlothAnim(engine, view, 'talk', step.at);
+        view.idleAt = step.at + step.ms;
+      }
+    }
     if (step.idle) slothToIdle(view, step.at);
     if (step.hidden) {
       setSlothAnim(engine, view, 'hidden', step.at);
@@ -1397,9 +1416,6 @@ function applyResult(engine, entity, result) {
       const now = Date.now();
       view.spits = result.slothPlan.rounds.flatMap((round) => Array.from({ length: round.snails }, (_, i) => now + round.atMs + 1200 + i * 150));
       playSloth(engine, entity, 'feed', { plan: result.slothPlan, full: entity.node.sessionFeeds > 7 });
-    }
-    if ((result.achievementCounters || []).some((c) => c.counter === 'sloth:fed_until_full')) {
-      engine.toast('Metal forever!', 2000);
     }
     if (slothsChewing(entities, Date.now()) >= 3) engine.grantAchievement?.('circle_crunch');
   }

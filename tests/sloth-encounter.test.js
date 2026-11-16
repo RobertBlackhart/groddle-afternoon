@@ -5,8 +5,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
-import { SLOTH_PEEK_GAP_MS, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=4e56e4cf';
-import { slothFeedPlan } from '../public/js/resource-nodes.js?v=739a3eba';
+import { SLOTH_LINES, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=db8913dd';
+import { slothFeedPlan } from '../public/js/resource-nodes.js?v=46646715';
 
 const anims = (steps) => steps.filter((s) => s.anim).map((s) => s.anim);
 
@@ -23,6 +23,27 @@ describe('Sloth encounter timeline', () => {
     const steps = slothTimeline('arrive');
     assert.deepEqual(anims(steps), ['drop']);
     assert.deepEqual(steps.find((s) => s.idle), { at: 1000, idle: true });
+    // 1.5 s in it says a drop line for 3 s, on a timer a feed does not cancel (npc_sloth.js 695).
+    assert.deepEqual(steps.find((s) => s.say), { at: 1500, say: 'drop', ms: 3000, keep: true });
+  });
+
+  it('speaks the GSJS lines in bubbles, never the same one twice running (chooseTalk)', () => {
+    assert.equal(SLOTH_LINES.drop.length, 4);
+    assert.equal(SLOTH_LINES.thanks[0], 'That was SO METAL! Thanks for the Rods, brah!');
+    assert.deepEqual(SLOTH_LINES.yawn, ['Yawn... See ya']);
+    let last = '';
+    for (let i = 0; i < 50; i += 1) {
+      const line = chooseSlothLine('thanks', last, () => (i % 7) / 7);
+      assert.ok(SLOTH_LINES.thanks.includes(line));
+      assert.notEqual(line, last);
+      last = line;
+    }
+    assert.equal(chooseSlothLine('yawn', 'Yawn... See ya'), 'Yawn... See ya', 'one line repeats');
+    const says = (event, opts) => slothTimeline(event, opts).filter((s) => s.say).map((s) => [s.say, s.ms]);
+    assert.deepEqual(says('hide'), [['yawn', 5000]]);
+    assert.deepEqual(says('feed', { plan: { rounds: [], doneMs: 1500 } }), [['thanks', 5000]]);
+    assert.deepEqual(says('feed', { plan: { rounds: [], doneMs: 1500 }, full: true }), [['thanks', 5000]]);
+    assert.deepEqual(says('peek'), []);
   });
 
   it('idles on hangIdle1 or hangIdle2 every 3-6 s (onIdleTick)', () => {
@@ -34,16 +55,16 @@ describe('Sloth encounter timeline', () => {
     const plan = { max: 8, rounds: [{ atMs: 3000, snails: 3, count: 3, rod: 3 }, { atMs: 5500, snails: 4, count: 7, rod: 7 }, { atMs: 8500, snails: 1, count: 8, rod: 7 }], doneMs: 10000 };
     const steps = slothTimeline('feed', { plan });
     assert.deepEqual(steps.filter((s) => s.anim).map((s) => [s.at, s.anim]), [
-      [0, 'eat'], [3000, 'spit'], [4500, 'eat'], [5500, 'spit'], [7000, 'eat'], [8500, 'spit'], [10000, 'finishedEating'],
+      [0, 'eat'], [3000, 'spit'], [4500, 'eat'], [5500, 'spit'], [7000, 'eat'], [8500, 'spit'], [10000, 'finishedEating'], [11000, 'talk'],
     ]);
     assert.equal(steps.at(-1).idle, true);
     // After the 8th rod it climbs away at once (metalize_count > 7 -> hideSloth).
     const full = slothTimeline('feed', { plan, full: true });
-    assert.deepEqual(full.slice(-2), [{ at: 10000, anim: 'climbUp' }, { at: 15000, hidden: true }]);
+    assert.deepEqual(full.slice(-2), [{ at: 10000, anim: 'climbUp', say: 'thanks', ms: 5000 }, { at: 15000, hidden: true }]);
   });
 
   it('climbs up after 20 s without a rod, and peeks when walked under', () => {
-    assert.deepEqual(slothTimeline('hide'), [{ at: 0, anim: 'climbUp' }, { at: 5000, hidden: true }]);
+    assert.deepEqual(slothTimeline('hide'), [{ at: 0, anim: 'climbUp', say: 'yawn', ms: 5000 }, { at: 5000, hidden: true }]);
     assert.deepEqual(anims(slothTimeline('peek')), ['peek', 'peekIdle', 'peekWithdraw']);
     assert.equal(slothTimeline('peek').at(-1).hidden, true);
     assert.deepEqual(anims(slothTimeline('peekSpit')), ['peek', 'peekSpit', 'peekIdle', 'peekWithdraw']);

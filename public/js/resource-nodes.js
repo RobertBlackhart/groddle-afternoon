@@ -1736,19 +1736,14 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
         node.units = def.stock.max;
         node.sessionFeeds = 0;
         node.hideAt = now + def.session.callDelayMs + def.session.idleHideMs;
-        msgs.push('You knock. The Sloth comes down to hang out.');
+        // G889: what the Sloth says comes in its own bubbles (js/sloth-encounter.js SLOTH_LINES), as
+        // npc_sloth.js talk did; Glitch wrote nothing to Activity for a knock or a feed.
       } else {
         node.sessionFeeds = whole(node.sessionFeeds, 0) + 1;
         node.units = Math.max(0, def.stock.max - node.sessionFeeds);
         node.busyUntil = now + durationMs;
         node.lastMetalizeAt = node.busyUntil;
-        if (node.sessionFeeds > 7) {
-          node.hideAt = node.busyUntil;
-          msgs.push(`The Sloth chews the Metal Rod and spits out ${plural(outputs[0].qty, 'snail')}. That was SO METAL! It climbs away, stuffed.`);
-        } else {
-          node.hideAt = node.busyUntil + def.session.idleHideMs;
-          msgs.push(`The Sloth chews the Metal Rod and spits out ${plural(outputs[0].qty, 'snail')}. That was SO METAL!`);
-        }
+        node.hideAt = node.sessionFeeds > 7 ? node.busyUntil : node.busyUntil + def.session.idleHideMs;
       }
       break;
     }

@@ -35,7 +35,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=739a3eba';
+} from '../public/js/resource-nodes.js?v=46646715';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -531,6 +531,7 @@ describe('Sloth', () => {
 
     const knock = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock', skills }));
     assert.equal(knock.ok, true);
+    assert.deepEqual(knock.msgs, [], 'G889: the Sloth talks in bubbles, nothing goes to Activity');
     assert.equal(node.out, true);
     assert.equal(inv.metal_rod, 9, 'knocking does not consume a rod');
     assert.deepEqual(resourceNodeVerbs(node, inv, pc, ctxBase({ skills })).map((v) => v.id), ['feed']);
@@ -538,6 +539,7 @@ describe('Sloth', () => {
     const feed = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills, rng: seq(0.99) }));
     assert.equal(feed.ok, true);
     assert.deepEqual(feed.outputs, [{ classTsid: 'snail', qty: 10 }]);
+    assert.deepEqual(feed.msgs, []);
     assert.equal(inv.metal_rod, 8);
     assert.equal(inv.snail, 10);
     assert.ok(feed.durationMs > 2000);
