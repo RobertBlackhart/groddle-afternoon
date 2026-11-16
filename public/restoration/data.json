@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2357,
+  "commits": 2359,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A quest room you reach without its quest always lets you out"
+   },
    {
     "date": "2026-11-16",
     "kind": "new",
@@ -2909,14 +2914,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Everyone in a party sees the party time extension in Activity"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Answering a friend's Butler after leaving their street no longer errors"
    }
   ]
  },
- "tests": 1047,
+ "tests": 1048,
  "generatedAt": "2026-11-16"
 }
