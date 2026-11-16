@@ -1,7 +1,7 @@
 <?php
-// tests/g895-ledger-refund.test.js: runs the site's LedgerRefund::run against an in-memory stand-in for
+// tests/g895-ledger-refund.test.js and g905-ledger-refund.test.js: run the site's LedgerRefund::run against an in-memory stand-in for
 // Minn's Db (only the statements the refund sends), so its dry run and its apply are checked without a
-// database. Reads {site, log: [{id, user_id, at, kind, detail}], names: {id: name}, credited: [[user, kind, ref, n]],
+// database. Reads {site, log: [{id, user_id, at, kind, detail}], names: {id: name}, credited: [[user, kind, ref, n, at?]],
 // calls: [{apply, ref, since?, users?}]} on stdin; prints each call's result and what the tables hold after.
 declare(strict_types=1);
 
@@ -27,6 +27,16 @@ namespace Minn {
                     return $g895 ? $r['kind'] === 'clamp' && $r['at'] >= $since : ($r['kind'] === 'clamp' || ($r['kind'] === 'credit' && str_contains($r['detail'], '"later"')));
                 }));
                 usort($out, static fn ($a, $b) => [$a['user_id'], $a['at'], $a['id']] <=> [$b['user_id'], $b['at'], $b['id']]);
+                return $out;
+            }
+            // G905: when G895's refunds were applied ([user, kind, ref, n, at?] rows).
+            if ($sql === 'SELECT user_id, ref, at FROM groddle_ledger_credited WHERE kind = ? AND ref IN (?, ?)') {
+                $out = [];
+                foreach ($this->credited as $row) {
+                    if ($row[1] === $p[0] && in_array($row[2], [$p[1], $p[2]], true)) {
+                        $out[] = ['user_id' => $row[0], 'ref' => $row[2], 'at' => $row[4] ?? '2026-11-16 00:00:00'];
+                    }
+                }
                 return $out;
             }
             if (str_contains($sql, 'FROM users u LEFT JOIN groddle_players')) {
