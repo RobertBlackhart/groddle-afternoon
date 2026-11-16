@@ -6927,6 +6927,8 @@ body.buff-purple-pulse::after {
 }
 .map-street.building:hover .map-seg-stripes { stroke-width: calc(9px * var(--map-line-k, 1)); }
 .map-label.loaded.building { opacity: 0.5; }
+/* #403: a street you have not been to, its name at half (MapStreet.as 20, 125: TF_DIM_ALPHA .5). */
+.map-label.loaded.unvisited { opacity: 0.5; }
 .map-label {
   font-family: var(--font-ui);
   font-size: calc(var(--fs-2xs) * var(--map-text-k, 1));

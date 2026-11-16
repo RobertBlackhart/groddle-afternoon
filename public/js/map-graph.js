@@ -678,7 +678,8 @@ export function layoutStreetLabels(streets, mapW = 760, mapH = 460, { hubs = [],
     if (!strong && best.score >= 1000) continue;
     if (!strong) dimCount += 1;
     // Ticket 66: a street under construction keeps its name, dimmed (MapStreet.as 125: TF_DIM_ALPHA for STREET_LOCKED).
-    const cls = s.current ? 'map-label current' : s.loaded ? `map-label loaded${s.building ? ' building' : ''}` : 'map-label dim';
+    // #403: so does a street you have not been to (the same line: !street.visited; game.js sets `unvisited`).
+    const cls = s.current ? 'map-label current' : s.loaded ? `map-label loaded${s.building ? ' building' : ''}${s.unvisited ? ' unvisited' : ''}` : 'map-label dim';
     placed.push(best.quad);
     out.push({ name: s.name, x: best.x, y: best.y, rot, cls, w, h });
   }

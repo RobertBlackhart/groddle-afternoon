@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HUB_COLOURS, WORLD_MAP } from '../public/js/map-views-data.js?v=bf881f35';
-import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=31437f5b';
+import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=7179ea52';
 import { CARD_PICTURE, CARD_PICTURE_MAX, CARDS_MANIFEST, hubColours, readWorldMap } from '../tools/map-views/build.mjs';
 import { STATIONS } from '../public/js/subway.js?v=30f38f50';
 import {

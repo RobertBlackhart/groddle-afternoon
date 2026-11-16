@@ -994,7 +994,7 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=31437f5b';
+} from './js/map-graph.js?v=7179ea52';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=54e019ea';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
@@ -26267,15 +26267,20 @@ async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } =
   prepareMapBg(view, { loader: mapBgLoader, dpr: globalThis.devicePixelRatio, fitScale: mapFitScale });
   // Ticket 66: streets still under construction show it before you try to go (map-graph.js `building`).
   let building = 0;
+  // #403: the names of streets you have not been to are dimmed (MapStreet.as 125); the street you are on counts (MapHub.as 559).
+  let unvisited = 0;
   for (const st of view.streets || []) {
     if (!st.loaded || st.current) continue;
     st.building = Boolean(features.query('streetUnderConstruction', st.loadedTsid || st.tsid, engine));
     if (st.building) building += 1;
+    st.unvisited = ![st.loadedTsid, st.tsid].some((t) => t && engine.streetVisitsBefore(t) > 0);
+    if (st.unvisited) unvisited += 1;
   }
   if (app?.canvas) {
     app.canvas.dataset.mapHub = targetHub;
     app.canvas.dataset.mapYou = view.streets?.find((st) => st.current)?.tsid || '';
     app.canvas.dataset.mapBuilding = String(building);
+    app.canvas.dataset.mapUnvisited = String(unvisited);
   }
   if (title) title.textContent = view.hubName;
   if (sub) {
