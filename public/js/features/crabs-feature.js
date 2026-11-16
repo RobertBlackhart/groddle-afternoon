@@ -44,7 +44,7 @@ import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { cleanQuestMarkup } from '../quests.js?v=40c71a37';
-import { followPath } from '../street-creatures.js?v=bfcef23a';
+import { followPath } from '../street-creatures.js?v=78003d25';
 import { walkSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { isStandable } from '../street-model.js?v=2918abe5';
 import {

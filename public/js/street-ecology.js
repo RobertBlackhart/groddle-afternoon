@@ -306,10 +306,27 @@ export function rockShapeFor(tsid, index, classTsid, room = Infinity) {
   return [1, 2, 3].reduce((a, b) => (widths[b - 1] < widths[a - 1] ? b : a));
 }
 
+/**
+ * G852, #394: Hechey Track's five starter rocks are the remake's own (its archived row names none:
+ * populationForStreet's onboarding set), and the planner put four of them on its pine branches. They
+ * stand on fixed spots on the street's main floor instead, as Glitch set its rocks by hand (rock_*.js
+ * obey_physics false): [x, y, shape] by index (street px, the floor line's y under x), each clear of
+ * the signposts (148, 2026, 4300, 5828), the ladder (3125) and the trees, gardens, shrine and vendor
+ * (tests/g852-starter-rocks.test.js). Rocks 1-4 keep the floor spots the planner gave them once
+ * branches were off limits (each rock's saved ore stays at its index); rock 0, planned on a 250 px
+ * ledge 470 px over the floor, goes down to the open floor between the last tree and the east
+ * signpost. Shapes are rockShapeFor's on those spots.
+ */
+export const STARTER_ROCK_SPOTS = Object.freeze({
+  GLI2V0UN7RD1T2J: Object.freeze([[5650, 859.9, 1], [4538.3, 916.8, 2], [3326.5, 875, 2], [346, 958.8, 3], [1501, 882.6, 3]]),
+});
+
 /** Each rock's measured spot ({ x, y, shape }) by its index in rockClasses, or null where it is planned. */
 function measuredRockSlots(population) {
   const used = {};
-  return (population?.rockClasses || []).map((classTsid) => {
+  return (population?.rockClasses || []).map((classTsid, index) => {
+    const starterSpot = population?.starterRockSpots?.[index];
+    if (starterSpot) return { x: starterSpot[0], y: starterSpot[1], shape: starterSpot[2] || 1 };
     const k = used[classTsid] || 0;
     used[classTsid] = k + 1;
     const spot = population?.resourceSpots?.[classTsid]?.[k];
@@ -330,7 +347,10 @@ export function rockPlacementRequest(population) {
     const classTsid = population.rockClasses[index];
     return { x: slot.x, y: slot.y, w: ROCK_SHAPE_WIDTHS[classTsid]?.[slot.shape - 1] || 0, h: ROCK_SHAPE_HEIGHTS[classTsid]?.[slot.shape - 1] || 0 };
   }).filter(Boolean);
-  return { key: 'rocks', count: population?.rockClasses?.length || 0, clearance: 74, ...(fixed.length ? { fixed } : {}) };
+  // G852: Hechey Track's starter rocks (STARTER_ROCK_SPOTS) sit in the gaps the trees, gardens, vendor
+  // and shrine leave, so they are seated at the rocks' turn (`late`), leaving those as they were.
+  const late = fixed.length && population?.starterRockSpots ? { late: true } : {};
+  return { key: 'rocks', count: population?.rockClasses?.length || 0, clearance: 74, ...(fixed.length ? { fixed } : {}), ...late };
 }
 
 /**
@@ -719,6 +739,7 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
   let gardens = Math.min(whole(counts.garden), 2);
   let vendor = whole(counts.street_spirit) > 0;
   let shrine = !!entry?.giantId;
+  let starterRockSpots = null;
 
   // The default street remains a self-contained onboarding playground while
   // retaining its exact archived piggy/trant population and official shrine.
@@ -741,6 +762,7 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
         'rock_sparkly_1',
         'rock_metal_1',
       ];
+      starterRockSpots = STARTER_ROCK_SPOTS[tsid] || null;
     }
     gardens = Math.max(2, gardens);
     vendor = true;
@@ -779,6 +801,7 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
     // The starter's onboarding trees are the remake's own: they are planned.
     ...spotFields(spots, starter && !entry ? null : measuredTreeSpots(tsid)),
     ...shrineSpotField(shrine && entry ? tsid : null),
+    ...(starterRockSpots ? { starterRockSpots } : {}),
   };
 }
 
@@ -1807,7 +1830,9 @@ export function planStreetPlacements(
       ...(p.w > 0 && p.h > 0 ? { block: { l: p.x - p.w / 2, r: p.x + p.w / 2, t: p.y - p.h, b: p.y } } : {}),
     }));
     fixedOf.set(request.key, placed);
-    occupied.push(...placed);
+    // A `late` request's fixed points (Hechey Track's starter rocks, STARTER_ROCK_SPOTS) are seated at
+    // their group's turn: they were chosen in the gaps the earlier groups leave.
+    if (request.late !== true) occupied.push(...placed);
   }
   const fixtures = occupied.filter((point) => point.block);
   // Planned trees' canopies (report #256): only the UNDER_CANOPY_HEIGHTS groups keep out of them.
@@ -1832,6 +1857,10 @@ export function planStreetPlacements(
       ? new Map(fixedPts.filter((p) => p.index < count).map((p) => [p.index, p]))
       : null;
     groups[request.key] = fixedAt ? [] : fixedPts.slice(0, count);
+    if (request.late === true && fixedPts.length) {
+      occupied.push(...fixedPts);
+      fixtures.push(...fixedPts.filter((point) => point.block));
+    }
     if (request.key === 'trees') for (const point of groups.trees) canopies.push(canopyOf(point));
     const maxSlope = BIG_THING_GROUPS.includes(request.key) ? BIG_THING_MAX_SLOPE : null;
     const deck = DECK_GROUPS.includes(request.key);

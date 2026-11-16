@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
-import { skillPictureUrl } from '../public/js/features/newxp-feature.js?v=0d7ce838';
+import { skillPictureUrl } from '../public/js/features/newxp-feature.js?v=20099913';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');
