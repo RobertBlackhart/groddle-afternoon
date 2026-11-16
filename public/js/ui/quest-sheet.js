@@ -179,14 +179,33 @@ export function questRewardChips(rewards = {}) {
 /**
  * Where a quest is: the step you are on (the first one not done, else the last), its count and
  * how far along it is. `requirements`: [{ desc, current, num }].
+ *
+ * #397: a quest of several steps counts its steps (Eggs 'n' Basics with two of three made reads
+ * 2/3, not the 0/1 of the step it is on) and its bar sums every step's counts (questProgress).
+ * `stepCount` is the current step's own count and `steps` lists every step for the pinned row,
+ * as Glitch's quest log and tracker listed each requirement with got/need (QuestElementUI.as
+ * buildReqs 182-218, QuestTracker.as updateReq 206-216, where a count shows only when more than
+ * one is needed). A quest of one step comes back as before: { step, count, percent }.
  */
 export function questStep(requirements = []) {
-  const reqs = requirements.filter(Boolean);
+  const reqs = (requirements || []).filter(Boolean);
   if (!reqs.length) return { step: '', count: '', percent: 0 };
-  const cur = reqs.find((r) => (Number(r.current) || 0) < (Number(r.num) || 0)) || reqs[reqs.length - 1];
-  const num = Math.max(0, Number(cur.num) || 0);
-  const got = Math.max(0, Math.min(num, Number(cur.current) || 0));
-  return { step: String(cur.desc || ''), count: num ? `${got}/${num}` : '', percent: num ? Math.round((got / num) * 100) : 100 };
+  const steps = reqs.map((r) => {
+    const num = Math.max(0, Number(r.num) || 0);
+    const got = Math.max(0, Math.min(num, Number(r.current) || 0));
+    return { desc: String(r.desc || ''), num, got, done: got >= num, count: num ? `${got}/${num}` : '', percent: num ? Math.round((got / num) * 100) : 100 };
+  });
+  const cur = steps.find((s) => !s.done) || steps[steps.length - 1];
+  if (steps.length === 1) return { step: cur.desc, count: cur.count, percent: cur.percent };
+  const done = steps.filter((s) => s.done).length;
+  return {
+    step: cur.desc,
+    count: `${done}/${steps.length}`,
+    percent: Math.round(questProgress(reqs) * 100),
+    stepCount: cur.num > 1 ? cur.count : '',
+    done,
+    steps: steps.map(({ desc, num, done: d, count, percent }) => ({ desc, count: num > 1 ? count : '', percent, done: d })),
+  };
 }
 
 /**
@@ -302,8 +321,10 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
     const step = info ? questStep(info.requirements) : null;
     if (step?.count) {
       const count = doc.createElement('span');
-      count.className = 'qc-count';
+      count.className = step.steps ? 'qc-count qc-steps' : 'qc-count';
       count.textContent = step.count;
+      // #397: several steps count steps done; the tip says so.
+      if (step.steps) count.title = `${step.done} of ${step.steps.length} steps done`;
       head.appendChild(count);
     } else if (which === 'done') {
       const count = doc.createElement('span');
@@ -321,6 +342,13 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
       const s = doc.createElement('span');
       s.className = 'qc-step';
       renderText(s, step.step);
+      // #397: with several steps the head counts steps, so the step you are on keeps its own count.
+      if (step.stepCount) {
+        const n = doc.createElement('span');
+        n.className = 'qc-step-n';
+        n.textContent = step.stepCount;
+        s.append(' ', n);
+      }
       head.appendChild(s);
     }
 
@@ -371,7 +399,7 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
     // RIGHTCLICK: the card has a menu of ours (js/ui/context-guard.js stops the browser's over it).
     card.dataset.ctx = 'quest-card';
     head.setAttribute('aria-keyshortcuts', 'Shift+F10');
-    head.setAttribute('aria-label', `${[titleEl.textContent, step?.count || (which === 'done' ? 'Done' : ''), head.querySelector('.qc-step')?.textContent || ''].filter(Boolean).join(', ')}. ${MORE_KEYS_LABEL}`);
+    head.setAttribute('aria-label', `${[titleEl.textContent, (step?.steps ? `${step.done} of ${step.steps.length} steps done` : step?.count) || (which === 'done' ? 'Done' : ''), head.querySelector('.qc-step')?.textContent || ''].filter(Boolean).join(', ')}. ${MORE_KEYS_LABEL}`);
     head.addEventListener('click', () => {
       const now = !card.classList.contains('is-open');
       card.classList.toggle('is-open', now);

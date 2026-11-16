@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { getQuestProgress } from '../public/js/quests.js?v=40c71a37';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=38a0cac5';
-import { questStep } from '../public/js/ui/quest-sheet.js?v=66a1b1e6';
+import { questStep } from '../public/js/ui/quest-sheet.js?v=5e2424a2';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
@@ -106,12 +106,12 @@ describe('the pinned count ticks as each unit is made, with Make still open', ()
     const accepted = acceptOffer(qs, id, { inv: {}, now: 1 });
     assert.equal(accepted.ok, true);
     const step = () => questStep(getQuestProgress(qs, id).requirements);
-    assert.deepEqual([step().step, step().count], ['Make 2 x Ginger', '0/2']);
+    assert.deepEqual([step().step, step().stepCount, step().count], ['Make 2 x Ginger', '0/2', '0/4']);
     routeQuestEvent(qs, 'making_recipe:ginger', 1, { managedOnly: true });
-    assert.deepEqual([step().step, step().count], ['Make 2 x Ginger', '1/2']);
+    assert.deepEqual([step().step, step().stepCount, step().count], ['Make 2 x Ginger', '1/2', '0/4']);
     routeQuestEvent(qs, 'making_recipe:ginger', 1, { managedOnly: true });
     assert.equal(getQuestProgress(qs, id).requirements.find((r) => r.recipeKey === 'ginger').current, 2);
-    assert.deepEqual([step().step, step().count], ['Make 2 x Curry', '0/2'], 'the card moves on to the step you are on');
+    assert.deepEqual([step().step, step().stepCount, step().count], ['Make 2 x Curry', '0/2', '1/4'], 'the card moves on to the step you are on (#397: the head counts steps done)');
   });
 
   it('game.js: every made unit emits its event and redraws the HUD, and the HUD always redraws the tracker', () => {

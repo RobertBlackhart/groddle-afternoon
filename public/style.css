@@ -12493,6 +12493,8 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #quest .qc-count { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; }
 [data-ui="modern"] #quest .qc-done { color: var(--good); font-size: var(--fs-s); }
 [data-ui="modern"] #quest .qc-step { grid-column: 1; font-size: var(--fs-s); color: var(--text-muted); }
+/* #397: with several steps the head counts steps; the step you are on keeps its own count. */
+[data-ui="modern"] #quest .qc-step-n { font-weight: var(--fw-bold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* A quest on hold for a closed road (game.js, js/quest-reach.js): the head and the card say why. */
 [data-ui="modern"] #quest .qc-step.qc-hold { color: var(--warn); font-weight: var(--fw-heavy); }
 [data-ui="modern"] #quest .q-card.on-hold .qc-bar > i { background: var(--text-muted); }
@@ -12928,6 +12930,16 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #quest-pins .tq.is-failed .tq-step { color: var(--warn); font-weight: var(--fw-bold); }
 [data-ui="modern"] #quest-pins .tq-bar { display: block; height: 6px; margin-top: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
 [data-ui="modern"] #quest-pins .tq-bar i { display: block; height: 100%; background: var(--good); transition: width var(--motion-med) var(--ease-out); }
+/* #397: a pinned quest of several steps lists each step left with a thin bar, then "+N more" and "N done". */
+[data-ui="modern"] #quest-pins .tq-steps { display: grid; gap: 5px; margin-top: 3px; }
+[data-ui="modern"] #quest-pins .tq-req { display: block; min-width: 0; }
+[data-ui="modern"] #quest-pins .tq-req-row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); font-size: var(--fs-s); color: var(--text-muted); }
+[data-ui="modern"] #quest-pins .tq-req-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+[data-ui="modern"] #quest-pins .tq-req-n { flex: none; font-weight: var(--fw-bold); color: var(--text); font-variant-numeric: tabular-nums; }
+[data-ui="modern"] #quest-pins .tq-req-bar { display: block; height: 3px; margin-top: 3px; border-radius: 2px; background: var(--track); overflow: hidden; }
+[data-ui="modern"] #quest-pins .tq-req-bar i { display: block; height: 100%; background: var(--good); transition: width var(--motion-med) var(--ease-out); }
+[data-ui="modern"] #quest-pins .tq-foot { display: flex; flex-wrap: wrap; gap: var(--space-2); font-size: var(--fs-xs); color: var(--text-muted); }
+[data-ui="modern"] #quest-pins .tq-done { color: var(--good); font-weight: var(--fw-bold); }
 /* The buff strip steps down under the tracker, which stands beside an open sheet too (above). */
 [data-ui="modern"] #game-root #quest-pins:not([hidden]) ~ #buff-strip { top: calc(var(--hud-h) + 6px + var(--quest-pins-h, 0px) + var(--space-2)); }
 /* Report #125: an open side sheet (Make, a grinder's window, Quests ...) covered the strip, so a running
@@ -13049,6 +13061,7 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 @media (prefers-reduced-motion: reduce) {
   [data-ui="modern"] #game-root #quest-pins:not([hidden]),
   [data-ui="modern"] #quest-pins .tq-bar i,
+  [data-ui="modern"] #quest-pins .tq-req-bar i,
   [data-ui="modern"] #quest-pins .quest-pins-toggle svg { transition: none; }
 }
 /* A quest room's HUD (centred over the world) centres in the width an open side sheet leaves. */

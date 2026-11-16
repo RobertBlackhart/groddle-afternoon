@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_ROWS_BOX, menuRowsCap, placeVerbMenu, plainWords, verbRowKeys, verbRowInner, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=96e06e9d';
-import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=66a1b1e6';
+import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=5e2424a2';
 import { MAX_QUEST_PINS, normalizeQuestPins, questPinsFeature } from '../public/js/features/quest-pins-feature.js?v=e59012f1';
 import { FEATURES } from '../public/js/features/index.js?v=7084ca72';
 
@@ -67,6 +67,26 @@ describe('the Quests sheet (js/ui/quest-sheet.js)', () => {
     assert.deepEqual(questStep([{ desc: 'Pet Piggies', current: 4, num: 6 }]), { step: 'Pet Piggies', count: '4/6', percent: 67 });
     assert.deepEqual(questStep([{ desc: 'A', current: 1, num: 1 }, { desc: 'B', current: 0, num: 2 }]).step, 'B');
     assert.equal(questStep([]).count, '');
+  });
+
+  it("#397: several steps count steps done in the head, the bar sums every count, the step keeps its own", () => {
+    const eggs = questStep([
+      { desc: 'Make a Fried Eggs', current: 1, num: 1 },
+      { desc: 'Make a Basic Omelet', current: 1, num: 1 },
+      { desc: 'Make a Bun', current: 0, num: 1 },
+    ]);
+    assert.equal(eggs.count, '2/3', "Eggs 'n' Basics with two made");
+    assert.equal(eggs.step, 'Make a Bun');
+    assert.equal(eggs.stepCount, '', 'a step of one shows no count of its own (QuestTracker.as updateReq)');
+    assert.equal(eggs.percent, 67);
+    const bubble = questStep([{ desc: 'Make 7 x Tiny Bubble', current: 7, num: 7 }, { desc: 'Make 7 x Blue Bubble', current: 3, num: 7 }]);
+    assert.deepEqual([bubble.count, bubble.step, bubble.stepCount, bubble.percent, bubble.done], ['1/2', 'Make 7 x Blue Bubble', '3/7', 71, 1]);
+    assert.deepEqual(bubble.steps, [
+      { desc: 'Make 7 x Tiny Bubble', count: '7/7', percent: 100, done: true },
+      { desc: 'Make 7 x Blue Bubble', count: '3/7', percent: 43, done: false },
+    ]);
+    // One step: exactly as before, no step list.
+    assert.deepEqual(questStep([{ desc: 'Pet Piggies', current: 6, num: 6 }]), { step: 'Pet Piggies', count: '6/6', percent: 100 });
   });
 
   it('says a quest\'s rewards in short chips', () => {

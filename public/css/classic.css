@@ -3373,6 +3373,12 @@
 :root[data-ui="classic"] #bug-report-panel .picture-lightbox-count { padding: calc(3 * var(--cu)) calc(10 * var(--cu)); border-radius: var(--radius-xs); background: var(--c-classic-panel); color: var(--c-classic-text); font: 800 calc(var(--fs-classic-button) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-title); }
 /* === end reportpics === */
 
+/* === chk13b (lane) === */
+/* #397: a quest of several steps counts steps in its head, so Classic says "(2/3 steps)" after the step. */
+:root[data-ui="classic"] #game-root #quest-panel .qc-head .qc-step + .qc-count.qc-steps::after,
+:root[data-ui="classic"] #game-root #quest-panel .qc-head .qc-count.qc-steps:has(+ .qc-step)::after { content: " steps)"; }
+/* === end chk13b === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

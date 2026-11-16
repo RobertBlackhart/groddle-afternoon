@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { questStepHtml } from '../public/js/ui/quest-tracker.js?v=db74c49b';
-import { questStep, orderQuestCards } from '../public/js/ui/quest-sheet.js?v=66a1b1e6';
+import { PIN_STEPS_SHOWN, createQuestTracker, pinStepsHtml, questStepHtml } from '../public/js/ui/quest-tracker.js?v=39b7d2ae';
+import { questStep, orderQuestCards } from '../public/js/ui/quest-sheet.js?v=5e2424a2';
 import { QUEST_MOVES_HERE, questTakesYouAway } from '../tools/encyclopedia/data.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -102,5 +102,71 @@ describe('#142 the Offered tab and pinned quests', () => {
     const sheet = readFileSync(join(root, 'public/js/ui/quest-sheet.js'), 'utf8');
     assert.match(sheet, /pinned: Boolean\(n\.dataset\.quest && isPinned\(n\.dataset\.quest\)\)/);
     assert.match(readFileSync(join(root, 'public/game.js'), 'utf8'), /isPinned: \(classTsid\) => modernUi\(\) && Boolean\(questPins\(\)\?\.isPinned\(classTsid\)\)/);
+  });
+});
+
+describe('#397 a quest of several steps shows them all', () => {
+  const bubble = [{ desc: 'Make 7 x Tiny Bubble', current: 7, num: 7 }, { desc: 'Make 7 x Blue Bubble', current: 3, num: 7 }];
+  const eggs = [
+    { desc: 'Make a Fried Eggs', current: 1, num: 1 },
+    { desc: 'Make a Basic Omelet', current: 1, num: 1 },
+    { desc: 'Make a Bun', current: 0, num: 1 },
+  ];
+
+  it("the card head counts steps done (Eggs 'n' Basics 2/3) and the bar sums the counts (Bubble 1/2 at 71%)", () => {
+    assert.equal(questStep(eggs).count, '2/3');
+    const b = questStep(bubble);
+    assert.deepEqual([b.count, b.percent, b.step, b.stepCount], ['1/2', 71, 'Make 7 x Blue Bubble', '3/7']);
+    const sheet = readFileSync(join(root, 'public/js/ui/quest-sheet.js'), 'utf8');
+    assert.match(sheet, /if \(step\.stepCount\) \{[\s\S]*?n\.className = 'qc-step-n';\s*n\.textContent = step\.stepCount;/);
+    assert.match(sheet, /fill\.style\.width = `\$\{step\.percent\}%`;/);
+    // Classic draws the head count in brackets after the step, so it says what it counts.
+    assert.match(sheet, /count\.className = step\.steps \? 'qc-count qc-steps' : 'qc-count';/);
+    assert.match(readFileSync(join(root, 'public/css/classic.css'), 'utf8'), /\.qc-count\.qc-steps:has\(\+ \.qc-step\)::after \{ content: " steps\)"; \}/);
+  });
+
+  it('the pinned row lists only the steps left (Blue 3/7) and folds the done ones into one line', () => {
+    const html = pinStepsHtml(questStep(bubble).steps);
+    assert.equal((html.match(/class="tq-req"/g) || []).length, 1);
+    assert.match(html, /<span class="tq-req-text">Make 7 x Blue Bubble<\/span><span class="tq-req-n">3\/7<\/span>/);
+    assert.match(html, /<i style="width:43%"><\/i>/);
+    assert.doesNotMatch(html, /Tiny Bubble/);
+    assert.match(html, /<span class="tq-done">1 done<\/span>/);
+    assert.doesNotMatch(html, /more/);
+    // A step of one shows its words and bar but no 0/1 (QuestTracker.as updateReq: need_num > 1).
+    assert.doesNotMatch(pinStepsHtml(questStep(eggs).steps), /tq-req-n/);
+  });
+
+  it('up to three steps left, then "+N more"', () => {
+    const many = Array.from({ length: 6 }, (_, i) => ({ desc: `Step ${i}`, current: i === 0 ? 2 : 0, num: 2 }));
+    const html = pinStepsHtml(questStep(many).steps);
+    assert.equal(PIN_STEPS_SHOWN, 3);
+    assert.equal((html.match(/class="tq-req"/g) || []).length, 3);
+    assert.match(html, /Step 1[\s\S]*Step 2[\s\S]*Step 3/);
+    assert.doesNotMatch(html, /Step 4/);
+    assert.match(html, /<span class="tq-more">\+2 more<\/span><span class="tq-done">1 done<\/span>/);
+  });
+
+  it('a quest of one step draws its row as before', () => {
+    const one = questStep([{ desc: 'Pet Piggies', current: 2, num: 6 }]);
+    assert.equal(one.steps, undefined);
+    assert.equal(pinStepsHtml(one.steps), '');
+    const list = { innerHTML: '', addEventListener() {}, contains: () => false, querySelector: () => null };
+    const el = {
+      hidden: false,
+      parentElement: null,
+      ownerDocument: { activeElement: null },
+      classList: { toggle() {}, contains: () => false },
+      querySelector: (sel) => (sel === '[data-pins-list]' ? list : null),
+    };
+    const tracker = createQuestTracker({ el });
+    tracker.render([{ classTsid: 'p', title: 'Porcine Pleaser', ...one }], false);
+    assert.match(list.innerHTML, /<span class="tq-n">2\/6<\/span><\/span><span class="tq-step">Pet Piggies<\/span><span class="tq-bar"/);
+    assert.doesNotMatch(list.innerHTML, /tq-steps/);
+    tracker.render([{ classTsid: 'b', title: 'Bubble Transmogrification', ...questStep(bubble) }], false);
+    assert.match(list.innerHTML, /class="tq has-steps"/);
+    assert.match(list.innerHTML, /<span class="tq-n">1\/2<\/span><\/span><span class="tq-steps">/);
+    assert.doesNotMatch(list.innerHTML, /tq-step"|class="tq-bar"/, 'the step list stands in for the one step line and bar');
+    assert.match(list.innerHTML, /aria-label="Bubble Transmogrification, 1 of 2 steps done: Make 7 x Blue Bubble 3\/7\. Open in Quests\./);
   });
 });
