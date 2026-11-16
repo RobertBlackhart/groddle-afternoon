@@ -25,7 +25,7 @@ import {
 } from '../public/js/animal-crowding.js?v=3ee9671d';
 import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=bbba35b9';
 import { homeStreetLayout, normalizeCultivationState } from '../public/js/home-cultivation.js?v=5d66e832';
-import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=ca5b4781';
+import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=d6321312';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

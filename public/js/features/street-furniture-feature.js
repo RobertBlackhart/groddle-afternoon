@@ -37,7 +37,7 @@
  * neighbourChore, neighbourLetters, furnitureLast.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
 import { nearestSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
@@ -126,8 +126,8 @@ import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } 
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=eca7de52';
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=d3642d55';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { butlerApi } from './butler-feature.js?v=47f02714';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=5e13cc8d';
+import { butlerApi } from './butler-feature.js?v=f18b0492';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=3992c971';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 

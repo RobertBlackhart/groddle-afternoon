@@ -120,7 +120,7 @@ import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=91aa2d26';
 import { hellFeature } from './hell-feature.js?v=5fdccf83';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=98606052';
-import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=1ecb86a5';
+import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=b12c43aa';
 import { POWDER_SHAKE, powderShakerSheet } from '../powder-shakers.js?v=fcd18855';
 import { OVERLAY_USES, playOverlay, playWindowOverlay, windowOverlayFit } from '../overlays.js?v=eda942a8';
 import {
