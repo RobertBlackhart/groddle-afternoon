@@ -13,8 +13,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
-import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=72373665';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=5244cb18';
+import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=8af3c741';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=78f13da3';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=f28fb98b';
+import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -148,5 +150,63 @@ describe('the way out is never a dead end (features/quest-instances-feature.js)'
     assert.match(out, /engine\.query\?\.\('safeWayOut', engine, \{ prefer, notice \}\)/);
     const card = src.slice(src.indexOf('function rememberReturn('), src.indexOf('function wayBack('));
     assert.match(card, /deadEnd\(engine, engine\.streetTsid\)/, 'a card taken on a dead end keeps the return it had');
+  });
+});
+
+describe("/stuck, I'm stuck and the Map card on a puzzle street with no road out (features/puzzles-feature.js)", () => {
+  const wired = (opts) => {
+    const engine = fakeEngine(opts);
+    engine.query = (hook, ...args) => (typeof qi[hook] === 'function' ? qi[hook](...args) : null);
+    return engine;
+  };
+  beforeEach(() => {
+    qi.restore({ lastStreet: HECHEY });
+    pz.restore({});
+  });
+
+  it('answers as a quest room with nothing to fail, so /stuck takes the way out with no cooldown', () => {
+    const engine = wired({ tsid: ORANGIAN });
+    const here = pz.questRoomHere(engine);
+    assert.deepEqual(here, { title: ORANGIAN, solved: true, stray: true, puzzle: true });
+    assert.deepEqual(slashPlan('/stuck', { home: { inHome: false }, questRoom: here, stuckWaitMs: 60_000 }), { command: '/stuck', stuck: 'quest-room' });
+    for (const t of NO_EXIT_PUZZLE_STREETS) assert.ok(pz.questRoomHere(wired({ tsid: t })), t);
+    assert.equal(pz.questRoomHere(wired({ tsid: HECHEY.tsid })), null);
+    assert.equal(pz.questRoomHere(wired({ tsid: 'GA96OS42D6F3M9P' })), null, 'Piano Party has its own signposts');
+  });
+
+  it('the reported state: from Orangian with the card taken on the practice street, /stuck goes to Ur unsolved', async () => {
+    pz.restore({ returnTo: { tsid: EZ, x: 1443, y: 900, card: ORANGIAN } });
+    qi.restore({ lastStreet: { tsid: ORANGIAN, x: 100, y: 829 } });
+    const engine = wired({ tsid: ORANGIAN });
+    assert.equal(await pz.questRoomLeave(engine, { transition: false }), true);
+    assert.equal(engine.log.entered[0][0], STRAY_FALLBACK_TSID);
+    assert.equal(engine.log.entered[0][1].useTransition, false);
+    assert.deepEqual(pz.save().completed, {}, 'never solved');
+    assert.equal(pz.save().returnTo, null);
+  });
+
+  it('goes back where the card was taken when that is a street of Ur, and a teleport lands on its target', async () => {
+    pz.restore({ returnTo: { tsid: GIMBAP_BOP, x: 700, y: 400, card: ORANGIAN } });
+    const engine = wired({ tsid: ORANGIAN });
+    await pz.questRoomLeave(engine);
+    assert.deepEqual(engine.log.entered[0], [GIMBAP_BOP, { spawnX: 700, spawnY: 400, useTransition: true }]);
+    const tp = wired({ tsid: 'GDOSHD9J6NT2HUJ' });
+    await pz.questRoomLeave(tp, { to: { tsid: 'GLI32G3NUTD100I', x: 1, y: 2 } });
+    assert.equal(tp.log.entered[0][0], 'GLI32G3NUTD100I');
+    assert.equal(await pz.questRoomLeave(wired({ tsid: HECHEY.tsid })), null, 'nothing to leave on a street of Ur');
+  });
+
+  it('/stuck says the puzzle line (features/slash-commands-feature.js)', () => {
+    assert.equal(STUCK_TEXT.donePuzzle, "You're off the puzzle street, back where you came in.");
+    const src = read('public/js/features/slash-commands-feature.js');
+    assert.match(src, /room\?\.puzzle \? STUCK_TEXT\.donePuzzle : room\?\.solved/);
+  });
+
+  it("the Map card offers Leave there (the card was the only way back, to more puzzle streets)", () => {
+    assert.equal(PUZZLE_LEAVE_TEXT.button('Orangian'), 'Leave Orangian');
+    const src = read('public/js/features/puzzles-feature.js');
+    const card = src.slice(src.indexOf('function buildMapCard('), src.indexOf('/* QA'));
+    assert.match(card, /const stuck = noExitHere\(engine\);/);
+    assert.match(card, /addEventListener\('click', \(\) => leavePuzzle\(engine\)\)/);
   });
 });

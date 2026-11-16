@@ -248,6 +248,12 @@ export const NO_EXIT_PUZZLE_STREETS = Object.freeze([
   'GIFM2QAIQ1C31JV', // Penumbra
 ]);
 
+/** G887: the Map card's way off a puzzle street with no road out (the remake's own words). */
+export const PUZZLE_LEAVE_TEXT = Object.freeze({
+  button: (name) => `Leave ${name || 'the puzzle street'}`,
+  tip: 'Back to where you came in, without finishing',
+});
+
 export const CARD_RETURN_TEXT = Object.freeze({
   button: (name) => (name ? `Back to ${name}` : 'Back to where you were'),
   // The card sits in the Map's Shortcuts (js/map-extras.js), shut after a reload.

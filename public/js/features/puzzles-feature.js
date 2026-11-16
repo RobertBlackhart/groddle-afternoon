@@ -36,6 +36,13 @@
  * Teleporter: stand there) and triggers with `moment` (reported to the instance through
  * engine.instanceMoment when the avatar enters them).
  *
+ * G887: a puzzle street with no road out (the colour levels, Umbra, Penumbra:
+ * js/puzzle-triggers.js NO_EXIT_PUZZLE_STREETS) answers as a quest room does
+ * (questRoomHere, questRoomLeave), so /stuck, the Menu's I'm stuck and the Map
+ * card's Leave take you back where you came in, never to the level's finish
+ * door (a reload left /stuck standing you in Orangian's exit door, a step from
+ * its reward) and never paying it; a teleport out lands on its own target.
+ *
  * QA: ?autostart=1&questoffer=off&puzzledemo=<tsid> travels to a puzzle
  * street and stands at its start; &puzzleautoplay=1 walks the triggers in
  * order by placing the avatar on each (1.2 s apart), collects every quoin,
@@ -54,6 +61,7 @@ import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821'
 import {
   CARD_RETURN_TEXT,
   NO_EXIT_PUZZLE_STREETS,
+  PUZZLE_LEAVE_TEXT,
   PUZZLE_DATA_URL,
   SOURCE_PHYSICS,
   autoplaySteps,
@@ -68,7 +76,7 @@ import {
   rewardBits,
   showExitDoor,
   stepTriggers,
-} from '../puzzle-triggers.js?v=72373665';
+} from '../puzzle-triggers.js?v=8af3c741';
 import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 
@@ -86,6 +94,7 @@ let save = normalizePuzzleSave();
 let run = null; // per visit
 let lastData = 0;
 let demo = { stage: 'idle', at: 0, queue: [], target: '' };
+let leaving = false;
 
 function load() {
   if (data) return Promise.resolve(data);
@@ -801,6 +810,40 @@ function wayOut(engine, here = engine.streetTsid, { notice = false } = {}) {
   return engine.query?.('safeWayOut', engine, { prefer, notice }) || prefer || { tsid: 'GLI2V0UN7RD1T2J', x: null, y: null };
 }
 
+/** The puzzle street with no road out you stand on (not a held instance), else null (G887). */
+function noExitHere(engine) {
+  const here = key(engine?.streetTsid);
+  if (!here || !noExit(here) || engine.transientInstance?.() || engine.homeContext?.().inHome) return null;
+  return { tsid: here, title: defFor(here)?.name || engine.street?.label || 'Puzzle street' };
+}
+
+/**
+ * G887: off a puzzle street with no road out, unsolved and unpaid: to `to` (a teleport's target) or
+ * back where you came in (wayOut). Answers whether you left.
+ */
+async function leavePuzzle(engine, opts = {}) {
+  if (leaving || !noExitHere(engine)) return false;
+  leaving = true;
+  try {
+    const to = opts.to?.tsid ? opts.to : wayOut(engine);
+    save.returnTo = null;
+    engine.closeMap?.();
+    await engine.enter(to.tsid, {
+      ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
+      ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
+      useTransition: opts.transition !== false,
+    });
+    engine.setData?.('puzzleLeft', key(to.tsid));
+    engine.save?.();
+    return true;
+  } catch (err) {
+    console.warn('puzzle leave', err);
+    return false;
+  } finally {
+    leaving = false;
+  }
+}
+
 /** The card is clicked for `dest`: remember this street, marked for the street the card sends to (G618). */
 function rememberReturn(engine, dest) {
   const p = engine.player;
@@ -888,6 +931,19 @@ function buildMapCard(engine) {
     b.title = 'Return to the street the Map card took you from';
     b.style.cssText = 'display:block;margin-top:8px;padding:4px 12px;border-radius:999px;border:1px solid #8f6fc9;background:#4b2f75;color:#fff;font-weight:700;cursor:pointer';
     b.addEventListener('click', () => goBack(engine));
+    card.appendChild(b);
+  }
+  // G887: on a street with no road out the card is the Map's way back to Ur (the remake's own words,
+  // like the card).
+  const stuck = noExitHere(engine);
+  if (stuck && !back) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'puzzle-map-back puzzle-map-leave';
+    b.textContent = PUZZLE_LEAVE_TEXT.button(stuck.title);
+    b.title = PUZZLE_LEAVE_TEXT.tip;
+    b.style.cssText = 'display:block;margin-top:8px;padding:4px 12px;border-radius:999px;border:1px solid #8f6fc9;background:#4b2f75;color:#fff;font-weight:700;cursor:pointer';
+    b.addEventListener('click', () => leavePuzzle(engine));
     card.appendChild(b);
   }
   return card;
@@ -1110,6 +1166,17 @@ export const puzzlesFeature = {
     if (verbId !== 'puzzle_exit') return null;
     complete(engine);
     return true;
+  },
+
+  /** G887: a puzzle street with no road out, for /stuck and teleporting (nothing to fail). */
+  questRoomHere(engine) {
+    const here = noExitHere(engine);
+    return here ? { title: here.title, solved: true, stray: true, puzzle: true } : null;
+  },
+
+  /** G887: /stuck, I'm stuck and a teleport out of one (leavePuzzle); null elsewhere. */
+  questRoomLeave(engine, opts = {}) {
+    return noExitHere(engine) ? leavePuzzle(engine, opts) : null;
   },
 
   mapCards(engine) {

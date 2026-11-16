@@ -16,7 +16,7 @@ import {
   showExitDoor,
   stepTriggers,
   triggerHit,
-} from '../public/js/puzzle-triggers.js?v=72373665';
+} from '../public/js/puzzle-triggers.js?v=8af3c741';
 import {
   createEventRuntime,
   dueEventTimers,
@@ -247,7 +247,7 @@ describe('gut tubes', () => {
   });
 
   test('a phone flips with its Jump button, and the toasts name it (Greyving Grays chat "stuck", 2026-11-13)', async () => {
-    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=e3205870');
+    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=f28fb98b');
     const src = readFileSync(join(root, 'public/js/features/puzzles-feature.js'), 'utf8');
     // The phone has no Space key: its Jump button sends TOUCH_JUMP_EVENT (game.js installTouchControls).
     assert.match(src, /window\.addEventListener\(TOUCH_JUMP_EVENT, \(\) => flipGravity\(engine\)\);/);

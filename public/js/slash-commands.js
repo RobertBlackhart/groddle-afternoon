@@ -78,6 +78,8 @@ export const STUCK_TEXT = Object.freeze({
   /** In a quest room: out, back where you came in (quest-instances-feature questRoomLeave). */
   doneQuestRoom: "You're out of the quest room, back where you came in. An unfinished quest ends when you leave its room.",
   doneQuestRoomSolved: "You're out of the quest room, back where you came in.",
+  /** G887: off a puzzle street with no road out (puzzles-feature questRoomLeave), unsolved. */
+  donePuzzle: "You're off the puzzle street, back where you came in.",
   leave: "/stuck doesn't work here. Use Leave to get out.",
   dead: "You are dead. Squish Hellish Grapes to get out of Naraka.",
   /** G528: once, on a floor a plain jump doesn't get off. */

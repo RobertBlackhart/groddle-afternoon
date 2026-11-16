@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hotkeySections } from '../public/js/client-hotkeys.js?v=7a2676ac';
+import { hotkeySections } from '../public/js/client-hotkeys.js?v=c8210235';
 import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=52534f8e';
 
 const here = dirname(fileURLToPath(import.meta.url));

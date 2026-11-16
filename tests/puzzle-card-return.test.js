@@ -18,7 +18,7 @@ import {
   cardReturn,
   normalizePuzzleData,
   normalizePuzzleSave,
-} from '../public/js/puzzle-triggers.js?v=72373665';
+} from '../public/js/puzzle-triggers.js?v=8af3c741';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = JSON.parse(readFileSync(join(root, 'public/assets/content/puzzle-triggers.json'), 'utf8'));

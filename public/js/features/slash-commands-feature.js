@@ -65,7 +65,7 @@ import { hellFeature } from './hell-feature.js?v=55547e57';
 import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
 import { towerApi } from './home-tower-feature.js?v=9c8359ad';
 import { platformYAt, platformsScreen } from '../street-model.js?v=2918abe5';
-import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=7c4d5a44';
+import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=fb3a8442';
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=fa56e8df';
 import { minnUrls } from '../minn-account.js?v=00f3eadb';
 import { saveStore } from '../save-store.js?v=cd053443';
@@ -212,7 +212,7 @@ async function stuck(engine, plan) {
       publish(engine);
       return;
     }
-    activity(engine, room?.solved ? STUCK_TEXT.doneQuestRoomSolved : STUCK_TEXT.doneQuestRoom);
+    activity(engine, room?.puzzle ? STUCK_TEXT.donePuzzle : room?.solved ? STUCK_TEXT.doneQuestRoomSolved : STUCK_TEXT.doneQuestRoom);
     last = '/stuck:quest-room';
     publish(engine);
     return;
