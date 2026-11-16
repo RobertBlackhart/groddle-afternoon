@@ -170,3 +170,18 @@ describe('#342 and #343: a phone held sideways (PHONE SIDEWAYS 2)', () => {
     assert.match(block, /:focus-within :is\(\.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-tray, \.reports-foot\) \{ display: none; \}/);
   });
 });
+
+describe('G857 (#406): sideways, the report window gives each picture row its own place', () => {
+  const block = css.slice(css.indexOf('/* === PHONE SIDEWAYS 2 (chk6'), css.indexOf('/* === end PHONE SIDEWAYS 2 === */'));
+  it('the Attach row, the Add and Take row, the tray and Send each have a grid area', () => {
+    assert.match(block, /grid-template-areas: "label label" "text pic" "text add" "text tray" "text send";/);
+    assert.match(block, /\.reports-new-view > \.reports-picture-row \{ grid-area: pic;/);
+    assert.match(block, /\.reports-new-view > \.reports-picture-row\.reports-new-pictures \{ grid-area: add;/);
+    assert.match(block, /\.reports-new-view > \.reports-tray \{ grid-area: tray;/);
+  });
+  it('both rows carry reports-picture-row in the sheet, so the second needs the more specific rule', () => {
+    const sheet = readFileSync(join(root, 'public/js/ui/reports-sheet.js'), 'utf8');
+    assert.match(sheet, /e\('div', \{ class: 'reports-picture-row', 'data-reports-picture-row': '' \}\)/);
+    assert.match(sheet, /e\('div', \{ class: 'reports-picture-row reports-new-pictures' \}\)/);
+  });
+});
