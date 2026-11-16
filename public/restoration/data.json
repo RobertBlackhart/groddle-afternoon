@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2340,
+  "commits": 2344,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Ix Completist needs every Ix street (9), not 7; a badge already earned is kept"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The touch stick climbs ladders: held Up as you reach one grabs it, a new Up in mid-air grabs it, and its diagonal keeps you climbing"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A visited player's Tower is titled \"<Name>'s Tower\", not \"<Name>'s Your Tower\""
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "Shimla Mirch's restored map loses its eight added wooden things and has its paper sea back"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "In the iPhone Home Screen app the Encyclopedia opens over the game, with Back to the game"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Replying in a chat on a phone keeps the conversation at its newest lines when the keyboard comes up"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "On a phone, a drag on Act moves through a signpost's roads, and Act chooses in a stack's menu"
    }
   ]
  },
- "tests": 1044,
+ "tests": 1046,
  "generatedAt": "2026-11-16"
 }
