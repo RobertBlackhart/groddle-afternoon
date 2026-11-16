@@ -31,7 +31,7 @@ function php(op, args) {
     };
     echo json_encode($out);`;
   const out = execFileSync('php', ['-r', code], { input: JSON.stringify({ op, args }) });
-  return JSON.parse(String(out), (k, v) => (Array.isArray(v) && !v.length && ['items', 'made', 'runs', 'capped', 'detail'].includes(k) ? {} : v));
+  return JSON.parse(String(out), (k, v) => (Array.isArray(v) && !v.length && ['items', 'made', 'runs', 'capped', 'detail', 'held'].includes(k) ? {} : v));
 }
 
 const constant = (name) => (skip ? 0 : Number(new RegExp(`const ${name} = (\\d+);`).exec(readFileSync(join(SITE_DIR, 'src/LedgerMath.php'), 'utf8'))?.[1]));
@@ -56,7 +56,8 @@ function save({ inv = {}, emblems = {}, donations = 0, cracked = {} } = {}) {
 
 /** Credited rows as Ledger::credited hands them over (daily kinds without the day). */
 function creditedFrom(rows) {
-  const out = { base: { base: 1 } };
+  // The level the save shows is credited already (so no level-up pays currants into these writes).
+  const out = { base: { base: 1 }, level: { level: 5 } };
   for (const [kind, ref, n] of rows) (out[kind] ||= {})[ref] = n;
   return out;
 }
@@ -182,18 +183,20 @@ describe('G895: the ledger credits the pieces a cracked Petrified Rock gives', {
     assert.deepEqual(rowsOf(r, 'cap'), [['cap', 'artifact_necklace_redtigereye_piece', 3]], 'they count toward the class\'s daily cap');
   });
 
-  it('no more than a crack can give: a fourth bead from one small rock is taken back with no budget', () => {
+  it('no more than a crack can give: a fourth bead from one small rock is left to the budget', () => {
     const credited = creditedFrom([['mark', 'base', 1], ['mark', 'crackyield', 6], ['mark', 'rockyield', 6], ['mark', 'feats', 2]]);
     const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 4 }, cracked: { petrified_rock_small: 3 } }), 0, 3]);
     assert.deepEqual(r.after.items, { artifact_necklace_onyx_piece: 3 });
-    assert.deepEqual(r.reconciled.clamped, counts({ artifact_necklace_onyx_piece: 1 }));
+    assert.deepEqual(r.reconciled.delta.items, {}, 'the budget pays nothing for the fourth');
+    assert.deepEqual(r.reconciled.held, { artifact_necklace_onyx_piece: 1 }, 'a capped drop the budget is short for waits outside the ledger');
   });
 
   it('a forged crack count with no Feat reward behind it credits nothing', () => {
     const credited = creditedFrom([['mark', 'base', 1], ['mark', 'crackyield', 6], ['mark', 'rockyield', 6], ['mark', 'feats', 2]]);
-    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 3 }, cracked: { petrified_rock_small: 50 } }), 0, 2]);
-    assert.deepEqual(r.reconciled.clamped, counts({ artifact_necklace_onyx_piece: 3 }));
+    const r = php('check', [counts(), credited, save({ inv: { artifact_necklace_onyx_piece: 9 }, cracked: { petrified_rock_small: 50 } }), 0, 2]);
+    assert.deepEqual(r.after.items, {});
     assert.deepEqual(rowsOf(r, 'mark'), []);
+    assert.equal(r.reconciled.clamped.items.artifact_necklace_onyx_piece, 9 - Object.values(r.reconciled.held).reduce((a, b) => a + b, 0));
   });
 
   it('a forged pile stands at most to the class\'s daily cap, a few more waiting, whatever the rewards', () => {
@@ -210,5 +213,40 @@ describe('G895: the ledger credits the pieces a cracked Petrified Rock gives', {
     const r = php('check', [counts(), credited, save({ inv: { artifact_chicken_brick_piece2: 1, artifact_wooden_apple_piece1: 1 }, cracked: { petrified_rock_medium: 1 } }), 0, 5]);
     assert.deepEqual(r.reconciled.clamped, counts());
     assert.deepEqual(r.after.items, { artifact_chicken_brick_piece2: 1, artifact_wooden_apple_piece1: 1 });
+  });
+});
+
+describe('G895: a capped drop the budget cannot pay yet waits instead of being taken', { skip }, () => {
+  const HOLD = skip ? 0 : Number(/CAPPED_HOLD_VALUE = ([\d.]+);/.exec(readFileSync(join(SITE_DIR, 'src/LedgerMath.php'), 'utf8'))?.[1]);
+  const ECON = skip ? null : JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));
+
+  it('a Musicblock found while the budget is low stays in the pack, outside the ledger', () => {
+    const r = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { musicblock_d_green_04: 1 } }), 145]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.reconciled.held, { musicblock_d_green_04: 1 });
+    assert.deepEqual(r.after.items, {}, 'the ledger does not hold it yet, so it cannot be traded on');
+    assert.deepEqual(r.rows.filter((x) => x[0] === 'cap'), [], 'nor does it use the day\'s cap');
+    // A later write with budget enough pays for it.
+    const later = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { musicblock_d_green_04: 1 } }), 600]);
+    assert.deepEqual(later.after.items, { musicblock_d_green_04: 1 });
+    assert.deepEqual(later.rows.filter((x) => x[0] === 'cap'), [['cap', 'musicblock_d_green_04', 1]]);
+  });
+
+  it('only within the class\'s cap and the hold\'s value: a forged pile of drops is still taken back', () => {
+    const cap = ECON.items.musicblock_d_blue_03.cap;
+    const v = ECON.items.musicblock_d_blue_03.v;
+    const r = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { musicblock_d_blue_03: 200, musicblock_d_red_03: 200 } }), 0]);
+    const held = Object.values(r.reconciled.held).reduce((a, b) => a + b, 0);
+    assert.ok(held <= 2 * cap && held * v <= HOLD, `held ${held}`);
+    assert.equal(r.reconciled.clamped.items.musicblock_d_blue_03 + r.reconciled.clamped.items.musicblock_d_red_03, 400 - held);
+    const over = php('check', [counts(), creditedFrom([['mark', 'base', 1], ['cap', 'musicblock_d_blue_03', cap]]), save({ inv: { musicblock_d_blue_03: 1 } }), 0]);
+    assert.deepEqual(over.reconciled.held, {}, 'a class past its cap today waits for nothing');
+    assert.deepEqual(over.reconciled.clamped, counts({ musicblock_d_blue_03: 1 }));
+  });
+
+  it('an ordinary gain the budget cannot pay is still taken back (it is not a drop)', () => {
+    const r = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { potato: 54 } }), 0]);
+    assert.deepEqual(r.reconciled.held, {});
+    assert.deepEqual(r.reconciled.clamped, counts({ potato: 54 }));
   });
 });
