@@ -921,6 +921,19 @@ export const STEADY_FLOOR_GROUPS = Object.freeze({
 });
 
 /**
+ * G852: soil patches (patches-feature.js soilPlacementGroups, a request's own `footprint` and
+ * `steady` rule) hung off ledge ends: 33 of the 188 planned stood with less than their art's width
+ * of floor under them (the spawn audit, 2026-11-16), four on branch art. A patch's mound is 79 px
+ * wide drawn (assets/sprites/soil patch-*.webp at 1:1), 113 dug, and its hit box 130
+ * (patches-feature _worldHitW), so it asks for SOIL_FOOTPRINT px of floor, both ends over it
+ * (edgeDrop) on a level floor (no slope over 0.25, as a Dirt Pile's mound), a ledge as good as a
+ * floor. A street's plots are shared and saved by key (`patch:<i>`), so one is never left out
+ * (`keep`): with no such spot left it takes any, as before.
+ */
+export const SOIL_FOOTPRINT = 120;
+export const SOIL_STEADY_FLOOR = Object.freeze({ maxSlope: 0.25, ledgeRun: 0, edgeDrop: 12, keep: true });
+
+/**
  * Big things stand on level ground (the placements audit, 2026-11-12): the planner had a Street
  * Spirit on a 1.38 slope (Mullat), a mailbox on 1.78 against Saani Shim's rock face and a Bean Tree
  * standing into Anrasan Glance's cliff. Of the rocks players' 2012 snaps show, 98.5% stand on a
@@ -1880,7 +1893,7 @@ export function planStreetPlacements(
       ? Math.max(0, request.footprint)
       : PLACEMENT_FOOTPRINTS[request.key] || 0;
     const perching = request?.perch === true || PERCHING_GROUPS.includes(request.key);
-    const steady = STEADY_FLOOR_GROUPS[request.key] || null;
+    const steady = request?.steady || STEADY_FLOOR_GROUPS[request.key] || null;
     // Reports #249, #250: a steady group with an edgeDrop also keeps both ends of its footprint over a floor.
     const steadyRule = (candidate) => {
       if (!steadyFloor(candidate, steady)) return false;

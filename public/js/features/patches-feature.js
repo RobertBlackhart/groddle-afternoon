@@ -49,7 +49,7 @@
 
 import { ensureItem } from '../inventory.js?v=f49c8998';
 import { isItemFloor, platformYAt } from '../street-model.js?v=2918abe5';
-import { getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=080710b3';
+import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=d34b6f73';
 import { trantFootAnchorY, trantStatusLabel } from '../trants.js?v=4d6f5593';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=b43edbd8';
 import {
@@ -75,7 +75,7 @@ import {
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=8516a0c3';
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
-import { plotSignature, replayRng } from '../shared-patches.js?v=f16e5f33';
+import { plotSignature, replayRng } from '../shared-patches.js?v=9abebac3';
 
 export const PATCHES_FEATURE_ID = 'patches';
 export const SOIL_GROUP_PREFIX = 'soil:';
@@ -119,10 +119,13 @@ export function soilCountsForStreet(tsid, catalog = getStreetEcologyCatalog()) {
 export function soilPlacementGroups(counts) {
   const tally = new Map();
   for (const classTsid of soilSpawnClasses(counts)) tally.set(classTsid, (tally.get(classTsid) || 0) + 1);
+  // G852: each plot on a level floor its footprint wide, never off a ledge end (street-ecology.js SOIL_STEADY_FLOOR).
   return [...tally.entries()].map(([classTsid, count]) => ({
     key: `${SOIL_GROUP_PREFIX}${classTsid}`,
     count,
     clearance: PLACEMENT_CLEARANCE[classTsid] || DEAD_CLEARANCE,
+    footprint: SOIL_FOOTPRINT,
+    steady: SOIL_STEADY_FLOOR,
   }));
 }
 
