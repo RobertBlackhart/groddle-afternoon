@@ -26,6 +26,8 @@ export const MP_PARTY_TEXT = Object.freeze({
   kickConfirm: (name) => `Kick ${name} out of your Party Space?`,
   kickYes: 'Kick out',
   kickNo: 'Never mind',
+  // G904: groups/party.js 583-584, a dead member gets this line instead of the offer.
+  dead: 'Someone invited you to a party, but you have more pressing matters to attend to: you are dead!',
   inviteKicker: (label) => `Party Space: ${label}`,
   inviteGo: (cost) => `Teleport (${cost} energy)`,
   inviteLater: 'Not now',

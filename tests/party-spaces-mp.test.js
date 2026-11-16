@@ -15,9 +15,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../public/js/party-spaces-mp.js?v=73fd3c11';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../public/js/party-spaces-mp.js?v=085bff98';
 import { PARTY_PACKS, PARTY_SPACES, PARTY_TEXT, normalizePartyRecord } from '../public/js/party-spaces.js?v=c667e9e2';
-import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=da37e687';
+import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=d0a474b0';
 import { sharedStreet } from '../public/js/features/realtime-feature.js?v=e99156b2';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
@@ -281,6 +281,23 @@ describe('party spaces feature in multiplayer (features/party-spaces-feature.js)
     assert.ok(events.includes('toast:Cy removed you from their Party Space.'));
     assert.ok(events.some((e) => e.startsWith('enter:')));
     assert.equal(partySpacesFeature._state().record.party, null);
+  });
+
+  it('G904: a dead member gets Glitch\'s line instead of the offer (groups/party.js 583-584)', () => {
+    engine.streetTsid = 'GA5101HF7F429V5';
+    engine.data.partyModal = 'closed';
+    const query = engine.query;
+    engine.query = (hook, ...args) => (hook === 'isDead' ? true : query(hook, ...args));
+    events.length = 0;
+    try {
+      client.msg({ t: 'party_space_prompt', space: { ...VIEW, creator: { id: 7, name: 'Cy' } }, pcs: ['Cy'] });
+    } finally {
+      engine.query = query;
+    }
+    assert.equal(engine.data.partyModal, 'closed', 'no offer');
+    assert.ok(events.includes(`activity:${MP_PARTY_TEXT.dead}`));
+    assert.equal(MP_PARTY_TEXT.dead, 'Someone invited you to a party, but you have more pressing matters to attend to: you are dead!');
+    client.msg({ t: 'party_space', space: null, why: 'closed' });
   });
 
   it('a refused street (kicked, over, a restart) drops the space', () => {

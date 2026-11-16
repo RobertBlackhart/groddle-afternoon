@@ -88,7 +88,7 @@ import { readVisitScene } from '../neighbours-mp.js?v=895a5209';
 import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=781ad57f';
 import { loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=73fd3c11';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=085bff98';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';
@@ -1202,6 +1202,13 @@ function spacePrompt(engine, msg) {
   const s = normalizeSpace(msg.space);
   if (!s || mpOnSpace(engine)) return;
   applySpace(engine, msg.space);
+  // G904: the dead get Glitch's line, not the offer (groups/party.js 583-584); the Map card stays
+  // (a teleporter costs energy the dead do not have: inc_party.js 483-493).
+  if (engine.query?.('isDead', engine) === true) {
+    engine.pushActivity(MP_PARTY_TEXT.dead);
+    note(engine, MP_PARTY_TEXT.dead);
+    return;
+  }
   const cost = rejoinCost(engine);
   const names = (Array.isArray(msg.pcs) ? msg.pcs : []).map(String).slice(0, 12);
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
