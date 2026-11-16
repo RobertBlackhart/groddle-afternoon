@@ -37,8 +37,10 @@
  * are read off the footage (bulbs ~6-10 s); the floor's red light stays on.
  *
  * Art: the CC0 hanging_lightbulb (bulbs), door_asset_gray (tinted) and
- * firebog_sign_blank_plank (the EXIT plank); lamp shades, dish platforms,
- * light cones, striped poles, switch panels and rock slabs are vectors.
+ * firebog_sign_blank_plank (the EXIT plank). The lamp shades, dish platforms,
+ * striped poles, stone ledges, switch bulbs and pipe knobs are made for
+ * Groddle (light-rig-art.js, tools/provenance/made-decos.json): no CC0 piece
+ * matches them. The light cones, wires and pipes are vectors.
  *
  * Look (G78): five players' Snaps (research/wayback/raw/snaps/
  * puzzle_level_light_perspective and _rem, reference only) show ceiling lamp
@@ -49,6 +51,7 @@
  */
 
 import { BODY_H, JUMP_GAP, JUMP_RISE, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=46560c2a';
+import { bulbSprite as rigBulb, dishSprite, knobSprite, ledgeStrip, mixHex, poleSprite, shadeSprite } from './light-rig-art.js?v=7fda94d2';
 
 const W = 7600;
 const H = 1100;
@@ -384,59 +387,38 @@ function coneTex(PIXI) {
   return coneTexture;
 }
 
-function drawSlab(g, s) {
+/** Pole tint: the Snaps' red-and-pink striped columns (the grey segment's dark band reads red, its light band pink). */
+export const POLE_TINT = 0xff6a5e;
+
+/** A stone ledge (made art) over its pillar and step (vectors, the dark block under it). */
+function drawSlab(PIXI, s) {
+  const c = new PIXI.Container();
   const depth = s.thin ? 26 : 42;
-  g.rect(s.x1, s.y, s.x2 - s.x1, depth).fill(0x1f1e24);
-  g.rect(s.x1, s.y, s.x2 - s.x1, depth - 8).fill(0x2c2b33);
-  // Rough top edge and a few chips.
-  g.moveTo(s.x1, s.y + 1);
-  g.lineTo(s.x2, s.y + 1);
-  g.stroke({ width: 3, color: 0x56545e, alpha: 1 });
-  for (let x = s.x1 + 30; x < s.x2 - 20; x += 70) {
-    g.rect(x, s.y + 12 + ((x / 70) % 2) * 8, 26, 4).fill(0x24232a);
-  }
+  const g = new PIXI.Graphics();
   if (s.pillar) {
     g.rect(s.x1, s.y + depth - 2, 60, LOW - s.y - depth + 2).fill(0x232229);
     g.moveTo(s.x1 + 58, s.y + depth);
     g.lineTo(s.x1 + 58, LOW);
     g.stroke({ width: 2, color: 0x34333b, alpha: 1 });
   }
-  if (s.step) {
-    g.rect(s.x1, s.y, s.x2 - s.x1, s.step - s.y + depth - 8).fill(0x2c2b33);
-  }
+  if (s.step) g.rect(s.x1, s.y, 40, s.step - s.y + depth - 8).fill(0x1f1e24);
+  c.addChild(g);
+  c.addChild(ledgeStrip(PIXI, s.x1, s.x2, s.y, { h: s.thin ? 30 : 48 }));
+  return c;
 }
 
-/** Mix two 0xrrggbb colours (t of b). */
-function mixHex(a, b, t) {
-  const m = (sh) => Math.round(((a >> sh) & 0xff) * (1 - t) + ((b >> sh) & 0xff) * t) << sh;
-  return m(16) | m(8) | m(0);
-}
-
-/** A shallow wooden dish platform, tinted by the light it appears in (the Snaps). */
+/** A dish platform (made art), tinted by the light it appears in (the Snaps), over a soft glow. */
 function drawCloud(PIXI, c) {
   const col = LIGHT_COLORS[c.color];
   const w = c.x2 - c.x1;
-  const wood = 0xa86a34;
-  const top = mixHex(wood, col.hex, 0.55);
-  const rim = mixHex(top, 0xffffff, 0.3);
-  const under = mixHex(wood, col.dim, 0.35);
+  const box = new PIXI.Container();
   const g = new PIXI.Graphics();
-  // Soft glow under the dish.
   g.ellipse(0, 10, w / 2 + 18, 22).fill({ color: col.hex, alpha: 0.18 });
-  // The bowl underneath, then the flat top and its rim.
-  g.moveTo(-w / 2, 2);
-  g.bezierCurveTo(-w * 0.42, 15, -w * 0.18, 19, 0, 19);
-  g.bezierCurveTo(w * 0.18, 19, w * 0.42, 15, w / 2, 2);
-  g.closePath();
-  g.fill(under);
-  g.moveTo(-w * 0.3, 12);
-  g.quadraticCurveTo(0, 16, w * 0.3, 12);
-  g.stroke({ width: 2, color: mixHex(under, 0x000000, 0.25), alpha: 0.7 });
-  g.ellipse(0, 2, w / 2, 7).fill(rim);
-  g.ellipse(0, 3, w / 2 - 5, 4.5).fill(top);
-  g.x = (c.x1 + c.x2) / 2;
-  g.y = c.y;
-  return g;
+  box.addChild(g);
+  box.addChild(dishSprite(PIXI, w, mixHex(col.hex, 0xffffff, 0.12)));
+  box.x = (c.x1 + c.x2) / 2;
+  box.y = c.y;
+  return box;
 }
 
 function drawWall(PIXI, w) {
@@ -444,50 +426,27 @@ function drawWall(PIXI, w) {
   const h = w.yBot - w.yTop;
   const width = w.x2 - w.x1;
   g.roundRect(-width, 0, width * 2, h, width).fill({ color: LIGHT_COLORS.red.hex, alpha: 0.16 });
-  drawPole(g, width - 6, h);
-  g.x = (w.x1 + w.x2) / 2;
-  g.y = w.yTop;
-  return g;
+  const c = new PIXI.Container();
+  c.addChild(g, poleSprite(PIXI, width - 6, h, POLE_TINT));
+  c.x = (w.x1 + w.x2) / 2;
+  c.y = w.yTop;
+  return c;
 }
 
-/** A ceiling lamp shade on its wire (the Snaps' grey domes with a dotted crown). */
+/** A ceiling lamp shade (made art) on its wire, its lit bulb under the rim (the Snaps' dark dotted shades). */
 function drawShade(PIXI, x, y, color) {
+  const c = new PIXI.Container();
   const g = new PIXI.Graphics();
   g.moveTo(0, -y);
-  g.lineTo(0, -22);
+  g.lineTo(0, -20);
   g.stroke({ width: 2, color: 0x111114, alpha: 1 });
-  // The lit bulb under the rim.
-  g.ellipse(0, -2, 14, 6).fill({ color: LIGHT_COLORS[color]?.hex ?? 0xfff2c8, alpha: 0.9 });
-  g.ellipse(0, -2, 7, 3).fill({ color: 0xffffff, alpha: 0.9 });
-  // Dome, rim and crown.
-  g.moveTo(-34, -4);
-  g.bezierCurveTo(-30, -20, -14, -26, 0, -26);
-  g.bezierCurveTo(14, -26, 30, -20, 34, -4);
-  g.closePath();
-  g.fill(0x8e8c90);
-  g.ellipse(0, -4, 34, 5).fill(0xb9b7bb);
-  g.ellipse(0, -25, 9, 4).fill(0x6c6a6e);
-  for (let i = 0; i < 9; i++) {
-    const a = Math.PI * (0.12 + (0.76 * i) / 8);
-    g.circle(-Math.cos(a) * 22, -18 - Math.sin(a) * 4, 1.8).fill(0x4a484c);
-  }
-  g.x = x;
-  g.y = y;
-  return g;
-}
-
-/** A tall striped pole (the Snaps' red-and-pink columns), centred on (0, 0) at its top. */
-function drawPole(g, width, h) {
-  const band = 34;
-  for (let y = 0, i = 0; y < h; y += band, i++) {
-    const bh = Math.min(band, h - y);
-    g.rect(-width / 2, y, width, bh).fill(i % 2 ? 0xf3a3a0 : 0xdc4f4c);
-  }
-  // Round shading: darker flanks, a soft highlight left of centre.
-  g.rect(-width / 2, 0, width * 0.18, h).fill({ color: 0x5a1010, alpha: 0.22 });
-  g.rect(width / 2 - width * 0.18, 0, width * 0.18, h).fill({ color: 0x5a1010, alpha: 0.3 });
-  g.rect(-width * 0.22, 0, width * 0.12, h).fill({ color: 0xffffff, alpha: 0.18 });
-  g.ellipse(0, 0, width / 2, 4).fill(0xf6b8b4);
+  g.ellipse(0, -1, 12, 6).fill({ color: LIGHT_COLORS[color]?.hex ?? 0xfff2c8, alpha: 0.9 });
+  g.ellipse(0, -1, 6, 3).fill({ color: 0xffffff, alpha: 0.9 });
+  c.addChild(g);
+  c.addChild(shadeSprite(PIXI, 96));
+  c.x = x;
+  c.y = y;
+  return c;
 }
 
 function drawSign(PIXI, kit, s) {
@@ -510,28 +469,22 @@ function drawSign(PIXI, kit, s) {
   return c;
 }
 
-/** A panel bulb: caged lamp, dim until picked. */
+/** A panel bulb (made art): a caged bulb in its colour, pale until picked, then lit with a glow. */
 function bulbSprite(PIXI, color) {
   const c = new PIXI.Container();
   const col = LIGHT_COLORS[color];
   const glow = new PIXI.Graphics();
-  glow.circle(0, -14, 22).fill({ color: col.hex, alpha: 0.35 });
+  glow.circle(0, -16, 24).fill({ color: col.hex, alpha: 0.35 });
   glow.blendMode = 'add';
   c.addChild(glow);
-  const g = new PIXI.Graphics();
-  g.roundRect(-7, -4, 14, 6, 2).fill(0x6b6b72);
-  g.roundRect(-9, -26, 18, 23, 8).fill(col.hex);
-  g.moveTo(-9, -18); g.lineTo(9, -18);
-  g.moveTo(-9, -11); g.lineTo(9, -11);
-  g.moveTo(0, -26); g.lineTo(0, -4);
-  g.stroke({ width: 1.5, color: 0x2a2a30, alpha: 0.8 });
-  c.addChild(g);
+  const body = rigBulb(PIXI, col.hex, 34);
+  c.addChild(body);
   // Generous invisible hit area for clicks.
   const hit = new PIXI.Graphics();
-  hit.rect(-18, -36, 36, 40).fill({ color: 0xffffff, alpha: 0.001 });
+  hit.rect(-18, -38, 36, 42).fill({ color: 0xffffff, alpha: 0.001 });
   c.addChild(hit);
   c.glow = glow;
-  c.body = g;
+  c.body = body;
   return c;
 }
 
@@ -605,9 +558,11 @@ export const room = {
     g.moveTo(0, LOW + 1);
     g.lineTo(W, LOW + 1);
     g.stroke({ width: 3, color: 0x47454f, alpha: 1 });
-    for (const s of layout.slabs) drawSlab(g, s);
-    for (const l of layout.ladders) kit.drawLadder(g, kit.ladder(l.x, l.top - 2, l.bottom ?? LOW), { rail: 0x3c3b44, rung: 0x55535e, half: 14 });
     world.addChild(g);
+    for (const s of layout.slabs) world.addChild(drawSlab(PIXI, s));
+    const lg = new PIXI.Graphics();
+    for (const l of layout.ladders) kit.drawLadder(lg, kit.ladder(l.x, l.top - 2, l.bottom ?? LOW), { rail: 0x3c3b44, rung: 0x55535e, half: 14 });
+    world.addChild(lg);
     // Panel pipes (behind the bulbs, which are registered targets).
     const pipes = new PIXI.Graphics();
     for (const p of layout.panels) {
@@ -629,9 +584,9 @@ export const room = {
       pipes.lineTo(p.x + 70, p.hanging ? LOW : p.surface + 60);
       if (lamp && !p.hanging) pipes.lineTo(Math.min(lamp.x - 120, p.x + 260), p.surface + 60);
       pipes.stroke({ width: 2, color: 0x8e8d96, alpha: 0.6 });
-      pipes.circle(p.x, knobY, 7).fill(0x3a3a40).stroke({ width: 2, color: 0x8e8d96, alpha: 1 });
     }
     world.addChild(pipes);
+    for (const p of layout.panels) world.addChild(knobSprite(PIXI, p.x, p.bulbY + 34, 24));
     // Fixtures: hanging bulbs, double bulbs, spotlight dishes.
     ctx.data.fixtures = {};
     for (const l of layout.lights) {
@@ -931,7 +886,7 @@ function refreshBulbs(ctx) {
     const on = ctx.data.state.picks[b.panel] === b.color;
     if (!b.spr || b.spr.destroyed) continue;
     b.spr.glow.visible = on;
-    b.spr.body.alpha = on ? 1 : 0.42;
+    b.spr.body.set(on);
   }
 }
 

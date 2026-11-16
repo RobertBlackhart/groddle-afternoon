@@ -88,7 +88,7 @@ export const ROOM_NOTES = Object.freeze({
     about: 'Radiant Glare was a vertical light puzzle: platforms only exist in light of their own colour.',
     play: 'Touch orbs to light timed lamps, mix colours on a two-bank console (yellow and blue make green), and use the "clicking on it works just as well" totem to reach the rainbow and the exit.',
     source: 'The five-minute limit, flags and rewards for both the quest and its replay.',
-    rebuilt: "Rebuilt from the level designer's run-through; the lamps' timings are measured from the video.",
+    rebuilt: "Rebuilt from the level designer's run-through; the lamps' timings are measured from the video. No CC0 piece matches the players' Snaps' wall spotlights, disc platforms, stone floors or the consoles' caged bulbs and knobs, so they are reimagined: new pictures made with GPT Image 2.6 Sunburst from our drawing of their sizes, the Snaps and Tiny Speck's own art, dedicated CC0 1.0 like everything else here.",
     footage: [{ id: 'ZQQydNM9THI', label: 'Radiant Glare (level designer)' }],
   },
   light_perspective: {
@@ -96,7 +96,7 @@ export const ROOM_NOTES = Object.freeze({
     about: 'Walk Toward the Light taught colour mixing step by step: each lesson adds a new way light can help or hinder you.',
     play: 'Seven lessons: timed bulbs, red walls that orbs put out, a "fall" section, and switches that mix red, yellow and blue into the colour that crosses, ending at "Astounding! You truly are a Champ!"',
     source: 'The five-minute limit, the solved flag at the exit door and both reward sets.',
-    rebuilt: "Rebuilt from the level designer's run-through, using his sign text for each lesson. Players' Snaps give the look: lamp shades throwing soft cones, bare bulbs on long wires, wooden dishes tinted by their light, red-and-pink striped poles and a plank EXIT sign.",
+    rebuilt: "Rebuilt from the level designer's run-through, using his sign text for each lesson. Players' Snaps give the look: lamp shades throwing soft cones, bare bulbs on long wires, dishes tinted by their light, red-and-pink striped poles and a plank EXIT sign. No CC0 piece matches the shades, dishes, poles, stone ledges or caged switch bulbs, so they are reimagined: new pictures made with GPT Image 2.6 Sunburst from our drawing of their sizes, the Snaps and Tiny Speck's own art, dedicated CC0 1.0 like everything else here.",
     footage: [{ id: 'Et0RkY43A5Q', label: 'Walk Toward the Light (level designer)' }],
   },
   mental_block: {

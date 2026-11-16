@@ -388,9 +388,15 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     assert.throws(() => buildZones(fs), /not the picture its provenance names/);
   });
 
-  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street', () => {
+  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street, and the light-puzzle rooms\' props', () => {
     const made = json(MADE_DECOS).art;
-    assert.deepEqual(Object.keys(made).sort(), ['gz_ai_ezc_glass_counter', 'gz_ai_ezc_hanging_lamp', 'gz_ai_ezc_round_table']);
-    for (const row of Object.values(made)) assert.deepEqual(row.streets, ['GIFII3UBRFB3KBE']);
+    const ezc = Object.keys(made).filter((n) => n.startsWith('gz_ai_ezc_'));
+    assert.deepEqual(ezc.sort(), ['gz_ai_ezc_glass_counter', 'gz_ai_ezc_hanging_lamp', 'gz_ai_ezc_round_table']);
+    for (const n of ezc) assert.deepEqual(made[n].streets, ['GIFII3UBRFB3KBE']);
+    // Walk Toward the Light and Radiant Glare (lane art01, 2026-11-16): quest-room props, drawn by js/quest-rooms/light-rig-art.js.
+    const rig = Object.keys(made).filter((n) => /^gz_ai_(lp|rg)_/.test(n));
+    assert.equal(rig.length, 11);
+    for (const n of rig) assert.equal(made[n].code, 'public/js/quest-rooms/light-rig-art.js', n);
+    assert.equal(ezc.length + rig.length, Object.keys(made).length);
   });
 });

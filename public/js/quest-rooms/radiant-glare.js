@@ -29,9 +29,12 @@
  *     Blue climbs halfway; switching to purple from up there (clicking the
  *     red bulb from afar) carries on to the ladder.
  *  4. The glare. A rainbow over the EXIT door, quoins along its arch.
- * Art is drawn as clean vectors in the footage's palette (no recovered deco
- * matches the lamps, disc platforms or panels); the EXIT sign is the
- * recovered sign_exit_starter_01a. The rainbow is Tiny Speck's own `rainbow`
+ * No recovered deco matches the wall spotlights, disc platforms, stone
+ * floors, console bulbs or pipe knobs, so they are made for Groddle
+ * (light-rig-art.js, shared with Walk Toward the Light; provenance in
+ * tools/provenance/made-decos.json); the rails, stems, door and light cones
+ * are vectors in the footage's palette. The EXIT sign is the recovered
+ * sign_exit_starter_01a. The rainbow is Tiny Speck's own `rainbow`
  * deco (quest02.swf in tinyspeck/glitch-locations, CC0; the shipped
  * decos/groddle/rainbow is the byte-identical copy in groddle1.swf), whose
  * soft, faded bands match players' Snaps of this room (round3-levels-2026-10-29
@@ -39,6 +42,7 @@
  */
 
 import { BODY_H, JUMP_GAP, JUMP_RISE, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=46560c2a';
+import { bulbSprite, dishSprite, knobSprite, ledgeStrip, mixHex, spotlightBeamX, spotlightSprite } from './light-rig-art.js?v=7fda94d2';
 
 export const W = 1100;
 export const H = 3400;
@@ -308,50 +312,30 @@ function coneTexture(PIXI) {
   return PIXI.Texture.from(c);
 }
 
+/** A wall spotlight (made art), facing into the shaft; its lens (the two bulbs) takes the light's colour. */
 function drawLamp(PIXI, side, x, y) {
+  return spotlightSprite(PIXI, side, x, y);
+}
+
+/** A disc platform (made art: the dish of Walk Toward the Light), tinted by its light. */
+function drawDisc(PIXI, w, color) {
   const c = new PIXI.Container();
   const g = new PIXI.Graphics();
-  const s = side === 'L' ? 1 : -1;
-  // Wall bracket.
-  g.rect(s > 0 ? 0 : -10, -5, 10, 10).fill(0x1f1d26);
-  // The dish, a dark half-cone opening into the room.
-  g.moveTo(8 * s, -10);
-  g.lineTo(26 * s, -32);
-  g.lineTo(30 * s, 32);
-  g.lineTo(8 * s, 10);
-  g.closePath().fill(0x2b2933).stroke({ width: 2, color: 0x6c6878, alpha: 1 });
-  for (let i = -24; i <= 24; i += 8) {
-    g.rect(14 * s + (s < 0 ? -2 : 0), i, 2, 4).fill(0x55515f);
-  }
-  c.addChild(g);
-  const lens = new PIXI.Graphics();
-  lens.ellipse(30 * s, 0, 6, 30).fill(0xf4f2f8);
-  c.addChild(lens);
-  c.lens = lens;
-  c.x = x;
-  c.y = y;
+  g.ellipse(0, 12, w / 2 + 12, 18).fill({ color, alpha: 0.16 });
+  c.addChild(g, dishSprite(PIXI, w, mixHex(color, 0xffffff, 0.12)));
   return c;
 }
 
-function drawDisc(PIXI, w, color) {
-  const g = new PIXI.Graphics();
-  const hx = w / 2;
-  g.ellipse(0, 14, hx * 0.92, 8).fill({ color: 0x000000, alpha: 0.18 });
-  g.ellipse(0, 6, hx, 11).fill({ color: color, alpha: 0.75 });
-  g.ellipse(0, 1, hx, 9).fill(color);
-  g.ellipse(-hx * 0.12, -1, hx * 0.7, 4).fill({ color: 0xffffff, alpha: 0.35 });
-  // Scalloped underside, the footage's cloud discs.
-  for (let i = -2; i <= 2; i++) {
-    g.ellipse(i * hx * 0.36, 11, hx * 0.22, 6).fill({ color: color, alpha: 0.55 });
-  }
-  return g;
-}
+/** Floor under the stone (the ledge's dark front, carried down). */
+const STONE = 0x17161b;
 
-function drawSlab(g, y) {
-  g.rect(0, y, W, SLAB).fill(0x1c1b21);
-  g.rect(0, y - 3, W, 5).fill(0x55535e);
-  for (let x = 30; x < W; x += 140) g.rect(x, y + 30 + ((x / 140) % 3) * 22, 70, 4);
-  g.fill({ color: 0x2a2930, alpha: 0.8 });
+/** A stone floor slab: the made ledge along its top, its dark body below. */
+function drawSlab(PIXI, y, depth = SLAB, x1 = 0, x2 = W, ends = {}) {
+  const c = new PIXI.Container();
+  const g = new PIXI.Graphics();
+  g.rect(x1, y + 30, x2 - x1, depth - 30).fill(STONE);
+  c.addChild(g, ledgeStrip(PIXI, x1, x2, y, { h: 48, left: false, right: false, ...ends }));
+  return c;
 }
 
 /**
@@ -394,27 +378,29 @@ function drawDoor(PIXI, x, y) {
   return c;
 }
 
+/** The mixer console: a stone block (made ledge) with the rail on top and its two knobs (made art). */
 function drawConsole(PIXI, k) {
-  const g = new PIXI.Graphics();
+  const c = new PIXI.Container();
   const y = k.top;
-  g.roundRect(k.x1, y, k.x2 - k.x1, FLOORS.mixer - y, 4).fill(0x17161b).stroke({ width: 2, color: 0x4d4a57, alpha: 1 });
-  // The rail on top: two posts, a bar, the bank knobs either side of the lamp.
+  const g = new PIXI.Graphics();
+  // The rail on top: two posts and a bar between the bank knobs.
   g.moveTo(k.x1 + 40, y);
   g.lineTo(k.x1 + 40, y - 36);
   g.lineTo(k.x2 - 40, y - 36);
   g.lineTo(k.x2 - 40, y);
   g.stroke({ width: 4, color: 0x8f8b9b, alpha: 1 });
-  for (const kx of [k.x1 + 80, k.x2 - 80]) {
-    g.circle(kx, y - 36, 10).fill(0x2b2933).stroke({ width: 3, color: 0x8f8b9b, alpha: 1 });
-  }
-  return g;
+  c.addChild(g);
+  c.addChild(ledgeStrip(PIXI, k.x1, k.x2, y, { h: FLOORS.mixer - y + 6 }));
+  for (const kx of [k.x1 + 80, k.x2 - 80]) c.addChild(knobSprite(PIXI, kx, y - 36, 28));
+  return c;
 }
 
+/** The totem: the lower bank hangs from a stone slab (made ledge); the upper on a knob atop a tall stem. */
 function drawTotem(PIXI, t) {
+  const c = new PIXI.Container();
   const g = new PIXI.Graphics();
   const slabY = t.top;
   const knobB = t.bankB + 34;
-  // The lower bank hangs from the slab; the upper bank sits on a knob at the top of a tall stem.
   for (let i = -1; i <= 1; i++) {
     g.moveTo(t.cx + i * 40, t.bankA - 22);
     g.lineTo(t.cx + i * 40, slabY + 26);
@@ -425,45 +411,44 @@ function drawTotem(PIXI, t) {
   g.moveTo(t.cx, knobB);
   g.lineTo(t.cx, slabY);
   g.stroke({ width: 4, color: 0x8f8b9b, alpha: 1 });
-  g.circle(t.cx, knobB, 10).fill(0x2b2933).stroke({ width: 3, color: 0x8f8b9b, alpha: 1 });
-  g.roundRect(t.x1, slabY, t.x2 - t.x1, 26, 4).fill(0x17161b).stroke({ width: 2, color: 0x4d4a57, alpha: 1 });
-  return g;
+  c.addChild(g);
+  c.addChild(knobSprite(PIXI, t.cx, knobB, 28));
+  c.addChild(ledgeStrip(PIXI, t.x1, t.x2, slabY, { h: 32 }));
+  return c;
 }
 
-/** A panel bulb; `set(lit)` brightens it. */
+/** A panel bulb (made art): a caged bulb in its colour, pale until pressed; `set(lit)` lights it. */
 function makeBulb(PIXI, color) {
   const c = new PIXI.Container();
   const glow = new PIXI.Graphics();
-  glow.circle(0, -12, 20).fill({ color: LIGHT[color].glow, alpha: 0.35 });
-  const g = new PIXI.Graphics();
-  g.ellipse(0, -14, 10, 12).fill(LIGHT[color].hex);
-  g.rect(-6, -4, 12, 8).fill(0x8f8b9b);
-  g.ellipse(-3, -18, 3, 5).fill({ color: 0xffffff, alpha: 0.5 });
+  glow.circle(0, -16, 22).fill({ color: LIGHT[color].glow, alpha: 0.35 });
+  const body = bulbSprite(PIXI, LIGHT[color].hex, 34);
   const hit = new PIXI.Graphics();
-  hit.rect(-18, -34, 36, 42).fill({ color: 0xffffff, alpha: 0.001 });
-  c.addChild(hit, glow, g);
+  hit.rect(-18, -38, 36, 46).fill({ color: 0xffffff, alpha: 0.001 });
+  c.addChild(hit, glow, body);
   c.set = (on) => {
     glow.visible = on;
-    g.alpha = on ? 1 : 0.42;
+    body.set(on);
   };
   c.set(false);
   return c;
 }
 
-/** The mixer's own lamp (on the console rail / in the totem slab). */
+/** The mixer's own lamp (on the console rail / in the totem slab): a caged bulb (made art) lit in the mix. */
 function makeMixLamp(PIXI) {
   const c = new PIXI.Container();
   const glow = new PIXI.Graphics();
-  const g = new PIXI.Graphics();
-  c.addChild(glow, g);
+  const body = bulbSprite(PIXI, null, 30);
+  body.y = 15;
+  c.addChild(glow, body);
+  let shown;
   c.set = (color) => {
+    if (color === shown) return;
+    shown = color;
     glow.clear();
-    g.clear();
-    const col = color ? LIGHT[color].hex : 0x3a3842;
-    if (color) {
-      glow.circle(0, 0, 22).fill({ color: LIGHT[color].glow, alpha: 0.35 });
-    }
-    g.roundRect(-9, -13, 18, 26, 6).fill(col).stroke({ width: 2, color: 0x8f8b9b, alpha: 1 });
+    if (color) glow.circle(0, 0, 24).fill({ color: LIGHT[color].glow, alpha: 0.35 });
+    body.setColor(color ? LIGHT[color].hex : null);
+    body.set(Boolean(color));
   };
   c.set(null);
   return c;
@@ -548,7 +533,7 @@ export const room = {
       spr.blendMode = 'add';
       const len = W - 30;
       spr.scale.set((lamp.side === 'L' ? 1 : -1) * (len / 512), 1.35);
-      spr.x = lamp.side === 'L' ? 26 : W - 26;
+      spr.x = spotlightBeamX(lamp.side, lamp.side === 'L' ? 0 : W);
       spr.y = lamp.y;
       spr.alpha = 0;
       spr.targetAlpha = 0;
@@ -557,16 +542,14 @@ export const room = {
     }
     // The rainbow's soft legs fade out behind the top floor's slab.
     world.addChild(drawRainbow(PIXI, kit));
-    const g = new PIXI.Graphics();
-    for (const y of [FLOORS.mixer, FLOORS.totem, FLOORS.glare]) drawSlab(g, y);
+    for (const y of [FLOORS.mixer, FLOORS.totem, FLOORS.glare]) world.addChild(drawSlab(PIXI, y));
     // The bottom floor.
-    g.rect(0, FLOORS.lamps, W, H - FLOORS.lamps).fill(0x1c1b21);
-    g.rect(0, FLOORS.lamps - 3, W, 5).fill(0x55535e);
-    // The stone ledge under the last ladder.
+    world.addChild(drawSlab(PIXI, FLOORS.lamps, H - FLOORS.lamps));
+    // The stone ledge under the last ladder (its right end runs into the wall).
     const ledge = layout.solids.find((s) => s.id === 'rg_ledge');
-    g.rect(ledge.x1, ledge.y, ledge.x2 - ledge.x1, 26).fill(0x1c1b21);
-    g.rect(ledge.x1, ledge.y - 3, ledge.x2 - ledge.x1, 5).fill(0x55535e);
+    world.addChild(ledgeStrip(PIXI, ledge.x1, ledge.x2, ledge.y, { h: 32, right: false }));
     // Ladder shafts through the slabs, then the ladders.
+    const g = new PIXI.Graphics();
     for (const l of layout.ladders) {
       g.rect(l.x - 26, l.yTop, 52, SLAB).fill(0x0f0e12);
     }
@@ -690,7 +673,10 @@ export const room = {
       if (color) cone.tint = LIGHT[color].glow;
       cone.alpha += (alpha - cone.alpha) * 0.25;
       const lens = ctx.data.lampSprites[lamp.id]?.lens;
-      if (lens) lens.tint = color ? LIGHT[color].glow : 0x77737f;
+      if (lens) {
+        if (color) lens.tint = LIGHT[color].glow;
+        lens.alpha = color ? Math.min(0.9, cone.alpha * 1.3) : 0;
+      }
     }
     for (const { p: plat, color, d } of ctx.data.discs || []) {
       const want = lit[plat.tier]?.has(color) ? 1 : 0;

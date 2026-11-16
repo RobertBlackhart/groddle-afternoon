@@ -30,7 +30,7 @@ import {
   standingWalls,
   touchOrb,
   room,
-} from '../public/js/quest-rooms/light-perspective.js?v=5ed5351d';
+} from '../public/js/quest-rooms/light-perspective.js?v=3092c067';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { JUMP_RISE, JUMP_GAP } = LIGHT_ROOM_FACTS;
@@ -264,13 +264,14 @@ describe('Walk Toward the Light (light_perspective)', () => {
 });
 
 describe('Walk Toward the Light: the look of the Snaps (G78)', () => {
-  it('draws lamp shades, wired bulbs, wooden dishes, striped poles and a plank EXIT', async () => {
+  it('draws lamp shades, wired bulbs, dishes, striped poles and a plank EXIT', async () => {
     const { readFileSync, existsSync } = await import('node:fs');
     const { join, dirname } = await import('node:path');
     const { fileURLToPath } = await import('node:url');
     const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
     const src = readFileSync(join(spike, 'public/js/quest-rooms/light-perspective.js'), 'utf8');
-    for (const fn of ['function drawShade(', 'function drawPole(', 'Bare bulbs hang on long wires', "'firebog_sign_blank_plank'", "'EXIT'"]) {
+    // Lane art01 (2026-11-16): the shades, dishes and poles are made art (js/quest-rooms/light-rig-art.js, tests/quest-room-light-art.test.js).
+    for (const fn of ['function drawShade(', 'shadeSprite(', 'dishSprite(', 'poleSprite(', 'Bare bulbs hang on long wires', "'firebog_sign_blank_plank'", "'EXIT'"]) {
       assert.ok(src.includes(fn), fn);
     }
     assert.ok(!src.includes("'sign_exit_starter_01a'"), 'the lit EXIT box is gone');

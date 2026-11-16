@@ -107,7 +107,7 @@ const madeAsked = () => new Set([...asked].map((u) => /assets\/decos\/groddle\/(
 
 describe('Walk Toward the Light draws the made art', () => {
   it('builds with every lp piece, the bulbs and the knobs, and no vector dish, pole or rock left', async () => {
-    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=5ed5351d');
+    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=3092c067');
     asked.clear();
     const ctx = fakeCtx();
     const built = room.build(ctx);
@@ -121,7 +121,7 @@ describe('Walk Toward the Light draws the made art', () => {
   });
 
   it('still solves: the intended run lights the way, and the exit door sets solved_puzzle', async () => {
-    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=5ed5351d');
+    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=3092c067');
     const ctx = fakeCtx();
     room.build(ctx);
     room.enter(ctx);
@@ -137,7 +137,7 @@ describe('Walk Toward the Light draws the made art', () => {
 
 describe('Radiant Glare draws the made art', () => {
   it('builds with the spotlights, dishes, ledges, bulbs and knobs', async () => {
-    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=6ea42a3d');
+    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=55abc40b');
     asked.clear();
     const ctx = fakeCtx();
     const built = room.build(ctx);
@@ -152,7 +152,7 @@ describe('Radiant Glare draws the made art', () => {
   });
 
   it('still solves: lamps, the green mix, the totem\'s purple, then the EXIT sets solved_puzzle', async () => {
-    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=6ea42a3d');
+    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=55abc40b');
     const ctx = fakeCtx();
     room.build(ctx);
     room.enter(ctx);
