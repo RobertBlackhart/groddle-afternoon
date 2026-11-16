@@ -89,7 +89,7 @@ import {
   openPriceDialog,
   openStoreDialog,
   storageWindowKind,
-} from '../ui/storage-windows.js?v=cf4d9e23';
+} from '../ui/storage-windows.js?v=4ab6d943';
 
 export const HOME_STORAGE_ID = 'home-storage';
 export const CLASS_STORAGE = 'home_storage';

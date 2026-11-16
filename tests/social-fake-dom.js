@@ -35,11 +35,14 @@ export class FakeEl {
     this.style = { props: {}, setProperty(k, v) { this.props[k] = v; }, getPropertyValue(k) { return this.props[k] || ''; } };
     const self = this;
     this.dataset = new Proxy({}, {
+      // A data-* attribute set with setAttribute reads back through dataset too, as in a browser.
+      get(t, k) { return k in t || typeof k === 'symbol' ? t[k] : self.attrs[`data-${String(k).replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`]; },
       set(t, k, v) { t[k] = String(v); self.attrs[`data-${String(k).replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`] = String(v); return true; },
       deleteProperty(t, k) { delete t[k]; delete self.attrs[`data-${String(k).replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`]; return true; },
     });
     this.classList = {
       add: (...c) => { const s = new Set((this.attrs.class || '').split(' ').filter(Boolean)); c.forEach((x) => s.add(x)); this.attrs.class = [...s].join(' '); },
+      remove: (...c) => { const s = new Set((this.attrs.class || '').split(' ').filter(Boolean)); c.forEach((x) => s.delete(x)); this.attrs.class = [...s].join(' '); },
       toggle: (c, on) => { const s = new Set((this.attrs.class || '').split(' ').filter(Boolean)); if (on ?? !s.has(c)) s.add(c); else s.delete(c); this.attrs.class = [...s].join(' '); },
       contains: (c) => (this.attrs.class || '').split(' ').includes(c),
     };

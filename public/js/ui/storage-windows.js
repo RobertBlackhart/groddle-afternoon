@@ -316,10 +316,11 @@ export function openCabinetWindow(opts) {
   }
 
   // —— Dragging from the pack (game.js pack slots are HTML5 drags with their class and count on the slot) ——
+  const packStackOf = (slot) => ({ cls: slot.dataset.tsid, count: Math.max(1, Math.floor(Number(slot.dataset.packCount) || 1)), copy: slot.dataset.packCopy != null ? Number(slot.dataset.packCopy) : null, bag: slot.dataset.packBag || '' });
   const onDragStart = (e) => {
     const slot = e.target?.closest?.('.pack-slot');
     if (!slot || !slot.dataset.tsid || h.root.contains(slot)) return;
-    packDrag = { cls: slot.dataset.tsid, count: Math.max(1, Math.floor(Number(slot.dataset.packCount) || 1)), copy: slot.dataset.packCopy != null ? Number(slot.dataset.packCopy) : null, bag: slot.dataset.packBag || '' };
+    packDrag = packStackOf(slot);
   };
   const onDragEnd = () => {
     packDrag = null;
@@ -341,6 +342,28 @@ export function openCabinetWindow(opts) {
     return s.classTsid === cls && s.count < (opts.stackmax?.(cls) ?? Infinity);
   }
 
+  /** A slot under a dragged stack: lit with "Move Here" when it takes it, else the refusal. */
+  function showOver(b, ok, why, x, y, fromPack) {
+    b.classList.toggle('is-over', ok);
+    b.classList.toggle('is-no', !ok && fromPack);
+    tip.textContent = ok ? (opts.moveHere || 'Move Here') : why;
+    tip.hidden = !tip.textContent;
+    tip.style.left = `${x}px`;
+    tip.style.top = `${y}px`;
+  }
+
+  function packFits(stack, i) {
+    const why = accepts(stack.cls) || '';
+    return { ok: !why && slotTakes(i, stack.cls), why };
+  }
+
+  async function dropPack(stack, i) {
+    const why = accepts(stack.cls);
+    if (why) return note(why, true);
+    if (!slotTakes(i, stack.cls)) return undefined;
+    return put({ ...stack, slot: i });
+  }
+
   grid.addEventListener('dragover', (e) => {
     const b = e.target?.closest?.('[data-hst-slot]');
     for (const x of grid.querySelectorAll('.is-over, .is-no')) if (x !== b) x.classList.remove('is-over', 'is-no');
@@ -348,19 +371,52 @@ export function openCabinetWindow(opts) {
     const i = Number(b.dataset.hstSlot);
     let ok = false;
     let why = '';
-    if (packDrag) {
-      why = accepts(packDrag.cls) || '';
-      ok = !why && slotTakes(i, packDrag.cls);
-    } else if (slotDrag != null) ok = i !== slotDrag;
+    if (packDrag) ({ ok, why } = packFits(packDrag, i));
+    else if (slotDrag != null) ok = i !== slotDrag;
     else return;
     e.preventDefault();
     if (e.dataTransfer) e.dataTransfer.dropEffect = ok ? 'move' : 'none';
-    b.classList.toggle('is-over', ok);
-    b.classList.toggle('is-no', !ok && Boolean(packDrag));
-    tip.textContent = ok ? (opts.moveHere || 'Move Here') : why;
-    tip.hidden = !tip.textContent;
-    tip.style.left = `${e.clientX}px`;
-    tip.style.top = `${e.clientY}px`;
+    showOver(b, ok, why, e.clientX, e.clientY, Boolean(packDrag));
+  });
+  // #407: a touch drag from the pack (game.js setupPackDrops lifts it by hand: no HTML5 drag on
+  // touch) tells the element under the finger with 'pack-touch-over' while it moves and
+  // 'pack-touch-drop' where it is let go (the pack slot in detail.slot; preventDefault says we
+  // took it), and the document 'pack-touch-end' when the lift ends, as dragend.
+  const touchSlot = (e) => {
+    const b = e.target?.closest?.('[data-hst-slot]');
+    return b && grid.contains(b) ? b : null;
+  };
+  const touchStack = (e) => {
+    const slot = e.detail?.slot;
+    return slot?.dataset?.tsid && !h.root.contains(slot) ? packStackOf(slot) : null;
+  };
+  const onTouchOver = (e) => {
+    const b = touchSlot(e);
+    for (const x of grid.querySelectorAll('.is-over, .is-no')) if (x !== b) x.classList.remove('is-over', 'is-no');
+    const stack = touchStack(e);
+    if (!b || !stack) {
+      tip.hidden = true;
+      return;
+    }
+    e.preventDefault();
+    const { ok, why } = packFits(stack, Number(b.dataset.hstSlot));
+    showOver(b, ok, why, e.detail.x, e.detail.y, true);
+  };
+  const onTouchDrop = async (e) => {
+    const b = touchSlot(e);
+    const stack = touchStack(e);
+    onDragEnd();
+    if (!b || !stack) return;
+    e.preventDefault();
+    await dropPack(stack, Number(b.dataset.hstSlot));
+  };
+  document.addEventListener('pack-touch-over', onTouchOver);
+  document.addEventListener('pack-touch-drop', onTouchDrop);
+  document.addEventListener('pack-touch-end', onDragEnd);
+  h.onCleanup(() => {
+    document.removeEventListener('pack-touch-over', onTouchOver);
+    document.removeEventListener('pack-touch-drop', onTouchDrop);
+    document.removeEventListener('pack-touch-end', onDragEnd);
   });
   grid.addEventListener('dragleave', (e) => {
     if (!grid.contains(e.relatedTarget)) tip.hidden = true;
@@ -373,12 +429,8 @@ export function openCabinetWindow(opts) {
     const was = packDrag;
     const from = slotDrag;
     onDragEnd();
-    if (was) {
-      const why = accepts(was.cls);
-      if (why) return note(why, true);
-      if (!slotTakes(i, was.cls)) return undefined;
-      await put({ ...was, slot: i });
-    } else if (from != null && from !== i) await move(from, i);
+    if (was) await dropPack(was, i);
+    else if (from != null && from !== i) await move(from, i);
     return undefined;
   });
 

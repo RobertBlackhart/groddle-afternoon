@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=45c9864a';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=72ae890d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=37e4d05f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -6000,11 +6000,19 @@ function setupPackDrops() {
     const lifted = touch.on;
     touch = null;
     if (lifted) {
+      document.dispatchEvent(new CustomEvent('pack-touch-end'));
       packDrag = null;
       if (packBarHeld) renderPackBar();
     }
   };
   const under = (x, y) => document.elementFromPoint(x, y)?.closest?.('.pack-slot[data-pack-container], .pack-slot.pack-empty, [data-pack-container]') || null;
+  // #407: off the pack, the element under the finger hears the drag as a mouse drop target would
+  // (js/ui/storage-windows.js: a cabinet's slots); true when it took the stack.
+  const touchElsewhere = (type, x, y) => {
+    const at = document.elementFromPoint(x, y);
+    if (!at || bar.contains(at)) return false;
+    return !at.dispatchEvent(new CustomEvent(type, { bubbles: true, cancelable: true, detail: { slot: touch.slot, x, y } }));
+  };
   bar.addEventListener('pointerdown', (event) => {
     if (event.pointerType !== 'touch' || touch) return;
     const slot = event.target?.closest?.('.pack-slot[data-pack-container][data-pack-index]');
@@ -6038,6 +6046,7 @@ function setupPackDrops() {
     const el = under(event.clientX, event.clientY);
     document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== el) n.classList.remove('is-drop-target'); });
     if (packDropRepair(el) || destFor(el)) el.classList.add('is-drop-target');
+    else touchElsewhere('pack-touch-over', event.clientX, event.clientY);
   });
   // Lifted, the finger drags the stack: no scrolling, no long-press menu, no native drag on top.
   bar.addEventListener('touchmove', (event) => { if (touch?.on) event.preventDefault(); }, { passive: false });
@@ -6051,7 +6060,7 @@ function setupPackDrops() {
       const eat = (e) => { e.stopPropagation(); e.preventDefault(); };
       document.addEventListener('click', eat, { capture: true, once: true });
       setTimeout(() => document.removeEventListener('click', eat, true), 400);
-      if (packDrag) dropOn(el);
+      if (packDrag && !dropOn(el) && touchElsewhere('pack-touch-drop', event.clientX, event.clientY) && app?.canvas) app.canvas.dataset.packDrop = 'elsewhere';
     }
     endTouch();
   });
