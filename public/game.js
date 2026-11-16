@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b394a5c1';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d6651b36';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=da8f7ece';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1092,7 +1092,7 @@ import { pickReadOnly, qaHandlesAllowed } from './js/qa-gate.js?v=f4e2cd82';
 import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
-import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=80ecc626';
+import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=0371ea0c';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=130338f9';
@@ -8026,6 +8026,31 @@ function nameplateViewBox() {
   return nameplateBox;
 }
 
+/**
+ * G877 (#425): the top bar's other pills (the stats at the left, the actions at the right) in view
+ * pixels, as nameplateViewBox measures the nameplate. The client kept every bubble 25 px under its
+ * header bar (ChatBubble.as keepInBounds 109-110: rect.y -= 25 + header_h); on a sideways phone
+ * the pills cover the top seventh of the view, and a bubble there went under them.
+ */
+let topPillBoxes = [];
+let topPillBoxesAt = -Infinity;
+function topPillViewBoxes() {
+  const now = performance.now();
+  if (now - topPillBoxesAt < 500) return topPillBoxes;
+  topPillBoxesAt = now;
+  topPillBoxes = [];
+  const canvas = app?.canvas;
+  const c = canvas?.getBoundingClientRect();
+  if (!c?.width || !c.height) return topPillBoxes;
+  for (const el of [document.getElementById('hud-stats'), document.querySelector('.top-bar .hud-actions')]) {
+    if (!el || el.offsetParent === null) continue;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height || r.bottom <= c.top) continue;
+    topPillBoxes.push({ left: (r.left - c.left) * (VIEW_W / c.width), right: (r.right - c.left) * (VIEW_W / c.width), bottom: (r.bottom - c.top) * (VIEW_H / c.height) });
+  }
+  return topPillBoxes;
+}
+
 /** G269: the top-left HUD column (the buff strip; the feed popups are NOTIFY's notices now) in view pixels, re-measured every 100 ms. */
 let hudBoxCache = null;
 let hudBoxCacheAt = -Infinity;
@@ -8087,6 +8112,9 @@ function positionSpeechBubble(bubble) {
   const left = bubble.x - cameraX - meta.width / 2;
   const underPill = Boolean(pill && left < pill.right + 8 && left + meta.width > pill.left - 8);
   if (underPill) lowestTip = Math.max(lowestTip, cameraY + pill.bottom + 8 + meta.height + 11);
+  for (const box of topPillViewBoxes()) {
+    if (left < box.right + 8 && left + meta.width > box.left - 8) lowestTip = Math.max(lowestTip, cameraY + box.bottom + 8 + meta.height + 11);
+  }
   const highestTip = cameraY + LOCATION_VIEW_H - 18;
   // Pushed down over the speaker as the client did (at most 120 px; never into a short one's art,
   // Austin 2026-11-01), else hung under the feet of a short one near the top of the view, tail up (G185).
@@ -8111,7 +8139,11 @@ function positionSpeechBubble(bubble) {
   });
   // The client's push is at most 120 px down and never up (keepInBounds 106-117, 148): a speaker
   // well above or under the view keeps its bubble too.
-  const reach = limitSpeechTip(place, want);
+  // G877 (#425): the client's 120 px limit is for speakers out of view above; one standing in view
+  // has its bubble pushed all the way in (speechPushLimit), so a tall bubble on a sideways phone's
+  // short view no longer runs off the top.
+  const pushLimit = speechPushLimit({ feet: spr.y, viewTop: cameraY });
+  const reach = limitSpeechTip(place, want, pushLimit);
   place = { tip: reach.tip, flip: reach.flip };
   // Out of view, wholly or partly: nothing on screen to clear or to slide off.
   const outOfView = shift.far || reach.far;
@@ -8156,7 +8188,7 @@ function positionSpeechBubble(bubble) {
   // Hold the side: a change waits, and after one flip only an under-the-feet bubble that no longer fits goes back.
   const side = holdSpeechSide(hold, place.flip, performance.now(), { forced: hold.side === true && belowSpare < -SPEECH_HOLD_MARGIN });
   if (side !== place.flip) {
-    const held = limitSpeechTip(speechTipOnSide(side, { want, minTip: lowestTip, maxTip: highestTip, below }), want);
+    const held = limitSpeechTip(speechTipOnSide(side, { want, minTip: lowestTip, maxTip: highestTip, below }), want, pushLimit);
     place = { tip: held.tip, flip: held.flip };
     slide = slideFor(place);
     // Held where a move had cleared the HUD or the notices: they fade under it meanwhile.

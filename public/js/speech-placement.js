@@ -55,6 +55,17 @@ export function limitSpeechShift(natural, clamped, limit = SPEECH_EDGE_LIMIT) {
 }
 
 /**
+ * G877 (#425): how far a bubble may be pushed down. The client's 120 px (keepInBounds 114) is
+ * there "so that they do not appear UNDER pcs that are way above you, out of view": a speaker
+ * whose feet are in the view (or under it) gets no limit, its bubble kept wholly in view, as the
+ * client kept a bubble not "within reason" (keepInBounds 111-112). On a sideways phone the view is
+ * short, and a tall bubble over a tall speaker standing in view ran off the top.
+ */
+export function speechPushLimit({ feet, viewTop }) {
+  return Number.isFinite(feet) && Number.isFinite(viewTop) && feet > viewTop ? Infinity : SPEECH_PUSH_LIMIT;
+}
+
+/**
  * The same for the tip's y (ChatBubble.as keepInBounds 106-117, 148): a tip-down bubble is pushed
  * down over its speaker by at most 120 px, and never pulled up for a speaker under the view (a
  * bubble "within reason" skips the client's bottom check). A bubble hung under the feet is left.

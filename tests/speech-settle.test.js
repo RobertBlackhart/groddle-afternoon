@@ -11,7 +11,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { SPEECH_REVERSE_MS, SPEECH_SETTLE_EASE, settleSpeechMove } from '../public/js/speech-placement.js?v=80ecc626';
+import { SPEECH_REVERSE_MS, SPEECH_SETTLE_EASE, settleSpeechMove } from '../public/js/speech-placement.js?v=0371ea0c';
 
 const FRAME = 1000 / 60;
 /** Runs wants (one per frame) through one bubble's record; returns the drawn places. */

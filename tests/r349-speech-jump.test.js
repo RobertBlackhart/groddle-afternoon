@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SPEECH_AIR_HOLD_MS, slideOffAvatars, standingFeet } from '../public/js/speech-placement.js?v=80ecc626';
+import { SPEECH_AIR_HOLD_MS, slideOffAvatars, standingFeet } from '../public/js/speech-placement.js?v=0371ea0c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FRAME = 1000 / 60;

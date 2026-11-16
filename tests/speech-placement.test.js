@@ -17,6 +17,7 @@ import {
   SPEECH_PUSH_LIMIT,
   limitSpeechShift,
   limitSpeechTip,
+  speechPushLimit,
   SPEECH_BUBBLE_RADIUS,
   SPEECH_TAIL_HALF,
   SPEECH_TAIL_TIP_INSET,
@@ -41,7 +42,7 @@ import {
   holdSpeechSide,
   speechTipOnSide,
   texelsPerUnit,
-} from '../public/js/speech-placement.js?v=80ecc626';
+} from '../public/js/speech-placement.js?v=0371ea0c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');
@@ -115,6 +116,26 @@ describe('a speaker out of view keeps its bubble (G242, ChatBubble.as keepInBoun
     assert.deepEqual(limitSpeechTip({ tip: 118, flip: true }, 60), { tip: 118, flip: true, far: false });
   });
 
+  it('G877 (#425): a speaker standing in view has its bubble pushed all the way in; one above the view keeps the 120 px', () => {
+    assert.equal(speechPushLimit({ feet: 311, viewTop: 0 }), Infinity);
+    assert.equal(speechPushLimit({ feet: 900, viewTop: 0 }), Infinity, 'under the view: the never-pulled-up rule still holds it');
+    assert.equal(speechPushLimit({ feet: -40, viewTop: 0 }), SPEECH_PUSH_LIMIT);
+    assert.equal(speechPushLimit({ feet: NaN, viewTop: 0 }), SPEECH_PUSH_LIMIT);
+    // The sideways phone of #425: a 165 px bubble over a 205 px tree whose feet are at 311 of a 540 px view,
+    // kept under the 73 px top bar: a 196 px push, all of it.
+    const want = 311 - 205 - 12;
+    const top = 73 + 165 + 11;
+    assert.deepEqual(limitSpeechTip({ tip: top, flip: false }, want, speechPushLimit({ feet: 311, viewTop: 0 })), { tip: top, flip: false, far: false });
+    assert.equal(limitSpeechTip({ tip: top, flip: false }, want).far, true, 'the 120 px limit left it off the top');
+  });
+
+  it('G877: a bubble keeps under the top bar\'s pills, not only the nameplate (ChatBubble.as 109-110: 25 px under header_h)', () => {
+    const game = readFileSync(join(ROOT, 'public/game.js'), 'utf8');
+    const fn = game.slice(game.indexOf('function positionSpeechBubble'), game.indexOf('function drawSpeechBubble'));
+    assert.match(fn, /for \(const box of topPillViewBoxes\(\)\) \{\n    if \(left < box\.right \+ 8 && left \+ meta\.width > box\.left - 8\) lowestTip = Math\.max\(lowestTip, cameraY \+ box\.bottom \+ 8 \+ meta\.height \+ 11\);/);
+    assert.match(game, /function topPillViewBoxes\(\)[\s\S]*?getElementById\('hud-stats'\), document\.querySelector\('\.top-bar \.hud-actions'\)/);
+  });
+
   it('the client limits are these', { skip: !existsSync(CLIENT) && 'no client checkout' }, () => {
     const bubble = readFileSync(join(CLIENT, 'port/ChatBubble.as'), 'utf8');
     assert.match(bubble, /if \(adj_x && keep_in_viewport_within_reason\) \{\s+var adj_x_limit:int = 100;/);
@@ -127,7 +148,8 @@ describe('a speaker out of view keeps its bubble (G242, ChatBubble.as keepInBoun
     const game = readFileSync(join(ROOT, 'public/game.js'), 'utf8');
     const fn = game.slice(game.indexOf('function positionSpeechBubble'), game.indexOf('function drawSpeechBubble'));
     assert.match(fn, /const shift = limitSpeechShift\(spr\.x \+ offset\.x, clampWorldOverlayX\(spr\.x \+ offset\.x, meta\.width, 12\)\);/);
-    assert.match(fn, /const reach = limitSpeechTip\(place, want\);/);
+    assert.match(fn, /const pushLimit = speechPushLimit\(\{ feet: spr\.y, viewTop: cameraY \}\);\n  const reach = limitSpeechTip\(place, want, pushLimit\);/);
+    assert.match(fn, /speechTipOnSide\(side, \{ want, minTip: lowestTip, maxTip: highestTip, below \}\), want, pushLimit\)/);
     assert.match(fn, /const outOfView = shift\.far \|\| reach\.far;/);
   });
 });
@@ -274,7 +296,7 @@ describe('art heights', () => {
 describe('wiring', () => {
   it('game.js places every bubble through the module and gives registered targets art heights', () => {
     const game = read('public/game.js');
-    assert.match(game, /import \{ SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechTipOnSide, standingFeet \} from '\.\/js\/speech-placement\.js\?v=[\w-]+';/);
+    assert.match(game, /import \{ SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet \} from '\.\/js\/speech-placement\.js\?v=[\w-]+';/);
     assert.match(game, /function register\(target\) \{\n[^\n]*\n  giveArtHeight\(target\);\n  interactables\.push\(target\);/);
     const fn = game.slice(game.indexOf('function positionSpeechBubble'), game.indexOf('function showSpeechBubble'));
     assert.match(fn, /const offset = speechOffsetFor\(meta\.target\);\n[^\n]*\n[^\n]*\n  const shift = limitSpeechShift\(spr\.x \+ offset\.x, clampWorldOverlayX\(spr\.x \+ offset\.x, meta\.width, 12\)\);\n  bubble\.x = shift\.x;/);
@@ -556,6 +578,6 @@ describe('bubbles hold their place (Austin 2026-11-01: a Bean Tree\'s bubble bou
     assert.match(fn, /prefer: meta\.zoneHow \|\| null,/);
     assert.match(fn, /prefer: meta\.slideWant \|\| 0,/);
     assert.match(fn, /const side = holdSpeechSide\(hold, place\.flip, performance\.now\(\), \{ forced: hold\.side === true && belowSpare < -SPEECH_HOLD_MARGIN \}\);/);
-    assert.match(fn, /const held = limitSpeechTip\(speechTipOnSide\(side, \{ want, minTip: lowestTip, maxTip: highestTip, below \}\), want\);/);
+    assert.match(fn, /const held = limitSpeechTip\(speechTipOnSide\(side, \{ want, minTip: lowestTip, maxTip: highestTip, below \}\), want, pushLimit\);/);
   });
 });
