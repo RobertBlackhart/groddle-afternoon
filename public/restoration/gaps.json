@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.45.0",
+  "release": "v0.45.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 233,
+    "fixed": 236,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -606,6 +606,12 @@
           "text": "A visited player's Tower was titled with \"Your Tower\" after their name.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G908",
+          "text": "Adding parts to a tower floor had no count picker, so wall segments went all or none.",
+          "state": "fixed",
+          "version": "v0.45.1"
         },
         {
           "id": "G48",
@@ -1373,6 +1379,12 @@
           "text": "On an upright phone, arrival notices were drawn on top of the route card.",
           "state": "fixed",
           "version": "v0.44.0"
+        },
+        {
+          "id": "G909",
+          "text": "On an upright phone the subway map didn't fit and couldn't be zoomed or panned.",
+          "state": "fixed",
+          "version": "v0.45.1"
         }
       ]
     },
@@ -1793,6 +1805,12 @@
           "text": "A link to a heading on the restoration report landed far above it.",
           "state": "fixed",
           "version": "v0.45.0"
+        },
+        {
+          "id": "G910",
+          "text": "The restoration report's Gone for good list was empty.",
+          "state": "fixed",
+          "version": "v0.45.1"
         }
       ]
     },

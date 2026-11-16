@@ -2445,6 +2445,34 @@
         "game:07e339ffefb",
         "site:84a56d6"
       ]
+    },
+    {
+      "id": "G908",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Adding parts to a tower floor had no count picker, so wall segments went all or none.",
+      "commits": [
+        "game:7998797ddf4"
+      ]
+    },
+    {
+      "id": "G909",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an upright phone the subway map didn't fit and couldn't be zoomed or panned.",
+      "commits": [
+        "game:86a3dbd7d3d"
+      ]
+    },
+    {
+      "id": "G910",
+      "area": "Site",
+      "show": "fixing",
+      "text": "The restoration report's Gone for good list was empty.",
+      "commits": [
+        "game:dff8a1535ce",
+        "site:f747acc"
+      ]
     }
   ]
 }
