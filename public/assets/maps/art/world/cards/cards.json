@@ -95,14 +95,14 @@
         "file": "assets/maps/art/bg/shimlamirch@2x.webp",
         "kind": "made for Groddle",
         "provenance": "tools/provenance/repainted-maps.json",
-        "sha256": "b85574982251d916b24b9b5030a19f6a52b7aee7bb734d315d456623af6ffa32"
+        "sha256": "c6b633853ec73b6669b618653837483c9f4f717fe783953b1950a8834812cfa5"
       },
       "picture": {
         "type": "image/webp",
         "w": 750,
         "h": 455,
-        "bytes": 47162,
-        "sha256": "9a770468c3f165d3e3734cf4385b2b702b51b3b372aa9841285fba4e45ea1ec9"
+        "bytes": 39176,
+        "sha256": "5bc482696d38fac07bd7431e0cd5adcf00a001e0f8d7d95dece56133d6e8ffae"
       }
     },
     "64": {

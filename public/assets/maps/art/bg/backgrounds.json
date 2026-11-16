@@ -158,10 +158,10 @@
       "x1": "assets/maps/art/bg/shimlamirch.webp",
       "x2": "assets/maps/art/bg/shimlamirch@2x.webp",
       "repainted": "tools/provenance/repainted-maps.json",
-      "x1Bytes": 69532,
-      "x1Sha256": "13135157006396569055b70c42b851f7d286a8ce7124c380031e9d40cc62e28d",
-      "x2Bytes": 251468,
-      "x2Sha256": "b85574982251d916b24b9b5030a19f6a52b7aee7bb734d315d456623af6ffa32"
+      "x1Bytes": 58756,
+      "x1Sha256": "41866b42d57e36cdf7b8dafaf6cf6bd69b677fbda9ce7bbd89395cc55ff481da",
+      "x2Bytes": 198556,
+      "x2Sha256": "c6b633853ec73b6669b618653837483c9f4f717fe783953b1950a8834812cfa5"
     },
     "64": {
       "hubName": "Groddle Heights",
