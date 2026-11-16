@@ -813,9 +813,9 @@ export const realtimeFeature = {
     return null;
   },
 
-  /** /who: the other players on this street. */
-  remotePlayerNames() {
-    return session ? session.client.players.map((p) => p.name) : null;
+  /** /who: the other players on this street, without anyone you block (G884: as the Who's here list, js/whos-here.js). */
+  remotePlayerNames(engine) {
+    return session ? session.client.players.filter((p) => !engine?.query?.('realtimeHidden', p.id)).map((p) => p.name) : null;
   },
 
   /** G787: the number keys' emotes (game.js playEmoteKey); null when no street session is open. */

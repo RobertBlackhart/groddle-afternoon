@@ -7,6 +7,7 @@
  */
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { memoryStore, page } from './social-fake-dom.js';
 import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=bf1f1a8c';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
@@ -171,6 +172,16 @@ describe('the Social drawer\'s Who\'s here (online)', () => {
     // Again while it is open: it stays open (the button is what shuts it).
     pill.dispatch('click', { detail: 1 });
     assert.equal(list().hidden, false);
+  });
+});
+
+describe('G884: /who leaves out players you block, as the list does', () => {
+  it('realtime-feature remotePlayerNames asks realtimeHidden (buddies-feature) for each player; game.js whoIsHere uses it', () => {
+    const rt = readFileSync(new URL('../public/js/features/realtime-feature.js', import.meta.url), 'utf8');
+    const body = rt.slice(rt.indexOf('  remotePlayerNames(engine) {'), rt.indexOf('\n  },', rt.indexOf('  remotePlayerNames(engine) {')));
+    assert.match(body, /session\.client\.players\.filter\(\(p\) => !engine\?\.query\?\.\('realtimeHidden', p\.id\)\)\.map\(\(p\) => p\.name\)/);
+    const game = readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');
+    assert.match(game, /whoIsHere: \(\) => \[[^\n]*features\.query\('remotePlayerNames', engine\)/);
   });
 });
 
