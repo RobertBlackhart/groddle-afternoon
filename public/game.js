@@ -1022,7 +1022,7 @@ import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=1ecb86a5';
 import { isCrowdSad } from './js/animal-crowding.js?v=3ee9671d';
-import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=e3634838';
+import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=efa15368';
 import {
   actionLoopFor,
   legacySoundKey,
@@ -34295,7 +34295,7 @@ async function main() {
   };
   window.groddleQA = qaHandlesAllowed() ? fullQA : pickReadOnly(fullQA, READ_ONLY_QA);
   if (new URLSearchParams(location.search).has('soundtest')) {
-    import('./js/sound-test.js?v=72d68256').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
+    import('./js/sound-test.js?v=9aad3d32').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
       state.muted = false;
       if (audio.ctx?.state === 'suspended') {
         try { await audio.ctx.resume(); } catch (_) { /* opt-in */ }

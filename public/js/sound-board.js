@@ -104,6 +104,13 @@ export function createSoundBoard(host) {
 
   function track(handle, seconds) {
     voices.add(handle);
+    // stop() frees the voice at once (#410): a stopped loop used to hold its
+    // slot for the full 600 s, so a dozen Acts filled the cap and effects stopped.
+    const stop = handle.stop;
+    handle.stop = () => {
+      voices.delete(handle);
+      stop?.();
+    };
     // unref: a looping voice (600 s) must not hold a Node test runner open.
     setTimeout(() => voices.delete(handle), Math.ceil((seconds + 0.3) * 1000))?.unref?.();
     return handle;
@@ -148,12 +155,16 @@ export function createSoundBoard(host) {
       gain.gain.linearRampToValueAtTime(0.0001, end);
       src.stop(end + 0.02);
     }
-    src.onended = () => { try { gain.disconnect(); } catch { /* */ } };
     stats.file += 1;
     stats.last = `${resolved.key}:file`;
     host.onPlayed?.(stats.last);
-    const seconds = opts.loop ? 600 : buffer.duration / (opts.rate ?? 1);
-    return track({ key: resolved.key, kind: 'file', stop: stopper(ctx, gain, src) }, seconds);
+    const seconds = opts.loop ? (opts.maxSeconds || 600) : buffer.duration / (opts.rate ?? 1);
+    const handle = track({ key: resolved.key, kind: 'file', stop: stopper(ctx, gain, src) }, seconds);
+    src.onended = () => {
+      voices.delete(handle);
+      try { gain.disconnect(); } catch { /* */ }
+    };
+    return handle;
   }
 
   function playRecipe(resolved, opts) {

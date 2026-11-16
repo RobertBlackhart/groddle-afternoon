@@ -24,7 +24,7 @@ import {
   startAssembly,
   startDisassembly,
 } from '../public/js/machines.js?v=f1b30bc0';
-import { resolveSound } from '../public/js/sound-board.js?v=e3634838';
+import { resolveSound } from '../public/js/sound-board.js?v=efa15368';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=b2afc1c0';
 

@@ -12,7 +12,7 @@ import {
   playSynthRecipe,
   recipeForKey,
 } from '../public/js/synth-sfx.js?v=c30a1709';
-import { createSoundBoard, resolveSound } from '../public/js/sound-board.js?v=e3634838';
+import { createSoundBoard, resolveSound } from '../public/js/sound-board.js?v=efa15368';
 import {
   LEGACY_SFX_KEYS,
   actionLoopFor,
@@ -416,5 +416,45 @@ describe('sound board', () => {
     assert.equal(handle.kind, 'loading');
     await new Promise((r) => setTimeout(r, 5));
     assert.equal(h.board.stats.file, 1);
+  });
+});
+
+describe('sound board voices (#410)', () => {
+  function board() {
+    const ctx = fakeAudioContext();
+    const destination = ctx.createGain();
+    let clock = 0;
+    return {
+      tick(ms) { clock += ms; },
+      board: createSoundBoard({
+        getContext: () => ctx,
+        getDestination: () => destination,
+        now: () => clock,
+        fetchImpl: async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }),
+      }),
+    };
+  }
+
+  test('a stopped tool loop frees its voice, so many Acts in a row never fill the cap', async () => {
+    const h = board();
+    await h.board.preload(['PICK', 'ITEM_PICKUP']);
+    for (let i = 0; i < 40; i += 1) {
+      const loop = h.board.loop('PICK', { intervalMs: 620 });
+      assert.equal(h.board.stats.voices, 1, `act ${i}`);
+      loop.stop();
+      assert.equal(h.board.stats.voices, 0, `act ${i} after stop`);
+      h.tick(100);
+    }
+    assert.equal(h.board.play('ITEM_PICKUP').kind, 'file');
+  });
+
+  test('a played voice that is stopped by its handle leaves the count too', async () => {
+    const h = board();
+    await h.board.preload(['PICK']);
+    const voice = h.board.play('PICK', { loop: true, allowMultiple: true });
+    assert.equal(h.board.stats.voices, 1);
+    voice.stop();
+    voice.stop();
+    assert.equal(h.board.stats.voices, 0);
   });
 });
