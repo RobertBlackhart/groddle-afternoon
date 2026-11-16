@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2414,
+  "commits": 2419,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The signpost hint, the Butler's bubble and the construction tag no longer sit over other things"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A party invite accepted at home opens the teleporter there instead of refusing"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Arrival notices on an upright phone go under the route card instead of over it"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Speech bubbles no longer draw thin lines to the middle of the screen on some phones"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2894,29 +2914,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "A tap on the Social drawer's top line opens Local chat with Who's here open"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "new",
-    "text": "Report on another player's menu sends the administrators the public chat you could see, never IMs"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The project window says why a solo project near the start asks less"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A solo project phase the new smaller amounts already fill finishes when you open its board"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Solo street projects near the start ask far less, and no skills"
    }
   ]
  },
- "tests": 1060,
+ "tests": 1064,
  "generatedAt": "2026-11-16"
 }
