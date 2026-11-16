@@ -97,8 +97,9 @@
  * it says how many other players are online (the presence line's count). Glitch showed the same people
  * as the Local pane title's tip, "People here (N): You, A and B" (ChatArea.as getTip 795-801,
  * RightSideManager.as localTooltip 1212-1255). Someone you block is left out, of the list and of the
- * presence line's "here", as their lines are elsewhere. QA: canvas data socialWhoNames (the names listed,
- * '' while shut).
+ * presence line's "here", as their lines are elsewhere. A tap on the presence line (the drawer's top line,
+ * "N buddies online · N here · N online") opens Local with the list open. QA: canvas data socialWhoNames
+ * (the names listed, '' while shut).
  *
  * QA: canvas data socialThread (chat|key of the thread open, or ''), socialThreadReplies (how many it
  * shows), socialOpen (open|rail), socialTab (the tab selected: activity, local, global,
@@ -1206,7 +1207,7 @@ export function mountSocialDrawer({
     const chev = el('span', { class: 'social-chev', 'aria-hidden': 'true' });
     chev.innerHTML = ICONS.chev;
     presence.replaceChildren(...(p.names.length ? [avs] : []), el('span', { class: 'social-presence-label' }, p.label), chev);
-    presence.setAttribute('aria-label', `${p.title}. Show buddies`);
+    presence.setAttribute('aria-label', `${p.title}. Show who's here`);
   }
 
   function renderBuddies() {
@@ -1480,7 +1481,11 @@ export function mountSocialDrawer({
   collapseBtn.setAttribute('aria-label', online ? 'Collapse the social drawer' : 'Collapse the activity log');
   collapseBtn.title = 'Collapse';
   collapseBtn.addEventListener('click', (e) => setOpen(false, { chosen: true, focus: e.detail === 0 ? 'rail' : null }));
-  presence.addEventListener('click', () => select('buddies', { focus: true }));
+  // G884 (#415 follow-up): the line says who is here, so it opens Local chat with Who's here open (it opened Buddies).
+  presence.addEventListener('click', () => {
+    whoOpen = true;
+    if (!select('local', { focus: true })) render();
+  });
 
   // #415 WHO'S HERE: the button opens and shuts the list (a click leaves the keyboard with the world);
   // a row opens that player's menu as a buddy row does (ContactElement.as 267-271), yours none.

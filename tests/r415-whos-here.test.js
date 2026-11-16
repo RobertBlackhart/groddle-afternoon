@@ -8,7 +8,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=2441d94e';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=bf1f1a8c';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../public/js/whos-here.js?v=cb52c987';
 
@@ -154,6 +154,23 @@ describe('the Social drawer\'s Who\'s here (online)', () => {
     btn().dispatch('click', { detail: 1 });
     assert.equal(list().hidden, true);
     assert.equal(data.socialWhoNames, '');
+  });
+
+  it('G884: a tap on the top line (N here · N online) opens Local with Who\'s here open, not Buddies', () => {
+    globalThis.groddleRealtime.client.players = [{ id: 6, name: 'Fi' }];
+    globalThis.groddleRealtime.client.here = 2;
+    drawer.select('global');
+    assert.equal(data.socialTab, 'global');
+    const pill = t.dock.querySelector('[data-social-presence]');
+    assert.match(pill.getAttribute('aria-label'), /Show who's here$/);
+    pill.dispatch('click', { detail: 1 });
+    assert.equal(data.socialTab, 'local');
+    assert.equal(list().hidden, false);
+    assert.equal(btn().getAttribute('aria-expanded'), 'true');
+    assert.equal(data.socialWhoNames, 'Fi');
+    // Again while it is open: it stays open (the button is what shuts it).
+    pill.dispatch('click', { detail: 1 });
+    assert.equal(list().hidden, false);
   });
 });
 
