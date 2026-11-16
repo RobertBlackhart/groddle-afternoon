@@ -14,6 +14,7 @@ import {
   feedPiggyStack,
   piggySnackOnly,
   incubationEggOptions,
+  INCUBATION,
   isFoodItem,
   itemLabel,
   itemStackMax,
@@ -167,6 +168,16 @@ export function pickerOptionsFor(classId, verbId, inv = {}) {
   if (verbId === 'incubate') return incubationEggOptions(inv);
   if (verbId === 'deposit') return listAnimalFeedOptions('piggy_feeder', inv);
   return listAnimalFeedOptions(classId, inv);
+}
+
+/**
+ * Why a target-item verb has no choices (#389). A verb's own emptyMsg first; Request incubation
+ * says the chicken's line (npc_chicken.js 597 sendBubble), else the generic feeding line.
+ */
+export function pickerEmptyLine(verbId, label = '', emptyMsg = '') {
+  if (emptyMsg) return emptyMsg;
+  if (verbId === 'incubate') return INCUBATION.noEggLine;
+  return `You don't have anything this ${label || 'animal'} wants to eat.`;
 }
 
 /** Consume the selected food (one, or up to a stack for a Piggy) and update care state. */

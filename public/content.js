@@ -57,7 +57,7 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=18353eaa';
+} from './js/animals.js?v=de0ef998';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
@@ -210,6 +210,7 @@ export function getVerbsFor(target, ctx) {
       energy,
       durationMs: Number.isFinite(opts.durationMs) ? opts.durationMs : undefined,
       ...(opts.picker ? { picker: opts.picker } : {}),
+      ...(opts.emptyMsg ? { emptyMsg: opts.emptyMsg } : {}),
     });
   };
 
@@ -632,6 +633,8 @@ export function getVerbsFor(target, ctx) {
         enabled: incubate.enabled,
         reason: incubate.reason,
         picker: 'incubate',
+        // #389: no egg says the chicken's line, not the feeding one (npc_chicken.js 597).
+        emptyMsg: INCUBATION.noEggLine,
       });
     }
     for (const verb of namingVerbs(classId, s, hk)) add(verb.id, verb.label, verb);

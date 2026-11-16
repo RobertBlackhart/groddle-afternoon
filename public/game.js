@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=4ddcd5c8';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a1e4a895';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=43e039fd';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a4713405';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -497,8 +497,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=64e4a567';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=18353eaa';
-import { pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=18353eaa';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=de0ef998';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=de0ef998';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -885,7 +885,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=18353eaa';
+} from './js/animals.js?v=de0ef998';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -8719,8 +8719,9 @@ function openVerbPickLevel(target, verb, row, focusFood = '') {
     // The reason in the footer, where the menu's other reasons go (was a toast).
     if (!row) return false;
     row.setAttribute('aria-disabled', 'true');
-    row.dataset.vmReason = verb?.emptyMsg || (verbId === 'plant' ? PLANT_NO_SEEDS_LINE : `You don't have anything this ${target.label || 'animal'} wants to eat.`);
+    row.dataset.vmReason = verbId === 'plant' && !verb?.emptyMsg ? PLANT_NO_SEEDS_LINE : pickerEmptyLine(verbId, target.label, verb?.emptyMsg);
     refuseVerbRow(menu, row);
+    sayNoEggs(target, verbId);
     return false;
   }
   // #197: a garden plot's Plant asks which seed; the picture runs Plant with it (plant:<seed>),
@@ -9096,6 +9097,12 @@ function verbChangedSomething(effects) {
   return Object.values(effects.items || {}).some((n) => Number(n));
 }
 
+/** #389: a chicken asked to incubate with no egg says so in its bubble for 5 s (npc_chicken.js 597). */
+function sayNoEggs(target, verbId) {
+  if (verbId !== 'incubate' || target?.classId !== 'npc_chicken') return;
+  showSpeechBubble(target, { text: pickerEmptyLine('incubate'), durationMs: 5000 });
+}
+
 /** `pick`: a stack chosen in the verb menu's second level (VERBS): straight to the count, or fed. */
 function openFeedPicker(target, verb = null, pick = '') {
   if (!target || currentAction) return false;
@@ -9106,7 +9113,8 @@ function openFeedPicker(target, verb = null, pick = '') {
   const verbId = verb?.picker || verb?.id || 'feed';
   const options = pickChoices(target, verbId);
   if (!options.length) {
-    toast(verb?.emptyMsg || `You don't have anything this ${target.label || 'animal'} wants to eat.`, 2800);
+    toast(pickerEmptyLine(verbId, target.label, verb?.emptyMsg), 2800);
+    sayNoEggs(target, verbId);
     return false;
   }
 

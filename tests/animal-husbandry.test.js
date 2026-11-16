@@ -49,10 +49,10 @@ import {
   stickPlaceState,
   takePlop,
 } from '../public/js/animal-husbandry.js?v=bf1c94f9';
-import { animalStatusLabel, piggyFeedTip, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=18353eaa';
-import { getVerbsFor, runVerb } from '../public/content.js?v=4ddcd5c8';
+import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=de0ef998';
+import { getVerbsFor, runVerb } from '../public/content.js?v=a1e4a895';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=38c770af';
+import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=3e39ab98';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -315,6 +315,22 @@ describe('Incubation and baby animals (npc_chicken.js, chick/piglet/caterpillar.
     feedBaby('piglet', inv, 'potato');
     assert.equal(feedBaby('piglet', inv, 'potato').grew, 'npc_piggy');
   });
+
+  it('#389: Request incubation with no egg says the chicken line, not the feeding one', () => {
+    assert.equal(INCUBATION.noEggLine, "Chickens incubate eggs. You don't have any!");
+    const chicken = { classId: 'npc_chicken', label: 'Chicken', state: createAnimalState('npc_chicken') };
+    const verb = getVerbsFor(chicken, { pc: { energy: 80, mood: 50 }, inv: { apple: 2 }, learned: [INCUBATION.skill] }).find((v) => v.id === 'incubate');
+    assert.equal(verb.emptyMsg, INCUBATION.noEggLine);
+    assert.deepEqual(pickerOptionsFor('npc_chicken', 'incubate', { apple: 2 }), []);
+    assert.equal(pickerEmptyLine('incubate', 'Chicken'), INCUBATION.noEggLine);
+    assert.equal(pickerEmptyLine('feed', 'Piggy'), "You don't have anything this Piggy wants to eat.");
+    assert.equal(pickerEmptyLine('feed', 'Chick', 'With what?'), 'With what?');
+    // Both empty fallbacks (the menu's second level and the picker) use it, and the chicken says it.
+    const game = readFileSync(join(publicDir, 'game.js'), 'utf8');
+    assert.doesNotMatch(game, /wants to eat\.`/);
+    assert.equal((game.match(/pickerEmptyLine\(verbId, target\.label, verb\?\.emptyMsg\)/g) || []).length, 2);
+    assert.match(game, /function sayNoEggs[\s\S]{0,200}showSpeechBubble\(target, \{ text: pickerEmptyLine\('incubate'\), durationMs: 5000 \}\)/);
+  });
 });
 
 describe('Naming (animal_naming.js)', () => {
@@ -540,7 +556,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=8dd0e11f');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=e4ab932d');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');

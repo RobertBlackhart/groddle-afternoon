@@ -33,10 +33,10 @@ import { patchesFeature } from '../public/js/features/patches-feature.js?v=bb451
 import { treeDeathFeature, decorateTreeVerbs } from '../public/js/features/tree-death-feature.js?v=67ac7d88';
 import { potionsFeature } from '../public/js/features/potions-feature.js?v=551b5712';
 import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=653a1707';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=8c866a77';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=9c2c0c0a';
 import { rookKeyFor } from '../public/js/rook-attack.js?v=c12e825f';
 import { rookedFromServer, syncKeys } from '../public/js/rook-mp.js?v=0b9056b1';
-import { runVerb } from '../public/content.js?v=4ddcd5c8';
+import { runVerb } from '../public/content.js?v=a1e4a895';
 import { isPoisoned, POISON_DURATION_MS, TREE_ANTIDOTE, TREE_POISON } from '../public/js/tree-poison.js?v=3bc48e3e';
 import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
 
