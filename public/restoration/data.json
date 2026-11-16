@@ -2792,9 +2792,19 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2296,
+  "commits": 2299,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Ladders whose bottom hangs over the floor can be climbed from it with Up"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Arbor Hollow branches all grow out of the trunk, stubs tucked into the bark"
+   },
    {
     "date": "2026-11-15",
     "kind": "fix",
@@ -2904,16 +2914,6 @@
     "date": "2026-11-15",
     "kind": "new",
     "text": "The phone report page can edit your report until the team reads it"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The shrine's Learn Faster box folds to one line, closed on a phone, open on a desktop"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "A phone's top bar shows iMG, currants and favor side by side, big counts shortened (17.2K)"
    }
   ]
  },
