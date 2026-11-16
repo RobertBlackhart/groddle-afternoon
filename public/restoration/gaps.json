@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 1,
-    "known": 14,
+    "known": 13,
     "unreleased": 0,
-    "fixed": 189,
+    "fixed": 190,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -338,14 +338,15 @@
       "name": "World",
       "items": [
         {
-          "id": "G680",
-          "text": "A few items have no picture of their own when dropped on the ground yet.",
-          "state": "known"
-        },
-        {
           "id": "G164",
           "text": "The small dark figure on the Hell Bar's counter, and the bar's own music, are still unidentified.",
           "state": "known"
+        },
+        {
+          "id": "G680",
+          "text": "A few items have no picture of their own when dropped on the ground yet.",
+          "state": "fixed",
+          "version": "v0.37.0"
         },
         {
           "id": "G670",
