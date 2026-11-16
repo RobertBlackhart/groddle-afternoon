@@ -26,7 +26,7 @@
       "assets/content/barnacle-spots.json": "ea6c5ca0",
       "assets/content/deco-catalog.json": "3ba04081",
       "assets/content/node-spots.json": "d0c87cff",
-      "assets/content/puzzle-triggers.json": "313a70f7",
+      "assets/content/puzzle-triggers.json": "9b2a1658",
       "assets/content/quests.json": "4f583ad5",
       "assets/content/quoin-spots.json": "a10e555f",
       "assets/content/recipes.json": "a0e6141c",

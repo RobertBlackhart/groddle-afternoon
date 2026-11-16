@@ -131,7 +131,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=7cbc4aa6';
+} from '../newxp.js?v=b77f7bc9';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=61be601c';
@@ -141,7 +141,7 @@ import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?
 import { assignQuest, completeQuest } from '../quests.js?v=40c71a37';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=38a0cac5';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
+import { locationEventsApi } from './location-events-feature.js?v=56c09570';
 import * as kit from '../quest-rooms/kit.js?v=b3e5e68d';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=8e0a8c38';
 import { upgradeSource } from '../sprite-hires.js?v=b59156cf';

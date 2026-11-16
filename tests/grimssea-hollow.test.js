@@ -13,11 +13,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=b6cb6a4e';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=d728092c';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=465c5e9a';
 import { ENCHANTED_FORESTS, hollowTreeSpots } from '../public/js/enchanted-forests.js?v=da978edc';
-import { treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=1950b85e';
+import { treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=916b3b26';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (tsid) => JSON.parse(readFileSync(join(spike, 'public/assets/streets', `${tsid}.json`), 'utf8'));

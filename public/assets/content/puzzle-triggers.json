@@ -3866,6 +3866,8 @@
     "invert": "gut_invert",
     "normal": "gut_normal"
    },
+   "lineEndsAtWalls": true,
+   "lineEndsAtWallsWhy": "Report #390: falling down the first tube against its divider (wall_1352148176866, x 2524, foot at y 2185), the floor resolve's 4 px slack past the end of the divider's tip (plat_1352148177034, ends at x 2524) seated the avatar on the tip beside the wall, 300 px over the bowl. Here a line gives no floor past an end a wall stands on, as the client gave none past any end. Only this street: the same rule moves the floor beside walls on 242 other streets (census, register G839).",
    "events": {
     "gut_from_bottom": [
      {

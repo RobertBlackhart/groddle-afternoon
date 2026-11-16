@@ -29,8 +29,8 @@ import { useDraftArt } from '../public/js/builder/draft-play.js?v=5853d710';
 import { run, effectOps, rumbleOps, effectsReport, placeOps, ladderTiling, LADDER_TILINGS } from '../tools/builder/cli.mjs';
 import * as textures from '../public/js/textures.js?v=8e0a8c38';
 import { installNewArt } from '../public/js/builder/new-art.js?v=29f0b13e';
-import { newStreet } from '../public/js/builder/templates.js?v=f5eaea9c';
-import { kindChange, costWords } from '../public/js/builder/editor-effects.js?v=b3970fc5';
+import { newStreet } from '../public/js/builder/templates.js?v=7b1b5bd7';
+import { kindChange, costWords } from '../public/js/builder/editor-effects.js?v=f2793916';
 
 const json = (p) => JSON.parse(readFileSync(join(GAME_DIR, p), 'utf8'));
 const hasPhp = spawnSync('php', ['-v']).status === 0;

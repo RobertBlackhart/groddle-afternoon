@@ -349,7 +349,7 @@ describe('Le Misérable (le_miserable)', () => {
 
   it('#340 (G762): the crawl walls never open; only a half-size body fits under them, both ways', async () => {
     const { mod, street } = await setup();
-    const model = await import('../public/js/street-model.js?v=b6cb6a4e');
+    const model = await import('../public/js/street-model.js?v=d728092c');
     const src = readFileSync(join(root, 'public/js/quest-rooms/le-miserable.js'), 'utf8');
     assert.doesNotMatch(src, /pc_perm/, 'the room never switches a wall');
     const walls = model.barriersScreen(street);

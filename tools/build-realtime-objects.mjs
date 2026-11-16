@@ -74,8 +74,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=18b181ad';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=5e48c6dd';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
 import {
   animalPatrolRange,
   ecologyForStreet,

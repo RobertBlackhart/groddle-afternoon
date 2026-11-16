@@ -304,6 +304,30 @@ export function platformYAt(p, x, margin = 4) {
 }
 
 /**
+ * A line's end cut off by a wall: `x` lies just past the end (within `reach`, the floor
+ * resolve's slack beyond a line) and a wall stands from the end's x to x whose foot is the
+ * end (its bottom within 2 px of the end's height, rising at least 40 px over it). The line is
+ * the underside of the rock the wall faces, as at Organish Chute's divider tip (report #390:
+ * plat_1352148177034 ends at x 2524 under wall_1352148176866, and the 4 px slack seated a
+ * falling avatar on the tip beside the wall). The client had no slack (AvatarPhysicsHandler.as
+ * floor test `x >= line.x1 && x <= line.x2`). `walls` are barriersScreen rows.
+ */
+export function lineEndWalled(p, x, walls, reach = 8) {
+  if (!walls?.length) return false;
+  const lo = Math.min(p.x1, p.x2);
+  const hi = Math.max(p.x1, p.x2);
+  if ((x >= lo && x <= hi) || x < lo - reach || x > hi + reach) return false;
+  const left = x < lo;
+  const ex = left ? lo : hi;
+  const ey = (p.x1 <= p.x2) === left ? p.y1 : p.y2;
+  for (const w of walls) {
+    if (Math.abs(w.yBot - ey) > 2 || w.yTop > ey - 40) continue;
+    if (left ? w.x <= ex + 0.5 && w.x > x : w.x >= ex - 0.5 && w.x < x) return true;
+  }
+  return false;
+}
+
+/**
  * Ground for a walking NPC: the nearest platform at or below its feet, allowing
  * only a gentle `maxRise` step up, so steep slopes and branches overhead are
  * never climbed. Falls back to the lowest platform at x, or null when none.

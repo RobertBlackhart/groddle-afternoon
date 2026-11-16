@@ -94,7 +94,7 @@ import {
 } from '../quest-instance.js?v=f0df88c3';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomModulePath } from '../quest-rooms/catalog.js?v=a217b716';
 import * as kit from '../quest-rooms/kit.js?v=b3e5e68d';
-import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
+import { locationEventsApi } from './location-events-feature.js?v=56c09570';
 import {
   acceptOffer,
   ensureQuestOfferState,
@@ -113,7 +113,7 @@ import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
-import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=43b1182e';
+import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=a2fade97';
 
 let quoinFrames = null;
 function quoinTexture(PIXI, type) {

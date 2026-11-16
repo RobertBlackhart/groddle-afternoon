@@ -102,7 +102,7 @@
  */
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
-import { nearestSurfaceY } from '../walk-surface.js?v=106bfdc5';
+import { nearestSurfaceY } from '../walk-surface.js?v=a6585ee8';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { isInHell } from '../hell.js?v=df2b4357';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';

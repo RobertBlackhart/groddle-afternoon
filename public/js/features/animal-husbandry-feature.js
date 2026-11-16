@@ -58,7 +58,7 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=94c00f28';
-import { nearestSurfaceY } from '../walk-surface.js?v=106bfdc5';
+import { nearestSurfaceY } from '../walk-surface.js?v=a6585ee8';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=55ad2f83';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';

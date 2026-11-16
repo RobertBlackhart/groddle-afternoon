@@ -22,7 +22,7 @@
  */
 
 import { BROADCAST_DISTANCE, createNoteState, inBroadcastReach, lothaNote, prepareToyStreet, streetToysFor, toyDecoId, toyHitBox } from '../street-toys.js?v=09630452';
-import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
+import { locationEventsApi } from './location-events-feature.js?v=56c09570';
 import { TOY_CLICK, catchUpDangles, catchUpLotha, createToyTracker, toyEvents, toyMessageFor } from '../street-toys-mp.js?v=9eca3893';
 
 export const STREET_TOYS_FEATURE_ID = 'street-toys';

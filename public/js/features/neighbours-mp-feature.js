@@ -109,7 +109,7 @@
 
 import { createMinnAccount } from '../minn-account.js?v=00f3eadb';
 import { runStreetTransition } from '../screen-fx.js?v=8c1be96c';
-import { STREET_INDEX } from '../street-loader.js?v=18b181ad';
+import { STREET_INDEX } from '../street-loader.js?v=5e48c6dd';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=f49c8998';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=5d66e832';
 import { getPlot, tickGarden } from '../garden.js?v=a5191e8b';

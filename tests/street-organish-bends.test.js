@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NORMAL_BUFF, avatarGround, stepAvatar, steerX, streetPhysicsExtras } from '../public/js/avatar-step.js?v=43b1182e';
-import { barriersScreen, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
+import { NORMAL_BUFF, avatarGround, stepAvatar, steerX, streetPhysicsExtras } from '../public/js/avatar-step.js?v=a2fade97';
+import { barriersScreen, lineEndWalled, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=d728092c';
 import { enteredFrom, normalizePuzzleData, stepTriggers } from '../public/js/puzzle-triggers.js?v=1363d17a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -61,6 +61,33 @@ describe('Organish Chute bend boxes (#390)', () => {
   });
 });
 
+describe('the divider\'s tip is no ledge beside its wall (#390)', () => {
+  const street = loadStreet();
+  const lines = platformsScreen(street);
+  const walls = barriersScreen(street);
+  const tip = lines.find((p) => p.id === 'plat_1352148177034');
+
+  it('past a line\'s end, a wall standing on that end cuts it off; inside the line, or a wall elsewhere, does not', () => {
+    assert.deepEqual([Math.round(tip.x2), Math.round(tip.y2)], [2524, 2185]);
+    assert.equal(lineEndWalled(tip, 2525, walls), true, 'beside wall_1352148176866, foot at the tip');
+    assert.equal(lineEndWalled(tip, 2528, walls), true);
+    assert.equal(lineEndWalled(tip, 2500, walls), false, 'on the tip itself');
+    assert.equal(lineEndWalled(tip, 2410, walls), false, 'its other end has no wall');
+    // A wall hanging down from a ledge's end (its top at the end) leaves the ledge's slack alone.
+    const ledge = { x1: 0, y1: 500, x2: 100, y2: 500 };
+    assert.equal(lineEndWalled(ledge, 102, [{ x: 100, yTop: 500, yBot: 900 }]), false);
+    assert.equal(lineEndWalled(ledge, 102, [{ x: 100, yTop: 100, yBot: 500 }]), true);
+  });
+
+  it('only on a street that asks for it: the avatar falls past the tip to the bowl', () => {
+    assert.equal(Math.round(avatarGround(lines, 2525, 2180, 6, { street })), 2185, 'the street as archived: the tip');
+    const patched = { ...street, lineEndsAtWalls: true };
+    assert.ok(avatarGround(lines, 2525, 2180, 6, { street: patched }) > 2450, 'patched: the bowl');
+    assert.equal(def.lineEndsAtWalls, true);
+    assert.match(def.lineEndsAtWallsWhy, /#390/);
+  });
+});
+
 describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
   let puzzles;
   let events;
@@ -81,8 +108,8 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     globalThis.fetch = async () => ({ json: async () => raw });
     // The flip keys listen on the window (bindGravityFlip).
     if (typeof globalThis.window === 'undefined') globalThis.window = new EventTarget();
-    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=1d819ba5'));
-    ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=f2b6c156'));
+    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=18014402'));
+    ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=56c09570'));
   });
 
   /** The avatar on the street at (x, y), stepped a frame at a time as game.js steps it. */
@@ -197,6 +224,26 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     assert.ok(w.p.y > 2000, 'fell down the tube');
     await w.press('ArrowUp');
     assert.equal(api.gravity(), -1, 'Up: head first again');
+    w.clear();
+  });
+
+  it('from the report\'s corner, Down drops the avatar to the bowl past the tip, and the bend turns it over again', async () => {
+    const w = await enter(2720, 377);
+    api.fire(w.engine, 'gut_invert');
+    w.frame();
+    assert.equal(api.gravity(), -1, 'starts head first');
+    w.hold('ArrowLeft');
+    for (let f = 0; f < 90; f += 1) w.frame();
+    await w.press('ArrowDown');
+    assert.equal(api.gravity(), 1);
+    let f = 0;
+    while (!(w.p.y > 2400) && f < 200) { w.frame(); f += 1; }
+    assert.ok(w.p.y > 2400, `below y 2400 within 200 frames (at ${Math.round(w.p.x)}, ${Math.round(w.p.y)} after ${f})`);
+    // Still holding Left: along the bowl under the tip, bend_bottom_right turns it over.
+    f = 0;
+    while (!(w.p.x < 2300) && f < 300) { w.frame(); f += 1; }
+    assert.ok(w.p.x < 2300, 'past x 2300 going left');
+    assert.equal(api.gravity(), -1, 'head first again');
     w.clear();
   });
 

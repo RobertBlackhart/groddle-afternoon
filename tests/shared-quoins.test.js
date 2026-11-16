@@ -350,7 +350,7 @@ describe('the server data', () => {
   });
 
   it('ships the current layout for Hechey Track and every class the spots use', { skip: skipWithoutServer }, async () => {
-    const { loadStreetDataFromFs, applyStreetIndex } = await import('../public/js/street-loader.js?v=18b181ad');
+    const { loadStreetDataFromFs, applyStreetIndex } = await import('../public/js/street-loader.js?v=5e48c6dd');
     applyStreetIndex(index);
     for (const tsid of ['GLI2V0UN7RD1T2J', 'GLI3272LOTD1B1F']) {
       const data = await loadStreetDataFromFs(tsid, join(root, 'public/assets/streets'));

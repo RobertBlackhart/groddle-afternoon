@@ -73,7 +73,7 @@ import {
   teleportCounters,
   teleportKindOf,
   trailingX,
-} from '../follow-mp.js?v=ec738df5';
+} from '../follow-mp.js?v=82247b24';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 
 export const FOLLOW_MP_FEATURE_ID = 'follow-mp';

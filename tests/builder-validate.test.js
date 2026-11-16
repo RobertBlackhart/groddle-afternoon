@@ -276,7 +276,7 @@ describe('ART-001: art that floats (js/builder/ground.js, lane GROUNDED)', () =>
   const rock = { id: 'd_5', sprite: 'gz_rock', x: 0, y: -40, w: 300, h: 120, z: 0, r: 0 };
 
   it('a low ledge with open space under it floats; the floor past the bottom edge does not; a high one may float', async () => {
-    const { floatingLines, FLOAT_REACH, FLOAT_OPEN } = await import('../public/js/builder/ground.js?v=9218684b');
+    const { floatingLines, FLOAT_REACH, FLOAT_OPEN } = await import('../public/js/builder/ground.js?v=fb481dff');
     assert.equal(FLOAT_REACH, 450);
     assert.equal(FLOAT_OPEN, 24);
     const f = floatingLines(street());

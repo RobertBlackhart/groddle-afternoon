@@ -564,7 +564,7 @@ test.describe('conversations against GameServerJS (G185)', () => {
     // near y 660 with the ground at y 902-920 on both sides; no floor at its
     // height 280-430 px away, so 330 px off on the ground with the camera lifted.
     const street = JSON.parse(readFileSync(join(ROOT, 'public/assets/streets/GLI57DI72HI153U.json'), 'utf8'));
-    const { platformsScreen } = await import('../public/js/street-model.js?v=b6cb6a4e');
+    const { platformsScreen } = await import('../public/js/street-model.js?v=d728092c');
     const sump = platformsScreen(street);
     const spot = spiritFarSpot(sump, 4797, 650, { artHeight: 140, viewH: 408 });
     assert.equal(spot.x, 5127);

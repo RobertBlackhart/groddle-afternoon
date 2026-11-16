@@ -10,11 +10,11 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { SLOPE_STICK, holdCloseToFloor, stickToSlope } from '../public/js/slope-walk.js?v=9af1e505';
-import { isStandable, platformYAt, platformsScreen, resolveGround } from '../public/js/street-model.js?v=b6cb6a4e';
-import { NORMAL_BUFF, avatarGround, stepAvatar } from '../public/js/avatar-step.js?v=43b1182e';
+import { isStandable, platformYAt, platformsScreen, resolveGround } from '../public/js/street-model.js?v=d728092c';
+import { NORMAL_BUFF, avatarGround, stepAvatar } from '../public/js/avatar-step.js?v=a2fade97';
 import { convertLocationXml } from '../public/js/location-xml.js?v=a4db2433';
 import { avatarAnimState } from '../public/js/avatar-anims.js?v=fb921bf4';
-import { landingY } from '../public/js/walk-surface.js?v=106bfdc5';
+import { landingY } from '../public/js/walk-surface.js?v=a6585ee8';
 
 const root = join(import.meta.dirname, '..');
 const babySteppes = JSON.parse(readFileSync(join(root, 'public/assets/streets/GM416LNIKVLM1.json'), 'utf8'));

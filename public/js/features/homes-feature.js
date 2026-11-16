@@ -242,7 +242,7 @@ import {
 } from '../home-styles.js?v=13fe0aaa';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
-import { oneArmSignpost } from '../street-render.js?v=b5bb9763';
+import { oneArmSignpost } from '../street-render.js?v=0259eca4';
 import { ROCK_CATALOG } from '../mining.js?v=c2964c53';
 import {
   HOUSE_SIGN,
@@ -261,7 +261,7 @@ import {
   ROCK_VERB_IDS,
 } from '../magic-rock-home.js?v=c07b2327';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=16b73363';
+import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=f93af1a3';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=0a356337';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
 import { storagePickupLock } from '../home-storage.js?v=b0225465';

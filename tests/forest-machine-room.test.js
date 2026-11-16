@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=b6cb6a4e';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=d728092c';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
 import { populationForStreet } from '../public/js/street-ecology.js?v=aec45c23';
 import { MACHINE_ROOMS, availableHubStreets, countsTowardHub, isMachineRoom, streetVisitCounters } from '../public/js/exploration.js?v=68f27989';

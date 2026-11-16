@@ -17,7 +17,7 @@ import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { streetHeight, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
+import { streetHeight, streetWidth } from '../public/js/street-model.js?v=d728092c';
 import {
   MEASURED_QUOIN_CLEARANCE,
   QUOIN_TYPES,

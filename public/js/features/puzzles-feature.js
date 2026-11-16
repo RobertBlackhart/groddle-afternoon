@@ -48,7 +48,7 @@
  * card offers the way back here).
  */
 
-import { locationEventsApi } from './location-events-feature.js?v=f2b6c156';
+import { locationEventsApi } from './location-events-feature.js?v=56c09570';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=61be601c';
 import {
@@ -116,6 +116,8 @@ function patchStreet(street) {
   const def = defFor(street?.tsid);
   if (!def || !street) return;
   if (def.events) street.events = { ...(street.events || {}), ...def.events };
+  // No floor past a line's end under a wall (js/avatar-step.js avatarGround; `lineEndsAtWallsWhy`).
+  if (def.lineEndsAtWalls) street.lineEndsAtWalls = true;
   // Amberlyza's exit door is switched off in the source data (report #184): the finish needs it.
   showExitDoor(street, def);
   // Geometry a street's own events still name but the archive lost (`platforms`, source

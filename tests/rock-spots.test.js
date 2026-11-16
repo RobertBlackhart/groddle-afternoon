@@ -40,7 +40,7 @@ import {
   setStreetEcologyCatalog,
 } from '../public/js/street-ecology.js?v=aec45c23';
 import { PAPER_TREE_SPOTS, PEAT_SPOTS, ROCK_BERYL_SPOTS, ROCK_DULLITE_SPOTS, ROCK_METAL_SPOTS, ROCK_SPARKLY_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
-import { platformsScreen } from '../public/js/street-model.js?v=b6cb6a4e';
+import { platformsScreen } from '../public/js/street-model.js?v=d728092c';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

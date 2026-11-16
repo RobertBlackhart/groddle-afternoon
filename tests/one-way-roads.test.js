@@ -23,7 +23,7 @@ import {
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=d0ca0659';
 import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=93915e43';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=18b181ad';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=5e48c6dd';
 import { buildOneWay } from '../tools/routes/build-one-way.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

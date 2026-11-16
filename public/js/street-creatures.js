@@ -59,7 +59,7 @@ import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=aec45c23';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=addb573f';
 import { CRAB_WALK } from './crabs.js?v=c4767c5f';
 import { FIRE_DRAGON_WALK } from './fire-dragon.js?v=b7f3d751';
-import { walkSurfaceY } from './walk-surface.js?v=106bfdc5';
+import { walkSurfaceY } from './walk-surface.js?v=a6585ee8';
 import { EAT_PAUSE_MS } from './animal-mood.js?v=a49495fc';
 import { CHICKEN_PAUSE_STATES } from './chicken-idles.js?v=eef0279b';
 

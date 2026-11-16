@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
 import {
   PERCH_DROP_PX,
   PLACEMENT_FOOTPRINTS,

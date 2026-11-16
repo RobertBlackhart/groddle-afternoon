@@ -8,7 +8,7 @@
  * Units are px per frame at 60 fps (spec 2.3). A body is { x, y, vx, vy, onGround } with the feet
  * at x, y in screen space (the street's top-left origin, y down).
  */
-import { avatarHeadReach, blockBarrierCrossing, buriedSignpostUnder, headCeiling, isStandable, platformYAt, resolveGround, worldToScreen } from './street-model.js?v=b6cb6a4e';
+import { avatarHeadReach, barriersScreen, blockBarrierCrossing, buriedSignpostUnder, headCeiling, isStandable, lineEndWalled, platformYAt, resolveGround, worldToScreen } from './street-model.js?v=d728092c';
 import { stickToSlope } from './slope-walk.js?v=9af1e505';
 
 /*
@@ -205,6 +205,13 @@ export function streetPhysicsFreeFall(body, buff, dt) {
 export const UNDER_LINE_SLACK = 24;
 
 export function avatarGround(platforms, px, py, vy, { street = null, fallback = 0, bottom = null } = {}) {
+  // A street that asks for it (puzzles-feature patchStreet, `lineEndsAtWalls`): no floor past a
+  // line's end where a wall stands on that end (street-model.js lineEndWalled, report #390).
+  if (street?.lineEndsAtWalls && platforms?.length) {
+    const walls = barriersScreen(street);
+    const kept = platforms.filter((p) => !lineEndWalled(p, px, walls));
+    if (kept.length !== platforms.length) platforms = kept;
+  }
   if (platforms?.length) {
     const hit = resolveGround(platforms, px, py, vy ?? 0, GROUND_SNAP);
     if (hit) return hit.y;

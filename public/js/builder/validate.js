@@ -33,10 +33,10 @@ import { platformsScreen, barriersScreen, isStandable, isSolidFromBelow, isItemF
 import { planStreetPlacements, populationForStreet, rockPlacementRequest, shrinePlacementRequest, streetReservedSpots, treePlacementRequest } from '../street-ecology.js?v=aec45c23';
 import { jumpApex } from '../avatar-step.js?v=43b1182e';
 import { STY_RULES, styleFindings } from './style-rules.js?v=abf9bfae';
-import { EFFECT_LIMITS, effectsCost, normaliseEmitter, rumbleShare, emitterAnchor } from '../street-effects.js?v=c51a35df';
+import { EFFECT_LIMITS, effectsCost, normaliseEmitter, rumbleShare, emitterAnchor } from '../street-effects.js?v=a30418a6';
 import { LICENCE_POLICY, provenanceProblems } from './new-art.js?v=29f0b13e';
-import { postOffFloor, offFloorWords } from './posts.js?v=1a62855d';
-import { floatingLines, FLOAT_REACH, FLOAT_OPEN } from './ground.js?v=9218684b';
+import { postOffFloor, offFloorWords } from './posts.js?v=8f5f1e3a';
+import { floatingLines, FLOAT_REACH, FLOAT_OPEN } from './ground.js?v=fb481dff';
 
 export const RULES = Object.freeze({
   'SCH-001': ['fatal', 'Zone does not fit the schema'],

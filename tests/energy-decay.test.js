@@ -21,7 +21,7 @@ import { energyDecayContext, energyDecayFeature, runEnergyLossTick } from '../pu
 import { __newxpTest } from '../public/js/features/newxp-feature.js?v=5063061e';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=55547e57';
 import { HELL_TEXT } from '../public/js/hell.js?v=df2b4357';
-import { SCENE_TSIDS } from '../public/js/newxp.js?v=7cbc4aa6';
+import { SCENE_TSIDS } from '../public/js/newxp.js?v=b77f7bc9';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

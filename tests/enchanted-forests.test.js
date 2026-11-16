@@ -10,8 +10,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry, platformsScreen, platformYAt, worldToScreen } from '../public/js/street-model.js?v=b6cb6a4e';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';
+import { assertStreetGeometry, platformsScreen, platformYAt, worldToScreen } from '../public/js/street-model.js?v=d728092c';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=465c5e9a';
 import {
   ENCHANTED_FORESTS,
   ENCHANTED_MUSIC,

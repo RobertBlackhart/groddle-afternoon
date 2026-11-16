@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=b6cb6a4e';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=d728092c';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
 import { inEventBox, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=05663361';
 import {

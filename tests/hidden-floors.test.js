@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=b6cb6a4e';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=d728092c';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
 import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=1363d17a';
 import {
@@ -52,7 +52,7 @@ import {
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=725c10e0';
 import { FEATURES } from '../public/js/features/index.js?v=93c19ef3';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=0a356337';
-import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=43b1182e';
+import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=a2fade97';
 import { buffPhysics } from '../public/js/buffs.js?v=c499cf1a';
 
 /** Spinach's High Jumper buff, running (buffs.js buffPhysics). */

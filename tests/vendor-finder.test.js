@@ -12,7 +12,7 @@ import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } fro
 import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=d4456d1f';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=aec45c23';
 import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=18b181ad';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=5e48c6dd';
 import { selectVendorProfile } from '../public/js/vendor.js?v=6b499efc';
 
 const PUB = new URL('../public/', import.meta.url);

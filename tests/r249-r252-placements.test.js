@@ -16,7 +16,7 @@ import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
+import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=d728092c';
 import {
   GARDEN_BOX_STREETS,
   LEGACY_BOX_BEDS,

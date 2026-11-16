@@ -19,7 +19,7 @@ import {
   platformYAt,
   streetWidth,
   worldToScreen,
-} from '../public/js/street-model.js?v=b6cb6a4e';
+} from '../public/js/street-model.js?v=d728092c';
 import { giantForStreet } from '../public/js/shrines.js?v=945cc7c4';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

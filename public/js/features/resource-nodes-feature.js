@@ -59,7 +59,7 @@
 
 import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=f49c8998';
 import { setToolRemaining, toolCopies } from '../tools.js?v=8516a0c3';
-import { isItemFloor, platformYAt } from '../street-model.js?v=b6cb6a4e';
+import { isItemFloor, platformYAt } from '../street-model.js?v=d728092c';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=b59156cf';
 import { rollResourceNodeDrop } from './drops-feature.js?v=ea633f39';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';

@@ -1,4 +1,4 @@
-import { isItemFloor, platformYAt, worldToScreen } from './street-model.js?v=b6cb6a4e';
+import { isItemFloor, platformYAt, worldToScreen } from './street-model.js?v=d728092c';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 import { MAILBOX_SPOTS } from './node-spots-data.js?v=97d4281c';
 
