@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUG_TEXT, MAX_MESSAGE, benignError, bugReportFeature, buildKey, pageErrorLine, rememberError, reportContext } from '../public/js/features/bug-report-feature.js?v=bbcbe7a8';
+import { BUGS_BOARD_URL, BUG_TEXT, MAX_MESSAGE, SOLO_BUGS_TIP, benignError, bugReportFeature, bugsBoardHref, buildKey, pageErrorLine, rememberError, reportContext } from '../public/js/features/bug-report-feature.js?v=4a01862f';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -124,6 +124,51 @@ describe('Report a bug (G353)', () => {
     bugReportFeature.init(engine);
     bugReportFeature.onTick(16, 0, engine);
     assert.equal(globalThis.groddleBugReport, undefined);
+  });
+
+  it('G879 (#425): solo shows a plain link to the Bugs board where the icon sits, and stays offline', () => {
+    assert.equal(BUGS_BOARD_URL, 'https://groddleafternoon.com/chat/bugs/');
+    assert.equal(bugsBoardHref('groddleafternoon.com'), '/chat/bugs/');
+    assert.equal(bugsBoardHref('groddle.localhost'), '/chat/bugs/');
+    assert.equal(bugsBoardHref('127.0.0.1'), BUGS_BOARD_URL, 'a page the site does not serve links to the live board');
+    assert.equal(bugsBoardHref(''), BUGS_BOARD_URL);
+    // A small page: the sound button in the bar's right pill.
+    const made = [];
+    const node = (tag) => {
+      const n = { tag, attrs: {}, children: [], parentElement: null };
+      n.setAttribute = (k, v) => { n.attrs[k] = String(v); };
+      n.append = (...c) => { for (const x of c) { x.parentElement = n; n.children.push(x); } };
+      n.insertBefore = (x, ref) => { x.parentElement = n; n.children.splice(n.children.indexOf(ref), 0, x); };
+      made.push(n);
+      return n;
+    };
+    const pill = node('div');
+    const sound = node('button');
+    pill.append(sound);
+    const byId = () => made.find((n) => n.attrs.id === 'bug-btn') || null;
+    const fetchBefore = globalThis.fetch;
+    let fetched = 0;
+    globalThis.fetch = async () => { fetched += 1; return { ok: false }; };
+    globalThis.document = { createElement: node, getElementById: (id) => (id === 'sound-btn' ? sound : id === 'bug-btn' ? byId() : null), querySelector: () => null };
+    try {
+      const engine = { mode: 'solo', started: true };
+      bugReportFeature.onTick(16, 0, engine);
+      bugReportFeature.onTick(16, 0, engine);
+      const link = byId();
+      assert.ok(link, 'the link is drawn once the game starts');
+      assert.equal(link.tag, 'a');
+      assert.equal(link.attrs.href, BUGS_BOARD_URL);
+      assert.equal(link.attrs.target, '_blank');
+      assert.equal(link.attrs.rel, 'noopener');
+      assert.equal(link.attrs.title, SOLO_BUGS_TIP);
+      assert.deepEqual(pill.children.map((n) => n.attrs.id || n.tag), ['bug-btn', 'button'], 'before Sound, where the icon sits');
+      assert.equal(made.filter((n) => n.attrs.id === 'bug-btn').length, 1, 'once');
+      assert.equal(globalThis.groddleBugReport, undefined, 'no Reports sheet in solo');
+      assert.equal(fetched, 0, 'solo sends nothing');
+    } finally {
+      delete globalThis.document;
+      globalThis.fetch = fetchBefore;
+    }
   });
 
   it('the site files each report as a ticket (TICKETS), keeping the old route and its limits', { skip: !existsSync(join(siteDir, 'src/BugReports.php')) }, () => {

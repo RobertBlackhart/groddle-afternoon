@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { canvasTransparent, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=d2c7b0e0';
 import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=e608117b';
 import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=66addeb7';
-import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=bbcbe7a8';
+import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=4a01862f';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

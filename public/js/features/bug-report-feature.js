@@ -17,7 +17,9 @@
  * the game starts, when the sheet opens, and every UNREAD_POLL_MS while the
  * page is in view (the realtime server has no per-player channel to push it
  * on). A reply email's link (/play/online/#report=<id>) opens that thread.
- * Solo has no account to send from: in solo this feature draws nothing.
+ * Solo has no account to send from and stays offline (G879, #425): where the icon sits, solo shows a
+ * plain link to the website's Bugs board instead (bugsBoardHref, mountSoloBugsLink), and the game
+ * itself sends nothing.
  *
  * A picture of the game (Austin 2026-10-30): New report draws the game as it
  * is (capturePicture: engine.snapshotView, the Pixi stage through the
@@ -804,7 +806,36 @@ function createSession(engine, errors) {
   return { ...sheet, takeNow, holdNow, get shutter() { return Boolean(shutter); }, get held() { return sheet.held; }, get pictures() { return sheet.pictures; }, get room() { return sheet.room; }, stop: () => { clearInterval(timer); }, get state() { return sheet.state; }, get view() { return sheet.view; }, get unread() { return sheet.unread; } };
 }
 
+/** G879: the community Bugs board, on the live site. */
+export const BUGS_BOARD_URL = 'https://groddleafternoon.com/chat/bugs/';
+/** G879: the solo link's tip (the bar shows it as data-tip). */
+export const SOLO_BUGS_TIP = 'Bugs board on the website';
+/** G879: hosts whose site serves /chat/ itself (the live site and the local one). */
+const SITE_HOSTS = new Set(['groddleafternoon.com', 'www.groddleafternoon.com', 'groddle.localhost']);
+
+/** PURE (G879): the Bugs board's address from a page on `hostname`: relative where the site serves it, else the live one. */
+export function bugsBoardHref(hostname) {
+  return SITE_HOSTS.has(String(hostname || '').toLowerCase()) ? '/chat/bugs/' : BUGS_BOARD_URL;
+}
+
+/**
+ * G879 (#425): solo's way to report: a link where the Report icon sits (same id, so the bar's
+ * layout, the phone's three buttons and R hold), opening the Bugs board in a new tab. Solo stays
+ * offline: the link is the player's to follow, the game sends nothing.
+ */
+function mountSoloBugsLink() {
+  if (document.getElementById('bug-btn')) return document.getElementById('bug-btn');
+  const href = bugsBoardHref(globalThis.location?.hostname);
+  const link = el('a', { id: 'bug-btn', class: 'chrome-btn mute-btn bug-btn', href, target: '_blank', rel: 'noopener', title: SOLO_BUGS_TIP, 'aria-label': `${SOLO_BUGS_TIP} (${REPORT_KEY})`, 'aria-keyshortcuts': REPORT_KEY, 'data-key': REPORT_KEY, 'data-solo-bugs': '' });
+  link.append(el('img', { src: 'assets/ui/bug_icon.webp', alt: '', width: '23', height: '20' }));
+  const mute = document.getElementById?.('sound-btn') || document.getElementById?.('mute-btn');
+  if (mute?.parentElement) mute.parentElement.insertBefore(link, mute);
+  else document.querySelector?.('.top-actions')?.append(link);
+  return link;
+}
+
 let session = null;
+let soloLink = null;
 const pageErrors = [];
 let listening = false;
 
@@ -824,6 +855,7 @@ export const bugReportFeature = {
   },
 
   onTick(dtMs, now, engine) {
+    if (!soloLink && engine?.mode === 'solo' && engine.started && typeof document !== 'undefined') soloLink = mountSoloBugsLink();
     if (session || engine?.mode !== 'multiplayer' || !engine.started || typeof document === 'undefined') return;
     session = createSession(engine, pageErrors);
     globalThis.groddleBugReport = session;
