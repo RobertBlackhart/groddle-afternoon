@@ -2012,6 +2012,224 @@
       "id": "G400",
       "area": "Homes",
       "text": "Nine wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop."
+    },
+    {
+      "id": "G856",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Low energy pushed the Menu off the top bar of an upright phone.",
+      "commits": [
+        "game:546bec3139"
+      ]
+    },
+    {
+      "id": "G857",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Sideways on a phone, the report window's picture buttons covered its words.",
+      "commits": [
+        "game:d71cc577eb"
+      ]
+    },
+    {
+      "id": "G858",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The phone street sheet had no way to open the Map.",
+      "commits": [
+        "game:4df09debb0"
+      ]
+    },
+    {
+      "id": "G859",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Upright on a phone, pack search hid its results and typed letters showed late.",
+      "commits": [
+        "game:e49490e764"
+      ]
+    },
+    {
+      "id": "G860",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a narrow screen the route card covered the pinned quests.",
+      "commits": [
+        "game:f6f25d69bd"
+      ]
+    },
+    {
+      "id": "G861",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "A vendor's Buy or Sell count had no close button on a phone.",
+      "commits": [
+        "game:1784da5a32"
+      ]
+    },
+    {
+      "id": "G862",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "A refused Buy with a full pack did not say why inside the shop.",
+      "commits": [
+        "game:90afcc95ef"
+      ]
+    },
+    {
+      "id": "G863",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Upright on a phone, Tower floors and quest rooms had a sky blue band above them.",
+      "commits": [
+        "game:2fb0101798"
+      ]
+    },
+    {
+      "id": "G864",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Home machines could vanish when a home was redrawn in place.",
+      "commits": [
+        "game:e341b62ae9"
+      ]
+    },
+    {
+      "id": "G865",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone, a pack stack dragged onto an open cabinet did not go in.",
+      "commits": [
+        "game:9edeaaffee"
+      ]
+    },
+    {
+      "id": "G866",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "After many Acts in a row, sound effects such as the pick stopped playing.",
+      "commits": [
+        "game:cb72fc9321"
+      ]
+    },
+    {
+      "id": "G867",
+      "area": "Messages",
+      "show": "fixing",
+      "text": "Answering a friend's Butler after leaving their street gave an error.",
+      "commits": [
+        "game:8dd3df3e39"
+      ]
+    },
+    {
+      "id": "G868",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "A party time extension did not reach everyone's Activity.",
+      "commits": [
+        "game:84ef355246",
+        "server:42a55f3"
+      ]
+    },
+    {
+      "id": "G869",
+      "area": "Quoins",
+      "show": "fixing",
+      "text": "Party Space quoins were not Glitch's party quoins.",
+      "commits": [
+        "game:ef79a4e3d4",
+        "server:9dffc00"
+      ]
+    },
+    {
+      "id": "G870",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The Map did not dim the names of streets you had not visited, as Glitch did.",
+      "commits": [
+        "game:ea5a70a3a9"
+      ]
+    },
+    {
+      "id": "G871",
+      "area": "Badges",
+      "show": "fixing",
+      "text": "Ix Completist came after seven streets instead of every Ix street.",
+      "commits": [
+        "game:941ff5214e"
+      ]
+    },
+    {
+      "id": "G873",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "A visited player's Tower was titled with \"Your Tower\" after their name.",
+      "commits": [
+        "game:ba04271633"
+      ]
+    },
+    {
+      "id": "G874",
+      "area": "Transit",
+      "show": "fixing",
+      "text": "Esc did not close the subway map at a station.",
+      "commits": [
+        "game:bcfd99f829"
+      ]
+    },
+    {
+      "id": "G875",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Upright on a phone, the camera showed empty space past a street's right end.",
+      "commits": [
+        "game:6676af96bd"
+      ]
+    },
+    {
+      "id": "G876",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The touch stick could hardly climb ladders, and a new Up in mid-air did not grab one.",
+      "commits": [
+        "game:49af4049de"
+      ]
+    },
+    {
+      "id": "G877",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a sideways phone, a long speech bubble ran off the top of the screen.",
+      "commits": [
+        "game:e773a334a2"
+      ]
+    },
+    {
+      "id": "G878",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a sideways phone, notices beside the avatar jumped from side to side as you walked.",
+      "commits": [
+        "game:1bf20c8598"
+      ]
+    },
+    {
+      "id": "G879",
+      "area": "Solo play",
+      "show": "fixing",
+      "text": "Solo play had no way to report a bug.",
+      "commits": [
+        "game:d970ad9712"
+      ]
+    },
+    {
+      "id": "G880",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Upright on a phone, short scenes outside towers and quest rooms still had a blue band above them.",
+      "commits": [
+        "game:bd317c7d96"
+      ]
     }
   ]
 }
