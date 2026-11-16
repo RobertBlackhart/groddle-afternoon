@@ -53,9 +53,9 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=72f37c7e';
-import { INCUBATION } from './animal-husbandry.js?v=5cc91752';
-import { isStandable } from './street-model.js?v=b6cb6a4e';
-import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=aec45c23';
+import { INCUBATION } from './animal-husbandry.js?v=21644e20';
+import { isStandable } from './street-model.js?v=d728092c';
+import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=8bcdebd0';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=addb573f';
 import { CRAB_WALK } from './crabs.js?v=c4767c5f';
 import { FIRE_DRAGON_WALK } from './fire-dragon.js?v=b7f3d751';

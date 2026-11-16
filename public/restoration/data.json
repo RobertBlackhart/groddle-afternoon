@@ -2792,9 +2792,49 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2286,
+  "commits": 2296,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Organish Chute's divider tip no longer catches you beside its wall"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "improve",
+    "text": "In the gut tubes Down puts you back on your feet and Up turns you over"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Organish Chute turns you over at its bends by itself, as it did"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Subway stations laid out as Glitch had them: the sign up over the crack, A Red Button on the gate box"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Shrines and vendors no longer stand behind a foreground tree, and half hidden counts"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "A narrow street keeps its canvas size with a cached older stylesheet"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "The subway's stop prompt no longer takes the keyboard; tickets name the next stop"
+   },
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "Request incubation with no egg says the chicken's line"
+   },
    {
     "date": "2026-11-15",
     "kind": "improve",
@@ -2874,49 +2914,9 @@
     "date": "2026-11-15",
     "kind": "improve",
     "text": "A phone's top bar shows iMG, currants and favor side by side, big counts shortened (17.2K)"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Past a street's end the mirrored art leaves out ladders, signs and doors and fades away"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The Report icon is a plain top-bar icon again; R opens Reports over any window"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "new",
-    "text": "Phones have a Hi button beside Happy, Surprised and Angry in the Local chat tab"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Shake, Compress, Age, Unbundle and Shuck are one verb that asks How many when the stack holds more than one"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "A report's picture keeps the street at a street's clipped end in Firefox, not just the sky"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Routes never cross a closed signpost arm: a street still being built says No road there yet"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "On iPhone the report window sits above the keyboard again, upright and sideways, for a new report and a reply"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "On a phone a drag in Camera Mode moves the view again, on iPhone too"
    }
   ]
  },
- "tests": 1026,
+ "tests": 1027,
  "generatedAt": "2026-11-15"
 }

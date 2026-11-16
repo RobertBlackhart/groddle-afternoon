@@ -33,7 +33,7 @@
       "assets/content/signpost-graph.json": "8b3b5b6b",
       "assets/content/sound-keys.json": "76e71d12",
       "assets/content/street-ecology.json": "52c389c0",
-      "assets/content/style-profiles.json": "b114fc25",
+      "assets/content/style-profiles.json": "e07d3ee6",
       "assets/content/trade-items.json": "962cd9b4",
       "assets/decos/groddle/alakol_house_big_shadow@0.946x.webp": "23c6d2fd",
       "assets/decos/groddle/apartment_poster_discover_ix@1.75x.webp": "ef40fd18",

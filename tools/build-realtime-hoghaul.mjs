@@ -25,9 +25,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { loadStreetDataFromFs } from '../public/js/street-loader.js?v=18b181ad';
-import { isStandable, platformYAt, platformsScreen, resolveGround, streetWidth, worldToScreen } from '../public/js/street-model.js?v=b6cb6a4e';
-import { planStreetPlacements } from '../public/js/street-ecology.js?v=aec45c23';
+import { loadStreetDataFromFs } from '../public/js/street-loader.js?v=5e48c6dd';
+import { isStandable, platformYAt, platformsScreen, resolveGround, streetWidth, worldToScreen } from '../public/js/street-model.js?v=d728092c';
+import { planStreetPlacements } from '../public/js/street-ecology.js?v=8bcdebd0';
 import { HOG_HAUL_GOAL, HOG_HAUL_STREET_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { HOG_HAUL_TICKET } from '../public/js/races.js?v=ab22a079';
 

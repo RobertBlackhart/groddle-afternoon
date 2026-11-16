@@ -14,15 +14,15 @@ import { TEMPLATES, newStreet, newStreetOps, groundStrip, templateLayers, gradie
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=0259eca4';
 import { populationWith, plannedSpots, moveMapLine, mapForStreets, spotGroup } from '../public/js/builder/editor-zone.js?v=07a34a41';
 import { intakeBody, base64Of } from '../public/js/builder/editor-picker.js?v=724352b6';
-import { streetWithEdits, editsOn, linkEdit, streetStats } from '../public/js/builder/zone.js?v=332c559e';
-import { applyZoneEdits } from '../public/js/builder/draft-play.js?v=5853d710';
+import { streetWithEdits, editsOn, linkEdit, streetStats } from '../public/js/builder/zone.js?v=a3c830ab';
+import { applyZoneEdits } from '../public/js/builder/draft-play.js?v=e130bd12';
 import { applyOps } from '../public/js/builder/ops.js?v=27c7796f';
 import { compileSchema } from '../public/js/builder/schema-check.js?v=cc9d1af4';
-import { validateZone, placementRequests } from '../public/js/builder/validate.js?v=b76e8e0c';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
-import { populationForStreet, planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=aec45c23';
-import { arriveFor } from '../public/js/builder/geometry-handles.js?v=1f4a3c23';
-import { applyStreetIndex, clearStreetIndex } from '../public/js/street-loader.js?v=18b181ad';
+import { validateZone, placementRequests } from '../public/js/builder/validate.js?v=b2648a05';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=d728092c';
+import { populationForStreet, planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=8bcdebd0';
+import { arriveFor } from '../public/js/builder/geometry-handles.js?v=e46142c6';
+import { applyStreetIndex, clearStreetIndex } from '../public/js/street-loader.js?v=5e48c6dd';
 import { loadValidatorContext } from '../tools/builder/validator-context.mjs';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 

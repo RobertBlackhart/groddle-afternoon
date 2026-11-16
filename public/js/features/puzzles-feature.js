@@ -116,10 +116,10 @@ function patchStreet(street) {
   const def = defFor(street?.tsid);
   if (!def || !street) return;
   if (def.events) street.events = { ...(street.events || {}), ...def.events };
-  // No floor past a line's end under a wall (js/avatar-step.js avatarGround; `lineEndsAtWallsWhy`).
-  if (def.lineEndsAtWalls) street.lineEndsAtWalls = true;
   // Amberlyza's exit door is switched off in the source data (report #184): the finish needs it.
   showExitDoor(street, def);
+  // No floor past a line's end under a wall (js/avatar-step.js avatarGround; `lineEndsAtWallsWhy`).
+  if (def.lineEndsAtWalls) street.lineEndsAtWalls = true;
   // Geometry a street's own events still name but the archive lost (`platforms`, source
   // space, each with its `why`), with the art that marks it (`decos`, middleground).
   for (const plat of def.platforms || []) {

@@ -20,9 +20,9 @@
  * not available." and the game starts on its usual street. A small banner names the draft and its
  * rev, with a link back to the builder.
  */
-import { registerDraftStreets, loadStreetData, resolveIndexTsid, STREET_INDEX } from '../street-loader.js?v=18b181ad';
-import { streetWithEdits, editsOn } from './zone.js?v=332c559e';
-import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../street-ecology.js?v=aec45c23';
+import { registerDraftStreets, loadStreetData, resolveIndexTsid, STREET_INDEX } from '../street-loader.js?v=5e48c6dd';
+import { streetWithEdits, editsOn } from './zone.js?v=a3c830ab';
+import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../street-ecology.js?v=8bcdebd0';
 import { createBuilderApi } from './api.js?v=9560d68f';
 import { installNewArt } from './new-art.js?v=29f0b13e';
 import { loadDecoManifest } from '../street-render.js?v=0259eca4';

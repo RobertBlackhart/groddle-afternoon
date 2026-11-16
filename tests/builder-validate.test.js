@@ -8,10 +8,10 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { validateZone, RULES, hash16, healOps, plainApex, badWords, zoneArrivals } from '../public/js/builder/validate.js?v=b76e8e0c';
-import { streetWorld, jumpArc, jumpArcs, reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';
-import { GRAVITY, stepAvatar, avatarGround, steerX, coastX, NORMAL_BUFF } from '../public/js/avatar-step.js?v=43b1182e';
-import { platformsScreen } from '../public/js/street-model.js?v=b6cb6a4e';
+import { validateZone, RULES, hash16, healOps, plainApex, badWords, zoneArrivals } from '../public/js/builder/validate.js?v=b2648a05';
+import { streetWorld, jumpArc, jumpArcs, reachStreet } from '../public/js/builder/reach-graph.js?v=465c5e9a';
+import { GRAVITY, stepAvatar, avatarGround, steerX, coastX, NORMAL_BUFF } from '../public/js/avatar-step.js?v=a2fade97';
+import { platformsScreen } from '../public/js/street-model.js?v=d728092c';
 import { loadValidatorContext } from '../tools/builder/validator-context.mjs';
 
 const root = join(import.meta.dirname, '..');
