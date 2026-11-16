@@ -44,6 +44,7 @@ import { isEditableTarget } from '../held-keys.js?v=a28eb293';
 import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { doorsFeature } from './doors-feature.js?v=ee2a2ef3';
+import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
 import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import {
   CAR_FLOOR,
@@ -116,6 +117,9 @@ let generation = 0;
 let mp = null;
 /** M on the train: the line map ({ el, key }) and the stop you picked to get off at (a station id). */
 let lineMap = null;
+/** G909: the Subway System map's zoom and pan (js/map-zoom.js) on one host kept across opens. */
+let mapZoomHost = null;
+let mapZoom = null;
 let chosenStop = null;
 
 const fastScale = (engine) => (engine.param('subwayfast') === '1' ? 0.25 : 1);
@@ -160,6 +164,30 @@ function ensureStyle() {
 .subway-map-close { font-size: var(--fs-3xl); color: var(--c-red-58b); line-height: var(--lh-none); padding: 0 .2rem; }
 .subway-map svg { display: block; width: 100%; height: auto; max-height: min(400px, calc(100vh - 260px)); margin-top: .3rem; }
 .subway-map-foot { text-align: center; margin: .3rem 0 0; color: var(--text-muted); font-size: var(--fs-md); }
+/* G909 (#437): the card never outgrows the screen (the grid's one track is the screen, not the card's
+   widest row), the map zooms and pans in place (js/map-zoom.js: two fingers, a drag, the wheel, + - Fit). */
+.subway-map { grid-template-columns: minmax(0, 1fr); }
+.subway-map-card { box-sizing: border-box; justify-self: center; }
+.subway-map-zoom { position: relative; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.subway-map-zoom[data-zoomed] { cursor: grab; }
+.subway-map-zoom[data-map-dragging], .subway-map-zoom[data-map-dragging] * { cursor: grabbing !important; }
+.subway-map .map-zoom-ctl svg { margin: 0; max-height: none; }
+@media (max-width: 720px), (max-height: 560px) {
+  .subway-map { padding: var(--sp-3); box-sizing: border-box; }
+  .subway-map-card { max-width: 100%; max-height: 100%; overflow: auto; padding: var(--sp-3) var(--sp-4) var(--sp-3); }
+  .subway-map-head h3 { text-align: left; font-size: var(--fs-xl); }
+  .subway-map-zoom > svg { max-height: calc(100dvh - 6.5rem); }
+  .subway-map-foot { font-size: var(--fs-sm); }
+  .subway-map-close { min-width: 2.75rem; min-height: 2.75rem; }
+  /* The buttons lie in a row in the paper's empty top left corner, clear of Next stop at the bottom right. */
+  .subway-map .map-zoom-ctl { top: var(--sp-2); left: var(--sp-2); right: auto; bottom: auto; flex-direction: row; }
+}
+/* Upright: the two lines take a row of their own under the title. */
+@media (max-width: 520px) {
+  .subway-map-head { flex-wrap: wrap; row-gap: var(--sp-2); }
+  .subway-map-lines { order: 3; flex: 1 0 100%; display: flex; justify-content: center; gap: var(--sp-3); }
+  .subway-map-zoom > svg { max-height: calc(100dvh - 8.5rem); }
+}
 .subway-line-card { width: 860px; }
 .subway-line-head h3 { text-align: left; display: flex; align-items: center; gap: var(--sp-3); }
 .subway-line-head .subway-dot { display: inline-block; width: .8rem; height: .8rem; border-radius: var(--radius-round); }
@@ -316,6 +344,7 @@ function clearAnnouncement() {
 function openMap(engine, { direction = 'forwards' } = {}) {
   ensureStyle();
   document.getElementById('subway-map')?.remove();
+  mapZoom?.reset();
   const station = here(engine);
   const el = document.createElement('div');
   el.id = 'subway-map';
@@ -340,7 +369,16 @@ function openMap(engine, { direction = 'forwards' } = {}) {
     engine.setData('subwayMap', '');
   });
   head.append(h, lines, close);
-  const svgHost = document.createElement('div');
+  // G909 (#437): on an upright phone the map is drawn to the screen's width, and two fingers zoom it,
+  // one drags it, as on the Map (MAPZOOM). Glitch's HubMapDialog was a fixed 760 x 460 with no zoom
+  // (HubMapDialog.as MAP_W, MAP_H 58-61): a computer's window always held it.
+  if (!mapZoomHost) {
+    mapZoomHost = document.createElement('div');
+    mapZoomHost.className = 'subway-map-zoom';
+    mapZoomHost.dataset.subwayZoom = '1';
+    mapZoom = createMapZoom(mapZoomHost);
+  }
+  const svgHost = mapZoomHost;
   const foot = document.createElement('p');
   foot.className = 'subway-map-foot';
   foot.textContent = TEXT.mapViewed;
@@ -362,6 +400,8 @@ function openMap(engine, { direction = 'forwards' } = {}) {
   });
   const draw = (dir) => {
     svgHost.innerHTML = mapSvg(station, dir);
+    // The other line keeps the view (the same key); a new open starts whole.
+    mapZoom.attach(svgHost.querySelector('svg'), 'subway');
     lines.replaceChildren(...['forwards', 'backwards'].map((d) => {
       const b = document.createElement('button');
       b.type = 'button';
