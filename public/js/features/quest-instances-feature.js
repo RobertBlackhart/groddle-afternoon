@@ -32,6 +32,11 @@
  *    (questRoomHere, questRoomLeave): /stuck back where you came in, as the source's
  *    "Are you stuck?" did; a teleport onto its target (inc_teleportation.js 362-366,
  *    quest_scripting.js 11-20 onExitLocation). See tests/quest-room-exits.test.js.
+ *  - G886: a quest room you stand in with no run open (a ?streetdemo= link, then a reload) is
+ *    never a dead end: a reload saved there starts on your last ordinary street, an arrival
+ *    moves you there a beat later with the source's "moved to a safe place" line, and until then
+ *    the room's EXIT box and /stuck (the Menu's I'm stuck) take you out (strayRoom, tickStray).
+ *    See tests/quest-room-strays.test.js.
  *
  * Room module contract (all optional except id/title/build or street):
  *   { id, title, kicker, icon, theme, durationMs | durationFor(questId),
@@ -64,12 +69,15 @@
  * "Are you stuck?" waits (first and again) to see the prompt. Canvas data:
  * qiQuest, qiRoom, qiStage, qiStatus, qiRemaining, qiObjective, qiOutcome,
  * qiTurnedIn, qiRetry, qiRetryGiver, qiAutoplay, qiStuckIn (seconds to the
- * prompt), qiStuck (1 while it asks), plus each room's own keys.
+ * prompt), qiStuck (1 while it asks), qiStray (G886: the room you stand in with no run open,
+ * 'left' once moved out), plus each room's own keys.
  */
 
 import {
   LOW_TIME_MS,
   STUCK_PROMPT_CHOICES,
+  STRAY_DELAY_MS,
+  STRAY_NOTICE,
   STUCK_PROMPT_DEAD_MS,
   STUCK_PROMPT_AGAIN_MS,
   STUCK_PROMPT_TEXT,
@@ -79,6 +87,7 @@ import {
   extendQuestInstance,
   finishQuestInstance,
   formatInstanceClock,
+  inBottomBox,
   instanceRemainingMs,
   isQuestSceneTsid,
   normalizeInstanceSave,
@@ -89,10 +98,11 @@ import {
   setRunFlag,
   solveQuestInstance,
   stepQuestInstance,
+  strayWayOut,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=f0df88c3';
-import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomModulePath } from '../quest-rooms/catalog.js?v=a217b716';
+} from '../quest-instance.js?v=b39384f3';
+import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=4c0fffec';
 import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
 import {
@@ -113,6 +123,7 @@ import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { FIRST_SKILLS } from '../newxp.js?v=1f52edd5';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=6122a615';
 
 let quoinFrames = null;
@@ -151,6 +162,10 @@ let demo = { quest: '', mode: '', stage: 'idle' };
 let lastData = 0;
 let worldCtx = null;
 let rubeTraded = false;
+let strayAt = 0; // G886: when a stray in a quest room is moved out (0: not waiting)
+let strayLeaving = false;
+let strayNotice = false; // G886: a reload moved you out of one; say so once the game runs
+let strayData = null;
 
 /* ------------------------------------------------------------------ */
 /* Room loading                                                         */
@@ -1038,7 +1053,9 @@ async function startInstance(engine, questId, opts = {}) {
     room = def;
     // Ticket 41: from home too (join_club.js onStarted 96-117 instanced you from wherever you
     // accepted, the Butler's offer at home included): the exit signpost brings you back there.
-    const returnTo = wayBackFrom({ tsid: engine.streetTsid, x: engine.player?.x, y: engine.player?.y }, save.returnTo);
+    // G886: from a quest room's own street with no run open, the way back is your last ordinary street.
+    const here = instanceKind(engine.streetTsid, engine) ? null : { tsid: engine.streetTsid, x: engine.player?.x, y: engine.player?.y };
+    const returnTo = wayBackFrom(here, save.returnTo || save.lastStreet);
     const durationMs = typeof room.durationFor === 'function' ? room.durationFor(questId) : room.durationMs;
     const exitPromptMs = typeof room.exitPromptFor === 'function' ? room.exitPromptFor(questId) : room.exitPromptMs;
     run = createQuestInstance({
@@ -1208,7 +1225,8 @@ async function leaveInstance(engine, opts = {}) {
   clearContextEntities(engine);
   // A teleport out (opts.to) lands on its own target, not back where you came in.
   const to = opts.to?.tsid ? opts.to : null;
-  const back = to || result.returnTo || save.returnTo;
+  // G886: never left standing in the room with nowhere to go: no way back saved goes the stray's way out.
+  const back = to || result.returnTo || save.returnTo || strayExit(engine);
   run = null;
   const leftRoom = room;
   room = null;
@@ -1236,6 +1254,118 @@ async function leaveInstance(engine, opts = {}) {
     await turnIn(engine, questId);
   }
   return true;
+}
+
+/* ------------------------------------------------------------------ */
+/* G886: standing in a quest room with no run open                      */
+/* ------------------------------------------------------------------ */
+
+/** The tutorial's three practice streets (config newxp_locations), instance copies like the rooms. */
+const PRACTICE_STREETS = Object.freeze(FIRST_SKILLS.map((s) => s.street).filter(Boolean));
+
+/**
+ * Which instance-only place a tsid is: a room's street (catalog ROOM_STREETS), a room's scene
+ * (QI_*, while one is on screen) or a tutorial practice street; else null.
+ */
+function instanceKind(tsid, engine) {
+  const t = String(tsid || '');
+  if (!t) return null;
+  const roomId = roomForStreet(t);
+  if (roomId) return roomId;
+  if (isQuestSceneTsid(t) && engine?.inScene?.() !== false) return 'scene';
+  return PRACTICE_STREETS.some((p) => p.slice(1) === t.slice(1)) ? 'practice' : null;
+}
+
+/**
+ * A quest room you stand in with no run open ({ roomId, title }), else null: reached by a street or
+ * QA link (?streetdemo=), or a save written there. Not while the tutorial walks its practice street
+ * (newxp-feature practiceStreetHeld) or a QA demo is about to start its room here.
+ */
+function strayRoom(engine) {
+  if (run || entering || !engine?.streetTsid) return null;
+  const roomId = instanceKind(engine.streetTsid, engine);
+  if (!roomId) return null;
+  if (engine.query?.('practiceStreetHeld', engine.streetTsid, engine) === true) return null;
+  if (demo.quest && (demo.stage === 'idle' || demo.stage === 'starting')) return null;
+  return { roomId, title: engine.street?.label || loaded.get(roomId)?.title || '' };
+}
+
+/** Where a stray goes (js/quest-instance.js strayWayOut). */
+function strayExit(engine) {
+  return strayWayOut({ lastStreet: save.lastStreet, homeTsid: engine?.homeContext?.()?.owned ? HOME_STREET_TSID : null });
+}
+
+/** The last ordinary street, kept as the way out (instances_get_exit's "where you came in"). */
+function noteStreet(engine, street) {
+  const tsid = street?.tsid || engine.streetTsid;
+  if (!tsid || tsid !== engine.streetTsid || entering || instanceKind(tsid, engine) || engine.transientInstance?.()) return;
+  const p = engine.player;
+  save.lastStreet = { tsid, x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
+}
+
+/**
+ * Out of a quest room with no run open: to `to` (a teleport's target) or the way out, with the
+ * source's "moved to a safe place" line when the arrival guard moved you (notice).
+ */
+async function leaveStray(engine, opts = {}) {
+  if (strayLeaving || !strayRoom(engine)) return false;
+  strayLeaving = true;
+  strayAt = 0;
+  try {
+    const to = opts.to?.tsid ? opts.to : strayExit(engine);
+    strayData = 'left';
+    engine.setData('qiStray', strayData);
+    await engine.enter(to.tsid, {
+      ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
+      ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
+      ...(opts.to ? {} : { quiet: true, bypassFeatureGates: true }),
+      useTransition: opts.transition !== false,
+    });
+    if (opts.notice) {
+      engine.toast?.(STRAY_NOTICE, 4200);
+      engine.pushActivity?.(STRAY_NOTICE);
+    }
+    engine.save?.();
+    return true;
+  } catch (err) {
+    console.warn('quest room stray', err);
+    // Try again in a while; the EXIT box and I'm stuck still work meanwhile.
+    strayAt = Date.now() + 10_000;
+    return false;
+  } finally {
+    strayLeaving = false;
+  }
+}
+
+/**
+ * Each tick with no run open: on a quest room's street the room's EXIT box takes you out as its
+ * teleporter did (locations/inc_skillquest.js onTeleporterCollision 27-40), and a beat after
+ * arriving you are moved out anyway once nothing is busy.
+ */
+function tickStray(engine, now) {
+  if (strayLeaving) return;
+  if (strayNotice) {
+    strayNotice = false;
+    engine.toast?.(STRAY_NOTICE, 4200);
+    engine.pushActivity?.(STRAY_NOTICE);
+  }
+  const stray = strayRoom(engine);
+  if (strayData !== (stray?.roomId || '')) {
+    strayData = stray?.roomId || '';
+    engine.setData('qiStray', strayData);
+  }
+  if (!stray) {
+    strayAt = 0;
+    return;
+  }
+  const p = engine.player;
+  if (p && (engine.street?.boxes || []).some((b) => String(b?.id || '').startsWith('quest:flag:') && inBottomBox(b, p.x, p.y))) {
+    leaveStray(engine);
+    return;
+  }
+  if (!strayAt) strayAt = now + STRAY_DELAY_MS;
+  if (now < strayAt || engine.busy?.({ ignoreHome: true, ignoreInstance: true })) return;
+  leaveStray(engine, { notice: true });
 }
 
 /* ------------------------------------------------------------------ */
@@ -1519,14 +1649,20 @@ export const questInstancesFeature = {
   },
 
   /** A reload inside a room resumes on the street the player came from. */
-  reloadLocation(saved) {
+  reloadLocation(saved, engine) {
     const target = reloadTarget(save, saved);
     if (target) {
       save.questId = null;
       save.roomId = null;
       save.returnTo = null;
+      return target;
     }
-    return target;
+    // G886: a save written in a quest room with no run open (a street link, then a reload) starts
+    // on the way out instead, as the source moved a player out of an instance on logout.
+    if (engine?.param?.('fresh') != null || !instanceKind(saved?.tsid, engine)) return null;
+    if (engine?.query?.('practiceStreetHeld', saved.tsid, engine) === true) return null;
+    strayNotice = true;
+    return strayExit(engine);
   },
 
   holdQuestOffers() {
@@ -1544,9 +1680,15 @@ export const questInstancesFeature = {
     return { ok: false, msg: room?.travelText || "You can't travel from here. Use Leave to go back." };
   },
 
-  /** The open quest room, for /stuck and teleporting (features/slash-commands-feature.js, teleportation-feature.js), else null. */
-  questRoomHere() {
-    return run ? { title: room?.title || '', solved: run.status === 'solved' } : null;
+  /**
+   * The open quest room, for /stuck and teleporting (features/slash-commands-feature.js,
+   * teleportation-feature.js), else null. G886: a quest room with no run open answers too
+   * (`stray`, nothing to fail), so /stuck and the Menu's I'm stuck take you out of it.
+   */
+  questRoomHere(engine) {
+    if (run) return { title: room?.title || '', solved: run.status === 'solved' };
+    const stray = strayRoom(engine);
+    return stray ? { title: stray.title, solved: true, stray: true } : null;
   },
 
   /**
@@ -1556,7 +1698,8 @@ export const questInstancesFeature = {
    * Answers the leave's promise, or null with no room open.
    */
   questRoomLeave(engine, opts = {}) {
-    return run ? leaveInstance(engine, opts) : null;
+    if (run) return leaveInstance(engine, opts);
+    return strayRoom(engine) ? leaveStray(engine, opts) : null;
   },
 
   /** Street-based rooms keep only what the room spawns (no fallback animals). */
@@ -1611,6 +1754,9 @@ export const questInstancesFeature = {
       renderHud(engine, true);
     } else if (!run) {
       if (hud) hud.bar.hidden = true;
+      // G886: a quest room with no run open waits a beat, then moves you out (tickStray).
+      strayAt = strayRoom(engine) ? Date.now() + STRAY_DELAY_MS : 0;
+      if (!strayAt) noteStreet(engine, street);
       for (const def of activeWorldRooms(engine)) def.world.onStreetEnter?.(worldContext(engine), street);
     }
     handleDemo(engine);
@@ -1659,6 +1805,7 @@ export const questInstancesFeature = {
       return;
     }
     if (!run && !entering) {
+      tickStray(engine, now);
       for (const def of activeWorldRooms(engine)) def.world.onTick?.(worldContext(engine), dtMs, now);
       settleRetries(engine);
       maybeStartAccepted(engine, now);

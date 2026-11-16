@@ -4079,6 +4079,15 @@ export const newxpFeature = {
     return [el('div', { class: 'nx-map-card', 'data-newxp-map': 'progress-way' }, ISLAND_LINES.mapperyActivity)];
   },
 
+  /**
+   * G886: the tutorial walks its practice street itself (runSkill), so quest-instances-feature
+   * leaves a player there alone while the skill stage runs or is about to start or resume.
+   */
+  practiceStreetHeld() {
+    if (pendingStage) return true;
+    return active() && save.stage === 'skill' && (run?.stage === 'skill' || !resumeChecked) ? true : null;
+  },
+
   reloadLocation(saved, engine) {
     // A reload inside a training scene restarts that scene once the game starts.
     if (isNewxpSceneTsid(saved?.tsid)) return { tsid: DEFAULT_START, x: 0, y: 0 };

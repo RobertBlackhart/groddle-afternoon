@@ -97,6 +97,31 @@ export const BUILT_ROOMS = Object.freeze([
 ]);
 
 /**
+ * G886: the imported streets a room's stages enter (its street(), the rest are scenes). They are
+ * instance copies in the source, entered only through their quest (quests/*.js onStarted
+ * questInstanceLocation / teleportToLocationDelayed), with no door out of their own, so a player
+ * standing on one with no run open is moved off it (features/quest-instances-feature.js).
+ * tests/quest-room-strays.test.js checks every room's street() is listed here.
+ */
+export const ROOM_STREETS = Object.freeze({
+  ez_cookin: Object.freeze(['GIFII3UBRFB3KBE']),
+  soil_appreciation: Object.freeze(['GHFS40864GB396O']),
+  le_miserable: Object.freeze(['GIFM4BD43383DKV']),
+  vision_quest: Object.freeze(['GNV1T7PCUM53T25']),
+  gwendolyn: Object.freeze(['GHF8DDDBTPF3P4U']),
+});
+
+/** The room whose street this is (either tsid prefix, G or L), else null. */
+export function roomForStreet(tsid) {
+  const key = String(tsid || '').slice(1);
+  if (!key) return null;
+  for (const [roomId, streets] of Object.entries(ROOM_STREETS)) {
+    if (streets.some((t) => t.slice(1) === key)) return roomId;
+  }
+  return null;
+}
+
+/**
  * Offer sources the remake cannot reproduce as written, replaced with the
  * nearest familiar trigger (the Magic Rock delivers them). Each row says why.
  * `prerequisites` custom_code values are answered by the quest-instances

@@ -240,7 +240,36 @@ export function normalizeInstanceSave(seed = {}) {
     roomId: cleanId(src.roomId) || null,
     retry,
     memory,
+    // G886: the last ordinary street you stood on, the way out of a quest room with no run open.
+    lastStreet: cleanPoint(src.lastStreet),
   };
+}
+
+/**
+ * G886: a quest room you stand in with no run open (a street or QA link, a save written there).
+ * The source never left anyone in one: instances were entered only through their quest, and a
+ * player logging out inside an underground puzzle or Paradise instance was moved to its exit,
+ * instances_get_exit (where you came in from, else config.default_location), with "It looks like
+ * you ran into some trouble. You've been moved to a safe place." (players/player.js onLogout
+ * 333-338, inc_instances.js 208-215).
+ * The practice streets' EXIT teleporter took you to that exit whatever the quest
+ * (locations/inc_skillquest.js onTeleporterCollision 27-40).
+ */
+export const STRAY_NOTICE = "It looks like you ran into some trouble. You've been moved to a safe place.";
+/** Hechey Track, the street index's default (game.js STREET_INDEX.default, newxp-feature DEFAULT_START). */
+export const STRAY_FALLBACK_TSID = 'GLI2V0UN7RD1T2J';
+/** A beat after arriving before the move, so the street's own arrival work finishes first. */
+export const STRAY_DELAY_MS = 700;
+
+/**
+ * Where a stray goes: the last ordinary street (instances_get_exit's "where you came in"), else
+ * your home street when you have one, else the default street (config.default_location).
+ */
+export function strayWayOut({ lastStreet = null, homeTsid = null } = {}) {
+  const back = cleanPoint(lastStreet);
+  if (back) return back;
+  if (homeTsid) return { tsid: String(homeTsid), x: null, y: null };
+  return { tsid: STRAY_FALLBACK_TSID, x: null, y: null };
 }
 
 /**
