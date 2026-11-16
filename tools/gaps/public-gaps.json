@@ -1614,6 +1614,81 @@
       ]
     },
     {
+      "id": "G832",
+      "area": "Tutorial",
+      "show": "fixing",
+      "text": "The first tutorial screen gave only a faint arrow after a few seconds, so new players did not know to pull the chain.",
+      "commits": [
+        "game:e94d06a0eb",
+        "game:8a1541dea6",
+        "game:2304e0eb11"
+      ]
+    },
+    {
+      "id": "G826",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Ladders drawn from loose pieces had gaps between their rungs on Peatland Moors and 20 other streets.",
+      "commits": [
+        "game:e9b8696b0a"
+      ]
+    },
+    {
+      "id": "G827",
+      "area": "Controls",
+      "show": "fixing",
+      "text": "Holding Up beside a ladder grabbed it in mid-jump; Glitch climbed only on a fresh Up press.",
+      "commits": [
+        "game:1bd55a148e"
+      ]
+    },
+    {
+      "id": "G708",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Phones could draw black boxes in a street's rock faces when a picture failed to reach the graphics card.",
+      "commits": [
+        "game:2ffbf532e9"
+      ]
+    },
+    {
+      "id": "G714",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "After the graphics context came back, a street's decorations stayed missing.",
+      "commits": [
+        "game:2ffbf532e9"
+      ]
+    },
+    {
+      "id": "G831",
+      "area": "Accounts",
+      "show": "fixing",
+      "text": "Password managers such as Proton Pass did not offer to fill the online sign-in in desktop Chrome.",
+      "commits": [
+        "game:decfd25388"
+      ]
+    },
+    {
+      "id": "G833",
+      "area": "Social",
+      "show": "fixing",
+      "text": "The Chats tab showed a new-message badge for a group's \"You are the only person here.\" note.",
+      "commits": [
+        "game:2e637da917"
+      ]
+    },
+    {
+      "id": "G830",
+      "area": "Site",
+      "show": "fixing",
+      "text": "The Maps page squeezed each picture compare beside its words instead of running it the full width.",
+      "commits": [
+        "site:7456315",
+        "game:9340d46379"
+      ]
+    },
+    {
       "id": "G665",
       "area": "Accounts and saving",
       "text": "A bug report says Read by the team once an administrator has opened it."
