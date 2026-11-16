@@ -153,8 +153,9 @@ export function ticketOffer(stationId) {
       { direction: 'backwards', name: SUBWAY_LINE.backwards_name, next: back.name },
     ],
     choices: [
-      { value: 'pay-forwards', label: `${SUBWAY_LINE.forwards_name} (${FARE}C)` },
-      { value: 'pay-backwards', label: `${SUBWAY_LINE.backwards_name} (${FARE}C)` },
+      // #387: each button says where its line goes next (the source's buttons named only the line).
+      { value: 'pay-forwards', label: `${SUBWAY_LINE.forwards_name}, next stop ${fwd.name} (${FARE}C)` },
+      { value: 'pay-backwards', label: `${SUBWAY_LINE.backwards_name}, next stop ${back.name} (${FARE}C)` },
       { value: 'no-pay', label: TEXT.noThanks },
     ],
   };

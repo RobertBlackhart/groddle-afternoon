@@ -40,6 +40,8 @@
  */
 
 import { countItem } from '../inventory.js?v=f49c8998';
+import { isEditableTarget } from '../held-keys.js?v=a28eb293';
+import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { doorsFeature } from './doors-feature.js?v=21c4005f';
 import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -89,7 +91,7 @@ import {
   stationScreen,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=43b4d658';
+} from '../subway.js?v=d6ae04bb';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 
 export const SUBWAY_FEATURE_ID = 'subway';
@@ -193,8 +195,31 @@ function closeDialog(engine) {
 }
 
 /**
- * A conversation card: { kicker, title, paras, lines, choices: [{ label, value, primary }], timeoutMs, onTimeout }.
- * onChoice(value) runs after it closes.
+ * The windows over a card opened now: the window stack (js/window-stack.js) puts each new window
+ * over the ones already up, but the report window, the start card and the full-screen views stay over it.
+ */
+const OVER_WINDOWS = [REPORT_WINDOW_SELECTOR, START_CARD_SELECTOR, SCREEN_SELECTOR].join(', ');
+
+/**
+ * May a subway card take the keyboard focus (#387)? Never from a text field the player is typing in,
+ * nor from another window that holds it, nor while a window over the card is up (the report window,
+ * z 512, over the card's 60): a typed Space would press the card's button. `el`: the card.
+ */
+export function dialogMayTakeFocus(doc, el) {
+  if (!doc) return false;
+  const active = doc.activeElement;
+  if (isEditableTarget(active)) return false;
+  if (active?.closest?.(`${WINDOW_SELECTOR}, ${OVER_WINDOWS}`) && !el?.contains?.(active)) return false;
+  for (const w of doc.querySelectorAll?.(OVER_WINDOWS) || []) {
+    if (w === el || w.contains?.(el)) continue;
+    if (!w.hidden && w.getClientRects?.().length) return false;
+  }
+  return true;
+}
+
+/**
+ * A conversation card: { kicker, title, paras, lines, choices: [{ label, value, primary }], timeoutMs, onTimeout,
+ * focus }. `focus: false` leaves the keyboard where it is. onChoice(value) runs after it closes.
  */
 function openDialog(engine, opts, onChoice) {
   ensureStyle();
@@ -255,7 +280,7 @@ function openDialog(engine, opts, onChoice) {
   root().appendChild(el);
   dialog = { el, onTimeout: opts.onTimeout || null, until: opts.timeoutMs ? Date.now() + opts.timeoutMs : 0, id: opts.id || '' };
   engine.setData('subwayDialog', opts.id || 'open');
-  actions.querySelector('button')?.focus({ preventScroll: true });
+  if (opts.focus !== false && dialogMayTakeFocus(document, el)) actions.querySelector('button')?.focus({ preventScroll: true });
   return dialog;
 }
 
@@ -826,6 +851,9 @@ function getOffPrompt(engine, station) {
     kicker: chosenStop === station.id ? lineText.yourStop : CAR_LABEL_KICKER,
     paras: [announce.getOff(station.name)],
     choices: [{ label: TEXT.yes, value: 'yes', primary: true }, { label: TEXT.no, value: 'no' }],
+    // #387: it pops up mid-ride, so it never takes the keyboard (a Space meant elsewhere pressed yes).
+    // No answer keeps you riding, as the source's prompt timing out (inc_transit.js 378-392).
+    focus: false,
     timeoutMs: ride.timing.prompt,
   }, (value) => {
     if (value === 'yes') disembark(engine);

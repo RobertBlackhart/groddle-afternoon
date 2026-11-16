@@ -32,7 +32,7 @@
  */
 import { HUB_MAP_BACKGROUNDS } from './hub-map-backgrounds.js?v=d6a23c90';
 import { WORLD_MAP } from './map-views-data.js?v=bf881f35';
-import { SUBWAY_PAPER, subwayPaper, worldCharts } from './map-views.js?v=caa40dc5';
+import { SUBWAY_PAPER, subwayPaper, worldCharts } from './map-views.js?v=4340ed47';
 
 /** How many regions' paintings are held at once (the latest previews, your own region among them). */
 export const MAP_BG_PRELOAD_CAP = 4;

@@ -33,10 +33,10 @@ import {
   sharedPatchesOn,
   soilRolls,
   stripSharedPlots,
-} from '../public/js/shared-patches.js?v=d8643e79';
-import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=6085aeea';
-import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=bb451e9e';
-import { FEATURES } from '../public/js/features/index.js?v=a4713405';
+} from '../public/js/shared-patches.js?v=e5d1e571';
+import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=057cb81c';
+import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=97b2ab91';
+import { FEATURES } from '../public/js/features/index.js?v=7881dd46';
 import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
 import { HAS_SERVER, serverPath } from '../tools/repos.mjs';
 

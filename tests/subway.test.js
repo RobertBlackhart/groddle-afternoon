@@ -54,8 +54,8 @@ import {
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=43b4d658';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=ea3c14d1';
+} from '../public/js/subway.js?v=d6ae04bb';
+import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=11a1d1a6';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -143,7 +143,8 @@ describe('A Red Button (items/subway_gate.js)', () => {
     assert.equal(offer.title, 'Train tickets 50C.');
     assert.equal(offer.text, 'Which line would you like to ride?');
     assert.deepEqual(offer.lines.map((l) => [l.name, l.next]), [['Red Line', 'Eastern Approach'], ['Blue Line', 'Thiruvan Thrive']]);
-    assert.deepEqual(offer.choices.map((c) => c.label), ['Red Line (50C)', 'Blue Line (50C)', 'No thanks']);
+    // #387: each button names where its line goes next, the price as before.
+    assert.deepEqual(offer.choices.map((c) => c.label), ['Red Line, next stop Eastern Approach (50C)', 'Blue Line, next stop Thiruvan Thrive (50C)', 'No thanks']);
     assert.ok(gate.includes('<b>Train tickets 50C.</b> Which line would you like to ride?'));
   });
 
@@ -193,6 +194,36 @@ describe('The ride (locations/inc_transit.js)', () => {
     assert.deepEqual(next.map((e) => e.type), ['call', 'brakes', 'arrive']);
     assert.equal(next[2].station.name, 'Tallish Crest');
     assert.equal(ride.stops, 2);
+  });
+
+  it('#387: from every station both lines call at all 12 stops in order, none twice', () => {
+    assert.equal(STATIONS.length, 12);
+    const timing = rideTiming(0.25);
+    const runs = {};
+    for (const start of STATIONS) {
+      for (const direction of ['forwards', 'backwards']) {
+        const ride = createRide({ stop: start.id, direction, now: 0, timing });
+        const calls = [];
+        for (let t = 0; calls.length < 12 && t < 1e7; t += 250) {
+          for (const e of stepRide(ride, t)) if (e.type === 'arrive') calls.push(e.station.id);
+        }
+        assert.equal(calls.length, 12);
+        assert.equal(new Set(calls.slice(0, 11)).size, 11, `${start.name} ${direction}: no repeats before coming round`);
+        assert.equal(calls[11], start.id, 'the twelfth stop is home again');
+        let id = start.id;
+        calls.forEach((c) => {
+          id = nextStation(id, direction).id;
+          assert.equal(c, id, 'each call is the line\'s next stop');
+        });
+        runs[`${start.id}:${direction}`] = calls;
+      }
+    }
+    // The Blue Line is the Red Line run backwards.
+    for (const start of STATIONS) {
+      const red = [start.id, ...runs[`${start.id}:forwards`].slice(0, 11)];
+      const blue = [start.id, ...runs[`${start.id}:backwards`].slice(0, 11)];
+      assert.deepEqual(blue.slice(1), red.slice(1).reverse());
+    }
   });
 
   it('runs the Blue Line backwards', () => {
@@ -372,5 +403,54 @@ describe('Stations, the train and the surface entrances', () => {
 
   it('art is current (tools/build-subway-art.py --check)', { skip: !existsSync('/opt/homebrew/bin/python3.11') && 'python3.11 missing' }, () => {
     execFileSync('python3.11', ['-I', join(spike, 'tools/build-subway-art.py'), '--check'], { stdio: 'pipe' });
+  });
+});
+
+describe('#387: subway cards and the keyboard', () => {
+  // A small stand-in for the page: elements with matches/closest/contains and visibility.
+  const fakeEl = ({ tag = 'div', id = '', cls = '', hidden = false, shown = true, parent = null, editable = false } = {}) => {
+    const el = { tag, id, cls, hidden, shown, parent, editable };
+    el.matches = (sel) => sel.split(',').map((x) => x.trim()).some((x) => (id && x === `#${id}`)
+      || (cls && x === `.${cls}`) || x === tag || (editable && x === '[contenteditable="true"]'));
+    el.closest = (sel) => { for (let n = el; n; n = n.parent) if (n.matches(sel)) return n; return null; };
+    el.contains = (o) => { for (let n = o; n; n = n.parent) if (n === el) return true; return false; };
+    el.getClientRects = () => (el.shown ? [{}] : []);
+    return el;
+  };
+  // querySelectorAll: the elements that match the selector, as the page would.
+  const fakeDoc = (els, active) => ({ activeElement: active, querySelectorAll: (sel) => els.filter((e) => e.matches(sel)) });
+  const card = () => fakeEl({ cls: 'glitch-modal' });
+  const body = () => fakeEl({ tag: 'body' });
+
+  it('never takes the keyboard from a focused text field', () => {
+    const c = card();
+    assert.equal(dialogMayTakeFocus(fakeDoc([c], fakeEl({ tag: 'textarea' })), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([c], fakeEl({ tag: 'input' })), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([c], fakeEl({ editable: true })), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([c], body()), c), true);
+  });
+
+  it('never takes it while the report window, the start card or a screen is up', () => {
+    const c = card();
+    const report = fakeEl({ id: 'bug-report-panel' });
+    assert.equal(dialogMayTakeFocus(fakeDoc([report, c], body()), c), false);
+    report.hidden = true;
+    assert.equal(dialogMayTakeFocus(fakeDoc([report, c], body()), c), true, 'a hidden report window does not count');
+    assert.equal(dialogMayTakeFocus(fakeDoc([fakeEl({ id: 'overlay' }), c], body()), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([fakeEl({ cls: 'new-day-screen' }), c], body()), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([fakeEl({ cls: 'award-screen', shown: false }), c], body()), c), true);
+    // An older window goes under the new card (js/window-stack.js), but focus inside it stays there.
+    const older = fakeEl({ cls: 'side-panel' });
+    assert.equal(dialogMayTakeFocus(fakeDoc([older, c], body()), c), true);
+    assert.equal(dialogMayTakeFocus(fakeDoc([older, c], fakeEl({ tag: 'button', parent: older })), c), false);
+    assert.equal(dialogMayTakeFocus(fakeDoc([c], fakeEl({ tag: 'button', parent: c })), c), true);
+  });
+
+  it('the stop prompt never focuses yes; no answer keeps you riding', () => {
+    const src = readFileSync(join(pub, 'js/features/subway-feature.js'), 'utf8');
+    const prompt = src.slice(src.indexOf('function getOffPrompt'), src.indexOf('const CAR_LABEL_KICKER'));
+    assert.match(prompt, /focus: false/);
+    assert.doesNotMatch(prompt, /onTimeout/);
+    assert.match(src, /if \(opts\.focus !== false && dialogMayTakeFocus\(document, el\)\) actions\.querySelector\('button'\)\?\.focus/);
   });
 });
