@@ -132,16 +132,17 @@ describe('G895: the ledger credits a Gameshow Ticket a shrine donation gave', { 
     assert.deepEqual(rowsOf(r, 'markday'), [['markday', 'ticket', 1]]);
   });
 
-  it('one ticket a donation at most: a second ticket from the same donation is taken back with no budget', () => {
+  it('one ticket a donation at most: a second ticket from the same donation is not credited (G905: it waits as a drop\'s)', () => {
     const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
     const r = php('check', [counts(), credited, save({ inv: { gameshow_ticket: 2 }, donations: 11 }), 0]);
     assert.deepEqual(r.after.items, { gameshow_ticket: 1 });
-    assert.deepEqual(r.reconciled.clamped, counts({ gameshow_ticket: 1 }));
+    assert.deepEqual(r.reconciled.held, { gameshow_ticket: 1 });
+    assert.deepEqual(r.reconciled.clamped, counts());
   });
 
-  it('a ticket with no new donation goes through the budget, as a drop-table ticket does', () => {
+  it('a ticket with no new donation goes through the budget, as a drop-table ticket does (G905: waiting while it is short)', () => {
     const credited = creditedFrom([['mark', 'base', 1], ['mark', 'donations', 10]]);
-    assert.deepEqual(php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 10 }), 0]).reconciled.clamped, counts({ gameshow_ticket: 1 }));
+    assert.deepEqual(php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 10 }), 0]).reconciled.held, { gameshow_ticket: 1 });
     assert.deepEqual(php('check', [counts(), credited, save({ inv: { gameshow_ticket: 1 }, donations: 10 }), 1000]).reconciled.clamped, counts());
   });
 
@@ -152,7 +153,9 @@ describe('G895: the ledger credits a Gameshow Ticket a shrine donation gave', { 
     const forged = php('check', [counts(), creditedFrom([['mark', 'base', 1]]), save({ inv: { gameshow_ticket: 300 }, donations: 300 }), 0]);
     assert.deepEqual(forged.after.items, { gameshow_ticket: TICKET_DAILY });
     assert.deepEqual(forged.held.items, { gameshow_ticket: TICKET_WAIT });
-    assert.deepEqual(forged.reconciled.clamped, counts({ gameshow_ticket: 300 - TICKET_DAILY - TICKET_WAIT }));
+    // G905: past the record, 3 more (3,000 of value) wait as a drop table's would; the rest go.
+    assert.deepEqual(forged.reconciled.held, { gameshow_ticket: 3 });
+    assert.deepEqual(forged.reconciled.clamped, counts({ gameshow_ticket: 300 - TICKET_DAILY - TICKET_WAIT - 3 }));
   });
 
   it('a donation that filled a Giant\'s favor gives its emblem and its ticket in one write, both credited', () => {

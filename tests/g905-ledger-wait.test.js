@@ -39,8 +39,8 @@ describe('G905: a rare find waits instead of being taken back', { skip }, () => 
   it('the data marks the uncapped Musicblocks, gems and Planks as drop classes, and nothing capped or ordinary', () => {
     for (const c of ['musicblock_x_shiny_04', 'musicblock_d_blue_05', 'musicblock_b_brown_05', 'musicblock_x_shiny_03', 'gem_diamond', 'gem_moonstone', 'gem_ruby']) assert.equal(ECON.items[c].d, 1, c);
     assert.equal(ECON.items.musicblock_d_blue_03.d, undefined, 'a capped class waits by its cap already');
-    // Cheap drops, and the classes the shrine record credits (G895), never wait this way.
-    for (const c of ['beam', 'plank', 'apple', 'gameshow_ticket', 'emblem_lem']) assert.equal(ECON.items[c].d, undefined, c);
+    // Cheap drops, and the emblems the shrine record credits (G895), never wait this way.
+    for (const c of ['beam', 'plank', 'apple', 'emblem_lem']) assert.equal(ECON.items[c].d, undefined, c);
   });
 
   it('a Musicblock XS-4 worth 540 with 514 in the budget (the clamp rows\' shape) waits, outside the ledger', () => {
@@ -75,6 +75,20 @@ describe('G905: a rare find waits instead of being taken back', { skip }, () => 
     const r = check(counts(), credited(), save({ [c]: 2 }), 0);
     assert.deepEqual(r.reconciled.held, { [c]: 1 });
     assert.deepEqual(r.reconciled.clamped.items, { [c]: 1 });
+  });
+
+  it('a Gameshow Ticket dropped while mining (#438) waits, within a capped class\'s day (dcap)', () => {
+    const dcap = ECON.items.gameshow_ticket.dcap;
+    assert.ok(ECON.items.gameshow_ticket.d === 1 && dcap > 0);
+    const r = check(counts(), credited({ mark: { base: 1, base905: 1, donations: 10 } }), save({ gameshow_ticket: 1 }), 274);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    assert.deepEqual(r.reconciled.held, { gameshow_ticket: 1 });
+    // Its day used up: a ticket through the budget is taken back however full the budget is.
+    const full = check(counts(), credited({ cap: { gameshow_ticket: dcap } }), save({ gameshow_ticket: 1 }), 100000);
+    assert.deepEqual(full.reconciled.clamped, counts({ gameshow_ticket: 1 }));
+    const paid = check(counts(), credited(), save({ gameshow_ticket: 1 }), 1000);
+    assert.deepEqual(paid.after.items, { gameshow_ticket: 1 });
+    assert.deepEqual(paid.rows.filter((x) => x[0] === 'cap'), [['cap', 'gameshow_ticket', 1]]);
   });
 
   it('a capped class still waits only within its day\'s cap, and an ordinary gain is taken back as before', () => {

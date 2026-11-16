@@ -46,6 +46,7 @@ const LOG = [
   clamp(7, '2026-11-16 18:37:12', { musicblock_x_shiny_04: 1 }),
   clamp(7, '2026-11-16 18:44:32', { musicblock_d_blue_05: 1 }),
   // 8: a machine room worker who also shook a pouch and mined gems.
+  // A Gameshow Ticket dropped while mining a Metal Rock (#438).
   clamp(8, '2026-11-16 18:45:37', { gameshow_ticket: 1 }),
   clamp(8, '2026-11-16 19:05:50', { grade_aa_earth_block: 4 }, { girder: 1 }),
   clamp(8, '2026-11-16 19:08:42', { element_blue: 406, element_shiny: 550 }),
@@ -75,7 +76,7 @@ const CREDITED = [[7, 'refund', 'g895', 9, '2026-11-16 18:10:00'], [7, 'refund',
 
 const EXPECTED = {
   7: { musicblock_b_brown_05: 1, musicblock_d_blue_05: 1, musicblock_x_shiny_04: 1 },
-  8: { beam: 1, board: 5, element_blue: 406, element_shiny: 550, gem_diamond: 1, gem_ruby: 1, girder: 1, grade_aa_earth_block: 4, wood_post: 4 },
+  8: { beam: 1, board: 5, element_blue: 406, element_shiny: 550, gameshow_ticket: 1, gem_diamond: 1, gem_ruby: 1, girder: 1, grade_aa_earth_block: 4, wood_post: 4 },
   9: { corn: 12, cucumber: 56, element_blue: 372, musicblock_goodnight_groddle: 1, parsnip: 16 },
   10: { bean_plain: 3, butterfly_lotion: 1, cherry: 4, hoe: 1, knife_and_board: 1, meat: 7, milk_butterfly: 2, musicblock_x_shiny_04: 1, shovel: 1 },
 };
@@ -90,14 +91,15 @@ describe('G905 refund: owedG905', { skip }, () => {
   it('never pays twice what G895 or the hand refund paid; without those marks the same rows are owed', () => {
     const unpaid = owed(LOG.filter((r) => r.user_id === 7), {});
     assert.deepEqual(unpaid[0].items, { musicblock_b_brown_05: 1, musicblock_d_blue_03: 1, musicblock_d_blue_05: 1, musicblock_d_green_04: 1, musicblock_x_shiny_04: 1, potato: 59 });
-    // A capped Musicblock clamped after G895's refund ran is G905's to pay.
-    const later = owed([clamp(7, '2026-11-16 19:00:00', { musicblock_d_green_04: 1, potato: 3 })], PAID);
-    assert.deepEqual(later[0].items, { musicblock_d_green_04: 1, potato: 3 });
+    // A capped Musicblock or a ticket clamped after G895's refund ran is G905's to pay; one before it, never.
+    const later = owed([clamp(7, '2026-11-16 19:00:00', { musicblock_d_green_04: 1, potato: 3, gameshow_ticket: 1 })], PAID);
+    assert.deepEqual(later[0].items, { gameshow_ticket: 1, musicblock_d_green_04: 1, potato: 3 });
+    assert.deepEqual(owed([clamp(7, '2026-11-16 17:11:09', { gameshow_ticket: 1 })], PAID), []);
   });
 
-  it('planks, apples, Plain Metal, tickets and chunks are not in it: no rule credits them', () => {
+  it('planks, apples, Plain Metal and chunks are not in it: no rule credits them', () => {
     const out = Object.fromEntries(owed(LOG, PAID).map((o) => [o.user, o.items]));
-    for (const items of Object.values(out)) for (const c of ['plank', 'apple', 'plain_metal', 'gameshow_ticket', 'dullite']) assert.equal(items[c], undefined, c);
+    for (const items of Object.values(out)) for (const c of ['plank', 'apple', 'plain_metal', 'dullite']) assert.equal(items[c], undefined, c);
   });
 
   it('a forged pile is owed only to the fixed counts', () => {
@@ -105,7 +107,7 @@ describe('G905 refund: owedG905', { skip }, () => {
     const day = (name) => Number(new RegExp(`const ${name} = (\\d+);`).exec(src)[1]);
     const ECON = JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));
     const out = owed([
-      clamp(11, '2026-11-16 18:00:00', { girder: 300, gem_diamond: 300, hoe: 300, element_red: 99999 }),
+      clamp(11, '2026-11-16 18:00:00', { girder: 300, gem_diamond: 300, hoe: 300, element_red: 99999, gameshow_ticket: 300 }),
       clamp(11, '2026-11-17 01:00:00', { girder: 300, hoe: 300 }),
     ])[0];
     const girders = Math.floor(day('G905_TIMED_DAY') / ECON.items.girder.v);
@@ -113,6 +115,7 @@ describe('G905 refund: owedG905', { skip }, () => {
     assert.equal(out.items.gem_diamond, Math.floor(day('G905_DROP_DAY') / ECON.items.gem_diamond.v));
     assert.equal(out.items.hoe, 1, 'a tutorial gift once ever');
     assert.equal(out.items.element_red, 7 * 600, 'SHAKE_DAILY shakes of a full pouch');
+    assert.equal(out.items.gameshow_ticket, ECON.items.gameshow_ticket.dcap, 'a drop ticket\'s day');
   });
 });
 
