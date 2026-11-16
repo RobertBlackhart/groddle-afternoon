@@ -2792,9 +2792,34 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2383,
+  "commits": 2389,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Knocking with no Metal Rod works: the Sloth stays up and answers from the leaves, as in Glitch"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Sloths spit Snails into the pack round by round, swapping the rod in hand"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Sloths say their own lines in speech bubbles"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Sloths hang from their own striped branch and move as they did in Glitch"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "The Sloth's own animations, rendered from Tiny Speck's sloth art"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2889,34 +2914,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Upright on a phone, the band above every scene shorter than the screen is dark"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Solo gets a bug icon too: a plain link to the website's Bugs board"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a sideways phone, notices beside the avatar keep their side instead of jumping across it as you walk"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a sideways phone, a long speech bubble stays below the top bar instead of running off the top"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Upright on a phone, the street runs to the screen's right edge instead of stopping short and showing the void past it"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Esc closes the subway map at a station, as it closes other windows"
    }
   ]
  },
- "tests": 1053,
+ "tests": 1055,
  "generatedAt": "2026-11-16"
 }
