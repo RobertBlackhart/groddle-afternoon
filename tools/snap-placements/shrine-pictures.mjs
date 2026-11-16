@@ -19,7 +19,8 @@
  * This seats each spot on the floor under it: of the standable lines (pc_perm -1, 0 or none) at
  * the spot's x, the one nearest its y, at most SEAT_PX away, and the floor must hold the shrine's
  * footprint (PLACEMENT_FOOTPRINTS.shrine) on both sides. A spot the remake's art in front of the
- * street would hide (street-ecology.js hiddenBehindFront: Broxhurst Green's big middleplus oak), or
+ * street would mostly hide (street-ecology.js hiddenBehindFront at FRONT_HIDE_SHARE, street-sized
+ * layers only: Broxhurst Green's big middleplus oak), or
  * one on a measured node (a Peat Bog, Jellisac, Barnacle or Paper Tree the snaps place, lane nodes) or
  * a mailbox, or with its foot in a doorway, on a signpost or at a ladder's foot, moves along the floor
  * to the nearest clear spot, NUDGE_STEP at a time, at most NUDGE_PX. It writes
@@ -34,7 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { platformYAt, platformsScreen } from '../../public/js/street-model.js?v=b6cb6a4e';
-import { PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=02dd7dda';
+import { FRONT_HIDE_SHARE, PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=aec45c23';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const check = process.argv.includes('--check');
@@ -96,13 +97,15 @@ function main() {
     const street = JSON.parse(readFileSync(join(root, 'public/assets/streets', `${tsid}.json`), 'utf8'));
     const [x, y] = row.spot;
     const platforms = platformsScreen(street);
-    const fronts = frontDecoCovers(street);
+    // A picture's spot is where Glitch had its shrine: it moves only off street-layer art that mostly
+    // hides it, as before G837, whose lower bar and sliding layers are for the planner's own spots.
+    const fronts = frontDecoCovers(street).filter((f) => !f.drift);
     const reserved = streetReservedSpots({ ...street, tsid });
     let seated = null;
     for (let step = 0; step <= NUDGE_PX && !seated; step += NUDGE_STEP) {
       for (const dx of step ? [-step, step] : [0]) {
         const fy = seatOnFloor(platforms, x + dx, y, PLACEMENT_FOOTPRINTS.shrine);
-        if (fy != null && !hiddenBehindFront({ x: x + dx, y: fy }, 'shrine', fronts) && !standsOnReserved(reserved, x + dx, fy)) {
+        if (fy != null && !hiddenBehindFront({ x: x + dx, y: fy }, 'shrine', fronts, FRONT_HIDE_SHARE) && !standsOnReserved(reserved, x + dx, fy)) {
           seated = [x + dx, fy];
           break;
         }

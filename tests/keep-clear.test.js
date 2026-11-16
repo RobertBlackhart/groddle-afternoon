@@ -26,6 +26,8 @@ import { join } from 'node:path';
 import { isStandable, platformYAt, platformsScreen, streetWidth, worldToScreen } from '../public/js/street-model.js?v=b6cb6a4e';
 import {
   ANIMAL_PATROL,
+  FRONT_BOXES,
+  FRONT_FIND_SHARE,
   LADDER_FOOT_PX,
   PLACEMENT_FOOTPRINTS,
   PLACEMENT_HEIGHTS,
@@ -36,14 +38,17 @@ import {
   footAtWalkway,
   frontCoverShare,
   frontDecoCovers,
+  frontDrift,
   frontDecoWalkways,
   hiddenBehindFront,
   planStreetPlacements,
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=02dd7dda';
+} from '../public/js/street-ecology.js?v=aec45c23';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
+import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=b5bb9763';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=18b181ad';
 
@@ -261,7 +266,7 @@ describe('ticket 89: nothing is planted behind a deco drawn in front of the stre
   const FLIPSIDE = 'GM410QQ0CHARO';
   const streets = Object.keys(index.streets).filter((tsid) => !/^GZ/.test(tsid)).sort();
 
-  it('reads the front layers as wide as the street, not their see-through shadows', () => {
+  it('reads the front layers, a sliding one with its drift, not their see-through shadows', () => {
     const fronts = frontDecoCovers(street(FLIPSIDE));
     // middleplus cl2_swissPipe_02_front (457 x 165 at 1417, 1972): the pipe the Spice Plant stood in.
     assert.ok(fronts.some((f) => f.block.l === 1417 - 228.5 && f.block.t === 1972 - 165), JSON.stringify(fronts.map((f) => f.block)));
@@ -270,7 +275,8 @@ describe('ticket 89: nothing is planted behind a deco drawn in front of the stre
       { name: 'foreground', z: 2, w: 2400, decos: [{ sprite: 'bush', x: 500, y: 900, w: 400, h: 300 }] },
       { name: 'middleground', z: 0, w: 2000, decos: [{ sprite: 'rock', x: 0, y: -100, w: 300, h: 200 }] },
     ] };
-    assert.deepEqual(frontDecoCovers(s).map((f) => f.key), ['front:middleplus:1']);
+    // G837: the foreground, 2400 on a 2000 px street, slides as the camera does (frontDrift).
+    assert.deepEqual(frontDecoCovers(s).map((f) => [f.key, !!f.drift]), [['front:middleplus:1', false], ['front:foreground:0', true]]);
     assert.equal(hiddenBehindFront({ x: 900, y: 900 }, 'trees', frontDecoCovers(s)), true);
     assert.equal(hiddenBehindFront({ x: 1200, y: 900 }, 'trees', frontDecoCovers(s)), false);
   });
@@ -370,7 +376,7 @@ describe('a shrine or vendor is never planned behind the rock a cave draws in fr
     assert.ok(frontCoverShare({ x: 1045, y: 1090 }, 60, 160, [turned]) > 0.9);
     assert.equal(frontCoverShare({ x: 955, y: 1090 }, 60, 160, [turned]), 0);
     // A layer as wide as the street but shorter moves with the camera (Sylvan Grove's middleplus, 850 on 1000).
-    assert.deepEqual(frontDecoCovers({ ...cave([tile(1000, 1000, 300, 300)]), layers: [{ name: 'middleplus', z: 1, w: 2000, h: 850, decos: [tile(1000, 1000, 300, 300)] }] }), []);
+    assert.deepEqual(frontDecoCovers({ ...cave([tile(1000, 1000, 300, 300)]), layers: [{ name: 'middleplus', z: 1, w: 2000, h: 850, decos: [tile(1000, 1000, 300, 300)] }] }).map((f) => f.drift), [{ sw: 2000, sh: 1000, lw: 2000, lh: 850 }]);
     // Tiles too small to matter, see-through overlays and hidden decos hide nothing.
     assert.deepEqual(frontDecoCovers(cave([tile(1000, 1000, 24, 25), { sprite: 'cave_light_overlay', x: 1000, y: 1000, w: 400, h: 400 }, { ...tile(1000, 1000, 300, 300), hidden: true }])), []);
   });
@@ -395,10 +401,46 @@ describe('a shrine or vendor is never planned behind the rock a cave draws in fr
       const { plan, reserved } = layoutOf(data);
       const fronts = reserved.filter((r) => r.front);
       if (!fronts.length) continue;
-      for (const key of ['shrine', 'vendor']) for (const p of plan.groups[key] || []) if (hiddenBehindFront(p, key, fronts)) hidden.push(`${tsid} ${key}`);
+      for (const key of ['shrine', 'vendor']) for (const p of plan.groups[key] || []) {
+        // A 2012 picture's shrine is where Glitch had it (tests/shrine-spots.test.js judges those).
+        if (key === 'shrine' && SHRINE_SPOTS[tsid]) continue;
+        if (hiddenBehindFront(p, key, fronts)) hidden.push(`${tsid} ${key} ${Math.round(frontCoverShare(p, ...FRONT_BOXES[key], fronts) * 100)}%`);
+      }
     }
     // Census (2026-11-08): before, 146 shrines and vendors mostly behind front decos (Megna Burrow's
     // shrine and vendor, Gimbap Bop's shrine behind a tree trunk); after, none.
+    // G837 (2026-11-16), counting sliding front layers too, at FRONT_FIND_SHARE: before, 100 planned
+    // shrines and 173 vendors 30% or more behind the front art (75 and 110 half or more); after, none.
     assert.deepEqual(hidden, []);
+  });
+
+  it('Mesob Medium stands its shrine clear of the foreground fir (G837, #388)', async () => {
+    const data = await loaded('GIF160988972VND');
+    const { plan, reserved } = layoutOf(data);
+    const fronts = reserved.filter((r) => r.front);
+    // Before: the shrine at 5010, 888, behind tree_coniferous_fg_1 and _fg_4 on the foreground
+    // (6200 x 1025 on a 6000 x 1000 street), which the check left out as a parallax layer.
+    const before = { x: 5010, y: 888 };
+    assert.equal(frontCoverShare(before, ...FRONT_BOXES.shrine, fronts.filter((f) => !f.drift)), 0);
+    assert.equal(frontCoverShare(before, ...FRONT_BOXES.shrine, fronts), 1);
+    assert.equal(hiddenBehindFront(before, 'shrine', fronts), true);
+    for (const key of ['shrine', 'vendor']) {
+      const [p] = plan.groups[key];
+      assert.ok(frontCoverShare(p, ...FRONT_BOXES[key], fronts) < FRONT_FIND_SHARE, `${key} ${Math.round(p.x)},${Math.round(p.y)}`);
+    }
+  });
+
+  it('a sliding front layer sits where street-render puts it with the camera on the spot (frontDrift)', () => {
+    const drift = { sw: 6000, sh: 1000, lw: 6200, lh: 1025 };
+    for (const x of [100, 2000, 3000, 5010, 5900]) {
+      const spot = { x, y: 888 };
+      const camX = Math.min(6000 - 1280, Math.max(0, x - 640));
+      const camY = Math.min(1000 - 720, Math.max(0, 888 - 540));
+      const at = parallaxLayerOffset({ w: 6200, h: 1025 }, camX, camY, 1280, 720, 6000, 1000);
+      assert.deepEqual(frontDrift(drift, spot), at, String(x));
+    }
+    // A street narrower than the view: the layer rests centred, its bottom on the street's.
+    assert.deepEqual(frontDrift({ sw: 1000, sh: 600, lw: 1200, lh: 700 }, { x: 500, y: 500 }), { x: -100, y: -100 });
+    assert.deepEqual(frontDrift(null, { x: 1, y: 1 }), { x: 0, y: 0 });
   });
 });

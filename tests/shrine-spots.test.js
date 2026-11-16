@@ -14,6 +14,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  FRONT_HIDE_SHARE,
   PLACEMENT_FOOTPRINTS,
   ecologyForStreet,
   frontDecoCovers,
@@ -24,7 +25,7 @@ import {
   setStreetEcologyCatalog,
   shrinePlacementRequest,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=02dd7dda';
+} from '../public/js/street-ecology.js?v=aec45c23';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
 import { NUDGE_PX, SEAT_PX, seatOnFloor, standsOnReserved } from '../tools/snap-placements/shrine-pictures.mjs';
@@ -74,7 +75,8 @@ describe('shrine spots from the 2012 street pictures', () => {
       const [px, py] = source[tsid].spot;
       assert.ok(Math.abs(x - px) <= NUDGE_PX, source[tsid].label);
       assert.ok(Math.abs(y - py) <= SEAT_PX, source[tsid].label);
-      assert.equal(hiddenBehindFront({ x, y }, 'shrine', frontDecoCovers(s)), false, `${source[tsid].label}: not behind the art in front`);
+      // Judged as the tool seats them: street-layer art, mostly hidden (G837's bar is for planned spots).
+      assert.equal(hiddenBehindFront({ x, y }, 'shrine', frontDecoCovers(s).filter((f) => !f.drift), FRONT_HIDE_SHARE), false, `${source[tsid].label}: not behind the art in front`);
       assert.equal(seatOnFloor(platformsScreen(s), x, y, PLACEMENT_FOOTPRINTS.shrine), y);
       const floor = platformsScreen(s).filter((p) => p.pcPerm !== 1 && p.pcPerm !== null)
         .some((p) => { const fy = platformYAt(p, x, 0); return fy != null && Math.abs(fy - y) <= 1; });

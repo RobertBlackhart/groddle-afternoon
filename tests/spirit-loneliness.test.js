@@ -47,9 +47,9 @@ import {
   spiritCryBox,
   spiritCrySheet,
 } from '../public/js/street-spirits.js?v=f9e88445';
-import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=ddaa6311';
+import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=4cebb2c0';
 import { ROUTE_SOURCES } from '../public/js/map-routes.js?v=f23b16a2';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=02dd7dda';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=aec45c23';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=18b181ad';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

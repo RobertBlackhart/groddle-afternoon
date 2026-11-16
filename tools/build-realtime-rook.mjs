@@ -38,7 +38,7 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=18b181ad';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=b6cb6a4e';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=02dd7dda';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=aec45c23';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=66c4f499';
 import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=945cc7c4';

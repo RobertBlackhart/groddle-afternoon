@@ -1239,6 +1239,12 @@ export const FRONT_DECO_MIN = Object.freeze({ w: 120, h: 90 });
 export const FRONT_FILL_MIN = Object.freeze({ w: 40, h: 40 });
 /** How much of a thing's box a front deco has to cover for the thing to count as behind it. */
 export const FRONT_HIDE_SHARE = 0.6;
+/**
+ * G837 (#388): the lower bar for the things a player has to find and click, a shrine or a vendor
+ * (FRONT_BOXES): a spot with this much of it behind the front art is taken last. Mesob Medium's
+ * shrine stood half behind a front fir, under the mostly-hidden bar trees and rocks keep.
+ */
+export const FRONT_FIND_SHARE = 0.3;
 /** Front decos that are see-through (shadows, light and haze overlays): they hide nothing. */
 export const FRONT_SEE_THROUGH = /shadow|overlay|trans|glow|light|haze|fog|mist|ray|beam|gradient/i;
 
@@ -1248,8 +1254,12 @@ export const FRONT_SEE_THROUGH = /shadow|overlay|trans|glow|light|haze|fog|mist|
  * `{ key, front: true, block }` in screen space. They never take a clearance or keep anything
  * away; planStreetPlacements only takes a spot whose tree, rock or Piggy (REACH_BOXES) they would
  * mostly hide last, as it does a spot behind a floor. The original set those by hand where they
- * showed (Flipside's Spice Plant sat inside the Swiss-cheese pipe's front half). Only layers as
- * wide and as tall as the street: a parallax layer moves against the street as the camera does.
+ * showed (Flipside's Spice Plant sat inside the Swiss-cheese pipe's front half). A layer as wide and
+ * as tall as the street stays on it; any other front layer slides against the street as the camera
+ * moves (street-render.js parallaxLayerOffset), so its decos come with `drift` and the cover checks
+ * put them where they are with the camera on the thing (frontDrift). G837, #388: Mesob Medium's
+ * foreground (6200 on a 6000 px street) stood a fir over the shrine; a third of all front layers
+ * are a little wider or taller than their street and were left out.
  * Smaller or turned tiles (FRONT_FILL_MIN, any `r`) come too, marked `fill` with their turn (`r`,
  * degrees clockwise about the bottom centre, as street-render.js sets spr.angle on a 0.5, 1
  * anchor) and their own size: they only hide things together (hiddenBehindFront), and a fill
@@ -1260,10 +1270,12 @@ export function frontDecoCovers(street) {
   const width = street?.bounds ? street.bounds.r - street.bounds.l : 0;
   const height = street?.bounds ? street.bounds.b - street.bounds.t : 0;
   for (const layer of street?.layers || []) {
-    if (!(Number(layer?.z) > 0) || !width || Number(layer.w) !== width) continue;
-    // A layer as wide as the street but shorter still moves up and down against it
+    if (!(Number(layer?.z) > 0) || !width || !(Number(layer.w) > 0)) continue;
+    // A layer wider or narrower, taller or shorter than the street slides against it
     // (parallaxLayerOffset): Sylvan Grove's middleplus is 850 tall on a 1000 px street.
-    if (Number.isFinite(Number(layer.h)) && Number(layer.h) > 0 && height && Number(layer.h) !== height) continue;
+    const lw = Number(layer.w);
+    const lh = Number(layer.h) > 0 ? Number(layer.h) : height;
+    const drift = lw !== width || (height > 0 && lh !== height) ? { sw: width, sh: height, lw, lh } : null;
     (layer.decos || []).forEach((d, i) => {
       const w = Number(d?.w) || 0;
       const h = Number(d?.h) || 0;
@@ -1271,15 +1283,44 @@ export function frontDecoCovers(street) {
       if (FRONT_SEE_THROUGH.test(String(d.sprite || ''))) return;
       const r = Number(d.r) || 0;
       const key = `front:${layer.name || layer.id}:${i}`;
+      const slide = drift ? { drift } : null;
       if (w >= FRONT_DECO_MIN.w && h >= FRONT_DECO_MIN.h && !r) {
-        out.push({ x: d.x, y: d.y, key, front: true, block: { l: d.x - w / 2, r: d.x + w / 2, t: d.y - h, b: d.y } });
+        out.push({ x: d.x, y: d.y, key, front: true, block: { l: d.x - w / 2, r: d.x + w / 2, t: d.y - h, b: d.y }, ...slide });
         return;
       }
       if (w < FRONT_FILL_MIN.w || h < FRONT_FILL_MIN.h) return;
-      out.push({ x: d.x, y: d.y, key, front: true, fill: true, r, w, h, block: turnedBox(d.x, d.y, w, h, r) });
+      out.push({ x: d.x, y: d.y, key, front: true, fill: true, r, w, h, block: turnedBox(d.x, d.y, w, h, r), ...slide });
     });
   }
   return out;
+}
+
+/**
+ * The location view a sliding front layer is placed for (world px) and where the avatar stands in
+ * it (movement.js yCamOffsetAnchor at the default y_cam_offset 150). A thing near mid-street finds
+ * the layer in the same place in any view; nearer the ends a wider or narrower view moves the layer
+ * by a share of its spare width or height only.
+ */
+const FRONT_DRIFT_VIEW = Object.freeze({ w: 1280, h: 720, anchor: 0.75 });
+
+/**
+ * PURE: how far a sliding front layer (frontDecoCovers `drift`) sits from the street, as
+ * street-render.js parallaxLayerOffset (and parallaxRestX/Y) places it, with the camera on a player
+ * standing at `spot` (movement.js cameraTargetX, cameraTargetY). { x: 0, y: 0 } for a layer that
+ * stays on the street.
+ */
+export function frontDrift(drift, spot, view = FRONT_DRIFT_VIEW) {
+  if (!drift) return { x: 0, y: 0 };
+  const axis = (cam, street, layer, vp, rest) => {
+    const max = street - vp;
+    if (!(max > 0)) return rest;
+    const at = Math.min(max, Math.max(0, cam));
+    return at + (at / max) * (vp - layer);
+  };
+  return {
+    x: axis(spot.x - view.w / 2, drift.sw, drift.lw, view.w, (drift.sw - drift.lw) / 2),
+    y: axis(spot.y - view.h * view.anchor, drift.sh, drift.lh, view.h, drift.sh - drift.lh),
+  };
 }
 
 /** The screen box round a deco w x h turned `r` degrees about its bottom centre (x, y). */
@@ -1320,7 +1361,13 @@ export function frontCoverShare(spot, w, h, fronts) {
   if (!fronts?.length) return 0;
   const l = spot.x - w / 2;
   const t = spot.y - h;
-  const near = fronts.filter(({ block: b }) => b.r > l && b.l < l + w && b.b > t && b.t < spot.y);
+  // A sliding layer's decos (frontDrift) are tested against the box moved into the layer's place.
+  const near = [];
+  for (const f of fronts) {
+    const d = frontDrift(f.drift, spot);
+    const b = f.block;
+    if (b.r + d.x > l && b.l + d.x < l + w && b.b + d.y > t && b.t + d.y < spot.y) near.push([f, d]);
+  }
   if (!near.length) return 0;
   const [cols, rows] = FRONT_SAMPLES;
   let hit = 0;
@@ -1328,7 +1375,7 @@ export function frontCoverShare(spot, w, h, fronts) {
     const px = l + ((i + 0.5) * w) / cols;
     for (let j = 0; j < rows; j += 1) {
       const py = t + ((j + 0.5) * h) / rows;
-      if (near.some((f) => insideFront(f, px, py))) hit += 1;
+      if (near.some(([f, d]) => insideFront(f, px - d.x, py - d.y))) hit += 1;
     }
   }
   return hit / (cols * rows);
@@ -1344,13 +1391,14 @@ export function frontCoverShare(spot, w, h, fronts) {
 export const FRONT_BOXES = Object.freeze({ shrine: [118, 147], vendor: [105, 127] });
 
 /**
- * PURE: whether a thing of `key` at `spot` is mostly behind the front decos (frontDecoCovers):
- * one big deco over FRONT_HIDE_SHARE of its box, or (for things that stand still) the decos
- * together over that share. A walking animal (ANIMAL_PATROL) keeps the one-deco rule: it walks out
- * from behind a fill, and the planner would otherwise put it inside a rock rather than behind one
- * (GIFBSQJTGME2KRH, tests/piggies-walk-on.test.js).
+ * PURE: whether a thing of `key` at `spot` is behind the front decos (frontDecoCovers): one big
+ * deco over `bar` of its box, or (for things that stand still) the decos together over that share.
+ * The bar is FRONT_HIDE_SHARE (mostly hidden) for trees, rocks and Piggies, FRONT_FIND_SHARE for a
+ * shrine or vendor. A walking animal (ANIMAL_PATROL) keeps the one-deco rule on the street's own
+ * layers: it walks out from behind a fill or a sliding layer's deco, and the planner would otherwise
+ * put it inside a rock or a tree rather than behind one (GIFBSQJTGME2KRH, tests/piggies-walk-on.test.js).
  */
-export function hiddenBehindFront(spot, key, fronts) {
+export function hiddenBehindFront(spot, key, fronts, bar = FRONT_BOXES[key] ? FRONT_FIND_SHARE : FRONT_HIDE_SHARE) {
   const size = REACH_BOXES[key] || FRONT_BOXES[key];
   if (!size || !fronts?.length) return false;
   const [w, h] = size;
@@ -1358,14 +1406,15 @@ export function hiddenBehindFront(spot, key, fronts) {
   const r = spot.x + w / 2;
   const t = spot.y - h;
   for (const f of fronts) {
-    if (f.fill) continue;
+    if (f.fill || (f.drift && ANIMAL_PATROL[key])) continue;
     const b = f.block;
-    const ox = Math.min(r, b.r) - Math.max(l, b.l);
-    const oy = Math.min(spot.y, b.b) - Math.max(t, b.t);
-    if (ox > 0 && oy > 0 && ox * oy >= FRONT_HIDE_SHARE * w * h) return true;
+    const d = frontDrift(f.drift, spot);
+    const ox = Math.min(r, b.r + d.x) - Math.max(l, b.l + d.x);
+    const oy = Math.min(spot.y, b.b + d.y) - Math.max(t, b.t + d.y);
+    if (ox > 0 && oy > 0 && ox * oy >= bar * w * h) return true;
   }
   if (ANIMAL_PATROL[key]) return false;
-  return frontCoverShare(spot, w, h, fronts) >= FRONT_HIDE_SHARE;
+  return frontCoverShare(spot, w, h, fronts) >= bar;
 }
 
 /** How near a floor's ends sit to a front deco's top for the floor to be that top (px up or down). */
@@ -1385,7 +1434,8 @@ export function frontDecoWalkways(platforms, fronts) {
   if (!fronts?.length || !Array.isArray(platforms)) return [];
   const lines = platforms.filter((p) => isStandable(p) && isItemSolid(p));
   const spans = floorRunSpans(lines);
-  return fronts.filter(({ block: b, fill }) => !fill && lines.some((line) => {
+  // A sliding layer (frontDecoCovers `drift`) never carries a floor: the floor stays as its decos move.
+  return fronts.filter(({ block: b, fill, drift }) => !fill && !drift && lines.some((line) => {
     const lo = Math.min(line.x1, line.x2);
     const hi = Math.max(line.x1, line.x2);
     const run = (spans.get(line) || []).find((span) => lo >= span[0] && hi <= span[1]);
