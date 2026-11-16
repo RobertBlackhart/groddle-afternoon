@@ -167,7 +167,7 @@ describe('Walk Toward the Light and Radiant Glare: grey avatars', () => {
   it('applies the filter to you and to other players only while in such a room', () => {
     const game = read('public/game.js');
     // Cleared on every location change, set again by a scene that names it.
-    assert.match(game, /function clearWorldEntities\(\) \{[^]*?if \(entityLayer\) entityLayer\.filters = null;\n  setAvatarTone\(null\);/);
+    assert.match(game, /function clearWorldEntities\([^)]*\) \{[^]*?if \(entityLayer\) entityLayer\.filters = null;\n  setAvatarTone\(null\);/);
     assert.match(game, /enterScene\(scene\) \{\n    clearWorldEntities\(\);\n    if \(scene\.avatarFilters\) setAvatarTone\(scene\.avatarFilters\);/);
     assert.match(game, /get avatarTone\(\) \{\n    return avatarTone;/);
     // Your Glitch keeps its other filters (An Autumn Day's silhouette) beside it.

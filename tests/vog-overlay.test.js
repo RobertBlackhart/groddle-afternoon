@@ -193,7 +193,7 @@ describe('game.js wiring', () => {
 
   it('a street change closes the chooser and drops VOGs, at the move and at the teardown', () => {
     assert.match(game, /function endStreetOverlays\(reason = 'street-change'\) \{\s*if \(enterChooser\?\.isOpen\(\)\) enterChooser\.close\(reason\);\s*vogOverlay\?\.cancel\(\);/);
-    assert.match(game, /function clearWorldEntities\(\) \{\s*cancelCurrentAction\(\{ quiet: true \}\);\s*endStreetOverlays\(\);/);
+    assert.match(game, /function clearWorldEntities\([^)]*\) \{\s*cancelCurrentAction\(\{ quiet: true \}\);\s*endStreetOverlays\(\);/);
     assert.match(game, /document\.documentElement\.addEventListener\(STREET_CARD_UP, \(\) => endStreetOverlays\(\)\);/);
     assert.match(read('js/screen-fx.js'), /export const STREET_CARD_UP = /);
   });

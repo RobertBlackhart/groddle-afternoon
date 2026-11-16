@@ -13513,7 +13513,7 @@ const engine = {
   /** Rebuild the current home room in place (decorate / cultivate changes). */
   async refreshHomeScene(opts = {}) {
     if (!homeIsInstanced()) return false;
-    await renderHomeScene(homeState.room, { spawnX: player?.x, arrive: 'exact', ...opts });
+    await renderHomeScene(homeState.room, { spawnX: player?.x, arrive: 'exact', inPlace: true, ...opts });
     return true;
   },
   /** The persistent per-street world slot (gardens, trees, rocks). */
@@ -24654,7 +24654,7 @@ function spawnHomeSceneTargets(room) {
 
 async function renderHomeScene(room = homeState.room || 'street', opts = {}) {
   const targetTsid = room === 'interior' ? HOME_INTERIOR_TSID : HOME_STREET_TSID;
-  clearWorldEntities();
+  clearWorldEntities({ keepWindows: opts.inPlace === true });
   if (bgLayer && world) {
     world.removeChild(bgLayer);
     bgLayer.destroy({ children: true });
@@ -24982,9 +24982,28 @@ function setAvatarTone(filters) {
   if (player) player.filters = [...(player.filters || []), avatarTone];
 }
 
-function clearWorldEntities() {
+/**
+ * #402: the windows that belong to something on the street you are leaving close with it, on every
+ * move: a street, a scene (a Ticket's Beam Me Down), an instance. The client closed every Dialog on
+ * a move (Dialog.as close_on_move 58, 285, 367-373) except the map, an item's info, the familiar and
+ * a confirmation (HubMapDialog.as 131, GetInfoDialog.as 106, FamiliarDialog.as 95,
+ * ConfirmationDialog.as 54). Here: the vendor's store, a shrine, a garden, the feed picker, a
+ * museum exhibit and mail opened at a mailbox (the top bar's mail stays open anywhere).
+ */
+function closeStreetBoundWindows() {
+  if (isVendorOpen()) closeVendor();
+  if (isShrineOpen()) closeShrinePanel();
+  if (isGardenOpen()) closeGardenPanel();
+  if (isFeedPickerOpen()) closeFeedPicker();
+  if (isRookMuseumExhibitOpen()) closeRookMuseumExhibit();
+  if (isMailboxOpen() && mailboxAt) closeMailboxPanel();
+}
+
+function clearWorldEntities({ keepWindows = false } = {}) {
   cancelCurrentAction({ quiet: true });
   endStreetOverlays();
+  // A home room rebuilt in place (decorating) is no move: its windows stay.
+  if (!keepWindows) closeStreetBoundWindows();
   // Player report 23: a new street starts with no key held (a real one comes back on its next repeat).
   heldKeys.releaseAll('street');
   clearHoverGlow();
