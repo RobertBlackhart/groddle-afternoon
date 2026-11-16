@@ -26,7 +26,7 @@ import {
   tierAt,
   tierSurfaces,
   walkable,
-} from '../public/js/quest-rooms/radiant-glare.js?v=236ea4fa';
+} from '../public/js/quest-rooms/radiant-glare.js?v=5048c3c9';
 import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=a217b716';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

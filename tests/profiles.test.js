@@ -20,7 +20,7 @@ import {
   aboutCounter, aboutLength, avatarKeyOf, base64Bytes, cleanAbout, homeKeyOf, homeSizes, imageBase64, pngBase64, profileSlug, shortHash, shouldUpload, stillTransform,
 } from '../public/js/profiles.js?v=054ca723';
 import { createMinnAccount } from '../public/js/minn-account.js?v=00f3eadb';
-import { FEATURES } from '../public/js/features/index.js?v=8e241472';
+import { FEATURES } from '../public/js/features/index.js?v=76f17fe7';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { loadContentCatalogsFromDir, getSkillCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { skillTitle } from '../public/js/skill-tree.js?v=e399b9ca';
@@ -72,7 +72,8 @@ describe('profile rules (js/profiles.js)', () => {
     assert.deepEqual(HOME_TYPES, ['image/webp', 'image/jpeg']);
     assert.ok(HOME_QUALITY >= 0.8 && HOME_QUALITY <= 0.9);
     assert.equal(HOME_BACKDROP, '#8ec8e8', 'the renderer background (game.js app.init)');
-    assert.match(read('public/game.js'), /background: 0x8ec8e8,/);
+    assert.match(read('public/game.js'), /const STAGE_CLEAR = 0x8ec8e8;/);
+    assert.match(read('public/game.js'), /background: STAGE_CLEAR,/);
     // A 1280 x 800 window: the view is 1280 x 668, 2560 x 1336 at 2x.
     assert.deepEqual(homeSizes(2560, 1336), [{ w: 1920, h: 1002 }, { w: 1440, h: 752 }, { w: 1280, h: 668 }, { w: 960, h: 501 }]);
     // A 1920 x 1080 window's wide view (3360 x 1440 at 2x): every size keeps the shape.

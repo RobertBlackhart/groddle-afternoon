@@ -34,8 +34,27 @@ export function gradient(PIXI, stops, width, height) {
   sprite.height = height;
   // On a screen-fixed layer it stretches to a view larger than it (fillView, g458).
   sprite.viewFill = { w: width, h: height };
+  // G863: its top colour, for the band above a short room (sceneRoot skyTop).
+  sprite.skyTop = gradientTop(stops);
   return sprite;
 }
+
+/** PURE (G863): the CSS colour at the top (the lowest stop) of a gradient's stops, or null. */
+export function gradientTop(stops) {
+  const first = [...(stops || [])].filter((s) => Array.isArray(s)).sort((a, b) => Number(a[0]) - Number(b[0]))[0];
+  if (!first) return null;
+  const c = first[1];
+  if (typeof c === 'number') return `#${c.toString(16).padStart(6, '0')}`;
+  return /^#[0-9a-f]{6}$/i.test(String(c)) ? String(c).toLowerCase() : null;
+}
+
+/**
+ * G863 (#422): the colour of the band an upright phone leaves above a short room (game.js
+ * syncLocationViewHeight, --stage-sky): the top of the room's backmost sky gradient, as a street's
+ * gradient top fills it (#348); a room with no sky gets the dark plain border a narrow street has
+ * (style.css NARROW STREETS), not the page's sky blue. A hex, so the canvas can clear to it too.
+ */
+export const ROOM_NO_SKY = '#2a2a2a'; // style.css --c-grey-29
 
 /**
  * Stretch a screen-fixed layer's gradients (and anything else marked
@@ -73,6 +92,14 @@ export function sceneRoot(PIXI, width, height) {
     if (factor !== 1) layers.push(c);
     return c;
   };
+  Object.defineProperty(root, 'skyTop', {
+    configurable: true,
+    get() {
+      const back = [...root.children].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
+      for (const c of back) for (const child of c.children || []) if (child.skyTop) return child.skyTop;
+      return ROOM_NO_SKY;
+    },
+  });
   root.updateParallax = (camX = 0, camY = 0, viewW = 0, viewH = 0, canvasH = viewH) => {
     for (const c of layers) {
       c.x = camX * (1 - c.factor);

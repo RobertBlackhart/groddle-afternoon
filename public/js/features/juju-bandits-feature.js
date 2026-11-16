@@ -55,7 +55,7 @@
 import { addItem, removeItem, countItem } from '../inventory.js?v=f49c8998';
 import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { groundBeneath, isItemSolid, platformYAt, platformsScreen } from '../street-model.js?v=2918abe5';
-import { sheetFrames } from '../quest-rooms/kit.js?v=f14e2823';
+import { sheetFrames } from '../quest-rooms/kit.js?v=4c0fffec';
 import {
   JUJU_BANDIT,
   JUJU_QUEST,

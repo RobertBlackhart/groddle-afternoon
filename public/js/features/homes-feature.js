@@ -821,6 +821,16 @@ function pieceSprite(engine, row, hires) {
  * (or tower) cross-section frame, attic and basement. Outside the house, a dark timber wall
  * covers what the camera can see past the end frames.
  */
+/** The dark timber wall outside the house (drawRoomShell) and its boards. */
+const HOME_OUTSIDE_FILL = 0x2a2019;
+const HOME_OUTSIDE_BOARD = 0x221a14;
+/**
+ * G863 (#422): the band an upright phone leaves above a short room (game.js syncLocationViewHeight
+ * --stage-sky) takes the timber wall's colour on a floor with no yard (Tower floors, the house's upper
+ * floors), not the page's sky blue; the ground floor's yard keeps its sky.
+ */
+export const HOME_OUTSIDE_SKY = `#${HOME_OUTSIDE_FILL.toString(16).padStart(6, '0')}`;
+
 function drawRoomShell(engine, container, opts = {}) {
   const { PIXI } = engine;
   container.removeChildren().forEach((child) => child.destroy({ children: true }));
@@ -833,8 +843,8 @@ function drawRoomShell(engine, container, opts = {}) {
   const OUTSIDE_W = 640;
   // With the back yard, the left side is the yard itself (interiorBackground draws it).
   for (const [x0, x1] of opts.yard ? [[width, width + OUTSIDE_W]] : [[-OUTSIDE_W, 0], [width, width + OUTSIDE_W]]) {
-    outside.rect(x0, top, x1 - x0, bottom - top).fill(0x2a2019);
-    for (let x = x0; x < x1; x += 46) outside.rect(x, top, 4, bottom - top).fill(0x221a14);
+    outside.rect(x0, top, x1 - x0, bottom - top).fill(HOME_OUTSIDE_FILL);
+    for (let x = x0; x < x1; x += 46) outside.rect(x, top, 4, bottom - top).fill(HOME_OUTSIDE_BOARD);
   }
   outside.rect(0, room.bottom, width, 200).fill(0x3b2a1e);
   container.addChild(outside);
@@ -928,6 +938,7 @@ function interiorBackground(engine, opts = {}) {
   root.house = house;
   root.houseX = x0;
   root.yardStyle = opts.yard ? shownYardStyle(engine) : null;
+  if (!opts.yard) root.skyTop = HOME_OUTSIDE_SKY;
   root.worldH = root.room.bottom;
   const { room } = root;
   // The floor is solid from the top (inc_homes.js homes_rebuild_floor 928-933: platform_pc_perm -1).

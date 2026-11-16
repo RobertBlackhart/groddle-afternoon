@@ -1,0 +1,63 @@
+/**
+ * G863 (#422): on an upright phone the band above a short room (game.js syncLocationViewHeight,
+ * --stage-sky) and the canvas above the room's ceiling showed the page's sky blue in Tower floors and
+ * quest rooms. A kit-built room gives the top of its backmost sky gradient (as a street's gradient top,
+ * #348), or the narrow street's dark border with no sky; a Tower or upper house floor gives the timber
+ * wall drawn outside the house; the canvas clears to the band's colour while there is a band.
+ * Run: node --test tests/short-room-band.test.js
+ */
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=4c0fffec';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const read = (p) => readFileSync(join(root, p), 'utf8');
+
+class FakeContainer {
+  constructor() { this.children = []; this.zIndex = 0; }
+  addChild(...c) { this.children.push(...c); return c[0]; }
+}
+const PIXI = { Container: FakeContainer };
+
+describe('G863: a short room\'s band colour', () => {
+  it('a gradient\'s top is its lowest stop, as CSS', () => {
+    assert.equal(gradientTop([[0, '#08150E'], [0.6, '#11271a'], [1, '#1a3523']]), '#08150e');
+    assert.equal(gradientTop([[1, 0x102030], [0, 0x0a0b0c]]), '#0a0b0c');
+    assert.equal(gradientTop([[0, 'rgba(0,0,0,0)']]), null);
+    assert.equal(gradientTop([]), null);
+    assert.equal(gradientTop(null), null);
+  });
+
+  it('a kit room gives its backmost sky\'s top, or the dark border with no sky', () => {
+    const room = sceneRoot(PIXI, 1600, 760);
+    assert.equal(room.skyTop, ROOM_NO_SKY);
+    assert.equal(ROOM_NO_SKY, '#2a2a2a');
+    assert.match(read('public/style.css'), /--c-grey-29: #2a2a2a;/);
+    assert.match(read('public/style.css'), /#game-root\[data-stage-bordered\] \{ background: var\(--c-grey-29\); \}/);
+    const front = room.layer(1, 5);
+    front.addChild({ skyTop: '#ffffff' });
+    const sky = room.layer(0, 0);
+    sky.addChild({ skyTop: '#08150e' });
+    assert.equal(room.skyTop, '#08150e', 'the backmost layer\'s gradient');
+    assert.match(read('public/js/quest-rooms/kit.js'), /sprite\.skyTop = gradientTop\(stops\);/);
+  });
+
+  it('a Tower floor or upper house floor gives the timber wall drawn outside the house; the yard floor keeps its sky', () => {
+    const homes = read('public/js/features/homes-feature.js');
+    assert.match(homes, /const HOME_OUTSIDE_FILL = 0x2a2019;/);
+    assert.match(homes, /outside\.rect\(x0, top, x1 - x0, bottom - top\)\.fill\(HOME_OUTSIDE_FILL\);/);
+    assert.match(homes, /if \(!opts\.yard\) root\.skyTop = HOME_OUTSIDE_SKY;/);
+  });
+
+  it('game.js: the band and the canvas clear take the scene\'s colour while there is a band, the page blue otherwise', () => {
+    const game = read('public/game.js');
+    assert.match(game, /const sky = band >= 1 \? viewSceneLayer\?\.skyTop \|\| '' : '';/);
+    assert.match(game, /const clear = \/\^#\[0-9a-f\]\{6\}\$\/i\.test\(sky\) \? parseInt\(sky\.slice\(1\), 16\) : STAGE_CLEAR;/);
+    assert.match(game, /const STAGE_CLEAR = 0x8ec8e8;/);
+    assert.match(game, /background: STAGE_CLEAR,/);
+    assert.match(read('public/style.css'), /--c-sky-80: #8ec8e8;/);
+  });
+});

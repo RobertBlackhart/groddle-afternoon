@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=45c9864a';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8e241472';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=76f17fe7';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=30f38f50';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=b9ce8b8d';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=486d774f';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,
@@ -2007,6 +2007,8 @@ function syncRenderResolution() {
 
 /** The scene whose size last held the view (syncLocationViewHeight). */
 let viewSceneLayer = null;
+/** The canvas's clear colour (style.css --c-sky-80); G863: a short room's band colour while it has one. */
+const STAGE_CLEAR = 0x8ec8e8;
 /** #386: a narrow street's canvas size in CSS px ({ w, h }), null when the canvas fills the root. */
 let stageCanvasSize = null;
 
@@ -2114,8 +2116,13 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
     }
     pinStageCanvasSize();
     // #348: the band above a short street is the street's own sky, not the page's blue.
-    if (band >= 1 && viewSceneLayer?.skyTop) root.style.setProperty('--stage-sky', viewSceneLayer.skyTop);
+    const sky = band >= 1 ? viewSceneLayer?.skyTop || '' : '';
+    if (sky) root.style.setProperty('--stage-sky', sky);
     else root.style.removeProperty('--stage-sky');
+    // G863 (#422): a room draws nothing above its ceiling, where the canvas showed its clear colour
+    // (the page's sky blue) under that band; it clears to the band's colour while there is one.
+    const clear = /^#[0-9a-f]{6}$/i.test(sky) ? parseInt(sky.slice(1), 16) : STAGE_CLEAR;
+    if (app?.renderer?.background && app.renderer.background.color?.toNumber?.() !== clear) app.renderer.background.color = clear;
   }
   if (stage.pinned && stageCanvasSize) {
     stageCanvasSize = null;
@@ -31657,7 +31664,7 @@ async function main() {
   await app.init({
     width: VIEW_W,
     height: VIEW_H,
-    background: 0x8ec8e8,
+    background: STAGE_CLEAR,
     antialias: false,
     resolution: renderResolution(VIEW_W, VIEW_W, window.devicePixelRatio || 1, RENDER_CAP),
     autoDensity: true,
