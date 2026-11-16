@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2400,
+  "commits": 2405,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The Super Harvest float says how many more you got, not \"+2×\""
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The Butler's long hints stay up long enough to read and land in Local chat"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Signpost words use the game's own rounded font on every device, smooth on a phone"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Quests finished on Questing and Contesting's day count once the server takes them, and a repeat taken again no longer hides a finish"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2894,26 +2914,6 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Solo street projects near the start ask far less, and no skills"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "No Teleportation Point or script on a quest room, practice or colour puzzle street"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A reload on a colour puzzle street moves you to a safe place"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "/stuck on a colour puzzle street takes you back where you came in, never to its finish door"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The way out of a quest room or puzzle street always ends on a street with roads to Ur"
    }
   ]
  },
