@@ -75,6 +75,6 @@ describe('LedgerRefund (report #246)', { skip }, () => {
     const src = readFileSync(join(SITE_DIR, 'src/LedgerRefund.php'), 'utf8');
     const text = /public const TEXT = '([^']*)'/.exec(src)[1];
     assert.ok(text.length <= 300 && !text.includes(String.fromCharCode(0x2014)));
-    assert.match(readFileSync(join(SITE_DIR, 'src/LedgerMail.php'), 'utf8'), /LedgerRefund::TEXT => LedgerRefund::SUBJECT/);
+    assert.match(readFileSync(join(SITE_DIR, 'src/LedgerMail.php'), 'utf8'), /LedgerRefund::TEXT(, LedgerRefund::TEXT_G895)? => LedgerRefund::SUBJECT/);
   });
 });
