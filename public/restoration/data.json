@@ -2792,9 +2792,29 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2363,
+  "commits": 2369,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "No Teleportation Point or script on a quest room, practice or colour puzzle street"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A reload on a colour puzzle street moves you to a safe place"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "/stuck on a colour puzzle street takes you back where you came in, never to its finish door"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The way out of a quest room or puzzle street always ends on a street with roads to Ur"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2894,29 +2914,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "Sideways on a phone, the report window's picture buttons no longer cover its words"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Low energy no longer pushes the Menu off an upright phone's top bar"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The Map dims the names of streets you have not visited"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a phone, a pack stack dragged onto an open cabinet goes in"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Home machines stay in view when the home rebuilds in place"
    }
   ]
  },
- "tests": 1049,
+ "tests": 1050,
  "generatedAt": "2026-11-16"
 }
