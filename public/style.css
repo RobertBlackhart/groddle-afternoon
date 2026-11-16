@@ -11952,12 +11952,9 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 }
 /* —— end HUB top bar layer —— */
 
-/* Ticket 21 (2026-11-01): a quest card (#quest-dialogue, --z-modal + 30) covered the whole game, so
-   the bug report could not be opened while one was up, even one that kept coming back. While a card
-   is up the bar lifts over it, and only its bug report button takes clicks; the report sheet itself
-   sits over the card (bug-report-feature.js, classic.css). */
-#wrap:has(#quest-dialogue:not([hidden])) > header.top-bar { z-index: calc(var(--z-modal) + 31); pointer-events: none; }
-#wrap:has(#quest-dialogue:not([hidden])) > header.top-bar #bug-btn { pointer-events: auto; }
+/* Ticket 21 (2026-11-01) lifted the top bar over a quest card so its bug button could be clicked;
+   Austin 2026-11-15 dropped that: R opens Reports from anywhere, and the report sheet itself still
+   sits over the card (bug-report-feature.js, classic.css), so the card covers the bar like any window. */
 /* A prompt that asks for an answer in time (a summons, a party invite) sits over an open quest card,
    so its 30 s never runs out behind the card's layer (two-player summons QA, 2026-11-12). */
 body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-modal) + 32); }
