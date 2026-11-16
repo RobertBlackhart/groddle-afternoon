@@ -14192,6 +14192,10 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 /* #348: under 760 px the street's name drops under the pills (and the map under it): the card goes under both. */
 @media (max-width: 760px) {
   [data-ui="modern"] #game-root .route-gps { top: calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + var(--minimap-h, 0px)); }
+  /* G860 (#416): the pinned quests stand at that height too, top left, and the card (the width of a
+     phone) lay over them; it goes under them (--quest-pins-h, game.js renderPinnedQuests), unless a
+     sheet is open, where the pins step out of sight at this width. */
+  [data-ui="modern"] #game-root:not([data-sheet]):has(#quest-pins:not([hidden])) .route-gps { top: calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + var(--minimap-h, 0px) + var(--quest-pins-h, 0px) + var(--space-2)); }
 }
 /* PHONE MAP (Austin 2026-11-13, p13; js/features/street-minimap-feature.js): a phone has no corner card;
    a map button at the front of the street's name opens the same map full screen, the signposts'

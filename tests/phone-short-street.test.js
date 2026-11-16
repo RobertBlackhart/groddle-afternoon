@@ -55,3 +55,18 @@ describe('a short street on an upright phone', () => {
     assert.ok(px(card) >= px(plate) + hudH, `card ${px(card)} vs name ${px(plate)} + ${hudH}`);
   });
 });
+
+describe('G860 (#416): under 760 px the route card and the pinned quests', () => {
+  const css = readFileSync(join(root, 'public/style.css'), 'utf8');
+  const narrow = css.slice(css.indexOf('#348: under 760 px'), css.indexOf('/* PHONE MAP (Austin 2026-11-13'));
+  it('the card goes under the pins while they show, by their height', () => {
+    const m = narrow.match(/#game-root:not\(\[data-sheet\]\):has\(#quest-pins:not\(\[hidden\]\)\) \.route-gps \{ top: ([^;]+);/);
+    assert.ok(m, 'the rule is in the narrow block');
+    const base = narrow.match(/\[data-ui="modern"\] #game-root \.route-gps \{ top: calc\(([^;]+)\);/)[1];
+    assert.equal(m[1], `calc(${base} + var(--quest-pins-h, 0px) + var(--space-2))`);
+  });
+  it('the pins stand at the card\'s height, and game.js keeps --quest-pins-h', () => {
+    assert.match(css, /@media \(max-width: 760px\) \{\n\s+\[data-ui="modern"\] #game-root #quest-pins:not\(\[hidden\]\) \{ top: calc\(2 \* var\(--hud-h\) \+ var\(--space-4\)\); \}/);
+    assert.match(readFileSync(join(root, 'public/game.js'), 'utf8'), /root\.style\.setProperty\('--quest-pins-h', `\$\{h\}px`\)/);
+  });
+});
