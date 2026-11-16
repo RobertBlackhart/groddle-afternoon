@@ -477,9 +477,14 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     else if (tray.opening && focusOnOpen) (tray.row.querySelector('.pack-slot[data-tsid]') || tray.row.querySelector('.pack-bag-close'))?.focus();
   }
 
-  /** "Nothing called ..." in the row when a search finds nothing. */
+  /**
+   * "Nothing called ..." in the row when a search finds nothing, unless the results list is showing:
+   * its own "No results for:" line says it there (G881 follow-up: one line, not two).
+   */
   function markNoMatches(box, q) {
     if (!box || box.querySelector('.pack-search-empty')) return;
+    const list = resultsBox();
+    if (list && !list.hidden) return;
     const none = doc.createElement('span');
     none.className = 'pack-search-empty';
     none.setAttribute('role', 'listitem');
@@ -611,6 +616,8 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
       return;
     }
     if (!box) return;
+    // G881 follow-up: while the list shows, its line is the only "nothing found" (the row's goes).
+    items()?.querySelector?.('.pack-search-empty')?.remove?.();
     const sig = JSON.stringify([words, list.map((r) => [r.key, r.classTsid, r.label, r.count, r.icon, r.sub])]);
     if (sig === resultsSig && !box.hidden) {
       lightSlot();

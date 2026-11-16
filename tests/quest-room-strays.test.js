@@ -23,7 +23,7 @@ import {
 import { BUILT_ROOMS, ROOM_STREETS, roomForStreet, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
 import { slashPlan } from '../public/js/slash-commands.js?v=7c4d5a44';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=223498b6';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=2a4f2911';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

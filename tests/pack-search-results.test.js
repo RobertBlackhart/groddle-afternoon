@@ -19,7 +19,7 @@ import {
   createPackRow,
   packSearchMarks,
   packSearchResults,
-} from '../public/js/ui/pack-row.js?v=16657c7d';
+} from '../public/js/ui/pack-row.js?v=78787920';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -214,6 +214,29 @@ describe('G881: the results list in the pack bar', () => {
     assert.equal(box.querySelector('.is-none').textContent, 'No results for: “zz”');
     key(input, 'Enter');
     assert.deepEqual(picked, [], 'nothing to pick');
+  });
+
+  it('nothing found says it once: the list\'s line while the list shows, the row\'s "Nothing called" only under two letters', () => {
+    const { input, packRow, doc, items } = mountBar();
+    const rowNone = () => items.querySelectorAll('.pack-search-empty');
+    packRow.openSearch();
+    // As game.js renderPackBar draws a search: the row's mark first, then the list.
+    input.value = 'z';
+    packRow.markNoMatches(items, 'z');
+    packRow.drawResults(packSearchResults(ENTRIES, 'z'), 'z');
+    assert.equal(rowNone().length, 1, 'one letter: no list, so the row says it');
+    assert.equal(rowNone()[0].textContent, 'Nothing called "z"');
+    input.value = 'zz';
+    packRow.markNoMatches(items, 'zz');
+    packRow.drawResults(packSearchResults(ENTRIES, 'zz'), 'zz');
+    const box = doc.getElementById('pack-search-results');
+    assert.equal(box.hidden, false);
+    assert.equal(box.querySelector('.is-none').textContent, 'No results for: “zz”');
+    assert.equal(rowNone().length, 0, 'the row\'s line goes while the list says it');
+    // The next redraw (updateHud, about once a second) draws the row again: it stays at one line.
+    packRow.markNoMatches(items, 'zz');
+    packRow.drawResults(packSearchResults(ENTRIES, 'zz'), 'zz');
+    assert.equal(rowNone().length, 0);
   });
 
   it('a redraw with the same results keeps the list as it is; a pack change keeps the lit stack', () => {

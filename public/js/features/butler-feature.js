@@ -141,7 +141,7 @@ import {
 } from '../butler.js?v=57456a7f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs } from '../read-time.js?v=be140198';
-import { createItemPicker } from '../ui/item-picker.js?v=da935048';
+import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
 
 export const BUTLER_FEATURE_ID = 'butler';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
