@@ -384,13 +384,13 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=b41e12a0';
-import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=b466613b';
+} from './js/paradise-flight.js?v=f2df3e99';
+import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
 import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=2c1ce72c';
+} from './js/paradise-course-runtime.js?v=a6d547c8';
 import {
   createAchievementState,
   applyAchievementProgress as applyAchievementProgressRaw,
@@ -517,7 +517,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=fa6f7859';
+} from './js/player-save.js?v=c55fce1d';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,

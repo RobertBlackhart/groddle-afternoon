@@ -178,6 +178,41 @@ const ARBOR_PLATFORMS = freezeList([
   ...ARBOR_BRANCHES,
   platform(ARBOR_NEST.x1, ARBOR_NEST.x2, ARBOR_NEST.y, { kind: 'nest', id: 'nest' }),
 ]);
+/**
+ * #391: the fir branch pictures Arbor Hollow draws, in the order its platforms take them, with the
+ * end each one's woody stub is on as the PNG stands (-1 left, 1 right) and the stub's share of the
+ * width (measured from the alpha and the brown against green; race-render.js BOUGH_ART agrees).
+ * a01 alone has its stub on the left, so mirroring every right branch pointed 7 of 13 outward.
+ */
+export const ARBOR_BRANCH_ART = Object.freeze({
+  platform_branch_a01: Object.freeze({ stub: -1, stubShare: 0.19 }),
+  platform_branch_a04: Object.freeze({ stub: 1, stubShare: 0.2 }),
+  platform_branch_a02: Object.freeze({ stub: 1, stubShare: 0.25 }),
+  platform_branch_4: Object.freeze({ stub: 1, stubShare: 0.12 }),
+});
+const ARBOR_BRANCH_NAMES = Object.keys(ARBOR_BRANCH_ART);
+/** The great trunk (tree_stack_trunk) drawn 190 wide: its bark fills 1 to 174 of the 176 px PNG, an edge 93 px out. */
+export const ARBOR_TRUNK_WIDTH = 190;
+export const ARBOR_TRUNK_HALF = 93;
+/** How far a stub's cut end sits inside that edge; the branches draw behind the trunk, so it tucks into the bark. */
+export const ARBOR_STUB_TUCK = 12;
+
+/**
+ * PURE (#391): where Arbor Hollow draws a branch picture for `plat` (platform list `index`): the
+ * stub's cut end just inside the trunk's edge on the branch's side, mirrored when the picture's stub
+ * is on the far end, and the needle tip a little past the platform's outer end (12% of its length,
+ * as before). `x` is the picture's middle. The platform itself does not move.
+ * @returns {{ name: string, width: number, x: number, stubX: number, tipX: number, flipX: boolean }}
+ */
+export function arborBranchArt(plat, index, trunkX = ARBOR_TRUNK_X) {
+  const name = ARBOR_BRANCH_NAMES[index % ARBOR_BRANCH_NAMES.length];
+  const towards = plat.side === 'left' ? 1 : -1;
+  const stubX = trunkX - towards * (ARBOR_TRUNK_HALF - ARBOR_STUB_TUCK);
+  const len = plat.x2 - plat.x1;
+  const tipX = towards === 1 ? plat.x1 - len * 0.12 : plat.x2 + len * 0.12;
+  return { name, width: Math.abs(stubX - tipX), x: (stubX + tipX) / 2, stubX, tipX, flipX: towards !== ARBOR_BRANCH_ART[name].stub };
+}
+
 const ARBOR_DROP_X = 1150;
 const ARBOR_PICKUPS = Object.freeze([
   pt(370, 3030),

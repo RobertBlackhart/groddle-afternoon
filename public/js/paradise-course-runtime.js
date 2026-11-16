@@ -17,7 +17,7 @@
  */
 
 import { heldDirection } from './held-keys.js?v=a28eb293';
-import { stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=b466613b';
+import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=622dcd46';
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=8e0a8c38';
 
@@ -400,7 +400,7 @@ function paintArborHollow(root, course, fg, art) {
     });
   }
   // The great trunk, stacked from the forest floor to the nest.
-  const trunkWidth = 190;
+  const trunkWidth = ARBOR_TRUNK_WIDTH;
   const trunkSegment = decoHeightAt('tree_stack_trunk', trunkWidth);
   for (let y = floor + 40; y > course.platforms.find((plat) => plat.id === 'nest').y + 20; y -= trunkSegment * 0.98) {
     deco(art, root, 'tree_stack_trunk', course.trunkX, y, { width: trunkWidth, z: -30, tint: 0x9b7a5c });
@@ -409,15 +409,14 @@ function paintArborHollow(root, course, fg, art) {
   for (let y = floor + 40; y > 700; y -= trunkSegment * 0.98) {
     deco(art, root, 'tree_stack_trunk', course.dropX + 180, y, { width: 150, z: -40, tint: 0x5d4a3a });
   }
-  // Fir branches: the stub meets the trunk, the foliage top is the walking line.
-  const branchNames = ['platform_branch_a01', 'platform_branch_a04', 'platform_branch_a02', 'platform_branch_4'];
+  // Fir branches: the foliage top is the walking line. #391: each stub faces the trunk whichever end
+  // its picture has it on, and tucks into the bark at the trunk's edge, drawn behind the trunk (z -35
+  // under its -30) as Glitch's Arbor Hollow had them.
   course.platforms.forEach((plat, index) => {
     if (plat.kind === 'branch') {
-      const name = branchNames[index % branchNames.length];
-      const width = (plat.x2 - plat.x1) * 1.2;
+      const { name, width, x, flipX } = arborBranchArt(plat, index, course.trunkX);
       const height = decoHeightAt(name, width);
-      const cx = plat.side === 'left' ? plat.x1 + width / 2 - (plat.x2 - plat.x1) * 0.12 : plat.x2 - width / 2 + (plat.x2 - plat.x1) * 0.12;
-      deco(art, root, name, cx, plat.y - height * 0.22, { width, ay: 0, z: -20, flipX: plat.side === 'right' });
+      deco(art, root, name, x, plat.y - height * 0.22, { width, ay: 0, z: -35, flipX });
     } else if (plat.kind === 'fungus') {
       const name = index % 2 ? 'fungus_oyster_01a_et1' : 'fungus_oyster_01b_et1';
       const width = (plat.x2 - plat.x1) * 1.18;

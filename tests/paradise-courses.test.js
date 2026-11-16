@@ -9,7 +9,12 @@ import {
   EXTRA_PARADISE_COURSES,
   EXTRA_PARADISE_COURSE_IDS,
   PARADISE_BODY,
+  ARBOR_BRANCH_ART,
   ARBOR_NEST,
+  ARBOR_STUB_TUCK,
+  ARBOR_TRUNK_HALF,
+  ARBOR_TRUNK_WIDTH,
+  arborBranchArt,
   DRAFTY_UPLIFT_JOKES,
   PARADISE_UNCONFIRMED_RELEASE_LINE,
   SKY_PLUNGE_BACK_TO_TOP,
@@ -19,7 +24,7 @@ import {
   resolveParadiseCourseAlias,
   stepParadiseBody,
   usesParadiseBody,
-} from '../public/js/paradise-courses.js?v=b466613b';
+} from '../public/js/paradise-courses.js?v=622dcd46';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -32,7 +37,7 @@ import {
   paradisePickupTouches,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=b41e12a0';
+} from '../public/js/paradise-flight.js?v=f2df3e99';
 import { QURAZY_REWARDS } from '../public/js/quoins.js?v=61be601c';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 
@@ -575,4 +580,47 @@ test('Abysmal Thrill water is the clearer teal-blue of its Snap, never near-blac
     assert.ok(lum(c) >= 25, `0x${c.toString(16)} too dark`);
     assert.ok((c & 0xff) > ((c >> 16) & 0xff), `0x${c.toString(16)} is blue over red`);
   }
+});
+
+test('#391 Arbor Hollow: every branch stub faces the trunk and tucks into the bark at its edge', () => {
+  const course = EXTRA_PARADISE_COURSES.arbor_hollow;
+  // The trunk deco is 176 px wide with bark from 1 to 174; drawn ARBOR_TRUNK_WIDTH wide, its edge is about 93 out.
+  assert.ok(Math.abs(ARBOR_TRUNK_HALF - (173 / 2) * (ARBOR_TRUNK_WIDTH / 176)) < 2);
+  let right = 0;
+  let a01Right = 0;
+  course.platforms.forEach((plat, index) => {
+    if (plat.kind !== 'branch') return;
+    const art = arborBranchArt(plat, index, course.trunkX);
+    const towards = plat.side === 'left' ? 1 : -1;
+    const label = `${plat.side} branch at y ${plat.y} (${art.name})`;
+    // The stub as drawn: the picture's own stub end, mirrored when flipX.
+    const stubSide = ARBOR_BRANCH_ART[art.name].stub * (art.flipX ? -1 : 1);
+    assert.equal(stubSide, towards, `${label}: stub points at the trunk`);
+    // Its cut end sits just inside the trunk's edge on the branch's side, behind the bark.
+    const inside = (course.trunkX - art.stubX) * towards;
+    assert.ok(inside >= ARBOR_TRUNK_HALF - ARBOR_STUB_TUCK - 0.5 && inside <= ARBOR_TRUNK_HALF - 0.5, `${label}: stub end ${art.stubX}`);
+    assert.ok(Math.abs(art.stubX - (art.x + (towards * art.width) / 2)) < 1e-6, `${label}: stub end is the picture's trunk-side edge`);
+    // The needles reach a little past the platform's outer end; the platform does not move.
+    const outer = towards === 1 ? plat.x1 : plat.x2;
+    const over = (outer - art.tipX) * towards;
+    assert.ok(over > 0 && over < 40, `${label}: tip ${art.tipX} vs end ${outer}`);
+    if (plat.side === 'right') {
+      right += 1;
+      if (art.name === 'platform_branch_a01') a01Right += 1;
+    }
+  });
+  // The report's case: 7 of the 13 right branches draw a01, whose stub is on its left as drawn.
+  assert.equal(right, 13);
+  assert.equal(a01Right, 7);
+  // race-render.js measured the same pictures the same way (BOUGH_ART stub -1 left, 1 right).
+  const race = fs.readFileSync(path.join(publicDir, 'js', 'race-render.js'), 'utf8');
+  for (const name of ['platform_branch_a01', 'platform_branch_a02', 'platform_branch_a04']) {
+    const m = new RegExp(`${name}: \\{[^}]*stub: (-?1)`).exec(race);
+    assert.equal(Number(m?.[1]), ARBOR_BRANCH_ART[name].stub, name);
+  }
+  // Drawn behind the trunk (Glitch's stubs go into the bark): branch z under the trunk's.
+  const runtime = fs.readFileSync(path.join(publicDir, 'js', 'paradise-course-runtime.js'), 'utf8');
+  const trunkZ = Number(/'tree_stack_trunk', course\.trunkX, y, \{[^}]*z: (-\d+)/.exec(runtime)?.[1]);
+  const branchZ = Number(/arborBranchArt\(plat, index, course\.trunkX\);[\s\S]{0,200}?z: (-\d+), flipX \}/.exec(runtime)?.[1]);
+  assert.ok(branchZ < trunkZ, `branch z ${branchZ} under trunk z ${trunkZ}`);
 });

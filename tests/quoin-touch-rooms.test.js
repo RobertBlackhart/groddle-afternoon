@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { quoinTouches } from '../public/js/quoins.js?v=61be601c';
-import { PARADISE_COURSES, PARADISE_STAR_COURSES, paradisePickupTouches, paradiseQuoinScale } from '../public/js/paradise-flight.js?v=b41e12a0';
+import { PARADISE_COURSES, PARADISE_STAR_COURSES, paradisePickupTouches, paradiseQuoinScale } from '../public/js/paradise-flight.js?v=f2df3e99';
 import { touchesQuoin } from '../public/js/quest-rooms/kit.js?v=b3e5e68d';
 
 const root = join(import.meta.dirname, '..');
