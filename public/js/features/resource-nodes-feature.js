@@ -74,6 +74,7 @@ import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
 import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
 import { slothTrees } from '../sloth-trees.js?v=a3299191';
+import { avatarHitBox, boxesTouch } from '../reach.js?v=8e52df56';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -1818,17 +1819,35 @@ function organelleOverlay(engine, entity, organelle, seconds) {
  * npc_sloth.js onPlayerCollision (590-601) and the peekSpit state (825-834):
  * walking under a hiding Sloth with Friend of Metal, 7% of the time (at most
  * once every 5 minutes, always with Max Luck) it peeks down and spits 1-3
- * Snails at you. The collision fires on entering its 200 px bottom_extender.
+ * Snails at you. The collision is the item's box (instance props width 300,
+ * height 200 over its point: apiSetHitBox, onPropsChanged 616) and its
+ * bottom_extender, as wide, reaching hitbox_extension down ("the amount to
+ * extend the hitbox on the bottom (for high trees)", 41; onCreate 572, 614-615):
+ * G891 takes the extension to the floor under it, so walking the path below a
+ * Sloth in its tree makes it peek, and a floor far under it does not.
  */
-const SLOTH_HITBOX_HALF = 100;
+export const SLOTH_COLLISION = Object.freeze({ w: 300, h: 200 });
+
+/** PURE: a Sloth's collision box (its box and bottom_extender), screen px, from slothGeometry. */
+export function slothPeekBox(geo) {
+  const half = SLOTH_COLLISION.w / 2;
+  return { left: geo.origin.x - half, right: geo.origin.x + half, top: geo.origin.y - SLOTH_COLLISION.h, bottom: Math.max(geo.origin.y, geo.floor) };
+}
+
+/** PURE: the avatar (feet x, y) touches the Sloth's collision box (the client's avatar hit box, js/reach.js). */
+export function touchesSloth(x, y, geo, scale = 1) {
+  return boxesTouch(avatarHitBox(x, y, scale), slothPeekBox(geo));
+}
 
 function checkSloths(engine) {
   const player = engine.player;
   if (!player) return;
-  const under = entities.find((entity) => entity.classTsid === 'npc_sloth' && entity.view
-    && Math.abs(player.x - entity.x) <= SLOTH_HITBOX_HALF && player.y <= entity.y + 10) || null;
+  const under = entities.find((entity) => entity.classTsid === 'npc_sloth' && entity.view?.geo
+    && touchesSloth(player.x, player.y, entity.view.geo)) || null;
   if (under === underSloth) return;
   underSloth = under;
+  // QA (G891): the Sloth whose collision box the avatar is in.
+  engine.setData?.('slothUnder', under?.key || '');
   if (!under || under.node.out || under.view.state !== 'hidden') return;
   const buffs = engine.activeBuffIds?.() || [];
   const now = Date.now();
