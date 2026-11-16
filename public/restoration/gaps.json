@@ -810,7 +810,8 @@
           "id": "G755",
           "text": "Butterflies on tall streets said you needed to be closer and then jumped away.",
           "report": 331,
-          "state": "fixed"
+          "state": "fixed",
+          "version": "v0.40.0"
         },
         {
           "id": "G781",
