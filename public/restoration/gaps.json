@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.43.1",
+  "release": "v0.44.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 226,
+    "fixed": 230,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -337,6 +337,12 @@
           "text": "Visiting Stones stood anywhere along a street instead of at its dead end, as in Glitch.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G903",
+          "text": "The signpost hint, the Butler's bubble and the construction tag could sit over other things.",
+          "state": "fixed",
+          "version": "v0.44.0"
         }
       ]
     },
@@ -1028,6 +1034,12 @@
           "text": "A party time extension did not reach everyone's Activity.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G901",
+          "text": "A party invite accepted at home refused to open the teleporter there.",
+          "state": "fixed",
+          "version": "v0.44.0"
         }
       ]
     },
@@ -1337,6 +1349,18 @@
           "text": "Signpost words were hard to read on phones, in a fallback serif font.",
           "state": "fixed",
           "version": "v0.43.1"
+        },
+        {
+          "id": "G897",
+          "text": "On some phones, speech bubbles drew thin lines out to the middle of the screen.",
+          "state": "fixed",
+          "version": "v0.44.0"
+        },
+        {
+          "id": "G902",
+          "text": "On an upright phone, arrival notices were drawn on top of the route card.",
+          "state": "fixed",
+          "version": "v0.44.0"
         }
       ]
     },

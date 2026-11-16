@@ -2367,6 +2367,42 @@
       "commits": [
         "game:b395ce8ff92"
       ]
+    },
+    {
+      "id": "G897",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On some phones, speech bubbles drew thin lines out to the middle of the screen.",
+      "commits": [
+        "game:810865b7b45"
+      ]
+    },
+    {
+      "id": "G902",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an upright phone, arrival notices were drawn on top of the route card.",
+      "commits": [
+        "game:9efae7bff6a"
+      ]
+    },
+    {
+      "id": "G901",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "A party invite accepted at home refused to open the teleporter there.",
+      "commits": [
+        "game:0dcd1223cd0"
+      ]
+    },
+    {
+      "id": "G903",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "The signpost hint, the Butler's bubble and the construction tag could sit over other things.",
+      "commits": [
+        "game:ddd71a79db5"
+      ]
     }
   ]
 }
