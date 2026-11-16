@@ -8,7 +8,7 @@ import {
   RESOURCE_GROUP_PREFIX,
   RESOURCE_MAIN_VERB,
   RESOURCE_PLACEMENT_CLEARANCE,
-  SLOTH_ART,
+  SLOTH_TREE,
   menuVerbId,
   migrateResourceStarterKit,
   normalizeResourceFeatureSlice,
@@ -20,15 +20,21 @@ import {
   rulesVerbId,
   surfaceNear,
   verbTooltip,
-} from '../public/js/features/resource-nodes-feature.js?v=e427bfaa';
+} from '../public/js/features/resource-nodes-feature.js?v=d86b3df8';
 import {
   RESOURCE_NODE_CATALOG,
   RESOURCE_NODE_CLASS_IDS,
   createResourceNode,
-} from '../public/js/resource-nodes.js?v=6ef2797a';
+} from '../public/js/resource-nodes.js?v=739a3eba';
 import { createFeatureHost, normalizeFeatureSlices } from '../public/js/feature-host.js?v=a0bd032a';
 import { populationForStreet, planStreetPlacements } from '../public/js/street-ecology.js?v=d34b6f73';
 import { STORE_CATALOG } from '../public/js/store-catalog.js?v=74b56af3';
+import { SLOTH_CANOPY, SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const publicRoot = join(dirname(fileURLToPath(import.meta.url)), '../public');
 
 const population = (classes) => ({ resourceNodeClasses: classes });
 
@@ -264,12 +270,26 @@ describe('resource QA and menu helpers', () => {
     assert.equal(verbTooltip({ tooltip: 'Give love', durationMs: 2000 }), 'Give love');
   });
 
-  it('draws the Sloth as self-contained SVG', () => {
-    for (const svg of [SLOTH_ART.tree(), SLOTH_ART.hidden(), SLOTH_ART.body('idle'), SLOTH_ART.body('eating', 'chew')]) {
-      assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
-      assert.doesNotMatch(svg, /undefined|NaN|<image|href=/);
+  it('hangs the SWF Sloth under a canopy that covers its HIDE ME box (G889)', () => {
+    // The canopy deco (tree_plane_foliage_01d, 482 x 320, anchored at its foot) at its scale.
+    const c = SLOTH_TREE.canopy;
+    const canopy = { left: c.x - (482 * c.scale) / 2, right: c.x + (482 * c.scale) / 2, top: c.y - 320 * c.scale, bottom: c.y };
+    const box = {
+      left: SLOTH_TREE.sloth.x + SLOTH_CANOPY.x,
+      right: SLOTH_TREE.sloth.x + SLOTH_CANOPY.x + SLOTH_CANOPY.w,
+      top: SLOTH_TREE.sloth.y + SLOTH_CANOPY.y,
+      bottom: SLOTH_TREE.sloth.y + SLOTH_CANOPY.y + SLOTH_CANOPY.h,
+    };
+    assert.ok(canopy.left <= box.left && canopy.right >= box.right && canopy.top <= box.top && canopy.bottom >= box.bottom,
+      `canopy ${JSON.stringify(canopy)} covers ${JSON.stringify(box)}`);
+    // The hanging sloth stays inside the hit box and clear of the ground (the avatar stands under it).
+    const hang = SLOTH_SHEETS.hangIdle1;
+    const bottom = SLOTH_TREE.sloth.y - hang.origin.y + hang.cell.h;
+    assert.ok(bottom < -60, `hangs ${-bottom} px up`);
+    assert.ok(-(SLOTH_TREE.sloth.y - hang.origin.y) <= SLOTH_TREE.hitH);
+    for (const part of [SLOTH_TREE.trunk, SLOTH_TREE.canopy]) {
+      assert.ok(existsSync(join(publicRoot, 'assets/decos/groddle', part.file)), part.file);
     }
-    assert.match(SLOTH_ART.body('eating', 'open'), /url\(#rod\)/);
   });
 
   it('owns only its own targets in the feature host', () => {

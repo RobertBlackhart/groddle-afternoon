@@ -16,8 +16,10 @@
  * Art: recovered CC0 OGA sheets under assets/sprites/resources/, loaded with
  * PIXI.Assets before any frame is sliced. Each sheet is scanned once for its
  * per-frame alpha bounds so growth states sit on the ground and the Firefly
- * glow follows the dot along its authored path. The Sloth has no public
- * raster, so it is drawn as SVG (rasterized at 2x) hanging from a branch.
+ * glow follows the dot along its authored path. The Sloth is Tiny Speck's
+ * npc_sloth.swf (js/sloth-art.js) hanging from its own striped branch under a
+ * canopy of Groddle tree decos, its animations played at the GSJS moments
+ * (js/sloth-encounter.js; G889, #245).
  *
  * Firefly Whistling: GSJS grants `firefly_whistling` at the end of the
  * instanced lab quest `firefly_whistle` (players/player.js
@@ -33,7 +35,7 @@
  * player on the first street entered (and grants any tool, rods, or skill it
  * needs); &resautoplay=1 performs its main verb once. Canvas data attributes:
  * resourceNodeCount, resourceNodeClasses, resourceLastHarvest, fireflyJar,
- * resourceDemo.
+ * resourceDemo, slothAnim (the QA Sloth's animation, `eat:rod3` with a rod).
  *
  * Pocket Salmon online (slice 3 of research/plans/street-animals-shared.md):
  * a street's Salmon are shared nodes (street-objects-feature): one pocketed is
@@ -66,6 +68,8 @@ import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
+import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
+import { SLOTH_PEEK_GAP_MS, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=4e56e4cf';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -92,8 +96,8 @@ import {
   starterResourceTools,
   swimmingSalmonCount,
   tickResourceNode,
-} from '../resource-nodes.js?v=6ef2797a';
-import { frameTexture as sheetFrameTexture, loadTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
+} from '../resource-nodes.js?v=739a3eba';
+import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=98606052';
@@ -136,7 +140,6 @@ export const RESOURCE_MAIN_VERB = Object.freeze({
 });
 
 const TICK_MS = 500;
-const SLOTH_SCALE = 0.8;
 const SVG_SCALE = 2;
 const WHISTLE_RADIUS = 500;
 /** quests/firefly_whistle.js: the lab quest a Firefly offers (npc_firefly.js). */
@@ -334,181 +337,52 @@ export function rulesVerbId(menuId) {
 }
 
 // ---------------------------------------------------------------------------
-// Sloth art (no npc_sloth raster survives in the public OGA archives)
+// Sloth art: Tiny Speck's npc_sloth.swf (js/sloth-art.js) under Groddle tree decos
 // ---------------------------------------------------------------------------
 
-const SLOTH = Object.freeze({
-  fur: '#8d6a47',
-  furDark: '#5f4430',
-  furLight: '#b38d63',
-  mask: '#f2e6cc',
-  stripe: '#4a3324',
-  claw: '#e8dcc2',
-  clawEdge: '#8a7a62',
-  bandana: '#d8372f',
-  bandanaDark: '#9e2621',
-  jacket: '#2d3342',
-  jacketLight: '#454e63',
-  stud: '#dfe4ea',
+const DECO_DIR = 'assets/decos/groddle/';
+
+/**
+ * A Sloth's tree, from its spot on the ground. The trunk and the canopy are Tiny Speck's Groddle
+ * tree decos (tree_branch_foliage_02d, tree_plane_foliage_01d: the same CC0 art as the canopies
+ * on the sloth streets). The sloth hangs from its own striped branch with its origin at `sloth`;
+ * the canopy covers the box npc_sloth.swf marks HIDE ME (SLOTH_CANOPY in js/sloth-art.js), so the
+ * hidden sloth sits in the leaves and peeks out under them, as under a street's canopy. The
+ * Knocker (sloth_knocker) hangs on the trunk. Where each street's own canopy is: the next lane
+ * (G889 placement).
+ */
+export const SLOTH_TREE = Object.freeze({
+  sloth: Object.freeze({ x: -58, y: -200 }),
+  trunk: Object.freeze({ file: 'tree_branch_foliage_02d_g1.webp', x: -104, y: 4, scale: 1.15 }),
+  canopy: Object.freeze({ file: 'tree_plane_foliage_01d_g1.webp', x: -28, y: -194, scale: 0.5 }),
+  knocker: Object.freeze({ x: -98, y: -62 }),
+  /** Where it spits from in the hanging pose (sloth origin + the mouth in hangIdle1). */
+  mouth: Object.freeze({ x: 80, y: 62 }),
+  hitW: 130,
+  hitH: 300,
 });
 
-/** Tree + branch + brass knocker. viewBox 300x300; trunk base (64, 296); grip (200, 74). */
-const SLOTH_TREE = Object.freeze({ width: 300, height: 300, gripX: 200, gripY: 74, baseY: 296, branchTop: 68 });
-
-function slothTreeSvg() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
-  <defs>
-    <linearGradient id="bark" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#5a3a22"/><stop offset="0.45" stop-color="#8a5e3a"/><stop offset="1" stop-color="#5b3b24"/></linearGradient>
-    <linearGradient id="limb" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#94673f"/><stop offset="1" stop-color="#5d3d25"/></linearGradient>
-    <radialGradient id="shade" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#2b2116" stop-opacity="0.35"/><stop offset="1" stop-color="#2b2116" stop-opacity="0"/></radialGradient>
-  </defs>
-  <ellipse cx="66" cy="294" rx="58" ry="7" fill="url(#shade)"/>
-  <path d="M38 296 C48 276 50 244 50 206 C50 160 45 118 51 70 L81 66 C78 116 80 164 82 208 C84 248 88 278 100 296 Z" fill="url(#bark)" stroke="#4a2f1b" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M20 297 C32 292 42 286 48 274 L56 292 C46 296 34 298 20 297 Z" fill="#6a4529" stroke="#4a2f1b" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M116 297 C104 293 94 287 88 276 L84 292 C92 296 104 298 116 297 Z" fill="#6a4529" stroke="#4a2f1b" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M60 250 C62 230 61 205 63 180" stroke="#4a2f1b" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.55"/>
-  <path d="M70 140 C71 120 69 104 70 86" stroke="#4a2f1b" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
-  <path d="M58 120 q4 -10 0 -18" stroke="#4a2f1b" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.45"/>
-  <path d="M74 78 C120 64 170 66 230 70 C252 71 270 68 290 60 L292 66 C272 76 252 80 230 81 C170 82 120 82 78 96 Z" fill="url(#limb)" stroke="#4a2f1b" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M250 74 C262 64 270 50 276 40" stroke="#5d3d25" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M150 72 C156 60 158 50 158 40" stroke="#5d3d25" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  ${slothLeaves()}
-  <rect x="58" y="166" width="16" height="20" rx="4" fill="#b88a34" stroke="#6e4f17" stroke-width="1.5"/>
-  <circle cx="66" cy="190" r="9" fill="none" stroke="#d9ad4c" stroke-width="4"/>
-  <circle cx="66" cy="190" r="9" fill="none" stroke="#6e4f17" stroke-width="1" opacity="0.6"/>
-  <circle cx="66" cy="174" r="2.4" fill="#f3d58a"/>
-</svg>`;
+/** The cells of one sheet (js/sloth-art.js), sliced once. */
+const slothFrameCache = new Map();
+function slothFrames(engine, sheet) {
+  if (!sheet) return [];
+  if (slothFrameCache.has(sheet.file)) return slothFrameCache.get(sheet.file);
+  const source = sourceFromUrl(`${SLOTH_ART_DIR}${sheet.file}`);
+  const { w, h } = sheet.cell;
+  const list = Array.from({ length: sheet.count }, (_, i) => sheetFrameTexture(source,
+    new engine.PIXI.Rectangle((i % sheet.cols) * w, Math.floor(i / sheet.cols) * h, w, h)));
+  slothFrameCache.set(sheet.file, list);
+  return list;
 }
 
-/** Clumps of small pointed leaves, in the paper tree's palette, around the crown and twigs. */
-function slothLeaves() {
-  const clumps = [
-    [44, 52, 30, 18], [92, 46, 30, 20], [64, 26, 34, 18], [20, 38, 18, 14],
-    [158, 38, 16, 12], [274, 34, 18, 14], [258, 24, 12, 9], [118, 66, 14, 8],
-  ];
-  const fills = ['#2f5524', '#3f6b2e', '#4f7f36', '#365f28'];
-  const out = [];
-  let seed = 7;
-  const rand = () => {
-    seed = (seed * 16807) % 2147483647;
-    return seed / 2147483647;
-  };
-  for (const [cx, cy, rx, ry] of clumps) {
-    const count = Math.round((rx * ry) / 22);
-    for (let i = 0; i < count; i += 1) {
-      const a = rand() * Math.PI * 2;
-      const r = Math.sqrt(rand());
-      const x = (cx + Math.cos(a) * rx * r).toFixed(1);
-      const y = (cy + Math.sin(a) * ry * r).toFixed(1);
-      const rot = Math.round(rand() * 360);
-      const size = (0.8 + rand() * 0.5).toFixed(2);
-      const fill = fills[Math.floor(rand() * fills.length)];
-      out.push(`<g transform="translate(${x} ${y}) rotate(${rot}) scale(${size})"><path d="M-9 0 C-5 -6 5 -6 9 0 C5 6 -5 6 -9 0 Z" fill="${fill}" stroke="#203a17" stroke-width="0.8"/><path d="M-8 0 L7 0" stroke="#7ea65a" stroke-width="0.7" opacity="0.7"/></g>`);
-    }
+/** The sheets a moment needs, sliced (and so loading) before it plays. */
+function warmSloth(engine, labels) {
+  for (const label of labels) {
+    const sheet = SLOTH_SHEETS[label];
+    slothFrames(engine, sheet);
+    if (sheet?.paw) slothFrames(engine, sheet.paw);
+    for (const rod of sheet?.rods || []) slothFrames(engine, rod);
   }
-  return out.join('');
-}
-
-function slothClaws(x, y, flip = 1) {
-  const out = [];
-  for (let i = 0; i < 3; i += 1) {
-    const dx = (i - 1) * 5 * flip;
-    const d = `M${x + dx - 2} ${y + 2} C${x + dx - 3} ${y - 8} ${x + dx + 4 * flip} ${y - 12} ${x + dx + 7 * flip} ${y - 4}`;
-    out.push(`<path d="${d}" fill="none" stroke="${SLOTH.clawEdge}" stroke-width="4.4" stroke-linecap="round"/>`);
-    out.push(`<path d="${d}" fill="none" stroke="${SLOTH.claw}" stroke-width="2.6" stroke-linecap="round"/>`);
-  }
-  return out.join('');
-}
-
-const SLOTH_DEFS = `<defs>
-  <radialGradient id="furBody" cx="0.45" cy="0.4" r="0.7"><stop offset="0" stop-color="${SLOTH.furLight}"/><stop offset="1" stop-color="${SLOTH.fur}"/></radialGradient>
-  <radialGradient id="furHead" cx="0.45" cy="0.35" r="0.7"><stop offset="0" stop-color="#a98157"/><stop offset="1" stop-color="${SLOTH.fur}"/></radialGradient>
-  <linearGradient id="jacket" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="${SLOTH.jacket}"/><stop offset="0.5" stop-color="${SLOTH.jacketLight}"/><stop offset="1" stop-color="${SLOTH.jacket}"/></linearGradient>
-  <linearGradient id="rod" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d7dde4"/><stop offset="0.5" stop-color="#8f99a5"/><stop offset="1" stop-color="#5d6672"/></linearGradient>
-</defs>`;
-
-function slothArm(x1, y1, x2, y2) {
-  const mx = (x1 + x2) / 2 + (x1 < 65 ? -6 : 6);
-  const my = (y1 + y2) / 2;
-  const d = `M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`;
-  return `<path d="${d}" stroke="${SLOTH.furDark}" stroke-width="15" fill="none" stroke-linecap="round"/>
-  <path d="${d}" stroke="${SLOTH.fur}" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <path d="M${x1 + (x1 < 65 ? 2 : -2)} ${y1 - 6} Q${mx} ${my} ${x2} ${y2 + 8}" stroke="${SLOTH.furLight}" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>`;
-}
-
-function slothHead(mouth) {
-  const mouthSvg = mouth === 'open'
-    ? `<ellipse cx="65" cy="73" rx="5" ry="4" fill="#5a2a22"/><ellipse cx="65" cy="75" rx="3" ry="1.6" fill="#d86a62"/>`
-    : mouth === 'chew'
-      ? `<path d="M58 72 Q65 70 72 72" stroke="${SLOTH.stripe}" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="80" cy="68" rx="5" ry="4" fill="#c79a6c" opacity="0.7"/>`
-      : `<path d="M58 71 Q65 77 72 71" stroke="${SLOTH.stripe}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-  return `<circle cx="65" cy="60" r="28" fill="url(#furHead)" stroke="${SLOTH.furDark}" stroke-width="2"/>
-  <path d="M40 66 l-5 4 6 -1 z M90 66 l5 4 -6 -1 z" fill="${SLOTH.furDark}"/>
-  <ellipse cx="65" cy="65" rx="22" ry="17" fill="${SLOTH.mask}"/>
-  <path d="M47 58 C52 54 60 56 61 61 C60 67 54 72 49 71 C45 69 44 62 47 58 Z" fill="${SLOTH.stripe}"/>
-  <path d="M83 58 C78 54 70 56 69 61 C70 67 76 72 81 71 C85 69 86 62 83 58 Z" fill="${SLOTH.stripe}"/>
-  <circle cx="55.5" cy="61" r="3.4" fill="#120c08"/><circle cx="74.5" cy="61" r="3.4" fill="#120c08"/>
-  <circle cx="56.6" cy="59.8" r="1.2" fill="#fff"/><circle cx="75.6" cy="59.8" r="1.2" fill="#fff"/>
-  <ellipse cx="65" cy="67" rx="5" ry="3.4" fill="#3a2a20"/><ellipse cx="64" cy="66" rx="1.6" ry="0.9" fill="#8b7462"/>
-  ${mouthSvg}
-  <path d="M38 52 C40 34 52 30 65 30 C80 30 91 36 92 52 C84 46 74 44 65 44 C55 44 45 46 38 52 Z" fill="${SLOTH.bandana}" stroke="${SLOTH.bandanaDark}" stroke-width="1.6" stroke-linejoin="round"/>
-  <path d="M90 45 C98 40 104 42 106 48 C101 47 97 48 94 52 Z" fill="${SLOTH.bandana}" stroke="${SLOTH.bandanaDark}" stroke-width="1.4"/>
-  <path d="M91 49 C97 52 99 58 97 63 C94 59 91 56 88 54 Z" fill="${SLOTH.bandana}" stroke="${SLOTH.bandanaDark}" stroke-width="1.4"/>
-  <circle cx="91" cy="48" r="3.2" fill="${SLOTH.bandanaDark}"/>
-  <g fill="#fbe9e4"><circle cx="52" cy="40" r="1.6"/><circle cx="64" cy="36" r="1.6"/><circle cx="77" cy="39" r="1.6"/><circle cx="58" cy="45" r="1.1"/><circle cx="71" cy="44" r="1.1"/><circle cx="86" cy="45" r="1.2"/></g>`;
-}
-
-function slothTorso() {
-  const leg = (d) => `<path d="${d}" stroke="${SLOTH.furDark}" stroke-width="13" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${SLOTH.fur}" stroke-width="10" fill="none" stroke-linecap="round"/>`;
-  const toes = '<path d="M44 170 q-2 6 2 8"/><path d="M49 171 q0 6 4 7"/><path d="M80 171 q0 6 -4 7"/><path d="M85 170 q2 6 -2 8"/>';
-  return `<path d="M30 104 C28 80 44 70 65 70 C86 70 102 80 100 104 C100 132 92 150 65 152 C38 150 30 132 30 104 Z" fill="url(#furBody)" stroke="${SLOTH.furDark}" stroke-width="2"/>
-  <path d="M34 128 l-6 8 9 -3 z M96 128 l6 8 -9 -3 z M48 148 l-3 8 7 -5 z M82 148 l3 8 -7 -5 z" fill="${SLOTH.fur}" stroke="${SLOTH.furDark}" stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M33 92 C38 78 50 74 58 76 L56 120 C50 132 40 134 34 128 C30 116 30 102 33 92 Z" fill="url(#jacket)" stroke="#1b1f29" stroke-width="1.6" stroke-linejoin="round"/>
-  <path d="M97 92 C92 78 80 74 72 76 L74 120 C80 132 90 134 96 128 C100 116 100 102 97 92 Z" fill="url(#jacket)" stroke="#1b1f29" stroke-width="1.6" stroke-linejoin="round"/>
-  <ellipse cx="65" cy="104" rx="10" ry="22" fill="#c7a47c" opacity="0.85"/>
-  <g fill="${SLOTH.stud}" stroke="#7d8794" stroke-width="0.6"><circle cx="55" cy="84" r="1.8"/><circle cx="54.5" cy="96" r="1.8"/><circle cx="54" cy="108" r="1.8"/><circle cx="75" cy="84" r="1.8"/><circle cx="75.5" cy="96" r="1.8"/><circle cx="76" cy="108" r="1.8"/></g>
-  ${leg('M48 146 C46 156 46 162 48 168')}${leg('M82 146 C84 156 84 162 82 168')}
-  <g stroke="${SLOTH.clawEdge}" stroke-width="3.4" fill="none" stroke-linecap="round">${toes}</g>
-  <g stroke="${SLOTH.claw}" stroke-width="1.8" fill="none" stroke-linecap="round">${toes}</g>`;
-}
-
-/** Hanging body. viewBox 130x184; the hands grip the branch at (65, 12). */
-const SLOTH_BODY = Object.freeze({ width: 130, height: 184, gripX: 65, gripY: 12, mouthX: 65, mouthY: 73 });
-
-function slothBodySvg(pose = 'idle', mouth = 'smile') {
-  const eating = pose === 'eating';
-  const arms = eating
-    ? `${slothArm(40, 84, 42, 14)}${slothClaws(42, 14, -1)}`
-    : `${slothArm(40, 84, 44, 14)}${slothArm(90, 84, 86, 14)}${slothClaws(44, 14, -1)}${slothClaws(86, 14, 1)}`;
-  const rod = eating
-    ? `<g transform="rotate(-24 84 76)"><rect x="70" y="72" width="44" height="7" rx="3" fill="url(#rod)" stroke="#4a525d" stroke-width="1.2"/><rect x="72" y="73" width="38" height="1.6" fill="#eef2f6" opacity="0.7"/></g>
-  ${slothArm(92, 92, 98, 80)}<circle cx="99" cy="79" r="7" fill="${SLOTH.fur}" stroke="${SLOTH.furDark}" stroke-width="1.6"/>`
-    : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="184" viewBox="0 0 130 184">${SLOTH_DEFS}
-  ${arms}${slothTorso()}${slothHead(mouth)}${rod}
-</svg>`;
-}
-
-/** Tucked up in the leaves on top of the branch. viewBox 130x70; branch top at y = 52. */
-const SLOTH_HIDDEN = Object.freeze({ width: 130, height: 70, branchX: 65, branchY: 52 });
-
-/** SVG sources, exported for the preview harness and tests. */
-export const SLOTH_ART = Object.freeze({
-  tree: () => slothTreeSvg(),
-  hidden: () => slothHiddenSvg(),
-  body: (pose, mouth) => slothBodySvg(pose, mouth),
-});
-
-function slothHiddenSvg() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="70" viewBox="0 0 130 70">${SLOTH_DEFS}
-  <ellipse cx="65" cy="38" rx="40" ry="22" fill="url(#furBody)" stroke="${SLOTH.furDark}" stroke-width="2"/>
-  <path d="M30 40 l-6 4 7 0 z M100 40 l6 4 -7 0 z M50 18 l-2 -6 6 4 z M78 17 l3 -6 1 7 z" fill="${SLOTH.fur}" stroke="${SLOTH.furDark}" stroke-width="1.2" stroke-linejoin="round"/>
-  <path d="M52 30 C58 22 74 22 80 30 C78 26 70 24 66 24 C60 24 55 26 52 30 Z" fill="${SLOTH.bandana}" stroke="${SLOTH.bandanaDark}" stroke-width="1.2"/>
-  <path d="M56 36 q5 3 9 0" stroke="${SLOTH.stripe}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <path d="M68 36 q5 3 9 0" stroke="${SLOTH.stripe}" stroke-width="2" fill="none" stroke-linecap="round"/>
-  ${[[16, 46, 0], [30, 50, 40], [104, 44, 160], [114, 50, 200], [92, 52, 130]].map(([x, y, r]) => `<g transform="translate(${x} ${y}) rotate(${r}) scale(1.1)"><path d="M-9 0 C-5 -6 5 -6 9 0 C5 6 -5 6 -9 0 Z" fill="#3f6b2e" stroke="#203a17" stroke-width="0.8"/></g>`).join('')}
-  ${slothClaws(46, 62, -1)}${slothClaws(84, 62, 1)}
-</svg>`;
 }
 
 /** Soft additive glow for Fireflies. */
@@ -683,15 +557,8 @@ function ensureSvgTextures(engine) {
   if (!svgLoad) {
     const load = (svg) => loadTexture(svgDataUrl(svg), { scale: SVG_SCALE })
       .catch(() => textureFromUrl(svgDataUrl(svg), { scale: SVG_SCALE }));
-    svgLoad = Promise.all([
-      load(slothTreeSvg()),
-      load(slothHiddenSvg()),
-      load(slothBodySvg('idle', 'smile')),
-      load(slothBodySvg('eating', 'open')),
-      load(slothBodySvg('eating', 'chew')),
-      load(glowSvg()),
-    ]).then(([tree, hidden, idle, eatOpen, eatChew, glow]) => {
-      svgTextures = { tree, hidden, idle, eatOpen, eatChew, glow };
+    svgLoad = load(glowSvg()).then((glow) => {
+      svgTextures = { glow };
       return svgTextures;
     });
   }
@@ -959,75 +826,156 @@ function refreshTrap(engine, entity) {
   sprite.anchor.set(0.5, footAnchor(frame.sheet, 0));
 }
 
-function slothGripY() {
-  return -(SLOTH_TREE.baseY - SLOTH_TREE.gripY) * SLOTH_SCALE;
-}
-
 function buildSlothView(engine, entity) {
   const { PIXI } = engine;
-  if (!svgTextures) return;
-  const s = SLOTH_SCALE / SVG_SCALE;
   const root = new PIXI.Container();
   root.x = entity.x;
   root.y = entity.y + 2;
   root.zIndex = itemZ(entity.classTsid, Z.tree);
-  // Hit box: the hanging column under the branch, so the avatar can reach it from the ground.
-  root._worldHitW = 120;
-  root._worldHitH = (SLOTH_TREE.baseY - SLOTH_TREE.branchTop + 30) * SLOTH_SCALE;
-  const tree = new PIXI.Sprite(svgTextures.tree);
-  tree.anchor.set(SLOTH_TREE.gripX / SLOTH_TREE.width, SLOTH_TREE.baseY / SLOTH_TREE.height);
-  tree.scale.set(s);
-  const hidden = new PIXI.Sprite(svgTextures.hidden);
-  hidden.anchor.set(SLOTH_HIDDEN.branchX / SLOTH_HIDDEN.width, SLOTH_HIDDEN.branchY / SLOTH_HIDDEN.height);
-  hidden.scale.set(s);
-  hidden.y = -(SLOTH_TREE.baseY - SLOTH_TREE.branchTop) * SLOTH_SCALE + 4;
-  const body = new PIXI.Sprite(svgTextures.idle);
-  body.anchor.set(SLOTH_BODY.gripX / SLOTH_BODY.width, SLOTH_BODY.gripY / SLOTH_BODY.height);
-  body.scale.set(s);
-  body.y = slothGripY();
-  root.addChild(tree, body, hidden);
+  // Hit box: the trunk's foot to the canopy, as wide as the hanging sloth.
+  root._worldHitW = SLOTH_TREE.hitW;
+  root._worldHitH = SLOTH_TREE.hitH;
+  const deco = (part) => {
+    const spr = new PIXI.Sprite(textureFromUrl(`${DECO_DIR}${part.file}`));
+    spr.anchor.set(0.5, 1);
+    spr.scale.set(part.scale);
+    spr.x = part.x;
+    spr.y = part.y;
+    return spr;
+  };
+  const trunk = deco(SLOTH_TREE.trunk);
+  const knocker = new PIXI.Sprite(textureFromUrl(`${SLOTH_ART_DIR}${SLOTH_KNOCKER_ART.still}`));
+  knocker.anchor.set(SLOTH_KNOCKER_ART.origin.x / SLOTH_KNOCKER_ART.knock.cell.w, SLOTH_KNOCKER_ART.origin.y / SLOTH_KNOCKER_ART.knock.cell.h);
+  knocker.x = SLOTH_TREE.knocker.x;
+  knocker.y = SLOTH_TREE.knocker.y;
+  // The sloth in the SWF's depth order: under the rod, the rod in hand, the paw over it.
+  const layer = () => {
+    const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
+    spr.x = SLOTH_TREE.sloth.x;
+    spr.y = SLOTH_TREE.sloth.y;
+    return spr;
+  };
+  const body = layer();
+  const rod = layer();
+  const paw = layer();
+  const canopy = deco(SLOTH_TREE.canopy);
+  root.addChild(trunk, knocker, body, rod, paw, canopy);
   engine.entityLayer.addChild(root);
-  entity.view = { kind: 'sloth', sprite: root, body, hidden, t: (hash(entity.key) % 100) / 10, drop: 0, chewAt: 0, chew: false, spits: [] };
+  const frame = resourceNodeFrame(entity.node);
+  entity.view = {
+    kind: 'sloth', sprite: root, body, rod, paw, knocker,
+    anim: '', animAt: 0, rodIndex: 1, steps: [], idleAt: 0, state: 'hidden', out: false,
+    peekAt: 0, knockAt: 0, spits: [],
+  };
   entity.target = targetFor(engine, entity, root, { airborne: true });
-  refreshSloth(entity);
+  warmSloth(engine, ['hidden', 'peek', 'peekIdle', 'peekWithdraw', 'drop', 'hangIdle1', 'hangIdle2']);
+  const now = Date.now();
+  if (frame?.state === 'eating') setSlothAnim(engine, entity.view, 'eat', now);
+  else if (frame?.state === 'idle') slothToIdle(entity.view, now);
+  else setSlothAnim(engine, entity.view, 'hidden', now);
+  entity.view.out = frame?.state !== 'hidden';
+  entity.view.state = frame?.state === 'hidden' ? 'hidden' : 'idle';
+  drawSloth(engine, entity.view, now);
 }
 
-function refreshSloth(entity) {
+/** Show `label` from its first cell (the layers' anchors are each sheet's sprite origin). */
+function setSlothAnim(engine, view, label, now) {
+  const sheet = SLOTH_SHEETS[label];
+  if (!sheet) return;
+  view.anim = label;
+  view.animAt = now;
+  const anchor = (spr, s) => spr.anchor.set(s.origin.x / s.cell.w, s.origin.y / s.cell.h);
+  anchor(view.body, sheet);
+  view.rod.visible = Boolean(sheet.rods);
+  view.paw.visible = Boolean(sheet.paw);
+  if (sheet.paw) anchor(view.paw, sheet.paw);
+}
+
+function drawSloth(engine, view, now) {
+  const sheet = SLOTH_SHEETS[view.anim];
+  if (!sheet) return;
+  const cell = slothCellAt(view.anim, now - view.animAt, SLOTH_LOOPERS.includes(view.anim));
+  const pick = (s) => slothFrames(engine, s)[cell] || engine.PIXI.Texture.EMPTY;
+  view.body.texture = pick(sheet);
+  if (sheet.rods) {
+    const rodSheet = sheet.rods[Math.max(0, Math.min(sheet.rods.length - 1, view.rodIndex - 1))];
+    view.rod.anchor.set(rodSheet.origin.x / rodSheet.cell.w, rodSheet.origin.y / rodSheet.cell.h);
+    view.rod.texture = pick(rodSheet);
+    view.paw.texture = pick(sheet.paw);
+  }
+  if (view.knockAt) {
+    const k = SLOTH_KNOCKER_ART.knock;
+    const n = Math.floor(((now - view.knockAt) * 30) / 1000);
+    if (n >= k.count) {
+      view.knockAt = 0;
+      view.knocker.texture = textureFromUrl(`${SLOTH_ART_DIR}${SLOTH_KNOCKER_ART.still}`);
+    } else {
+      view.knocker.texture = sheetFrameTexture(sourceFromUrl(`${SLOTH_ART_DIR}${k.file}`),
+        new engine.PIXI.Rectangle((n % k.cols) * k.cell.w, Math.floor(n / k.cols) * k.cell.h, k.cell.w, k.cell.h));
+    }
+  }
+}
+
+/** onIdleTick: hand the sloth to its idle ticks from now. */
+function slothToIdle(view, now) {
+  view.state = 'idle';
+  view.idleAt = now;
+}
+
+/** Play one js/sloth-encounter.js event on a Sloth (replacing what was playing). */
+function playSloth(engine, entity, event, opts = {}) {
   const view = entity.view;
-  const frame = resourceNodeFrame(entity.node);
-  const state = frame?.state || 'hidden';
-  const wasHidden = view.state === 'hidden';
-  view.state = state;
-  view.hidden.visible = state === 'hidden';
-  view.body.visible = state !== 'hidden';
-  if (state === 'idle') view.body.texture = svgTextures.idle;
-  if (state === 'eating') view.body.texture = view.chew ? svgTextures.eatChew : svgTextures.eatOpen;
-  if (wasHidden && state !== 'hidden') view.drop = 1;
+  if (!view || view.kind !== 'sloth') return;
+  const now = Date.now();
+  view.steps = slothTimeline(event, opts).map((step) => ({ ...step, at: now + step.at }));
+  view.state = 'busy';
+  view.leaving = view.steps.some((step) => step.hidden);
+  placeSloth(engine, entity, 0, now);
+}
+
+function refreshSloth(engine, entity) {
+  const view = entity.view;
+  const state = resourceNodeFrame(entity.node)?.state || 'hidden';
+  const wasOut = view.out;
+  view.out = state !== 'hidden';
+  // hideSloth: 20 s without a rod, it yawns and climbs away (a full one is already climbing).
+  if (wasOut && !view.out && !view.leaving) playSloth(engine, entity, 'hide');
 }
 
 function placeSloth(engine, entity, dtMs, now) {
   const view = entity.view;
-  view.t += dtMs / 1000;
-  if (view.drop > 0) view.drop = Math.max(0, view.drop - dtMs / 450);
-  const ease = view.drop * view.drop;
-  view.body.y = slothGripY() - ease * 60;
-  view.body.alpha = 1 - ease * 0.6;
-  view.body.rotation = Math.sin(view.t * 1.15) * (view.state === 'eating' ? 0.025 : 0.06);
-  if (view.state === 'eating' && now - view.chewAt > 230) {
-    view.chewAt = now;
-    view.chew = !view.chew;
-    view.body.texture = view.chew ? svgTextures.eatChew : svgTextures.eatOpen;
+  while (view.steps.length && now >= view.steps[0].at) {
+    const step = view.steps.shift();
+    if (step.anim) setSlothAnim(engine, view, step.anim, step.at);
+    if (step.idle) slothToIdle(view, step.at);
+    if (step.hidden) {
+      setSlothAnim(engine, view, 'hidden', step.at);
+      view.state = 'hidden';
+      view.leaving = false;
+    }
+  }
+  if (view.state === 'idle' && now >= view.idleAt) {
+    const tick = slothIdleTick();
+    setSlothAnim(engine, view, tick.anim, now);
+    view.idleAt = now + tick.nextMs;
   }
   while (view.spits.length && now >= view.spits[0]) {
     view.spits.shift();
     spitSnail(engine, entity);
+  }
+  drawSloth(engine, view, now);
+  // QA: the QA Sloth's animation (and rod) as canvas data-sloth-anim.
+  const shown = `${view.anim}${SLOTH_SHEETS[view.anim]?.rods ? `:rod${view.rodIndex}` : ''}`;
+  if (entity === demoEntity && view.shown !== shown) {
+    view.shown = shown;
+    engine.setData?.('slothAnim', shown);
   }
 }
 
 function spawnView(engine, entity) {
   if (entity.view) return;
   const def = getResourceNodeDef(entity.classTsid);
-  if (def.art === 'vector') return buildSlothView(engine, entity);
+  if (def.art === 'swf') return buildSlothView(engine, entity);
   if (entity.classTsid === 'dust_trap') return buildDustTrapView(engine, entity);
   const frame = resourceNodeFrame(entity.node);
   if (frame?.hidden) return;
@@ -1055,7 +1003,7 @@ function refreshEntity(engine, entity) {
     spawnView(engine, entity);
     return;
   }
-  if (entity.view.kind === 'sloth') refreshSloth(entity);
+  if (entity.view.kind === 'sloth') refreshSloth(engine, entity);
   else if (entity.view.kind === 'trap') refreshTrap(engine, entity);
   else if (entity.view.kind === 'ground' && frame?.sheet) {
     if (entity.view.sheetPath !== frame.sheet.path || entity.view.frameIndex !== frame.frameIndex) {
@@ -1153,8 +1101,8 @@ function spitSnail(engine, entity) {
   snail.anchor.set(0.5);
   snail.scale.set(0.6);
   const from = {
-    x: entity.x + (SLOTH_BODY.mouthX - SLOTH_BODY.gripX) * SLOTH_SCALE,
-    y: entity.y + slothGripY() + (SLOTH_BODY.mouthY - SLOTH_BODY.gripY) * SLOTH_SCALE,
+    x: entity.x + SLOTH_TREE.sloth.x + SLOTH_TREE.mouth.x,
+    y: entity.y + SLOTH_TREE.sloth.y + SLOTH_TREE.mouth.y,
   };
   const to = { x: engine.player.x, y: engine.player.y - 40 };
   addEffect(engine, snail, (t) => {
@@ -1439,13 +1387,16 @@ function applyResult(engine, entity, result) {
       }
     });
     showJar(engine, filled.flies);
+  } else if (entity.classTsid === 'npc_sloth' && result.verbId === 'knock') {
+    warmSloth(engine, ['talk', 'eat', 'spit', 'finishedEating', 'climbUp']);
+    playSloth(engine, entity, 'arrive');
   } else if (entity.classTsid === 'npc_sloth' && result.verbId === 'feed') {
     const view = entity.view;
-    if (view) {
+    if (view && result.slothPlan) {
+      // The Snails leave its mouth as each spit lands (createSnailItem, 1.2 s after createSnail).
       const now = Date.now();
-      const spits = Math.min(5, result.outputs?.[0]?.qty || 1);
-      const span = Math.max(600, (result.durationMs || 3000) - 1500);
-      view.spits = Array.from({ length: spits }, (_, i) => now + 900 + (span * i) / spits);
+      view.spits = result.slothPlan.rounds.flatMap((round) => Array.from({ length: round.snails }, (_, i) => now + round.atMs + 1200 + i * 150));
+      playSloth(engine, entity, 'feed', { plan: result.slothPlan, full: entity.node.sessionFeeds > 7 });
     }
     if ((result.achievementCounters || []).some((c) => c.counter === 'sloth:fed_until_full')) {
       engine.toast('Metal forever!', 2000);
@@ -1623,7 +1574,7 @@ async function spawnStreet(engine, items, myGeneration) {
   const fireflies = items.some((item) => item.classTsid === 'npc_firefly');
   await Promise.all([
     ...[...needs.values()].map((def) => ensureSheet(engine, def)),
-    fireflies || items.some((item) => item.classTsid === 'npc_sloth') ? ensureSvgTextures(engine) : null,
+    fireflies ? ensureSvgTextures(engine) : null,
   ]);
   if (myGeneration !== generation) return;
   const now = Date.now();
@@ -1717,14 +1668,23 @@ function checkSloths(engine) {
     && Math.abs(player.x - entity.x) <= SLOTH_HITBOX_HALF && player.y <= entity.y + 10) || null;
   if (under === underSloth) return;
   underSloth = under;
-  if (!under || under.node.out) return;
+  if (!under || under.node.out || under.view.state !== 'hidden') return;
   const buffs = engine.activeBuffIds?.() || [];
   const now = Date.now();
   const snails = rollSlothBonusSnails(engine.pc?.imaginationUpgrades || [], bonusSnailsAt, now, Math.random, buffs.includes('max_luck'));
-  if (!snails) return;
+  if (!snails) {
+    // onPlayerCollision 604-607: it peeks out at you, at most every 20 s.
+    if (now - under.view.peekAt > SLOTH_PEEK_GAP_MS) {
+      under.view.peekAt = now;
+      playSloth(engine, under, 'peek');
+    }
+    return;
+  }
   bonusSnailsAt = now;
   addItem(engine.inv, 'snail', snails);
-  for (let i = 0; i < snails; i += 1) setTimeout(() => { if (under.view) spitSnail(engine, under); }, i * 260);
+  // setStateComplete peekSpit (825-834): the Snails come as the peekSpit ends.
+  playSloth(engine, under, 'peekSpit');
+  under.view.spits = Array.from({ length: snails }, (_, i) => now + 2000 + i * 260);
   engine.playSound?.('SLOTH_PEAK_AND_SPIT');
   engine.achievement?.('sloth:got_bonus_snails', 1);
   engine.achievement?.('sloth:snails_received', snails);
@@ -1866,6 +1826,8 @@ export const resourceNodesFeature = {
     const entity = entities.find((row) => row.target === target);
     if (!entity) return undefined;
     stopNodeTool();
+    // sloth_knocker.js knock 49-50: the Knocker plays its tool_animation, then rests.
+    if (entity.classTsid === 'npc_sloth' && rulesVerbId(verb?.id) === 'knock' && entity.view?.knocker) entity.view.knockAt = Date.now();
     const rule = resourceNodeVerbs(entity.node, engine.inv, engine.pc, verbContext(engine, entity)).find((v) => v.id === rulesVerbId(verb?.id));
     const def = nodeToolSheet(rule?.tool);
     const spr = target.sprite;

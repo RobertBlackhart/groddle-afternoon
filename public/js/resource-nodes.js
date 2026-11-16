@@ -806,11 +806,11 @@ export const RESOURCE_NODE_CATALOG = Object.freeze({
         yields: Object.freeze([{ classTsid: 'snail', qty: '7-10', note: 'choose_one([7,8,9,10]) per Metal Rod' }]),
       }),
     ]),
-    art: 'vector',
-    vector: Object.freeze({
-      reason: 'No npc_sloth raster in the public OGA archives (only npc_cubimal_sloth, a cubimal figure).',
-      draw: 'Hanging sloth on a canopy branch: shaggy brown fur, pale face mask, long hooked claws, red bandana (instance head=redBandana) and dark jacket (jacket=darkJacket). It holds a metal rod whose length shows rod1..rod7 (rod7 = whole rod, shrinking as snails are spat). States: hidden (only claws/branch visible), peeking (head dips below the leaves), idle/hangIdle1/hangIdle2 (slow sway), eating (chewing loop), spit (snail arcs to the player), devil_horns ("Metal forever!").',
-      states: Object.freeze(['hidden', 'peeking', 'idle', 'eating', 'spit']),
+    art: 'swf',
+    swf: Object.freeze({
+      source: 'glitch-items inhabitants/sloth/npc_sloth.swf sprite 123 (sloth_mc), CC0: js/sloth-art.js (tools/sloth-art/build.mjs)',
+      draw: 'The sloth hanging from its own striped branch in the red bandana and dark jacket (initInstanceProps head=redBandana, jacket=darkJacket), its eighteen animations played at the GSJS moments (js/sloth-encounter.js); the HIDE ME marker where the canopy covered it is drawn as leaves.',
+      states: Object.freeze(['hidden', 'idle', 'eating']),
     }),
     source: 'npc_sloth.js (verbs.feed metal_rod, animalkinship_3, createSnail 7-10, metalize_count > 7 hides, 3 min cooldown), sloth_knocker.js (callSloth)',
   }),
@@ -1601,23 +1601,10 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
       if (verb.id === 'knock') {
         durationMs = def.session.callDelayMs;
       } else {
-        const max = chooseOne([7, 8, 9, 10], rng);
-        // createSnail: first spit after chew_secs 2-5 s; each spit schedules the
-        // next after its own chew; metalizeComplete 1.5 s after the last spit.
-        let ms = chooseOne([2, 3, 4, 5], rng) * 1000;
-        let count = 0;
-        while (count < max) {
-          let spit = 1;
-          let chew = 2500;
-          if (rng() >= 0.3) {
-            chew = chooseOne([2.5, 3, 4, 5, 6], rng) * 1000;
-            spit = chooseOne([1, 2, 3, 4], rng);
-          }
-          spit = Math.min(spit, max - count);
-          count += spit;
-          ms += count < max ? chew : 1500;
-        }
-        durationMs = ms;
+        const feedPlan = slothFeedPlan(rng);
+        const max = feedPlan.max;
+        durationMs = feedPlan.doneMs;
+        extra.slothPlan = feedPlan;
         outputs.push({ classTsid: 'snail', qty: max });
         achievementCounters.push({ counter: 'sloth:snails_received', amount: max });
         if (node.sessionFeeds + 1 > 7) achievementCounters.push({ counter: 'sloth:fed_until_full', amount: 1 });
@@ -1960,18 +1947,45 @@ export function resourceNodeStatusLabel(node, now = Date.now()) {
 }
 
 /**
+ * npc_sloth.js feed handler 284-286 and createSnail 367-421: one Metal Rod's schedule. 7-10
+ * Snails in all; the first spit chew_secs (2-5 s) after the rod; each spit a round of 1-4 Snails
+ * (30%: one, and a 2.5 s chew), never past the total; the rod in hand after a round is
+ * rod<count> (1-7, 400-404); the next spit one chew later; metalizeComplete 1.5 s after the last.
+ * Returns { max, rounds: [{ atMs, snails, count, rod }], doneMs }.
+ */
+export function slothFeedPlan(rng = Math.random) {
+  const max = chooseOne([7, 8, 9, 10], rng);
+  let at = chooseOne([2, 3, 4, 5], rng) * 1000;
+  const rounds = [];
+  let count = 0;
+  while (count < max) {
+    let snails = 1;
+    let chew = 2500;
+    if (rng() >= 0.3) {
+      chew = chooseOne([2.5, 3, 4, 5, 6], rng) * 1000;
+      snails = chooseOne([1, 2, 3, 4], rng);
+    }
+    snails = Math.min(snails, max - count);
+    count += snails;
+    rounds.push({ atMs: at, snails, count, rod: Math.max(1, Math.min(7, count)) });
+    if (count < max) at += chew;
+  }
+  return { max, rounds, doneMs: at + 1500 };
+}
+
+/**
  * Which sheet + frame to draw for the node's current state.
  * Returns { art: 'raster', hidden, sheetKey, sheet, frameIndex, rect, animate, loop }
- * or { art: 'vector', state, vector } for the Sloth.
+ * or { art: 'swf', state, swf } for the Sloth (its frames: js/sloth-encounter.js).
  */
 export function resourceNodeFrame(node, now = Date.now()) {
   const def = getResourceNodeDef(node?.classTsid);
   if (!def) return null;
-  if (def.art === 'vector') {
+  if (def.art === 'swf') {
     let state = 'hidden';
     if (node.busyUntil && now < node.busyUntil) state = 'eating';
     else if (node.out) state = 'idle';
-    return { art: 'vector', state, vector: def.vector };
+    return { art: 'swf', state, swf: def.swf };
   }
   const sprite = def.sprite;
   let sheetKey = node.variant && sprite.sheets[node.variant] ? node.variant : sprite.defaultSheet;

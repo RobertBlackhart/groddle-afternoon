@@ -147,7 +147,7 @@ import {
   treeId,
   treeReady,
   treeSkill,
-} from '../street-objects.js?v=7e814c2c';
+} from '../street-objects.js?v=deecfec1';
 import { ROCK_CATALOG } from '../mining.js?v=c2964c53';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=b43edbd8';

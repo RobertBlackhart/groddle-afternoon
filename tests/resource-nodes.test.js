@@ -19,6 +19,7 @@ import {
   resourceNodeVerbs,
   resourceNodeStatusLabel,
   resourceNodeFrame,
+  slothFeedPlan,
   isResourceNodeHarvestable,
   normalizeResourceNode,
   normalizeResourceNodes,
@@ -34,7 +35,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=6ef2797a';
+} from '../public/js/resource-nodes.js?v=739a3eba';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -128,8 +129,9 @@ describe('resource node catalog', () => {
       assert.equal(h, s.frameHeight * s.rows, `${s.path} height`);
       assert.ok(s.frameCount <= s.cols * s.rows && s.frameCount >= 1, s.path);
     }
-    assert.equal(RESOURCE_NODE_CATALOG.npc_sloth.art, 'vector');
-    assert.match(RESOURCE_NODE_CATALOG.npc_sloth.vector.draw, /bandana/);
+    assert.equal(RESOURCE_NODE_CATALOG.npc_sloth.art, 'swf');
+    assert.match(RESOURCE_NODE_CATALOG.npc_sloth.swf.source, /npc_sloth\.swf sprite 123/);
+    assert.match(RESOURCE_NODE_CATALOG.npc_sloth.swf.draw, /bandana/);
     for (const def of Object.values(RESOURCE_NODE_CATALOG)) {
       if (def.art === 'raster') assert.ok(def.sprite.sheets[def.sprite.defaultSheet], def.classTsid);
     }
@@ -557,6 +559,43 @@ describe('Sloth', () => {
     tickResourceNode(node, node.lastMetalizeAt + 3 * 60 * 1000);
     assert.equal(node.units, 8);
     assert.equal(harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock', skills, now: node.lastMetalizeAt + 3 * 60 * 1000 })).ok, true);
+  });
+});
+
+describe('Sloth feed plan (G889)', () => {
+  it('spits in rounds of 1-4, 7-10 in all, the rod in hand following the count (createSnail 367-421)', () => {
+    for (let k = 0; k < 400; k += 1) {
+      let x = (k * 7919) % 1000;
+      const rng = () => { x = (x * 48271 + 11) % 1000; return x / 1000; };
+      const plan = slothFeedPlan(rng);
+      assert.ok(plan.max >= 7 && plan.max <= 10);
+      assert.equal(plan.rounds.reduce((n, r) => n + r.snails, 0), plan.max);
+      let count = 0;
+      let at = 0;
+      for (const round of plan.rounds) {
+        assert.ok(round.snails >= 1 && round.snails <= 4, `round of ${round.snails}`);
+        count += round.snails;
+        assert.equal(round.count, count);
+        assert.equal(round.rod, Math.min(7, count));
+        assert.ok(round.atMs > at, 'every spit after the last');
+        at = round.atMs;
+      }
+      assert.ok(plan.rounds[0].atMs >= 2000 && plan.rounds[0].atMs <= 5000, 'first chew 2-5 s');
+      assert.equal(plan.doneMs, at + 1500, 'metalizeComplete 1.5 s after the last spit');
+    }
+  });
+
+  it('is what the feed returns: its duration, its Snails and its plan', () => {
+    const node = createResourceNode('npc_sloth');
+    const inv = { metal_rod: 2 };
+    const ctx = ctxBase({ skills: ['animalkinship_3'] });
+    harvestResourceNode(node, inv, {}, { ...ctx, verbId: 'knock' });
+    // max 10 (0.99), first chew 5 s (0.99), then: 30% branch (0.1) one Snail and 2.5 s, then 4 Snails a round.
+    const feed = harvestResourceNode(node, inv, {}, { ...ctx, verbId: 'feed', rng: seq(0.99, 0.99, 0.1, 0.99, 0.99, 0.99) });
+    assert.equal(feed.ok, true);
+    assert.deepEqual(feed.slothPlan.rounds.map((r) => [r.atMs, r.snails, r.rod]), [[5000, 1, 1], [7500, 4, 5], [13500, 4, 7], [19500, 1, 7]]);
+    assert.equal(feed.durationMs, feed.slothPlan.doneMs);
+    assert.equal(feed.outputs[0].qty, 10);
   });
 });
 
