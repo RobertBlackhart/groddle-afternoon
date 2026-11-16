@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2443,
+  "commits": 2444,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The restoration report's Gone for good list shows what can't come back"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "Signpost words use the game's own rounded font on every device, smooth on a phone"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Quests finished on Questing and Contesting's day count once the server takes them, and a repeat taken again no longer hides a finish"
    }
   ]
  },
