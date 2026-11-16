@@ -297,7 +297,8 @@ export async function economyTable() {
   for (const t of transforms) for (const c of Object.keys(t.o)) ordinary.add(c);
   // The shrines give every Giant's emblem (js/shrines.js claimShrineEmblem builds `emblem_<giant>` at
   // run time, so job-obtainable never sees it; items/include/shrines.js give_emblem 78-166): an
-  // ordinary class, paid for by the budget the donated goods refund, not a drop capped at 5 a day.
+  // ordinary class, not a drop capped at 5 a day. The site's ledger credits it from the save's shrine
+  // record, a few a day (G895, LedgerMath::earned), since donated goods no longer refill the budget (G742).
   for (const id of Object.keys(GIANTS)) ordinary.add(`emblem_${id}`);
   const drops = dropCounts();
   const items = {};
