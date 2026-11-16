@@ -521,8 +521,32 @@ export const STREET_QUOIN_CLASSES = Object.freeze({
 /** purple_emperor.js 71: is_chance(0.05) picks the big class. */
 export const STREET_BIG_QUOIN_CHANCE = 0.05;
 
-/** The class a street's natural quoin `index` of `typeId` is ('' for qurazy: it never respawns); stable per spot. */
-export function streetQuoinClass(streetTsid, index, typeId) {
+/**
+ * G869: a Party Space's quoins are the party classes (items/quoin.js 623-650,
+ * "Coins for Coin Sharding Party Spaces"): 1 each, back in 60 to 120 s. Those
+ * classes come in four kinds only, so a party spot planned as another kind
+ * (favor, time, mystery, qurazy) is one of the four instead, stable per spot.
+ */
+export const PARTY_QUOIN_CLASSES = Object.freeze({
+  mood: 'party mood',
+  energy: 'party energy',
+  xp: 'party iMG',
+  currants: 'party currants',
+});
+const PARTY_QUOIN_KINDS = Object.freeze(Object.keys(PARTY_QUOIN_CLASSES));
+
+/** The kind a Party Space's quoin `index` is, from its planned `typeId`. */
+export function partyQuoinType(streetTsid, index, typeId) {
+  if (PARTY_QUOIN_CLASSES[typeId]) return typeId;
+  return PARTY_QUOIN_KINDS[stableHash(`${streetTsid}#${index}#party`) % PARTY_QUOIN_KINDS.length];
+}
+
+/**
+ * The class a street's natural quoin `index` of `typeId` is ('' for qurazy: it never respawns); stable per spot.
+ * On a Party Space's street (`party`) it is the kind's party class.
+ */
+export function streetQuoinClass(streetTsid, index, typeId, { party = false } = {}) {
+  if (party) return PARTY_QUOIN_CLASSES[partyQuoinType(streetTsid, index, typeId)];
   if (typeId === 'qurazy') return '';
   const [small, big] = STREET_QUOIN_CLASSES[typeId] || STREET_QUOIN_CLASSES.xp;
   return (stableHash(`${streetTsid}#${index}`) % 10000) / 10000 < STREET_BIG_QUOIN_CHANCE ? big : small;

@@ -9,14 +9,16 @@ import { fileURLToPath } from 'node:url';
 import {
   QUOIN_CLASSES,
   QUOIN_TYPES,
+  PARTY_QUOIN_CLASSES,
   STREET_BIG_QUOIN_CHANCE,
+  partyQuoinType,
   STREET_QUOIN_CLASSES,
   noteQuoinRespawn,
   quoinRespawnMs,
   releaseQuoinRespawns,
   streetQuoinClass,
-} from '../public/js/quoins.js?v=61be601c';
-import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=c55fce1d';
+} from '../public/js/quoins.js?v=a4208821';
+import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=e076fea2';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
@@ -89,6 +91,30 @@ describe('street quoin classes', () => {
     assert.equal(streetQuoinClass('GLI2V0UN7RD1T2J', 0, 'qurazy'), '');
     assert.equal(quoinRespawnMs(''), Infinity);
     assert.ok(STREET_QUOIN_CLASSES.xp.includes(streetQuoinClass('GLI2V0UN7RD1T2J', 3, 'mystery')), 'mystery uses the iMG tiers');
+  });
+
+  it('a Party Space\'s quoins are the party classes: 1 each, back in 60 to 120 s (G869, quoin.js 623-650)', () => {
+    const MOON = 'GDOBUP8IR8E2IPH';
+    assert.deepEqual(Object.fromEntries(Object.values(PARTY_QUOIN_CLASSES).map((c) => [c, [QUOIN_CLASSES[c].respawnSec, QUOIN_CLASSES[c].benefit]])), {
+      'party mood': [120, 1], 'party energy': [120, 1], 'party iMG': [90, 1], 'party currants': [60, 1],
+    });
+    for (const [type, cls] of Object.entries(PARTY_QUOIN_CLASSES)) {
+      assert.equal(QUOIN_CLASSES[cls].type, type);
+      assert.equal(partyQuoinType(MOON, 4, type), type, 'the four kinds stay');
+      assert.equal(streetQuoinClass(MOON, 4, type, { party: true }), cls);
+    }
+    for (const other of ['favor', 'time', 'mystery', 'qurazy']) {
+      for (let i = 0; i < 12; i += 1) {
+        const kind = partyQuoinType(MOON, i, other);
+        assert.ok(PARTY_QUOIN_CLASSES[kind], `${other} #${i} became ${kind}`);
+        assert.equal(partyQuoinType(MOON, i, other), kind, 'stable per spot');
+        assert.equal(streetQuoinClass(MOON, i, other, { party: true }), PARTY_QUOIN_CLASSES[kind]);
+      }
+    }
+    assert.equal(streetQuoinClass(MOON, 4, 'currants'), streetQuoinClass(MOON, 4, 'currants', { party: false }), 'an ordinary street is unchanged');
+    const game = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/game.js'), 'utf8');
+    assert.match(game, /planStreetQuoins\(currentStreetTsid, count\)\.map\(\(t, i\) => \(party \? partyQuoinType\(currentStreetTsid, i, t\) : t\)\)/);
+    assert.match(game, /streetQuoinClass\(currentStreetTsid, index, typeId, \{ party: isPartyStreet\(currentStreetTsid\) \}\)/);
   });
 
   it('is stable per street spot; about 5% are the big class (G257, purple_emperor.js 58-75)', () => {

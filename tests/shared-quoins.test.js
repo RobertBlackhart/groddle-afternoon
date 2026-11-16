@@ -24,7 +24,7 @@ import {
   shardFor,
   statusOf,
 } from '../public/js/shared-quoins.js?v=89d7b201';
-import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=05da3ce0';
+import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=d8556d06';
 import {
   QUOIN_SHARD_FLOOR,
   QUOIN_SHARD_NEAR,
@@ -34,7 +34,7 @@ import {
 } from '../public/js/quoin-shards.js?v=121156a0';
 import { placementRequests, streetQuoinLayout, classTable, mysteryTable } from '../tools/build-realtime-quoins.mjs';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=d34b6f73';
-import { QUOIN_CLASSES } from '../public/js/quoins.js?v=61be601c';
+import { QUOIN_CLASSES } from '../public/js/quoins.js?v=a4208821';
 import { HAS_SERVER, serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -366,6 +366,16 @@ describe('the server data', () => {
       assert.notEqual(type, 'qurazy', 'no natural spot is a Qurazy (G260)');
     }
     assert.ok(Object.keys(shipped.streets).length > 1000);
+  });
+
+  it('a Party Space\'s shared quoins are the party classes, so the server brings them back in 60 to 120 s (G869)', { skip: skipWithoutServer }, () => {
+    const party = { 'party mood': 'mood', 'party energy': 'energy', 'party iMG': 'xp', 'party currants': 'currants' };
+    for (const tsid of ['GDOBUP8IR8E2IPH', 'GUVNGTHAGP93U34', 'GUVU11R1HP9341R', 'GDOGBH4BG1E2BM0']) {
+      const rows = shipped.streets[tsid];
+      assert.ok(rows?.length, tsid);
+      for (const [, , type, cls] of rows) assert.equal(party[cls], type, `${tsid}: ${type} ${cls}`);
+    }
+    assert.ok(shipped.streets.GLI2V0UN7RD1T2J.every(([, , , cls]) => !party[cls]), 'an ordinary street keeps its street classes');
   });
 });
 

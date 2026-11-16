@@ -1,7 +1,7 @@
 /** Source-authored Ticket to Paradise economy and reusable flight-course state. */
 
 import { EXTRA_PARADISE_COURSES } from './paradise-courses.js?v=622dcd46';
-import { qrazyRewardForLevel, quoinTouches } from './quoins.js?v=61be601c';
+import { qrazyRewardForLevel, quoinTouches } from './quoins.js?v=a4208821';
 import { getGameDayKey } from './game-day.js?v=72f37c7e';
 
 export const PARADISE_DURATION_MS = 4 * 60 * 1000;

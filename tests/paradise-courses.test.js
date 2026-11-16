@@ -37,8 +37,8 @@ import {
   paradisePickupTouches,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=f2df3e99';
-import { QURAZY_REWARDS } from '../public/js/quoins.js?v=61be601c';
+} from '../public/js/paradise-flight.js?v=0100d66e';
+import { QURAZY_REWARDS } from '../public/js/quoins.js?v=a4208821';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 
 const here = path.dirname(fileURLToPath(import.meta.url));

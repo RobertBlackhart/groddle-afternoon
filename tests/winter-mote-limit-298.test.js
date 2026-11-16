@@ -16,7 +16,7 @@ import {
   winterMoteLimitNotice,
 } from '../public/js/winter-walk.js?v=a5c63b75';
 import { QUEST_PLATE_CARDS, compactCount } from '../public/js/quest-plate.js?v=a0240f13';
-import { quoinLimitPrompt } from '../public/js/quoins.js?v=61be601c';
+import { quoinLimitPrompt } from '../public/js/quoins.js?v=a4208821';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

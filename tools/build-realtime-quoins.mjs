@@ -44,11 +44,12 @@ import {
   QUOIN_TYPES,
   STREET_QUOIN_CLASSES,
   mysteryClassFor,
+  partyQuoinType,
   planStreetQuoins,
   streetQuoinClass,
   streetQuoinPoints,
-} from '../public/js/quoins.js?v=61be601c';
-import { partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=dcc45819';
+} from '../public/js/quoins.js?v=a4208821';
+import { isPartyStreet, partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=dcc45819';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -104,10 +105,13 @@ export function streetQuoinLayout(data, { starter = false, ecology = streetEcolo
   // (game.js enterStreet streetQuoinPoints; a measured spot's y is the quoin's own, exactY).
   const points = streetQuoinPoints(data.tsid, plan.groups.quoins || [], { count: population.quoins });
   const types = planStreetQuoins(data.tsid, points.length);
+  // G869: a Party Space's quoins are the party classes (game.js naturalQuoinPlan does the same).
+  const party = isPartyStreet(data.tsid);
   return points.map((spot, i) => {
-    const type = QUOIN_TYPES[spot.type] ? spot.type : types[i] || 'xp';
+    const planned = QUOIN_TYPES[spot.type] ? spot.type : types[i] || 'xp';
+    const type = party ? partyQuoinType(data.tsid, i, planned) : planned;
     const y = spot.exactY === true ? spot.y : spot.y - 58 - (i % 3) * 34;
-    return [Math.round(spot.x * 10) / 10, Math.round(y * 10) / 10, type, streetQuoinClass(data.tsid, i, type)];
+    return [Math.round(spot.x * 10) / 10, Math.round(y * 10) / 10, type, streetQuoinClass(data.tsid, i, type, { party })];
   });
 }
 

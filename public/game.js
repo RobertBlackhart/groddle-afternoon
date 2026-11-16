@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=45c9864a';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e668b5a9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c6cbd9da';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=30f38f50';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=6d6877b9';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=b9ce8b8d';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,
@@ -384,7 +384,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=f2df3e99';
+} from './js/paradise-flight.js?v=0100d66e';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
 import {
   buildParadiseCourseArt,
@@ -517,7 +517,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=c55fce1d';
+} from './js/player-save.js?v=e076fea2';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -968,6 +968,7 @@ import {
   quoinLimitPrompt,
   resetQuoinDay,
   streetQuoinClass,
+  partyQuoinType,
   quoinRespawnMs,
   noteQuoinRespawn,
   releaseQuoinRespawns,
@@ -976,7 +977,8 @@ import {
   creditQuoinStat,
   creditMetabolicReward,
   streetQuoinPoints,
-} from './js/quoins.js?v=61be601c';
+} from './js/quoins.js?v=a4208821';
+import { isPartyStreet } from './js/party-spaces.js?v=dcc45819'; // G869: a Party Space's quoins are the party classes
 import {
   buildHubMapView,
   mapClickTravel,
@@ -14986,7 +14988,9 @@ function spawnWorldQuoin(spot, typeId = 'xp', opts = {}) {
 let naturalQuoins = { tsid: '', points: [], plan: [] };
 
 function naturalQuoinPlan(count, points = []) {
-  const plan = planStreetQuoins(currentStreetTsid, count);
+  // G869: a Party Space's quoins come in the party classes' four kinds (items/quoin.js 623-650).
+  const party = isPartyStreet(currentStreetTsid);
+  const plan = planStreetQuoins(currentStreetTsid, count).map((t, i) => (party ? partyQuoinType(currentStreetTsid, i, t) : t));
   // A room that sets its own quoins (a feature's quoinSpots) names each one's type.
   points.forEach((spot, i) => {
     if (QUOIN_TYPES[spot?.type]) plan[i] = spot.type;
@@ -15006,7 +15010,7 @@ function naturalQuoinClass(index, typeId) {
   if (index === 0 && forced) return forced;
   const own = naturalQuoins.points[index]?.quoinClass;
   if (own && quoinClassType(own) === typeId) return own;
-  return streetQuoinClass(currentStreetTsid, index, typeId);
+  return streetQuoinClass(currentStreetTsid, index, typeId, { party: isPartyStreet(currentStreetTsid) });
 }
 
 function spawnNaturalQuoin(i) {
