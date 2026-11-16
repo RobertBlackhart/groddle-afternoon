@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=4318f3a0';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=50fdcb12';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fadd865f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -824,7 +824,7 @@ import { AFK_TIMEOUT_MS, ANIMS, ANIM_FPS, CORE_FRAMES, EMOTIONS, EMOTION_MS, IDL
 import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=13819ec0';
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=6122a615';
-import { PATH_END_ALLOWANCE, createUserPath, stepUserPath } from './js/user-path.js?v=8880557f';
+import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from './js/user-path.js?v=68e6892c';
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=b10f17bb';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
@@ -13447,6 +13447,8 @@ const engine = {
   },
   /** MAPWALK: walk to a street map click ({ kind: 'sign'|'player'|'item'|'point', id, x, y }); false when refused. */
   walkTo: (goal) => startUserWalk(goal),
+  /** #398: end a walk you started (the route card's arrow walk, arrived or stopped). */
+  endWalk: (reason = 'ended') => endUserWalk(reason),
   /** MAPWALK: where a walk you started is heading ({ kind, id, x, y }), or null. */
   get userWalkGoal() {
     const w = avatarWalk;
@@ -15596,6 +15598,25 @@ function movementNow() {
   return globalThis.performance?.now?.() ?? Date.now();
 }
 
+/**
+ * #398: what ends a walk you started (the street map's, the route card's arrow) as it opens:
+ * the windows Glitch marked stops_avatar_on_focus (TSMainView.as blur 538-553: the verb menu,
+ * InteractionMenu.as 1501; a signpost's menu; choices and quest dialogue; the Rook) and the scenes.
+ * The rest (the Map, the pack, the wardrobe, a garden or shrine panel) only take the keys while
+ * the path keeps steering (stopAvatarKeyControl, AvatarPhysicsHandler.as 328-335).
+ */
+function walkStoppedByWindow() {
+  return Boolean(
+    avatarHeldByScene() ||
+    isQuestDialogueOpen() ||
+    isVogOpen() ||
+    isRookMuseumExhibitOpen() ||
+    isScreenFxBlocking() ||
+    worldCtxMenu?.isOpen() ||
+    playerCtxMenu?.isOpen()
+  );
+}
+
 function gameplayInputBlocked() {
   return Boolean(
     avatarHeldByScene() ||
@@ -15770,14 +15791,16 @@ function handleInput() {
   // Ticket 71: following another player, a card or a panel takes the keys but not the walk.
   let followUnderCard = false;
   if (gameplayInputBlocked()) {
-    // MAPWALK: a menu or a scene that holds the avatar ends a walk you started.
-    endUserWalk('held');
+    // MAPWALK, #398: a walk you started goes on under a card, not a menu or scene (walkStoppedByWindow).
+    // A walk-over (js/walk-over.js) still ends: its menu never opens under a card.
+    const walkUnderCard = Boolean(avatarWalk?.user && !avatarWalk.verbWalk) && !climb.active && !walkStoppedByWindow();
+    if (!walkUnderCard) endUserWalk('held');
     // Player report 23: a menu or scene that takes the avatar lets go of the keys held as it
     // opened (its own keys come back on their next press), as TSMainView.blur's stopAvatar did.
     if (!inputWasBlocked) heldKeys.releaseAll('held');
     inputWasBlocked = true;
     clearJumpQueue(jumpState);
-    followUnderCard = !avatarHeldByScene() && !climb.active && features.query('followActive', engine) === true;
+    followUnderCard = walkUnderCard || (!avatarHeldByScene() && !climb.active && features.query('followActive', engine) === true);
     if (!followUnderCard) {
       player.vx = 0;
       return;
@@ -32775,6 +32798,13 @@ async function main() {
   // AvatarController: any key or click restarts the AFK timer (and returns from AFK).
   window.addEventListener('keydown', noteAvatarInput, { capture: true });
   window.addEventListener('pointerdown', noteAvatarInput, { capture: true });
+  // MAPWALK, #398: a movement key or Space outside a text field, or a press on the street, ends a
+  // walk you started; other keys and presses on the HUD, chat or a card do not (js/user-path.js).
+  const walkInput = (e) => {
+    if (avatarWalk?.user && e.isTrusted && walkInterrupts(e, { canvas: app?.canvas })) endUserWalk(e.type === 'keydown' ? 'key' : 'press');
+  };
+  window.addEventListener('keydown', walkInput, { capture: true });
+  window.addEventListener('pointerdown', walkInput, { capture: true });
   window.addEventListener('keydown', (e) => {
     if (e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) {
       if (e.key === 'Escape') {

@@ -30,7 +30,7 @@ import {
   ROUTE_STOPS_SHOWN,
   signpostToward,
 } from '../public/js/map-routes.js?v=f23b16a2';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=62d13794';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=9024e6ca';
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=ba4899eb';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=55547e57';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
@@ -605,6 +605,19 @@ describe('G192 the GPS arrow walks you there', () => {
     engine.beginVerb = (t, v) => engine.log.verbs.push([t, v]);
     engine.travel = (to, meta) => engine.log.travel.push([to, meta]);
     engine.acting = () => false;
+    // #398: the street map's walk (game.js startUserWalk / endUserWalk), which the arrow now starts.
+    engine.log.walks = [];
+    engine.log.walkEnds = [];
+    engine.userWalkGoal = null;
+    engine.walkTo = (goal) => {
+      engine.log.walks.push(goal);
+      engine.userWalkGoal = { kind: goal.kind, id: '', x: goal.x, y: null };
+      return true;
+    };
+    engine.endWalk = (reason) => {
+      engine.log.walkEnds.push(reason);
+      engine.userWalkGoal = null;
+    };
     Object.assign(engine, extra);
     return engine;
   }
@@ -620,7 +633,7 @@ describe('G192 the GPS arrow walks you there', () => {
     return target;
   }
 
-  /** Walk the fake avatar the way the held arrow key would. */
+  /** Walk the fake avatar the way the street walk steers it. */
   function walkUntilDone(engine, start = Date.now()) {
     let now = start;
     for (let i = 0; i < 2000 && mapRoutesFeature._walk(); i++) {
@@ -760,6 +773,60 @@ describe('G192 the GPS arrow walks you there', () => {
     mapRoutesFeature._arrowClick(engine);
     assert.equal(mapRoutesFeature.mapRoute('get', null, engine), null);
     assert.equal(engine.data.routeCleared, 'closed');
+  });
+
+  it('#398: the arrow starts the street map\'s walk, which keeps going under an open panel', () => {
+    const engine = onStreet(PANKA);
+    const target = doorTarget(engine, PANKA);
+    engine.player.x = 900;
+    mapRoutesFeature.mapRoute('set', { to: HELL_BAR, source: 'player' }, engine);
+    mapRoutesFeature.onStreetEnter(engine.street, engine);
+    mapRoutesFeature._arrowClick(engine);
+    assert.deepEqual(engine.log.walks, [{ kind: 'point', x: target.door.x }], 'GpsUI.as 104-106: startUserInitiatedPath');
+    // The Map, Quests, Skills or chat open: busy() but nothing that holds the avatar.
+    engine.busy = () => true;
+    walkUntilDone(engine);
+    assert.equal(engine.data.routeWalkEnd, 'arrived');
+    assert.deepEqual(engine.log.walkEnds, ['arrived'], 'the street walk ends with the route walk');
+    assert.equal(engine.log.verbs.length, 1);
+  });
+
+  it('#398: whatever ends the street walk (a key, a press on the street, a held window) ends the route walk', () => {
+    const engine = onStreet(PANKA);
+    doorTarget(engine, PANKA);
+    engine.player.x = 900;
+    mapRoutesFeature.mapRoute('set', { to: HELL_BAR, source: 'player' }, engine);
+    mapRoutesFeature.onStreetEnter(engine.street, engine);
+    mapRoutesFeature._arrowClick(engine);
+    const t0 = Date.now();
+    engine.player.x += 10;
+    mapRoutesFeature._stepWalk(engine, t0 + 16);
+    assert.ok(mapRoutesFeature._walk());
+    engine.userWalkGoal = null;
+    mapRoutesFeature._stepWalk(engine, t0 + 32);
+    assert.equal(mapRoutesFeature._walk(), null);
+    assert.equal(engine.data.routeWalkEnd, 'ended');
+    assert.deepEqual(engine.log.walkEnds, [], 'nothing left to end');
+    // A minimap click starts another walk: the route walk lets it be.
+    mapRoutesFeature._arrowClick(engine);
+    engine.userWalkGoal = { kind: 'point', id: '', x: 40, y: null };
+    mapRoutesFeature._stepWalk(engine, t0 + 48);
+    assert.equal(mapRoutesFeature._walk(), null);
+    assert.deepEqual(engine.log.walkEnds, []);
+    assert.equal(engine.userWalkGoal.x, 40);
+    // The verb menu or a verb does end it.
+    mapRoutesFeature._arrowClick(engine);
+    engine.acting = () => true;
+    mapRoutesFeature._stepWalk(engine, t0 + 64);
+    assert.equal(engine.data.routeWalkEnd, 'lost');
+    assert.deepEqual(engine.log.walkEnds, ['lost']);
+  });
+
+  it('#398: no key or press listener of its own, no held keys (the street walk takes the input)', () => {
+    const src = read(join(PUBLIC, 'js/features/map-routes-feature.js'));
+    assert.doesNotMatch(src, /bindWalkInput|addEventListener\('keydown', takeOver/);
+    assert.doesNotMatch(src, /new KeyboardEvent/);
+    assert.doesNotMatch(src.slice(src.indexOf('function stepWalk('), src.indexOf('function arrowClick(')), /engine\.busy/);
   });
 
   it('map_destination_reached is a quest event the game sends (A Little Tutorial Reinforcement)', () => {

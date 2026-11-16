@@ -17,6 +17,7 @@ import {
   createUserPath,
   pathGoalX,
   stepUserPath,
+  walkInterrupts,
 } from '../public/js/user-path.js?fresh=minimap-walk';
 import { DEST_MARK, mapGeometry, mapToWorld, toMap } from '../public/js/ui/street-minimap.js?fresh=minimap-walk';
 import { walkFromMap } from '../public/js/features/street-minimap-feature.js?fresh=minimap-walk';
@@ -150,7 +151,9 @@ describe('map walk: game.js (startUserInitiatedPath)', () => {
 
   it('steers through the shared walk, ends on a jump, a hold or the game\'s walk', () => {
     assert.match(game, /const step = stepUserPath\(w, \{ x: player\.x, moving: userMoving, jump: hasQueuedJump\(jumpState, movementNow\(\)\), tsid: currentStreetTsid \}\);/);
-    assert.match(game, /function handleInput\(\) \{\n(?:  [^\n]*\n){0,4}  if \(gameplayInputBlocked\(\)\) \{\n    \/\/ MAPWALK[^\n]*\n    endUserWalk\('held'\);/);
+    // #398: only a window that stops the avatar ends it; under a card (the Map, the pack) it keeps steering.
+    assert.match(game, /function handleInput\(\) \{\n(?:  [^\n]*\n){0,4}  if \(gameplayInputBlocked\(\)\) \{\n(?:    \/\/[^\n]*\n){1,4}    const walkUnderCard = Boolean\(avatarWalk\?\.user && !avatarWalk\.verbWalk\) && !climb\.active && !walkStoppedByWindow\(\);\n    if \(!walkUnderCard\) endUserWalk\('held'\);/);
+    assert.match(game, /followUnderCard = walkUnderCard \|\| \(/);
     assert.match(game, /function startAvatarWalk\(x, face = ''\) \{\n[^\n]*\n[^\n]*\n  endUserWalk\('game'\);/);
   });
 
@@ -158,8 +161,70 @@ describe('map walk: game.js (startUserInitiatedPath)', () => {
     assert.match(game, /if \(reason === 'arrived' && w\.kind === 'player' && w\.id && !menuTarget\) \{[\s\S]{0,200}t\?\.classId === 'pc_remote' && String\(t\.playerId\) === w\.id[\s\S]{0,80}withinReach\(them, 100\)\) openVerbMenu\(them\);/);
   });
 
+  it('#398: the windows Glitch marked stops_avatar_on_focus end it; the Map and the pack do not', () => {
+    const fn = game.slice(game.indexOf('function walkStoppedByWindow('), game.indexOf('function gameplayInputBlocked('));
+    for (const held of ['avatarHeldByScene()', 'isQuestDialogueOpen()', 'isVogOpen()', 'isRookMuseumExhibitOpen()', 'isScreenFxBlocking()', 'worldCtxMenu?.isOpen()', 'playerCtxMenu?.isOpen()']) {
+      assert.ok(fn.includes(held), held);
+    }
+    for (const card of ['isMapOpen', 'isPackPopoverOpen', 'isAvatarOpen', 'isGardenOpen', 'isShrineOpen']) assert.ok(!fn.includes(card), card);
+  });
+
+  it('#398: one key and press listener ends it through walkInterrupts', () => {
+    assert.match(game, /if \(avatarWalk\?\.user && e\.isTrusted && walkInterrupts\(e, \{ canvas: app\?\.canvas \}\)\) endUserWalk\(e\.type === 'keydown' \? 'key' : 'press'\);/);
+    assert.match(game, /window\.addEventListener\('keydown', walkInput, \{ capture: true \}\);\n  window\.addEventListener\('pointerdown', walkInput, \{ capture: true \}\);/);
+    assert.match(game, /endWalk: \(reason = 'ended'\) => endUserWalk\(reason\),/);
+  });
+
   it('the engine answers walkTo and userWalkGoal', () => {
     assert.match(game, /walkTo: \(goal\) => startUserWalk\(goal\),/);
     assert.match(game, /get userWalkGoal\(\) \{\n    const w = avatarWalk;\n    return w\?\.user \? \{ kind: w\.kind, id: w\.id, x: w\.x, y: w\.y \} : null;/);
+  });
+});
+
+describe('#398 map walk: what ends it (walkInterrupts)', () => {
+  /** A stand-in element: matches() for the selectors walkInterrupts asks about. */
+  const el = (tag, { editable = false } = {}) => ({
+    tag,
+    isContentEditable: editable,
+    matches: (sel) => sel.split(',').map((x) => x.trim()).some((x) => x === tag || (editable && x.startsWith('[contenteditable'))),
+  });
+  const canvas = el('canvas');
+  const body = el('body');
+  const key = (k, target = body) => ({ type: 'keydown', key: k, target });
+  const press = (target) => ({ type: 'pointerdown', target });
+
+  it('a press on the street ends it (LocationInputHandler.as 263, 291 began a new path)', () => {
+    assert.equal(walkInterrupts(press(canvas), { canvas }), true);
+  });
+
+  it('a press on the Map, chat, the pack or the HUD does not', () => {
+    for (const where of ['#map-panel', '#chat-input', '#pack-bar', '.route-gps-arrow', '#quests-panel']) {
+      assert.equal(walkInterrupts(press(el(where)), { canvas }), false, where);
+    }
+    assert.equal(walkInterrupts(press(canvas)), false, 'no canvas known: nothing is the street');
+  });
+
+  it('the arrows, WASD and Space end it (onLeftKey, onRightKey, onUpKey, onDownKey, onSpaceKey: endPath)', () => {
+    for (const k of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'a', 'D', 'w', 'S']) {
+      assert.equal(walkInterrupts(key(k), { canvas }), true, JSON.stringify(k));
+    }
+  });
+
+  it('other keys (M for the Map, Q for Quests, Enter, Escape) do not', () => {
+    for (const k of ['m', 'M', 'q', 'Q', 'Enter', 'Escape', 'Tab', 'k', '1']) {
+      assert.equal(walkInterrupts(key(k), { canvas }), false, k);
+    }
+  });
+
+  it('keys typed in a text field never do (shouldIgnoreKeyPress)', () => {
+    for (const field of [el('input'), el('textarea'), el('select'), el('div', { editable: true })]) {
+      for (const k of ['ArrowLeft', ' ', 'a', 'w']) assert.equal(walkInterrupts(key(k, field), { canvas }), false, `${field.tag} ${k}`);
+    }
+  });
+
+  it('nothing else counts', () => {
+    assert.equal(walkInterrupts(null), false);
+    assert.equal(walkInterrupts({ type: 'keyup', key: 'ArrowLeft', target: body }), false);
+    assert.equal(walkInterrupts({ type: 'click', target: canvas }, { canvas }), false);
   });
 });

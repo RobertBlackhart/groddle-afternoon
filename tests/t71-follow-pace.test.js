@@ -255,9 +255,10 @@ describe('ticket 71: carrying on under a card', () => {
       assert.ok(blocked.includes(name), `still holds the keys: ${name}`);
     }
     const input = game.slice(game.indexOf('function handleInput() {'), game.indexOf('function soloChickenPause'));
-    assert.match(input, /followUnderCard = !avatarHeldByScene\(\) && !climb\.active && features\.query\('followActive', engine\) === true;\n\s+if \(!followUnderCard\) \{\n\s+player\.vx = 0;\n\s+return;/);
+    // #398: a walk you started (walkUnderCard, tests/minimap-walk.test.js) carries on the same way.
+    assert.match(input, /followUnderCard = walkUnderCard \|\| \(!avatarHeldByScene\(\) && !climb\.active && features\.query\('followActive', engine\) === true\);\n\s+if \(!followUnderCard\) \{\n\s+player\.vx = 0;\n\s+return;/);
     assert.match(input, /const keyed = !followUnderCard;\n(\s+\/\/[^\n]*\n)?\s+const heldSide = keyed \? heldDirection\(keys\) : 0;/, 'the card keeps the keys');
-    assert.ok(input.indexOf('clearJumpQueue(jumpState);') < input.indexOf('followUnderCard = !avatarHeldByScene'), 'a Space meant for the card never jumps');
+    assert.ok(input.indexOf('clearJumpQueue(jumpState);') < input.indexOf('followUnderCard = walkUnderCard'), 'a Space meant for the card never jumps');
   });
 
   it('a real key press still ends the follow (AvatarController.as _endFollowing)', () => {

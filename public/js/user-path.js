@@ -82,3 +82,30 @@ export function stepUserPath(path, { x, moving = false, jump = false, tsid = '' 
   if (path.stall >= PATH_STALL_FRAMES) return { dir: 0, end: 'wall' };
   return { dir: dx < 0 ? -1 : 1, end: null };
 }
+
+/** The keys that end a walk (AvatarController.as onLeftKey/onRightKey, onUpKey, onDownKey, onSpaceKey: endPath). */
+export const WALK_STOP_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'Spacebar', 'a', 'd', 'w', 's', 'A', 'D', 'W', 'S']);
+
+/**
+ * PURE: whether a press or a key of yours ends a walk you started (the street map's or the route
+ * card's arrow). #398: only these do, so the walk keeps going while you open the Map, Quests,
+ * Skills, the pack or chat, or type (TSMainView.as blur 538-553: those windows only took the keys;
+ * the path kept steering, AvatarPhysicsHandler.as 328-335).
+ * - A key: a movement key or Space, unless a text field has it (AvatarController.as 370-430
+ *   shouldIgnoreKeyPress: an input TextField with focus).
+ * - A press: one on the street itself (`canvas`), where the client started a new path instead
+ *   (LocationInputHandler.as 263, 291); a press on the HUD never reached the world.
+ * @param {{ type: string, key?: string, target?: any }} e
+ * @param {{ canvas?: any }} [opts]
+ */
+export function walkInterrupts(e, { canvas = null } = {}) {
+  if (!e) return false;
+  if (e.type === 'pointerdown' || e.type === 'mousedown' || e.type === 'touchstart') {
+    return Boolean(canvas) && e.target === canvas;
+  }
+  if (e.type !== 'keydown' || !WALK_STOP_KEYS.has(e.key)) return false;
+  const t = e.target;
+  if (t?.matches?.('input, textarea, select, [contenteditable=""], [contenteditable="true"]')) return false;
+  if (t?.isContentEditable) return false;
+  return true;
+}

@@ -676,40 +676,31 @@ function pointArrow(engine) {
  * interaction_sign, and a door path ends by entering the door). At the
  * destination the arrow closes the route (onCloseClick).
  *
- * The walk holds the arrow key toward the post, as you would, so the avatar
- * walks with its own speed, animation, walls and energy. Any key or click of
- * yours takes over and ends it; so does a wall or a ledge in the way.
+ * #398: the walk is the street map's own (engine.walkTo, game.js startUserWalk,
+ * js/user-path.js), as the client's arrow started the same user path the
+ * minimap did (GpsUI.as 104, 106: startUserInitiatedPath). So it keeps going
+ * through the Map, chat, Quests, Skills and the pack, and ends where that walk
+ * ends: a movement key or Space outside a text field, a press on the street, a
+ * verb or the verb menu, quest dialogue or a scene, a wall, a new street
+ * (user-path.js walkInterrupts, game.js walkStoppedByWindow).
  */
-const WALK_KEY = { [-1]: 'ArrowLeft', 1: 'ArrowRight' };
 /** Close enough to use the post or the door (world px). */
 const WALK_REACH = 26;
 /** No headway for this long (a wall, a ledge): stop and leave you there. */
 const WALK_STALL_MS = 1500;
 const WALK_MAX_MS = 45000;
-let walkInputBound = false;
 
-function sendWalkKey(type, key) {
-  if (typeof window === 'undefined' || typeof KeyboardEvent === 'undefined') return;
-  window.dispatchEvent(new KeyboardEvent(type, { key, code: key, bubbles: true }));
-}
-
-function bindWalkInput() {
-  if (walkInputBound || typeof window === 'undefined') return;
-  walkInputBound = true;
-  const takeOver = (e) => {
-    if (!walk || !e.isTrusted) return;
-    if (e.target?.closest?.('.route-gps-arrow')) return;
-    stopWalk(walk.engine, 'input');
-  };
-  window.addEventListener('keydown', takeOver, true);
-  window.addEventListener('pointerdown', takeOver, true);
+/** PURE: whether the street walk heading for `x` is still this route walk's (not ended, not replaced). */
+export function walkStillOurs(goal, x) {
+  return Boolean(goal) && Math.abs(Number(goal.x) - x) < 1;
 }
 
 function stopWalk(engine, reason = '') {
   if (!walk) return;
-  const held = walk.dir ? WALK_KEY[walk.dir] : '';
+  const ours = walkStillOurs(engine?.userWalkGoal, walk.goalX);
   walk = null;
-  if (held) sendWalkKey('keyup', held);
+  // The street walk ends with it, unless it already did or a new one took over.
+  if (ours) engine?.endWalk?.(reason || 'route');
   gps?.arrow?.classList.remove('walking');
   if (reason) engine?.setData?.('routeWalkEnd', reason);
 }
@@ -717,9 +708,11 @@ function stopWalk(engine, reason = '') {
 function startWalk(engine, now) {
   stopWalk(engine);
   if (!highlight || !engine.player) return false;
-  bindWalkInput();
   const x = highlight.kind === 'sign' ? highlight.view.x : highlight.x;
-  walk = { engine, kind: highlight.kind, key: highlight.key, x, startedAt: now, lastX: engine.player.x, lastMoveAt: now, dir: 0 };
+  if (!engine.walkTo?.({ kind: 'point', x })) return false;
+  // goalX: the street walk's own x (clamped to the street), to know it is still ours.
+  const goalX = Number(engine.userWalkGoal?.x ?? x);
+  walk = { engine, kind: highlight.kind, key: highlight.key, x, goalX, startedAt: now, lastX: engine.player.x, lastMoveAt: now, dir: 0 };
   gps?.arrow?.classList.add('walking');
   engine.setData?.('routeWalkEnd', '');
   return true;
@@ -759,7 +752,8 @@ function takeHop(engine) {
 function stepWalk(engine, now) {
   if (!walk) return;
   const p = engine.player;
-  if (!p || !highlight || highlight.key !== walk.key || offWorld(engine) || engine.busy?.() || engine.acting?.()) {
+  // #398: not any open panel (the Map, chat, Quests): only what ends the street walk ends this one.
+  if (!p || !highlight || highlight.key !== walk.key || offWorld(engine) || engine.acting?.()) {
     stopWalk(engine, 'lost');
     return;
   }
@@ -769,12 +763,12 @@ function stepWalk(engine, now) {
     takeHop(engine);
     return;
   }
-  const dir = dx > 0 ? 1 : -1;
-  if (dir !== walk.dir) {
-    if (walk.dir) sendWalkKey('keyup', WALK_KEY[walk.dir]);
-    walk.dir = dir;
-    sendWalkKey('keydown', WALK_KEY[dir]);
+  // A key, a press on the street, a held window, a wall or a new walk ended the street walk.
+  if (!walkStillOurs(engine.userWalkGoal, walk.goalX)) {
+    stopWalk(engine, 'ended');
+    return;
   }
+  walk.dir = dx > 0 ? 1 : -1;
   if (Math.abs(p.x - walk.lastX) > 2) {
     walk.lastX = p.x;
     walk.lastMoveAt = now;

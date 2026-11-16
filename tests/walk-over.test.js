@@ -21,7 +21,7 @@ import {
 } from '../public/js/walk-over.js?v=277ab977';
 import { VERB_RANGES } from '../public/js/verb-ranges-data.js?v=4d0a4515';
 import { OUT_OF_REACH_LINE, avatarHitBox, behindFloor } from '../public/js/reach.js?v=8e52df56';
-import { createUserPath, stepUserPath } from '../public/js/user-path.js?v=8880557f';
+import { createUserPath, stepUserPath } from '../public/js/user-path.js?v=68e6892c';
 import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=6122a615';
 import { avatarHeadReach, groundBeneath, platformsScreen, barriersScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 
