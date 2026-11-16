@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BESIDE_MIN_W, NOTICE_W, SHORT_SCREEN_H, noticesBesideAvatar } from '../public/js/notify-view.js?v=993ffafc';
+import { BESIDE_MIN_W, NOTICE_W, SHORT_SCREEN_H, noticesBesideAvatar } from '../public/js/notify-view.js?v=8edb24fb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -47,6 +47,45 @@ describe('the notices on a short screen keep clear of the avatar', () => {
   it('game.js hands the notices the avatar\'s box', () => {
     assert.match(game, /avatarBox: \(\) => \(state\.started \? avatarOnRoot\(\)\?\.box \|\| null : null\),/);
     assert.match(game, /box: \{ left, top, right: left \+ b\.width \* sx, bottom \}/);
+  });
+});
+
+describe('G878 (#425): a notice column beside the avatar keeps its side while notices are up', () => {
+  const W = { rootW: 812, rootH: 402 };
+  const centred = { left: 186, right: 626, top: 90, bottom: 170 };
+  const at = (x) => ({ left: x, top: 100, right: x + 50, bottom: 180 });
+  it('walking across the middle, the column stays on the side it opened on', () => {
+    let hold = noticesBesideAvatar({ ...W, rect: centred, avatar: at(390) });
+    assert.equal(hold.side, 'left', 'opened on the roomier side');
+    // Unheld, a few steps left flips it to the other side: the jump the report saw.
+    assert.equal(noticesBesideAvatar({ ...W, rect: centred, avatar: at(360) }).side, 'right');
+    for (let x = 390; x >= 200; x -= 4) {
+      hold = noticesBesideAvatar({ ...W, rect: centred, avatar: at(x), hold });
+      assert.equal(hold.side, 'left', `x ${x}`);
+      assert.ok(hold.left + hold.width <= x - 10, 'never over the avatar');
+    }
+  });
+  it('it keeps its place as the avatar walks away, and is pushed only when the avatar walks into it', () => {
+    const first = noticesBesideAvatar({ ...W, rect: centred, avatar: at(560) });
+    assert.deepEqual(first, { left: 110, width: 440, side: 'left' });
+    const away = noticesBesideAvatar({ ...W, rect: centred, avatar: at(640), hold: first });
+    assert.equal(away.left, first.left, 'no slide with each step');
+    const into = noticesBesideAvatar({ ...W, rect: centred, avatar: at(500), hold: away });
+    assert.equal(into.side, 'left');
+    assert.equal(into.left + into.width, 500 - 10, 'pushed along, still clear of the avatar');
+  });
+  it('a held column stays beside even where the centred stack would miss the avatar; its side out of room, it changes once', () => {
+    const hold = noticesBesideAvatar({ ...W, rect: centred, avatar: at(390) });
+    assert.equal(noticesBesideAvatar({ ...W, rect: centred, avatar: { ...at(390), top: 300, bottom: 380 } }), null);
+    assert.equal(noticesBesideAvatar({ ...W, rect: centred, avatar: { ...at(390), top: 300, bottom: 380 }, hold }).side, 'left');
+    const squeezed = noticesBesideAvatar({ ...W, rect: centred, avatar: at(150), hold });
+    assert.equal(squeezed.side, 'right');
+  });
+  it('the view holds it for the notices\' life and forgets it when they are gone', () => {
+    const view = read('public/js/notify-view.js');
+    assert.match(view, /keepOut: zones\.keepOut, hold: besideHold \}\)/);
+    assert.match(view, /setBeside\(rect === centred \? null : side\);\n    besideHold = rect === centred \? null : side;/);
+    assert.match(view, /shownBox = null;\n      \/\/ G878: [^\n]*\n      besideHold = null;\n      return;/);
   });
 });
 

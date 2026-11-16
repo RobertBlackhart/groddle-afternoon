@@ -267,12 +267,18 @@ export const BESIDE_MIN_W = 180;
  * insetL / insetR the side sheet and the drawer; safeL / safeR the screen's safe area (a notch);
  * keepOut the phone's stick and Jump (the column stops short of whichever stands on its side: a
  * notice over Jump would take the thumb's tap).
+ * G878 (#425): `hold` is where the stack stood beside the avatar last frame ({ left, width, side }).
+ * While notices are up it keeps that side as long as the side has room, wherever the avatar walks
+ * (picking the roomier side every frame flipped it across the avatar at the middle of the screen),
+ * and keeps its place there until the avatar walks into it, when it is pushed along (hugging the
+ * avatar every frame slid it with each step). Returns { left, width, side }.
  */
-export function noticesBesideAvatar({ rect, avatar, rootW, rootH, insetL = 0, insetR = 0, safeL = 0, safeR = 0, keepOut = [], margin = 10, edge = 8 } = {}) {
+export function noticesBesideAvatar({ rect, avatar, rootW, rootH, insetL = 0, insetR = 0, safeL = 0, safeR = 0, keepOut = [], margin = 10, edge = 8, hold = null } = {}) {
   if (!rect || !avatar || !(rootH > 0) || rootH >= SHORT_SCREEN_H) return null;
   const overlaps = rect.left < avatar.right + margin && rect.right > avatar.left - margin
     && rect.top < avatar.bottom + margin && rect.bottom > avatar.top - margin;
-  if (!overlaps) return null;
+  const held = hold && (hold.side === 'left' || hold.side === 'right') ? hold : null;
+  if (!overlaps && !held) return null;
   let minL = edge + Math.max(0, insetL, safeL);
   let maxR = rootW - edge - Math.max(0, insetR, safeR);
   for (const k of keepOut || []) {
@@ -282,12 +288,25 @@ export function noticesBesideAvatar({ rect, avatar, rootW, rootH, insetL = 0, in
   }
   const leftRoom = avatar.left - margin - minL;
   const rightRoom = maxR - (avatar.right + margin);
-  const room = Math.max(leftRoom, rightRoom);
-  if (room < BESIDE_MIN_W) return null;
+  let side = null;
+  if (held && (held.side === 'left' ? leftRoom : rightRoom) >= BESIDE_MIN_W) side = held.side;
+  else {
+    // A new column (or its side ran out of room): the roomier side, only while it covers the avatar.
+    if (!overlaps || Math.max(leftRoom, rightRoom) < BESIDE_MIN_W) return null;
+    side = leftRoom >= rightRoom ? 'left' : 'right';
+  }
+  const room = side === 'left' ? leftRoom : rightRoom;
   const width = Math.floor(Math.min(NOTICE_W, room));
   // Hug the avatar's side, so the column stays as near the middle as it can.
-  const left = leftRoom >= rightRoom ? avatar.left - margin - width : avatar.right + margin;
-  return { left: Math.round(left), width };
+  const hug = side === 'left' ? avatar.left - margin - width : avatar.right + margin;
+  let left = hug;
+  if (held && held.side === side && Number.isFinite(held.left)) {
+    // Where it stood, while that still clears the avatar and the screen's edge.
+    const lo = side === 'left' ? minL : avatar.right + margin;
+    const hi = side === 'left' ? avatar.left - margin - width : maxR - width;
+    left = Math.min(Math.max(held.left, lo), hi);
+  }
+  return { left: Math.round(left), width, side };
 }
 
 /** The screen's safe area at the sides, CSS px (0 where there is none or no stylesheet). */
@@ -318,6 +337,8 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
   let zones = { top: 12, banner: [], blockers: [], maxBottom: Infinity, rootW: 0, rootH: 0, insetL: 0, insetR: 0, avatar: null };
   /** LANDSCAPE: the column beside the avatar the stack stands in ({ left, width }), or null (centred). */
   let beside = null;
+  /** G878: the column the stack stood in last frame, held while notices are up (noticesBesideAvatar hold). */
+  let besideHold = null;
   let shiftKey = '';
   let place = { dy: 0, wait: false };
   let holdWhy = '';
@@ -478,6 +499,8 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
     if (!h) {
       place = { dy: 0, wait: false };
       shownBox = null;
+      // G878: the notices are gone, so the next ones pick their side afresh.
+      besideHold = null;
       return;
     }
     // A phone's side sheet leaves a sliver: the notices wait instead of standing one letter wide in it.
@@ -498,7 +521,7 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
     // cover it), it steps beside it (noticesBesideAvatar).
     const probe = place.wait ? centred : { ...centred, top: centred.top + place.dy, bottom: centred.bottom + place.dy };
     const side = zones.avatar
-      ? noticesBesideAvatar({ rect: probe, avatar: zones.avatar, rootW: zones.rootW, rootH: zones.rootH, insetL: zones.insetL, insetR: zones.insetR, safeL: zones.safeL, safeR: zones.safeR, keepOut: zones.keepOut })
+      ? noticesBesideAvatar({ rect: probe, avatar: zones.avatar, rootW: zones.rootW, rootH: zones.rootH, insetL: zones.insetL, insetR: zones.insetR, safeL: zones.safeL, safeR: zones.safeR, keepOut: zones.keepOut, hold: besideHold })
       : null;
     if (side) {
       const sh = beside ? h : Math.ceil((h * w) / side.width);
@@ -511,6 +534,7 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
       }
     }
     setBeside(rect === centred ? null : side);
+    besideHold = rect === centred ? null : side;
     const top = Math.round(zones.top + place.dy);
     if (stack.style.top !== `${top}px`) stack.style.top = `${top}px`;
     shownBox = place.wait ? null : { left: rect.left, right: rect.right, top, bottom: top + h };
