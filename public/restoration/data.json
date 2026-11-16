@@ -2792,9 +2792,24 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2369,
+  "commits": 2374,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The project window says why a solo project near the start asks less"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A solo project phase the new smaller amounts already fill finishes when you open its board"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Solo street projects near the start ask far less, and no skills"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2899,24 +2914,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "On a narrow screen the route card sits under the pinned quests, not over them"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Upright on a phone, pack search shows its hits, and typed letters show at once"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The phone street sheet has a Map button"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Sideways on a phone, the report window's picture buttons no longer cover its words"
    }
   ]
  },
- "tests": 1050,
+ "tests": 1051,
  "generatedAt": "2026-11-16"
 }
