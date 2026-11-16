@@ -77,7 +77,8 @@ describe('street physics', () => {
   });
 
   test('103 archived streets carry physics; 91 differ from normal', () => {
-    const rows = allStreets().filter((s) => s.physics);
+    // The subway stations are reconstructions with a camera offset of their own (G838), not archived physics.
+    const rows = allStreets().filter((s) => s.physics && !s.reconstructed);
     assert.equal(rows.length, 103);
     assert.equal(rows.filter((s) => Object.keys(s.physics.delta).length).length, 91);
     assert.equal(rows.filter((s) => s.physics.setting.jetpack === 1).length, 49);
