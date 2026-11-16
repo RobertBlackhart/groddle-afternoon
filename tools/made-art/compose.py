@@ -5,21 +5,31 @@ each a crop, a render or a side-by-side composed from the game's own files, writ
 public/assets/made-art/ and recorded in tools/made-art/showcase.json (sha256, size, what it shows
 and what it was made from), which tools/made-art/build-data.mjs checks against the files.
 
-  python3.11 -I tools/made-art/compose.py --shots <dir>
+  python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
-<dir> holds three PNG screenshots of the game served from this checkout at deviceScaleFactor 2
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room) and keeps every other record of
+showcase.json as it is, so a new piece does not need the older pieces' screenshots.
+
+<dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
 (tools/qa/serve.mjs; the steps are in each entry's `made`):
   subway-render.png   js/map-views.js renderSubwayMapSvg at 760 x 460 on the game's style.css, the
                       names and line buttons hidden
   room-before.png     the tutorial's EZ Cooking pick on Breezy, EZ Cookin' (1280 x 800), the avatar
                       placed at x 1640, with the street JSON of 51a268aa9d^ (the stand-ins) served
   room-after.png      the same with today's street
+  lp-before.png       Walk Toward the Light (?questdemo=puzzle_level_light_perspective&questautoplay=final,
+                      1280 x 800) at its spotlight run, every page element but the canvas hidden, drawn with
+                      light-perspective.js of 2026-11-16 before the made art (b4381e64556)
+  lp-after.png        the same with today's room
+  rg-before.png       Radiant Glare (?questdemo=radiant_glare&questautoplay=mixer, 1280 x 800) at its
+                      green mixer, likewise, with radiant-glare.js of b4381e64556
+  rg-after.png        the same with today's room
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
 """
 import argparse, hashlib, json, os, subprocess, sys
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PUB = os.path.join(ROOT, 'public')
@@ -117,6 +127,62 @@ def props_scene():
     return img, used
 
 
+# Walk Toward the Light and Radiant Glare: the light-puzzle rig's made pieces (js/quest-rooms/light-rig-art.js), on paper at
+# 3 px a unit, the grey ones also tinted as the rooms tint them (a Pixi tint multiplies each channel).
+def tinted(img, hexc):
+    if hexc is None:
+        return img
+    t = Image.new('RGBA', img.size, ((hexc >> 16) & 255, (hexc >> 8) & 255, hexc & 255, 255))
+    out = ImageChops.multiply(img, t)
+    out.putalpha(img.split()[3])
+    return out
+
+
+def lighten(hexc, t):
+    return sum(round(((hexc >> sh) & 255) * (1 - t) + 255 * t) << sh for sh in (16, 8, 0))
+
+
+def rig_sheet(size, items):
+    """items: (name, x, y, w, h, tint) in units, top-left; returns the sheet and the files used."""
+    img = Image.new('RGBA', (size[0] * S, size[1] * S), PAPER)
+    used = {}
+    for name, x, y, w, h, tint in items:
+        p = os.path.join(PUB, 'assets/decos/groddle', f'{name}@1.5x.webp')
+        used[p] = source(p)
+        art = tinted(Image.open(p).convert('RGBA').resize((round(w * S), round(h * S)), Image.LANCZOS), tint)
+        img.alpha_composite(art, (round(x * S), round(y * S)))
+    return img, list(used.values())
+
+
+# Tints the rooms use (light-perspective.js LIGHT_COLORS and POLE_TINT, radiant-glare.js LIGHT), lightened 12% (dishes)
+# and 12% / 30% (bulbs off / lit) as js/quest-rooms/light-rig-art.js does.
+LP_YELLOW, LP_BLUE, LP_POLE = 0xf3d33c, 0x4d6bff, 0xff6a5e
+RG = {'red': 0xe8584a, 'yellow': 0xe8d54a, 'blue': 0x4f6fe0}
+
+
+def lp_props():
+    seg, step = 75 * 34 / 32, (75 - 2.55) * 34 / 32
+    items = [('gz_ai_lp_shade', 14, 12, 100, 26, None),
+             ('gz_ai_lp_dish', 14, 56, 240, 50, None),
+             ('gz_ai_lp_dish', 14, 118, 120, 25, lighten(LP_YELLOW, 0.12)),
+             ('gz_ai_lp_dish', 140, 118, 120, 25, lighten(LP_BLUE, 0.12))]
+    # The pole as the walls draw it (34 wide): segments from the bottom up, each upper one over the one below, the cap on top.
+    for i in reversed(range(2)):
+        items.append(('gz_ai_lp_pole', 278, 20 + i * step, 34, seg, LP_POLE))
+    items.append(('gz_ai_lp_pole_cap', 278, 20 + 6 * 34 / 32 - 17, 34, 17, LP_POLE))
+    items += [('gz_ai_lp_ledge_left', 14, 186, 40, 48, None), ('gz_ai_lp_ledge_mid', 54, 186, 236, 48, None), ('gz_ai_lp_ledge_right', 290, 186, 40, 48, None)]
+    return rig_sheet((344, 246), items)
+
+
+def rg_props():
+    items = [('gz_ai_rg_spotlight', 12, 14, 62, 150, None)]
+    for i, (k, c) in enumerate(RG.items()):
+        items.append(('gz_ai_rg_bulb_lit', 90 + i * 46, 6, 53, 59, lighten(c, 0.3)))
+        items.append(('gz_ai_rg_bulb_off', 90 + i * 46, 70, 53, 59, lighten(c, 0.12)))
+    items += [('gz_ai_rg_bulb_lit', 228, 6, 53, 59, None), ('gz_ai_rg_bulb_off', 228, 70, 53, 59, None), ('gz_ai_rg_knob', 150, 136, 30, 30, None)]
+    return rig_sheet((290, 176), items)
+
+
 # Region maps: none since lane maps17. The gallery of regions painted again from their thumbnails (maps:<hub>,...) lost its
 # last region when Vortex of Random took The Seams' restore (its 2012 map is the same painting), so the piece, its two
 # composed pictures (maps-thumbs.webp, maps-painted.webp) and this part were dropped; they stay in git history.
@@ -126,16 +192,59 @@ def main():
     global TMP
     ap = argparse.ArgumentParser()
     ap.add_argument('--shots', required=True)
+    ap.add_argument('--only', default='')
     args = ap.parse_args()
+    only = set(filter(None, args.only.split(',')))
+    want = lambda g: not only or g in only
     TMP = os.path.join(args.shots, 'compose-tmp')
     os.makedirs(TMP, exist_ok=True)
     os.makedirs(os.path.join(ROOT, OUT), exist_ok=True)
-    rec = {}
+    rec = json.load(open(REC))['files'] if only else {}
 
     def put(name, dst, what, made, sources):
         w, h = Image.open(dst).size
         rec[rel(dst)] = {'what': what, 'w': w, 'h': h, 'sha256': sha(dst), 'made': made, 'from': sources}
 
+    if want('subway'):
+        subway(args, put)
+    if want('ezc'):
+        ezc(args, put)
+    if want('lp'):
+        img, used = lp_props()
+        put('lp-props', webp(img, 'lp-props'), "Walk Toward the Light's made shade, dish, striped pole and stone ledge",
+            'the made decos (3x files) at the sizes the room draws them, 3 px a unit, on paper: the shade, the grey dish and two tinted copies as the yellow and blue lights show them, two pole segments stacked and tinted red with the cap, and the ledge (left end, middle, right end)', used)
+    if want('rg'):
+        img, used = rg_props()
+        put('rg-props', webp(img, 'rg-props'), "Radiant Glare's made wall spotlight, caged bulbs and pipe knob",
+            'the made decos (3x files) at the sizes of the brief, 3 px a unit, on paper: the spotlight, the caged bulb lit (top) and off (below) tinted red, yellow and blue as the switches tint them and untinted, and the knob', used)
+    # Crops in device px (CSS px x 2): the spotlight run's shades, poles, dishes and ledge; the mixer's console, dishes and spotlight.
+    for room, title, how, box in (('lp', 'Walk Toward the Light at its spotlight run', 'questautoplay=final', (320, 160, 2240, 1288)),
+                                  ('rg', "Radiant Glare's mixer lit green", 'questautoplay=mixer', (560, 472, 2480, 1600))):
+        if not want(f'{room}-room'):
+            continue
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'{room}-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (2560, 1600), s.size
+            s = s.crop(box).resize((720, 423), Image.LANCZOS)
+            name = f'{room}-room-vectors' if which == 'before' else f'{room}-room'
+            what = f"{title}, drawn in plain shapes before the made art" if which == 'before' else f"{title} with its made art"
+            module = 'the room module of b4381e64556 (before the made art)' if which == 'before' else "today's room"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (1280 x 800, deviceScaleFactor 2, {how}), every page element but the canvas hidden, {module}; cropped to x {box[0] // 2}-{box[2] // 2}, y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 423",
+                [{'shot': f'{room}-{which}.png', 'sha256': sha(shot)}])
+
+    doc = {'format': 'groddle-made-showcase/1',
+           'about': 'Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and game screenshots; tools/made-art/build-data.mjs checks each against its sha256.',
+           'files': dict(sorted(rec.items()))}
+    open(REC, 'w').write(json.dumps(doc, indent=1, ensure_ascii=False) + '\n')
+    for f in os.listdir(TMP):
+        os.remove(os.path.join(TMP, f))
+    os.rmdir(TMP)
+    print('\n'.join(f"{k}: {v['w']} x {v['h']}" for k, v in rec.items()))
+
+
+def subway(args, put):
     # Subway: the sign's little map (Tiny Speck, CC0) and the paper with the line on it.
     sign = os.path.join(PUB, 'assets/sprites/icons/subway_map@3x.webp')
     crop = Image.open(sign).convert('RGBA').crop((27, 47, 259, 205))
@@ -150,6 +259,8 @@ def main():
         "screenshot of js/map-views.js renderSubwayMapSvg (the Map's Subway view) at 760 x 460, deviceScaleFactor 2, on the game's style.css with the station names and line buttons hidden; the rounded corners cropped (8 px), Lanczos to 752 x 452",
         [source(paper), {'file': 'public/js/map-views.js'}, {'shot': 'subway-render.png', 'sha256': sha(shot)}])
 
+
+def ezc(args, put):
     # EZ Cookin': the drawing the model was given, and what came back, at the same scale.
     put('ezc-props-outline', webp(outline_drawing(), 'ezc-props-outline'), "Our drawing of EZ Cookin's table, counter and lamp, at their measured sizes",
         'drawn by compose.py from the outlines of research/art-briefs/ez-cookin/attach/01-measurements-ours.svg (our own measurement drawing) at their measured sizes, lamp, counter and table one above the other 24 units apart, 3 px a unit', [])
@@ -166,15 +277,6 @@ def main():
         put(name, webp(s, name, q=84), what,
             f"screenshot of the game (1280 x 800, deviceScaleFactor 2): the tutorial's EZ Cooking pick (?newxp=skill&newxpskill=ezcooking_1, Aiight), the avatar placed at x 1640, {how}; the HUD cropped off (x 232-1220, y 60-640), Lanczos to 720 x 423",
             [{'shot': f'room-{which}.png', 'sha256': sha(shot)}])
-
-    doc = {'format': 'groddle-made-showcase/1',
-           'about': 'Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and three game screenshots; tools/made-art/build-data.mjs checks each against its sha256.',
-           'files': dict(sorted(rec.items()))}
-    open(REC, 'w').write(json.dumps(doc, indent=1, ensure_ascii=False) + '\n')
-    for f in os.listdir(TMP):
-        os.remove(os.path.join(TMP, f))
-    os.rmdir(TMP)
-    print('\n'.join(f"{k}: {v['w']} x {v['h']}" for k, v in rec.items()))
 
 
 if __name__ == '__main__':

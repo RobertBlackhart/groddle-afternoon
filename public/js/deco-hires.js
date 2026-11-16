@@ -26,7 +26,7 @@
  * draws the 2x file as before.
  */
 import { HIRES_DECOS, HIRES_DECOS_BIG } from './deco-hires-list.js?v=60fcf361';
-import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=bf75b325';
+import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=ec115f5d';
 
 /** A published zone's new art (gz_ decos, js/deco-new-list.js): drawn like library decos. */
 export { NEW_DECOS };

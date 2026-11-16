@@ -2,10 +2,11 @@
  "format": "groddle-made-decos/1",
  "about": "New decos made for Groddle's own rebuilt streets (not a published zone): AI-generated or own work, dedicated CC0 1.0 with who or what made them and from what inputs (tools/builder/licence-policy.json). They ship as gz_ files beside the library's, kept out of assets/decos/manifest.json; tools/builder/build-zones.mjs lists them in js/deco-new-list.js after checking each file's sha256 here, and tests/g316-provenance.test.js allows exactly these files with the zones' new-art.json.",
  "references": [
-  "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words"
+  "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
+  "Players' 2012 Snaps of Walk Toward the Light and Radiant Glare (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt)",
- "count": 3,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 and 02: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
+ "count": 14,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -305,6 +306,1039 @@
    "intake": {
     "on": "2026-11-13",
     "by": "Claude (lane madeart): sizes checked against attach/01; trimmed and resized only, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_dish": {
+   "what": "The dish platform, neutral grey, tinted by the light it appears in (every coloured platform of both rooms)",
+   "file": "public/assets/decos/groddle/gz_ai_lp_dish.webp",
+   "sha256": "0f22e6267af28fd615dbbe57870a58cee162bab0b41fa2c2d099f28517c86301",
+   "bytes": 9748,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_dish@1.5x.webp",
+   "sha256_3": "4d8a51a01f6564fe429651c041347079897ab2035ef1aeacde0eebf6e9504d86",
+   "bytes3": 16306,
+   "w": 240,
+   "h": 50,
+   "size": "240 x 50 units (brief); the drawing (upper of the pair) is 693 x 171 px, 4.05 to 1, pressed 16% in height to the brief's 4.8 to 1 (model.txt: split the pair and press about 20% to its ratio); drawn at each platform's width",
+   "replaces": "drawCloud (light-perspective.js) and drawDisc (radiant-glare.js): vector dishes",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the dish and a wider copy (the wider copy is not used)",
+   "prompt": "Draw piece A from attachment 1: a floating dish platform from the game's puzzle level \"Walk Toward the Light\".\n\nWhat it is: a shallow, wide, rounded bowl of rough stone that floats in the air, like a flattened mushroom cap turned over. The top is a flat, walkable surface, slightly lobed at the edge like a cloud seen from the side, with a few soft rings and puddle-like hollows drawn on it (attachment 2 shows yellow and blue ones, attachment 3 green ones). The rim is a little lighter than the top. Underneath, the bowl curves down to a soft rounded bottom with a few rough bumps and faint stone grain.\n\nColour: neutral light grey only (top surface very light grey, nearly white; the underside mid grey; the darkest shading a darker grey). The game tints it with coloured light, so it must have no colour of its own and no glow.\n\nSize: 240 x 50 units, the flat top in the upper 14 units. Draw it at 4 px per unit: 960 x 200 px, on a wider canvas if needed (it must stay about 4.8 times as wide as it is tall).\nThen a second picture, a wider copy: 320 x 58 units, 1280 x 232 px, same look.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/A-dish-platform.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/A-dish-both.png",
+    "dropSha256": "e110cd87585ae896b4d15b1a4cbac1c92b11eeb80ffd5e635aa1ecc855f1d3ac",
+    "trim": "the upper dish, alpha over 8: x 165-858, y 167-338",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 480 x 100 and 720 x 150",
+    "masterSha256": {
+     "x2": "1119c93be226d51cf586671185a92a7af47df158f182828f020393f8925c1560",
+     "x3": "33bffa4781560e3d2ffdf3498d50650e76175394d3459530fdd8843e49c7a9fd"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_shade": {
+   "what": "The ceiling lamp shade over each spotlight dish light",
+   "file": "public/assets/decos/groddle/gz_ai_lp_shade.webp",
+   "sha256": "4eb21744b08899bf41e547551c9fb0645a9b4ac9163165348f5685d2a4fd7f2c",
+   "bytes": 4656,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_shade@1.5x.webp",
+   "sha256_3": "d5032cab24c976ee4e63efe6a0e4dd7c82ac256e9818426d0e622448824c6d65",
+   "bytes3": 7518,
+   "w": 100,
+   "h": 26,
+   "size": "100 x 32 units in the brief; as drawn (Austin 2026-11-16: its flatter shape matches the 2012 shades), 876 x 224 px, 100 x 26; drawn 96 wide",
+   "replaces": "drawShade (light-perspective.js): a vector dome",
+   "rooms": [
+    "light_perspective"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3 Standard, transparent, 1 image; 1024 x 768",
+   "prompt": "Draw piece B from attachment 1: a ceiling lamp shade from the puzzle level \"Walk Toward the Light\" (attachment 2 shows four of them at the top, attachment 3 one more).\n\nWhat it is: a wide, shallow cone of dark charcoal metal, seen from the side and a little below, like a flat Asian hat or a low wok lid. Its surface is covered with small round perforations and little raised dots, catching tiny grey highlights. A small round collar at the top centre where the cord meets it. The underside rim is a thin lighter band. No bulb, no light, no cord: the game adds the cord and the light.\n\nSize: 100 x 32 units. Draw it at 4 px per unit: 400 x 128 px.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/B-lamp-shade.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/B-shade.png",
+    "dropSha256": "539f900f3c6c6a0d46dfeb835fc733a6da8df0675a0fbe7e349c4e52df18ae62",
+    "trim": "alpha over 8: x 74-950, y 290-514",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 200 x 52 and 300 x 78",
+    "masterSha256": {
+     "x2": "0c0d0fac257301c14f01f63aac16153faddd8898fb05f26f0e7a94d92fe7a9bb",
+     "x3": "8f723ab77ed5b45e6f13c2650386766d62dce01c2325ffb1cd75f79aacb68533"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_pole": {
+   "what": "The striped pole segment (one dark band, one light), neutral grey, stacked and tinted into the red walls",
+   "file": "public/assets/decos/groddle/gz_ai_lp_pole.webp",
+   "sha256": "775da8b532d5bdcc2419d02d318cb5b76cdded1628e26ad2ebd3e932853e2fb0",
+   "bytes": 1926,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_pole@1.5x.webp",
+   "sha256_3": "0538a1df05d33d16afc8d0d27c26e33ee2b214e25f12e9c15ddd98408554bf2d",
+   "bytes3": 3140,
+   "w": 32,
+   "h": 75,
+   "size": "32 x 68 units tiling in the brief; the second try's segment is 226 x 530 px, 32 x 75; stacked with 18 px of the drawing (2.55 units) overlap, upper over lower (model.txt), cut at the wall's foot",
+   "replaces": "drawPole (light-perspective.js): vector bands",
+   "rooms": [
+    "light_perspective"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the segment and the cap (second try, same chat; the first try, C-pole-both-2.png, is not used)",
+   "prompt": "Draw piece C from attachment 1: one repeating segment of the tall striped light pole from the puzzle level \"Walk Toward the Light\" (attachment 2 shows two red ones, left and right).\n\nWhat it is: a round vertical column made of stacked bands, slightly uneven like hand-stacked rings, with soft round shading (darker at both sides, a soft highlight a little left of centre). Two bands per segment, each 34 units tall: one dark, one light.\n\nColour: neutral grey only (the dark band mid grey, the light band very light grey). The game tints it red, orange or pink with light.\n\nSize: the segment 32 x 68 units, drawn at 4 px per unit: 128 x 272 px. It must tile seamlessly from top to bottom (the top edge meets the bottom edge of the next copy).\nThen a second picture: the pole's top cap, 32 x 12 units (128 x 48 px), the rounded top of the column seen a little from above, same grey.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/C-striped-pole.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/C-pole-both.png",
+    "dropSha256": "ee26f6a594c6a9d3156a3f61de03725daa893ef97f89b10cb2150ccc23228e09",
+    "trim": "the segment, alpha over 8: x 399-625, y 189-719",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 64 x 150 and 96 x 225",
+    "masterSha256": {
+     "x2": "72999bd8d4241ae5b81a6e49c9aba97bdea0179251e062732655c67eed50b30c",
+     "x3": "1cd4c10d68cb4c68b5bc12238778678f1ec81e69b110710752e1c7b9439b2a66"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_pole_cap": {
+   "what": "The striped pole's top cap, neutral grey, tinted with the pole",
+   "file": "public/assets/decos/groddle/gz_ai_lp_pole_cap.webp",
+   "sha256": "61606b912e9f48df0a9f21bd13d37a21bf5bb3516a286cd24fb2cd57989f6dcb",
+   "bytes": 1108,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_pole_cap@1.5x.webp",
+   "sha256_3": "3b4dcb62c849bc313bf90f0341c9a2554fddf3ee39772f53d0fd29f304200a59",
+   "bytes3": 1704,
+   "w": 32,
+   "h": 16,
+   "size": "32 x 12 units in the brief; drawn 224 x 114 px, 32 x 16",
+   "replaces": "drawPole's top ellipse (light-perspective.js)",
+   "rooms": [
+    "light_perspective"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the segment and the cap (second try)",
+   "prompt": "Draw piece C from attachment 1: one repeating segment of the tall striped light pole from the puzzle level \"Walk Toward the Light\" (attachment 2 shows two red ones, left and right).\n\nWhat it is: a round vertical column made of stacked bands, slightly uneven like hand-stacked rings, with soft round shading (darker at both sides, a soft highlight a little left of centre). Two bands per segment, each 34 units tall: one dark, one light.\n\nColour: neutral grey only (the dark band mid grey, the light band very light grey). The game tints it red, orange or pink with light.\n\nSize: the segment 32 x 68 units, drawn at 4 px per unit: 128 x 272 px. It must tile seamlessly from top to bottom (the top edge meets the bottom edge of the next copy).\nThen a second picture: the pole's top cap, 32 x 12 units (128 x 48 px), the rounded top of the column seen a little from above, same grey.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/C-striped-pole.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/C-pole-both.png",
+    "dropSha256": "ee26f6a594c6a9d3156a3f61de03725daa893ef97f89b10cb2150ccc23228e09",
+    "trim": "the cap, alpha over 8: x 400-624, y 54-168",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 64 x 32 and 96 x 48",
+    "masterSha256": {
+     "x2": "6f8361a7bc112c5498e3a519c28cb65defbd83d5475860d14cefb6706fc9e519",
+     "x3": "116be2b8f4624557eead924393f9148431f56ccc7111122f1656339997e7c10a"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_ledge_left": {
+   "what": "The stone ledge's left end",
+   "file": "public/assets/decos/groddle/gz_ai_lp_ledge_left.webp",
+   "sha256": "203f1f1781d4b147bd95264560c9e97bbe51fc183b5ffa372333d5ffd28c070c",
+   "bytes": 1540,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_ledge_left@1.5x.webp",
+   "sha256_3": "664f7c5e6852c89ebf49d7894fc5364d3857c4944d1898960cc62e9e9ee6b83d",
+   "bytes3": 2620,
+   "w": 40,
+   "h": 48,
+   "size": "40 x 48 units (brief); the drawn end is 154 px wide (1.24 to 1), narrowed to the brief by cutting its inner, flat front side: x 28-133",
+   "replaces": "drawSlab (both rooms), drawConsole and drawTotem's slabs (radiant-glare.js): vector rock",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the left end, the middle and the right end side by side",
+   "prompt": "Draw piece D from attachment 1: the stone ledge the player walks on in the puzzle level \"Walk Toward the Light\" (attachment 4 shows it at the bottom: a thick dark slab with a lighter worn top edge and a bevelled end).\n\nWhat it is: a thick slab of dark charcoal stone with a fine gritty texture, a lighter, slightly worn top edge (the walking line), small chips along the front, and a darker bottom. Three pictures:\n1. the middle, which tiles seamlessly left to right: 256 x 48 units (1024 x 192 px);\n2. the left end, with a bevelled corner: 40 x 48 units (160 x 192 px);\n3. the right end, the mirror of the left: 40 x 48 units (160 x 192 px).\nThe top edge sits at exactly the same height in all three.\n\nColour: dark charcoal greys, as in attachment 4 (this piece keeps its own colour).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/D-stone-ledge.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/D-ledge-all.png",
+    "dropSha256": "c683834c83ae226337220948556dc9a70823c78232ebaf45d0721b3f58d942a9",
+    "trim": "rows y 333-458 (the three top edges level), soft side edges cut (columns of alpha over 200 only): x 28-133",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 80 x 96 and 120 x 144",
+    "masterSha256": {
+     "x2": "45a08e28681ff3e7e9ec4cd4b72ca77b726dcc0af14724e7a6517e0def1fd428",
+     "x3": "879e242d57c968ad152b9be8fc1b242114ca76df7bed816f8295ae8a6830c556"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_ledge_mid": {
+   "what": "The stone ledge's middle, tiled left to right along every ledge and floor",
+   "file": "public/assets/decos/groddle/gz_ai_lp_ledge_mid.webp",
+   "sha256": "ba7bc65f7a0c9a5e220bcd20440cd25583ecd9f4e3f02df6e6b483bb01c86c05",
+   "bytes": 4866,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_ledge_mid@1.5x.webp",
+   "sha256_3": "6c5dcfd81a1645522e0105ca312b3de14102f44727dace92576a84bd94f64a44",
+   "bytes3": 7940,
+   "w": 236,
+   "h": 48,
+   "size": "256 x 48 units in the brief; drawn 4.97 to 1 (7% short of 5.33), 236 x 48; it tiles, so only its height matters",
+   "replaces": "drawSlab (both rooms), drawConsole and drawTotem's slabs (radiant-glare.js): vector rock",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the left end, the middle and the right end side by side",
+   "prompt": "Draw piece D from attachment 1: the stone ledge the player walks on in the puzzle level \"Walk Toward the Light\" (attachment 4 shows it at the bottom: a thick dark slab with a lighter worn top edge and a bevelled end).\n\nWhat it is: a thick slab of dark charcoal stone with a fine gritty texture, a lighter, slightly worn top edge (the walking line), small chips along the front, and a darker bottom. Three pictures:\n1. the middle, which tiles seamlessly left to right: 256 x 48 units (1024 x 192 px);\n2. the left end, with a bevelled corner: 40 x 48 units (160 x 192 px);\n3. the right end, the mirror of the left: 40 x 48 units (160 x 192 px).\nThe top edge sits at exactly the same height in all three.\n\nColour: dark charcoal greys, as in attachment 4 (this piece keeps its own colour).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/D-stone-ledge.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/D-ledge-all.png",
+    "dropSha256": "c683834c83ae226337220948556dc9a70823c78232ebaf45d0721b3f58d942a9",
+    "trim": "rows y 333-458, soft side edges cut (alpha over 200, then 2 more columns a side, so tiles meet with no hairline): x 202-822",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 472 x 96 and 708 x 144",
+    "masterSha256": {
+     "x2": "6fe6932b4412bd23fc44b3ff4690027cab8f915cf84aba19652d1d9168b4cdf4",
+     "x3": "b2faeb3079d08be145474c6428a74db91963979be26c86e662cdd3545de74af8"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_lp_ledge_right": {
+   "what": "The stone ledge's right end",
+   "file": "public/assets/decos/groddle/gz_ai_lp_ledge_right.webp",
+   "sha256": "be9697270b40c18ac17a74dc8a1c3bca30f5ab2198bf0b9d8e027ec445e46a67",
+   "bytes": 1604,
+   "file3": "public/assets/decos/groddle/gz_ai_lp_ledge_right@1.5x.webp",
+   "sha256_3": "5908f274b5c77121955e1db7b410b9e5a8065388277f76856be382d04eb0de01",
+   "bytes3": 2774,
+   "w": 40,
+   "h": 48,
+   "size": "40 x 48 units (brief); the drawn end is 155 px wide, narrowed to the brief by cutting its inner, flat front side: x 892-997",
+   "replaces": "drawSlab (both rooms), drawConsole and drawTotem's slabs (radiant-glare.js): vector rock",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/model.txt (\"room 01 accepted\")"
+   },
+   "settings": "4:3, transparent, 1 image; 1024 x 768 holding the left end, the middle and the right end side by side",
+   "prompt": "Draw piece D from attachment 1: the stone ledge the player walks on in the puzzle level \"Walk Toward the Light\" (attachment 4 shows it at the bottom: a thick dark slab with a lighter worn top edge and a bevelled end).\n\nWhat it is: a thick slab of dark charcoal stone with a fine gritty texture, a lighter, slightly worn top edge (the walking line), small chips along the front, and a darker bottom. Three pictures:\n1. the middle, which tiles seamlessly left to right: 256 x 48 units (1024 x 192 px);\n2. the left end, with a bevelled corner: 40 x 48 units (160 x 192 px);\n3. the right end, the mirror of the left: 40 x 48 units (160 x 192 px).\nThe top edge sits at exactly the same height in all three.\n\nColour: dark charcoal greys, as in attachment 4 (this piece keeps its own colour).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/prompts/D-stone-ledge.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-dishes-shades-poles-snap-85454.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-and-dishes-snap-85798.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-stone-ledge-snap-85232.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a",
+    "deco:firebog_sign_blank_plank",
+    "deco:rainbow"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "276822d556af9e6779434e8bf5c2526f5de8df0092079cc713e02ba2fc96c798",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-dishes-shades-poles-snap-85454.png",
+     "sha256": "2855e128cedfa03f44c411d3a28be8d636e2415635fed4fb38caa0418b897839",
+     "what": "a player's 2012 Snap of the room: two dishes, four shades, two poles",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-and-dishes-snap-85798.png",
+     "sha256": "ec8143927f91cb7a01389737357f48f08b6bf16daa5cb34f34e7817aa6462926",
+     "what": "a player's 2012 Snap of the room: the colour switch rig and mixed light",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-stone-ledge-snap-85232.png",
+     "sha256": "b7dd496e4b52bd8f32dbbd417e27c9b2072951b4a93e9962aa04714faa51d002",
+     "what": "a player's 2012 Snap of the room: the stone ledge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7e4ef7cfa902f6af8cd66e7b72ece365d8acf706d3c5067a90084daba0994e8f",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a, firebog_sign_blank_plank, rainbow (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/01-walk-toward-the-light/drop/D-ledge-all.png",
+    "dropSha256": "c683834c83ae226337220948556dc9a70823c78232ebaf45d0721b3f58d942a9",
+    "trim": "rows y 333-458, soft side edges cut (alpha over 200): x 892-997",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 80 x 96 and 120 x 144",
+    "masterSha256": {
+     "x2": "7ab44d921cf1ed8675e3f8d8f85077502c343c94fa992662047d0f5ab7b89e14",
+     "x3": "1618aac9b30aeae819f48da8b9e88e3b504fa971db72cc83ae53c13a4edf3e36"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_rg_spotlight": {
+   "what": "The wall spotlight, facing left (mirrored on the left wall); its two bulbs take the light's colour",
+   "file": "public/assets/decos/groddle/gz_ai_rg_spotlight.webp",
+   "sha256": "3ad50f56299ab8aeaa65c237292f6979d30cdceee13fc6b9bda819a21659af5c",
+   "bytes": 9066,
+   "file3": "public/assets/decos/groddle/gz_ai_rg_spotlight@1.5x.webp",
+   "sha256_3": "7627e99af21d7bf335b3a66998d297ccf6d6abd2844c9697f5b7b9f27cb10c59",
+   "bytes3": 14556,
+   "w": 62,
+   "h": 150,
+   "size": "60 x 150 units (brief, 0.40 to 1); drawn 534 x 1286 px (0.415 to 1), 62 x 150",
+   "replaces": "drawLamp (radiant-glare.js): a vector half-cone",
+   "rooms": [
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snap 98906 and the close-ups, for Austin's preview in the room",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/model.txt (\"Room 02 complete\"; Austin's own yes is still to come)"
+   },
+   "settings": "9:16, transparent, 1 image; 864 x 1536",
+   "prompt": "Draw piece E from attachment 1: the wall spotlight from the puzzle level \"Radiant Glare\" (attachment 2 shows one at the right edge, cut off by the picture's edge; attachment 4 shows it close up on the left, and a second one from another picture).\n\nWhat it is: a large round reflector dish of dark perforated metal, mounted on the wall and turned to face left, so it is seen almost edge-on: a tall narrow lens shape covered in small round holes and studs, with a short grey bracket and arm on its right side going into the wall. On its face, two round pale bulbs side by side vertically. No light beam: the game draws the beam.\n\nSize: 60 x 150 units. Draw it at 4 px per unit: 240 x 600 px.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/prompts/E-wall-spotlight.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-switch-bulbs-spotlight-snap-98906.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-tree-snap-100580.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-closeups-spotlight-and-bulbs.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "e04225fd17c8e69703102ef6111c1cbd163a8fdb4a2848262b6409f226619ac5",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-switch-bulbs-spotlight-snap-98906.png",
+     "sha256": "11def64eb5d13d06a455226063015452c071eaaf971f6337124cc9c06bab2bc9",
+     "what": "a player's 2012 Snap of the room: the switch rig, a lit bulb, the wall spotlight, green dishes",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-tree-snap-100580.png",
+     "sha256": "2dc0c66ec6e860ccc2a451c5eae221d46c95d2f04059b96013057a3d025362f4",
+     "what": "a player's 2012 Snap of the room: the branching switch tree",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeups-spotlight-and-bulbs.png",
+     "sha256": "f894fdcf96ead58b7224b3ed16e29c35837da4d4f39a4832422bd3d8fc6e853a",
+     "what": "enlarged crops of two spotlights and the bulb rig from players' 2012 Snaps 98906 and 100008",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "e982378007fadfd241eed76960e7d84bb6ec916c907898bc8efc5f44b8d6d7d6",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/E-spotlight.png",
+    "dropSha256": "e93ff76ec942f970082824f6a33d8f2965da651119d93f5b2e0fb2b450d30921",
+    "trim": "alpha over 8: x 168-702, y 127-1413",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 124 x 300 and 186 x 450",
+    "masterSha256": {
+     "x2": "1c1e84e24e1853e8887870ac25b43fd95a8a837527d6c7d01646eeb2793877c4",
+     "x3": "0d5434367bfe4041f050d1e95e9c404d6bf509278cebfb83f795919dabab5a59"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_rg_bulb_off": {
+   "what": "The caged switch bulb, off: pale glass tinted by its colour (both rooms' switch panels, the mixer lamps unlit)",
+   "file": "public/assets/decos/groddle/gz_ai_rg_bulb_off.webp",
+   "sha256": "2a39c1deb9509ccdafe63907399c6ff039b1481c905174c654b92277101dc249",
+   "bytes": 2616,
+   "file3": "public/assets/decos/groddle/gz_ai_rg_bulb_off@1.5x.webp",
+   "sha256_3": "56cac2b0c84e41de2d5784350845bdccd6b81f0c64d75f4b22a5e75dcef918d1",
+   "bytes3": 4184,
+   "w": 53,
+   "h": 59,
+   "size": "26 x 36 units (brief); the bulb drawn 274 x 428 px (0.64 to 1), sized 36 tall; on the lit bulb's halo canvas (53 x 59 units), the bulb at units 14.8, 13.88, 37.85, 49.88",
+   "replaces": "bulbSprite (light-perspective.js), makeBulb and makeMixLamp (radiant-glare.js): vector bulbs",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snap 98906 and the close-ups, for Austin's preview in the room",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/model.txt (\"Room 02 complete\"; Austin's own yes is still to come)"
+   },
+   "settings": "16:9, transparent, 1 image; 1536 x 864 holding the off and the lit bulb",
+   "prompt": "Draw piece F from attachment 1: the caged glass bulb of the switch rigs in the puzzle level \"Radiant Glare\" (attachment 2 shows six along the front of the stone block and a lit green one on the pipe; attachment 3 shows them on a branching pipe; attachment 4 close up).\n\nWhat it is: a small rounded glass bulb, like a ship's bulkhead lamp: a dome of glass inside a cage of thin metal bars (two or three vertical, one or two across), on a short round metal collar at its base. It sits tilted a little, as in the pictures.\n\nTwo pictures, the same bulb:\n1. off: pale, almost white glass, light grey cage. No colour of its own: the game tints the glass red, yellow or blue.\n2. lit: the same bulb glowing, its glass white-hot in the middle, a soft white halo around it (the halo fading to transparent).\n\nSize: 26 x 36 units each (the halo may reach 50 x 60). Draw at 4 px per unit: 104 x 144 px (lit: up to 200 x 240 px).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/prompts/F-caged-bulb.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-switch-bulbs-spotlight-snap-98906.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-tree-snap-100580.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-closeups-spotlight-and-bulbs.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "e04225fd17c8e69703102ef6111c1cbd163a8fdb4a2848262b6409f226619ac5",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-switch-bulbs-spotlight-snap-98906.png",
+     "sha256": "11def64eb5d13d06a455226063015452c071eaaf971f6337124cc9c06bab2bc9",
+     "what": "a player's 2012 Snap of the room: the switch rig, a lit bulb, the wall spotlight, green dishes",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-tree-snap-100580.png",
+     "sha256": "2dc0c66ec6e860ccc2a451c5eae221d46c95d2f04059b96013057a3d025362f4",
+     "what": "a player's 2012 Snap of the room: the branching switch tree",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeups-spotlight-and-bulbs.png",
+     "sha256": "f894fdcf96ead58b7224b3ed16e29c35837da4d4f39a4832422bd3d8fc6e853a",
+     "what": "enlarged crops of two spotlights and the bulb rig from players' 2012 Snaps 98906 and 100008",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "e982378007fadfd241eed76960e7d84bb6ec916c907898bc8efc5f44b8d6d7d6",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/F-bulb-both.png",
+    "dropSha256": "566703fb2ead66f7f5d72bb085bed4e9fc5f0620704e1bed6dc0712bc92a2854",
+    "trim": "the off bulb, alpha over 8: x 325-602, y 240-671, set on the lit bulb's canvas at the lit bulb's place (shift 573, -1 px); its grey glass (unsaturated pixels brighter than 175: 46359) lightened 55% toward white so a tint reads true (model.txt)",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 106 x 118 and 159 x 177",
+    "masterSha256": {
+     "x2": "bcba1c46c279809d28c60cd619d4af0265737c47a035c7be8661253bde22d0ac",
+     "x3": "9c8e29584d92263ac6a50155141784beff6d3ad7255d41b8be1de3442a65c520"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_rg_bulb_lit": {
+   "what": "The caged switch bulb, lit, with its soft halo, tinted by its colour",
+   "file": "public/assets/decos/groddle/gz_ai_rg_bulb_lit.webp",
+   "sha256": "c17dee5b279e4332a579f387f7b0c001c7bd296c030aec3af6ca35e5bae4c852",
+   "bytes": 6756,
+   "file3": "public/assets/decos/groddle/gz_ai_rg_bulb_lit@1.5x.webp",
+   "sha256_3": "8c855e24806772606ad1b0583081940b46317f5fffd7e49fcf08024535715b17",
+   "bytes3": 12026,
+   "w": 53,
+   "h": 59,
+   "size": "26 x 36 units, halo up to 50 x 60 (brief); the same scale as the off bulb: 53 x 59 units with the halo",
+   "replaces": "bulbSprite (light-perspective.js), makeBulb and makeMixLamp (radiant-glare.js): vector bulbs",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snap 98906 and the close-ups, for Austin's preview in the room",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/model.txt (\"Room 02 complete\"; Austin's own yes is still to come)"
+   },
+   "settings": "16:9, transparent, 1 image; 1536 x 864 holding the off and the lit bulb",
+   "prompt": "Draw piece F from attachment 1: the caged glass bulb of the switch rigs in the puzzle level \"Radiant Glare\" (attachment 2 shows six along the front of the stone block and a lit green one on the pipe; attachment 3 shows them on a branching pipe; attachment 4 close up).\n\nWhat it is: a small rounded glass bulb, like a ship's bulkhead lamp: a dome of glass inside a cage of thin metal bars (two or three vertical, one or two across), on a short round metal collar at its base. It sits tilted a little, as in the pictures.\n\nTwo pictures, the same bulb:\n1. off: pale, almost white glass, light grey cage. No colour of its own: the game tints the glass red, yellow or blue.\n2. lit: the same bulb glowing, its glass white-hot in the middle, a soft white halo around it (the halo fading to transparent).\n\nSize: 26 x 36 units each (the halo may reach 50 x 60). Draw at 4 px per unit: 104 x 144 px (lit: up to 200 x 240 px).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/prompts/F-caged-bulb.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-switch-bulbs-spotlight-snap-98906.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-tree-snap-100580.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-closeups-spotlight-and-bulbs.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "e04225fd17c8e69703102ef6111c1cbd163a8fdb4a2848262b6409f226619ac5",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-switch-bulbs-spotlight-snap-98906.png",
+     "sha256": "11def64eb5d13d06a455226063015452c071eaaf971f6337124cc9c06bab2bc9",
+     "what": "a player's 2012 Snap of the room: the switch rig, a lit bulb, the wall spotlight, green dishes",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-tree-snap-100580.png",
+     "sha256": "2dc0c66ec6e860ccc2a451c5eae221d46c95d2f04059b96013057a3d025362f4",
+     "what": "a player's 2012 Snap of the room: the branching switch tree",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeups-spotlight-and-bulbs.png",
+     "sha256": "f894fdcf96ead58b7224b3ed16e29c35837da4d4f39a4832422bd3d8fc6e853a",
+     "what": "enlarged crops of two spotlights and the bulb rig from players' 2012 Snaps 98906 and 100008",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "e982378007fadfd241eed76960e7d84bb6ec916c907898bc8efc5f44b8d6d7d6",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/F-bulb-both.png",
+    "dropSha256": "566703fb2ead66f7f5d72bb085bed4e9fc5f0620704e1bed6dc0712bc92a2854",
+    "trim": "the lit bulb and halo, alpha over 8: x 724-1350, y 76-778",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 106 x 118 and 159 x 177",
+    "masterSha256": {
+     "x2": "1a560701398e9f84a5f2dea5ce2110b006aa2a9ca2c9ae62315a89e515bb667b",
+     "x3": "4a99469378b42fecf4ab9aed5fdfb36280aabe8f419ea491c9768405e2f999c5"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_rg_knob": {
+   "what": "The pipe knob at the switch rigs' junctions",
+   "file": "public/assets/decos/groddle/gz_ai_rg_knob.webp",
+   "sha256": "19608f61141bc8fac3159bd46168a3dfbeb1b415e77ad772dbb38e8f249b9d3e",
+   "bytes": 2014,
+   "file3": "public/assets/decos/groddle/gz_ai_rg_knob@1.5x.webp",
+   "sha256_3": "59e026a11b1eda7fd098cedc73d1e3a3f34deec872ab0b89c3dc3a5ca5a9d1de",
+   "bytes3": 3208,
+   "w": 30,
+   "h": 30,
+   "size": "30 x 30 units (brief); drawn 578 x 590 px (0.98 to 1), 30 x 30; drawn 24 to 28 across",
+   "replaces": "the rig junctions' vector circles (both rooms)",
+   "rooms": [
+    "light_perspective",
+    "radiant_glare"
+   ],
+   "code": "public/js/quest-rooms/light-rig-art.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snap 98906 and the close-ups, for Austin's preview in the room",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/model.txt (\"Room 02 complete\"; Austin's own yes is still to come)"
+   },
+   "settings": "16:9, transparent, 1 image; 1536 x 864",
+   "prompt": "Draw piece G from attachment 1: the round junction knob on the switch pipes in the puzzle level \"Radiant Glare\" (attachments 2 and 3 show them where the pipes meet; attachment 4 close up).\n\nWhat it is: a round dark metal wheel seen face-on, like a valve wheel or a thick washer: a dark charcoal disc with a lighter grey ring around it and a small darker centre, with a soft highlight at the top left. No pipes: the game draws them.\n\nSize: 30 x 30 units. Draw it at 4 px per unit: 120 x 120 px.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/prompts/G-pipe-knob.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-switch-bulbs-spotlight-snap-98906.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:3-ref-switch-tree-snap-100580.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "ref:4-ref-closeups-spotlight-and-bulbs.png (a player's 2012 Snap or crops of one: reference only, never in the repo)",
+    "deco:hanging_lightbulb",
+    "deco:door_asset_gray",
+    "deco:sign_exit_starter_01a"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "e04225fd17c8e69703102ef6111c1cbd163a8fdb4a2848262b6409f226619ac5",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-switch-bulbs-spotlight-snap-98906.png",
+     "sha256": "11def64eb5d13d06a455226063015452c071eaaf971f6337124cc9c06bab2bc9",
+     "what": "a player's 2012 Snap of the room: the switch rig, a lit bulb, the wall spotlight, green dishes",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-switch-tree-snap-100580.png",
+     "sha256": "2dc0c66ec6e860ccc2a451c5eae221d46c95d2f04059b96013057a3d025362f4",
+     "what": "a player's 2012 Snap of the room: the branching switch tree",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeups-spotlight-and-bulbs.png",
+     "sha256": "f894fdcf96ead58b7224b3ed16e29c35837da4d4f39a4832422bd3d8fc6e853a",
+     "what": "enlarged crops of two spotlights and the bulb rig from players' 2012 Snaps 98906 and 100008",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "e982378007fadfd241eed76960e7d84bb6ec916c907898bc8efc5f44b8d6d7d6",
+     "what": "hanging_lightbulb, door_asset_gray, sign_exit_starter_01a: Tiny Speck decos already in the game, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos hanging_lightbulb, door_asset_gray, sign_exit_starter_01a (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/02-radiant-glare/drop/G-knob.png",
+    "dropSha256": "eb8234649cf6a2803cec704ef42101221f63fa07f226c2fc30cbd5352d6b0e43",
+    "trim": "alpha over 8: x 477-1055, y 145-735",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 60 x 60 and 90 x 90",
+    "masterSha256": {
+     "x2": "57f58c67d68539314236abae2c7ea117279ca6d7d00aa319fcf856a0845ed6b6",
+     "x3": "5316a1e7f958264855f69636c35bc218b34128f1099761f58797b55bdceed012"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
    }
   }
  }

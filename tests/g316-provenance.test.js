@@ -25,6 +25,10 @@
  * each region on the Maps page, on the footing of the 2026-10-28 call on the original recordings. They are
  * allowed by path and sha256 only: tools/provenance/encyclopedia-maps.json lists each one's saved copy and
  * sha256 and the shipped WebP's path and sha256. Player snaps, videos and anything else from research/ stay out.
+ *
+ * 2026-11-16 (lane art01, Austin: player snaps may be attached to the prompts, output ships CC0 with
+ * provenance): made decos may also be quest-room props (`rooms` and the `code` that draws them, in place of
+ * `streets`), and their inputs may name the attached snaps as `ref:` (reference only, never in the repo).
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -166,17 +170,25 @@ describe('new art from published zones (level builder P6) and made decos', () =>
       assert.ok(existsSync(join(root, row.file)), row.file);
       assert.ok(row.zones.length > 0, `${name}: no zone uses it`);
     }
-    // The made decos: AI-generated, each with its model, prompt, inputs and the streets that draw it.
+    // The made decos: AI-generated, each with its model, prompt, inputs and the streets (or quest rooms) that draw it.
     const index = JSON.parse(readFileSync(join(pub, 'assets/streets/index.json'), 'utf8')).streets;
     for (const [name, row] of Object.entries(made)) {
       assert.match(name, new RegExp(policy.licences[row.licence].prefix ? `^${policy.licences[row.licence].prefix}` : '^gz_'), name);
       assert.ok(!art[name], `${name}: both a zone's and a made deco`);
       assert.equal(policy.licences[row.licence]?.origin, 'new', `${name}: ${row.licence}`);
       for (const k of policy.licences[row.licence].requires) assert.ok(row[k], `${name}: ${k}`);
-      assert.ok(row.inputs.every((i) => /^(deco:|own:)/.test(i)), `${name}: inputs`);
+      assert.ok(row.inputs.every((i) => /^(deco:|own:|ref:)/.test(i)), `${name}: inputs`);
       assert.ok(row.inputs.filter((i) => i.startsWith('deco:')).every((i) => existsSync(join(decos, `${i.slice(5)}.webp`))), `${name}: library inputs`);
       assert.equal(row.inputFiles.length, 5, `${name}: the five files given`);
       for (const f of [row.file, row.file3]) assert.ok(existsSync(join(root, f)), f);
+      if (row.rooms) {
+        // A quest-room prop: the rooms exist and the code that draws them names the deco.
+        const roomSrc = readdirSync(join(pub, 'js/quest-rooms')).map((f) => readFileSync(join(pub, 'js/quest-rooms', f), 'utf8')).join('\n');
+        assert.ok(row.rooms.length > 0 && row.rooms.every((r) => roomSrc.includes(`id: '${r}'`)), `${name}: rooms`);
+        assert.ok(readFileSync(join(root, row.code), 'utf8').includes(`'${name}'`), `${name}: ${row.code} draws it`);
+        assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: snaps are reference only`);
+        continue;
+      }
       assert.ok(row.streets.length > 0 && row.streets.every((t) => index[t]), `${name}: streets`);
       for (const t of row.streets) {
         const street = JSON.parse(readFileSync(join(pub, index[t].file), 'utf8'));
@@ -234,7 +246,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=aba2ec8b');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=4a0f5c8f');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

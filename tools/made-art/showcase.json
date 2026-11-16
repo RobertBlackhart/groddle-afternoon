@@ -1,6 +1,6 @@
 {
  "format": "groddle-made-showcase/1",
- "about": "Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and three game screenshots; tools/made-art/build-data.mjs checks each against its sha256.",
+ "about": "Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and game screenshots; tools/made-art/build-data.mjs checks each against its sha256.",
  "files": {
   "public/assets/made-art/ezc-props-outline.webp": {
    "what": "Our drawing of EZ Cookin's table, counter and lamp, at their measured sizes",
@@ -54,6 +54,120 @@
     {
      "shot": "room-after.png",
      "sha256": "fb4d59612285f25dd6e9357a8384bfe20b1e5532be0896a1a3b0d6f70696354e"
+    }
+   ]
+  },
+  "public/assets/made-art/lp-props.webp": {
+   "what": "Walk Toward the Light's made shade, dish, striped pole and stone ledge",
+   "w": 1032,
+   "h": 738,
+   "sha256": "f97db4bda2cb5e46bbd90a7e565c67b1033616347075cf65b361e07d3ab9f352",
+   "made": "the made decos (3x files) at the sizes the room draws them, 3 px a unit, on paper: the shade, the grey dish and two tinted copies as the yellow and blue lights show them, two pole segments stacked and tinted red with the cap, and the ledge (left end, middle, right end)",
+   "from": [
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_shade@1.5x.webp",
+     "sha256": "d5032cab24c976ee4e63efe6a0e4dd7c82ac256e9818426d0e622448824c6d65"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_dish@1.5x.webp",
+     "sha256": "4d8a51a01f6564fe429651c041347079897ab2035ef1aeacde0eebf6e9504d86"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_pole@1.5x.webp",
+     "sha256": "0538a1df05d33d16afc8d0d27c26e33ee2b214e25f12e9c15ddd98408554bf2d"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_pole_cap@1.5x.webp",
+     "sha256": "3b4dcb62c849bc313bf90f0341c9a2554fddf3ee39772f53d0fd29f304200a59"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_ledge_left@1.5x.webp",
+     "sha256": "664f7c5e6852c89ebf49d7894fc5364d3857c4944d1898960cc62e9e9ee6b83d"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_ledge_mid@1.5x.webp",
+     "sha256": "6c5dcfd81a1645522e0105ca312b3de14102f44727dace92576a84bd94f64a44"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_lp_ledge_right@1.5x.webp",
+     "sha256": "5908f274b5c77121955e1db7b410b9e5a8065388277f76856be382d04eb0de01"
+    }
+   ]
+  },
+  "public/assets/made-art/lp-room-vectors.webp": {
+   "what": "Walk Toward the Light at its spotlight run, drawn in plain shapes before the made art",
+   "w": 720,
+   "h": 423,
+   "sha256": "d2cdf112d08770d5b2adf8c3bedc01792052225a9ca69bd6cae662ee9854894f",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questautoplay=final), every page element but the canvas hidden, the room module of b4381e64556 (before the made art); cropped to x 160-1120, y 80-644 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "lp-before.png",
+     "sha256": "22160ccd8e2829c829123d5115ebb2711a0c8c8aa8aeb23ed4d64722937b1cf4"
+    }
+   ]
+  },
+  "public/assets/made-art/lp-room.webp": {
+   "what": "Walk Toward the Light at its spotlight run with its made art",
+   "w": 720,
+   "h": 423,
+   "sha256": "3f1e38d50a238b869dc6a75364320dc6baf1c5a768472da7275e6f8dd43767ce",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questautoplay=final), every page element but the canvas hidden, today's room; cropped to x 160-1120, y 80-644 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "lp-after.png",
+     "sha256": "ae7427598cb05d5accfd465295d08ecc92b27b8070939ee70944c801a781e69f"
+    }
+   ]
+  },
+  "public/assets/made-art/rg-props.webp": {
+   "what": "Radiant Glare's made wall spotlight, caged bulbs and pipe knob",
+   "w": 870,
+   "h": 528,
+   "sha256": "c54d2bc6c827979f211a29d970505a4fe2a012544a63f3f43c3b301a3dc9a218",
+   "made": "the made decos (3x files) at the sizes of the brief, 3 px a unit, on paper: the spotlight, the caged bulb lit (top) and off (below) tinted red, yellow and blue as the switches tint them and untinted, and the knob",
+   "from": [
+    {
+     "file": "public/assets/decos/groddle/gz_ai_rg_spotlight@1.5x.webp",
+     "sha256": "7627e99af21d7bf335b3a66998d297ccf6d6abd2844c9697f5b7b9f27cb10c59"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_rg_bulb_lit@1.5x.webp",
+     "sha256": "8c855e24806772606ad1b0583081940b46317f5fffd7e49fcf08024535715b17"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_rg_bulb_off@1.5x.webp",
+     "sha256": "56cac2b0c84e41de2d5784350845bdccd6b81f0c64d75f4b22a5e75dcef918d1"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_rg_knob@1.5x.webp",
+     "sha256": "59e026a11b1eda7fd098cedc73d1e3a3f34deec872ab0b89c3dc3a5ca5a9d1de"
+    }
+   ]
+  },
+  "public/assets/made-art/rg-room-vectors.webp": {
+   "what": "Radiant Glare's mixer lit green, drawn in plain shapes before the made art",
+   "w": 720,
+   "h": 423,
+   "sha256": "402dc31d81ed514142bdf7924d5b5ec5ce9903c59f622e98edcd65dc48201b95",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questautoplay=mixer), every page element but the canvas hidden, the room module of b4381e64556 (before the made art); cropped to x 280-1240, y 236-800 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "rg-before.png",
+     "sha256": "e282ac236727a2f53ebbfdba628386d15f67cd1f290d9bd70c31318bc79d5a85"
+    }
+   ]
+  },
+  "public/assets/made-art/rg-room.webp": {
+   "what": "Radiant Glare's mixer lit green with its made art",
+   "w": 720,
+   "h": 423,
+   "sha256": "f426dc6dbe4ba7a484f88c65a9c410a7388d0d4f7d1e32c052db8bbdd49cf5f0",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questautoplay=mixer), every page element but the canvas hidden, today's room; cropped to x 280-1240, y 236-800 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "rg-after.png",
+     "sha256": "8cae157adf6b976b9fdc07ea74b45b06e15303cf17bc5359642407e10ed65f70"
     }
    ]
   },

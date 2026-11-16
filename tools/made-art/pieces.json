@@ -70,6 +70,130 @@
       ]
     },
     {
+      "id": "decos:lp",
+      "name": "Walk Toward the Light's dishes, shades, poles and ledges",
+      "caption": "The dish platforms, ceiling lamp shades, striped poles and stone ledges of Walk Toward the Light, the second puzzle level a player meets. No picture of them survives in Tiny Speck's files, only in players' snapshots of the room from 2012, so they were made again. The dish and the pole are grey on purpose: the room tints one picture by the light it stands in, as the snapshots show the same dish in six colours.",
+      "display": {
+        "w": 280,
+        "h": 200
+      },
+      "image": {
+        "file": "public/assets/made-art/lp-props.webp",
+        "label": "Made for Groddle",
+        "alt": "A dark dotted lamp shade, a grey dish platform with a cratered top and two smaller copies tinted yellow and blue, a red striped pole with a round cap, and a long dark stone ledge with angled ends."
+      },
+      "facts": [
+        {
+          "label": "What the 2012 room had",
+          "text": "A dark room where lamp shades hang from the ceiling and throw soft cones of coloured light; shallow dishes that appear only in light of their own colour; red and pink striped columns that stand while a red light shines; and dark stone ledges to start from."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) for Austin, one piece at a time. It was given our drawing of the sizes, three of the players' 2012 snapshots to look at, and a sheet of Tiny Speck's own art from these rooms to match the look. Austin chose the pictures."
+        },
+        {
+          "label": "How it was checked",
+          "text": "Each picture was measured against the drawing. The dish was made 16% flatter to the drawing's shape, the ledge's ends were narrowed to it and the pole's segments overlap a little so they stack without a gap. The room was played in the game on a desktop and a phone, in both looks, its platforms, walls and puzzle unchanged."
+        },
+        {
+          "label": "In the game",
+          "text": "Walk Toward the Light, offered at level 6, and its replay. The dish and the ledge also stand in Radiant Glare."
+        }
+      ]
+    },
+    {
+      "id": "decos:lp:room",
+      "name": "Walk Toward the Light",
+      "caption": "The same stretch of the room before and after, at its last lesson: two always-on lamps over their dishes and a red striped wall between them. Until the new pieces came, the shades, dishes, poles and ledges were drawn in plain shapes.",
+      "display": {
+        "w": 289,
+        "h": 170
+      },
+      "image": {
+        "file": "public/assets/made-art/lp-room.webp",
+        "label": "With the pieces made for Groddle",
+        "alt": "A dark room: a stone ledge with a ladder, orange and yellow dishes in soft cones of light, dark dotted lamp shades and a red striped pole."
+      },
+      "original": {
+        "file": "public/assets/made-art/lp-room-vectors.webp",
+        "kind": "original",
+        "label": "Drawn in plain shapes before",
+        "alt": "The same room with flat orange and yellow dishes, grey dome shades, a plain dark block and a red and pink striped bar."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "The shades, dishes, poles and ledges are by an image model ({tool}). The hanging bulbs, the door and the EXIT plank are Tiny Speck's own art; the cones of light are drawn by the game."
+        },
+        {
+          "label": "In the game",
+          "text": "Both pictures are the game itself, the room's own platforms and lights, with only the art changed."
+        }
+      ]
+    },
+    {
+      "id": "decos:rg",
+      "name": "Radiant Glare's spotlights, bulbs and knobs",
+      "caption": "The wall spotlights, the caged switch bulbs and the pipe knobs of the light puzzles. The spotlights light Radiant Glare's tall shaft; the bulbs and knobs make up the switch rigs of both Radiant Glare and Walk Toward the Light. Like the dishes, they survive only in players' snapshots from 2012. The bulbs are pale on purpose, so each one can be tinted red, yellow or blue, and lit.",
+      "display": {
+        "w": 280,
+        "h": 170
+      },
+      "image": {
+        "file": "public/assets/made-art/rg-props.webp",
+        "label": "Made for Groddle",
+        "alt": "A dark perforated spotlight dish seen edge on with two pale bulbs and a wall bracket, caged glass bulbs lit in red, yellow, blue and white with soft halos, the same bulbs unlit below, and a dark round knob."
+      },
+      "facts": [
+        {
+          "label": "What the 2012 room had",
+          "text": "A dark shaft climbed floor by floor toward a rainbow, lit from the walls by perforated spotlights, with stone consoles carrying rows of red, yellow and blue caged bulbs on pipes joined at round knobs."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) for Austin, one piece at a time, from our drawing of the sizes, players' 2012 snapshots of the room and close crops of them, and Tiny Speck's own art to match the look. The two bulbs came back in one picture and were cut apart; the unlit bulb's grey glass was lightened so its tint reads true."
+        },
+        {
+          "label": "How it was checked",
+          "text": "Each picture was measured against the drawing and compared with the snapshots. The room was played in the game on a desktop and a phone, in both looks, its floors, platforms and puzzle unchanged."
+        },
+        {
+          "label": "In the game",
+          "text": "Radiant Glare, offered at level 7, and its replay; the bulbs and knobs also on Walk Toward the Light's switches."
+        }
+      ]
+    },
+    {
+      "id": "decos:rg:room",
+      "name": "Radiant Glare",
+      "caption": "The same stretch of the shaft before and after, with the mixer lit green: a wall spotlight throws green light across the dishes. Until the new pieces came, the spotlight, the dishes and the bulbs were drawn in plain shapes.",
+      "display": {
+        "w": 289,
+        "h": 170
+      },
+      "image": {
+        "file": "public/assets/made-art/rg-room.webp",
+        "label": "With the pieces made for Groddle",
+        "alt": "A dark shaft: a perforated wall spotlight on the right throws a green cone over green dishes, and a caged green bulb glows on a rail between two dark knobs."
+      },
+      "original": {
+        "file": "public/assets/made-art/rg-room-vectors.webp",
+        "kind": "original",
+        "label": "Drawn in plain shapes before",
+        "alt": "The same shaft with a flat green lens on the wall, flat green discs and a plain green lamp between two ring knobs."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "The spotlight, the dishes, the stone floors, the bulbs and the knobs are by an image model ({tool}). The rainbow and the EXIT sign higher up are Tiny Speck's own art."
+        },
+        {
+          "label": "In the game",
+          "text": "Both pictures are the game itself, the room's own platforms and lights, with only the art changed."
+        }
+      ]
+    },
+    {
       "id": "decos:ezc",
       "name": "EZ Cookin' counters, lamps and table",
       "caption": "The glass serving counters, the white lamps over them and the round mosaic table of Breezy, EZ Cookin', the forest street where the EZ Cooking quest begins. No picture of them survives in Tiny Speck's files, only in players' snapshots of the street from 2012, so they were made again from their measured sizes.",

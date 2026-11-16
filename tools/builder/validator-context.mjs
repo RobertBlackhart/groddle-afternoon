@@ -6,7 +6,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { GAME_DIR } from '../repos.mjs';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=aba2ec8b';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=4a0f5c8f';
 import { ANIM_DECOS } from '../../public/js/deco-anim-list.js?v=ecfee655';
 import { SHARP_DECOS } from '../../public/js/deco-sharp-list.js?v=28262069';
 import { compileSchema } from '../../public/js/builder/schema-check.js?v=cc9d1af4';
