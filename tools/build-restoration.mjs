@@ -410,6 +410,25 @@ function checklist() {
   }));
 }
 
+/**
+ * G910: the Gone for good list (the report's What can't come back band): checklist items that can't
+ * come back, then the Known gaps marked Not possible (public/restoration/gaps.json, from
+ * tools/gaps/build-data.mjs), each under its area's name. The checklist's last lost item came back
+ * with the Snaps, which had left the list empty.
+ */
+export function lostList(items, gaps) {
+  const rows = items.filter((it) => it.status === 'lost').map((it) => ({ name: it.name, blurb: it.blurb }));
+  for (const area of gaps?.areas || []) {
+    for (const g of area.items || []) if (g.state === 'lost') rows.push({ name: area.name, blurb: g.text });
+  }
+  return rows;
+}
+
+function knownGaps() {
+  const file = join(pub, 'restoration', 'gaps.json');
+  return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
+}
+
 /** Levels Tiny Speck's designers recorded, plus the text-only courses, with play links. */
 function designerLevels() {
   const row = (l) => ({ ...l, route: undefined, play: playHref(l.route), shot: shotFile(l.shot) });
@@ -430,6 +449,7 @@ export async function buildRestorationData() {
     status: STATUS,
     groups: GROUPS,
     items,
+    lost: lostList(items, knownGaps()),
     tally,
     back,
     possible,

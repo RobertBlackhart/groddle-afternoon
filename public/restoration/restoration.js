@@ -365,7 +365,9 @@ function renderDesigners(data) {
 function renderRest(data) {
   const kinds = { new: 'New', improve: 'Better', fix: 'Fixed' };
   $('#recent-list')?.replaceChildren(...data.git.recent.map((r) => el('li', {}, el('time', { datetime: r.date }, r.date), el('span', { class: `kind kind-${r.kind}` }, kinds[r.kind]), el('span', {}, r.text))));
-  $('#lost-list')?.replaceChildren(...data.items.filter((i) => i.status === 'lost').map((it) => el('li', {}, el('b', {}, it.name), ': ', it.blurb)));
+  // G910: data.lost (build-restoration.mjs lostList: lost checklist items and the Known gaps marked Not possible).
+  const lost = Array.isArray(data.lost) ? data.lost : data.items.filter((i) => i.status === 'lost');
+  $('#lost-list')?.replaceChildren(...lost.map((it) => el('li', {}, el('b', {}, it.name), ': ', it.blurb)));
   $('#legend-list')?.replaceChildren(...STATUS_ORDER.map((s) => {
     const st = data.status[s];
     return el('div', {}, el('dt', {}, el('span', { class: 'pill', style: `--tone:${tone(s, data)}` }, st.label)), el('dd', {}, st.desc));
