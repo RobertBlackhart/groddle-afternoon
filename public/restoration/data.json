@@ -2792,9 +2792,44 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2430,
+  "commits": 2438,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A Gameshow Ticket dropped while mining waits in the pack instead of being taken back"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "A refund letter gives back the machine output, crops, elements, tutorial gifts and rare finds the save checker took"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A new player's tutorial gifts and practice-street tools are no longer taken back by the save checker"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The elements an Elemental Pouch's Shake makes are no longer taken back by the save checker"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Ingots and elements made from chunks just mined are no longer taken back by the save checker"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Girders, Boards, Fuel Cells and garden crops made over time are no longer taken back by the save checker"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A Musicblock or gem the save checker cannot pay for yet waits in the pack instead of being taken back"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2879,44 +2914,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "A Sloth up in its tree peeks at you on the path below it, from its own collision box"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The Knocker is its own thing on the trunk: Knock (K) calls its tree's Sloth"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Sloths hang in their own street's trees, at the crown's edge, on the side it spreads"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "A solo project near the start pays a smaller top-contributor reward, scaled with its amounts"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Knocking with no Metal Rod works: the Sloth stays up and answers from the leaves, as in Glitch"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Sloths spit Snails into the pack round by round, swapping the rod in hand"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Sloths say their own lines in speech bubbles"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Sloths hang from their own striped branch and move as they did in Glitch"
    }
   ]
  },
- "tests": 1069,
+ "tests": 1075,
  "generatedAt": "2026-11-16"
 }
