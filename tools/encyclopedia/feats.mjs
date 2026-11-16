@@ -14,7 +14,8 @@
  *    and drop tables are Tiny Speck's), the jobs that use each (the street it
  *    builds, its region), the group halls (online only).
  *  - public/js/street-jobs.js SOLO_DIVISOR / soloNeed: the remake's amounts,
- *    1/50 of the original, solo and online (js/projects-tracker.js PROJECTS_TEXT).
+ *    1/50 of the original, solo and online (js/projects-tracker.js PROJECTS_TEXT); solo streets nearer
+ *    the start ask less (js/street-jobs-solo.js SOLO_CURVE, report #425).
  *
  * Words about the remake are ours. Refs: 'needs' and 'tool' (what a project
  * asks for), 'rewards' (items a Feat or project can give), 'epic' (the other
@@ -25,6 +26,7 @@ import { join } from 'node:path';
 import { GAME_WEEK_DAYS, GAME_WEEK_MS, REWARD_ITEM, SOLO_FEATS } from '../../public/js/solo-feats.js?v=2b83c824';
 import { CIGAR_PLACES, LARGE_PLACES, MP_BONUS, MP_GOAL_SCALE, MP_ORDER, MP_REWARD, MP_SUPER, ROCK_LARGE, ROCK_MEDIUM, TOP_PLACES, mpGoals } from '../../public/js/feats-mp.js?v=92c56f81';
 import { CONTRIBUTION_BADGES, SOLO_DIVISOR, soloNeed } from '../../public/js/street-jobs.js?v=35880b67';
+import { SOLO_CURVE } from '../../public/js/street-jobs-solo.js?v=24c5b7be';
 import { esc, fmt, tsHtml } from './parts.mjs';
 
 const PUB = join(import.meta.dirname, '..', '..', 'public');
@@ -270,14 +272,14 @@ function projectPage(e, P, { info, uniqBy, kit }) {
   const twinNote = twins ? ` One of ${fmt(twins)} phases with this name, each asking for different things.` : '';
   const remake = hall
     ? 'In multiplayer: a group hall is built by a group of players together, online only.'
-    : `In the remake, solo and online. Every amount is a fiftieth of the original’s (at least 1), because the original totals were sized for a whole server of players.${twinNote}`;
+    : `In the remake, solo and online. Online, and on your own far from the start, every amount is a fiftieth of the original’s (at least 1), because the original totals were sized for a whole server of players. On your own, a street nearer the start asks less, down to 1/${SOLO_CURVE[0].divisor} next to Hechey Track, and its work needs lower skills or none.${twinNote}`;
   const words = [
     `<div class="cat-desc">${paras(tsHtml(projectText(def.desc), () => null))}</div>`,
     def.completion ? sub('When it is done', `<div class="ency-talk">${paras(tsHtml(projectText(def.completion), () => null))}</div>`) : '',
   ].filter(Boolean).join('\n        ');
   return `${entryHead(e, P, { subline: esc(hall ? 'Group hall project · multiplayer' : e.group === GROUP_WHOLE || e.group === GROUP_UPGRADE ? 'Street project' : 'Street project phase') })}
   <main>
-${band('needs-h', 'What it needs', `<ol class="ency-steps">${steps.join('\n          ')}</ol>`, { lead: 'The remake’s amounts. Work is done with any tool from its list, one go at a time; some steps open only once the steps before them are done.' })}
+${band('needs-h', 'What it needs', `<ol class="ency-steps">${steps.join('\n          ')}</ol>`, { lead: 'The remake’s amounts, online and on your own far from the start. Work is done with any tool from its list, one go at a time; some steps open only once the steps before them are done.' })}
 ${band('rewards-h', 'Rewards', rewards, { alt: true })}
 ${band('where-h', 'Where it is offered', `<p class="ency-lead-small">${esc(whereLead)}</p>\n        ${regionHtml}`)}
 ${band('words-h', 'In Tiny Speck’s words', `${words}\n        <p class="cat-source">From Tiny Speck’s game code.</p>`, { alt: true })}
