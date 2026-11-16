@@ -43,7 +43,7 @@ import {
 } from '../public/js/woodcutting.js?v=b43edbd8';
 import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=792562b2';
 import { enchantedForestFeature, hollowTrees, treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=b1ed4b03';
-import { FEATURES } from '../public/js/features/index.js?v=971ccc47';
+import { FEATURES } from '../public/js/features/index.js?v=bdade926';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

@@ -58,8 +58,15 @@ const SIGN_GLOW_COLOUR = 0x53e5ff;
  */
 export const SIGN_TEXT_FILL = 0xfdf8ee;
 export const SIGN_TEXT_FILL_UNBUILT = 0xd9ccb6;
+/**
+ * The words' font (G898, #429). The client's `signpost` CSS class is lost; the remake asked for
+ * 'Trebuchet MS, Georgia, serif', and a phone without Trebuchet MS (Android) drew a bold serif.
+ * Now the UI's own self-hosted Nunito (style.css @font-face, assets/fonts/nunito), loaded before
+ * any arm is drawn (loadSignFont), then a plain sans-serif.
+ */
+export const SIGN_FONT_FAMILY = 'Nunito, "Trebuchet MS", "Helvetica Neue", Arial, sans-serif';
 const SIGN_LABEL_STYLE = Object.freeze({
-  fontFamily: 'Trebuchet MS, Georgia, serif',
+  fontFamily: SIGN_FONT_FAMILY,
   fontSize: SIGN_FONT_SIZE,
   fontWeight: '700',
   fill: SIGN_TEXT_FILL,
@@ -77,7 +84,9 @@ const SIGN_LABEL_STYLE = Object.freeze({
  * @param {number} [fill]
  */
 export function signLabel(PIXI, text, fill = SIGN_TEXT_FILL) {
-  const label = new PIXI.Text({ text: String(text), style: { ...SIGN_LABEL_STYLE, fill } });
+  // Mipmapped (G898): the 3x words shrink to a phone's 1x canvas (js/render-density.js) smoothly
+  // instead of dropping pixels, which broke up the strokes on a tilted arm.
+  const label = new PIXI.Text({ text: String(text), style: { ...SIGN_LABEL_STYLE, fill }, autoGenerateMipmaps: true });
   label.resolution = SIGN_TEXT_RESOLUTION;
   label.anchor.set(0.5, 0.5);
   return label;
@@ -152,15 +161,44 @@ let decoManifest = null;
 /** @type {Record<string, import('pixi.js').Texture>|null} */
 let signTextures = null;
 
+let signFont = null;
+/** How long a street waits for the font before it draws the arms with the fallback. */
+const SIGN_FONT_WAIT_MS = 3000;
+
 /**
- * Preload original signpost PNGs (post / arm / shadow).
+ * G898: loads the signposts' Nunito (bold, at the words' size) before any arm is measured or
+ * drawn: canvas text never redraws when a font arrives later. Resolves true once loaded, false
+ * without document.fonts, on an error or after the wait (that street keeps the fallback; the next
+ * asks again).
+ */
+export function loadSignFont(wait = SIGN_FONT_WAIT_MS) {
+  if (signFont) return signFont;
+  const fonts = typeof document !== 'undefined' ? document.fonts : null;
+  if (!fonts || typeof fonts.load !== 'function') return Promise.resolve(false);
+  const asking = Promise.race([
+    fonts.load(`700 ${SIGN_FONT_SIZE}px Nunito`).then((faces) => Array.isArray(faces) && faces.length > 0, () => false),
+    new Promise((resolve) => setTimeout(() => resolve(false), wait)),
+  ]);
+  signFont = asking.then((ok) => {
+    if (!ok) signFont = null;
+    return ok;
+  });
+  return signFont;
+}
+
+/**
+ * Preload original signpost PNGs (post / arm / shadow) and the words' font (G898).
  * @param {typeof PIXI} PIXI
  */
 export async function loadSignpostTextures(PIXI) {
-  if (signTextures) return signTextures;
+  if (signTextures) {
+    await loadSignFont();
+    return signTextures;
+  }
   signTextures = {};
-  await Promise.all(
-    Object.entries(SIGNPOST)
+  await Promise.all([
+    loadSignFont(),
+    ...Object.entries(SIGNPOST)
       .filter(([k]) => k !== 'scale')
       .map(
         ([key, url]) =>
@@ -178,8 +216,8 @@ export async function loadSignpostTextures(PIXI) {
               setTimeout(done, 2000);
             }
           })
-      )
-  );
+      ),
+  ]);
   return signTextures;
 }
 
@@ -335,7 +373,7 @@ function buildSignpostSprite(PIXI, signpost, pos) {
 
   if (!shown.length) {
     const empty = new PIXI.Text({ text: 'Signpost', style: {
-      fontFamily: 'Trebuchet MS, sans-serif',
+      fontFamily: SIGN_FONT_FAMILY,
       fontSize: 12,
       fill: 0x3a2a18,
       fontWeight: '700',
@@ -367,7 +405,7 @@ function signKeyCap(PIXI, n) {
   box.roundRect(-SIGN_KEY_W / 2, -SIGN_KEY_W / 2, SIGN_KEY_W, SIGN_KEY_W, 4)
     .fill({ color: 0xfdf8ee, alpha: 0.95 })
     .stroke({ width: 1.5, color: 0x5a3a22, alpha: 0.9 });
-  const text = new PIXI.Text({ text: String(n), style: { fontFamily: 'Trebuchet MS, Georgia, serif', fontSize: 13, fontWeight: '700', fill: 0x3a2a18 } });
+  const text = new PIXI.Text({ text: String(n), style: { fontFamily: SIGN_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0x3a2a18 } });
   text.resolution = SIGN_TEXT_RESOLUTION;
   text.anchor.set(0.5, 0.5);
   text.y = 0.5;

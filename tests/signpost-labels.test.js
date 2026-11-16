@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
-import { SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, signLabel } from '../public/js/street-render.js?v=66addeb7';
+import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont, loadSignpostTextures, signLabel } from '../public/js/street-render.js?v=aba2ec8b';
 
 const root = join(import.meta.dirname, '..');
 const python = '/opt/homebrew/bin/python3.11';
@@ -19,9 +19,10 @@ const read = (p) => readFileSync(join(root, p), 'utf8');
 
 const FakePIXI = {
   Text: class {
-    constructor({ text, style }) {
+    constructor({ text, style, autoGenerateMipmaps }) {
       this.text = text;
       this.style = style;
+      this.autoGenerateMipmaps = autoGenerateMipmaps;
       this.anchor = { set: (x, y = x) => { this.anchorAt = [x, y]; } };
     }
   },
@@ -52,6 +53,36 @@ describe('signpost words', () => {
     assert.equal(label.resolution, 3);
     assert.deepEqual(label.anchorAt, [0.5, 0.5]);
     assert.equal(signLabel(FakePIXI, 'Far', SIGN_TEXT_FILL_UNBUILT).style.fill, SIGN_TEXT_FILL_UNBUILT);
+  });
+
+  it('draws the words in the UI\'s self-hosted Nunito, a sans-serif fallback, mipmapped for a 1x phone canvas (G898, #429)', () => {
+    const label = signLabel(FakePIXI, 'Plains Rte C');
+    assert.equal(label.style.fontFamily, SIGN_FONT_FAMILY);
+    assert.match(SIGN_FONT_FAMILY, /^Nunito, /);
+    assert.match(SIGN_FONT_FAMILY, /sans-serif$/);
+    assert.doesNotMatch(SIGN_FONT_FAMILY, /Georgia|serif,|, serif/);
+    assert.equal(label.autoGenerateMipmaps, true);
+    // The face the UI ships (style.css @font-face) is the one asked for.
+    assert.match(read('public/style.css'), /font-family: Nunito;[\s\S]*?src: url\("assets\/fonts\/nunito\/nunito-roman-latin\.woff2"\)/);
+    const src = read('public/js/street-render.js');
+    assert.doesNotMatch(src, /fontFamily: 'Trebuchet MS/);
+  });
+
+  it('waits for the font before a street draws its arms (loadSignpostTextures, G898)', async () => {
+    const asked = [];
+    const realDoc = globalThis.document;
+    globalThis.document = { fonts: { load: (font) => { asked.push(font); return Promise.resolve([{ family: 'Nunito' }]); } } };
+    try {
+      assert.equal(await loadSignFont(), true);
+      assert.deepEqual(asked, ['700 14px Nunito']);
+      // Loaded once: later streets do not ask again.
+      assert.equal(await loadSignFont(), true);
+      assert.equal(asked.length, 1);
+      assert.match(read('public/js/street-render.js'), /await Promise\.all\(\[\n    loadSignFont\(\),/);
+      assert.equal(typeof loadSignpostTextures, 'function');
+    } finally {
+      globalThis.document = realDoc;
+    }
   });
 
   it('both fills read on the arm art at 4.5:1 or better, against its lightest grain too', { skip: !existsSync(python) && 'needs python3.11' }, () => {

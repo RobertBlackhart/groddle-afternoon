@@ -31,7 +31,7 @@ import {
   signpostToward,
 } from '../public/js/map-routes.js?v=f23b16a2';
 import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=baab6046';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=a61c5def';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=c021e7c3';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=7ed1bdfd';
@@ -42,7 +42,7 @@ import { SUBWAY_STREETS } from '../public/js/quest-rooms/back-alley.js?v=866407d
 import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
 import { afterStreetCard, runStreetTransition, streetCardUp } from '../public/js/screen-fx.js?v=8c1be96c';
 import { EMITTED_EVENTS } from '../public/js/quest-offers.js?v=38a0cac5';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=4ecda338';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=f02464cc';
 import { addItem } from '../public/js/inventory.js?v=f49c8998';
 import { resurrect } from '../public/js/hell.js?v=df2b4357';
 

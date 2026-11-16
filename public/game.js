@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=a335e8c6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=971ccc47';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=bdade926';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -682,7 +682,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=7ed1bdfd';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e9fba2ba';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=88d66b1f';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -711,7 +711,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=66addeb7';
+} from './js/street-render.js?v=aba2ec8b';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
