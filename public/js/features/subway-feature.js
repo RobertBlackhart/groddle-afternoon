@@ -164,8 +164,8 @@ function ensureStyle() {
 .subway-map-close { font-size: var(--fs-3xl); color: var(--c-red-58b); line-height: var(--lh-none); padding: 0 .2rem; }
 .subway-map svg { display: block; width: 100%; height: auto; max-height: min(400px, calc(100vh - 260px)); margin-top: .3rem; }
 .subway-map-foot { text-align: center; margin: .3rem 0 0; color: var(--text-muted); font-size: var(--fs-md); }
-/* G909 (#437): the card never outgrows the screen (the grid's one track is the screen, not the card's
-   widest row), the map zooms and pans in place (js/map-zoom.js: two fingers, a drag, the wheel, + - Fit). */
+/* The card never outgrows the screen (the grid's one track is the screen, not the card's
+   widest row), the map zooms and pans in place (the Map's zoom: two fingers, a drag, the wheel, + - Fit). */
 .subway-map { grid-template-columns: minmax(0, 1fr); }
 .subway-map-card { box-sizing: border-box; justify-self: center; }
 .subway-map-zoom { position: relative; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
