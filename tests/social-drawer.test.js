@@ -28,7 +28,7 @@ import {
   splitChat,
   withTimeLines,
   writeChoice,
-} from '../public/js/ui/social-drawer.js?v=244a4497';
+} from '../public/js/ui/social-drawer.js?v=90aee828';
 import { createNotifier } from '../public/js/notify.js?v=91598c67';
 import { resolveTokens } from './css-tokens.js';
 

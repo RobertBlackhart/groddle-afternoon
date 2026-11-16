@@ -412,6 +412,11 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
       const r = relRect(document.querySelector(sel), rr);
       if (r) blockers.push(r);
     }
+    // G902 (#433): under 760 px the route card (To: / Next: / You Have Arrived!) stands under the
+    // street's name, where the stack starts: on arrival the notices lay over it and each other's
+    // lines. They go under it (on a wide window it is top right and never meets them).
+    const gps = relRect(root.querySelector('.route-gps'), rr);
+    if (gps) blockers.push(gps);
     const dialogs = [];
     for (const d of root.querySelectorAll('[role="dialog"]')) {
       // Interaction menus (the verb menu, the Enter chooser, the item pickers: .verb-menu) step aside
