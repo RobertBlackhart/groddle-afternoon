@@ -19,9 +19,9 @@ import {
   salmonReleaseConditions,
   swimmingSalmonCount,
   tickResourceNode,
-} from '../public/js/resource-nodes.js?v=e63ad822';
+} from '../public/js/resource-nodes.js?v=486fd922';
 import { MOOD_XP_SOURCES } from '../public/js/mood-xp.js?v=22648ec0';
-import { resourceNodesFeature } from '../public/js/features/resource-nodes-feature.js?v=ce65bdbb';
+import { resourceNodesFeature } from '../public/js/features/resource-nodes-feature.js?v=6a8a0a52';
 import { eventIncrements } from '../public/js/solo-feats.js?v=2b83c824';
 
 const ROOT = join(import.meta.dirname, '..');

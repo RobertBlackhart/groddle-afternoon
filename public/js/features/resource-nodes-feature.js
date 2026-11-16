@@ -33,7 +33,8 @@
  *
  * QA: ?autostart=1&fresh=1&resdemo=<classTsid> places that node beside the
  * player on the first street entered (and grants any tool, rods, or skill it
- * needs); &resautoplay=1 performs its main verb once. Canvas data attributes:
+ * needs; &resdemobare=1 leaves the items out); &resautoplay=1 performs its
+ * main verb once. Canvas data attributes:
  * resourceNodeCount, resourceNodeClasses, resourceLastHarvest, fireflyJar,
  * resourceDemo, slothAnim (the QA Sloth's animation, `eat:rod3` with a rod).
  *
@@ -69,7 +70,7 @@ import { slugsFromEffects } from '../speech-slugs.js?v=130338f9';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
-import { SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=8cf4b350';
+import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -97,7 +98,7 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=e63ad822';
+} from '../resource-nodes.js?v=486fd922';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -361,9 +362,9 @@ export const SLOTH_TREE = Object.freeze({
   mouth: Object.freeze({ x: 80, y: 62 }),
   /**
    * Its bubbles (talk 852-881: offset 85 px to its right, higher while it hides): over its head
-   * when it hangs, over the canopy when it is up in the leaves.
+   * when it hangs, over the leaves it hides in when it is up there.
    */
-  speech: Object.freeze({ x: 22, hanging: 165, hiding: 350 }),
+  speech: Object.freeze({ x: 22, hanging: 165, hiding: 230 }),
   hitW: 130,
   hitH: 300,
 });
@@ -961,6 +962,15 @@ function paySlothSnails(engine, entity, now) {
   return n;
 }
 
+/** talk (852-881): one of its lines in a bubble, never the one it said last (chooseTalk). */
+function slothSay(engine, entity, key, ms) {
+  const view = entity.view;
+  if (!view || !entity.target) return;
+  const line = chooseSlothLine(key, view.lastLine);
+  view.lastLine = line;
+  engine.say?.(entity.target, line, ms, { exact: true });
+}
+
 function refreshSloth(engine, entity) {
   const view = entity.view;
   const state = resourceNodeFrame(entity.node)?.state || 'hidden';
@@ -984,9 +994,7 @@ function placeSloth(engine, entity, dtMs, now) {
     // announce_sound SLOTH_EAT with a loop count of 10 (720-727, 409), until the spit stops it.
     if (step.eatSound) view.eatLoop = engine.playSoundLoop?.('SLOTH_EAT', { durationMs: 10000, volume: 0.5 }) || null;
     if (step.say && entity.target) {
-      const line = chooseSlothLine(step.say, view.lastLine);
-      view.lastLine = line;
-      engine.say?.(entity.target, line, step.ms, { exact: true });
+      slothSay(engine, entity, step.say, step.ms);
       // talk 874-877: hanging idle, it talks for as long as the line shows, then idles again.
       if (view.state === 'idle') {
         setSlothAnim(engine, view, 'talk', step.at);
@@ -1435,6 +1443,20 @@ function applyResult(engine, entity, result) {
       }
     });
     showJar(engine, filled.flies);
+  } else if (entity.classTsid === 'npc_sloth' && result.verbId === 'knock' && result.slothAnswer && entity.view) {
+    // callSloth 312-336: full, or no Metal Rod with you: it stays up in the leaves and says so.
+    const view = entity.view;
+    const now = Date.now();
+    // Answered at once (no knock bar), so the Knocker knocks here (sloth_knocker.js 52-54).
+    if (!view.knockAt) {
+      view.knockAt = now;
+      engine.playSound?.('SLOTH_KNOCKER', { volume: 0.6 });
+    }
+    if (result.slothAnswer === 'full' && view.state === 'hidden' && now - view.peekAt > SLOTH_FULL_PEEK_GAP_MS) {
+      view.peekAt = now;
+      playSloth(engine, entity, 'peek');
+    }
+    slothSay(engine, entity, result.slothAnswer, 5000);
   } else if (entity.classTsid === 'npc_sloth' && result.verbId === 'knock') {
     warmSloth(engine, ['talk', 'eat', 'spit', 'finishedEating', 'climbUp']);
     playSloth(engine, entity, 'arrive');
@@ -1579,8 +1601,11 @@ function setupDemo(engine, plan) {
   const kitInfo = resourceDemoKit(engine.param('resdemo'));
   if (!kitInfo) return plan;
   demoUsed = true;
+  // &resdemobare=1: the node without its kit (a Sloth knocked with no Metal Rod answers from the leaves).
+  const bare = engine.param('resdemobare') === '1';
   for (const [classTsid, qty] of Object.entries(kitInfo.items)) {
-    engine.inv[classTsid] = Math.max(qty, engine.inv[classTsid] || 0);
+    if (bare) delete engine.inv[classTsid];
+    else engine.inv[classTsid] = Math.max(qty, engine.inv[classTsid] || 0);
   }
   if (engine.pc.energy < 60) engine.pc.energy = 60;
   const at = demoPlacement(engine, kitInfo.classTsid);
@@ -1607,7 +1632,7 @@ function scheduleAutoplay(engine) {
     performVerb(engine, demoEntity, verb);
     if (demoEntity.classTsid === 'npc_sloth') {
       autoplayTimer = setTimeout(() => {
-        if (entities.includes(demoEntity)) performVerb(engine, demoEntity, 'feed');
+        if (entities.includes(demoEntity) && demoEntity.node.out) performVerb(engine, demoEntity, 'feed');
       }, 900);
     }
   }, 1200);

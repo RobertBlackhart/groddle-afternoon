@@ -19,7 +19,7 @@ import {
   hallForPlace,
   hallReload,
   hallSceneTsid,
-} from '../public/js/features/bureaucratic-halls-feature.js?v=51b708cd';
+} from '../public/js/features/bureaucratic-halls-feature.js?v=d760cb93';
 import {
   LEGALIZE_HALL_STAGES,
   LEGALIZE_HALL_TSID,

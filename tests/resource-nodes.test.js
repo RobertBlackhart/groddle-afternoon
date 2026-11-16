@@ -20,6 +20,7 @@ import {
   resourceNodeStatusLabel,
   resourceNodeFrame,
   slothFeedPlan,
+  slothKnockAnswer,
   slothSnailsDue,
   takeDueSnails,
   isResourceNodeHarvestable,
@@ -37,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=e63ad822';
+} from '../public/js/resource-nodes.js?v=486fd922';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -515,21 +516,27 @@ describe('Salmon and Fireflies', () => {
 });
 
 describe('Sloth', () => {
-  it('requires Animal Kinship 3, a knock, and Metal Rods; spits 7-10 snails per rod', () => {
+  it('requires Animal Kinship 3 and a knock, comes down for Metal Rods; spits 7-10 snails per rod', () => {
     const node = createResourceNode('npc_sloth');
     const inv = { metal_rod: 9 };
     const pc = { energy: 50 };
     const before = snapshot(node, inv, pc);
     const noSkill = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock' }));
     assert.equal(noSkill.reason, 'skill');
-    assert.match(noSkill.message, /Animal Kinship 3/);
+    assert.equal(noSkill.message, 'You must have Animal Kinship 3 to knock this Knocker.');
     assert.equal(snapshot(node, inv, pc), before);
 
     const skills = ['animalkinship_3'];
     assert.deepEqual(resourceNodeVerbs(node, inv, pc, ctxBase({ skills })).map((v) => v.id), ['knock']);
     const hidden = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills }));
     assert.equal(hidden.reason, 'hidden');
-    assert.equal(harvestResourceNode(node, {}, pc, ctxBase({ verbId: 'knock', skills })).reason, 'no_input');
+    // G889: knocking with no Metal Rod works; the Sloth stays up and answers (callSloth 328-336).
+    const noRod = harvestResourceNode(node, {}, pc, ctxBase({ verbId: 'knock', skills }));
+    assert.equal(noRod.ok, true);
+    assert.equal(noRod.slothAnswer, 'noRod');
+    assert.equal(noRod.durationMs, 0, 'answered at once');
+    assert.equal(node.out, false, 'it stays up in the leaves');
+    assert.equal(resourceNodeVerbs(node, {}, pc, ctxBase({ skills }))[0].enabled, true, 'the Knocker needs no rod');
 
     const knock = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock', skills }));
     assert.equal(knock.ok, true);
@@ -560,7 +567,11 @@ describe('Sloth', () => {
     tickResourceNode(node, node.busyUntil);
     assert.equal(node.out, false, 'hides after the 8th rod');
     const tooSoon = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock', skills, now: node.lastMetalizeAt + 1000 }));
-    assert.equal(tooSoon.reason, 'full');
+    assert.equal(tooSoon.ok, true);
+    assert.equal(tooSoon.slothAnswer, 'full', 'it ate in the last 3 minutes (callSloth 314-325)');
+    assert.equal(node.out, false);
+    // Full comes first: with no rod either, it still says it is full.
+    assert.equal(slothKnockAnswer(node, {}, node.lastMetalizeAt + 1000), 'full');
     tickResourceNode(node, node.lastMetalizeAt + 3 * 60 * 1000);
     assert.equal(node.units, 8);
     assert.equal(harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'knock', skills, now: node.lastMetalizeAt + 3 * 60 * 1000 })).ok, true);

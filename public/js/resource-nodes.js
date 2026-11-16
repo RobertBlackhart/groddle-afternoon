@@ -773,7 +773,7 @@ export const RESOURCE_NODE_CATALOG = Object.freeze({
       idleHideMs: 20000,
       callDelayMs: 2000,
       fullCooldownMs: 3 * 60 * 1000,
-      note: 'Hides after 20 s idle or after the 8th rod (metalize_count > 7); refuses to come down within 3 min of the last meal',
+      note: 'Hides after 20 s idle or after the 8th rod (metalize_count > 7); within 3 min of the last meal, or to a knock with no Metal Rod, it answers from the leaves and stays up',
     }),
     verbs: Object.freeze([
       Object.freeze({
@@ -781,7 +781,9 @@ export const RESOURCE_NODE_CATALOG = Object.freeze({
         label: 'Knock',
         tooltip: 'Knock on the Knocker to call the Sloth down',
         tools: Object.freeze([]),
-        inputs: Object.freeze([{ classTsid: 'metal_rod', qty: 1, consumed: false }]),
+        // sloth_knocker.js knock 33-46 asks for Animal Kinship 3 and a hiding Sloth, never a rod:
+        // without one the Sloth answers from the leaves (npc_sloth.js callSloth 328-336, G889).
+        inputs: Object.freeze([]),
         skillGate: 'animalkinship_3',
         durationMs: 2000,
         energy: 0,
@@ -1277,7 +1279,8 @@ function gateVerb(node, inv, pc, ctx = {}) {
   // Skill / achievement gates (GSJS conditions).
   if (verb.skillGate && ctx.requireSkill !== false && !skills.includes(verb.skillGate)) {
     const message = def.classTsid === 'npc_sloth'
-      ? "Hey, you're not metal enough to offer me a rod. You must first learn Animal Kinship 3."
+      // sloth_knocker.js 35-37 (the Knocker's own reason); npc_sloth.js feed 253 (the Sloth's).
+      ? (verb.id === 'knock' ? 'You must have Animal Kinship 3 to knock this Knocker.' : "Hey, you're not metal enough to offer me a rod. You must first learn Animal Kinship 3.")
       : `You need ${verb.skillGate.replace(/_/g, ' ')}.`;
     return fail('skill', message, { skill: verb.skillGate });
   }
@@ -1328,9 +1331,8 @@ function gateVerb(node, inv, pc, ctx = {}) {
   } else if (def.stock.model === 'session') {
     if (verb.id === 'knock') {
       if (node.out) return fail('already_out', 'The Sloth is already here');
-      if (node.lastMetalizeAt && now - node.lastMetalizeAt < def.session.fullCooldownMs) {
-        return fail('full', "Sod off, I'm full!");
-      }
+      // Answered from the leaves at once (slothKnockAnswer): no wait for it to come down.
+      if (slothKnockAnswer(node, inv, now)) durationMs = 0;
     }
     if (verb.id === 'feed') {
       if (!node.out) return fail('hidden', 'The Sloth is hiding up in the branches. Knock first.');
@@ -1600,7 +1602,9 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
     }
     case 'npc_sloth': {
       if (verb.id === 'knock') {
-        durationMs = def.session.callDelayMs;
+        const answer = slothKnockAnswer(node, inv, now);
+        if (answer) extra.slothAnswer = answer;
+        durationMs = answer ? 0 : def.session.callDelayMs;
       } else {
         const feedPlan = slothFeedPlan(rng);
         const max = feedPlan.max;
@@ -1733,7 +1737,9 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
       break;
     }
     case 'npc_sloth': {
-      if (verb.id === 'knock') {
+      if (verb.id === 'knock' && extra.slothAnswer) {
+        // It stays up in the leaves and says why (js/sloth-encounter.js SLOTH_LINES full / noRod).
+      } else if (verb.id === 'knock') {
         node.out = true;
         node.units = def.stock.max;
         node.sessionFeeds = 0;
@@ -1969,6 +1975,18 @@ export function slothFeedPlan(rng = Math.random) {
     if (count < max) at += chew;
   }
   return { max, rounds, doneMs: at + 1500 };
+}
+
+/**
+ * npc_sloth.js callSloth 312-336, after a knock: 'full' when it ate in the last 3 minutes, 'noRod'
+ * when you carry no Metal Rod (it stays up and answers from the leaves either way), else null (it
+ * comes down two seconds later).
+ */
+export function slothKnockAnswer(node, inv, now = Date.now()) {
+  const def = getResourceNodeDef('npc_sloth');
+  if (node?.lastMetalizeAt && now - node.lastMetalizeAt < def.session.fullCooldownMs) return 'full';
+  if (countItem(inv, 'metal_rod') < 1) return 'noRod';
+  return null;
 }
 
 /**

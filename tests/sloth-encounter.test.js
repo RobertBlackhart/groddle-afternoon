@@ -5,8 +5,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
-import { SLOTH_LINES, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=8cf4b350';
-import { slothFeedPlan } from '../public/js/resource-nodes.js?v=e63ad822';
+import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_LINES, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothLabelMs, slothTimeline } from '../public/js/sloth-encounter.js?v=d78eba08';
+import { slothFeedPlan } from '../public/js/resource-nodes.js?v=486fd922';
 
 const anims = (steps) => steps.filter((s) => s.anim).map((s) => s.anim);
 
@@ -44,6 +44,13 @@ describe('Sloth encounter timeline', () => {
     assert.deepEqual(says('feed', { plan: { rounds: [], doneMs: 1500 } }), [['thanks', 5000]]);
     assert.deepEqual(says('feed', { plan: { rounds: [], doneMs: 1500 }, full: true }), [['thanks', 5000]]);
     assert.deepEqual(says('peek'), []);
+  });
+
+  it('answers a knock from the leaves when full or when you have no Metal Rod (callSloth 312-336)', () => {
+    assert.deepEqual(SLOTH_LINES.full, ['Sod off, I\'m full!', 'I just ate and don\'t want to move. Maybe later.', 'Ugh, I was just down there. Maybe later']);
+    assert.equal(SLOTH_LINES.noRod.length, 4);
+    assert.equal(SLOTH_LINES.noRod[0], 'I ain\'t comin\' down, brah. You don\'t have any Metal Rods!');
+    assert.equal(SLOTH_FULL_PEEK_GAP_MS, 7000);
   });
 
   it('idles on hangIdle1 or hangIdle2 every 3-6 s (onIdleTick)', () => {

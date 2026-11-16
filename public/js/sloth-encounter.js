@@ -59,7 +59,23 @@ export const SLOTH_LINES = Object.freeze({
   ]),
   /** hideSloth 516: climbing back up, for 5 s. */
   yawn: Object.freeze(['Yawn... See ya']),
+  /** callSloth 321-324: knocked within 3 minutes of its last rod; it stays up, for 5 s. */
+  full: Object.freeze([
+    'Sod off, I\'m full!',
+    'I just ate and don\'t want to move. Maybe later.',
+    'Ugh, I was just down there. Maybe later',
+  ]),
+  /** callSloth 328-335: knocked by someone with no Metal Rod; it stays up, for 5 s. */
+  noRod: Object.freeze([
+    'I ain\'t comin\' down, brah. You don\'t have any Metal Rods!',
+    'I wanna see some Metal Rods before I come hang with you...',
+    'I ain\'t coming down... until you show me the Metal! Rods, dude.',
+    'Knock when you got a Rod. I\'m only into Metal!',
+  ]),
 });
+
+/** callSloth 316-319: a full Sloth peeks at a knock unless it peeked in the last 7 s. */
+export const SLOTH_FULL_PEEK_GAP_MS = 7 * 1000;
 
 /**
  * chooseTalk 356-365: one of the lines, never the one it said last (while there is another).

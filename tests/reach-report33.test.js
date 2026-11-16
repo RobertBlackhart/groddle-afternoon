@@ -9,7 +9,7 @@ import { AVATAR_HIT_BOX, avatarHitBox, behindFloor, boxesTouch } from '../public
 import { avatarHeadReach, groundBeneath, isBuriedSignpost, isStandable, platformYAt, platformsScreen, signpostNear, signpostReachY, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
 import { walkUpSignpostStreet } from '../public/js/ladder-top-signposts.js?v=db8c4d21';
 import { planSignpostTravel } from '../public/js/travel.js?v=7fd6e363';
-import { COPY, OBJECT_REACH, inObjectReach } from '../public/js/street-objects.js?v=5b52d4e4';
+import { COPY, OBJECT_REACH, inObjectReach } from '../public/js/street-objects.js?v=7fbdce1f';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
