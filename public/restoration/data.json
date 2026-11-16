@@ -2792,9 +2792,49 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2320,
+  "commits": 2329,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The Map dims the names of streets you have not visited"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "On a phone, a pack stack dragged onto an open cabinet goes in"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Home machines stay in view when the home rebuilds in place"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Party Space quoins are Glitch's party quoins, back in 60 to 120 s"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Everyone in a party sees the party time extension in Activity"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Answering a friend's Butler after leaving their street no longer errors"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Sound effects keep playing after many Acts in a row"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Jethimadh's restored map loses its ten added wooden things"
+   },
    {
     "date": "2026-11-15",
     "kind": "fix",
@@ -2874,49 +2914,9 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "Organish Chute's divider tip no longer catches you beside its wall"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "In the gut tubes Down puts you back on your feet and Up turns you over"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Organish Chute turns you over at its bends by itself, as it did"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Subway stations laid out as Glitch had them: the sign up over the crack, A Red Button on the gate box"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Shrines and vendors no longer stand behind a foreground tree, and half hidden counts"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "A narrow street keeps its canvas size with a cached older stylesheet"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "The subway's stop prompt no longer takes the keyboard; tickets name the next stop"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Request incubation with no egg says the chicken's line"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "A quest card covers the top bar like any window; R still opens Reports over it"
    }
   ]
  },
- "tests": 1037,
- "generatedAt": "2026-11-15"
+ "tests": 1041,
+ "generatedAt": "2026-11-16"
 }
