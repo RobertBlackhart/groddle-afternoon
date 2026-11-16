@@ -89,6 +89,17 @@
  * closes it, and the keys go back to the game. Leaving Activity clears it too. Only the drawer's own
  * Activity log is searched (Modern, and Classic where the drawer's Activity view is the pane).
  *
+ * WHO'S HERE (#415, register G884; Austin 2026-11-16): online, the Local tab's head has a "Who's here"
+ * button beside the emotes. It opens a list over the lines (js/whos-here.js): "People here (N)", you
+ * first, then everyone on the street in the order they came, each row a name over the site's face where
+ * it has one (the lettered circle otherwise); a row opens that player's menu as their Glitch does (a
+ * click, a right-click, a long press, Enter or Shift+F10 on the name; yours has none), and the line under
+ * it says how many other players are online (the presence line's count). Glitch showed the same people
+ * as the Local pane title's tip, "People here (N): You, A and B" (ChatArea.as getTip 795-801,
+ * RightSideManager.as localTooltip 1212-1255). Someone you block is left out, of the list and of the
+ * presence line's "here", as their lines are elsewhere. QA: canvas data socialWhoNames (the names listed,
+ * '' while shut).
+ *
  * QA: canvas data socialThread (chat|key of the thread open, or ''), socialThreadReplies (how many it
  * shows), socialOpen (open|rail), socialTab (the tab selected: activity, local, global,
  * buddies or chats), socialChat (the conversation open in Chats, or ''), socialTabs (the row),
@@ -105,7 +116,8 @@ import { createNodeCache, pressLeavesKeys, reconcileChildren, uniqueKeys } from 
 import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { sameWords } from '../chat-reactions.js?v=38460172';
 import { THREAD_TEXT, mergeReplies, normalSummary, summaryText } from '../chat-threads.js?v=f1b1fbcc';
-import { createFaceMemory } from '../buddy-list.js?v=b418f3f2';
+import { buddyFaceUrl, createFaceMemory } from '../buddy-list.js?v=b418f3f2';
+import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../whos-here.js?v=cb52c987';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deleteConfirmRows } from '../chat-delete.js?v=c55a1043';
 
 export const SOCIAL_STORE_KEY = 'groddle-social-drawer';
@@ -672,6 +684,15 @@ export function mountSocialDrawer({
   threadBack.innerHTML = ICONS.back;
   threadBack.append(el('span', { class: 'social-back-label' }, THREAD_TEXT.back));
   threadHead.append(threadBack, el('span', { class: 'social-thread-title' }, THREAD_TEXT.head));
+  // #415 WHO'S HERE: Local's head online: the button, then the feature's emotes, and the list under them.
+  let whoOpen = false;
+  let whoNames = '';
+  const whoBtn = el('button', { type: 'button', class: 'social-who-btn', 'data-social-who': '', 'aria-expanded': 'false', 'aria-controls': 'social-who-list', title: WHOS_HERE_TEXT.tip }, WHOS_HERE_TEXT.button);
+  const whoList = el('div', { id: 'social-who-list', class: 'social-who-list', role: 'region', 'aria-label': WHOS_HERE_TEXT.tip, 'data-social-who-list': '', hidden: true });
+  const localBar = el('div', { class: 'social-local-bar' });
+  localBar.append(whoBtn);
+  const localHead = el('div', { class: 'social-local-head', 'data-social-local-head': '' });
+  localHead.append(localBar, whoList);
   const log = el('div', { class: 'social-log', role: 'log', tabindex: '0', 'data-social-log': '' });
   view.append(convHead, viewHead, log);
   const compose = el('div', { class: 'social-compose', 'data-social-compose': '' });
@@ -1067,9 +1088,9 @@ export function mountSocialDrawer({
   const faces = createFaceMemory();
   /** id -> the one picture node of a buddy, moved into each redraw of their row (no reload, no flash). */
   const faceNodes = new Map();
-  function faceNode(r) {
+  function faceNode(r, nodes = faceNodes) {
     if (!r.face || faces.state(r.id) === 'bad') return null;
-    const had = faceNodes.get(r.id);
+    const had = nodes.get(r.id);
     if (had && had.src === r.face) return had.node;
     const node = el('span', { class: 'social-face' });
     const img = el('img', { src: r.face, alt: '', width: '100', height: '144', decoding: 'async', draggable: 'false' });
@@ -1078,12 +1099,12 @@ export function mountSocialDrawer({
     img.addEventListener('load', () => { faces.ok(r.id); circle()?.setAttribute('data-face', ''); });
     img.addEventListener('error', () => {
       faces.bad(r.id);
-      faceNodes.delete(r.id);
+      nodes.delete(r.id);
       circle()?.removeAttribute('data-face');
       node.remove?.();
     });
     node.append(img);
-    faceNodes.set(r.id, { src: r.face, node });
+    nodes.set(r.id, { src: r.face, node });
     return node;
   }
 
@@ -1099,10 +1120,12 @@ export function mountSocialDrawer({
     const rt = globalThis.groddleRealtime;
     const state = rt?.client?.state;
     if (!rt || state !== 'online') return null;
-    const here = Math.max(0, (Number(rt.client.here) || 1) - 1);
+    // #415: the others on the street, without anyone you block (the Who's here list counts the same).
+    const others = Number(rt.client.here) > 0 ? streetOthers(rt.client.players, { meId: rt.client.me?.id, hidden: blocked }) : [];
+    const here = others.length;
     const b = buddyData();
     const on = b ? b.rows.filter((r) => r.online) : null;
-    const names = on?.length ? on.map((r) => r.name) : (rt.client.players || []).map((p) => p.name);
+    const names = on?.length ? on.map((r) => r.name) : others.map((p) => p.name);
     const buddies = on ? on.length : null;
     const parts = [];
     if (buddies !== null) parts.push(`${buddies} ${buddies === 1 ? 'buddy' : 'buddies'} online`);
@@ -1110,6 +1133,64 @@ export function mountSocialDrawer({
     // Who's around (features/presence-mp-feature.js): everyone online you would see on the website's panel.
     if (onlineCount !== null) parts.push(`${onlineCount} online`);
     return { buddies, here, names, label: parts.join(' · '), title: parts.join(', ') };
+  }
+
+  /** #415: someone you block (buddies-feature), left out of who is here as their lines are elsewhere. */
+  function blocked(id) {
+    try {
+      return Boolean(globalThis.groddleBuddies?.isIgnoring?.(id));
+    } catch {
+      return false;
+    }
+  }
+
+  /** #415: Local's head online: the Who's here button and the feature's emotes, the list under them. */
+  function localHeadOf(t) {
+    const h = t.header || null;
+    if (h && h.parentElement !== localBar) localBar.append(h);
+    for (const c of [...localBar.children]) if (c !== whoBtn && c !== h) c.remove();
+    renderWho();
+    return localHead;
+  }
+
+  /** #415: the faces in the Who's here rows (their own nodes: a buddy can be in both lists). */
+  const whoFaces = new Map();
+
+  function renderWho() {
+    whoBtn.setAttribute('aria-expanded', String(whoOpen));
+    whoList.hidden = !whoOpen;
+    if (!whoOpen) {
+      whoNames = '';
+      whoList.replaceChildren();
+      return;
+    }
+    const rt = globalThis.groddleRealtime;
+    const live = rt?.client?.state === 'online';
+    const me = rt?.client?.me || null;
+    const v = whosHereView({ me, players: live && Number(rt.client.here) > 0 ? rt.client.players : [], hidden: blocked, online: live ? onlineCount : null });
+    const ul = el('ul', { class: 'social-buddies social-who-rows', 'data-social-who-rows': '' });
+    for (const r of v.rows) {
+      const menu = Boolean(playerMenu && !r.you && r.id > 0);
+      const li = el('li', { 'data-social-here': String(r.id), 'data-you': r.you ? 'true' : false, 'data-ctx': menu ? 'player' : false, 'data-name': r.you ? false : r.name });
+      const a = avatarOf(r.you ? me?.name || r.name : r.name);
+      const av = el('span', { class: 'social-av', 'data-hue': String(a.hue), 'aria-hidden': 'true' }, a.initial);
+      const face = r.id > 0 ? faceNode({ id: r.id, face: buddyFaceUrl(r.id) }, whoFaces) : null;
+      if (face) {
+        if (faces.state(r.id) === 'ok') av.setAttribute('data-face', '');
+        av.append(face);
+      }
+      const what = menu
+        ? el('button', { type: 'button', class: 'social-buddy-what', 'data-social-here-who': String(r.id), 'aria-haspopup': 'menu', 'aria-keyshortcuts': 'Shift+F10' })
+        : el('span', { class: 'social-buddy-what' });
+      what.append(el('span', { class: 'social-buddy-name' }, r.name));
+      li.append(av, what);
+      ul.append(li);
+    }
+    const out = [el('p', { class: 'social-who-head', 'data-social-who-head': '' }, v.head), ul];
+    if (v.alone) out.push(el('p', { class: 'social-empty' }, v.alone));
+    if (v.online) out.push(el('p', { class: 'social-note', 'data-social-who-online': '' }, v.online));
+    whoList.replaceChildren(...out);
+    whoNames = v.rows.filter((r) => !r.you).map((r) => r.name).join(',');
   }
 
   function renderStatus() {
@@ -1145,7 +1226,7 @@ export function mountSocialDrawer({
       const av = el('span', { class: 'social-av', 'data-hue': String(a.hue), 'aria-hidden': 'true' }, a.initial);
       // Report #178: the buddy's own look over the lettered circle, which stays when there is no
       // picture or it does not load (and is not asked for again for a while).
-      const face = faceNode(r, av);
+      const face = faceNode(r);
       if (face) {
         if (faces.state(r.id) === 'ok') av.setAttribute('data-face', '');
         av.append(face);
@@ -1205,7 +1286,7 @@ export function mountSocialDrawer({
     if (!finding && findOpen) shutFind();
     findBtn.hidden = !finding;
     findBtn.setAttribute('aria-expanded', findOpen ? 'true' : 'false');
-    const headNode = th ? threadHead : finding && findOpen ? findBar : t.header;
+    const headNode = th ? threadHead : finding && findOpen ? findBar : online && t.id === 'local' ? localHeadOf(t) : t.header;
     if (th) threadBack.setAttribute('aria-label', THREAD_TEXT.backLabel(t.label));
     // The same head stays put (moving it would drop the keyboard from a button in it).
     if (viewHead.firstChild !== headNode || viewHead.childNodes?.length > 1) viewHead.replaceChildren(...(headNode ? [headNode] : []));
@@ -1274,6 +1355,7 @@ export function mountSocialDrawer({
     setData('socialThread', thread ? `${thread.chat}|${thread.tk}` : '');
     setData('socialThreadReplies', thread ? String(storeOf(thread.tk).replies.length) : '');
     setData('socialTabs', row().join(','));
+    setData('socialWhoNames', whoOpen ? whoNames : '');
     setData('socialChats', listed().flatMap((sec) => sec.rows.map((r) => r.id)).join(','));
     const counts = sorted().map((t) => [t.id, unreadOf(t)]);
     if (row().includes(CHATS_TAB)) counts.push([CHATS_TAB, unreadOf(CHATS_VIEW)]);
@@ -1284,7 +1366,7 @@ export function mountSocialDrawer({
   function focusSelector(node) {
     if (!node || node === input || node === document.body || !dock.contains?.(node)) return null;
     const esc = (v) => (globalThis.CSS?.escape ? CSS.escape(v) : String(v).replace(/"/g, '\\"'));
-    for (const a of ['data-social-rail-tab', 'data-social-tab', 'data-social-chat', 'data-social-buddy-who', 'data-social-buddy', 'data-social-name']) {
+    for (const a of ['data-social-rail-tab', 'data-social-tab', 'data-social-chat', 'data-social-buddy-who', 'data-social-buddy', 'data-social-name', 'data-social-here-who']) {
       const v = node.getAttribute?.(a);
       if (v !== null && v !== undefined) return `[${a}="${esc(v)}"]`;
     }
@@ -1292,7 +1374,7 @@ export function mountSocialDrawer({
       const v = node.getAttribute?.(a);
       if (v !== null && v !== undefined) return `[${a}="${esc(v)}"]`;
     }
-    for (const a of ['data-social-expand', 'data-social-collapse', 'data-social-presence', 'data-social-manage-buddies', 'data-social-back', 'data-social-thread-back']) if (node.getAttribute?.(a) !== null) return `[${a}]`;
+    for (const a of ['data-social-expand', 'data-social-collapse', 'data-social-presence', 'data-social-manage-buddies', 'data-social-back', 'data-social-thread-back', 'data-social-who']) if (node.getAttribute?.(a) !== null) return `[${a}]`;
     const label = node.getAttribute?.('aria-label');
     return label ? `[aria-label="${esc(label)}"]` : null;
   }
@@ -1399,6 +1481,47 @@ export function mountSocialDrawer({
   collapseBtn.title = 'Collapse';
   collapseBtn.addEventListener('click', (e) => setOpen(false, { chosen: true, focus: e.detail === 0 ? 'rail' : null }));
   presence.addEventListener('click', () => select('buddies', { focus: true }));
+
+  // #415 WHO'S HERE: the button opens and shuts the list (a click leaves the keyboard with the world);
+  // a row opens that player's menu as a buddy row does (ContactElement.as 267-271), yours none.
+  whoBtn.addEventListener('pointerdown', (e) => {
+    if (e.button === 0 && !e.ctrlKey) e.preventDefault?.();
+  });
+  whoBtn.addEventListener('click', () => {
+    whoOpen = !whoOpen;
+    closeDrawerMenu();
+    render();
+  });
+  const hereRow = (t) => {
+    if (!playerMenu || whoList.hidden) return null;
+    const li = t?.closest?.('[data-social-here][data-ctx]');
+    return li && whoList.contains(li) ? li : null;
+  };
+  const openHere = (li, { at = null, keys = false } = {}) => {
+    const id = Number(li.getAttribute('data-social-here')) || 0;
+    const who = li.querySelector('[data-social-here-who]');
+    return openPlayer(id, li.getAttribute('data-name') || '', li, {
+      at,
+      keys,
+      opener: who || li,
+      find: () => whoList.querySelector(`[data-social-here-who="${CSS.escape(String(id))}"]`),
+    });
+  };
+  whoList.addEventListener('pointerdown', (e) => {
+    if (hereRow(e.target) && e.button === 0 && !e.ctrlKey) e.preventDefault?.();
+  });
+  whoList.addEventListener('click', (e) => {
+    const li = hereRow(e.target);
+    if (!li) return;
+    const keys = e.detail === 0;
+    openHere(li, { at: keys ? null : { x: e.clientX, y: e.clientY }, keys });
+  });
+  bindContextTrigger(whoList, {
+    rowOf: hereRow,
+    isOpenFor: (li) => Boolean(contextMenu?.()?.isOpenFor?.(`player:${Number(li.getAttribute('data-social-here')) || 0}`)),
+    open: (li, { at, keys }) => openHere(li, { at, keys }),
+    longPress: true,
+  });
 
   /** Back from a conversation to the Chats list; `focus` puts the keyboard on its row there. */
   function back({ focus = false } = {}) {

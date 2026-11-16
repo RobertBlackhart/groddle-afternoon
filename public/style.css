@@ -10694,6 +10694,33 @@ button.social-buddy-what { margin: 0; padding: 0; border: 0; background: none; c
   left: calc(50% + var(--notify-shift, 0px));
   width: min(440px, calc(100% - 24px - var(--notify-room, 0px)));
 }
+/* #415 WHO'S HERE (js/ui/social-drawer.js, js/whos-here.js): Local's head online, the button beside the
+   emotes and the list of everyone on the street under them (the rows are the Buddies tab's). */
+.social-local-head { display: grid; gap: var(--sp-2); }
+.social-local-bar { display: flex; align-items: flex-start; gap: var(--sp-2); }
+.social-local-bar .mp-emotes { flex: 1 1 auto; min-width: 0; }
+.social-view-head .social-who-btn {
+  flex: none;
+  min-height: 28px;
+  padding: 0 var(--sp-5);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-bright);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+.social-view-head .social-who-btn:hover, .social-view-head .social-who-btn[aria-expanded="true"] { background: var(--surface-parchment); }
+.social-who-list { padding-bottom: var(--sp-2); border-bottom: 1px solid var(--border); }
+.social-who-list[hidden] { display: none; }
+/* Open, the head may take most of the view (a phone held sideways caps it at 30%, which left only the
+   button row in sight); the lines scroll under it. The id outranks the phone rules. */
+#local-chat-dock .social-view-head:has(.social-who-list:not([hidden])) { max-height: 70%; }
+.social-who-head { margin: 0 0 var(--sp-1); font-weight: 800; }
+.social-who-list .social-empty, .social-who-list .social-note { margin: var(--sp-1) 0 0; }
+.social-who-rows li[data-ctx] { cursor: pointer; }
+.social-who-rows li[data-ctx]:hover { background: var(--accent-soft); }
 @media (prefers-reduced-motion: reduce) {
   .local-chat-dock.social-drawer { transition: none; }
 }
