@@ -67,7 +67,7 @@ import {
   rewardBits,
   showExitDoor,
   stepTriggers,
-} from '../puzzle-triggers.js?v=facc2c29';
+} from '../puzzle-triggers.js?v=1363d17a';
 import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 
@@ -183,6 +183,7 @@ function puzzleStuck(engine) {
   run.pinned = false;
   run.pull = null;
   run.prevY = engine.player?.y ?? null;
+  run.prevX = engine.player?.x ?? null;
   for (const r of run.def.rearm || []) {
     if (locationEventsApi.flag(r.flag)) locationEventsApi.fire(engine, r.event);
   }
@@ -422,6 +423,7 @@ function startRun(engine, street, def) {
     toasted: new Set(),
     rearmAir: new Set(),
     prevY: null,
+    prevX: null,
     pinned: false,
     arrivalChecked: false,
     ceilings: def.ceilings
@@ -633,7 +635,8 @@ function stepRun(engine) {
     }
   }
   const now = locationEventsApi.clock();
-  for (const edge of stepTriggers(run.def.triggers.filter((t) => !t.verb), run.inside, run.spent, p.x, p.y, height)) {
+  const prev = run.prevX == null || run.prevY == null ? null : { x: run.prevX, y: run.prevY };
+  for (const edge of stepTriggers(run.def.triggers.filter((t) => !t.verb), run.inside, run.spent, p.x, p.y, height, prev)) {
     fireAll(engine, edge.events, edge.trigger.id);
     if (!run) return;
     if (edge.edge === 'enter') run.repeatAt.set(edge.trigger.id, now + (edge.trigger.repeatMs || 0));
@@ -652,12 +655,14 @@ function stepRun(engine) {
       place(engine, edge.trigger.teleport.x, edge.trigger.teleport.y);
       run.inside.delete(edge.trigger.id);
       run.prevY = engine.player?.y ?? null;
+      run.prevX = engine.player?.x ?? null;
       return;
     }
     if (edge.edge === 'enter' && edge.trigger.respawn) {
       respawn(engine, edge.trigger.respawnText || 'Ouch! Back to the last safe spot.');
       run.inside.delete(edge.trigger.id);
       run.prevY = engine.player?.y ?? null;
+      run.prevX = engine.player?.x ?? null;
       return;
     }
   }
@@ -697,6 +702,7 @@ function stepRun(engine) {
     if (flag && !view.spr.visible && !run.taken.has(id) && locationEventsApi.flag(flag)) view.spr.visible = true;
   }
   run.prevY = engine.player?.y ?? null;
+  run.prevX = engine.player?.x ?? null;
 }
 
 /** Pays the reward; returns it with any energy or mood the gate refused set to 0. */

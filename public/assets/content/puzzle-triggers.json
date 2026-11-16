@@ -3961,9 +3961,25 @@
       "param": "all",
       "all": false
      }
+    ],
+    "invert_phys": [
+     {
+      "type": "physics",
+      "param": "gravity",
+      "value": -1,
+      "duration": 0,
+      "all": false
+     }
+    ],
+    "reset_phys": [
+     {
+      "type": "physics_reset",
+      "param": "all",
+      "all": false
+     }
     ]
    },
-   "eventsWhy": "The source scripts are code the remake cannot run (player_enter picks a direction from pc.y and sets pc.startedAT; should_tp_top/bottom teleport only for the matching start; invert_phys is addCTPCPhysics({gravity:-1})). Repaired as flags: the arrival region fires gut_from_bottom (gravity x-1) or gut_from_top, and each end teleports only the traveller who started at the other end, with the source destinations. The serpentine/spiral's 14 lost boxes flipped gravity at its bends (invert_phys*/reset_phys*, check_a/check_b); their places are not recoverable, so Space works those same flips (gut_invert = gravity x-1, gut_normal = reset) and the traveller steers the bends.",
+   "eventsWhy": "The source scripts are code the remake cannot run (player_enter picks a direction from pc.y and pc.x and calls check_b; check_b sets pc.startedAT and addCTPCPhysics({gravity:-1}); should_tp_top/bottom teleport). Repaired as flags: the arrival region fires gut_from_bottom (gravity x-1) or gut_from_top, and each end teleports only the traveller who started at the other end, with the source destinations. The street's 14 Collision-triggered Event Boxes (LA9UCEFP7LD3523.xml objrefs) fired invert_phys (addCTPCPhysics({gravity:-1})), reset_phys (addCTPCPhysics({gravity:1})), check_a and the two ends; where they stood was not archived. The bend boxes below put invert_phys and reset_phys back at the bends of the way up from Shim Shiri, read from the street's lines (register G839, report #390), each firing only for a traveller going that way (`from`). Space still flips gravity (gut_invert = gravity x-1, gut_normal = reset), and so do Up and Down, remake fallbacks the original did not have.",
    "arrival": [
     {
      "x0": 3700,
@@ -3973,7 +3989,7 @@
      "events": [
       "gut_from_bottom"
      ],
-     "toast": "Inside the gut, press Space to flip which way is down.",
+     "toast": "The gut turns you over at its bends. Space flips which way is down too.",
      "why": "Foot of the wide right shaft: the orange beam lands at (3843, 2850), the Shim Shiri signpost at (3850, 2997). check_a's own test was pc.x > 1730 world (screen 3730) and pc.y > -350."
     },
     {
@@ -4008,6 +4024,54 @@
       "gut_bottom"
      ],
      "why": "Foot of the narrow shaft (x≈3420-3600) the inner loop drains into: should_tp_bottom -> Shim Shiri (1359, -1000)."
+    },
+    {
+     "id": "bend_top_right",
+     "x": 2670,
+     "y": 564,
+     "w": 220,
+     "h": 360,
+     "from": "right",
+     "onEnter": [
+      "reset_phys"
+     ],
+     "why": "Top of the first downward tube (x 2524-2810, walls wall_1352148176866 and wall_1352148176865). Up the wide right shaft head first, the traveller rides the top passage's ceiling (plat_1352148177058, y 211) left; past the end of the passage's floor (plat_1352148177046 ends at x 2810) gravity comes back and the tube drops it to the bowl (report #390: reversed, it pinned in the tube's top-left corner, 2525, 654)."
+    },
+    {
+     "id": "bend_bottom_right",
+     "x": 2315,
+     "y": 2524,
+     "w": 170,
+     "h": 170,
+     "from": "right",
+     "onEnter": [
+      "invert_phys"
+     ],
+     "why": "Bottom of the first bend: along the bowl's floor (plat_1352148177030/029) left under the divider's tip (plat_1352148177034, x 2418-2524) and into the foot of the second tube (x 2140-2405), which rises to the top passage on the left; reversed here, it carries the traveller up."
+    },
+    {
+     "id": "bend_top_left",
+     "x": 1085,
+     "y": 644,
+     "w": 210,
+     "h": 400,
+     "from": "right",
+     "onEnter": [
+      "reset_phys"
+     ],
+     "why": "Top of the second downward tube (x 955-1231): along the upper passage's ceiling (plat_1352148177044, y 269-278) left past the end of its floor (plat_1352148177017 ends at x 1231), before the ceiling turns down into the corner at wall_1352148176891 (x 955)."
+    },
+    {
+     "id": "bend_bottom_left",
+     "x": 645,
+     "y": 2644,
+     "w": 170,
+     "h": 160,
+     "from": "right",
+     "onEnter": [
+      "invert_phys"
+     ],
+     "why": "Bottom of the second bend: along the bowl's floor (plat_1352148176999, y 2571-2629) left under the divider's tip (plat_1352148177009, x 748-867) into the foot of the last tube (x 470-739), which rises to the mouth and tube_top."
     }
    ],
    "quoins": [

@@ -24,7 +24,7 @@ import { NO_UPGRADE_PHYSICS_STREETS, ignoresUpgradePhysics, remakeMovementMultip
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=0a356337';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=d03eeab1';
 import { plainApex, LEDGE_RISE } from '../public/js/builder/validate.js?v=b76e8e0c';
-import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=facc2c29';
+import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=1363d17a';
 import { CANOPY_PHYSICS } from '../public/js/hidden-floors.js?v=732a2610';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

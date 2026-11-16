@@ -17,7 +17,7 @@
  *   exit: { door: true } | { x, y, w, h } // completion; `show` (a door id, with `showWhy`) puts
  *                                         // back an exit door the source data has switched off
  *   reward: { xp, energy, mood, currants, favor: [{ giant, points }], source },
- *   triggers: [{ id, x, y, w, h, onEnter: [], onExit: [], body, once, art, why }],
+ *   triggers: [{ id, x, y, w, h, onEnter: [], onExit: [], body, once, from, art, why }],
  *   quoins: [{ x, y, type, amount }],
  *   physics: { gravity, ... }             // whole-street multipliers (gut tubes)
  * }
@@ -107,11 +107,30 @@ export function triggerHit(trigger, x, y, bodyH = 0) {
 }
 
 /**
+ * A trigger with `from` ('left', 'right', 'top' or 'bottom') fires only for an avatar that came
+ * in across that side: the last frame's feet `prev` were beyond it. A gut tube's bend box turns
+ * the traveller over going the street's way, and lets one walking back pass (report #390).
+ * Without `from` every way in counts.
+ */
+export function enteredFrom(trigger, prev) {
+  if (!trigger?.from) return true;
+  if (!prev || !Number.isFinite(prev.x) || !Number.isFinite(prev.y)) return false;
+  const half = trigger.w / 2;
+  if (trigger.from === 'left') return prev.x < trigger.x - half;
+  if (trigger.from === 'right') return prev.x > trigger.x + half;
+  if (trigger.from === 'top') return prev.y < trigger.y - trigger.h;
+  if (trigger.from === 'bottom') return prev.y > trigger.y + 4;
+  return true;
+}
+
+/**
  * Enter/exit edges for one frame. `inside` (Set of ids) is updated in place;
- * `spent` (Set) holds `once` triggers that already fired.
+ * `spent` (Set) holds `once` triggers that already fired. `prev` (last frame's feet)
+ * decides a `from` trigger's way in (enteredFrom); in from any other side it is
+ * inside without firing.
  * @returns {{ trigger: object, edge: 'enter'|'exit', events: string[] }[]}
  */
-export function stepTriggers(triggers, inside, spent, x, y, bodyH = 0) {
+export function stepTriggers(triggers, inside, spent, x, y, bodyH = 0, prev = null) {
   const out = [];
   for (const trigger of triggers) {
     const hit = triggerHit(trigger, x, y, bodyH);
@@ -119,6 +138,7 @@ export function stepTriggers(triggers, inside, spent, x, y, bodyH = 0) {
     if (hit === was) continue;
     if (hit) inside.add(trigger.id);
     else inside.delete(trigger.id);
+    if (trigger.from && (!hit || !enteredFrom(trigger, prev))) continue;
     if (trigger.once && spent.has(trigger.id)) continue;
     const events = hit ? trigger.onEnter : trigger.onExit;
     if (hit && trigger.once) spent.add(trigger.id);
