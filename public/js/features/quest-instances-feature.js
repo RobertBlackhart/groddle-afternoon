@@ -33,10 +33,10 @@
  *    "Are you stuck?" did; a teleport onto its target (inc_teleportation.js 362-366,
  *    quest_scripting.js 11-20 onExitLocation). See tests/quest-room-exits.test.js.
  *  - G886: a quest room you stand in with no run open (a ?streetdemo= link, then a reload) is
- *    never a dead end: a reload saved there starts on your last ordinary street, an arrival
- *    moves you there a beat later with the source's "moved to a safe place" line, and until then
- *    the room's EXIT box and /stuck (the Menu's I'm stuck) take you out (strayRoom, tickStray).
- *    See tests/quest-room-strays.test.js.
+ *    never a dead end: the room's EXIT box and /stuck (the Menu's I'm stuck) take you out to your
+ *    last ordinary street (strayRoom, tickStray). G888: you are no longer moved out on arrival or
+ *    reload; the street shows the generic EXIT sign instead (features/dead-ends-feature.js, with
+ *    deadEndRun here saying when a run owns the street). See tests/quest-room-strays.test.js.
  *  - G887: that way out is only ever a street whose roads lead to Ur (urReach, from
  *    signpost-graph.json): never a quest room, practice street or puzzle street with no road out
  *    (Orangian, whose one door leads to itself, once was, and the way out led back onto it). A save
@@ -80,8 +80,6 @@
 import {
   LOW_TIME_MS,
   STUCK_PROMPT_CHOICES,
-  STRAY_DELAY_MS,
-  STRAY_NOTICE,
   STUCK_PROMPT_DEAD_MS,
   STUCK_PROMPT_AGAIN_MS,
   STUCK_PROMPT_TEXT,
@@ -106,7 +104,7 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=7b06754a';
+} from '../quest-instance.js?v=ee574732';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=4c0fffec';
 import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
@@ -168,9 +166,7 @@ let demo = { quest: '', mode: '', stage: 'idle' };
 let lastData = 0;
 let worldCtx = null;
 let rubeTraded = false;
-let strayAt = 0; // G886: when a stray in a quest room is moved out (0: not waiting)
 let strayLeaving = false;
-let strayNotice = false; // G886: a reload moved you out of one; say so once the game runs
 let strayData = null;
 /** G887: streets whose roads lead to Hechey Track (js/quest-instance.js streetsReachingUr), once loaded. */
 let urReach = null;
@@ -1356,14 +1352,10 @@ function noteStreet(engine, street) {
   save.lastStreet = { tsid, x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
 }
 
-/**
- * Out of a quest room with no run open: to `to` (a teleport's target) or the way out, with the
- * source's "moved to a safe place" line when the arrival guard moved you (notice).
- */
+/** Out of a quest room with no run open: to `to` (a teleport's target) or the way out. */
 async function leaveStray(engine, opts = {}) {
   if (strayLeaving || !strayRoom(engine)) return false;
   strayLeaving = true;
-  strayAt = 0;
   try {
     const to = opts.to?.tsid ? opts.to : strayExit(engine);
     strayData = 'left';
@@ -1374,16 +1366,10 @@ async function leaveStray(engine, opts = {}) {
       ...(opts.to ? {} : { quiet: true, bypassFeatureGates: true }),
       useTransition: opts.transition !== false,
     });
-    if (opts.notice) {
-      engine.toast?.(STRAY_NOTICE, 4200);
-      engine.pushActivity?.(STRAY_NOTICE);
-    }
     engine.save?.();
     return true;
   } catch (err) {
     console.warn('quest room stray', err);
-    // Try again in a while; the EXIT box and I'm stuck still work meanwhile.
-    strayAt = Date.now() + 10_000;
     return false;
   } finally {
     strayLeaving = false;
@@ -1392,33 +1378,19 @@ async function leaveStray(engine, opts = {}) {
 
 /**
  * Each tick with no run open: on a quest room's street the room's EXIT box takes you out as its
- * teleporter did (locations/inc_skillquest.js onTeleporterCollision 27-40), and a beat after
- * arriving you are moved out anyway once nothing is busy.
+ * teleporter did (locations/inc_skillquest.js onTeleporterCollision 27-40). G888: nothing moves you
+ * out on its own any more; the street's EXIT sign (features/dead-ends-feature.js) is the way out.
  */
-function tickStray(engine, now) {
+function tickStray(engine) {
   if (strayLeaving) return;
-  if (strayNotice) {
-    strayNotice = false;
-    engine.toast?.(STRAY_NOTICE, 4200);
-    engine.pushActivity?.(STRAY_NOTICE);
-  }
   const stray = strayRoom(engine);
   if (strayData !== (stray?.roomId || '')) {
     strayData = stray?.roomId || '';
     engine.setData('qiStray', strayData);
   }
-  if (!stray) {
-    strayAt = 0;
-    return;
-  }
+  if (!stray) return;
   const p = engine.player;
-  if (p && (engine.street?.boxes || []).some((b) => String(b?.id || '').startsWith('quest:flag:') && inBottomBox(b, p.x, p.y))) {
-    leaveStray(engine);
-    return;
-  }
-  if (!strayAt) strayAt = now + STRAY_DELAY_MS;
-  if (now < strayAt || engine.busy?.({ ignoreHome: true, ignoreInstance: true })) return;
-  leaveStray(engine, { notice: true });
+  if (p && (engine.street?.boxes || []).some((b) => String(b?.id || '').startsWith('quest:flag:') && inBottomBox(b, p.x, p.y))) leaveStray(engine);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1714,12 +1686,9 @@ export const questInstancesFeature = {
       // G887: a way back saved on a dead end starts on the way out instead.
       return liveBack(target) || strayExit(engine);
     }
-    // G886: a save written in a quest room with no run open (a street link, then a reload) starts
-    // on the way out instead, as the source moved a player out of an instance on logout.
-    if (engine?.param?.('fresh') != null || !instanceKind(saved?.tsid, engine)) return null;
-    if (engine?.query?.('practiceStreetHeld', saved.tsid, engine) === true) return null;
-    strayNotice = true;
-    return strayExit(engine);
+    // G888: a save written in a quest room with no run open stays there; the street's EXIT sign
+    // (features/dead-ends-feature.js) leads out (G886 moved you out here).
+    return null;
   },
 
   /**
@@ -1737,12 +1706,10 @@ export const questInstancesFeature = {
   },
 
   /**
-   * G887: the way out of a dead end for other features (puzzles-feature): `prefer` (where you came
-   * in) unless it is a dead end itself, else the stray's way out; `notice` says the source's "moved
-   * to a safe place" line once the game runs.
+   * G887: the way out of a dead end for other features (puzzles-feature, dead-ends-feature):
+   * `prefer` (where you came in) unless it is a dead end itself, else the stray's way out.
    */
-  safeWayOut(engine, { prefer = null, notice = false } = {}) {
-    if (notice) strayNotice = true;
+  safeWayOut(engine, { prefer = null } = {}) {
     const back = liveBack(prefer);
     return back ? { tsid: back.tsid, x: back.x, y: back.y } : strayExit(engine);
   },
@@ -1845,9 +1812,9 @@ export const questInstancesFeature = {
       renderHud(engine, true);
     } else if (!run) {
       if (hud) hud.bar.hidden = true;
-      // G886: a quest room with no run open waits a beat, then moves you out (tickStray).
-      strayAt = strayRoom(engine) ? Date.now() + STRAY_DELAY_MS : 0;
-      if (!strayAt) noteStreet(engine, street);
+      // G888: a quest room with no run open is never your last ordinary street (noteStreet skips
+      // dead ends); its EXIT sign leads out (features/dead-ends-feature.js).
+      if (!strayRoom(engine)) noteStreet(engine, street);
       for (const def of activeWorldRooms(engine)) def.world.onStreetEnter?.(worldContext(engine), street);
     }
     handleDemo(engine);
@@ -1896,7 +1863,7 @@ export const questInstancesFeature = {
       return;
     }
     if (!run && !entering) {
-      tickStray(engine, now);
+      tickStray(engine);
       for (const def of activeWorldRooms(engine)) def.world.onTick?.(worldContext(engine), dtMs, now);
       settleRetries(engine);
       maybeStartAccepted(engine, now);

@@ -7,23 +7,23 @@
  * onTeleporterCollision), and a player logging out in an instance was moved to its exit with "It
  * looks like you ran into some trouble. You've been moved to a safe place." (players/player.js
  * onLogout, inc_instances.js instances_get_exit).
+ * G888 (Austin 2026-11-16): nothing moves you out on arrival or reload any more; the street shows
+ * the generic EXIT sign (tests/dead-end-exit.test.js), and the EXIT box and /stuck still lead out.
  */
+/** players/player.js onLogout 333-338: the line the source said when it moved you out. */
+const STRAY_NOTICE = "It looks like you ran into some trouble. You've been moved to a safe place.";
+/** Long after arriving: G886 moved you out 700 ms in. */
+const LATER_MS = 5000;
 import { beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  STRAY_DELAY_MS,
-  STRAY_FALLBACK_TSID,
-  STRAY_NOTICE,
-  normalizeInstanceSave,
-  strayWayOut,
-} from '../public/js/quest-instance.js?v=7b06754a';
+import { STRAY_FALLBACK_TSID, normalizeInstanceSave, strayWayOut } from '../public/js/quest-instance.js?v=ee574732';
 import { BUILT_ROOMS, ROOM_STREETS, roomForStreet, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=1f52edd5';
 import { slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=594cdfac';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=563fc504';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -134,41 +134,36 @@ describe('the way out (js/quest-instance.js strayWayOut)', () => {
   });
 });
 
-describe('the arrival guard (features/quest-instances-feature.js)', () => {
+describe('arriving in a quest room with no run open (features/quest-instances-feature.js)', () => {
   beforeEach(() => qi.restore({}));
 
-  it('a link onto the practice street moves you out a beat later, with the safe-place line', async () => {
+  it('G888: a link onto the practice street leaves you there (its EXIT sign shows), never moved out', async () => {
     const engine = fakeEngine();
     qi.onStreetEnter(engine.street, engine);
     const t0 = Date.now();
     qi.onTick(16, t0, engine);
-    assert.deepEqual(engine.log.entered, [], 'not at once: the street settles first');
-    assert.equal(engine.log.data.qiStray, 'ez_cookin');
-    qi.onTick(16, t0 + STRAY_DELAY_MS + 50, engine);
+    qi.onTick(16, t0 + LATER_MS, engine);
     await flush();
-    assert.equal(engine.log.entered.length, 1);
-    assert.equal(engine.log.entered[0][0], STRAY_FALLBACK_TSID, 'no street before it: the default street');
-    assert.deepEqual(engine.log.toasts, [STRAY_NOTICE]);
-    assert.deepEqual(engine.log.activity, [STRAY_NOTICE]);
+    assert.deepEqual(engine.log.entered, []);
+    assert.deepEqual(engine.log.toasts, []);
+    assert.equal(engine.log.data.qiStray, 'ez_cookin');
+    assert.equal(qi.deadEndRun(), null, 'nothing runs here, so the dead-end exit shows (features/dead-ends-feature.js)');
   });
 
-  it('goes back to the last ordinary street you stood on, or home when you have one', async () => {
+  it('its way out is the last ordinary street you stood on, or home when you have one', async () => {
     const engine = fakeEngine({ tsid: HECHEY.tsid, player: { x: 410, y: 820 } });
     qi.onStreetEnter(engine.street, engine);
     assert.deepEqual(qi._state().save.lastStreet, HECHEY);
     Object.assign(engine, { streetTsid: EZ, street: { tsid: EZ, label: 'EZ', boxes: [EZ_FINISH] } });
     qi.onStreetEnter(engine.street, engine);
     assert.deepEqual(qi._state().save.lastStreet, HECHEY, 'the room street is never the way back');
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS + 50, engine);
-    await flush();
+    assert.deepEqual(qi.safeWayOut(engine), HECHEY);
+    await qi.questRoomLeave(engine, {});
     assert.equal(engine.log.entered[0][0], HECHEY.tsid);
     assert.equal(engine.log.entered[0][1].spawnX, HECHEY.x);
     qi.restore({});
     const owner = fakeEngine({ owned: true });
-    qi.onStreetEnter(owner.street, owner);
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS + 50, owner);
-    await flush();
-    assert.equal(owner.log.entered[0][0], 'RH_HOME_EXT');
+    assert.equal(qi.safeWayOut(owner).tsid, 'RH_HOME_EXT');
   });
 
   it('the EXIT box takes you out at once, with no line', async () => {
@@ -181,34 +176,23 @@ describe('the arrival guard (features/quest-instances-feature.js)', () => {
     assert.deepEqual(engine.log.toasts, []);
   });
 
-  it('waits while something is busy', () => {
-    const engine = fakeEngine();
-    engine.busy = () => true;
-    qi.onStreetEnter(engine.street, engine);
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS * 4, engine);
-    assert.deepEqual(engine.log.entered, []);
-  });
-
   it('leaves the tutorial walking its practice street alone, and ordinary streets too', () => {
     const tutorial = fakeEngine({ held: true });
     qi.onStreetEnter(tutorial.street, tutorial);
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS * 4, tutorial);
+    qi.onTick(16, Date.now() + LATER_MS, tutorial);
     assert.deepEqual(tutorial.log.entered, []);
     assert.equal(qi.questRoomHere(tutorial), null);
     const street = fakeEngine({ tsid: HECHEY.tsid });
     qi.onStreetEnter(street.street, street);
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS * 4, street);
+    qi.onTick(16, Date.now() + LATER_MS, street);
     assert.deepEqual(street.log.entered, []);
     assert.equal(qi.questRoomHere(street), null);
   });
 
-  it('a tutorial practice street with no tutorial on it is a stray too', async () => {
+  it('a tutorial practice street with no tutorial on it is a stray too (/stuck leads out)', () => {
     const ak = FIRST_SKILLS.find((s) => s.id === 'animalkinship_1').street;
     const engine = fakeEngine({ tsid: ak });
-    qi.onStreetEnter(engine.street, engine);
-    qi.onTick(16, Date.now() + STRAY_DELAY_MS + 50, engine);
-    await flush();
-    assert.equal(engine.log.entered.length, 1);
+    assert.equal(qi.questRoomHere(engine)?.stray, true);
   });
 });
 
@@ -236,18 +220,14 @@ describe('/stuck and I\'m stuck on a stray', () => {
 describe('a reload saved in a quest room', () => {
   beforeEach(() => qi.restore({ lastStreet: HECHEY }));
 
-  it('starts on the way out and says so once the game runs', () => {
+  it('G888: stays there (the EXIT sign leads out), with no safe-place line', () => {
     const engine = fakeEngine();
-    assert.deepEqual(qi.reloadLocation({ tsid: EZ, x: 1443, y: 900 }, engine), HECHEY);
-    const there = fakeEngine({ tsid: HECHEY.tsid });
+    assert.equal(qi.reloadLocation({ tsid: EZ, x: 1443, y: 900 }, engine), null);
+    const there = fakeEngine();
     qi.onTick(16, Date.now(), there);
-    assert.deepEqual(there.log.toasts, [STRAY_NOTICE]);
-  });
-
-  it('not with ?fresh, on an ordinary street, or while the tutorial walks it', () => {
-    assert.equal(qi.reloadLocation({ tsid: EZ }, fakeEngine({ params: { fresh: '1' } })), null);
-    assert.equal(qi.reloadLocation({ tsid: HECHEY.tsid }, fakeEngine()), null);
-    assert.equal(qi.reloadLocation({ tsid: EZ }, fakeEngine({ held: true })), null);
+    assert.deepEqual(there.log.toasts, []);
+    const src = read('public/js/features/quest-instances-feature.js');
+    assert.ok(!src.includes('STRAY_NOTICE'), 'nothing says the moved-out line any more');
   });
 
   it('a run open at save time still goes back where it came in', () => {

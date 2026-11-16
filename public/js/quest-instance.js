@@ -254,12 +254,12 @@ export function normalizeInstanceSave(seed = {}) {
  * 333-338, inc_instances.js 208-215).
  * The practice streets' EXIT teleporter took you to that exit whatever the quest
  * (locations/inc_skillquest.js onTeleporterCollision 27-40).
+ * G888 (Austin 2026-11-16): the remake no longer moves you out on arrival or reload (G886/G887
+ * did, with that line); the street shows a visible EXIT that leads to this way out
+ * (features/dead-ends-feature.js).
  */
-export const STRAY_NOTICE = "It looks like you ran into some trouble. You've been moved to a safe place.";
 /** Hechey Track, the street index's default (game.js STREET_INDEX.default, newxp-feature DEFAULT_START). */
 export const STRAY_FALLBACK_TSID = 'GLI2V0UN7RD1T2J';
-/** A beat after arriving before the move, so the street's own arrival work finishes first. */
-export const STRAY_DELAY_MS = 700;
 
 /**
  * Where a stray goes: the last ordinary street (instances_get_exit's "where you came in"), else

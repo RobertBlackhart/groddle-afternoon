@@ -27,7 +27,7 @@
  * (the remake keeps these instance copies as plain streets anyone can reach by a link or a save).
  */
 
-import { streetsReachingUr } from './quest-instance.js?v=7b06754a';
+import { streetsReachingUr } from './quest-instance.js?v=ee574732';
 
 /** The Map's signpost graph (same URL as map-routes-feature, so the browser keeps one copy). */
 export const DEAD_END_GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';

@@ -12,10 +12,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STRAY_FALLBACK_TSID, STRAY_NOTICE, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=7b06754a';
+import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=ee574732';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=8af3c741';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=594cdfac';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=bb9c3634';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=563fc504';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=16fce15d';
 import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -118,11 +118,13 @@ describe('the way out is never a dead end (features/quest-instances-feature.js)'
     assert.deepEqual(engine.log.entered, [], 'and Orangian itself is left alone (its card run)');
   });
 
-  it("the reported loop: a reload on the practice street goes to Ur, not Orangian", () => {
+  it("the reported loop: the practice street's way out goes to Ur, not Orangian", () => {
     qi.restore({ lastStreet: { tsid: ORANGIAN, x: 100, y: 829 } });
-    assert.equal(qi.reloadLocation({ tsid: EZ, x: 1443, y: 900 }, fakeEngine()).tsid, STRAY_FALLBACK_TSID);
+    assert.equal(qi.safeWayOut(fakeEngine({ tsid: EZ })).tsid, STRAY_FALLBACK_TSID);
     qi.restore({ lastStreet: { tsid: ORANGIAN, x: 100, y: 829 } });
-    assert.equal(qi.reloadLocation({ tsid: EZ }, fakeEngine({ owned: true })).tsid, 'RH_HOME_EXT');
+    assert.equal(qi.safeWayOut(fakeEngine({ tsid: EZ, owned: true })).tsid, 'RH_HOME_EXT');
+    // G888: a reload there stays (the street's EXIT sign leads out by this way).
+    assert.equal(qi.reloadLocation({ tsid: EZ, x: 1443, y: 900 }, fakeEngine()), null);
   });
 
   it('a quest run whose way back is a dead end comes out on the way out', () => {
@@ -147,7 +149,7 @@ describe('the way out is never a dead end (features/quest-instances-feature.js)'
     assert.match(done, /const back = noExit\(tsid\) \? wayOut\(engine, tsid\) : save\.returnTo;/);
     const out = src.slice(src.indexOf('function wayOut('), src.indexOf('function rememberReturn('));
     assert.match(out, /!deadEnd\(engine, r\.tsid\)/);
-    assert.match(out, /engine\.query\?\.\('safeWayOut', engine, \{ prefer, notice \}\)/);
+    assert.match(out, /engine\.query\?\.\('safeWayOut', engine, \{ prefer \}\)/);
     const card = src.slice(src.indexOf('function rememberReturn('), src.indexOf('function wayBack('));
     assert.match(card, /deadEnd\(engine, engine\.streetTsid\)/, 'a card taken on a dead end keeps the return it had');
   });
@@ -211,37 +213,24 @@ describe("/stuck, I'm stuck and the Map card on a puzzle street with no road out
   });
 });
 
-describe('a reload saved on a colour level (features/puzzles-feature.js reloadLocation)', () => {
-  const wired = (opts, params = {}) => {
-    const engine = fakeEngine(opts);
-    engine.param = (k) => params[k] ?? null;
-    engine.query = (hook, ...args) => (typeof qi[hook] === 'function' ? qi[hook](...args) : null);
-    return engine;
-  };
+describe('a reload saved on a colour level (G888)', () => {
   beforeEach(() => {
     qi.restore({ lastStreet: HECHEY });
     pz.restore({});
   });
 
-  it('starts back where you came in, and says the safe-place line once the game runs', () => {
+  it('stays there: no level is in progress after a reload, so the EXIT sign shows (dead-ends-feature)', () => {
+    assert.equal(typeof pz.reloadLocation, 'undefined', 'G887 moved you out here');
     pz.restore({ returnTo: { tsid: GIMBAP_BOP, x: 700, y: 400, card: ORANGIAN } });
-    assert.deepEqual(pz.reloadLocation({ tsid: ORANGIAN, x: 100, y: 829 }, wired()), { tsid: GIMBAP_BOP, x: 700, y: 400 });
-    assert.equal(pz.save().returnTo, null);
-    const there = wired({ tsid: GIMBAP_BOP });
-    qi.onTick(16, Date.now(), there);
-    assert.deepEqual(there.log.toasts, [STRAY_NOTICE]);
+    assert.equal(pz.deadEndRun(fakeEngine({ tsid: ORANGIAN })), null, 'a card mark in the save is no trip this page');
   });
 
-  it("the reported save (card taken on the practice street, last street Orangian) starts on Ur's default street", () => {
-    pz.restore({ returnTo: { tsid: EZ, x: 1443, y: 900, card: ORANGIAN } });
-    qi.restore({ lastStreet: { tsid: ORANGIAN, x: 100, y: 829 } });
-    assert.equal(pz.reloadLocation({ tsid: 'LHVCKEPHO403BN5', x: 100, y: 829 }, wired()).tsid, STRAY_FALLBACK_TSID);
-  });
-
-  it('leaves Umbra, Penumbra, ordinary streets, ?fresh and ?puzzledemo alone', () => {
-    for (const t of ['GDOSHD9J6NT2HUJ', 'GIFM2QAIQ1C31JV', HECHEY.tsid]) assert.equal(pz.reloadLocation({ tsid: t }, wired()), null, t);
-    assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { fresh: '1' })), null);
-    assert.equal(pz.reloadLocation({ tsid: ORANGIAN }, wired({}, { puzzledemo: ORANGIAN })), null);
+  it('its EXIT (questRoomLeave) still goes back where the card was taken when that is a street of Ur', async () => {
+    pz.restore({ returnTo: { tsid: GIMBAP_BOP, x: 700, y: 400, card: ORANGIAN } });
+    const engine = fakeEngine({ tsid: ORANGIAN });
+    engine.query = (hook, ...args) => (typeof qi[hook] === 'function' ? qi[hook](...args) : null);
+    await pz.questRoomLeave(engine);
+    assert.equal(engine.log.entered[0][0], GIMBAP_BOP);
   });
 });
 
