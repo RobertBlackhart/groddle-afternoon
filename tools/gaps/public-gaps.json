@@ -2318,6 +2318,55 @@
         "game:8024c53bb8e",
         "server:4869566"
       ]
+    },
+    {
+      "id": "G895",
+      "area": "Items",
+      "show": "fixing",
+      "text": "The save checker could take back things you had earned: a shrine's emblems, a donation's Gameshow Ticket, beads from a cracked Petrified Rock and some rare drops.",
+      "commits": [
+        "site:b0ecb27",
+        "site:52789eb",
+        "site:a47b9da",
+        "site:27eecae",
+        "site:da943a6"
+      ]
+    },
+    {
+      "id": "G896",
+      "area": "Feats",
+      "show": "fixing",
+      "text": "Today's Feat could miss quests you finished when their report didn't reach the server.",
+      "commits": [
+        "game:84d46bfe62d"
+      ]
+    },
+    {
+      "id": "G898",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Signpost words were hard to read on phones, in a fallback serif font.",
+      "commits": [
+        "game:706639ae5c7"
+      ]
+    },
+    {
+      "id": "G899",
+      "area": "Messages",
+      "show": "fixing",
+      "text": "The Butler's longer hints vanished before they could be read.",
+      "commits": [
+        "game:49323598320"
+      ]
+    },
+    {
+      "id": "G900",
+      "area": "Trees and gardens",
+      "show": "fixing",
+      "text": "A super harvest showed its bonus as \"+2×\", which read like a multiplier.",
+      "commits": [
+        "game:b395ce8ff92"
+      ]
     }
   ]
 }

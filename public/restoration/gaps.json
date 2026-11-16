@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.43.0",
+  "release": "v0.43.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 221,
+    "fixed": 226,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -517,6 +517,12 @@
           "version": "v0.42.0"
         },
         {
+          "id": "G895",
+          "text": "The save checker could take back things you had earned: a shrine's emblems, a donation's Gameshow Ticket, beads from a cracked Petrified Rock and some rare drops.",
+          "state": "fixed",
+          "version": "v0.43.1"
+        },
+        {
           "id": "G174",
           "text": "A few dozen items in the encyclopedia have no icon, because their art was never archived.",
           "state": "lost"
@@ -753,6 +759,12 @@
           "text": "Wood Trees take care only once a game day, so a planted one needs days of real time to grow.",
           "state": "fixed",
           "version": "v0.36.0"
+        },
+        {
+          "id": "G900",
+          "text": "A super harvest showed its bonus as \"+2×\", which read like a multiplier.",
+          "state": "fixed",
+          "version": "v0.43.1"
         }
       ]
     },
@@ -976,6 +988,12 @@
           "text": "Answering a friend's Butler after leaving their street gave an error.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G899",
+          "text": "The Butler's longer hints vanished before they could be read.",
+          "state": "fixed",
+          "version": "v0.43.1"
         }
       ]
     },
@@ -1313,6 +1331,12 @@
           "text": "Upright on a phone, short scenes outside towers and quest rooms still had a blue band above them.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G898",
+          "text": "Signpost words were hard to read on phones, in a fallback serif font.",
+          "state": "fixed",
+          "version": "v0.43.1"
         }
       ]
     },
@@ -1600,6 +1624,12 @@
           "report": 361,
           "state": "fixed",
           "version": "v0.41.1"
+        },
+        {
+          "id": "G896",
+          "text": "Today's Feat could miss quests you finished when their report didn't reach the server.",
+          "state": "fixed",
+          "version": "v0.43.1"
         }
       ]
     },
