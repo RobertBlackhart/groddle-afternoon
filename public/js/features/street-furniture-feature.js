@@ -127,7 +127,7 @@ import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteVie
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=d3642d55';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { butlerApi } from './butler-feature.js?v=c281ddca';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=4bb0317b';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=a19ed6c3';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 

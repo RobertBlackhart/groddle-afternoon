@@ -30,7 +30,7 @@ import {
   vicarsPeakEcology,
 } from '../public/js/vicars-peak.js?v=5efb4e71';
 import { vicarsPeakFeature } from '../public/js/features/vicars-peak-feature.js?v=cb444319';
-import { FEATURES } from '../public/js/features/index.js?v=19c58a72';
+import { FEATURES } from '../public/js/features/index.js?v=fa0e8dd7';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

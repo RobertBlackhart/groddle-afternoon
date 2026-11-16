@@ -846,17 +846,24 @@ function createSession(engine, client) {
   function confirmPackage(c, n, box = null) {
     if (!visit) return;
     vb && (vb.busy = true);
+    const { owner, name } = visit;
     const words = itemLabel(c, n);
-    const text = n > 1 ? BT.packageGivePlural(`${n} ${words}`, visit.name) : BT.packageGiveSingle(words, visit.name);
+    const text = n > 1 ? BT.packageGivePlural(`${n} ${words}`, name) : BT.packageGiveSingle(words, name);
     butlerSay(text);
     const go = (yes) => {
+      // #411: the prompt can be answered after the visit ended (or on another neighbour's
+      // street); the Butler went with the visit, so the package stays in the pack.
+      if (visit?.owner !== owner) {
+        if (vb) vb.busy = false;
+        return undefined;
+      }
       if (!yes) {
         if (vb) vb.busy = false;
         return butlerSay(BT.packageNo);
       }
-      butlerSay(BT.packageSuccess(visit.name));
+      butlerSay(BT.packageSuccess(name));
       const item = box ? { c, n: 1, box: box.items, ref: box.id } : { c, n };
-      messageBox(BT.packageSuccess(visit.name), (msg) => send({ item, text: msg }), { optional: true });
+      messageBox(BT.packageSuccess(name), (msg) => send({ item, text: msg, owner }), { optional: true });
     };
     if (!engine.prompt) return go(true);
     engine.prompt({ text, choices: [{ label: BT.yes, value: true }, { label: BT.keep, value: false }], onChoice: (v) => go(v === true) });
@@ -870,8 +877,12 @@ function createSession(engine, client) {
     messageBox(BT.messageResponse, (text) => send({ text }));
   }
 
-  function send({ item = null, text = '' }) {
-    if (!visit || !client.send('butler_leave', { owner: visit.owner, item, text })) {
+  function send({ item = null, text = '', owner = visit?.owner }) {
+    if (!visit || visit.owner !== owner) {
+      if (vb) vb.busy = false;
+      return;
+    }
+    if (!client.send('butler_leave', { owner: visit.owner, item, text })) {
       if (vb) vb.busy = false;
       notice(T.offline, 3000);
     }
