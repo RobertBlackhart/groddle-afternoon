@@ -6,25 +6,25 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.43.1",
-   "commit": "07ec9614",
+   "ref": "v0.44.0",
+   "commit": "bd7744af",
    "licence": "MIT",
    "history": {
-    "commits": 2414,
+    "commits": 2423,
     "first": "2026-10-19",
     "latest": "2026-11-16"
    },
    "code": {
-    "files": 4787,
-    "lines": 983077,
-    "bytes": 59830151
+    "files": 4794,
+    "lines": 983962,
+    "bytes": 59880029
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2071,
-     "lines": 646148
+     "files": 2078,
+     "lines": 646931
     },
     {
      "id": "html",
@@ -42,7 +42,7 @@
      "id": "python",
      "label": "Python",
      "files": 38,
-     "lines": 11881
+     "lines": 11983
     },
     {
      "id": "php",
@@ -69,42 +69,42 @@
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1096,
-     "lines": 223841
+     "files": 1101,
+     "lines": 224328
     },
     {
      "id": "core",
      "label": "Game core",
      "path": "public/game.js, public/content.js, public/js/",
-     "files": 510,
-     "lines": 216927
+     "files": 511,
+     "lines": 217081
     },
     {
      "id": "features",
      "label": "Feature modules",
      "path": "public/js/features/",
      "files": 161,
-     "lines": 121769
+     "lines": 121802
     },
     {
      "id": "tools",
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
      "files": 329,
-     "lines": 76278
+     "lines": 76380
     },
     {
      "id": "rooms",
      "label": "Quest rooms",
      "path": "public/js/quest-rooms/",
-     "files": 34,
-     "lines": 20171
+     "files": 35,
+     "lines": 20280
     }
    ],
    "largest": [
     {
      "path": "public/game.js",
-     "lines": 34809
+     "lines": 34847
     },
     {
      "path": "public/style.css",
@@ -127,21 +127,21 @@
     {
      "id": "art",
      "label": "Art and sound",
-     "files": 20871,
-     "bytes": 1738244564
+     "files": 20899,
+     "bytes": 1738447736
     },
     {
      "id": "data",
      "label": "Data (JSON)",
      "files": 3173,
-     "bytes": 213404469
+     "bytes": 213513872
     },
     {
      "id": "generated",
      "label": "Generated modules and built pages",
      "files": 2262,
-     "bytes": 25461792,
-     "lines": 288836
+     "bytes": 25464003,
+     "lines": 288864
     },
     {
      "id": "vendored",
@@ -163,10 +163,10 @@
      "bytes": 2786
     }
    ],
-   "totalFiles": 31126,
+   "totalFiles": 31161,
    "tests": {
-    "files": 1060,
-    "cases": 12531,
+    "files": 1065,
+    "cases": 12556,
     "runner": "node --test"
    }
   },

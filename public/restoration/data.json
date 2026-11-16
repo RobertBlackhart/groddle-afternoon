@@ -2788,13 +2788,18 @@
   ]
  },
  "release": {
-  "game": "0.43.1",
+  "game": "0.44.0",
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2421,
+  "commits": 2423,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Walk Toward the Light and Radiant Glare draw their lamps, dishes, poles, ledges, spotlights, bulbs and knobs from the made art"
+   },
    {
     "date": "2026-11-16",
     "kind": "new",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Any street with no road back to Ur shows an EXIT sign when nothing is running there"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "/who leaves out players you block, as the Who's here list does"
    }
   ]
  },
