@@ -10,7 +10,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { page, memoryStore } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=c79da2b5';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=df52476c';
 import { createNotifier } from '../public/js/notify.js?v=1fb97b21';
 
 const src = readFileSync(new URL('../public/js/ui/social-drawer.js', import.meta.url), 'utf8');
@@ -69,6 +69,6 @@ describe('report 230: the chat log keeps to its end while the box grows', () => 
     const bind = src.indexOf('bindChatInput(input, {');
     const listen = src.indexOf("input.addEventListener('input', keepLogEnd);");
     assert.ok(bind > 0 && listen > bind, 'the input listener comes after bindChatInput\'s own');
-    assert.match(src, /log\.addEventListener\('scroll', \(\) => \{\n\s+logAtEnd = log\.scrollHeight - log\.scrollTop - log\.clientHeight < 24;/);
+    assert.match(src, /log\.addEventListener\('scroll', \(\) => \{\n\s+const atEnd = log\.scrollHeight - log\.scrollTop - log\.clientHeight < 24;[\s\S]{0,300}logAtEnd = atEnd;/);
   });
 });

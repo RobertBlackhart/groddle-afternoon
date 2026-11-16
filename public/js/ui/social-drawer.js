@@ -1662,14 +1662,32 @@ export function mountSocialDrawer({
   // Report #230 (Friendly): a long line growing the box shrank the log above it, and the newest lines
   // slid out of sight under it. A log that was at its end (the last scroll left it there) stays there
   // whenever its height changes: the box growing or shrinking, the window or the drawer resized.
+  // #400 (iPhone, upright and sideways): replying, the keyboard came up and the log jumped to its
+  // oldest lines. The view shrinking for the keyboard rebuilt the log's box, its scroll went back to the
+  // top, and that scroll counted as the player's, so the log no longer kept to its end. A scroll that
+  // comes with a new log height is the layout's, never the player's: a log at its end goes back there.
+  // The keyboard's own steps (the visual viewport) and the box taking focus keep it there too.
   let logAtEnd = true;
+  let logSeenH = -1;
   const keepLogEnd = () => {
     if (logAtEnd) log.scrollTop = log.scrollHeight;
   };
   log.addEventListener('scroll', () => {
-    logAtEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 24;
+    const atEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 24;
+    const resized = logSeenH >= 0 && log.clientHeight !== logSeenH;
+    logSeenH = log.clientHeight;
+    if (resized && logAtEnd && !atEnd) {
+      keepLogEnd();
+      return;
+    }
+    logAtEnd = atEnd;
   });
   if (typeof globalThis.ResizeObserver === 'function') new globalThis.ResizeObserver(keepLogEnd).observe(log);
+  globalThis.visualViewport?.addEventListener?.('resize', keepLogEnd);
+  input?.addEventListener('focus', () => {
+    keepLogEnd();
+    globalThis.requestAnimationFrame?.(keepLogEnd);
+  });
 
   // The box wraps and grows up to five lines (js/ui/chat-input.js); Enter sends. Up and Down walk
   // back through what you said from its first or last line.
