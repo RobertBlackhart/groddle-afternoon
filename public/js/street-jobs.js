@@ -33,7 +33,8 @@
  *  - Rewards keep the source share formula, then divide by the same 50, so
  *    a phase pays what a 1/50 contributor earned (7,500 iMG becomes 150).
  *    You are always the top contributor, so the performance rewards and drop
- *    tables are source-exact and unscaled.
+ *    tables are source-exact and unscaled far out (see performanceScale for
+ *    near the start).
  *  - Hire a hand: work you cannot do yourself (no working tool from the
  *    list, or missing the skill) can be paid for at the requirement's
  *    base_cost in currants per unit, the source's own value of one unit. It
@@ -263,6 +264,28 @@ export function jobDivisor(job) {
   return d > 0 ? d : SOLO_DIVISOR;
 }
 
+/**
+ * The top contributor's (performance) rewards in solo, register G890 (Austin 2026-11-16): a near-start
+ * project's curve divisor (job.solo, js/street-jobs-solo.js) shrinks them by how far it sits under
+ * today's SOLO_DIVISOR, 50/500 = 1/10 next to Hechey Track, so a small basket no longer pays a far
+ * project's 100 iMG and drops. Far out (1/50), online (no job.solo) and every other project: 1, the
+ * source's amounts (quests/quest.js 1621-1629 performance_rewards to the top contributors).
+ */
+export function performanceScale(job) {
+  const d = Number(job?.solo?.divisor);
+  return d > SOLO_DIVISOR ? SOLO_DIVISOR / d : 1;
+}
+
+/** A performance amount at that scale: rounded, never below 1 when the source pays any. */
+export function scalePerformance(n, scale = 1) {
+  const v = whole(n);
+  if (!v || !(scale < 1)) return v;
+  return Math.max(1, Math.round(v * scale));
+}
+
+/** A drop table's chance at that scale, in percent as the card shows it ("a 10% chance at ..."). */
+export const dropChancePercent = (scale) => Math.max(1, Math.round(Math.min(1, Number(scale) || 0) * 100));
+
 export function jobDef(catalog, jobId) {
   return catalog?.jobs?.[jobId] || null;
 }
@@ -340,7 +363,8 @@ export function rewardWords(parts) {
  * "The top N% of players will also split: ..." (performance_percent) or "The top N players will also
  * get: ..." (performance_cutoff; "The top player" for one). A restoration shows none (713-717). The
  * split pool is the class rewards at the job's amounts (over its divisor, as every share is paid);
- * the performance rewards are whole. names: { giant(id), drop(tableId) }.
+ * the performance rewards are whole, or at performanceScale near the start in solo (G890: each drop
+ * table then reads as its chance). names: { giant(id), drop(tableId) }.
  */
 export function jobRewardsText(job, def, names = {}) {
   if (!job || !def || job.kind === 'restore' || job.kind === 'hall') return null;
@@ -356,11 +380,13 @@ export function jobRewardsText(job, def, names = {}) {
     ...(r.favor || []).map((f) => [scaled(f.points), `favor with ${giant(f.giant)}`]),
   ]);
   const p = def.performance || {};
+  const ps = performanceScale(job);
+  const chance = ps < 1 ? `a ${dropChancePercent(ps)}% chance at ` : '';
   const perf = rewardWords([
-    [p.xp || 0, 'iMG'],
-    [p.mood || 0, 'mood'],
-    [p.energy || 0, 'energy'],
-    ...(p.dropTables || []).map((id) => [null, names.drop ? names.drop(id) : id]),
+    [scalePerformance(p.xp, ps), 'iMG'],
+    [scalePerformance(p.mood, ps), 'mood'],
+    [scalePerformance(p.energy, ps), 'energy'],
+    ...(p.dropTables || []).map((id) => [null, `${chance}${names.drop ? names.drop(id) : id}`]),
   ]);
   const pct = Number(def.performancePercent) || 0;
   const cut = Number(def.performanceCutoff) || 0;
@@ -797,8 +823,14 @@ export function settlePhase(state, catalog, jobId, now = Date.now(), rng = Math.
     favor: (r.favor || []).map((f) => ({ giant: f.giant, points: Math.round(f.points * mult) })),
   };
   const perf = def.performance || {};
-  const performance = { xp: perf.xp || 0, mood: perf.mood || 0, energy: perf.energy || 0, items: [], currants: 0, favor: [] };
+  // G890: solo near the start the top contributor's rewards shrink with the curve (performanceScale).
+  // Each drop table's rows are single items or a currant/favor lump, so a smaller count does not
+  // exist: the table rolls at that chance instead (1/10 next to the start), which keeps its worth in
+  // step with the iMG. At scale 1 no extra roll is drawn, so far out and online are as before.
+  const ps = performanceScale(job);
+  const performance = { xp: scalePerformance(perf.xp, ps), mood: scalePerformance(perf.mood, ps), energy: scalePerformance(perf.energy, ps), items: [], currants: 0, favor: [] };
   for (const tableId of perf.dropTables || []) {
+    if (ps < 1 && rng() >= ps) continue;
     const drop = rollDropTable(catalog.drops?.[tableId], rng);
     if (!drop) continue;
     if (drop.class_id) performance.items.push({ classTsid: drop.class_id, count: drop.count || 1 });

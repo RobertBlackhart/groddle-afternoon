@@ -14,18 +14,21 @@ import { join } from 'node:path';
 import { SKILLS_WAIVED, SOLO_CURVE, SOLO_PANEL_LINE, applySoloScale, hopsFromStart, soloAmountsLine, soloSkill, soloTerms } from '../public/js/street-jobs-solo.js?v=24c5b7be';
 import {
   SOLO_DIVISOR,
+  dropChancePercent,
   jobDivisor,
   jobRewardsText,
   normalizeStreetJobState,
+  performanceScale,
   phaseIsComplete,
   phaseRequirements,
+  scalePerformance,
   settlePhase,
   soloNeed,
   workCheck,
-} from '../public/js/street-jobs.js?v=35880b67';
+} from '../public/js/street-jobs.js?v=950e9c22';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=85716726';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=a6c2af4a';
+import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=480d92cf';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=de48cde1';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
@@ -152,6 +155,92 @@ describe('solo amounts and skills', () => {
     for (const r of reqs) assert.equal(r.got, Math.min(r.need, row.got[r.id]), r.id);
     assert.equal(JSON.stringify(save), keep, 'reading the new amounts writes nothing');
     assert.ok(reqs.filter((r) => r.done).length > 0, 'the smaller asks are already met');
+  });
+});
+
+/** A state with the job's current phase filled, all yours. */
+function filledPhase(cat, id) {
+  const st = normalizeStreetJobState({});
+  const row = { phase: 0, got: {}, mine: {} };
+  let cost = 0;
+  for (const r of phaseRequirements(st, cat, id)) {
+    row.got[r.id] = r.need;
+    cost += r.need * r.baseCost;
+  }
+  row.mine[cat.jobs[id].phases[0].classTsid] = cost;
+  st.jobs[id] = normalizeStreetJobState({ jobs: { [id]: row } }).jobs[id];
+  return st;
+}
+
+/** A counting rng: every draw returns `value`. */
+function countingRng(value) {
+  const rng = () => {
+    rng.calls += 1;
+    return value;
+  };
+  rng.calls = 0;
+  return rng;
+}
+
+describe('the top contributor reward (G890)', () => {
+  const drop = (id) => (id === 'street_creation_trophies' ? 'A Street Creator Trophy Piece' : 'Street Creation Rewards A');
+
+  it('scales by the curve against today\'s 1/50: a tenth next to the start, whole far out', () => {
+    const cat = scaled();
+    assert.equal(performanceScale(cat.jobs[SYLVAN]), 0.1);
+    assert.equal(performanceScale(cat.jobs[MULLAT]), 0.25);
+    assert.equal(performanceScale(cat.jobs[VASKO]), 50 / 120);
+    assert.equal(performanceScale(cat.jobs[FAR]), 1);
+    assert.equal(performanceScale(rawCatalog().jobs[SYLVAN]), 1, 'online');
+    assert.equal(scalePerformance(100, 0.1), 10);
+    assert.equal(scalePerformance(10, 0.1), 1);
+    assert.equal(scalePerformance(3, 0.1), 1, 'never below 1');
+    assert.equal(scalePerformance(0, 0.1), 0);
+    assert.equal(scalePerformance(175, 1), 175);
+    assert.deepEqual([0.1, 1 / 6, 0.25, 50 / 120, 0.625, 1].map(dropChancePercent), [10, 17, 25, 42, 63, 100]);
+  });
+
+  it('the project window names the scaled numbers and each drop\'s chance', () => {
+    const cat = scaled();
+    const top = (id) => jobRewardsText(cat.jobs[id], cat.classes[cat.jobs[id].phases[0].classTsid], { drop }).top;
+    assert.equal(top(SYLVAN), 'The top 5 players will also get: 10 iMG, 5 mood, 3 energy, a 10% chance at Street Creation Rewards A, and a 10% chance at A Street Creator Trophy Piece.');
+    assert.equal(top(MULLAT), 'The top 5 players will also get: 13 iMG, 5 mood, 3 energy, a 25% chance at A Street Creator Trophy Piece, and a 25% chance at Street Creation Rewards A.');
+    assert.equal(top(VASKO), 'The top 5 players will also get: 42 iMG, 21 mood, 10 energy, a 42% chance at Street Creation Rewards A, and a 42% chance at A Street Creator Trophy Piece.');
+    const far = cat.classes[cat.jobs[FAR].phases[0].classTsid];
+    const raw = rawCatalog();
+    assert.equal(top(FAR), jobRewardsText(raw.jobs[FAR], raw.classes[raw.jobs[FAR].phases[0].classTsid], { drop }).top, 'far out is today\'s');
+    assert.match(top(FAR), new RegExp(`get: ${far.performance.xp} iMG, ${far.performance.mood} mood`));
+  });
+
+  it('pays the scaled amounts near the start, each drop at its chance', () => {
+    const cat = scaled();
+    const def = cat.classes[cat.jobs[SYLVAN].phases[0].classTsid];
+    assert.deepEqual([def.performance.xp, def.performance.mood, def.performance.energy], [100, 50, 25], 'the source');
+    const miss = settlePhase(filledPhase(cat, SYLVAN), cat, SYLVAN, 1000, () => 0.5);
+    assert.deepEqual(miss.performance, { xp: 10, mood: 5, energy: 3, items: [], currants: 0, favor: [] }, 'a 10% chance missed: no drops');
+    const hit = settlePhase(filledPhase(cat, SYLVAN), cat, SYLVAN, 1000, () => 0.01);
+    assert.equal(hit.performance.xp, 10);
+    assert.equal(hit.performance.items.length, 2, 'both tables hit and rolled: a diamond and a trophy piece');
+    assert.ok(hit.performance.items.every((it) => it.count === 1));
+  });
+
+  it('far out and online pay today\'s whole top reward, drawing no extra rolls', () => {
+    for (const cat of [scaled(), rawCatalog()]) {
+      const def = cat.classes[cat.jobs[FAR].phases[0].classTsid];
+      const rng = countingRng(0.01);
+      const out = settlePhase(filledPhase(cat, FAR), cat, FAR, 1000, rng);
+      assert.equal(out.performance.xp, def.performance.xp);
+      assert.equal(out.performance.mood, def.performance.mood);
+      assert.equal(out.performance.energy, def.performance.energy);
+      assert.equal(out.performance.items.length, def.performance.dropTables.length);
+      assert.equal(rng.calls, def.performance.dropTables.length * 2, 'one roll and one row pick a table, as before');
+    }
+    const raw = rawCatalog();
+    const def = raw.classes[raw.jobs[SYLVAN].phases[0].classTsid];
+    const online = settlePhase(filledPhase(raw, SYLVAN), raw, SYLVAN, 1000, () => 0.5);
+    assert.equal(online.performance.xp, 100, 'online Sylvan Grove keeps the source 100 iMG');
+    assert.equal(online.performance.items.length, 2, 'and both its drops, rolled without a chance draw');
+    assert.equal(jobRewardsText(raw.jobs[SYLVAN], def, { drop }).top, 'The top 5 players will also get: 100 iMG, 50 mood, 25 energy, Street Creation Rewards A, and A Street Creator Trophy Piece.');
   });
 });
 
@@ -299,6 +388,8 @@ describe('online is untouched', () => {
       assert.ok(engine.inv.plank >= 4, 'nothing refunded or taken');
       assert.equal(awards.length, before + 1, 'the phase card');
       assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /Solo amounts are 1\/200 of the original multiplayer totals, and the phase rewards scale by the same 1\/200\./);
+      // G890: the top contributor's line names the scaled share and chance.
+      assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /As the top contributor you also earned the performance rewards, scaled the same way: 25% of a far-out project's, with a 25% chance at each drop\./);
       // Phase 2's rows: a skill two levels lower says so, a waived one too.
       const texts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
       const phase2 = raw.classes[job.phases[1].classTsid].requirements.filter((r) => r.skill);

@@ -104,13 +104,15 @@ import {
   jobInProgress,
   cancelJob,
   jobDivisor,
+  performanceScale,
+  dropChancePercent,
   upgradeOption,
   findWork,
   countsForBadges,
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=35880b67';
+} from '../street-jobs.js?v=950e9c22';
 import { PAPERS_BADGE } from '../subway.js?v=34e7e56f';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
 import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=fc51a023';
@@ -137,7 +139,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=c11176dc';
+} from '../street-jobs-mp.js?v=74889857';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -149,8 +151,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=f23b16a2';
 import { TELEPORTERS } from '../hidden-floors.js?v=e8836c2e';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=85716726';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=691d6f7b';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=480d92cf';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=601cacb0';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
@@ -1005,7 +1007,7 @@ function finishPhase(engine, jobId) {
   const d = jobDivisor(job);
   const solo = job.kind === 'restore'
     ? ''
-    : `Solo amounts are 1/${d} of the original multiplayer totals, and the phase rewards scale by the same 1/${d}. As the top contributor you also earned the full performance rewards.`;
+    : `Solo amounts are 1/${d} of the original multiplayer totals, and the phase rewards scale by the same 1/${d}. ${topRewardText(job)}`;
   let title = `${job.title}: phase ${out.index + 1} of ${out.phaseCount}`;
   let steps;
   if (out.finalPhase) {
@@ -1036,6 +1038,17 @@ function finishPhase(engine, jobId) {
   engine.save();
   renderPanel(engine);
   drawPlate(engine);
+}
+
+/**
+ * The phase card's top-contributor line. G890: near the start in solo the performance rewards shrink
+ * with the curve (street-jobs.js performanceScale), so the card names the share and the drop chance.
+ */
+function topRewardText(job) {
+  const ps = performanceScale(job);
+  if (!(ps < 1)) return 'As the top contributor you also earned the full performance rewards.';
+  const pct = dropChancePercent(ps);
+  return `As the top contributor you also earned the performance rewards, scaled the same way: ${pct}% of a far-out project's, with a ${pct}% chance at each drop.`;
 }
 
 let pendingReload = null;
