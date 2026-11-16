@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2355,
+  "commits": 2357,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "Pack search lists every match under the search, bags included, as Glitch did"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2909,14 +2914,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "Answering a friend's Butler after leaving their street no longer errors"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Sound effects keep playing after many Acts in a row"
    }
   ]
  },
- "tests": 1046,
+ "tests": 1047,
  "generatedAt": "2026-11-16"
 }
