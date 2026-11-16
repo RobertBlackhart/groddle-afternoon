@@ -299,7 +299,7 @@ describe('the game uses it', () => {
   it('races-feature: games_end_race / games_end_quoin_grab, and leaving mid-race just goes', () => {
     assert.match(races, /import \{ QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor \} from '\.\.\/game-splash\.js\?v=[0-9a-f]{8}';/);
     assert.match(races, /buttons: \[\{ label: splash\.leaveLabel, w: splash\.buttonW, value: 'leave', onClick: \(\) => leaveRace\(engine\) \}\],/);
-    assert.match(races, /\} else setTimeout\(\(\) => leaveRace\(engine\), 0\);/);
+    assert.match(races, /\} else if \(!stay\) setTimeout\(\(\) => leaveRace\(engine\), 0\);/);
     assert.match(races, /if \(splashShown\) engine\.hideGameSplash\?\.\(\);/);
     // G304: the game quoin's mood goes through the gain gate (quoin.js 185); raceResultCopy is not used here.
     assert.match(races, /gainMetabolic\(engine\.pc, 'mood', amount\);/);

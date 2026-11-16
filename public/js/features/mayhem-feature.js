@@ -882,6 +882,36 @@ export const mayhemFeature = {
     return mm ? { ok: false, msg: "You can't leave in the middle of a game!" } : null;
   },
 
+  /**
+   * G904: a party teleporter taken in the arena gives the game up (any exit ran game.playerLeft,
+   * GSJS groups/instance.js player_exited_location 353-355): out of the server's game, no prize,
+   * and the party leads back to the street you joined from.
+   */
+  partyTrip(action, engine) {
+    const here = Boolean(mm) && engine?.streetTsid === CROWNS_STREET;
+    if (action === 'plan') return here ? { kind: 'forfeit', label: MAYHEM_TITLE } : null;
+    if (action !== 'depart' || !here) return null;
+    const back = record.returnTo;
+    client?.send('mayhem_leave', { room: mm.room });
+    mm = null;
+    note(engine, 'left');
+    clearMustWait(engine);
+    clearEnd();
+    clearDiscs();
+    syncThrobber(false);
+    if (hud) {
+      hud.bar.hidden = true;
+      hud.ready.hidden = true;
+      hud.countdown.hidden = true;
+      hud.target.hidden = true;
+    }
+    record.returnTo = null;
+    if (engine.instanceHold === MAYHEM_ID) engine.instanceHold = null;
+    engine.save();
+    publish(engine);
+    return back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : null;
+  },
+
   physics(engine) {
     if (!mm || engine.streetTsid !== CROWNS_STREET) return null;
     return mm.status === 'running' ? { jump: JUMP_SCALE } : { speed: 0, jump: 0 };

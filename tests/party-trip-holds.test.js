@@ -27,7 +27,7 @@ import {
   stuckPromptDue,
 } from '../public/js/quest-instance.js?v=2fdff4a7';
 import { normalizePartyRecord } from '../public/js/party-spaces.js?v=c667e9e2';
-import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=8de30c94';
+import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=da37e687';
 import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=b105aeed';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

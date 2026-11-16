@@ -1373,7 +1373,8 @@ function startDemo(engine) {
   const classTsid = packFor(template, engine.param('partytaster') === '1');
   const mode = engine.param('partyautoplay') || '';
   record.party = null;
-  engine.instanceHold = null;
+  // G904: only the party's own hold (a game's arena keeps its hold, so its partyTrip plan answers).
+  if (engine.instanceHold === HOLD) engine.instanceHold = null;
   addItem(engine.inv, classTsid, 1);
   if ((Number(engine.pc.currants) || 0) < 40000) engine.pc.currants = 40000;
   engine.refreshPack();

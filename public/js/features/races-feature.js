@@ -89,8 +89,8 @@ import { runStreetTransition } from '../screen-fx.js?v=8c1be96c';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=1038b993';
-import { startHogHaulMp } from './hog-haul-mp-feature.js?v=f523ea81';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=eb4fb711';
+import { startHogHaulMp } from './hog-haul-mp-feature.js?v=5fe0c57c';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
@@ -234,6 +234,16 @@ function ticketRaceId(classTsid) {
  * The pending ticket was used: its race reached GO or its instance opened.
  * A Race Ticket's roll goes with it, so the next one rolls again.
  */
+/** A solo race that never started (a reload, G904 a party trip): the ticket comes back, its race kept. */
+function refundPendingTicket(engine) {
+  if (!record.pendingTicket) return false;
+  addItem(engine.inv, record.pendingTicket, 1);
+  engine.toast('Your race never started, so your ticket was returned.', 3600);
+  record.pendingTicket = null;
+  engine.updateHud();
+  return true;
+}
+
 function spendPendingTicket() {
   if (record.pendingTicket === RACE_GENERIC_TICKET) record.ticketRace = null;
   record.pendingTicket = null;
@@ -1056,7 +1066,7 @@ function quoinTick(engine, now) {
   }
 }
 
-function showResult(engine) {
+function showResult(engine, { stay = false } = {}) {
   if (!run || resultApplied) return;
   resultApplied = true;
   clearTimeout(soonTimer);
@@ -1120,7 +1130,7 @@ function showResult(engine) {
     });
   } else if (mp?.calledOff != null) {
     showCalledOff(engine);
-  } else setTimeout(() => leaveRace(engine), 0);
+  } else if (!stay) setTimeout(() => leaveRace(engine), 0);
   engine.player.vx = 0;
   engine.updateHud();
   engine.save();
@@ -1130,6 +1140,17 @@ function showResult(engine) {
 
 async function leaveRace(engine) {
   if (!run || raceIsLive(run)) return false;
+  const { back, outcome } = endRaceHere(engine);
+  const tsid = back?.tsid || null;
+  if (tsid) await engine.enter(tsid, { spawnX: back.x, spawnY: back.y, quiet: true, bypassFeatureGates: true });
+  engine.setData('raceStatus', 'left');
+  engine.setData('raceOutcome', outcome);
+  publish(engine);
+  return true;
+}
+
+/** Out of the race as Leave the Game does, without the trip (leaveRace takes it; a party takes its own). */
+function endRaceHere(engine) {
   const outcome = run.status;
   const back = record.returnTo;
   if (outcome === 'won') engine.questFlag(RACE_FLAGS.leave);
@@ -1149,12 +1170,39 @@ async function leaveRace(engine) {
   course = null;
   record.returnTo = null;
   engine.save();
-  const tsid = back?.tsid || null;
-  if (tsid) await engine.enter(tsid, { spawnX: back.x, spawnY: back.y, quiet: true, bypassFeatureGates: true });
+  return { back, outcome };
+}
+
+/**
+ * G904: a party teleporter taken in a race or game gives it up. Glitch made the teleporter
+ * wherever you stood (players/inc_party.js 479-520), and leaving a game's instance for any other
+ * place ran game.playerLeft(pc) (groups/instance.js player_exited_location 353-355; races and
+ * Grab 'Em Good: global_game.js playerLeft 814-815 calls the game off): no prize, the result is a
+ * forfeit, and the party leads back to the street you joined it from. A start still counting down
+ * never starts (the ticket comes back, as a reload's does). The solo Hog Haul (game.js) is given up
+ * the same way (engine.forfeitHogHaul).
+ */
+function departForParty(engine) {
+  if (starting && !run && !isMp(engine)) {
+    clearTimeout(startTimer);
+    startTimer = null;
+    starting = false;
+    if (hud) hud.banner.hidden = true;
+    refundPendingTicket(engine);
+    engine.save();
+    return null;
+  }
+  if (!run) {
+    const back = engine.streetTsid === HOG_HAUL_STREET_ID ? engine.forfeitHogHaul?.() : null;
+    return back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : null;
+  }
+  if (forfeitRace(run, Date.now())) showResult(engine, { stay: true });
+  const { back } = endRaceHere(engine);
   engine.setData('raceStatus', 'left');
-  engine.setData('raceOutcome', outcome);
+  engine.setData('raceOutcome', 'forfeit');
   publish(engine);
-  return true;
+  // The street's own name labels the space's exit signpost (party-spaces-feature enterParty).
+  return back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1845,12 +1893,7 @@ export const racesFeature = {
     if (!run) {
       // G349: solo's reload rule. In multiplayer the server says (mpAskPending), never a street change.
       if (engine.mode === 'multiplayer') mpAskPending(engine);
-      else if (record.pendingTicket) {
-        addItem(engine.inv, record.pendingTicket, 1);
-        engine.toast('Your race never started, so your ticket was returned.', 3600);
-        record.pendingTicket = null;
-        engine.updateHud();
-      }
+      else refundPendingTicket(engine);
       if (record.returnTo) record.returnTo = null;
     }
     if (hasRaceDispenser(street.tsid) || wantsDemoDispenser(engine)) {
@@ -1875,6 +1918,18 @@ export const racesFeature = {
   travelGate() {
     if (run || starting) return { ok: false, msg: "You can't leave in the middle of a race!" };
     return null;
+  },
+
+  /** G904: the party teleporter's contract: a race or the solo Hog Haul is given up ('forfeit'). */
+  partyTrip(action, engine) {
+    if (action === 'plan') {
+      if (run) return { kind: 'forfeit', label: RACES[run.raceId]?.title || '' };
+      // The game.js haul (the quest's, a solo ticket's) holds its street with no feature hold; the
+      // online match's hold is hog-haul-mp-feature's, which answers for it.
+      const haul = engine?.streetTsid === HOG_HAUL_STREET_ID && typeof engine.forfeitHogHaul === 'function' && !engine.instanceHold && engine.transientInstance?.();
+      return haul ? { kind: 'forfeit', label: HOG_HAUL_TICKET.title } : null;
+    }
+    return action === 'depart' ? departForParty(engine) : null;
   },
 
   /**

@@ -60,7 +60,7 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=8c04be08';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=fe5c369f';
 import { wallsScreen } from '../street-model.js?v=2918abe5';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -570,6 +570,42 @@ async function leave(engine) {
   engine.save();
   if (back?.tsid) await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, quiet: true, bypassFeatureGates: true });
   publish(engine);
+}
+
+/**
+ * G904: a party teleporter taken in the arena gives the game up: any exit ran game.playerLeft(pc)
+ * (GSJS groups/instance.js player_exited_location 353-355; it_game: global_game.js playerLeft
+ * 803-813, the game goes on without you). No prize; the crown time you held still counts on your
+ * badges, as games_is_not_it did; the party leads back to the street you joined from.
+ */
+function departForParty(engine) {
+  const back = record.returnTo;
+  if (mp) {
+    mpClient?.send('crown_leave', { match: mp.match });
+    if (mpMustWaitUid) engine.removePrompt?.(mpMustWaitUid);
+    mpMustWaitUid = null;
+    mp = null;
+    mpNote(engine, 'left');
+  } else if (game && !resultApplied) {
+    const seconds = Math.floor((game.players?.you?.crownMs || 0) / 1000);
+    if (seconds > 0) engine.achievement('it_game:seconds_with_crown', seconds);
+    engine.pushActivity('You left the Game of Crowns.');
+  }
+  engine.hideGameSplash?.();
+  clearTip();
+  if (hud) {
+    hud.bar.hidden = true;
+    hud.countdown.hidden = true;
+    if (hud.ready) hud.ready.hidden = true;
+  }
+  game = null;
+  pending = null;
+  record.returnTo = null;
+  record.pendingTicket = null;
+  if (engine.instanceHold === CROWNS_ID) engine.instanceHold = null;
+  engine.save();
+  publish(engine);
+  return back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : null;
 }
 
 function playAgain(engine) {
@@ -1585,6 +1621,13 @@ export const crownsFeature = {
 
   travelGate() {
     return game || pending || mp || mpStarting || mpChallenging ? { ok: false, msg: "You can't leave in the middle of a game!" } : null;
+  },
+
+  /** G904: the party teleporter's contract: the Game of Crowns is given up ('forfeit'). */
+  partyTrip(action, engine) {
+    const here = engine?.streetTsid === CROWNS_STREET && !mayhemHoldsArena() && Boolean(game || pending || mp);
+    if (action === 'plan') return here ? { kind: 'forfeit', label: CROWNS_TITLE } : null;
+    return action === 'depart' && here ? departForParty(engine) : null;
   },
 
   physics(engine) {

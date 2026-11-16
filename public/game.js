@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=df4e2ca6';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0433df11';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -13588,6 +13588,32 @@ const engine = {
   startRookMuseum: (opts = {}) => startRookMuseum(opts),
   /** Enter The Great Hog Haul (as the quest does); races-feature passes { ticket, rivalLabel } for a Hog Haul Ticket. */
   startHogHaulRace: (opts = {}) => startHogHaulRace(opts),
+  /**
+   * G904: given up for a party teleporter, as any exit ran game.playerLeft (GSJS groups/instance.js
+   * 353-355): no prize, the haul over, and the place it was joined from ({ tsid, x, y }) for the
+   * party's way back; null when no haul runs. A quest haul stays in the log.
+   */
+  forfeitHogHaul() {
+    if (!hogHaulState || !hogHaulIsInstanced()) return null;
+    const back = hogHaulSourceLocation?.tsid ? { ...hogHaulSourceLocation } : { tsid: STREET_INDEX.default };
+    const fromTicket = Boolean(hogHaulState.ticket);
+    const over = ['won', 'lost'].includes(hogHaulState.status);
+    // Already over: leaving is the splash's Leave the Game (the prize was paid at the end).
+    if (hogHaulState.status === 'won') announceQuestCompletions(applyQuestProgress(questState, 'race_leave', 1, pc));
+    hideHogHaulScreens();
+    const hud = document.getElementById('hog-haul-hud');
+    if (hud) hud.hidden = true;
+    if (hogHaulCarrySprite) hogHaulCarrySprite.visible = false;
+    hogHaulState = null;
+    hogHaulSourceLocation = null;
+    hogHaulResultApplied = false;
+    if (app?.canvas) {
+      app.canvas.dataset.hogHaulStatus = 'left';
+      app.canvas.dataset.hogHaulOutcome = 'forfeit';
+    }
+    if (!over) pushActivity(fromTicket ? 'You left The Great Hog Haul.' : 'You left The Great Hog Haul. It is still in your Quest Log.');
+    return back;
+  },
   /** A scripted NPC conversation: beats, onComplete; cancelable adds a second button (primaryLabel / cancelLabel, onCancel). */
   scriptedDialogue: (opts) => openScriptedQuestDialogue(opts),
   /** G228: a location event's VOG ({ lines, onComplete }): js/vog-overlay.js, not the quest card. */

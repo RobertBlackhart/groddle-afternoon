@@ -586,6 +586,27 @@ export const hogHaulMpFeature = {
     return mp || pending ? { ok: false, msg: "You can't leave in the middle of a race!" } : null;
   },
 
+  /**
+   * G904: a party teleporter taken on the haul's street gives it up (any exit ran game.playerLeft,
+   * GSJS groups/instance.js player_exited_location 353-355; global_game.js playerLeft 814-815 calls
+   * the race off): race_leave to the server, no prize, back to the street the challenge was made on.
+   */
+  partyTrip(action, engine) {
+    const here = engine?.mode === 'multiplayer' && Boolean(mp) && engine.streetTsid === mp.home;
+    if (action === 'plan') return here ? { kind: 'forfeit', label: HOG_MP_TEXT.title } : null;
+    if (action !== 'depart' || !here) return null;
+    const back = record.returnTo;
+    client?.send('race_leave', { match: mp.match });
+    if (mp.splash) engine.hideGameSplash?.();
+    if (mp.outcome === 'won') engine.questFlag?.('race_leave');
+    finish(engine);
+    record.returnTo = null;
+    engine.save();
+    engine.setData?.('hogMpOutcome', 'forfeit');
+    publish(engine);
+    return back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : null;
+  },
+
   physics(engine) {
     if (!mp || engine.streetTsid !== mp.home) return null;
     return mp.status === 'running' ? null : { speed: 0, jump: 0 };
