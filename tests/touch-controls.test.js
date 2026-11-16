@@ -72,7 +72,8 @@ describe('the stick', () => {
     assert.ok(k.x > 0 && k.y > 0);
   });
   it('holds the same keys a keyboard does, and Jump queues the Space key\'s jump', () => {
-    assert.match(game, /press: \(k\) => keys\.add\(k\),\s*release: \(k\) => keys\.delete\(k\),\s*jump: \(\) => \{\s*queueJump\(jumpState, movementNow\(\)\);\s*window\.dispatchEvent\(new CustomEvent\(TOUCH_JUMP_EVENT\)\);\s*\},/);
+    // G876: the stick also notes what it holds (stickHeld), so reaching a ladder with it held Up is a press.
+    assert.match(game, /press: \(k\) => \{\s*keys\.add\(k\);\s*stickHeld\.add\(k\);\s*\},\s*release: \(k\) => \{\s*keys\.delete\(k\);\s*stickHeld\.delete\(k\);\s*\},\s*jump: \(\) => \{\s*queueJump\(jumpState, movementNow\(\)\);\s*window\.dispatchEvent\(new CustomEvent\(TOUCH_JUMP_EVENT\)\);\s*\},/);
     assert.match(mod, /press\(' '\);\s*jump\(\);/);
   });
 });
