@@ -38,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=486fd922';
+} from '../public/js/resource-nodes.js?v=a7d407f3';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -53,7 +53,7 @@ import {
   measuredNodeSpots,
   PLANNED_NODE_CAPS,
   RESOURCE_NODE_CLASSES,
-} from '../public/js/street-ecology.js?v=d34b6f73';
+} from '../public/js/street-ecology.js?v=7435cfce';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(__dirname, '../public');

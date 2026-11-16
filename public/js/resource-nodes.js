@@ -811,7 +811,7 @@ export const RESOURCE_NODE_CATALOG = Object.freeze({
     art: 'swf',
     swf: Object.freeze({
       source: 'glitch-items inhabitants/sloth/npc_sloth.swf sprite 123 (sloth_mc), CC0: js/sloth-art.js (tools/sloth-art/build.mjs)',
-      draw: 'The sloth hanging from its own striped branch in the red bandana and dark jacket (initInstanceProps head=redBandana, jacket=darkJacket), its eighteen animations played at the GSJS moments (js/sloth-encounter.js); the HIDE ME marker where the canopy covered it is drawn as leaves.',
+      draw: 'The sloth hanging from its own striped branch in the red bandana and dark jacket (initInstanceProps head=redBandana, jacket=darkJacket), its eighteen animations played at the GSJS moments (js/sloth-encounter.js); it hangs in its own street\'s tree (js/sloth-trees.js, G891), where the crown the street draws in front covers the HIDE ME box.',
       states: Object.freeze(['hidden', 'idle', 'eating']),
     }),
     source: 'npc_sloth.js (verbs.feed metal_rod, animalkinship_3, createSnail 7-10, metalize_count > 7 hides, 3 min cooldown), sloth_knocker.js (callSloth)',

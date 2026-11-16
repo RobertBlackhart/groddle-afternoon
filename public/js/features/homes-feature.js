@@ -212,14 +212,14 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=98606052';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
 import { fadeInNewNear } from '../poof-fade.js?v=17fc143a';
-import { projectApi } from './street-jobs-feature.js?v=de48cde1';
+import { projectApi } from './street-jobs-feature.js?v=716bfb0a';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=2d71091c';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=9c8359ad';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=dbfc79a6';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=6a8a0a52';
-import { patchesFeature } from './patches-feature.js?v=228a10e8';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=91035502';
+import { patchesFeature } from './patches-feature.js?v=d0b76589';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=5a38514c';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';

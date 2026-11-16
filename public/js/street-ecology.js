@@ -19,6 +19,8 @@ import {
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
+import { SLOTH_SPOTS } from './sloth-spots-data.js?v=7396e9db';
+import { slothSpotFromRow } from './sloth-trees.js?v=a3299191';
 
 export const STREET_ECOLOGY_URL = 'assets/content/street-ecology.json?v=official-ecology-6';
 
@@ -185,6 +187,12 @@ export const MEASURED_NODE_SPOTS = Object.freeze({
   rock_beryl_1: Object.freeze({ variantPrefix: 'rock_beryl_', streets: ROCK_BERYL_SPOTS }),
   rock_dullite_1: Object.freeze({ variantPrefix: 'rock_dullite_', streets: ROCK_DULLITE_SPOTS }),
   rock_sparkly_1: Object.freeze({ variantPrefix: 'rock_sparkly_', streets: ROCK_SPARKLY_SPOTS }),
+  // G891: each Sloth in its own street's tree (tools/build-sloth-spots.mjs), with its side, the floor
+  // under it and its Knocker on the trunk: { x, y, variant: null, sloth: { dir, floor, knocker } }.
+  npc_sloth: Object.freeze({ variantPrefix: '', streets: SLOTH_SPOTS, extra: (row) => {
+    const spot = slothSpotFromRow(row);
+    return spot ? { sloth: { dir: spot.dir, floor: spot.floor, knocker: spot.knocker } } : {};
+  } }),
 });
 
 /**
@@ -205,7 +213,12 @@ export function measuredNodeSpots(tsid) {
     out ||= {};
     out[classTsid] = rows
       .filter((row) => Number.isFinite(row?.[0]) && Number.isFinite(row?.[1]))
-      .map(([x, y, v]) => ({ x, y, variant: Number.isFinite(v) ? `${source.variantPrefix}${v}` : null }));
+      .map((row) => {
+        const [x, y, v] = row;
+        // A class with more to a row than its variant (the Sloth) reads it with its own `extra`.
+        if (source.extra) return { x, y, variant: null, ...source.extra(row) };
+        return { x, y, variant: Number.isFinite(v) ? `${source.variantPrefix}${v}` : null };
+      });
   }
   return out;
 }

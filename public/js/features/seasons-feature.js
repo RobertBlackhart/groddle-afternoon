@@ -73,12 +73,12 @@ function takePumpkin(engine, cls, copy) {
 }
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { isStandable } from '../street-model.js?v=2918abe5';
-import { isBatterflyHabitat } from '../animal-husbandry.js?v=f121225d';
+import { isBatterflyHabitat } from '../animal-husbandry.js?v=22212cb3';
 import { emblemCostFor } from '../shrines.js?v=945cc7c4';
 import { rollDropTable } from '../drop-tables.js?v=8bcf111f';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=ea633f39';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=6a8a0a52';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=91035502';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import {
   CANDY_CLASSES,

@@ -13,9 +13,9 @@ import { join } from 'node:path';
 import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=2663e2d3';
 import { TYPING_EVERY_MS, TYPING_MS, typingCounts, typingDotAlpha } from '../public/js/features/realtime-feature.js?v=e99156b2';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, commandHelp, imDelayMs, imLine, imText, normalizeImPrefs, parseButlerIm } from '../public/js/butler-im.js?v=44783638';
-import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=4928782d';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=33173171';
-import { FEATURES } from '../public/js/features/index.js?v=98c67109';
+import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=77bb2b21';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=9b30450e';
+import { FEATURES } from '../public/js/features/index.js?v=e1e0e72a';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -183,7 +183,7 @@ describe('G367 the Butler IM: the feature', () => {
     // tick(1000) this used to take on the real clock, and one Jeeves line was missing.
     t.mock.timers.enable({ apis: ['setTimeout', 'Date'], now: 1_000_000 });
     t.mock.method(Math, 'random', () => 0.999);
-    const { butlerApi } = await import('../public/js/features/butler-feature.js?v=c0a322e1');
+    const { butlerApi } = await import('../public/js/features/butler-feature.js?v=753cd9d4');
     t.mock.method(butlerApi, 'owned', () => true);
     t.mock.method(butlerApi, 'label', () => 'Jeeves');
     const streetSaid = [];
@@ -238,7 +238,7 @@ describe('G367 the Butler IM: the feature', () => {
     // The delays are spaced by Date.now while the timers keep their own clock: under load the two
     // drift apart, and a slow first IM once showed after a quick second one (full suite 2026-11-04).
     t.mock.timers.enable({ apis: ['setTimeout'] });
-    const { butlerApi } = await import('../public/js/features/butler-feature.js?v=c0a322e1');
+    const { butlerApi } = await import('../public/js/features/butler-feature.js?v=753cd9d4');
     t.mock.method(butlerApi, 'owned', () => true);
     t.mock.method(butlerApi, 'label', () => 'Jeeves');
     let clock = 1_000_000;

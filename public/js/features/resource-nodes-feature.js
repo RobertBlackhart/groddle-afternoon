@@ -9,7 +9,8 @@
  *
  * Placement: one shared-planner group per node class from the street
  * population's `resourceNodeClasses`, so every node stands on a real
- * platform. Node state persists per street in engine.streetSlot('resource-nodes')
+ * platform; spots measured on the snaps come first, and a Sloth only ever
+ * hangs in its street's own tree (UNPLANNED_RESOURCE_CLASSES, G891). Node state persists per street in engine.streetSlot('resource-nodes')
  * keyed `<classTsid>:<index>`; the Firefly Jar and the one-time starter kit
  * flag live in this feature's save slice.
  *
@@ -17,9 +18,9 @@
  * PIXI.Assets before any frame is sliced. Each sheet is scanned once for its
  * per-frame alpha bounds so growth states sit on the ground and the Firefly
  * glow follows the dot along its authored path. The Sloth is Tiny Speck's
- * npc_sloth.swf (js/sloth-art.js) hanging from its own striped branch under a
- * canopy of Groddle tree decos, its animations played at the GSJS moments
- * (js/sloth-encounter.js; G889, #245).
+ * npc_sloth.swf (js/sloth-art.js) hanging from its own striped branch in its
+ * street's own tree, hidden by the crown the street draws in front (G891),
+ * its animations played at the GSJS moments (js/sloth-encounter.js; G889, #245).
  *
  * Firefly Whistling: GSJS grants `firefly_whistling` at the end of the
  * instanced lab quest `firefly_whistle` (players/player.js
@@ -36,7 +37,8 @@
  * needs; &resdemobare=1 leaves the items out); &resautoplay=1 performs its
  * main verb once. Canvas data attributes:
  * resourceNodeCount, resourceNodeClasses, resourceLastHarvest, fireflyJar,
- * resourceDemo, slothAnim (the QA Sloth's animation, `eat:rod3` with a rod).
+ * resourceDemo, slothAnim (the QA Sloth's animation, `eat:rod3` with a rod),
+ * slothSpots (the street's Sloths: key@x,y,dir).
  *
  * Pocket Salmon online (slice 3 of research/plans/street-animals-shared.md):
  * a street's Salmon are shared nodes (street-objects-feature): one pocketed is
@@ -71,6 +73,7 @@ import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3c
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
 import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
+import { slothTrees } from '../sloth-trees.js?v=a3299191';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -98,7 +101,7 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=486fd922';
+} from '../resource-nodes.js?v=a7d407f3';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=38a0cac5';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -107,7 +110,7 @@ import { playItemOverlay } from '../item-overlay.js?v=b12c43aa';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=30061f5c';
+import { salmonSwimAt } from '../street-creatures.js?v=6d9e6816';
 import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
@@ -123,9 +126,14 @@ export const RESOURCE_PLACEMENT_CLEARANCE = Object.freeze({
   jellisac: 42,
   dirt_pile: 110,
   peat_1: 115,
-  npc_sloth: 140,
   paper_tree: 135,
 });
+
+/**
+ * G891: classes never planned on a floor. A Sloth hangs in its own street's tree (js/sloth-trees.js,
+ * written for the 37 sloth streets by tools/build-sloth-spots.mjs); one with no tree is not drawn.
+ */
+export const UNPLANNED_RESOURCE_CLASSES = Object.freeze(['npc_sloth']);
 
 /** The verb each class's QA autoplay performs. */
 export const RESOURCE_MAIN_VERB = Object.freeze({
@@ -153,7 +161,7 @@ export const FIREFLY_OFFER_LINES = Object.freeze([
 ]);
 /** Every node is an item, so all of them draw under the avatars (50); npc_firefly is in_foreground (FG_ITEM). */
 /**
- * Offsets inside each class's item band (item-bands.js). Peat, dirt, jellisac, the sloth's tree and
+ * Offsets inside each class's item band (item-bands.js). Peat, dirt, jellisac, the Sloth and
  * the paper tree are background items (with the trants, 16); barnacles, ice knobs and dust traps
  * normal; fireflies and salmon foreground.
  */
@@ -182,10 +190,17 @@ function resourceClassCounts(population) {
  * Player report #210: the class's spots measured on the street's snaps (street-ecology.js
  * measuredNodeSpots, populationForStreet `resourceSpots`), at most `count`.
  */
-function measuredSpots(population, classTsid, count) {
-  const rows = population?.resourceSpots?.[classTsid];
+function measuredSpots(population, classTsid, count, street = null) {
+  let rows = population?.resourceSpots?.[classTsid];
+  // G891: a street with Sloths and no written spots (a builder street) finds its trees in its own art.
+  if (!Array.isArray(rows) && classTsid === 'npc_sloth' && street) rows = slothSpotsFromArt(street);
   if (!Array.isArray(rows)) return [];
   return rows.filter((row) => Number.isFinite(row?.x) && Number.isFinite(row?.y)).slice(0, count);
+}
+
+/** G891: a street's sloth trees as measured spots ({ x, y, sloth: { dir, floor, knocker } }). */
+export function slothSpotsFromArt(street) {
+  return slothTrees(street).map((t) => ({ x: t.x, y: t.y, variant: null, sloth: { dir: t.dir, floor: t.floor, knocker: t.knocker } }));
 }
 
 /**
@@ -195,6 +210,7 @@ function measuredSpots(population, classTsid, count) {
 export function resourcePlacementGroups(population) {
   const groups = [];
   for (const [classTsid, count] of resourceClassCounts(population)) {
+    if (UNPLANNED_RESOURCE_CLASSES.includes(classTsid)) continue;
     const planned = count - measuredSpots(population, classTsid, count).length;
     if (planned < 1) continue;
     groups.push({
@@ -211,14 +227,18 @@ export function resourcePlacementGroups(population) {
  * spots first (`wall: true`, drawn where the snap shows them, in the variant it shows), then the
  * planner's points; ones the planner could not seat are dropped.
  */
-export function resourceSpawnPlan(population, placement) {
+export function resourceSpawnPlan(population, placement, street = null) {
   const plan = [];
   for (const [classTsid, count] of resourceClassCounts(population)) {
-    const spots = measuredSpots(population, classTsid, count);
+    const spots = measuredSpots(population, classTsid, count, street);
     spots.forEach((spot, index) => {
-      plan.push({ key: `${classTsid}:${index}`, classTsid, x: spot.x, y: spot.y, wall: true, ...(spot.variant ? { variant: spot.variant } : {}) });
+      plan.push({
+        key: `${classTsid}:${index}`, classTsid, x: spot.x, y: spot.y, wall: true,
+        ...(spot.variant ? { variant: spot.variant } : {}),
+        ...(spot.sloth ? { sloth: spot.sloth } : {}),
+      });
     });
-    if (count - spots.length < 1) continue;
+    if (count - spots.length < 1 || UNPLANNED_RESOURCE_CLASSES.includes(classTsid)) continue;
     const points = (typeof placement === 'function' ? placement(`${RESOURCE_GROUP_PREFIX}${classTsid}`) : []) || [];
     points.slice(0, count - spots.length).forEach((point, index) => {
       if (!Number.isFinite(point?.x) || !Number.isFinite(point?.y)) return;
@@ -339,35 +359,53 @@ export function rulesVerbId(menuId) {
 }
 
 // ---------------------------------------------------------------------------
-// Sloth art: Tiny Speck's npc_sloth.swf (js/sloth-art.js) under Groddle tree decos
+// Sloth art: Tiny Speck's npc_sloth.swf (js/sloth-art.js) in its street's own tree
 // ---------------------------------------------------------------------------
 
-const DECO_DIR = 'assets/decos/groddle/';
+/**
+ * G891: a Sloth hangs in its own street's tree (js/sloth-trees.js): its origin (the SWF's point)
+ * at the crown's lower edge, on the side the crown spreads (`dir`, npc_sloth.js instance prop
+ * 33, 54, onPropsChanged 620: left mirrors every layer), so the HIDE ME box above it sits in the
+ * leaves the street already draws in front of the items, and the hanging sloth under it. The
+ * Knocker hangs on the trunk at its own point. Offsets from the origin, dir right (mirrored left):
+ * - box: what you point at or reach for, the hanging art across (the hangIdle cells: origin x 61
+ *   of 179) from the top of the HIDE ME box (SLOTH_CANOPY y -96) down to the floor under it, so
+ *   from the path below it is right there;
+ * - mouth: where it spits from in the hanging pose (the mouth in hangIdle1);
+ * - speech: its bubbles (talk 852-881: offset 85 px to its right, higher while it hides), over its
+ *   head when it hangs, over the leaves it hides in when it is up there.
+ */
+export const SLOTH_REACH = Object.freeze({
+  box: Object.freeze({ back: 61, front: 118, top: 96 }),
+  mouth: Object.freeze({ x: 80, y: 62 }),
+  speech: Object.freeze({ x: 80, hanging: 35, hiding: -30 }),
+});
+/** A QA Sloth by the player stands on no tree: its origin this far over the floor, its Knocker beside it. */
+const DEMO_SLOTH = Object.freeze({ lift: 200, knockerX: 110, knockerLift: 75 });
 
 /**
- * A Sloth's tree, from its spot on the ground. The trunk and the canopy are Tiny Speck's Groddle
- * tree decos (tree_branch_foliage_02d, tree_plane_foliage_01d: the same CC0 art as the canopies
- * on the sloth streets). The sloth hangs from its own striped branch with its origin at `sloth`;
- * the canopy covers the box npc_sloth.swf marks HIDE ME (SLOTH_CANOPY in js/sloth-art.js), so the
- * hidden sloth sits in the leaves and peeks out under them, as under a street's canopy. The
- * Knocker (sloth_knocker) hangs on the trunk. Where each street's own canopy is: the next lane
- * (G889 placement).
+ * PURE: where a Sloth's parts are, from its spot ({ x, y, sloth: { dir, floor, knocker } }, screen
+ * px): { dir, origin, floor, knocker, box, mouth, speech }.
  */
-export const SLOTH_TREE = Object.freeze({
-  sloth: Object.freeze({ x: -58, y: -200 }),
-  trunk: Object.freeze({ file: 'tree_branch_foliage_02d_g1.webp', x: -104, y: 4, scale: 1.15 }),
-  canopy: Object.freeze({ file: 'tree_plane_foliage_01d_g1.webp', x: -28, y: -194, scale: 0.5 }),
-  knocker: Object.freeze({ x: -98, y: -62 }),
-  /** Where it spits from in the hanging pose (sloth origin + the mouth in hangIdle1). */
-  mouth: Object.freeze({ x: 80, y: 62 }),
-  /**
-   * Its bubbles (talk 852-881: offset 85 px to its right, higher while it hides): over its head
-   * when it hangs, over the leaves it hides in when it is up there.
-   */
-  speech: Object.freeze({ x: 22, hanging: 165, hiding: 230 }),
-  hitW: 130,
-  hitH: 300,
-});
+export function slothGeometry(spot) {
+  const dir = spot?.sloth?.dir < 0 ? -1 : 1;
+  const x = Number(spot?.x) || 0;
+  const y = Number(spot?.y) || 0;
+  const floor = Number.isFinite(spot?.sloth?.floor) ? spot.sloth.floor : y + DEMO_SLOTH.lift;
+  const knocker = Number.isFinite(spot?.sloth?.knocker?.x) && Number.isFinite(spot?.sloth?.knocker?.y)
+    ? { x: spot.sloth.knocker.x, y: spot.sloth.knocker.y }
+    : { x: x - dir * DEMO_SLOTH.knockerX, y: floor - DEMO_SLOTH.knockerLift };
+  const { box: b, mouth, speech } = SLOTH_REACH;
+  return {
+    dir,
+    origin: { x, y },
+    floor,
+    knocker,
+    box: { left: dir > 0 ? x - b.back : x - b.front, right: dir > 0 ? x + b.front : x + b.back, top: y - b.top, bottom: floor },
+    mouth: { x: x + dir * mouth.x, y: y + mouth.y },
+    speech: { x: x + dir * speech.x, hanging: y + speech.hanging, hiding: y + speech.hiding },
+  };
+}
 
 /** The cells of one sheet (js/sloth-art.js), sliced once. */
 const slothFrameCache = new Map();
@@ -602,6 +640,9 @@ function publish(engine) {
     demoEntity ? `${demoEntity.classTsid}:${demoEntity.node.units}:${resourceNodeStatusLabel(demoEntity.node)}` : ''
   );
   engine.setData('salmonRelease', releaseState);
+  // G891: each Sloth's key, origin and side (`npc_sloth:0@2886,452,1;...`), the QA Sloth left out.
+  engine.setData('slothSpots', entities.filter((e) => e.classTsid === 'npc_sloth' && e !== demoEntity)
+    .map((e) => `${e.key}@${Math.round(e.x)},${Math.round(e.y)},${e.sloth?.dir < 0 ? -1 : 1}`).join(';'));
 }
 
 // ---------------------------------------------------------------------------
@@ -835,46 +876,41 @@ function refreshTrap(engine, entity) {
 
 function buildSlothView(engine, entity) {
   const { PIXI } = engine;
+  const geo = slothGeometry(entity);
+  // The target's box (the root, anchored bottom centre as every world thing): the hanging sloth
+  // across, from the leaves it hides in down to the floor under it.
   const root = new PIXI.Container();
-  root.x = entity.x;
-  root.y = entity.y + 2;
+  root.x = (geo.box.left + geo.box.right) / 2;
+  root.y = geo.box.bottom;
   root.zIndex = itemZ(entity.classTsid, Z.tree);
-  // Hit box: the trunk's foot to the canopy, as wide as the hanging sloth.
-  root._worldHitW = SLOTH_TREE.hitW;
-  root._worldHitH = SLOTH_TREE.hitH;
-  const deco = (part) => {
-    const spr = new PIXI.Sprite(textureFromUrl(`${DECO_DIR}${part.file}`));
-    spr.anchor.set(0.5, 1);
-    spr.scale.set(part.scale);
-    spr.x = part.x;
-    spr.y = part.y;
-    return spr;
-  };
-  const trunk = deco(SLOTH_TREE.trunk);
-  const knocker = new PIXI.Sprite(textureFromUrl(`${SLOTH_ART_DIR}${SLOTH_KNOCKER_ART.still}`));
-  knocker.anchor.set(SLOTH_KNOCKER_ART.origin.x / SLOTH_KNOCKER_ART.knock.cell.w, SLOTH_KNOCKER_ART.origin.y / SLOTH_KNOCKER_ART.knock.cell.h);
-  knocker.x = SLOTH_TREE.knocker.x;
-  knocker.y = SLOTH_TREE.knocker.y;
-  // The sloth in the SWF's depth order: under the rod, the rod in hand, the paw over it.
-  const layer = () => {
-    const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    spr.x = SLOTH_TREE.sloth.x;
-    spr.y = SLOTH_TREE.sloth.y;
-    return spr;
-  };
+  root._worldHitW = geo.box.right - geo.box.left;
+  root._worldHitH = geo.box.bottom - geo.box.top;
+  // The sloth in the SWF's depth order: under the rod, the rod in hand, the paw over it, all three
+  // mirrored together for a sloth on the left of its trunk (the anchors are each sheet's origin).
+  const art = new PIXI.Container();
+  art.x = geo.origin.x - root.x;
+  art.y = geo.origin.y - root.y;
+  art.scale.x = geo.dir;
+  const layer = () => new PIXI.Sprite(PIXI.Texture.EMPTY);
   const body = layer();
   const rod = layer();
   const paw = layer();
-  const canopy = deco(SLOTH_TREE.canopy);
-  root.addChild(trunk, knocker, body, rod, paw, canopy);
-  engine.entityLayer.addChild(root);
+  art.addChild(body, rod, paw);
+  root.addChild(art);
+  // The Knocker on the trunk (sloth_knocker: obey_physics false, its point the art's bottom centre).
+  const knocker = new PIXI.Sprite(textureFromUrl(`${SLOTH_ART_DIR}${SLOTH_KNOCKER_ART.still}`));
+  knocker.anchor.set(SLOTH_KNOCKER_ART.origin.x / SLOTH_KNOCKER_ART.knock.cell.w, SLOTH_KNOCKER_ART.origin.y / SLOTH_KNOCKER_ART.knock.cell.h);
+  knocker.x = geo.knocker.x;
+  knocker.y = geo.knocker.y;
+  knocker.zIndex = itemZ('sloth_knocker', Z.tree);
+  engine.entityLayer.addChild(root, knocker);
   const frame = resourceNodeFrame(entity.node);
   entity.view = {
-    kind: 'sloth', sprite: root, body, rod, paw, knocker,
+    kind: 'sloth', sprite: root, art, body, rod, paw, knocker, geo,
     anim: '', animAt: 0, rodIndex: 1, steps: [], idleAt: 0, state: 'hidden', out: false,
     peekAt: 0, knockAt: 0, spits: [],
   };
-  entity.target = targetFor(engine, entity, root, { airborne: true, speechOffset: { x: SLOTH_TREE.speech.x, y: 0 } });
+  entity.target = targetFor(engine, entity, root, { airborne: true, speechOffset: { x: geo.speech.x - root.x, y: 0 } });
   entity.view.target = entity.target;
   warmSloth(engine, ['hidden', 'peek', 'peekIdle', 'peekWithdraw', 'drop', 'hangIdle1', 'hangIdle2']);
   const now = Date.now();
@@ -890,7 +926,10 @@ function buildSlothView(engine, entity) {
 function setSlothAnim(engine, view, label, now) {
   const sheet = SLOTH_SHEETS[label];
   if (!sheet) return;
-  if (view.target) view.target.artHeight = /^(hidden|peek|climbUp)/.test(label) ? SLOTH_TREE.speech.hiding : SLOTH_TREE.speech.hanging;
+  if (view.target) {
+    const tip = /^(hidden|peek|climbUp)/.test(label) ? view.geo.speech.hiding : view.geo.speech.hanging;
+    view.target.artHeight = view.sprite.y - tip;
+  }
   view.anim = label;
   view.animAt = now;
   const anchor = (spr, s) => spr.anchor.set(s.origin.x / s.cell.w, s.origin.y / s.cell.h);
@@ -1154,10 +1193,7 @@ function spitSnail(engine, entity) {
   const snail = new PIXI.Sprite(textureFromUrl('assets/sprites/icons/snail.webp'));
   snail.anchor.set(0.5);
   snail.scale.set(0.6);
-  const from = {
-    x: entity.x + SLOTH_TREE.sloth.x + SLOTH_TREE.mouth.x,
-    y: entity.y + SLOTH_TREE.sloth.y + SLOTH_TREE.mouth.y,
-  };
+  const from = entity.view?.geo?.mouth || slothGeometry(entity).mouth;
   const to = { x: engine.player.x, y: engine.player.y - 40 };
   addEffect(engine, snail, (t) => {
     const k = Math.min(1, t / 650);
@@ -1610,6 +1646,11 @@ function setupDemo(engine, plan) {
   if (engine.pc.energy < 60) engine.pc.energy = 60;
   const at = demoPlacement(engine, kitInfo.classTsid);
   const extra = [{ key: `demo:${kitInfo.classTsid}`, classTsid: kitInfo.classTsid, x: at.x, y: at.y, demo: true }];
+  if (kitInfo.classTsid === 'npc_sloth') {
+    // No tree by the player: the QA Sloth hangs DEMO_SLOTH.lift over the floor, its Knocker beside it.
+    extra[0].y = at.y - DEMO_SLOTH.lift;
+    extra[0].sloth = { dir: 1, floor: at.y, knocker: { x: at.x - DEMO_SLOTH.knockerX, y: at.y - DEMO_SLOTH.knockerLift } };
+  }
   if (kitInfo.classTsid === 'npc_firefly') {
     // A small swarm, so one whistle shows several Fireflies streaming in.
     extra.push({ key: 'demo:npc_firefly:2', classTsid: 'npc_firefly', x: at.x + 70, y: at.y, demo: true });
@@ -1818,7 +1859,7 @@ export const resourceNodesFeature = {
     generation += 1;
     const myGeneration = generation;
     const slot = engine.streetSlot(RESOURCE_FEATURE_ID);
-    const planned = resourceSpawnPlan(engine.population, (key) => engine.placement(key));
+    const planned = resourceSpawnPlan(engine.population, (key) => engine.placement(key), street);
     const items = prepareStreetResourceNodes(slot, planned, { tsid: engine.streetTsid, now: Date.now() });
     const all = setupDemo(engine, items).map((item) => (
       item.demo ? { ...item, node: createResourceNode(item.classTsid, { seed: item.key, now: Date.now() }) } : item

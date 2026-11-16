@@ -8,7 +8,7 @@ import {
   RESOURCE_GROUP_PREFIX,
   RESOURCE_MAIN_VERB,
   RESOURCE_PLACEMENT_CLEARANCE,
-  SLOTH_TREE,
+  UNPLANNED_RESOURCE_CLASSES,
   menuVerbId,
   migrateResourceStarterKit,
   normalizeResourceFeatureSlice,
@@ -20,26 +20,20 @@ import {
   rulesVerbId,
   surfaceNear,
   verbTooltip,
-} from '../public/js/features/resource-nodes-feature.js?v=6a8a0a52';
+} from '../public/js/features/resource-nodes-feature.js?v=91035502';
 import {
   RESOURCE_NODE_CATALOG,
   RESOURCE_NODE_CLASS_IDS,
   createResourceNode,
-} from '../public/js/resource-nodes.js?v=486fd922';
+} from '../public/js/resource-nodes.js?v=a7d407f3';
 import { createFeatureHost, normalizeFeatureSlices } from '../public/js/feature-host.js?v=a0bd032a';
-import { populationForStreet, planStreetPlacements } from '../public/js/street-ecology.js?v=d34b6f73';
+import { populationForStreet, planStreetPlacements } from '../public/js/street-ecology.js?v=7435cfce';
 import { STORE_CATALOG } from '../public/js/store-catalog.js?v=74b56af3';
-import { SLOTH_CANOPY, SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
-import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const publicRoot = join(dirname(fileURLToPath(import.meta.url)), '../public');
 
 const population = (classes) => ({ resourceNodeClasses: classes });
 
 describe('resource node placement groups', () => {
-  it('requests one planner group per class with that class count and clearance', () => {
+  it('requests one planner group per class with that class count and clearance, never for Sloths (G891)', () => {
     const groups = resourcePlacementGroups(population([
       'npc_firefly', 'npc_firefly', 'npc_firefly', 'mortar_barnacle', 'peat_1', 'npc_sloth',
     ]));
@@ -47,7 +41,6 @@ describe('resource node placement groups', () => {
       { key: `${RESOURCE_GROUP_PREFIX}npc_firefly`, count: 3, clearance: RESOURCE_PLACEMENT_CLEARANCE.npc_firefly },
       { key: `${RESOURCE_GROUP_PREFIX}mortar_barnacle`, count: 1, clearance: RESOURCE_PLACEMENT_CLEARANCE.mortar_barnacle },
       { key: `${RESOURCE_GROUP_PREFIX}peat_1`, count: 1, clearance: RESOURCE_PLACEMENT_CLEARANCE.peat_1 },
-      { key: `${RESOURCE_GROUP_PREFIX}npc_sloth`, count: 1, clearance: RESOURCE_PLACEMENT_CLEARANCE.npc_sloth },
     ]);
   });
 
@@ -61,7 +54,7 @@ describe('resource node placement groups', () => {
 
   it('has a clearance and an autoplay verb for every catalog class', () => {
     for (const classTsid of RESOURCE_NODE_CLASS_IDS) {
-      assert.ok(RESOURCE_PLACEMENT_CLEARANCE[classTsid] > 0, classTsid);
+      if (!UNPLANNED_RESOURCE_CLASSES.includes(classTsid)) assert.ok(RESOURCE_PLACEMENT_CLEARANCE[classTsid] > 0, classTsid);
       const verbs = RESOURCE_NODE_CATALOG[classTsid].verbs.map((verb) => verb.id);
       assert.ok(verbs.includes(RESOURCE_MAIN_VERB[classTsid]), classTsid);
     }
@@ -268,28 +261,6 @@ describe('resource QA and menu helpers', () => {
       'Costs 2 energy and takes 4 seconds'
     );
     assert.equal(verbTooltip({ tooltip: 'Give love', durationMs: 2000 }), 'Give love');
-  });
-
-  it('hangs the SWF Sloth under a canopy that covers its HIDE ME box (G889)', () => {
-    // The canopy deco (tree_plane_foliage_01d, 482 x 320, anchored at its foot) at its scale.
-    const c = SLOTH_TREE.canopy;
-    const canopy = { left: c.x - (482 * c.scale) / 2, right: c.x + (482 * c.scale) / 2, top: c.y - 320 * c.scale, bottom: c.y };
-    const box = {
-      left: SLOTH_TREE.sloth.x + SLOTH_CANOPY.x,
-      right: SLOTH_TREE.sloth.x + SLOTH_CANOPY.x + SLOTH_CANOPY.w,
-      top: SLOTH_TREE.sloth.y + SLOTH_CANOPY.y,
-      bottom: SLOTH_TREE.sloth.y + SLOTH_CANOPY.y + SLOTH_CANOPY.h,
-    };
-    assert.ok(canopy.left <= box.left && canopy.right >= box.right && canopy.top <= box.top && canopy.bottom >= box.bottom,
-      `canopy ${JSON.stringify(canopy)} covers ${JSON.stringify(box)}`);
-    // The hanging sloth stays inside the hit box and clear of the ground (the avatar stands under it).
-    const hang = SLOTH_SHEETS.hangIdle1;
-    const bottom = SLOTH_TREE.sloth.y - hang.origin.y + hang.cell.h;
-    assert.ok(bottom < -60, `hangs ${-bottom} px up`);
-    assert.ok(-(SLOTH_TREE.sloth.y - hang.origin.y) <= SLOTH_TREE.hitH);
-    for (const part of [SLOTH_TREE.trunk, SLOTH_TREE.canopy]) {
-      assert.ok(existsSync(join(publicRoot, 'assets/decos/groddle', part.file)), part.file);
-    }
   });
 
   it('owns only its own targets in the feature host', () => {
