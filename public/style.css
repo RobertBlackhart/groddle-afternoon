@@ -14042,6 +14042,15 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #vendor-panel .vendor-detail.count-pop .qty-row { flex-wrap: wrap; margin-top: var(--space-2); }
 [data-ui="modern"] #vendor-panel .vendor-detail.count-pop .qty-row .btn-glitch-primary { flex: 1 0 100%; margin-top: var(--space-1); }
 [data-ui="modern"] #vendor-panel .vendor-detail.count-pop .count-pop-esc { margin: var(--space-2) 0 0; }
+/* G861 (#419): Esc is the way back to the shelf, and a phone has neither the key nor its hint, so the
+   pop's Back (data-v-back, the Classic panel's button) shows there as a close in its corner. */
+:root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .btn-glitch-back {
+  position: absolute; top: 0; right: 0; display: grid; place-items: center; width: 44px; height: 44px; margin: 0; padding: 0;
+  border: 0; border-radius: var(--radius-pill); background: transparent; box-shadow: none; color: var(--text-muted);
+  font-size: 0; line-height: 1; cursor: pointer;
+}
+:root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .btn-glitch-back::before { content: "×" / ""; font-size: var(--fs-xl); font-weight: var(--fw-bold); }
+:root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .vendor-detail-body h3 { padding-right: var(--space-6); }
 /* A phone held sideways (the mobile QA, 2026-11-12: a 138 px shelf): the pop drops its price line
    (the Buy button says it) so the count row and Buy fit the shelf together. */
 @media (max-height: 500px) {

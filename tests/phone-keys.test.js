@@ -94,3 +94,20 @@ describe('the shrine on a narrow window', () => {
     assert.match(media, /\.shrine-all-favor \{ mask-image: linear-gradient\(to right/);
   });
 });
+
+describe('G861 (#419): the vendor count pop has a way back on a phone', () => {
+  it('the pop\'s Back shows on a phone as a 44 px close in its corner; elsewhere it stays hidden (Esc)', () => {
+    assert.match(css, /\[data-ui="modern"\] #vendor-panel \.vendor-detail\.count-pop \.btn-glitch-back \{ display: none; \}/);
+    const rule = css.match(/:root\.touch-phone\[data-ui="modern"\] #vendor-panel \.vendor-detail\.count-pop \.btn-glitch-back \{([^}]*)\}/);
+    assert.ok(rule, 'the phone rule');
+    assert.match(rule[1], /position: absolute; top: 0; right: 0; display: grid;/);
+    assert.match(rule[1], /width: 44px; height: 44px;/);
+    assert.match(css, /count-pop \.btn-glitch-back::before \{ content: "×" \/ "";/);
+    // The phone hides the Esc hint, so the button is the only way back besides a tap on another tile.
+    assert.match(css, /:root\.touch-phone :is\(\.kcap, \.vm-key, \.ui-sheet-esc, span\.count-pop-esc, \.count-pop-key/);
+  });
+  it('the button is the Back that returns to the shelf', () => {
+    assert.match(game, /<button type="button" class="btn-glitch-back" data-v-back>← Back<\/button>/);
+    assert.match(game, /detail\.querySelector\('\[data-v-back\]'\)\?\.addEventListener\('click', \(\) => \{\s*vendorSelected = null;\s*renderVendorList\(\);/);
+  });
+});
