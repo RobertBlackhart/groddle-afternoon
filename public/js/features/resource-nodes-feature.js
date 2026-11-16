@@ -371,10 +371,14 @@ export function rulesVerbId(menuId) {
 // ---------------------------------------------------------------------------
 
 /**
- * G891: a Sloth hangs in its own street's tree (js/sloth-trees.js): its origin (the SWF's point)
- * at the crown's lower edge, on the side the crown spreads (`dir`, npc_sloth.js instance prop
- * 33, 54, onPropsChanged 620: left mirrors every layer), so the HIDE ME box above it sits in the
- * leaves the street already draws in front of the items, and the hanging sloth under it. The
+ * G891: a Sloth hangs in its own street's tree (js/sloth-trees.js): its hands on its branch at the
+ * spot (the crown's lower edge, on the side the crown spreads: `dir`, npc_sloth.js instance prop
+ * 33, 54, onPropsChanged 620; left mirrors every layer about the origin, as the client's
+ * view_holder.scaleX = -1 did, LocationItemstackView.as 1111-1126), so the HIDE ME box above sits
+ * in the leaves the street already draws in front of the items, and the hanging sloth under them.
+ * The 7 Sloths in the 2012 snaps were measured by their hands on the branch, within 24 px of the
+ * spots: so the spot is the grip, and the SWF's origin sits SLOTH_GRIP up and back from it (the
+ * hands in hangIdle1: 17-42 px right of the origin, the branch under them 22 px down). The
  * Knocker hangs on the trunk at its own point. Offsets from the origin, dir right (mirrored left):
  * - box: what you point at or reach for, the hanging art across (the hangIdle cells: origin x 61
  *   of 179) from the top of the HIDE ME box (SLOTH_CANOPY y -96) down to the floor under it, so
@@ -383,6 +387,7 @@ export function rulesVerbId(menuId) {
  * - speech: its bubbles (talk 852-881: offset 85 px to its right, higher while it hides), over its
  *   head when it hangs, over the leaves it hides in when it is up there.
  */
+export const SLOTH_GRIP = Object.freeze({ x: 30, y: 22 });
 export const SLOTH_REACH = Object.freeze({
   box: Object.freeze({ back: 61, front: 118, top: 96 }),
   mouth: Object.freeze({ x: 80, y: 62 }),
@@ -393,20 +398,24 @@ const DEMO_SLOTH = Object.freeze({ lift: 200, knockerX: 110, knockerLift: 75 });
 
 /**
  * PURE: where a Sloth's parts are, from its spot ({ x, y, sloth: { dir, floor, knocker } }, screen
- * px): { dir, origin, floor, knocker, box, mouth, speech }.
+ * px): { dir, origin, grip, floor, knocker, box, mouth, speech }.
  */
 export function slothGeometry(spot) {
   const dir = spot?.sloth?.dir < 0 ? -1 : 1;
-  const x = Number(spot?.x) || 0;
-  const y = Number(spot?.y) || 0;
-  const floor = Number.isFinite(spot?.sloth?.floor) ? spot.sloth.floor : y + DEMO_SLOTH.lift;
+  const gx = Number(spot?.x) || 0;
+  const gy = Number(spot?.y) || 0;
+  const floor = Number.isFinite(spot?.sloth?.floor) ? spot.sloth.floor : gy + DEMO_SLOTH.lift;
   const knocker = Number.isFinite(spot?.sloth?.knocker?.x) && Number.isFinite(spot?.sloth?.knocker?.y)
     ? { x: spot.sloth.knocker.x, y: spot.sloth.knocker.y }
-    : { x: x - dir * DEMO_SLOTH.knockerX, y: floor - DEMO_SLOTH.knockerLift };
+    : { x: gx - dir * DEMO_SLOTH.knockerX, y: floor - DEMO_SLOTH.knockerLift };
+  // The SWF's origin, from the hands at the spot.
+  const x = gx - dir * SLOTH_GRIP.x;
+  const y = gy - SLOTH_GRIP.y;
   const { box: b, mouth, speech } = SLOTH_REACH;
   return {
     dir,
     origin: { x, y },
+    grip: { x: gx, y: gy },
     floor,
     knocker,
     box: { left: dir > 0 ? x - b.back : x - b.front, right: dir > 0 ? x + b.front : x + b.back, top: y - b.top, bottom: floor },

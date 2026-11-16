@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SLOTH_COLLISION, slothGeometry, slothPeekBox, touchesSloth } from '../public/js/features/resource-nodes-feature.js?v=8be7e477';
+import { SLOTH_COLLISION, slothGeometry, slothPeekBox, touchesSloth } from '../public/js/features/resource-nodes-feature.js?v=2b9265b4';
 import { SLOTH_SPOTS } from '../public/js/sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from '../public/js/sloth-trees.js?v=a3299191';
 import { platformsScreen, platformYAt } from '../public/js/street-model.js?v=2918abe5';
@@ -33,14 +33,14 @@ describe('a Sloth in its tree (G891)', () => {
     const tsid = 'GA55645B8O528MI';
     const geo = geoOf(tsid, 0);
     const platforms = platformsScreen(street(tsid));
-    const floors = floorsAt(platforms, geo.origin.x);
+    const floors = floorsAt(platforms, geo.grip.x);
     const under = floors.find((y) => Math.abs(y - geo.floor) <= 2);
     const lower = floors.find((y) => y > geo.floor + 130);
     assert.ok(under != null && lower != null, `floors ${floors}`);
-    assert.equal(touchesSloth(geo.origin.x, under, geo), true);
+    assert.equal(touchesSloth(geo.grip.x, under, geo), true);
     assert.equal(touchesSloth(geo.origin.x - 170, under, geo), true, 'the box is 300 wide, and the avatar 66');
     assert.equal(touchesSloth(geo.origin.x + 200, under, geo), false);
-    assert.equal(touchesSloth(geo.origin.x, lower, geo), false);
+    assert.equal(touchesSloth(geo.grip.x, lower, geo), false);
   });
 
   it('every Sloth is in reach from the floor under it, and not from far below', () => {
@@ -49,7 +49,7 @@ describe('a Sloth in its tree (G891)', () => {
       const platforms = platformsScreen(street(tsid));
       rows.forEach((row, i) => {
         const geo = geoOf(tsid, i);
-        const x = geo.origin.x;
+        const x = geo.grip.x;
         const feet = geo.floor;
         const hitBox = avatarHitBox(x, feet);
         const body = { x, y: feet - 60 };

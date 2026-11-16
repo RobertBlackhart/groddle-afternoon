@@ -42,7 +42,7 @@ import {
   landscapeNearSpots,
   streetNearSkip,
   streetTrimSpots,
-} from '../public/js/features/homes-feature.js?v=53d5ddf3';
+} from '../public/js/features/homes-feature.js?v=99341200';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const RICH = { level: 60, imagination: 1e9 };

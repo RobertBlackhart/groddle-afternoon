@@ -12,12 +12,13 @@ import { buildSlothSpots, slothStreets } from '../tools/build-sloth-spots.mjs';
 import { measuredNodeSpots, populationForStreet } from '../public/js/street-ecology.js?v=7435cfce';
 import { SLOTH_SHEETS } from '../public/js/sloth-art.js?v=a2768e2f';
 import {
+  SLOTH_GRIP,
   prepareStreetResourceNodes,
   resourcePlacementGroups,
   resourceSpawnPlan,
   slothGeometry,
   slothSpotsFromArt,
-} from '../public/js/features/resource-nodes-feature.js?v=8be7e477';
+} from '../public/js/features/resource-nodes-feature.js?v=2b9265b4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ecology = JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8'));
@@ -65,10 +66,13 @@ describe('sloth trees (G891)', () => {
     }
   });
 
-  it('hangs the 7 snapped Sloths within 24 px of the snaps, on the side they hung', () => {
+  it('hangs the 7 snapped Sloths with their hands within 24 px of the snaps, on the side they hung', () => {
     for (const [tsid, index, sx, sy, dir] of SNAPPED) {
       const { l, t } = street(tsid).bounds;
-      const spot = slothSpotFromRow(SLOTH_SPOTS[tsid][index]);
+      const row = slothSpotFromRow(SLOTH_SPOTS[tsid][index]);
+      // The hands on the branch as drawn (SLOTH_GRIP from the SWF's origin) are the spot.
+      const geo = slothGeometry({ x: row.x, y: row.y, sloth: row });
+      const spot = { x: geo.origin.x + geo.dir * SLOTH_GRIP.x, y: geo.origin.y + SLOTH_GRIP.y, dir: geo.dir };
       assert.ok(Math.abs(spot.x - (sx - l)) <= 24, `${tsid} ${index} x ${spot.x} vs ${sx - l}`);
       assert.ok(Math.abs(spot.y - (sy - t)) <= 21, `${tsid} ${index} y ${spot.y} vs ${sy - t}`);
       assert.equal(spot.dir, dir, `${tsid} ${index} dir`);
@@ -83,7 +87,8 @@ describe('sloth trees (G891)', () => {
         const spot = slothSpotFromRow(row);
         // Its tallest frame (climbing up into the leaves) stays under the top edge: the closest is
         // Paaviri Vent's first tree, its crown 151 px under the edge.
-        assert.ok(spot.y - climb >= 40, `${tsid}: the sloth's top ${spot.y - climb} px under the top edge`);
+        const { origin } = slothGeometry({ x: spot.x, y: spot.y, sloth: spot });
+        assert.ok(origin.y - climb >= 30, `${tsid}: the sloth's top ${origin.y - climb} px under the top edge`);
         assert.ok(spot.x > 0 && spot.x < r - l && spot.floor <= b - t, tsid);
         const lift = spot.floor - spot.y;
         assert.ok(lift >= 150 && lift <= 260, `${tsid} lift ${lift}`);
@@ -93,7 +98,7 @@ describe('sloth trees (G891)', () => {
     // Kaha Haha's one Sloth: 1268,-1860 left of its trunk (the snap: 1270,-1872), 640 px under the top.
     const kaha = slothSpotFromRow(SLOTH_SPOTS.GHFEKBJFP0J2J9Q[0]);
     assert.deepEqual([kaha.x, kaha.y, kaha.dir], [1268 + 2000, -1860 + 2500, -1]);
-    assert.ok(kaha.y - climb > 500);
+    assert.ok(slothGeometry({ x: kaha.x, y: kaha.y, sloth: kaha }).origin.y - climb > 500);
   });
 
   it('a sloth street plans no Sloth and spawns npc_sloth:<i> at the i-th tree from the left', () => {
@@ -121,7 +126,8 @@ describe('sloth trees (G891)', () => {
     const right = slothGeometry({ x: 1000, y: 400, sloth: { dir: 1, floor: 600, knocker: { x: 890, y: 525 } } });
     const left = slothGeometry({ x: 1000, y: 400, sloth: { dir: -1, floor: 600, knocker: { x: 1110, y: 525 } } });
     assert.equal(right.box.bottom, 600);
-    assert.equal(right.box.top, 400 - 96);
+    assert.equal(right.box.top, right.origin.y - 96);
+    assert.deepEqual([right.origin.x, right.origin.y, left.origin.x], [970, 378, 1030], 'the hands on the branch at the spot');
     assert.deepEqual([left.box.left, left.box.right], [2000 - right.box.right, 2000 - right.box.left]);
     assert.equal(left.mouth.x, 2000 - right.mouth.x);
     assert.equal(left.speech.x, 2000 - right.speech.x);
