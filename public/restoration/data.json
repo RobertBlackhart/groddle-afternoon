@@ -2792,9 +2792,14 @@
   "deployed": "2026-11-15"
  },
  "git": {
-  "commits": 2303,
+  "commits": 2305,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-15",
+    "kind": "fix",
+    "text": "A street map or route walk keeps going while you open the Map, chat, Quests or Skills"
+   },
    {
     "date": "2026-11-15",
     "kind": "fix",
@@ -2909,11 +2914,6 @@
     "date": "2026-11-15",
     "kind": "fix",
     "text": "The Chats tab no longer shows a new-message badge for a group's \"You are the only person here.\""
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "The upgrade reveal lets the street show faintly through, like the other award moments"
    }
   ]
  },
