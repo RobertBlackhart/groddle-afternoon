@@ -17,10 +17,11 @@ const game = readFileSync(join(import.meta.dirname, '..', 'public/game.js'), 'ut
 describe('#380b report pictures keep clipped layers', () => {
   it('stageCanvas makes its target\'s depth and stencil before drawing', () => {
     const fn = game.slice(game.indexOf('function stageCanvas('), game.indexOf('\n}\n', game.indexOf('function stageCanvas(')));
-    const stencil = fn.indexOf('ensureDepthStencilTexture');
+    // G844: through js/render-probe.js ensureDepthStencil (the same ensureDepthStencilTexture).
+    const stencil = fn.indexOf('ensureDepthStencil(app.renderer, rt)');
     const draw = fn.indexOf('app.renderer.render({ container: app.stage, target: rt, clear: true, clearColor: [0, 0, 0, 0] })');
     assert.ok(stencil > 0 && draw > stencil, 'stencil first, then the draw');
-    assert.match(fn, /return app\.renderer\.extract\.canvas\(rt\);/);
+    assert.match(fn, /out = app\.renderer\.extract\.canvas\(rt\);/);
     assert.match(fn, /rt\.destroy\(true\);/);
   });
   it('the report picture and the view snapshot both draw through it', () => {

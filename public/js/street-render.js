@@ -16,6 +16,7 @@ import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDe
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
 import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=08e7deaa';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
+import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**
@@ -1501,12 +1502,15 @@ export function shadeColour(colour, k) {
  * PURE: the colour the skirt fades into. The street's gradient bottom when it is darker than its
  * ground (Naraka's black and dark red, a deep sea), else the band's average darkened
  * (SKIRT_DEEP_SHADE): a pale sky bottom under the ground read as the band of sky colour that
- * 989 streets once showed there. No band average (the read failed): the fallback, which is the
- * gradient bottom or the meadow green (black stays black, ticket 39).
+ * 989 streets once showed there. No band average (the read failed or found nothing opaque): the
+ * gradient bottom darkened (G844), else the fallback, the meadow green (black stays black, ticket 39).
  */
 export function skirtFadeColour(bandAverage, gradientBottom, fallback) {
   const sky = Number.isFinite(gradientBottom) ? gradientBottom : null;
-  if (!Number.isFinite(bandAverage)) return Number.isFinite(fallback) ? fallback : sky ?? 0x6b8f3c;
+  // G844 (#393): a band read that found nothing opaque (a GPU whose off-screen draws come back
+  // empty) faded to the raw pale sky; the sky darkened as a band of it would be (black stays black).
+  if (!Number.isFinite(bandAverage) && sky !== null) return shadeColour(sky, SKIRT_DEEP_SHADE);
+  if (!Number.isFinite(bandAverage)) return Number.isFinite(fallback) ? fallback : 0x6b8f3c;
   const deep = shadeColour(bandAverage, SKIRT_DEEP_SHADE);
   return sky !== null && luma(sky) <= luma(deep) ? sky : deep;
 }
@@ -1757,7 +1761,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     for (let x0 = 0; x0 < W; x0 += chunkW) {
       const w = Math.min(chunkW, Math.ceil(W - x0));
       if (band > 0) {
-        const rt = PIXI.RenderTexture.create({ width: w, height: band, resolution: res });
+        const rt = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: w, height: band, resolution: res }));
         renderer.render({ container: shell, target: rt, transform: new PIXI.Matrix(1, 0, 0, 1, -x0, -top), clear: true });
         textures.push(rt);
         for (const tile of skirtTiles(depth, band)) {
@@ -1779,9 +1783,10 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
         for (const lc of others) lc.visible = false;
         // From SOLID_OVERLAP px above the edge: the copy's first rows sample past its texture's
         // top, and there they lie over the same art (identical where it is solid).
-        const raw = PIXI.RenderTexture.create({ width: w, height: below + SOLID_OVERLAP, resolution: res });
+        const raw = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: w, height: below + SOLID_OVERLAP, resolution: res }));
         renderer.render({ container: shell, target: raw, transform: new PIXI.Matrix(1, 0, 0, 1, -x0, -(sourceH - SOLID_OVERLAP)), clear: true });
         for (const lc of others) lc.visible = true;
+        // Drawn from one filtered sprite, no mask: it needs no stencil of its own.
         const solid = PIXI.RenderTexture.create({ width: w, height: below + SOLID_OVERLAP, resolution: res });
         const holder = new PIXI.Container();
         const rawSprite = new PIXI.Sprite(raw);
@@ -1799,7 +1804,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       // The band's average colour from an eighth-size copy (one small read per chunk).
       const sw = Math.max(1, Math.ceil(w / 8));
       const sh = Math.max(1, Math.ceil(Math.max(band, 24) / 8));
-      const small = PIXI.RenderTexture.create({ width: sw, height: sh, resolution: 1 });
+      const small = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: sw, height: sh, resolution: 1 }));
       renderer.render({ container: shell, target: small, transform: new PIXI.Matrix(1 / 8, 0, 0, 1 / 8, -x0 / 8, -(sourceH - Math.max(band, 24)) / 8), clear: true });
       try {
         const { pixels: px } = renderer.extract.pixels(small);
@@ -1823,7 +1828,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       // Whole texels ending on the street's end (edgeMirrorTexels): a texture Pixi rounded down
       // would stop short of the end, flipped, and leave a gap there.
       const padW = wholeTexels(pad, res) / res;
-      const rt = PIXI.RenderTexture.create({ width: padW, height: band, resolution: res });
+      const rt = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: padW, height: band, resolution: res }));
       renderer.render({ container: shell, target: rt, transform: new PIXI.Matrix(1, 0, 0, 1, -(W - padW), -top), clear: true });
       textures.push(rt);
       for (const tile of skirtTiles(depth, band)) {

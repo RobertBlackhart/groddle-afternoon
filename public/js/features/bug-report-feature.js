@@ -79,6 +79,7 @@
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=aa93fc78';
 import { mountReportsSheet } from '../ui/reports-sheet.js?v=5c292919';
 import { PICTURE_TEXT } from '../report-pictures.js?v=d98e235d';
+import { canvasTransparent } from '../render-probe.js?v=d2c7b0e0';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -224,6 +225,10 @@ export function reportContext(engine, errors = [], env = globalThis) {
   const street = engine?.street;
   let panels = '';
   try { panels = openPanels(env.document).join(', ').slice(0, 300); } catch { panels = ''; }
+  // G844 (#393): the boot render-texture probe, the GPU's name and limits (js/render-probe.js).
+  let gpu = '';
+  try { gpu = String(engine?.renderProbeLine?.() || '').slice(0, 200); } catch { gpu = ''; }
+  const failed = engine?.renderProbe?.ok === false || engine?.renderProbe?.plain === false;
   return {
     street: String(engine?.streetTsid || ''),
     streetName: String(street?.label || street?.name || ''),
@@ -234,7 +239,9 @@ export function reportContext(engine, errors = [], env = globalThis) {
     agent: String(env.navigator?.userAgent || '').slice(0, 300),
     screen: env.innerWidth ? `${env.innerWidth}x${env.innerHeight}` : '',
     panels,
-    errors: errors.slice(-MAX_ERRORS),
+    gpu,
+    // The site keeps only the context keys it knows; a failed probe also rides in the errors so it reaches it now.
+    errors: failed && gpu ? [...errors.slice(-(MAX_ERRORS - 1)), `render probe: ${gpu}`] : errors.slice(-MAX_ERRORS),
   };
 }
 
@@ -252,6 +259,9 @@ export function captureFrame(engine, doc = globalThis.document, limits = REPORT_
   const width = Math.max(cssW, Math.min(viewW || cssW, limits.maxWidth));
   let frame = null;
   try { frame = engine?.snapshotCanvas?.(width ? { width } : {}) || null; } catch { frame = null; }
+  // G844 (#393): an empty frame (the GPU drew nothing off screen and the screen copy failed too) is
+  // no picture, never a black one. Read from the frame's own 2D context, once per report.
+  if (frame?.width && frame?.height && canvasTransparent(frame, null, Infinity)) return null;
   return frame?.width && frame?.height ? frame : null;
 }
 

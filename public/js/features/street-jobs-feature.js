@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
 import { ecologyForStreet } from '../street-ecology.js?v=3d348213';
 import { worldToScreen } from '../street-model.js?v=2918abe5';
-import { signArmWidth } from '../street-render.js?v=fcd73f63';
+import { signArmWidth } from '../street-render.js?v=66addeb7';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=945cc7c4';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';

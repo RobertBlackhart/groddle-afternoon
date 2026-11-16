@@ -90,6 +90,7 @@
  */
 
 import { bindContextTrigger } from './context-menu.js?v=400bbb32';
+import { canvasTransparent, ensureDepthStencil } from '../render-probe.js?v=d2c7b0e0';
 
 export const MAP_WIDTH = 160;
 export const MAX_CONTRACTED_H = 70;
@@ -478,6 +479,11 @@ export function drawLinesPicture(canvas, street, platforms = []) {
  *   `entities` ({ layer, keep(child) }) draws over it with only the children `keep` passes
  *   showing: the cultivations, fixtures and furniture, never a player (hidePCsTemporarily).
  */
+/** G844 (#393): whether a street map snapshot came back with nothing drawn (js/render-probe.js canvasTransparent). */
+export function snapshotEmpty(canvas, doc = globalThis.document) {
+  return canvasTransparent(canvas, doc, 160);
+}
+
 export function snapshotStreetView(PIXI, renderer, view, { width, height } = {}, { W: streetW = 0, H: streetH = 0, viewW = 0, entities = null } = {}) {
   if (!PIXI || !renderer || !view || view.destroyed || !(width > 0) || !(height > 0)) return null;
   const W = view.worldW || streetW || 0;
@@ -521,11 +527,19 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
     }
     const front = view.frontView && !view.frontView.destroyed ? view.frontView : null;
     rt = PIXI.RenderTexture.create({ width, height, resolution: 1 });
+    // G844 (#380b): its depth and stencil before drawing, as the screen has them (the street's edge clips are masks).
+    ensureDepthStencil(renderer, rt);
     const m = new PIXI.Matrix().scale(width / W, height / H);
     renderer.render({ container: view, target: rt, clear: true, transform: m });
     if (layer) renderer.render({ container: layer, target: rt, clear: false, transform: m });
     if (front) renderer.render({ container: front, target: rt, clear: false, transform: m });
-    return renderer.extract.canvas(rt);
+    const canvas = renderer.extract.canvas(rt);
+    // G844 (#393): an empty picture (the GPU drew nothing off screen) has failed: the lines picture stays.
+    if (snapshotEmpty(canvas)) {
+      console.warn('street map snapshot came back empty');
+      return null;
+    }
+    return canvas;
   } catch (err) {
     console.warn('street map snapshot', err);
     return null;

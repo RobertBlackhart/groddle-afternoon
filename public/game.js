@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=4318f3a0';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7084ca72';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=50fdcb12';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -682,7 +682,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=7ed1bdfd';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=c1c92de0';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=cb6794ed';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -711,7 +711,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=fcd73f63';
+} from './js/street-render.js?v=66addeb7';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -806,7 +806,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=6012d
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=39a3b47c';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=e608117b';
 import './js/classic/classic-zoom.js?v=2691dc07';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1044,7 +1044,7 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=dbfc79a6';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=53a19e1d';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=52534f8e';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1076,6 +1076,7 @@ import { sceneAnim, syncAnim } from './js/deco-anim.js?v=08e7deaa';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=98606052';
 import * as textureUrls from './js/textures.js?v=8e0a8c38';
+import { canvasTransparent, ensureDepthStencil, probeRenderTexture, renderProbeLine } from './js/render-probe.js?v=d2c7b0e0';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=0436d54a';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
@@ -1093,7 +1094,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=66c279c5';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=ca6eca29';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -1506,6 +1507,10 @@ let imagesReleased = 0;
 let uploadGuard = null;
 /** G714: how many times the WebGL context came back (canvas data contextRestores). */
 let contextRestores = 0;
+/** G844 (#393): the boot probe of drawing into a render texture (js/render-probe.js), for a report's context. */
+let renderProbe = null;
+/** G844: snapshots whose off-screen picture came back empty and were copied from the screen (canvas data snapshotScreenCopies). */
+let snapshotScreenCopies = 0;
 // FEEL (js/camera-feel.js): per axis, whether the eased camera rests on its target this frame and
 // the way it last travelled.
 const cameraRest = { x: { rest: true, dir: 0 }, y: { rest: true, dir: 0 } };
@@ -7885,6 +7890,16 @@ function clearSpeechBubbles() {
   speechBubbles = [];
 }
 
+/** G844 (#393): draw a small square into a render texture and read it back (js/render-probe.js); canvas data renderProbe. */
+function runRenderProbe() {
+  try {
+    renderProbe = probeRenderTexture(PIXI, app?.renderer);
+  } catch {
+    renderProbe = null;
+  }
+  if (app?.canvas) app.canvas.dataset.renderProbe = renderProbeLine(renderProbe, { resolution: app.renderer?.resolution, restores: contextRestores });
+}
+
 /**
  * #380b (Firefox, Arjun Plunge at its right end: the report's picture was only the sky): the stage,
  * from the view's top left, drawn into a new canvas `w` x `h` view px at `resolution` (engine
@@ -7896,12 +7911,44 @@ function clearSpeechBubbles() {
  */
 function stageCanvas(w, h, resolution) {
   const rt = PIXI.RenderTexture.create({ width: w, height: h, resolution });
+  let out = null;
   try {
-    app.renderer.renderTarget.getRenderTarget(rt)?.ensureDepthStencilTexture?.();
+    ensureDepthStencil(app.renderer, rt);
     app.renderer.render({ container: app.stage, target: rt, clear: true, clearColor: [0, 0, 0, 0] });
-    return app.renderer.extract.canvas(rt);
+    out = app.renderer.extract.canvas(rt);
   } finally {
     rt.destroy(true);
+  }
+  // G844 (#393): a GPU whose off-screen draws come back empty (Firefox on Windows at DPR 3) gave
+  // a black report picture. The stage is always drawn somewhere, so an empty one has failed: the
+  // screen copy takes its place, or null (no picture) when that fails too.
+  if (!out || canvasTransparent(out)) return screenStageCanvas(w, h, resolution);
+  return out;
+}
+
+/**
+ * G844 (#393): the stage drawn to the screen and the visible canvas copied in the same task, so
+ * no preserveDrawingBuffer is needed (WebGL keeps the drawing buffer until the page is shown).
+ * The view's top left `w` x `h` view px at `resolution`, as far as the screen reaches; null when
+ * the copy cannot be made. The next frame draws the screen as usual.
+ */
+function screenStageCanvas(w, h, resolution) {
+  const src = app?.canvas;
+  if (!src?.width || !src?.height) return null;
+  try {
+    app.renderer.render({ container: app.stage });
+    const per = src.width / VIEW_W;
+    const sw = Math.min(src.width, Math.round(w * per));
+    const sh = Math.min(src.height, Math.round(h * per));
+    const out = document.createElement('canvas');
+    out.width = Math.max(1, Math.round(w * resolution));
+    out.height = Math.max(1, Math.round(h * resolution));
+    out.getContext('2d').drawImage(src, 0, 0, sw, sh, 0, 0, (sw / per) * resolution, (sh / per) * resolution);
+    snapshotScreenCopies += 1;
+    src.dataset.snapshotScreenCopies = String(snapshotScreenCopies);
+    return canvasTransparent(out) ? null : out;
+  } catch {
+    return null;
   }
 }
 
@@ -13133,6 +13180,12 @@ const engine = {
   get renderer() {
     return app?.renderer || null;
   },
+  /** G844 (#393): the boot render-texture probe as one line for a report's context ('' before boot). */
+  renderProbeLine: () => renderProbeLine(renderProbe, { resolution: app?.renderer?.resolution, restores: contextRestores }),
+  /** G844: the boot probe's result (js/render-probe.js probeRenderTexture), or null. */
+  get renderProbe() {
+    return renderProbe;
+  },
   /**
    * The view as the player sees it (the stage inside the location's view),
    * drawn to a new canvas: the home picture on a multiplayer profile
@@ -13144,11 +13197,14 @@ const engine = {
     // The "Enter: choose" prompt is a hint to the player, not part of the street.
     const hint = prompt?.visible;
     if (prompt) prompt.visible = false;
+    const copies = snapshotScreenCopies;
     try {
       const shot = (w, h) => stageCanvas(w, h, resolution);
       return frame ? engine.viewAt(frame, () => shot(frame.w, frame.h)) : shot(VIEW_W, LOCATION_VIEW_H);
     } finally {
       if (prompt) prompt.visible = hint;
+      // G844: a screen copy drew the frame on screen; the camera is back, so the screen is too.
+      if (frame && snapshotScreenCopies !== copies) app.renderer.render({ container: app.stage });
     }
   },
   /**
@@ -31518,8 +31574,10 @@ async function main() {
     requestAnimationFrame(() => {
       const dropped = bgLayer?.dropBakes?.() ?? 0;
       app.canvas.dataset.contextBakesDropped = String(dropped);
+      runRenderProbe();
     });
   });
+  runRenderProbe();
   // QA: &maxfps=N holds the game to N frames a second (jump timing at a low frame rate).
   const qaMaxFps = Number(new URLSearchParams(location.search).get('maxfps'));
   if (qaMaxFps > 0) app.ticker.maxFPS = qaMaxFps;

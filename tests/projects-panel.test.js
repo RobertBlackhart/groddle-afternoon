@@ -29,7 +29,7 @@ import {
   statusLine,
 } from '../public/js/projects-tracker.js?v=3621eb75';
 import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=759adbfe';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=53a19e1d';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=52534f8e';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=7a2676ac';
 
