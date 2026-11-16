@@ -1,0 +1,932 @@
+{
+ "about": "Visiting Stones where the Eleven players' 2012 full-street snaps show them (research/eleven-snaps; reference only, never shipped): the spawn audit (2026-11-16, G853, #392) matched our own CC0 visiting-stone art (assets/sprites/street-furniture/visiting-stone.webp, both facings, at 1.0 and 0.9) against every snap of the 105 stone streets the snaps cover, with tools/snap-placements/nodes.py art_snap (threshold 0.78), merged hits within 30 px across a street's snaps and kept the one seen on the most snaps, then the best score. 103 streets have one. spot = the art's foot in street px (0, 0 = the street's top left, as street-model.js platformsScreen); score = the best match (0-1); snaps = how many of the street's snaps show it. Positions and scores only: no snap pixels. Of the 103, 102 stand within 1,200 px of the street's signpost-free end (median 356 px), as visiting_stone.js 202 says: 'Visiting Stones can typically be found in \"dead-end locations\" of most regions.' tools/snap-placements/stone-spots.mjs seats each on the floor under it and writes public/js/stone-spots-data.js.",
+ "streets": {
+  "GA512CSG4H42RKG": {
+   "label": "Stake Claim Rd A",
+   "spot": [
+    391.5,
+    643.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA512IH5226256P": {
+   "label": "Gaare Grims",
+   "spot": [
+    290.5,
+    787.0
+   ],
+   "score": 0.991,
+   "snaps": 2
+  },
+  "GA5132LA0J526JJ": {
+   "label": "Boor Bane A",
+   "spot": [
+    374.5,
+    912.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA5137QE0J52UB8": {
+   "label": "Cornfed Crt A",
+   "spot": [
+    267.5,
+    905.0
+   ],
+   "score": 0.884,
+   "snaps": 3
+  },
+  "GA513KEP0J52N21": {
+   "label": "Loutish Ln D",
+   "spot": [
+    5808.5,
+    920.0
+   ],
+   "score": 0.999,
+   "snaps": 4
+  },
+  "GA513LMP0J52V1C": {
+   "label": "Rustic Rd NW",
+   "spot": [
+    186.5,
+    899.0
+   ],
+   "score": 0.998,
+   "snaps": 3
+  },
+  "GA513S9U0J52SKD": {
+   "label": "Boor Bane F",
+   "spot": [
+    5745.5,
+    924.0
+   ],
+   "score": 0.999,
+   "snaps": 4
+  },
+  "GA5146Q41J528U9": {
+   "label": "Yokel Yarn 1",
+   "spot": [
+    424.5,
+    622.0
+   ],
+   "score": 0.999,
+   "snaps": 1
+  },
+  "GA5147561J525G7": {
+   "label": "Chuff Chase 4",
+   "spot": [
+    5733.5,
+    605.0
+   ],
+   "score": 0.999,
+   "snaps": 1
+  },
+  "GA515E0PQC4214G": {
+   "label": "Parsin's Trail SE",
+   "spot": [
+    5530.5,
+    908.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA515GCSSC42QGF": {
+   "label": "Stake Claim Rd F",
+   "spot": [
+    5473.5,
+    607.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA517L6UL262RHT": {
+   "label": "Kobbaya Shii",
+   "spot": [
+    347.5,
+    884.0
+   ],
+   "score": 0.997,
+   "snaps": 2
+  },
+  "GA51IOM1PC62SPF": {
+   "label": "Ianara Straight",
+   "spot": [
+    5589.5,
+    808.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GA51IVI7PC62L64": {
+   "label": "Raagi Road",
+   "spot": [
+    5752.5,
+    775.0
+   ],
+   "score": 0.998,
+   "snaps": 1
+  },
+  "GA5371G9AH421NO": {
+   "label": "Range Rd 1",
+   "spot": [
+    234.5,
+    660.0
+   ],
+   "score": 0.999,
+   "snaps": 1
+  },
+  "GA55645B8O528MI": {
+   "label": "Jonna Jinx",
+   "spot": [
+    5655.5,
+    254.0
+   ],
+   "score": 0.99,
+   "snaps": 2
+  },
+  "GA57FADCBN62PR0": {
+   "label": "Chettia Churns",
+   "spot": [
+    455.5,
+    831.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GA5CTEP5UH42CQC": {
+   "label": "Plains Rte D",
+   "spot": [
+    5290.5,
+    881.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA5KUKA22I42CI9": {
+   "label": "Mart's Way 4",
+   "spot": [
+    5489.5,
+    899.0
+   ],
+   "score": 0.893,
+   "snaps": 1
+  },
+  "GA5N5E10CM42HJ4": {
+   "label": "Plains Rte A",
+   "spot": [
+    349.5,
+    887.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA5P9MNTJK42IJS": {
+   "label": "Dust Path 1A",
+   "spot": [
+    389.5,
+    914.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GA5T6PDF7K42SNM": {
+   "label": "Contour Rd NW",
+   "spot": [
+    544.5,
+    872.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GA9117J18492SRS": {
+   "label": "Krios Palm",
+   "spot": [
+    514.5,
+    890.0
+   ],
+   "score": 0.998,
+   "snaps": 3
+  },
+  "GA912UEGE492F2G": {
+   "label": "Pipit Throat",
+   "spot": [
+    352.5,
+    834.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GA9GT0J87H92MPR": {
+   "label": "Samak Shun",
+   "spot": [
+    5450.5,
+    882.0
+   ],
+   "score": 0.984,
+   "snaps": 2
+  },
+  "GA9JJL6KCE924IK": {
+   "label": "Patomi Bunya",
+   "spot": [
+    424.5,
+    829.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GCR10199TPJ1DA3": {
+   "label": "Bishop's Arch",
+   "spot": [
+    5916.5,
+    836.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GCR10S7GVKJ1ABI": {
+   "label": "Verdant Green",
+   "spot": [
+    5846.5,
+    944.0
+   ],
+   "score": 0.995,
+   "snaps": 1
+  },
+  "GCR13L1JQEM1OSG": {
+   "label": "Jacob's Climb",
+   "spot": [
+    1401.5,
+    1925.0
+   ],
+   "score": 0.996,
+   "snaps": 1
+  },
+  "GCR15ST40FM1M1I": {
+   "label": "Mossystep",
+   "spot": [
+    259.5,
+    746.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GCR169AURSL1G9O": {
+   "label": "Darnefree Air",
+   "spot": [
+    5869.5,
+    836.0
+   ],
+   "score": 0.996,
+   "snaps": 1
+  },
+  "GCR16AUURSL1KTM": {
+   "label": "Smallend High",
+   "spot": [
+    5926.5,
+    846.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GCR16BA1SSL1P7K": {
+   "label": "Coldham Shift",
+   "spot": [
+    227.5,
+    944.0
+   ],
+   "score": 0.996,
+   "snaps": 1
+  },
+  "GCR16VUKOQL18DU": {
+   "label": "Pinhigh Prose",
+   "spot": [
+    3923.5,
+    449.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GCR195Q63RK143M": {
+   "label": "Grimssea Bottom",
+   "spot": [
+    223.5,
+    949.0
+   ],
+   "score": 0.991,
+   "snaps": 1
+  },
+  "GCRGEU0PUP12CLS": {
+   "label": "Stopan Winnow",
+   "spot": [
+    324.5,
+    863.0
+   ],
+   "score": 0.994,
+   "snaps": 1
+  },
+  "GDO20OO2ETQ2EAG": {
+   "label": "Gomed Essoni",
+   "spot": [
+    5754.5,
+    852.0
+   ],
+   "score": 0.99,
+   "snaps": 2
+  },
+  "GDO2NCNJUR038S7": {
+   "label": "Flammeu Pew",
+   "spot": [
+    358.5,
+    2261.0
+   ],
+   "score": 0.992,
+   "snaps": 5
+  },
+  "GDO3CO0RUR0307B": {
+   "label": "Flavus Muss",
+   "spot": [
+    2315.5,
+    2264.0
+   ],
+   "score": 0.993,
+   "snaps": 5
+  },
+  "GDOF2V2INVQ2M9D": {
+   "label": "Chiti Tiga",
+   "spot": [
+    5098.5,
+    794.0
+   ],
+   "score": 0.996,
+   "snaps": 1
+  },
+  "GDOGKA16T4R2NP1": {
+   "label": "Katela Ameth",
+   "spot": [
+    244.5,
+    862.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GDOISPPQICD27RQ": {
+   "label": "Onoma Peas",
+   "spot": [
+    1630.5,
+    553.0
+   ],
+   "score": 0.993,
+   "snaps": 4
+  },
+  "GDOT3LP63TQ204B": {
+   "label": "Heera Amond",
+   "spot": [
+    308.5,
+    746.0
+   ],
+   "score": 0.989,
+   "snaps": 1
+  },
+  "GDOTQ8JCOCD20TU": {
+   "label": "Paodoo Lets",
+   "spot": [
+    1422.5,
+    450.0
+   ],
+   "score": 0.993,
+   "snaps": 4
+  },
+  "GDOU6HOAO2R21Q1": {
+   "label": "Lapix Lora",
+   "spot": [
+    304.5,
+    750.0
+   ],
+   "score": 0.956,
+   "snaps": 1
+  },
+  "GDOVUDD84DD2U4U": {
+   "label": "Boorgal Broods",
+   "spot": [
+    1478.5,
+    479.0
+   ],
+   "score": 0.995,
+   "snaps": 5
+  },
+  "GHFD81QMKMI2SSL": {
+   "label": "Surx Upx",
+   "spot": [
+    5550.5,
+    811.0
+   ],
+   "score": 0.998,
+   "snaps": 4
+  },
+  "GHFJR7H9R8J2SHM": {
+   "label": "Erupekku Rumple",
+   "spot": [
+    355.5,
+    507.0
+   ],
+   "score": 0.998,
+   "snaps": 4
+  },
+  "GHFS76JAU5J2P90": {
+   "label": "Pacca Pax",
+   "spot": [
+    298.5,
+    822.0
+   ],
+   "score": 0.988,
+   "snaps": 5
+  },
+  "GHV1HKHRSKA2CR9": {
+   "label": "Senaga Siren",
+   "spot": [
+    5574.5,
+    750.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GHV1HT5F4D32GNM": {
+   "label": "Kaavin Kit",
+   "spot": [
+    4368.5,
+    929.0
+   ],
+   "score": 0.994,
+   "snaps": 1
+  },
+  "GHV2547JP9B2AG0": {
+   "label": "Baddam Haddam",
+   "spot": [
+    4372.5,
+    1379.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GHV2SQS7ENA25BL": {
+   "label": "Sabudana Drama",
+   "spot": [
+    5716.5,
+    887.0
+   ],
+   "score": 0.993,
+   "snaps": 1
+  },
+  "GHV4U509S9B2MRV": {
+   "label": "Kottima Cast",
+   "spot": [
+    4681.5,
+    1160.0
+   ],
+   "score": 0.998,
+   "snaps": 1
+  },
+  "GHVMK86NP7B26E6": {
+   "label": "Kerivepa Vili",
+   "spot": [
+    4626.5,
+    1058.0
+   ],
+   "score": 0.997,
+   "snaps": 1
+  },
+  "GIF14PFVU872CSG": {
+   "label": "Awagni Walk",
+   "spot": [
+    275.5,
+    884.0
+   ],
+   "score": 0.998,
+   "snaps": 4
+  },
+  "GIF14RQ7V872TPR": {
+   "label": "Gedeo Grails",
+   "spot": [
+    321.5,
+    881.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIF18V95I972R96": {
+   "label": "Qabena Quaint",
+   "spot": [
+    346.5,
+    862.0
+   ],
+   "score": 0.998,
+   "snaps": 4
+  },
+  "GIF9UI391Q62CIC": {
+   "label": "Puran Pills",
+   "spot": [
+    362.5,
+    858.0
+   ],
+   "score": 0.995,
+   "snaps": 4
+  },
+  "GIFDAMF03952OEO": {
+   "label": "Bumpkin Tr E",
+   "spot": [
+    5499.5,
+    911.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFDB8NGF282H0Q": {
+   "label": "Parvana Pungence",
+   "spot": [
+    362.5,
+    815.0
+   ],
+   "score": 0.996,
+   "snaps": 4
+  },
+  "GIFE0QTCG3H2QU2": {
+   "label": "Machaboos Mess",
+   "spot": [
+    5726.5,
+    837.0
+   ],
+   "score": 0.998,
+   "snaps": 4
+  },
+  "GIFF7T7N9O72TP2": {
+   "label": "Distant Drag F",
+   "spot": [
+    5819.5,
+    914.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFF8EOJAO72U8U": {
+   "label": "Fervor Tack F",
+   "spot": [
+    5613.5,
+    909.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFF8ITNAO72C6N": {
+   "label": "Languid Line SE",
+   "spot": [
+    5627.5,
+    877.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFF8LVSAO72S3C": {
+   "label": "Fervor Tack A",
+   "spot": [
+    292.5,
+    899.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFF8TQ8BO72L8G": {
+   "label": "Distant Drag A",
+   "spot": [
+    296.5,
+    915.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFF95RKBO72R2Q": {
+   "label": "Zealous Rd NE",
+   "spot": [
+    5633.5,
+    908.0
+   ],
+   "score": 0.999,
+   "snaps": 3
+  },
+  "GIFFGUFIABH2D6F": {
+   "label": "Jiireesh Risen",
+   "spot": [
+    5617.5,
+    844.0
+   ],
+   "score": 0.999,
+   "snaps": 4
+  },
+  "GIFFIRQ00P729BS": {
+   "label": "Watta Wayward",
+   "spot": [
+    5741.5,
+    431.0
+   ],
+   "score": 0.997,
+   "snaps": 4
+  },
+  "GIFHB52DMHI2FQ6": {
+   "label": "Wawa West",
+   "spot": [
+    617.5,
+    841.0
+   ],
+   "score": 0.968,
+   "snaps": 3
+  },
+  "GIFIEGBN9E72ILT": {
+   "label": "Jeban Journey",
+   "spot": [
+    436.5,
+    871.0
+   ],
+   "score": 0.992,
+   "snaps": 2
+  },
+  "GIFIGKANP4I2H84": {
+   "label": "Darwin Char",
+   "spot": [
+    5633.5,
+    796.0
+   ],
+   "score": 0.996,
+   "snaps": 3
+  },
+  "GIFMLT2S7952HAQ": {
+   "label": "Bumpkin Tr A",
+   "spot": [
+    841.5,
+    905.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFMR8JU7952PH5": {
+   "label": "Putter Track E",
+   "spot": [
+    5333.5,
+    893.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNL5554G52MHJ": {
+   "label": "Naif Lane W",
+   "spot": [
+    380.5,
+    879.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNL8294G52U4M": {
+   "label": "Putter Track A",
+   "spot": [
+    409.5,
+    902.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNMSQ5GG528AK": {
+   "label": "Redhorn Rd W",
+   "spot": [
+    505.5,
+    914.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNNHRBJG52QS0": {
+   "label": "Chester Way 1E",
+   "spot": [
+    5605.5,
+    628.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNTBMONG520FD": {
+   "label": "Naif Lane E",
+   "spot": [
+    5299.5,
+    890.0
+   ],
+   "score": 0.999,
+   "snaps": 2
+  },
+  "GIFNU7T73U722U5": {
+   "label": "Malaba Summit",
+   "spot": [
+    5444.5,
+    858.0
+   ],
+   "score": 0.996,
+   "snaps": 4
+  },
+  "GIFSJB0MAHI2EN9": {
+   "label": "Tenten Fure",
+   "spot": [
+    611.5,
+    777.0
+   ],
+   "score": 0.989,
+   "snaps": 2
+  },
+  "GIFVCIJ6BHI2DR4": {
+   "label": "Bullic Craik",
+   "spot": [
+    5521.5,
+    848.0
+   ],
+   "score": 0.997,
+   "snaps": 3
+  },
+  "GNV9O6NVFCD2SFS": {
+   "label": "Luump Yasa",
+   "spot": [
+    1110.5,
+    374.0
+   ],
+   "score": 0.995,
+   "snaps": 4
+  },
+  "GTJ101I3KSO1JQS": {
+   "label": "Palsa Mosch",
+   "spot": [
+    258.5,
+    773.0
+   ],
+   "score": 0.988,
+   "snaps": 3
+  },
+  "GTJ101PRVCQ1RN0": {
+   "label": "Niiske Kook",
+   "spot": [
+    5890.5,
+    774.0
+   ],
+   "score": 0.99,
+   "snaps": 3
+  },
+  "GTJ12E6VSFQ1V4E": {
+   "label": "Fjarcke",
+   "spot": [
+    3778.5,
+    708.0
+   ],
+   "score": 0.992,
+   "snaps": 4
+  },
+  "GTJ12G0H5KV10GH": {
+   "label": "Toma Traverse",
+   "spot": [
+    5797.5,
+    404.0
+   ],
+   "score": 0.992,
+   "snaps": 2
+  },
+  "GTJ13T0J2VV1A4N": {
+   "label": "Aava Plies",
+   "spot": [
+    249.5,
+    412.0
+   ],
+   "score": 0.994,
+   "snaps": 1
+  },
+  "GTJ1539P8102B2F": {
+   "label": "Dalsan Detach",
+   "spot": [
+    516.5,
+    414.0
+   ],
+   "score": 0.99,
+   "snaps": 2
+  },
+  "GTJ154SP8102KIG": {
+   "label": "Bakean Stutter",
+   "spot": [
+    309.5,
+    422.0
+   ],
+   "score": 0.995,
+   "snaps": 2
+  },
+  "GTJ16T2SURV19NT": {
+   "label": "Saani Shim",
+   "spot": [
+    269.5,
+    435.0
+   ],
+   "score": 0.994,
+   "snaps": 2
+  },
+  "GUV22FOR7AF2TIE": {
+   "label": "Magha Shank",
+   "spot": [
+    347.5,
+    770.0
+   ],
+   "score": 0.993,
+   "snaps": 3
+  },
+  "GUV483AL8JL28J2": {
+   "label": "Batata Tata",
+   "spot": [
+    368.5,
+    651.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GUV4RLT53QK2GUF": {
+   "label": "Varana Na",
+   "spot": [
+    353.5,
+    581.0
+   ],
+   "score": 0.995,
+   "snaps": 2
+  },
+  "GUV681KDSQL2PST": {
+   "label": "Leffe Weff",
+   "spot": [
+    467.5,
+    610.0
+   ],
+   "score": 0.997,
+   "snaps": 2
+  },
+  "GUVBQFC4NJL2093": {
+   "label": "Dolla Holla",
+   "spot": [
+    5643.5,
+    372.0
+   ],
+   "score": 0.997,
+   "snaps": 2
+  },
+  "GUVGL5C7BJL2V4U": {
+   "label": "Rumina Ruma",
+   "spot": [
+    5756.5,
+    693.0
+   ],
+   "score": 0.998,
+   "snaps": 2
+  },
+  "GUVGTE14OSF23D5": {
+   "label": "Makaram Maker",
+   "spot": [
+    395.5,
+    848.0
+   ],
+   "score": 0.997,
+   "snaps": 3
+  },
+  "GUVIIL1P65F22NC": {
+   "label": "Aippasi Massy",
+   "spot": [
+    5785.5,
+    844.0
+   ],
+   "score": 0.996,
+   "snaps": 2
+  },
+  "GUVKM04MB9G2I53": {
+   "label": "Jazi Kaya",
+   "spot": [
+    5833.5,
+    674.0
+   ],
+   "score": 0.998,
+   "snaps": 3
+  },
+  "GUVQMVII88F2O29": {
+   "label": "Rausa Repent",
+   "spot": [
+    596.5,
+    798.0
+   ],
+   "score": 0.995,
+   "snaps": 3
+  },
+  "GUVTHO9HPSF2GJA": {
+   "label": "Vaisakha Sack",
+   "spot": [
+    5841.5,
+    870.0
+   ],
+   "score": 0.997,
+   "snaps": 3
+  }
+ }
+}

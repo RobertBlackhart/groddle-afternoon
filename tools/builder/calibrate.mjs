@@ -22,9 +22,9 @@ import { Worker, isMainThread, parentPort, workerData } from 'node:worker_thread
 import { fileURLToPath } from 'node:url';
 import { GAME_DIR } from '../repos.mjs';
 import { shippedStreetFiles } from './validator-context.mjs';
-import { validateShippedStreet } from '../../public/js/builder/validate.js?v=10cbd420';
+import { validateShippedStreet } from '../../public/js/builder/validate.js?v=72af05f4';
 import { streetBuff, REACH_LIMITS } from '../../public/js/builder/reach-graph.js?v=633a59ad';
-import { plainApex } from '../../public/js/builder/validate.js?v=10cbd420';
+import { plainApex } from '../../public/js/builder/validate.js?v=72af05f4';
 
 /**
  * The 2012 client's plain jump: 143 px (AvatarPhysicsHandler.as at its 17 ms steps). Since

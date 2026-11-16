@@ -5,7 +5,7 @@
 
 import { avatarHeadReach, groundBeneath, isItemSolid, isStandable, platformYAt, worldToScreen } from './street-model.js?v=2918abe5';
 import { behindFloor } from './reach.js?v=8e52df56';
-import { MAILBOX_SHEETS, measuredMailboxes } from './street-furniture.js?v=70fb87a7';
+import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=b1d3e833';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
 import {
@@ -1176,6 +1176,11 @@ export function streetReservedSpots(street) {
   (measuredMailboxes(street?.tsid) || []).forEach((m, index) => {
     out.push({ x: m.x, y: m.y, key: `mailbox:${index}`, clearance: 80, block: box(m.x, m.y, MAILBOX_SHEETS.idle.fw, MAILBOX_SHEETS.idle.fh) });
   });
+  // G853: the Visiting Stones the snaps show (street-furniture.js measuredStones), the same: the stone's
+  // box as drawn (81 x 124, UNDER_CANOPY_HEIGHTS.furnitureStone) and the planned stone's clearance.
+  (measuredStones(street?.tsid) || []).forEach((m, index) => {
+    out.push({ x: m.x, y: m.y, key: `stone:${index}`, clearance: 90, block: box(m.x, m.y, 81, UNDER_CANOPY_HEIGHTS.furnitureStone) });
+  });
   out.push(...measuredNodeCovers(street?.tsid));
   out.push(...frontDecoCovers(street));
   out.push(...branchArtCovers(street));
@@ -1865,6 +1870,10 @@ export function planStreetPlacements(
     const maxSlope = BIG_THING_GROUPS.includes(request.key) ? BIG_THING_MAX_SLOPE : null;
     const deck = DECK_GROUPS.includes(request.key);
     const branchFree = request.avatar !== true && branchFreeGroup(request.key);
+    // G853: a request's `zone` ({ lo, hi } screen x: a planned Visiting Stone's dead end) is where it
+    // stands while any spot there is left; outside it, the nearer the better.
+    const zone = Number.isFinite(request?.zone?.lo) && Number.isFinite(request?.zone?.hi) ? request.zone : null;
+    const zoneMiss = (candidate) => (zone ? Math.max(0, zone.lo - candidate.x, candidate.x - zone.hi) : 0);
     const measuredQuoin = request.key === 'quoins' ? nearMeasuredQuoin(tsid) : null;
     const avatar = request.key === 'player' || request.avatar === true;
     const footprint = avatar ? 0 : Number.isFinite(request?.footprint)
@@ -1909,7 +1918,8 @@ export function planStreetPlacements(
       let need = 0;
       if (footprint > 0) {
         let clearNeed = -1;
-        // G852: the room off branch art, so a roomy branch never outranks a floor (offNeed < 0: none left).
+        // G852, G853: the room on the spots the group prefers (off branch art, inside its zone), so a
+        // roomy branch or a spot far from a stone's dead end never outranks them (offNeed < 0: none left).
         let offNeed = -1;
         let offClear = -1;
         for (const candidate of candidates) {
@@ -1917,7 +1927,7 @@ export function planStreetPlacements(
           const room = Math.min(footprint, candidate.room || 0);
           need = Math.max(need, room);
           if (!covers.has(candidate.id)) clearNeed = Math.max(clearNeed, room);
-          if (branchFree && !onBranch.has(candidate.id)) {
+          if ((branchFree || zone) && !(branchFree && onBranch.has(candidate.id)) && !zoneMiss(candidate)) {
             offNeed = Math.max(offNeed, room);
             if (!covers.has(candidate.id)) offClear = Math.max(offClear, room);
           }
@@ -1972,7 +1982,9 @@ export function planStreetPlacements(
         const tooSteep = maxSlope != null && (candidate.slope || 0) > maxSlope ? 64 : 0;
         // G852: big things and walkers up a tree's branch art only when nothing else is left.
         const onBranchArt = branchFree && onBranch.has(candidate.id) ? 128 : 0;
-        const tier = onBranchArt + tooSteep + (footprint > 0
+        const miss = zoneMiss(candidate);
+        const outOfZone = miss > 0 ? 8 + Math.min(20, Math.ceil(miss / 400)) : 0;
+        const tier = onBranchArt + outOfZone + tooSteep + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
           : 0) + (covers.has(candidate.id) ? (walker ? 16 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {

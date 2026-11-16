@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { BOARD_ART, DOOR_CLEARANCE, clearOfDoors } from '../public/js/street-furniture.js?v=70fb87a7';
+import { BOARD_ART, DOOR_CLEARANCE, clearOfDoors } from '../public/js/street-furniture.js?v=b1d3e833';
 import { platformsScreen } from '../public/js/street-model.js?v=2918abe5';
 
 const towers = JSON.parse(readFileSync(new URL('../public/assets/streets/GA5134UPLRU29OH.json', import.meta.url), 'utf8'));

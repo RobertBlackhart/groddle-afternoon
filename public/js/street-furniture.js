@@ -1,6 +1,7 @@
 import { isItemFloor, platformYAt, worldToScreen } from './street-model.js?v=2918abe5';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 import { MAILBOX_SPOTS } from './node-spots-data.js?v=97d4281c';
+import { STONE_SPOTS } from './stone-spots-data.js?v=3373caf6';
 
 /**
  * Street furniture rules: street Mailboxes, placed Notes, Notice Boards and
@@ -281,17 +282,75 @@ export function rowMailboxes(row, tsid) {
 }
 
 /**
- * Planner groups for one street row (notes beyond the planner cap pile up nearby). With the
- * street's `tsid`, the mailboxes the snaps show are not planned (rowMailboxes).
+ * G853, #392: Visiting Stones stood anywhere on their street, half of them on the half with the
+ * signposts. Glitch set each by hand at a dead end: "Visiting Stones can typically be found in
+ * \"dead-end locations\" of most regions" (visiting_stone.js 202), and of the 103 the players' 2012
+ * snaps show (stone-spots-data.js) 102 stand within 1,200 px of the street's end that has no
+ * signpost (median 356 px).
+ *
+ * PURE: a street's measured stones, [{ x, y }] (screen px, the stone's foot on its floor), or null.
  */
-export function furniturePlacementGroups(row, tsid = '') {
+export function measuredStones(tsid) {
+  const id = String(tsid || '');
+  const aliases = [id];
+  if (id.startsWith('G')) aliases.push(`L${id.slice(1)}`);
+  if (id.startsWith('L')) aliases.push(`G${id.slice(1)}`);
+  for (const alias of aliases) {
+    // One stone a street (every archived stone street has one): [x, y].
+    const spot = STONE_SPOTS[alias];
+    if (Number.isFinite(spot?.[0]) && Number.isFinite(spot?.[1])) return [{ x: spot[0], y: spot[1] }];
+  }
+  return null;
+}
+
+/**
+ * A street's furniture row with its Visiting Stone pinned where the snaps show it (measuredStones,
+ * screen space; street-ecology.js streetReservedSpots keeps every planned thing clear of it), when
+ * the row has a stone and no fixed spot of its own. Every archived stone street has one stone.
+ */
+export function stoneSpotRow(row, street) {
+  const spots = measuredStones(street?.tsid);
+  if (!row || !spots || !whole(row[STONE_CLASS]) || row.at?.[STONE_CLASS]) return row;
+  return { ...row, at: { ...(row.at || {}), [STONE_CLASS]: spots.slice(0, whole(row[STONE_CLASS])) } };
+}
+
+/** How near the dead end (px) a planned Visiting Stone stands (G853: the measured ones' median is 356). */
+export const STONE_DEAD_END_PX = 800;
+
+/**
+ * PURE: the stretch of street (screen x, { lo, hi }) a planned Visiting Stone takes: the last
+ * STONE_DEAD_END_PX before the street's dead end, the end on the half with no signpost (every
+ * signpost the player sees on the other half), or null when signposts stand on both halves or there
+ * are none (the planner picks, as before).
+ */
+export function stoneDeadEndZone(street) {
+  const b = street?.bounds;
+  if (!b) return null;
+  const width = b.r - b.l;
+  const posts = (street.signposts || [])
+    .filter((s) => Number.isFinite(s?.x) && (!Array.isArray(s.connects) || s.connects.some((c) => !c?.hidden)))
+    .map((s) => s.x - b.l);
+  if (!posts.length || !(width > 0)) return null;
+  if (posts.every((x) => x < width / 2)) return { lo: Math.max(0, width - STONE_DEAD_END_PX), hi: width };
+  if (posts.every((x) => x >= width / 2)) return { lo: 0, hi: Math.min(width, STONE_DEAD_END_PX) };
+  return null;
+}
+
+/**
+ * Planner groups for one street row (notes beyond the planner cap pile up nearby). With the
+ * street's `tsid`, the mailboxes the snaps show are not planned (rowMailboxes); with the `street`,
+ * a planned Visiting Stone keeps to its dead end (stoneDeadEndZone, the planner's `zone`).
+ */
+export function furniturePlacementGroups(row, tsid = '', street = null) {
   if (!row) return [];
   const out = [];
   for (const [classTsid, group] of Object.entries(FURNITURE_GROUPS)) {
     if (fixedFurniturePoints(row, classTsid)) continue;
     let count = Math.min(PLANNER_GROUP_MAX, whole(row[classTsid]));
     if (classTsid === MAILBOX_CLASS) count -= rowMailboxes(row, tsid).length;
-    if (count > 0) out.push({ key: group.key, count, clearance: group.clearance });
+    if (count <= 0) continue;
+    const zone = classTsid === STONE_CLASS ? stoneDeadEndZone(street) : null;
+    out.push({ key: group.key, count, clearance: group.clearance, ...(zone ? { zone } : {}) });
   }
   return out;
 }
