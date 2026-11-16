@@ -58,8 +58,8 @@ import {
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=30f38f50';
-import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=555985f7';
+} from '../public/js/subway.js?v=34e7e56f';
+import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=f49f42bf';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -347,7 +347,7 @@ describe('Stations, the train and the surface entrances', () => {
   });
 
   it('frames the car as the footage does: a thin strip of floor under the feet, no gap below', async () => {
-    const { cameraTargetY, cameraWorldHeightForGround, cameraBottomSlack } = await import('../public/js/movement.js?v=0a356337');
+    const { cameraTargetY, cameraWorldHeightForGround, cameraBottomSlack } = await import('../public/js/movement.js?v=f05bb30a');
     const street = carStreet();
     const feet = CAR_FLOOR - street.bounds.t;
     // street-render.js worldH: the street's height plus the camera's ground clearance.

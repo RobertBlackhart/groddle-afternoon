@@ -53,7 +53,7 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=72f37c7e';
-import { INCUBATION } from './animal-husbandry.js?v=37c17772';
+import { INCUBATION } from './animal-husbandry.js?v=f121225d';
 import { isStandable } from './street-model.js?v=2918abe5';
 import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=d34b6f73';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=addb573f';

@@ -45,7 +45,7 @@
 
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 import { SUBWAY_ART } from './subway-art.js?v=789979e3';
-import { MIN_GROUND_CLEARANCE } from './movement.js?v=0a356337';
+import { MIN_GROUND_CLEARANCE } from './movement.js?v=f05bb30a';
 
 export { SUBWAY_LINE, SUBWAY_ART };
 

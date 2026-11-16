@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt, LADDER_GRAB_BELOW, findClimbWallNear, isStandable, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
-import { ladderMount, LADDER_UP_PRESS_MS } from '../public/js/movement.js?v=0a356337';
+import { ladderArrivalPress, ladderMount, LADDER_UP_PRESS_MS, spendLadderUp, stickLadderSide } from '../public/js/movement.js?v=f05bb30a';
 import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=fb2b34e3';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -122,10 +122,21 @@ describe('getting on a ladder (#382, movement.js ladderMount)', () => {
     assert.equal(ladderMount({ ...fresh, upPressedMs: Infinity }), '');
   });
 
-  it('does not grab in the air after a jump, even on a fresh press', () => {
-    assert.equal(ladderMount({ ...fresh, onGround: false, jumpedSinceFloor: true }), '');
-    // Off a ledge without jumping the press still takes it (no jump to keep).
-    assert.equal(ladderMount({ ...fresh, onGround: false, jumpedSinceFloor: false }), 'up');
+  it('grabs on a fresh press in mid-air, after a jump too (#424: onUpKey has no ground check)', () => {
+    assert.equal(ladderMount({ ...fresh, onGround: false, jumpedSinceFloor: true }), 'up');
+    assert.equal(ladderMount({ ...fresh, onGround: false }), 'up');
+  });
+
+  it('does not grab with the Up that started the jump, held on through it (#382, spendLadderUp)', () => {
+    // game.js: W/Up goes down (pressAt), the jump fires that frame and spends the press.
+    const press = { held: true, pressAt: 1000 };
+    spendLadderUp(press);
+    assert.equal(press.pressAt, -Infinity);
+    assert.equal(ladderMount({ ...fresh, onGround: false, upPressedMs: 1020 - press.pressAt }), '');
+    // A new press in the air is fresh again.
+    press.held = false;
+    press.pressAt = 1100;
+    assert.equal(ladderMount({ ...fresh, onGround: false, upPressedMs: 1120 - press.pressAt }), 'up');
   });
 
   it('lets Up jump from the deck at a ladder top (the switches in Walk Toward the Light)', () => {
@@ -145,8 +156,8 @@ describe('getting on a ladder (#382, movement.js ladderMount)', () => {
     assert.match(game, /if \(up && !ladderUp\.held\) ladderUp\.pressAt = now;\s*ladderUp\.held = up;/);
     // Not on `climb`, which a street load replaces ({ active: false, wall: null }).
     assert.match(game, /const ladderUp = \{ held: false, pressAt: -Infinity \};/);
-    assert.match(game, /if \(climbHit && ladderMount\(\{ \.\.\.mountArgs, near: Math\.abs\(player\.x - climbHit\.x\) < 28 \}\)\) \{\s*startClimb\(climbHit\);/);
-    assert.match(game, /jumpedSinceFloor: jumpState\.jumpedSinceFloor,/);
+    assert.match(game, /const ladderNear = Boolean\(climbHit && Math\.abs\(player\.x - climbHit\.x\) < 28\);/);
+    assert.match(game, /if \(climbHit && ladderMount\(\{ \.\.\.mountArgs, near: ladderNear \}\)\) \{\s*startClimb\(climbHit\);/);
     assert.match(game, /onTopDeck = Boolean\(climbHit && up && player\.onGround && standsOnLadderTop\(climbHit\)\)/);
   });
 
@@ -160,5 +171,50 @@ describe('getting on a ladder (#382, movement.js ladderMount)', () => {
       const deck = ladderTopDeck(plats, l.x, l.top - 24 + 4, LOW);
       assert.equal(deck, slab.y, id);
     }
+  });
+});
+
+describe('climbing with the touch stick (#424, movement.js ladderArrivalPress)', () => {
+  const game = readFileSync(join(here, '..', 'public/game.js'), 'utf8');
+
+  it('the stick held Up as a ladder comes within reach is a fresh press', () => {
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: 'l1', wasReach: '' }), true);
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: 'l2', wasReach: 'l1' }), true, 'from one ladder\'s reach to the next');
+  });
+
+  it('only on arriving, only for the stick, and not on a street\'s first frame', () => {
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: 'l1', wasReach: 'l1' }), false, 'already in reach');
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: '', wasReach: 'l1' }), false, 'walked out of reach');
+    assert.equal(ladderArrivalPress({ stickUp: false, reach: 'l1', wasReach: '' }), false, 'keys keep the key press (onUpKey)');
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: 'l1', wasReach: undefined }), false, 'a load beside a ladder');
+  });
+
+  it('not in the air after a jump: the stick held up through a jump flies past (#382)', () => {
+    assert.equal(ladderArrivalPress({ stickUp: true, reach: 'l1', wasReach: '', jumpedSinceFloor: true }), false);
+  });
+
+  it('with the arrival as its press, ladderMount climbs from the floor and off a ledge', () => {
+    const arrived = ladderArrivalPress({ stickUp: true, reach: 'l1', wasReach: '' });
+    assert.equal(ladderMount({ near: true, up: true, upPressedMs: arrived ? 0 : Infinity, onGround: true }), 'up');
+    assert.equal(ladderMount({ near: true, up: true, upPressedMs: arrived ? 0 : Infinity, onGround: false }), 'up');
+  });
+
+  it('on the ladder, the stick\'s diagonal climbs and its side alone gets off (stickLadderSide)', () => {
+    assert.equal(stickLadderSide({ right: true, up: true, stickUpDown: true }), 0, 'up-right climbs');
+    assert.equal(stickLadderSide({ left: true, down: true, stickUpDown: true }), 0, 'down-left climbs');
+    assert.equal(stickLadderSide({ right: true, stickUpDown: false }), 1, 'the stick pushed right gets off');
+    assert.equal(stickLadderSide({ left: true }), -1);
+    // Keys as before: a side gets off even with Up held (AvatarPhysicsHandler triggerGetOffLadder).
+    assert.equal(stickLadderSide({ right: true, up: true, stickUpDown: false }), 1);
+    assert.equal(stickLadderSide({ left: true, right: true, up: true }), 0);
+    assert.match(game, /const offSide = stickLadderSide\(\{ left, right, up, down, stickUpDown: stickHeld\.has\('ArrowUp'\) \|\| stickHeld\.has\('ArrowDown'\) \}\);\s*if \(jumpRequested \|\| offSide\) \{\s*const side = offSide;/);
+  });
+
+  it('is wired in handleInput and the touch controls (game.js)', () => {
+    assert.match(game, /const stickHeld = new Set\(\);/);
+    assert.match(game, /press: \(k\) => \{\s*keys\.add\(k\);\s*stickHeld\.add\(k\);\s*\}/);
+    assert.match(game, /release: \(k\) => \{\s*keys\.delete\(k\);\s*stickHeld\.delete\(k\);\s*\}/);
+    assert.match(game, /if \(up && ladderArrivalPress\(\{ stickUp: stickHeld\.has\('ArrowUp'\) && keys\.has\('ArrowUp'\), reach, wasReach: climb\.reach, jumpedSinceFloor: jumpState\.jumpedSinceFloor \}\)\) \{\s*ladderUp\.pressAt = now;\s*mountArgs\.upPressedMs = 0;\s*\}\s*climb\.reach = reach;/);
+    assert.match(game, /if \(jumpResult\.ok\) \{\s*\/\/[^\n]*\n\s*spendLadderUp\(ladderUp\);\s*performPlayerJump\(/);
   });
 });

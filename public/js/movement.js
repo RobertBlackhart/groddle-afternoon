@@ -329,23 +329,55 @@ export function cameraWorldHeightForGround(
 export const LADDER_UP_PRESS_MS = JUMP_BUFFER_MS;
 
 /**
- * PURE (#382): which way a ladder in reach is mounted this frame, 'up', 'down' or '' (none).
+ * PURE (#382, #424): which way a ladder in reach is mounted this frame, 'up', 'down' or '' (none).
  * Glitch got on a ladder on the Up or Down key press (AvatarController.as onUpKey 445, _beginInteractionAfterUpKey
- * 453-468; onDownKey 419, _beginInteractionAfterDownKey 433-443), never on a key held from before. Up:
+ * 453-468; onDownKey 419, _beginInteractionAfterDownKey 433-443), never on a key held from before, and on the
+ * ground or in the air alike (no ground check there). Up:
  * - only a fresh press (`upPressedMs` ago, LADDER_UP_PRESS_MS at most), so Up held through a jump
- *   or a walk does not catch a ladder you pass;
- * - not in the air after a jump (`jumpedSinceFloor`): no grabbing by flying (the remake's Up/W also
- *   jumps, which Glitch's Up never did);
+ *   or a walk does not catch a ladder you pass. The press that started a jump is spent by it
+ *   (spendLadderUp), so Up/W held through a jump never grabs, while a new press in mid-air does;
  * - not from the deck at a ladder's top (`onTopDeck`): there it would only lift you onto the floor
  *   you stand on, so Up jumps instead (the switches in Walk Toward the Light stand beside them).
  * Down is as before: held is enough, but not at the very bottom (`atBase`), where it walks on.
  * `near`: the avatar is within 28 px of the ladder. `locked`: just got off, keys not yet released.
  */
-export function ladderMount({ up = false, down = false, near = false, locked = false, upPressedMs = Infinity, onGround = false, jumpedSinceFloor = false, onTopDeck = false, atBase = false } = {}) {
+export function ladderMount({ up = false, down = false, near = false, locked = false, upPressedMs = Infinity, onGround = false, onTopDeck = false, atBase = false } = {}) {
   if (!near || locked || up === down) return '';
   if (down) return atBase ? '' : 'down';
   if (!(upPressedMs >= 0 && upPressedMs <= LADDER_UP_PRESS_MS)) return '';
-  if (!onGround && jumpedSinceFloor) return '';
   if (onGround && onTopDeck) return '';
   return 'up';
+}
+
+/**
+ * PURE (#424): the touch stick held Up as the avatar came within reach of a ladder counts as a fresh
+ * press. A stick has no key edge while it walks (a diagonal holds Left or Right and Up together) and
+ * its Up never jumps (Jump is its own button), so it would otherwise never grab. Not in the air after
+ * a jump, so the stick held up through a jump does not catch a ladder you fly past (#382). The keys
+ * keep Glitch's key press (AvatarController.as onUpKey): their Up/W also jumps, and a W held since a
+ * jump must not pull you onto a ladder you walk into.
+ * `reach`: the ladder in reach this frame ('' for none); `wasReach`: last frame's (undefined on the
+ * first frame of a street, which is not an arrival).
+ */
+export function ladderArrivalPress({ stickUp = false, reach = '', wasReach, jumpedSinceFloor = false } = {}) {
+  if (!stickUp || !reach || wasReach === undefined || wasReach === reach) return false;
+  return !jumpedSinceFloor;
+}
+
+/**
+ * PURE (#424): which way Left/Right get off a ladder (-1, 1, or 0 to stay on). Keys: either side alone, as
+ * before (AvatarPhysicsHandler triggerGetOffLadder). The touch stick holds a side and Up or Down together on
+ * a diagonal (touch-controls.js stickKeys), so while the stick climbs (`stickUpDown`) its side does not get
+ * you off; the stick pushed sideways alone does.
+ */
+export function stickLadderSide({ left = false, right = false, up = false, down = false, stickUpDown = false } = {}) {
+  const side = left && !right ? -1 : right && !left ? 1 : 0;
+  if (side && stickUpDown && (up || down)) return 0;
+  return side;
+}
+
+/** #424: a jump spends the Up press that started it (game.js ladderUp), so only a new press grabs in the air. */
+export function spendLadderUp(press) {
+  if (press && typeof press === 'object') press.pressAt = -Infinity;
+  return press;
 }

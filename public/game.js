@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=45c9864a';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b394a5c1';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=514a8790';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=76e959e5';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -136,7 +136,7 @@ import {
   travelToGregarious,
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
-import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=30f38f50';
+import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=34e7e56f';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=486d774f';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -497,8 +497,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSlotTip } from './js/ui/pack-row.js?v=d9041d6b';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=14153dbc';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=14153dbc';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=14db16f8';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=14db16f8';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -758,6 +758,9 @@ import {
   noteJumped,
   resolveQueuedJump,
   ladderMount,
+  ladderArrivalPress,
+  spendLadderUp,
+  stickLadderSide,
   dampingAlpha,
   cameraTargetX,
   cameraLocationViewWidth,
@@ -767,7 +770,7 @@ import {
   cameraBottomSlack,
   cameraWorldHeightForGround,
   MIN_GROUND_CLEARANCE,
-} from './js/movement.js?v=0a356337';
+} from './js/movement.js?v=f05bb30a';
 import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
@@ -885,7 +888,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=14153dbc';
+} from './js/animals.js?v=14db16f8';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -996,9 +999,9 @@ import {
   PUBLIC_HUBS,
 } from './js/map-graph.js?v=7179ea52';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=54e019ea';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=1564e179';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=ce04116e';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=03ae0243';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
@@ -1019,7 +1022,7 @@ import {
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=d34b6f73';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=cdb3f48b';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=30061f5c';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=67531884';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=1ecb86a5';
@@ -2455,6 +2458,8 @@ let climb = { active: false, wall: null, regrabLock: false, goalY: null };
 // #382 (js/movement.js ladderMount): Up gets on a ladder only on a fresh press. Kept apart from `climb`,
 // which each street load resets, so an Up held through a trip is not a new press.
 const ladderUp = { held: false, pressAt: -Infinity };
+// #424: the arrows the touch stick holds (installTouchControls press/release), for ladderArrivalPress.
+const stickHeld = new Set();
 let homeMailboxTarget = null;
 let homeDoorTarget = null;
 let homeReturnTarget = null;
@@ -15894,8 +15899,11 @@ function handleInput() {
     // Getting off (AvatarPhysicsHandler triggerGetOffLadder): left/right
     // win over Space and hop off sideways at vx_off_ladder with a tenth of a
     // jump; Space alone jumps straight up and uses the air jump.
-    if (jumpRequested || (left && !right) || (right && !left)) {
-      const side = left && !right ? -1 : right && !left ? 1 : 0;
+    // #424: the touch stick's diagonal (a side with Up or Down) climbs; its side alone gets off
+    // (js/movement.js stickLadderSide), so the stick that walked you on does not hop you straight off.
+    const offSide = stickLadderSide({ left, right, up, down, stickUpDown: stickHeld.has('ArrowUp') || stickHeld.has('ArrowDown') });
+    if (jumpRequested || offSide) {
+      const side = offSide;
       clearJumpQueue(jumpState);
       noteGrounded(jumpState, false, now);
       stopClimb({ jumpOff: true, side, jumpVelocity: JUMP_SPEED * movementBuff.jump, maxSpeed: 4.4 * movementBuff.speed });
@@ -15951,11 +15959,18 @@ function handleInput() {
     locked: climb.regrabLock,
     upPressedMs: now - ladderUp.pressAt,
     onGround: player.onGround,
-    jumpedSinceFloor: jumpState.jumpedSinceFloor,
     onTopDeck,
     atBase: Boolean(atBase),
   };
-  if (climbHit && ladderMount({ ...mountArgs, near: Math.abs(player.x - climbHit.x) < 28 })) {
+  // #424: the stick held Up as a ladder comes within reach is a fresh press (js/movement.js ladderArrivalPress).
+  const ladderNear = Boolean(climbHit && Math.abs(player.x - climbHit.x) < 28);
+  const reach = ladderNear ? String(climbHit.wall?.id ?? climbHit.x) : '';
+  if (up && ladderArrivalPress({ stickUp: stickHeld.has('ArrowUp') && keys.has('ArrowUp'), reach, wasReach: climb.reach, jumpedSinceFloor: jumpState.jumpedSinceFloor })) {
+    ladderUp.pressAt = now;
+    mountArgs.upPressedMs = 0;
+  }
+  climb.reach = reach;
+  if (climbHit && ladderMount({ ...mountArgs, near: ladderNear })) {
     startClimb(climbHit);
     return;
   }
@@ -16007,6 +16022,8 @@ function handleInput() {
     maxVelocityX: max,
   });
   if (jumpResult.ok) {
+    // #424: the jump spends the Up press that started it; only a new press grabs a ladder in the air.
+    spendLadderUp(ladderUp);
     performPlayerJump(streetPhysicsTripleJump(movementBuff, jumpResult), jumpVelocity, now, { counted: !follow?.jump });
   } else {
     streetPhysicsJetpackStroke(movementBuff, jumpVelocity, now);
@@ -33645,8 +33662,14 @@ async function main() {
   if (TOUCH_PHONE) {
     installTouchControls({
       root: document.getElementById('game-root') || document.body,
-      press: (k) => keys.add(k),
-      release: (k) => keys.delete(k),
+      press: (k) => {
+        keys.add(k);
+        stickHeld.add(k);
+      },
+      release: (k) => {
+        keys.delete(k);
+        stickHeld.delete(k);
+      },
       jump: () => {
         queueJump(jumpState, movementNow());
         window.dispatchEvent(new CustomEvent(TOUCH_JUMP_EVENT));

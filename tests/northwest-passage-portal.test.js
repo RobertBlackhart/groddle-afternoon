@@ -22,7 +22,7 @@ import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
 import { barriersScreen, platformsScreen, worldToScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
 import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.js?v=6122a615';
-import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=0a356337';
+import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f05bb30a';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
 import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=e8836c2e';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=f0362527';
