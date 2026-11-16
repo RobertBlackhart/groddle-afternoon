@@ -2792,9 +2792,39 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2344,
+  "commits": 2353,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Upright on a phone, the band above every scene shorter than the screen is dark"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Solo gets a bug icon too: a plain link to the website's Bugs board"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "On a sideways phone, notices beside the avatar keep their side instead of jumping across it as you walk"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "On a sideways phone, a long speech bubble stays below the top bar instead of running off the top"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Upright on a phone, the street runs to the screen's right edge instead of stopping short and showing the void past it"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "Esc closes the subway map at a station, as it closes other windows"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2884,36 +2914,6 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "Sound effects keep playing after many Acts in a row"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Jethimadh's restored map loses its ten added wooden things"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Soil patches sit on level floor instead of hanging off ledge ends"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Visiting Stones stand at their street's dead end, where the 2012 snaps show them"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Hechey Track's five starter rocks stand on the street's main floor"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "fix",
-    "text": "Rocks, shrines, vendors, patches and animals no longer stand up in the trees on branch art"
-   },
-   {
-    "date": "2026-11-15",
-    "kind": "improve",
-    "text": "Shimla Mirch's restored map loses its eight added wooden things and has its paper sea back"
    }
   ]
  },
