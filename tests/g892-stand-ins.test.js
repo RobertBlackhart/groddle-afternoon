@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=6ef1ea3a';
 import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=125375b0';
+import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -139,5 +140,32 @@ describe('Starlit Night cloud floor and way out (A7, A8)', () => {
     const spawn = fnBody(game(), 'spawnParadiseExit');
     assert.match(spawn, /art\?\.kind === 'door'/);
     assert.match(spawn, /paradiseExitShutSign\(art\?\.kind === 'door'/);
+  });
+});
+
+describe('Alphabet Sauce (A9)', () => {
+  it('is alphabet_sauce.swf\'s own loop, rendered by tools/potion-art.py', () => {
+    const art = POTION_ART.alphabet_sauce;
+    assert.ok(art, 'potion-art.js has the sheet');
+    assert.equal(art.url, 'assets/sprites/potions/alphabet_sauce.webp');
+    assert.match(art.source, /^glitch-items\/alchemy\/alphabet_sauce_unreleased\/alphabet_sauce\.swf sprite 84, every 2 frame\(s\) at zoom 2$/);
+    // 79 frames, every second one: 40 cells, drawn at world size.
+    assert.equal(art.frames, 40);
+    assert.equal(art.scale, 0.5);
+    assert.deepEqual(art.labels.loop, [0, 40]);
+    assert.ok(existsSync(join(ROOT, art.url)));
+    const tool = readFileSync(join(ROOT, '../tools/potion-art.py'), 'utf8');
+    assert.match(tool, /'alphabet_sauce': \('alchemy\/alphabet_sauce_unreleased\/alphabet_sauce\.swf', 84, 2, 1,/);
+    assert.match(tool, /--check/);
+    if (existsSync(join(AUDIT, 'glitch-items'))) assert.ok(existsSync(join(AUDIT, 'glitch-items/alchemy/alphabet_sauce_unreleased/alphabet_sauce.swf')));
+  });
+
+  it('the poured sauce plays that sheet, not a drawn puddle', () => {
+    const src = read('js/features/potions-feature.js');
+    const body = fnBody(src, 'drawSauce');
+    assert.match(body, /framesFor\(engine, 'alphabet_sauce'\)/);
+    assert.match(body, /new PIXI\.AnimatedSprite\(frames\)/);
+    assert.doesNotMatch(body, /ellipse\(|0xc8432b/);
+    assert.match(src, /export const ALPHABET_SAUCE_SPEED = 12 \/ 60;/);
   });
 });

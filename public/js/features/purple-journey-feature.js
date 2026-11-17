@@ -40,7 +40,7 @@ import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { playPoofIn } from '../overlay-art.js?v=98606052';
 import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
-import { POTION_ART } from '../potion-art.js?v=27ccc756';
+import { POTION_ART } from '../potion-art.js?v=9d731b38';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
 import {
   EMPEROR,

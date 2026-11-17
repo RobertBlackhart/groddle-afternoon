@@ -79,7 +79,7 @@ import { isPoisoned } from '../tree-poison.js?v=3bc48e3e';
 import { furnitureSize } from '../home-decor.js?v=06be9c65';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=1c78ef1a';
 import { textureFromUrl, sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
-import { POTION_ART } from '../potion-art.js?v=27ccc756';
+import { POTION_ART } from '../potion-art.js?v=9d731b38';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
 import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
 import { playPoofIn, playSheetOverlay } from '../overlay-art.js?v=98606052';
@@ -959,18 +959,29 @@ function syncHeart(engine) {
 /* Alphabet Sauce: the puddle and the letter over your head             */
 /* ------------------------------------------------------------------ */
 
-/** A plain puddle in the sauce's place until alphabet_sauce.swf is rendered (stand-in art). */
+/**
+ * G892: the poured sauce is Tiny Speck's own alphabet_sauce.swf (glitch-items, CC0): its
+ * alphabet_sauce_mc loop, a glowing column of drifting letters over a white splash, from
+ * tools/potion-art.py (js/potion-art.js alphabet_sauce), its foot on the item's spot. The SWF runs
+ * at 24 fps and the sheet keeps every second frame: 12 drawings a second.
+ */
+export const ALPHABET_SAUCE_SPEED = 12 / 60;
 function drawSauce(engine, item) {
   const { PIXI } = engine;
-  if (!PIXI?.Graphics || !engine.entityLayer || sauceViews.has(item.id)) return;
-  const g = new PIXI.Graphics();
-  g.ellipse(0, 0, 46, 9).fill({ color: 0xc8432b, alpha: 0.78 });
-  g.ellipse(-8, -2, 20, 3).fill({ color: 0xf2b38e, alpha: 0.7 });
+  const art = POTION_ART.alphabet_sauce;
+  if (!PIXI?.AnimatedSprite || !art || !engine.entityLayer || sauceViews.has(item.id)) return;
+  const frames = framesFor(engine, 'alphabet_sauce');
+  if (!frames.length) return;
+  const g = new PIXI.AnimatedSprite(frames);
+  g.anchor.set(art.anchorX / art.cellW, art.anchorY / art.cellH);
+  g.scale.set(art.scale);
+  g.animationSpeed = ALPHABET_SAUCE_SPEED;
   g.x = item.x;
-  g.y = item.y - 2;
+  g.y = item.y + 2;
   g.zIndex = 34;
   g.eventMode = 'none';
   g.label = 'alphabet-sauce';
+  g.play();
   engine.entityLayer.addChild(g);
   sauceViews.set(item.id, g);
 }

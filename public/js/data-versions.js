@@ -420,6 +420,7 @@
       "assets/sprites/overlays/typing_in_location_overlay@4x.webp": "52df0052",
       "assets/sprites/parties/teleporter_visible_disappear@3x.webp": "c19b2696",
       "assets/sprites/parties/teleporter_visible_portal@3x.webp": "be9366e2",
+      "assets/sprites/potions/alphabet_sauce.webp": "22c3f88a",
       "assets/sprites/potions/potion_alphabet_sauce-tool.webp": "a3d63bb6",
       "assets/sprites/potions/potion_alphabet_sauce-tool@3x.webp": "acb3a88f",
       "assets/sprites/potions/potion_amorous_philtre-tool.webp": "e0ed5c0a",

@@ -103,5 +103,22 @@ export const POTION_ART = Object.freeze({
    ]
   },
   "source": "glitch-items/inhabitants/scion_of_purple/purple_apparition.swf sprite 81, every 3 frame(s) at zoom 1"
+ },
+ "alphabet_sauce": {
+  "url": "assets/sprites/potions/alphabet_sauce.webp",
+  "cellW": 284,
+  "cellH": 217,
+  "cols": 6,
+  "frames": 40,
+  "scale": 0.5,
+  "anchorX": 146.5,
+  "anchorY": 215,
+  "labels": {
+   "loop": [
+    0,
+    40
+   ]
+  },
+  "source": "glitch-items/alchemy/alphabet_sauce_unreleased/alphabet_sauce.swf sprite 84, every 2 frame(s) at zoom 2"
  }
 });
