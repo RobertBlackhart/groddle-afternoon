@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2590,
+  "commits": 2592,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Closed roads are part of the street graph, so every route, reach and distance goes round streets under construction"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "A key-holder's open cabinet shows the owner's moves, and a yard animal someone uses stands still for everyone"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "What a home's owner does at home reaches visitors live (picks, plants, cultivations, furniture, styles)"
    }
   ]
  },
- "tests": 1115,
+ "tests": 1116,
  "generatedAt": "2026-11-17"
 }
