@@ -27,7 +27,7 @@ import {
   useDoorDrink,
 } from '../public/js/door-drink.js?v=15add3b8';
 import { doorDrinkFeature, completePour } from '../public/js/features/door-drink-feature.js?v=790e3a40';
-import { FEATURES } from '../public/js/features/index.js?v=9349ad3c';
+import { FEATURES } from '../public/js/features/index.js?v=5a781cb0';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

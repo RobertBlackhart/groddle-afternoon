@@ -67,8 +67,10 @@
  *    Grendaline fades in through the light. The ghost dances for 12.8 s (384
  *    frames at 30 fps), rocks crumble from the pedestal: the Conch (part 1) or
  *    an iMG quoin (the reminisce, as recorded), then out through the light.
- *  - The grotto and climb terrain is clean vector basalt in the recordings'
- *    lavender, with recovered Alakol cliff decos tinted for the far walls.
+ *  - The grotto and climb terrain is Tiny Speck's Alakol mountaineering set
+ *    tinted lavender (G962, BASALT): toppers on the walking lines, column
+ *    faces, stepping stones, hanging columns and rubble, as the Snaps show,
+ *    with the recovered Alakol cliffs tinted for the far walls.
  *  - The Giant glyphs are Tiny Speck's own esquibeth1.swf decos (glitch-locations,
  *    CC0; tools/esquibeth-art/build.py, js/quest-rooms/esquibeth-art.js):
  *    Spriggan in the Eastern Grotto, Cosma in the Western Grotto and Pot on the
@@ -390,124 +392,118 @@ export function noteDot(n) {
 /* Drawing                                                              */
 /* ------------------------------------------------------------------ */
 
-const PAL = {
-  lit: { cap: 0xc9b9d4, capEdge: 0xe7dcef, face: 0x8d7aa0, seam: 0x5f4f73, deep: 0x4a3c5c },
-  cave: { cap: 0x8a7898, capEdge: 0xa898b6, face: 0x54456a, seam: 0x3a2e4c, deep: 0x2c2238 },
-  climb: { cap: 0x6d5a72, capEdge: 0x8e7a92, face: 0x463648, seam: 0x2e2232, deep: 0x231a27 },
-};
+/**
+ * G962: the grottos and the climb are Tiny Speck's Alakol mountaineering set tinted lavender, as
+ * players' Snaps show (snap 93906 at 1:1 matches platform_topper_01a_al1 and
+ * platform_horizontal_ledge_mountaineering_01a_al1 drawing for drawing; research/art-briefs/
+ * quest-rooms-pack3-2026-11-17/02-esquibeth-basalt, reference only). Each piece's [name, width,
+ * height] is its 2x file; the set is laid at its stage size (half the file), toppers on the walking
+ * lines, column faces under them, stepping stones, hanging columns and the rubble heaps.
+ */
+export const BASALT = Object.freeze({
+  toppers: Object.freeze([['platform_topper_01a_al1', 588, 210], ['platform_topper_01b_al1', 612, 148], ['platform_topper_02a_al1', 1030, 242], ['platform_topper_02b_al1', 432, 278]]),
+  ledges: Object.freeze([['platform_horizontal_ledge_mountaineering_01a_al1', 1030, 342], ['platform_horizontal_ledge_mountaineering_01b_al1', 594, 252]]),
+  faces: Object.freeze([['cliff_face_mountaineering_01a_al1', 1336, 878], ['cliff_face_mountaineering_01b_al1', 974, 834], ['cliff_face_mountaineering_01c_al1', 620, 846], ['cliff_face_mountaineering_01d_al1', 440, 588], ['cliff_face_mountaineering_01e_al1', 470, 514]]),
+  stones: Object.freeze([['cliff_face_plat_01a_al1', 224, 194], ['cliff_face_plat_01b_al1', 346, 164]]),
+  cones: Object.freeze([['platform_cone_base_01a_al1', 412, 866], ['platform_cone_base_01b_al1', 382, 504]]),
+  rubble: Object.freeze([['rock_rubble_01a_al1', 554, 274], ['rock_rubble_01b_al1', 300, 218], ['rock_rubble_01c_al1', 544, 178], ['rock_rubble_01e_al1', 416, 268], ['rock_rubble_01g_al1', 146, 98]]),
+  // The brief's lit tint (0.86, 0.74, 0.95); darker in the caves and on the climb, as the Snaps show.
+  tint: Object.freeze({ lit: 0xdbbdf2, cave: 0x9c86b6, climb: 0xa58cb0, wall: 0x5a4a70 }),
+  /** Stage size: the files are drawn at 2 px a unit. */
+  scale: 0.5,
+  /** A topper's top edge stands this far over its walking line (the feet land on the cap's face). */
+  capRise: 16,
+});
 
 function inCave(L, x) {
   return (L.caves || []).some((c) => x >= c.x1 && x <= c.x2);
 }
 
-/** A block of columnar basalt: hex caps along the top, columns down the face. */
-function drawBasalt(g, x1, x2, top, bottom, pal, seedKey, kit) {
-  const h = bottom - top;
-  g.rect(x1, top, x2 - x1, h).fill(pal.face);
-  // Columns: strips of slightly different tone with dark seams.
-  let x = x1;
-  let i = 0;
-  const lips = [];
-  while (x < x2 - 2) {
-    const w = 18 + Math.floor(kit.hash01(`${seedKey}:${i}`) * 24);
-    const right = Math.min(x2, x + w);
-    const r = kit.hash01(`${seedKey}:s${i}`);
-    const tone = r > 0.66 ? pal.capEdge : r > 0.33 ? pal.seam : pal.face;
-    g.rect(x, top, right - x, h).fill({ color: tone, alpha: r > 0.66 ? 0.16 : r > 0.33 ? 0.28 : 0 });
-    // A sliver of light down one side of each column.
-    g.rect(x + 2, top + 10, 3, h).fill({ color: pal.capEdge, alpha: 0.12 });
-    g.moveTo(right, top + 8);
-    g.lineTo(right, bottom);
-    g.stroke({ width: 1.5, color: pal.seam, alpha: 0.85 });
-    for (let j = 1; j < 8; j++) {
-      const jy = top + 30 + j * (50 + kit.hash01(`${seedKey}:j${i}:${j}`) * 80);
-      if (jy > bottom - 10) break;
-      g.moveTo(x + 2, jy);
-      g.lineTo(right - 2, jy + (kit.hash01(`${seedKey}:k${i}:${j}`) - 0.5) * 7);
-      g.stroke({ width: 1.2, color: pal.seam, alpha: 0.6 });
+/** n pieces across x1..x2, each a little wider than its share so they overlap (no gaps). */
+function spans(x1, x2, each) {
+  const n = Math.max(1, Math.round((x2 - x1) / each));
+  const w = (x2 - x1) / n;
+  return Array.from({ length: n }, (_, i) => ({ cx: x1 + w * (i + 0.5), w: w * 1.12 }));
+}
+
+function pick(list, key, kit) {
+  return list[Math.floor(kit.hash01(key) * list.length) % list.length];
+}
+
+/** One Alakol piece, width w, its height at stage scale times `squash`; anchored (ax, ay). */
+function basaltPiece(PIXI, kit, [name, pw, ph], x, y, w, { tint, flip = false, ay = 0, squash = 1, flipY = false } = {}) {
+  const sx = w / pw;
+  const sy = BASALT.scale * squash * (flipY ? -1 : 1);
+  return kit.deco(PIXI, name, x, y, { scale: sx, sy, flip, tint, ay });
+}
+
+/** A terrace: column faces from under the cap down to `bottom`, the cap on its walking line. */
+function drawBasalt(PIXI, layer, x1, x2, top, bottom, tint, seedKey, kit, { ledgeEnds = false } = {}) {
+  const faces = new PIXI.Container();
+  for (const [i, c] of spans(x1, x2, 300).entries()) {
+    for (let y = top + 34, row = 0; y < bottom; row += 1) {
+      const piece = pick(BASALT.faces, `${seedKey}:f${i}:${row}`, kit);
+      const spr = basaltPiece(PIXI, kit, piece, c.cx, y, c.w, { tint, flip: kit.hash01(`${seedKey}:ff${i}:${row}`) < 0.5 });
+      faces.addChild(spr);
+      y += piece[2] * BASALT.scale * 0.82;
     }
-    lips.push([x, right, 8 + Math.round(kit.hash01(`${seedKey}:l${i}`) * 9)]);
-    x = right;
-    i += 1;
   }
-  // The flat top: a lighter band with a ragged front lip and a few hex cracks.
-  g.moveTo(x1, top - 3);
-  g.lineTo(x2, top - 3);
-  for (let k = lips.length - 1; k >= 0; k--) {
-    const [lx, rx, d] = lips[k];
-    g.lineTo(rx, top + d);
-    g.lineTo(lx + 3, top + d + 2);
-  }
-  g.lineTo(x1, top + 8);
-  g.closePath();
-  g.fill(pal.cap);
-  g.moveTo(x1, top - 2);
-  g.lineTo(x2, top - 2);
-  g.stroke({ width: 2, color: pal.capEdge, alpha: 0.95 });
-  for (const [lx, rx] of lips) {
-    if (kit.hash01(`${seedKey}:c${lx}`) < 0.5) continue;
-    g.moveTo(rx, top - 1);
-    g.lineTo(rx - 4, top + 5);
-  }
-  g.stroke({ width: 1, color: pal.seam, alpha: 0.45 });
-  // Depth: darker towards the bottom.
-  for (let k = 0; k < 4; k++) {
-    const y = top + h * (0.25 + k * 0.18);
-    g.rect(x1, y, x2 - x1, bottom - y).fill({ color: pal.deep, alpha: 0.16 });
+  layer.addChild(faces);
+  const caps = spans(x1 - 8, x2 + 8, 270);
+  for (const [i, c] of caps.entries()) {
+    const end = i === 0 || i === caps.length - 1;
+    const useLedge = (ledgeEnds && end) || kit.hash01(`${seedKey}:l${i}`) < 0.25;
+    const piece = useLedge ? pick(BASALT.ledges, `${seedKey}:lp${i}`, kit) : pick(BASALT.toppers, `${seedKey}:t${i}`, kit);
+    layer.addChild(basaltPiece(PIXI, kit, piece, c.cx, top - BASALT.capRise, c.w, { tint, flip: kit.hash01(`${seedKey}:tf${i}`) < 0.5 }));
   }
 }
 
-/** A floating slab of column tops (the climb's stepping stones). */
-function drawSlab(g, l, pal, kit) {
-  const depth = 46;
-  drawBasalt(g, l.x1, l.x2, l.y, l.y + depth, pal, `slab${l.x1}:${l.y}`, kit);
-  // Broken column stubs hang under the slab.
-  const n = Math.max(2, Math.round((l.x2 - l.x1) / 30));
-  for (let i = 0; i < n; i++) {
-    const w = (l.x2 - l.x1) / n;
-    const x = l.x1 + i * w;
-    const len = 10 + kit.hash01(`drip${l.x1}:${i}`) * 30;
-    g.rect(x + 2, l.y + depth - 2, w - 4, len).fill(i % 2 ? pal.face : pal.seam);
-    g.rect(x + 2, l.y + depth + len - 6, w - 4, 6).fill({ color: pal.deep, alpha: 0.6 });
+/** A floating stepping stone (the climb): cliff_face_plat, its cap on the walking line. */
+function drawSlab(PIXI, layer, l, tint, kit) {
+  const piece = pick(BASALT.stones, `slab${l.x1}:${l.y}`, kit);
+  const w = (l.x2 - l.x1) + 24;
+  // Squashed so stones one step apart in the zigzag do not cover each other (82 up, 220 across).
+  layer.addChild(basaltPiece(PIXI, kit, piece, (l.x1 + l.x2) / 2, l.y - BASALT.capRise, w, { tint, flip: kit.hash01(`slabf${l.x1}:${l.y}`) < 0.5, squash: (w / piece[1]) / BASALT.scale * 0.62 }));
+}
+
+/** Hanging columns (platform_cone_base) along an underside line. */
+function hangColumns(PIXI, layer, x1, x2, y, tint, seedKey, kit) {
+  for (const [i, c] of spans(x1, x2, 150).entries()) {
+    const piece = pick(BASALT.cones, `${seedKey}:c${i}`, kit);
+    const w = 90 + kit.hash01(`${seedKey}:cw${i}`) * 60;
+    const squash = 0.18 + kit.hash01(`${seedKey}:cl${i}`) * 0.22;
+    layer.addChild(basaltPiece(PIXI, kit, piece, c.cx, y - 30, w, { tint, flip: i % 2 === 1, squash: (w / piece[1]) / BASALT.scale * squash * 2 }));
   }
 }
 
-/** A cave's ceiling: an overhang of rock with a jagged underside. */
-function drawCeiling(g, c, pal, kit, worldTop = 0) {
-  g.moveTo(c.x1, worldTop);
-  g.lineTo(c.x2, worldTop);
-  let x = c.x2;
-  let i = 0;
-  while (x > c.x1) {
-    const w = 60 + kit.hash01(`ceil${c.x1}:${i}`) * 90;
-    const drop = 20 + kit.hash01(`ceilD${c.x1}:${i}`) * 70;
-    g.lineTo(x, c.ceiling);
-    g.lineTo(x - w / 2, c.ceiling + drop);
-    x -= w;
-    i += 1;
+/** A cave's ceiling: column faces upside down from the top of the world, columns hanging under it. */
+function drawCeiling(PIXI, layer, c, tint, kit, worldTop = 0) {
+  // The rock's own dark behind the pieces, so no sky shows between their edges.
+  const under = new PIXI.Graphics();
+  under.rect(c.x1, worldTop - 400, c.x2 - c.x1, c.ceiling - worldTop + 400).fill(0x2c2238);
+  layer.addChild(under);
+  for (const [i, sp] of spans(c.x1, c.x2, 300).entries()) {
+    for (let y = c.ceiling + 30, row = 0; y > worldTop - 40; row += 1) {
+      const piece = pick(BASALT.faces, `ceil${c.x1}:${i}:${row}`, kit);
+      layer.addChild(basaltPiece(PIXI, kit, piece, sp.cx, y, sp.w, { tint, flipY: true, flip: (i + row) % 2 === 1 }));
+      y -= piece[2] * BASALT.scale * 0.82;
+    }
   }
-  g.lineTo(c.x1, c.ceiling);
-  g.closePath();
-  g.fill(pal.face);
-  g.rect(c.x1, worldTop, c.x2 - c.x1, c.ceiling - worldTop - 40).fill({ color: pal.deep, alpha: 0.6 });
+  hangColumns(PIXI, layer, c.x1, c.x2, c.ceiling, tint, `ceil${c.x1}`, kit);
 }
 
 /** The dark columned wall at the back of a cave. */
-function drawBackWall(g, c, floor, kit) {
-  g.rect(c.x1, c.ceiling - 20, c.x2 - c.x1, floor - c.ceiling + 40).fill(0x3b2f4a);
-  let x = c.x1;
-  let i = 0;
-  while (x < c.x2) {
-    const w = 34 + kit.hash01(`wall${c.x1}:${i}`) * 50;
-    const a = 0.12 + kit.hash01(`wallA${c.x1}:${i}`) * 0.2;
-    g.rect(x, c.ceiling, Math.max(6, w - 6), floor - c.ceiling).fill({ color: 0x8a78a0, alpha: a });
-    g.moveTo(x, c.ceiling);
-    g.lineTo(x, floor);
-    g.stroke({ width: 2, color: 0x241b30, alpha: 0.55 });
-    x += w;
-    i += 1;
+function drawBackWall(PIXI, layer, c, floor, kit) {
+  const under = new PIXI.Graphics();
+  under.rect(c.x1, c.ceiling - 60, c.x2 - c.x1, floor - c.ceiling + 120).fill(0x3b2f4a);
+  layer.addChild(under);
+  for (const [i, sp] of spans(c.x1, c.x2, 320).entries()) {
+    for (let y = c.ceiling - 40, row = 0; y < floor + 40; row += 1) {
+      const piece = pick(BASALT.faces, `wall${c.x1}:${i}:${row}`, kit);
+      layer.addChild(basaltPiece(PIXI, kit, piece, sp.cx, y, sp.w, { tint: BASALT.tint.wall, flip: kit.hash01(`wallf${c.x1}:${i}:${row}`) < 0.5 }));
+      y += piece[2] * BASALT.scale * 0.8;
+    }
   }
-  g.rect(c.x1, c.ceiling - 20, c.x2 - c.x1, 140).fill({ color: 0x1d1626, alpha: 0.35 });
 }
 
 /** A soft radial light (canvas texture), for openings and glows. */
@@ -590,9 +586,9 @@ function buildGrotto(ctx, stage) {
     }
   }
   const world = root.layer(1, 3);
-  const back = new PIXI.Graphics();
+  const back = new PIXI.Container();
   world.addChild(back);
-  for (const c of L.caves) drawBackWall(back, c, Math.max(...L.blocks.filter((b) => b.x1 < c.x2 && b.x2 > c.x1).map((b) => b.top)), kit);
+  for (const c of L.caves) drawBackWall(PIXI, back, c, Math.max(...L.blocks.filter((b) => b.x1 < c.x2 && b.x2 > c.x1).map((b) => b.top)), kit);
   if (L.light) {
     const glow = radial(PIXI, 'rgba(255,248,170,0.95)', 'rgba(255,240,160,0)', L.light.w * 1.6, 900);
     glow.x = L.light.x;
@@ -616,21 +612,27 @@ function buildGrotto(ctx, stage) {
   exitGlow.y = L.exit.y - 90;
   exitGlow.alpha = 0;
   world.addChild(exitGlow);
-  const g = new PIXI.Graphics();
+  const g = new PIXI.Container();
   world.addChild(g);
-  for (const [i, b] of L.blocks.entries()) {
-    drawBasalt(g, b.x1, b.x2, b.top, L.height, inCave(L, (b.x1 + b.x2) / 2) ? PAL.cave : L.climb ? PAL.climb : PAL.lit, `${stage}:${i}`, kit);
+  // Lower terraces first, so a higher one's cap and hanging columns draw over the step down to it.
+  const order = [...L.blocks.entries()].sort(([, a], [, b]) => b.top - a.top);
+  for (const [i, b] of order) {
+    const cave = inCave(L, (b.x1 + b.x2) / 2);
+    drawBasalt(PIXI, g, b.x1, b.x2, b.top, L.height + 40, cave ? BASALT.tint.cave : L.climb ? BASALT.tint.climb : BASALT.tint.lit, `${stage}:${i}`, kit, { ledgeEnds: true });
   }
-  const slabs = new PIXI.Graphics();
+  const slabs = new PIXI.Container();
   world.addChild(slabs);
-  for (const l of L.ledges) drawSlab(slabs, l, L.climb ? PAL.climb : PAL.lit, kit);
-  if (L.top) drawBasalt(slabs, L.top.x1, L.top.x2, L.top.y, L.top.y + 240, PAL.climb, `${stage}:top`, kit);
-  const ceil = new PIXI.Graphics();
+  for (const l of L.ledges) drawSlab(PIXI, slabs, l, L.climb ? BASALT.tint.climb : BASALT.tint.lit, kit);
+  if (L.top) {
+    drawBasalt(PIXI, slabs, L.top.x1, L.top.x2, L.top.y, L.top.y + 200, BASALT.tint.climb, `${stage}:top`, kit, { ledgeEnds: true });
+    hangColumns(PIXI, slabs, L.top.x1 + 40, L.top.x2, L.top.y + 200, BASALT.tint.climb, `${stage}:topc`, kit);
+  }
+  const ceil = new PIXI.Container();
   world.addChild(ceil);
-  for (const c of L.caves) drawCeiling(ceil, c, PAL.cave, kit, 0);
+  for (const c of L.caves) drawCeiling(PIXI, ceil, c, BASALT.tint.cave, kit, 0);
   if (L.climb) {
     // The overhang above the summit ledge frames the bright cave mouth.
-    drawCeiling(ceil, { x1: 980, x2: 1800, ceiling: 420 }, PAL.climb, kit, 0);
+    drawCeiling(PIXI, ceil, { x1: 980, x2: 1800, ceiling: 420 }, BASALT.tint.climb, kit, 0);
   }
   // The glyph, carved into the wall, and its staff over it.
   const place = glyphPlacement(stage);
@@ -938,30 +940,18 @@ function setupGrotto(ctx, stage, scene) {
   refreshSockets(ctx);
 }
 
+/** The heap over a passage: Tiny Speck's Alakol rubble, tinted to the rock around it (G962). */
 function rockPile(ctx, x, floor, seed) {
   const { PIXI, kit } = ctx;
   const c = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  const rocks = [];
-  for (let i = 0; i < 11; i++) {
-    const rx = (kit.hash01(`${seed}r${i}`) - 0.5) * 150;
-    const ry = -18 - kit.hash01(`${seed}y${i}`) * 150;
-    const r = 26 + kit.hash01(`${seed}s${i}`) * 26;
-    rocks.push([rx, Math.min(-r * 0.6, ry), r, i]);
+  const L = ctx.data.layout;
+  const tint = seed === 'hollow' ? BASALT.tint.lit : L && inCave(L, x) ? BASALT.tint.cave : L?.climb ? BASALT.tint.climb : BASALT.tint.lit;
+  // Two big pieces at the foot, one across them, a small one on top (about 190 wide, 110 tall).
+  const heap = [[0, -36, 6, 112], [2, 44, 4, 106], [3, 4, -24, 98], [1, -10, -56, 74], [4, 22, -80, 44]];
+  for (const [k, dx, dy, w] of heap) {
+    const piece = BASALT.rubble[k];
+    c.addChild(basaltPiece(PIXI, kit, piece, dx, dy + 4, w, { tint, ay: 1, flip: kit.hash01(`${seed}r${k}`) < 0.5, squash: (w / piece[1]) / BASALT.scale }));
   }
-  rocks.sort((a, b) => a[1] - b[1]);
-  for (const [rx, ry, r, i] of rocks) {
-    const shade = kit.hash01(`${seed}c${i}`) > 0.5 ? 0x6b5a7e : 0x584a6a;
-    const pts = [];
-    for (let k = 0; k < 6; k++) {
-      const a = (k / 6) * Math.PI * 2 + kit.hash01(`${seed}a${i}`);
-      const rr = r * (0.8 + kit.hash01(`${seed}k${i}:${k}`) * 0.3);
-      pts.push(rx + Math.cos(a) * rr, ry + Math.sin(a) * rr * 0.8);
-    }
-    g.poly(pts).fill(shade).stroke({ width: 2, color: 0x2a2133, alpha: 0.9 });
-    g.circle(rx - r * 0.3, ry - r * 0.35, r * 0.25).fill({ color: 0x9d8bb0, alpha: 0.5 });
-  }
-  c.addChild(g);
   c.x = x;
   c.y = floor;
   ctx.add(c, 40);

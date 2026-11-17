@@ -220,7 +220,7 @@ const ROOM_MODULES = {
   gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=685acaa6'),
   mental_block: () => import('../quest-rooms/mental-block.js?v=0b75079c'),
   penalty: () => import('../quest-rooms/penalty.js?v=ed97a59d'),
-  esquibeth: () => import('../quest-rooms/esquibeth.js?v=85385baf'),
+  esquibeth: () => import('../quest-rooms/esquibeth.js?v=5dbd28e3'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=77fee627'),
   soil_appreciation: () => import('../quest-rooms/soil-appreciation.js?v=40cbe9b3'),
   firefly_whistle: () => import('../quest-rooms/firefly-whistle.js?v=81d9eee9'),

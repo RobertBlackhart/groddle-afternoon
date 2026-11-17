@@ -22,7 +22,7 @@ import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from 
 import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=1337f73f';
 import { glitchLayerMatrix } from '../public/js/street-render.js?v=a1ce9368';
 import { MOON, WASHING, WASHING_LINE } from '../public/js/purple-journey-scene.js?v=eaa28de5';
-import * as esq from '../public/js/quest-rooms/esquibeth.js?v=85385baf';
+import * as esq from '../public/js/quest-rooms/esquibeth.js?v=5dbd28e3';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from '../public/js/quest-rooms/esquibeth-art.js?v=fe515887';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -120,7 +120,7 @@ export const ROOM_NOTES = Object.freeze({
     about: "The Last Pilgrimage of Esquibeth retold a Glitch legend: follow her ghost through grottos and up a waterfall, collecting notes and replaying her song at each Giant stone.",
     play: 'Find the notes, then play back the ghost\'s melody (click or keys 1 to 5). At the top, Esquibeth dances, Grendaline appears, and you keep the Conch as a memento.',
     source: "The quest rules and rewards, the Conch's Play and Blow, the Hollow's own background painting, and the melody Esquibeth's ghost plays at each stone, all from Tiny Speck's overlay files.",
-    rebuilt: "Narration was read from two full recordings, and her song (E G D, E C, A D) was matched from their audio against the recovered bell sounds. Each grotto's sky colour is sampled from players' Snaps and a recording: peach-pink, pale lemon with a pink flush, magenta-pink.",
+    rebuilt: "Narration was read from two full recordings, and her song (E G D, E C, A D) was matched from their audio against the recovered bell sounds. Each grotto's sky colour is sampled from players' Snaps and a recording: peach-pink, pale lemon with a pink flush, magenta-pink. The Snaps show the rock is Tiny Speck's own Alakol mountaineering set washed lavender, so the terraces, column faces, stepping stones, hanging columns and the rubble over each passage are those pieces, darker in the caves.",
     footage: [{ id: 'BgRgIaeaj9Q', label: 'The Last Pilgrimage of Esquibeth' }, { id: 'fvin5awPESI', label: 'The Last Pilgrimage of Esquibeth (SnygystFS)' }],
   },
   ez_cookin: {

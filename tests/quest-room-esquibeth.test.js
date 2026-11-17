@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import * as kit from '../public/js/quest-rooms/kit.js?v=153fa0a9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const mod = await import('../public/js/quest-rooms/esquibeth.js?v=85385baf');
+const mod = await import('../public/js/quest-rooms/esquibeth.js?v=5dbd28e3');
 
 // Avatar reach (game.js physics): jump 9.6 px/frame against 0.42 gravity peaks near 110 px
 // and carries about 200 px at run speed 4.4; keep margins.
@@ -280,5 +280,46 @@ describe('Esquibeth: grotto skies from the Snaps (G79)', () => {
     assert.equal(mod.SKY_STOPS.rose[0][1], '#eba2e8');
     assert.equal(mod.SKY_STOPS.rose[1][1], '#f5bfee');
     for (const stage of ['waterfall_01', 'waterfall_02', 'waterfall_03']) assert.ok(mod.SKY_STOPS[mod.stageLayout(stage).sky], stage);
+  });
+});
+
+describe('G962: the grottos and the climb are the Alakol mountaineering set tinted lavender (snap 93906)', () => {
+  const src = readFileSync(join(root, 'public/js/quest-rooms/esquibeth.js'), 'utf8');
+  const { BASALT } = mod;
+
+  it('every piece ships, and the code-drawn basalt is gone', () => {
+    for (const group of ['toppers', 'ledges', 'faces', 'stones', 'cones', 'rubble']) {
+      assert.ok(BASALT[group].length >= 2, group);
+      for (const [name, w, h] of BASALT[group]) {
+        assert.ok(existsSync(join(root, `public/assets/decos/groddle/${name}.webp`)), name);
+        assert.ok(w > 0 && h > 0, name);
+      }
+    }
+    assert.match(BASALT.toppers.map((t) => t[0]).join(), /platform_topper_01a_al1/);
+    assert.match(BASALT.ledges.map((t) => t[0]).join(), /platform_horizontal_ledge_mountaineering_01a_al1/);
+    // No hex caps, column strips, jagged ceiling polygons or hexagon rocks drawn in code any more.
+    assert.doesNotMatch(src, /const PAL = |g\.poly\(pts\)|lips\.push|ceilD\$\{/);
+    for (const fn of ['drawBasalt', 'drawSlab', 'drawCeiling', 'drawBackWall', 'rockPile']) {
+      const at = src.indexOf(`function ${fn}(`);
+      const body = src.slice(at, src.indexOf('\n}\n', at));
+      assert.match(body, /basaltPiece\(|drawBasalt\(|hangColumns\(|BASALT\./, `${fn} lays Alakol pieces`);
+      assert.doesNotMatch(body, /\.moveTo\(|\.lineTo\(|\.poly\(/, `${fn} draws no rock shapes`);
+    }
+  });
+
+  it('tints the set the Snaps\' lavender: lit, darker in the caves and on the climb', () => {
+    const rgb = (c) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+    const [r, g, b] = rgb(BASALT.tint.lit);
+    assert.ok(Math.abs(r / 255 - 0.86) < 0.03 && Math.abs(g / 255 - 0.74) < 0.03 && Math.abs(b / 255 - 0.95) < 0.03);
+    const sum = (c) => rgb(c).reduce((a, v) => a + v, 0);
+    assert.ok(sum(BASALT.tint.cave) < sum(BASALT.tint.lit) && sum(BASALT.tint.climb) < sum(BASALT.tint.lit));
+    for (const t of Object.values(BASALT.tint)) assert.ok(rgb(t)[2] >= rgb(t)[1], 'lavender, blue over green');
+  });
+
+  it('caps sit on the walking lines the layouts already have (geometry unchanged)', () => {
+    assert.equal(BASALT.scale, 0.5);
+    assert.ok(BASALT.capRise > 0 && BASALT.capRise < 30);
+    assert.match(src, /top - BASALT\.capRise/);
+    assert.match(src, /l\.y - BASALT\.capRise/);
   });
 });
