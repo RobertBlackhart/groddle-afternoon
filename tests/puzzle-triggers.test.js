@@ -276,7 +276,7 @@ describe('gut tubes', () => {
 });
 
 describe('lost puzzle levels (scenes)', async () => {
-  const scenes = await import('../public/js/puzzle-scenes.js?v=af3c8cf9');
+  const scenes = await import('../public/js/puzzle-scenes.js?v=946a3e28');
   const { CONSTELLATION, BEAM_ME_DOWN } = scenes;
 
   test('Constellation: stars connect only in order, and the first star closes the piggy', () => {
@@ -310,6 +310,30 @@ describe('lost puzzle levels (scenes)', async () => {
     assert.ok(scenes.beamPhysics(true).gravity < scenes.beamPhysics(false).gravity);
     const last = BEAM_ME_DOWN.saucers.at(-1);
     assert.ok(last.y + 30 + BEAM_ME_DOWN.beamLength < BEAM_ME_DOWN.floorY);
+  });
+
+  test('G962: Beam Me Down is Tiny Speck art and soft light, not vectors (full-street snaps, 22 players\' snaps)', async () => {
+    const src = readFileSync(join(root, 'public/js/features/puzzle-scenes-feature.js'), 'utf8');
+    const body = src.slice(src.indexOf('function buildBeamMeDown('), src.indexOf('\nfunction ', src.indexOf('function buildBeamMeDown(') + 10));
+    // The flat trapezoid beams, the one tinted fluffy start cloud and the cloud_fluffy floor over a rect are gone.
+    assert.doesNotMatch(body, /\.poly\(|cloudBank\(|'cloud_fluffy_1', \(scene\.startCloud/);
+    assert.match(body, /beamConeTexture\(PIXI, scene\)/);
+    assert.match(body, /beamLanding\(PIXI, root, scene\)/);
+    assert.match(body, /ufo_1\.webp/);
+    const { BEAM_ART } = await import('../public/js/features/puzzle-scenes-feature.js?v=1c7d8a74');
+    for (const n of BEAM_ART.clouds) assert.ok(existsSync(join(root, `public/assets/decos/groddle/${n}.webp`)), n);
+    assert.ok(existsSync(join(root, 'public', BEAM_ART.door)));
+    assert.ok(existsSync(join(root, `public/assets/decos/groddle/${BEAM_ART.plank}.webp`)));
+    // The door is drawn from the CC0 sprite on this scene (Constellation keeps its own door).
+    const door = src.slice(src.indexOf('function exitDoor('), src.indexOf("  } else {", src.indexOf('function exitDoor(')));
+    assert.match(door, /scene\.id === 'beam_me_down'[\s\S]*BEAM_ART\.door[\s\S]*BEAM_ART\.doorTint[\s\S]*'EXIT'/);
+    // The soft cone is drawn to beamAt's own widths, feathered past them, and fades downward.
+    const cone = src.slice(src.indexOf('function beamConeTexture('), src.indexOf('\nfunction ', src.indexOf('function beamConeTexture(') + 10));
+    assert.match(cone, /scene\.beamTop \+ \(scene\.beamBottom - scene\.beamTop\) \* t/);
+    assert.match(cone, /\(1 - t\) \*\* 1\.4/);
+    // The EXIT stands at the far right, against the right bank, as the street snaps show (868 of 900).
+    assert.ok(BEAM_ME_DOWN.exit.x / BEAM_ME_DOWN.width > 0.9 && BEAM_ME_DOWN.exit.x < BEAM_ME_DOWN.width - 60);
+    assert.equal(BEAM_ME_DOWN.exit.y, BEAM_ME_DOWN.floorY);
   });
 
   test('scene tsids never look like street tsids; saves drop unknown scenes', () => {

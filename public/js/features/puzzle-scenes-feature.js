@@ -48,7 +48,7 @@ import {
   nextStarIndex,
   normalizeSceneSave,
   sceneTsid,
-} from '../puzzle-scenes.js?v=af3c8cf9';
+} from '../puzzle-scenes.js?v=946a3e28';
 import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
@@ -117,6 +117,109 @@ function cloudBank(PIXI, root, scene, y, tint) {
   root.addChild(under);
 }
 
+/**
+ * G962: Beam Me Down's pieces, from the Eleven collectors' full-street snaps (900 x 5000 at 1 px a
+ * unit) and 22 players' snaps (reference only): newxp cloud banks for the floor and its two end banks,
+ * door_asset_heights_interior darkened with a plank EXIT sign, and the tractor beams as soft light.
+ */
+export const BEAM_ART = Object.freeze({
+  clouds: Object.freeze(['clouds_bg_middleplus_01a_newxp', 'clouds_bg_middleplus_01b_newxp']),
+  // The snaps' floor reads (188, 186, 173) to (159, 171, 163): the newxp clouds washed mint.
+  cloudTint: 0xcfd9cb,
+  door: 'assets/sprites/paradise/sky_plunge/door_asset_heights_interior@2x.webp',
+  // The street snap's door is very dark wood: (76, 62, 13) lit, (14, 1, 0) in shade.
+  doorTint: 0x5a4636,
+  // 1.47 x a player in the snap (140 to 95); the avatar here is 0.6 of its size.
+  doorHeight: 104,
+  plank: 'groddle_sign_blank_plank',
+  beamColour: [255, 244, 212],
+});
+
+/** A newxp cloud piece by its pixel width (the files are 2x, so scale 1 is 2x the stage size). */
+function cloudPiece(PIXI, i, x, y, width, { flip = false, tint = BEAM_ART.cloudTint, alpha = 1, ay = 1, squash = 1 } = {}) {
+  const name = BEAM_ART.clouds[i % 2];
+  const px = i % 2 ? 646 : 1766;
+  const spr = new PIXI.Sprite(textureFromUrl(`${DECO}${name}.png`));
+  spr.anchor.set(0.5, ay);
+  const sc = width / px;
+  spr.scale.set(flip ? -sc : sc, sc * squash);
+  spr.x = x;
+  spr.y = y;
+  spr.tint = tint;
+  spr.alpha = alpha;
+  return spr;
+}
+
+/**
+ * The landing (the street snap's bottom 500 rows): a bumpy cloud floor whose tops stand about 50
+ * over the walking line, three rows deep, and tall banks at both ends (the left to about 370 over
+ * the floor, the right to about 300, the EXIT door at its foot).
+ */
+function beamLanding(PIXI, root, scene) {
+  const y = scene.floorY;
+  for (let x = -500, i = 0; x < scene.width + 600; x += 520, i += 1) {
+    root.addChild(cloudPiece(PIXI, 1, x + 120, y + 125, 520, { flip: i % 2 === 1, alpha: 0.96 }));
+  }
+  const bank = (x, rise, flip) => {
+    for (let k = 0, top = y - rise; top < y; k += 1, top += 110) {
+      root.addChild(cloudPiece(PIXI, 1, x + (k % 2 ? 26 : -18) * (flip ? -1 : 1), top + 150, 340 - k * 12, { flip: (k % 2 === 1) !== flip }));
+    }
+  };
+  bank(40, 370, false);
+  bank(scene.width - 30, 300, true);
+  for (const [row, dy, w] of [[0, 150, 900], [1, 290, 1100], [2, 430, 1100]]) {
+    for (let x = -600 + row * 230, i = 0; x < scene.width + 700; x += w * 0.7, i += 1) {
+      root.addChild(cloudPiece(PIXI, 0, x, y + dy, w, { flip: (i + row) % 2 === 1 }));
+    }
+  }
+}
+
+let beamTexture = null;
+/**
+ * The tractor beam: a soft cone of warm light, feathered at its edges, fading downward, with faint
+ * streaks (snaps 101273, 95023, 94496, 95986, 58487). Light, not a picture: a canvas gradient, drawn
+ * once at the cone's own size (beamTop wide at the saucer, beamBottom at the foot), so it still
+ * matches beamAt's cone.
+ */
+function beamConeTexture(PIXI, scene) {
+  if (beamTexture && !beamTexture.destroyed) return beamTexture;
+  const W = Math.ceil(scene.beamBottom * 1.3);
+  const H = Math.ceil(scene.beamLength);
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const g = canvas.getContext('2d');
+  const [r, gr, b] = BEAM_ART.beamColour;
+  const rgba = (a) => `rgba(${r},${gr},${b},${a})`;
+  for (let y = 0; y < H; y += 1) {
+    const t = y / (H - 1);
+    const half = ((scene.beamTop + (scene.beamBottom - scene.beamTop) * t) / 2) * 1.2;
+    const a = 0.05 + 0.5 * (1 - t) ** 1.4;
+    const grad = g.createLinearGradient(W / 2 - half, 0, W / 2 + half, 0);
+    grad.addColorStop(0, rgba(0));
+    grad.addColorStop(0.22, rgba(a * 0.55));
+    grad.addColorStop(0.5, rgba(a));
+    grad.addColorStop(0.78, rgba(a * 0.55));
+    grad.addColorStop(1, rgba(0));
+    g.fillStyle = grad;
+    g.fillRect(W / 2 - half, y, half * 2, 1);
+  }
+  g.globalCompositeOperation = 'lighter';
+  for (const [u, a] of [[-0.55, 0.05], [-0.25, 0.08], [0.05, 0.07], [0.32, 0.06], [0.6, 0.04]]) {
+    const grad = g.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, rgba(a));
+    grad.addColorStop(1, rgba(0));
+    g.strokeStyle = grad;
+    g.lineWidth = 6;
+    g.beginPath();
+    g.moveTo(W / 2 + u * scene.beamTop * 0.45, 0);
+    g.lineTo(W / 2 + u * scene.beamBottom * 0.5, H);
+    g.stroke();
+  }
+  beamTexture = PIXI.Texture.from(canvas);
+  return beamTexture;
+}
+
 function buildConstellation(engine) {
   const { PIXI } = engine;
   const scene = CONSTELLATION;
@@ -176,19 +279,13 @@ function buildBeamMeDown(engine) {
     root.addChild(deco(PIXI, i % 2 ? 'cloud_fluffy_1' : 'cloud_fluffy_2', 200 + ((i * 523) % 1200), y, { w: 360, h: 190, alpha: 0.25, tint: 0x9aa4b8 }));
   }
   const beams = [];
+  const cone = beamConeTexture(PIXI, scene);
   for (const s of scene.saucers) {
-    const g = new PIXI.Graphics();
-    const top = s.y + 30;
-    g.poly([
-      s.x - scene.beamTop / 2, top, s.x + scene.beamTop / 2, top,
-      s.x + scene.beamBottom / 2, top + scene.beamLength, s.x - scene.beamBottom / 2, top + scene.beamLength,
-    ]);
-    g.fill({ color: 0xfff2b0, alpha: 0.16 });
-    g.poly([
-      s.x - scene.beamTop / 4, top, s.x + scene.beamTop / 4, top,
-      s.x + scene.beamBottom / 4, top + scene.beamLength, s.x - scene.beamBottom / 4, top + scene.beamLength,
-    ]);
-    g.fill({ color: 0xfff8d8, alpha: 0.12 });
+    const g = new PIXI.Sprite(cone);
+    g.anchor.set(0.5, 0);
+    g.x = s.x;
+    g.y = s.y + 30;
+    g.blendMode = 'add';
     root.addChild(g);
     beams.push(g);
     const ufo = new PIXI.Sprite(textureFromUrl(`${ART}ufo_1.webp`));
@@ -199,14 +296,18 @@ function buildBeamMeDown(engine) {
     root.addChild(ufo);
   }
   // Start cloud with its sign, and the landing cloud floor.
-  root.addChild(deco(PIXI, 'cloud_fluffy_1', (scene.startCloud.x0 + scene.startCloud.x1) / 2, scene.startCloud.y + 70, { w: 520, h: 210, tint: 0xe8eef4 }));
+  // The start: a cloud ledge running right from the left edge (street snap rows 450-560); the
+  // snaps' cloud hoop at its left end waits for pack 2's ring to be taken in.
+  // The snap's ledge is about 110 deep and flat on top: the pieces squashed to 0.7.
+  root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x0 + 60, scene.startCloud.y + 135, 560, { squash: 0.7 }));
+  root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x1 - 40, scene.startCloud.y + 120, 430, { flip: true, squash: 0.7 }));
   const sign = new PIXI.Text({ text: scene.sign.replace(' here!', '\nhere!'), style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 22, fontWeight: '700', fill: 0xffffff, align: 'center' } });
   sign.anchor.set(0.5, 1);
   sign.x = (scene.startCloud.x0 + scene.startCloud.x1) / 2;
   sign.y = scene.startCloud.y - 110;
   sign.alpha = 0.9;
   root.addChild(sign);
-  cloudBank(PIXI, root, scene, scene.floorY, 0xe8eef4);
+  beamLanding(PIXI, root, scene);
   const bravo = new PIXI.Text({ text: scene.completion.replace('! ', '!\n').replace('You made', 'You\nmade'), style: {
     fontFamily: 'Trebuchet MS, sans-serif', fontSize: 46, fontWeight: '800', fill: 0xe8d23a, align: 'center', lineHeight: 50,
   } });
@@ -221,14 +322,35 @@ function buildBeamMeDown(engine) {
 function exitDoor(engine, scene) {
   const { PIXI } = engine;
   const door = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  g.roundRect(-34, -108, 68, 108, 26).fill(0x2b2230);
-  g.roundRect(-26, -96, 52, 20, 4).fill(0xe2c34a);
-  door.addChild(g);
-  const label = new PIXI.Text({ text: 'EXIT', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 15, fontWeight: '800', fill: 0x2b2230 } });
-  label.anchor.set(0.5, 0.5);
-  label.y = -86;
-  door.addChild(label);
+  if (scene.id === 'beam_me_down') {
+    // G962: the street snap's EXIT is door_asset_heights_interior darkened, a pale plank across it.
+    const wood = new PIXI.Sprite(textureFromUrl(BEAM_ART.door));
+    wood.anchor.set(0.5, 1);
+    wood.scale.set(BEAM_ART.doorHeight / 188);
+    wood.tint = BEAM_ART.doorTint;
+    door.addChild(wood);
+    const plank = new PIXI.Container();
+    plank.y = -BEAM_ART.doorHeight * 0.62;
+    plank.rotation = -0.1;
+    const board = new PIXI.Sprite(textureFromUrl(`${DECO}${BEAM_ART.plank}.png`));
+    board.anchor.set(0.5, 0.5);
+    board.scale.set(62 / 481);
+    plank.addChild(board);
+    // The snaps' plank is paler than this CC0 one, so the word is cream over a dark edge to read.
+    const word = new PIXI.Text({ text: 'EXIT', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 14, fontWeight: '800', fill: 0xf6ead0, stroke: { color: 0x2b2216, width: 3 } } });
+    word.anchor.set(0.5, 0.5);
+    plank.addChild(word);
+    door.addChild(plank);
+  } else {
+    const g = new PIXI.Graphics();
+    g.roundRect(-34, -108, 68, 108, 26).fill(0x2b2230);
+    g.roundRect(-26, -96, 52, 20, 4).fill(0xe2c34a);
+    door.addChild(g);
+    const label = new PIXI.Text({ text: 'EXIT', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 15, fontWeight: '800', fill: 0x2b2230 } });
+    label.anchor.set(0.5, 0.5);
+    label.y = -86;
+    door.addChild(label);
+  }
   door.x = scene.exit.x;
   door.y = scene.exit.y;
   door.zIndex = 20;
@@ -609,7 +731,7 @@ function stepBeam(engine) {
   const { beams, bravo } = active.views;
   const lit = beamAt(active.scene, p.x, p.y);
   beams.forEach((g, i) => {
-    g.alpha = active.scene.saucers[i] === lit ? 1.25 : 0.9 + Math.sin(Date.now() / 400 + i) * 0.1;
+    g.alpha = active.scene.saucers[i] === lit ? 1 : 0.78 + Math.sin(Date.now() / 400 + i) * 0.08;
   });
   if (!active.landed && p.onGround && p.y >= active.scene.floorY - 4) {
     active.landed = true;

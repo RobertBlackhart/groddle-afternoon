@@ -234,7 +234,8 @@ export const BEAM_ME_DOWN = Object.freeze({
   avatarScale: 0.6,
   spawn: Object.freeze({ x: 330, y: 420 }),
   startCloud: Object.freeze({ x0: 170, x1: 470, y: 420 }),
-  exit: Object.freeze({ x: 1000, y: 5100 }),
+  // G962: the full-street snaps stand the EXIT at the far right against the right cloud bank (x 868 of 900).
+  exit: Object.freeze({ x: 1300, y: 5100 }),
   beamLength: 540,
   beamTop: 150,
   beamBottom: 300,
