@@ -448,7 +448,8 @@ describe('UI wiring', () => {
     assert.ok(game.includes('pushActivity'));
     assert.ok(game.includes('createSpriteOutline'));
     // executeVerb must push the activity feed once (prefer activityLine), not once in msgs.forEach and again on ok
-    const execStart = game.indexOf('function executeVerb(');
+    // G963: executeVerb wraps the finish for playSound; the verb's body is runVerbFinish.
+    const execStart = game.indexOf('function runVerbFinish(') >= 0 ? game.indexOf('function runVerbFinish(') : game.indexOf('function executeVerb(');
     assert.ok(execStart >= 0);
     let depth = 0;
     let execEnd = -1;

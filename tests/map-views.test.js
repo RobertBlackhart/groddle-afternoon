@@ -226,7 +226,8 @@ describe('world map (world_map.fla)', () => {
         t.skip('no ImageMagick');
         return;
       }
-      const grey = (src, input) => execFileSync('magick', [src, '-resize', '75x46!', '-colorspace', 'Gray', '-depth', '8', 'gray:-'], { input });
+      // A stuck ImageMagick once held the whole suite for an hour: give it a time limit and close its input.
+      const grey = (src, input) => execFileSync('magick', [src, '-resize', '75x46!', '-colorspace', 'Gray', '-depth', '8', 'gray:-'], { input: input ?? '', timeout: 60_000, maxBuffer: 16 * 1024 * 1024 });
       const ncc = (a, b) => {
         const n = a.length;
         let ma = 0;
