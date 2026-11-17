@@ -23,10 +23,10 @@ import {
   resolveGround,
   streetWidth,
 } from '../public/js/street-model.js?v=9f16f4ab';
-import { buildPlatformCandidates, planStreetPlacements } from '../public/js/street-ecology.js?v=9ee1ed3f';
+import { buildPlatformCandidates, planStreetPlacements } from '../public/js/street-ecology.js?v=79b7a6f5';
 import { landingY, nearestSurfaceY, walkSurfaceY } from '../public/js/walk-surface.js?v=0d502ab1';
-import { parseLocationEvents, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=05663361';
-import { convertLocationXml } from '../public/js/location-xml.js?v=a4db2433';
+import { parseLocationEvents, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=7fd40f71';
+import { convertLocationXml } from '../public/js/location-xml.js?v=9bae75b2';
 
 const root = join(import.meta.dirname, '..');
 const streetsDir = join(root, 'public/assets/streets');

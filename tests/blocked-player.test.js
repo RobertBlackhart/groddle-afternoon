@@ -19,8 +19,8 @@ import { PROFILE_PAGE_VERB } from '../public/js/profiles.js?v=054ca723';
 import { IM_VERB_ID } from '../public/js/player-im.js?v=da51888c';
 import { VISIT_VERB } from '../public/js/neighbours-mp.js?v=ea03e02b';
 import { PARTY_TEXT, inviteCandidates } from '../public/js/party.js?v=7615aab8';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=94d97746';
-import { createNotifier } from '../public/js/notify.js?v=91598c67';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=2a28cf63';
+import { createNotifier } from '../public/js/notify.js?v=2dde9014';
 import { partyFeature } from '../public/js/features/party-feature.js?v=498a021a';
 import { SERVER_DIR, skipWithoutServer } from '../tools/repos.mjs';
 

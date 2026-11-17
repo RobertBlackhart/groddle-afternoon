@@ -43,7 +43,7 @@ import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f'
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { canUseTool, useToolCondition } from '../tools.js?v=8516a0c3';
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { runStreetTransition } from '../screen-fx.js?v=45ffea07';
+import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { STREET_VISITS_SLOT, loadingCardDetails, recordStreetEntry, streetLoadingVisit } from '../exploration.js?v=5f533ebf';
 import {
   BOARD_ART,
@@ -102,7 +102,7 @@ import {
   streetNoteSeeds,
   takePinnedNote,
   writePaperNote,
-} from '../street-furniture.js?v=06481ee6';
+} from '../street-furniture.js?v=868360eb';
 import {
   CHORES,
   NEIGHBOURS,
@@ -124,10 +124,10 @@ import {
 } from '../neighbours.js?v=781ad57f';
 import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=ee03b288';
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=eca7de52';
-import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=17a75d4d';
+import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=be55db1b';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { butlerApi } from './butler-feature.js?v=92d7fc02';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=988e072d';
+import { butlerApi } from './butler-feature.js?v=7c067d31';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=8d7aa029';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 

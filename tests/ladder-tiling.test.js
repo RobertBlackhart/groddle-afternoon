@@ -13,7 +13,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LADDER_TILE_Z, ladderTilePieces } from '../public/js/ladder-tiling.js?v=4f9e07fa';
-import { extractLocationNavigation } from '../public/js/location-navigation.js?v=90fca5cc';
+import { extractLocationNavigation } from '../public/js/location-navigation.js?v=9555ce80';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');

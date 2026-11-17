@@ -22,7 +22,7 @@ import {
   dueEventTimers,
   eventPlatformIds,
   runLocationEvent,
-} from '../public/js/location-events.js?v=05663361';
+} from '../public/js/location-events.js?v=7fd40f71';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = JSON.parse(readFileSync(join(root, 'public/assets/content/puzzle-triggers.json'), 'utf8'));
@@ -198,7 +198,7 @@ describe('location-events trigger API', () => {
   });
 
   test('without a strict hook, a platform only lost boxes switch back stays walkable', async () => {
-    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=802ff117');
+    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=0843b12e');
     const street = make();
     const engine = fakeEngine(street);
     locationEventsFeature.onStreetEnter(street, engine);
@@ -208,7 +208,7 @@ describe('location-events trigger API', () => {
   });
 
   test('a strict hook runs the scripts as written and restart re-applies them', async () => {
-    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=802ff117');
+    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=0843b12e');
     let strict = false;
     locationEventsApi.register({ strict: (s) => strict && s.tsid === 'GTESTPUZZLE0001' });
     const street = make();
@@ -247,7 +247,7 @@ describe('gut tubes', () => {
   });
 
   test('a phone flips with its Jump button, and the toasts name it (Greyving Grays chat "stuck", 2026-11-13)', async () => {
-    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=f7fe7857');
+    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=ea3c879e');
     const src = readFileSync(join(root, 'public/js/features/puzzles-feature.js'), 'utf8');
     // The phone has no Space key: its Jump button sends TOUCH_JUMP_EVENT (game.js installTouchControls).
     assert.match(src, /window\.addEventListener\(TOUCH_JUMP_EVENT, \(\) => flipGravity\(engine\)\);/);

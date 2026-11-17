@@ -2,6 +2,7 @@ import { isItemFloor, platformYAt, worldToScreen } from './street-model.js?v=9f1
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 import { MAILBOX_SPOTS } from './node-spots-data.js?v=97d4281c';
 import { STONE_SPOTS } from './stone-spots-data.js?v=3373caf6';
+import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
 /**
  * Street furniture rules: street Mailboxes, placed Notes, Notice Boards and
@@ -444,7 +445,7 @@ export function normalizeNote(seed = {}) {
 /** readNote: initial instance text wins until somebody edits the note. */
 export function noteContent(note) {
   const n = normalizeNote(note);
-  const body = n.initialText ? n.initialText.replace(/\\n/g, '\n').replace(/&quot;/g, '"') : n.body;
+  const body = n.initialText ? decodeEntities(n.initialText.replace(/\\n/g, '\n')) : n.body;
   const title = n.initialTitle || n.title;
   return { title: title || NOTE_TEXT.defaultTitle, body };
 }

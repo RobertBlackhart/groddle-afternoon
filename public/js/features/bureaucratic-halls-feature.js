@@ -68,15 +68,15 @@
  *   confirm, done, left), hallStep, hallHelper, hallBuff, hallRefusals, hallClerks.
  */
 
-import { LEGALIZE_CLERKS } from '../legalize-it.js?v=fadb0602';
+import { LEGALIZE_CLERKS } from '../legalize-it.js?v=d4f5ec5c';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
-import { acceptOffer, ensureQuestOfferState, markOffered, questMoveNote, questStatus } from '../quest-offers.js?v=8a52da9f';
+import { acceptOffer, ensureQuestOfferState, markOffered, questMoveNote, questStatus } from '../quest-offers.js?v=394cbaf0';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { parseQuestConversation } from '../quests.js?v=40c71a37';
+import { parseQuestConversation } from '../quests.js?v=185186c2';
 import { CUP_CLASS, CUP_OF_WATER, WATER_COOLER, WATER_COOLER_CLASS, drinkCup, getWater, getWaterState } from '../water-cooler.js?v=1cf1b040';
 import { BUREAUCRAT_CLASS, HALL, HALL_LAYOUT, HALL_TEXT, PLEASE_WAIT_BUFF, TALK_VERB, createHallFlow } from '../bureaucratic-hall.js?v=a8eaa334';
-import { closeQuestRoomConverse, questRoomConverse } from './quest-instances-feature.js?v=4819d085';
+import { closeQuestRoomConverse, questRoomConverse } from './quest-instances-feature.js?v=d009e22d';
 import { HALL_MP_TEXT, HALL_POSE_MS, clerkAt, clerkRow, poseChanged } from '../halls-mp.js?v=044b5c5a';
 
 export const HALLS_FEATURE_ID = 'bureaucratic-halls';

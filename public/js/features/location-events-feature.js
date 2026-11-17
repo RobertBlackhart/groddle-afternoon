@@ -50,7 +50,7 @@ import {
   recoverableToggles,
   runLocationEvent,
   streetOwner,
-} from '../location-events.js?v=05663361';
+} from '../location-events.js?v=7fd40f71';
 import { JUMP_SPEED } from '../avatar-step.js?v=a6f5a99b';
 
 export const LOCATION_EVENTS_FEATURE_ID = 'location-events';

@@ -25,7 +25,7 @@ import {
   isRemakeNote,
   pinNote,
   refreshBoardPins,
-} from '../public/js/street-furniture.js?v=06481ee6';
+} from '../public/js/street-furniture.js?v=868360eb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(root, 'assets/streets', `${tsid}.json`), 'utf8'));

@@ -27,18 +27,18 @@ import {
   sharedTreeReady,
   sharedTreeSkill,
   TRANTSFORM_VERB,
-} from '../public/js/shared-patches.js?v=01a3e907';
-import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=e7164fee';
-import { patchesFeature } from '../public/js/features/patches-feature.js?v=fbbc6008';
-import { treeDeathFeature, decorateTreeVerbs } from '../public/js/features/tree-death-feature.js?v=0e75ea9c';
-import { potionsFeature } from '../public/js/features/potions-feature.js?v=f5a2b62c';
-import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=49f6bdca';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=5383aced';
-import { rookKeyFor } from '../public/js/rook-attack.js?v=c12e825f';
-import { rookedFromServer, syncKeys } from '../public/js/rook-mp.js?v=0b9056b1';
-import { runVerb } from '../public/content.js?v=04f4b02e';
+} from '../public/js/shared-patches.js?v=f8b4ef37';
+import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=7bfe229e';
+import { patchesFeature } from '../public/js/features/patches-feature.js?v=89642277';
+import { treeDeathFeature, decorateTreeVerbs } from '../public/js/features/tree-death-feature.js?v=128c267a';
+import { potionsFeature } from '../public/js/features/potions-feature.js?v=14652d24';
+import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=19af1744';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6cee306e';
+import { rookKeyFor } from '../public/js/rook-attack.js?v=5e62a79f';
+import { rookedFromServer, syncKeys } from '../public/js/rook-mp.js?v=eace1128';
+import { runVerb } from '../public/content.js?v=78294ea6';
 import { isPoisoned, POISON_DURATION_MS, TREE_ANTIDOTE, TREE_POISON } from '../public/js/tree-poison.js?v=3bc48e3e';
-import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=9ee1ed3f';
+import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=79b7a6f5';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const OLD_MAIN = 'GM4103L52ID23';

@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { DROP_TABLES, DROP_ITEMS } from '../public/js/drop-tables-data.js?v=c51a6400';
 import { rollDropTable } from '../public/js/drop-tables.js?v=8bcf111f';
 import { CRACKER } from '../public/js/seasons.js?v=887d886e';
-import { PARTY_PACKS, PARTY_SPACES, isPartyPack, partyPackDurationSeconds } from '../public/js/party-spaces.js?v=c667e9e2';
+import { PARTY_PACKS, PARTY_SPACES, isPartyPack, partyPackDurationSeconds } from '../public/js/party-spaces.js?v=8e869964';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');

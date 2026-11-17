@@ -5,6 +5,7 @@
  * XML dialect: game_object / object / int / str / bool / null / objref
  * (same layout as tinyspeck/glitch-locations dumps).
  */
+import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
 /** @typedef {import('./street-model.js').StreetData} StreetData */
 
@@ -13,12 +14,8 @@
  * @param {string} s
  */
 export function decodeXmlEntities(s) {
-  return String(s ?? '')
-    .replace(/&apos;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
+  // G955: the one decoder (js/html-text.js); numeric ones too ("Moonga Coral &#x9;").
+  return decodeEntities(s);
 }
 
 /**

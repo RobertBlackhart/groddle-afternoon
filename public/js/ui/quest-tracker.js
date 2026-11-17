@@ -17,11 +17,11 @@
  * (js/ui/quest-pin-button.js), drawn open; `button` is that button's controller.
  */
 
-import { escapeText } from './verb-menu.js?v=cd68932d';
-import { questTextPlain, questTextSegments } from '../quest-text.js?v=7f5d761c';
-import { createQuestPinMenu } from './quest-pin-menu.js?v=15c53e87';
-import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=c76b5244';
-import { createQuestPinButton } from './quest-pin-button.js?v=5578cc7c';
+import { escapeText } from './verb-menu.js?v=3a795424';
+import { questTextPlain, questTextSegments } from '../quest-text.js?v=4d0f8703';
+import { createQuestPinMenu } from './quest-pin-menu.js?v=ddca41f8';
+import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=dfdf98f7';
+import { createQuestPinButton } from './quest-pin-button.js?v=95cabfe3';
 
 /**
  * @param {{ el: HTMLElement|null, onOpen?: (classTsid: string) => void, onCollapse?: (on: boolean) => void,

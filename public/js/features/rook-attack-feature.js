@@ -104,7 +104,7 @@ import {
   strikeBeamFor,
   strikeDamageFor,
   useBalmPoint,
-} from '../rook-attack.js?v=c12e825f';
+} from '../rook-attack.js?v=5e62a79f';
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
@@ -123,7 +123,7 @@ import {
   strikeDamage as mpStrikeDamage,
   syncKeys,
   syncObjs,
-} from '../rook-mp.js?v=0b9056b1';
+} from '../rook-mp.js?v=eace1128';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
 import { migrateClassValue } from '../tools.js?v=8516a0c3';

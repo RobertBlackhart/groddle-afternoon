@@ -22,7 +22,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyQuestProgress, createQuestState } from '../public/js/quests.js?v=40c71a37';
+import { applyQuestProgress, createQuestState } from '../public/js/quests.js?v=185186c2';
 import {
   BOOT_STARTER_LEFTOVERS,
   acceptOffer,
@@ -30,8 +30,8 @@ import {
   ensureQuestOfferState,
   routeQuestEvent,
   routesCounter,
-} from '../public/js/quest-offers.js?v=8a52da9f';
-import { racesFeature } from '../public/js/features/races-feature.js?v=fa9293bd';
+} from '../public/js/quest-offers.js?v=394cbaf0';
+import { racesFeature } from '../public/js/features/races-feature.js?v=dfe9e2fd';
 import { raceSceneTsid } from '../public/js/races.js?v=ab22a079';
 import { HOG_HAUL_STREET_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { CROWNS_STREET } from '../public/js/game-of-crowns.js?v=e32f35f5';

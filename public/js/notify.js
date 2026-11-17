@@ -26,6 +26,7 @@
  */
 
 import { holdMs } from './read-time.js?v=3151fb1a';
+import { htmlToText } from './html-text.js?v=6bbf4d1f';
 
 export const NOTICE_LIMIT = 2;
 /** GrowlQueue.as 25-30: a growl held 4 s. Ticket 69: a longer line holds its reading time (js/read-time.js). */
@@ -61,14 +62,7 @@ const STAT_DELTA = new RegExp(`[+\\-−]\\s?\\d[\\d,]*(?:\\.\\d+)?\\s*${UNIT}\\b
 
 /** Text with markup removed and spaces collapsed. */
 export function plainText(value) {
-  return String(value ?? '')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return htmlToText(value, { split: ' ', br: ' ', collapse: true });
 }
 
 /**

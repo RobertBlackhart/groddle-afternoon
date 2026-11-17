@@ -26,7 +26,7 @@ import { installPixiFixes } from '../js/pixi-fixes.js?v=173fb649';
 import { installHiresDecos } from '../js/deco-hires.js?v=6d3c1226';
 import { installNewArt, withNewArt } from '../js/builder/new-art.js?v=29f0b13e';
 import { spotGroup } from '../js/builder/editor-zone.js?v=c15fa086';
-import { drawGeometryOverlay, drawReachOverlay, drawArrivals, OVERLAY_COLOURS } from '../js/builder/overlays.js?v=eed49221';
+import { drawGeometryOverlay, drawReachOverlay, drawArrivals, OVERLAY_COLOURS } from '../js/builder/overlays.js?v=2f4add8f';
 import { createStreetEffects, normaliseEmitter, emitterAnchor, EFFECT_WORDS } from '../js/street-effects.js?v=8a3067ec';
 
 export const MAX_SIDE = 4096;

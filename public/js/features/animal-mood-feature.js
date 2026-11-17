@@ -111,14 +111,14 @@ import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overla
 import { isInHell } from '../hell.js?v=df2b4357';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
-import { animalStatusLabel } from '../animals.js?v=1773b3d9';
+import { animalStatusLabel } from '../animals.js?v=92a3a070';
 import { LOCAL_STATES } from '../shared-quoins.js?v=89d7b201';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { quoteAnimalKinship } from '../animal-kinship.js?v=15e88ddc';
-import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0b948684';
-import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=d5b3019b';
-import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=a4c40af4';
-import { ANIMAL_BODY, ANIMAL_PATROL, TREE_FOOTPRINT } from '../street-ecology.js?v=9ee1ed3f';
+import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0777b59b';
+import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=1b82fbdd';
+import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=c3ab585e';
+import { ANIMAL_BODY, ANIMAL_PATROL, TREE_FOOTPRINT } from '../street-ecology.js?v=79b7a6f5';
 import {
   CHECK_ON_REMOVE,
   CROWD_CLASSES,

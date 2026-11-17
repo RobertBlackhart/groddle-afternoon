@@ -15,10 +15,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=40c71a37';
-import { pendingQuestOffers } from '../public/js/quest-offers.js?v=8a52da9f';
+import { createQuestState } from '../public/js/quests.js?v=185186c2';
+import { pendingQuestOffers } from '../public/js/quest-offers.js?v=394cbaf0';
 import { MP_RACE_QUESTS, MULTIPLAYER_QUESTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=9a5069ea';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=34aebf1b';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 import { HELL_LOCATION } from '../public/js/hell.js?v=df2b4357';
 import { HOG_MP_COURSE } from '../public/js/hog-haul-mp.js?v=67f873fe';
@@ -170,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=fa9293bd');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=dfe9e2fd');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {
@@ -262,7 +262,7 @@ describe('a Game of Crowns reload asks the server, and the dead stay out (crowns
   });
 
   it('solo still gives a ticket back on a street change', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=3c609d12');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=5ab03625');
     const engine = { mode: 'solo', inv: {}, query: () => null, toast() {}, updateHud() {}, param: () => null, instanceHold: null, setData() {} };
     crownsFeature.restore({ pendingTicket: CROWNS_TICKET }, engine);
     crownsFeature.onStreetEnter({ tsid: 'GA5' }, engine);

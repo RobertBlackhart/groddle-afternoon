@@ -10,10 +10,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
-import { populationForStreet } from '../public/js/street-ecology.js?v=9ee1ed3f';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { populationForStreet } from '../public/js/street-ecology.js?v=79b7a6f5';
 import { checkDoorEntry, doorAt, doorDestination } from '../public/js/doors.js?v=727d0e0b';
-import { eventCounters, SEAM_STREETS } from '../public/js/quest-offers.js?v=8a52da9f';
+import { eventCounters, SEAM_STREETS } from '../public/js/quest-offers.js?v=394cbaf0';
 import {
   ABBASID_JAIL_DOOR,
   ABBASID_JAIL_TSID,
@@ -53,7 +53,7 @@ import {
   rebuiltRoomEcology,
 } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=ab4d4e00';
-import { FEATURES } from '../public/js/features/index.js?v=44028acd';
+import { FEATURES } from '../public/js/features/index.js?v=2074b22e';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

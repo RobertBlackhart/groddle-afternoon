@@ -6887,7 +6887,7 @@
   "title": "The High Jumper",
   "desc": "Get to the top of tree in your Magic Rock's memory-place, <b>Activating</b> whatever you need along the way.",
   "offer": "You know that poem in the beginning of <i>The Great Gatsby</i>?<split butt_txt=\"Eh? Maybe\" />I remember really liking it, but I can't remember how it goes. Help me?<split butt_txt=\"I'll try\" />OK then. Let me transport you to my special memory place and we'll give it a go ...",
-  "completion": "Ah, yes - I remember! You did it!<split butt_txt=\"Oh yeah?\" />Yes, the poem goes like this ...<split butt_txt=\"...\" />Then wear the gold hat, if that will move her;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if you can bounce high, bounce for her too,<br> Till she cry \"Lover, gold-hatted, high-bouncing lover,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I must have you!\"<split butt_txt=\"Oh yeah! I remember that too!\" />I feel like I should give you a <b>Gold Hat</b> now ... but the Giants haven't made a mind-picture of it yet.<split butt_txt=\"Awwww ...\" />Oh well. Whatever. Great poem, great poem. Here's a lil' something more.",
+  "completion": "Ah, yes - I remember! You did it!<split butt_txt=\"Oh yeah?\" />Yes, the poem goes like this ...<split butt_txt=\"...\" />Then wear the gold hat, if that will move her;<br>     if you can bounce high, bounce for her too,<br> Till she cry \"Lover, gold-hatted, high-bouncing lover,<br>     I must have you!\"<split butt_txt=\"Oh yeah! I remember that too!\" />I feel like I should give you a <b>Gold Hat</b> now ... but the Giants haven't made a mind-picture of it yet.<split butt_txt=\"Awwww ...\" />Oh well. Whatever. Great poem, great poem. Here's a lil' something more.",
   "requirements": [
    {
     "id": "r198",
@@ -32317,7 +32317,7 @@
   "classTsid": "smuggle_the_smuggler_part2",
   "title": "Smuggle the Smuggler II",
   "desc": "Figure out a way to release the Smuggler from prison.",
-  "offer": "That contraband was planted on me by those agents of the Rook, the Deimaginators. All in a ploy to destroy imagination in the name of &#34;freedom&#34;. Puh, I say!<split butt_txt=\"Well then what say we freedom ourselves out of here? That sounded better in my head.\" />Good luck finding a way out. I've been looking for a way since I got here.<split butt_txt=\"You can count on me.\" />",
+  "offer": "That contraband was planted on me by those agents of the Rook, the Deimaginators. All in a ploy to destroy imagination in the name of \"freedom\". Puh, I say!<split butt_txt=\"Well then what say we freedom ourselves out of here? That sounded better in my head.\" />Good luck finding a way out. I've been looking for a way since I got here.<split butt_txt=\"You can count on me.\" />",
   "completion": "That's a mighty fine hole you dug yourself there.<split butt_txt=\"I thought so.\" />",
   "requirements": [
    {

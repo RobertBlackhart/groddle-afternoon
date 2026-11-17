@@ -62,6 +62,7 @@ export const SOLO_DIVISOR = 50;
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 import { loseEnergy } from './metabolics.js?v=1383e6fd';
 import { soloSkill } from './street-jobs-solo.js?v=24c5b7be';
+import { htmlToText } from './html-text.js?v=6bbf4d1f';
 /** items/include/jobs.js startJobWork unit_duration. */
 export const WORK_UNIT_MS = 1500;
 /** locations/inc_jobs.js jobs_get_available: 30 * 60 seconds. */
@@ -401,13 +402,7 @@ export const phaseOrdinal = (index) => ORDINALS[index] || `${index + 1}th`;
 
 /** Strip the source's HTML/split markup for plain UI text. */
 export function plainText(html) {
-  return String(html || '')
-    .replace(/<split[^>]*>/g, '\n\n')
-    .replace(/<br\s*\/?>/g, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return htmlToText(html);
 }
 
 /** Total base cost of a phase at solo amounts (quest.js getTotalBasecost). */

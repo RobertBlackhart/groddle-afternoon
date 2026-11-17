@@ -8,8 +8,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JAR_ARRIVALS, JAR_BOXES, JAR_DECOS, JAR_FLIES, countArrival, inJarBox, isKoulatoCluster, litJars, normalizeJarSave } from '../public/js/koulato-jars.js?v=5838b30a';
-import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=05663361';
-import { koulatoJarsFeature } from '../public/js/features/koulato-jars-feature.js?v=457b05f8';
+import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=7fd40f71';
+import { koulatoJarsFeature } from '../public/js/features/koulato-jars-feature.js?v=ece2608a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = () => JSON.parse(readFileSync(join(root, 'public/assets/streets/GIF10RP1DBU11NU.json'), 'utf8'));

@@ -52,7 +52,7 @@
 import { pluralize } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=f49c8998';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
-import { ecologyForStreet } from '../street-ecology.js?v=9ee1ed3f';
+import { ecologyForStreet } from '../street-ecology.js?v=79b7a6f5';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=a1ce9368';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
@@ -112,10 +112,10 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=950e9c22';
+} from '../street-jobs.js?v=edadd67d';
 import { PAPERS_BADGE } from '../subway.js?v=735bfbeb';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=2dddd1c7';
+import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=0c97384c';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
@@ -139,7 +139,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=74889857';
+} from '../street-jobs-mp.js?v=1e19532c';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -151,8 +151,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=f23b16a2';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=480d92cf';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=601cacb0';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=667c0f96';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=f038049f';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';

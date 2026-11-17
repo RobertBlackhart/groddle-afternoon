@@ -2,14 +2,14 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=04f4b02e';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=78294ea6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=44028acd';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2074b22e';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=34133c93';
+import { createPromptStack } from './js/prompt-stack.js?v=5718128a';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=44a586ca';
 import {
@@ -33,12 +33,12 @@ import {
   cleanQuestMarkup,
   questDoneAt,
   paidRewardBits,
-} from './js/quests.js?v=40c71a37';
+} from './js/quests.js?v=185186c2';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
-import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=7f5d761c';
+import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=b8bdc515';
-import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=8a52da9f';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=583a9254';
+import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=394cbaf0';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -134,7 +134,7 @@ import {
   qualificationVerb,
   requestLegalizeQualification,
   travelToGregarious,
-} from './js/legalize-it.js?v=fadb0602';
+} from './js/legalize-it.js?v=d4f5ec5c';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=efe3ca58';
@@ -412,7 +412,7 @@ import {
   consumeAchievementCounters,
   resetAchievementCounter,
   purchaseAchievementUpdates,
-} from './js/achievements.js?v=1bc93d7e';
+} from './js/achievements.js?v=c1f18256';
 import {
   applyStreetVisit,
   topUpCompletists,
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=1773b3d9';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=1773b3d9';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=92a3a070';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=92a3a070';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=7152843e';
+} from './js/player-save.js?v=3465cbc7';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -688,7 +688,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e713da5b';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=b89ee0f2';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -707,7 +707,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=2ca10239';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=c1513885';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -809,7 +809,7 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=45ffea07';
+} from './js/screen-fx.js?v=f227c6d1';
 import { momentMoreText } from './js/ui/moment-card.js?v=3f08b37c';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=4cde830b';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
@@ -817,13 +817,13 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e0
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=711f19b6';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=92ae727c';
 import './js/classic/classic-zoom.js?v=d09cb283';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=59b35a88';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=7f5009dd';
 import {
   planTravel,
   listMapDestinations,
@@ -893,7 +893,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=1773b3d9';
+} from './js/animals.js?v=92a3a070';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -988,7 +988,7 @@ import {
   creditMetabolicReward,
   streetQuoinPoints,
 } from './js/quoins.js?v=a4208821';
-import { isPartyStreet } from './js/party-spaces.js?v=c667e9e2'; // G869: a Party Space's quoins are the party classes
+import { isPartyStreet } from './js/party-spaces.js?v=8e869964'; // G869: a Party Space's quoins are the party classes
 import {
   buildHubMapView,
   mapClickTravel,
@@ -1031,8 +1031,8 @@ import {
   treePlacementRequest,
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=9ee1ed3f';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=39ab3fa7';
+} from './js/street-ecology.js?v=79b7a6f5';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=304f4695';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b12c43aa';
@@ -1060,25 +1060,25 @@ import { installHiresDecos } from './js/deco-hires.js?v=6d3c1226';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=b8c31e13';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=76d66324';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
 import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=d2bcebbc';
 import { denseSprite } from './js/sprite-dense.js?v=2a0ce07a';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
-import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=91598c67';
+import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=2dde9014';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
-import { mountNotifyView } from './js/notify-view.js?v=82d06f33';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=94d97746';
+import { mountNotifyView } from './js/notify-view.js?v=44acf575';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=2a28cf63';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=9645fa07';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=d92ac7e5';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=c76b5244';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=db8d7891';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=32471bc9';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dfdf98f7';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=cd68932d';
+import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=3a795424';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=c8210235';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
@@ -1104,7 +1104,7 @@ import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588ea
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=0371ea0c';
-import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=3ceb8a8c';
+import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=97df8351';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { outlinePoints } from './js/outline-points.js?v=c9edb089';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=5c729187';
@@ -1112,7 +1112,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=a23b349b';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=d69d66b4';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;

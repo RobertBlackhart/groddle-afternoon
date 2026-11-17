@@ -25,6 +25,7 @@
  * 4.4), so source settings become multipliers against the normal preset
  * rather than raw px/s values.
  */
+import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
 /** config_base.js physics_configs.normal. */
 export const NORMAL_PHYSICS = Object.freeze({
@@ -89,15 +90,6 @@ export function streetOwner(tsid) {
 /* XML helpers (the archive's flat <object id> / scalar format)        */
 /* ------------------------------------------------------------------ */
 
-function decodeEntities(text) {
-  return String(text)
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&amp;/g, '&');
-}
 
 /** Body of the first `<object id="id">` at or after `from`, matching nesting. */
 export function objectBodyById(xml, id, from = 0) {

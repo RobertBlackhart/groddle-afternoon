@@ -38,14 +38,14 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=9ee1ed3f';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=79b7a6f5';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=819002b7';
 import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=f1a0a0d8';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { TOOL_CONDITION_CATALOG } from '../public/js/tools.js?v=8516a0c3';
 import { placementRequests } from './build-realtime-objects.mjs';
-import { streetIsRookable } from '../public/js/rook-attack.js?v=c12e825f';
+import { streetIsRookable } from '../public/js/rook-attack.js?v=5e62a79f';
 import { rebuiltRoomEcology } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { winterStreetEcology } from '../public/js/winter-walk-streets.js?v=8a3f74b9';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';

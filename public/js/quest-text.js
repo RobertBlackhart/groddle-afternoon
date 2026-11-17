@@ -11,33 +11,10 @@
  * every other tag is dropped with its text kept, and no source string ever
  * reaches innerHTML.
  */
+import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
-const NAMED_ENTITIES = {
-  amp: '&',
-  lt: '<',
-  gt: '>',
-  quot: '"',
-  apos: "'",
-  nbsp: ' ',
-  hellip: '…',
-  mdash: '—',
-  ndash: '–',
-  lsquo: '‘',
-  rsquo: '’',
-  ldquo: '“',
-  rdquo: '”',
-};
-
-function decodeEntities(text) {
-  return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (whole, body) => {
-    if (body[0] === '#') {
-      const code = body[1] === 'x' || body[1] === 'X' ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
-      return Number.isFinite(code) && code > 0 && code < 0x110000 ? String.fromCodePoint(code) : whole;
-    }
-    const named = NAMED_ENTITIES[body.toLowerCase()];
-    return named ?? whole;
-  });
-}
+// G955: the one entity decoder (js/html-text.js); a non-breaking space reads as a space here.
+const decodeText = (text) => decodeEntities(text).replace(/\u00a0/g, ' ');
 
 /** Only these change how text looks; everything else is dropped, its text kept. */
 const BOLD = new Set(['b', 'strong']);
@@ -70,7 +47,7 @@ export function questTextSegments(raw = '', { playerLabel = 'friend' } = {}) {
   const links = [];
   const pushText = (chunk) => {
     if (!chunk) return;
-    const lines = decodeEntities(chunk).split('\n');
+    const lines = decodeText(chunk).split('\n');
     lines.forEach((line, n) => {
       if (n > 0) out.push({ br: true });
       if (!line) return;

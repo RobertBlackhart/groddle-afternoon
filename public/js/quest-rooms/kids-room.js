@@ -29,7 +29,7 @@
  * friend Bear is its teddy and friend Thing the pink tall guy at the tea table.
  */
 
-import { applyRewards } from '../quests.js?v=40c71a37';
+import { applyRewards } from '../quests.js?v=185186c2';
 import { ITEM_CATALOG, isToolItem } from '../inventory.js?v=f49c8998';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { playPoofIn } from '../overlay-art.js?v=98606052';

@@ -15,7 +15,7 @@
  * there (activityLog: false: no panel, no button) and covers the right edge:
  * sideInset() says how much, and the stack centres in the width that is left.
  */
-import { placeBelow, placeBeside, plainText } from './notify.js?v=91598c67';
+import { placeBelow, placeBeside, plainText } from './notify.js?v=2dde9014';
 import { REPORT_WINDOW_SELECTOR } from './window-stack.js?v=a7104f02';
 
 const STACK_ID = 'notify-notices';

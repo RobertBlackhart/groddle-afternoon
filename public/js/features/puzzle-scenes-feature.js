@@ -52,7 +52,7 @@ import {
 import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { partySpaceForStreet } from '../party-spaces.js?v=c667e9e2';
+import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
 const TICKET = 'paradise_ticket_beam_me_down';

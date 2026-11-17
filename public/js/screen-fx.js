@@ -10,6 +10,7 @@
 import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBounce, mountPetRock } from './familiar.js?v=b9597cd3';
 import { formatLoadingTime, ordinal } from './exploration.js?v=5f533ebf';
 import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3f08b37c';
+import { decodeEntities, htmlToText } from './html-text.js?v=6bbf4d1f';
 
 /**
  * Street-load timings (seconds).
@@ -285,18 +286,7 @@ export function nextFrame() {
  * The card shows plain text, so keep the words and drop the markup.
  */
 export function awardText(value) {
-  return String(value ?? '')
-    .replace(/<split[^>]*>/gi, '\n\n')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&quot;/g, '"')
-    .replace(/&#0?39;|&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return htmlToText(value);
 }
 
 export function normalizeAwardPages(payload = {}) {
@@ -711,7 +701,7 @@ function setPolVisit(el, visit) {
   const node = el.querySelector('[data-st-pol-last]');
   const html = polVisitLine(visit || {});
   if (node) node.innerHTML = html;
-  el.dataset.stVisit = html.replace(/<[^>]+>/g, '').replace(/&#8212;/g, '—');
+  el.dataset.stVisit = decodeEntities(html.replace(/<[^>]+>/g, ''));
 }
 
 function setPolDetails(el, pol, features) {
@@ -826,7 +816,7 @@ async function streetTransition(el, opts) {
   const setVisit = (html, showQurazy = false) => {
     if (last) last.innerHTML = html || '';
     if (qurazy) qurazy.hidden = !showQurazy;
-    el.dataset.stVisit = String(html || '').replace(/<[^>]+>/g, '').replace(/&#8212;/g, '—');
+    el.dataset.stVisit = decodeEntities(String(html || '').replace(/<[^>]+>/g, ''));
   };
   setVisit(opts.visitHtml || '');
   if (home) {

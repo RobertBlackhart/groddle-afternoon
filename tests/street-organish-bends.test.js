@@ -108,8 +108,8 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     globalThis.fetch = async () => ({ json: async () => raw });
     // The flip keys listen on the window (bindGravityFlip).
     if (typeof globalThis.window === 'undefined') globalThis.window = new EventTarget();
-    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=f7fe7857'));
-    ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=802ff117'));
+    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=ea3c879e'));
+    ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=0843b12e'));
   });
 
   /** The avatar on the street at (x, y), stepped a frame at a time as game.js steps it. */

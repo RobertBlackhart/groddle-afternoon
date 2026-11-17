@@ -39,27 +39,27 @@
 import { buildStreetView, loadDecoManifest, loadSignpostTextures, DECO_TWINS, flashBlurSize } from '../street-render.js?v=a1ce9368';
 import { worldToScreen, platformsScreen, isStandable, streetWidth, streetHeight, navigableSignposts } from '../street-model.js?v=9f16f4ab';
 import { ensureStreetIndex, STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
-import { loadStreetEcologyCatalog, ecologyForStreet } from '../street-ecology.js?v=9ee1ed3f';
+import { loadStreetEcologyCatalog, ecologyForStreet } from '../street-ecology.js?v=79b7a6f5';
 import { createBuilderApi } from './api.js?v=9560d68f';
 import { DraftSession, statusWords, SAVE_MS, POLL_MS } from './session.js?v=e3e42dc2';
 import { forkStreet, forkOps, newTsid, streetKeyFrom, relayerPosition, isLayerLocal, withDecoIds, floorUnder, libraryAsset, screenToDeco, streetWithEdits, editsOn, linkEdit } from './zone.js?v=11a49e7d';
 import { mountPicker, PICK_MIME } from './editor-picker.js?v=724352b6';
 import { newDraftDialog, newStreetDialog, hubMapDialog, populationSection, zoneSection, plannedSpots, SPOT_GROUPS, spotGroup } from './editor-zone.js?v=c15fa086';
 import { decoFor, NEW_ART_BUNDLE } from './deco-search.js?v=fda9b16b';
-import { populationForStreet, planStreetPlacements, streetReservedSpots } from '../street-ecology.js?v=9ee1ed3f';
+import { populationForStreet, planStreetPlacements, streetReservedSpots } from '../street-ecology.js?v=79b7a6f5';
 import { nextDecoId, findDeco, applyOps } from './ops.js?v=27c7796f';
-import { postOffFloor, offFloorWords, settlePostOps, arrivalOps, followPostOps } from './posts.js?v=af68617c';
+import { postOffFloor, offFloorWords, settlePostOps, arrivalOps, followPostOps } from './posts.js?v=d7f2fa1f';
 import { decoBox, contains, handlePoints, resizeBy, rotationTo, meetsRect, corners } from './handles.js?v=06f9e9a5';
 import { layerRole } from './layer-role.js?v=e585f610';
 import { installNewArt, withNewArt, provenanceSection } from './new-art.js?v=29f0b13e';
 import * as textureUrls from '../textures.js?v=8e0a8c38';
 import { installPixiFixes } from '../pixi-fixes.js?v=173fb649';
 import { installHiresDecos } from '../deco-hires.js?v=6d3c1226';
-import { OVERLAY_COLOURS, drawGeometryOverlay, drawReachOverlay, drawEffectMarkers, strokeSegs } from './overlays.js?v=eed49221';
+import { OVERLAY_COLOURS, drawGeometryOverlay, drawReachOverlay, drawEffectMarkers, strokeSegs } from './overlays.js?v=2f4add8f';
 import { createStreetEffects, createRumbleClock, prefersReducedMotion } from '../street-effects.js?v=8a3067ec';
 import { effectInspector, rumbleSection } from './editor-effects.js?v=304ea301';
-import { setLayerOffsets } from './geometry-handles.js?v=5b995fda';
-import { GEO_KINDS, GEO_LIST, GEO_WORDS, PERMS, geoKey, parseGeoKey, geoItem, geoKindOf, geoShape, geoHits, geoHandles, handleWorld, dragHandle, moveBy, changedFields, drawnItem, postOnFloor, defaultItem, permKey, permValue, permName, dashes, arriveFor, newConnect, shapeBounds } from './geometry-handles.js?v=5b995fda';
+import { setLayerOffsets } from './geometry-handles.js?v=1f5fb71a';
+import { GEO_KINDS, GEO_LIST, GEO_WORDS, PERMS, geoKey, parseGeoKey, geoItem, geoKindOf, geoShape, geoHits, geoHandles, handleWorld, dragHandle, moveBy, changedFields, drawnItem, postOnFloor, defaultItem, permKey, permValue, permName, dashes, arriveFor, newConnect, shapeBounds } from './geometry-handles.js?v=1f5fb71a';
 import { SNAP_PX, GUIDE_PX, endPoints, joinedEnds, snapPlatform, snapDrawnPlatform, snapPoint, floorSnapY, rulerTicks, bestPull } from './snap.js?v=31852d00';
 import { watchSelects } from '../combobox.js?v=d43209e8';
 
@@ -737,7 +737,7 @@ async function boot() {
   }
   function loadValidateMod() {
     if (S.validateModLoading) return;
-    S.validateModLoading = import('./validate.js?v=b925305f').then((m) => { S.validateMod = m; S.geoDrawn = ''; }).catch(() => { S.validateModLoading = null; });
+    S.validateModLoading = import('./validate.js?v=6033dbe1').then((m) => { S.validateMod = m; S.geoDrawn = ''; }).catch(() => { S.validateModLoading = null; });
   }
 
   /** The reach to draw: the validator's for a draft street, else the one worked out here. */
@@ -2412,7 +2412,7 @@ async function boot() {
   async function loadReach() {
     if (S.reachMod) return S.reachMod;
     if (loadReach.p) return loadReach.p;
-    loadReach.p = import('./reach-graph.js?v=7905fc7f').then((m) => { S.reachMod = m; S.geoDrawn = ''; return m; }).catch(() => {
+    loadReach.p = import('./reach-graph.js?v=33f40cb6').then((m) => { S.reachMod = m; S.geoDrawn = ''; return m; }).catch(() => {
       say('The reach map could not load.', 'bad');
       return null;
     });
@@ -2482,7 +2482,7 @@ async function boot() {
     // `new URL(...)` written here would not be keyed by tools/module-keys).
     if (!V.workerUrl) {
       if (!V.loading) {
-        V.loading = import('./validate-worker.js?v=8ea2cb6b').then((m) => { V.workerUrl = m.WORKER_URL; V.dataPaths = m.VALIDATOR_DATA; runValidate(); }).catch(() => { V.state = 'off'; ensureLocalReach(); });
+        V.loading = import('./validate-worker.js?v=65cecde9').then((m) => { V.workerUrl = m.WORKER_URL; V.dataPaths = m.VALIDATOR_DATA; runValidate(); }).catch(() => { V.state = 'off'; ensureLocalReach(); });
       }
       return null;
     }

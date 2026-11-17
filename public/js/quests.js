@@ -14,6 +14,7 @@ import { getQuestCatalog } from './content-catalogs.js?v=10b118dd';
 import { questRewardModifier } from './imagination-effects.js?v=70169933';
 import { metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
+import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
 /**
  * @typedef {{
@@ -99,11 +100,8 @@ export function cleanQuestMarkup(raw = '') {
     .replace(/<a\b[^>]*>(.*?)<\/a>/gis, '$1')
     .replace(/<b\b[^>]*>(.*?)<\/b>/gis, '$1')
     .replace(/<[^>]+>/g, '')
-    .replace(/&hellip;/gi, '…')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
+    // G955: the one decoder (js/html-text.js); a non-breaking space reads as a space here.
+    .replace(/[^\n]+/g, (line) => decodeEntities(line).replace(/\u00a0/g, ' '))
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();

@@ -12,9 +12,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FakeEl, matches } from './social-fake-dom.js';
-import { failedQuestPin } from '../public/js/ui/quest-sheet.js?v=9645fa07';
-import { createQuestTracker } from '../public/js/ui/quest-tracker.js?v=d92ac7e5';
-import { isPinMenuKey, placePinMenu, LONG_PRESS_MS, PIN_MENU_ROWS } from '../public/js/ui/quest-pin-menu.js?v=15c53e87';
+import { failedQuestPin } from '../public/js/ui/quest-sheet.js?v=db8d7891';
+import { createQuestTracker } from '../public/js/ui/quest-tracker.js?v=32471bc9';
+import { isPinMenuKey, placePinMenu, LONG_PRESS_MS, PIN_MENU_ROWS } from '../public/js/ui/quest-pin-menu.js?v=ddca41f8';
 import { questPinsFeature } from '../public/js/features/quest-pins-feature.js?v=e59012f1';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');

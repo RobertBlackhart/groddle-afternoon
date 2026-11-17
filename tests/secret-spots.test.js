@@ -43,7 +43,7 @@ import {
   triggerSecretSpot,
 } from '../public/js/secret-spots.js?v=59a37384';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=1bc93d7e';
+import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=c1f18256';
 import { SOUND_CATEGORIES } from '../public/js/sound-keys.js?v=d6b20718';
 import { SYNTH_RECIPES, recipeForKey } from '../public/js/synth-sfx.js?v=c30a1709';
 

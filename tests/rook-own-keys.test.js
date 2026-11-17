@@ -9,8 +9,8 @@
 // Now a key is the animal's own: its class and the index the street spawned it with (rookKeyFor).
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { rookKeyFor } from '../public/js/rook-attack.js?v=c12e825f';
-import { syncKeys } from '../public/js/rook-mp.js?v=0b9056b1';
+import { rookKeyFor } from '../public/js/rook-attack.js?v=5e62a79f';
+import { syncKeys } from '../public/js/rook-mp.js?v=eace1128';
 
 /** A copy of the feature of its own (its realtime binding is module state, one per player). */
 const featureCopy = async (name) => (await import(`../public/js/features/rook-attack-feature.js?fresh=rook-own-keys-${name}`)).rookAttackFeature;

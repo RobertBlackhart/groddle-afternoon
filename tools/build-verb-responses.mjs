@@ -21,6 +21,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+import { decodeEntities } from '../public/js/html-text.js?v=6bbf4d1f';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = process.argv.slice(2).find((a) => !a.startsWith('--')) || join(ROOT, '..', 'glitch-GameServerJS');
@@ -80,6 +81,9 @@ function readResponses(gsjs, cls) {
   const src = readFileSync(join(gsjs, file), 'utf8');
   const { text, line } = responsesLiteral(src, file);
   const all = vm.runInNewContext(`(${text})`, Object.create(null), { timeout: 1000 });
+  // G955 (#472): the lines are Flash htmlText ("i &lt;3 u"); the bubbles draw plain text, so the
+  // entities become characters here, once (js/html-text.js).
+  for (const key of Object.keys(all)) if (Array.isArray(all[key])) all[key] = all[key].map((line) => (typeof line === 'string' ? decodeEntities(line) : line));
   return { all, source: `${file} ${line}` };
 }
 

@@ -107,8 +107,8 @@
  * socialChats (the list's ids in order), socialUnread (id:n,... for every tab and conversation with
  * news, chats:n the Chats total); window.groddleSocial.
  */
-import { colorizeAmounts } from '../notify-view.js?v=82d06f33';
-import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=c76b5244';
+import { colorizeAmounts } from '../notify-view.js?v=44acf575';
+import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=dfdf98f7';
 import { IM_VERB_ID } from '../player-im.js?v=da51888c';
 import { selectionCovers } from './context-guard.js?v=0f71ac17';
 import { appendLinkedText, linkifyTextNodes } from '../chat-links.js?v=b717fac7';
@@ -120,6 +120,7 @@ import { THREAD_TEXT, mergeReplies, normalSummary, summaryText } from '../chat-t
 import { buddyFaceUrl, createFaceMemory } from '../buddy-list.js?v=b418f3f2';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../whos-here.js?v=cb52c987';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deleteConfirmRows } from '../chat-delete.js?v=c55a1043';
+import { htmlToText } from '../html-text.js?v=6bbf4d1f';
 
 export const SOCIAL_STORE_KEY = 'groddle-social-drawer';
 /** The drawer opens by default at this window width and up (the mock's 1440 rule). */
@@ -220,7 +221,7 @@ export const FIND_TEXT = Object.freeze({
 
 /** Lower case, accents folded, tags and runs of space taken out: what the Activity search compares. */
 export function foldFind(s) {
-  return String(s ?? '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+  return htmlToText(String(s ?? '').replace(/<[^>]*>/g, ' '), { collapse: true })
     .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
 }
 

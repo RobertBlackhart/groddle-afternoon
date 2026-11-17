@@ -20,7 +20,7 @@
  * with no solo crowd multiplier, and each player gives one revive dose.
  */
 
-import { ROOK_SOURCE, ROOK_TEXT, isRookableClass, strikeDamageFor } from './rook-attack.js?v=c12e825f';
+import { ROOK_SOURCE, ROOK_TEXT, isRookableClass, strikeDamageFor } from './rook-attack.js?v=5e62a79f';
 
 /** The server's limits (groddle-afternoon-server/rook.go). */
 export const MP_ROOK = Object.freeze({

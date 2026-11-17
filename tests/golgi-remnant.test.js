@@ -13,8 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { DUST_TRAP_ORGANELLES, ORGANELLE_OVERLAY, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=12346629';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=40c71a37';
-import { acceptOffer, isEventEmitted, routeQuestEvent } from '../public/js/quest-offers.js?v=8a52da9f';
+import { createQuestState } from '../public/js/quests.js?v=185186c2';
+import { acceptOffer, isEventEmitted, routeQuestEvent } from '../public/js/quest-offers.js?v=394cbaf0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

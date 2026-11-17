@@ -32,10 +32,10 @@ import {
 import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=794229af';
 import { COMPANION_FOLLOW_TRAIL_DISTANCE } from '../public/js/local-companions.js?v=188f756c';
 import { loadContentCatalogsFromDir, getQuestCatalog, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=40c71a37';
-import { pendingQuestOffers } from '../public/js/quest-offers.js?v=8a52da9f';
+import { createQuestState } from '../public/js/quests.js?v=185186c2';
+import { pendingQuestOffers } from '../public/js/quest-offers.js?v=394cbaf0';
 import { MULTIPLAYER_QUESTS, MULTIPLAYER_QUESTS_LEFT_OUT, creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=1fc5ff58';
-import { questsMpFeature } from '../public/js/features/quests-mp-feature.js?v=030a5a7a';
+import { questsMpFeature } from '../public/js/features/quests-mp-feature.js?v=0dc188ee';
 import { economyCredits } from '../tools/build-economy.mjs';
 import { tradeTable } from '../tools/build-realtime-trade.mjs';
 

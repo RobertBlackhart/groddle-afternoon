@@ -10,8 +10,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=9f16f4ab';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
-import { inEventBox, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=05663361';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { inEventBox, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=7fd40f71';
 import {
   CEBARKUL_DOOR,
   CEBARKUL_TSID,
@@ -36,7 +36,7 @@ import {
   touchesStar,
 } from '../public/js/symphonious-maximus.js?v=345ad437';
 import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=74d78119';
-import { FEATURES } from '../public/js/features/index.js?v=44028acd';
+import { FEATURES } from '../public/js/features/index.js?v=2074b22e';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=a1ce9368';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

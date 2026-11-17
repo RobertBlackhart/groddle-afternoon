@@ -23,6 +23,7 @@
  * read) and its click is stopped here. A row's explanation is data-vm-tip, its reason
  * data-vm-reason; the back row has data-vm-back.
  */
+import { htmlToText } from '../html-text.js?v=6bbf4d1f';
 
 const SVG = (body, cls) => `<svg class="${cls}" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 /** The energy bolt beside a cost. */
@@ -46,8 +47,7 @@ export function escapeText(s) {
 
 /** Markup in a tooltip or reason (a verb's <b>, a quest link) as the plain words the footer shows. */
 export function plainWords(s) {
-  return String(s ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&rsquo;/g, '’').replace(/\s+/g, ' ').trim();
+  return htmlToText(s, { split: ' ', br: ' ', collapse: true });
 }
 
 /**

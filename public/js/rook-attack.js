@@ -768,12 +768,8 @@ export function rookResponse(classId, pool, rng = Math.random, label = 'Ur') {
   const lines = ROOK_RESPONSES[classId]?.[pool];
   if (!lines?.length) return '';
   const line = lines[Math.min(lines.length - 1, Math.floor(rng() * lines.length))];
-  return line
-    .replace(/\{pc_label\}/g, label)
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&');
+  // G955: the lines hold characters ("I <3 u"), decoded once where they were copied from GSJS.
+  return line.replace(/\{pc_label\}/g, label);
 }
 
 /**
@@ -1041,11 +1037,11 @@ export const ROOK_RESPONSES = Object.freeze({
     revived_2nd_time: Object.freeze([
       "i <3 u. U mades me almost bettr. 1 more times?",
       "I h8 rux. I still hurtz. Moar?",
-      "OMG. I &lt;3 ur revinin. Pls do again? Someone? Pls?",
+      "OMG. I <3 ur revinin. Pls do again? Someone? Pls?",
     ]),
     revived_3rd_time: Object.freeze([
       "YAYZ!!!!!1!!! {pc_label} SAVED ME FROM TEH RUX! LOL!",
-      "OMGiant I &lt;3 u {pc_label}!!!!!! Thnx!",
+      "OMGiant I <3 u {pc_label}!!!!!! Thnx!",
       "UR teh AWESUM! Thnx {pc_label}. I r unruxed! ROFL!",
     ]),
   }),

@@ -38,7 +38,7 @@ import {
   gardenPlacementRequest,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=9ee1ed3f';
+} from '../public/js/street-ecology.js?v=79b7a6f5';
 import {
   MYSTERY_QUOIN_KINDS,
   QUOIN_CLASSES,
@@ -50,7 +50,7 @@ import {
   streetQuoinClass,
   streetQuoinPoints,
 } from '../public/js/quoins.js?v=a4208821';
-import { isPartyStreet, partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=c667e9e2';
+import { isPartyStreet, partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=8e869964';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

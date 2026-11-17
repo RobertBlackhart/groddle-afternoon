@@ -5,7 +5,7 @@
 
 import { avatarHeadReach, groundBeneath, isItemSolid, isStandable, platformYAt, worldToScreen } from './street-model.js?v=9f16f4ab';
 import { behindFloor } from './reach.js?v=8e52df56';
-import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=06481ee6';
+import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=868360eb';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { nudgedBarnacleSpots } from './barnacle-nudges.js?v=159f11bf';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';

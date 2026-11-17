@@ -24,7 +24,7 @@ import {
   listQuestLog,
   listQuestLogNewestFirst,
   listQuests,
-} from '../public/js/quests.js?v=40c71a37';
+} from '../public/js/quests.js?v=185186c2';
 import {
   createAchievementState,
   applyAchievementProgress,
@@ -33,7 +33,7 @@ import {
   browseAchievementLog,
   achievementCategories,
   getAchievementProgress,
-} from '../public/js/achievements.js?v=1bc93d7e';
+} from '../public/js/achievements.js?v=c1f18256';
 import {
   createSkillState,
   canLearnSkill,

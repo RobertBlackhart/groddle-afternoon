@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { contributionsText, jobText, phaseName, plainText } from '../public/js/street-jobs.js?v=950e9c22';
-import { cleanQuestMarkup } from '../public/js/quests.js?v=40c71a37';
+import { contributionsText, jobText, phaseName, plainText } from '../public/js/street-jobs.js?v=edadd67d';
+import { cleanQuestMarkup } from '../public/js/quests.js?v=185186c2';
 
 const root = join(import.meta.dirname, '..');
 const catalog = JSON.parse(readFileSync(join(root, 'public/assets/content/street-jobs.json'), 'utf8'));
@@ -48,7 +48,8 @@ describe('Job and quest text keeps no placeholders', () => {
   });
 
   it('a project of several phases names each one by its label, decoded', () => {
-    const { job, classes } = jobs().find((j) => j.job.phases.length > 2 && j.job.phases.some((p) => /&amp;/.test(p.label)));
+    // G955: the builder decodes "Plant &amp; Certify" to "Plant & Certify" (tools/data-text.mjs).
+    const { job, classes } = jobs().find((j) => j.job.phases.length > 2 && j.job.phases.some((p) => / & /.test(p.label)));
     const text = contributionsText(job, { classes }, { mine: (p) => p === job.phases[0], share: () => 50 });
     assert.match(text, /^1\. [^:]+: You contributed 50% of the work! 2\. [^:]+: You did not contribute\./);
     assert.doesNotMatch(text, LEFT);

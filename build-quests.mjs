@@ -42,6 +42,7 @@
  *   inferred     hand-assigned gate for an unsourced quest (inferred: true)
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { decodeDataText } from './tools/data-text.mjs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
@@ -567,7 +568,8 @@ for (const def of Object.values(catalog)) {
   if (CUSTOM.has(id)) def.custom = true;
 }
 
-writeFileSync(join(CONTENT, 'quests.json'), JSON.stringify(catalog, null, 1) + '\n');
+// G955 (#472): GSJS htmlText entities as characters (tools/data-text.mjs).
+writeFileSync(join(CONTENT, 'quests.json'), JSON.stringify(decodeDataText(catalog), null, 1) + '\n');
 
 const metaPath = join(CONTENT, 'meta.json');
 const meta = JSON.parse(readFileSync(metaPath, 'utf8'));

@@ -70,7 +70,7 @@ import { hiresSpriteUrl } from '../sprite-hires.js?v=d2bcebbc';
 import { rollResourceNodeDrop } from './drops-feature.js?v=1251db2f';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
+import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=97df8351';
 import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
 import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
@@ -105,14 +105,14 @@ import {
   tickResourceNode,
 } from '../resource-nodes.js?v=12346629';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=8a52da9f';
+import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=394cbaf0';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=98606052';
 import { playItemOverlay } from '../item-overlay.js?v=b12c43aa';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=39ab3fa7';
+import { salmonSwimAt } from '../street-creatures.js?v=304f4695';
 import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';

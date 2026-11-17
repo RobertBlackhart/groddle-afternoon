@@ -10,7 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { checkDoorEntry, doorAt, doorDestination } from '../public/js/doors.js?v=727d0e0b';
 import {
   HOUSE_GROUND_ART,

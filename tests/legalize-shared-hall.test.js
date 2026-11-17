@@ -19,7 +19,7 @@ import {
   hallForPlace,
   hallReload,
   hallSceneTsid,
-} from '../public/js/features/bureaucratic-halls-feature.js?v=2c55c8c2';
+} from '../public/js/features/bureaucratic-halls-feature.js?v=500fceb8';
 import {
   LEGALIZE_HALL_STAGES,
   LEGALIZE_HALL_TSID,
@@ -30,8 +30,8 @@ import {
   ensureLegalizeState,
   leaveBureaucraticHall,
   legalizeObjective,
-} from '../public/js/legalize-it.js?v=fadb0602';
-import { assignQuest, createQuestState } from '../public/js/quests.js?v=40c71a37';
+} from '../public/js/legalize-it.js?v=d4f5ec5c';
+import { assignQuest, createQuestState } from '../public/js/quests.js?v=185186c2';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

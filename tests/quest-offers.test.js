@@ -23,7 +23,7 @@ import {
   applyQuestRewards,
   questRewardSummary,
   listQuestLog,
-} from '../public/js/quests.js?v=40c71a37';
+} from '../public/js/quests.js?v=185186c2';
 import { builtInstanceQuests } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import {
   OFFER_INTERVAL_MS,
@@ -53,7 +53,7 @@ import {
   tickQuestTimers,
   restartTimedQuest,
   questTimerStatus,
-} from '../public/js/quest-offers.js?v=8a52da9f';
+} from '../public/js/quest-offers.js?v=394cbaf0';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=72b2b22a';
 
 const CONTENT = join(dirname(fileURLToPath(import.meta.url)), '../public/assets/content');

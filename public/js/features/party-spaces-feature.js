@@ -82,13 +82,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=c667e9e2';
+} from '../party-spaces.js?v=8e869964';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { readVisitScene } from '../neighbours-mp.js?v=ea03e02b';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=781ad57f';
 import { loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=085bff98';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ac6c3387';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';

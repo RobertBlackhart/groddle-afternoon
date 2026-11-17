@@ -10,8 +10,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeStreetJobState, contributeCurrants, contributeItems, settlePhase, phaseBaseCost, phaseRequirements, workCheck, workGear } from '../public/js/street-jobs.js?v=950e9c22';
-import { rowFromServer } from '../public/js/street-jobs-mp.js?v=74889857';
+import { normalizeStreetJobState, contributeCurrants, contributeItems, settlePhase, phaseBaseCost, phaseRequirements, workCheck, workGear } from '../public/js/street-jobs.js?v=edadd67d';
+import { rowFromServer } from '../public/js/street-jobs-mp.js?v=1e19532c';
 import {
   PROJECTS_TEXT,
   agoWords,
@@ -27,9 +27,9 @@ import {
   projectPlace,
   shareLine,
   statusLine,
-} from '../public/js/projects-tracker.js?v=480d92cf';
-import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=601cacb0';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=b8c31e13';
+} from '../public/js/projects-tracker.js?v=667c0f96';
+import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=f038049f';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=76d66324';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=c8210235';
 

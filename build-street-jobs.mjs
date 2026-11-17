@@ -35,6 +35,7 @@ import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+import { decodeDataText } from './tools/data-text.mjs';
 import { obtainableItems } from './tools/job-obtainable.mjs';
 import { loadRetiredItems, retireRequirement } from './tools/retired-items.mjs';
 
@@ -525,5 +526,6 @@ const catalog = {
   halls,
 };
 
-await writeFile(outputPath, `${JSON.stringify(catalog)}\n`);
+// G955 (#472): GSJS htmlText entities as characters ("Plant &amp; Certify" read so on the boards).
+await writeFile(outputPath, `${JSON.stringify(decodeDataText(catalog))}\n`);
 console.log(JSON.stringify(catalog.counts, null, 2));

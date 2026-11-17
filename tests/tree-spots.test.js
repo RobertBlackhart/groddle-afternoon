@@ -30,8 +30,8 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=9ee1ed3f';
-import { furniturePlacementGroups, measuredMailboxes, rowMailboxes } from '../public/js/street-furniture.js?v=06481ee6';
+} from '../public/js/street-ecology.js?v=79b7a6f5';
+import { furniturePlacementGroups, measuredMailboxes, rowMailboxes } from '../public/js/street-furniture.js?v=868360eb';
 import { MAILBOX_SPOTS, PAPER_TREE_SPOTS, TREE_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
 
 const root = join(import.meta.dirname, '..');
