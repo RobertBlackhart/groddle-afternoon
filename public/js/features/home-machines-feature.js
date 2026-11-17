@@ -102,6 +102,7 @@ import { receiveToolCopy, takeToolCopy } from '../tools.js?v=8516a0c3';
 import { RECIPE_CATALOG } from '../making.js?v=819002b7';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=5d66e832';
+import { lookOf, poseOf } from './realtime-feature.js?v=e59d3336';
 import { readVisitScene } from '../neighbours-mp.js?v=895a5209';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -543,13 +544,13 @@ function createSession(engine, client) {
 
   // —— Acts ——
 
-  function send(verb, m, extra = {}) {
+  function send(verb, m, extra = {}, { retried = false } = {}) {
     if (!client || client.state !== 'online') {
       say(T.offline);
       return false;
     }
     req += 1;
-    sent.set(req, { verb, id: m?.id || '', at: Date.now(), extra });
+    sent.set(req, { verb, id: m?.id || '', at: Date.now(), extra, retried });
     // In a room the act names the machine's owner (a place names me: I set my own down).
     const owner = home.kind === 'room' ? Number(m ? m.owner : me()) : Number(home.owner);
     const ok = client.send('home_machine', { req, owner, verb, ...(m ? { id: m.id } : {}), ...extra });
@@ -781,12 +782,41 @@ function createSession(engine, client) {
     return true;
   }
 
+  /**
+   * #465: in your own home the server answers "You need to be in their home" when it does not
+   * have you on your home street (home_machines.go machinePlace: cl.Street() is not HOME_<you>).
+   * Stand on it again and ask once more; a second refusal says why.
+   */
+  function retryAway(msg, ask) {
+    if (msg.why !== 'away' || !ask || ask.retried || home?.kind !== 'own' || Number(msg.owner) !== Number(me())) return false;
+    if (!engine.homeContext?.().inHome) return false;
+    const street = engine.query?.('realtimeStreet', engine);
+    if (!street || !engine.player) return false;
+    client.join({ street, ...poseOf(engine.player), look: lookOf(engine) });
+    let done = false;
+    const again = () => {
+      if (done) return;
+      done = true;
+      off?.();
+      send(ask.verb, ask.id ? machines.get(ask.id) || { id: ask.id } : null, ask.extra, { retried: true });
+    };
+    // The server's street answer (realtime-client 'roster'), or a short wait if none comes.
+    const off = client.on?.('roster', again);
+    setTimeout(again, 2000);
+    last = `rejoin:${msg.verb}`;
+    return true;
+  }
+
   function onDone(msg) {
     const ask = sent.get(Number(msg.req));
     sent.delete(Number(msg.req));
     const offset = Date.now() - (Number(msg.now) || Date.now());
     const m = normalizeMachine(msg.machine, offset);
     const here = isHere(msg.owner, m, msg.gone);
+    if (msg.status !== 'settled' && retryAway(msg, ask)) {
+      publish();
+      return;
+    }
     if (msg.status !== 'settled') {
       last = `no:${msg.verb}:${msg.why || ''}`;
       say(String(msg.text || T.failed), 3000);

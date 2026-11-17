@@ -221,12 +221,29 @@ export function questLogDetail(panel) {
   return `${tab ? `${tab} ` : ''}${shown}/${cards.length} cards${counts.length ? `, tabs ${counts.join('/')}` : ''}`;
 }
 
+/**
+ * #465: online, the realtime street the client stands on (the server's answer) and the one it asked
+ * for when they differ, or none: "rt HOME_520", "rt none (asked HOME_520)". It rides at the front
+ * of `panels`, a context key the site already keeps (BugReports.php CONTEXT).
+ */
+export function realtimeLine(engine) {
+  if (engine?.mode !== 'multiplayer') return '';
+  let client = null;
+  try { client = engine.query?.('realtimeClient') || null; } catch { client = null; }
+  if (!client) return 'rt off';
+  const on = String(client.street || '') || 'none';
+  const asked = String(client.wanted || '') || 'none';
+  return `rt ${on}${asked !== on ? ` (asked ${asked})` : ''}`;
+}
+
 /** What the report carries besides the player's words. */
 export function reportContext(engine, errors = [], env = globalThis) {
   const p = engine?.player;
   const street = engine?.street;
   let panels = '';
-  try { panels = openPanels(env.document).join(', ').slice(0, 300); } catch { panels = ''; }
+  try { panels = openPanels(env.document).join(', '); } catch { panels = ''; }
+  const rt = realtimeLine(engine);
+  panels = [rt, panels].filter(Boolean).join(', ').slice(0, 300);
   // G844 (#393): the boot render-texture probe, the GPU's name and limits (js/render-probe.js).
   let gpu = '';
   try { gpu = String(engine?.renderProbeLine?.() || '').slice(0, 200); } catch { gpu = ''; }

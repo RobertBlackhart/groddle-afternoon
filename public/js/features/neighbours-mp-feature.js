@@ -239,6 +239,8 @@ function createSession(engine, client) {
   let visitors = null;
   let busy = false;
   let knocking = 0;
+  /** Visit scenes being shown now (show(): the visit is set before its scene is entered). */
+  let showing = 0;
   let needRejoin = false;
   let last = '';
   let tab = 'received';
@@ -380,6 +382,15 @@ function createSession(engine, client) {
   /** The visit scene for a room, through the loading card. */
   async function show(room, { arrive = '', floor = 0, via = '', at = null } = {}) {
     if (!visit) return;
+    showing += 1;
+    try {
+      await showScene(room, { arrive, floor, via, at });
+    } finally {
+      showing -= 1;
+    }
+  }
+
+  async function showScene(room, { arrive, floor, via, at }) {
     const built = visitorHomeScene(engine, visit.view, room, { returnLabel: wayOutOf(visit.returnTo).label, floor, via });
     const tower = room === 'tower' ? visitorHomeState(visit.view).tower : null;
     const stop = tower ? elevatorStops(tower).find((row) => row.index === built.floor) : null;
@@ -1522,6 +1533,15 @@ function createSession(engine, client) {
     /** The street others share with you (realtimeStreet). */
     street() {
       const home = engine.homeContext?.() || {};
+      // #465: a visit left by the Home button or /home (renderHomeScene runs no onStreetEnter, so
+      // left() never heard) is over once its scene is gone and none is on its way; it kept you off
+      // your own home street, so the server refused your yard's machines.
+      if (visit && !showing && !readVisitScene(engine.streetTsid)) {
+        visit = null;
+        knocking = 0;
+        dropButler();
+        publish();
+      }
       if (visit && readVisitScene(engine.streetTsid)?.owner !== visit.owner) return '';
       const scene = homesFeature._state?.().scene;
       // An upper house floor (G153, home-floors.js) is a room of its own; a Tower floor is shared with its visitors (MPVISIT).
