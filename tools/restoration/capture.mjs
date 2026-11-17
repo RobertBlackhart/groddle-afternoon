@@ -9,6 +9,9 @@
  *   node tools/restoration/capture.mjs --hd            room modal images: 2x, no room card,
  *                                                     public/restoration/shots/hd/room-<id>.webp
  *
+ * Steps (shots.mjs): click, key (a press), hold + ms (a key held down, e.g.
+ * to walk the avatar to the framing spot), eval, wait.
+ *
  * Run it under the browser lock: GRODDLE_BROWSER_LOCK=<slot> node
  * tools/qa/browser-lock.mjs run -- node tools/restoration/capture.mjs ...
  *
@@ -64,6 +67,12 @@ for (const key of keys) {
     for (const step of spec.steps || []) {
       if (step.click) await page.click(step.click, { timeout: 10000 }).catch(() => {});
       if (step.key) await page.keyboard.press(step.key);
+      // hold: a key held down for ms (walks the avatar to a framing spot), then let go.
+      if (step.hold) {
+        await page.keyboard.down(step.hold);
+        await page.waitForTimeout(step.ms || 1000);
+        await page.keyboard.up(step.hold);
+      }
       if (step.eval) await page.evaluate(step.eval).catch(() => {});
       if (step.wait) await page.waitForTimeout(step.wait);
     }
