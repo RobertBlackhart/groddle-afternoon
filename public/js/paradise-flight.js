@@ -78,6 +78,9 @@ export function paradiseStarArt(point = {}) {
  *   (DecoRenderer.as 287-322, default_deco_sign_lg): "Exit's down here!", 425 x 248 at 502, 1416 in
  *   its layer, centred half its height up. The template (LHFR8BRSVT33AE0) that filled the signpost's
  *   connects was not archived, so the arm says where it takes you: home to Ur.
+ * - Starlit Night: door_1340398529213 (instance_exit), its deco door_asset_apartment_hall_right
+ *   50 x 138 (GHFCVOD2GN631RJ.xml), standing on the exit. The source door is at 728, -156 (1478,
+ *   744 here) on its own cloud; the exit's touch stays at 1380, 700.
  */
 export const PARADISE_EXIT_ART = Object.freeze({
   radial_heights: Object.freeze({
@@ -85,7 +88,29 @@ export const PARADISE_EXIT_ART = Object.freeze({
     arm: 'Back to Ur',
     sign: Object.freeze({ text: "Exit's down here!", x: 502, y: 1416, w: 425, h: 248 }),
   }),
+  starlit_night: Object.freeze({
+    kind: 'door',
+    sprite: 'door_asset_apartment_hall_right',
+    w: 50,
+    h: 138,
+  }),
 });
+
+/**
+ * G892 (stand-ins audit A8): Starlit Night's cloud floor is the six cloud_blueShade3 decos its
+ * middleground places (GHFCVOD2GN631RJ, x + 750 and y + 900 here; w, h, r in degrees, flip), not
+ * drawn ellipses. Its middleplus layer's 16 cloud_vpuff2 in front are not in any CC0 set
+ * (tinyspeck/glitch-locations has no such deco), so they are left out.
+ */
+export const STARLIT_NIGHT_CLOUDS = Object.freeze([
+  Object.freeze({ x: 310, y: 897, w: 803, h: 103, r: 0, z: 5 }),
+  Object.freeze({ x: 1569, y: 587, w: 434, h: 77, r: -49, z: 2 }),
+  Object.freeze({ x: 1516, y: 743, w: 256, h: 61, r: 0, z: 3 }),
+  Object.freeze({ x: 1305, y: 892, w: 803, h: 103, r: 0, z: 1 }),
+  Object.freeze({ x: -49, y: 751, w: 475, h: 55, r: 0, z: 4, flip: true }),
+  Object.freeze({ x: 769, y: 899, w: 803, h: 103, r: -1, z: 0 }),
+]);
+export const STARLIT_NIGHT_CLOUD_SPRITE = 'cloud_blueShade3';
 
 export const STARLIT_NIGHT_MOON_FADE_MS = 1500;
 export const STARLIT_NIGHT_STAR_FADE_MS = 1000;

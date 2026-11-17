@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=6ef1ea3a';
-import { PARADISE_COURSES, PARADISE_EXIT_ART, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=47c676c2';
+import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=125375b0';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -103,5 +103,41 @@ describe('Radial Heights stars and way out (A6, A7)', () => {
     assert.match(src, /if \(paradiseExit\.arrow\) paradiseExit\.arrow\.visible = true;/);
     assert.match(fnBody(src, 'buildRadialBackground'), /PARADISE_EXIT_ART\.radial_heights\.sign/);
     assert.doesNotMatch(src, /EXIT'S DOWN HERE!/);
+  });
+});
+
+describe('Starlit Night cloud floor and way out (A7, A8)', () => {
+  it('lays the street\'s six cloud_blueShade3 decos where it placed them', () => {
+    const data = street('GHFCVOD2GN631RJ');
+    const mg = data.layers.find((l) => l.id === 'middleground');
+    const src = mg.decos.filter((d) => d.sprite === STARLIT_NIGHT_CLOUD_SPRITE);
+    assert.equal(src.length, 6);
+    assert.equal(STARLIT_NIGHT_CLOUDS.length, 6);
+    for (const d of src) {
+      const row = STARLIT_NIGHT_CLOUDS.find((c) => c.z === d.z);
+      assert.deepEqual([row.x, row.y, row.w, row.h, row.r, Boolean(row.flip)],
+        [d.x - data.bounds.l, d.y - data.bounds.t, d.w, d.h, d.r, Boolean(d.flip)], `cloud z ${d.z}`);
+    }
+    assert.ok(existsSync(join(ROOT, `assets/decos/groddle/${STARLIT_NIGHT_CLOUD_SPRITE}.webp`)));
+    // The front puffs (cloud_vpuff2) are in no CC0 set: none ships.
+    assert.ok(!existsSync(join(ROOT, 'assets/decos/groddle/cloud_vpuff2.webp')));
+    const body = fnBody(game(), 'buildStarlitBackground');
+    assert.match(body, /STARLIT_NIGHT_CLOUDS\.map/);
+    assert.doesNotMatch(body, /ellipse\(/);
+  });
+
+  it('the way out is the street\'s exit door, boarded until the sky is lit', () => {
+    const art = PARADISE_EXIT_ART.starlit_night;
+    assert.deepEqual([art.kind, art.sprite, art.w, art.h], ['door', 'door_asset_apartment_hall_right', 50, 138]);
+    assert.ok(existsSync(join(ROOT, `assets/decos/groddle/${art.sprite}.webp`)));
+    if (existsSync(XML('GHFCVOD2GN631RJ'))) {
+      const xml = readFileSync(XML('GHFCVOD2GN631RJ'), 'utf8');
+      assert.match(xml, /<bool id="instance_exit">true<\/bool>[\s\S]*<str id="sprite_class">door_asset_apartment_hall_right<\/str>/);
+    }
+    // The exit's touch point is unchanged.
+    assert.deepEqual({ ...PARADISE_COURSES.starlit_night.exit }, { x: 1380, y: 700 });
+    const spawn = fnBody(game(), 'spawnParadiseExit');
+    assert.match(spawn, /art\?\.kind === 'door'/);
+    assert.match(spawn, /paradiseExitShutSign\(art\?\.kind === 'door'/);
   });
 });

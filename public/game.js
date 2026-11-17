@@ -362,6 +362,8 @@ import {
   STARLIT_NIGHT_MOON_FADE_MS,
   STARLIT_NIGHT_STAR_FADE_MS,
   STARLIT_NIGHT_STAR_FIELDS,
+  STARLIT_NIGHT_CLOUDS,
+  STARLIT_NIGHT_CLOUD_SPRITE,
   SLIP_N_SLIDE_LANDMARKS,
   SLIP_N_SLIDE_TREE_SPRITES,
   activateParadiseTicket,
@@ -386,7 +388,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=47c676c2';
+} from './js/paradise-flight.js?v=125375b0';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
 import {
   buildParadiseCourseArt,
@@ -519,7 +521,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=fa0d92c8';
+} from './js/player-save.js?v=3a7270a1';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -22643,12 +22645,25 @@ function buildStarlitBackground(root, course, points) {
     return field;
   });
 
-  const cloudFloor = new PIXI.Graphics();
-  for (let index = 0; index < 15; index += 1) {
-    cloudFloor.ellipse(index * 115 - 40, 865 - (index % 3) * 16, 135, 58).fill({ color: index % 2 ? 0xb6a7cb : 0xd9d1e2, alpha: 0.82 });
-  }
-  cloudFloor.zIndex = -30;
-  root.addChild(cloudFloor);
+  // G892: the street's own cloud floor (js/paradise-flight.js STARLIT_NIGHT_CLOUDS), drawn as the
+  // client drew a deco: w x h from its bottom centre, turned r degrees about it, mirrored when flipped.
+  const cloudTexture = textureFromUrl(`assets/decos/groddle/${STARLIT_NIGHT_CLOUD_SPRITE}.png`);
+  root.paradiseStarlitClouds = STARLIT_NIGHT_CLOUDS.map((spec) => {
+    const cloud = new PIXI.Sprite(cloudTexture);
+    cloud.anchor.set(0.5, 1);
+    cloud.position.set(spec.x, spec.y);
+    cloud.rotation = (spec.r * Math.PI) / 180;
+    const applySize = () => {
+      cloud.width = spec.w;
+      cloud.height = spec.h;
+      if (spec.flip) cloud.scale.x *= -1;
+    };
+    if (isLoaded(cloudTexture.source)) applySize();
+    else onLoaded(cloudTexture.source, applySize);
+    cloud.zIndex = -30 + spec.z / 10;
+    root.addChild(cloud);
+    return cloud;
+  });
 
   points.forEach((point, index) => {
     const starAsset = `assets/decos/groddle/star_asset_0${point.major ? '1' : '2'}.png`;
@@ -22841,6 +22856,8 @@ async function loadParadiseVisualAssets(course) {
       loadTexture('assets/decos/groddle/stars_2.png').catch(() => null),
       loadTexture('assets/decos/groddle/star_asset_01.png').catch(() => null),
       loadTexture('assets/decos/groddle/star_asset_02.png').catch(() => null),
+      loadTexture(`assets/decos/groddle/${STARLIT_NIGHT_CLOUD_SPRITE}.png`).catch(() => null),
+      loadTexture(`assets/decos/groddle/${PARADISE_EXIT_ART.starlit_night.sprite}.png`).catch(() => null),
     ]);
     return;
   }
@@ -23039,9 +23056,17 @@ function spawnParadiseExit(course) {
     const post = oneArmSignpost(PIXI, art.arm, { left: true });
     post.label = 'paradise-exit-signpost';
     root.addChild(post);
+  } else if (art?.kind === 'door') {
+    const door = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${art.sprite}.png`));
+    door.anchor.set(0.5, 1);
+    door.width = art.w;
+    door.height = art.h;
+    door.label = 'paradise-exit-door';
+    root.addChild(door);
   }
   // Report 131: shut until the course's goal is met: planks nailed across it and the word, not only faded.
-  const shut = paradiseExitShutSign();
+  // On a door the boards cross the door itself.
+  const shut = paradiseExitShutSign(art?.kind === 'door' ? { w: art.w + 8, top: -art.h + 12, bottom: -14 } : undefined);
   root.addChild(shut);
   root.alpha = 0.82;
   entityLayer.addChild(root);
@@ -23085,11 +23110,12 @@ function paradiseExitArch(course, root) {
   return arrow;
 }
 
-/** The closed way home's boards (over the arch, in its own px) and its SHUT sign. */
-function paradiseExitShutSign() {
+/** The closed way home's boards (over the arch, in its own px, or over `box`) and its SHUT sign. */
+function paradiseExitShutSign({ w = 92, top = -108, bottom = -22 } = {}) {
   const root = new PIXI.Container();
   const planks = new PIXI.Graphics();
-  for (const [from, to] of [[[-46, -108], [46, -22]], [[46, -108], [-46, -22]]]) {
+  const half = w / 2;
+  for (const [from, to] of [[[-half, top], [half, bottom]], [[half, top], [-half, bottom]]]) {
     const dx = to[0] - from[0];
     const dy = to[1] - from[1];
     const len = Math.hypot(dx, dy);
@@ -23098,7 +23124,7 @@ function paradiseExitShutSign() {
     planks.poly([from[0] + nx, from[1] + ny, to[0] + nx, to[1] + ny, to[0] - nx, to[1] - ny, from[0] - nx, from[1] - ny])
       .fill(0x8a5a33).stroke({ width: 2, color: 0x4b2d17 });
   }
-  planks.circle(0, -65, 5).fill(0x4b2d17);
+  planks.circle(0, (top + bottom) / 2, 5).fill(0x4b2d17);
   root.addChild(planks);
   const sign = new PIXI.Text({ text: 'SHUT', style: {
     fontFamily: 'Trebuchet MS, sans-serif',
@@ -23108,7 +23134,7 @@ function paradiseExitShutSign() {
     stroke: { color: 0x8c1f1f, width: 5 },
   } });
   sign.anchor.set(0.5);
-  sign.position.set(0, -122);
+  sign.position.set(0, top - 14);
   root.addChild(sign);
   return root;
 }
