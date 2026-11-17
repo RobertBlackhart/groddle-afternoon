@@ -841,6 +841,8 @@
       "assets/streets/GUVNHLCRGEA3VAS.json": "b458bb21",
       "assets/streets/GUVVV3FU2FC38SK.json": "b4f1b950",
       "assets/streets/index.json": "b09ddc13",
+      "assets/ui/buff-debuff.svg": "12f5a1d0",
+      "assets/ui/buff_bang_white.png": "cda911c4",
       "assets/ui/quest-book-solid.webp": "a53d6aca",
       "assets/ui/quest_bubble_active.png": "2de1b09a",
       "assets/ui/rook_star_bg.png": "41ff9651",

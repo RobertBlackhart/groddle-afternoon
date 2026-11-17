@@ -157,6 +157,15 @@ describe('prompts, VOGs and the buffs tray', () => {
 
   it('a debuff with no item shows the bang, and a held buff has no End button', () => {
     assert.ok(existsSync(join(pub, 'assets/ui/buff-debuff.svg')));
+    // G892: the bang is the client's own buff_bang_white.png (TSEngineAssets, CC0), inlined unchanged,
+    // on the disc BuffUI.as draw() fills in code with fill_color_debuff 0xb73d40; no vector redraw.
+    const svg = read('assets/ui/buff-debuff.svg');
+    const bang = readFileSync(join(pub, 'assets/ui/buff_bang_white.png'));
+    const original = join(here, '../../glitch-client/TSEngineAssets/src/assets/graphics/buff_bang_white.png');
+    if (existsSync(original)) assert.ok(bang.equals(readFileSync(original)));
+    assert.ok(svg.includes(`href="data:image/png;base64,${bang.toString('base64')}"`));
+    assert.match(svg, /<circle cx="20" cy="20" r="20" fill="#b73d40"\/>/);
+    assert.ok(!/<rect/.test(svg), 'no drawn bang');
     assert.match(game, /return row\?\.def\?\.isDebuff \? 'assets\/ui\/buff-debuff\.svg' : 'assets\/sprites\/icons\/apple\.webp';/);
     assert.match(game, /if \(buffEndableByHand\(b\)\) \{\s*const btn = document\.createElement\('button'\);/);
     assert.match(read('js/buffs.js'), /return Boolean\(row\) && !row\.heldBy && ITEM_BUFF_IDS\.has\(row\.classTsid\);/);
