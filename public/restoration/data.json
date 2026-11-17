@@ -874,7 +874,7 @@
    "group": "quests",
    "name": "The Purple Journey",
    "status": "rebuilt",
-   "blurb": "Imbibe an Essence of Purple and wait: the minute of HURRY UP PLEASE ITS TIME, then Le Voyage Violet, where Scions of Purple say strange things and quoins appear. Purpled Out follows, and three journeys earn Elementary Penguin. The room was never archived, so it is rebuilt from the players’ Snaps.",
+   "blurb": "Imbibe an Essence of Purple and wait: the minute of HURRY UP PLEASE ITS TIME, then Le Voyage Violet, where Scions of Purple say strange things and quoins appear. Purpled Out follows, and three journeys earn Elementary Penguin. The room was never archived, so it is rebuilt from the players’ Snaps: its washing, moon, mushrooms, frond heads, ferns, ghost and owl are Tiny Speck’s own pieces, and its drippy stumps and carved spiral stones are new pictures made for Groddle (reimagined).",
    "multiplayer": null,
    "spot": null,
    "evidence": [
@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2583,
+  "commits": 2586,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Le Voyage Violet's floor is Tiny Speck's Uralia mushrooms, ghost and owl, with a drippy stump and a spiral stone made for Groddle"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Street gardens stand where the 2012 snaps show them, every bed the street had"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Gentle Island's rock pays its 978 currants once, flagged in the same save so the save checker credits them"
    }
   ]
  },
