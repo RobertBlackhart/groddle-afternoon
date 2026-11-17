@@ -906,9 +906,13 @@
       "restoration/maps/2012/xalanga.webp": "c465ecee",
       "restoration/maps/2012/zhambu.webp": "7d5f9896",
       "restoration/shots/hd/room-ez_cookin.webp": "e5b4e2bd",
+      "restoration/shots/hd/room-light_perspective.webp": "4cb4f97c",
+      "restoration/shots/hd/room-radiant_glare.webp": "ef36413d",
       "restoration/shots/hd/room-soil_appreciation.webp": "9ed07507",
       "restoration/shots/interrogation.webp": "4778b1b1",
       "restoration/shots/room-ez_cookin.webp": "28d566f9",
+      "restoration/shots/room-light_perspective.webp": "422194e2",
+      "restoration/shots/room-radiant_glare.webp": "6ae087c4",
       "restoration/shots/room-soil_appreciation.webp": "20511c4b",
     },
   };

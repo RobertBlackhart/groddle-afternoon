@@ -60,7 +60,7 @@ export const SHOTS = Object.freeze({
   'room:le_miserable': { route: `${Q}&questdemo=le_miserable`, wait: 14000 },
   'room:juju_camp': { route: `${Q}&questdemo=help_juju_bandits&questautoplay=scene`, wait: 20000 },
   'room:picto_pattern': { route: `${Q}&questdemo=picto_pattern&questautoplay=solve1`, wait: 18000 },
-  'room:radiant_glare': { route: `${Q}&questdemo=radiant_glare&questautoplay=mixer`, wait: 18000 },
+  'room:radiant_glare': { route: `${Q}&questdemo=radiant_glare&questautoplay=totem`, wait: 24000 },
   'room:an_autumn_day': { route: `${Q}&questdemo=an_autumn_day`, wait: 12000 },
   'room:being_watched': { route: `${Q}&questdemo=stale_but_necessary&questautoplay=veil`, wait: 18000 },
   'room:back_alley': { route: `${Q}&questdemo=fuelmaking_refuel_robot`, wait: 14000 },
