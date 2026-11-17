@@ -9,8 +9,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=8ccdbae1';
-import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=64135839';
+import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=42bbe693';
+import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f5f0e24f';
 import { BARNACLE_GAP_CLOSE, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=fd6c9f68';
 import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=afcde8cf';
 

@@ -52,7 +52,7 @@
 import { pluralize } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=f49c8998';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
-import { ecologyForStreet } from '../street-ecology.js?v=8ccdbae1';
+import { ecologyForStreet } from '../street-ecology.js?v=42bbe693';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=a1ce9368';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';

@@ -28,10 +28,10 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   measuredTreeSpots,
-} from '../public/js/street-ecology.js?v=8ccdbae1';
+} from '../public/js/street-ecology.js?v=42bbe693';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SHEETS } from '../public/js/shrine-variants.js?v=7f11c97d';
-import { adoptedPlan } from '../public/js/features/patches-feature.js?v=09cd2ef0';
+import { adoptedPlan } from '../public/js/features/patches-feature.js?v=58454bb0';
 import { createPlot } from '../public/js/patches.js?v=c5256421';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

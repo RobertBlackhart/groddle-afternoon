@@ -20,7 +20,7 @@ import {
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
-import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=2a4d0a48';
+import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=256c00e9';
 import { SLOTH_SPOTS } from './sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from './sloth-trees.js?v=a3299191';
 
