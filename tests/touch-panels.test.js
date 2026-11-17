@@ -24,6 +24,15 @@ describe('panels on a phone', () => {
     for (const classes of named) assert.ok(classes.some((c) => covered.has(c)), classes.join(' '));
   });
   it('no window wider than the screen', () => {
-    assert.match(block, /:is\(\.glitch-modal-card, \.side-card, \.ui-sheet, \[role="dialog"\]\) \{ max-width: calc\(100vw - 8px\); box-sizing: border-box; \}/);
+    assert.match(block, /:is\(\.glitch-modal-card, \.side-card, \.ui-sheet, \[role="dialog"\]\) \{ box-sizing: border-box; \}/);
+    assert.match(block, /:is\(\.glitch-modal-card, \.side-card, \.ui-sheet, \[role="dialog"\]\):not\([^)]*\) \{ max-width: calc\(100vw - 8px\); \}/);
+  });
+  // G924 (#451): full-screen layers (inset 0 scrims, stage-sized screens) reach both edges; the cap is for cards.
+  it('full-screen layers are not capped', () => {
+    const not = block.match(/\[role="dialog"\]\):not\(([^)]*)\) \{ max-width: calc\(100vw - 8px\); \}/);
+    assert.ok(not, 'the cap names what it leaves out');
+    const left = new Set(not[1].split(',').map((s) => s.trim()));
+    for (const c of ['.ui-sheet-center', '.award-screen', '.new-day-screen', '.hog-haul-screen', '.img-reveal', '.quest-dialogue', '.feed-picker', '.imagination-hub']) assert.ok(left.has(c), c);
+    for (const c of ['.glitch-modal-card', '.side-card']) assert.ok(!left.has(c), c);
   });
 });

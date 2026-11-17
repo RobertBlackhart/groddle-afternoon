@@ -14665,7 +14665,11 @@ body.is-booting .touch-controls { display: none; }
   min-width: 44px; min-height: 44px;
   -webkit-tap-highlight-color: transparent;
 }
-:root.touch-phone[data-ui="modern"] :is(.glitch-modal-card, .side-card, .ui-sheet, [role="dialog"]) { max-width: calc(100vw - 8px); box-sizing: border-box; }
+:root.touch-phone[data-ui="modern"] :is(.glitch-modal-card, .side-card, .ui-sheet, [role="dialog"]) { box-sizing: border-box; }
+/* G924 (#451): the 8 px cap is for cards. The full-screen layers (a scrim or a stage-sized screen:
+   the award, an upgrade's card, the Map's backdrop, Reports) reach both edges; capped, they stopped
+   8 px short on the right of an upright phone. */
+:root.touch-phone[data-ui="modern"] :is(.glitch-modal-card, .side-card, .ui-sheet, [role="dialog"]):not(.ui-sheet-center, .award-screen, .new-day-screen, .hog-haul-screen, .overlay, .quest-dialogue, .rook-museum-exhibit, .feed-picker, .emotional-bear-picker, .imagination-hub, .img-reveal, .game-splash, .vog-overlay) { max-width: calc(100vw - 8px); }
 :root.touch-phone[data-ui="modern"] body { overflow-x: hidden; }
 /* The tutorial's pill (top left) waits while a sheet or window is open: it covered their titles. */
 :root.touch-phone[data-ui="modern"]:has(#game-root :is(.ui-sheet, .side-panel, .glitch-modal, .map-panel):not([hidden])) #newxp-pill { visibility: hidden; }
