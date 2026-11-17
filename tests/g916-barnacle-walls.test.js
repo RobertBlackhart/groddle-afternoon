@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
 import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=8ccdbae1';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=7086eff4';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=64135839';
 import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=fd6c9f68';
 import { fixedPictureBoxes } from '../tools/build-barnacle-wall-spots.mjs';
 import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=afcde8cf';

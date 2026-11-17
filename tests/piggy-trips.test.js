@@ -26,8 +26,8 @@ import {
 import { EAT_PAUSE_MS } from '../public/js/animal-mood.js?v=a49495fc';
 import { ANIMAL_BODY, TREE_FOOTPRINT, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=8ccdbae1';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=1424ef16';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=3b979016';
+import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=02282c0d';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6e94dea6';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

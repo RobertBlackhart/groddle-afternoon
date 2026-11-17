@@ -165,12 +165,13 @@ export const RESOURCE_SKILL_PACKAGES = Object.freeze({
 });
 
 /**
- * Drop tables the remake honors (catalog_drop_tables.js). Keys are the
- * cumulative thresholds; GSJS rolls randInt(0, 100) and takes the first key
- * the roll does not exceed. Skill-package drop tables that only hand out
- * currants/musicblocks/SWFs (barnacle_scraping, jellisac_scooping,
- * peat_harvesting, tree_watering_small, light_green_thumb_small) are
- * intentionally not ported; their packages still roll yield bonuses.
+ * The node verbs' own tables (catalog_drop_tables.js): Loam and the Dust Trap's.
+ * Keys are the cumulative thresholds; GSJS rolls randInt(0, 100) and takes the
+ * first key the roll does not exceed. The skill-package drop tables
+ * (barnacle_scraping, jellisac_scooping, peat_harvesting, tree_watering_small,
+ * light_green_thumb_small, with their currants, Musicblocks and SWFs) are not
+ * here: features/drops-feature.js rolls them from js/drop-tables-data.js after
+ * each harvest (RESOURCE_NODE_DROP_PACKAGES, rollResourceNodeDrop).
  */
 export const RESOURCE_DROP_TABLES = Object.freeze({
   loam: [[100, [{ classTsid: 'loam', qty: 3 }]]],

@@ -38,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=2659c4e8';
+} from '../public/js/resource-nodes.js?v=bac50225';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
