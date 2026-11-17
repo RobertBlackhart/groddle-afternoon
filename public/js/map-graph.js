@@ -117,8 +117,11 @@ export function isPlaceholderMap(bg) {
  * @param {object} hubData  hub-N.json shape
  * @param {string} currentTsid
  * @param {Record<string, { label: string }>} streetIndex
+ * @param {{ shrineAt?: (tsid: string) => string }} [opts] shrineAt: #475, the Giant of the shrine the
+ *   street stands now (game.js streetShrineGiant: its ecology row as enterStreet reads it, a built
+ *   street upgrade's own Giant included), so the icon says what the street shows; '' for none.
  */
-export function buildHubMapView(hubData, currentTsid, streetIndex = {}) {
+export function buildHubMapView(hubData, currentTsid, streetIndex = {}, { shrineAt = null } = {}) {
   const available = Object.keys(streetIndex || {});
   const mapW = hubData.mapW || 760;
   const mapH = hubData.mapH || 460;
@@ -151,7 +154,7 @@ export function buildHubMapView(hubData, currentTsid, streetIndex = {}) {
         : s.name || s.tsid,
       // The map's street icons (MapHub.as drawStreet; tools/build-map-icons.mjs).
       store: s.store || '',
-      shrine: s.shrine || '',
+      shrine: (shrineAt ? shrineAt(loadedTsid || s.tsid) : s.shrine) || '',
       hasSubway: !!s.has_subway,
       // Left off the map unless you stand on it (MapHub.as drawStreet 638-640): the Start
       // streets, apartment towers and basements, machine rooms (tools/build-map-hidden.mjs).

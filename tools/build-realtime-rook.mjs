@@ -38,7 +38,7 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=79b7a6f5';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=c4ce9ccd';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=819002b7';
 import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=f1a0a0d8';
@@ -74,7 +74,10 @@ export function streetShrine(data, { starter = false, ecology = ecologyForStreet
   const point = plan.groups.shrine?.[0] || { x: worldW * 0.72, y: groundY(platforms) };
   // game.js spawnShrine: x clamped 90 px inside the street, feet 2 px down.
   const x = clamp(point.x, 90, Math.max(90, worldW - 90));
-  return { x: r1(x), y: r1((point.y ?? groundY(platforms)) + 2), giant: giantForStreet(data).id };
+  // #475: the Giant the street's shrine is, as game.js enterStreet names it (officialGiantId from the
+  // population's row, the location file's "Shrine to X"); without it giantForStreet guessed by hub.
+  const official = population.giantId ? { officialGiantId: population.giantId } : {};
+  return { x: r1(x), y: r1((point.y ?? groundY(platforms)) + 2), giant: giantForStreet({ ...data, ...official }).id };
 }
 
 /** Offer values a primed shrine turns into damage (js/features/rook-attack-feature.js offerOptions). */

@@ -621,12 +621,15 @@ function wholeLineUnreached(unreached, line) {
 /**
  * Report #258: the streets whose shrine is this Giant's (each street row's giantId, where the
  * game stands its shrine), for "Find the closest Shrine to <Giant>" (glitch-client
- * FavorProgressUI.as 129, 189-212).
+ * FavorProgressUI.as 129, 189-212). #475: `giantAt(tsid, row)` names the Giant a street's shrine is
+ * now (game.js streetShrineGiant: a built street upgrade's own Giant), so the finder, the map and
+ * the street read one fact; without it, each archived row's.
  */
-export function shrineStreetsFor(giantId, source = catalog) {
+export function shrineStreetsFor(giantId, source = catalog, giantAt = null) {
   const id = String(giantId || '');
   if (!id) return [];
-  return Object.entries(source?.streets || {}).filter(([, row]) => row?.giantId === id).map(([tsid]) => tsid);
+  const of = typeof giantAt === 'function' ? giantAt : (_tsid, row) => row?.giantId;
+  return Object.entries(source?.streets || {}).filter(([tsid, row]) => of(tsid, row) === id).map(([tsid]) => tsid);
 }
 
 export function ecologyForStreet(tsid, source = catalog) {

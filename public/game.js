@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=78294ea6';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=8884fee5';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d8773bae';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e28c281b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=92a3a070';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=92a3a070';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=bc86e306';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=bc86e306';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -689,7 +689,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=b89ee0f2';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=ab3596f4';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -708,7 +708,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=c1513885';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=ab06747b';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -894,7 +894,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=92a3a070';
+} from './js/animals.js?v=bc86e306';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1007,7 +1007,7 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=119d8cc2';
+} from './js/map-graph.js?v=78a605db';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=275b0c40';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
@@ -1032,8 +1032,8 @@ import {
   treePlacementRequest,
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=79b7a6f5';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=304f4695';
+} from './js/street-ecology.js?v=c4ce9ccd';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=68e5539a';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=570215e2';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=0c20633c';
@@ -25462,6 +25462,24 @@ function clearWorldEntities({ keepWindows = false } = {}) {
  * @param {string} tsid
  * @param {{ spawnX?: number, spawnY?: number, quiet?: boolean }} [opts]
  */
+/**
+ * A street's ecology row as enterStreet builds it: a feature's (a built street upgrade's,
+ * js/street-jobs.js upgradeEcologyEntry, which names its own shrine Giant) or the archived one.
+ */
+function streetEcologyEntry(street) {
+  return features.ecologyOverride(street, engine) || ecologyForStreet(street.tsid);
+}
+
+/**
+ * #475: the Giant of the shrine a street stands, from the row enterStreet spawns it from, or ''.
+ * The hub map's shrine icons and "Find the closest Shrine" read this, so they say what the street
+ * shows (they read the archived row while a built upgrade had put another Giant's shrine there).
+ */
+function streetShrineGiant(tsid) {
+  const t = resolveIndexTsid(tsid) || tsid;
+  return t ? streetEcologyEntry({ tsid: t })?.giantId || '' : '';
+}
+
 async function enterStreet(tsid, opts = {}) {
   // Ticket 67: your home is no street file (it resolved to the arrival street, a stay still set).
   if (isHomePlaceTsid(tsid) && homeState.owned) return arriveInHome(tsid, { ...opts, useTransition: false });
@@ -25552,7 +25570,7 @@ async function enterStreet(tsid, opts = {}) {
   // Tiny Speck's late-game location objects retain each street's real item
   // population. Allocate all of it in one pass so independent systems never
   // reuse the same handful of platform points or bury the arrival spot.
-  const ecologyEntry = features.ecologyOverride(data, engine) || ecologyForStreet(data.tsid);
+  const ecologyEntry = streetEcologyEntry(data);
   currentStreetPopulation = populationForStreet(data.tsid, ecologyEntry, {
     starter: data.tsid === STREET_INDEX.default,
   });
@@ -26608,7 +26626,7 @@ async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } =
   }
 
   // "You" on the hub map: the current street, or the street that stands for it (spot.tsid).
-  const view = buildHubMapView(hubData, spot.hubId === targetHub ? spot.tsid : currentStreetTsid, STREET_INDEX.streets);
+  const view = buildHubMapView(hubData, spot.hubId === targetHub ? spot.tsid : currentStreetTsid, STREET_INDEX.streets, { shrineAt: streetShrineGiant });
   // MAPLOAD: the painting at the size this screen draws, and the region's thumb in its place until it arrives.
   prepareMapBg(view, { loader: mapBgLoader, dpr: globalThis.devicePixelRatio, fitScale: mapFitScale });
   // Ticket 66: streets still under construction show it before you try to go (map-graph.js `building`).
@@ -29961,7 +29979,7 @@ function findNearestShrine(giant) {
   const row = favorPanelRows(shrineState, null).find((r) => r.id === giant);
   if (!row) return null;
   const shrine = `Shrine to ${row.name}`;
-  const streets = shrineStreetsFor(row.id);
+  const streets = shrineStreetsFor(row.id, undefined, streetShrineGiant);
   const here = String(currentStreetTsid || '');
   const alias = (t) => [t, t.replace(/^G/, 'L'), t.replace(/^L/, 'G')];
   if (here && streets.some((t) => alias(t).includes(here))) {

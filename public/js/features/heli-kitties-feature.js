@@ -39,7 +39,7 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
-import { followPath } from '../street-creatures.js?v=304f4695';
+import { followPath } from '../street-creatures.js?v=68e5539a';
 import { landingY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
