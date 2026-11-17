@@ -351,6 +351,40 @@ export function labelQuad(x, y, w, h, rot) {
   return rotatedQuad(x, y, rot, -w / 2, -h * 0.8, w, h);
 }
 
+/** G935: how many degrees from 90 a street may lean and still count as vertical (HubMapDialog.as 66 STREET_ROTATION_BUFFER). */
+export const STREET_ROTATION_BUFFER = 5;
+
+/**
+ * PURE (G935, #467): where the You star stands on the street you are on, in map units. Glitch moved it
+ * along the street's line by your share of the street every frame while the map was open
+ * (HubMapDialog.as onEnterFrame 594-596, placeYouMarker 614-633): the street's left end at the line's
+ * first point (x1, y1), its right end at the second; a street drawn about upright (90 degrees, within
+ * STREET_ROTATION_BUFFER) whose level is taller than wide goes by height instead, its bottom at the
+ * second point. `xShare` and `yShare` are 0 to 1 (left to right, top to bottom); `tall` is the level
+ * taller than wide. The star stays centred on the line, as the remake drew it at the midpoint.
+ */
+export function youOnStreet(s, { xShare = 0.5, yShare = 1, tall = false } = {}) {
+  const x1 = Number(s?.x1);
+  const y1 = Number(s?.y1);
+  const dx = Number(s?.x2) - x1;
+  const dy = Number(s?.y2) - y1;
+  if (![x1, y1, dx, dy].every(Number.isFinite)) return null;
+  const rot = (Math.atan2(dy, dx) * 180) / Math.PI;
+  const upright = rot >= 90 - STREET_ROTATION_BUFFER && rot <= 90 + STREET_ROTATION_BUFFER && tall;
+  const share = Number(upright ? yShare : xShare);
+  const t = Number.isFinite(share) ? Math.min(1, Math.max(0, share)) : 0.5;
+  return { x: x1 + dx * t, y: y1 + dy * t };
+}
+
+/** The You star's points about (cx, cy) (renderHubMapSvg; game.js moves it with youOnStreet). */
+export function hubYouPoints(cx, cy) {
+  return (
+    `${cx},${cy - 14} ${cx + 4},${cy - 4} ${cx + 14},${cy - 4} ${cx + 6},${cy + 2} ` +
+    `${cx + 9},${cy + 12} ${cx},${cy + 6} ${cx - 9},${cy + 12} ${cx - 6},${cy + 2} ` +
+    `${cx - 14},${cy - 4} ${cx - 4},${cy - 4}`
+  );
+}
+
 /** The you-are-here star's box (renderHubMapSvg draws it about the street's midpoint). */
 export function youBox(mx, my) {
   return { x0: mx - 14, y0: my - 14, x1: mx + 14, y1: my + 12 };
@@ -940,14 +974,11 @@ export function renderHubMapSvg(view) {
 
   const you = (view.streets || []).find((s) => s.current);
   if (you) {
-    const cx = you.mx;
-    const cy = you.my;
-    parts.push(
-      `<polygon class="map-you" points="` +
-        `${cx},${cy - 14} ${cx + 4},${cy - 4} ${cx + 14},${cy - 4} ${cx + 6},${cy + 2} ` +
-        `${cx + 9},${cy + 12} ${cx},${cy + 6} ${cx - 9},${cy + 12} ${cx - 6},${cy + 2} ` +
-        `${cx - 14},${cy - 4} ${cx - 4},${cy - 4}" />`
-    );
+    // G935: where you stand along it when the caller knows (view.youAt, youOnStreet), else the midpoint.
+    const at = view.youAt && Number.isFinite(view.youAt.x) && Number.isFinite(view.youAt.y) ? view.youAt : null;
+    const cx = at ? Math.round(at.x * 10) / 10 : you.mx;
+    const cy = at ? Math.round(at.y * 10) / 10 : you.my;
+    parts.push(`<polygon class="map-you" points="${hubYouPoints(cx, cy)}" />`);
   }
 
   for (const h of view.hubs || []) {

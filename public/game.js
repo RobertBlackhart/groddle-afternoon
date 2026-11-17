@@ -993,6 +993,8 @@ import {
   buildHubMapView,
   mapClickTravel,
   renderHubMapSvg,
+  youOnStreet,
+  hubYouPoints,
   mapFitSize,
   findCurrentStreet,
   listHubsFromIndex,
@@ -1004,7 +1006,7 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=7179ea52';
+} from './js/map-graph.js?v=3d5daed9';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=a4a08a24';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
@@ -16698,6 +16700,7 @@ function physics(dt) {
   // a street loading card is up (G198); a panel opened after a notice was raised (the shrine again,
   // right after a donation) sends it early, its line still in the Activity log (tickNotices).
   tickNotices();
+  followMapYou();
 }
 
 /**
@@ -26709,6 +26712,11 @@ async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } =
     sub.title = sub.textContent;
   }
 
+  // G935 (#467): the You star stands where you are along the street, and follows you while the map is open
+  // (followMapYou) when the street you are on is on the map (not a street standing in for it).
+  const youSeg = view.streets?.find((st) => st.current);
+  mapYouSeg = youSeg && findCurrentStreet(currentStreetTsid, [youSeg]) ? youSeg : null;
+  view.youAt = mapYouSeg ? mapYouSpot(mapYouSeg) : null;
   canvas.innerHTML = renderHubMapSvg(view);
   // The street icons' tips on hover and keyboard focus (vendor, shrine, subway; MapHub.as).
   bindMapIconTips(canvas);
@@ -27132,6 +27140,40 @@ function closeMap() {
 function isMapOpen() {
   const panel = document.getElementById('map-panel');
   return panel && !panel.hidden;
+}
+
+/** G935: the region map's street you stand on, as drawn (null when the star stands on another street's behalf). */
+let mapYouSeg = null;
+/** G935: the star's last drawn place ("x,y"), so an unmoved star is not written again. */
+let mapYouDrawn = '';
+
+/** G935 (#467): your share of the street you are on, as youOnStreet reads it (HubMapDialog.as 614-633). */
+function mapYouSpot(seg) {
+  const w = Number(WORLD_W) || 0;
+  const h = Number(bgLayer?.worldH) || 0;
+  if (!player || !(w > 0)) return null;
+  return youOnStreet(seg, { xShare: player.x / w, yShare: h > 0 ? player.y / h : 1, tall: h > w });
+}
+
+/**
+ * G935 (#467): once a frame while the region map is open, the You star moves along your street as you
+ * walk (HubMapDialog.as onEnterFrame 594-596: updateYou every frame), so a route walked with the map
+ * open shows the star going.
+ */
+function followMapYou() {
+  if (!mapYouSeg || mapPanelView !== 'hub' || !isMapOpen()) return;
+  // A street change under the open map: the star stays until the map draws the new street.
+  if (!findCurrentStreet(currentStreetTsid, [mapYouSeg])) return;
+  const star = document.querySelector('#map-panel .map-you');
+  const at = star && mapYouSpot(mapYouSeg);
+  if (!at) return;
+  const x = Math.round(at.x * 10) / 10;
+  const y = Math.round(at.y * 10) / 10;
+  const key = `${x},${y}`;
+  if (key === mapYouDrawn && star.dataset.youAt === key) return;
+  mapYouDrawn = key;
+  star.dataset.youAt = key;
+  star.setAttribute('points', hubYouPoints(x, y));
 }
 
 /** Ticket 81: the Projects panel (features/street-jobs-feature.js projectsPanel, js/ui/projects-sheet.js). */

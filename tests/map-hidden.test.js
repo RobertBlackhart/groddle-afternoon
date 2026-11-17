@@ -16,7 +16,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hiddenReason, readHiddenSources, STRAYS, TOWERS } from '../tools/build-map-hidden.mjs';
-import { buildHubMapView, listHubsFromIndex, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=7179ea52';
+import { buildHubMapView, listHubsFromIndex, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=3d5daed9';
 import { hubMapSubtitle } from '../public/js/panel-copy.js?v=85c3e029';
 import { doorRooms } from '../public/js/map-routes.js?v=f23b16a2';
 

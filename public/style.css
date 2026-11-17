@@ -6936,10 +6936,11 @@ body.buff-purple-pulse::after {
   stroke-width: calc(3.5px * var(--map-line-k, 1));
   opacity: 0.55;
 }
+/* G935 (#467): the streets you are not on at 0.7, the one you are on whole (MapStreet.as 16, 46 NORMAL_ALPHA). */
 .map-seg.travelable {
   stroke: var(--c-yellow-91);
   stroke-width: calc(7px * var(--map-line-k, 1));
-  opacity: 0.95;
+  opacity: 0.7;
 }
 .map-seg.current {
   stroke: var(--c-yellow-90);
@@ -6956,6 +6957,7 @@ body.buff-purple-pulse::after {
 .map-street.travelable:hover .map-seg.travelable {
   stroke: var(--c-yellow-95b);
   stroke-width: calc(9px * var(--map-line-k, 1));
+  opacity: 0.85; /* MapStreet.as 18 HIGHLIGHT_ALPHA */
 }
 /* Ticket 66: under construction (MapStreet.as: a locked street paler, its name dimmed), with stripes. */
 .map-seg.travelable.building { opacity: 0.6; }
