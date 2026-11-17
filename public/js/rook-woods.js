@@ -176,6 +176,26 @@ export const ROOK_NEST = Object.freeze({
   h: 112,
 });
 
+/**
+ * G892 (stand-ins audit A10): the birds over the wood are rooks, not drawn strokes: the one-colour
+ * rook silhouette sheet An Autumn Day already ships (an_autumn_day/crow.webp: glitch-overlays
+ * rook_fly_side.swf sprite 53, its 18 frames in order at a quarter size, CC0), flapping, small and
+ * faint in the far sky where the strokes were. Every other bird turns the other way.
+ */
+export const ROOK_WOODS_BIRDS = Object.freeze({
+  sheet: 'assets/sprites/quest-rooms/an_autumn_day/crow.webp',
+  fw: 148,
+  fh: 145,
+  cols: 6,
+  rows: 3,
+  frames: 18,
+  scale: 0.2,
+  alpha: 0.52,
+  speed: 0.24,
+  zIndex: -860,
+  spots: Object.freeze(Array.from({ length: 8 }, (_, i) => Object.freeze({ x: 330 + i * 245, y: 215 + (i % 3) * 44, flip: i % 2 === 1 }))),
+});
+
 export const ROOK_FOREST_ART_ID = 'clean-layered-silhouettes';
 
 export const ROOK_FOREST_DEPTH_LAYERS = Object.freeze([

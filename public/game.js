@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=6c40df6e';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=43fa8181';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9ce2ed45';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -222,6 +222,7 @@ import {
   ROOK_FOREST_DEPTH_LAYERS,
   ROOK_FOREST_LIMBS,
   ROOK_NEST,
+  ROOK_WOODS_BIRDS,
   ROOK_QUEST_ID,
   ROOK_WOODS_DURATION_MS,
   ROOK_WOODS_PLATFORMS,
@@ -239,7 +240,7 @@ import {
   rookEggStateForProgress,
   rookWoodsObjective,
   rookWoodsRemainingMs,
-} from './js/rook-woods.js?v=c8089bf8';
+} from './js/rook-woods.js?v=5c325002';
 import {
   ROOK_HALL_QUEST_ID,
   ROOK_HALL_START_QUEST_ID,
@@ -20781,17 +20782,23 @@ function drawRookWoodsBackground() {
   nest.name = 'rook-nest';
   root.addChild(nest);
 
-  const birds = new PIXI.Graphics();
-  birds.zIndex = -860;
-  for (let i = 0; i < 8; i += 1) {
-    const bx = 330 + i * 245;
-    const by = 215 + (i % 3) * 44;
-    birds.moveTo(bx - 14, by + 3);
-    birds.quadraticCurveTo(bx - 5, by - 8, bx, by);
-    birds.quadraticCurveTo(bx + 6, by - 9, bx + 15, by + 2);
-  }
-  birds.stroke({ width: 3, color: 0x0d110e, alpha: 0.52 });
-  root.addChild(birds);
+  // G892: rook silhouettes flapping in the far sky (js/rook-woods.js ROOK_WOODS_BIRDS), not strokes.
+  const B = ROOK_WOODS_BIRDS;
+  const birdFrames = sliceSheet(textureFromUrl(B.sheet).source, B, B.frames);
+  root.rookWoodsBirds = B.spots.map((spot, i) => {
+    const bird = new PIXI.AnimatedSprite(birdFrames);
+    bird.anchor.set(0.5);
+    bird.position.set(spot.x, spot.y);
+    bird.scale.set(spot.flip ? -B.scale : B.scale, B.scale);
+    bird.alpha = B.alpha;
+    bird.animationSpeed = B.speed;
+    bird.gotoAndPlay((i * 5) % B.frames);
+    bird.zIndex = B.zIndex;
+    bird.eventMode = 'none';
+    bird.label = 'rook-woods-bird';
+    root.addChild(bird);
+    return bird;
+  });
 
   root.platformsScreen = platforms;
   root.signViews = [];

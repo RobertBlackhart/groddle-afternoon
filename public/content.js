@@ -76,7 +76,7 @@ import {
   harvestWoodTree,
   woodTreeStatusLabel,
 } from './js/woodcutting.js?v=b43edbd8';
-import { findWorkingRookTool } from './js/rook-woods.js?v=c8089bf8';
+import { findWorkingRookTool } from './js/rook-woods.js?v=5c325002';
 import {
   HERDKEEPING,
   INCUBATION,

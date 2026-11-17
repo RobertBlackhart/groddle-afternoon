@@ -32,7 +32,7 @@ import {
 import { createAnimalState, animalStatusLabel, resetAnimalDay } from '../public/js/animals.js?v=0c6762ce';
 import { performAnimalKinship } from '../public/js/animal-kinship.js?v=d1fff152';
 import { advanceYard, capturePiggy, captureVerbState, feedPiggyStack, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=22212cb3';
-import { getVerbsFor, runVerb } from '../public/content.js?v=662a4744';
+import { getVerbsFor, runVerb } from '../public/content.js?v=6c40df6e';
 import { animalMoodFeature, describeAnimalPlace } from '../public/js/features/animal-mood-feature.js?v=21b0c24c';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 import { animalHusbandryFeature, deathRollFor, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=095a14a6';

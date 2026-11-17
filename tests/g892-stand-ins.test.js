@@ -8,6 +8,7 @@ import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=6ef1ea3a';
 import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=125375b0';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
+import { ROOK_WOODS_BIRDS } from '../public/js/rook-woods.js?v=5c325002';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -167,5 +168,29 @@ describe('Alphabet Sauce (A9)', () => {
     assert.match(body, /new PIXI\.AnimatedSprite\(frames\)/);
     assert.doesNotMatch(body, /ellipse\(|0xc8432b/);
     assert.match(src, /export const ALPHABET_SAUCE_SPEED = 12 \/ 60;/);
+  });
+});
+
+describe('Rooks\' Woods birds (A10)', () => {
+  it('are the shipped rook silhouette sheet (rook_fly_side.swf sprite 53), where the strokes were', () => {
+    const B = ROOK_WOODS_BIRDS;
+    assert.ok(existsSync(join(ROOT, B.sheet)), B.sheet);
+    assert.equal(B.cols * B.rows, B.frames);
+    assert.equal(B.frames, 18);
+    // The sheet's grid is exactly the cells named here (888 x 435).
+    const head = readFileSync(join(ROOT, B.sheet));
+    const kind = head.toString('ascii', 12, 16);
+    const bits = head.readUInt32LE(21);
+    const size = kind === 'VP8X' ? [head.readUIntLE(24, 3) + 1, head.readUIntLE(27, 3) + 1] : [(bits & 0x3fff) + 1, ((bits >> 14) & 0x3fff) + 1];
+    assert.equal(kind === 'VP8X' || kind === 'VP8L', true, kind);
+    assert.deepEqual(size, [B.fw * B.cols, B.fh * B.rows]);
+    assert.match(read('js/quest-rooms/an-autumn-day.js'), /crow\.png is rook_fly_side\.swf\s*\n?\s*\*?\s*sprite 53/);
+    assert.equal(B.spots.length, 8);
+    assert.deepEqual(B.spots.map((p) => [p.x, p.y]), Array.from({ length: 8 }, (_, i) => [330 + i * 245, 215 + (i % 3) * 44]));
+    // About as wide as the strokes were (29 px).
+    assert.ok(Math.abs(B.fw * B.scale - 29) < 4);
+    const body = fnBody(game(), 'drawRookWoodsBackground');
+    assert.match(body, /new PIXI\.AnimatedSprite\(birdFrames\)/);
+    assert.doesNotMatch(body, /quadraticCurveTo/);
   });
 });
