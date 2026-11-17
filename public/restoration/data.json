@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2592,
+  "commits": 2594,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Energy and mood change one way: gains never push a full tank down, and drops, the Emotional Bear and puzzle quoins fill to your real tank"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Stack repairs: imports and test steps the lane merges dropped"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A key-holder's open cabinet shows the owner's moves, and a yard animal someone uses stands still for everyone"
    }
   ]
  },
- "tests": 1116,
+ "tests": 1117,
  "generatedAt": "2026-11-17"
 }
