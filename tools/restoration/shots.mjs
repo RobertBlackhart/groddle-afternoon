@@ -6,11 +6,14 @@
  * pack; 'panel' keeps the whole game area so an open panel shows.
  */
 const Q = '?autostart=1&fresh=1&resetgame=1&questoffer=off&questfx=0&timedemo=day';
+// Hechey Track at ground level by its tree ladder: a fresh game now spawns up in the street's canopy
+// (game.js placement('player') since 30e8eca38dd), where the shots lost their street.
+const H = '&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820';
 // Clicks the first visible dialogue button (OK / Click anywhere / Next).
 
 
 export const SHOTS = Object.freeze({
-  streets: { route: `${Q}`, wait: 9000 },
+  streets: { route: `${Q}${H}`, wait: 10000 },
   navigation: { route: `${Q}&doordemo=GLI32G3NUTD100I`, wait: 11000 },
   // The Ur subway (G115): buy a Red Line ticket at Somewhat Sump and stop in the moving train.
   subway: { route: `${Q}&subwaydemo=somewhat_sump&subwaypapers=1&subwayautoplay=ride&subwayfast=1&subwayhold=1`, wait: 26000 },
@@ -20,36 +23,40 @@ export const SHOTS = Object.freeze({
   // The Interrogation room (G352): standing by the right partitions, the booth's chair in the light.
   interrogation: { route: `${Q}&streetdemo=GIFLFPPBUUT11SP&streetx=720&streety=970`, wait: 12000 },
   'street-events': { route: `${Q}&puzzledemo=GHVOD0F3T403694`, wait: 12000 },
-  camera: { route: `${Q}&camerademo=1&cameraskill=1&cameralook=-1100,-60`, wait: 12000 },
+  camera: { route: `${Q}${H}&camerademo=1&cameraskill=1&cameralook=-1100,-60`, wait: 12000 },
   piggies: { route: `${Q}&animaldemo=piggy&animalrank=2`, wait: 9000 },
-  butterflies: { route: `${Q}&animaldemo=butterfly&animalrank=2&tooldemo=butterfly_lotion&toolremaining=5`, wait: 9000 },
+  // Gregarious Grange: Hechey Track keeps no butterflies in the archive's ecology.
+  // The demo stands you beside a butterfly at boot, but they fly off: step beside the lowest one again.
+  butterflies: { route: `${Q}&streetdemo=GLI32G3NUTD100I&animaldemo=butterfly&animalrank=2&tooldemo=butterfly_lotion&toolremaining=5`, wait: 10000, steps: [{ eval: "(() => { const b = window.groddleQA.snapshot().interactables.filter((i) => i.classId === 'npc_butterfly').sort((p, q) => q.y - p.y)[0]; if (b) window.groddleQA.placeAvatar(b.x - 60, b.y); })()" }, { wait: 900 }] },
   trants: { route: `${Q}&harvestdemo=fruit&harvestrank=2&harvestreset=1`, wait: 9000 },
-  foxes: { route: `${Q}&foxdemo=1`, wait: 11000 },
+  foxes: { route: `${Q}${H}&foxdemo=1`, wait: 11000 },
   batterflies: { route: `${Q}&streetdemo=GA9114MS8B32FB2`, wait: 11000 },
   gardens: { route: `${Q}&mastergardendemo=1`, wait: 10000 },
   mining: { route: `${Q}&rockdemo=sparkly`, wait: 9000 },
-  cooking: { route: `${Q}`, wait: 8000, frame: 'panel', steps: [{ click: '#make-btn' }, { wait: 1200 }] },
-  quoins: { route: `${Q}&quoindemo=qurazy`, wait: 9000 },
+  cooking: { route: `${Q}${H}`, wait: 8000, frame: 'panel', steps: [{ click: '#make-btn' }, { wait: 1200 }] },
+  // A fresh game stands in Hechey Track's canopy, where the street's quoins now float (no H).
+  quoins: { route: `${Q}`, wait: 9000 },
   shrines: { route: `${Q}&shrinedemo=1`, wait: 10000 },
-  imagination: { route: `${Q}&imgdemo=1&imglevel=12`, wait: 10000, frame: 'panel' },
-  badges: { route: `${Q}&badgeqa=1`, wait: 9000, frame: 'panel', steps: [{ click: '#more-btn' }, { click: '#achieve-btn' }, { wait: 1500 }] },
-  quests: { route: '?autostart=1&fresh=1&resetgame=1&questoffer=now', wait: 16000, frame: 'panel' },
+  imagination: { route: `${Q}${H}&imgdemo=1&imglevel=12`, wait: 10000, frame: 'panel' },
+  badges: { route: `${Q}${H}&badgeqa=1`, wait: 9000, frame: 'panel', steps: [{ click: '#more-btn' }, { click: '#achieve-btn' }, { wait: 1500 }] },
+  quests: { route: `?autostart=1&fresh=1&resetgame=1&questoffer=now${H}`, wait: 16000, frame: 'panel' },
   'story-quests': { route: `${Q}&questdemo=winter&winterautoplay=surface`, wait: 16000 },
   paradise: { route: `${Q}&paradise=cloud_rings&paradisepreview=ring&paradisefx=0`, wait: 12000 },
   races: { route: `${Q}&racedemo=space_race&raceassist=1&raceautoplay=1`, wait: 16000 },
   'hog-haul': { route: `${Q}&questdemo=hoghaul&racedemo=1&raceassist=1`, wait: 14000 },
-  'street-jobs': { route: `${Q}&jobdemo=351`, wait: 10000 },
+  'street-jobs': { route: `${Q}${H}&jobdemo=351`, wait: 10000 },
   parties: { route: `${Q}&partydemo=moon&partyautoplay=hold`, wait: 16000 },
   homes: { route: `${Q}&homedemo=decorate`, wait: 12000 },
   neighbours: { route: `${Q}&stonedemo=1&stoneautoplay=1`, wait: 16000 },
-  rooks: { route: `${Q}&rookdemo=attack&rookfx=hold`, wait: 12000 },
-  skills: { route: `${Q}&skilltree=mining_3`, wait: 9000, frame: 'panel' },
-  meditation: { route: `${Q}&meditatedemo=all&meditateroll=0.99&meditateautoplay=levitate&meditatelevhold=1`, wait: 14000 },
-  icons: { route: `${Q}&icondemo=1&iconautoplay=place`, wait: 16000 },
-  rube: { route: `${Q}&rubedemo=1&rubeautoplay=offer&rubeseed=3`, wait: 20000, frame: 'panel' },
+  rooks: { route: `${Q}${H}&rookdemo=attack&rookfx=hold`, wait: 12000 },
+  skills: { route: `${Q}${H}&skilltree=mining_3`, wait: 9000, frame: 'panel' },
+  meditation: { route: `${Q}${H}&meditatedemo=all&meditateroll=0.99&meditateautoplay=levitate&meditatelevhold=1`, wait: 14000 },
+  icons: { route: `${Q}${H}&icondemo=1&iconautoplay=place`, wait: 16000 },
+  rube: { route: `${Q}${H}&rubedemo=1&rubeautoplay=offer&rubeseed=3`, wait: 20000, frame: 'panel' },
   hell: { route: `${Q}&helldemo=croak`, wait: 12000 },
-  smuggling: { route: `${Q}&smugglingdemo=give`, wait: 12000 },
-  collectibles: { route: `${Q}&stootdemo=1&stootdollautoplay=1&stootquote=38`, wait: 12000 },
+  // West of the tree ladder: the Smuggler walks up to 330 px on your right, clear of the Beryl Rock.
+  smuggling: { route: `${Q}&streetdemo=GLI2V0UN7RD1T2J&streetx=2700&streety=840&smugglingdemo=give`, wait: 9000 },
+  collectibles: { route: `${Q}&stootdemo=1&stootdollautoplay=1&stootquote=38`, wait: 8000 },
 
   'room:rainbow_run': { route: `${Q}&questdemo=numismatic_hustle&questautoplay=ready`, wait: 16000 },
   'room:top_of_tree': { route: `${Q}&questdemo=high_jump`, wait: 12000, steps: [{ eval: "[...document.querySelectorAll('button')].find((b) => b.offsetParent && /^(OK|Ok|Click anywhere|Next|Continue)/i.test(b.textContent.trim()))?.click()" }, { wait: 900 }, { eval: "[...document.querySelectorAll('button')].find((b) => b.offsetParent && /^(OK|Ok|Click anywhere|Next|Continue)/i.test(b.textContent.trim()))?.click()" }, { wait: 900 }] },
