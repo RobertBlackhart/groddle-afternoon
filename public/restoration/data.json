@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2549,
+  "commits": 2552,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Ivalo Trims' left Mortar Barnacle sits on the trunk instead of half over its edge"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Edge barnacles on round trunks face outward whichever art variant they are"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Stack repairs: imports and test steps the lane merges dropped"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-17",
     "kind": "improve",
     "text": "Winter Haven's branches carry their snow: its three trees are made for Groddle, with snow caps and short icicles"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Mortar Barnacles placed by rule sit on the wall art, never on the dirt in front of it, and the ones on a round trunk's right side face outward"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Clicking the street map's arrow tab expands it again, not only hovering over it"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Helping someone mine counts for I Me Mine when everyone starts together"
    }
   ]
  },
- "tests": 1100,
+ "tests": 1101,
  "generatedAt": "2026-11-17"
 }
