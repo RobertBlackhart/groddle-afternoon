@@ -79,6 +79,19 @@ describe('a Storage Display Box takes things, as the original did', () => {
     assert.match(homes, /const tip = new PIXI\.Text\(\{ text: ok \? DISPLAY_TEXT\.dropTip : hit\.refusal\.msg/);
   });
 
+  it('#470: outside Decorate a pack stack dropped on a box in your own house goes in it (bag_furniture_sdb.js 611-640)', () => {
+    const wire = homes.slice(homes.indexOf('function wireBoxDrop('), homes.indexOf('function startPackDrag('));
+    const here = homes.slice(homes.indexOf('function boxDropHere('), homes.indexOf('function endBoxDrag('));
+    assert.match(here, /mode === 'decorate'/, 'Decorate keeps its own drop');
+    assert.match(here, /scene\.room !== 'interior'/);
+    assert.match(here, /ctx\?\.inHome/, 'your own home only: a visit is a VISIT_ scene, never inHome');
+    assert.match(wire, /document\.addEventListener\('dragstart'[\s\S]{0,200}event\.defaultPrevented/);
+    const drop = wire.slice(wire.indexOf("canvas.addEventListener('drop'"));
+    assert.match(drop, /if \(!hit\) return;\s+e\.preventDefault\(\);\s+const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
+    assert.doesNotMatch(wire, /dropPackStackAt|packDragStart/, 'only a drop over a box is taken');
+    assert.match(homes.slice(homes.indexOf('function afterEnter('), homes.indexOf('function afterEnter(') + 300), /wireBoxDrop\(engine\);/, 'wired when a home room is entered');
+  });
+
   it('a stack set down in the room dragged onto a box goes in by its own Pick up, then the deposit (the ledger sees moves only)', () => {
     const end = homes.slice(homes.indexOf('function endStackDrag('));
     assert.match(end.slice(0, 1200), /if \(hit\) return stackIntoBox\(engine, was\.id, hit\);\s+return moveStack\(engine, was\.id, p\);/);
@@ -109,7 +122,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=0d646f65');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=6c555970');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);

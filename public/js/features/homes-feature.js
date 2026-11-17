@@ -5599,6 +5599,66 @@ function wirePackDrag(engine) {
   return true;
 }
 
+// --- #470: a pack stack dragged onto a Storage Display Box outside Decorate goes in it too. The
+// original took the drop any time (bag_furniture_sdb.js verbs.deposit 611-633: is_drop_target,
+// drop_ok_code; conditions 638-640: in a home only its owner), so at home, in your own
+// house, the box is a drop target as it is in Decoration Mode. This only listens to the pack's HTML
+// drag (as features/world-drop-feature.js does): it answers no packDragStart, so a move into a bag
+// still works, and only a drop over a box is taken.
+
+let boxDrag = null; // { classTsid, count } a pack stack dragged while not decorating
+let boxDropWired = false;
+
+/** Whether a drag outside Decorate may go into a box here: your own house, its rooms drawn. */
+function boxDropHere(engine) {
+  if (mode === 'decorate' || !scene || scene.room !== 'interior' || scene.construction) return false;
+  const ctx = engine.homeContext?.();
+  return Boolean(ctx?.inHome && ctx.room === 'interior');
+}
+
+function endBoxDrag(engine) {
+  boxDrag = null;
+  clearDisplayTarget(engine);
+}
+
+function wireBoxDrop(engine) {
+  const canvas = gameCanvas();
+  if (boxDropWired || !canvas || typeof document === 'undefined') return;
+  boxDropWired = true;
+  // After the pack slot's own dragstart: a drag it cancelled is no drag; a bag is no stack.
+  document.addEventListener('dragstart', (event) => {
+    const slot = event.target?.closest?.('.pack-slot');
+    const cls = slot?.dataset?.tsid || '';
+    boxDrag = !event.defaultPrevented && cls && !slot.dataset.packBag && boxDropHere(engine)
+      ? { classTsid: cls, count: Math.max(1, Math.floor(Number(slot.dataset.packCount) || 1)) }
+      : null;
+  });
+  document.addEventListener('dragend', () => { if (boxDrag) endBoxDrag(engine); });
+  canvas.addEventListener('dragover', (e) => {
+    if (!boxDrag || !boxDropHere(engine)) return;
+    const hit = displayDropAt(toRoom(worldPoint(engine, e)), boxDrag.classTsid);
+    drawDisplayTarget(engine, hit);
+    if (!hit) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = hit.refusal ? 'none' : 'move';
+  });
+  canvas.addEventListener('dragleave', () => { if (boxDrag) clearDisplayTarget(engine); });
+  canvas.addEventListener('drop', (e) => {
+    if (!boxDrag || !boxDropHere(engine)) return;
+    const was = boxDrag;
+    const hit = displayDropAt(toRoom(worldPoint(engine, e)), was.classTsid);
+    endBoxDrag(engine);
+    if (!hit) return;
+    e.preventDefault();
+    const res = depositInBox(engine, hit.box, was.classTsid, was.count);
+    if (!res.ok) {
+      if (res.msg) engine.toast(res.msg);
+      engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    }
+    engine.setData('homeDropLast', res.ok ? `display:${was.classTsid}:${hit.box.id}` : `refused:${res.reason || ''}`);
+  });
+}
+
 /** game.js pack dragstart while decorating: a pack stack goes onto a shelf, a table or the floor. */
 function startPackDrag(classTsid, event, engine) {
   if (mode !== 'decorate' || scene?.room !== 'interior' || scene.construction || !wirePackDrag(engine)) return false;
@@ -7671,6 +7731,8 @@ function homeScene(room, engine) {
 
 function afterEnter(engine) {
   bindPointer(engine);
+  // #470: at home a pack stack may go into a Storage Display Box without Decorate.
+  wireBoxDrop(engine);
   if ((mode === 'decorate' && scene.room !== 'interior') || (mode === 'cultivate' && scene.room !== 'street' && !inHouse())) {
     mode = null;
     placing = null;
