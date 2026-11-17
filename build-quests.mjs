@@ -4,6 +4,7 @@
  * (CC0) with the fields the quest-offer engine needs.
  *
  *   node build-quests.mjs            (from ~/Documents/glitch-audit/spike)
+ *   node build-quests.mjs --check    (exit 1 when quests.json or meta.json is stale)
  *
  * Supersedes the quest half of ../scripts/extract-gsjs-content.mjs: if that
  * script is re-run, run this one afterwards. Every field the older extractor
@@ -39,7 +40,11 @@
  *   event        named special hook (death, shrine_donation, emblems, streets_visited, item_use, ...)
  *   prerequisites  no giver survives in the dump; the quest's own `prerequisites`
  *                  list is the gate, delivered by the familiar (inferred: true)
- *   inferred     hand-assigned gate for an unsourced quest (inferred: true)
+ *   inferred     the remake's stand-in for a quest with no giver and no conditions
+ *                in GSJS (inferred: true; tools/quest-gates/table.mjs STAND_INS, R18)
+ *
+ * Every gate that is not GSJS's own has a row in tools/quest-gates/table.mjs
+ * (tests/quest-gates-gsjs.test.js).
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { decodeDataText } from './tools/data-text.mjs';
@@ -47,6 +52,9 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { QUEST_ROOMS, OFFER_OVERRIDES, isBuiltRoom } from './public/js/quest-rooms/catalog.js';
+import { SPECIAL_TRIGGERS, STAND_INS } from './tools/quest-gates/table.mjs';
+
+const CHECK = process.argv.includes('--check');
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const GS = join(ROOT, '../glitch-GameServerJS');
@@ -146,28 +154,9 @@ for (const file of readdirSync(join(GS, 'achievements'))) {
     addTrigger(m[1], { type: 'achievement', achievement: file.replace(/\.js$/, '') });
   }
 }
-// Named special hooks found by reading the call sites (see header).
-const SPECIAL_TRIGGERS = {
-  hell_hole: [{ type: 'event', event: 'death', where: 'hell_one' }],
-  hell_quest: [{ type: 'event', event: 'death', where: 'purgatory' }],
-  baqala_nostalgia: [{ type: 'region', region: 'Savanna' }],
-  buy_two_bags: [{ type: 'event', event: 'newxp_island' }],
-  leave_gentle_island: [{ type: 'event', event: 'newxp_home' }],
-  rube_spy: [{ type: 'event', event: 'rube_visited_home' }],
-  card_carrying_qualification: [{ type: 'event', event: 'subway_gate' }],
-  stale_but_necessary: [{ type: 'event', event: 'item_use', item: 'cup_of_water' }],
-  treasure_map_1: [{ type: 'event', event: 'item_use', item: 'treasure_map_1' }],
-  create_giant_icon: [{ type: 'event', event: 'emblems', count: 4 }],
-  donate_to_all_shrines: [{ type: 'event', event: 'shrine_donation' }],
-  last_pilgrimage_of_esquibeth: [{ type: 'event', event: 'shrine_donation', afterQuest: 'donate_to_all_shrines', delaySec: 1800 }],
-  zero_mood: [{ type: 'event', event: 'mood_zero', adminOnly: true }],
-  smuggling_basic: [{ type: 'npc', npc: 'npc_smuggler' }],
-  high_jump: [{ type: 'quest', quest: 'de_embiggenify_part2', delaySec: 60 }],
-};
-for (const [q, list] of Object.entries(SPECIAL_TRIGGERS)) for (const t of list) addTrigger(q, t);
+// Named special hooks found by reading the call sites (tools/quest-gates/table.mjs, each with its line).
+for (const [q, { triggers: list }] of Object.entries(SPECIAL_TRIGGERS)) for (const t of list) addTrigger(q, t);
 
-// Hand-assigned gates for quests whose giver is lost from the dump. Each is a
-// judgment call from the quest text; `inferred: true` marks them in the data.
 // Requirements the remake implements as the quest text describes, where the
 // source only checked a looser counter. Each row says why.
 const REQUIREMENT_OVERRIDES = {
@@ -234,35 +223,6 @@ const TEXT_OVERRIDES = {
   ],
 };
 
-const INFERRED_GATES = {
-  meditativearts_meditation_station: { quests: ['meditativearts_get_max_relax'], why: 'Meditative Arts series; no giver survives (familiar turn-in)' },
-  master_milker: { quests: ['animalkinship_milk_butterflies'], why: 'milking quest after the Animal Kinship milking quest' },
-  rannacramble: { quests: ['master_milker'], region: 'Aranna', why: '"Take a hike through Aranna"' },
-  doody_inspector: { quests: ['animalkinship_pet_piggies'], why: 'piggy plops follow piggy care' },
-  buy_bag: { level: 2, why: 'early pack-space quest (source: emergency, newxp era)' },
-  spice_must_flow: { npc: 'street_spirit_groddle', why: 'end_npcs: street_spirit_groddle' },
-  // Meet the Merchants (G121): part 1's offer is the pet rock talking ("I'm your pet rock"), so the
-  // Magic Rock gives it; its end NPC, the Gardening Tools Vendor, then offers parts 2-4 (their offer text
-  // is the scarecrow: "buy these items from me"), each once the last one is turned in.
-  vendor_ping_pong_part1: { level: 2, why: 'offer is the pet rock speaking; end_npcs npc_gardening_vendor' },
-  vendor_ping_pong_part2: { npc: 'npc_gardening_vendor', quests: ['vendor_ping_pong_part1'], why: 'offer is the Gardening Tools Vendor speaking' },
-  vendor_ping_pong_part3: { npc: 'npc_gardening_vendor', quests: ['vendor_ping_pong_part2'], why: 'offer is the Gardening Tools Vendor speaking' },
-  vendor_ping_pong_part4: { npc: 'npc_gardening_vendor', quests: ['vendor_ping_pong_part3'], why: 'offer is the Gardening Tools Vendor speaking' },
-  manor_mystery: { street: 'Hauki Seeks', why: '"the Manor on Hauki Seeks"' },
-  jump_in_hole: { level: 5, why: 'exploration quest; no gate in source' },
-  ultimate_smoothie_1: { skills: ['blending_1'], why: 'smoothie ingredients; Blending' },
-  rising_moon: { level: 5, why: 'emotional bear + moon, both sold by street spirits' },
-  betterlearning_collect_favor_points: { quests: ['betterlearning_get_favor_at_shrines'], why: 'Better Learning favor series' },
-  betterlearning_donate_to_shrines: { quests: ['betterlearning_get_favor_at_shrines'], why: 'Better Learning favor series' },
-  betterlearning_get_giant_emblem: { quests: ['betterlearning_get_favor_at_shrines'], why: 'Better Learning favor series' },
-  engineering_assemble_machine: { skills: ['engineering_1'], why: 'Engineering intro quest' },
-  teleportation_teleport_between_zones: { skills: ['teleportation_1'], why: 'Teleportation series' },
-  soilappreciation_tend_patches: { skills: ['soil_appreciation_1'], why: 'Soil Appreciation series' },
-  soilappreciation_pet_seedlings_to_trees: { skills: ['soil_appreciation_2'], why: 'Soil Appreciation series' },
-  soilappreciation_tend_patch_get_drop: { skills: ['soil_appreciation_3'], why: 'Soil Appreciation series' },
-  soilappreciation_plant_beans_in_back_yard_patches: { skills: ['soil_appreciation_4'], why: 'Soil Appreciation series' },
-  mini_me_mini_you: { level: 10, why: 'Cubimal giving; no gate in source' },
-};
 
 /* ------------------------------------------------------------------ */
 /* Solo classification                                                  */
@@ -524,8 +484,10 @@ for (const def of Object.values(catalog)) {
 for (const def of Object.values(catalog)) {
   const id = def.classTsid;
   let list = triggers.get(id) ? [...triggers.get(id)] : [];
-  if (!list.length && INFERRED_GATES[id]) {
-    const { why, ...gate } = INFERRED_GATES[id];
+  // R18: the giver is lost and the file has no conditions; the stand-in is the remake's own
+  // (tools/quest-gates/table.mjs says what GSJS holds and the register row).
+  if (!list.length && STAND_INS[id]) {
+    const { gate, why } = STAND_INS[id];
     list = [{ type: 'inferred', inferred: true, ...gate, why }];
   }
   if (!list.length && def.prerequisites.length && !def.isJob) {
@@ -569,14 +531,28 @@ for (const def of Object.values(catalog)) {
 }
 
 // G955 (#472): GSJS htmlText entities as characters (tools/data-text.mjs).
-writeFileSync(join(CONTENT, 'quests.json'), JSON.stringify(decodeDataText(catalog), null, 1) + '\n');
-
+const questsPath = join(CONTENT, 'quests.json');
+const questsText = JSON.stringify(decodeDataText(catalog), null, 1) + '\n';
 const metaPath = join(CONTENT, 'meta.json');
-const meta = JSON.parse(readFileSync(metaPath, 'utf8'));
+const metaBefore = readFileSync(metaPath, 'utf8');
+const meta = JSON.parse(metaBefore);
 meta.counts.quests = { input: files.length, output: Object.keys(catalog).length, skips: skips.length };
 meta.skips.quests = skips;
 meta.questsBuiltBy = 'spike/build-quests.mjs';
-writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
+const metaText = JSON.stringify(meta, null, 2) + '\n';
+if (CHECK) {
+  const stale = [[questsPath, questsText], [metaPath, metaText]]
+    .filter(([path, text]) => (path === metaPath ? metaBefore : readFileSync(path, 'utf8')) !== text)
+    .map(([path]) => path.slice(ROOT.length + 1));
+  if (stale.length) {
+    console.error(`build-quests --check: stale ${stale.join(', ')}; run node build-quests.mjs`);
+    process.exit(1);
+  }
+  console.log('build-quests --check: quests.json and meta.json are current');
+  process.exit(0);
+}
+writeFileSync(questsPath, questsText);
+writeFileSync(metaPath, metaText);
 
 const tally = {};
 for (const d of Object.values(catalog)) {
