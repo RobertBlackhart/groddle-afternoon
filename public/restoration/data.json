@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2572,
+  "commits": 2575,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Instant Resurrection fills mood to the full tank, not 100"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "new",
+    "text": "The Scion of Purple is drawn sharp on computers, only while it is on screen"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Seasons turn on by the date on Ur's clock, so every player sees the same season"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Online, a Giant Icon stays in your pack on shared streets instead of a placement nobody else sees"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Released animals no longer make shared street animals leave on one screen online"
    }
   ]
  },
- "tests": 1110,
+ "tests": 1112,
  "generatedAt": "2026-11-17"
 }
