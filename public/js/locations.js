@@ -46,7 +46,6 @@ export const LOCATIONS = {
     entities: {
       piggies: [380, 700, 1100, 1500, 1900],
       chickens: [500, 900, 1400],
-      apples: [420, 800, 1200, 1600],
       butterflies: [650, 1300],
       trees: [1700, 2000],
       quoins: true,
@@ -84,7 +83,6 @@ export const LOCATIONS = {
     entities: {
       piggies: [400, 900, 1600],
       chickens: [700, 1200],
-      apples: [350, 950],
       butterflies: [1100],
       trees: [1400],
       quoins: true,
@@ -116,7 +114,6 @@ export const LOCATIONS = {
     entities: {
       piggies: [500, 1100],
       chickens: [800],
-      apples: [600, 1400],
       butterflies: [],
       trees: [1600],
       quoins: true,
@@ -145,7 +142,6 @@ export const LOCATIONS = {
     entities: {
       piggies: [],
       chickens: [],
-      apples: [400],
       butterflies: [],
       trees: [],
       quoins: false,

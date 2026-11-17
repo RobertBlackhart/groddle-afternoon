@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=4f661e19';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=8cfc2e2c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9f2a7136';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=970d1054';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=6a4177c7';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=6a4177c7';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=ede460d8';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=ede460d8';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=fbb6173e';
+} from './js/player-save.js?v=449465dc';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -687,7 +687,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=7456b174';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=7c86728d';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -706,7 +706,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=0ce5d775';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=1265c006';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -892,7 +892,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=6a4177c7';
+} from './js/animals.js?v=ede460d8';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1027,8 +1027,8 @@ import {
   shrinePlacementRequest,
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=b394a0ec';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=5c3ba435';
+} from './js/street-ecology.js?v=fc79cd70';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=88a88bbb';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b12c43aa';
@@ -1234,12 +1234,11 @@ const QUOIN_SCALE = 1;
  * Official Glitch sheets are low-res x1 rasters (no x2 / no vector bodies for animals).
  * Chickens ship with large frames (148×110) so they use a lower factor; piggies are
  * small frames (88×62) that looked huge + pixelated at full SCALE — keep them near 1:1
- * native size so they stay sharp. Apples are iconic inventory art, not world-scale fruit.
+ * native size so they stay sharp.
  */
 const ENTITY_SCALE = {
   piggy: SCALE * 0.72, // ~86×60 — smaller than before; near-native so less mushy
   chicken: SCALE * 0.52, // looks right; leave alone
-  apple: SCALE * 0.38, // ~20px ground pickup, not a melon
   // Official rest/fly sheets are ~70×65–78; keep near ambient size (not the old 39×28 rest single).
   butterfly: SCALE * 0.52,
   butterflyFly: SCALE * 0.52,
@@ -1269,8 +1268,6 @@ const SHEETS = {
     url: 'assets/sprites/npc_piggy__x1_nibble_png_1354829441.webp',
     fw: 88, fh: 62, cols: 10, rows: 6,
   },
-  // The pack icon, which has a 3x render (js/icon-hires.js).
-  appleIcon: { url: 'assets/sprites/icons/apple.webp', whole: true },
   chickenWalk: {
     url: 'assets/sprites/npc_chicken__x1_walk_png_1354830385.webp',
     fw: 148, fh: 110, cols: 6, rows: 4,
@@ -2454,7 +2451,7 @@ let interactables = [];
 const animalStateCache = new Map();
 /** Versioned ecology snapshot. Runtime targets point directly into these street records. */
 const persistentWorldState = { animals: {}, streets: {} };
-let piggies = [], chickens = [], apples = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], particles = [], speechBubbles = [];
+let piggies = [], chickens = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], particles = [], speechBubbles = [];
 let textures = {};
 let time = 0;
 let menuTarget = null;
@@ -8914,7 +8911,7 @@ function renderVerbMenu(target, verbs, level = null) {
   bindVerbMenu(menu);
   title.textContent = target.label || target.classId;
   sub.textContent = level ? level.title : target.subtitle || 'What do you want to do?';
-  // A thing that is also an item (an apple on the ground, a dropped stack) shows its icon.
+  // A thing that is also an item (a stack on the ground) shows its icon.
   const iconUrl = ITEM_CATALOG[target.classId] ? itemIconUrl(target.classId) : '';
   if (icon) {
     icon.hidden = !iconUrl;
@@ -10376,11 +10373,7 @@ function executeVerb(target, verbId) {
     if (!verbAnimationAlreadyStarted) playVerbStartAnimation(target, result.anim);
 
     if (result.remove) {
-      if (target.classId === 'apple') {
-        collectNaturalIndex('apple', target.state?.naturalIndex);
-      }
       entityLayer.removeChild(target.sprite);
-      apples = apples.filter((a) => a !== target.sprite);
       interactables = interactables.filter((t) => t !== target);
     }
   } else {
@@ -14268,7 +14261,6 @@ function streetWorldState(tsid = currentStreetTsid) {
       gardens: {},
       trees: [],
       rocks: [],
-      collectedApples: [],
       collectedQuoins: [],
     };
   }
@@ -14276,15 +14268,13 @@ function streetWorldState(tsid = currentStreetTsid) {
   street.gardens ||= {};
   street.trees ||= [];
   street.rocks ||= [];
-  street.collectedApples ||= [];
   street.collectedQuoins ||= [];
   return street;
 }
 
-function collectNaturalIndex(kind, index) {
+function collectNaturalQuoin(index) {
   if (!Number.isInteger(index) || index < 0) return;
-  const key = kind === 'quoin' ? 'collectedQuoins' : 'collectedApples';
-  const values = streetWorldState()[key];
+  const values = streetWorldState().collectedQuoins;
   if (!values.includes(index)) values.push(index);
   values.sort((a, b) => a - b);
 }
@@ -14593,7 +14583,7 @@ function spawnTrees(spots) {
     spr.scale.set(spr._woodDirection * s, s);
     spr.x = x;
     spr.y = y;
-    // Trants and Wood Trees are in_background (BG_ITEM): under apples, signs and every other item.
+    // Trants and Wood Trees are in_background (BG_ITEM): under signs and every other item.
     spr.zIndex = itemZ(classId, 6);
     // Tall plants (egg/fruit) can span > half the view; keep full texture, no mask
     spr.mask = null;
@@ -14701,45 +14691,10 @@ function resetAllAnimalsForNewDay() {
 function resetStreetCollectiblesForNewDay() {
   let n = 0;
   for (const street of Object.values(persistentWorldState.streets || {})) {
-    n += street.collectedApples?.length || 0;
-    street.collectedApples = [];
     // G227: quoins have no day reset in the source; timed spots wait for onRespawn.
     n += resetStreetQuoinsForNewDay(street);
   }
   return n;
-}
-
-/**
- * The street's loose Apples, one on each planned point (planStreetPlacements: a line that holds
- * items). An apple is an item, and an item on a street lies still with its art's bottom centre
- * on its point (LocationItemstackView.as _positionViewDO 853-854); it bobs only for a class whose
- * CSS names a bob_amt (215-229, default 0), and apple.js names none (Austin 2026-11-02: the
- * floating apples rest on the ground, as dropped stacks and Musicblocks do, desk DROPHOVER).
- */
-function spawnApples(points) {
-  const list = [];
-  const collected = new Set(streetWorldState().collectedApples);
-  points.forEach((p, i) => {
-    if (collected.has(i)) return;
-    const spr = new PIXI.Sprite(textures.appleIcon.frames[0]);
-    spr.anchor.set(0.5, 1);
-    spr.baseScale = ENTITY_SCALE.apple;
-    spr.scale.set(ENTITY_SCALE.apple);
-    spr.x = p.x;
-    spr.y = p.y;
-    spr._naturalIndex = i;
-    spr.zIndex = itemZ('apple', 4);
-    entityLayer.addChild(spr);
-    list.push(spr);
-    register({
-      classId: 'apple',
-      label: 'Apple',
-      subtitle: 'Boldly red and brazenly juicy',
-      sprite: spr,
-      state: { naturalIndex: i },
-    });
-  });
-  return list;
 }
 
 function sizeDroppedItemSprite(spr) {
@@ -15350,7 +15305,7 @@ function grabWorldQuoin(q, shared = null) {
   if (!result.ok) return false;
   // Multiplayer street quoins: the server keeps who took them and brings them back.
   if (Number.isInteger(q.naturalQuoinIndex) && !shared) {
-    collectNaturalIndex('quoin', q.naturalQuoinIndex);
+    collectNaturalQuoin(q.naturalQuoinIndex);
     // G216: it comes back after its class's respawn_time (items/quoin.js 305, 320-662).
     const respawnMs = quoinRespawnMs(q.quoinClass);
     noteQuoinRespawn(streetWorldState(), q.naturalQuoinIndex, respawnMs, Date.now());
@@ -16594,7 +16549,6 @@ function physics(dt) {
     }
   }
 
-  // auto-pickup apples on walk-over still? Keep click/menu only for apples to showcase verbs
   // quoin auto collect
   tickQuoinRespawns();
   if (!menuTarget && quoins.length) {
@@ -25389,7 +25343,6 @@ function clearWorldEntities({ keepWindows = false } = {}) {
   interactables = [];
   piggies = [];
   chickens = [];
-  apples = [];
   droppedItemSprites = [];
   quoins = [];
   butterflies = [];
@@ -25624,6 +25577,7 @@ async function enterStreet(tsid, opts = {}) {
       { key: 'chickens', count: currentStreetPopulation.chickens, clearance: 86 },
       { key: 'butterflies', count: currentStreetPopulation.butterflies, clearance: 62 },
       { key: 'flyingButterflies', count: currentStreetPopulation.flyingButterflies, clearance: 58 },
+      // G943: Glitch put no loose Apples on streets; their spots stay planned, empty, so nothing else moves.
       { key: 'apples', count: currentStreetPopulation.apples, clearance: 30 },
       { key: 'musicblocks', count: currentStreetPopulation.musicblocks, clearance: 45 },
       { key: 'quoins', count: currentStreetPopulation.quoins, clearance: 28 },
@@ -25666,7 +25620,6 @@ async function enterStreet(tsid, opts = {}) {
       spr._groundY = p.y;
     }
   });
-  apples = spawnApples(placement('apples'));
   const treeSpots = placement('trees').map((point, index) => ({
     x: point.x,
     y: point.y,

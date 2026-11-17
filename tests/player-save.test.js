@@ -12,7 +12,7 @@ import {
   parsePlayerSave,
   restorePlayerSave,
   serializePlayerSave,
-} from '../public/js/player-save.js?v=fbb6173e';
+} from '../public/js/player-save.js?v=449465dc';
 
 const publicRoot = join(import.meta.dirname, '..', 'public');
 
@@ -206,7 +206,6 @@ describe('persistent pack and core player state', () => {
             },
             trees: [{ classId: 'trant_fruit', state: { fruitCount: 2, harvested: false } }],
             rocks: [{ classId: 'rock_metal_1', rock: { chunksRemaining: 12, depleted: false } }],
-            collectedApples: [0, 2],
             collectedQuoins: [1],
           },
         },
@@ -323,7 +322,8 @@ describe('persistent pack and core player state', () => {
     const world = normalizeWorldSnapshot({
       streets: { 'bad street!': { collectedApples: [2, 2, -1, 1000], collectedQuoins: [3] } },
     });
-    assert.deepEqual(world.streets.badstreet.collectedApples, [2]);
+    // G943: an older save's street Apples (collectedApples) load and are dropped; there are none now.
+    assert.equal(world.streets.badstreet.collectedApples, undefined);
     assert.deepEqual(world.streets.badstreet.collectedQuoins, [3]);
     assert.deepEqual(normalizeSystemsSnapshot({ skills: { learned: ['a', 'a', 'bad skill!'] } }).skills.learned, ['a', 'badskill']);
   });
@@ -347,7 +347,6 @@ describe('player save client integration', () => {
     assert.match(game, /streetState\.gardens\[bedKey\]/);
     assert.match(game, /streetState\.trees\[i\]/);
     assert.match(game, /streetState\.rocks\[index\]/);
-    assert.match(game, /collectedApples/);
     assert.match(game, /collectedQuoins/);
     assert.match(game, /rehydrateSavedBuffs\(\)/);
   });

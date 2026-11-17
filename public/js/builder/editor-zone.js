@@ -52,7 +52,7 @@ export const SPOT_GROUPS = Object.freeze([
   Object.freeze({ id: 'rocks', label: 'Rocks', colour: 0x9aa3ad, keys: Object.freeze(['rocks']) }),
   Object.freeze({ id: 'animals', label: 'Animals', colour: 0xf28fb5, keys: Object.freeze(['piggies', 'chickens', 'butterflies', 'flyingButterflies']) }),
   Object.freeze({ id: 'quoins', label: 'Quoins', colour: 0xf5c518, keys: Object.freeze(['quoins']) }),
-  Object.freeze({ id: 'other', label: 'Vendor, shrine, apples, music blocks', colour: 0x4a90e2, keys: Object.freeze(['vendor', 'shrine', 'apples', 'musicblocks']) }),
+  Object.freeze({ id: 'other', label: 'Vendor, shrine, kept spots', colour: 0x4a90e2, keys: Object.freeze(['vendor', 'shrine', 'apples', 'musicblocks']) }),
 ]);
 export function spotGroup(key) {
   return SPOT_GROUPS.find((g) => g.keys.includes(key)) || SPOT_GROUPS[SPOT_GROUPS.length - 1];
@@ -449,7 +449,7 @@ export function populationSection(ctx) {
   return el('section', { class: 'builder-pop', 'aria-label': 'Population', 'data-builder-population': '' },
     el('h3', { class: 'builder-h3', text: 'Population' }),
     el('p', { class: 'builder-sub', text: 'What the planner places here: trees, rocks, animals and quoins, on floors that hold items. Players never see this list, only what grows from it.' }),
-    items.length ? el('div', { class: 'builder-grid' }, ...items) : el('p', { class: 'builder-sub', text: 'Nothing chosen yet: an outdoor street still gets apples, a music block and quoins.' }),
+    items.length ? el('div', { class: 'builder-grid' }, ...items) : el('p', { class: 'builder-sub', text: 'Nothing chosen yet: an outdoor street still gets its quoins.' }),
     addSel,
     el('div', { class: 'builder-grid' }, field('Quoins', quoins)),
     el('label', { class: 'builder-check' }, interior, ' Indoors (exactly this list, nothing added)'),

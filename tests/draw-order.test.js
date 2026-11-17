@@ -329,7 +329,6 @@ describe('item bands from the source (ITEMBANDS)', () => {
   });
 
   for (const [what, file, pattern] of [
-    ['apples', 'public/game.js', /spr\.zIndex = itemZ\('apple', 4\);/],
     ['piggies', 'public/game.js', /spr\.zIndex = itemZ\('npc_piggy', 2\);/],
     ['quoins', 'public/game.js', /q\.zIndex = itemZ\('quoin', 4\);/],
     ['shrines', 'public/game.js', /spr\.zIndex = itemZ\(`npc_shrine_\$\{giant\.id\}`, 8\);/],

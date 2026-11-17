@@ -376,7 +376,6 @@ function normalizeStreetSnapshot(seed = {}) {
     gardens,
     trees,
     rocks,
-    collectedApples: cleanIndexArray(seed?.collectedApples),
     collectedQuoins,
     quoinRespawn: cleanRespawnMap(seed?.quoinRespawn, collectedQuoins),
     features: normalizeFeatureSlices(seed?.features),

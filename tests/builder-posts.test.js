@@ -11,7 +11,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { postFloor, postOffFloor, settlePostOps, carryPostOps, arrivalOps, followPostOps, POST_FLOOR } from '../public/js/builder/posts.js?v=af68617c';
-import { validateZone, RULES } from '../public/js/builder/validate.js?v=a6aa8ea2';
+import { validateZone, RULES } from '../public/js/builder/validate.js?v=e0dc182d';
 import { applyOps } from '../public/js/builder/ops.js?v=27c7796f';
 import { run } from '../tools/builder/cli.mjs';
 import { loadValidatorContext } from '../tools/builder/validator-context.mjs';

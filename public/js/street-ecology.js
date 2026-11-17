@@ -722,7 +722,7 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
     // Indoors, or an outdoor street whose archived file holds no ecology at
     // all (`exact`: quoins, Qurazy markers, event boxes, patches, notes):
     // exactly what the archived row lists, no spawner-inferred animals, no
-    // invented scenery, no ambient apples or Musicblocks, and the archived
+    // invented scenery, no kept apple or Musicblock spots, and the archived
     // quoin count instead of the outdoor eight.
     return {
       source: 'tinyspeck-locations-xml',
@@ -815,6 +815,8 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
     shrine,
     // Feature-built rows (private instances such as party spaces) may pin
     // these; archived street rows never carry them.
+    // G943: no Apple lies on a street any more (Glitch placed none: no street file holds an apple
+    // stack); the planner keeps their four spots, empty, so no street's layout moves.
     apples: Number.isFinite(entry?.apples) ? whole(entry.apples, 0, 8) : 4,
     // G938: the street drop that drew a block here is gone (no source); the planner keeps the spot
     // so no street's layout moves.

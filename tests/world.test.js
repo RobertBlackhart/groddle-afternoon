@@ -6,14 +6,14 @@ import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadLocation, getLocation, playerInBounds, DEFAULT_STREET } from '../public/js/locations.js?v=7e086f05';
+import { loadLocation, getLocation, playerInBounds, DEFAULT_STREET } from '../public/js/locations.js?v=bef922d2';
 import {
   createWorld,
   teleportTo,
   enterHouse,
   leaveHouse,
   tryUsePortal,
-} from '../public/js/world.js?v=d0d8b7d7';
+} from '../public/js/world.js?v=28dd48a8';
 import {
   createQuestState,
   assignQuest,
@@ -30,7 +30,7 @@ import {
   countItem,
   ITEM_CATALOG,
 } from '../public/js/inventory.js?v=f49c8998';
-import { getVerbsFor, runVerb } from '../public/content.js?v=4f661e19';
+import { getVerbsFor, runVerb } from '../public/content.js?v=8cfc2e2c';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -158,15 +158,13 @@ describe('items + verbs (content.js handlers)', () => {
     assert.ok(ITEM_CATALOG.grain);
   });
 
-  it('pick up apple adds to inventory via runVerb', () => {
+  it('G943: no loose street Apple to pick up; an Apple comes from its Glitch sources', () => {
     const inv = createInventory({ apple: 0, butterfly_lotion: 0 });
     const pc = { energy: 80, mood: 70 };
     const target = { classId: 'apple', state: {} };
-    const verbs = getVerbsFor(target, { pc, inv });
-    assert.ok(verbs.some((v) => v.id === 'pickup' && v.enabled));
-    const r = runVerb(target, 'pickup', { pc, inv });
-    assert.equal(r.ok, true);
-    assert.equal(countItem(inv, 'apple'), 1);
+    assert.ok(!getVerbsFor(target, { pc, inv }).some((v) => v.id === 'pickup'));
+    assert.equal(runVerb(target, 'pickup', { pc, inv }).ok, false);
+    assert.equal(countItem(inv, 'apple'), 0);
   });
 
   it('pet piggy works and costs energy', () => {

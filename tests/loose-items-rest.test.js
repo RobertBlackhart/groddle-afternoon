@@ -31,7 +31,7 @@ import { join } from 'node:path';
 import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=0d502ab1';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=b394a0ec';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=fc79cd70';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 
 const root = join(import.meta.dirname, '..');
@@ -82,14 +82,6 @@ describe('stackRestY: where a stack set down comes to rest', () => {
 describe('the game draws loose street things at rest', () => {
   const src = read('public/game.js');
 
-  it('an Apple lies still on its planned point: no bob, no lift', () => {
-    const spawn = fnText(src, 'spawnApples');
-    assert.doesNotMatch(spawn, /\.bob\b|Math\.sin/, 'spawnApples sets no bob');
-    assert.match(spawn, /spr\.x = p\.x;\n\s+spr\.y = p\.y;/, 'its bottom centre on the point');
-    assert.match(src, /apples = spawnApples\(placement\('apples'\)\);/);
-    assert.doesNotMatch(src, /for \(const a of apples\)/, 'the frame loop moves no apple');
-  });
-
   it('every dropped or created stack rests on the line under it', () => {
     const rest = fnText(src, 'restingStackY');
     assert.match(rest, /stackRestY\(streetPlatforms, x, y\) \?\? y/);
@@ -107,7 +99,9 @@ describe('the game draws loose street things at rest', () => {
   });
 });
 
-describe('every planned Apple and Musicblock sits on a line that holds items, on every street', () => {
+// G943: the street Apples are gone (tests/g943-no-street-apples.test.js); their spots, like the
+// Musicblock's (G938), stay planned and empty so layouts stay put, and stay on a line that holds items.
+describe('every kept Apple and Musicblock spot sits on a line that holds items, on every street', () => {
   const streets = [];
   before(async () => {
     setZoneStreetsShown(false);
@@ -131,7 +125,7 @@ describe('every planned Apple and Musicblock sits on a line that holds items, on
       const population = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === STREET_INDEX.default });
       const platforms = platformsScreen(data);
       const plan = planStreetPlacements(platforms, placementRequests(population), { worldW: streetWidth(data), seed: data.tsid, reserved: streetReservedSpots(data) });
-      // game.js spawnApples: y = p.y. The Musicblock spot is kept (unused since G938) so layouts stay put.
+      // The Apple spots (unused since G943) and the Musicblock spot (since G938) are kept so layouts stay put.
       const drawn = [
         ...(plan.groups.apples || []).map((p) => ['apple', p]),
         ...(plan.groups.musicblocks || []).slice(0, 1).map((p) => ['musicblock', p]),

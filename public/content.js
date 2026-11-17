@@ -57,7 +57,7 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=6a4177c7';
+} from './js/animals.js?v=ede460d8';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
@@ -82,7 +82,7 @@ import {
   namingVerbs,
   queuePlops,
   startIncubation,
-} from './js/animal-husbandry.js?v=748354e0';
+} from './js/animal-husbandry.js?v=05fc520b';
 import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=1383e6fd';
 import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=55ad2f83';
 import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=9700115b';
@@ -770,13 +770,6 @@ export function getVerbsFor(target, ctx) {
       });
     }
     add('talk_to', 'talk to', { sort: 40, tooltip: 'I have something to tell you!' });
-  }
-
-  if (classId === 'apple') {
-    add('pickup', 'pick up', {
-      sort: 10,
-      tooltip: 'Put it in your pack',
-    });
   }
 
   if (classId === 'dropped_item') {
@@ -1529,12 +1522,6 @@ export function runVerb(target, verbId, ctx) {
       speaker: meta?.label || (classId === 'wood_tree' ? 'Tree' : 'Fruit Tree'),
       fallback,
     });
-  }
-
-  if (classId === 'apple' && verbId === 'pickup') {
-    give('apple', 1);
-    msgs.push('Apple acquired. Boldly red.');
-    return { ok: true, msgs, effects, remove: true };
   }
 
   if (classId.startsWith('street_spirit_') && verbId === 'browse') {

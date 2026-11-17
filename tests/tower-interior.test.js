@@ -17,12 +17,12 @@ import {
   isInteriorHub,
   populationForStreet,
   setStreetEcologyCatalog,
-} from '../public/js/street-ecology.js?v=b394a0ec';
+} from '../public/js/street-ecology.js?v=fc79cd70';
 import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { TOWER_ROOMS, VENT } from '../public/js/tower-rooms.js?v=4f1f6af7';
 import { ALL_TOWER_ROOMS } from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
 import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=b877dfb6';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=d63b3561';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=ae94fc54';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));
@@ -90,7 +90,7 @@ describe('Jethimadh Tower Base is an interior hub', () => {
     assert.deepEqual([pop.piggies, pop.chickens, pop.butterflies, pop.rockClasses, pop.quoins], [2, 0, 0, ['rock_metal_1'], 2]);
   });
 
-  it('outdoor streets are unchanged: eight quoins, four apples (spawners infer no animals, G44b)', () => {
+  it('outdoor streets are unchanged: eight quoins, four kept apple spots (G943: none drawn; spawners infer no animals, G44b)', () => {
     const pop = populationForStreet('GIF15OTSM102353', { counts: { trant_fruit: 1, npc_piggy: 1 }, spawners: 1 });
     assert.equal(pop.interior, undefined);
     assert.equal(pop.piggies + pop.chickens + pop.butterflies, 1);

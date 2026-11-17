@@ -8,7 +8,7 @@ import {
   getLocation,
   portalAt,
   playerInBounds,
-} from './locations.js?v=7e086f05';
+} from './locations.js?v=bef922d2';
 
 /**
  * @typedef {ReturnType<typeof loadLocation>} LoadedLocation
