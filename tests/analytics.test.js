@@ -204,8 +204,10 @@ describe('the console carries the tab, the route and the tables', { skip: skipWi
     assert.match(page, /data-console-tab="analytics">Analytics<\/button>/);
     assert.match(page, /data-console-tabpanel="analytics"/);
     assert.match(page, /analytics\.js\?v=" \. self::ANALYTICS_ASSET_KEY/);
-    const key = (f) => /from '\.\/charts\.js\?v=([^']+)'/.exec(readFileSync(sitePath('console', f), 'utf8'))?.[1];
-    assert.ok(key('server.js'));
-    assert.equal(key('analytics.js'), key('server.js'));
+    // G966: both import the kit bare; the console's import map gives it one content key (site Extension::importMap).
+    for (const f of ['server.js', 'analytics.js', 'ledger.js']) {
+      assert.match(readFileSync(sitePath('console', f), 'utf8'), /from '\.\/charts\.js';/, f);
+    }
+    assert.match(src('Extension.php'), /'\/wp-content\/themes\/groddle\/console\/charts\.js',/);
   });
 });
