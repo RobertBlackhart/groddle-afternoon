@@ -566,10 +566,15 @@ export function ladderTopDeck(platforms, feetX, feetY, ladderBottomY) {
  */
 export const POST_REACH_SLACK = 40;
 export function signpostReachY(street, signpost, feetY, scale = 1) {
-  if (!Number.isFinite(feetY)) return true;
+  return postReachY(worldToScreen(street, signpost.x, signpost.y).y, signpost.h, feetY, scale);
+}
+
+/** signpostReachY in screen space: the post's foot y and height (200 when unknown). */
+export function postReachY(footY, h, feetY, scale = 1) {
+  if (!Number.isFinite(feetY) || !Number.isFinite(footY)) return true;
   const s = scale > 0 ? scale : 1;
-  const foot = worldToScreen(street, signpost.x, signpost.y).y;
-  const top = foot - (Number(signpost.h) > 0 ? Number(signpost.h) : 200);
+  const foot = footY;
+  const top = foot - (Number(h) > 0 ? Number(h) : 200);
   const boxBottom = feetY + Math.round(10 * s);
   const boxTop = boxBottom - Math.round(123 * s);
   return boxTop < foot + POST_REACH_SLACK && boxBottom > top - POST_REACH_SLACK;

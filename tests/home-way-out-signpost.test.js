@@ -15,10 +15,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { getVerbsFor } from '../public/content.js?v=6c40df6e';
-import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=b444382d';
-import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=0f0fe29f';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=b2d39da7';
+import { getVerbsFor } from '../public/content.js?v=6dbd3e61';
+import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=d6241586';
+import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=77a264f7';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=3fc800de';
 import {
   SIGNPOST_POST_HALF,
   createCultivationState,

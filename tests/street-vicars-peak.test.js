@@ -9,10 +9,10 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=2918abe5';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=9f16f4ab';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=90fca5cc';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=633a59ad';
-import { planStreetPlacements, populationForStreet } from '../public/js/street-ecology.js?v=7435cfce';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=7905fc7f';
+import { planStreetPlacements, populationForStreet } from '../public/js/street-ecology.js?v=f12d3466';
 import {
   BOTTOM_DOOR,
   LADDER_SPOTS,
@@ -30,7 +30,7 @@ import {
   vicarsPeakEcology,
 } from '../public/js/vicars-peak.js?v=5efb4e71';
 import { vicarsPeakFeature } from '../public/js/features/vicars-peak-feature.js?v=cb444319';
-import { FEATURES } from '../public/js/features/index.js?v=7cedb196';
+import { FEATURES } from '../public/js/features/index.js?v=618ba766';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

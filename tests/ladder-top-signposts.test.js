@@ -17,8 +17,8 @@ import {
   ladderTopSignpostLadder,
   ladderTopSignposts,
   walkUpSignpostStreet,
-} from '../public/js/ladder-top-signposts.js?v=db8c4d21';
-import { navigableSignposts, signpostNear, wallsScreen, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
+} from '../public/js/ladder-top-signposts.js?v=b4099ba0';
+import { navigableSignposts, signpostNear, wallsScreen, worldToScreen } from '../public/js/street-model.js?v=9f16f4ab';
 import { planSignpostTravel } from '../public/js/travel.js?v=7fd6e363';
 import { visibleDoors } from '../public/js/doors.js?v=727d0e0b';
 

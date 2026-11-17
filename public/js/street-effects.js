@@ -28,7 +28,7 @@
  * (createStreetEffects) by the game (js/features/zone-effects-feature.js), the editor and the
  * render page (/builder-render/).
  */
-import { worldToScreen } from './street-model.js?v=2918abe5';
+import { worldToScreen } from './street-model.js?v=9f16f4ab';
 import { textureFromUrl, isLoaded, isFailed, onLoaded } from './textures.js?v=8e0a8c38';
 
 export const EFFECT_KINDS = Object.freeze(['steam', 'lava', 'embers']);

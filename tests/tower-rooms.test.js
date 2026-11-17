@@ -8,7 +8,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry, platformsScreen } from '../public/js/street-model.js?v=2918abe5';
+import { assertStreetGeometry, platformsScreen } from '../public/js/street-model.js?v=9f16f4ab';
 import {
   ROOM_15_TSID,
   STEPS_PROFILE,
@@ -40,8 +40,8 @@ import {
   anyTowerRoomStreet,
   flats,
 } from '../public/js/tower-challenge-rooms.js?v=bfc49d89';
-import { ladderTopDeck } from '../public/js/street-model.js?v=2918abe5';
-import { GRAVITY, JUMP_SPEED, TERMINAL_VY, WALK_MAX, jumpApex } from '../public/js/avatar-step.js?v=6122a615';
+import { ladderTopDeck } from '../public/js/street-model.js?v=9f16f4ab';
+import { GRAVITY, JUMP_SPEED, TERMINAL_VY, WALK_MAX, jumpApex } from '../public/js/avatar-step.js?v=a6f5a99b';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

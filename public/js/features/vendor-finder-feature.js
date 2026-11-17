@@ -10,8 +10,8 @@
  * `where` (the street and how far), query('vendorFinderFind', key, engine) -> the route's answer.
  * QA canvas data: vendorFinder (`<key>@<street>`, `<key>@here`, `<key>:<error>`).
  */
-import { getStreetEcologyCatalog } from '../street-ecology.js?v=7435cfce';
-import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
+import { getStreetEcologyCatalog } from '../street-ecology.js?v=f12d3466';
+import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { VENDOR_FINDER_TEXT, sameStreet, vendorFinderRows, vendorKinds, vendorRowWhere } from '../vendor-finder.js?v=814ba28e';
 
 export const VENDOR_FINDER_FEATURE_ID = 'vendor-finder';

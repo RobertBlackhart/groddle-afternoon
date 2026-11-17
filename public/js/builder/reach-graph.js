@@ -23,9 +23,9 @@
  *
  * Pure: no DOM, no Pixi.
  */
-import { platformsScreen, barriersScreen, wallsScreen, isStandable, platformYAt, resolveGround, ladderTopDeck, worldToScreen, streetWidth, streetHeight, navigableSignposts, isBuriedSignpost, blockBarrierCrossing, LADDER_GRAB_BELOW } from '../street-model.js?v=2918abe5';
-import { stepAvatar, avatarGround, steerX, NORMAL_BUFF, JUMP_SPEED, WALK_MAX, OFF_LADDER_RATIO } from '../avatar-step.js?v=6122a615';
-import { ladderTopSignpostLadder } from '../ladder-top-signposts.js?v=db8c4d21';
+import { platformsScreen, barriersScreen, wallsScreen, isStandable, platformYAt, resolveGround, ladderTopDeck, worldToScreen, streetWidth, streetHeight, navigableSignposts, isBuriedSignpost, blockBarrierCrossing, LADDER_GRAB_BELOW } from '../street-model.js?v=9f16f4ab';
+import { stepAvatar, avatarGround, steerX, NORMAL_BUFF, JUMP_SPEED, WALK_MAX, OFF_LADDER_RATIO } from '../avatar-step.js?v=a6f5a99b';
+import { ladderTopSignpostLadder } from '../ladder-top-signposts.js?v=b4099ba0';
 import { physicsMultipliers } from '../location-events.js?v=05663361';
 
 export const STAND_STEP = 8;

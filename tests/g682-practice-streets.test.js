@@ -11,8 +11,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { imageSize } from '../tools/image-size.mjs';
-import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=2918abe5';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=633a59ad';
+import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=7905fc7f';
 import {
   EZ_BOUGHS,
   EZ_COOKIN_BOUNDS,
@@ -49,7 +49,7 @@ import {
 } from '../public/js/practice-streets.js?v=557238c1';
 import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=ce74b07a';
 import { BUILT_ROOMS, QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
-import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=6ef1ea3a';
+import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=6d95626b';
 import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=77fee627';
 import { HELLO as SOIL_HELLO, TEND_FIRST, patchArt, patchVerbs, room as soilRoom } from '../public/js/quest-rooms/soil-appreciation.js?v=40cbe9b3';
 

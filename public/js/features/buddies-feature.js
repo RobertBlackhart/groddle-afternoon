@@ -59,7 +59,7 @@
 
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { bindContextTrigger } from '../ui/context-menu.js?v=c76b5244';
-import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
+import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { BUDDY_DESTINATION_TEXT, BUDDY_DESTINATION_VERB, buddyDestination, buddyFaceUrl } from '../buddy-list.js?v=b418f3f2';
 import {
   BUDDY_COUNTER,

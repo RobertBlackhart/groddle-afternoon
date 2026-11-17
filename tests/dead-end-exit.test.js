@@ -12,20 +12,20 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=24145409';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=46930140';
-import { loadStreetIndexObject } from '../public/js/street-loader.js?v=7ed1bdfd';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=eae75ac5';
+import { loadStreetIndexObject } from '../public/js/street-loader.js?v=90517e2f';
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=2fdff4a7';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
-import { FIRST_SKILLS } from '../public/js/newxp.js?v=6ef1ea3a';
+import { FIRST_SKILLS } from '../public/js/newxp.js?v=6d95626b';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=221b67a9';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=fe390ee8';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=1ab231dd';
 import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=8653e59a';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=09fc5635';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=1a744e1e';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=c76127f8';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=f7fe7857';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=873cf655';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=6c07b8c6';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=1f53d243';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=2382a169';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=1bbc932c';
 import { Display, fakePixi } from './fake-scene.js';
 
 /** fake-scene's Pixi, with a texture source js/textures.js can wait on (the image never loads in Node). */

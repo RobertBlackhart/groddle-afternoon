@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt, LADDER_GRAB_BELOW, findClimbWallNear, isStandable, worldToScreen } from '../public/js/street-model.js?v=2918abe5';
+import { ladderTopDeck, platformsScreen, wallsScreen, platformYAt, LADDER_GRAB_BELOW, findClimbWallNear, isStandable, worldToScreen } from '../public/js/street-model.js?v=9f16f4ab';
 import { ladderArrivalPress, ladderMount, LADDER_UP_PRESS_MS, spendLadderUp, stickLadderSide } from '../public/js/movement.js?v=f05bb30a';
 import { lightLayout, LOW } from '../public/js/quest-rooms/light-perspective.js?v=7607eff3';
 

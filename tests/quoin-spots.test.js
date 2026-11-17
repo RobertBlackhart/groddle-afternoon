@@ -17,7 +17,7 @@ import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { streetHeight, streetWidth } from '../public/js/street-model.js?v=2918abe5';
+import { streetHeight, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import {
   MEASURED_QUOIN_CLEARANCE,
   QUOIN_TYPES,
@@ -29,8 +29,8 @@ import {
 } from '../public/js/quoins.js?v=a4208821';
 import { QUOIN_COIN_COUNTS, QUOIN_SPOTS } from '../public/js/quoin-spots-data.js?v=7c343cbc';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=7ed1bdfd';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=7435cfce';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=f12d3466';
 
 const root = join(import.meta.dirname, '..');
 const read = (path) => JSON.parse(readFileSync(join(root, path), 'utf8'));

@@ -74,8 +74,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=7ed1bdfd';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=2918abe5';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import {
   animalPatrolRange,
   ecologyForStreet,
@@ -87,7 +87,7 @@ import {
   rockSpawnPlan,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=7435cfce';
+} from '../public/js/street-ecology.js?v=f12d3466';
 import { ROCK_CATALOG } from '../public/js/mining.js?v=c2964c53';
 import { MEGA_ROCK_CHANCE, MEGA_ROCK_CHUNKS } from '../public/js/imagination-effects.js?v=70169933';
 import { RESOURCE_NODE_CATALOG, RESOURCE_SKILL_PACKAGES } from '../public/js/resource-nodes.js?v=2659c4e8';
@@ -96,16 +96,16 @@ import { TRANT_CARE_PACKAGES } from '../public/js/trant-care.js?v=44269e93';
 import { WOOD_TREE_MATURITY_MAP } from '../public/js/woodcutting.js?v=b43edbd8';
 import { ANIMAL_KINSHIP_PACKAGES } from '../public/js/animal-kinship.js?v=d1fff152';
 import { locationIsDepressing } from '../public/js/animal-mood.js?v=a49495fc';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=d3efe873';
-import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=be8cbac9';
-import { KITTY_GROUP, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=505d9980';
-import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=095a14a6';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=9d5a57ac';
+import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=4d196d3e';
+import { KITTY_GROUP, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=bbf84ef8';
+import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=53de0145';
 import { hasRaceDispenser } from '../public/js/races.js?v=ab22a079';
 import { setWildlifeCatalog, wildlifeFor } from '../public/js/wildlife.js?v=670c3a7f';
-import { boardSpotRow, furnitureFor, furniturePlacementGroups, stoneSpotRow } from '../public/js/street-furniture.js?v=b1d3e833';
-import { INCUBATION } from '../public/js/animal-husbandry.js?v=22212cb3';
-import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=5d7747c8';
-import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=6d9e6816';
+import { boardSpotRow, furnitureFor, furniturePlacementGroups, stoneSpotRow } from '../public/js/street-furniture.js?v=06481ee6';
+import { INCUBATION } from '../public/js/animal-husbandry.js?v=c296b293';
+import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=6b871ff5';
+import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=15e2255a';
 import { CRAB_PLACEMENT_KEY, CRAB_WALK, crabPlacementGroups } from '../public/js/crabs.js?v=c4767c5f';
 import { KITTY_PET } from '../public/js/heli-kitties.js?v=addb573f';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';

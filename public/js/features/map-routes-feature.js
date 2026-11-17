@@ -50,10 +50,11 @@
  */
 
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
+import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=950e9c22';
 import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=34e7e56f';
 import { hellFeature } from './hell-feature.js?v=5fdccf83';
+import { postReachY } from '../street-model.js?v=9f16f4ab';
 import {
   ROUTE_COLOR,
   ROUTE_COLOR_CSS,
@@ -749,6 +750,26 @@ function takeHop(engine) {
   else engine.enter(step.next);
 }
 
+/** AvatarController.as 196: a door is entered from within 300 px up or down. */
+export const DOOR_REACH_Y = 300;
+
+/**
+ * PURE: whether the avatar, its feet at `feetY` (screen), can use the hop where the walk
+ * ends. #442: a signpost only while the avatar's box overlaps the post up and down
+ * (AvatarController.as 156-165 endPath: a signpost path ends in an interaction only when
+ * the post is among the sprites the avatar touches, `_interaction_spV`; street-model.js
+ * postReachY is that test); a door within DOOR_REACH_Y (AvatarController.as 195-199).
+ * @param {{ kind: string, view?: { y?: number, signpost?: { h?: number } }, footY?: number }} hop
+ */
+export function hopInReach(hop, feetY) {
+  if (!hop || !Number.isFinite(feetY)) return true;
+  const footY = Number(hop.footY ?? hop.view?.y);
+  if (!Number.isFinite(footY)) return true;
+  if (hop.kind === 'sign') return postReachY(footY, hop.view?.signpost?.h, feetY);
+  if (hop.kind === 'door') return Math.abs(feetY - footY) < DOOR_REACH_Y;
+  return true;
+}
+
 function stepWalk(engine, now) {
   if (!walk) return;
   const p = engine.player;
@@ -759,6 +780,12 @@ function stepWalk(engine, now) {
   }
   const dx = walk.x - p.x;
   if (Math.abs(dx) <= WALK_REACH) {
+    // #442: under the post on a lower floor, the walk stops there; you climb or jump the rest
+    // (the client's path ended without an interaction, AvatarController.as 202-208).
+    if (!hopInReach(highlight, p.y)) {
+      stopWalk(engine, 'below');
+      return;
+    }
     stopWalk(engine, 'arrived');
     takeHop(engine);
     return;

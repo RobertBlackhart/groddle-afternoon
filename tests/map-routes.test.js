@@ -30,11 +30,11 @@ import {
   ROUTE_STOPS_SHOWN,
   signpostToward,
 } from '../public/js/map-routes.js?v=f23b16a2';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=baab6046';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=67fc79f3';
+import { mapRoutesFeature, hopInReach, DOOR_REACH_Y } from '../public/js/features/map-routes-feature.js?v=eeb63f32';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=f3c1230c';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=7ed1bdfd';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=90517e2f';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=df2b4357';
@@ -42,7 +42,7 @@ import { SUBWAY_STREETS } from '../public/js/quest-rooms/back-alley.js?v=28e8657
 import { doorRooms, doorToward, routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
 import { afterStreetCard, runStreetTransition, streetCardUp } from '../public/js/screen-fx.js?v=45ffea07';
 import { EMITTED_EVENTS } from '../public/js/quest-offers.js?v=38a0cac5';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=ee552b47';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=e7768451';
 import { addItem } from '../public/js/inventory.js?v=f49c8998';
 import { resurrect } from '../public/js/hell.js?v=df2b4357';
 
@@ -680,6 +680,50 @@ describe('G192 the GPS arrow walks you there', () => {
     mapRoutesFeature._arrowClick(engine);
     walkUntilDone(engine);
     assert.deepEqual(engine.log.travel, [[DHUMA, { label: 'Dhuma Maya', arrive: { x: 50, y: 400 } }]]);
+  });
+
+  // #442: AvatarController.as 156-165 used a signpost only when the avatar touched it.
+  function signWalk(feetY) {
+    const engine = onStreet(MAHATAM);
+    const board = { index: 0, x: 0, y: -100, rotation: 0, connection: { tsid: 'LA5REO5I9OE2KLS', label: 'Dhuma Maya', arrive: { x: 50, y: 400 } } };
+    const view = new FakeContainer();
+    view.x = 1500;
+    view.y = 500;
+    view.signpost = { h: 180 };
+    view.signBoards = [board];
+    engine.signViews = [view];
+    engine.player.x = 1200;
+    engine.player.y = feetY;
+    mapRoutesFeature.mapRoute('set', { to: PANKA, source: 'player' }, engine);
+    mapRoutesFeature.onStreetEnter(engine.street, engine);
+    mapRoutesFeature._arrowClick(engine);
+    walkUntilDone(engine);
+    return engine;
+  }
+
+  it('#442: a walk that ends under the post on the floor below stops there, no travel', () => {
+    const engine = signWalk(500 + 300);
+    assert.deepEqual(engine.log.travel, []);
+    assert.equal(engine.data.routeWalkEnd, 'below');
+    assert.ok(Math.abs(engine.player.x - 1500) <= 26, 'walked to under the post');
+    assert.ok(mapRoutesFeature.mapRoute('get', null, engine), 'the route stays for the climb');
+  });
+
+  it('#442: on the post\'s own floor (or a hop below it) the walk takes the board', () => {
+    assert.equal(signWalk(500).log.travel.length, 1);
+    assert.equal(signWalk(500 + 120).log.travel.length, 1, 'feet a little under the foot: the box still overlaps');
+  });
+
+  it('#442: hopInReach: the post\'s box up and down; a door within 300 px (AvatarController.as 196)', () => {
+    const sign = { kind: 'sign', view: { y: 1000, signpost: { h: 200 } } };
+    assert.equal(hopInReach(sign, 1000), true);
+    assert.equal(hopInReach(sign, 1000 + 150), true, 'the 123 px box, 10 under the feet, plus 40 px slack');
+    assert.equal(hopInReach(sign, 1000 + 160), false);
+    assert.equal(hopInReach(sign, 1000 - 400), false, 'far over the post');
+    const door = { kind: 'door', view: { y: 1000 } };
+    assert.equal(hopInReach(door, 1000 + DOOR_REACH_Y - 1), true);
+    assert.equal(hopInReach(door, 1000 + DOOR_REACH_Y), false);
+    assert.equal(hopInReach({ kind: 'transport', view: { y: 0 } }, 5000), true);
   });
 
   /** Fake signpost views for a street's visible posts, one board per visible arm, in the street's order. */

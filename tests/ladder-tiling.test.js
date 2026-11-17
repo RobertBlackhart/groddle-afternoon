@@ -112,7 +112,7 @@ function fakePixi() {
 }
 
 before(async () => {
-  ({ DECO_TWINS } = await import('../public/js/street-render.js?v=b444382d'));
+  ({ DECO_TWINS } = await import('../public/js/street-render.js?v=d6241586'));
 });
 
 describe('ladder tiling rule (SurfaceView.tile, vertical)', () => {
@@ -232,8 +232,8 @@ describe('buildStreetView draws the tiles', () => {
         setTimeout(() => this.onload?.(), 0);
       }
     };
-    const { buildStreetView } = await import('../public/js/street-render.js?v=b444382d');
-    const { worldToScreen } = await import('../public/js/street-model.js?v=2918abe5');
+    const { buildStreetView } = await import('../public/js/street-render.js?v=d6241586');
+    const { worldToScreen } = await import('../public/js/street-model.js?v=9f16f4ab');
     const s = { ...street('GM4109NI2R640'), gradient: null, signposts: [] };
     const root = buildStreetView(s, globalThis.PIXI, { available: new Set(['ladder_tile_center_01_spine']) });
     assert.equal(root.ladderTiles, 5);

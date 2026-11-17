@@ -13,7 +13,7 @@ import { TOY_CLICK, catchUpDangles, catchUpKoulato, catchUpLotha, createToyTrack
 import { STREET_TOYS } from '../public/js/street-toys.js?v=09630452';
 import { JAR_BOXES, JAR_FLIES, KOULATO_TSID } from '../public/js/koulato-jars.js?v=5838b30a';
 import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=05663361';
-import { koulatoJarsFeature } from '../public/js/features/koulato-jars-feature.js?v=35f168df';
+import { koulatoJarsFeature } from '../public/js/features/koulato-jars-feature.js?v=457b05f8';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

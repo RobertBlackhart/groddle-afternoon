@@ -134,7 +134,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=6ef1ea3a';
+} from '../newxp.js?v=6d95626b';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
@@ -144,14 +144,14 @@ import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?
 import { assignQuest, completeQuest } from '../quests.js?v=40c71a37';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=38a0cac5';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { locationEventsApi } from './location-events-feature.js?v=dafc63f6';
+import { locationEventsApi } from './location-events-feature.js?v=802ff117';
 import * as kit from '../quest-rooms/kit.js?v=80889429';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=8e0a8c38';
 import { upgradeSource } from '../sprite-hires.js?v=d2bcebbc';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=6241101a';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=0c6762ce';
+import { HOME_MACHINE } from '../home-ticket.js?v=b86b2119';
+import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=9a8ccb49';
 import {
   AK_ANIMALS,
   AK_BUBBLE,

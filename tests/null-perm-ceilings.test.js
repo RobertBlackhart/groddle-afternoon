@@ -6,10 +6,10 @@
  * pc_perm) stay plain floors, and Penumbra, rebuilt from video, uses -1 floors.
  */
 import assert from 'node:assert/strict';
-import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=6122a615';
+import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=a6f5a99b';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { avatarHeadReach, headCeiling, isSolidFromBelow, isStandable, platformYAt, platformsScreen } from '../public/js/street-model.js?v=2918abe5';
+import { avatarHeadReach, headCeiling, isSolidFromBelow, isStandable, platformYAt, platformsScreen } from '../public/js/street-model.js?v=9f16f4ab';
 
 const street = (path) => JSON.parse(readFileSync(new URL(`../public/assets/streets/${path}`, import.meta.url), 'utf8'));
 

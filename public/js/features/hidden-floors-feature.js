@@ -62,7 +62,7 @@ import {
   isLostFloorTsid,
   isMissingFloorTsid,
   teleportersOn,
-} from '../hidden-floors.js?v=e8836c2e';
+} from '../hidden-floors.js?v=014b5377';
 import { narakaTeleportersOn } from '../hell.js?v=df2b4357';
 import { wintryPortalTeleportersOn } from '../wintry-portal.js?v=1437deda';
 import { cavePitTeleportersOn } from '../cave-pit.js?v=81e62950';

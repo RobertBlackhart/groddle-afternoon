@@ -26,10 +26,10 @@ import {
   normalizeMineBoard,
   pinPayload,
   sameWords,
-} from '../public/js/boards-mp.js?v=d3642d55';
-import { BOARD_PINS, NOTE_LIMITS, REMAKE_NOTE_BYLINE, REMAKE_NOTE_MARKER, isRemakeNote, noteContent, normalizeNote, noteWriteVerb } from '../public/js/street-furniture.js?v=b1d3e833';
-import { boardsMpFeature, createBoardsSession } from '../public/js/features/boards-mp-feature.js?v=a9619fed';
-import { carriedNoteList, giveCarriedNote, streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=aff6791c';
+} from '../public/js/boards-mp.js?v=17a75d4d';
+import { BOARD_PINS, NOTE_LIMITS, REMAKE_NOTE_BYLINE, REMAKE_NOTE_MARKER, isRemakeNote, noteContent, normalizeNote, noteWriteVerb } from '../public/js/street-furniture.js?v=06481ee6';
+import { boardsMpFeature, createBoardsSession } from '../public/js/features/boards-mp-feature.js?v=2ba9b502';
+import { carriedNoteList, giveCarriedNote, streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=3e61d8a5';
 import { boardsData } from '../tools/build-realtime-boards.mjs';
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 

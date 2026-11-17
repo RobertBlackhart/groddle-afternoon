@@ -53,13 +53,13 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=72f37c7e';
-import { INCUBATION } from './animal-husbandry.js?v=22212cb3';
-import { isStandable } from './street-model.js?v=2918abe5';
-import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=7435cfce';
+import { INCUBATION } from './animal-husbandry.js?v=c296b293';
+import { isStandable } from './street-model.js?v=9f16f4ab';
+import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=f12d3466';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=addb573f';
 import { CRAB_WALK } from './crabs.js?v=c4767c5f';
 import { FIRE_DRAGON_WALK } from './fire-dragon.js?v=b7f3d751';
-import { walkSurfaceY } from './walk-surface.js?v=13819ec0';
+import { walkSurfaceY } from './walk-surface.js?v=0d502ab1';
 import { EAT_PAUSE_MS } from './animal-mood.js?v=a49495fc';
 import { CHICKEN_PAUSE_STATES } from './chicken-idles.js?v=eef0279b';
 

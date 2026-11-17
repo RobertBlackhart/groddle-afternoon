@@ -3,9 +3,9 @@
  * placement on recovered locations-xml platforms.
  */
 
-import { avatarHeadReach, groundBeneath, isItemSolid, isStandable, platformYAt, worldToScreen } from './street-model.js?v=2918abe5';
+import { avatarHeadReach, groundBeneath, isItemSolid, isStandable, platformYAt, worldToScreen } from './street-model.js?v=9f16f4ab';
 import { behindFloor } from './reach.js?v=8e52df56';
-import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=b1d3e833';
+import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=06481ee6';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
 import {

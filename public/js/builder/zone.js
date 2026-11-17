@@ -4,7 +4,7 @@
  * decos are world space; decos on every other layer are layer-local, offset each frame by
  * parallax). No DOM, no Pixi.
  */
-import { worldToScreen, screenToWorld } from '../street-model.js?v=2918abe5';
+import { worldToScreen, screenToWorld } from '../street-model.js?v=9f16f4ab';
 import { withoutZoneConnects } from '../zone-streets.js?v=b40010d5';
 
 /** Fields a builder street never carries (schema $defs/draftStreet; feature-owned or events). */
