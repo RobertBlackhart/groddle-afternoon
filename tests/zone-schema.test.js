@@ -125,13 +125,14 @@ describe('the deco catalog (tools/builder/deco-catalog.mjs, assets/content/deco-
 
   it('has one row per library deco, with layer usage, sizes and flags', () => {
     const manifest = json('public/assets/decos/manifest.json');
-    assert.equal(cat.count, 2993);
+    assert.equal(cat.count, 2994); // + door_asset_striped_01a_newxpblack (G962, Mental Block)
     assert.equal(cat.decos.length, manifest.length);
     assert.equal(cat.streetsScanned, 1479); // + the two practice streets (G682)
     assert.deepEqual(cat.decos.map((d) => d.name), [...manifest].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
     const placed = cat.decos.filter((d) => !d.neverPlaced);
     // The Interrogation room (G352) is the first street to place bureaucratic_hall_waitingroom_1: 138 before.
-    assert.equal(cat.decos.length - placed.length, 137, 'spec 2.4: 137 library decos never placed (the Enchanted Forest door is a door sprite)');
+    // G962: Mental Block's striped end door is placed by its room's code, not by a street, so it joins the never-placed list.
+    assert.equal(cat.decos.length - placed.length, 138, 'spec 2.4: 138 library decos never placed (the Enchanted Forest door is a door sprite)');
     assert.ok(placed.every((d) => Object.keys(d.layers).length > 0 && d.drawn && d.streets > 0));
     assert.ok(cat.decos.every((d) => Object.keys(d.layers).every((r) => LAYER_ROLES.includes(r))));
     assert.ok(cat.decos.every((d) => Array.isArray(d.size2) && d.size2.length === 2));
