@@ -1992,6 +1992,41 @@ export function landscapeGeometry(look, groundY) {
 }
 
 /**
+ * Pieces that belong in the sky or on water, never on the ground: clouds, moons, haze, flying
+ * platforms, light, fireflies, the Firebog canopies drawn above the trunks, ripples on a lake.
+ */
+const SKY_PIECE = /cloud|moon|haze|flying_platform|light_sha|light_spot|fireflies|treetop|ripple/i;
+
+/** Multiply two 0xRRGGBB colours (a Pixi tint on a flat colour). */
+function tintColor(color, tint) {
+  if (tint == null) return color;
+  const ch = (shift) => Math.round((((color >> shift) & 255) * ((tint >> shift) & 255)) / 255);
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
+/**
+ * G954 (#471): the ground a layer's standing pieces stand on. The recipes stand a layer's trees,
+ * hills and cliffs up to ~130 px behind the field's back edge (RECIPE_FIELD_TOP), and drew nothing
+ * under them, so sky showed between their feet and the field: Bonzai's trees with their roots in
+ * the air, Elated Green's hills over a pink strip. An upright phone frames the most of it, the
+ * desktop crops less of it away, and the style's tile showed it too. Every home street is a clone
+ * of a `*_high` template whose ground runs back to the tree line (FIELD_DEPTH), so each layer
+ * gets that ground: a strip from its pieces' feet down to the field, the field's colour in the
+ * layer's haze (its tint). Returns { y } in recipe units (the old 620 px street) and the colour,
+ * or null for a layer with nothing standing above the field (its pieces stand in it or hang).
+ */
+export function layerGround(look, layer) {
+  let top = null;
+  for (const item of layer?.items || []) {
+    if (item.hang || item.flipY || SKY_PIECE.test(item.s)) continue;
+    if (!(item.y < RECIPE_FIELD_TOP)) continue;
+    if (!top || item.y < top.y) top = item;
+  }
+  if (!top) return null;
+  return { y: top.y, color: tintColor(look.field, top.tint ?? layer.tint ?? null) };
+}
+
+/**
  * A style's landscape (js/home-styles.js looks): the sky, parallax layers, the
  * walkable field with its soil, what stands in the field (the `near` rows with
  * `inField`, counted from the house `lot`) and grass and plants along it. Item
@@ -2047,6 +2082,18 @@ export function drawLandscape(engine, root, style, seed, { width, groundY, lift,
       band.rect(bx, by, bw, layer.band.h).fill({ color: layer.band.color, alpha: layer.band.alpha ?? 1 });
       band.homeLayoutFills = [[bx, by, bw, layer.band.h, layer.band.color, layer.band.alpha ?? 1]];
       lc.addChild(band);
+    }
+    const lg = layerGround(style, layer);
+    if (lg) {
+      // G954: the ground under this layer's pieces, down behind the field (layerGround).
+      const strip = new PIXI.Graphics();
+      const gy = lg.y + lift - rise;
+      const gx0 = Math.min(-200, win.left - 50);
+      const gw0 = Math.max(span, win.right) + 200 - gx0;
+      const gh = fieldTop + 4 - gy;
+      strip.rect(gx0, gy, gw0, gh).fill(lg.color);
+      strip.homeLayoutFills = [[gx0, gy, gw0, gh, lg.color, 1]];
+      lc.addChild(strip);
     }
     for (const item of layer.items || []) {
       // Piece i stands at base + i * every as it always did; G951 adds pieces either side
@@ -3700,57 +3747,69 @@ function decoImageUrl(name) {
   return name.endsWith('.svg') ? `${DECO}${name}` : `${DECO}${name}.webp`;
 }
 
-/** A small picture of a style for its tile: sky, field and a few of its decos. */
-function stylePreviewEl(look) {
-  const box = el('span', { class: 'hs-prev', 'aria-hidden': 'true' });
-  box.style.background = `linear-gradient(${look.sky.map(hexColor).join(',')})`;
-  const H = 64; // tile picture height in CSS px
-  const k = H / 470; // about the street's height above the ground
-  // The field as deep as the street draws it (landscapeGeometry), the decos standing at its back edge.
+/** How much of the street a style's tile shows above the walk line (stylePreviewEl). */
+export const PREVIEW_SPAN = 470;
+
+/**
+ * A style's tile picture as boxes in percent of the tile (G954, #471): the tile is 64 px tall on a
+ * desktop and 52 px on a phone (the max-width 640 rule), and the pieces were placed in pixels for
+ * 64 while the field and bands were percent, so on a phone every piece stood a fifth higher than
+ * its field, over a strip of sky. Pure: { field, parts } with parts in drawing order (back to
+ * front, the field before the `near` pieces): { band: true, bottom, height, color, alpha } and
+ * { s, left, bottom, height, flip, lum, alpha, near? }, every length a percent of the height.
+ */
+export function stylePreviewLayout(look) {
+  const pct = (v) => (v * 100) / PREVIEW_SPAN;
   const { depth, rise } = landscapeGeometry(look, OLD_STREET_GROUND_Y);
-  const fieldPct = Math.round((depth * k * 100) / H);
-  const layers = look.layers;
-  layers.forEach((layer, li) => {
+  const field = pct(depth);
+  const lumOf = (tint) => (tint == null ? 1 : (((tint >> 16) & 255) * 0.3 + ((tint >> 8) & 255) * 0.59 + (tint & 255) * 0.11) / 255);
+  const parts = [];
+  look.layers.forEach((layer, li) => {
+    // Its ground first (layerGround), as the street draws it.
+    const lg = layerGround(look, layer);
+    if (lg) parts.push({ band: true, bottom: 0, height: pct(OLD_STREET_GROUND_Y - lg.y + rise), color: lg.color, alpha: 1 });
     if (layer.band) {
-      box.append(el('span', {
-        class: 'hs-band',
-        style: `bottom:${fieldPct + Math.max(0, (RECIPE_FIELD_TOP - layer.band.y - layer.band.h) * k / H * 100)}%;height:${Math.max(1, layer.band.h * k)}px;background:${hexColor(layer.band.color)};opacity:${layer.band.alpha ?? 1}`,
-      }));
+      parts.push({ band: true, bottom: field + pct(Math.max(0, RECIPE_FIELD_TOP - layer.band.y - layer.band.h)), height: pct(Math.max(1, layer.band.h)), color: layer.band.color, alpha: layer.band.alpha ?? 1 });
       return;
     }
     const item = (layer.items || []).find((row) => !row.hang && !row.flipY);
     if (!item) return;
-    const tint = item.tint ?? layer.tint;
-    const lum = tint == null ? 1 : (((tint >> 16) & 255) * 0.3 + ((tint >> 8) & 255) * 0.59 + (tint & 255) * 0.11) / 255;
-    const h = Math.min(H * 1.2, item.h * item.scale * k);
-    const bottom = Math.max(0, (OLD_STREET_GROUND_Y - item.y + rise) * k);
+    const height = Math.min(120, pct(item.h * item.scale));
+    const bottom = Math.max(0, pct(OLD_STREET_GROUND_Y - item.y + rise));
     [0.22, 0.72].forEach((at, n) => {
-      if (layers.length > 3 && li === 0 && n === 1) return;
-      box.append(el('img', {
-        src: decoImageUrl(item.s),
-        alt: '',
-        loading: 'lazy',
-        style: `left:${(at + (li % 2) * 0.08) * 100}%;bottom:${bottom}px;height:${h}px;${n ? 'transform:translateX(-50%) scaleX(-1);' : ''}${lum < 0.98 ? `filter:brightness(${lum.toFixed(2)});` : ''}${item.alpha != null ? `opacity:${item.alpha};` : ''}`,
-      }));
+      if (look.layers.length > 3 && li === 0 && n === 1) return;
+      parts.push({ s: item.s, left: (at + (li % 2) * 0.08) * 100, bottom, height, flip: n === 1, lum: lumOf(item.tint ?? layer.tint), alpha: item.alpha ?? null });
     });
   });
-  box.append(el('span', { class: 'hs-field', style: `height:${fieldPct}%;background:${hexColor(look.field)}` }));
   // What stands in the field (near rows with `inField`): its two tallest pieces, where they stand.
-  const light = look.nearTint;
-  const dim = light == null ? 1 : (((light >> 16) & 255) * 0.3 + ((light >> 8) & 255) * 0.59 + (light & 255) * 0.11) / 255;
+  const dim = lumOf(look.nearTint);
   (look.near || [])
     .filter((row) => Number.isFinite(row.inField) && !(row.on > 0) && row.h * row.scale > 100)
-    .sort((a, b) => b.h * b.scale - a.h * a.scale)
+    .sort((x, y) => y.h * y.scale - x.h * x.scale)
     .filter((row, n, rows) => rows.findIndex((other) => other.s === row.s) === n)
     .slice(0, 2)
     .forEach((row, n) => {
-      box.append(el('img', {
-        src: decoImageUrl(row.s),
-        alt: '',
-        loading: 'lazy',
-        style: `left:${n ? 70 : 38}%;bottom:${Math.round(nearFeetY(row, 0, depth) * -k)}px;height:${Math.round(Math.min(H * 1.2, row.h * row.scale * k))}px;${dim < 0.98 ? `filter:brightness(${dim.toFixed(2)});` : ''}`,
-      }));
+      parts.push({ s: row.s, left: n ? 70 : 38, bottom: pct(-nearFeetY(row, 0, depth)), height: Math.min(120, pct(row.h * row.scale)), flip: false, lum: dim, alpha: null, near: true });
     });
+  return { field, parts };
+}
+
+/** A small picture of a style for its tile: sky, field and a few of its decos (stylePreviewLayout). */
+function stylePreviewEl(look) {
+  const box = el('span', { class: 'hs-prev', 'aria-hidden': 'true' });
+  box.style.background = `linear-gradient(${look.sky.map(hexColor).join(',')})`;
+  const { field, parts } = stylePreviewLayout(look);
+  const p = (v) => `${Math.round(v * 100) / 100}%`;
+  const band = (b) => el('span', { class: 'hs-band', style: `bottom:${p(b.bottom)};height:${p(b.height)};background:${hexColor(b.color)};opacity:${b.alpha}` });
+  const img = (x) => el('img', {
+    src: decoImageUrl(x.s),
+    alt: '',
+    loading: 'lazy',
+    style: `left:${p(x.left)};bottom:${p(x.bottom)};height:${p(x.height)};${x.flip ? 'transform:translateX(-50%) scaleX(-1);' : ''}${x.lum < 0.98 ? `filter:brightness(${x.lum.toFixed(2)});` : ''}${x.alpha != null ? `opacity:${x.alpha};` : ''}`,
+  });
+  for (const x of parts.filter((q) => !q.near)) box.append(x.band ? band(x) : img(x));
+  box.append(el('span', { class: 'hs-field', style: `height:${p(field)};background:${hexColor(look.field)}` }));
+  for (const x of parts.filter((q) => q.near)) box.append(img(x));
   return box;
 }
 
