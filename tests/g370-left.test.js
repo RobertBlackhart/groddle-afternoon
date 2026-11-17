@@ -191,6 +191,7 @@ describe('G266: Funpickle and powder follow-ups', () => {
   it('the Musicblock note says the Funpickle sends GNG', () => {
     const src = read('js/musicblocks.js');
     assert.doesNotMatch(src, /which the remake\s+\* does not have/);
-    assert.match(src, /seeing all six of its\n \* powers sends it/);
+    // G938 rewrote the note: GNG is the Funpickle's thank-you (giveAward 372-378).
+    assert.match(src, /GNG: the Funpickle's thank-you \(special_item_that_only_beta_testers_get\.js\n \*   giveAward 372-378/);
   });
 });
