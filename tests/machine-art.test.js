@@ -39,11 +39,11 @@ import {
   setMachineArtFrame,
 } from '../public/js/machine-art.js?v=fb6a7ba6';
 import { MACHINE_IDS } from '../public/js/machines.js?v=f1b30bc0';
-import { MACHINE_EXTRA_WAIT_MS, machineTank, tankFuel } from '../public/js/machine-rooms.js?v=991ff9b4';
+import { MACHINE_EXTRA_WAIT_MS, machineTank, tankFuel } from '../public/js/machine-rooms.js?v=860da69c';
 import { craftRecipe, ensureMakingItems, loadRecipeCatalogFromFile } from '../public/js/making.js?v=66c4f499';
 import { platformsScreen } from '../public/js/street-model.js?v=2918abe5';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=e7e430da';
-import { machineArtFeature } from '../public/js/features/machine-art-feature.js?v=a59b549b';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=114195ac';
+import { machineArtFeature } from '../public/js/features/machine-art-feature.js?v=53fd0b85';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

@@ -16,7 +16,7 @@ import {
   unlockAchievement,
 } from '../public/js/achievements.js?v=e4e5edd0';
 import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyStreetVisit, availableHubStreets, topUpCompletists } from '../public/js/exploration.js?v=68f27989';
+import { applyStreetVisit, availableHubStreets, topUpCompletists } from '../public/js/exploration.js?v=5f533ebf';
 import { ACHIEVEMENT_CONDITION_OVERRIDES, withAchievementOverrides } from '../tools/achievement-overrides.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));

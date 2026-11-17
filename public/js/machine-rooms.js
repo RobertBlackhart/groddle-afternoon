@@ -53,7 +53,7 @@
  */
 
 import { FOREST_MACHINE_ROOM_HELD, FOREST_MACHINE_ROOM_TSID } from './forest-machine-room.js?v=5f7e4589';
-import { MACHINE_ROOMS } from './exploration.js?v=68f27989';
+import { MACHINE_ROOMS } from './exploration.js?v=5f533ebf';
 import { FRESH_FUEL, FUEL_PER_CELL, MAX_FUEL } from './machines.js?v=f1b30bc0';
 import { MAKING_BUSY } from './make-tools.js?v=86877c3e';
 

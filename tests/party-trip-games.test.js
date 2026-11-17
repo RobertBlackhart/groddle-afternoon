@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { racesFeature } from '../public/js/features/races-feature.js?v=fef0ad15';
+import { racesFeature } from '../public/js/features/races-feature.js?v=b3961120';
 import { crownsFeature } from '../public/js/features/crowns-feature.js?v=eb4fb711';
 import { mayhemFeature } from '../public/js/features/mayhem-feature.js?v=fe5c369f';
 import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=5fe0c57c';

@@ -20,6 +20,7 @@
 
 import { HUB_MAP_STREETS } from './hub-maps-data.js?v=ffe222f1';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
+import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 
 // js/hell.js noteNarakaVisit already counts Naraka's streets (its index rows
 // leave Hell One Clone's hub blank), so hub 40 is left to it.
@@ -41,20 +42,45 @@ function mappedSet(hubId) {
 export const MACHINE_ROOMS = new Set(['GCR101Q98A12EHH', 'GIF16EM56A12FSB', 'GA9MU59GB792T80']);
 export const isMachineRoom = (tsid) => MACHINE_ROOMS.has(String(tsid || '').replace(/^L/, 'G'));
 
+/**
+ * config_prod.js:916 greeting_locations, G-prefixed: the Start streets a new
+ * player lands on (several copies per hub). countsTowardHubAchievement leaves
+ * them out (location.js:2769 isGreetingLocation, :3837).
+ */
+export const GREETING_LOCATIONS = new Set([
+  'GNVKFBM3PVC2GDD', 'GNVRJVDNB0D2GJ9', 'GNV57FNCD0D2059', 'GNV6FEDKD0D2J3O', // Alakol Start
+  'GHVHDUF7PVC2D3E', 'GHVC6LAT70D23MG', 'GHVDQMOA80D245R', // Muufo Start
+  'GA9U0VLRB0D2JES', 'GA9U90TVB0D2EAH', 'GA9TEC6GB0D2B2M', 'GA9S5T1LA0D27NG', // Bortola Start
+  'GHF2R7NJE0D2JOC', 'GHF3UJS8F0D2CCC', 'GHF358MNE0D27A3', 'GHF1FNLTD0D28PT', // Salatu Start
+]);
+
+/** config_prod.js:662 transit_instances stations (the subway's twelve), left out by location.js:2759 transit_is_station. */
+export const TRANSIT_STATIONS = new Set(SUBWAY_LINE.stations.map((s) => s.streetTsid));
+
+const G = (tsid) => String(tsid || '').replace(/^L/, 'G');
+
+/**
+ * location.js:2756-2770 countsTowardHubAchievement: never a transit station, a
+ * machine room or a start (greeting) street. Every visit still counts as a
+ * location (locations_visited, or hidden_locations_visited for a machine room).
+ */
+export const isNonCountingStreet = (tsid) => isMachineRoom(tsid) || GREETING_LOCATIONS.has(G(tsid)) || TRANSIT_STATIONS.has(G(tsid));
+
 /** True when the hub's own map lists the street (countsTowardHubAchievement). */
 export function countsTowardHub(tsid, hubId) {
-  return Boolean(tsid && hubId != null && mappedSet(hubId).has(tsid) && !isMachineRoom(tsid));
+  return Boolean(tsid && hubId != null && mappedSet(hubId).has(tsid) && !isNonCountingStreet(tsid));
 }
 
 /**
- * Streets of a hub the remake can actually load: listed on the hub map,
- * present in the street index, and filed under that hub.
+ * Streets of a hub the remake can actually load that count toward its
+ * Completist: listed on the hub map, present in the street index, filed under
+ * that hub, and not a station, machine room or start street.
  * @param {string|number} hubId
  * @param {Record<string, { hubId?: string }>} indexStreets
  */
 export function availableHubStreets(hubId, indexStreets = {}) {
   const key = String(hubId);
-  return (HUB_MAP_STREETS[key] || []).filter((tsid) => String(indexStreets[tsid]?.hubId ?? '') === key && !isMachineRoom(tsid));
+  return (HUB_MAP_STREETS[key] || []).filter((tsid) => String(indexStreets[tsid]?.hubId ?? '') === key && !isNonCountingStreet(tsid));
 }
 
 /** Total streets the source hub map lists for a hub. */

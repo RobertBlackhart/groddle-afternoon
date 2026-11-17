@@ -20,7 +20,7 @@ import {
   countsTowardHub,
   hubMapStreetCount,
   streetVisitCounters,
-} from '../public/js/exploration.js?v=68f27989';
+} from '../public/js/exploration.js?v=5f533ebf';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -144,13 +144,14 @@ describe('street visit counters', () => {
   });
 
   it('groddle forest is not finished one street early', () => {
-    // 43 kept streets of the map's 56; the badge wants 41 (groddle_forest_completist).
+    // 42 counting streets of the map's 56 (G914: the badge wants every one, not
+    // Tiny Speck's 41; GFJ Subway Station is the 43rd kept street and never counts).
     const kept = availableHubStreets('56', index);
-    assert.equal(kept.length, 43);
+    assert.equal(kept.length, 42);
     const state = createAchievementState();
-    for (const tsid of kept.slice(0, 40)) visit(state, tsid);
+    for (const tsid of kept.slice(0, 41)) visit(state, tsid);
     assert.ok(!state.unlocked.includes('groddle_forest_completist'));
-    visit(state, kept[40]);
+    visit(state, kept[41]);
     assert.ok(state.unlocked.includes('groddle_forest_completist'));
   });
 });
@@ -165,7 +166,7 @@ import {
   recordStreetEntry,
   streetFeaturesFromTargets,
   streetLoadingVisit,
-} from '../public/js/exploration.js?v=68f27989';
+} from '../public/js/exploration.js?v=5f533ebf';
 
 describe('location loading card (LoadingLocationView.as, location.js getLoadingInfo)', () => {
   it('formats time and ordinals like StringUtil', () => {

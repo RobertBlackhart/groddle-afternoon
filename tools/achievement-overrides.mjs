@@ -17,7 +17,54 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * #441 (G914, Austin 2026-11-17: every hub Completist needs every street of its hub,
+ * as Ix and Brillah). Tiny Speck's achievements/<hub>_completist.js:17-22 asks for a
+ * count that some hubs outgrew. "Every street" is exploration.js availableHubStreets:
+ * on the hub's street list, loadable in the remake, and counting by location.js:2756-2770
+ * (no subway station, machine room or start street). Same condition id and counter, so
+ * progress carries over; a badge already earned stays (topUpCompletists only raises).
+ * `left` names what the hub's list holds that is not counted, for the record.
+ */
+const everyStreet = (id, hub, was, num, left) => Object.freeze({
+  conditions: Object.freeze([
+    Object.freeze({ id, type: 'counter', group: 'streets_visited_in_hub', name: `number_${hub}`, num, desc: `number_${hub}` }),
+  ]),
+  replaces: Object.freeze([Object.freeze({ group: 'streets_visited_in_hub', name: `number_${hub}`, num: was })]),
+  left: Object.freeze(left),
+  source: `Austin 2026-11-17 (#441), every street of hub ${hub}, over glitch-GameServerJS/achievements:17-22 (${was})`,
+});
+
 export const ACHIEVEMENT_CONDITION_OVERRIDES = Object.freeze({
+  // G914: inc_data_maps_prod.js hub street lists against assets/streets/index.json.
+  aranna_completist: everyStreet('609', '101', 26, 28, [
+    'GHVQ4NDEGMB23JQ Old Sabudana Drama Towers (not archived)', 'GHVR9OQH76A2B2E main street for hub 101 (dev)']),
+  besara_completist: everyStreet('604', '98', 32, 34, [
+    'GA9MU59GB792T80 Besara Community Machine Room', 'GA5A1KPKK3H2A5R Old Egret Taun Towers, GA5I99FGF5D2ELI Willis Brone Towers, GA9VA0QI1H92PKK Petrif Willow Towers (not archived)',
+    'GA912ITK8S82IQ6 main street for hub 98 (dev)']),
+  bortola_completist: everyStreet('490', '75', 35, 37, [
+    'GA9S5T1LA0D27NG GA9TEC6GB0D2B2M GA9U0VLRB0D2JES GA9U90TVB0D2EAH Bortola Start (greeting)', 'GHV2CQPL1E32QM8 Mallos Means Subway Station',
+    'GHVMSOGBUA32RPV Old Hauki Seeks Manor (not archived)', 'GIFNQSJ1UD02M6B main street for hub 75, GIFNQTD2UD02IQ3 Concept_01 (dev)']),
+  groddle_forest_completist: everyStreet('483', '56', 41, 42, [
+    'GIF16EM56A12FSB Forest Community Machine Room', 'GCRC6VC9MAO1Q7F GFJ Subway Station',
+    'GCR1G73RL7T1VKI GDO11O4750D2CFE GDO4U6RN50D2L74 GDOP37CA40D2FNT Forest Start, GDOMNN2592D272G New Forest Start (dev, not archived)',
+    'GCR1017NNFL18O5 Keylocked Door Level 01, GCR168NJLQL175U Stacked Forest 03, GCR1KTHS7ST1KD9 DontLookAtThis, GLI1013Q5BB14E0 main street for hub 56 (dev)',
+    'GCR17I2DB0O1CB0 Luster Pose, GCR17J1HB0O1PP8 Coulcairn, GCR17KJHB0O1U2H Fendeer (not archived)']),
+  groddle_meadows_completist: everyStreet('485', '58', 40, 43, [
+    'GCR101Q98A12EHH Meadow Community Machine Room', 'GCR177QO65T1EON Gregarious Grange Subway Station',
+    'GCRHDVFAKNL1TKD GCR16B8SMQL16C3 GCR1G5N9T1M14FB Stacked Meadow 01/02/05, GCR1IH8KM7T1HGH Meadow Start, GLI32FCEUTD1984 main street for hub 58 (dev)',
+    'GCR10281EUK11H0 Old Gregarious Towers (not archived)']),
+  muufo_completist: everyStreet('599', '97', 32, 35, [
+    'GHVHDUF7PVC2D3E GHVC6LAT70D23MG GHVDQMOA80D245R Muufo Start (greeting)',
+    'GDOMH1GUD5D2IQ4 Old Hakusan Heaps Towers, GDORGE5P8ME2SJB Panko Press Towers (not archived)', 'GA9TBK6SGR726VM main street for hub 97 (dev)']),
+  rasana_completist: everyStreet('655', '109', 37, 38, [
+    'GUV47PRP8DF2CG6 ZZ Kumbham Bham obs, GUV3BKB1DOE2BJ2 main street for hub 109 (dev)']),
+  tamila_completist: everyStreet('605', '92', 31, 33, [
+    'GA9PJHDPE5D262P Jeban Journey Towers, GIF3H0KG2H72DIB Goorsh Gam Towers (not archived)', 'GIF1OI3OQQ523OK main street for hub 92 (dev)']),
+  // achievements/uralia_completist.js's status text still says four streets: the hub's list grew after it.
+  uralia_completist: everyStreet('493', '51', 4, 6, [
+    'GHV1U3M48M22D54 Eastern Approach Subway Station']),
+
   // #154 (Austin 2026-11-09: make it earnable, Eleven Giants' rule). Tiny Speck's
   // achievements/brillah_completist.js:17 ships `var conditions = {};`, so nothing
   // granted it; Eleven Giants' eleven-gsjs/achievements/brillah_completist.js:18-23

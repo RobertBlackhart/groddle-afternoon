@@ -39,7 +39,7 @@ import {
   renderX,
   roomMachineVerbs,
   tankFuel,
-} from '../public/js/machine-rooms.js?v=991ff9b4';
+} from '../public/js/machine-rooms.js?v=860da69c';
 import { FOREST_MACHINE_ROOM_HELD, FOREST_MACHINE_ROOM_TSID } from '../public/js/forest-machine-room.js?v=5f7e4589';
 import { FRESH_FUEL, MAX_FUEL, refuelMachine } from '../public/js/machines.js?v=f1b30bc0';
 import { DROP_TABLES, applyDropResult, rollDropTable } from '../public/js/drop-tables.js?v=8bcf111f';
@@ -50,7 +50,7 @@ import { fixedFurniturePoints, furniturePlacementGroups } from '../public/js/str
 import { worldToScreen } from '../public/js/street-model.js?v=2918abe5';
 import { nearestSurfaceY } from '../public/js/walk-surface.js?v=13819ec0';
 import { platformsScreen } from '../public/js/street-model.js?v=2918abe5';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=e7e430da';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=114195ac';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(spike, '../glitch-GameServerJS');

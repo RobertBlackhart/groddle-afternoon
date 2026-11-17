@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createAchievementState, applyAchievementProgress, getAchievementProgress, unlockAchievement } from '../public/js/achievements.js?v=e4e5edd0';
 import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyStreetVisit, availableHubStreets, hubMapStreetCount, topUpCompletists } from '../public/js/exploration.js?v=68f27989';
+import { applyStreetVisit, availableHubStreets, hubMapStreetCount, topUpCompletists } from '../public/js/exploration.js?v=5f533ebf';
 import { ACHIEVEMENT_CONDITION_OVERRIDES, applyAchievementOverrides, withAchievementOverrides } from '../tools/achievement-overrides.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));

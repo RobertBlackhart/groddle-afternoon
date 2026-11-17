@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
 import { BOARD_CAPACITY, BOARD_CLASS, NOTE_LIMITS, REMAKE_NOTE_TEXTS, boardPinSeeds } from '../public/js/street-furniture.js?v=b1d3e833';
-import { MACHINE_ROOM_TSIDS } from '../public/js/machine-rooms.js?v=991ff9b4';
+import { MACHINE_ROOM_TSIDS } from '../public/js/machine-rooms.js?v=860da69c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outPath = serverPath('data', 'boards.json');
