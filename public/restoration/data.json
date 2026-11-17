@@ -1691,7 +1691,7 @@
      "about": "Mental Block and its sequel were block-drop puzzles: build a staircase to a high ledge from a fixed sequence of blocks.",
      "play": "At each station, move the tube and drop blocks in order. Blue blocks stack on anything; red ones stack only on red and crush the blue beneath. Reset if you box yourself in.",
      "source": "The flags, rewards and the \"Are you stuck?\" prompt (not a timer: the sequel takes longer than five minutes).",
-     "rebuilt": "Each station's block order, tube stops and ledge heights are measured from the level designer's two videos.",
+     "rebuilt": "Each station's block order, tube stops and ledge heights are measured from the level designer's two videos. Players' Snaps show the pieces are Tiny Speck's own, from the new-player training rooms: the holey metal tube, the light-blue and red wooden blocks (the red washed to the Snaps' crimson) and the blue-grey striped arch door, sized to the Snaps. The black silhouettes, grey arrows and boards are flat, as the Snaps show them, under a plain grey sky.",
      "footage": [
       {
        "id": "mgsdduCR_Gc",
@@ -1903,7 +1903,7 @@
      "about": "The Last Pilgrimage of Esquibeth retold a Glitch legend: follow her ghost through grottos and up a waterfall, collecting notes and replaying her song at each Giant stone.",
      "play": "Find the notes, then play back the ghost's melody (click or keys 1 to 5). At the top, Esquibeth dances, Grendaline appears, and you keep the Conch as a memento.",
      "source": "The quest rules and rewards, the Conch's Play and Blow, the Hollow's own background painting, and the melody Esquibeth's ghost plays at each stone, all from Tiny Speck's overlay files.",
-     "rebuilt": "Narration was read from two full recordings, and her song (E G D, E C, A D) was matched from their audio against the recovered bell sounds. Each grotto's sky colour is sampled from players' Snaps and a recording: peach-pink, pale lemon with a pink flush, magenta-pink.",
+     "rebuilt": "Narration was read from two full recordings, and her song (E G D, E C, A D) was matched from their audio against the recovered bell sounds. Each grotto's sky colour is sampled from players' Snaps and a recording: peach-pink, pale lemon with a pink flush, magenta-pink. The Snaps show the rock is Tiny Speck's own Alakol mountaineering set washed lavender, so the terraces, column faces, stepping stones, hanging columns and the rubble over each passage are those pieces, darker in the caves.",
      "footage": [
       {
        "id": "BgRgIaeaj9Q",
@@ -2159,7 +2159,7 @@
     "kind": "Ticket to Paradise",
     "video": "JyE3RpWp9nc",
     "shot": "shots/level-beam_me_down.webp",
-    "note": "",
+    "note": "The Eleven collectors' full-street snaps give the look: Tiny Speck's own flying saucers and new-player clouds for the start ledge and the landing, a dark wooden door with a plank EXIT at the far right, and the tractor beams as soft cones of light, as players' snaps show them.",
     "extra": null,
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&scenedemo=beam_me_down&practice=1"
    },
@@ -2181,7 +2181,7 @@
     "kind": "Story quest",
     "video": "WlAMZpSGPgQ",
     "shot": "shots/level-winter_walk.webp",
-    "note": "The hollow tree arch, the curling plants and Winter Haven's snowy trees are new pictures made for Groddle (reimagined, the trees redrawn from Tiny Speck's own with their snow).",
+    "note": "The hollow tree arch, the curling plants and Winter Haven's snowy trees are new pictures made for Groddle (reimagined, the trees redrawn from Tiny Speck's own with their snow). The passage down is Tiny Speck's own wintry portal, a soft oval of falling snow hanging past the tallest pillar, as the recording shows; the way home has no light: you step off the pillar into the blizzard and fade into it.",
     "extra": null,
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&questdemo=winter&practice=1"
    },
@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2577,
+  "commits": 2583,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Esquibeth's grottos and Waterfall Climb are Tiny Speck's Alakol rock washed lavender, as players' Snaps show"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Beam Me Down lands on Tiny Speck's clouds by a dark wooden EXIT, under soft tractor beams"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Winter Walk's passage is Tiny Speck's wintry portal past the tall pillar, and the way home walks into the blizzard"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Mental Block's tube, blocks and end door are Tiny Speck's own art, as players' Snaps show"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2916,26 +2936,6 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Gentle Island's rock pays its 978 currants once, flagged in the same save so the save checker credits them"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A Spinning Wheel prize is no longer taken back: the Gameshow Ticket is spent as the prize lands"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "An artifact or necklace goes into the pack as its pieces leave, so the save checker no longer takes it back"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The economy builder reads every game folder, so the Rube Shaped Potato and the Camera are gated right"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "World map cards for Pollokoo, Callopee, Massadoe, Folivoria and Nottis show the sketched frame and the lettered name"
    }
   ]
  },
