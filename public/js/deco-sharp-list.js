@@ -856,7 +856,7 @@ export const SHARP_DECOS = new Map([
 ["heights_topper_wide_1",["svg",1.4699,764,162,0,1.233,0]],
 ["heights_tree_bare_1",["webp",0.5122,752,2138,1.75,0.5,0]],
 ["heights_tree_bare_2",["svg",0.8175,334,1288,0,0.7605,0]],
-["heights_tree_bare_3",["webp",0.9917,362,1166,3.0,0.6998,0]],
+["heights_tree_bare_3",["webp",0.9917,362,1166,3.0,0.6329,0]],
 ["heights_tree_bare_4",["svg",0.6863,1138,1294,0,0.5008,0]],
 ["hell_yelling_head_v2",["webp",0,348,414,4.0,1.273,0]],
 ["hiil_plant_1",["svg",0,268,108,0,1.5556,0]],

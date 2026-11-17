@@ -9,7 +9,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as mod from '../public/js/quest-rooms/tile-puzzle.js?v=e7487422';
+import * as mod from '../public/js/quest-rooms/tile-puzzle.js?v=50186386';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS/quests');

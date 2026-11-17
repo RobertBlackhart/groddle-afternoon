@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { avatarHitBox, behindFloor } from '../public/js/reach.js?v=8e52df56';
 import { avatarHeadReach } from '../public/js/street-model.js?v=9f16f4ab';
 import { inVerbReach, verbRange } from '../public/js/walk-over.js?v=277ab977';
-import { litByTier, radiantLayout, walkable } from '../public/js/quest-rooms/radiant-glare.js?v=7b4fde2c';
+import { litByTier, radiantLayout, walkable } from '../public/js/quest-rooms/radiant-glare.js?v=f54c9447';
 
 const root = join(import.meta.dirname, '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
