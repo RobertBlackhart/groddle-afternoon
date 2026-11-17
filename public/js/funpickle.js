@@ -4,9 +4,9 @@
  * Source: glitch-GameServerJS items/special_item_that_only_beta_testers_get.js
  * (eleven-gsjs has the same file). In Glitch it was Tiny Speck's gift to the
  * beta testers at "The Great Reset"; nobody else could get one. The remake
- * makes it a rare late-game street find (Austin 2026-10-25, desk FUNPICKLE),
- * the way Goodnight Groddle became a street find once every series tune is
- * owned (js/musicblocks.js MUSICBLOCK_ENDGAME_DROP).
+ * makes it a rare late-game street find (Austin 2026-10-25, desk FUNPICKLE).
+ * Goodnight Groddle also comes once as a gift when every series tune is owned
+ * (js/musicblocks.js endgameGiftDue, G938).
  *
  * What the item does (all from the source file):
  * - Seven pack verbs (procrastinate, ignore, begrudge, respect, enjoy, infer,

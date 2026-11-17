@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=b8991424';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=8bef229e';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d0511624';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=86b72347';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=a3fd525b';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=a3fd525b';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=581eac1b';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=581eac1b';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=3a7270a1';
+} from './js/player-save.js?v=fbb6173e';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -687,7 +687,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=b7574f61';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=280c6fb1';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -706,7 +706,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=7880a20b';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=d3d95045';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -799,7 +799,7 @@ import {
   trantStatusLabel,
   trantFootAnchorY,
 } from './js/trants.js?v=4d6f5593';
-import { growStreetTrant } from './js/patches.js?v=5a38514c';
+import { growStreetTrant } from './js/patches.js?v=c5256421';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -869,14 +869,11 @@ import {
   createMusicblockState,
   ensureMusicblockItems,
   getMusicblock,
-  isMusicblock,
-  listMusicblockCollection,
   musicblockCollectionNote,
   musicblockPlaySeconds,
-  planMusicblockDrop,
   playMusicblock,
   starterMusicblocks,
-} from './js/musicblocks.js?v=f75d0a19';
+} from './js/musicblocks.js?v=20ba0fa0';
 import {
   VENDOR_PROFILES,
   selectVendorProfile,
@@ -895,7 +892,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=a3fd525b';
+} from './js/animals.js?v=581eac1b';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -936,7 +933,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=945cc7c4';
+} from './js/shrines.js?v=2ebaf1e5';
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
@@ -950,7 +947,7 @@ import {
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=5c18c365';
+} from './js/spinning-wheel.js?v=cfa24485';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -1030,8 +1027,8 @@ import {
   shrinePlacementRequest,
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=535aaba4';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=9736f549';
+} from './js/street-ecology.js?v=8ccdbae1';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=61722882';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b12c43aa';
@@ -2457,7 +2454,7 @@ let interactables = [];
 const animalStateCache = new Map();
 /** Versioned ecology snapshot. Runtime targets point directly into these street records. */
 const persistentWorldState = { animals: {}, streets: {} };
-let piggies = [], chickens = [], apples = [], worldMusicblocks = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], particles = [], speechBubbles = [];
+let piggies = [], chickens = [], apples = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], particles = [], speechBubbles = [];
 let textures = {};
 let time = 0;
 let menuTarget = null;
@@ -10096,7 +10093,6 @@ function executeVerb(target, verbId) {
     learned: skillState.learned,
     imaginationUpgrades: pc.imaginationUpgrades || [],
     achievements: achieveState.unlocked || [],
-    musicblocks: musicblockState,
     shrines: shrineState,
     streetTsid: currentStreetTsid,
     sharedChunks: sharedGrant?.chunks,
@@ -10290,29 +10286,6 @@ function executeVerb(target, verbId) {
     if (result.animalChanged && target.state) {
       target.subtitle = animalStatusLabel(target.classId, target.state);
     }
-    if (result.musicblockPickup) {
-      const picked = result.musicblockPickup;
-      if (picked.newDiscovery) {
-        const updates = applyAchievementProgress(
-          achieveState,
-          `in_inventory:${picked.def.classTsid}`,
-          1,
-          pc
-        );
-        announceAchievementUpdates(updates);
-      }
-      floatText(
-        target.sprite.x,
-        target.sprite.y - 112,
-        picked.collection.complete
-          ? 'Musicblock set complete!'
-          : `Tunes ${picked.collection.owned}/${picked.collection.total}`,
-        0xc6a2ff,
-        // #311 (The Catface): the top of a Musicblock's three lines faded in under a second; it
-        // lasts as long as the pickup line under it now.
-        { life: 110 }
-      );
-    }
     playSound(soundForVerb(target.classId, verbId, result), { volume: 0.7, jitter: 0.06 });
     burst(target.sprite.x, target.sprite.y - 30, 0xffe066, 8);
 
@@ -10408,7 +10381,6 @@ function executeVerb(target, verbId) {
       }
       entityLayer.removeChild(target.sprite);
       apples = apples.filter((a) => a !== target.sprite);
-      worldMusicblocks = worldMusicblocks.filter((block) => block !== target.sprite);
       interactables = interactables.filter((t) => t !== target);
     }
   } else {
@@ -14768,41 +14740,6 @@ function spawnApples(points) {
     });
   });
   return list;
-}
-
-/** Place one deterministic unowned tune on each newly visited street. */
-function spawnMusicblockDrop(point, exactPlacement = false) {
-  const def = planMusicblockDrop(musicblockState, inv, currentStreetTsid);
-  if (!def || !point) return [];
-  const collection = listMusicblockCollection(inv);
-  // Ticket 78: the block on the street is the same stack a player puts down, so it draws as one
-  // (spawnDroppedItemStack): its '1' scene at the SWF's own size (musicblock_*.js adjusted_scale 1,
-  // LocationItemstackView.as 853-854), about 37 px, not the pack icon blown up 1.65 times.
-  const icon = ITEM_CATALOG[def.classTsid]?.icon || `assets/sprites/icons/${def.classTsid}.webp`;
-  const worldArt = worldArtFor(def.classTsid, 1, icon);
-  const spr = new PIXI.Sprite(textureFromUrl(worldArt?.url || icon));
-  spr.anchor.set(0.5, 1);
-  spr.worldArt = worldArt;
-  sizeDroppedItemSprite(spr);
-  if (!isLoaded(spr.texture?.source)) onLoaded(spr.texture?.source, () => sizeDroppedItemSprite(spr));
-  spr.x = clamp(point.x + (exactPlacement ? 0 : 92), 44, Math.max(44, WORLD_W - 44));
-  // Desk DROPHOVER (G297): it sits on the ground like every other dropped
-  // item (no hover, bob or pulse), drawn in front of street furniture as they are.
-  spr.y = point.y;
-  spr.zIndex = itemZ(def.classTsid, 12);
-  // G286: no drawn glow behind it. musicblock_*.js and musicblock_base set no
-  // glow or highlight state, and the client only glows an itemstack under the
-  // pointer or a drag (LocationItemstackView.as 408-424, AbstractItemstackView.as 457-486),
-  // as with the pumpkins (G248) and Senor Funpickle (G265).
-  entityLayer.addChild(spr);
-  register({
-    classId: def.classTsid,
-    label: def.label,
-    subtitle: `Playable collectible · recovered tunes ${collection.owned}/${collection.total}`,
-    sprite: spr,
-    state: { streetTsid: currentStreetTsid },
-  });
-  return [spr];
 }
 
 function sizeDroppedItemSprite(spr) {
@@ -25453,7 +25390,6 @@ function clearWorldEntities({ keepWindows = false } = {}) {
   piggies = [];
   chickens = [];
   apples = [];
-  worldMusicblocks = [];
   droppedItemSprites = [];
   quoins = [];
   butterflies = [];
@@ -25731,7 +25667,6 @@ async function enterStreet(tsid, opts = {}) {
     }
   });
   apples = spawnApples(placement('apples'));
-  worldMusicblocks = spawnMusicblockDrop(placement('musicblocks')[0], true);
   const treeSpots = placement('trees').map((point, index) => ({
     x: point.x,
     y: point.y,

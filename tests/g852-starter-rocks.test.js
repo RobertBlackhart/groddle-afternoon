@@ -25,7 +25,7 @@ import {
   rockSpawnPlan,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=535aaba4';
+} from '../public/js/street-ecology.js?v=8ccdbae1';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 
 const root = join(import.meta.dirname, '..');

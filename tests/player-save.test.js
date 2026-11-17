@@ -12,7 +12,7 @@ import {
   parsePlayerSave,
   restorePlayerSave,
   serializePlayerSave,
-} from '../public/js/player-save.js?v=3a7270a1';
+} from '../public/js/player-save.js?v=fbb6173e';
 
 const publicRoot = join(import.meta.dirname, '..', 'public');
 
@@ -293,6 +293,8 @@ describe('persistent pack and core player state', () => {
     assert.deepEqual(skills.learned, ['gardening_1']);
     assert.ok(buffs.active.silvertongue);
     assert.equal(musicblocks.plays, 7);
+    // G938: an older save's street-drop record is left behind harmlessly.
+    assert.equal(musicblocks.collectedStreets, undefined);
     assert.equal(shrines.favor.spriggan, 42);
     assert.equal(quoins.collectedToday, 9);
     assert.equal(quoins.multiplier, 2);

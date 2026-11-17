@@ -816,6 +816,8 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
     // Feature-built rows (private instances such as party spaces) may pin
     // these; archived street rows never carry them.
     apples: Number.isFinite(entry?.apples) ? whole(entry.apples, 0, 8) : 4,
+    // G938: the street drop that drew a block here is gone (no source); the planner keeps the spot
+    // so no street's layout moves.
     musicblocks: Number.isFinite(entry?.musicblocks) ? whole(entry.musicblocks, 0, 2) : 1,
     quoins: Number.isFinite(entry?.quoins) ? whole(entry.quoins, 0, 40) : 8,
     companions: entry?.companions !== false,

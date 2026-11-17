@@ -38,10 +38,10 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=535aaba4';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=8ccdbae1';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=819002b7';
-import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=945cc7c4';
+import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=2ebaf1e5';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { TOOL_CONDITION_CATALOG } from '../public/js/tools.js?v=8516a0c3';
 import { placementRequests } from './build-realtime-objects.mjs';

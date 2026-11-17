@@ -120,7 +120,7 @@ import {
 import { saveStore } from '../save-store.js?v=cd053443';
 import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { GIANTS } from '../shrines.js?v=945cc7c4';
+import { GIANTS } from '../shrines.js?v=2ebaf1e5';
 import {
   MP_DONATIONS,
   MP_TEXT,

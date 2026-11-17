@@ -31,7 +31,7 @@ import { join } from 'node:path';
 import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=0d502ab1';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=535aaba4';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=8ccdbae1';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 
 const root = join(import.meta.dirname, '..');
@@ -131,7 +131,7 @@ describe('every planned Apple and Musicblock sits on a line that holds items, on
       const population = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === STREET_INDEX.default });
       const platforms = platformsScreen(data);
       const plan = planStreetPlacements(platforms, placementRequests(population), { worldW: streetWidth(data), seed: data.tsid, reserved: streetReservedSpots(data) });
-      // game.js spawnApples: y = p.y; spawnMusicblockDrop: y = point.y (the first point).
+      // game.js spawnApples: y = p.y. The Musicblock spot is kept (unused since G938) so layouts stay put.
       const drawn = [
         ...(plan.groups.apples || []).map((p) => ['apple', p]),
         ...(plan.groups.musicblocks || []).slice(0, 1).map((p) => ['musicblock', p]),

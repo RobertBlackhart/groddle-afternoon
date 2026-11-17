@@ -7,7 +7,7 @@
  *   lying on the ground in its in-location state (Tiny Speck's x1_1 sheet).
  *   Pick up puts it in the pack; it never turns up again. A rare late-game
  *   find in place of the beta testers' gift (Austin 2026-10-25, desk
- *   FUNPICKLE), like Goodnight Groddle (js/musicblocks.js).
+ *   FUNPICKLE).
  * - Pack: Procrastinate, Ignore, Begrudge, Respect, Enjoy, Infer, Admire
  *   (deployItem): Too Much Fun for 5 minutes, the item hops out 75 px in front
  *   of you, bounces after 1 s with its own sound (the x1_bounce2 sheet, 160
@@ -86,7 +86,7 @@ import {
   pickRandomTeleport,
   recordPower,
   shouldPlaceFind,
-} from '../funpickle.js?v=1fb38c54';
+} from '../funpickle.js?v=95796317';
 
 export const FUNPICKLE_FEATURE_ID = 'funpickle';
 

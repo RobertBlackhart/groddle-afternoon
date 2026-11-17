@@ -34,7 +34,7 @@ function fnBody(src, name) {
 
 describe('ORBERA: the orb just above the name labels', () => {
   it('stands its ball just clear of a name plate, the count on the orb', async () => {
-    const { ORB_ART } = await import('../public/js/features/rook-attack-feature.js?v=0f3b9d84');
+    const { ORB_ART } = await import('../public/js/features/rook-attack-feature.js?v=8eb9d955');
     const plateY = Number(read('js/features/realtime-feature.js').match(/const PLATE_Y = (-\d+);/)[1]);
     // The plate's text bottom is PLATE_Y; 12 px text plus its 4 px pad puts the top about 20 px higher.
     const plateTop = -plateY + 20;
@@ -60,18 +60,17 @@ describe('ORBERA: the orb just above the name labels', () => {
 });
 
 describe('DROPHOVER: a street Musicblock sits on the ground', () => {
-  it('spawns at its spot, with no hover, bob or pulse', () => {
-    const spawn = fnBody(game, 'spawnMusicblockDrop');
-    assert.match(spawn, /spr\.y = point\.y;/);
-    assert.doesNotMatch(spawn, /point\.y - 120|airborne|\.bob\b/);
-    assert.doesNotMatch(game, /for \(const block of worldMusicblocks\)/);
+  it('G938: the only street block (the start street\'s) is an ordinary ground stack, with no hover, bob or pulse', () => {
+    assert.doesNotMatch(game, /spawnMusicblockDrop|worldMusicblocks/);
     assert.doesNotMatch(game, /block\.baseScale \* pulse/);
+    const feature = read('js/features/musicblocks-feature.js');
+    assert.match(feature, /engine\.dropWorldStack\?\.\(classTsid, 1, x, y\)/);
   });
 
   it('ticket 78: draws at the size of the same block put down (its world art, own size), not 1.65x its icon', () => {
-    const spawn = fnBody(game, 'spawnMusicblockDrop');
+    const spawn = fnBody(game, 'spawnDroppedItemStack');
     assert.doesNotMatch(spawn, /baseScale = 1\.65|scale\.set\(1\.65/);
-    assert.match(spawn, /worldArtFor\(def\.classTsid, 1, icon\)/);
+    assert.match(spawn, /worldArtFor\(stack\.classTsid, stack\.count, item\.icon\)/);
     assert.match(spawn, /sizeDroppedItemSprite\(spr\)/);
     // musicblock_*.js adjusted_scale 1: the SWF's own size.
     if (haveGsjs) assert.match(gsjs('items/musicblock_d_blue_01.js'), /var adjusted_scale = 1;/);

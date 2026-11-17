@@ -31,7 +31,7 @@
  * groddle1.swf decos; their placement is read off the Snap.
  */
 
-import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=5a38514c';
+import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=c5256421';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { ensureItem } from '../inventory.js?v=f49c8998';

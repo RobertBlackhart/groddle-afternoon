@@ -1,5 +1,5 @@
 /** Persistent player systems + per-street world snapshot. */
-import { normalizeShrineState } from './shrines.js?v=945cc7c4';
+import { normalizeShrineState } from './shrines.js?v=2ebaf1e5';
 import { normalizeQuoinState } from './quoins.js?v=a4208821';
 import { normalizeToolConditionState, syncToolCopies } from './tools.js?v=8516a0c3';
 import { normalizeSkillState } from './skills.js?v=4542bdf9';
@@ -285,16 +285,11 @@ export function normalizeMusicblockSnapshot(seed = {}) {
     const at = Math.max(0, Math.floor(finite(rawTime, -1)));
     if (classTsid && at >= 0) heardAt[classTsid] = at;
   }
-  const collectedStreets = {};
-  for (const [rawId, collected] of Object.entries(seed?.collectedStreets || {})) {
-    const streetTsid = cleanKey(rawId);
-    if (streetTsid && collected === true) collectedStreets[streetTsid] = true;
-  }
+  // G938: an older save's collectedStreets (the street drop that had no source) is left behind.
   return {
     heardAt,
     plays: Math.max(0, Math.floor(finite(seed?.plays, 0))),
     lastPlayed: cleanKey(seed?.lastPlayed) || null,
-    collectedStreets,
   };
 }
 

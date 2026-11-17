@@ -18,7 +18,7 @@ import {
   isFoodItem,
   itemLabel,
   itemStackMax,
-} from './animal-husbandry.js?v=ba4cdba4';
+} from './animal-husbandry.js?v=ce4962cf';
 import { ensurePiggyMood, piggyMoodLabel } from './animal-mood.js?v=a49495fc';
 
 export const ANIMAL_CLASS_IDS = Object.freeze([

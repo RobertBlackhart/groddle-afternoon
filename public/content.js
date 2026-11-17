@@ -57,18 +57,14 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=a3fd525b';
+} from './js/animals.js?v=581eac1b';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
   performAnimalKinship,
   highestAnimalKinshipRank,
 } from './js/animal-kinship.js?v=d1fff152';
-import {
-  MUSICBLOCK_CATALOG,
-  collectMusicblock,
-  isMusicblock,
-} from './js/musicblocks.js?v=f75d0a19';
+import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=20ba0fa0';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
   ensureWoodTreeState,
@@ -86,7 +82,7 @@ import {
   namingVerbs,
   queuePlops,
   startIncubation,
-} from './js/animal-husbandry.js?v=ba4cdba4';
+} from './js/animal-husbandry.js?v=ce4962cf';
 import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=1383e6fd';
 import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=55ad2f83';
 import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=9700115b';
@@ -809,13 +805,6 @@ export function getVerbsFor(target, ctx) {
         tooltip: 'You suspect the doll might say something',
       });
     }
-  }
-
-  if (isMusicblock(classId)) {
-    add('pickup', 'pick up', {
-      sort: 10,
-      tooltip: 'Add this playable tune to your collection',
-    });
   }
 
   if (classId.startsWith('street_spirit_')) {
@@ -1546,26 +1535,6 @@ export function runVerb(target, verbId, ctx) {
     give('apple', 1);
     msgs.push('Apple acquired. Boldly red.');
     return { ok: true, msgs, effects, remove: true };
-  }
-
-  if (isMusicblock(classId) && verbId === 'pickup') {
-    const picked = collectMusicblock(ctx.musicblocks, inv, classId, ctx.streetTsid);
-    if (!picked.ok) return { ok: false, msgs: ['That tune slipped away.'], effects };
-    effects.items[classId] = 1;
-    effects._activityBase = `You found ${picked.def.label}.`;
-    msgs.push(
-      picked.newDiscovery
-        ? `${picked.def.label} acquired. A new tune for the collection!`
-        : `${picked.def.label} acquired again.`
-    );
-    finalizeMsgs(msgs, effects);
-    return {
-      ok: true,
-      msgs,
-      effects,
-      remove: true,
-      musicblockPickup: picked,
-    };
   }
 
   if (classId.startsWith('street_spirit_') && verbId === 'browse') {

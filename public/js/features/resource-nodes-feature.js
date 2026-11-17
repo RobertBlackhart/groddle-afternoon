@@ -67,7 +67,7 @@ import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=f49c8998';
 import { setToolRemaining, toolCopies } from '../tools.js?v=8516a0c3';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=d2bcebbc';
-import { rollResourceNodeDrop } from './drops-feature.js?v=ea633f39';
+import { rollResourceNodeDrop } from './drops-feature.js?v=03f366d3';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=3ceb8a8c';
@@ -112,7 +112,7 @@ import { playItemOverlay } from '../item-overlay.js?v=b12c43aa';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=9736f549';
+import { salmonSwimAt } from '../street-creatures.js?v=61722882';
 import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';

@@ -29,7 +29,7 @@
  * secretCount, secretOverlay, secretGrowl, secretDemo, secretBox.
  */
 
-import { emblemCostFor } from '../shrines.js?v=945cc7c4';
+import { emblemCostFor } from '../shrines.js?v=2ebaf1e5';
 import {
   ELEVEN_BADGE,
   SECRET_MARKER_SIZE,

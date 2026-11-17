@@ -6,7 +6,7 @@
  * was last heard. The tunes are Tiny Speck's CC0 recordings (sound-key catalog).
  */
 
-import { addItem, countItem, ensureItem } from './inventory.js?v=f49c8998';
+import { countItem, ensureItem } from './inventory.js?v=f49c8998';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=72f37c7e';
 import { metabolicGain, moodMax, loseEnergy } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
@@ -185,9 +185,6 @@ export function createMusicblockState(seed = {}) {
     heardAt,
     plays: Math.max(0, Math.floor(Number(seed.plays) || 0)),
     lastPlayed: MUSICBLOCK_CATALOG[seed.lastPlayed] ? seed.lastPlayed : null,
-    collectedStreets: Object.fromEntries(
-      Object.entries(seed.collectedStreets || {}).filter(([, collected]) => collected === true)
-    ),
   };
 }
 
@@ -223,59 +220,73 @@ export function musicblockCollectionNote(inv, classTsid) {
 }
 
 /**
- * Street spawns: locations/newbie_island.js and the greeting locations
- * (location.js:663) place one random block from the five series. SB-1 only
- * comes out of the soil (patches.js musicblocks_brown). GNG was Tiny Speck's
- * thank-you from the Special Item That Only Beta Testers Get (giveAward,
- * special_item_that_only_beta_testers_get.js 372-378): seeing all six of its
- * powers sends it (js/features/funpickle-feature.js, G209). Before the
- * Funpickle was in the remake, GNG also turned up on a street once all 25
- * series tunes are owned; that street find stays (desk FUNPICKLE).
+ * Where blocks come from (G938, Austin 2026-11-17: follow Glitch). There is no
+ * block waiting on every street: the remake's own "one unowned block on each
+ * uncollected street" had no source and is gone. Blocks come from:
+ * - drop tables (items/catalog_drop_tables.js, js/drop-tables-data.js): Chicken
+ *   squeezes, croppery and herbalism, tree petting and watering, refining and
+ *   smelting, barnacles, jellisacs, peat, the soil (SB-1 only out of
+ *   musicblocks_brown) and the Spinning Wheel;
+ * - Gentle Island's side street (newbie_island.js 124-162, NB_Side_Street2):
+ *   js/features/newxp-feature.js doonboggleSetup, any of the 25 series blocks;
+ * - a new player's own start street (locations/location.js 646-667): when they
+ *   own no block and none lies there, one of the twenty D and X blocks, below;
+ * - GNG: the Funpickle's thank-you (special_item_that_only_beta_testers_get.js
+ *   giveAward 372-378, js/features/funpickle-feature.js, G209), and the
+ *   remake's one-time gift once all 25 series tunes are owned (desk FUNPICKLE),
+ *   sent the way giveAward sends it (endgameGiftDue).
  */
-export const MUSICBLOCK_STREET_POOL = Object.freeze(
-  Object.values(MUSICBLOCK_CATALOG).filter((def) => def.collection).map((def) => def.classTsid)
-);
-export const MUSICBLOCK_ENDGAME_DROP = 'musicblock_goodnight_groddle';
 
-function stableHash(value) {
-  let hash = 2166136261;
-  for (const char of String(value || '')) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+/** location.js 663: the greeting location's choose_one, the D and X series in source order (no BB). */
+export const START_STREET_MUSICBLOCKS = Object.freeze([
+  'musicblock_d_blue_01', 'musicblock_d_blue_02', 'musicblock_d_blue_03', 'musicblock_d_blue_04', 'musicblock_d_blue_05',
+  'musicblock_d_green_01', 'musicblock_d_green_02', 'musicblock_d_green_03', 'musicblock_d_green_04', 'musicblock_d_green_05',
+  'musicblock_d_red_01', 'musicblock_d_red_02', 'musicblock_d_red_03', 'musicblock_d_red_04', 'musicblock_d_red_05',
+  'musicblock_x_shiny_01', 'musicblock_x_shiny_02', 'musicblock_x_shiny_03', 'musicblock_x_shiny_04', 'musicblock_x_shiny_05',
+]);
+/** location.js 665: createItemStackDelayed(block_class, 1, x, y, 1), a second after the player enters. */
+export const START_STREET_DELAY_MS = 1000;
+
+/** True when the inventory holds any Musicblock (pc.countItemClass(is_musicblock)). */
+export function ownsMusicblock(inv) {
+  return Object.keys(MUSICBLOCK_CATALOG).some((classTsid) => countItem(inv, classTsid) > 0);
 }
 
-/** One deterministic unowned block per uncollected street. */
-export function planMusicblockDrop(state, inv, streetTsid) {
-  if (!state || !streetTsid || state.collectedStreets?.[streetTsid]) return null;
-  let missing = MUSICBLOCK_STREET_POOL.filter((classTsid) => countItem(inv, classTsid) < 1);
-  if (!missing.length && countItem(inv, MUSICBLOCK_ENDGAME_DROP) < 1) missing = [MUSICBLOCK_ENDGAME_DROP];
-  if (!missing.length) return null;
-  return MUSICBLOCK_CATALOG[missing[stableHash(streetTsid) % missing.length]];
+/**
+ * location.js 646-667: the start street's block. In Glitch the greeting location was the new
+ * player's own instance, so the block was theirs alone; here the street is the remake's start
+ * street (Hechey Track) and the block is a ground stack in the player's own dropped stacks, never
+ * shared online. The source checks on each entry that the player owns no block and none lies on
+ * the street; the instance was left for good, so `made` keeps it to once a save (a shared street
+ * the player walks back to would otherwise hand out a block for every one sold).
+ * stacks: the player's own stacks on this street ({ classTsid }).
+ */
+export function startStreetMusicblockDue({ made = false, onStartStreet = false, inv = null, stacks = [] } = {}) {
+  if (made || !onStartStreet || !inv) return false;
+  if (ownsMusicblock(inv)) return false;
+  return !(stacks || []).some((stack) => isMusicblock(stack?.classTsid));
 }
 
-/** Pick up a world block and return collection progress. */
-export function collectMusicblock(state, inv, classTsid, streetTsid) {
-  const def = getMusicblock(classTsid);
-  if (!def) return { ok: false, reason: 'unknown' };
-  if (!state || !inv) return { ok: false, reason: 'state' };
-  const before = countItem(inv, classTsid);
-  addItem(inv, classTsid, 1);
-  if (!state.collectedStreets) state.collectedStreets = {};
-  if (streetTsid) state.collectedStreets[streetTsid] = true;
-  const collection = listMusicblockCollection(inv);
-  const series = musicblockSeriesProgress(inv, def.collection);
-  return {
-    ok: true,
-    reason: 'collected',
-    def,
-    newDiscovery: before < 1,
-    collection,
-    seriesOwned: series ? series.owned : 0,
-    seriesTotal: series ? series.total : 0,
-    seriesComplete: Boolean(series?.complete),
-  };
+/** location.js 663: choose_one of the twenty. */
+export function chooseStartStreetMusicblock(rng = Math.random) {
+  const i = Math.min(START_STREET_MUSICBLOCKS.length - 1, Math.floor(Math.max(0, rng()) * START_STREET_MUSICBLOCKS.length));
+  return START_STREET_MUSICBLOCKS[i];
+}
+
+/** GNG, the one block no series holds. */
+export const MUSICBLOCK_ENDGAME_GIFT = 'musicblock_goodnight_groddle';
+/** The gift's activity line, in giveAward's words (special_item_that_only_beta_testers_get.js 375). */
+export const MUSICBLOCK_ENDGAME_GIFT_LINE = "You've collected every tune in all five Musicblock series. As a thank-you, Tiny Speck have sent you this Musicblock.";
+
+/**
+ * Desk FUNPICKLE: before the Funpickle was in the remake, GNG lay on a street once all 25 series
+ * tunes were owned. With the street drop gone (G938) it comes once as a gift, through the path
+ * Glitch sent GNG by (giveAward: an activity line, then createItemFromGround). Not when GNG is
+ * already owned, and never twice (`given`).
+ */
+export function endgameGiftDue(inv, given = false) {
+  if (given || !inv || countItem(inv, MUSICBLOCK_ENDGAME_GIFT) > 0) return false;
+  return Object.values(MUSICBLOCK_CATALOG).filter((def) => def.collection).every((def) => countItem(inv, def.classTsid) > 0);
 }
 
 /**

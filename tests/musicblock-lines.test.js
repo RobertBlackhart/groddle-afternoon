@@ -21,9 +21,8 @@ describe('#311 a verb result\'s lines last alike', () => {
   it("the result's later lines live as long", () => {
     assert.match(game, /resultFloatY\(target, spoke \|\| Boolean\(reactionText\)\) - i \* 16, m, 0xfff4d6, \{ life: 110 \}\);/);
   });
-  it('the Musicblock "Tunes n/m" line lives as long', () => {
-    const at = game.indexOf('`Tunes ${picked.collection.owned}/${picked.collection.total}`');
-    assert.ok(at > 0);
-    assert.match(game.slice(at, at + 300), /0xc6a2ff,[\s\S]*?\{ life: 110 \}\s*\);/);
+  it('G938: the street block\'s own "Tunes n/m" line went with the street drop', () => {
+    // The start street's block is an ordinary ground stack; its pick up says what any stack's does.
+    assert.equal(game.indexOf('`Tunes ${picked.collection.owned}/${picked.collection.total}`'), -1);
   });
 });

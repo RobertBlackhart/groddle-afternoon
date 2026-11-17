@@ -61,7 +61,7 @@ import {
   scionWords,
 } from '../purple-journey.js?v=5e078ed8';
 import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=eaa28de5';
-import { homesFeature } from './homes-feature.js?v=2663838b';
+import { homesFeature } from './homes-feature.js?v=e5baa50c';
 
 export const PURPLE_FEATURE_ID = 'purple-journey';
 /** The scene's own TSID (the template is LNVV4OTMAUG2PQV). */

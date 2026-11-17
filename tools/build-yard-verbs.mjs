@@ -53,10 +53,10 @@ import { requireSite, sitePath } from './repos.mjs';
 export const OUT = sitePath('data', 'yard-verbs.json');
 
 export async function yardVerbsJson() {
-  const { YARD_POOL, YARD_AK_ITEMS } = await import('../public/js/yard-verbs-mp.js?v=1d540a72');
+  const { YARD_POOL, YARD_AK_ITEMS } = await import('../public/js/yard-verbs-mp.js?v=5a95a58a');
   const { ANIMAL_KINSHIP_PACKAGES } = await import('../public/js/animal-kinship.js?v=d1fff152');
   const { ARBOROLOGY_HARVEST, TRANT_META } = await import('../public/js/trants.js?v=4d6f5593');
-  const { SEASONED_BEANS, SEEDLING_GROW_UPGRADES, SOIL_SKILL_PACKAGES, SOIL_TIMERS } = await import('../public/js/patches.js?v=5a38514c');
+  const { SEASONED_BEANS, SEEDLING_GROW_UPGRADES, SOIL_SKILL_PACKAGES, SOIL_TIMERS } = await import('../public/js/patches.js?v=c5256421');
   const { WOOD_TREE_HARVEST } = await import('../public/js/woodcutting.js?v=b43edbd8');
   const { ENCHANTED_WOOD_TREE } = await import('../public/js/enchanted-forests.js?v=da978edc');
   const beans = Object.keys(SEASONED_BEANS).sort().map((id) => `${JSON.stringify(id)}:${JSON.stringify(SEASONED_BEANS[id].trantClass)}`);

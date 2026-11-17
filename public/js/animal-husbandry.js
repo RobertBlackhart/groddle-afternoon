@@ -38,14 +38,14 @@ import { ITEM_CATALOG, ensureItem, getItemUseInfo } from './inventory.js?v=f49c8
 import { DROP_TABLES, applyDropResult, rollDropTable } from './drop-tables.js?v=8bcf111f';
 import { loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { musicblockItemMeta } from './musicblocks.js?v=f75d0a19';
+import { musicblockItemMeta } from './musicblocks.js?v=20ba0fa0';
 import { isEnchantedForest } from './enchanted-forests.js?v=da978edc';
 import { isSymphoniousTsid } from './symphonious-maximus.js?v=345ad437';
 import { isMissingFloorTsid } from './hidden-floors.js?v=014b5377';
 import { stationByTsid } from './subway.js?v=735bfbeb';
 import { ensurePiggyMood, piggyTwiceDailyTick, satePiggy } from './animal-mood.js?v=a49495fc';
 import { isCrowdSad } from './animal-crowding.js?v=3ee9671d';
-import { ecologyForStreet } from './street-ecology.js?v=535aaba4';
+import { ecologyForStreet } from './street-ecology.js?v=8ccdbae1';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 import { getGameDayKey } from './game-day.js?v=72f37c7e';
 

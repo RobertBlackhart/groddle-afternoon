@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { countWords, pluralize, withArticle } from '../public/js/words.js?v=ee4e72f8';
-import { YARD_TEXT } from '../public/js/yard-verbs-mp.js?v=1d540a72';
+import { YARD_TEXT } from '../public/js/yard-verbs-mp.js?v=5a95a58a';
 import { pluralize as butlerPluralize } from '../public/js/butler.js?v=57456a7f';
 import { ensureMakingItems } from '../public/js/making.js?v=819002b7';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
