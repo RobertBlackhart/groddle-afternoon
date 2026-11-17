@@ -11,7 +11,8 @@
  *
  * A row applies only while the GSJS file still has no conditions of its own, or, for a
  * row with `replaces`, while its conditions are still exactly the ones that row names
- * (so a source that changes is noticed, not overwritten).
+ * (so a source that changes is noticed, not overwritten). A row's `text` rewords the
+ * badge's own words (statusText, desc) where they still say what the row replaces.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -61,9 +62,12 @@ export const ACHIEVEMENT_CONDITION_OVERRIDES = Object.freeze({
     'GUV47PRP8DF2CG6 ZZ Kumbham Bham obs, GUV3BKB1DOE2BJ2 main street for hub 109 (dev)']),
   tamila_completist: everyStreet('605', '92', 31, 33, [
     'GA9PJHDPE5D262P Jeban Journey Towers, GIF3H0KG2H72DIB Goorsh Gam Towers (not archived)', 'GIF1OI3OQQ523OK main street for hub 92 (dev)']),
-  // achievements/uralia_completist.js's status text still says four streets: the hub's list grew after it.
-  uralia_completist: everyStreet('493', '51', 4, 6, [
-    'GHV1U3M48M22D54 Eastern Approach Subway Station']),
+  // achievements/uralia_completist.js's status text says four streets (its line 5); the hub's list grew
+  // after it, so the text follows the count (Austin 2026-11-17).
+  uralia_completist: Object.freeze({
+    ...everyStreet('493', '51', 4, 6, ['GHV1U3M48M22D54 Eastern Approach Subway Station']),
+    text: Object.freeze({ statusText: Object.freeze([Object.freeze(['four streets', 'six streets'])]) }),
+  }),
 
   // #154 (Austin 2026-11-09: make it earnable, Eleven Giants' rule). Tiny Speck's
   // achievements/brillah_completist.js:17 ships `var conditions = {};`, so nothing
@@ -104,7 +108,13 @@ function overrideApplies(row, conditions = []) {
 export function applyAchievementOverrides(catalog) {
   for (const [id, row] of Object.entries(ACHIEVEMENT_CONDITION_OVERRIDES)) {
     const def = catalog[id];
-    if (!def || !overrideApplies(row, def.conditions || [])) continue;
+    if (!def) continue;
+    // A row's `text` ({ field: [[from, to]] }) rewords the badge's own words while they still say `from`.
+    for (const [field, pairs] of Object.entries(row.text || {})) {
+      if (typeof def[field] !== 'string') continue;
+      for (const [from, to] of pairs) def[field] = def[field].split(from).join(to);
+    }
+    if (!overrideApplies(row, def.conditions || [])) continue;
     def.conditions = row.conditions.map((c) => ({ ...c }));
   }
   return catalog;

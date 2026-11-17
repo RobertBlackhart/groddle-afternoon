@@ -21,7 +21,7 @@
       "assets/audio/sfx/WM_D1.mp3": "0684df49",
       "assets/audio/sfx/WM_D2.mp3": "cbff5b64",
       "assets/audio/sfx/WM_E2.mp3": "6d6cb2ba",
-      "assets/content/achievements.json": "89792b62",
+      "assets/content/achievements.json": "d06f0a1c",
       "assets/content/ambient-music.json": "fd84e46f",
       "assets/content/barnacle-picture-spots.json": "a384faa9",
       "assets/content/barnacle-spots.json": "ea6c5ca0",

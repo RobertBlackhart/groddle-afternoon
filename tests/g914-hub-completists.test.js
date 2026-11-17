@@ -91,6 +91,13 @@ describe('#441 hub Completists: every street', () => {
     assert.deepEqual(visit.map((v) => v.counter), ['locations_visited:GHV2CQPL1E32QM8', 'hubs_visited:75'], 'still a location visited');
   });
 
+  it('Uralia\'s badge text follows its count: six streets, not four (Austin 2026-11-17)', () => {
+    const text = getAchievementCatalog().uralia_completist.statusText;
+    assert.match(text, /roamed six streets/);
+    assert.doesNotMatch(text, /four streets/);
+    assert.equal(availableHubStreets('51', index).length, 6);
+  });
+
   it('Groddle Meadow: 40 is no longer enough, all 43 earn it', () => {
     const streets = availableHubStreets('58', index);
     assert.equal(streets.length, 43);
