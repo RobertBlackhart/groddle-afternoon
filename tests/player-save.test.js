@@ -12,7 +12,7 @@ import {
   parsePlayerSave,
   restorePlayerSave,
   serializePlayerSave,
-} from '../public/js/player-save.js?v=449465dc';
+} from '../public/js/player-save.js?v=0e7ba77a';
 
 const publicRoot = join(import.meta.dirname, '..', 'public');
 

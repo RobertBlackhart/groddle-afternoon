@@ -24,7 +24,7 @@ import {
   soundChannelToggle,
 } from '../public/js/ui/topbar.js?v=47b04ca4';
 
-import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=2ebaf1e5';
+import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=f1a0a0d8';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (f) => readFileSync(join(pub, f), 'utf8');

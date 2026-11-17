@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3e445ae8';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=70ca31ae';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ade4df98';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=449465dc';
+} from './js/player-save.js?v=0e7ba77a';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -933,7 +933,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=2ebaf1e5';
+} from './js/shrines.js?v=f1a0a0d8';
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
@@ -941,13 +941,15 @@ import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powde
 import {
   GAMESHOW_TICKET_ID,
   applySpinningWheelReward,
+  spendSpinningWheelTicket,
+  spinningWheelTicketHeld,
   canSpinWheel,
   createSpinningWheelState,
   ensureSpinningWheelItems,
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=cfa24485';
+} from './js/spinning-wheel.js?v=ff608cb8';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -11018,9 +11020,9 @@ function removeSpinningWheelTarget() {
   }
 }
 
-function spawnSpinningWheel({ now = Date.now() } = {}) {
+function spawnSpinningWheel({ now = Date.now(), ticket = null } = {}) {
   if (!entityLayer || !player || spinningWheelTarget) return null;
-  const wheel = createSpinningWheelState('player', now);
+  const wheel = createSpinningWheelState('player', now, { ticket });
   wheel.phase = 'appear';
   const sprite = new PIXI.AnimatedSprite(textures.wheelAppear.frames);
   sprite.anchor.set(0.5, 1);
@@ -11190,13 +11192,14 @@ function useGameshowTicket() {
     toast('Finish this wheel before redeeming another ticket.');
     return false;
   }
-  if (!removeItem(inv, GAMESHOW_TICKET_ID, 1)) {
+  if (countItem(inv, GAMESHOW_TICKET_ID) < 1) {
     toast('You do not have a Gameshow Ticket.');
     return false;
   }
-  const target = spawnSpinningWheel();
+  // G948: the ticket stays in the pack until the wheel pays (or goes unspun), so the save write that
+  // holds the prize also holds the ticket's loss (js/spinning-wheel.js createSpinningWheelState).
+  const target = spawnSpinningWheel({ ticket: GAMESHOW_TICKET_ID });
   if (!target) {
-    addItem(inv, GAMESHOW_TICKET_ID, 1);
     toast('There is no room for the wheel here.');
     return false;
   }
@@ -11210,6 +11213,10 @@ function useGameshowTicket() {
 
 function handleSpinningWheelTarget(target, verbId) {
   if (verbId !== 'spin') return;
+  if (!spinningWheelTicketHeld(target.state.wheel, inv)) {
+    toast('Your Gameshow Ticket is gone, so the wheel will not spin.');
+    return;
+  }
   const params = new URLSearchParams(location.search);
   const colorName = String(params.get('wheelcolor') || '').toLowerCase();
   const forcedColorRoll =
@@ -11265,6 +11272,7 @@ function updateSpinningWheel() {
   }
   if (phase.endsWith('_end') && !wheel.rewardApplied) {
     const result = applySpinningWheelReward(wheel, inv, pc);
+    if (result.reason === 'no_ticket') toast('Your Gameshow Ticket is gone, so the wheel has no prize for you.');
     if (result.ok) {
       // G376 npc_spinning_wheel.js 263, 270: a musicblock or 500+ currants shows rainbow_spindoctor.
       const r = result.reward || {};
@@ -11294,7 +11302,11 @@ function updateSpinningWheel() {
       updateHud();
     }
   }
-  if (phase === 'destroyed') removeSpinningWheelTarget();
+  if (phase === 'destroyed') {
+    // G948: an unspun wheel still used its ticket up (gameshow_ticket.js), now as it goes.
+    if (spendSpinningWheelTicket(wheel, inv)) updateHud();
+    removeSpinningWheelTarget();
+  }
 }
 
 function makePlayer() {

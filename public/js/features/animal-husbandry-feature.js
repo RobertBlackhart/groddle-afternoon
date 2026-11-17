@@ -114,7 +114,7 @@ import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-
 import { loseEnergy, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=31077bc8';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=9daa2ed2';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot } from '../yard-wander.js?v=f3f0bdb5';

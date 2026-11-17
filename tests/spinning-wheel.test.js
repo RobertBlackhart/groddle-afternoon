@@ -12,6 +12,8 @@ import {
   SPINNING_WHEEL_REVEAL_MS,
   SPINNING_WHEEL_REWARD_MS,
   applySpinningWheelReward,
+  spendSpinningWheelTicket,
+  spinningWheelTicketHeld,
   canSpinWheel,
   createSpinningWheelState,
   ensureSpinningWheelItems,
@@ -20,7 +22,7 @@ import {
   spinningWheelPhase,
   startSpinningWheel,
   wheelPrizeTier,
-} from '../public/js/spinning-wheel.js?v=cfa24485';
+} from '../public/js/spinning-wheel.js?v=ff608cb8';
 import {
   ITEM_CATALOG,
   createInventory,
@@ -29,7 +31,7 @@ import {
 import {
   createShrineState,
   donateToShrine,
-} from '../public/js/shrines.js?v=2ebaf1e5';
+} from '../public/js/shrines.js?v=f1a0a0d8';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -126,6 +128,53 @@ test.describe('owner-only one-spin lifecycle', () => {
     assert.equal(pc.currants, 10);
     assert.equal(applySpinningWheelReward(wheel, inv, pc).reason, 'already_applied');
     assert.equal(inv.gameshow_ticket, 1);
+  });
+});
+
+test.describe('G948: the ticket is spent in the same tick as the prize (G942 gap A8)', () => {
+  const spin = (wheel, rewardRoll) => startSpinningWheel(wheel, 'player', { now: SPINNING_WHEEL_APPEAR_MS, rewardRoll, snoConeRoll: 0, colorRoll: 0, responseRoll: 0 });
+
+  test('the pack holds the ticket while the wheel turns; the prize and the ticket\'s loss land together', () => {
+    const wheel = createSpinningWheelState('player', 0, { ticket: GAMESHOW_TICKET_ID });
+    const inv = createInventory({ [GAMESHOW_TICKET_ID]: 2 });
+    const pc = { currants: 0 };
+    assert.equal(spinningWheelTicketHeld(wheel, inv), true);
+    // The top currant prize (the drop table's 500) is what could not wait on the site.
+    let roll = 0;
+    while (roll < 1 && selectSpinningWheelReward(roll, 0).amount !== 500) roll += 0.001;
+    spin(wheel, roll);
+    assert.equal(inv[GAMESHOW_TICKET_ID], 2, 'nothing left the pack at the spin');
+    const won = applySpinningWheelReward(wheel, inv, pc);
+    assert.equal(won.ok, true);
+    assert.equal(pc.currants, 500);
+    assert.equal(inv[GAMESHOW_TICKET_ID], 1, 'one ticket spent with the prize');
+    assert.equal(spendSpinningWheelTicket(wheel, inv), false, 'never spent twice');
+    assert.equal(inv[GAMESHOW_TICKET_ID], 1);
+  });
+
+  test('a ticket gone from the pack before the prize wins nothing; an unspun wheel still uses its ticket up', () => {
+    const wheel = createSpinningWheelState('player', 0, { ticket: GAMESHOW_TICKET_ID });
+    const inv = createInventory({ [GAMESHOW_TICKET_ID]: 1 });
+    const pc = { currants: 0 };
+    spin(wheel, 0.5);
+    inv[GAMESHOW_TICKET_ID] = 0;
+    assert.equal(spinningWheelTicketHeld(wheel, inv), false);
+    const before = { ...inv };
+    assert.equal(applySpinningWheelReward(wheel, inv, pc).reason, 'no_ticket');
+    assert.equal(pc.currants, 0);
+    assert.deepEqual(inv, before, 'no prize');
+    const idle = createSpinningWheelState('player', 0, { ticket: GAMESHOW_TICKET_ID });
+    const inv2 = createInventory({ [GAMESHOW_TICKET_ID]: 1 });
+    assert.equal(spendSpinningWheelTicket(idle, inv2), true);
+    assert.equal(inv2[GAMESHOW_TICKET_ID] || 0, 0);
+  });
+
+  test('game.js no longer takes the ticket when the wheel appears', () => {
+    const game = fs.readFileSync(path.join(root, 'public/game.js'), 'utf8');
+    const use = game.slice(game.indexOf('function useGameshowTicket('), game.indexOf('function handleSpinningWheelTarget('));
+    assert.doesNotMatch(use, /removeItem\(inv, GAMESHOW_TICKET_ID/);
+    assert.match(use, /spawnSpinningWheel\(\{ ticket: GAMESHOW_TICKET_ID \}\)/);
+    assert.match(game, /spendSpinningWheelTicket\(wheel, inv\)/);
   });
 });
 

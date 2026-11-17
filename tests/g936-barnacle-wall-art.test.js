@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=d3832c0c';
-import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=886e1cb9';
+import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=80f2b38f';
 import { BARNACLE_GAP_CLOSE, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=3e4e2c94';
 import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=976d947e';
 

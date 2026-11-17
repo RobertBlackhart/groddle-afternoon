@@ -6,7 +6,7 @@
  * - items/include/shrines.js
  */
 
-import { addItem, ensureItem } from './inventory.js?v=f49c8998';
+import { addItem, ensureItem, removeItem } from './inventory.js?v=f49c8998';
 import { musicblockItemMeta } from './musicblocks.js?v=20ba0fa0';
 
 export const GAMESHOW_TICKET_ID = 'gameshow_ticket';
@@ -203,9 +203,19 @@ export function spinMeResponse(roll = 0) {
   return pool[Math.floor(normalizedRoll(roll) * pool.length)] || pool[0];
 }
 
-export function createSpinningWheelState(ownerId = 'player', now = Date.now()) {
+/**
+ * A wheel for its owner. ticket (G948, G942 gap A8): the Gameshow Ticket that called it, still in the
+ * pack: it is spent in the same tick the prize is paid (applySpinningWheelReward), or when the wheel
+ * goes unspun (spendSpinningWheelTicket), so one save write holds the ticket's loss and the prize and
+ * the site's ledger pays the prize from the ticket instead of taking it back (a 500-currant prize
+ * came at least 5.2 s after the ticket left, in a later write). gameshow_ticket.js used it up when the
+ * wheel appeared; it is still used up for every wheel, only later.
+ */
+export function createSpinningWheelState(ownerId = 'player', now = Date.now(), { ticket = null } = {}) {
   return {
     ownerId: String(ownerId || 'player'),
+    ticket: ticket ? String(ticket) : null,
+    ticketSpent: false,
     createdAt: now,
     readyAt: now + SPINNING_WHEEL_APPEAR_MS,
     expiresAt: now + SPINNING_WHEEL_LIFETIME_MS,
@@ -276,9 +286,27 @@ export function spinningWheelPhase(state, now = Date.now()) {
   return 'appear';
 }
 
+/** G948: spends the wheel's ticket if it is still owed (true when it was taken now). */
+export function spendSpinningWheelTicket(state, inv) {
+  if (!state?.ticket || state.ticketSpent) return false;
+  state.ticketSpent = true;
+  return removeItem(inv, state.ticket, 1);
+}
+
+/** G948: whether the pack still holds the ticket this wheel will spend (true when it owes none). */
+export function spinningWheelTicketHeld(state, inv) {
+  if (!state?.ticket || state.ticketSpent) return true;
+  return (Number(inv?.[state.ticket]) || 0) >= 1;
+}
+
 export function applySpinningWheelReward(state, inv, pc) {
   if (!state?.spun || !state.reward) return { ok: false, reason: 'not_spun' };
   if (state.rewardApplied) return { ok: false, reason: 'already_applied' };
+  // G948: the ticket leaves in the same tick as the prize arrives; a ticket no longer in the pack wins nothing.
+  if (state.ticket && !state.ticketSpent && !spendSpinningWheelTicket(state, inv)) {
+    state.rewardApplied = true;
+    return { ok: false, reason: 'no_ticket' };
+  }
   const reward = state.reward;
   if (reward.kind === 'currants') {
     pc.currants = (Number(pc.currants) || 0) + reward.amount;

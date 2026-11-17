@@ -42,7 +42,7 @@ import {
   waterPlot,
   wetPlot,
 } from '../public/js/garden.js?v=73a80be0';
-import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=449465dc';
+import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=0e7ba77a';
 import { normalizeFeatureSlices } from '../public/js/feature-host.js?v=a0bd032a';
 import { applyPlot, localPlot, GARDEN_LOCK_MS } from '../public/js/shared-gardens.js?v=c1f90bc0';
 import { applyTendAct } from '../public/js/neighbours-mp.js?v=895a5209';
