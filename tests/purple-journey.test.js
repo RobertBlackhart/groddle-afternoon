@@ -31,7 +31,7 @@ import {
 } from '../public/js/purple-journey.js?v=5e078ed8';
 import { VOYAGE_FLOOR, VOYAGE_OFFSET } from '../public/js/purple-journey-scene.js?v=29304304';
 import { purpleJourneyFeature } from '../public/js/features/purple-journey-feature.js?v=87b6aab1';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=e4e5edd0';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=1bc93d7e';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const here = dirname(fileURLToPath(import.meta.url));

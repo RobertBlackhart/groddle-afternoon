@@ -54,6 +54,11 @@ export function achievementConditionLabel(condition = {}, catalogLabel = '') {
   const knownLabel = String(catalogLabel || '').trim();
   if (knownLabel && knownLabel !== name) return knownLabel;
 
+  // Hub Completists count streets seen in one hub: a `streets_visited_in_hub`
+  // counter named number_<hub>, or Haraiva's group_count over
+  // `streets_visited_in_hub_116`. Both read like the other exploring badges.
+  if (/^streets_visited_in_hub(_\d+)?$/.test(String(condition.group || '').trim())) return 'Locations Visited';
+
   const musicblock = name.match(/^musicblock_(d_green|d_red|d_blue|b_brown|x_shiny)_(\d{2})$/i);
   if (musicblock) {
     const collection = { d_green: 'DG', d_red: 'DR', d_blue: 'DB', b_brown: 'BB', x_shiny: 'XS' }[musicblock[1].toLowerCase()];

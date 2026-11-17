@@ -40,7 +40,7 @@ import { planStreetTrophies } from '../public/js/street-jobs.js?v=950e9c22';
 import { planEggTrophy } from '../public/js/seasons.js?v=1978c3f3';
 import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=eb3d4e75';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=e4e5edd0';
+import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=1bc93d7e';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const GS = join(here, '../../glitch-GameServerJS');

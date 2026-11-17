@@ -33,7 +33,7 @@ import {
   browseAchievementLog,
   achievementCategories,
   getAchievementProgress,
-} from '../public/js/achievements.js?v=e4e5edd0';
+} from '../public/js/achievements.js?v=1bc93d7e';
 import {
   createSkillState,
   canLearnSkill,

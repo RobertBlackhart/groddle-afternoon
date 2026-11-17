@@ -9,7 +9,7 @@
  */
 
 import { applyQuestProgress } from './quests.js?v=40c71a37';
-import { unlockAchievement } from './achievements.js?v=e4e5edd0';
+import { unlockAchievement } from './achievements.js?v=1bc93d7e';
 import { countItem, removeItem } from './inventory.js?v=f49c8998';
 
 export const LEGALIZE_QUEST_ID = 'card_carrying_qualification';

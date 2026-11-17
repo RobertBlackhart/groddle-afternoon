@@ -22,7 +22,7 @@ import {
   consumeAchievementCounters,
   resetAchievementCounter,
   purchaseAchievementUpdates,
-} from '../public/js/achievements.js?v=e4e5edd0';
+} from '../public/js/achievements.js?v=1bc93d7e';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=2659c4e8';
 import { createPlot, growTree, tickPlot } from '../public/js/patches.js?v=5a38514c';
 import { noteWoodCare } from '../public/js/woodcutting.js?v=b43edbd8';
@@ -55,6 +55,15 @@ describe('canonical GSJS achievement events', () => {
     assert.equal(
       achievementConditionLabel({ name: 'awesome_pot', desc: 'awesome_pot' }, 'Awesome Pot'),
       'Awesome Pot'
+    );
+    // #462: hub Completists read like the other exploring badges, not "Number 58".
+    assert.equal(
+      achievementConditionLabel({ type: 'counter', group: 'streets_visited_in_hub', name: 'number_58', desc: 'number_58' }),
+      'Locations Visited'
+    );
+    assert.equal(
+      achievementConditionLabel({ type: 'group_count', group: 'streets_visited_in_hub_116', name: '665', desc: '665' }),
+      'Locations Visited'
     );
   });
 

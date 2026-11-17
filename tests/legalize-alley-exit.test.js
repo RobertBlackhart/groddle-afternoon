@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { assignQuest, createQuestState } from '../public/js/quests.js?v=40c71a37';
-import { createAchievementState } from '../public/js/achievements.js?v=e4e5edd0';
+import { createAchievementState } from '../public/js/achievements.js?v=1bc93d7e';
 import { countItem, createInventory } from '../public/js/inventory.js?v=f49c8998';
 import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=3a7270a1';
 import { STATION_X, stationScreen, surfaceStation } from '../public/js/subway.js?v=735bfbeb';
@@ -38,7 +38,7 @@ import {
   legalizeObjective,
   legalizeReloadLocation,
   legalizeWayBack,
-} from '../public/js/legalize-it.js?v=9afd2e68';
+} from '../public/js/legalize-it.js?v=fadb0602';
 import { closeQuestRoomConverse } from '../public/js/features/quest-instances-feature.js?v=d6039b62';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

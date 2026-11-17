@@ -54,7 +54,7 @@ import { getGameDayKey } from '../public/js/game-day.js?v=72f37c7e';
 import { towerApi } from '../public/js/features/home-tower-feature.js?v=c5037c77';
 import { shiftBotX } from '../public/js/features/craftybot-feature.js?v=b5ed1a11';
 import { normalizeDroppedItemState } from '../public/js/world-items.js?v=deadf665';
-import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=e4e5edd0';
+import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=1bc93d7e';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const spike = join(import.meta.dirname, '..');

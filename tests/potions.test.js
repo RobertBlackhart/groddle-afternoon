@@ -51,7 +51,7 @@ import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=a3093922';
 import { createPlot, growTree, tickPlot, trantsformPlotTree, normalizePlot } from '../public/js/patches.js?v=5a38514c';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=e4e5edd0';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=1bc93d7e';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');

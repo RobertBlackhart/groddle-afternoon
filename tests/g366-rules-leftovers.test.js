@@ -23,7 +23,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { worldVerbAchievementCounters } from '../public/js/achievements.js?v=e4e5edd0';
+import { worldVerbAchievementCounters } from '../public/js/achievements.js?v=1bc93d7e';
 import { createAnimalState, resetAnimalDay } from '../public/js/animals.js?v=9f460d2f';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=38a0cac5';
