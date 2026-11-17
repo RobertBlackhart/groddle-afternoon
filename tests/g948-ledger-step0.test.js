@@ -18,6 +18,8 @@ import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/
 import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons.js?v=0d6b4965';
 import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
 import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=afe01381';
+import { FUNPICKLE } from '../public/js/funpickle.js?v=95796317';
+import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=72733693';
 
 const root = join(import.meta.dirname, '..');
 const economy = () => JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));
@@ -180,5 +182,27 @@ describe('G948 A9: a Cubimal out racing or battling is still counted as the play
     const back = php('check', [out.after, credited(), save({ inv: { npc_cubimal_gnome: 1, npc_cubimal_chick: 1 }, features: { 'cubimal-race': { version: 2, out: [], outNames: [], outTags: [] }, 'cubimal-battle': { version: 1, out: null } } }), 0]);
     assert.deepEqual(back.reconciled.clamped, none, 'its return is not a 1,000 gain');
     assert.deepEqual(back.after, ledger);
+  });
+});
+
+describe('G948 A1: the Funpickle out using a power is still counted as the player\'s', { skip }, () => {
+  const ledger = counts({ [FUNPICKLE]: 1 });
+
+  it('the deploy write and the return write stand with no budget; the slice is the game\'s own', () => {
+    funpickleFeature._reset();
+    funpickleFeature.restore({ found: true, out: true, powersUsed: {} });
+    const slice = JSON.parse(JSON.stringify(funpickleFeature.save()));
+    assert.equal(slice.out, true);
+    const out = php('check', [ledger, credited(), save({ features: { funpickle: slice } }), 0]);
+    assert.deepEqual(out.reconciled.clamped, none);
+    assert.deepEqual(out.after, ledger, 'out of the pack, still held');
+    const back = php('check', [out.after, credited(), save({ inv: { [FUNPICKLE]: 1 }, features: { funpickle: { ...slice, out: false } } }), 0]);
+    assert.deepEqual(back.reconciled.clamped, none, 'its return is not a 1,000 gain');
+    assert.deepEqual(back.after, ledger);
+  });
+
+  it('never two: out with one in the pack still counts one', () => {
+    const h = php('holdings', [save({ inv: { [FUNPICKLE]: 1 }, features: { funpickle: { out: true } } })]);
+    assert.equal(h.items[FUNPICKLE], 1);
   });
 });
