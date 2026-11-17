@@ -41,8 +41,8 @@
  * radianceStatus, meditationTogether, meditatorsHere.
  */
 
-import { addItem, countItem, ensureItem } from '../inventory.js?v=487b1b60';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../game-day.js?v=03b8d954';
+import { addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../game-day.js?v=50c112eb';
 import {
   STATION_COUNTER,
   STATION_QUEST,
@@ -72,13 +72,13 @@ import {
   startLevitation,
   startMeditation,
 } from '../meditation.js?v=96f23682';
-import { energyMax, metabolicGain, moodMax, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
+import { energyMax, forceMetabolic, gainMetabolic, loseEnergy, loseMood, metabolicGain, moodMax } from '../metabolics.js?v=48f784bf';
 import { levitationCards } from '../imagination-effects.js?v=70169933';
 import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=7fd40f71';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { rainbowSound, showRainbow } from '../overlays.js?v=eda942a8';
-import { moodScaledXp } from '../mood-xp.js?v=22648ec0';
+import { moodScaledXp } from '../mood-xp.js?v=e311b45c';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { getSkillPackageOverride } from '../skill-packages.js?v=bfb87281';
@@ -360,8 +360,8 @@ function end(engine, reason = 'timer', at = Date.now()) {
   if (mood > 0 && !metabolicGain('mood').ok) mood = 0;
   // Energy the gate refused does not count toward the daily top.
   state = { ...out.state, energyToday: Math.max(0, out.state.energyToday - (out.energy - energy)) };
-  pc.energy = Math.min(tankOf(engine), (pc.energy || 0) + energy);
-  pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + mood);
+  if (energy > 0) gainMetabolic(pc, 'energy', energy);
+  if (mood > 0) gainMetabolic(pc, 'mood', mood);
   const imgTotal = out.img + (out.imgBonus || 0);
   if (imgTotal) {
     pc.imagination = (pc.imagination || 0) + imgTotal;
@@ -489,8 +489,8 @@ function demoSetup(engine) {
   for (const id of grants) engine.grantSkill(id);
   if (countItem(engine.inv, ORB_CLASS) < 1) addItem(engine.inv, ORB_CLASS, 1);
   state = { ...rollMeditationDay(state, dayKey()), cooldownUntil: 0, energyToday: 0, levitateUntil: 0 };
-  engine.pc.energy = demo === 'levitate' ? 80 : 40;
-  engine.pc.mood = 40;
+  forceMetabolic(engine.pc, 'energy', demo === 'levitate' ? 80 : 40);
+  forceMetabolic(engine.pc, 'mood', 40);
   engine.updateHud();
   const auto = engine.param('meditateautoplay');
   if (auto) autoplayAt = Date.now() + 1500;
@@ -781,10 +781,7 @@ function onRadiateDone(engine, m) {
     rng: rng(engine),
   });
   let energyGot = 0;
-  if (out.energyBonus > 0 && metabolicGain('energy').ok) {
-    energyGot = Math.min(out.energyBonus, Math.max(0, tank - (pc.energy || 0)));
-    pc.energy = (pc.energy || 0) + energyGot;
-  }
+  if (out.energyBonus > 0) energyGot = gainMetabolic(pc, 'energy', out.energyBonus);
   // stats_add_xp(n, false): the mood bonus; the card's iMG first (1225), then the full bonus (1243).
   const imgBonus = out.imgBonus ? moodScaledXp(pc, out.imgBonus) : 0;
   const img = out.img ? moodScaledXp(pc, out.img) : 0;
@@ -858,14 +855,8 @@ function onRadiatePulse(engine, m) {
   const gain = pulseGain(tank, Math.max(1, Math.min(3, Number(m.rank) || 1)));
   let mood = 0;
   let energy = 0;
-  if (m.mood && gain > 0 && metabolicGain('mood').ok) {
-    mood = Math.min(gain, Math.max(0, moodMax(pc) - (pc.mood || 0)));
-    pc.mood = (pc.mood || 0) + mood;
-  }
-  if (gain > 0 && !hasZen(state, dayKey(), tank) && metabolicGain('energy').ok) {
-    energy = Math.min(gain, Math.max(0, tank - (pc.energy || 0)));
-    pc.energy = (pc.energy || 0) + energy;
-  }
+  if (m.mood && gain > 0) mood = gainMetabolic(pc, 'mood', gain);
+  if (gain > 0 && !hasZen(state, dayKey(), tank)) energy = gainMetabolic(pc, 'energy', gain);
   rec.energy += energy;
   rec.mood += mood;
   const player = engine.player;

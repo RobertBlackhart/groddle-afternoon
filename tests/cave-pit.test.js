@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=33f40cb6';
 import { CAVE_PIT_TELEPORTERS, LEVEL_3_WEST_TELEPORTER, LEVEL_3_WEST_TSID, cavePitTeleportersOn } from '../public/js/cave-pit.js?v=81e62950';
 import { inTeleporter } from '../public/js/hidden-floors.js?v=014b5377';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=006daab4';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=8c496b92';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = JSON.parse(readFileSync(join(spike, 'public/assets/streets', `${LEVEL_3_WEST_TSID}.json`), 'utf8'));

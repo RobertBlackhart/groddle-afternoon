@@ -31,9 +31,9 @@
  * pushes no item_give, its createItem leaves nothing over).
  */
 
-import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from './inventory.js?v=487b1b60';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from './inventory.js?v=6414dbdc';
 import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
+import { gainMetabolic, loseEnergy, loseMood, moodMax } from './metabolics.js?v=48f784bf';
 
 /**
  * Plain transforms: { verb, label, out, energy, mood, keep } per input class.
@@ -245,8 +245,7 @@ export function runTransform(classTsid, verb, count, inv, pc, learned = [], rng 
   if (check.mood) loseMood(pc, check.mood);
   // grain_bushel.js 126: metabolics_add_mood(10 * count), nothing while dead
   // (inc_metabolics.js 79-86); the tank caps it (metabolics.js moodMax).
-  const moodGain = (t.moodGain || 0) * n > 0 && metabolicGain('mood').ok ? (t.moodGain || 0) * n : 0;
-  if (moodGain) pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + moodGain);
+  const moodGain = (t.moodGain || 0) * n > 0 ? gainMetabolic(pc, 'mood', (t.moodGain || 0) * n) : 0;
   addItem(inv, t.out, got);
   if (t.becomes) addItem(inv, t.becomes, n);
   const line = typeof t.line === 'function' ? t.line(n) : t.line;

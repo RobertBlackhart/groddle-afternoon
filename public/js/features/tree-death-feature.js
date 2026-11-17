@@ -66,11 +66,11 @@
  * treeGuilt, treeDeaths, treePoisonAutoplay.
  */
 
-import { copyFromLedger, keepsCopies } from '../copy-charges.js?v=1c1efade';
-import { migrateClassValue } from '../tools.js?v=8516a0c3';
-import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=487b1b60';
-import { moodMax } from '../metabolics.js?v=1383e6fd';
-import { plantChoices } from '../patches.js?v=2281bd71';
+import { copyFromLedger, keepsCopies } from '../copy-charges.js?v=ab07e909';
+import { migrateClassValue } from '../tools.js?v=4156bba8';
+import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
+import { moodMax, topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { plantChoices } from '../patches.js?v=67d08c97';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
@@ -99,8 +99,8 @@ import {
   quoteAntidoteVerb,
   quotePoisonVerb,
   treeDeathOutcome,
-} from '../tree-poison.js?v=3bc48e3e';
-import { patchesFeature } from './patches-feature.js?v=84b0213c';
+} from '../tree-poison.js?v=646d1bc1';
+import { patchesFeature } from './patches-feature.js?v=d5f4344d';
 
 export const TREE_DEATH_FEATURE_ID = 'tree-death';
 const VERB_PREFIX = 'treepoison:';
@@ -530,8 +530,8 @@ function setupDemoKit(engine) {
   engine.grantSkill?.('botany_1');
   const kit = { [TREE_POISON]: 1, [TREE_ANTIDOTE]: 1, hatchet: 1, hoe: 1, watering_can: 1, bean_bean: 2, bean_fruit: 1, bean_wood: 1, bean_egg: 1 };
   for (const [id, qty] of Object.entries(kit)) engine.inv[id] = Math.max(qty, engine.inv[id] || 0);
-  engine.pc.energy = Math.max(engine.pc.energy || 0, 100);
-  engine.pc.mood = Math.max(engine.pc.mood || 0, moodMax(engine.pc));
+  topUpMetabolic(engine.pc, 'energy', 100);
+  topUpMetabolic(engine.pc, 'mood', moodMax(engine.pc));
   engine.refreshPack?.();
 }
 

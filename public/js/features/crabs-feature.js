@@ -37,14 +37,14 @@
  */
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
-import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=487b1b60';
-import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=dc6b7003';
-import { energyMax, loseMood, metabolicGain, moodMax, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=6414dbdc';
+import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=650ecd58';
+import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f784bf';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { cleanQuestMarkup } from '../quests.js?v=d057d5ec';
-import { followPath } from '../street-creatures.js?v=d390cfd8';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { cleanQuestMarkup } from '../quests.js?v=92c75858';
+import { followPath } from '../street-creatures.js?v=6076a836';
 import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
 import {
@@ -77,7 +77,7 @@ import {
   musicblocksInPack,
   normalizeCrabMemory,
   playToday,
-} from '../crabs.js?v=68023acd';
+} from '../crabs.js?v=f1c48c4d';
 
 const ART = 'assets/sprites/crabs/';
 /** OGA npc_crab sheets: 131x129 cells, 6 columns; populated counts measured. */
@@ -453,16 +453,8 @@ function onSettle(engine, row) {
   const r = settled.rewards;
   // G227: rewards go through metabolics_add_mood / _energy, refused while dead
   // or (energy) Super Pooped (inc_metabolics.js 40-53, 79-86; js/metabolics.js).
-  if (r.mood > 0 && metabolicGain('mood').ok) {
-    const before = pc.mood || 0;
-    pc.mood = Math.min(moodMax(pc), before + r.mood);
-    effects.mood = (effects.mood || 0) + (pc.mood - before);
-  }
-  if (r.energy > 0 && metabolicGain('energy').ok) {
-    const before = pc.energy || 0;
-    pc.energy = Math.min(energyMax(pc), before + r.energy);
-    effects.energy = pc.energy - before;
-  }
+  if (r.mood > 0) effects.mood = (effects.mood || 0) + gainMetabolic(pc, 'mood', r.mood);
+  if (r.energy > 0) effects.energy = gainMetabolic(pc, 'energy', r.energy);
   // stats_add_xp(xp, false): the mood bonus applies.
   if (r.xp) effects.xp = grantMoodXp(pc, r.xp);
   if (r.currants) {

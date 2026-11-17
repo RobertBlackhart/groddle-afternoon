@@ -13,8 +13,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { TOWER_JOBS, createTowerState, elevatorStops, finishSharedExpansion, floorJobFor, readTowerFloorWire, startExpansion, towerFloorClass, towerFloorProject, towerFloorWire } from '../public/js/home-tower.js?v=2d71091c';
-import { normalizeTowers } from '../public/js/home-street-mp.js?v=e65807e1';
+import { TOWER_JOBS, createTowerState, elevatorStops, finishSharedExpansion, floorJobFor, readTowerFloorWire, startExpansion, towerFloorClass, towerFloorProject, towerFloorWire } from '../public/js/home-tower.js?v=77d57cda';
+import { normalizeTowers } from '../public/js/home-street-mp.js?v=1ca05fa3';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
 import { SITE_DIR, sitePath, serverPath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 

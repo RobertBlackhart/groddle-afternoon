@@ -11,20 +11,20 @@
  * spend_points, emblem_base doSpend. See quoteFavorSpend / quoteEmblemSpend.
  */
 
-import { levelInfoForXp } from './progression.js?v=4165e202';
+import { levelInfoForXp } from './progression.js?v=05ff0260';
 import {
   ITEM_CATALOG,
   addItem,
   ensureItem,
   isToolItem,
   removeItem,
-} from './inventory.js?v=487b1b60';
+} from './inventory.js?v=6414dbdc';
 import {
   GAMESHOW_TICKET_ID,
   gameshowTicketChance,
-} from './spinning-wheel.js?v=2ac95241';
-import { metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+} from './spinning-wheel.js?v=13336464';
+import { gainMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';
 import { accelerateActiveStudy, getActiveStudy, maxStudyAcceleration } from './skills.js?v=4542bdf9';
 import { emblemUnlockSkillFor } from './skill-tree.js?v=e399b9ca';
@@ -446,9 +446,7 @@ export function donateToShrine(state, giantId, inv, pc, classTsid, count = 1, op
 
   // shrines.js 490-492: the mood comes back through metabolics_add_mood,
   // which gives nothing while dead (inc_metabolics.js 79-86).
-  const moodBefore = Number(pc.mood) || 0;
-  if (mood > 0 && metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), moodBefore + mood);
-  const actualMood = pc.mood - moodBefore;
+  const actualMood = mood > 0 ? gainMetabolic(pc, 'mood', mood) : 0;
   pc.xp = (Number(pc.xp) || 0) + xp;
   pc.imagination = (Number(pc.imagination) || 0) + xp;
   state.favor[giantId] = whole(state.favor[giantId]) + quote.favor;

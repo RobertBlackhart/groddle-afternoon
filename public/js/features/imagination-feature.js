@@ -26,10 +26,10 @@
  * imgLast, imgShuffled, imgAutoplay, imgBrain, imgEnergyMax.
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { quoinDailyLimitFor } from '../quoins.js?v=a4208821';
-import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { quoinDailyLimitFor } from '../quoins.js?v=6a2cac74';
+import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   CARD_ART_LAYERS,
   HAND_SIZE,
@@ -58,8 +58,9 @@ import { brainCapacityRescale, skillTimeFactor } from '../imagination-effects.js
 import { betterLearningDiscount } from '../better-learning.js?v=044ff9ff';
 import { rescaleStudiesForLearningModifier } from '../skills.js?v=4542bdf9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
-import { hellFeature } from './hell-feature.js?v=eb79a9c5';
+import { hellFeature } from './hell-feature.js?v=dba6adad';
 import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=0386b354';
+import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 const ART = 'assets/imagination/cards/';
 const UI = 'assets/imagination/ui/';
@@ -158,11 +159,11 @@ function syncEnergyTank(engine = engineRef, refill = false) {
   if (!pc) return;
   pc.energyMax = energyMax(engine);
   if (refill && !hellFeature.isDead?.()) {
-    pc.energy = pc.energyMax;
-    pc.mood = pc.energyMax;
+    forceMetabolic(pc, 'energy', pc.energyMax);
+    forceMetabolic(pc, 'mood', pc.energyMax);
   } else {
-    if (pc.energy > pc.energyMax) pc.energy = pc.energyMax;
-    if (pc.mood > pc.energyMax) pc.mood = pc.energyMax;
+    if (pc.energy > pc.energyMax) forceMetabolic(pc, 'energy', pc.energyMax);
+    if (pc.mood > pc.energyMax) forceMetabolic(pc, 'mood', pc.energyMax);
   }
 }
 

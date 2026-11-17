@@ -3,8 +3,8 @@
  * Simplified conditions/handlers for the Groddle spike.
  */
 
-import { getVerbReward, applyVerbReward, formatActivityLine } from './js/verb-rewards.js?v=202a9e37';
-import { grantMoodXp } from './js/mood-xp.js?v=22648ec0';
+import { getVerbReward, applyVerbReward, formatActivityLine } from './js/verb-rewards.js?v=42171963';
+import { grantMoodXp } from './js/mood-xp.js?v=e311b45c';
 import { superHarvestWords } from './js/words.js?v=274023af';
 import {
   TRANT_META,
@@ -16,7 +16,7 @@ import {
 import {
   quoteTrantCare,
   performTrantCare,
-} from './js/trant-care.js?v=44269e93';
+} from './js/trant-care.js?v=4d522292';
 import {
   listPlantableSeeds,
   waterAllPlots,
@@ -36,8 +36,8 @@ import {
   GARDEN_FERTILIZE_MS,
   fertilizeCheck,
   fertilizePlot,
-} from './js/garden.js?v=15082e6f';
-import { firstWorkingTool, HOE_TOOLS, WATERING_CAN_TOOLS } from './js/tools.js?v=8516a0c3';
+} from './js/garden.js?v=d4e55862';
+import { firstWorkingTool, HOE_TOOLS, WATERING_CAN_TOOLS } from './js/tools.js?v=4156bba8';
 import { miningGemHint } from './js/gem-hints.js?v=4b65f7ac';
 import {
   ROCK_CATALOG,
@@ -51,29 +51,29 @@ import {
   noPickLine,
   rockStatusLabel,
   ensureMiningItems,
-} from './js/mining.js?v=187cd4b9';
+} from './js/mining.js?v=c13f0259';
 import { takeToolChoice } from './js/tool-choice.js?v=e0dcb60e';
 import {
   ANIMAL_CLASS_IDS,
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=e4f45db6';
+} from './js/animals.js?v=99a80423';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
   performAnimalKinship,
   highestAnimalKinshipRank,
-} from './js/animal-kinship.js?v=15e88ddc';
-import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=dc6b7003';
+} from './js/animal-kinship.js?v=75d3cb34';
+import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=650ecd58';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
   ensureWoodTreeState,
   quoteWoodTreeHarvest,
   harvestWoodTree,
   woodTreeStatusLabel,
-} from './js/woodcutting.js?v=b43edbd8';
-import { findWorkingRookTool } from './js/rook-woods.js?v=5c325002';
+} from './js/woodcutting.js?v=9e9af511';
+import { findWorkingRookTool } from './js/rook-woods.js?v=0aab151e';
 import {
   HERDKEEPING,
   INCUBATION,
@@ -83,15 +83,15 @@ import {
   namingVerbs,
   queuePlops,
   startIncubation,
-} from './js/animal-husbandry.js?v=9ed2a680';
-import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=1383e6fd';
-import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=55ad2f83';
-import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=9700115b';
-import { levelInfoForXp } from './js/progression.js?v=4165e202';
-import { getGameDayKey } from './js/game-day.js?v=03b8d954';
+} from './js/animal-husbandry.js?v=0429b2e9';
+import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=48f784bf';
+import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=6fcd8355';
+import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=3374cf3a';
+import { levelInfoForXp } from './js/progression.js?v=05ff0260';
+import { getGameDayKey } from './js/game-day.js?v=50c112eb';
 import { PACK_COPY, isElementClass } from './js/pack-slots.js?v=4d446d78';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
-import { ITEM_CATALOG, countItem } from './js/inventory.js?v=487b1b60';
+import { ITEM_CATALOG, countItem } from './js/inventory.js?v=6414dbdc';
 import { slugsFromEffects } from './js/speech-slugs.js?v=5c729187';
 import { animalResponseKey, failureResponseKey, trantCareResponseKey, rockResponseKey, verbResponse } from './js/verb-responses.js?v=97df8351';
 

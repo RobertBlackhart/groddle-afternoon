@@ -31,12 +31,12 @@
  *     pack), seasonTrophy, seasonPlaced.
  */
 
-import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=487b1b60';
-import { dametimeParts, getGameDayKey } from '../game-day.js?v=03b8d954';
-import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=15082e6f';
-import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=15082e6f';
-import { setSeasonalRecipeCheck } from '../making.js?v=a16c767f';
-import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=8516a0c3';
+import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
+import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
+import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=d4e55862';
+import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=d4e55862';
+import { setSeasonalRecipeCheck } from '../making.js?v=af1c7d5b';
+import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 
 /*
  * Each lit pumpkin's phrases are its own (pumpkin_lit_*.js this.phrases, 380-391, at most 3), kept
@@ -73,14 +73,14 @@ function takePumpkin(engine, cls, copy) {
 }
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
-import { isBatterflyHabitat } from '../animal-husbandry.js?v=9ed2a680';
-import { emblemCostFor } from '../shrines.js?v=f48c0155';
-import { rollDropTable } from '../drop-tables.js?v=8bcf111f';
+import { isBatterflyHabitat } from '../animal-husbandry.js?v=0429b2e9';
+import { emblemCostFor } from '../shrines.js?v=15d03920';
+import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
-import { payDrop } from './drops-feature.js?v=89ee0a00';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=95aa25d0';
+import { payDrop } from './drops-feature.js?v=439d100b';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=5656bfba';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
-import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
+import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
   CANDY_CLASSES,
   CANDY_DAILY_MAX,
@@ -217,12 +217,11 @@ function grant(engine, stat, amount) {
     engine.updateHud?.();
     return amount;
   }
-  // G965: mood tops out at the energy tank too (metabolics.js moodMax), not 100.
-  const cap = stat === 'energy' ? energyMax(pc) : moodMax(pc);
-  const before = Math.max(0, Number(pc[stat]) || 0);
-  pc[stat] = Math.max(0, Math.min(cap, before + amount));
+  // G970: a rise is metabolics_add_* (nothing while dead, no energy while Super Pooped), a fall
+  // metabolics_lose_* (nothing while dead), capped at the tank and never lowering a stat above it.
+  const landed = shiftMetabolic(pc, stat, amount);
   engine.updateHud?.();
-  return Math.round(pc[stat] - before);
+  return Math.round(landed);
 }
 
 function grantAll(engine, effects) {
@@ -1165,8 +1164,8 @@ function demoSetup(engine) {
     if (countItem(inv, id) < n) addItem(inv, id, n - countItem(inv, id));
   };
   const pc = engine.pc;
-  pc.energy = Math.max(Number(pc.energy) || 0, 80);
-  pc.mood = Math.min(Number(pc.mood) || 0, 60);
+  topUpMetabolic(pc, 'energy', 80);
+  forceMetabolic(pc, 'mood', Math.min(Number(pc.mood) || 0, 60));
   if (isOn('zilloween')) {
     need('pumpkin', 3);
     need('pick', 1);

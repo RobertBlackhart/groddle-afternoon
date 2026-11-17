@@ -108,6 +108,12 @@ export function gainMetabolic(pc, stat, amount, opts = {}) {
   return pc[stat] - before;
 }
 
+/** metabolics_lose_energy / _lose_mood by name: spends through the loss door; returns what was lost. */
+export function spendMetabolic(pc, stat, amount, opts = {}) {
+  if (stat !== 'energy' && stat !== 'mood') return 0;
+  return spend(pc, stat, amount, opts);
+}
+
 /**
  * G300: a signed catalog delta (buff ticks, drinks, spices, gases): a rise
  * goes through gainMetabolic (metabolics_add_*), a fall through
@@ -120,4 +126,38 @@ export function shiftMetabolic(pc, stat, delta, opts = {}) {
   if (x > 0) return gainMetabolic(pc, stat, x, opts);
   if (x < 0) return 0 - spend(pc, stat, -x, opts);
   return 0;
+}
+
+const topOf = (pc, stat) => (stat === 'energy' ? energyMax(pc) : moodMax(pc));
+
+/**
+ * G970 (root R13): metabolics_set_energy / _set_mood (inc_metabolics.js 230-264). The value is
+ * capped at the tank and the difference goes through the gain or the loss door, so the dead gain
+ * nothing and Super Pooped no energy, as in the source. Returns the signed change that landed.
+ */
+export function setMetabolic(pc, stat, value, opts = {}) {
+  if (!pc || (stat !== 'energy' && stat !== 'mood')) return 0;
+  const target = Math.max(0, Math.min(topOf(pc, stat), Number(value) || 0));
+  return shiftMetabolic(pc, stat, target - Math.max(0, Number(pc[stat]) || 0), opts);
+}
+
+/**
+ * G970: a write past both doors (Property.apiSet / apiSetVal in the source), for what the source
+ * writes raw or forces: dying empties both tanks, a resurrection or a new day sets them, a new
+ * Energy Tank card refills them, a tutorial scene sets its starting meters (newxp_training2.js 98,
+ * metabolics_set_* with force), and QA hooks set theirs. Clamped to 0..tank; `overTank` lets a QA
+ * hook top up past the tank for a long headless run. Returns the signed change.
+ */
+export function forceMetabolic(pc, stat, value, { overTank = false } = {}) {
+  if (!pc || (stat !== 'energy' && stat !== 'mood')) return 0;
+  const before = Number(pc[stat]) || 0;
+  const v = Math.max(0, Number(value) || 0);
+  pc[stat] = overTank ? v : Math.min(topOf(pc, stat), v);
+  return pc[stat] - before;
+}
+
+/** G970: QA kit top-up: raise a stat to at least `floor` past both doors, never lowering it. */
+export function topUpMetabolic(pc, stat, floor, opts = {}) {
+  if (!pc || (Number(pc[stat]) || 0) >= floor) return 0;
+  return forceMetabolic(pc, stat, floor, opts);
 }

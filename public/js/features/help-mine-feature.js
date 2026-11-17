@@ -46,13 +46,13 @@
  *     data-help-mine-companion (the last companion swing: name:chunks).
  */
 
-import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=187cd4b9';
-import { rockId } from '../street-objects.js?v=9d62f517';
-import { addItem } from '../inventory.js?v=487b1b60';
+import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=c13f0259';
+import { rockId } from '../street-objects.js?v=6d51771b';
+import { addItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { frameTexture, loadTexture } from '../textures.js?v=8e0a8c38';
-import { acceptOffer } from '../quest-offers.js?v=ed4e7435';
+import { acceptOffer } from '../quest-offers.js?v=4debd26e';
 import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=ca0cc848';
 import {
   COMPANION_MINE_RULES,
@@ -71,6 +71,7 @@ import {
   pickCompanionRock,
   removeMiner,
 } from '../help-mine.js?v=27f9d276';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 // js/node-tools.js PICK_SHEETS.pick (the SWF's 30 fps swing). A companion's pick stays beside it.
 const PICK_SHEET = 'assets/sprites/tools/pick-tool@3x.webp';
@@ -595,7 +596,7 @@ function stageDemo(now, engine) {
     // You can mine: Mining I, a pick, energy.
     if (!(engine.learnedSkills || []).includes('mining_1')) engine.grantSkill?.('mining_1');
     engine.inv.pick = Math.max(1, engine.inv.pick || 0);
-    if (engine.pc) engine.pc.energy = Math.max(engine.pc.energy || 0, 400);
+    if (engine.pc) topUpMetabolic(engine.pc, 'energy', 400, { overTank: true });
     if (engine.param('helpminequest') === '1' && !engine.questState?.active?.help_mine) {
       acceptOffer(engine.questState, 'help_mine', { inv: engine.inv, now });
       engine.save?.();

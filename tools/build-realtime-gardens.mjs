@@ -34,9 +34,9 @@ import { requireServer, serverPath } from './repos.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetGardenBoxBeds, streetReservedSpots } from '../public/js/street-ecology.js?v=c4ce9ccd';
-import { GARDEN_FERTILIZE_PERC, GARDEN_SPEEDUP, GARDEN_WATER_MS, LEGACY_GARDEN, SEED_CATALOG, legacyGrowMs, streetGardenBeds } from '../public/js/garden.js?v=15082e6f';
+import { GARDEN_FERTILIZE_PERC, GARDEN_SPEEDUP, GARDEN_WATER_MS, LEGACY_GARDEN, SEED_CATALOG, legacyGrowMs, streetGardenBeds } from '../public/js/garden.js?v=d4e55862';
 import { GARDEN_LOCK_MS, SHARED_GARDEN_STREETS } from '../public/js/shared-gardens.js?v=464472e5';
-import { GARDEN_POTIONS, POTION_USES } from '../public/js/master-garden.js?v=a50e3f32';
+import { GARDEN_POTIONS, POTION_USES } from '../public/js/master-garden.js?v=43a08008';
 import { placementRequests } from './build-realtime-objects.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

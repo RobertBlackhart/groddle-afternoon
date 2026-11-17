@@ -58,11 +58,11 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=5bc894c8';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { donationValueFor } from '../shrines.js?v=f48c0155';
+import { donationValueFor } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
 import {
@@ -106,8 +106,8 @@ import {
   useBalmPoint,
 } from '../rook-attack.js?v=5e62a79f';
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
+import { forceMetabolic, gainMetabolic, loseEnergy, loseMood, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import {
@@ -125,8 +125,8 @@ import {
   syncObjs,
 } from '../rook-mp.js?v=eace1128';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=1c1efade';
-import { migrateClassValue } from '../tools.js?v=8516a0c3';
+import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
+import { migrateClassValue } from '../tools.js?v=4156bba8';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
@@ -2951,8 +2951,8 @@ function mpRevive(engine, target, { balm = false, copy = null } = {}) {
 function seedDemoKit(engine) {
   ensureItem(ORB_CLASS);
   if (countItem(engine.inv, ORB_CLASS) <= 0) addItem(engine.inv, ORB_CLASS, 1);
-  engine.pc.energy = 100;
-  engine.pc.mood = Math.max(engine.pc.mood || 0, 80);
+  forceMetabolic(engine.pc, 'energy', 100);
+  topUpMetabolic(engine.pc, 'mood', 80);
   engine.refreshPack();
 }
 
@@ -3021,7 +3021,7 @@ function stepAutoplay(engine) {
   }
   if (canStun(a) && !orb) {
     if (autoplay === 'stun' && autoStep >= 1) return;
-    engine.pc.energy = Math.max(engine.pc.energy, 60);
+    topUpMetabolic(engine.pc, 'energy', 60);
     if (startStun(engine, 'auto')) autoStep += 1;
     return;
   }
@@ -3031,7 +3031,7 @@ function stepAutoplay(engine) {
     const shrine = shrineTarget(engine);
     if (!shrine) return;
     if (!primed) {
-      engine.pc.energy = Math.max(engine.pc.energy, 60);
+      topUpMetabolic(engine.pc, 'energy', 60);
       prime(engine, shrine);
       return;
     }

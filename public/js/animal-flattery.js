@@ -21,8 +21,8 @@
  * (685) live in js/solo-feats.js and the sound (680) in js/sound-moments.js.
  */
 
-import { metabolicGain, moodMax, energyMax, loseEnergy } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { energyMax, gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 
 export const BUTTER_UP = Object.freeze({
   verb: 'butter_up',
@@ -101,9 +101,8 @@ export function butterUpChicken(state = {}, pc = {}) {
   const energyBefore = num(pc.energy);
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
   loseEnergy(pc, BUTTER_UP.energyCost);
-  const moodBefore = num(pc.mood);
   // 197: metabolics_add_mood, nothing while dead (inc_metabolics.js 79-86).
-  if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), moodBefore + BUTTER_UP.mood);
+  const moodLanded = gainMetabolic(pc, 'mood', BUTTER_UP.mood);
   const xp = grantMoodXp(pc, BUTTER_UP.xp);
   state.butteredUp = num(state.butteredUp) + 1;
   return {
@@ -111,7 +110,7 @@ export function butterUpChicken(state = {}, pc = {}) {
     msg: BUTTER_UP.activity,
     bubble: BUTTER_UP.bubble,
     bubbleMs: BUTTER_UP.bubbleMs,
-    effects: { energy: pc.energy - energyBefore, mood: num(pc.mood) - moodBefore, xp },
+    effects: { energy: pc.energy - energyBefore, mood: moodLanded, xp },
   };
 }
 

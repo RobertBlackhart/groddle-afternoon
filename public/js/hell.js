@@ -45,10 +45,10 @@
  * }
  */
 
-import { ensureItem } from './inventory.js?v=487b1b60';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=03b8d954';
+import { ensureItem } from './inventory.js?v=6414dbdc';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=50c112eb';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
-import { energyMax as tankEnergyMax, moodMax as tankMoodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax as tankEnergyMax, moodMax as tankMoodMax } from './metabolics.js?v=48f784bf';
 
 export const HELL_STATE_VERSION = 1;
 

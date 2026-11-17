@@ -8,7 +8,7 @@
  * there, and a part whose block is not on the page is skipped.
  */
 
-import { dametimeParts } from '../js/game-day.js?v=03b8d954';
+import { dametimeParts } from '../js/game-day.js?v=50c112eb';
 import { setupMadeCompare } from './made-compare.js?v=bbd8d187';
 import { settleHash } from './hash-settle.js?v=834e5782';
 

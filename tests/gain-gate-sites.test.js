@@ -11,22 +11,22 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { setMetabolicGainGate } from '../public/js/metabolics.js?v=1383e6fd';
-import { createInventory, useItem } from '../public/js/inventory.js?v=487b1b60';
-import { createShrineState, donateToShrine } from '../public/js/shrines.js?v=f48c0155';
-import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=8516a0c3';
-import { HERDKEEPING, capturePiggy, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=9ed2a680';
-import { KITTY_PET, createKitty, petKitty } from '../public/js/heli-kitties.js?v=addb573f';
-import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=dc6b7003';
-import { runTransform } from '../public/js/item-transforms.js?v=fa7f5db1';
-import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=3bc48e3e';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=2281bd71';
-import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=bdb4247b';
-import { runVerb } from '../public/content.js?v=5dfc6bfe';
-import { applySetFree } from '../public/js/animal-set-free.js?v=55ad2f83';
-import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=1fe7236e';
-import { room as topOfTree } from '../public/js/quest-rooms/top-of-tree.js?v=d1d813a9';
-import { room as esquibeth } from '../public/js/quest-rooms/esquibeth.js?v=5dbd28e3';
+import { setMetabolicGainGate } from '../public/js/metabolics.js?v=48f784bf';
+import { createInventory, useItem } from '../public/js/inventory.js?v=6414dbdc';
+import { createShrineState, donateToShrine } from '../public/js/shrines.js?v=15d03920';
+import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
+import { HERDKEEPING, capturePiggy, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=0429b2e9';
+import { KITTY_PET, createKitty, petKitty } from '../public/js/heli-kitties.js?v=e4af4096';
+import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=650ecd58';
+import { runTransform } from '../public/js/item-transforms.js?v=3a1b5812';
+import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=646d1bc1';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=67d08c97';
+import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=13f35acd';
+import { runVerb } from '../public/content.js?v=0cb5c6db';
+import { applySetFree } from '../public/js/animal-set-free.js?v=6fcd8355';
+import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
+import { room as topOfTree } from '../public/js/quest-rooms/top-of-tree.js?v=d68c9f79';
+import { room as esquibeth } from '../public/js/quest-rooms/esquibeth.js?v=3387a823';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
@@ -297,12 +297,13 @@ describe('feature gain sites ask the shared gate (source text)', () => {
     assert.match(med, /if \(energy > 0 && !metabolicGain\('energy'\)\.ok\) energy = 0;\n\s*if \(mood > 0 && !metabolicGain\('mood'\)\.ok\) mood = 0;/);
     assert.doesNotMatch(med, /engine\.metabolicGate\('(energy|mood)', 'gain'\)/);
     assert.match(src('js/features/hi-signs-feature.js'), /if \(!metabolicGain\('mood'\)\.ok\) return 0;/);
-    assert.match(src('js/features/potions-feature.js'), /if \(metabolicGain\('mood'\)\.ok\) pc\.mood = Math\.min\(moodMax\(pc\), before \+ loveMood/);
-    assert.match(src('js/features/powders-feature.js'), /if \(metabolicGain\('mood'\)\.ok\) pc\.mood = Math\.min\(moodMax\(pc\), \(Number\(pc\.mood\) \|\| 0\) \+ 10\);/);
+    // G970: the gains go through gainMetabolic, which asks the same gate (js/metabolics.js).
+    assert.match(src('js/features/potions-feature.js'), /const gained = Math\.round\(gainMetabolic\(pc, 'mood', loveMood\(moodMax\(pc\)\)\)\);/);
+    assert.match(src('js/features/powders-feature.js'), /gainMetabolic\(pc, 'mood', 10\);/);
     const puzzles = src('js/features/puzzles-feature.js');
-    assert.match(puzzles, /const energy = r\.energy > 0 && metabolicGain\('energy'\)\.ok \? r\.energy : 0;/);
+    assert.match(puzzles, /const energy = r\.energy > 0 \? gainMetabolic\(pc, 'energy', r\.energy\) : 0;/);
     assert.match(puzzles, /const bits = rewardBits\(reward \? payout\(engine, reward\) : null\);/);
-    assert.match(src('js/features/puzzle-scenes-feature.js'), /const mood = r\.mood > 0 && metabolicGain\('mood'\)\.ok \? r\.mood : 0;/);
+    assert.match(src('js/features/puzzle-scenes-feature.js'), /return r\.mood > 0 \? gainMetabolic\(pc, 'mood', r\.mood\) : 0;/);
     // The antidote verb leaves the gate to the pour, so the dead hear why.
     assert.doesNotMatch(src('js/features/tree-death-feature.js'), /moodGain = engine\.metabolicGate/);
   });
@@ -311,13 +312,14 @@ describe('feature gain sites ask the shared gate (source text)', () => {
     const content = src('content.js');
     // G280 dropped the remake-only chicken Feed and its mood.
     assert.equal((content.match(/metabolicGain\('mood'\)\.ok/g) || []).length, 1);
-    assert.match(src('js/animal-set-free.js'), /if \(metabolicGain\('mood'\)\.ok\) pc\.mood = Math\.min\(moodMax\(pc\), moodBefore \+ SET_FREE\.mood\);/);
+    // G970: through gainMetabolic (the gate, the tank, never lowering a stat above it).
+    assert.match(src('js/animal-set-free.js'), /const moodLanded = gainMetabolic\(pc, 'mood', SET_FREE\.mood\);/);
     // G279: butter up's +10 mood (npc_chicken.js 198); sing to has no mood at all.
     const flattery = src('js/animal-flattery.js');
-    assert.equal((flattery.match(/metabolicGain\('mood'\)\.ok/g) || []).length, 1);
-    assert.match(flattery, /if \(metabolicGain\('mood'\)\.ok\) pc\.mood = Math\.min\(moodMax\(pc\), moodBefore \+ BUTTER_UP\.mood\);/);
+    assert.equal((flattery.match(/gainMetabolic\(pc, 'mood'/g) || []).length, 1);
+    assert.match(flattery, /const moodLanded = gainMetabolic\(pc, 'mood', BUTTER_UP\.mood\);/);
     // G278: resource-node packages' mood_bonus.
-    assert.match(src('js/resource-nodes.js'), /if \(metabolicGain\('mood'\)\.ok\) pc\.mood = Math\.min\(moodMax\(pc\), before \+ costs\.mood\);/);
+    assert.match(src('js/resource-nodes.js'), /costs\.mood = gainMetabolic\(pc, 'mood', costs\.mood\);/);
   });
 
   it('the Paradise ticket in game.js already asks before its 1 energy', () => {

@@ -27,8 +27,8 @@
  * sceneId, sceneStatus, sceneProgress, sceneQuoins, sceneReward, sceneDemo.
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=a4208821';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { QUOIN_SHEET, QUOIN_TYPES, creditQuoinStat, quoinTouches } from '../quoins.js?v=6a2cac74';
 import {
   BEAM_ME_DOWN,
   CONSTELLATION,
@@ -49,9 +49,9 @@ import {
   normalizeSceneSave,
   sceneTsid,
 } from '../puzzle-scenes.js?v=946a3e28';
-import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
+import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
@@ -540,9 +540,7 @@ function payout(engine, r) {
   }
   // The scene's mood goes through metabolics_add_mood like every source gain:
   // nothing while dead (inc_metabolics.js 79-86). Returns the mood that landed.
-  const mood = r.mood > 0 && metabolicGain('mood').ok ? r.mood : 0;
-  if (mood) pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + mood);
-  return mood;
+  return r.mood > 0 ? gainMetabolic(pc, 'mood', r.mood) : 0;
 }
 
 function finish(engine) {
@@ -721,8 +719,9 @@ function stepBeam(engine) {
     let amount = q.amount;
     // items/quoin.js 184: an iMG quoin takes the mood bonus.
     if (q.type === 'xp') amount = grantMoodXp(pc, q.amount);
-    else if (q.type === 'currants') pc.currants = (pc.currants || 0) + q.amount;
-    else pc[q.type] = Math.min(100, (pc[q.type] || 0) + q.amount);
+    // G970 (the G608 #156 pattern): energy and mood credit through the quoin path (items/quoin.js
+    // 185-186 metabolics_add_*): the tank, never a flat 100, refused while dead.
+    else amount = creditQuoinStat(pc, q.type, q.amount);
     const label = QUOIN_TYPES[q.type]?.label || 'iMG';
     engine.floatText(q.x, q.y - 14, `+${amount} ${label}`, '#ffffff');
     engine.playSound(`QUOIN_${q.type.toUpperCase()}`, { volume: 0.45 });

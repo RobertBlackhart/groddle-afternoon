@@ -19,8 +19,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { NEWXP_EXITS, GENTLE_ISLAND, indexTsid, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
-import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
-import { newxpFeature, __newxpTest, exitLeadsHome, pickOpenExit } from '../public/js/features/newxp-feature.js?v=96dc9dc5';
+import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=5806a615';
+import { __newxpTest, exitLeadsHome, newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=1835f5d4';
 import { _useStreetGraph, streetGraph } from '../public/js/street-graph.js?v=114647c2';
 
 const root = join(import.meta.dirname, '..');

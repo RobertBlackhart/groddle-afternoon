@@ -10,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+import { createQuestState } from '../public/js/quests.js?v=92c75858';
 import {
   acceptOffer,
   routeQuestEvent,
@@ -28,24 +28,24 @@ import {
   PURPLE_JOURNEY_STREETS,
   COLD_COMFORT,
   COLD_COMFORT_LEAVE_TEXT,
-} from '../public/js/quest-offers.js?v=ed4e7435';
-import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=1fe7236e';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=2281bd71';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
-import { performEmotionalBearAction, createEmotionalBearState } from '../public/js/emotional-bear.js?v=172f393b';
+} from '../public/js/quest-offers.js?v=4debd26e';
+import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=67d08c97';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
+import { performEmotionalBearAction, createEmotionalBearState } from '../public/js/emotional-bear.js?v=1c88a46a';
 import {
   questVerbsFeature,
   slatherVerb,
   SLATHER_VERB,
   SLATHER_COPY,
-} from '../public/js/features/quest-verbs-feature.js?v=36de9fac';
-import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=bf38176d';
+} from '../public/js/features/quest-verbs-feature.js?v=c4a40c09';
+import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=23f081e1';
 import {
   cubimalFor,
   giveCubimalVerb,
   GIVE_CUBIMAL_VERB,
   CUBIMAL_GIFT_RESPONSES,
-} from '../public/js/features/quest-verbs-feature.js?v=36de9fac';
+} from '../public/js/features/quest-verbs-feature.js?v=c4a40c09';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
 
 const here = dirname(fileURLToPath(import.meta.url));

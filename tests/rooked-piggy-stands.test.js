@@ -3,9 +3,9 @@
 // (no food while rooked), npc_piggy.js onRevived 1090-1095 (startMoving).
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { createAnimalState } from '../public/js/animals.js?v=e4f45db6';
-import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=23b5ec36';
-import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=8e549de2';
+import { createAnimalState } from '../public/js/animals.js?v=99a80423';
+import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=260ef36d';
+import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=ff0d794a';
 
 const TSID = 'GLI2HVHUM4F16B0'; // Pasha's Place, Groddle Forest: where Austin met it
 

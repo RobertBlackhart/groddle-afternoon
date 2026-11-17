@@ -68,19 +68,19 @@
  *   &potionlevel=<n> sets your level for the Draught of Wisdom.
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
-import { quoinDailyLimitFor } from '../quoins.js?v=a4208821';
-import { emblemCostFor } from '../shrines.js?v=f48c0155';
-import { GROWN_TREE_LABELS, trantsformPlotTree } from '../patches.js?v=2281bd71';
-import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=e3ff914c';
-import { isPoisoned } from '../tree-poison.js?v=3bc48e3e';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { gainMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
+import { quoinDailyLimitFor } from '../quoins.js?v=6a2cac74';
+import { emblemCostFor } from '../shrines.js?v=15d03920';
+import { GROWN_TREE_LABELS, trantsformPlotTree } from '../patches.js?v=67d08c97';
+import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=0f107341';
+import { isPoisoned } from '../tree-poison.js?v=646d1bc1';
 import { furnitureSize } from '../home-decor.js?v=06be9c65';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
 import { textureFromUrl, sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
 import { POTION_ART } from '../potion-art.js?v=9d731b38';
-import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=4165e202';
+import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
 import { playPoofIn, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import {
@@ -135,14 +135,14 @@ import {
   trantsformOutcome,
   usePotion,
 } from '../potions.js?v=4f4c996d';
-import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
-import { patchesFeature } from './patches-feature.js?v=84b0213c';
-import { homesFeature } from './homes-feature.js?v=6d7978dd';
-import { streetTreeIndex } from './tree-death-feature.js?v=a40bbfc3';
-import { questRoomConverse } from './quest-instances-feature.js?v=c5ef475a';
+import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
+import { patchesFeature } from './patches-feature.js?v=d5f4344d';
+import { homesFeature } from './homes-feature.js?v=90b42c0d';
+import { streetTreeIndex } from './tree-death-feature.js?v=4c9cb63e';
+import { questRoomConverse } from './quest-instances-feature.js?v=92aa3930';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=1c1efade';
-import { copyTag, migrateClassTag, migrateClassValue, setCopyTag, toolCopies } from '../tools.js?v=8516a0c3';
+import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
+import { copyTag, migrateClassTag, migrateClassValue, setCopyTag, toolCopies } from '../tools.js?v=4156bba8';
 
 export const POTIONS_FEATURE_ID = 'potions';
 const LOVE = 'feeling_called_love';
@@ -499,9 +499,7 @@ function applyLove(engine) {
   engine.applyBuff(LOVE);
   const pc = engine.pc;
   // catalog_buffs.js 719: on_apply is metabolics_add_mood, nothing while dead (inc_metabolics.js 79-86).
-  const before = Number(pc.mood) || 0;
-  if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), before + loveMood(moodMax(pc)));
-  const gained = Math.round(pc.mood - before);
+  const gained = Math.round(gainMetabolic(pc, 'mood', loveMood(moodMax(pc))));
   if (gained && engine.player) engine.floatText?.(engine.player.x, engine.player.y - 96, `+${gained} mood`, 0xff7eb6);
   engine.refreshPack?.();
 }

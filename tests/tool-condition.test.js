@@ -13,20 +13,20 @@ import {
   quoteToolRepair,
   repairToolCondition,
   setToolRemaining,
-} from '../public/js/tools.js?v=8516a0c3';
-import { createInventory } from '../public/js/inventory.js?v=487b1b60';
+} from '../public/js/tools.js?v=4156bba8';
+import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import {
   createGarden,
   plantPlot,
   waterPlot,
-} from '../public/js/garden.js?v=15082e6f';
+} from '../public/js/garden.js?v=d4e55862';
 import {
   createMineRock,
   mineRock,
   MINING_COSTS,
-} from '../public/js/mining.js?v=187cd4b9';
-import { craftRecipe } from '../public/js/making.js?v=a16c767f';
-import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=75ac79c6';
+} from '../public/js/mining.js?v=c13f0259';
+import { craftRecipe } from '../public/js/making.js?v=af1c7d5b';
+import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=47b7d580';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, '..', 'public');

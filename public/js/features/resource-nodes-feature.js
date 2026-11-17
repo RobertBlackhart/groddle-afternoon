@@ -63,11 +63,11 @@
  * last release: released:respawned|new:<key>, or failed:<reason>).
  */
 
-import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=487b1b60';
-import { setToolRemaining, toolCopies } from '../tools.js?v=8516a0c3';
+import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=6414dbdc';
+import { setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=24aa024c';
-import { rollResourceNodeDrop } from './drops-feature.js?v=89ee0a00';
+import { rollResourceNodeDrop } from './drops-feature.js?v=439d100b';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=97df8351';
@@ -103,17 +103,18 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=1fe7236e';
+} from '../resource-nodes.js?v=cf9aae18';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=ed4e7435';
+import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=4debd26e';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=98606052';
 import { playItemOverlay } from '../item-overlay.js?v=0c20633c';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=d390cfd8';
-import { GAME_EPOCH_MS } from '../game-day.js?v=03b8d954';
+import { salmonSwimAt } from '../street-creatures.js?v=6076a836';
+import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
 export const RESOURCE_GROUP_PREFIX = 'resource:';
@@ -1710,7 +1711,7 @@ function setupDemo(engine, plan) {
     if (bare) delete engine.inv[classTsid];
     else engine.inv[classTsid] = Math.max(qty, engine.inv[classTsid] || 0);
   }
-  if (engine.pc.energy < 60) engine.pc.energy = 60;
+  topUpMetabolic(engine.pc, 'energy', 60);
   // &resdemonode=0: the kit only, for the street's own nodes (a street's Sloths, G891), which then
   // skip the skill gate as the QA node does.
   if (engine.param('resdemonode') === '0') {

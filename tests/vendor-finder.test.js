@@ -14,7 +14,7 @@ import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=c4ce9c
 import { findRoute } from '../public/js/map-routes.js?v=84356b3e';
 import { streetGraph } from '../public/js/street-graph.js?v=114647c2';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=90517e2f';
-import { selectVendorProfile } from '../public/js/vendor.js?v=925b0f77';
+import { selectVendorProfile } from '../public/js/vendor.js?v=3025c322';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');

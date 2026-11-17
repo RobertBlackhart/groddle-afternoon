@@ -35,10 +35,10 @@ import {
   requirementRoute,
   routeQuestEvent,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=ed4e7435';
-import { createMineRock } from '../public/js/mining.js?v=187cd4b9';
-import { rockId } from '../public/js/street-objects.js?v=9d62f517';
-import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+} from '../public/js/quest-offers.js?v=4debd26e';
+import { createMineRock } from '../public/js/mining.js?v=c13f0259';
+import { rockId } from '../public/js/street-objects.js?v=6d51771b';
+import { createQuestState } from '../public/js/quests.js?v=92c75858';
 
 const here = import.meta.dirname;
 const root = join(here, '..');

@@ -19,12 +19,12 @@
  * (what a stack would do at a client point) and drop(x, y, cls) (the same drop a mouse does).
  */
 
-import { ITEM_CATALOG } from '../inventory.js?v=487b1b60';
+import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { listAnimalFeedOptions } from '../animals.js?v=e4f45db6';
+import { listAnimalFeedOptions } from '../animals.js?v=99a80423';
 import { isBagClass } from '../pack-slots.js?v=4d446d78';
 import { dropFor, dropTip } from '../world-drop.js?v=d152b2bb';
-import { canUseTool } from '../tools.js?v=8516a0c3';
+import { canUseTool } from '../tools.js?v=4156bba8';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 

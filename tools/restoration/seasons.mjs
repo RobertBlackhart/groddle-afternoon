@@ -34,9 +34,9 @@ import {
   SEASON_IDS,
 } from '../../public/js/seasons.js?v=887d886e';
 import { SEASON_DATA } from '../../public/js/seasons-data.js?v=b5174bc9';
-import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=03b8d954';
-import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=15082e6f';
-import { SEASONAL_RECIPES } from '../../public/js/making.js?v=a16c767f';
+import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=50c112eb';
+import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=d4e55862';
+import { SEASONAL_RECIPES } from '../../public/js/making.js?v=af1c7d5b';
 import { SKILL_PACKAGES } from '../../public/js/skill-packages-data.js?v=cb4e9ab3';
 import { TRANT_META } from '../../public/js/trants.js?v=4d6f5593';
 import { playHref } from './play-links.mjs';

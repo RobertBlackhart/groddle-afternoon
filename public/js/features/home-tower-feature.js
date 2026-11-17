@@ -49,11 +49,11 @@
  */
 
 import { playOverlay } from '../overlays.js?v=eda942a8';
-import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=487b1b60';
-import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
-import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=ed4e7435';
+import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
+import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
+import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=4debd26e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
+import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   BUILD_A_TOWER,
   ELEVATOR_MARK,
@@ -113,13 +113,14 @@ import {
   towerSecretText,
   towerSpotsFor,
   workCheck,
-} from '../home-tower.js?v=2d71091c';
+} from '../home-tower.js?v=77d57cda';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { pieceUrl } from '../home-wallpaper.js?v=f1969400';
 import { wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=5bc894c8';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 /** 3x tower pieces where the screen has more than 2.25 backing pixels per world pixel. */
 function hires(engine) {
@@ -653,7 +654,7 @@ function tickWork(engine, now) {
   const project = activeProject(tower);
   if (!project || project.jobId !== work.jobId) return stopWork(engine, '');
   // QA (&towerfast=1): keep the tank topped up so long work runs finish headless.
-  if (fast()) engine.pc.energy = Math.max(engine.pc.energy || 0, 500);
+  if (fast()) topUpMetabolic(engine.pc, 'energy', 500, { overTank: true });
   const res = applyWorkUnit(project.jobId, project.got, work.rid, workCtx(engine));
   if (!res.ok) return stopWork(engine, res.msg);
   work.units += 1;
@@ -1414,7 +1415,7 @@ function grantFor(engine, jobId) {
     if (r.type === 'item') engine.inv[r.classId] = Math.max(engine.inv[r.classId] || 0, r.num);
     else engine.inv[r.classIds[0]] = Math.max(engine.inv[r.classIds[0]] || 0, 1);
   }
-  engine.pc.energy = Math.max(engine.pc.energy || 0, 900);
+  topUpMetabolic(engine.pc, 'energy', 900, { overTank: true });
   engine.refreshPack();
 }
 
@@ -1436,7 +1437,7 @@ function demoStreet(engine) {
     // Until build-quests.mjs flips it solo (lead integration), QA lifts the gate in memory.
     if (def && !def.solo) def.solo = true;
     for (const [cls, n] of Object.entries(PROJECT_KIT)) engine.inv[cls] = Math.max(engine.inv[cls] || 0, n);
-    engine.pc.energy = Math.max(engine.pc.energy || 0, 900);
+    topUpMetabolic(engine.pc, 'energy', 900, { overTank: true });
     engine.refreshPack();
     engine.updateHud();
     setTimeout(() => engine.refreshHomeScene?.().then(() => startAutoplay(engine)), 0);
@@ -1465,7 +1466,7 @@ function demoStreet(engine) {
     tower.project = {};
   } else {
     for (const [cls, n] of Object.entries(PROJECT_KIT)) engine.inv[cls] = Math.max(engine.inv[cls] || 0, n);
-    engine.pc.energy = Math.max(engine.pc.energy || 0, 900);
+    topUpMetabolic(engine.pc, 'energy', 900, { overTank: true });
   }
   if (kind === 'expand') {
     if (tower.floors >= TOWER_CONFIG.MAX_FLOORS) tower.floors = TOWER_CONFIG.MAX_FLOORS - 1;
@@ -1512,7 +1513,7 @@ function autoplayStep(engine, now) {
     const res = bridge.cultivateTower(engine);
     say(res?.ok ? 'cultivated' : `cultivate-failed:${res?.reason || ''}`);
     if (res?.ok) for (const [cls, n] of Object.entries(PROJECT_KIT)) engine.inv[cls] = Math.max(engine.inv[cls] || 0, n);
-    engine.pc.energy = Math.max(engine.pc.energy || 0, 900);
+    topUpMetabolic(engine.pc, 'energy', 900, { overTank: true });
     return;
   }
   if (work) return;
@@ -1525,7 +1526,7 @@ function autoplayStep(engine, now) {
     }
     const job = rows.find((r) => r.type === 'work');
     if (job) {
-      engine.pc.energy = Math.max(engine.pc.energy || 0, 900);
+      topUpMetabolic(engine.pc, 'energy', 900, { overTank: true });
       startWork(engine, job.id);
       return say(`work:${job.id}`);
     }

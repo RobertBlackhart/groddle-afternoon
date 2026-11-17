@@ -45,7 +45,7 @@
 
 import { TOWER_ROOM_SPOTS } from './tower-rooms.js?v=4f1f6af7';
 import { TOWER_PART_CHOICES, TOWER_VARIANT_ART } from './home-tower-art.js?v=9619a093';
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 
 export { TOWER_PART_CHOICES, TOWER_VARIANT_ART };

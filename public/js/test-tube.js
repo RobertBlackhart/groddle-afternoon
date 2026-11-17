@@ -30,10 +30,10 @@
  * never take away what a save already has. js/features/compound-discovery-feature.js stamps once per
  * save: a save that existed before the stamp keeps all sixteen; a new character starts with none.
  */
-import { addItem, countItem, ITEM_CATALOG, removeItem } from './inventory.js?v=487b1b60';
-import { makingRequiredSkill, pluralizeItem, RECIPE_CATALOG } from './making.js?v=a16c767f';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { addItem, countItem, ITEM_CATALOG, removeItem } from './inventory.js?v=6414dbdc';
+import { makingRequiredSkill, pluralizeItem, RECIPE_CATALOG } from './making.js?v=af1c7d5b';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { loseEnergy } from './metabolics.js?v=48f784bf';
 
 export const EXPERIMENT_TOOL = 'test_tube';
 /** test_tube.js 284 (slots). */

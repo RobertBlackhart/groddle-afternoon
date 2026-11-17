@@ -41,14 +41,14 @@ import { SPEECH_BUBBLE_Z } from './fx-z.js?v=18dda7e3';
 import { playItemOverlay } from './item-overlay.js?v=0c20633c';
 import { jobWorkToolSheet } from './job-work-fx.js?v=e16ca80f';
 import { MAKE_TOOL_SHEETS } from './make-tool-sheets.js?v=6f758e09';
-import { ROCK_CATALOG } from './mining.js?v=187cd4b9';
+import { ROCK_CATALOG } from './mining.js?v=c13f0259';
 import { PICK_SHEETS, nodeToolSheet } from './node-tools.js?v=47a93d54';
-import { MUSICBLOCK_CATALOG } from './musicblocks.js?v=dc6b7003';
+import { MUSICBLOCK_CATALOG } from './musicblocks.js?v=650ecd58';
 import { PACKED_SHEETS } from './packed-sheets-data.js?v=192c6f15';
 import { potionBottleClasses, potionBottleSheet } from './potion-bottles.js?v=17925871';
 import { powderShakerSheet } from './powder-shakers.js?v=fcd18855';
 import { WOTD_TOOL } from './wine-pour-fx.js?v=364e22d2';
-import { firstWorkingTool } from './tools.js?v=8516a0c3';
+import { firstWorkingTool } from './tools.js?v=4156bba8';
 
 /** inc_skill_packages.js 294-305: the bubble the others see. */
 export const SKILL_BUBBLE = Object.freeze({ wh: 40, dy: -110, src: 'players/inc_skill_packages.js 294-314' });

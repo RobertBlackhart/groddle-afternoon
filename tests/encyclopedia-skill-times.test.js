@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { SKILL_PACKAGES, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=60df8d16';
+import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=7f7b9137';
 import { TIME_TABLES, cardsFor, learnedFor, tablesForCard, tablesForSkill, timeText } from '../tools/encyclopedia/skill-times.mjs';
 
 const pub = join(import.meta.dirname, '..', 'public');

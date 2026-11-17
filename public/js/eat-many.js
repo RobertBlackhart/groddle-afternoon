@@ -30,10 +30,10 @@
  * daily limit leaves (limitCountCap; the feature runs its rule for each one).
  */
 
-import { CONSUME_FLAVOUR_LINES, ITEM_CATALOG, countItem, getItemUseInfo, removeItem, useItem } from './inventory.js?v=487b1b60';
-import { energyMax as tankEnergyMax, loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=415fb86c';
+import { CONSUME_FLAVOUR_LINES, ITEM_CATALOG, countItem, getItemUseInfo, removeItem, useItem } from './inventory.js?v=6414dbdc';
+import { metabolicGain, moodMax, shiftMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=328b3274';
 
 /**
  * Eat and drink verbs marked "is_single": 1 in GSJS items/*.js (verbs.eat:
@@ -212,18 +212,14 @@ export function useItemMany(inv, pc, classTsid, count = 1) {
   const addEnergy = () => {
     const amount = (info.effects.energy || 0) * n;
     if (!amount || (amount > 0 && !metabolicGain('energy').ok)) return;
-    const before = pc.energy || 0;
-    if (amount < 0) loseEnergy(pc, -amount);
-    else pc.energy = Math.min(tankEnergyMax(pc), before + amount);
-    if ((pc.energy || 0) !== before) effects.energy = (pc.energy || 0) - before;
+    const landed = shiftMetabolic(pc, 'energy', amount);
+    if (landed) effects.energy = landed;
   };
   const addMood = () => {
     const amount = (info.effects.mood || 0) * n;
     if (!amount || (amount > 0 && !metabolicGain('mood').ok)) return;
-    const before = pc.mood || 0;
-    if (amount < 0) loseMood(pc, -amount);
-    else pc.mood = Math.min(moodMax(pc), before + amount);
-    if ((pc.mood || 0) !== before) effects.mood = (pc.mood || 0) - before;
+    const landed = shiftMetabolic(pc, 'mood', amount);
+    if (landed) effects.mood = landed;
   };
   // Same order as useItem: drink_drink mood then energy, food_eat energy first.
   if (info.kind === 'drink') {

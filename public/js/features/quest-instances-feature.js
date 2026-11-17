@@ -121,7 +121,7 @@ import {
 } from '../quest-instance.js?v=13b8ee09';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
-import * as kit from '../quest-rooms/kit.js?v=c8175e77';
+import * as kit from '../quest-rooms/kit.js?v=436636b4';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
 import {
   acceptOffer,
@@ -130,16 +130,16 @@ import {
   questAwardPayload,
   questMoveNote,
   turnInQuest,
-} from '../quest-offers.js?v=ed4e7435';
-import { parseQuestConversation } from '../quests.js?v=d057d5ec';
+} from '../quest-offers.js?v=4debd26e';
+import { parseQuestConversation } from '../quests.js?v=92c75858';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
 import { armPromptTimeout, promptTimeoutMs } from '../prompt-timeout.js?v=7f5009dd';
 import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
-import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
+import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { FIRST_SKILLS } from '../newxp.js?v=02f902e6';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
@@ -201,27 +201,27 @@ let urLoading = null;
  * BUILT_ROOMS: a new room gets a line here.
  */
 const ROOM_MODULES = {
-  rainbow_run: () => import('../quest-rooms/rainbow-run.js?v=344426d8'),
-  top_of_tree: () => import('../quest-rooms/top-of-tree.js?v=d1d813a9'),
-  color_unblocking: () => import('../quest-rooms/color-unblocking.js?v=bd0f8f33'),
+  rainbow_run: () => import('../quest-rooms/rainbow-run.js?v=dfd23aea'),
+  top_of_tree: () => import('../quest-rooms/top-of-tree.js?v=d68c9f79'),
+  color_unblocking: () => import('../quest-rooms/color-unblocking.js?v=741ca357'),
   vision_quest: () => import('../quest-rooms/vision-quest.js?v=b4d0ba91'),
-  kids_room: () => import('../quest-rooms/kids-room.js?v=3d8b165c'),
+  kids_room: () => import('../quest-rooms/kids-room.js?v=a60ef25e'),
   rube_yard: () => import('../quest-rooms/rube-yard.js?v=97d0ad89'),
   le_miserable: () => import('../quest-rooms/le-miserable.js?v=2a56a8a6'),
-  juju_camp: () => import('../quest-rooms/juju-camp.js?v=3b6e8a45'),
-  picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=0c9e92b0'),
-  radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=30ab282d'),
+  juju_camp: () => import('../quest-rooms/juju-camp.js?v=57def468'),
+  picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=d6c5f437'),
+  radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=4302d427'),
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=a0fa2e8a'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=c616b773'),
-  back_alley: () => import('../quest-rooms/back-alley.js?v=5b9e8ca4'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=1d25fd43'),
-  light_perspective: () => import('../quest-rooms/light-perspective.js?v=f17aca78'),
-  tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=69a15e18'),
-  operation_grow: () => import('../quest-rooms/operation-grow.js?v=766b58b1'),
-  gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=685acaa6'),
-  mental_block: () => import('../quest-rooms/mental-block.js?v=0f0a0b01'),
-  penalty: () => import('../quest-rooms/penalty.js?v=ed97a59d'),
-  esquibeth: () => import('../quest-rooms/esquibeth.js?v=5dbd28e3'),
+  back_alley: () => import('../quest-rooms/back-alley.js?v=ff0abe6e'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=d804c770'),
+  light_perspective: () => import('../quest-rooms/light-perspective.js?v=91fccd15'),
+  tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=672e912a'),
+  operation_grow: () => import('../quest-rooms/operation-grow.js?v=7c3fe260'),
+  gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=5f6af2b0'),
+  mental_block: () => import('../quest-rooms/mental-block.js?v=f0650176'),
+  penalty: () => import('../quest-rooms/penalty.js?v=9c507b8e'),
+  esquibeth: () => import('../quest-rooms/esquibeth.js?v=3387a823'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=77fee627'),
   soil_appreciation: () => import('../quest-rooms/soil-appreciation.js?v=40cbe9b3'),
   firefly_whistle: () => import('../quest-rooms/firefly-whistle.js?v=81d9eee9'),

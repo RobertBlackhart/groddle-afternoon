@@ -17,10 +17,10 @@ import {
   setToolRemaining,
   takeToolCopy,
   useToolCondition,
-} from './tools.js?v=8516a0c3';
+} from './tools.js?v=4156bba8';
 import { SKILL_PACKAGES, getSkillPackageOverride, skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { loseEnergy, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { loseEnergy, shiftMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { petPiggy, piggyNibbleRefusal } from './animal-mood.js?v=a49495fc';
 
 export const ANIMAL_KINSHIP_RANK_IDS = Object.freeze(
@@ -301,11 +301,7 @@ function awardMetabolics(pc, selected, moodBonus = selected.moodBonus) {
   const lost = loseEnergy(pc, selected.energyCost);
   effects.energy = lost ? -lost : 0;
   // G259: mood_bonus is metabolics_add_mood (inc_skill_packages.js 524), refused while dead.
-  if (moodBonus && (moodBonus < 0 || metabolicGain('mood').ok)) {
-    const before = Number(pc.mood) || 0;
-    pc.mood = Math.min(moodMax(pc), before + moodBonus);
-    effects.mood = pc.mood - before;
-  }
+  if (moodBonus) effects.mood = shiftMetabolic(pc, 'mood', moodBonus);
   // inc_skill_packages.js 532: xp_bonus takes the mood bonus (after the mood gain).
   if (selected.xpBonus) effects.xp = grantMoodXp(pc, selected.xpBonus);
   return effects;

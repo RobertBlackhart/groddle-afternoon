@@ -113,7 +113,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
   });
 
   it('#473: forty emblems on the floor all go in, whatever room the pack has (capacity 1000 stacks, stackmax 1)', async () => {
-    const { createDroppedItemState, dropInventoryStack, pickupDroppedStack } = await import('../public/js/world-items.js?v=053888d2');
+    const { createDroppedItemState, dropInventoryStack, pickupDroppedStack } = await import('../public/js/world-items.js?v=4057c421');
     const state = room();
     const dropped = createDroppedItemState();
     const inv = { emblem_alph: 40 };
@@ -151,7 +151,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=6d7978dd');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=90b42c0d');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);

@@ -51,8 +51,8 @@
  *     data-supply-permits).
  */
 
-import { ITEM_CATALOG, addItem, countItem, ensureItem } from '../inventory.js?v=487b1b60';
-import { getToolCondition, copyForVerb, copyTag, copyTags, migrateClassTag, setCopyTag } from '../tools.js?v=8516a0c3';
+import { ITEM_CATALOG, addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
+import { getToolCondition, copyForVerb, copyTag, copyTags, migrateClassTag, setCopyTag } from '../tools.js?v=4156bba8';
 import {
   MACHINE_ASSEMBLIES,
   MACHINE_IDS,
@@ -85,10 +85,10 @@ import {
   stillOnPickup,
   stillStopsAt,
   stillWaitsToStart,
-} from '../machines.js?v=0af7364d';
+} from '../machines.js?v=ab7d71da';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
 import { createSheetLoader } from '../sprite-sheets.js?v=d8e87813';
-import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=fa7f5db1';
+import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=3a1b5812';
 import {
   BUREAUCRACY_ITEMS,
   HALL_STREETS,
@@ -97,10 +97,11 @@ import {
   clerkOffers,
   completePapers,
   completePapersCheck,
-} from '../bureaucracy.js?v=cadcccba';
+} from '../bureaucracy.js?v=62eded48';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const SUPPLY_FEATURE_ID = 'supply';
 export const CLERK_CLASS = 'npc_bureaucrat';
@@ -736,8 +737,8 @@ function demoSetup(engine) {
   // #285: a Still works on the ground, so the demo puts it down beside you (its contents go with it),
   // once the street is up (demoDrop, on the tick).
   demoDropPending = engine.param?.('supplystill') !== 'pack';
-  engine.pc.energy = Math.max(engine.pc.energy || 0, 400);
-  engine.pc.mood = Math.max(engine.pc.mood || 0, 200);
+  topUpMetabolic(engine.pc, 'energy', 400, { overTank: true });
+  topUpMetabolic(engine.pc, 'mood', 200, { overTank: true });
   engine.updateHud?.();
   if (engine.param('supplyautoplay')) autoplayAt = Date.now() + 1200;
   publish(engine);

@@ -48,8 +48,8 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getToolCondition } from '../tools.js?v=8516a0c3';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getToolCondition } from '../tools.js?v=4156bba8';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
@@ -86,10 +86,11 @@ import {
   rangerGreeting,
   splitConversation,
   stepFox,
-} from '../foxes.js?v=6f3d5af8';
-import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=dbb25b21';
-import { clockOffset } from '../street-creatures.js?v=d390cfd8';
+} from '../foxes.js?v=4497a984';
+import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=0a1438dc';
+import { clockOffset } from '../street-creatures.js?v=6076a836';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const FOX_FEATURE_ID = 'foxes';
 /** {name} in the Fox Ranger's lines: the remake has no player names in solo, so "friend", as quests.js fills {pc_label}. */
@@ -1134,7 +1135,7 @@ function setupDemo(engine) {
   demoLicensed = true;
   engine.inv[FOX_BRUSH_ID] = Math.max(1, engine.inv[FOX_BRUSH_ID] || 0);
   engine.inv[FOX_BAIT_ID] = Math.max(5, engine.inv[FOX_BAIT_ID] || 0);
-  if ((engine.pc.energy || 0) < 60) engine.pc.energy = 60;
+  topUpMetabolic(engine.pc, 'energy', 60);
   if (!preserve) {
     preserve = {
       facing: 'left',

@@ -16,8 +16,8 @@
 
 import { DROP_ITEMS, DROP_TABLES } from './drop-tables-data.js?v=c51a6400';
 import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { metabolicGain } from './metabolics.js?v=1383e6fd';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { gainMetabolic } from './metabolics.js?v=48f784bf';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
 
 export { DROP_ITEMS, DROP_TABLES };
@@ -104,7 +104,7 @@ export function dropItemName(classTsid, qty, meta = DROP_ITEMS[classTsid]) {
  * Pay a drop result into the pack and stats. `favorCap(giant)` caps a
  * Giant's favor (the shrine emblem target); `favor` is the per-Giant ledger.
  * Returns the source activity lines and what actually landed.
- * target: { inv, pc, favor, favorCap, energyCap, moodCap, addItem }
+ * target: { inv, pc, favor, favorCap, addItem }
  */
 export function applyDropResult(result, target = {}) {
   const lines = [];
@@ -144,17 +144,12 @@ export function applyDropResult(result, target = {}) {
   // (inc_skill_packages.js 85, 96), refused while dead or (energy) Super Pooped,
   // and still says "You got 0 energy!" (inc_metabolics.js 40-53, 79-86).
   if (result.mood && pc) {
-    const cap = target.moodCap ?? 100;
-    const before = Number(pc.mood) || 0;
-    if (metabolicGain('mood').ok) pc.mood = Math.min(cap, before + result.mood);
-    landed.mood = Math.round(pc.mood - before);
+    // G970: capped at the tank (metabolics_add_mood), not a passed cap that defaulted to 100.
+    landed.mood = Math.round(gainMetabolic(pc, 'mood', result.mood));
     lines.push(`You got ${landed.mood} mood!`);
   }
   if (result.energy && pc) {
-    const cap = target.energyCap ?? 100;
-    const before = Number(pc.energy) || 0;
-    if (metabolicGain('energy').ok) pc.energy = Math.min(cap, before + result.energy);
-    landed.energy = Math.round(pc.energy - before);
+    landed.energy = Math.round(gainMetabolic(pc, 'energy', result.energy));
     lines.push(`You got ${landed.energy} energy!`);
   }
   if (result.xp && pc) {

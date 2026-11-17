@@ -24,7 +24,7 @@
  * neighbours.
  */
 
-import { loseEnergy, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
 
 export const NEIGHBOUR_SCENE_PREFIX = 'NB_';
 export const NEIGHBOUR_SCENE = Object.freeze({ width: 2200, height: 700, groundY: 620 });
@@ -252,14 +252,11 @@ export function doChore(state, neighbour, pc, ctx = {}) {
   if (!verb || !verb.enabled) return { ok: false, msg: verb?.reason || 'Nothing to do here.' };
   const chore = CHORES[neighbour.chore];
   state.chores[neighbour.id] = ctx.dayKey;
-  pc.energy = whole(pc.energy);
   // Chores are remake design; their cost spends through the loss door like every source verb.
   const energy = loseEnergy(pc, chore.energy || 0);
-  const maxMood = moodMax(pc);
-  const before = whole(pc.mood);
   // The chores are remake design; their mood goes through the same door as
   // every source gain (metabolics_add_mood, inc_metabolics.js 79-86).
-  if (chore.mood > 0 && metabolicGain('mood').ok) pc.mood = Math.min(maxMood, before + chore.mood);
+  const mood = chore.mood > 0 ? gainMetabolic(pc, 'mood', chore.mood) : 0;
   pc.xp = whole(pc.xp) + chore.xp;
   if (pc.imagination != null) pc.imagination = whole(pc.imagination) + chore.xp;
   const take = chore.needs ? [{ ...chore.needs }] : [];
@@ -275,7 +272,7 @@ export function doChore(state, neighbour, pc, ctx = {}) {
       deliveryAt: whole(ctx.now) + LETTER_DELAY_MS,
     };
   }
-  return { ok: true, chore, effects: { energy: energy ? -energy : 0, mood: pc.mood - before, xp: chore.xp }, take, give, letter };
+  return { ok: true, chore, effects: { energy: energy ? -energy : 0, mood, xp: chore.xp }, take, give, letter };
 }
 
 /** Posting a carried note in a neighbour's mailbox: one reply per game day. */

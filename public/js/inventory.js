@@ -6,8 +6,8 @@
 /** @typedef {Record<string, number>} Inventory */
 
 /** Canonical icon path for a class_tsid (OGA iconic extract). */
-import { energyMax, loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { metabolicGain, moodMax, shiftMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 export function itemIcon(classTsid) {
   if (!classTsid) return 'assets/sprites/icons/apple.webp';
   return `assets/sprites/icons/${classTsid}.webp`;
@@ -455,17 +455,13 @@ export function useItem(inv, pc, classTsid) {
   // G300: a fall is metabolics_lose_energy / _mood (drink.js 75-76, 97-98), nothing while dead.
   const addEnergy = () => {
     if (!info.effects.energy || (info.effects.energy > 0 && !metabolicGain('energy').ok)) return;
-    const before = pc.energy || 0;
-    if (info.effects.energy < 0) loseEnergy(pc, -info.effects.energy);
-    else pc.energy = Math.min(energyMax(pc), before + info.effects.energy);
-    if ((pc.energy || 0) !== before) effects.energy = (pc.energy || 0) - before;
+    const landed = shiftMetabolic(pc, 'energy', info.effects.energy);
+    if (landed) effects.energy = landed;
   };
   const addMood = () => {
     if (!info.effects.mood || (info.effects.mood > 0 && !metabolicGain('mood').ok)) return;
-    const before = pc.mood || 0;
-    if (info.effects.mood < 0) loseMood(pc, -info.effects.mood);
-    else pc.mood = Math.min(moodMax(pc), before + info.effects.mood);
-    if ((pc.mood || 0) !== before) effects.mood = (pc.mood || 0) - before;
+    const landed = shiftMetabolic(pc, 'mood', info.effects.mood);
+    if (landed) effects.mood = landed;
   };
   // G268: drink_drink adds mood first, then energy (drink.js 66, then 88), so
   // a dead drinker hears the mood line before the energy line; food_eat

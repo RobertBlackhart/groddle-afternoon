@@ -11,12 +11,12 @@ import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
-import { copyForVerb, copyTags, createToolConditionState, keepsOwnStack, setCopyTag } from '../public/js/tools.js?v=8516a0c3';
-import { STILL, STILL_TEXT, createStillState, distillInStill, stillCollectCheck, stillDistillCheck } from '../public/js/machines.js?v=0af7364d';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
-import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=053888d2';
-import { shareReason } from '../public/js/drops-mp.js?v=89c3e58e';
+import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
+import { copyForVerb, copyTags, createToolConditionState, keepsOwnStack, setCopyTag } from '../public/js/tools.js?v=4156bba8';
+import { STILL, STILL_TEXT, createStillState, distillInStill, stillCollectCheck, stillDistillCheck } from '../public/js/machines.js?v=ab7d71da';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=316bc182';
+import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=4057c421';
+import { shareReason } from '../public/js/drops-mp.js?v=ad34ae0a';
 import { dropFor } from '../public/js/world-drop.js?v=d152b2bb';
 import { STILL_ART, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../public/js/still-art.js?v=2eeb65ff';
 

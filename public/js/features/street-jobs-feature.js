@@ -50,15 +50,15 @@
  */
 
 import { pluralize } from '../words.js?v=274023af';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=487b1b60';
-import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=6414dbdc';
+import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=c4ce9ccd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=c0814575';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { GIANTS } from '../shrines.js?v=f48c0155';
+import { GIANTS } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=9ce752fa';
+import { teleportationFeature } from './teleportation-feature.js?v=0ce61bb6';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,
@@ -112,10 +112,10 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=43cb0e02';
+} from '../street-jobs.js?v=5806a615';
 import { PAPERS_BADGE } from '../subway.js?v=735bfbeb';
-import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=164158a0';
+import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=c1916698';
 import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
@@ -140,8 +140,8 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=3ac15476';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+} from '../street-jobs-mp.js?v=73d86611';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
@@ -152,8 +152,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=84356b3e';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=6a7cf8fc';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=d30e2464';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=34f60876';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ae042c42';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
@@ -2463,7 +2463,7 @@ function seedPhase(engine, jobId, { realWork }) {
     }
   }
   engine.pc.currants = (engine.pc.currants || 0) + currants;
-  engine.pc.energy = 100;
+  forceMetabolic(engine.pc, 'energy', 100);
 }
 
 function autoplayStep(engine, now) {

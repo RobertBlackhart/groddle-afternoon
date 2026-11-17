@@ -20,8 +20,8 @@ import {
   normalizeKeySpawnState,
   soloKeyStep,
 } from '../public/js/door-key-spawns.js?v=8e6b40bb';
-import { doorKeysFeature, resetDoorKeysForTest, sharedKeyStacks } from '../public/js/features/door-keys-feature.js?v=635dadfa';
-import { createDroppedItemState, dropInventoryStack, listDroppedStacks, pickupDroppedStack } from '../public/js/world-items.js?v=053888d2';
+import { doorKeysFeature, resetDoorKeysForTest, sharedKeyStacks } from '../public/js/features/door-keys-feature.js?v=7c66f7b8';
+import { createDroppedItemState, dropInventoryStack, listDroppedStacks, pickupDroppedStack } from '../public/js/world-items.js?v=4057c421';
 import { isStandable, platformYAt, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
 import { doorKeysData } from '../tools/build-realtime-door-keys.mjs';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

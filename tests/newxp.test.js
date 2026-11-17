@@ -305,8 +305,8 @@ describe('training2 never holds a player who cannot eat or drink (reports 122-12
   });
 
   it('entering sets both meters to 99 (playerEntered 96-99), so a full save has room again', () => {
-    assert.match(feature, /pc\.energy = TRAINING2_ENTER_METABOLICS;/);
-    assert.match(feature, /pc\.mood = TRAINING2_ENTER_METABOLICS;/);
+    assert.match(feature, /forceMetabolic\(pc, 'energy', TRAINING2_ENTER_METABOLICS\);/);
+    assert.match(feature, /forceMetabolic\(pc, 'mood', TRAINING2_ENTER_METABOLICS\);/);
     assert.doesNotMatch(feature, /Math\.max\(pc\.(energy|mood) \|\| 0, TRAINING2_ENTER_METABOLICS\)/);
   });
 

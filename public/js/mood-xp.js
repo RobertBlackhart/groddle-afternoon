@@ -25,7 +25,7 @@
  * is not scaled (unit fixtures with no metabolics).
  */
 
-import { moodMax } from './metabolics.js?v=1383e6fd';
+import { moodMax } from './metabolics.js?v=48f784bf';
 
 /** [upper bound (exclusive), multiplier], inc_stats.js 237-257. */
 export const MOOD_XP_BANDS = Object.freeze([

@@ -13,7 +13,7 @@ import {
   useToolCondition,
   workStepCost,
   workUnitWear,
-} from '../public/js/tools.js?v=8516a0c3';
+} from '../public/js/tools.js?v=4156bba8';
 
 const GSJS = new URL('../../glitch-GameServerJS/items/', import.meta.url);
 const jobs = JSON.parse(readFileSync(new URL('../public/assets/content/street-jobs.json', import.meta.url), 'utf8'));

@@ -45,9 +45,9 @@ import {
   setButlerHiVariant,
   setPlayerHiVariant,
   stepMissile,
-} from '../public/js/hi-signs.js?v=c9d1aedc';
-import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=03b8d954';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=cc2028f5';
+} from '../public/js/hi-signs.js?v=49b991c2';
+import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=50c112eb';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=7059abbd';
 import { getAchievementCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

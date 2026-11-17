@@ -29,13 +29,13 @@
  * cubiBattleWins, cubiBattleLevel (the last level a win left).
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { copyForVerb, copyTag, setCopyTag, takeToolCopy } from '../tools.js?v=8516a0c3';
+import { copyForVerb, copyTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
-import { CUBIMAL_RACE, cubimalArticle, cubimalInfo, cubimalRaceSheet } from '../cubimals.js?v=d38434e0';
+import { CUBIMAL_RACE, cubimalArticle, cubimalInfo, cubimalRaceSheet } from '../cubimals.js?v=07f59f2f';
 import {
   CUBIMAL_BATTLE,
   battleStyleOfVerb,
@@ -46,7 +46,7 @@ import {
   cubimalEgo,
   cubimalTagName,
   cubimalTagWith,
-} from '../cubimal-battle.js?v=b50cf09e';
+} from '../cubimal-battle.js?v=f91166b0';
 
 export const CUBIMAL_BATTLE_FEATURE_ID = 'cubimal-battle';
 const SOLO_ID = 'solo';

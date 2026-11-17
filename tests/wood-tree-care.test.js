@@ -11,7 +11,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { performTrantCare, quoteTrantCare } from '../public/js/trant-care.js?v=44269e93';
+import { performTrantCare, quoteTrantCare } from '../public/js/trant-care.js?v=4d522292';
 import {
   WOOD_TREE_CARE,
   adoptPlotWoodCounts,
@@ -19,11 +19,11 @@ import {
   noteWoodCare,
   resetWoodTreeDay,
   woodCareWait,
-} from '../public/js/woodcutting.js?v=b43edbd8';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
-import { applyWoodState } from '../public/js/street-objects.js?v=9d62f517';
-import { applyYardAct, treeActs, treeSnapshot, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=009c49f4';
-import { fertilizeTree } from '../public/js/powders.js?v=ffca4adb';
+} from '../public/js/woodcutting.js?v=9e9af511';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
+import { applyWoodState } from '../public/js/street-objects.js?v=6d51771b';
+import { applyYardAct, treeActs, treeSnapshot, visitorTreeState } from '../public/js/yard-verbs-mp.js?v=e44de6fd';
+import { fertilizeTree } from '../public/js/powders.js?v=2a43f991';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');

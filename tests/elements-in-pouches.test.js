@@ -9,9 +9,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { layoutPack, moveStack, packAccepts, packKeeps, roomFor, stackUp, isElementClass } from '../public/js/pack-slots.js?v=4d446d78';
-import { smashTrophy } from '../public/js/item-verbs-more.js?v=97cd58a8';
-import { canCraft, grindsElements, grinderResultLine, NEED_POUCH_LINE, recipeBlockedLine, isGrinderRecipe } from '../public/js/making.js?v=a16c767f';
-import { getVerbsFor } from '../public/content.js?v=5dfc6bfe';
+import { smashTrophy } from '../public/js/item-verbs-more.js?v=377f760a';
+import { canCraft, grindsElements, grinderResultLine, NEED_POUCH_LINE, recipeBlockedLine, isGrinderRecipe } from '../public/js/making.js?v=af1c7d5b';
+import { getVerbsFor } from '../public/content.js?v=0cb5c6db';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

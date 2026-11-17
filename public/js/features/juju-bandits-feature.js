@@ -52,10 +52,10 @@
  *   nostalgiaPotion (1 once Ancestral Spirits is used this visit).
  */
 
-import { addItem, removeItem, countItem } from '../inventory.js?v=487b1b60';
-import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=ed4e7435';
+import { addItem, removeItem, countItem } from '../inventory.js?v=6414dbdc';
+import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=4debd26e';
 import { groundBeneath, isItemSolid, platformYAt, platformsScreen } from '../street-model.js?v=9f16f4ab';
-import { sheetFrames } from '../quest-rooms/kit.js?v=c8175e77';
+import { sheetFrames } from '../quest-rooms/kit.js?v=436636b4';
 import {
   JUJU_BANDIT,
   JUJU_QUEST,

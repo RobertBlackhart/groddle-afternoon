@@ -15,9 +15,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { BAGS_NEEDED, CHEAP_BAG_PRICE, ISLAND_CURRANTS, cheapBagPrice } from '../public/js/newxp.js?v=02f902e6';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=96dc9dc5';
-import { vendorBuy } from '../public/js/vendor.js?v=925b0f77';
-import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=1835f5d4';
+import { vendorBuy } from '../public/js/vendor.js?v=3025c322';
+import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
 
 describe('1. cheapBagPrice never strands a new player', () => {
   it('the first bag costs the rock\'s 500 when you hold the gift', () => {

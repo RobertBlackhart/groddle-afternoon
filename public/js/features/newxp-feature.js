@@ -136,23 +136,23 @@ import {
   TUTORIAL_NAME_MAX,
 } from '../newxp.js?v=02f902e6';
 import { countWords } from '../words.js?v=274023af';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=6a2cac74';
 import { loadRoadsFor, reachableStreets } from '../street-graph.js?v=114647c2';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
 import { soundForQuoin } from '../sound-moments.js?v=3e66996f';
 import { IMAGINATION_UPGRADES } from '../imagination.js?v=1bdfd77c';
 import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?v=557238c1';
-import { assignQuest, completeQuest } from '../quests.js?v=d057d5ec';
-import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=ed4e7435';
+import { assignQuest, completeQuest } from '../quests.js?v=92c75858';
+import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=4debd26e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
-import * as kit from '../quest-rooms/kit.js?v=c8175e77';
+import * as kit from '../quest-rooms/kit.js?v=436636b4';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=8e0a8c38';
 import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=99d88876';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=e4f45db6';
+import { HOME_MACHINE } from '../home-ticket.js?v=e882731b';
+import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=99a80423';
 import {
   AK_ANIMALS,
   AK_BUBBLE,
@@ -171,7 +171,7 @@ import {
 } from '../skillquest-ak.js?v=397a9d19';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
-import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
+import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 
 export const NEWXP_FEATURE_ID = 'newxp';
 /** newxp_training1.js 705-706 slothRemove: deleteWithPoof, then hideTree 0.5 s later. */
@@ -1878,8 +1878,8 @@ async function runTraining2(t) {
   fadeIn();
   const pc = engine.pc;
   // playerEntered 96-99: both meters are set to 99, not raised to it, so there is always room to eat and drink.
-  pc.energy = TRAINING2_ENTER_METABOLICS;
-  pc.mood = TRAINING2_ENTER_METABOLICS;
+  forceMetabolic(pc, 'energy', TRAINING2_ENTER_METABOLICS);
+  forceMetabolic(pc, 'mood', TRAINING2_ENTER_METABOLICS);
   engine.updateHud();
   const db = makeNpc(engine, 'dustbunny', L.dustbunny.initial, L.floorY, { register: true, classId: 'newxp_dustbunny', subtitle: 'An aficionado of EGGs' });
   run.npcs.push(db);
@@ -1934,7 +1934,7 @@ async function runTraining2(t) {
   clearInstruction();
   // food_eaten: energy to 80, the overlay, then the energy meter appears.
   if (ui) ui.say.hidden = true;
-  pc.energy = TRAINING2_ENERGY_AFTER_EAT;
+  forceMetabolic(pc, 'energy', TRAINING2_ENERGY_AFTER_EAT);
   engine.updateHud();
   await overlay(t, { title: LINES.firstEat, button: 'OK' });
   rooted = true;

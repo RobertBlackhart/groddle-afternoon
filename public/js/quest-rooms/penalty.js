@@ -31,10 +31,11 @@
  * groddle1.swf decos; their placement is read off the Snap.
  */
 
-import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=2281bd71';
+import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=67d08c97';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { ensureItem } from '../inventory.js?v=487b1b60';
+import { ensureItem } from '../inventory.js?v=6414dbdc';
+import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PART_1 = 'smuggle_the_smuggler_part1';
 export const PART_2 = 'smuggle_the_smuggler_part2';
@@ -533,7 +534,7 @@ export const room = {
     };
     await ctx.wait(800);
     if (ctx.count('shovel') < 1 && ctx.count('ace_of_spades') < 1) ctx.give('shovel', 1);
-    if ((ctx.engine.pc.energy || 0) < 20) ctx.engine.pc.energy = 60;
+    if ((ctx.engine.pc.energy || 0) < 20) forceMetabolic(ctx.engine.pc, 'energy', 60);
     ctx.place(ctx.data.vendor.x + 80, FLOOR);
     talk(ctx);
     await drain(() => ctx.quest(PART_2).active());

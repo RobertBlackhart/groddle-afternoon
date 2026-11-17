@@ -10,9 +10,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { energyMax, moodMax } from '../public/js/metabolics.js?v=1383e6fd';
-import { normalizeHellState, resurrect } from '../public/js/hell.js?v=7f2c9be1';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=eb79a9c5';
+import { energyMax, moodMax } from '../public/js/metabolics.js?v=48f784bf';
+import { normalizeHellState, resurrect } from '../public/js/hell.js?v=834960da';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=dba6adad';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

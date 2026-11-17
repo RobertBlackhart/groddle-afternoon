@@ -27,9 +27,9 @@
  *     mgPlots, mgAutoplay, mgDrop.
  */
 
-import { TOOL_CONDITION_CATALOG, migrateClassValue } from '../tools.js?v=8516a0c3';
-import { ITEM_CATALOG, countItem, ensureItem } from '../inventory.js?v=487b1b60';
-import { SEED_CATALOG, listPlantableSeeds } from '../garden.js?v=15082e6f';
+import { TOOL_CONDITION_CATALOG, migrateClassValue } from '../tools.js?v=4156bba8';
+import { ITEM_CATALOG, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
+import { SEED_CATALOG, listPlantableSeeds } from '../garden.js?v=d4e55862';
 import {
   GARDEN_POTIONS,
   MASTER_GARDENER,
@@ -43,13 +43,14 @@ import {
   potionTendGarden,
   potionUsesLeft,
   usePotion,
-} from '../master-garden.js?v=a50e3f32';
-import { rollDropTable } from '../drop-tables.js?v=8bcf111f';
-import { payDrop } from './drops-feature.js?v=89ee0a00';
+} from '../master-garden.js?v=43a08008';
+import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
+import { payDrop } from './drops-feature.js?v=439d100b';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
-import { copyFromLedger, keepsCopies, verbCopy } from '../copy-charges.js?v=1c1efade';
+import { copyFromLedger, keepsCopies, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const MASTER_GARDEN_FEATURE_ID = 'master-garden';
 
@@ -281,7 +282,7 @@ function demoSetup(engine) {
   const herb = demo === 'herb';
   const seedId = herb ? 'herb_seed_rookswort' : 'seed_spinach';
   if (SEED_CATALOG[seedId]) inv[seedId] = Math.max(12, Number(inv[seedId]) || 0);
-  engine.pc.energy = Math.max(engine.pc.energy || 0, 95);
+  topUpMetabolic(engine.pc, 'energy', 95);
   let target = null;
   for (const t of engine.interactables || []) {
     if (t.classId === 'garden_new' && (t.state?.garden?.gardenType === 'herb') === herb) target = t;

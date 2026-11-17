@@ -12,9 +12,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GARDEN_ART } from '../public/js/garden-art.js?v=d90f3721';
 import { bedPieces, GARDEN_SCALE, gardenHalfWidth, gardenLayout, gardenMetrics, gardenStyle, plotOrigin, plotPieces, PLOT_H, PLOT_W } from '../public/js/garden-view.js?v=04fe8467';
-import { createCultivationState, cultivateDemoYard, cultivationDef, dispatcherRx, footprint, groundFixtures, homeStreetLayout, normalizeCultivationState, placementCheck, SIGNPOST_POST_HALF } from '../public/js/home-cultivation.js?v=5d66e832';
+import { createCultivationState, cultivateDemoYard, cultivationDef, dispatcherRx, footprint, groundFixtures, homeStreetLayout, normalizeCultivationState, placementCheck, SIGNPOST_POST_HALF } from '../public/js/home-cultivation.js?v=57afc9e2';
 import { DISPATCHER_HALF } from '../public/js/home-street-fixtures.js?v=bad831a1';
-import { SEED_CATALOG } from '../public/js/garden.js?v=15082e6f';
+import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { HIRES_SPRITES, FIRST_DRAW_SPRITES } from '../public/js/sprite-hires.js?v=24aa024c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

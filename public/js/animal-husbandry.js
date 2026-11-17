@@ -34,20 +34,20 @@
  *   (rolled with the shared js/drop-tables.js runDropTable).
  */
 
-import { ITEM_CATALOG, ensureItem, getItemUseInfo } from './inventory.js?v=487b1b60';
-import { DROP_TABLES, applyDropResult, rollDropTable } from './drop-tables.js?v=8bcf111f';
-import { loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { musicblockItemMeta } from './musicblocks.js?v=dc6b7003';
-import { isEnchantedForest } from './enchanted-forests.js?v=da978edc';
+import { ITEM_CATALOG, ensureItem, getItemUseInfo } from './inventory.js?v=6414dbdc';
+import { DROP_TABLES, applyDropResult, rollDropTable } from './drop-tables.js?v=1ed0b596';
+import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { musicblockItemMeta } from './musicblocks.js?v=650ecd58';
+import { isEnchantedForest } from './enchanted-forests.js?v=17ac01e4';
 import { isSymphoniousTsid } from './symphonious-maximus.js?v=345ad437';
 import { isMissingFloorTsid } from './hidden-floors.js?v=014b5377';
 import { stationByTsid } from './subway.js?v=735bfbeb';
 import { ensurePiggyMood, piggyTwiceDailyTick, satePiggy } from './animal-mood.js?v=a49495fc';
-import { isCrowdSad } from './animal-crowding.js?v=45c663e8';
+import { isCrowdSad } from './animal-crowding.js?v=1966bc21';
 import { ecologyForStreet } from './street-ecology.js?v=c4ce9ccd';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
-import { getGameDayKey } from './game-day.js?v=03b8d954';
+import { getGameDayKey } from './game-day.js?v=50c112eb';
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
@@ -847,9 +847,7 @@ export function capturePiggy(state, { pc, inv, learned = [], streetTsid = '', no
     inv.hogtied_piggy = (inv.hogtied_piggy || 0) + 1;
     effects.items.hogtied_piggy = 1;
     // npc_piggy.js 451: metabolics_add_mood(30), nothing while dead (inc_metabolics.js 79-86).
-    const before = pc.mood || 0;
-    if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), before + HERDKEEPING.successMood);
-    effects.mood = pc.mood - before;
+    effects.mood = gainMetabolic(pc, 'mood', HERDKEEPING.successMood);
     if (!ownYard) {
       // npc_piggy.js 460: stats_add_xp(50, false) takes the mood bonus.
       effects.xp = grantMoodXp(pc, HERDKEEPING.successXp);

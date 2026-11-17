@@ -39,7 +39,7 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
-import { followPath } from '../street-creatures.js?v=d390cfd8';
+import { followPath } from '../street-creatures.js?v=6076a836';
 import { landingY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
@@ -58,7 +58,7 @@ import {
   petKitty,
   rollScare,
   stepKitty,
-} from '../heli-kitties.js?v=addb573f';
+} from '../heli-kitties.js?v=e4af4096';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 
 export const KITTY_FEATURE_ID = 'heli-kitties';

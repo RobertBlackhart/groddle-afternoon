@@ -28,7 +28,7 @@
  * buffTriggerOverrides, buffTriggerMirrors, buffColdTicks.
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import {
   BUBBLE_MEDITATION_PACKAGES,
   BUFF_END_MESSAGES,
@@ -56,16 +56,17 @@ import {
   removeSkillPackageOverride,
   skillPackageDetails,
 } from '../skill-packages.js?v=bfb87281';
-import { husbandryPack } from '../animal-husbandry.js?v=9ed2a680';
-import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
+import { husbandryPack } from '../animal-husbandry.js?v=0429b2e9';
+import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 // The same module instances js/features/index.js registers (tests/buff-triggers.test.js checks the tags).
-import { meditationFeature } from './meditation-feature.js?v=55f80433';
-import { teleportationFeature } from './teleportation-feature.js?v=9ce752fa';
-import { rookAttackFeature } from './rook-attack-feature.js?v=8e549de2';
-import { rubeFeature } from './rube-feature.js?v=e582e07c';
-import { smugglingFeature } from './smuggling-feature.js?v=9f337cb1';
-import { hellFeature } from './hell-feature.js?v=eb79a9c5';
-import { isPooped } from '../hell.js?v=7f2c9be1';
+import { meditationFeature } from './meditation-feature.js?v=a29fda54';
+import { teleportationFeature } from './teleportation-feature.js?v=0ce61bb6';
+import { rookAttackFeature } from './rook-attack-feature.js?v=ff0d794a';
+import { rubeFeature } from './rube-feature.js?v=31e03282';
+import { smugglingFeature } from './smuggling-feature.js?v=40081511';
+import { hellFeature } from './hell-feature.js?v=dba6adad';
+import { isPooped } from '../hell.js?v=834960da';
+import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const BUFF_TRIGGERS_FEATURE_ID = 'buff-triggers';
 
@@ -376,8 +377,8 @@ function demoSetup(engine) {
   if (demoDone || engine.param?.('buffdemo') !== '1') return;
   demoDone = true;
   for (const classTsid of DEMO_ITEMS) if (countItem(engine.inv, classTsid) < 1) addItem(engine.inv, classTsid, 1);
-  engine.pc.energy = Math.min(engine.pc.energy, 50);
-  engine.pc.mood = Math.min(engine.pc.mood, 50);
+  forceMetabolic(engine.pc, 'energy', Math.min(engine.pc.energy, 50));
+  forceMetabolic(engine.pc, 'mood', Math.min(engine.pc.mood, 50));
   engine.setData?.('buffDemo', '1');
   engine.refreshPack?.();
   engine.updateHud?.();

@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 import { cancelAllOverlays, liveOverlayCount } from '../public/js/overlay-art.js?v=98606052';
 import { advanceVpOverlay, vpOverlay, vpOverlayText, vpSequence } from '../public/js/quest-rooms/vp-overlay.js?v=316addb9';
-import { swfFeature } from '../public/js/features/swf-feature.js?v=afd02c0a';
+import { swfFeature } from '../public/js/features/swf-feature.js?v=c6b4e493';
 
 const saved = {};
 

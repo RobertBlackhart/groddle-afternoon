@@ -48,9 +48,9 @@
  * teleportSummons (summonses today).
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=8516a0c3';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=4156bba8';
 import {
   PAPER_CLASS,
   QUILL_CLASS,
@@ -78,7 +78,7 @@ import {
   teleportToPoint,
   useScript,
 } from '../teleportation.js?v=e95cf7cb';
-import { energyMax, loseEnergy } from '../metabolics.js?v=1383e6fd';
+import { energyMax, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
 
 export const TELEPORT_FEATURE_ID = 'teleportation';
@@ -628,7 +628,7 @@ function demoOnEnter(engine) {
     engine.grantSkill('meditativearts_1');
     for (let r = 1; r <= rank; r += 1) engine.grantSkill(`teleportation_${r}`);
     state = { ...state, cooldownUntil: 0 };
-    engine.pc.energy = Math.max(engine.pc.energy, 90);
+    topUpMetabolic(engine.pc, 'energy', 90);
     if (mode === 'script') {
       engine.grantSkill('penmanship_1');
       if (countItem(engine.inv, QUILL_CLASS) < 1) addItem(engine.inv, QUILL_CLASS, 1);

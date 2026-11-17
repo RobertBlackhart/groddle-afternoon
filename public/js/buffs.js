@@ -8,8 +8,8 @@
  */
 
 import { getBuffCatalog } from './content-catalogs.js?v=10b118dd';
-import { energyMax, gainMetabolic, loseEnergy, loseMood, moodMax, shiftMetabolic } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { energyMax, gainMetabolic, loseEnergy, loseMood, moodMax, shiftMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { BUFF_ICONS } from './buff-triggers.js?v=a3093922';
 
 const SECOND = 1000;

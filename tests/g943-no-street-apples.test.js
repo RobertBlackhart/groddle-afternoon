@@ -16,9 +16,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { populationForStreet } from '../public/js/street-ecology.js?v=c4ce9ccd';
-import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=75ac79c6';
-import { getVerbsFor } from '../public/content.js?v=5dfc6bfe';
-import { ITEM_CATALOG } from '../public/js/inventory.js?v=487b1b60';
+import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=47b7d580';
+import { getVerbsFor } from '../public/content.js?v=0cb5c6db';
+import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

@@ -19,19 +19,19 @@ import {
   openCubimalPackage,
   selectCubimal,
   setCubimalFree,
-} from '../public/js/cubimals.js?v=d38434e0';
+} from '../public/js/cubimals.js?v=07f59f2f';
 import {
   ITEM_CATALOG,
   addItem,
   countItem,
   createInventory,
   listPackItemSlots,
-} from '../public/js/inventory.js?v=487b1b60';
+} from '../public/js/inventory.js?v=6414dbdc';
 import {
   applyAchievementProgress,
   createAchievementState,
   getAchievementProgress,
-} from '../public/js/achievements.js?v=23248abe';
+} from '../public/js/achievements.js?v=c3e8be23';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const here = dirname(fileURLToPath(import.meta.url));

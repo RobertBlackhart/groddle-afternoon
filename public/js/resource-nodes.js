@@ -76,11 +76,11 @@ import {
   countItem,
   ensureItem,
   ITEM_CATALOG,
-} from './inventory.js?v=487b1b60';
-import { TOOL_CONDITION_CATALOG, canUseTool, toolCopies, useToolCondition } from './tools.js?v=8516a0c3';
-import { getGameDayKey } from './game-day.js?v=03b8d954';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
+} from './inventory.js?v=6414dbdc';
+import { TOOL_CONDITION_CATALOG, canUseTool, toolCopies, useToolCondition } from './tools.js?v=4156bba8';
+import { getGameDayKey } from './game-day.js?v=50c112eb';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
 import { superHarvestWords } from './words.js?v=274023af';
 
 export const RESOURCE_NODES_SOURCE = 'tinyspeck/glitch-GameServerJS CC0';
@@ -1454,9 +1454,7 @@ function applyMetabolics(pc, costs) {
     // G278: a package's mood_bonus is metabolics_add_mood
     // (inc_skill_packages.js 524), refused while dead (inc_metabolics.js
     // 79-86) and capped at the tank; costs.mood keeps what landed.
-    const before = Number(pc.mood) || 0;
-    if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), before + costs.mood);
-    costs.mood = Math.max(0, (Number(pc.mood) || 0) - before);
+    costs.mood = gainMetabolic(pc, 'mood', costs.mood);
   } else if (costs.mood) {
     loseMood(pc, -costs.mood);
   }

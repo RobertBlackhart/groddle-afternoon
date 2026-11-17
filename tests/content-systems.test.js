@@ -24,7 +24,7 @@ import {
   listQuestLog,
   listQuestLogNewestFirst,
   listQuests,
-} from '../public/js/quests.js?v=d057d5ec';
+} from '../public/js/quests.js?v=92c75858';
 import {
   createAchievementState,
   applyAchievementProgress,
@@ -33,7 +33,7 @@ import {
   browseAchievementLog,
   achievementCategories,
   getAchievementProgress,
-} from '../public/js/achievements.js?v=23248abe';
+} from '../public/js/achievements.js?v=c3e8be23';
 import {
   createSkillState,
   canLearnSkill,
@@ -52,7 +52,7 @@ import {
   listActiveBuffs,
   hasBuff,
   listBuffCatalog,
-} from '../public/js/buffs.js?v=67b7ccad';
+} from '../public/js/buffs.js?v=57e5d8e0';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT = join(__dirname, '../public/assets/content');

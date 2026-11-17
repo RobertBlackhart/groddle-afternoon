@@ -18,8 +18,8 @@
  * through the server online: buff-triggers-feature and player-verbs-mp-feature.
  */
 
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
 
 /* ------------------------------------------------------------------ */

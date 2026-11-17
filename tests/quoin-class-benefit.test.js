@@ -20,12 +20,12 @@ import {
   quoinClassType,
   resetStreetQuoinsForNewDay,
   streetQuoinClass,
-} from '../public/js/quoins.js?v=a4208821';
-import { setMetabolicGainGate } from '../public/js/metabolics.js?v=1383e6fd';
-import { applyDropResult, createDropResult } from '../public/js/drop-tables.js?v=8bcf111f';
-import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
+} from '../public/js/quoins.js?v=6a2cac74';
+import { setMetabolicGainGate } from '../public/js/metabolics.js?v=48f784bf';
+import { applyDropResult, createDropResult } from '../public/js/drop-tables.js?v=1ed0b596';
+import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=57e5d8e0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyVerbReward } from '../public/js/verb-rewards.js?v=202a9e37';
+import { applyVerbReward } from '../public/js/verb-rewards.js?v=42171963';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
@@ -272,8 +272,8 @@ describe('other energy and mood gains ask the gate', () => {
 
   it('crabs: settle rewards and verb rises ask the gate (static)', () => {
     const crabs = read('js/features/crabs-feature.js');
-    assert.match(crabs, /if \(r\.mood > 0 && metabolicGain\('mood'\)\.ok\) \{/);
-    assert.match(crabs, /if \(r\.energy > 0 && metabolicGain\('energy'\)\.ok\) \{/);
+    assert.match(crabs, /if \(r\.mood > 0\) effects\.mood = \(effects\.mood \|\| 0\) \+ gainMetabolic\(pc, 'mood', r\.mood\);/);
+    assert.match(crabs, /if \(r\.energy > 0\) effects\.energy = gainMetabolic\(pc, 'energy', r\.energy\);/);
     // G300: verb changes go through both doors (shiftMetabolic: gains ask the gain gate).
     assert.match(crabs, /const mood = shiftMetabolic\(pc, 'mood', result\.mood\);/);
     assert.match(crabs, /const energy = shiftMetabolic\(pc, 'energy', result\.energy\);/);

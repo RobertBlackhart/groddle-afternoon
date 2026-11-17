@@ -26,7 +26,7 @@ import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../
 import { isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import { buildPlatformCandidates, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=c4ce9ccd';
 import { EDGE_MARGIN, JUMP_SPEED, NORMAL_BUFF, WALK_MAX, avatarFall } from '../public/js/avatar-step.js?v=a6f5a99b';
-import { QUOIN_TOUCH, measuredStreetQuoins, quoinTouches } from '../public/js/quoins.js?v=a4208821';
+import { QUOIN_TOUCH, measuredStreetQuoins, quoinTouches } from '../public/js/quoins.js?v=6a2cac74';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 

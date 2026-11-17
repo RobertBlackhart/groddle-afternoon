@@ -10,7 +10,7 @@
  * named street companions already present in the Feat replay as local players.
  */
 
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
 
 export const EMOTIONAL_BEAR_ITEM_ID = 'emotional_bear';
 export const EMOTIONAL_BEAR_LIPS_ID = 'lips';
@@ -243,9 +243,8 @@ export function performEmotionalBearAction(
   const next = normalizeEmotionalBearState(state);
 
   if (actionId === 'anthropomorphize') {
-    const before = clampMood(player?.mood);
-    player.mood = clampMood(before + 20);
-    const gained = player.mood - before;
+    // emotional_bear.js 573: metabolics_add_mood(20), capped at the tank (G970: was a flat 100).
+    const gained = gainMetabolic(player, 'mood', 20);
     next.anthropomorphizedDay = cleanDayKey(options.dayKey);
     Object.assign(state, next);
     return {
@@ -262,9 +261,8 @@ export function performEmotionalBearAction(
   const action = { ...EMOTIONAL_BEAR_ACTIONS[actionId], energy: quote.energy, selfMood: quote.selfMood, targetMood: quote.targetMood };
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
   loseEnergy(player, action.energy);
-  const selfMoodBefore = clampMood(player.mood);
-  player.mood = clampMood(selfMoodBefore + action.selfMood);
-  const selfMood = player.mood - selfMoodBefore;
+  // emotional_bear.js 96, 249: metabolics_add_mood, nothing while dead, capped at the tank (G970).
+  const selfMood = gainMetabolic(player, 'mood', action.selfMood);
   const targetBefore = next.companionMood[target];
   next.companionMood[target] = clampMood(targetBefore + action.targetMood);
   const targetMood = next.companionMood[target] - targetBefore;

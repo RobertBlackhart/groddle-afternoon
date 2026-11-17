@@ -99,8 +99,8 @@
  *       (=restorehold stops on the proto, =restoreaward on the award)
  */
 
-import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=487b1b60';
-import { pickupCountTitle } from '../world-items.js?v=053888d2';
+import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
+import { pickupCountTitle } from '../world-items.js?v=4057c421';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
 import { isBagClass } from '../pack-slots.js?v=4d446d78';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
@@ -171,7 +171,7 @@ import {
   swatchFilters,
   trayFilters,
 } from '../ui/home-builder.js?v=378178ac';
-import { RECIPE_CATALOG } from '../making.js?v=a16c767f';
+import { RECIPE_CATALOG } from '../making.js?v=af1c7d5b';
 import {
   createBackYardState,
   fixtureObstacles,
@@ -207,24 +207,24 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=5d66e832';
+} from '../home-cultivation.js?v=57afc9e2';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=98606052';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { fadeInNewNear } from '../poof-fade.js?v=17fc143a';
-import { projectApi } from './street-jobs-feature.js?v=02f60e52';
-import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=2d71091c';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=72af031a';
+import { projectApi } from './street-jobs-feature.js?v=c679b93f';
+import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=77d57cda';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=39ba28bf';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=95aa25d0';
-import { patchesFeature } from './patches-feature.js?v=84b0213c';
-import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=2281bd71';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=5656bfba';
+import { patchesFeature } from './patches-feature.js?v=d5f4344d';
+import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=67d08c97';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
-import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
+import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   STREET_STYLE_BY_KEY,
   STYLE_TEXT,
@@ -244,7 +244,7 @@ import {
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
 import { oneArmSignpost } from '../street-render.js?v=c0814575';
-import { ROCK_CATALOG } from '../mining.js?v=187cd4b9';
+import { ROCK_CATALOG } from '../mining.js?v=c13f0259';
 import {
   HOUSE_SIGN,
   IMG_BUBBLE_MS,
@@ -261,8 +261,8 @@ import {
   rockVerbs,
   ROCK_VERB_IDS,
 } from '../magic-rock-home.js?v=c07b2327';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=99d88876';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=e882731b';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
@@ -290,6 +290,7 @@ import {
   quoteHouseUnexpand,
   unexpandHouseFloors,
 } from '../home-floors.js?v=fbae0b05';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -4414,7 +4415,7 @@ function runFurnUpAutoplay(engine, how) {
       if (!ups.includes('furnituremaking_bonus_upgrade_1')) ups.push('furnituremaking_bonus_upgrade_1');
       engine.grantSkill?.('furnituremaking_1');
       for (const [cls, n] of [['construction_tool', 1], ['wood_post', 1], ['board', 4], ['snail', 4]]) engine.inv[cls] = Math.max(n, Number(engine.inv[cls]) || 0);
-      engine.pc.energy = Math.max(engine.pc.energy || 0, 95);
+      topUpMetabolic(engine.pc, 'energy', 95);
       engine.refreshPack?.();
       engine.updateHud?.();
       say('craft:ready');

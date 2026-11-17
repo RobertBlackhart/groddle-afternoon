@@ -10,8 +10,8 @@
  * count, as before.
  */
 
-import { removeItem } from './inventory.js?v=487b1b60';
-import { TOOL_CONDITION_CATALOG, chargesLeft, copyForVerb, setToolRemaining, useCharge } from './tools.js?v=8516a0c3';
+import { removeItem } from './inventory.js?v=6414dbdc';
+import { TOOL_CONDITION_CATALOG, chargesLeft, copyForVerb, setToolRemaining, useCharge } from './tools.js?v=4156bba8';
 
 /** Whether this engine keeps `classTsid` per copy. */
 export function keepsCopies(engine, classTsid) {

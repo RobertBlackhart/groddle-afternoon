@@ -54,8 +54,8 @@ import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
 import { readItemTags, readItems } from './inventory/gsjs-data.mjs';
-import { TOOL_CONDITION_CATALOG, copyTagKind } from '../public/js/tools.js?v=8516a0c3';
-import { PIGGY_CROP_SEEDS } from '../public/js/animal-husbandry.js?v=9ed2a680';
+import { TOOL_CONDITION_CATALOG, copyTagKind } from '../public/js/tools.js?v=4156bba8';
+import { PIGGY_CROP_SEEDS } from '../public/js/animal-husbandry.js?v=0429b2e9';
 import { COPY_TAG_RULES } from '../public/js/copy-tags.js?v=7eec7d48';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

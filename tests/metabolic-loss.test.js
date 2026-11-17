@@ -17,19 +17,19 @@ import {
   setMetabolicGainGate,
   setMetabolicLossGate,
   shiftMetabolic,
-} from '../public/js/metabolics.js?v=1383e6fd';
-import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
+} from '../public/js/metabolics.js?v=48f784bf';
+import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=57e5d8e0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { HELL_TEXT, metabolicGate, normalizeHellState } from '../public/js/hell.js?v=7f2c9be1';
-import { BUTTER_UP, butterUpChicken } from '../public/js/animal-flattery.js?v=9700115b';
-import { SET_FREE, applySetFree } from '../public/js/animal-set-free.js?v=55ad2f83';
-import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=202a9e37';
-import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
-import { startAssembly, startDisassembly } from '../public/js/machines.js?v=0af7364d';
-import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=8516a0c3';
-import { smeltMetalRocks } from '../public/js/mining.js?v=187cd4b9';
-import { craftRecipe } from '../public/js/making.js?v=a16c767f';
-import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=bdb4247b';
+import { HELL_TEXT, metabolicGate, normalizeHellState } from '../public/js/hell.js?v=834960da';
+import { BUTTER_UP, butterUpChicken } from '../public/js/animal-flattery.js?v=3374cf3a';
+import { SET_FREE, applySetFree } from '../public/js/animal-set-free.js?v=6fcd8355';
+import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=42171963';
+import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
+import { startAssembly, startDisassembly } from '../public/js/machines.js?v=ab7d71da';
+import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
+import { smeltMetalRocks } from '../public/js/mining.js?v=c13f0259';
+import { craftRecipe } from '../public/js/making.js?v=af1c7d5b';
+import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=13f35acd';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
@@ -215,13 +215,9 @@ describe('verb costs spend through the door', () => {
     // through without metabolics_lose_*: drinks (drink.js 75-98), spices and gases, the crab's
     // verbs, the purple journey, Funpickle, baby animal verbs and brain freezes were routed.
     const signed = /\b(?:pc|player|ctx\.pc|engine\.pc)\.(?:energy|mood)\s*=\s*(?:Math\.max\(0,\s*Math\.min\(|clamp\(|0;)/;
-    // Left on purpose: dying empties the tank (hell-feature, player.js croak) and the No-No crash
-    // ends in pc.croak() (catalog_buffs.js 1502-1507). races-feature's game-quoin mood is a gain
-    // (not scanned here; a follow-up row asks whether it should ask the gain gate).
-    assert.deepEqual(modulesMatching(signed, ['js/features/races-feature.js']), [
-      'js/features/hell-feature.js',
-      'js/features/powders-feature.js',
-    ]);
+    // G970: dying (hell-feature, player.js croak) and the No-No crash (catalog_buffs.js 1502-1507)
+    // now empty the tank through forceMetabolic; tests/stat-writes.test.js bans every direct write.
+    assert.deepEqual(modulesMatching(signed, ['js/features/races-feature.js']), []);
   });
 
   it('G300: the buff catalog spends through the doors and costs nothing while dead', () => {

@@ -47,11 +47,11 @@
  * street the server doesn't share keep the save's own plots, as before.
  */
 
-import { ensureItem } from '../inventory.js?v=487b1b60';
+import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=c4ce9ccd';
 import { trantFootAnchorY, trantStatusLabel } from '../trants.js?v=4d6f5593';
-import { woodTreeStatusLabel } from '../woodcutting.js?v=b43edbd8';
+import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   GROWN_TREE_LABELS,
   SEASONED_BEANS,
@@ -71,11 +71,12 @@ import {
   soilSpawnClasses,
   soilSpritePaths,
   tickPlot,
-} from '../patches.js?v=2281bd71';
+} from '../patches.js?v=67d08c97';
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=8516a0c3';
+import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { plotSignature, replayRng } from '../shared-patches.js?v=e3ff914c';
+import { plotSignature, replayRng } from '../shared-patches.js?v=0f107341';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PATCHES_FEATURE_ID = 'patches';
 export const SOIL_GROUP_PREFIX = 'soil:';
@@ -723,7 +724,7 @@ function setupDemo(engine, slot, planned) {
   for (const [classTsid, qty] of Object.entries(patchDemoKit(variant))) {
     engine.inv[classTsid] = Math.max(qty, engine.inv[classTsid] || 0);
   }
-  if ((engine.pc.energy || 0) < 80) engine.pc.energy = 80;
+  topUpMetabolic(engine.pc, 'energy', 80);
   const key = `demo:${variant}`;
   const now = Date.now();
   if (engine.param('patchreset') === '1' || !normalizePlot(slot.plots?.[key])) {

@@ -52,7 +52,7 @@
  * Solo is untouched.
  */
 
-import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=6414dbdc';
 import { teleportEnergyCost } from '../teleportation.js?v=e95cf7cb';
 import {
   PARTY_GUESTS,
@@ -84,10 +84,10 @@ import {
   teleporterPhase,
 } from '../party-spaces.js?v=8e869964';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { readVisitScene } from '../neighbours-mp.js?v=8761b034';
+import { readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { isNeighbourSceneTsid } from '../neighbours.js?v=bdb4247b';
-import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=1383e6fd';
+import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
+import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ac6c3387';
 
 export const PARTY_FEATURE_ID = 'party-spaces';

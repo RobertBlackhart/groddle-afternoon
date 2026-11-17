@@ -13,12 +13,12 @@
  * Produce counts are the GSJS seed classProps produces_count.
  */
 
-import { ITEM_CATALOG, addItem, removeItem, countItem, ensureItem, itemIcon } from './inventory.js?v=487b1b60';
-import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=8516a0c3';
+import { ITEM_CATALOG, addItem, removeItem, countItem, ensureItem, itemIcon } from './inventory.js?v=6414dbdc';
+import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
 import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
 import { gardenGrowModifier } from './imagination-effects.js?v=70169933';
-import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { isCropGardenStreet } from './garden-beds.js?v=831b1d97';
 import { superHarvestWords } from './words.js?v=274023af';
 
@@ -886,11 +886,7 @@ function applyGardenRewards(pc, profile) {
   const got = { mood: 0, xp: 0 };
   if (profile.legacy) return got;
   // G259: mood_bonus is metabolics_add_mood (inc_skill_packages.js 524), refused while dead.
-  if (profile.mood && pc.mood != null && metabolicGain('mood').ok) {
-    const before = pc.mood || 0;
-    pc.mood = Math.min(moodMax(pc), before + profile.mood);
-    got.mood = Math.max(0, pc.mood - before);
-  }
+  if (profile.mood && pc.mood != null) got.mood = gainMetabolic(pc, 'mood', profile.mood);
   // inc_skill_packages.js 532: xp_bonus takes the mood bonus (after the mood gain).
   if (profile.xp) got.xp = grantMoodXp(pc, profile.xp);
   return got;
@@ -1447,11 +1443,13 @@ export function plantPlot(garden, key, inv, pc, seedId, opts = {}) {
   }
   const profile = gardenActionProfile(gType, 'plant', opts.learned, opts.upgrades);
   const cost = profile.energy;
+  // G970: the seed is taken before the energy and handed back if the energy is short, so nothing
+  // refunds energy by hand (a refund of the full cost gave energy to the dead, who spent none).
+  if (!removeItem(inv, seed.seedId, 1)) return { ok: false, reason: 'seed', msgs: ['Not enough seeds.'] };
   const er = spendEnergy(pc, cost);
-  if (!er.ok) return er;
-  if (!removeItem(inv, seed.seedId, 1)) {
-    pc.energy = (pc.energy || 0) + cost;
-    return { ok: false, reason: 'seed', msgs: ['Not enough seeds.'] };
+  if (!er.ok) {
+    addItem(inv, seed.seedId, 1);
+    return er;
   }
   const got = applyGardenRewards(pc, profile);
   const now = opts.now ?? Date.now();
@@ -1633,8 +1631,7 @@ export function harvestPlot(garden, key, inv, pc, opts = {}) {
   let got = { mood: 2, xp: 2 };
   if (profile.legacy) {
     if (pc.mood != null) {
-      if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + 2);
-      else got.mood = 0;
+      got.mood = gainMetabolic(pc, 'mood', 2);
     }
     got.xp = grantMoodXp(pc, 2);
   } else {

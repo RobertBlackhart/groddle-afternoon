@@ -31,12 +31,12 @@
  * growModifier, pace, wetPace }. Growth uses js/garden.js plotStageMs (sowPlot sets the plot's clock).
  */
 
-import { SEED_CATALOG, applyFertilizer, plotNeedsWater, seedFitsGarden, sowPlot, wetPlot, stageElapsedMs } from './garden.js?v=15082e6f';
+import { SEED_CATALOG, applyFertilizer, plotNeedsWater, seedFitsGarden, sowPlot, wetPlot, stageElapsedMs } from './garden.js?v=d4e55862';
 import { gardenGrowModifier } from './imagination-effects.js?v=70169933';
 import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { metabolicGain, moodMax, loseEnergy } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { chargesLeft, useCharge } from './tools.js?v=8516a0c3';
+import { gainMetabolic, loseEnergy, metabolicGain } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { chargesLeft, useCharge } from './tools.js?v=4156bba8';
 
 export const MASTER_GARDENER = 'mastergardener_1';
 export const POTION_USES = 5;
@@ -240,7 +240,7 @@ export function potionTendGarden(garden, action, inv, pc, ctx = {}) {
     const rawMood = Number(details.mood_bonus) || 0;
     const plotMood = rawMood > 0 && !metabolicGain('mood').ok ? 0 : rawMood;
     mood += plotMood;
-    pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + plotMood);
+    gainMetabolic(pc, 'mood', plotMood);
     xp += grantMoodXp(pc, Number(details.xp_bonus) || 0);
     return true;
   };

@@ -24,10 +24,10 @@ import {
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
 import { CROP_GARDEN_STREETS_2012, gardenBedWidth, isCropGardenStreet, measuredGardenBeds, measuredGardenVendor } from '../public/js/garden-beds.js?v=831b1d97';
-import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=15082e6f';
+import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=d4e55862';
 import { bedKey, parsePlotId, plotId } from '../public/js/shared-gardens.js?v=464472e5';
 import { VENDOR_PLACEMENT_KEY, vendorNpcPlacementGroups, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=75ac79c6';
+import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=47b7d580';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -7,7 +7,7 @@
 
 import { GAME_MODE } from './game-mode.js?v=1ecf2899';
 import { repairGivesMood } from './imagination-effects.js?v=70169933';
-import { energyMax, loseEnergy, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax, gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
 import { COPY_TAG_CLASSES, cleanCopyTagOf } from './copy-tags.js?v=7eec7d48';
 
 export const TOOL_CONDITION_CATALOG = Object.freeze({
@@ -998,10 +998,8 @@ export function repairToolCondition(state, classTsid, pc, opts = {}) {
   // to that tick's Tinkertool wear, so the whole repair adds the full wear.
   let moodGained = 0;
   // metabolics_add_mood: nothing while dead (inc_metabolics.js 79-86).
-  if (repairGivesMood(opts.upgrades || pc?.imaginationUpgrades) && pc && plan.ticks > 0 && metabolicGain('mood').ok) {
-    const before = Number(pc.mood) || 0;
-    pc.mood = Math.min(moodMax(pc), before + plan.ticks);
-    moodGained = pc.mood - before;
+  if (repairGivesMood(opts.upgrades || pc?.imaginationUpgrades) && pc && plan.ticks > 0) {
+    moodGained = gainMetabolic(pc, 'mood', plan.ticks);
   }
   // endRepair 337-348: a tool short of full says how far it got.
   const said = full

@@ -5,11 +5,11 @@ import assert from 'node:assert/strict';
 import { describe, it, afterEach } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=a4208821';
-import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=4165e202';
-import { loseMood, setMetabolicGainGate, setMoodLossNotice } from '../public/js/metabolics.js?v=1383e6fd';
-import { gameDayIndex } from '../public/js/musicblocks.js?v=dc6b7003';
-import { GAME_EPOCH_MS, GAME_DAY_MS } from '../public/js/game-day.js?v=03b8d954';
+import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=6a2cac74';
+import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=05ff0260';
+import { loseMood, setMetabolicGainGate, setMoodLossNotice } from '../public/js/metabolics.js?v=48f784bf';
+import { gameDayIndex } from '../public/js/musicblocks.js?v=650ecd58';
+import { GAME_EPOCH_MS, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
 import { levelUpStreetLine } from '../public/js/features/level-up-mp-feature.js?v=22659e6d';
 
 const pub = (...p) => readFileSync(join(import.meta.dirname, '..', 'public', ...p), 'utf8');
@@ -84,7 +84,7 @@ describe('teleporting and the Energy Tank card', () => {
 
   it('an Energy Tank card refills energy and mood, never while dead (inc_imagination.js 140-142)', () => {
     const src = pub('js', 'features', 'imagination-feature.js');
-    assert.match(src, /if \(refill && !hellFeature\.isDead\?\.\(\)\) \{\s*pc\.energy = pc\.energyMax;\s*pc\.mood = pc\.energyMax;/);
+    assert.match(src, /if \(refill && !hellFeature\.isDead\?\.\(\)\) \{\s*forceMetabolic\(pc, 'energy', pc\.energyMax\);\s*forceMetabolic\(pc, 'mood', pc\.energyMax\);/);
   });
 });
 

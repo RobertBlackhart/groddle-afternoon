@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=c679b93f';
 import {
   findWork,
   jobRewardsText,
@@ -31,8 +31,8 @@ import {
   STREET_JOB_COOLDOWN_MS,
   workCheck,
   contributeItems,
-} from '../public/js/street-jobs.js?v=43cb0e02';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
+} from '../public/js/street-jobs.js?v=5806a615';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { soloTerms } from '../public/js/street-jobs-solo.js?v=04ea0019';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

@@ -13,9 +13,9 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { INVENTORY_DB } from '../tools/catalog/build.mjs';
-import { SOLO_FEATS } from '../public/js/solo-feats.js?v=8455be6a';
-import { mpGoals } from '../public/js/feats-mp.js?v=cda27f60';
-import { soloNeed } from '../public/js/street-jobs.js?v=43cb0e02';
+import { SOLO_FEATS } from '../public/js/solo-feats.js?v=3bc9b43c';
+import { mpGoals } from '../public/js/feats-mp.js?v=d5cb2199';
+import { soloNeed } from '../public/js/street-jobs.js?v=5806a615';
 import { denied, pageText } from './player-copy-dev-refs.js';
 import { servedByMinn } from './minn-served.js';
 

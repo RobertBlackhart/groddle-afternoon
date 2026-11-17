@@ -40,16 +40,16 @@
 
 import { displayTopOf } from '../overlay-art.js?v=98606052';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=4165e202';
-import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
+import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 import { hasPouch, POUCH_CLASS } from '../elemental-pouch.js?v=42702eda';
 import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=02f902e6';
 import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
-import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=8516a0c3';
-import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=1c1efade';
-import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=9ed2a680';
+import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=4156bba8';
+import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
+import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=0429b2e9';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
@@ -116,8 +116,9 @@ import {
   trophySmash,
   vvSniffButton,
   JUJU_POWDER,
-} from '../item-verbs-more.js?v=97cd58a8';
+} from '../item-verbs-more.js?v=377f760a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const ITEM_VERBS_MORE_FEATURE_ID = 'item-verbs-more';
 
@@ -897,9 +898,9 @@ function setupDemo(engine) {
   const lvl = Math.floor(Number(engine.param?.('packverblevel')) || 0);
   if (lvl > 1 && pc) pc.xp = Math.max(Number(pc.xp) || 0, XP_FOR_LEVEL[Math.min(XP_FOR_LEVEL.length, lvl) - 2] || 0);
   const mood = engine.param?.('packverbmood');
-  if (mood != null && pc) pc.mood = Math.max(0, Number(mood) || 0);
+  if (mood != null && pc) forceMetabolic(pc, 'mood', mood, { overTank: true });
   const energy = engine.param?.('packverbenergy');
-  if (energy != null && pc) pc.energy = Math.max(0, Number(energy) || 0);
+  if (energy != null && pc) forceMetabolic(pc, 'energy', energy, { overTank: true });
   engine.setData?.('packVerbDemo', '1');
   refresh(engine);
   if (engine.param?.('packverbautoplay')) autoplayAt = now() + 1800;

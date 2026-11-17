@@ -7,7 +7,7 @@
  */
 
 import { saveStore } from './save-store.js?v=cd053443';
-import { energyMax, moodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax, forceMetabolic, moodMax } from './metabolics.js?v=48f784bf';
 
 export const SPEED_MULTIPLIER = 6;
 export const GAME_EPOCH_MS = 1_238_562_000 * 1000;
@@ -256,8 +256,9 @@ export function applyNewDayRefill(pc, caps = {}) {
   const mMax = caps.moodMax ?? moodMax(pc);
   const energyBefore = pc.energy;
   const moodBefore = pc.mood;
-  pc.energy = eMax;
-  pc.mood = mMax;
+  // A raw set (G970 forceMetabolic): hell.js 1083-1086 resurrects after this refill.
+  forceMetabolic(pc, 'energy', eMax, { overTank: true });
+  forceMetabolic(pc, 'mood', mMax, { overTank: true });
   return {
     energyGained: Math.max(0, eMax - energyBefore),
     moodGained: Math.max(0, mMax - moodBefore),

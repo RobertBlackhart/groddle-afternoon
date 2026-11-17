@@ -19,7 +19,7 @@
  * { [classTsid]: n }.
  */
 
-import { cleanCopyTag } from './tools.js?v=8516a0c3';
+import { cleanCopyTag } from './tools.js?v=4156bba8';
 import { UNNAMED_PLAYER } from './player-names.js?v=f9b78094';
 
 /** TradeDialog.as:50 MAX_TRADE_SLOTS. */

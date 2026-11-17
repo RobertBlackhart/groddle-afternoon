@@ -39,12 +39,12 @@ import {
   plainText,
   TROPHY_PIECES,
   planStreetTrophies,
-} from '../public/js/street-jobs.js?v=43cb0e02';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=23248abe';
-import { applyRewards } from '../public/js/quests.js?v=d057d5ec';
+} from '../public/js/street-jobs.js?v=5806a615';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=c679b93f';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=c3e8be23';
+import { applyRewards } from '../public/js/quests.js?v=92c75858';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { addItem, countItem } from '../public/js/inventory.js?v=487b1b60';
+import { addItem, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 import { TROPHY_WHERE_TEXT } from '../public/js/home-trophies.js?v=2020b29b';
 

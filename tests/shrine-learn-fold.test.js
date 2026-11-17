@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=f48c0155';
+import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=15d03920';
 import { LEARN_FASTER_OPEN_KEY, loadLearnFasterOpen, saveLearnFasterOpen } from '../public/js/ui/learn-faster-pref.js?v=08249a09';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');

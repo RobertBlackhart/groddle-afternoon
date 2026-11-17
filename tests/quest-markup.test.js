@@ -15,7 +15,7 @@ import {
   questRequirementText,
   withQuestMarkup,
 } from '../public/js/quest-text.js?v=4d0f8703';
-import { cleanQuestMarkup, parseQuestConversation } from '../public/js/quests.js?v=d057d5ec';
+import { cleanQuestMarkup, parseQuestConversation } from '../public/js/quests.js?v=92c75858';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

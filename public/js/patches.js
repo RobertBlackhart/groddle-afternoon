@@ -34,11 +34,11 @@
  */
 
 import { createTrantState, fruitCapacityAt, resetTrantDay } from './trants.js?v=4d6f5593';
-import { WOOD_TREE_MATURITY_MAP, adoptPlotWoodCounts, ensureWoodTreeState, resetWoodTreeDay } from './woodcutting.js?v=b43edbd8';
-import { canUseTool, useToolCondition } from './tools.js?v=8516a0c3';
-import { musicblockItemMeta } from './musicblocks.js?v=dc6b7003';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { metabolicGain, loseEnergy, moodMax } from './metabolics.js?v=1383e6fd';
+import { WOOD_TREE_MATURITY_MAP, adoptPlotWoodCounts, ensureWoodTreeState, resetWoodTreeDay } from './woodcutting.js?v=9e9af511';
+import { canUseTool, useToolCondition } from './tools.js?v=4156bba8';
+import { musicblockItemMeta } from './musicblocks.js?v=650ecd58';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { loseEnergy, shiftMetabolic } from './metabolics.js?v=48f784bf';
 
 export const PATCH_SOURCE = 'tinyspeck/glitch-GameServerJS CC0';
 export const SOIL_SPRITE_ROOT = 'assets/sprites/soil';
@@ -885,11 +885,8 @@ function applyCosts(pc, costs) {
   if (costs.energy) costs.energy = loseEnergy(pc, costs.energy);
   // inc_skill_packages.js 524: the mood bonus goes through metabolics_add_mood,
   // nothing while dead (inc_metabolics.js 79-86); costs.mood is what landed.
-  if (costs.mood > 0 && !metabolicGain('mood').ok) costs.mood = 0;
-  if (costs.mood) {
-    const cap = moodMax(pc);
-    pc.mood = Math.min(cap, (Number(pc.mood) || 0) + costs.mood);
-  }
+  // G970: costs.mood becomes what landed (slugs.mood = metabolics_add_mood's return, 524-525).
+  if (costs.mood) costs.mood = shiftMetabolic(pc, 'mood', costs.mood);
   // inc_skill_packages.js 532, patch_seedling.js 210: stats_add_xp(n, false)
   // takes the mood bonus; costs.xp becomes what landed.
   if (costs.xp) costs.xp = grantMoodXp(pc, costs.xp);

@@ -84,11 +84,11 @@ import {
   secondsToString,
   takeJobIngredients,
   tankFuel,
-} from '../machine-rooms.js?v=42c081c0';
-import { refuelMachine, MAX_FUEL } from '../machines.js?v=0af7364d';
-import { DROP_ITEMS, applyDropResult, isEmptyDrop, rollDropTable } from '../drop-tables.js?v=8bcf111f';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
-import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
+} from '../machine-rooms.js?v=727c3cc3';
+import { refuelMachine, MAX_FUEL } from '../machines.js?v=ab7d71da';
+import { DROP_ITEMS, applyDropResult, isEmptyDrop, rollDropTable } from '../drop-tables.js?v=1ed0b596';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
@@ -292,7 +292,7 @@ function altarBonus(engine, classTsid, recipeId, made) {
     }
   }
   const pc = engine.pc;
-  const paid = applyDropResult(result, { inv: engine.inv, pc, addItem, energyCap: energyMax(pc), moodCap: moodMax(pc) });
+  const paid = applyDropResult(result, { inv: engine.inv, pc, addItem });
   bonusPaid += 1;
   const p = engine.player;
   let lift = 0;
@@ -562,7 +562,7 @@ function setupDemo(engine) {
       if (short > 0) addItem(engine.inv, id, short);
     }
   }
-  if (engine.pc && engine.pc.energy < 50) engine.pc.energy = 50;
+  if (engine.pc) topUpMetabolic(engine.pc, 'energy', 50);
   engine.updateHud?.();
   later(() => {
     if (engine.player) {

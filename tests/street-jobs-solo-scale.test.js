@@ -25,11 +25,11 @@ import {
   settlePhase,
   soloNeed,
   workCheck,
-} from '../public/js/street-jobs.js?v=43cb0e02';
+} from '../public/js/street-jobs.js?v=5806a615';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=6a7cf8fc';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
+import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=34f60876';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=c679b93f';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

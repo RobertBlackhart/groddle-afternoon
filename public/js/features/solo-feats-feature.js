@@ -94,8 +94,8 @@
  * owed lists (qurazyOwed, questOwed) of older saves are read into it once.
  */
 
-import { addItem } from '../inventory.js?v=487b1b60';
-import { GAME_DAY_MS, getGameDayKey } from '../game-day.js?v=03b8d954';
+import { addItem } from '../inventory.js?v=6414dbdc';
+import { GAME_DAY_MS, getGameDayKey } from '../game-day.js?v=50c112eb';
 import {
   CAP_OWNERS,
   COMPLETE_BUTTON,
@@ -124,7 +124,7 @@ import {
   resetPending,
   streakCheck,
   takePending,
-} from '../solo-feats.js?v=8455be6a';
+} from '../solo-feats.js?v=3bc9b43c';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
   capHeld,
@@ -140,10 +140,10 @@ import {
   owedSent,
   placeOwed,
   runKey,
-} from '../feat-owed.js?v=bad2d279';
-import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { GIANTS } from '../shrines.js?v=f48c0155';
+} from '../feat-owed.js?v=83eb6c59';
+import { gainMetabolic } from '../metabolics.js?v=48f784bf';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
+import { GIANTS } from '../shrines.js?v=15d03920';
 import {
   MP_DONATIONS,
   MP_TEXT,
@@ -160,7 +160,7 @@ import {
   runFromServer,
   vogFor,
   youLine,
-} from '../feats-mp.js?v=cda27f60';
+} from '../feats-mp.js?v=d5cb2199';
 
 const POLL_MS = 500;
 /** How often an open panel redraws its "Opens again in" lines. */

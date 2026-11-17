@@ -13,7 +13,7 @@ import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { populationForStreet } from '../public/js/street-ecology.js?v=c4ce9ccd';
 import { checkDoorEntry, doorAt, doorDestination } from '../public/js/doors.js?v=727d0e0b';
-import { eventCounters, SEAM_STREETS } from '../public/js/quest-offers.js?v=ed4e7435';
+import { eventCounters, SEAM_STREETS } from '../public/js/quest-offers.js?v=4debd26e';
 import {
   ABBASID_JAIL_DOOR,
   ABBASID_JAIL_TSID,
@@ -53,7 +53,7 @@ import {
   rebuiltRoomEcology,
 } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=a1b9173f';
-import { FEATURES } from '../public/js/features/index.js?v=50ae0891';
+import { FEATURES } from '../public/js/features/index.js?v=02af9965';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

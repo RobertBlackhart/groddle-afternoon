@@ -84,17 +84,17 @@ import {
   raceLoadingColors,
   renderRaceCourse,
 } from '../race-render.js?v=34f80320';
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=d3c7230f';
-import { startHogHaulMp } from './hog-haul-mp-feature.js?v=5fe0c57c';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=edb846e4';
+import { startHogHaulMp } from './hog-haul-mp-feature.js?v=cf68ec0c';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
-import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
+import { gainMetabolic } from '../metabolics.js?v=48f784bf';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { quoinShardGrabberSound, quoinShardSoundKey } from '../quoin-shards.js?v=121156a0';
 import {
   MP_RACE_COURSES,

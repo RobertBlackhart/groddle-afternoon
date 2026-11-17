@@ -22,15 +22,15 @@ import {
   consumeAchievementCounters,
   resetAchievementCounter,
   purchaseAchievementUpdates,
-} from '../public/js/achievements.js?v=23248abe';
-import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=1fe7236e';
-import { createPlot, growTree, tickPlot } from '../public/js/patches.js?v=2281bd71';
-import { noteWoodCare } from '../public/js/woodcutting.js?v=b43edbd8';
-import { slothsChewing } from '../public/js/features/resource-nodes-feature.js?v=95aa25d0';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
+} from '../public/js/achievements.js?v=c3e8be23';
+import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
+import { createPlot, growTree, tickPlot } from '../public/js/patches.js?v=67d08c97';
+import { noteWoodCare } from '../public/js/woodcutting.js?v=9e9af511';
+import { slothsChewing } from '../public/js/features/resource-nodes-feature.js?v=5656bfba';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=316bc182';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { normalizeAchievementSnapshot } from '../public/js/player-save.js?v=75ac79c6';
+import { normalizeAchievementSnapshot } from '../public/js/player-save.js?v=47b7d580';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');

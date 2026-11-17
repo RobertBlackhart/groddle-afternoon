@@ -60,7 +60,7 @@
 
 export const SOLO_DIVISOR = 50;
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { soloSkill } from './street-jobs-solo.js?v=04ea0019';
 import { htmlToText } from './html-text.js?v=6bbf4d1f';
 import { fewestClosures, streetGraph } from './street-graph.js?v=114647c2';

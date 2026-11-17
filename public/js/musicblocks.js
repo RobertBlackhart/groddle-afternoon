@@ -6,10 +6,10 @@
  * was last heard. The tunes are Tiny Speck's CC0 recordings (sound-key catalog).
  */
 
-import { countItem, ensureItem } from './inventory.js?v=487b1b60';
-import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=03b8d954';
-import { metabolicGain, moodMax, loseEnergy } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { countItem, ensureItem } from './inventory.js?v=6414dbdc';
+import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
+import { gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { SOUND_ALIASES, SOUND_FILES } from './sound-keys.js?v=d6b20718';
 
 export const MUSICBLOCK_MONTH_MS = Math.round(30.5 * 24 * 60 * 60 * 1000);
@@ -343,8 +343,7 @@ export function playMusicblock(state, pc, classTsid, now = Date.now()) {
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
   loseEnergy(pc, 2);
   // musicblock_*.js 370: metabolics_add_mood(2), nothing while dead (inc_metabolics.js 79-86).
-  const oldMood = pc.mood || 0;
-  if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), oldMood + 2);
+  const mood = gainMetabolic(pc, 'mood', 2);
   state.heardAt[classTsid] = at;
   state.plays = (state.plays || 0) + 1;
   state.lastPlayed = classTsid;
@@ -355,6 +354,6 @@ export function playMusicblock(state, pc, classTsid, now = Date.now()) {
     def,
     freshness,
     msg,
-    effects: { energy: -2, mood: pc.mood - oldMood, xp },
+    effects: { energy: -2, mood, xp },
   };
 }

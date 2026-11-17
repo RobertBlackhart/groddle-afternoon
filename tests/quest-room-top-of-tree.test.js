@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as mod from '../public/js/quest-rooms/top-of-tree.js?v=d1d813a9';
+import * as mod from '../public/js/quest-rooms/top-of-tree.js?v=d68c9f79';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = path.join(root, '..', 'glitch-GameServerJS');

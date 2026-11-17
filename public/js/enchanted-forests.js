@@ -49,7 +49,7 @@
  */
 
 export const ENCHANTED_SOURCE = 'tinyspeck/glitch-GameServerJS CC0 items/wood_tree_enchanted.js';
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { loseEnergy } from './metabolics.js?v=48f784bf';
 export const ENCHANTED_FOREST_SOURCE = 'reconstruction: Enchanted Forest hollows (not in tinyspeck/glitch-locations), laid out from the Glitch Tribute Blog panoramas in Tiny Speck\'s enchant_tree.swf art (CC0)';
 
 

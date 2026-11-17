@@ -15,14 +15,14 @@ import {
   crunchIce,
   itemVerbButton,
   runItemVerb,
-} from '../public/js/item-verbs.js?v=994d3d4f';
+} from '../public/js/item-verbs.js?v=ecade42e';
 import {
   HAIRBALL_DASH_MIN,
   homeTrophyCount,
   isTrophyClass,
   itemVerbsFeature,
-} from '../public/js/features/item-verbs-feature.js?v=d2d36006';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=6d7978dd';
+} from '../public/js/features/item-verbs-feature.js?v=1a601a87';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=90b42c0d';
 import {
   applyAchievementProgress,
   createAchievementState,
@@ -31,8 +31,8 @@ import {
   resetAchievementCounter,
   seedAchievementNearCompletion,
   worldVerbAchievementCounters,
-} from '../public/js/achievements.js?v=23248abe';
-import { applyBuff, buffPhysics, createBuffState, getBuffItemInfo, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
+} from '../public/js/achievements.js?v=c3e8be23';
+import { applyBuff, buffPhysics, createBuffState, getBuffItemInfo, tickBuffs } from '../public/js/buffs.js?v=57e5d8e0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const publicRoot = join(dirname(fileURLToPath(import.meta.url)), '../public');

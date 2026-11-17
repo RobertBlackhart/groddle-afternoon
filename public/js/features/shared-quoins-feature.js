@@ -39,7 +39,7 @@
  * (got:i:amount[:resolved] | taken:i:by | refused:i:why | back:i | shard:i:amount>actual).
  */
 
-import { QUOIN_TYPES, creditQuoinStat } from '../quoins.js?v=a4208821';
+import { QUOIN_TYPES, creditQuoinStat } from '../quoins.js?v=6a2cac74';
 import { quoinShardGrabberSound, quoinShardSoundKey } from '../quoin-shards.js?v=121156a0';
 import { LOCAL_STATES, SHARD_STATS, createSharedQuoinBook, fxShards, normalizeGrab, shardFor, statusOf } from '../shared-quoins.js?v=89d7b201';
 import { publicStreet } from '../shared-street.js?v=dce5694b';

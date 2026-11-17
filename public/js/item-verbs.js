@@ -11,8 +11,8 @@
  * `<class>:<verb>` and `VERB:<verb>:<class>` (itemVerbAchievementCounters).
  */
 
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { metabolicGain, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { gainMetabolic, loseEnergy, loseMood, metabolicGain } from './metabolics.js?v=48f784bf';
 
 const ENERGY = "You don't have enough energy to do this.";
 const DEPRESSED = 'You are too depressed to do this.';
@@ -132,9 +132,8 @@ export function crunchIce(pc, count = 1, ctx = {}) {
       msgs.push(ICE_TEXT.freeze);
     } else {
       msgs.push(ICE_TEXT.crunched);
-      const cap = Math.max(1, Number(ctx.moodMax) || 100);
-      // G259: ice.js 87 metabolics_add_mood, refused while dead (inc_metabolics.js 79-86).
-      if (metabolicGain('mood').ok) pc.mood = Math.min(cap, (Number(pc.mood) || 0) + 6 * n);
+      // G259: ice.js 87 metabolics_add_mood, refused while dead (inc_metabolics.js 79-86), capped at the tank.
+      gainMetabolic(pc, 'mood', 6 * n);
     }
   }
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
@@ -144,31 +143,21 @@ export function crunchIce(pc, count = 1, ctx = {}) {
 
 /**
  * Apply one ItemVerb to pc. Returns { ok, msgs, consume, buff, effects }.
- * `ctx.energyMax` / `ctx.moodMax` cap the gains.
+ * Gains cap at the player's tank (js/metabolics.js gainMetabolic).
  */
 export function runItemVerb(def, pc, ctx = {}) {
   const button = itemVerbButton(def, { energy: pc.energy, mood: pc.mood, unlocked: ctx.unlocked });
   if (!button) return { ok: false, msgs: [] };
   if (!button.enabled) return { ok: false, msgs: [button.reason] };
   const effects = {};
-  const energyCap = Math.max(1, Number(ctx.energyMax) || 100);
-  const moodCap = Math.max(1, Number(ctx.moodMax) || 100);
   // G259: a rise goes through metabolics_add_energy / _mood (laughing_gas.js 129,
   // inc_metabolics.js 40-53, 79-86): nothing while dead or (energy) Super Pooped.
   // G300: a fall is metabolics_lose_energy / _mood (black_pepper.js 255, crying_gas.js 123,
   // heavy_gas.js 133-141), nothing lost while dead.
   if (def.energy < 0) effects.energy = 0 - loseEnergy(pc, -def.energy);
-  else if (def.energy && metabolicGain('energy').ok) {
-    const before = Number(pc.energy) || 0;
-    pc.energy = Math.min(energyCap, before + def.energy);
-    effects.energy = pc.energy - before;
-  }
+  else if (def.energy && metabolicGain('energy').ok) effects.energy = gainMetabolic(pc, 'energy', def.energy);
   if (def.mood < 0) effects.mood = 0 - loseMood(pc, -def.mood);
-  else if (def.mood && metabolicGain('mood').ok) {
-    const before = Number(pc.mood) || 0;
-    pc.mood = Math.min(moodCap, before + def.mood);
-    effects.mood = pc.mood - before;
-  }
+  else if (def.mood && metabolicGain('mood').ok) effects.mood = gainMetabolic(pc, 'mood', def.mood);
   // items/<spice|gas>.js: stats_add_xp(n, false, context) after the mood change.
   if (def.xp) effects.xp = grantMoodXp(pc, def.xp);
   return {

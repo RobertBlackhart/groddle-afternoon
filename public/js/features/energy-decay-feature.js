@@ -31,11 +31,11 @@
  * on the last tick), -skip, -energy.
  */
 import { createEnergyLossClock, ENERGY_LOSS_TICK_MS, energyLossSkip, periodicEnergyLoss } from '../energy-decay.js?v=01009c8b';
-import { energyMax } from '../metabolics.js?v=1383e6fd';
+import { energyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { isNewxpSceneTsid } from '../newxp.js?v=02f902e6';
-import { homesFeature } from './homes-feature.js?v=6d7978dd';
-import { meditationFeature } from './meditation-feature.js?v=55f80433';
-import { newxpFeature } from './newxp-feature.js?v=96dc9dc5';
+import { homesFeature } from './homes-feature.js?v=90b42c0d';
+import { meditationFeature } from './meditation-feature.js?v=a29fda54';
+import { newxpFeature } from './newxp-feature.js?v=1835f5d4';
 
 export const ENERGY_DECAY_FEATURE_ID = 'energy-decay';
 const BEAM_ME_DOWN_TSID = 'PUZZLESCENE_BEAM_ME_DOWN';
@@ -72,7 +72,8 @@ export function runEnergyLossTick(engine) {
   if (!res.loss) return { skip: null, ...res };
   // metabolics_lose_energy: refused while dead, and in the intro and training1.
   if (engine.metabolicGate?.('energy', 'loss')?.ok === false) return { skip: 'gate', ...res, loss: 0 };
-  pc.energy = Math.max(0, before - res.loss);
+  // Asked above without a word (player.js onPeriodicEnergyLoss), so the door is asked quietly.
+  loseEnergy(pc, res.loss, { quiet: true });
   engine.updateHud?.();
   return { skip: null, ...res };
 }

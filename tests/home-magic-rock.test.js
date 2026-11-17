@@ -34,7 +34,7 @@ import {
   imgRewards,
   rewardsCap,
 } from '../public/js/magic-rock-home.js?v=c07b2327';
-import { getGameDayKey } from '../public/js/game-day.js?v=03b8d954';
+import { getGameDayKey } from '../public/js/game-day.js?v=50c112eb';
 
 const spike = join(import.meta.dirname, '..');
 const GS = join(spike, '../glitch-GameServerJS');
@@ -156,11 +156,11 @@ describe('source wording', { skip: !existsSync(ROCK_JS) }, () => {
  * shiftCKeyHandler 816-828; HouseManager.as startCultivation 102-118).
  */
 describe('the home street rock (G231)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=6d7978dd');
-  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=72af031a');
-  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=675d2ec7');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=90b42c0d');
+  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=39ba28bf');
+  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=743ede92');
   const { homeEditing } = await import('../public/js/features/camera-mode-feature.js?v=48c30c54');
-  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=96dc9dc5');
+  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=1835f5d4');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const towerQuest = { active: { build_a_tower: { started: 1 } }, completed: [], offers: {} };
@@ -285,7 +285,7 @@ describe('the home street rock (G231)', async () => {
  * (NCMsgHandler.as 3093-3096). Solo: no visitors, so only the stipend.
  */
 describe('the rock’s daily iMG and the house sign (G232)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=6d7978dd');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=90b42c0d');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const quiet = { active: {}, completed: [], offers: {} };

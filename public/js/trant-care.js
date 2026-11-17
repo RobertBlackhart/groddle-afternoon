@@ -11,12 +11,12 @@
  *   js/woodcutting.js noteWoodCare)
  */
 
-import { TOOL_CONDITION_CATALOG, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=8516a0c3';
+import { TOOL_CONDITION_CATALOG, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
 import { fruitCapacityAt, fruitProductionAt } from './trants.js?v=4d6f5593';
 import { scaledToolWear, toolWearMultiplier } from './imagination-effects.js?v=70169933';
-import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { noteWoodCare, stampWoodCare, woodCareWait } from './woodcutting.js?v=b43edbd8';
+import { loseEnergy, loseMood, shiftMetabolic } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
+import { noteWoodCare, stampWoodCare, woodCareWait } from './woodcutting.js?v=9e9af511';
 
 const freezeRanks = (ranks) => Object.freeze(
   Object.fromEntries(Object.entries(ranks).map(([id, row]) => [id, Object.freeze(row)]))
@@ -198,10 +198,8 @@ export function performTrantCare(state, classId, kind, ctx = {}) {
       state.fruitCount = Math.min(state.fruitCapacity, Math.max(0, Number(state.fruitCount) || 0));
     }
   }
-  const moodBefore = Number(pc.mood) || 0;
   // G259: mood_bonus is metabolics_add_mood (inc_skill_packages.js 524), refused while dead.
-  if (!(profile.moodBonus > 0) || metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), moodBefore + profile.moodBonus);
-  const mood = pc.mood - moodBefore;
+  const mood = shiftMetabolic(pc, 'mood', profile.moodBonus);
   // inc_skill_packages.js 532: xp_bonus takes the mood bonus (after the mood gain).
   const xp = grantMoodXp(pc, profile.xpBonus);
   return {

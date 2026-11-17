@@ -13,13 +13,13 @@ import {
   moodXpMultiplier,
   moodXpMultiplierFor,
   setMoodXpEnv,
-} from '../public/js/mood-xp.js?v=22648ec0';
-import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=a4208821';
-import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=202a9e37';
-import { applyDropResult } from '../public/js/drop-tables.js?v=8bcf111f';
-import { quoteShrineDonation } from '../public/js/shrines.js?v=f48c0155';
-import { applyRewards } from '../public/js/quests.js?v=d057d5ec';
-import { bemoanSnoCone, eatSnoCone } from '../public/js/sno-cones.js?v=e6719ebf';
+} from '../public/js/mood-xp.js?v=e311b45c';
+import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=6a2cac74';
+import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=42171963';
+import { applyDropResult } from '../public/js/drop-tables.js?v=1ed0b596';
+import { quoteShrineDonation } from '../public/js/shrines.js?v=15d03920';
+import { applyRewards } from '../public/js/quests.js?v=92c75858';
+import { bemoanSnoCone, eatSnoCone } from '../public/js/sno-cones.js?v=64e34b89';
 
 const GSJS = join(import.meta.dirname, '../../glitch-GameServerJS');
 const gsjs = (rel) => readFileSync(join(GSJS, rel), 'utf8');

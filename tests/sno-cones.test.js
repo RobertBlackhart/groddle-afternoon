@@ -18,14 +18,14 @@ import {
   snoConeEatButton,
   snoConeMelted,
   snoConeVerbLine,
-} from '../public/js/sno-cones.js?v=e6719ebf';
-import { BEMOAN_VERB, snoConesFeature } from '../public/js/features/sno-cones-feature.js?v=76a23f59';
+} from '../public/js/sno-cones.js?v=64e34b89';
+import { BEMOAN_VERB, snoConesFeature } from '../public/js/features/sno-cones-feature.js?v=69331dd9';
 import {
   applyAchievementProgress,
   createAchievementState,
   seedAchievementNearCompletion,
-} from '../public/js/achievements.js?v=23248abe';
-import { getGameDayKey } from '../public/js/game-day.js?v=03b8d954';
+} from '../public/js/achievements.js?v=c3e8be23';
+import { getGameDayKey } from '../public/js/game-day.js?v=50c112eb';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

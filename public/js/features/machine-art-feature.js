@@ -18,11 +18,12 @@
  * Canvas data: machineArtState (the frozen state or ''), machineArtDemo.
  */
 
-import { addItem, countItem } from '../inventory.js?v=487b1b60';
-import { ensureToolCondition } from '../tools.js?v=8516a0c3';
-import { MACHINE_SKILLS } from '../machine-rooms.js?v=42c081c0';
+import { addItem, countItem } from '../inventory.js?v=6414dbdc';
+import { ensureToolCondition } from '../tools.js?v=4156bba8';
+import { MACHINE_SKILLS } from '../machine-rooms.js?v=727c3cc3';
 import { freezeMachineState, isMachineArt } from '../machine-art.js?v=26ed750c';
 import { packSlotFor } from '../pack-slot-qa.js?v=1d74bf2d';
+import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const MACHINE_ART_FEATURE_ID = 'machine-art';
 
@@ -56,7 +57,7 @@ function packDemo(engine, machine) {
     const short = n * qty - countItem(engine.inv, id);
     if (short > 0) addItem(engine.inv, id, short);
   }
-  if (engine.pc && engine.pc.energy < 100) engine.pc.energy = 100;
+  if (engine.pc) topUpMetabolic(engine.pc, 'energy', 100);
   engine.updateHud?.();
   engine.refreshPack?.();
   engine.setData?.('machineArtDemo', machine);

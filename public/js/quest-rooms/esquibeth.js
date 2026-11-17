@@ -84,8 +84,8 @@
  */
 
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { loseEnergy, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
+import { gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from './esquibeth-art.js?v=fe515887';
 
 export const ROOM_ID = 'esquibeth';
@@ -1678,9 +1678,7 @@ export const room = {
       const reward = conchPlayReward(mem.conchHeard || 0, now, mem.conchHeard ? day(mem.conchHeard) === day(now) : false);
       mem.conchHeard = now;
       // conch.js 397: metabolics_add_mood(2), nothing while dead (inc_metabolics.js 79-86).
-      const moodBefore = Number(pc.mood) || 0;
-      if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), moodBefore + 2);
-      const moodGained = (Number(pc.mood) || 0) - moodBefore;
+      const moodGained = gainMetabolic(pc, 'mood', 2);
       loseEnergy(pc, 2); // conch.js 406: metabolics_lose_energy(2)
       // conch.js 364-382: stats_add_xp(n, false) takes the mood bonus (the
       // blow's Esquibeth reward above is no_bonus, conch.js 507).

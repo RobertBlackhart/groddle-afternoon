@@ -5,7 +5,7 @@
  * point balance; gameplay rewards normally increase both values together.
  */
 
-import { energyMax, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax, gainMetabolic, metabolicGain, moodMax } from './metabolics.js?v=48f784bf';
 
 /** Cumulative XP thresholds for levels 2 through 60. */
 export const XP_FOR_LEVEL = Object.freeze([
@@ -86,9 +86,8 @@ export function favorRewardForLevel(level) {
  * The caller pays `favor` to each Giant (it lives in the shrine state).
  *
  * @param {object} pc
- * @param {{ energyTop?: number, moodTop?: number }} [opts]
  */
-export function reconcilePlayerProgression(pc, opts = {}) {
+export function reconcilePlayerProgression(pc) {
   // inc_stats.js 4-6, 338: XP stops at level 60's threshold (the prop's top); only iMG grows past it.
   if (pc && Number(pc.xp) > MAX_XP) pc.xp = MAX_XP;
   const info = levelInfoForXp(pc?.xp || 0);
@@ -117,9 +116,9 @@ export function reconcilePlayerProgression(pc, opts = {}) {
   const currants = currantRewardForLevel(toLevel);
   const favor = favorRewardForLevel(toLevel);
 
-  const energyTop = Math.max(0, Number(opts.energyTop) || energyMax(pc));
+  const energyTop = energyMax(pc);
   // Mood's maximum is the same tank (metabolics_recalc_limits).
-  const moodTop = Math.max(0, Number(opts.moodTop) || moodMax(pc));
+  const moodTop = moodMax(pc);
   const beforeEnergy = Number(pc.energy) || 0;
   const beforeMood = Number(pc.mood) || 0;
   // inc_stats.js 363-370: nothing refills while dead; metabolics_set_energy / _mood go through
@@ -127,8 +126,8 @@ export function reconcilePlayerProgression(pc, opts = {}) {
   // keeps the mood (inc_metabolics.js 40-53, 79-86).
   // Mood's gate refuses only the dead, so it reads "alive" without a word (the source never asks then).
   const alive = metabolicGain('mood', { quiet: true }).ok;
-  if (alive && beforeEnergy < energyTop && metabolicGain('energy').ok) pc.energy = energyTop;
-  if (alive && beforeMood < moodTop) pc.mood = moodTop;
+  if (alive && beforeEnergy < energyTop) gainMetabolic(pc, 'energy', energyTop - beforeEnergy);
+  if (alive && beforeMood < moodTop) gainMetabolic(pc, 'mood', moodTop - beforeMood);
   pc.currants = (Number(pc.currants) || 0) + currants;
 
   return {

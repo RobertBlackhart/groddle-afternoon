@@ -9,10 +9,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { countWords, pluralize, withArticle } from '../public/js/words.js?v=274023af';
-import { YARD_TEXT } from '../public/js/yard-verbs-mp.js?v=009c49f4';
-import { pluralize as butlerPluralize } from '../public/js/butler.js?v=2ad6ac58';
-import { ensureMakingItems } from '../public/js/making.js?v=a16c767f';
-import { ITEM_CATALOG } from '../public/js/inventory.js?v=487b1b60';
+import { YARD_TEXT } from '../public/js/yard-verbs-mp.js?v=e44de6fd';
+import { pluralize as butlerPluralize } from '../public/js/butler.js?v=b6ed6990';
+import { ensureMakingItems } from '../public/js/making.js?v=af1c7d5b';
+import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

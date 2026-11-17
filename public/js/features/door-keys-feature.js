@@ -21,8 +21,8 @@
  * keyLast (drop:i | taken:i | got:i | gone:i | back:i | refused:i:why), keyBackIn (ms, first spot).
  */
 
-import { addItem } from '../inventory.js?v=487b1b60';
-import { listDroppedStacks } from '../world-items.js?v=053888d2';
+import { addItem } from '../inventory.js?v=6414dbdc';
+import { listDroppedStacks } from '../world-items.js?v=4057c421';
 import { DOOR_KEYS, doorKeyClass } from '../doors.js?v=727d0e0b';
 import {
   KEY_RESPAWN_MS,

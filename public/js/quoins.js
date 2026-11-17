@@ -1,7 +1,7 @@
 /** Official Glitch quoin types and their persistent daily economy. */
 
-import { energyMax, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
-import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { energyMax, gainMetabolic, metabolicGain, moodMax } from './metabolics.js?v=48f784bf';
+import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { QUOIN_COIN_COUNTS, QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 
 export const DEFAULT_DAILY_QUOIN_LIMIT = 100;
@@ -278,12 +278,11 @@ export function creditQuoinStat(pc, typeId, rawAmount, { gated = false } = {}) {
     return actual;
   }
   if (typeId === 'energy' || typeId === 'mood') {
-    // metabolics_add_energy / _mood cap at the tank, never lowering a tank above 100.
-    const top = typeId === 'mood' ? moodMax(pc) : energyMax(pc);
-    // #156: a stat already above its tank is left alone, never pushed down.
-    if (finite(pc[typeId], 0) > top) return 0;
-    const before = clamp(finite(pc[typeId], 0), 0, top);
-    pc[typeId] = clamp(before + amount, 0, top);
+    // metabolics_add_energy / _mood cap at the tank; #156: a stat already above its tank is left
+    // alone, never pushed down (js/metabolics.js gainMetabolic, G970). A caller that asked the
+    // gate already asks again quietly.
+    const before = Math.max(0, finite(pc[typeId], 0));
+    if (!gainMetabolic(pc, typeId, amount, { quiet: gated })) return 0;
     // GSJS stats are whole numbers; ours drift by fractions, so report the
     // change in the whole numbers the HUD shows.
     return Math.floor(pc[typeId]) - Math.floor(before);

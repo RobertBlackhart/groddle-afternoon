@@ -34,10 +34,10 @@
  *     iconOfferCollisions (walk-ins that offered instead of bestowing).
  */
 
-import { addItem, countItem, ensureItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
-import { emblemCostFor } from '../shrines.js?v=f48c0155';
+import { addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
+import { emblemCostFor } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { landingY } from '../walk-surface.js?v=0d502ab1';
 import {
@@ -69,8 +69,8 @@ import {
 } from '../giant-icons.js?v=0d6b4965';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { playSheetOverlay } from '../overlay-art.js?v=98606052';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
+import { forceMetabolic, gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted, toldRecord } from '../conversations.js?v=7cbdfea4';
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -142,12 +142,9 @@ function grant(engine, stat, amount) {
   // Ticket 48: the real limits (metabolics_recalc_limits: mood shares the energy tank), and a gain
   // never lowers the stat: mood 134 with a +25 Caress was cut to the old fixed 100 (-34).
   // metabolics_add_mood / add_energy (inc_metabolics.js 40-98) add nothing while dead.
-  if ((stat === 'energy' || stat === 'mood') && !metabolicGain(stat).ok) return 0;
-  const cap = stat === 'energy' ? energyMax(pc) : moodMax(pc);
-  const before = Math.max(0, Number(pc[stat]) || 0);
-  pc[stat] = Math.max(before, Math.min(cap, before + amount));
+  const landed = gainMetabolic(pc, stat, amount);
   engine.updateHud?.();
-  return Math.round(pc[stat] - before);
+  return Math.round(landed);
 }
 
 function grantFavor(engine, giant, amount) {
@@ -382,8 +379,8 @@ function demoSetup(engine) {
   pc.xp = Math.max(Number(pc.xp) || 0, XP_FOR_LEVEL[Math.min(XP_FOR_LEVEL.length, lvl) - 2] || 0);
   pc.level = lvl;
   pc.currants = Math.max(pc.currants || 0, 2000);
-  pc.mood = Math.min(pc.mood || 0, 40);
-  pc.energy = Math.min(pc.energy || 0, 60);
+  forceMetabolic(pc, 'mood', Math.min(pc.mood || 0, 40));
+  forceMetabolic(pc, 'energy', Math.min(pc.energy || 0, 60));
   const inv = engine.inv;
   const need = (id, n) => {
     if (countItem(inv, id) < n) addItem(inv, id, n - countItem(inv, id));

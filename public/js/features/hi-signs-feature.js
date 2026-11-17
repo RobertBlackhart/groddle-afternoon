@@ -66,8 +66,8 @@
  */
 
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { butlerApi } from './butler-feature.js?v=675d2ec7';
-import { metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
+import { butlerApi } from './butler-feature.js?v=743ede92';
+import { gainMetabolic, metabolicGain, moodMax } from '../metabolics.js?v=48f784bf';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 import {
   HI,
@@ -101,7 +101,7 @@ import {
   setButlerHiVariant,
   setPlayerHiVariant,
   stepMissile,
-} from '../hi-signs.js?v=c9d1aedc';
+} from '../hi-signs.js?v=49b991c2';
 import {
   BOARD_POLL_MS,
   BOARD_TEXT,
@@ -116,7 +116,7 @@ import {
   recordLine,
   yesterdayLine,
   yourSignLine,
-} from '../hi-signs-mp.js?v=1415ecb7';
+} from '../hi-signs-mp.js?v=70171967';
 
 /** An art URL with its content key (js/data-urls.js groddleDataUrl); as it is in Node and on a page without the map. */
 const keyedArt = (url) => (typeof globalThis.groddleDataUrl === 'function' ? globalThis.groddleDataUrl(url) : url);
@@ -178,11 +178,10 @@ function addMood(engine, n) {
   // inc_emotes.js 218, 319, 337: metabolics_add_mood, not quiet, so the dead
   // hear "You would have gained some mood, but you're dead!" (inc_metabolics.js 79-86).
   if (!metabolicGain('mood').ok) return 0;
-  const before = Number(pc.mood) || 0;
-  pc.mood = Math.min(moodMax(pc), before + n);
+  const landed = gainMetabolic(pc, 'mood', n);
   engine.updateHud?.();
   // metabolics_add_mood returns what was granted.
-  return Math.round(pc.mood - before);
+  return Math.round(landed);
 }
 
 function counters(engine, rows) {

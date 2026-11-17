@@ -11,7 +11,8 @@
  * Canvas: data-garden-talk (running|done|missing), data-garden-talk-step,
  * data-last-speech, data-last-speech-slugs.
  */
-import { SEED_CATALOG } from './garden.js?v=15082e6f';
+import { SEED_CATALOG } from './garden.js?v=d4e55862';
+import { topUpMetabolic } from './metabolics.js?v=48f784bf';
 
 const STEPS = ['clear', 'plant', 'water', 'harvest'];
 const STEP_MS = 2600;
@@ -31,7 +32,7 @@ export function runGardenTalkDemo({ engine, executeVerb, params }) {
     if (skilled) engine.grantSkill?.(herb ? 'herbalism_1' : 'croppery_1');
     const pc = engine.pc;
     pc.imaginationUpgrades = [...new Set([...(pc.imaginationUpgrades || []), ...upgrades])];
-    pc.energy = Math.max(pc.energy || 0, 300);
+    topUpMetabolic(pc, 'energy', 300, { overTank: true });
     const inv = engine.inv;
     for (const id of ['hoe', 'watering_can']) inv[id] = Math.max(1, Number(inv[id]) || 0);
     if (SEED_CATALOG[seedId]) inv[seedId] = Math.max(6, Number(inv[seedId]) || 0);

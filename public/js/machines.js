@@ -22,10 +22,10 @@
  * by one while the install runs (assemblySounds, disassemblySounds).
  */
 
-import { addItem, countItem, removeItem } from './inventory.js?v=487b1b60';
-import { getToolCondition, receiveToolCopy, setToolRemaining, toolCopies } from './tools.js?v=8516a0c3';
+import { addItem, countItem, removeItem } from './inventory.js?v=6414dbdc';
+import { getToolCondition, receiveToolCopy, setToolRemaining, toolCopies } from './tools.js?v=4156bba8';
 import { distillingBonus, hasMasterAssembler, hasMasterExploder, machinePartInstallMs } from './imagination-effects.js?v=70169933';
-import { loseEnergy } from './metabolics.js?v=1383e6fd';
+import { loseEnergy } from './metabolics.js?v=48f784bf';
 
 export const MACHINE_STAND = 'machine_stand';
 export const MACHINE_ENGINE = 'blockmaker_engine';

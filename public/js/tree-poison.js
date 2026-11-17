@@ -29,8 +29,8 @@
  * is not wired here (see the header of js/patches.js).
  */
 
-import { loseMood, metabolicGain } from './metabolics.js?v=1383e6fd';
-import { chargesLeft, useCharge } from './tools.js?v=8516a0c3';
+import { gainMetabolic, loseMood } from './metabolics.js?v=48f784bf';
+import { chargesLeft, useCharge } from './tools.js?v=4156bba8';
 
 export const TREE_POISON = 'potion_tree_poison';
 export const TREE_ANTIDOTE = 'potion_tree_poison_antidote';
@@ -350,12 +350,7 @@ export function performAntidotePour(state, ctx = {}) {
   let moodGained = 0;
   // tree_poison_antidote.js 284: metabolics_add_mood(10), which gives nothing
   // while dead and says so (inc_metabolics.js 79-86).
-  if (ctx.pc && ctx.moodGain !== false && metabolicGain('mood').ok) {
-    const cap = Number.isFinite(ctx.maxMood) ? ctx.maxMood : 100;
-    const before = Number(ctx.pc.mood) || 0;
-    ctx.pc.mood = Math.min(cap, before + ANTIDOTE_MOOD);
-    moodGained = ctx.pc.mood - before;
-  }
+  if (ctx.pc && ctx.moodGain !== false) moodGained = gainMetabolic(ctx.pc, 'mood', ANTIDOTE_MOOD);
   cureTreePoison(state);
   const bottle = ctx.bottles ? useBottle(ctx.bottles, TREE_ANTIDOTE, ctx.inv) : { ok: true, emptied: false };
   return {

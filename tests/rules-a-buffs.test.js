@@ -8,8 +8,8 @@ import { before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { loadContentCatalogsFromDir, getBuffCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyBuff, createBuffState, resumeBuffsAfterAway, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
-import { normalizeBuffSnapshot } from '../public/js/player-save.js?v=75ac79c6';
+import { applyBuff, createBuffState, resumeBuffsAfterAway, tickBuffs } from '../public/js/buffs.js?v=57e5d8e0';
+import { normalizeBuffSnapshot } from '../public/js/player-save.js?v=47b7d580';
 
 const MIN = 60_000;
 

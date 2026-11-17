@@ -18,10 +18,10 @@
  *   Canvas: snoConeLast, snoConeEaten.
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { listDroppedStacks } from '../world-items.js?v=053888d2';
-import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { listDroppedStacks } from '../world-items.js?v=4057c421';
+import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   SNO_CONES,
   SNO_CONE_TEXT,
@@ -32,7 +32,7 @@ import {
   snoConeEatButton,
   snoConeMelted,
   snoConeVerbLine,
-} from '../sno-cones.js?v=e6719ebf';
+} from '../sno-cones.js?v=64e34b89';
 
 export const SNO_CONES_FEATURE_ID = 'sno-cones';
 export const BEMOAN_VERB = 'sno_cone_bemoan';

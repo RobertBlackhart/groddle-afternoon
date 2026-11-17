@@ -33,7 +33,7 @@ import {
   touches,
 } from '../hog-haul-mp.js?v=67f873fe';
 import { HOG_HAUL_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { playCountdownArt } from '../overlays.js?v=eda942a8';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 

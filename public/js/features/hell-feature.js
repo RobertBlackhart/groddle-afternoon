@@ -58,10 +58,10 @@ import {
   wineDrinkConditions,
   POOPED_ENERGY_PERCENT,
   SUPER_POOPED_CONSUMED_MULTIPLIER,
-} from '../hell.js?v=7f2c9be1';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
-import { countItem, removeItem } from '../inventory.js?v=487b1b60';
+} from '../hell.js?v=834960da';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
+import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 
 const GRAPE_SCALE = 0.8;
@@ -114,7 +114,8 @@ function applyEffects(effects, engine, { prompts = true } = {}) {
         engine.pushActivity(effect.text);
         break;
       case 'metabolics':
-        Object.assign(engine.pc, effect.set);
+        // A croak empties both tanks and a resurrection sets them (apiSet, past the doors: G970).
+        for (const [stat, value] of Object.entries(effect.set || {})) forceMetabolic(engine.pc, stat, value);
         engine.updateHud();
         break;
       case 'remove_followers':
@@ -295,7 +296,7 @@ function demoSetup(engine) {
   if (!demo || demoRan) return;
   demoRan = true;
   if (demo === 'croak') {
-    engine.pc.energy = 0;
+    forceMetabolic(engine.pc, 'energy', 0);
   } else if ((demo === 'pooped' || demo === 'superpooped') && !state.isDead) {
     // checkPooped (inc_metabolics.js): alive, croaked today, energy at or under 5%, then a loss.
     const now = Date.now();
@@ -303,16 +304,16 @@ function demoSetup(engine) {
     // superpooped: today's energy_consumed one short of top * 20 (inc_metabolics.js 149), so the 1 lost next reaches it.
     const consumed = demo === 'superpooped' ? max * SUPER_POOPED_CONSUMED_MULTIPLIER - 1 : energyConsumedTodayFor(state, now);
     state = normalizeHellState({ ...state, deathsToday: Math.max(1, Number(state.deathsToday) || 0), deathsDayKey: getGameDayKey(now), pooped: null, dontGetPooped: false, energyConsumedToday: consumed, energyConsumedDayKey: getGameDayKey(now) });
-    engine.pc.energy = Math.max(1, Math.floor((max * POOPED_ENERGY_PERCENT) / 100));
+    forceMetabolic(engine.pc, 'energy', Math.max(1, Math.floor((max * POOPED_ENERGY_PERCENT) / 100)));
     lastEnergy = engine.pc.energy + 1;
     engine.updateHud?.();
   } else if (demo === 'dead' && !state.isDead) {
     // QA: dead where you stand (no croak teleport), e.g. on a Naraka street for the Hell Bar door.
     state = normalizeHellState({ ...state, isDead: true, croakedAt: Date.now(), visitId: state.visitId + 1 });
-    engine.pc.energy = 0;
+    forceMetabolic(engine.pc, 'energy', 0);
     engine.updateHud();
   } else if (demo === 'squish' && !state.isDead) {
-    engine.pc.energy = 0;
+    forceMetabolic(engine.pc, 'energy', 0);
     if (doCroak(engine)) {
       const already = HELL_ONE_GRAPES.slice(0, GRAPES_REQUIRED - 1).map((grape) => grape.id);
       state = { ...state, grapesSquished: already.length, squishedGrapeIds: already };
@@ -606,8 +607,8 @@ export const hellFeature = {
     if (!state.isDead) return false;
     if (!doResurrect(engine)) return false;
     if (full) {
-      engine.pc.energy = energyMax(engine.pc);
-      engine.pc.mood = moodMax(engine.pc);
+      forceMetabolic(engine.pc, 'energy', energyMax(engine.pc));
+      forceMetabolic(engine.pc, 'mood', moodMax(engine.pc));
       engine.updateHud();
     }
     return true;

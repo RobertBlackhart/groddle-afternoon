@@ -21,8 +21,8 @@
  *   energyMax).
  */
 
-import { addItem } from './inventory.js?v=487b1b60';
-import { energyMax, moodMax } from './metabolics.js?v=1383e6fd';
+import { addItem } from './inventory.js?v=6414dbdc';
+import { energyMax, forceMetabolic, moodMax } from './metabolics.js?v=48f784bf';
 
 export const ADMIN_TEXT_MAX = 500;
 const GIVE_OP = /^admin-give-[0-9a-f]{16}$/;
@@ -108,8 +108,8 @@ export function applyAdminGive(engine, msg) {
 export function applyAdminRefill(engine) {
   const pc = engine.pc;
   if (!pc) return false;
-  pc.energy = energyMax(pc);
-  pc.mood = moodMax(pc);
+  forceMetabolic(pc, 'energy', energyMax(pc));
+  forceMetabolic(pc, 'mood', moodMax(pc));
   engine.pushActivity?.(ADMIN_TEXT.refilled);
   engine.toast?.(ADMIN_TEXT.refilled, 3600);
   engine.setData?.('adminRefill', `${pc.mood}/${pc.energy}`);

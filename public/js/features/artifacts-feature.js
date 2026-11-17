@@ -35,9 +35,9 @@
  *     artifactPending, artifactOverlay, artifactProgress, artifactAutoplay.
  */
 
-import { addItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=487b1b60';
-import { DROP_ITEMS, rollDropTable } from '../drop-tables.js?v=8bcf111f';
-import { canUseTool, useToolCondition, TOOL_CONDITION_CATALOG } from '../tools.js?v=8516a0c3';
+import { addItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
+import { DROP_ITEMS, rollDropTable } from '../drop-tables.js?v=1ed0b596';
+import { canUseTool, useToolCondition, TOOL_CONDITION_CATALOG } from '../tools.js?v=4156bba8';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import {
   ALL_ARTIFACT_CLASSES,

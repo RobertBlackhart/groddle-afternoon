@@ -24,15 +24,15 @@ import {
   phantomHauntPool,
   phantomPlaceNeed,
 } from '../public/js/ghost-quest.js?v=5f3cc133';
-import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+import { createQuestState } from '../public/js/quests.js?v=92c75858';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
-import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=014b5377';
-import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
-import { placeIndex, questHold, questStoryNeeds } from '../public/js/quest-reach.js?v=164158a0';
-import { reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
+import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js';
+import { routeGraph } from '../public/js/map-routes.js';
+import { TELEPORTERS } from '../public/js/hidden-floors.js';
+import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js';
+import { placeIndex, questHold, questStoryNeeds, reachableStreets } from '../public/js/quest-reach.js';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js';
+import { reachableStreets, streetGraph } from '../public/js/street-graph.js';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');

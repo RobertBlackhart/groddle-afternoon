@@ -18,14 +18,14 @@ import {
   verbResponse,
 } from '../public/js/verb-responses.js?v=97df8351';
 import { VERB_RESPONSE_POOLS } from '../public/js/verb-responses-data.js?v=0777b59b';
-import { runVerb } from '../public/content.js?v=5dfc6bfe';
+import { runVerb } from '../public/content.js?v=0cb5c6db';
 import { setTrantTables, createTrantState } from '../public/js/trants.js?v=4d6f5593';
-import { setMetabolicLossGate } from '../public/js/metabolics.js?v=1383e6fd';
-import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=1fe7236e';
-import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=95aa25d0';
-import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=84b0213c';
-import { createKitty, petKitty } from '../public/js/heli-kitties.js?v=addb573f';
-import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
+import { setMetabolicLossGate } from '../public/js/metabolics.js?v=48f784bf';
+import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
+import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=5656bfba';
+import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=d5f4344d';
+import { createKitty, petKitty } from '../public/js/heli-kitties.js?v=e4af4096';
+import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '..', 'glitch-GameServerJS');

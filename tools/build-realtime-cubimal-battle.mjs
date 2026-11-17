@@ -16,8 +16,8 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
-import { ensureCubimalItems } from '../public/js/cubimals.js?v=d38434e0';
-import { cubimalBattleServerData } from '../public/js/cubimal-battle.js?v=b50cf09e';
+import { ensureCubimalItems } from '../public/js/cubimals.js?v=07f59f2f';
+import { cubimalBattleServerData } from '../public/js/cubimal-battle.js?v=f91166b0';
 
 const outPath = serverPath('data', 'cubimal_battle.json');
 

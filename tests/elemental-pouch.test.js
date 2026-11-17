@@ -25,19 +25,19 @@ import {
   shakeElement,
   shakePouch,
 } from '../public/js/elemental-pouch.js?v=42702eda';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=c9b8530b';
-import { runMoreVerb } from '../public/js/features/item-verbs-more-feature.js?v=b6751d34';
-import { pouchFeature } from '../public/js/features/elemental-pouch-feature.js?v=7209c26d';
-import { FEATURES } from '../public/js/features/index.js?v=50ae0891';
-import { ITEM_CATALOG, countItem, createInventory } from '../public/js/inventory.js?v=487b1b60';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=2100afbc';
+import { runMoreVerb } from '../public/js/features/item-verbs-more-feature.js?v=0f5402cf';
+import { pouchFeature } from '../public/js/features/elemental-pouch-feature.js?v=7a883983';
+import { FEATURES } from '../public/js/features/index.js?v=02af9965';
+import { ITEM_CATALOG, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { STORE_CATALOG } from '../public/js/store-catalog.js?v=74b56af3';
-import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=925b0f77';
+import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=3025c322';
 import { IMAGINATION_UPGRADES } from '../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 import { SKILL_REMAKE_NOTES } from '../public/js/skill-tree.js?v=e399b9ca';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
-import { acceptOffer, pendingQuestOffers, syncItemRequirements, turnInQuest } from '../public/js/quest-offers.js?v=ed4e7435';
+import { createQuestState } from '../public/js/quests.js?v=92c75858';
+import { acceptOffer, pendingQuestOffers, syncItemRequirements, turnInQuest } from '../public/js/quest-offers.js?v=4debd26e';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = decodeURIComponent(new URL('../../glitch-GameServerJS', import.meta.url).pathname);

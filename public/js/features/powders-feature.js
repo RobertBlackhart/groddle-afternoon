@@ -91,10 +91,10 @@
  *   powderCharges, powderNoNo, powderTreesGrown.
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
-import { getGameDayKey } from '../game-day.js?v=03b8d954';
-import { isPooped } from '../hell.js?v=7f2c9be1';
-import { metabolicGain, moodMax, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
+import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { isPooped } from '../hell.js?v=834960da';
+import { forceMetabolic, gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=48f784bf';
 import {
   POWDERS,
   POWDER_TEXT,
@@ -111,14 +111,14 @@ import {
   sniffNoNo,
   sprinkleHallowed,
   usePowderCharge,
-} from '../powders.js?v=ffca4adb';
-import { itemVerbAchievementCounters } from '../item-verbs.js?v=994d3d4f';
-import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=1c1efade';
-import { migrateClassValue } from '../tools.js?v=8516a0c3';
-import { DEAD_TRANT_CLASSES } from '../patches.js?v=2281bd71';
-import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=e3ff914c';
-import { hellFeature } from './hell-feature.js?v=eb79a9c5';
-import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+} from '../powders.js?v=2a43f991';
+import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
+import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
+import { migrateClassValue } from '../tools.js?v=4156bba8';
+import { DEAD_TRANT_CLASSES } from '../patches.js?v=67d08c97';
+import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=0f107341';
+import { hellFeature } from './hell-feature.js?v=dba6adad';
+import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=0c20633c';
 import { POWDER_SHAKE, powderShakerSheet } from '../powder-shakers.js?v=fcd18855';
@@ -131,7 +131,7 @@ import {
   powderCaughtLine,
   powderRefusedLine,
   powderRefusedSound,
-} from '../hi-signs-mp.js?v=1415ecb7';
+} from '../hi-signs-mp.js?v=70171967';
 
 export const POWDERS_FEATURE_ID = 'powders';
 
@@ -407,7 +407,7 @@ const RUNNERS = {
     const pc = engine.pc;
     loseEnergy(pc, 20); // G289 loss gate (inc_metabolics.js 108-122)
     // sparkle_powder.js 289: metabolics_add_mood(10), nothing while dead (inc_metabolics.js 79-86).
-    if (metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), (Number(pc.mood) || 0) + 10);
+    gainMetabolic(pc, 'mood', 10);
     say(engine, POWDER_TEXT.sparkle);
     sparkleWindow(engine);
     finishUse(engine, classTsid);
@@ -682,11 +682,7 @@ function onCaught(engine, m) {
     // sparkle_powder.js 324: metabolics_add_mood(20) for each of the others.
     const pc = engine.pc;
     let granted = 0;
-    if (pc && metabolicGain('mood').ok) {
-      const before = Number(pc.mood) || 0;
-      pc.mood = Math.min(moodMax(pc), before + POWDER_MP.SPARKLE_MOOD);
-      granted = Math.round(pc.mood - before);
-    }
+    if (pc) granted = Math.round(gainMetabolic(pc, 'mood', POWDER_MP.SPARKLE_MOOD));
     say(engine, powderCaughtLine(cls, name, granted));
     sparkleWindow(engine);
     engine.updateHud?.();
@@ -764,7 +760,7 @@ export const powdersFeature = {
       // no_no_powder_crash on_remove: no rush running, so croak (hell.js croaks at zero energy).
       if (!engine.hasBuff('no_no_powder')) {
         noNo.startAt = 0;
-        engine.pc.energy = 0;
+        forceMetabolic(engine.pc, 'energy', 0);
         engine.updateHud?.();
         engine.save?.();
       }

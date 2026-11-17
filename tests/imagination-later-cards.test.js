@@ -22,8 +22,8 @@ import {
   rollSlothBonusSnails,
   taskLimitMultiplier,
 } from '../public/js/imagination-effects.js?v=70169933';
-import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
-import { createToolConditionState, getToolCondition, setToolRemaining } from '../public/js/tools.js?v=8516a0c3';
+import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
+import { createToolConditionState, getToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
 import {
   DEFAULT_TASK_LIMIT,
   RECIPE_CATALOG,
@@ -32,7 +32,7 @@ import {
   loadRecipeCatalogFromFile,
   makingSkillAdjustments,
   recipeTaskLimit,
-} from '../public/js/making.js?v=a16c767f';
+} from '../public/js/making.js?v=af1c7d5b';
 import {
   assemblyCheck,
   assemblyEnergy,
@@ -43,7 +43,7 @@ import {
   finishMachineWork,
   startAssembly,
   startDisassembly,
-} from '../public/js/machines.js?v=0af7364d';
+} from '../public/js/machines.js?v=ab7d71da';
 import {
   finishMeditation,
   levitationMinEnergy,
@@ -54,11 +54,11 @@ import {
 } from '../public/js/meditation.js?v=96f23682';
 import { skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
 import { strikeDamageFor } from '../public/js/rook-attack.js?v=5e62a79f';
-import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=187cd4b9';
-import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=fa7f5db1';
-import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=6f3d5af8';
+import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=c13f0259';
+import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=3a1b5812';
+import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=4497a984';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=3e66996f';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=316bc182';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

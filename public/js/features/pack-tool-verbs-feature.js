@@ -9,9 +9,9 @@
  * QA: canvas data packToolVerbs (the buttons the last tool shows, `id:state`), packToolLast.
  */
 
-import { countItem } from '../inventory.js?v=487b1b60';
-import { getToolCondition } from '../tools.js?v=8516a0c3';
-import { ROCK_CATALOG, knowsMining } from '../mining.js?v=187cd4b9';
+import { countItem } from '../inventory.js?v=6414dbdc';
+import { getToolCondition } from '../tools.js?v=4156bba8';
+import { ROCK_CATALOG, knowsMining } from '../mining.js?v=c13f0259';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import {
   findCloseTarget,
