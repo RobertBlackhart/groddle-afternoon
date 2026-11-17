@@ -428,7 +428,11 @@ function paintArborHollow(root, course, fg, art) {
   deco(art, root, 'fungus_oyster_noshadow_01c_et1', course.trunkX + 70, 1900, { width: 110, z: -25 });
   deco(art, root, 'fungus_oyster_noshadow_01d_et1', course.dropX + 120, 2600, { width: 110, z: -35, flipX: true });
   deco(art, root, 'fungus_oyster_noshadow_01c_et1', course.dropX + 110, 1400, { width: 100, z: -35, flipX: true });
-  // The nest and its egg on top of the trunk.
+  // The nest and its egg on top of the trunk. G892 (stand-ins audit A12): they stay drawn. The
+  // recordings (ELtkACMJkNU 1:08-1:16, JgWvGd7FcKA) show a light brown cup of spiky twigs on the
+  // hollow trunk with a big plain cream egg in it; no CC0 set has that art. The one nest deco,
+  // rook_nest (glitch-locations original_hell, Whiteless Hell and Blackwater), is a black silhouette,
+  // the rook_nest furniture are beds and tables, and egg_plain is a small speckled item.
   const nest = course.platforms.find((plat) => plat.id === 'nest');
   const nestArt = new PIXI.Graphics();
   const nx = (nest.x1 + nest.x2) / 2;

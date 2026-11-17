@@ -395,7 +395,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=a6d547c8';
+} from './js/paradise-course-runtime.js?v=f51896f4';
 import {
   createAchievementState,
   applyAchievementProgress as applyAchievementProgressRaw,

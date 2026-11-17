@@ -194,3 +194,13 @@ describe('Rooks\' Woods birds (A10)', () => {
     assert.doesNotMatch(body, /quadraticCurveTo/);
   });
 });
+
+describe('Arbor Hollow nest and egg (A12)', () => {
+  it('stay drawn, with the reason: the only nest deco is the black rook_nest silhouette', () => {
+    const src = read('js/paradise-course-runtime.js');
+    assert.match(src, /G892 \(stand-ins audit A12\): they stay drawn/);
+    const svg = read('assets/decos/groddle/rook_nest.svg');
+    const fills = new Set([...svg.matchAll(/fill="(#[0-9a-fA-F]{6})"/g)].map((m) => m[1].toLowerCase()));
+    assert.deepEqual([...fills], ['#000000']);
+  });
+});
