@@ -70,6 +70,44 @@
       ]
     },
     {
+      "id": "decos:vv",
+      "name": "Le Voyage Violet's stump and spiral stone",
+      "caption": "Le Voyage Violet, the dream room an Essence of Purple sends you to: washing on lines under a crescent moon, mushrooms, a sleeping owl and a shy ghost, all in violet light. The room itself was never saved, only players' snapshots of it from 2012. Its mushrooms, frond heads, ferns, ghost and owl are Tiny Speck's own pieces from Uralia, but nothing in Tiny Speck's files matches the tall cut stumps with wax dripping over their tops or the carved spiral stone, so those two were drawn again.",
+      "display": {
+        "w": 289,
+        "h": 126
+      },
+      "image": {
+        "file": "public/assets/made-art/vv-room.webp",
+        "label": "With the pictures made for Groddle",
+        "alt": "A violet room: a tall cut stump with pale wax dripping over its top, a rounded stone carved with a square spiral, red umbrella mushrooms, a sleeping owl on a washing line and black fern shapes in front of lilac peaks."
+      },
+      "original": {
+        "file": "public/assets/made-art/vv-room-vectors.webp",
+        "kind": "original",
+        "label": "Drawn in plain shapes",
+        "alt": "The same room before: small flat purple stumps, a spiral drawn as a line on an oval, and leaf-shaped fronds in front of the peaks."
+      },
+      "facts": [
+        {
+          "label": "What the 2012 room had",
+          "text": "Stumps taller than a player, flat-topped and dripping, a carved stone about as wide as a player is tall, red and lilac mushrooms, a ghost peeping over a boulder and an owl asleep on the washing line, as players' snapshots show."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) for Austin, one chat for the stump and one for the stone, from our drawing of their sizes, three crops of the players' 2012 snapshots and Tiny Speck's own Uralia pieces for the look. The stone came back a little wide and was narrowed. Both are drawn in natural colours, and the room tints them violet with everything else."
+        },
+        {
+          "label": "How it was checked",
+          "text": "Each piece was measured against the player in the snapshots and placed as they show it. The room was walked in the game on a computer and a phone, in both looks, its floor and its Scions unchanged."
+        },
+        {
+          "label": "In the game",
+          "text": "The Purple Journey: imbibe an Essence of Purple and wait a minute."
+        }
+      ]
+    },
+    {
       "id": "decos:om",
       "name": "The Outer Mind",
       "caption": "The Outer Mind, the second part of Gwendolyn's Task, where you walk through your own head: a rock-rimmed head floating in space with a sunburst brain, glass eyes, and one long pink tube that runs from a giant foot on a checkered floor up and across into an eye. None of its pictures survive in Tiny Speck's files, only in players' snapshots from 2012, so the head, the eyes, the tube, the foot and the floor were drawn again, and the room was laid out again in the snapshots' shape.",

@@ -231,6 +231,32 @@
     }
    ]
   },
+  "public/assets/made-art/vv-room-vectors.webp": {
+   "what": "Le Voyage Violet before: stumps, mushrooms, spiral stones and fronds drawn in plain shapes",
+   "w": 720,
+   "h": 315,
+   "sha256": "7a4cc7342ec768659e7aa9e29aa1ceee0201f71d092c217815777d871c06cee7",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, purpledemo=1&purpleautoplay=room, the avatar placed at x 560 as the room opens), every page element but the canvas hidden, purple-journey-scene.js of 064a563494c (before the made art and the Uralia decos); cropped to y 16-576 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "vv-before.png",
+     "sha256": "0380bfc9071f1ba528411fc0e9e7149e006a282369bac8eabd4225b8ceac0ee5"
+    }
+   ]
+  },
+  "public/assets/made-art/vv-room.webp": {
+   "what": "Le Voyage Violet with its made stump and spiral stone among Tiny Speck's Uralia mushrooms, ghost and owl",
+   "w": 720,
+   "h": 315,
+   "sha256": "fff5c09b729fdb35018400f36e9771f48b46f3445533babf69c6d3445c4e8f4c",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, purpledemo=1&purpleautoplay=room, the avatar placed at x 560 as the room opens), every page element but the canvas hidden, today's room; cropped to y 16-576 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "vv-after.png",
+     "sha256": "539efb37b6841b319b4c0cc4bd47e41b57ef0955e2159d0c502edb7a8e4978b0"
+    }
+   ]
+  },
   "public/assets/made-art/wh-trees-before.webp": {
    "what": "the Tiny Speck trees Winter Haven's snowy trees were redrawn from",
    "w": 828,

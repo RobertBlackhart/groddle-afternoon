@@ -30,6 +30,9 @@
  * provenance): made decos may also be quest-room props (`rooms` and the `code` that draws them, in place of
  * `streets`), and their inputs may name the attached snaps as `ref:` (reference only, never in the repo).
  *
+ * 2026-11-17 (lane vviolet, G964): a made deco may belong to a scene outside the quest-room catalog
+ * (`scene` and the `code` that draws it), as Le Voyage Violet's stump and spiral stone do.
+ *
  * 2026-11-17 (lane art45, G922): a made deco may come without a @1.5x copy when its drop holds less than
  * 3 px a unit (Winter Haven's trees, the Outer Mind's head), and a chat may have been given four files.
  */
@@ -198,6 +201,12 @@ describe('new art from published zones (level builder P6) and made decos', () =>
         assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: snaps are reference only`);
         continue;
       }
+      if (row.scene) {
+        // A scene built outside the quest-room catalog (G964: Le Voyage Violet, js/purple-journey-scene.js): its code names the deco.
+        assert.ok(readFileSync(join(root, row.code), 'utf8').includes(`'${name}'`), `${name}: ${row.code} draws it`);
+        assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: snaps are reference only`);
+        continue;
+      }
       assert.ok(row.streets.length > 0 && row.streets.every((t) => index[t]), `${name}: streets`);
       for (const t of row.streets) {
         const street = JSON.parse(readFileSync(join(pub, index[t].file), 'utf8'));
@@ -255,7 +264,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=a1ce9368');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=c0814575');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

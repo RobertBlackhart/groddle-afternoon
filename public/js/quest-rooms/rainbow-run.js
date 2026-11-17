@@ -17,7 +17,7 @@
  */
 
 import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=c4d2c503';
-import { touchesQuoin } from './kit.js?v=153fa0a9';
+import { touchesQuoin } from './kit.js?v=c8175e77';
 
 export { rainbowCoins, rainbowPlatforms };
 export const RUN_MS = 30_000;

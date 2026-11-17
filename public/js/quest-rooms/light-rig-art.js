@@ -14,7 +14,7 @@
  * one picture is tinted by the light it stands in, as the Snaps show the same piece in six colours.
  */
 
-import { DECO_DIR, deco } from './kit.js?v=153fa0a9';
+import { DECO_DIR, deco } from './kit.js?v=c8175e77';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 
 /** Each piece's name and its size in world units (its 2x file is twice that in pixels). */

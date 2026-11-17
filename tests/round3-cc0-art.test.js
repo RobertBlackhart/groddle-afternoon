@@ -18,10 +18,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from '../public/js/quest-rooms/radiant-glare.js?v=f54c9447';
-import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=1337f73f';
-import { glitchLayerMatrix } from '../public/js/street-render.js?v=a1ce9368';
-import { MOON, WASHING, WASHING_LINE } from '../public/js/purple-journey-scene.js?v=eaa28de5';
+import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from '../public/js/quest-rooms/radiant-glare.js?v=30ab282d';
+import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=f17aca78';
+import { glitchLayerMatrix } from '../public/js/street-render.js?v=c0814575';
+import { FLOOR_WASH, MOON, VOYAGE_DECOS, VOYAGE_FLOOR, VOYAGE_OWL, VOYAGE_STONE, VOYAGE_STUMP, VOYAGE_W, WASHING, WASHING_LINE, violetMatrix, voyageGroundPlan } from '../public/js/purple-journey-scene.js?v=44c8b7b0';
 import * as esq from '../public/js/quest-rooms/esquibeth.js?v=5dbd28e3';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from '../public/js/quest-rooms/esquibeth-art.js?v=fe515887';
 
@@ -85,6 +85,77 @@ describe('Le Voyage Violet: the CC0 washing and moon', () => {
     assert.match(src, /deco\(PIXI, WASHING_LINE,/);
     assert.match(src, /deco\(PIXI, name,/);
     assert.match(src, /deco\(PIXI, MOON,/);
+  });
+});
+
+describe('Le Voyage Violet: the floor from Uralia decos and two made pieces (G964)', () => {
+  const src = read('public/js/purple-journey-scene.js');
+  const plan = voyageGroundPlan();
+
+  it('no longer draws the stumps, mushrooms, spiral stones or fronds as vectors', () => {
+    for (const gone of ['function stump(', 'function mushroom(', 'function spiralStone(', 'function frond(', 'g.ellipse(0, -h, w / 2 + 3, 12)', 'Math.PI * 5']) {
+      assert.ok(!src.includes(gone), gone);
+    }
+    // Only the peaks, the strands and the motes are still drawn.
+    assert.equal((src.match(/new PIXI\.Graphics\(\)/g) || []).length, 3);
+    assert.match(src, /for \(const p of voyageGroundPlan\(\)\) props\.addChild\(deco\(PIXI, p\.name,/);
+  });
+
+  it('puts Tiny Speck\'s zutto1.swf decos where Snap 81702 shows them, at sizes measured there', () => {
+    const decos = decoPlan();
+    const cc0 = [...VOYAGE_DECOS.mushrooms, ...VOYAGE_DECOS.fronds, VOYAGE_DECOS.fiddlehead, VOYAGE_DECOS.ghost, VOYAGE_DECOS.owl, ...VOYAGE_DECOS.ferns];
+    assert.deepEqual(cc0, ['tree_14', 'tree_15', 'tree_13', 'tree_11', 'zutto_tree_2', 'plant_fern_1', 'creature_purple', 'owl_1', 'ground_plant_1', 'ground_plant_2']);
+    for (const name of cc0) {
+      assert.equal(decos.get(name).swf, `bundle:zutto1.swf#${name}`, name);
+      assert.ok(existsSync(join(root, `public/assets/decos/groddle/${name}.webp`)), name);
+    }
+    const kinds = new Set(plan.map((p) => p.kind));
+    assert.deepEqual([...kinds].sort(), ['fiddlehead', 'frond', 'ghost', 'mushroom', 'stone', 'stump']);
+    for (const p of plan) {
+      assert.ok(p.x > 0 && p.x < VOYAGE_W, `${p.name} at ${p.x}`);
+      if (!p.name.startsWith('gz_')) assert.ok(cc0.includes(p.name), p.name);
+    }
+    // The red umbrella mushroom about 180 units tall (tree_14's drawn rows 363 px at scale 0.5).
+    assert.ok(plan.filter((p) => p.name === 'tree_14').every((p) => Math.abs(363 * p.scale - 180) < 12));
+    // Drawn back to front: stumps behind the ghost, the ghost behind the stones, the mushrooms in front of them.
+    const at = (kind) => plan.findIndex((p) => p.kind === kind);
+    assert.ok(at('stump') < at('ghost') && at('ghost') < at('stone') && at('stone') < at('mushroom'));
+    // The arrival point stays open.
+    assert.ok(plan.every((p) => Math.abs(p.x - 1600) > 140));
+    assert.ok(VOYAGE_OWL.scale > 0.9 && VOYAGE_OWL.scale < 1.2);
+  });
+
+  it('draws the made stump 220-300 tall and the made stone 120-150 wide, each with its provenance', () => {
+    const made = JSON.parse(read('tools/provenance/made-decos.json')).art;
+    const stumps = plan.filter((p) => p.name === VOYAGE_STUMP);
+    const stones = plan.filter((p) => p.name === VOYAGE_STONE);
+    assert.ok(stumps.length >= 3 && stones.length >= 3);
+    assert.ok(stumps.some((p) => p.flip) && stones.some((p) => p.flip));
+    for (const p of stumps) assert.ok(made[VOYAGE_STUMP].h * 2 * p.scale >= 220 && made[VOYAGE_STUMP].h * 2 * p.scale <= 300, `stump ${p.x}`);
+    for (const p of stones) assert.ok(made[VOYAGE_STONE].w * 2 * p.scale >= 120 && made[VOYAGE_STONE].w * 2 * p.scale <= 150, `stone ${p.x}`);
+    for (const name of [VOYAGE_STUMP, VOYAGE_STONE]) {
+      const row = made[name];
+      assert.ok(row, `${name}: provenance`);
+      assert.equal(row.code, 'public/js/purple-journey-scene.js');
+      assert.equal(row.scene, 'purple_journey');
+      assert.equal(row.licence, 'ai-generated');
+      assert.equal(createHash('sha256').update(readFileSync(join(root, row.file))).digest('hex'), row.sha256);
+      assert.equal(row.inputFiles.length, 5);
+      assert.ok(row.inputs.some((i) => i.startsWith('ref:')) && row.inputFiles.slice(1, 4).every((f) => /reference only/.test(f.source)));
+      assert.match(row.prompt, /^Draw piece [AB] from attachment 1/);
+      assert.match(row.reimagined, /made art/);
+    }
+    // B came back 1.38:1 and is squeezed to 1.25:1 (drop/model.txt).
+    assert.equal(made[VOYAGE_STONE].w / made[VOYAGE_STONE].h, 1.25);
+    assert.ok(Math.abs(made[VOYAGE_STUMP].h / made[VOYAGE_STUMP].w - 2.22) < 0.05);
+  });
+
+  it('washes the floor violet but keeps a little of its own colour', () => {
+    assert.ok(FLOOR_WASH > 0.5 && FLOOR_WASH < 1);
+    assert.deepEqual(violetMatrix(0), [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]);
+    assert.equal(violetMatrix(1)[0], 0.264);
+    assert.match(src, /violetWash\(PIXI, props, FLOOR_WASH\)/);
+    assert.equal(VOYAGE_FLOOR, 939);
   });
 });
 

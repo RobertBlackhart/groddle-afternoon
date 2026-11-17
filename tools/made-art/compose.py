@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, vv) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -31,6 +31,10 @@ showcase.json as it is, so a new piece does not need the older pieces' screensho
                       room's height in view), the avatar placed mid-room on the floor, every page element but the canvas
                       hidden, with gwendolyn.js of 3f234fd386b (before the made art and the re-lay)
   om-after.png        the same with today's room (the avatar at x 720 on its floor)
+  vv-before.png       Le Voyage Violet (?purpledemo=1&purpleautoplay=room&purplehold=1, 1280 x 800), the avatar placed
+                      at x 560 as the room opens (before the first Scion), every page element but the canvas hidden,
+                      with purple-journey-scene.js of 064a563494c (before the made art and the Uralia decos)
+  vv-after.png        the same with today's room
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
@@ -317,6 +321,19 @@ def main():
             put(name, webp(s, name, q=84), what,
                 f"screenshot of the game (a 1280 x 1700 window, deviceScaleFactor 1, questdemo=tower_quest_part2, the avatar placed mid-room on the floor), every page element but the canvas hidden, {module}; cropped to y {box[1]}-{box[3]}, Lanczos to 640 x 656",
                 [{'shot': f'om-{which}.png', 'sha256': sha(shot)}])
+    if want('vv'):
+        box = (0, 32, 2560, 1152)
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'vv-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (2560, 1600), s.size
+            s = s.crop(box).resize((720, 315), Image.LANCZOS)
+            name = 'vv-room-vectors' if which == 'before' else 'vv-room'
+            what = "Le Voyage Violet before: stumps, mushrooms, spiral stones and fronds drawn in plain shapes" if which == 'before' else "Le Voyage Violet with its made stump and spiral stone among Tiny Speck's Uralia mushrooms, ghost and owl"
+            module = 'purple-journey-scene.js of 064a563494c (before the made art and the Uralia decos)' if which == 'before' else "today's room"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (1280 x 800, deviceScaleFactor 2, purpledemo=1&purpleautoplay=room, the avatar placed at x 560 as the room opens), every page element but the canvas hidden, {module}; cropped to y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 315",
+                [{'shot': f'vv-{which}.png', 'sha256': sha(shot)}])
     if want('ww-room'):
         box = (360, 60, 2160, 1118)
         for which in ('before', 'after'):

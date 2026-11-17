@@ -3,10 +3,11 @@
  "about": "New decos made for Groddle's own rebuilt streets (not a published zone): AI-generated or own work, dedicated CC0 1.0 with who or what made them and from what inputs (tools/builder/licence-policy.json). They ship as gz_ files beside the library's, kept out of assets/decos/manifest.json; tools/builder/build-zones.mjs lists them in js/deco-new-list.js after checking each file's sha256 here, and tests/g316-provenance.test.js allows exactly these files with the zones' new-art.json.",
  "references": [
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
-  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare, Winter Walk and The Outer Mind, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
+  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare, Winter Walk and The Outer Mind, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0",
+  "Players' 2012 Snaps of Le Voyage Violet (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/ref): reference only. Three crops (no player in them) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
- "count": 26,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt; research/art-briefs/quest-rooms-pack3-2026-11-17 (outside git), room 03: readme.md, 03-voyage-violet/brief.md, prompts/, attach/, ref/, drop/model.txt",
+ "count": 28,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -2388,6 +2389,194 @@
    "intake": {
     "on": "2026-11-17",
     "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_vv_stump": {
+   "what": "Le Voyage Violet's drippy log stump (piece A): a tall cut log, cream wax dripping over its flat top, brown bark; the room washes it violet",
+   "file": "public/assets/decos/groddle/gz_ai_vv_stump.webp",
+   "sha256": "828d91ca9dcc6e4cc9fda63eab183e1c66d2ad768fbd59917fbd738820231c7c",
+   "bytes": 14282,
+   "w": 126,
+   "h": 280,
+   "size": "brief 125 x 280 units (1 : 2.2); the drop holds 333 x 740 px (0.45 : 1, 2.64 px a unit at 280 tall), taken in as 126 x 280 units at 2 px a unit (252 x 560) and drawn 220-300 tall; no @1.5x copy, since the drop holds less than 3 px a unit",
+   "replaces": "the stump that buildVoyageScene drew in vector shapes (a flat rect with a pale ellipse and four drips)",
+   "scene": "purple_journey",
+   "code": "public/js/purple-journey-scene.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-17",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; transparency on; 4:3; one image; 1024 x 768 RGBA",
+   "chosen": {
+    "by": "Claude, checked against the brief and Snaps 81702 and 27222, under Austin's standing go for pack 3",
+    "on": "2026-11-17",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/drop/model.txt (\"ACCEPTED 2026-11-17 (Claude's check, Austin's standing go for pack 3): A-stump.png as is (4 drips, base on the edge is ground); B-spiral-stone.png narrowed to about 1.25:1 at intake (1.38 drawn), its blue-violet cast and soft shading are fine under the room's purple tint.\")"
+   },
+   "reimagined": "No Tiny Speck picture of the stump survives (pack 2's zutto_platform_2/3 have domed moss caps, not cut tops with drips); drawn fresh from the Snaps, so it ships as made art.",
+   "modelNote": "A-stump.png — GPT Image 2.6 Sunburst (T3 Chat canvas; Flare and Nano Banana 2.1 off; transparency on; 4:3; one image), 1024x768 RGBA, 2026-11-17",
+   "prompt": "Draw piece A from attachment 1: a tall cut log standing upright, from the dream room \"Le Voyage Violet\" in the video game Glitch (attachments 2 and 3 show two of them standing on the floor, at the left and at the right; the whole room is washed in violet light, which the game adds later).\n\nShape first: a tall upright cylinder a little more than twice as tall as it is wide (125 x 280 units, about 1 : 2.2), standing straight on a flat base, seen from the side with the camera a little above, so the flat top shows as a shallow oval.\n\nWhat it is: the cut top is flat and pale cream, with a few thin growth rings, and the cream covers the top edge and runs a short way down the sides in five or six rounded drips of different lengths, like candle wax or thick paint. Below the drips, warm brown bark with soft vertical grooves, a little lighter on the left, darker on the right. A clean flat bottom edge where it stands on the floor.\n\nColour: natural colours (cream top, warm brown bark), with a clear range from light to dark. Do not make it purple or violet: the game tints the whole room.\n\nSize: 125 x 280 units. Draw it at 4 px per unit, 500 x 1120 px, on a larger canvas if needed. Keep the proportions (a little more than twice as tall as wide) above the exact pixel size: a larger picture with the same shape is fine.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/prompts/A-drippy-stump.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-stump-and-spiral-stone-snap-81702.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-stump-right-snap-81702.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-spiral-stone-snap-27222.png (a player's 2012 Snap: reference only, never in the repo)",
+    "deco:zutto_platform_3",
+    "deco:tree_int_stump_1",
+    "deco:tree_14",
+    "deco:tree_13",
+    "deco:creature_purple",
+    "deco:plant_fern_1",
+    "deco:owl_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "881356b07815f149d5a123542f8a52b8c4a776fff351cc056c7a5fe66fc0afa8",
+     "what": "the two pieces as plain outlines with their sizes in game units (stump 125 x 280, stone 140 x 120)",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps 81702 and 27222, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-stump-and-spiral-stone-snap-81702.png",
+     "sha256": "420a197a4894c2d2bb1b6a1ba37f9e220a2fcea28a4f3a201d9cc477254176c6",
+     "what": "a crop of a player's 2012 Snap of Le Voyage Violet: the left stump, the spiral stone and the mushrooms",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-stump-right-snap-81702.png",
+     "sha256": "d45615c38190d00b1983a238b88215c9ba1614e1025d082791a586a687c061f9",
+     "what": "a crop of the same Snap: the right stump",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-spiral-stone-snap-27222.png",
+     "sha256": "ba01ba1df57e4476f0ec2a14184b38f21307ae3b69c73b3f9a570b741b8d11c5",
+     "what": "a crop of a player's 2012 Snap: the spiral stone behind the red mushroom, the player cropped out",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "0923efb3864cd7228e176899b47b3c560bc665b58fcef08d79f00de0c77943c3",
+     "what": "zutto_platform_3, tree_int_stump_1, tree_14, tree_13, creature_purple, plant_fern_1, owl_1: Tiny Speck's Uralia decos (zutto1.swf) the room uses, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos zutto_platform_3, tree_int_stump_1, tree_14, tree_13, creature_purple, plant_fern_1, owl_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/drop/A-stump.png",
+    "dropSha256": "edd17f3276928e6bfed5eb744692b8e6013c4df3c38d4e53d8ebec1eb8b167eb",
+    "trim": "alpha over 20: x 346-678, y 14-753 (333 x 740, 0.45:1); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 px a unit: 252 x 560 (the base on the drop's bottom edge is where it meets the ground, as drawn)",
+    "masterSha256": {
+     "x2": "77e508432f6f96b87e651b3127a5d7b744901a6a10f03df8d1eba498b1d4906e"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane vviolet): sizes checked against attach/1, the brief and the Snaps; keyed, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_vv_spiral_stone": {
+   "what": "Le Voyage Violet's spiral stone (piece B): a grey boulder dome carved with one squared spiral; the room washes it violet",
+   "file": "public/assets/decos/groddle/gz_ai_vv_spiral_stone.webp",
+   "sha256": "6958b686b16403204d0b23e8453b671edfa17bdb243e6584b7969e4078c0b9d9",
+   "bytes": 6884,
+   "file3": "public/assets/decos/groddle/gz_ai_vv_spiral_stone@1.5x.webp",
+   "sha256_3": "9d70ca03d1cd7a82ea5db35277c86914403d15a87e3ec1ef345a84e2b2ffa8f7",
+   "bytes3": 11084,
+   "w": 150,
+   "h": 120,
+   "size": "brief 140 x 120 units (7 : 6); drawn 1.38 : 1 (863 x 626 px), squeezed to 1.25 : 1 at intake (model.txt) and taken in as 150 x 120 units at 2 and 3 px a unit (300 x 240, 450 x 360); drawn 120-150 wide",
+   "replaces": "the spiral stone that buildVoyageScene drew in vector shapes (an ellipse with a stroked spiral)",
+   "scene": "purple_journey",
+   "code": "public/js/purple-journey-scene.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-17",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; transparency on; 4:3; one image; 1024 x 768 RGBA",
+   "chosen": {
+    "by": "Claude, checked against the brief and Snaps 81702 and 27222, under Austin's standing go for pack 3",
+    "on": "2026-11-17",
+    "of": "1 generation, no same-chat re-ask possible: research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/drop/model.txt (\"ACCEPTED 2026-11-17 (Claude's check, Austin's standing go for pack 3): A-stump.png as is (4 drips, base on the edge is ground); B-spiral-stone.png narrowed to about 1.25:1 at intake (1.38 drawn), its blue-violet cast and soft shading are fine under the room's purple tint.\")"
+   },
+   "reimagined": "No Tiny Speck picture of the carved stone survives; drawn fresh from the Snaps, so it ships as made art.",
+   "modelNote": "B-spiral-stone.png — GPT Image 2.6 Sunburst (T3 Chat canvas; Flare and Nano Banana 2.1 off; transparency on; 4:3; one image), 1024x768 RGBA, 2026-11-17; stone is 1.38:1 (over 1.3), no same-chat re-ask possible",
+   "prompt": "Draw piece B from attachment 1: a large carved stone from the dream room \"Le Voyage Violet\" in the video game Glitch (attachment 4 shows it at the left, behind the red mushroom; attachment 2 shows another one near the middle; the room is washed in violet light, which the game adds later).\n\nShape first: a rounded dome of stone, a little wider than it is tall (140 x 120 units, about 7 : 6), with a flat base and a smooth, round top, like a big river boulder resting on the ground. Seen from the side with the camera a little above.\n\nWhat it is: smooth grey stone with a carved pattern on its face: one squared spiral (a key pattern that turns inward in straight lines and right angles, three or four turns), cut as wide shallow grooves that are darker than the stone, so the raised bands between them read as lighter stripes. The pattern wraps a little around the curve of the dome. Soft light from the upper left, darker toward the lower right, a few small chips on the edge.\n\nColour: natural cool grey stone with darker grey grooves, with a clear range from light to dark. Do not make it purple or violet: the game tints the whole room.\n\nSize: 140 x 120 units. Draw it at 4 px per unit, 560 x 480 px, on a larger canvas if needed. Keep the proportions (a little wider than tall) above the exact pixel size: a larger picture with the same shape is fine.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/prompts/B-spiral-stone.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-stump-and-spiral-stone-snap-81702.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-stump-right-snap-81702.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-spiral-stone-snap-27222.png (a player's 2012 Snap: reference only, never in the repo)",
+    "deco:zutto_platform_3",
+    "deco:tree_int_stump_1",
+    "deco:tree_14",
+    "deco:tree_13",
+    "deco:creature_purple",
+    "deco:plant_fern_1",
+    "deco:owl_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "881356b07815f149d5a123542f8a52b8c4a776fff351cc056c7a5fe66fc0afa8",
+     "what": "the two pieces as plain outlines with their sizes in game units (stump 125 x 280, stone 140 x 120)",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps 81702 and 27222, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-stump-and-spiral-stone-snap-81702.png",
+     "sha256": "420a197a4894c2d2bb1b6a1ba37f9e220a2fcea28a4f3a201d9cc477254176c6",
+     "what": "a crop of a player's 2012 Snap of Le Voyage Violet: the left stump, the spiral stone and the mushrooms",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-stump-right-snap-81702.png",
+     "sha256": "d45615c38190d00b1983a238b88215c9ba1614e1025d082791a586a687c061f9",
+     "what": "a crop of the same Snap: the right stump",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-spiral-stone-snap-27222.png",
+     "sha256": "ba01ba1df57e4476f0ec2a14184b38f21307ae3b69c73b3f9a570b741b8d11c5",
+     "what": "a crop of a player's 2012 Snap: the spiral stone behind the red mushroom, the player cropped out",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance; this pack's crops show no player): a player's 2012 Snap of Tiny Speck's room, brightened, kept in research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/attach and ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "0923efb3864cd7228e176899b47b3c560bc665b58fcef08d79f00de0c77943c3",
+     "what": "zutto_platform_3, tree_int_stump_1, tree_14, tree_13, creature_purple, plant_fern_1, owl_1: Tiny Speck's Uralia decos (zutto1.swf) the room uses, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos zutto_platform_3, tree_int_stump_1, tree_14, tree_13, creature_purple, plant_fern_1, owl_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/drop/B-spiral-stone.png",
+    "dropSha256": "558031cc09bb7b308fc7107d0715d80628759cfa00c9c3cadc78c63f0c57677e",
+    "trim": "alpha over 20: x 76-938, y 72-697 (863 x 626, 1.379:1); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos, squeezed from 1.38 : 1 to 1.25 : 1 in the same pass, to whole units at 2 and 3 px a unit: 300 x 240 and 450 x 360",
+    "masterSha256": {
+     "x2": "33b99afac546c19e898825e41fc73486c2c95ae03a968209db88ccb20edbbeb4",
+     "x3": "e6ad6cb57937fa74ff1c2f8c7d7bbb1e626986a3eaf791973151fe8795e8d337"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane vviolet): sizes checked against attach/1, the brief and the Snaps; keyed, trimmed and resized as model.txt asks, nothing redrawn"
    }
   }
  }

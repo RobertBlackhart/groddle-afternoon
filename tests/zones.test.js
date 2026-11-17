@@ -388,7 +388,7 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     assert.throws(() => buildZones(fs), /not the picture its provenance names/);
   });
 
-  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street, the light-puzzle rooms\' props and Winter Walk\'s', () => {
+  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street, the light-puzzle rooms\' props, Winter Walk\'s and Le Voyage Violet\'s', () => {
     const made = json(MADE_DECOS).art;
     const ezc = Object.keys(made).filter((n) => n.startsWith('gz_ai_ezc_'));
     assert.deepEqual(ezc.sort(), ['gz_ai_ezc_glass_counter', 'gz_ai_ezc_hanging_lamp', 'gz_ai_ezc_round_table']);
@@ -409,6 +409,11 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     const om = Object.keys(made).filter((n) => n.startsWith('gz_ai_om_'));
     assert.deepEqual(om.sort(), ['gz_ai_om_eye', 'gz_ai_om_eye_socket', 'gz_ai_om_floor', 'gz_ai_om_foot', 'gz_ai_om_head', 'gz_ai_om_tube']);
     for (const n of om) assert.equal(made[n].code, 'public/js/quest-rooms/gwendolyn.js', n);
-    assert.equal(ezc.length + rig.length + ww.length + wh.length + om.length, Object.keys(made).length);
+    // Le Voyage Violet's stump and spiral stone (lane vviolet, G964): scene pictures drawn by js/purple-journey-scene.js; the stump 2x only.
+    const vv = Object.keys(made).filter((n) => n.startsWith('gz_ai_vv_'));
+    assert.deepEqual(vv.sort(), ['gz_ai_vv_spiral_stone', 'gz_ai_vv_stump']);
+    for (const n of vv) assert.ok(made[n].code === 'public/js/purple-journey-scene.js' && made[n].scene === 'purple_journey', n);
+    assert.ok(!made.gz_ai_vv_stump.file3 && made.gz_ai_vv_spiral_stone.file3);
+    assert.equal(ezc.length + rig.length + ww.length + wh.length + om.length + vv.length, Object.keys(made).length);
   });
 });

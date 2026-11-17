@@ -47,7 +47,7 @@ import {
   practiceStreetEcology,
   soilStreet,
 } from '../public/js/practice-streets.js?v=557238c1';
-import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=cec8f0ab';
+import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=d424c3d9';
 import { BUILT_ROOMS, QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=02f902e6';
 import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=77fee627';
