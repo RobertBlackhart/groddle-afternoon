@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 
 import {
   BUBBLE_ITEMS,
+  bubbleItemIcon,
+  bubbleItemPlace,
   GSJS_SKILL_PACKAGES,
   SKILL_BUBBLE,
   SKILL_BUBBLES,
@@ -23,9 +25,9 @@ import {
   skillBubbleWord,
   skillToolClass,
   skillToolFor,
-} from '../public/js/skill-bubbles.js?v=2a5ea48c';
+} from '../public/js/skill-bubbles.js?v=5da95e46';
 import { SKILL_BUBBLE_WORD } from '../public/js/realtime-client.js?v=73e1ae86';
-import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=8447f5f9';
+import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=76c3c80d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');
@@ -57,13 +59,16 @@ describe('skill-bubbles: which verb shows which word', () => {
     assert.equal(SKILL_BUBBLE.wh, 40);
     assert.equal(SKILL_BUBBLE.dy, -110);
     for (const [key, row] of Object.entries(SKILL_BUBBLES)) {
-      assert.ok(manifest[key], `${key} built`);
+      const art = row.overlay || key;
+      assert.ok(manifest[art], `${art} built`);
       // Every call cited (G923: each one, not only the first; a bare file name is in items/).
       for (const part of row.src.split(', ')) {
         const [name, line] = part.split(' ');
         const file = name.includes('/') ? name : `items/${name}`;
         const text = readFileSync(join(gsjs, file), 'utf8').split('\n');
-        assert.match(text[Number(line) - 1], new RegExp(`overlay_id\\s*[:=]\\s*'${key}'`), part);
+        // An overlay_id on the call, or (G923 part C) the announcement sent to the others naming the overlay just above it.
+        const near = text.slice(Math.max(0, Number(line) - 12), Number(line)).join('\n');
+        assert.match(near, new RegExp(`overlay_id\\s*[:=]\\s*'${art}'|overlay_key_to_url\\('${art}'\\)`), part);
       }
     }
     assert.match(readFileSync(join(gsjs, 'items/include/rook.js'), 'utf8'), /overlay_id:'rooked_revive'[^\n]*bubble_width: 75/);
@@ -95,7 +100,7 @@ describe('skill-bubbles: every skill package (G923)', () => {
         assert.ok(existsSync(join(root, 'public', def.path)), def.path);
       }
     }
-    for (const tool of BUBBLE_ITEMS) assert.ok(bubbleItemSheet(tool), `${tool} draws`);
+    for (const tool of BUBBLE_ITEMS) assert.ok(bubbleItemSheet(tool) || bubbleItemIcon(tool), `${tool} draws`);
     // The making packages' tools (smelting, spinning, crystallizing, refining): the Make panel's bubble.
     for (const tool of ['smelter', 'spindle', 'splendid_spindle', 'crystallizer', 'ore_grinder', 'grand_ol_grinder']) assert.ok(BUBBLE_ITEMS.includes(tool), tool);
   });
@@ -130,6 +135,58 @@ describe('skill-bubbles: every skill package (G923)', () => {
     assert.equal(skillToolClass('watering', { watering_can: 1, irrigator_9000: 1 }), 'irrigator_9000');
     assert.equal(skillToolClass('dig_dirt_pile', { shovel: 1 }), 'shovel');
     assert.equal(skillToolClass('soil_appreciation', {}), 'hoe');
+  });
+});
+
+describe('skill-bubbles: what else Glitch showed the street (G923 part C)', () => {
+  it('every item another client can be told about draws: its own sheet, or a musicblock\'s icon', () => {
+    for (const cls of BUBBLE_ITEMS) {
+      const def = bubbleItemSheet(cls);
+      const icon = bubbleItemIcon(cls);
+      assert.ok(def || icon, `${cls} draws`);
+      assert.ok(existsSync(join(root, 'public', def ? def.path : icon)), cls);
+    }
+    for (const cls of ['potion_rook_balm', 'potion_garden_water', 'fertilidust', 'sneezing_powder', 'wine_of_the_dead', 'musicblock_d_red_01', 'tinkertool']) assert.ok(BUBBLE_ITEMS.includes(cls), cls);
+    assert.ok(BUBBLE_ITEMS.length <= 26 * 26);
+  });
+
+  it('stands each kind where GSJS put it: tools 110 px up, potions 135, powders and musicblocks 120, all 40 px', { skip: !hasGsjs }, () => {
+    assert.deepEqual(bubbleItemPlace('pick'), { wh: 40, dy: -110 });
+    assert.deepEqual(bubbleItemPlace('potion_charades'), { wh: 40, dy: -135 });
+    assert.deepEqual(bubbleItemPlace('fertilidust'), { wh: 40, dy: -120 });
+    assert.deepEqual(bubbleItemPlace('musicblock_x_shiny_02'), { wh: 40, dy: -120 });
+    const at = (file, line) => readFileSync(join(gsjs, file), 'utf8').split('\n').slice(line - 1, line + 14).join('\n');
+    assert.match(at('items/potion_charades.js', 399), /delta_y: -135,\s*bubble: true,\s*width: 40,\s*height: 40/);
+    assert.match(at('items/fertilidust.js', 473), /delta_y: -120,\s*bubble: true,\s*width: 40,\s*height: 40/);
+    assert.match(at('items/musicblock_d_red_01.js', 153), /delta_y: -120,\s*bubble: true,\s*width: 40,\s*height: 40/);
+    assert.match(at('items/tinkertool.js', 489), /item_class: this\.class_tsid,\s*state: 'tool_animation'/);
+  });
+
+  it('the actor\'s own drawing asks for the bubble: bottles, shakers, musicblocks, repairs, the Wine pour, the crack', () => {
+    const read = (f) => readFileSync(join(root, 'public', f), 'utf8');
+    assert.match(read('js/potion-bottle-fx.js'), /engine\.query\?\.\('itemBubbleStarted', classTsid, durationMs, engine\)/);
+    assert.match(read('js/features/powders-feature.js'), /engine\.query\?\.\('itemBubbleStarted', classTsid, POWDER_SHAKE\.ms, engine\)/);
+    assert.match(read('js/features/homes-feature.js'), /'itemBubbleStarted', 'wine_of_the_dead', WOTD_TOOL\.durationMs, engine, \{ flipped: ap\.flipped \}/);
+    assert.match(read('js/features/artifacts-feature.js'), /'overlayBubbleStarted', 'petrified_open', use\.durationMs, engine/);
+    const game = read('game.js');
+    assert.match(game, /features\.query\('itemBubbleStarted', def\.classTsid, def\.durationMs, engine\)/);
+    assert.match(game, /features\.query\('itemBubbleStarted', 'tinkertool', plan\.durationMs, engine\)/);
+    assert.equal(skillBubbleFor('paper_tree', 'harvest'), 'trant_harvest');
+  });
+
+  it('online, a pour, a shake, a crack each send their word; solo none', () => {
+    const sent = [];
+    const online = fakeEngine('multiplayer', sent);
+    skillBubblesFeature.itemBubbleStarted('potion_rook_balm', 2500, online);
+    skillBubblesFeature.itemBubbleStarted('fertilidust', 3000, online);
+    skillBubblesFeature.itemBubbleStarted('wine_of_the_dead', 3000, online, { flipped: true });
+    skillBubblesFeature.overlayBubbleStarted('petrified_open', 2000, online);
+    skillBubblesFeature.itemBubbleStarted('apple', 2000, online);
+    assert.deepEqual(sent, [itemBubbleWord('potion_rook_balm', 2500), itemBubbleWord('fertilidust', 3000), itemBubbleWord('wine_of_the_dead', 3000, { flipped: true }), 'sp_petrified_open_2']);
+    assert.deepEqual(parseSkillBubbleWord('sp_petrified_open_2'), { key: 'petrified_open', durationMs: 2000 });
+    skillBubblesFeature.itemBubbleStarted('potion_rook_balm', 2500, fakeEngine('solo', sent));
+    assert.equal(sent.length, 4);
+    skillBubblesFeature.onStreetClear();
   });
 });
 

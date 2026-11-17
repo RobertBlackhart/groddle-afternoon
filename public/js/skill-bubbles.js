@@ -16,6 +16,14 @@
  * tool_animation for making.wait), which is how the smelter, spindles, grinders and the
  * Crystalmalizing Chamber's packages reach the others here (the Make panel runs them).
  *
+ * Glitch sent the same kind of bubble for other things the actor sees drawn (G923 part C; the
+ * research in lanes/sharefx/work/packages.md): a potion quaffed or poured (potion_*.js 399 and
+ * 490: 2.5 s at delta_y -135), a powder shaken (fertilidust.js 473 and the rest: 3 s at -120), a
+ * musicblock played (musicblock_*.js 153: its own art with no state, at -120), a Tinkertool
+ * repair (tinkertool.js 489), a Wine of the Dead pour (wine_of_the_dead.js 249: mirrored as the
+ * pour), a Paper Tree harvest (paper_tree.js 302) and a petrified rock cracked open
+ * (petrified_rock_small.js 199).
+ *
  * Online the actor sends one emote word (the server relays any [a-z0-9_]{1,24} word, hub.go
  * wordRe; every word here also fits the G892 client rule /^sp_[a-z_]{1,19}_\d{1,2}$/, so a
  * client from before G923 ignores the new ones):
@@ -28,13 +36,18 @@
  */
 
 import { OVERLAY_BUBBLE_URL, loadMoreOverlays, overlayBubbleBox, playOverlay } from './overlays.js?v=eda942a8';
-import { textureFromUrl } from './textures.js?v=8e0a8c38';
+import { loadTexture, textureFromUrl } from './textures.js?v=8e0a8c38';
 import { SPEECH_BUBBLE_Z } from './fx-z.js?v=18dda7e3';
 import { playItemOverlay } from './item-overlay.js?v=b12c43aa';
 import { jobWorkToolSheet } from './job-work-fx.js?v=e16ca80f';
 import { MAKE_TOOL_SHEETS } from './make-tool-sheets.js?v=6f758e09';
 import { ROCK_CATALOG } from './mining.js?v=c2964c53';
 import { PICK_SHEETS, nodeToolSheet } from './node-tools.js?v=47a93d54';
+import { MUSICBLOCK_CATALOG } from './musicblocks.js?v=f75d0a19';
+import { PACKED_SHEETS } from './packed-sheets-data.js?v=192c6f15';
+import { potionBottleClasses, potionBottleSheet } from './potion-bottles.js?v=17925871';
+import { powderShakerSheet } from './powder-shakers.js?v=fcd18855';
+import { WOTD_TOOL } from './wine-pour-fx.js?v=364e22d2';
 import { firstWorkingTool } from './tools.js?v=8516a0c3';
 
 /** inc_skill_packages.js 294-305: the bubble the others see. */
@@ -55,10 +68,14 @@ export const SKILL_BUBBLES = Object.freeze({
     wh: 40,
     src: 'items/include/trants.js 35, wood_tree.js 1060, paper_tree.js 642',
   },
-  trant_harvest: { on: Object.fromEntries(['trant_fruit', 'trant_egg', 'trant_bean', 'trant_bubble', 'trant_spice', 'trant_gas'].map((c) => [c, ['harvest']])), wh: 40, src: 'items/include/trants.js 250' },
+  // paper_tree.js 302: a Paper Tree's harvest sends the same overlay to the others (G923), with no package.
+  trant_harvest: { on: Object.fromEntries(['trant_fruit', 'trant_egg', 'trant_bean', 'trant_bubble', 'trant_spice', 'trant_gas', 'paper_tree'].map((c) => [c, ['harvest']])), wh: 40, src: 'items/include/trants.js 250, paper_tree.js 302' },
   // include/rook.js 128: bubble_width 75 for the longer word.
   rooked_revive: { on: { '*': ['rook_revive'] }, wh: 75, src: 'items/include/rook.js 128' },
   jellisac_scoop: { on: { jellisac: ['scoop'] }, wh: 40, src: 'items/jellisac.js 67' },
+  // G923: petrified_rock_small.js 199 (and medium, large): the crack's overlay to the others, once through,
+  // 2 s; no verb (features/artifacts-feature.js crackFx asks overlayBubbleStarted). The key fits the wire word.
+  petrified_open: { on: {}, overlay: 'petrified_rock_open_overlay', loop: false, wh: 40, src: 'items/petrified_rock_small.js 199' },
 });
 
 /** The overlay a timed verb shows the others, or null. Verb ids may carry a ':' suffix (feed:cherry). */
@@ -167,7 +184,17 @@ export function skillToolClass(key, inv = null, toolState = null) {
  * a code draws nothing.
  */
 const FIELD_TOOLS = Object.freeze(['pick', 'fancy_pick', 'shovel', 'ace_of_spades', 'hoe', 'high_class_hoe', 'scraper', 'super_scraper', 'hatchet', 'class_axe', 'watering_can', 'irrigator_9000', 'focusing_orb']);
-export const BUBBLE_ITEMS = Object.freeze([...new Set([...FIELD_TOOLS, ...Object.keys(MAKE_TOOL_SHEETS).sort()])]);
+const POWDERS = Object.freeze(Object.keys(PACKED_SHEETS.powders || {}).sort());
+const MUSICBLOCKS = Object.freeze(Object.keys(MUSICBLOCK_CATALOG).sort());
+export const BUBBLE_ITEMS = Object.freeze([...new Set([
+  ...FIELD_TOOLS,
+  ...Object.keys(MAKE_TOOL_SHEETS).sort(),
+  // G923 part C.
+  ...potionBottleClasses(),
+  ...POWDERS,
+  'wine_of_the_dead',
+  ...MUSICBLOCKS,
+])]);
 
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const codeOf = (i) => LETTERS[Math.floor(i / 26)] + LETTERS[i % 26];
@@ -191,6 +218,11 @@ function packedFromGrid(g) {
 export function bubbleItemSheet(classTsid) {
   const id = String(classTsid || '');
   if (PICK_SHEETS[id]) return PICK_SHEETS[id];
+  const potion = potionBottleSheet(id);
+  if (potion) return potion;
+  const powder = powderShakerSheet(id);
+  if (powder) return powder;
+  if (id === 'wine_of_the_dead') return packedFromGrid(WOTD_TOOL.sheet);
   const node = nodeToolSheet(id);
   if (node) return node;
   if (HOE_SHEETS[id]) return packedFromGrid(HOE_SHEETS[id]);
@@ -198,8 +230,23 @@ export function bubbleItemSheet(classTsid) {
   return grid ? packedFromGrid(grid) : null;
 }
 
-/** How the bubble stands over the actor: { wh, dy }. */
-export function bubbleItemPlace() {
+/**
+ * A musicblock's bubble shows the block itself (musicblock_*.js 153: item_class and no state, its
+ * first look): its pack icon, which is that art. Null for anything else.
+ */
+export function bubbleItemIcon(classTsid) {
+  return MUSICBLOCK_CATALOG[classTsid] ? `assets/sprites/icons/${classTsid}.webp` : null;
+}
+
+/**
+ * How the bubble stands over the actor: { wh, dy }. Always 40 x 40; 110 px up for a tool,
+ * 135 for a potion (potion_*.js 399, 490), 120 for a powder (fertilidust.js 473) and a
+ * musicblock (musicblock_*.js 153).
+ */
+export function bubbleItemPlace(classTsid) {
+  const id = String(classTsid || '');
+  if (potionBottleSheet(id)) return { wh: SKILL_BUBBLE.wh, dy: -135 };
+  if (powderShakerSheet(id) || MUSICBLOCK_CATALOG[id]) return { wh: SKILL_BUBBLE.wh, dy: -120 };
   return { wh: SKILL_BUBBLE.wh, dy: SKILL_BUBBLE.dy };
 }
 
@@ -255,7 +302,8 @@ export function playSkillBubble(engine, key, at, { durationMs = 2000, alive = nu
     return handle;
   }
   handle.done = loadMoreOverlays().then((manifest) => {
-    const meta = manifest?.[key];
+    const art = row.overlay || key;
+    const meta = manifest?.[art];
     if (!meta || handle.stopped) return false;
     const [sw, sh] = meta.stage;
     const k = row.wh / Math.max(sw, sh);
@@ -278,12 +326,12 @@ export function playSkillBubble(engine, key, at, { durationMs = 2000, alive = nu
       bubble.y = p.y;
     };
     place();
-    const h = playOverlay(PIXI, key, {
+    const h = playOverlay(PIXI, art, {
       layer,
       at: () => { const p = point(); return { x: p.x, y: p.y - box.artBottom }; },
       wh: row.wh,
       durationMs,
-      loop: true,
+      loop: row.loop !== false,
       alive,
       holdMs,
       zIndex: SPEECH_BUBBLE_Z + 1,
@@ -310,12 +358,25 @@ export function playSkillBubble(engine, key, at, { durationMs = 2000, alive = nu
 export function playItemBubble(engine, classTsid, at, { durationMs = 2000, flipped = false, alive = null, holdMs = null } = {}) {
   const { PIXI } = engine || {};
   const layer = engine?.fxLayer;
-  const def = bubbleItemSheet(classTsid);
+  const sheet = bubbleItemSheet(classTsid);
+  const icon = sheet ? null : bubbleItemIcon(classTsid);
   const handle = { item: classTsid, stopped: false, overlay: null, bubble: null, done: null, stop() { handle.stopped = true; handle.overlay?.stop(); } };
-  if (!def || !PIXI?.Sprite || !layer) {
+  if ((!sheet && !icon) || !PIXI?.Sprite || !layer) {
     handle.done = Promise.resolve(false);
     return handle;
   }
+  // A musicblock's icon: one frame, its size read once it loads (the item overlay loads the same raw file).
+  const ready = sheet
+    ? Promise.resolve(sheet)
+    : loadTexture(icon, { raw: true }).then((t) => packedFromGrid({ path: icon, fw: t.width, fh: t.height, cols: 1, frames: 1 }));
+  handle.done = ready.then((def) => (handle.stopped ? false : drawItemBubble(engine, handle, def, at, { durationMs, flipped, alive, holdMs }))).catch(() => false);
+  return handle;
+}
+
+function drawItemBubble(engine, handle, def, at, { durationMs, flipped, alive, holdMs }) {
+  const { PIXI } = engine;
+  const layer = engine.fxLayer;
+  const classTsid = handle.item;
   const { wh, dy } = bubbleItemPlace(classTsid);
   const [cw, ch] = def.cell;
   const k = wh / Math.max(cw, ch);
@@ -356,14 +417,10 @@ export function playItemBubble(engine, classTsid, at, { durationMs = 2000, flipp
     holdMs,
     zIndex: SPEECH_BUBBLE_Z + 1,
     label: `item-bubble-art:${classTsid}`,
-    onFrame: () => {
-      place();
-      if (!bubble.destroyed && h.sprite) bubble.alpha = h.sprite.alpha;
-    },
   });
   handle.overlay = h;
   if (handle.stopped) h.stop();
-  // The bubble follows the art's fade every frame, not only on a new frame.
+  // The bubble follows the art and takes its fade every frame.
   const raf = globalThis.requestAnimationFrame;
   const follow = () => {
     if (bubble.destroyed) return;
@@ -372,6 +429,5 @@ export function playItemBubble(engine, classTsid, at, { durationMs = 2000, flipp
     raf?.(follow);
   };
   raf?.(follow);
-  handle.done = h.done.finally(() => { if (!bubble.destroyed) bubble.destroy(); });
-  return handle;
+  return h.done.finally(() => { if (!bubble.destroyed) bubble.destroy(); });
 }

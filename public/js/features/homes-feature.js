@@ -3270,6 +3270,8 @@ function pourFx(engine, row) {
   pourOverlay?.end();
   const sheet = WOTD_TOOL.sheet;
   const tsid = engine.streetTsid;
+  // G923 (wine_of_the_dead.js 249-261): everyone else sees the bottle over you, mirrored as the pour is.
+  engine.query?.('itemBubbleStarted', 'wine_of_the_dead', WOTD_TOOL.durationMs, engine, { flipped: ap.flipped });
   pourSheets.load(sheet).then(() => {
     const frames = pourSheets.frames(sheet);
     // An itemstack_overlay goes in the overlay holder, over the street's front layers (AnnouncementController.as 503-540).

@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=78f94fa6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a338369b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8d96d597';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -4680,6 +4680,8 @@ function beginToolRepair(classTsid, copy = null, opts = {}) {
   }, plan.durationMs);
   activeToolRepair = { classTsid, timer, finishesAt };
   showToolRepairFx(quote.condition.label, plan.durationMs);
+  // G923 (tinkertool.js 489): everyone else sees the Tinkertool at work in a bubble over you.
+  features.query('itemBubbleStarted', 'tinkertool', plan.durationMs, engine);
   const reach = plan.full
     ? ''
     : ` · your energy takes it to ${Math.floor(((quote.condition.remaining + plan.points) / quote.condition.capacity) * 100)}%`;
@@ -8840,6 +8842,8 @@ function showMusicblockFx(def) {
   icon.x = player.x + 18;
   icon.y = player.y - 112;
   fxLayer.addChild(icon);
+  // G923 (musicblock_*.js 153): everyone else sees the block in a bubble over you for the tune.
+  features.query('itemBubbleStarted', def.classTsid, def.durationMs, engine);
 
   // G378 musicblock_*.js 139-151: Tiny Speck's musicblock_notes, 180 x 180 at delta 140, -100, for the tune.
   musicblockNotes?.stop();

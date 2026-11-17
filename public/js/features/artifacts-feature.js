@@ -250,6 +250,8 @@ function crackFx(engine, rock) {
     zIndex: 9000,
   });
   engine.setData?.('artifactCrackArt', `petrified_rock_open_overlay:${rock}`);
+  // G923 (petrified_rock_small.js 199): everyone else sees the crack in a 40 px bubble over you, 2 s.
+  engine.query?.('overlayBubbleStarted', 'petrified_open', use.durationMs, engine);
   return { handle };
 }
 

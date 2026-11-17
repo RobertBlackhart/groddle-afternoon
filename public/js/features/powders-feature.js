@@ -276,6 +276,8 @@ function playShaker(engine, classTsid) {
   const sheet = powderShakerSheet(classTsid);
   const layer = engine.fxLayer || engine.entityLayer;
   if (!sheet || !engine.PIXI || !layer || !engine.player) return null;
+  // G923: everyone else on the street sees the shaker in a bubble over you (fertilidust.js 473 and the rest).
+  engine.query?.('itemBubbleStarted', classTsid, POWDER_SHAKE.ms, engine);
   const hold = Number(engine.param?.('powdershakerhold'));
   return playItemOverlay(engine.PIXI, sheet, {
     layer,

@@ -26,6 +26,8 @@ export function playPotionBottle(engine, classTsid, target = null, { durationMs 
   const def = potionBottleSheet(classTsid);
   const layer = engine?.fxLayer || engine?.entityLayer;
   if (!def || !engine?.PIXI || !layer) return null;
+  // G923: everyone else on the street sees the bottle in a bubble over you (potion_*.js 399, 490).
+  engine.query?.('itemBubbleStarted', classTsid, durationMs, engine);
   const hold = Number(engine.param?.('potionbottlehold'));
   const holdMs = Number.isFinite(hold) && hold > 0 ? hold : null;
   const spr = target?.sprite && !target.sprite.destroyed ? target.sprite : null;

@@ -111,7 +111,7 @@ import { animalStatusLabel } from '../animals.js?v=9f460d2f';
 import { quoteAnimalKinship } from '../animal-kinship.js?v=d1fff152';
 import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0b948684';
 import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=90f3435a';
-import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=a36a1294';
+import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=0f3b9d84';
 import { ANIMAL_BODY, ANIMAL_PATROL, TREE_FOOTPRINT } from '../street-ecology.js?v=feeada1a';
 import {
   CHECK_ON_REMOVE,
