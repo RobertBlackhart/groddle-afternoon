@@ -61,7 +61,7 @@
  * spiritReminisceLast.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { STREET_SPIRIT_SPEECH_OFFSET } from '../speech-placement.js?v=0371ea0c';
 import {
@@ -102,7 +102,7 @@ import {
 } from '../conversations.js?v=7cbdfea4';
 import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=394cbaf0';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { questRoomConverse } from './quest-instances-feature.js?v=001cca45';
+import { questRoomConverse } from './quest-instances-feature.js?v=6d143a4b';
 import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=583a9254';
 import { questDoneAt } from '../quests.js?v=185186c2';
 

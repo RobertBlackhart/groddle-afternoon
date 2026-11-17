@@ -35,7 +35,7 @@
  * vendorNpcLast, vendorNpcWalk (class:pose:facing:x:held). &vendorwalkfrom=<ms> starts each vendor that far into its round (screenshots).
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
 import { VENDOR_PROFILES } from '../vendor.js?v=37538dca';
 import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';

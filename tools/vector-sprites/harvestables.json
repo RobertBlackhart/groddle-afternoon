@@ -2123,6 +2123,142 @@
      "mirror": false
     }
    ]
+  },
+  {
+   "name": "rock-metal-2",
+   "swf": "harvestable_resources/rock_metal/rock_metal_2/rock_metal_2.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_metal_2.webp",
+     "fw": 156,
+     "fh": 137,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-metal-3",
+   "swf": "harvestable_resources/rock_metal/rock_metal_3/rock_metal_3.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_metal_3.webp",
+     "fw": 184,
+     "fh": 92,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-dullite-2",
+   "swf": "harvestable_resources/rock_dullite/rock_dullite_2/rock_dullite_2.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_dullite_2.webp",
+     "fw": 131,
+     "fh": 130,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-dullite-3",
+   "swf": "harvestable_resources/rock_dullite/rock_dullite_3/rock_dullite_3.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_dullite_3.webp",
+     "fw": 180,
+     "fh": 82,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-beryl-2",
+   "swf": "harvestable_resources/rock_beryl/rock_beryl_2/rock_beryl_2.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_beryl_2.webp",
+     "fw": 146,
+     "fh": 129,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-beryl-3",
+   "swf": "harvestable_resources/rock_beryl/rock_beryl_3/rock_beryl_3.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_beryl_3.webp",
+     "fw": 184,
+     "fh": 98,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-sparkly-2",
+   "swf": "harvestable_resources/rock_sparkly/rock_sparkly_2/rock_sparkly_2.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_sparkly_2.webp",
+     "fw": 151,
+     "fh": 150,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
+  },
+  {
+   "name": "rock-sparkly-3",
+   "swf": "harvestable_resources/rock_sparkly/rock_sparkly_3/rock_sparkly_3.swf",
+   "sprite": 0,
+   "sheets": [
+    {
+     "path": "assets/sprites/mining/rock_sparkly_3.webp",
+     "fw": 173,
+     "fh": 88,
+     "cols": 5,
+     "frames": 5,
+     "swfStart": 1,
+     "swfCount": 6,
+     "mirror": false
+    }
+   ]
   }
  ]
 }

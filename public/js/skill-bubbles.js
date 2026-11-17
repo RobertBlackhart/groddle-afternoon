@@ -38,7 +38,7 @@
 import { OVERLAY_BUBBLE_URL, loadMoreOverlays, overlayBubbleBox, playOverlay } from './overlays.js?v=eda942a8';
 import { loadTexture, textureFromUrl } from './textures.js?v=8e0a8c38';
 import { SPEECH_BUBBLE_Z } from './fx-z.js?v=18dda7e3';
-import { playItemOverlay } from './item-overlay.js?v=b12c43aa';
+import { playItemOverlay } from './item-overlay.js?v=0c20633c';
 import { jobWorkToolSheet } from './job-work-fx.js?v=e16ca80f';
 import { MAKE_TOOL_SHEETS } from './make-tool-sheets.js?v=6f758e09';
 import { ROCK_CATALOG } from './mining.js?v=c2964c53';

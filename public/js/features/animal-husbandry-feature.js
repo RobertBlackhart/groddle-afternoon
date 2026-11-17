@@ -57,7 +57,7 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=55ad2f83';
@@ -114,14 +114,14 @@ import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-
 import { loseEnergy, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=47eac2ae';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=a353ba21';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=3aa97c01';
-import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=4c43bfeb';
+import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=570215e2';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
-import { createPackedLoader } from '../packed-sheets.js?v=56e7cb7e';
+import { createPackedLoader } from '../packed-sheets.js?v=2e19bbab';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';
 export const BATTERFLY_GROUP = 'batterfly';

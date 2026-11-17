@@ -67125,5 +67125,293 @@
    0.8963,
    0.8834
   ]
+ },
+ "assets/sprites/mining/rock_metal_2.webp": {
+  "animal": "rock-metal-2",
+  "swf": "harvestable_resources/rock_metal/rock_metal_2/rock_metal_2.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 156,
+  "fh": 137,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   0,
+   0
+  ],
+  "score": 0.9747,
+  "minFrame": 0.9716,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_metal_2@3x.webp",
+  "bytes": 172092,
+  "firstDraw": true,
+  "frameScores": [
+   0.9764,
+   0.9758,
+   0.9759,
+   0.9737,
+   0.9716
+  ]
+ },
+ "assets/sprites/mining/rock_metal_3.webp": {
+  "animal": "rock-metal-3",
+  "swf": "harvestable_resources/rock_metal/rock_metal_3/rock_metal_3.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 184,
+  "fh": 92,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   0,
+   0
+  ],
+  "score": 0.9763,
+  "minFrame": 0.9713,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_metal_3@3x.webp",
+  "bytes": 114204,
+  "firstDraw": true,
+  "frameScores": [
+   0.9803,
+   0.9781,
+   0.9776,
+   0.974,
+   0.9713
+  ]
+ },
+ "assets/sprites/mining/rock_dullite_2.webp": {
+  "animal": "rock-dullite-2",
+  "swf": "harvestable_resources/rock_dullite/rock_dullite_2/rock_dullite_2.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 131,
+  "fh": 130,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -36,
+   0
+  ],
+  "score": 0.9913,
+  "minFrame": 0.9841,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_dullite_2@3x.webp",
+  "bytes": 51944,
+  "firstDraw": true,
+  "frameScores": [
+   0.9946,
+   0.9946,
+   0.9916,
+   0.9916,
+   0.9841
+  ]
+ },
+ "assets/sprites/mining/rock_dullite_3.webp": {
+  "animal": "rock-dullite-3",
+  "swf": "harvestable_resources/rock_dullite/rock_dullite_3/rock_dullite_3.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 180,
+  "fh": 82,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -45,
+   0
+  ],
+  "score": 0.9918,
+  "minFrame": 0.9888,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_dullite_3@3x.webp",
+  "bytes": 54870,
+  "firstDraw": true,
+  "frameScores": [
+   0.9949,
+   0.9949,
+   0.9901,
+   0.9901,
+   0.9888
+  ]
+ },
+ "assets/sprites/mining/rock_beryl_2.webp": {
+  "animal": "rock-beryl-2",
+  "swf": "harvestable_resources/rock_beryl/rock_beryl_2/rock_beryl_2.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 146,
+  "fh": 129,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -15,
+   0
+  ],
+  "score": 0.9914,
+  "minFrame": 0.9821,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_beryl_2@3x.webp",
+  "bytes": 57032,
+  "firstDraw": true,
+  "frameScores": [
+   0.9956,
+   0.9956,
+   0.9919,
+   0.9919,
+   0.9821
+  ]
+ },
+ "assets/sprites/mining/rock_beryl_3.webp": {
+  "animal": "rock-beryl-3",
+  "swf": "harvestable_resources/rock_beryl/rock_beryl_3/rock_beryl_3.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 184,
+  "fh": 98,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -66,
+   0
+  ],
+  "score": 0.9916,
+  "minFrame": 0.9868,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_beryl_3@3x.webp",
+  "bytes": 67346,
+  "firstDraw": true,
+  "frameScores": [
+   0.9955,
+   0.9955,
+   0.99,
+   0.99,
+   0.9868
+  ]
+ },
+ "assets/sprites/mining/rock_sparkly_2.webp": {
+  "animal": "rock-sparkly-2",
+  "swf": "harvestable_resources/rock_sparkly/rock_sparkly_2/rock_sparkly_2.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 151,
+  "fh": 150,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -30,
+   -3
+  ],
+  "score": 0.9874,
+  "minFrame": 0.9764,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_sparkly_2@3x.webp",
+  "bytes": 124742,
+  "firstDraw": true,
+  "frameScores": [
+   0.9913,
+   0.9921,
+   0.9885,
+   0.9885,
+   0.9764
+  ]
+ },
+ "assets/sprites/mining/rock_sparkly_3.webp": {
+  "animal": "rock-sparkly-3",
+  "swf": "harvestable_resources/rock_sparkly/rock_sparkly_3/rock_sparkly_3.swf",
+  "sprite": 0,
+  "label": null,
+  "swfFrames": [
+   2,
+   6
+  ],
+  "swfLabelFrames": 6,
+  "cells": 5,
+  "fw": 173,
+  "fh": 88,
+  "mirror": false,
+  "shift": 1,
+  "offset3x": [
+   -30,
+   -3
+  ],
+  "score": 0.9865,
+  "minFrame": 0.9816,
+  "faintFrames": 0,
+  "faintMin": 1,
+  "drift": [],
+  "status": "ok",
+  "hires": "assets/sprites/mining/rock_sparkly_3@3x.webp",
+  "bytes": 144020,
+  "firstDraw": true,
+  "frameScores": [
+   0.9925,
+   0.9919,
+   0.9832,
+   0.9832,
+   0.9816
+  ]
  }
 }

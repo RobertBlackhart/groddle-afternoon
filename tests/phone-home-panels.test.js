@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decorDragTarget } from '../public/js/features/homes-feature.js?v=7ac80bed';
+import { decorDragTarget } from '../public/js/features/homes-feature.js?v=3c328baa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, 'public', p), 'utf8');
