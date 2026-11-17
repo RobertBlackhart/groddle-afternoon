@@ -95,3 +95,14 @@ describe('G948 A14: the island rock\'s 978 currants stand once per character', {
     assert.ok(r.rows.some(([k, ref, n]) => k === 'tut' && ref === 'islandcurrants:currants' && n === ISLAND_CURRANTS - 500));
   });
 });
+
+describe('G948 A25: the Egg Plant\'s egg is credited in training2, where it is harvested', { skip }, () => {
+  it('a training2 save\'s one egg stands with no budget; a second egg does not', () => {
+    const t2 = { newxp: { v: 1, status: 'active', stage: 'training2', flags: [] } };
+    const r = php('check', [none, credited(), save({ inv: { egg_plain: 1 }, features: t2 }), 0]);
+    assert.deepEqual(r.reconciled.clamped, none);
+    assert.deepEqual(r.credits.detail.tutorial, { egg_plain: 1 });
+    const two = php('check', [none, credited(), save({ inv: { egg_plain: 2 }, features: t2 }), 0]);
+    assert.deepEqual(two.reconciled.clamped, counts({ egg_plain: 1 }));
+  });
+});
