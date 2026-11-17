@@ -316,6 +316,6 @@ export function winterWalkObjective(state) {
   if (state.status === 'expired') return 'The winter path faded';
   if (state.status === 'complete') return 'Winter Walk complete';
   if (state.stage === 'haven') return 'Climb through Winter Haven and find the way out';
-  if (state.stage === 'return') return 'Gather the last winter motes and follow the light home';
+  if (state.stage === 'return') return 'Gather the last winter motes and walk into the blizzard to go home';
   return 'Cross the snowy path to Winter Haven';
 }

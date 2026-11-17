@@ -14,7 +14,7 @@ import {
   createWinterWalkState,
   winterMoteCapped,
   winterMoteLimitNotice,
-} from '../public/js/winter-walk.js?v=a5c63b75';
+} from '../public/js/winter-walk.js?v=6e67699f';
 import { QUEST_PLATE_CARDS, compactCount } from '../public/js/quest-plate.js?v=a0240f13';
 import { quoinLimitPrompt } from '../public/js/quoins.js?v=a4208821';
 

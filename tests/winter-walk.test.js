@@ -20,7 +20,7 @@ import {
   winterWalkObjective,
   winterWalkProgress,
   winterWalkRemainingMs,
-} from '../public/js/winter-walk.js?v=a5c63b75';
+} from '../public/js/winter-walk.js?v=6e67699f';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, '..', 'public');
@@ -99,9 +99,28 @@ test('client ships clean recovered exit art, three-phase routing, snow, and auto
   assert.match(game, /reenterWinterWalkStage/);
   assert.match(game, /surface>haven>return/);
   assert.match(game, /recovered-exit-ladder/);
-  assert.match(game, /white-home-light/);
+  assert.match(game, /blizzard-bank/);
   assert.match(game, /winterautoplay/);
   assert.match(game, /winterpreview/);
   assert.match(html, /id="winter-walk-hud"/);
   assert.match(css, /\.winter-walk-hud/);
+});
+
+test('G962: the passage is portal_wintry and the way home has no light (recording 2Xko9Hy-cLE)', () => {
+  const game = fs.readFileSync(path.join(publicDir, 'game.js'), 'utf8');
+  const start = game.indexOf('function spawnWinterPortal(');
+  const body = game.slice(start, game.indexOf('\nfunction ', start + 10));
+  // The code-drawn stand-ins are gone: no ellipse glows, no white beam, no snow_skirt overhang.
+  assert.doesNotMatch(body, /\.ellipse\(|\.rect\(-18, -206|white-home-light|ice-passage|snow_skirt_01b_al1/);
+  assert.match(game, /const WINTER_PASSAGE_DECO = 'portal_wintry'/);
+  assert.match(body, /sceneAnim\(PIXI, WINTER_PASSAGE_DECO/);
+  assert.match(body, /art = 'blizzard-bank'/);
+  for (const f of ['groddle/portal_wintry.webp', 'animated/portal_wintry.json', 'animated/portal_wintry.webp']) {
+    assert.ok(fs.existsSync(path.join(publicDir, 'assets', 'decos', f)), f);
+  }
+  // About 0.7 x 1.1 of a 125-unit player in the recording: 96 x 125 from the 200 x 260 file.
+  const scale = Number(game.match(/const WINTER_PASSAGE_SCALE = ([\d.]+)/)[1]);
+  assert.ok(Math.abs(260 * scale - 125) < 10 && Math.abs(200 * scale - 90) < 12);
+  // The homeward fade resets when the walk's atmosphere clears.
+  assert.match(game, /function clearWinterAtmosphere\(\) \{\n  if \(winterWalkFaded && player\) player\.alpha = 1;/);
 });

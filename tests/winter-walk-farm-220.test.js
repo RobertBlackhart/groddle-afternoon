@@ -38,7 +38,7 @@ import {
   winterMoteKind,
   winterWalkProgress,
   winterWalkRun,
-} from '../public/js/winter-walk.js?v=a5c63b75';
+} from '../public/js/winter-walk.js?v=6e67699f';
 import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=a4208821';
 
 const root = join(import.meta.dirname, '..');

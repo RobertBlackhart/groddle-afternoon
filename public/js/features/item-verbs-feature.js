@@ -49,7 +49,7 @@ import { homesFeature } from './homes-feature.js?v=f873085d';
 import { CROWNS_STREET } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { isRaceSceneTsid } from '../races.js?v=ab22a079';
-import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../winter-walk.js?v=a5c63b75';
+import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../winter-walk.js?v=6e67699f';
 import { ROOK_WOODS_STREET_ID } from '../rook-woods.js?v=5c325002';
 import { questSceneTsid } from '../quest-instance.js?v=2fdff4a7';
 

@@ -27,7 +27,7 @@ import {
   ensureWinterWalkStory,
   failInterruptedWinterWalk,
   noteWinterWalkEnd,
-} from '../public/js/winter-walk.js?v=a5c63b75';
+} from '../public/js/winter-walk.js?v=6e67699f';
 import { OFFER_OVERRIDES, QUEST_ROOMS, isBuiltRoom } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 
 const root = join(import.meta.dirname, '..');

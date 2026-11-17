@@ -206,6 +206,13 @@ export const WINTER_WALK_PILLARS = Object.freeze([
   Object.freeze({ x: 2560, top: -271, w: 170 }),
   Object.freeze({ x: 2720, top: -366, w: 160 }),
 ]);
+/**
+ * G962: the passage to Winter Haven floats in the air just past the tall pillar, its foot 30 over
+ * the pillar's top, as recording 2Xko9Hy-cLE shows at 1:32-1:34 (a soft white oval past the cliff
+ * top that the player jumps into from the cliff; reference only). The point is where the avatar's
+ * feet meet it (game.js spawnWinterPortal: within 62); the oval (portal_wintry) is drawn over it.
+ */
+export const WINTER_WALK_PASSAGE = Object.freeze({ x: 2840, y: -396 });
 /** The overhang's pieces (centre x), hung from the top at the cliffs' end. */
 export const WINTER_WALK_OVERHANG = Object.freeze([1300, 1760, 2160]);
 /**

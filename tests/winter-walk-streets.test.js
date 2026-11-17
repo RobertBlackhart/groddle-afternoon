@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=9f16f4ab';
 import { OWNED_STREETS, streetOwner } from '../public/js/location-events.js?v=7fd40f71';
 import { JUMP_GAP } from '../public/js/quest-rooms/puzzle-kit.js?v=85204cf2';
-import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../public/js/winter-walk.js?v=a5c63b75';
+import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../public/js/winter-walk.js?v=6e67699f';
 import {
   WINTER_HAVEN_BOARDWALK_Y,
   WINTER_HAVEN_FIRE_X,
@@ -36,15 +36,17 @@ import {
   WINTER_WALK_CURL_SPLAYS,
   WINTER_WALK_ICICLES,
   WINTER_WALK_OVERHANG,
+  WINTER_WALK_PASSAGE,
   WINTER_WALK_PILLARS,
   WINTER_WALK_SOURCE_TSID,
   WINTER_WALK_START,
   WINTER_WALK_TSID,
   isWinterStreetTsid,
   winterStreetEcology,
-} from '../public/js/winter-walk-streets.js?v=8a3f74b9';
-import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=ab4d4e00';
+} from '../public/js/winter-walk-streets.js?v=cbe116f2';
+import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=a1b9173f';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=33f40cb6';
+import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=a6f5a99b';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -380,5 +382,41 @@ describe('copy', () => {
       assert.doesNotMatch(JSON.stringify(s.why), /—/);
     }
     assert.doesNotMatch(readFileSync(join(pub, 'js/winter-walk-streets.js'), 'utf8'), /—/);
+  });
+});
+
+describe('G962: the passage to Winter Haven floats past the tall pillar (recording 2Xko9Hy-cLE 1:32-1:34)', () => {
+  const tall = WINTER_WALK_PILLARS.at(-1);
+  const plat = walk.platforms.find((q) => q.id === `plat_ww_pillar_${WINTER_WALK_PILLARS.length}`);
+  const edge = plat.x2; // street platforms are in street units, like the pillars
+  const TOUCH = 62; // game.js updateWinterWalk: the feet within 62 of the portal point
+  /** Closest the feet come to the passage on a run-and-jump (or a walk off) from x, y. */
+  const closest = (x, y, vy) => {
+    let best = Infinity;
+    for (let f = 0; f < 140; f += 1) {
+      x += WALK_MAX;
+      vy += GRAVITY;
+      y += vy;
+      best = Math.min(best, Math.hypot(x - WINTER_WALK_PASSAGE.x, y - WINTER_WALK_PASSAGE.y));
+    }
+    return best;
+  };
+
+  it('hangs in the air just right of the tall pillar, a little over its top', () => {
+    assert.equal(tall.top, -366);
+    assert.ok(WINTER_WALK_PASSAGE.x > edge && WINTER_WALK_PASSAGE.x - edge < 80, `${WINTER_WALK_PASSAGE.x} vs edge ${edge}`);
+    const over = tall.top - WINTER_WALK_PASSAGE.y;
+    assert.ok(over > 0 && over < 60, `foot ${over} over the pillar top`);
+    // Nothing to stand on under it but the floor far below.
+    for (const q of walk.platforms) {
+      if (q.x1 <= WINTER_WALK_PASSAGE.x && q.x2 >= WINTER_WALK_PASSAGE.x) assert.ok(q.y1 - WINTER_WALK_PASSAGE.y > 250, q.id);
+    }
+  });
+
+  it('one jump from the tall pillar reaches it, a jump from the floor does not', () => {
+    assert.ok(closest(edge - 20, tall.top, JUMP_SPEED) < TOUCH, 'run and jump off the pillar');
+    assert.ok(closest(edge, tall.top, 0) < TOUCH, 'or step off the pillar into it');
+    const apex = WINTER_WALK_START.y - (JUMP_SPEED * JUMP_SPEED) / (2 * GRAVITY);
+    assert.ok(apex - WINTER_WALK_PASSAGE.y > TOUCH + 60, 'out of reach from the floor');
   });
 });

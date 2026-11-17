@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=5dfc6bfe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e2fa4846';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=99b42d7d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -138,6 +138,7 @@ import {
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=efe3ca58';
+import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,
@@ -162,7 +163,7 @@ import {
   winterWalkProgress,
   winterWalkRemainingMs,
   winterWalkRun,
-} from './js/winter-walk.js?v=a5c63b75';
+} from './js/winter-walk.js?v=6e67699f';
 import {
   SUMMERS_DAY_ANNEX_BOWL,
   SUMMERS_DAY_ANNEX_FLOOR_Y,
@@ -19480,6 +19481,8 @@ function winterRoutePoints(stage, count) {
 }
 
 function clearWinterAtmosphere() {
+  if (winterWalkFaded && player) player.alpha = 1;
+  winterWalkFaded = false;
   if (winterSnow?.parent) winterSnow.parent.removeChild(winterSnow);
   if (winterSnow && !winterSnow.destroyed) winterSnow.destroy({ children: true });
   winterSnow = null;
@@ -19576,18 +19579,31 @@ function spawnWinterMotes(stage) {
   return winterWalkMotes;
 }
 
+/** G962: the passage to Winter Haven (portal_wintry, 200 x 260 file: 96 x 125 units, bottom 16 over the line). */
+const WINTER_PASSAGE_DECO = 'portal_wintry';
+const WINTER_PASSAGE_SCALE = 0.48;
+const WINTER_PASSAGE_LIFT = 16;
+const WINTER_PASSAGE_TINT = 0xd2daf3;
+/** The way home: the avatar fades from this far left of the exit spot to its trigger (62). */
+const WINTER_HOME_FADE_PX = 240;
+let winterWalkFaded = false;
+
 function spawnWinterPortal(stage) {
   const route = winterRouteCandidates(stage);
   const point = route[route.length - 1];
   const fallback = samplePlatformPoints(1)[0] || { x: WORLD_W - 140, y: GROUND_Y };
-  const spot = point || fallback;
+  // G962: the passage hangs in the air past the tall pillar (WINTER_WALK_PASSAGE, street units).
+  const passage = stage === 'surface' && currentStreetTsid === WINTER_WALK_STREET_ID
+    ? { x: WINTER_WALK_PASSAGE.x - WINTER_WALK_BOUNDS.l, y: WINTER_WALK_PASSAGE.y - WINTER_WALK_BOUNDS.t }
+    : null;
+  const spot = passage || point || fallback;
   const root = new PIXI.Container();
   root.name = `winter-portal-${stage}`;
   root.position.set(spot.x, spot.y + 2);
   root.zIndex = 48;
   root.hitArea = new PIXI.Rectangle(-66, -190, 132, 190);
 
-  let art = 'ice-passage';
+  let art = 'portal-wintry';
   if (stage === 'haven') {
     art = 'recovered-exit-ladder';
     const ladder = new PIXI.Sprite(
@@ -19604,26 +19620,22 @@ function spawnWinterPortal(stage) {
     sign.position.set(78, -112);
     sign.scale.set(0.9);
     root.addChild(sign);
+  } else if (stage === 'return') {
+    // G962: the way home has no light (recording 2Xko9Hy-cLE 2:56-3:00, Snaps 81936, 82325): you
+    // step off the tall pillar into the blizzard bank (js/winter-walk-streets.js walkFog*Decos) and
+    // fade into it; the exit is this invisible spot inside the bank, past the tall pillar.
+    art = 'blizzard-bank';
   } else {
-    const light = new PIXI.Graphics();
-    const returning = stage === 'return';
-    art = returning ? 'white-home-light' : art;
-    light.ellipse(0, -78, returning ? 108 : 46, returning ? 152 : 82).fill({ color: 0xffffff, alpha: returning ? 0.24 : 0.045 });
-    light.ellipse(0, -66, returning ? 56 : 26, returning ? 128 : 62).fill({ color: returning ? 0xf5feff : 0xcdf4ff, alpha: returning ? 0.52 : 0.12 });
-    if (returning) {
-      light.rect(-18, -206, 36, 206).fill({ color: 0xffffff, alpha: 0.34 });
-    }
-    root.addChild(light);
-
-    if (!returning) {
-      const ice = new PIXI.Sprite(
-        textureFromUrl('assets/decos/groddle/snow_skirt_01b_al1.png')
-      );
-      ice.anchor.set(0.5, 0);
-      ice.position.set(0, -174);
-      ice.scale.set(0.42);
-      root.addChild(ice);
-    }
+    // G962: the passage is Tiny Speck's portal_wintry, a feathered white oval with snowflakes falling
+    // in it (its own 115-frame loop), floating just over the walking line (recording 2Xko9Hy-cLE 1:33:
+    // about 0.7 x 1.1 of the player).
+    const oval = sceneAnim(PIXI, WINTER_PASSAGE_DECO, 0, -WINTER_PASSAGE_LIFT, { scale: WINTER_PASSAGE_SCALE });
+    // The recording's oval reads (227, 230, 246) against the sky; here it hangs in front of the white
+    // blizzard bank, so it takes that lavender as a tint and still shows.
+    oval.tint = WINTER_PASSAGE_TINT;
+    oval.label = 'winter-passage';
+    root.addChild(oval);
+    root._winterPulse = oval;
   }
   root._winterPortalArt = art;
 
@@ -19862,7 +19874,7 @@ async function reenterWinterWalkStage() {
     if (!winterWalkState) return false;
     savePlayerLocation(winterWalkSourceLocation);
     pushActivity('You climb back into Winter Walk. Three bright motes mark the way home.');
-    toast('Winter Walk: gather the last motes and follow the light.', 3200);
+    toast('Winter Walk: gather the last motes, then walk into the blizzard.', 3200);
     return true;
   } finally {
     winterWalkTransitionBusy = false;
@@ -19985,6 +19997,19 @@ function updateWinterWalk(dt) {
     if (!menuTarget && quoinTouches(entry.sprite, player.x, player.y, { scale: moteBody, quoinScale: entry.sprite.baseScale })) {
       collectWinterWalkMote(entry);
     }
+  }
+  const portalRoot = winterWalkPortal?.sprite;
+  if (portalRoot?._winterPulse) {
+    const k = 1 + Math.sin(now / 520) * 0.04;
+    portalRoot._winterPulse.scale.set(WINTER_PASSAGE_SCALE * k);
+    portalRoot._winterPulse.alpha = 0.92 + Math.sin(now / 700) * 0.08;
+    syncAnim(portalRoot._winterPulse);
+  }
+  if (player && portalRoot && winterWalkState.stage === 'return') {
+    const d = Math.hypot(portalRoot.x - player.x, portalRoot.y - player.y);
+    const k = Math.min(1, Math.max(0, (d - 62) / (WINTER_HOME_FADE_PX - 62)));
+    player.alpha = 0.15 + 0.85 * k;
+    winterWalkFaded = k < 1;
   }
   if (
     !menuTarget &&

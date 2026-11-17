@@ -34,7 +34,7 @@ import {
   villaLayerX,
   villaLayerY,
 } from '../public/js/louise-pasture-villa.js?v=01066f39';
-import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=ab4d4e00';
+import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=a1b9173f';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
