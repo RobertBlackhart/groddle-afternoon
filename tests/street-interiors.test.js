@@ -17,7 +17,7 @@ import {
   ecologyForStreet,
   interiorReason,
   populationForStreet,
-} from '../public/js/street-ecology.js?v=b0c9db4b';
+} from '../public/js/street-ecology.js?v=9ee1ed3f';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));

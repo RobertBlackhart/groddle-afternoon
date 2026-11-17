@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JELLISAC_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
-import { FRONT_SEE_THROUGH, MEASURED_NODE_COVERS, frontDrift, streetEcologyAliases } from '../public/js/street-ecology.js?v=b0c9db4b';
+import { FRONT_SEE_THROUGH, MEASURED_NODE_COVERS, frontDrift, streetEcologyAliases } from '../public/js/street-ecology.js?v=9ee1ed3f';
 import { decoCovers } from '../public/js/barnacle-walls.js?v=f6598c43';
 import { DECO_TWINS } from '../public/js/street-render.js?v=a1ce9368';
 

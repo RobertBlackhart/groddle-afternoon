@@ -29,7 +29,7 @@
  * window.groddleButlerIm in multiplayer.
  */
 
-import { butlerApi } from './butler-feature.js?v=e9be24a5';
+import { butlerApi } from './butler-feature.js?v=2184ca8f';
 import { BUTLER_STRINGS } from '../butler.js?v=57456a7f';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, imDelayMs, imLine, normalizeImPrefs, parseButlerIm } from '../butler-im.js?v=44783638';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';

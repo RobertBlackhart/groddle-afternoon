@@ -10,8 +10,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-import { CREATURE_PATHS, PATH_STEP, PIGGY_PLAN_ROOTS, PIGGY_ROOT, followPath, pathFrom, pathTime, piggyPlan, piggyWalkAt, chickenSeed } from '../public/js/street-creatures.js?v=1af2dc4a';
-import { createStreetCopy, reconcile, streetPigIndex, takeObjs } from '../public/js/street-objects.js?v=ef88d70e';
+import { CREATURE_PATHS, PATH_STEP, PIGGY_PLAN_ROOTS, PIGGY_ROOT, followPath, pathFrom, pathTime, piggyPlan, piggyWalkAt, chickenSeed } from '../public/js/street-creatures.js?v=39ab3fa7';
+import { createStreetCopy, reconcile, streetPigIndex, takeObjs } from '../public/js/street-objects.js?v=f118079c';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
 
 const root = join(import.meta.dirname, '..');

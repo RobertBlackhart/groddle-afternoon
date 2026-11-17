@@ -18,12 +18,12 @@ import {
   verbResponse,
 } from '../public/js/verb-responses.js?v=3ceb8a8c';
 import { VERB_RESPONSE_POOLS } from '../public/js/verb-responses-data.js?v=0b948684';
-import { runVerb } from '../public/content.js?v=ba801a5c';
+import { runVerb } from '../public/content.js?v=7603825b';
 import { setTrantTables, createTrantState } from '../public/js/trants.js?v=4d6f5593';
 import { setMetabolicLossGate } from '../public/js/metabolics.js?v=1383e6fd';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=bac50225';
-import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=f62c5897';
-import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=aa86d5cc';
+import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=009e8672';
+import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=1296084a';
 import { createKitty, petKitty } from '../public/js/heli-kitties.js?v=addb573f';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 
