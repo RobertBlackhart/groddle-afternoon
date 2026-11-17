@@ -16,7 +16,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { dropTargetIds, registerDropTarget, resolveDrop, currentDrag, beginDrag, dragDrop, endDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 import { dropPage, fakeSlot, touchDrop, mouseDrop } from './drop-fake.js';
-import { worldDropFeature } from '../public/js/features/world-drop-feature.js?v=cc56cab4';
+import { worldDropFeature } from '../public/js/features/world-drop-feature.js?v=999cb78c';
 import { gardenGuanoFeature } from '../public/js/features/garden-guano-feature.js?v=70b81650';
 import { createGarden } from '../public/js/garden.js?v=d4e55862';
 
@@ -67,6 +67,7 @@ describe('one registry (R9, G967)', () => {
       'js/features/homes-feature.js': ['home-decorate', 'home-pour', 'home-display-box'],
       'js/features/garden-guano-feature.js': ['garden'],
       'js/features/world-drop-feature.js': ['world'],
+      'js/butler-drop.js': ['butler'],
     };
     const orders = {};
     for (const [f, ids] of Object.entries(want)) {
@@ -80,8 +81,9 @@ describe('one registry (R9, G967)', () => {
     }
     const asked = Object.keys(orders).sort((a, b) => orders[a] - orders[b]);
     // DragVO.as findDragTargetForStack: windows over the room first; then players (not while
-    // decorating, which asks first and takes the room), plots, and the location's things last.
-    assert.deepEqual(asked, ['vendor', 'trade', 'cabinet', 'cabinet-out', 'pack', 'home-decorate', 'gift', 'home-pour', 'home-display-box', 'garden', 'world']);
+    // decorating, which asks first and takes the room), plots, and the location's things last
+    // (G972: a friend's Butler is one of them, asked before the street's other things).
+    assert.deepEqual(asked, ['vendor', 'trade', 'cabinet', 'cabinet-out', 'pack', 'home-decorate', 'gift', 'home-pour', 'home-display-box', 'garden', 'butler', 'world']);
   });
 
   it('the pack bar\'s mouse drag and its touch lift both go through the registry', () => {

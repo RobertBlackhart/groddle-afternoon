@@ -54,8 +54,11 @@ function showTip(text, no, x, y) {
   tip.classList.toggle('is-left', room > 0 && tip.offsetWidth > room);
 }
 
+/** G972: the Butler's drop target (js/butler-drop.js) shows its tip in the same place. */
+export { showTip as showWorldDropTip };
+
 /** The world point under a client point (the canvas's view scaled to the entity layer). */
-function worldPoint(engine, canvas, clientX, clientY) {
+export function worldPoint(engine, canvas, clientX, clientY) {
   const rect = canvas?.getBoundingClientRect?.();
   if (!rect?.width || !engine.entityLayer || !engine.PIXI) return null;
   const k = (engine.camera?.w || 960) / rect.width;

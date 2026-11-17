@@ -170,6 +170,8 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=eeba8bcb';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=67b880de';
+import { worldPoint } from './world-drop-feature.js?v=999cb78c';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=77d57cda';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
@@ -716,7 +718,7 @@ function createSession(engine, client) {
     box.x = x;
     box.y = (Number(groundY) || engine.groundY || 0) + 2;
     engine.entityLayer.addChild(box);
-    const me2 = { box, sprite: null, painter: null, source: null, target: null, t: 0, greeted: false, busy: false, name: b.name };
+    const me2 = { box, sprite: null, painter: null, source: null, target: null, t: 0, greeted: false, busy: false, full: '', name: b.name };
     vb = me2;
     const paint = (rig) => {
       if (vb !== me2 || box.destroyed || !rig) return;
@@ -880,8 +882,8 @@ function createSession(engine, client) {
     const seen = new Map();
     for (const slot of listPackItemSlots(engine.inv) || []) {
       const cls = slot.classTsid;
-      const tags = ITEM_CATALOG[cls]?.tags || [];
-      if (!cls || tags.includes('no_trade') || tags.includes('quest-item') || tags.includes('no_drop') || /^(bag_|furniture_|trophy_)/.test(cls)) continue;
+      // G972: the one rule for the menu and a drag onto the Butler (js/butler-drop.js butlerCarries).
+      if (!cls || cls === GIFT_WRAPPED_CLASS || !butlerCarries(cls)) continue;
       if (!seen.has(cls)) seen.set(cls, countItem(engine.inv, cls));
     }
     const out = [...seen].filter(([, n]) => n > 0).map(([c, n]) => ({ c, n }));
@@ -893,16 +895,39 @@ function createSession(engine, client) {
     return out;
   }
 
-  function leavePackage() {
+  /**
+   * The count chooser's top: what is held, no more than the class's stackmax (main.js 5420-5425,
+   * leave_package's limit_target_count_to_stackmax).
+   */
+  function leaveMax(st) {
+    const cap = Number(ITEM_CATALOG[st.c]?.stackMax);
+    return Math.max(1, Number.isFinite(cap) && cap > 0 ? Math.min(st.n, cap) : st.n);
+  }
+
+  /**
+   * The Butler's leave package (its menu), or G972 a stack dragged onto it (`drop`: { cls, count }):
+   * the same flow, the dragged class chosen. A single one goes straight to the Butler's question; a
+   * stack opens the count chooser at the dragged count (LocationInputHandler.as 600-631 opened the
+   * verb with the stack, requires_target_item_count).
+   */
+  function leavePackage(drop = null) {
     if (!visit?.butler || vb?.busy) return;
-    const stacks = giftableStacks();
-    if (!stacks.length) return butlerSay(BT.nothingToGive);
+    const all = giftableStacks();
+    const stacks = drop ? all.filter((st) => st.c === drop.cls) : all;
+    if (!stacks.length) return butlerSay(drop && all.length ? BT.packageTypeFail : BT.nothingToGive);
+    if (drop && stacks.length === 1 && leaveMax(stacks[0]) === 1) {
+      engine.setData?.('butlerLeaveFrom', 'drop');
+      return confirmPackage(stacks[0].c, 1, stacks[0].box || null);
+    }
+    engine.setData?.('butlerLeaveFrom', drop ? 'drop' : 'menu');
     vb.busy = true;
     let pick = stacks[0];
+    const first = drop ? Math.min(leaveMax(pick), Math.max(1, Math.floor(Number(drop.count) || 1))) : 1;
     openBox(BT.pickTitle, (panel) => {
       panel.append(el('p', { class: 'keys-sub' }, BT.pickHint));
       const grid = el('div', { class: 'butler-stacks', 'data-butler-stacks': '' });
-      const count = el('input', { type: 'number', min: '1', max: String(pick.n), value: '1', 'data-butler-count': '', 'aria-label': BT.howMany });
+      const count = el('input', { type: 'number', min: '1', max: String(leaveMax(pick)), value: String(first), 'data-butler-count': '', 'aria-label': BT.howMany });
+      count.value = String(first);
       for (const st of stacks) {
         const words = st.box ? boxLabel(st.box) : `${itemLabel(st.c, 1)} ×${st.n}`;
         const b = el('button', { type: 'button', 'data-butler-stack': st.c, ...(st.box ? { 'data-butler-gift-box': st.box.id } : {}), 'aria-pressed': String(st === pick), title: st.box ? words : itemLabel(st.c, st.n) });
@@ -911,8 +936,8 @@ function createSession(engine, client) {
         b.append(document.createTextNode(words));
         b.addEventListener('click', () => {
           pick = st;
-          count.max = String(st.n);
-          count.value = String(Math.min(Number(count.value) || 1, st.n));
+          count.max = String(leaveMax(st));
+          count.value = String(Math.min(Number(count.value) || 1, leaveMax(st)));
           for (const o of grid.querySelectorAll('button')) o.setAttribute('aria-pressed', String(o === b));
         });
         grid.append(b);
@@ -922,7 +947,7 @@ function createSession(engine, client) {
       label.append(count);
       const ok = el('button', { type: 'button', class: 'key-act', 'data-butler-leave': '' }, BT.leave);
       ok.addEventListener('click', () => {
-        const n = Math.max(1, Math.min(pick.n, Math.floor(Number(count.value) || 1)));
+        const n = Math.max(1, Math.min(leaveMax(pick), Math.floor(Number(count.value) || 1)));
         closeBox(false);
         confirmPackage(pick.c, n, pick.box || null);
       });
@@ -981,6 +1006,36 @@ function createSession(engine, client) {
       notice(T.offline, 3000);
     }
   }
+
+  // G972: a pack stack dragged onto the owner's Butler leaves it as a package (js/butler-drop.js), by
+  // the mouse or the touch lift; the avatar walks into reach first, as the menu's leave package does.
+  const gameCanvas = () => document.querySelector?.('#game-root > canvas') || null;
+
+  function canLeave(cls) {
+    if (cls === GIFT_WRAPPED_CLASS) return giftableStacks().some((st) => st.c === cls);
+    return butlerCarries(cls) && countItem(engine.inv, cls) > 0;
+  }
+
+  function dropPackage(drop) {
+    if (!visit?.butler || !vb?.target || vb.busy) return;
+    const verb = { ...BV.leavePackage, enabled: true, reason: '' };
+    if (!engine.requestVerb) return leavePackage(drop);
+    engine.requestVerb(vb.target, verb, { run: () => leavePackage(drop) });
+  }
+
+  registerButlerDrop({
+    engine,
+    scope: gameCanvas,
+    butlerAt(x, y) {
+      if (!visit?.butler || !vb?.target) return null;
+      const canvas = gameCanvas();
+      const p = canvas && worldPoint(engine, canvas, x, y);
+      if (!p || engine.interactableAt?.(p.x, p.y)?.classId !== VISITOR_BUTLER_CLASS) return null;
+      return { target: vb.target, mine: visit.owner === me(), busy: vb.busy, full: vb.full || '' };
+    },
+    takes: canLeave,
+    leave: dropPackage,
+  });
 
   // —— Slice 2: my own Butler, holding what real visitors left ——
 
@@ -1428,6 +1483,8 @@ function createSession(engine, client) {
     if (!visit || Number(msg.owner) !== visit.owner) return;
     const item = msg.item && typeof msg.item === 'object' ? { c: String(msg.item.c || ''), n: Math.max(0, Math.floor(Number(msg.item.n) || 0)) } : null;
     if (msg.status !== 'settled') {
+      // G972: a Butler that said it is full refuses a drag in red from then on this visit (bag_butler.js 1032-1036).
+      if (vb && msg.why === 'full' && msg.item) vb.full = String(msg.text || BT.packageFail);
       butlerSay(String(msg.text || BT.packageFail));
       return;
     }
