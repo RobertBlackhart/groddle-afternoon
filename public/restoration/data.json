@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2522,
+  "commits": 2526,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A planned Jellisac stands on flat floor where you can see it, not behind a curtain or inside a pipe"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A Jellisac seated in a hole sits in the hole's opening, turned holes included, and takes an open hole before one art covers"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "A spot given only as an x (demo links, the home page shots, the tutorial autoplay) stands on the street's ground, not up a tree"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "On a phone, pinned quests are one round button in the top bar"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Uralia Completist's badge text says six streets, as it now asks"
    }
   ]
  },
