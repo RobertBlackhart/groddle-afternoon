@@ -26,17 +26,19 @@ import { planStreetQuoins } from '../public/js/quoins.js?v=a4208821';
 import {
   QURAZY_ZONE,
   QURAZY_OVERLAY,
+  QURAZY_CLEAR_OF,
   QURAZY_PILL_GAP,
   QURAZY_PLACEMENT_GROUP,
   boxesOverlap,
+  lowestBottomOver,
   qurazyBannerBox,
   qurazyBannerTopY,
   qurazyFeature,
   qurazyFeatureState,
   qurazyStreetEligible,
   resetQurazyFeatureForTests,
-} from '../public/js/features/qurazy-feature.js?v=879ee1c3';
-import * as qurazyModule from '../public/js/features/qurazy-feature.js?v=879ee1c3';
+} from '../public/js/features/qurazy-feature.js?v=e0e9d60f';
+import * as qurazyModule from '../public/js/features/qurazy-feature.js?v=e0e9d60f';
 import { GENTLE_ISLAND } from '../public/js/newxp.js?v=6d95626b';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -359,6 +361,26 @@ describe('the spawn banner and the street-name pill (G274)', () => {
 
   it('never moves it up: a pill already clear of the banner keeps -5%', () => {
     assert.equal(qurazyBannerTopY({ height: 540, scale: 1, boxTop, pillBottom: -40 }), -0.05);
+  });
+});
+
+// G927 (#456): upright on a phone the route card and the quest step line stand under the street-name pill,
+// and the banner lay over the route card; it goes under the lowest of the three over its own columns.
+describe('the spawn banner clears the route card and the step line (G927, #456)', () => {
+  const box = (left, top, right, bottom) => ({ left, top, right, bottom, width: right - left, height: bottom - top });
+  it('the lowest shown box over the banner\'s columns', () => {
+    const pill = box(84, 52, 300, 96);
+    const card = box(64, 104, 324, 160);
+    assert.equal(lowestBottomOver([pill, card], { left: 0, right: 384 }), 160, 'upright: under the route card');
+    assert.equal(lowestBottomOver([pill, null, box(0, 0, 0, 0)], { left: 0, right: 384 }), 96, 'a hidden card moves nothing');
+    assert.equal(lowestBottomOver([box(499, 4, 782, 48), box(986, 100, 1220, 143)], { left: 420, right: 860 }), 48, 'a wide window: the card off to the side');
+    assert.equal(lowestBottomOver([pill, card], null), 160, 'no columns known: every box');
+    assert.equal(lowestBottomOver([], { left: 0, right: 10 }), null);
+  });
+  it('the feature measures the pill, the route card and the step line while it is out', () => {
+    assert.deepEqual([...QURAZY_CLEAR_OF], ['#street-nameplate', '.route-gps', '#quest-pins-btn[data-line="on"] .qpb-line']);
+    const src = readFileSync(join(PUBLIC, 'js/features/qurazy-feature.js'), 'utf8');
+    assert.match(src, /pillBottom: chromeBottomIn\(c, span\)/);
   });
 });
 

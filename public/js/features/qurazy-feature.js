@@ -123,11 +123,33 @@ export function qurazyBannerTopY({ height, scale = 1, boxTop = 0, pillBottom = n
   return drawnTop >= want ? topY : (want - boxTop * scale) / height;
 }
 
-/** The street-name pill's bottom edge in px from the viewport canvas's top, or null when it is not shown. */
-function pillBottomIn(c) {
-  const pill = document.getElementById('street-nameplate')?.getBoundingClientRect();
-  if (!pill?.width || !pill.height) return null;
-  return pill.bottom - c.top;
+/**
+ * G927 (#456): what stands under the top bar where the banner lands. Upright on a phone the route card
+ * (js/features/map-routes-feature.js .route-gps, G860) and the quest step line (js/ui/quest-pin-button.js,
+ * while it is out) sit below the street-name pill, and the banner lay over them; it goes under the lowest.
+ */
+export const QURAZY_CLEAR_OF = Object.freeze(['#street-nameplate', '.route-gps', '#quest-pins-btn[data-line="on"] .qpb-line']);
+
+/**
+ * PURE (G927): the lowest bottom edge among the shown boxes ({ left, right, top, bottom, width, height },
+ * any one px space) that share columns with `span` ({ left, right }; null: every box), or null when none.
+ * A route card off to the side of a wide window never meets the banner, so it moves nothing.
+ */
+export function lowestBottomOver(rects, span = null) {
+  let low = null;
+  for (const r of rects || []) {
+    if (!r?.width || !r.height) continue;
+    if (span && !(r.left < span.right && r.right > span.left)) continue;
+    if (low === null || r.bottom > low) low = r.bottom;
+  }
+  return low;
+}
+
+/** The lowest of QURAZY_CLEAR_OF's bottom edges over the banner's columns, in px from the viewport canvas's top, or null. */
+function chromeBottomIn(c, span) {
+  const rects = QURAZY_CLEAR_OF.map((sel) => document.querySelector(sel)?.getBoundingClientRect());
+  const low = lowestBottomOver(rects, span);
+  return low === null ? null : low - c.top;
 }
 
 /**
@@ -209,7 +231,10 @@ async function showSpawnOverlay(engine) {
   const meta = await loadOverlayManifest().then((m) => m?.[QURAZY_OVERLAY.key] || null, () => null);
   if (run !== bannerRun) return;
   const boxTop = meta?.box?.[1] ?? 0;
-  const topY = qurazyBannerTopY({ height: c.height, scale, boxTop, pillBottom: pillBottomIn(c) });
+  // The banner's columns (its x is the source's; top_y moves it up and down only), in viewport px.
+  const across = qurazyBannerBox(meta, rect, { scale });
+  const span = across ? { left: across.left + r.left, right: across.right + r.left } : null;
+  const topY = qurazyBannerTopY({ height: c.height, scale, boxTop, pillBottom: chromeBottomIn(c, span) });
   engine.setData?.('qurazyOverlay', 'playing');
   engine.setData?.('qurazyOverlayTopY', String(Math.round(topY * 1000) / 1000));
   const box = qurazyBannerBox(meta, rect, { topY, scale });

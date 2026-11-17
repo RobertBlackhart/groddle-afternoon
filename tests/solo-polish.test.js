@@ -23,9 +23,9 @@ import { accountBackupFeature } from '../public/js/features/account-backup-featu
 import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=03932c2d';
 import { yardVerbsMpFeature } from '../public/js/features/yard-verbs-mp-feature.js?v=4afe68a6';
 import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=eda3419c';
-import { qurazyFeature, resetQurazyFeatureForTests } from '../public/js/features/qurazy-feature.js?v=879ee1c3';
+import { qurazyFeature, resetQurazyFeatureForTests } from '../public/js/features/qurazy-feature.js?v=e0e9d60f';
 import { QURAZY_SPAWN_LINE } from '../public/js/qurazy.js?v=3c304077';
-import { QURAZY_PLACEMENT_GROUP } from '../public/js/features/qurazy-feature.js?v=879ee1c3';
+import { QURAZY_PLACEMENT_GROUP } from '../public/js/features/qurazy-feature.js?v=e0e9d60f';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from '../public/js/panel-copy.js?v=85c3e029';
 
 const root = join(import.meta.dirname, '..');
