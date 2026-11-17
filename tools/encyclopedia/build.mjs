@@ -31,6 +31,7 @@ import { neverReleased, neverReleasedNote, neverReleasedTag } from './never-rele
 import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
 import { regionMoreStreets, regionStreetName, streetPage, streetsIndex } from './streets.mjs';
 import { storePage } from './stores.mjs';
+import { subwayPage } from './subway.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = 'encyclopedia';
@@ -238,13 +239,17 @@ export async function buildEncyclopedia(data = null) {
     else put(`${OUT}/${sec.key}/index.html`, sectionIndex(sec, list, info, d.nameOf));
   }
 
+  // G917 (#445): the Subway System map (subway.mjs), drawn here as the game draws it.
+  const subway = await subwayPage({ d, P: makeParts('../../', info, d.nameOf), p: '../../', info });
+  put(`${OUT}/subway/index.html`, shell({ p: '../../', title: subway.title, description: subway.description, body: subway.body, css: 'encyclopedia/streets.css' }));
+
   // Search: every entry, items included.
   const search = [
     ...[...items.values()].map((it) => ({ s: 'items', id: it.id, n: it.name, st: it.status, ic: it.icon?.src || '', h: pathOf(`item:${it.id}`) })),
     ...[...entries.values()].map((e) => ({ s: e.section, id: e.id, n: e.name, g: e.group || '', st: e.status, ic: e.icon?.src || '', h: pathOf(e.key) })),
   ];
   put(`${OUT}/search.json`, `${JSON.stringify({ sections: [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))], statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), entries: search }).replace(/\{"s":/g, '\n{"s":')}\n`);
-  put(`${OUT}/index.html`, homePage(bySection, items, info, d.nameOf));
+  put(`${OUT}/index.html`, homePage(bySection, items, info, d.nameOf, subway.count));
 
   const keys = committedMap();
   for (const path of Object.keys(files)) if (path.endsWith('.html')) files[path] = keyAssetUrls(files[path], path, keys);
@@ -776,7 +781,7 @@ ${groups.map((g) => { const pic = list.find((e) => e.group === g && e.icon)?.ico
   return shell({ p, title: `${sec.label} · Groddle Encyclopedia`, description: `${sec.blurb} ${inCount} of ${list.length}${sec.noun ? ` ${sec.noun}` : ''} are in the Groddle Afternoon remake.`, body, script: true, css: sec.css });
 }
 
-function homePage(bySection, items, info, nameOf) {
+function homePage(bySection, items, info, nameOf, stations = 0) {
   const p = '../';
   const P = makeParts(p, info, nameOf);
   const itemsIn = [...items.values()].filter((i) => inRemake(i.status)).length;
@@ -790,6 +795,8 @@ function homePage(bySection, items, info, nameOf) {
   const cards = [
     card('items/', 'Items', items.size, `Every item, how to get it and what it is for. ${fmt(itemsIn)} are in the remake.`, info('item:apple')?.icon),
     ...SECTIONS.map((s) => card(`${s.key}/`, s.label, s.cardCount ? s.cardCount(bySection[s.key]) : bySection[s.key].length, blurbOf(s), info(sample[s.key] || s.sample)?.icon || bySection[s.key][0]?.icon)),
+    // G917 (#445): the Subway System map (subway.mjs).
+    card('subway/', 'Subway map', `${fmt(stations)} stations`, 'The Red Line and the Blue Line under Ur, drawn as the game’s Map window draws them, and the street each station comes up on.', info('item:subway_map')?.icon),
   ];
   const body = `
   <header class="masthead note-head cat-head">

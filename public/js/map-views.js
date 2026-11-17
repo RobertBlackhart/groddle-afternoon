@@ -289,8 +289,11 @@ export function nearestStation(spot, stations = STATIONS, regions = WORLD_MAP.re
  * subwayPaper()'s answer; the plain sage rect stays under the picture, the colour on show while it
  * loads (with `wait` it starts hidden and fades in when it arrives: js/map-bg-preload.js watchMapBg,
  * style.css .subway-map-svg .map-bg-soft).
+ * G917 (#445): the Encyclopedia draws it at build time (tools/encyclopedia/subway.mjs) with `links`,
+ * station => { street, hub, label }: each station is a link to its street's page and its region's name
+ * to the region's page, in place of the game's buttons; `buttons: false` leaves out the line buttons.
  */
-export function renderSubwayMapSvg({ direction = 'forwards', here = null, stations = STATIONS, paper = subwayPaper() } = {}) {
+export function renderSubwayMapSvg({ direction = 'forwards', here = null, stations = STATIONS, paper = subwayPaper(), links = null, buttons: withButtons = true } = {}) {
   const W = 760;
   const H = 460;
   const colour = LINE_COLOURS[direction] || LINE_COLOURS.forwards;
@@ -308,18 +311,25 @@ export function renderSubwayMapSvg({ direction = 'forwards', here = null, statio
     const [dx, dy, anchor] = SUBWAY_LABELS[s.id] || [14, -4, 'start'];
     const isHere = mark && mark.id === s.id;
     const label = `${s.name}, ${s.hubName}`;
+    const link = links ? links(s) : null;
+    const hitOpen = link?.street
+      ? `<a class="subway-stop-hit" href="${esc(link.street)}" aria-label="${esc(link.label || label)}">`
+      : `<g class="subway-stop-hit" tabindex="0" role="button" aria-label="${esc(`${label}: set a destination or teleport`)}">`;
+    const hubText = link
+      ? `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}">${esc(s.hubName)}</text>`
+      : `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}" tabindex="0" role="link" aria-label="${esc(`${s.hubName} map`)}">${esc(s.hubName)}</text>`;
     return `<g class="subway-stop${isHere ? ' is-here' : ''}" data-station="${s.id}" data-tsid="${esc(s.surfaceStreetTsid)}" data-hub="${esc(s.surfaceHubId)}" data-label="${esc(s.surfaceLabel)}">`
-      + `<g class="subway-stop-hit" tabindex="0" role="button" aria-label="${esc(`${label}: set a destination or teleport`)}">`
+      + hitOpen
       + `<circle class="subway-stop-pad" cx="${x}" cy="${y}" r="14"/><circle class="subway-stop-ring" cx="${x}" cy="${y}" r="6"/><circle class="subway-stop-dot" cx="${x}" cy="${y}" r="2.6"/>`
-      + `<text class="subway-stop-name" x="${x + dx}" y="${y + dy}" text-anchor="${anchor}">${esc(s.name)}</text></g>`
-      + `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}" tabindex="0" role="link" aria-label="${esc(`${s.hubName} map`)}">${esc(s.hubName)}</text></g>`;
+      + `<text class="subway-stop-name" x="${x + dx}" y="${y + dy}" text-anchor="${anchor}">${esc(s.name)}</text>${link?.street ? '</a>' : '</g>'}`
+      + `${link?.hub ? `<a class="subway-stop-hub-link" href="${esc(link.hub)}">${hubText}</a>` : hubText}</g>`;
   }).join('');
   const art = mark ? SUBWAY_ART[direction === 'backwards' ? 'subway_map_current_station_blue' : 'subway_map_current_station_red'] : null;
   const you = mark && art
     ? `<image class="map-you subway-you" href="${esc(SUBWAY_ART_BASE + art[0])}" x="${mark.map_pos[0] - art[1] / 2}" y="${mark.map_pos[1] - art[2] / 2 - 1}" width="${art[1]}" height="${art[2]}" pointer-events="none"/>`
     : '';
   // The line buttons at the top right (MapTransit.as build: each line's name over a stroke of its colour).
-  const buttons = ['forwards', 'backwards'].map((dir, i) => {
+  const buttons = !withButtons ? '' : ['forwards', 'backwards'].map((dir, i) => {
     const on = dir === direction;
     const x = 586 + i * 86;
     return `<g class="subway-line-btn${on ? ' is-on' : ''}" data-dir="${dir}" tabindex="0" role="button" aria-pressed="${on}" style="--line-c: ${LINE_COLOURS[dir]}">`

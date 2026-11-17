@@ -31,6 +31,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadSoundData, streetMusicKeys } from '../sound/sound-model.mjs';
 import { andList, esc, fmt, pathOf } from './parts.mjs';
+import { subwayMapLink } from './subway.mjs';
 
 const root = join(import.meta.dirname, '..', '..');
 const PUB = join(root, 'public');
@@ -318,8 +319,9 @@ export function streetPage(e, P, { info, d, backOf, kit }) {
     const k = `people:npc_shrine_${st.giant}`;
     facts.push(`<dt>Shrine</dt><dd>${P.chips([P.chip(esc(`Shrine to ${GIANT_NAMES[st.giant] || st.giant}`), { pic: kit.picture(giantIcon(st.giant)), link: info(k) ? P.href(k) : null })])}</dd>`);
   }
-  if (st.station) facts.push(`<dt>Subway</dt><dd>${esc(st.station.name)} station, up to ${streetLink(st.station.surfaceStreetTsid, P, d)}</dd>`);
-  if (st.surface) facts.push(`<dt>Subway</dt><dd>The ${esc(st.surface.name)} station is here: ${streetLink(st.surface.streetTsid, P, d)}</dd>`);
+  // G917 (#445): both lines end with a link to the Subway System map, at this station.
+  if (st.station) facts.push(`<dt>Subway</dt><dd>${esc(st.station.name)} station, up to ${streetLink(st.station.surfaceStreetTsid, P, d)} · ${subwayMapLink(p, st.station)}</dd>`);
+  if (st.surface) facts.push(`<dt>Subway</dt><dd>The ${esc(st.surface.name)} station is here: ${streetLink(st.surface.streetTsid, P, d)} · ${subwayMapLink(p, st.surface)}</dd>`);
   // Music: the street's own key, silence, or the region's music.
   let musicLine = '';
   const soundKey = st.music ? `sounds:${st.music.toLowerCase()}` : null;
@@ -417,7 +419,7 @@ export function streetsIndex(sec, list, { info, kit, d }) {
       <p class="kicker"><a href="../">Groddle Encyclopedia</a> · ${esc(sec.label)}</p>
       <h1>${esc(sec.label)}</h1>
       <p class="lead">${esc(sec.blurb)}</p>
-      <p class="cat-score"><strong>${fmt(list.length)}</strong> streets in ${fmt(placesSorted.length)} regions.</p>
+      <p class="cat-score"><strong>${fmt(list.length)}</strong> streets in ${fmt(placesSorted.length)} regions. Under them, the <a href="../subway/">subway map</a>.</p>
     </div>
   </header>
 

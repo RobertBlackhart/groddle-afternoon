@@ -17,3 +17,42 @@
 .st-region h3 { margin: 14px 0 8px; }
 .st-region h3 a { color: inherit; }
 .cat-facts .ency-chips { margin: 0; }
+
+/*
+ * G917 (#445): the Subway System map (tools/encyclopedia/subway.mjs), the game's own SVG
+ * (js/map-views.js renderSubwayMapSvg) on the recreated paper, drawn as the Map window draws it
+ * (style.css .subway-map-svg). The paper is the same picture in light and dark, so the names on it
+ * keep the game's ink in both; the frame and everything round it take the site's tokens. On a
+ * phone the map keeps a readable size and scrolls sideways inside its frame.
+ */
+.sub-map { margin: 0 0 24px; }
+.sub-map-frame { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: #e6ecdf; -webkit-overflow-scrolling: touch; }
+.sub-map-frame svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.sub-map figcaption { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.subway-map-svg .subway-paper { fill: #e6ecdf; }
+.subway-map-svg .subway-track { fill: none; stroke: var(--line-c); stroke-width: 3; stroke-linecap: round; opacity: 0.9; }
+.subway-map-svg .subway-arrow { fill: var(--line-c); }
+.subway-map-svg .subway-stop-pad { fill: transparent; }
+.subway-map-svg .subway-stop-ring { fill: #ffffff; stroke: #8d8781; stroke-width: 2; }
+.subway-map-svg .subway-stop-dot { fill: var(--line-c); }
+.subway-map-svg .subway-stop-name { font: italic 800 13px var(--font-body); fill: #2a2a2a; paint-order: stroke fill; stroke: color-mix(in srgb, #fffbe8 55%, transparent); stroke-width: 3; }
+.subway-map-svg .subway-stop-hub { font: italic 700 12px var(--font-body); fill: #6d6555; paint-order: stroke fill; stroke: color-mix(in srgb, #fffbe8 55%, transparent); stroke-width: 3; }
+.subway-map-svg a { cursor: pointer; outline: none; }
+.subway-map-svg a.subway-stop-hit:is(:hover, :focus-visible) .subway-stop-ring { stroke: var(--line-c); stroke-width: 3; }
+.subway-map-svg a.subway-stop-hit:focus-visible .subway-stop-name,
+.subway-map-svg a.subway-stop-hit:hover .subway-stop-name { text-decoration: underline; }
+.subway-map-svg a.subway-stop-hub-link:is(:hover, :focus-visible) .subway-stop-hub { fill: #4a3a28; text-decoration: underline; }
+.sub-line { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; white-space: nowrap; }
+/* The line's colour is its stroke; the words keep the text colour (the Blue Line's blue is too light to read on cream). */
+.sub-line::before { content: ""; width: 14px; height: 4px; border-radius: 2px; background: var(--sub-c); }
+.sub-red { --sub-c: var(--sub-red); }
+.sub-blue { --sub-c: var(--sub-blue); }
+.sub-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.sub-station { padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); scroll-margin-top: 80px; }
+.sub-station:target { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.sub-station h3 { margin: 0 0 6px; }
+.sub-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 0; }
+.sub-facts dt { color: var(--muted); }
+.sub-facts dd { margin: 0; }
+.sub-map-hint { display: none; margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+@media (max-width: 700px) { .sub-map-hint { display: block; } }
