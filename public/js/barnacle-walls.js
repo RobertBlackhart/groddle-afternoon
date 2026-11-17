@@ -58,8 +58,8 @@ export const GROUND_COVER_DECO = /^(front_ground|foreground|ground_(?!rootpipe)|
  */
 export const WALL_FOOT_DECO = /^legs_|^ground_rootpipe/;
 export const WALL_FOOT_SHARE = 0.15;
-/** G936: round walls, whose outer barnacles turn to face outward. */
-export const ROUND_WALL_DECO = /^(background_)?sprout|^(background_)?bottletree_body/;
+/** G936: round walls, whose outer barnacles turn to face outward (the root pipes are round barrels too: Austin 2026-11-17, Konka Brink). */
+export const ROUND_WALL_DECO = /^(background_)?sprout|^(background_)?bottletree_body|^ground_rootpipe/;
 /** G936: points of the barnacle art (from its bottom centre) that must sit on the wall's art: its shell, less the frame's rim. */
 export const BARNACLE_CORE = Object.freeze({ xs: Object.freeze([-8, -4, 0, 4, 8]), ys: Object.freeze([-36, -28, -20, -12, -6]) });
 /** G936: how far a spot hanging over the wall art's edge may slide in to sit on it (px), in steps of SEAT_STEP. */

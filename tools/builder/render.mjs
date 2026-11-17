@@ -14,8 +14,8 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { GAME_DIR } from '../repos.mjs';
 import { openBrowser } from '../qa/browser.mjs';
-import { validateZone, placementRequests, hash16 } from '../../public/js/builder/validate.js?v=e0dc182d';
-import { planStreetPlacements, populationForStreet, streetReservedSpots } from '../../public/js/street-ecology.js?v=fc79cd70';
+import { validateZone, placementRequests, hash16 } from '../../public/js/builder/validate.js?v=fa3b7101';
+import { planStreetPlacements, populationForStreet, streetReservedSpots } from '../../public/js/street-ecology.js?v=d3832c0c';
 import { platformsScreen, streetWidth } from '../../public/js/street-model.js?v=9f16f4ab';
 import { plannedSpots } from '../../public/js/builder/editor-zone.js?v=c15fa086';
 

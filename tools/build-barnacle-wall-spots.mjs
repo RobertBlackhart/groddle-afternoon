@@ -23,7 +23,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=fd6c9f68';
+import { barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=3e4e2c94';
 import { DECO_TWINS } from '../public/js/street-render.js?v=a1ce9368';
 import {
   ecologyForStreet,
@@ -33,7 +33,7 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=fc79cd70';
+} from '../public/js/street-ecology.js?v=d3832c0c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';

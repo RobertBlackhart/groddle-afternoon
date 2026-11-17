@@ -17,7 +17,7 @@
  * other street leads to takes its own way out nearest the middle, where /stuck stands you
  * (street-model.js stuckWay); with neither, null (game.js keeps the planner's spot).
  */
-import { inUnreachedRun, unreachedFloorsFor } from './street-ecology.js?v=fc79cd70';
+import { inUnreachedRun, unreachedFloorsFor } from './street-ecology.js?v=d3832c0c';
 import { isStandable, platformYAt, stuckWay } from './street-model.js?v=9f16f4ab';
 
 export const STREET_ARRIVALS_URL = 'assets/content/street-arrivals.json';

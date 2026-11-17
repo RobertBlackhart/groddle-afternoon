@@ -8,7 +8,7 @@ import { behindFloor } from './reach.js?v=8e52df56';
 import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=06481ee6';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
-import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=afcde8cf';
+import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=976d947e';
 import {
   JELLISAC_SPOTS,
   PAPER_TREE_SPOTS,

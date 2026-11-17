@@ -9,10 +9,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=fc79cd70';
-import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=51e6d860';
-import { BARNACLE_GAP_CLOSE, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=fd6c9f68';
-import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=afcde8cf';
+import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=d3832c0c';
+import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=886e1cb9';
+import { BARNACLE_GAP_CLOSE, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=3e4e2c94';
+import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=976d947e';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
@@ -52,6 +52,10 @@ describe('G936: barnacles sit on the wall art, never under ground art', () => {
     assert.ok(rows.every((r) => r[3] >= 1 && r[3] <= 3), 'every one on a wall, none on the floor');
     // The pipe (ground_rootpipe2 at street 3070, 217 wide): its drawn body runs about 3007-3127.
     for (const [x] of rows.filter(([x]) => x > 2950 && x < 3200)) assert.ok(x >= 3010 && x <= 3124, `on the pipe: ${x}`);
+    // The root pipe is a round barrel (Austin 2026-11-17): its right-hand barnacle faces outward, the others as drawn.
+    const pipe = rows.filter(([x]) => x > 2950 && x < 3200);
+    assert.equal(pipe.at(-1)[4], 1, `right on the pipe ${pipe.at(-1)}: mirrored`);
+    assert.ok(pipe.slice(0, -1).every((r) => r[4] !== 1), JSON.stringify(pipe));
   });
 
   it('the mirror reaches the game: measuredNodeSpots and the spawn plan carry it for that barnacle only', () => {
