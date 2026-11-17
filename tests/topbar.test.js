@@ -22,7 +22,7 @@ import {
   vitalRing,
   volumeLevel,
   soundChannelToggle,
-} from '../public/js/ui/topbar.js?v=2abf9f70';
+} from '../public/js/ui/topbar.js?v=f94b211b';
 
 import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=945cc7c4';
 
@@ -147,7 +147,7 @@ describe('top bar markup and wiring', () => {
     assert.match(game, /audio\.buses\.set\(audioSettings\(\)\);/);
     assert.match(game, /blockPause \? MUSICBLOCK_PLAYBACK\.streetMusicLevel : audio\.musicblock \? 0\.055 : STREET_MUSIC_MIX;/);
     assert.match(game, /saveAudioLevel\(kind, audioLevels\[kind\]\);\n\s*applyMute\(\);/);
-    assert.match(game, /audio: \{ levels: \(\) => \(\{ \.\.\.audioLevels \}\), setLevel: setAudioLevel \}/);
+    assert.match(game, /audio: \{ levels: \(\) => \(\{ \.\.\.audioLevels \}\), setLevel: setAudioLevel, otherMusic: \{ get: \(\) => otherMusic, set: setOtherMusic \} \}/);
     assert.match(game, /document\.getElementById\('sound-btn'\)\?\.setAttribute\('data-muted', String\(state\.muted\)\);/);
   });
 

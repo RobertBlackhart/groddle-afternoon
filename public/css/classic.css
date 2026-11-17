@@ -3403,6 +3403,18 @@
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.is-search-lit { background: var(--c-classic-panel); box-shadow: 0 0 0 2px var(--c-classic-focus); }
 /* === end build16a === */
 
+/* === fix28 (lane) === */
+/* G918 (#447): "Let other apps' music keep playing" in the volume panel, under Music, in the panel's words. */
+:root[data-ui="classic"] .top-bar #sound-pop .sound-other-music {
+  padding: calc(4 * var(--cu)) calc(8 * var(--cu)) calc(6 * var(--cu));
+  color: var(--c-classic-title);
+  font: 700 var(--fs-classic-body)/var(--lh-snug) var(--font-classic-body);
+}
+:root[data-ui="classic"] .top-bar #sound-pop .sound-other-music input { margin: 0; accent-color: var(--c-classic-link); }
+:root[data-ui="classic"] .top-bar #sound-pop .sound-other-music small { color: var(--c-classic-text); font-weight: 400; }
+:root[data-ui="classic"] .top-bar #sound-pop .hud-slider[data-other-music] { opacity: 0.5; }
+/* === end fix28 === */
+
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

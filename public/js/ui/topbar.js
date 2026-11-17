@@ -22,6 +22,7 @@
  */
 import { vitalLevel, vitalTitle } from '../vitals.js?v=85a51302';
 import { loadAudioRestore, saveAudioRestore } from '../audio-pref.js?v=6fe817bc';
+import { OTHER_MUSIC_HINT, OTHER_MUSIC_LABEL } from '../other-music.js?v=df3315d1';
 import { PHONE_ZOOM_HINT, ZOOM_FIXED_NOTE, ZOOM_KEYS_HINT, clampZoom, phoneSideways, phoneZoomEnds, phoneZoomLabel, phoneZoomValueText, zoomLabel, zoomValueText } from '../world-zoom.js?v=38816228';
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=9501b2ee';
@@ -1181,10 +1182,24 @@ function installSound(doc, audio) {
   const pop = doc.getElementById('sound-pop');
   if (!btn || !pop) return;
   const rows = [['effects', doc.getElementById('sfx-volume')], ['music', doc.getElementById('music-volume')]];
+  // G918 (#447): "Let other apps' music keep playing" sits under Music; while it is on, Music is off.
+  const other = audio?.otherMusic ? otherMusicToggle(doc, audio.otherMusic, { id: 'sound-other-music' }) : null;
+  if (other && !doc.getElementById('sound-other-music')) {
+    const mute = pop.querySelector('#mute-btn');
+    if (mute) mute.before(other.row);
+    else pop.append(other.row);
+  }
   const draw = () => {
     const v = audio?.levels?.() || {};
+    const othersOn = Boolean(audio?.otherMusic?.get?.());
     for (const [kind, input] of rows) {
       if (!input) continue;
+      if (kind === 'music') {
+        input.disabled = othersOn;
+        const name = pop.querySelector('[data-sound-toggle="music"]');
+        if (name) name.disabled = othersOn;
+        input.parentElement.toggleAttribute('data-other-music', othersOn);
+      }
       const level = volumeLevel(v[kind]);
       if (doc.activeElement !== input) input.value = String(level);
       setText(input.parentElement.querySelector('output'), String(level));
@@ -1223,9 +1238,49 @@ function installSound(doc, audio) {
   }
   // It only sets things: a click on Mute, a channel or a slider gives the world the keys (focus-return.js).
   pop.dataset.clickReleases = '';
-  popover(doc, btn, pop, { onOpen: () => { draw(); names(); } });
+  other?.input.addEventListener('change', draw);
+  popover(doc, btn, pop, { onOpen: () => { draw(); names(); other?.draw(); } });
   names();
   draw();
+}
+
+/**
+ * G918 (#447, iPhone): the "Let other apps' music keep playing" switch (js/other-music.js).
+ * `setting` is { get(), set(bool) }. Returns the row, the input and a draw().
+ */
+export function otherMusicToggle(doc, setting, { id, className = 'hud-toggle sound-other-music' }) {
+  const row = doc.createElement('label');
+  row.className = className;
+  row.htmlFor = id;
+  row.dataset.otherMusicControl = 'sound';
+  const input = doc.createElement('input');
+  Object.assign(input, { id, type: 'checkbox' });
+  input.setAttribute('role', 'switch');
+  input.setAttribute('aria-describedby', `${id}-hint`);
+  const words = doc.createElement('span');
+  words.textContent = OTHER_MUSIC_LABEL;
+  const hint = doc.createElement('small');
+  hint.id = `${id}-hint`;
+  hint.textContent = OTHER_MUSIC_HINT;
+  row.append(input, words, hint);
+  const draw = () => {
+    const on = Boolean(setting?.get?.());
+    input.checked = on;
+    input.setAttribute('aria-checked', on ? 'true' : 'false');
+  };
+  input.addEventListener('change', () => {
+    setting?.set?.(input.checked);
+    draw();
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.click();
+    }
+    if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+  });
+  draw();
+  return { row, input, draw };
 }
 
 /**

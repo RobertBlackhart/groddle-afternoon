@@ -1056,7 +1056,8 @@ import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc8
 import { installHiresDecos } from './js/deco-hires.js?v=7a8904fa';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=2abf9f70';
+import { applyAudioSession, loadOtherMusic, saveOtherMusic, streetMusicWanted } from './js/other-music.js?v=df3315d1';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=f94b211b';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -7072,6 +7073,8 @@ async function loadAudio() {
   // Street music streams when a street needs it (setAmbientForStreet), so nothing is fetched here:
   // the libraries are 330 MB of Tiny Speck's recordings, and the game used to download and decode
   // every ambient track before it started.
+  // G918 (#447): an 'ambient' audio session (Safari 17+) before any sound starts when other apps' music may play on.
+  applyAudioSession(otherMusic);
   audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
   // MUTE: the one route to the speakers, set from the saved settings before any sound starts.
   audio.buses = createAudioBuses(audio.ctx, audioSettings());
@@ -7308,10 +7311,10 @@ function streetMusicVoice(url, loop) {
       // Autoplay refused before the first click or key: start on the next one.
       started?.catch?.(() => {
         const retry = () => {
-          if (audio.music === voice && !voice.stopped) el.play().catch(() => {});
+          if (audio.music === voice && !voice.stopped && el.paused && !voice.looper) el.play().catch(() => {});
         };
-        window.addEventListener('pointerdown', retry, { once: true, capture: true });
-        window.addEventListener('keydown', retry, { once: true, capture: true });
+        // A tap on an iPhone is a gesture when it ends (touchend), not when it starts.
+        for (const type of ['pointerdown', 'keydown', 'touchend']) window.addEventListener(type, retry, { once: true, capture: true });
       });
     },
     stop(afterSec = 0) {
@@ -7359,13 +7362,26 @@ function startStreetTrack(url, loop, fadeSec) {
     fadeGain(prev.gain.gain, 0, STREET_TRACK_FADE_SEC, audio.ctx);
     prev.stop(STREET_TRACK_FADE_SEC + 0.05);
   }
+  ambientTrackUrl = url;
+  if (app?.canvas) app.canvas.dataset.ambientTrack = url;
+  // G918 (#447): muted, at Music 0 or with other apps' music let through, no <audio> element is made
+  // (on an iPhone a playing one stops the player's own music); syncStreetMusic starts it later.
+  if (!streetMusicAllowed()) {
+    audio.music = null;
+    audio.trackGain = null;
+    audio.trackTarget = null;
+    return;
+  }
   const voice = streetMusicVoice(url, loop);
   audio.music = voice;
   audio.trackGain = voice?.gain || null;
   audio.trackTarget = null;
-  ambientTrackUrl = url;
-  if (app?.canvas) app.canvas.dataset.ambientTrack = url;
   if (!voice) return;
+  // Music back on: the track carries on from where it stopped.
+  if (audio.musicResume?.url === url && audio.musicResume.time > 0) {
+    try { voice.el.currentTime = audio.musicResume.time; } catch { /* starts from the top */ }
+  }
+  audio.musicResume = null;
   voice.el.addEventListener('ended', () => {
     if (audio.music !== voice || voice.stopped) return;
     const list = ambientPlaylistState;
@@ -7381,7 +7397,11 @@ function startStreetTrack(url, loop, fadeSec) {
 /** The Sound popover's Effects and Music levels, 0 to 100 (js/audio-pref.js; 100 is the game's own mix). */
 const audioLevels = loadAudioLevels();
 const sfxLevel = () => audioLevels.effects / 100;
-const musicLevel = () => audioLevels.music / 100;
+/** G918 (#447): "Let other apps' music keep playing" (js/other-music.js): the game's own music is off. */
+let otherMusic = loadOtherMusic();
+const musicLevel = () => (otherMusic ? 0 : audioLevels.music / 100);
+/** Whether the street music element may exist and play (never muted, at Music 0 or with other apps' music on). */
+const streetMusicAllowed = () => streetMusicWanted({ muted: state.muted, music: audioLevels.music, otherMusic });
 /** The player's sound settings as the buses take them (js/audio-buses.js). */
 const audioSettings = () => ({ muted: state.muted, music: musicLevel(), effects: sfxLevel() });
 /** Street music's own mix level (the Music slider scales the bus above it). */
@@ -7395,6 +7415,36 @@ function setAudioLevel(kind, value) {
   audioLevels[kind] = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
   saveAudioLevel(kind, audioLevels[kind]);
   applyMute();
+}
+
+/** The Sound popover's "Let other apps' music keep playing" switch: remember it, set the audio session, apply. */
+function setOtherMusic(on) {
+  otherMusic = Boolean(on);
+  saveOtherMusic(otherMusic);
+  applyAudioSession(otherMusic);
+  applyMute();
+}
+
+/**
+ * G918 (#447): the street music element follows the settings. Not allowed (muted, Music 0, other
+ * apps' music on): the element stops and goes, remembering where the track was. Allowed again: the
+ * street's track starts (from that point when it is the same track).
+ */
+function syncStreetMusic() {
+  if (!audio.ctx || !state.started) return;
+  const voice = audio.music;
+  if (!streetMusicAllowed()) {
+    if (!voice) return;
+    if (!voice.stopped) audio.musicResume = { url: voice.url, time: voice.el.currentTime || 0 };
+    voice.stop(0);
+    audio.music = null;
+    audio.trackGain = null;
+    audio.trackTarget = null;
+    return;
+  }
+  const list = ambientPlaylistState;
+  if ((voice && !voice.stopped) || !list || ambientThemeId === SILENT_THEME) return;
+  startStreetTrack(list.tracks[list.index], list.loop, STREET_TRACK_FADE_SEC);
 }
 
 function syncMuteButton() {
@@ -7437,6 +7487,7 @@ function applyMute(trackFadeSec = STREET_MIX_FADE_SEC) {
     stopActionSoundLoop();
     stopCraftSoundLoop();
   }
+  syncStreetMusic();
 }
 
 // —— Textures ——
@@ -34226,7 +34277,8 @@ async function main() {
     if (state.muted || audio.ctx?.state !== 'suspended') return;
     try { await audio.ctx.resume(); } catch (_) { /* tries again on the next gesture */ }
   };
-  for (const type of ['pointerdown', 'keydown']) window.addEventListener(type, resumeAudioOnGesture, { capture: true });
+  // G918: an iPhone tap unlocks audio when it ends (touchend), so that counts too.
+  for (const type of ['pointerdown', 'keydown', 'touchend']) window.addEventListener(type, resumeAudioOnGesture, { capture: true });
   // Panel open/close and dialog button clicks (client CLICK_SUCCESS/FAILURE).
   watchPanelSounds(document, playSound, soundForPanel);
   watchButtonClicks(document, playSound);
@@ -34529,6 +34581,10 @@ async function main() {
         ctx: audio.ctx?.state || null,
         muted: state.muted,
         levels: { ...audioLevels },
+        // G918: the "Let other apps' music keep playing" switch, the audio session asked for, and whether an element exists.
+        otherMusic,
+        session: navigator.audioSession?.type ?? null,
+        trackElement: Boolean(audio.music),
         theme: ambientThemeId,
         track: ambientTrackUrl,
         // What the street music element is really doing (G-soundzip QA): its source, clock and index.
@@ -34725,7 +34781,7 @@ async function main() {
   // PHONE ZOOM: on a phone the bar's Zoom slider moves the phone's close-up level (js/world-zoom.js).
   const hudZoom = TOUCH_PHONE ? phoneZoom : { get: worldZoom, set: setWorldZoom, onChange: onZoomChange, fixed: zoomFixed, onFixedChange: onZoomFixedChange };
   installTopBar(document, {
-    audio: { levels: () => ({ ...audioLevels }), setLevel: setAudioLevel },
+    audio: { levels: () => ({ ...audioLevels }), setLevel: setAudioLevel, otherMusic: { get: () => otherMusic, set: setOtherMusic } },
     zoom: hudZoom,
     nightTint,
     streetMap: streetMapSetting,

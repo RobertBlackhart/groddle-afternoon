@@ -11233,6 +11233,15 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 }
 [data-ui="modern"] .top-bar .hud-mute:hover { background: var(--surface-hover); }
 [data-ui="modern"] .top-bar .hud-mute[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+/* G918 (#447): "Let other apps' music keep playing" under Music (js/ui/topbar.js otherMusicToggle); while it
+   is on the Music row is off and greyed. */
+[data-ui="modern"] .sound-pop .sound-other-music {
+  padding: var(--space-1) var(--space-2) var(--space-2); color: var(--text); font-size: var(--fs-m); font-weight: var(--fw-bold);
+}
+[data-ui="modern"] .sound-pop .sound-other-music input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+[data-ui="modern"] .sound-pop .sound-other-music input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[data-ui="modern"] .sound-pop .sound-other-music small { color: var(--text-muted); font-size: var(--fs-xs); font-weight: var(--fw-regular); line-height: var(--lh-snug); }
+[data-ui="modern"] .sound-pop .hud-slider[data-other-music] { opacity: 0.5; }
 
 /* —— ZOOM —— the world zoom (js/world-zoom.js) in the Sound popover and the Menu's Settings group. */
 [data-ui="modern"] .hud-zoom { grid-template-columns: 64px 1fr 58px; row-gap: 0; }
