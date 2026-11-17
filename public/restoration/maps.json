@@ -456,8 +456,8 @@
       },
       "card": {
         "src": "/assets/maps/art/world/cards/107.svg",
-        "w": 52,
-        "h": 39,
+        "w": 153,
+        "h": 127,
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/callopee/"
@@ -764,8 +764,8 @@
       },
       "card": {
         "src": "/assets/maps/art/world/cards/119.svg",
-        "w": 54,
-        "h": 41,
+        "w": 153,
+        "h": 120,
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/folivoria/"
@@ -1458,8 +1458,8 @@
       },
       "card": {
         "src": "/assets/maps/art/world/cards/110.svg",
-        "w": 52,
-        "h": 39,
+        "w": 153,
+        "h": 121,
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/massadoe/"
@@ -1585,8 +1585,8 @@
       },
       "card": {
         "src": "/assets/maps/art/world/cards/137.svg",
-        "w": 57,
-        "h": 39,
+        "w": 153,
+        "h": 122,
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/nottis/"
@@ -1673,8 +1673,8 @@
       },
       "card": {
         "src": "/assets/maps/art/world/cards/106.svg",
-        "w": 57,
-        "h": 39,
+        "w": 153,
+        "h": 121,
         "label": "Its card on the World map"
       },
       "place": "/encyclopedia/places/pollokoo/"

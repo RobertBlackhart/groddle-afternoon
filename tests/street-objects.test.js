@@ -40,7 +40,7 @@ import {
   treeSkill,
 } from '../public/js/street-objects.js?v=11549c92';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=81d80b14';
-import { FEATURES } from '../public/js/features/index.js?v=8f8296ec';
+import { FEATURES } from '../public/js/features/index.js?v=b11d38b9';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=c2964c53';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=bac50225';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=4d6f5593';
@@ -487,7 +487,9 @@ describe('street objects: the server\'s layout', () => {
       // The trees' request is treePlacementRequest (key 'trees', clearance 135, the trees the snaps show fixed).
       .replace(/treePlacementRequest\(currentStreetPopulation\)/, "{ key: 'trees', count: trees, clearance: 135 }")
       // The shrine's request is shrinePlacementRequest (key 'shrine', clearance 135, a shrine its 2012 picture shows fixed).
-      .replace(/shrinePlacementRequest\(currentStreetPopulation\)/, "{ key: 'shrine', count: shrine, clearance: 135 }");
+      .replace(/shrinePlacementRequest\(currentStreetPopulation\)/, "{ key: 'shrine', count: shrine, clearance: 135 }")
+      // The gardens' request is gardenPlacementRequest (key 'gardens', clearance 165, the beds the snaps show fixed: G940).
+      .replace(/gardenPlacementRequest\(currentStreetPopulation\)/, "{ key: 'gardens', count: gardens, clearance: 165 }");
     const keys = [...call.slice(0, call.indexOf("features.collect('placementGroups'")).matchAll(/\{ key: '([a-zA-Z]+)'/g)].map((m) => m[1]);
     const pop = { treeClasses: [], rockClasses: [], resourceNodeClasses: [] };
     assert.deepEqual(placementRequests(pop).map((r) => r.key), keys);

@@ -340,7 +340,9 @@ describe('the server data', () => {
       // The trees' request is treePlacementRequest (key 'trees', clearance 135, the trees the snaps show fixed).
       .replace(/treePlacementRequest\(currentStreetPopulation\)/, "{ key: 'trees', count: trees, clearance: 135 }")
       // The shrine's request is shrinePlacementRequest (key 'shrine', clearance 135, a shrine its 2012 picture shows fixed).
-      .replace(/shrinePlacementRequest\(currentStreetPopulation\)/, "{ key: 'shrine', count: shrine, clearance: 135 }");
+      .replace(/shrinePlacementRequest\(currentStreetPopulation\)/, "{ key: 'shrine', count: shrine, clearance: 135 }")
+      // The gardens' request is gardenPlacementRequest (key 'gardens', clearance 165, the beds the snaps show fixed: G940).
+      .replace(/gardenPlacementRequest\(currentStreetPopulation\)/, "{ key: 'gardens', count: gardens, clearance: 165 }");
     const list = call.slice(0, call.indexOf("{ key: 'quoins'") + 80);
     const keys = [...list.matchAll(/\{ key: '([A-Za-z]+)', count: ([^,]+), clearance: (\d+) \}/g)].map((m) => [m[1], m[3]]);
     const pop = { treeClasses: [], gardens: 0, vendor: false, shrine: false, rockClasses: [], piggies: 0, chickens: 0, butterflies: 0, flyingButterflies: 0, apples: 0, musicblocks: 0, quoins: 0 };
