@@ -169,3 +169,16 @@ describe('G948 A11: things set down (gnome, Giant Icons, Note Poles, pumpkins) a
       save({ inv: { pumpkin_lit_2: 1 } }));
   });
 });
+
+describe('G948 A9: a Cubimal out racing or battling is still counted as the player\'s', { skip }, () => {
+  const ledger = counts({ npc_cubimal_gnome: 1, npc_cubimal_chick: 1 });
+
+  it('a race and a battle: off and back, each in its own write, stand with no budget', () => {
+    const out = php('check', [ledger, credited(), save({ features: { 'cubimal-race': { version: 2, out: ['npc_cubimal_gnome'], outNames: [''], outTags: [null] }, 'cubimal-battle': { version: 1, out: { c: 'npc_cubimal_chick', tag: null } } } }), 0]);
+    assert.deepEqual(out.reconciled.clamped, none);
+    assert.deepEqual(out.after, ledger, 'out of the pack, still held');
+    const back = php('check', [out.after, credited(), save({ inv: { npc_cubimal_gnome: 1, npc_cubimal_chick: 1 }, features: { 'cubimal-race': { version: 2, out: [], outNames: [], outTags: [] }, 'cubimal-battle': { version: 1, out: null } } }), 0]);
+    assert.deepEqual(back.reconciled.clamped, none, 'its return is not a 1,000 gain');
+    assert.deepEqual(back.after, ledger);
+  });
+});
