@@ -4046,6 +4046,16 @@ export const newxpFeature = {
     return isNewxpSceneTsid(engine?.streetTsid) ? true : null;
   },
 
+  /**
+   * G938: the street the tutorial set this player down on when they left Gentle Island (player.js
+   * teleportHome's newxp exit, or the one a G401 rescue moved them to), or null before that. It is
+   * a start street for features/musicblocks-feature.js, as Glitch's greeting locations were.
+   */
+  newxpExitStreet() {
+    if (!save?.exit?.tsid || !(save.island === 'exited' || save.status === 'done')) return null;
+    return save.exit.tsid;
+  },
+
   /** MINIMAP (G370): the tutorial is about to start or running (the street map waits for it). */
   tutorialRunning(engine) {
     if (pendingStage || active()) return true;

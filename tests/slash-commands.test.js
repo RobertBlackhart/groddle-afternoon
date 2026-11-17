@@ -23,7 +23,7 @@ import { smallItemsFeature } from '../public/js/features/small-items-feature.js?
 import { towerApi } from '../public/js/features/home-tower-feature.js?v=a4f64c59';
 import { BUTLER_STRINGS } from '../public/js/butler.js?v=57456a7f';
 import { butlerFeature } from '../public/js/features/butler-feature.js?v=b19b8b19';
-import { FEATURES } from '../public/js/features/index.js?v=86b72347';
+import { FEATURES } from '../public/js/features/index.js?v=6f8d404d';
 import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
 import { countItem } from '../public/js/inventory.js?v=f49c8998';
 

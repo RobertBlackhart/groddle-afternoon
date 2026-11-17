@@ -10,12 +10,15 @@
  *   first time a block shows up, so a series badge unlocks the moment its fifth tune lands.
  *   Counting an already-owned block again is harmless (each condition needs 1).
  * - The start street's block (G938, locations/location.js 646-667): a player who owns no block
- *   and has none lying on the start street (Hechey Track, the street index default) finds one of
+ *   and has none lying on a start street finds one of
  *   the twenty D and X blocks there a second after arriving (createItemStackDelayed(..., 1)),
  *   lying on the ground a short walk from where they arrived (startStreetSpot). It goes into the
  *   player's own dropped stacks
  *   (engine.dropWorldStack), so online it is theirs alone, as the greeting location's private
- *   instance made it. Once a save.
+ *   instance made it. Once a save, on whichever start street comes first. The start streets: the
+ *   one a new player is set down on when leaving the tutorial (newxp-feature's newxpExitStreet;
+ *   Glitch's greeting locations were where a new player first arrived after it), and Hechey Track
+ *   (the street index default, where a skipped tutorial and a lost exit land).
  * - The GNG gift (desk FUNPICKLE, js/musicblocks.js endgameGiftDue): all 25 series tunes owned
  *   sends Musicblock GNG once, the way giveAward sends it.
  *
@@ -75,6 +78,16 @@ export function startStreetTsid() {
   return STREET_INDEX.default;
 }
 
+/** Every start street for this player: Hechey Track, and the street the tutorial left them on. */
+export function startStreets(engine) {
+  const exit = engine?.query?.('newxpExitStreet', engine);
+  return [startStreetTsid(), ...(typeof exit === 'string' && exit ? [exit] : [])];
+}
+
+/** The avatar stands (a tutorial exit drops the player in from above). */
+const LAND_RETRY_MS = 250;
+const LAND_WAIT_MS = 6000;
+
 function publish(engine) {
   engine.setData?.('musicblockStart', st.startBlock?.classTsid || 'none');
   engine.setData?.('musicblockGift', st.gift ? 'given' : 'none');
@@ -83,7 +96,7 @@ function publish(engine) {
 function startDue(engine, tsid) {
   return startStreetMusicblockDue({
     made: Boolean(st.startBlock),
-    onStartStreet: Boolean(tsid) && tsid === startStreetTsid() && engine.streetTsid === tsid,
+    onStartStreet: Boolean(tsid) && startStreets(engine).includes(tsid) && engine.streetTsid === tsid,
     inv: engine.inv,
     stacks: listDroppedStacks(engine.droppedItems, engine.dropTsid),
   });
@@ -152,10 +165,18 @@ export const musicblocksFeature = {
     startTimer = null;
     const tsid = street?.tsid || engine.streetTsid;
     if (startDue(engine, tsid)) {
-      startTimer = setTimeout(() => {
+      const since = Date.now();
+      const lay = () => {
         startTimer = null;
+        // Dropped in from above at a tutorial exit: wait until the avatar is down, so the block
+        // lies on the ground beside them, not on whatever line is under them mid-fall.
+        if (engine.player && engine.player.onGround === false && Date.now() - since < LAND_WAIT_MS) {
+          startTimer = setTimeout(lay, LAND_RETRY_MS);
+          return;
+        }
         layStartStreetMusicblock(engine, tsid);
-      }, START_STREET_DELAY_MS);
+      };
+      startTimer = setTimeout(lay, START_STREET_DELAY_MS);
     }
     publish(engine);
   },

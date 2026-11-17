@@ -255,7 +255,7 @@ function fakeEngine({ streetTsid, inv, stacks = [] } = {}) {
 }
 
 async function freshFeature() {
-  const mod = await import('../public/js/features/musicblocks-feature.js?v=9b8dd7c3');
+  const mod = await import('../public/js/features/musicblocks-feature.js?v=bc7c3cb6');
   mod.musicblocksFeature._reset();
   return mod;
 }
@@ -366,6 +366,38 @@ describe('G938: the start street block (location.js 646-667)', () => {
     if (existsSync(GSJS)) assert.match(readFileSync(join(GSJS, 'config_prod.js'), 'utf8'), /\/\/ Alakol Start 1\n\t\{\n\t\ttsid: 'LNVKFBM3PVC2GDD',\n\t\tx: \[-1378\],\n\t\ty: \[-195\],\n\t\tmusicblock_position: \[-1085, -177\]/);
   });
 
+  it('the street the tutorial leaves a new player on is a start street too, online and solo', async (t) => {
+    t.mock.timers.enable({ apis: ['setTimeout'] });
+    const { musicblocksFeature, startStreets } = await freshFeature();
+    const EXIT = 'LIF102FDNU11314';
+    const { engine, drops } = fakeEngine({ streetTsid: EXIT, inv: createInventory() });
+    // Before the tutorial is left, its exit is nobody's start street.
+    engine.query = () => null;
+    assert.deepEqual(startStreets(engine), [HECHEY]);
+    musicblocksFeature.onStreetEnter({ tsid: EXIT }, engine);
+    t.mock.timers.tick(1500);
+    assert.deepEqual(drops, []);
+    // Set down there by the tutorial (newxp-feature newxpExitStreet), still falling at the second.
+    engine.query = (hook) => (hook === 'newxpExitStreet' ? EXIT : null);
+    assert.deepEqual(startStreets(engine), [HECHEY, EXIT]);
+    engine.player.onGround = false;
+    musicblocksFeature.onStreetEnter({ tsid: EXIT }, engine);
+    t.mock.timers.tick(1500);
+    assert.deepEqual(drops, []);
+    engine.player.onGround = true;
+    t.mock.timers.tick(250);
+    assert.equal(drops.length, 1);
+    assert.ok(START_STREET_MUSICBLOCKS.includes(drops[0].classTsid));
+    assert.equal(musicblocksFeature.save().startBlock.tsid, EXIT);
+    // Once a save: Hechey Track lays none after it.
+    const hechey = fakeEngine({ streetTsid: HECHEY, inv: createInventory() });
+    musicblocksFeature.onStreetEnter({ tsid: HECHEY }, hechey.engine);
+    t.mock.timers.tick(2000);
+    assert.deepEqual(hechey.drops, []);
+    const feature = readFileSync(join(publicRoot, 'js/features/newxp-feature.js'), 'utf8');
+    assert.match(feature, /newxpExitStreet\(\) \{\n    if \(!save\?\.exit\?\.tsid \|\| !\(save\.island === 'exited' \|\| save\.status === 'done'\)\) return null;\n    return save\.exit\.tsid;/);
+  });
+
   it('leaving before the second is up lays nothing', async (t) => {
     t.mock.timers.enable({ apis: ['setTimeout'] });
     const { musicblocksFeature } = await freshFeature();
@@ -460,7 +492,7 @@ describe('Musicblock game integration', () => {
 
 describe('Musicblock collection badges from any source', () => {
   it('emits in_inventory the first time a block reaches the pack', async () => {
-    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=9b8dd7c3');
+    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=bc7c3cb6');
     assert.deepEqual(newlyOwnedMusicblocks(new Set(['musicblock_d_blue_01']), {
       musicblock_d_blue_01: 2, musicblock_d_blue_02: 1, apple: 3, musicblock_trumpets: 1,
     }), ['musicblock_d_blue_02']);
