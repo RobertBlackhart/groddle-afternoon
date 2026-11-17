@@ -47,6 +47,7 @@
  */
 
 import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=c2964c53';
+import { rockId } from '../street-objects.js?v=a98295e1';
 import { addItem } from '../inventory.js?v=f49c8998';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
@@ -354,8 +355,29 @@ function sharedCrew(engine, target) {
   return { miners, others: miners.filter((id) => id !== me) };
 }
 
+/**
+ * #464: whether a swing helps is the server's word (objects.go handleMine answers obj_mine
+ * { id, helping }: someone was already swinging when your start reached it), as Glitch's was
+ * (items/include/mining.js 222-225: !help_mining when the rock has helpers as the swing starts,
+ * counted for help_mine at 504-507). The crew this page copied lags, so a 3-2-1 group start read
+ * nobody else there and counted no one; it stays the first guess until the answer lands.
+ */
+let answersFrom = null;
+function hearServerAnswers(engine) {
+  const client = engine.query?.('realtimeClient');
+  if (!client?.on || answersFrom === client) return;
+  answersFrom = client;
+  client.on('msg:obj_mine', (msg) => {
+    const target = playerAt?.shared ? playerAt.target : null;
+    if (!Number.isInteger(target?.rockIndex) || msg?.id !== rockId(target.rockIndex) || typeof msg.helping !== 'boolean') return;
+    playerAt.helping = msg.helping;
+    engine.setData?.('helpMineHelping', msg.helping ? 'server:yes' : 'server:no');
+  });
+}
+
 /** Your swing at a shared rock begins: the server adds you to its crew. */
 function sharedStarts(target, crew, engine) {
+  hearServerAnswers(engine);
   playerAt = { target, helping: crew.others.length > 0, shared: true };
   engine.query('sharedMineSwing', target, 'start');
   engine.setData('helpMineCrew', `shared:${crew.miners.length + 1}`);

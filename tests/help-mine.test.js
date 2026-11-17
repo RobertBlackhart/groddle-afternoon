@@ -37,6 +37,7 @@ import {
   turnInQuest,
 } from '../public/js/quest-offers.js?v=38a0cac5';
 import { createMineRock } from '../public/js/mining.js?v=c2964c53';
+import { rockId } from '../public/js/street-objects.js?v=a98295e1';
 import { createQuestState } from '../public/js/quests.js?v=40c71a37';
 
 const here = import.meta.dirname;
@@ -335,6 +336,8 @@ describe('features/help-mine-feature.js in multiplayer (the realtime server keep
     const events = [];
     const data = {};
     const crew = { miners };
+    const heard = new Map();
+    const client = { me: { id: 7 }, on: (type, fn) => heard.set(type, fn), hear: (type, msg) => heard.get(type)?.(msg) };
     const engine = {
       mode: 'multiplayer',
       started: true,
@@ -355,7 +358,7 @@ describe('features/help-mine-feature.js in multiplayer (the realtime server keep
       refreshPack() {},
       achievement: (counter, n) => events.push([counter, n]),
       query(name, ...args) {
-        if (name === 'realtimeClient') return { me: { id: 7 } };
+        if (name === 'realtimeClient') return client;
         if (name === 'sharedMiners') return crew.miners;
         if (name === 'sharedMineSwing') { sent.push(args[1]); return true; }
         if (name === 'sharedVerbGrant') return { chunks: 5, help };
@@ -363,7 +366,7 @@ describe('features/help-mine-feature.js in multiplayer (the realtime server keep
       },
     };
     feature.onStreetEnter({}, engine);
-    return { feature, engine, rock, rockTarget, sent, log, events, data, crew };
+    return { feature, engine, rock, rockTarget, sent, log, events, data, crew, client };
   }
 
   it('labels the verb help mine only while someone else swings', async () => {
@@ -394,5 +397,23 @@ describe('features/help-mine-feature.js in multiplayer (the realtime server keep
     assert.match(s.log.at(-1), /^You got 3 additional .+ with the help you received from Ada, and Bo\.$/, 'getHelpString 25-50: ", and " before the last name');
     assert.deepEqual(s.events, [['help_mine', 1]], 'you helped Ada: I Me Mine counts it');
     assert.equal(s.data.helpMineLast, 'bonus:3:Ada,Bo');
+  });
+
+  it('#464: the server says whether a swing helps, not the page\'s late copy of the crew (mining.js 222-225, 504)', async () => {
+    // A 3-2-1 group start: this page still saw nobody else swinging, the server had someone first.
+    const s = await stageShared({ miners: [] });
+    s.feature.verbStarted(s.rockTarget, { id: 'mine' }, s.engine);
+    s.client.hear('msg:obj_mine', { t: 'obj_mine', id: 'rock:9', helping: true });
+    assert.equal(s.data.helpMineHelping, undefined, 'another rock\'s answer is not this swing\'s');
+    s.client.hear('msg:obj_mine', { t: 'obj_mine', id: rockId(s.rockTarget.rockIndex), helping: true });
+    assert.equal(s.data.helpMineHelping, 'server:yes');
+    s.feature.rockMined(s.rockTarget, { ok: true, rock: s.rock }, s.engine);
+    assert.deepEqual(s.events, [['help_mine', 1]], 'I Me Mine counts the helper');
+    // The first to start: the page saw a crew, the server had nobody before it.
+    const t = await stageShared({ miners: [3] });
+    t.feature.verbStarted(t.rockTarget, { id: 'mine' }, t.engine);
+    t.client.hear('msg:obj_mine', { t: 'obj_mine', id: rockId(t.rockTarget.rockIndex), helping: false });
+    t.feature.rockMined(t.rockTarget, { ok: true, rock: t.rock }, t.engine);
+    assert.deepEqual(t.events, [], 'the first swing helps no one');
   });
 });
