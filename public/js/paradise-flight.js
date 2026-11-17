@@ -50,6 +50,43 @@ export const STARLIT_NIGHT_MOON = Object.freeze({
   }),
 });
 
+/**
+ * G892 (stand-ins audit A6): the star pickups are Tiny Speck's own star decos, star_asset_01 for the
+ * big stars and star_asset_02 for the small ones (Radial Heights' 'yellow stars' layer places 14 and
+ * 39 of them, GHFQOLEIHN63P27), not vector stars. A pickup's radius is 0.42 of its deco's side
+ * (game.js loadParadiseSourcePoints), so the deco is drawn PARADISE_STAR_SIDE x its radius across,
+ * the source's own size (57 and 27); the source's rotation (r, degrees) comes with it. Slip 'N Slide
+ * has no source street; its stars use the same decos. Collisions keep the radius.
+ */
+export const PARADISE_STAR_SIDE = 2.38;
+/** PURE: { asset, side, rotation } for one star pickup. */
+export function paradiseStarArt(point = {}) {
+  const radius = Number(point.radius) || 13;
+  return {
+    asset: point.major ? 'star_asset_01' : 'star_asset_02',
+    side: Math.round(radius * PARADISE_STAR_SIDE * 10) / 10,
+    rotation: ((Number(point.r) || 0) * Math.PI) / 180,
+  };
+}
+
+/**
+ * G892 (stand-ins audit A7): each recovered course's way out as its source street has it, in place of
+ * the drawn arch. The SHUT boards (report 131) have no source and stay over it until the goal is met.
+ * - Radial Heights: the street's signpost (signpost_1339609697365 at -499, -371, so 501, 1629 here;
+ *   the exit stands at 500, 1645) drawn as a street signpost (street-render oneArmSignpost), and over
+ *   it the deco sign groddle_sign_blank_1340666150608 whose sign_txt the client printed
+ *   (DecoRenderer.as 287-322, default_deco_sign_lg): "Exit's down here!", 425 x 248 at 502, 1416 in
+ *   its layer, centred half its height up. The template (LHFR8BRSVT33AE0) that filled the signpost's
+ *   connects was not archived, so the arm says where it takes you: home to Ur.
+ */
+export const PARADISE_EXIT_ART = Object.freeze({
+  radial_heights: Object.freeze({
+    kind: 'signpost',
+    arm: 'Back to Ur',
+    sign: Object.freeze({ text: "Exit's down here!", x: 502, y: 1416, w: 425, h: 248 }),
+  }),
+});
+
 export const STARLIT_NIGHT_MOON_FADE_MS = 1500;
 export const STARLIT_NIGHT_STAR_FADE_MS = 1000;
 

@@ -352,6 +352,8 @@ import {
   PARADISE_TICKET_IDS,
   resetParadiseDay,
   PARADISE_STAR_COURSES,
+  PARADISE_EXIT_ART,
+  paradiseStarArt,
   paradisePickupTouches,
   paradiseQuoinScale,
   CLOUD_RING_PROFILES,
@@ -384,7 +386,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=0100d66e';
+} from './js/paradise-flight.js?v=47c676c2';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
 import {
   buildParadiseCourseArt,
@@ -517,7 +519,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=e076fea2';
+} from './js/player-save.js?v=fa0d92c8';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -709,6 +711,7 @@ import {
   pickConnection,
   loadDecoManifest,
   loadSignpostTextures,
+  oneArmSignpost,
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
@@ -22456,16 +22459,26 @@ function applyParadiseReward(rewardDef) {
   return { actual, copy };
 }
 
-function vectorStar(radius = 16, color = 0xffe96a, alpha = 1) {
-  const star = new PIXI.Graphics();
-  const points = [];
-  for (let index = 0; index < 10; index += 1) {
-    const angle = -Math.PI / 2 + index * Math.PI / 5;
-    const r = index % 2 === 0 ? radius : radius * 0.43;
-    points.push(Math.cos(angle) * r, Math.sin(angle) * r);
-  }
-  star.poly(points).fill({ color: color, alpha: alpha }).stroke({ width: Math.max(1, radius * 0.08), color: 0xfff8c5, alpha: alpha * 0.9 });
-  return star;
+/**
+ * G892: a star pickup is Tiny Speck's own star deco (js/paradise-flight.js paradiseStarArt) in a
+ * box of scale 1, so the pulse and the collision box (baseScale 1, the point's radius) stay as they were.
+ */
+function paradiseStarPickup(point) {
+  const box = new PIXI.Container();
+  const art = paradiseStarArt(point);
+  const texture = textureFromUrl(`assets/decos/groddle/${art.asset}.png`);
+  const star = new PIXI.Sprite(texture);
+  star.anchor.set(0.5);
+  star.rotation = art.rotation;
+  const applySize = () => {
+    star.width = art.side;
+    star.height = art.side;
+  };
+  if (isLoaded(texture.source)) applySize();
+  else onLoaded(texture.source, applySize);
+  box.addChild(star);
+  box.label = `paradise-star-${art.asset}`;
+  return box;
 }
 
 function addParadiseCloud(root, x, y, width, height, alpha = 0.9, tint = 0xffffff) {
@@ -22593,6 +22606,25 @@ function buildRadialBackground(root, course) {
   moon._sourceStreetTsid = course.sourceStreetTsid;
   root.addChild(moon);
   root.paradiseRadialMoon = moon;
+  // G892: the source's exit sign, its sign_txt printed in its deco's box (DecoRenderer.as 287-322).
+  const sign = PARADISE_EXIT_ART.radial_heights.sign;
+  const words = new PIXI.Text({ text: sign.text, style: {
+    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontWeight: '800',
+    fontSize: 26,
+    fill: 0xffffff,
+    align: 'center',
+    wordWrap: true,
+    wordWrapWidth: sign.w,
+    dropShadow: { color: 0x1f3440, alpha: 0.85, blur: 2, distance: 2, angle: Math.PI / 3 },
+  } });
+  words.resolution = 2;
+  words.anchor.set(0.5);
+  words.position.set(sign.x, sign.y - sign.h / 2);
+  words.zIndex = -2;
+  words.label = 'paradise-exit-sign';
+  root.addChild(words);
+  root.paradiseExitSign = words;
 }
 
 function buildStarlitBackground(root, course, points) {
@@ -22773,6 +22805,7 @@ async function loadParadiseSourcePoints(course) {
           y: screenSpace ? deco.y : deco.y - data.bounds.t,
           radius: Math.max(10, Math.min(28, Number(deco.w || 30) * 0.42)),
           major: String(deco.sprite) === 'star_asset_01',
+          r: Number(deco.r) || 0,
         };
       });
   } catch {
@@ -22787,9 +22820,13 @@ async function loadParadiseVisualAssets(course) {
     );
     return;
   }
+  // G892: the star pickups' decos, before the first one is drawn.
+  const stars = PARADISE_STAR_COURSES.includes(course?.id)
+    ? ['star_asset_01', 'star_asset_02'].map((name) => loadTexture(`assets/decos/groddle/${name}.png`).catch(() => null))
+    : [];
   if (course?.id === 'radial_heights') {
     const src = `assets/decos/groddle/${RADIAL_HEIGHTS_MOON.asset}?v=radial-322`;
-    await loadTexture(src, { width: RADIAL_HEIGHTS_MOON.width, height: RADIAL_HEIGHTS_MOON.height }).catch(() => null);
+    await Promise.all([loadTexture(src, { width: RADIAL_HEIGHTS_MOON.width, height: RADIAL_HEIGHTS_MOON.height }).catch(() => null), ...stars]);
     return;
   }
   if (course?.id === 'starlit_night') {
@@ -22808,6 +22845,7 @@ async function loadParadiseVisualAssets(course) {
     return;
   }
   if (course?.id !== 'slip_n_slide') return;
+  await Promise.all(stars);
   const sprites = new Set([
     ...SLIP_N_SLIDE_LANDMARKS.map((entry) => entry.sprite),
     ...SLIP_N_SLIDE_TREE_SPRITES,
@@ -22888,8 +22926,7 @@ function spawnParadisePickup(course, point, index) {
   let sprite;
   let typeId = '';
   if (PARADISE_STAR_COURSES.includes(course.id)) {
-    sprite = vectorStar(point.radius || 13, 0xffe15c, 0.96);
-    sprite.rotation = index % 2 ? 0.13 : -0.13;
+    sprite = paradiseStarPickup(point);
     sprite.baseScale = 1;
   } else {
     const quoinType = paradiseQuoinType(course, index);
@@ -22995,6 +23032,25 @@ function spawnParadiseExit(course) {
     course.movement === 'slide' ? slipTerrainY(course.exit.x) : course.exit.y
   );
   root.zIndex = 44;
+  // G892: a recovered course's own way out (js/paradise-flight.js PARADISE_EXIT_ART), else the drawn arch.
+  const art = PARADISE_EXIT_ART[course.id];
+  const arrow = art ? null : paradiseExitArch(course, root);
+  if (art?.kind === 'signpost') {
+    const post = oneArmSignpost(PIXI, art.arm, { left: true });
+    post.label = 'paradise-exit-signpost';
+    root.addChild(post);
+  }
+  // Report 131: shut until the course's goal is met: planks nailed across it and the word, not only faded.
+  const shut = paradiseExitShutSign();
+  root.addChild(shut);
+  root.alpha = 0.82;
+  entityLayer.addChild(root);
+  paradiseExit = { sprite: root, active: false, shut, arrow, lineAt: 0 };
+  return paradiseExit;
+}
+
+/** The drawn arch, its arrow (shown once open) and its words, for the courses with no way out of their own. */
+function paradiseExitArch(course, root) {
   const glow = new PIXI.Graphics();
   // Reconstructed courses paint their own exit door; keep only a soft glow.
   if (course.art) glow.alpha = 0.35;
@@ -23014,7 +23070,7 @@ function spawnParadiseExit(course) {
   arrow.position.set(0, -68);
   root.addChild(arrow);
   const label = new PIXI.Text(
-    { text: course.id === 'radial_heights' ? "EXIT'S DOWN HERE!" : course.exitLabel ?? 'WAY HOME', style: {
+    { text: course.exitLabel ?? 'WAY HOME', style: {
       fontFamily: 'Trebuchet MS, sans-serif',
       fontSize: 12,
       fontWeight: '900',
@@ -23025,14 +23081,8 @@ function spawnParadiseExit(course) {
   label.anchor.set(0.5);
   label.position.set(0, -140);
   root.addChild(label);
-  // Report 131: shut until the course's goal is met: planks nailed across it and the word, not only faded.
   arrow.visible = false;
-  const shut = paradiseExitShutSign();
-  root.addChild(shut);
-  root.alpha = 0.82;
-  entityLayer.addChild(root);
-  paradiseExit = { sprite: root, active: false, shut, arrow, lineAt: 0 };
-  return paradiseExit;
+  return arrow;
 }
 
 /** The closed way home's boards (over the arch, in its own px) and its SHUT sign. */
@@ -23514,7 +23564,7 @@ function unlockParadiseExit() {
   if (!paradiseExit || paradiseExit.active) return;
   paradiseExit.active = true;
   paradiseExit.shut.visible = false;
-  paradiseExit.arrow.visible = true;
+  if (paradiseExit.arrow) paradiseExit.arrow.visible = true;
   paradiseExit.sprite.alpha = 1;
   paradiseExit.sprite.scale.set(1.05);
   playSfx('quest', { volume: 0.62, rate: 1.08 });

@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=6ef1ea3a';
+import { PARADISE_COURSES, PARADISE_EXIT_ART, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=47c676c2';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -44,5 +45,63 @@ describe('training2 tables (A2, A2b)', () => {
     const body = src.slice(at, src.indexOf('\n}\n', at));
     assert.match(body, /TRAINING2_TABLE_ART\[kind\]/);
     assert.doesNotMatch(body, /ellipse\(|roundRect\(|0x9a5a2b|0xf4f4f4/);
+  });
+});
+
+const game = () => read('game.js');
+const fnBody = (src, name) => {
+  const at = src.indexOf(`function ${name}(`);
+  return src.slice(at, src.indexOf('\n}\n', at));
+};
+const street = (tsid) => JSON.parse(read(`assets/streets/${tsid}.json`));
+const XML = (tsid) => join(AUDIT, 'streets/mnt/stos/location_data', `${tsid}.xml`);
+
+describe('Radial Heights stars and way out (A6, A7)', () => {
+  it('each star pickup is its source star deco at the source size and turn', () => {
+    const data = street('GHFQOLEIHN63P27');
+    const stars = data.layers.find((l) => l.name === 'yellow stars').decos;
+    assert.equal(stars.length, 53);
+    for (const deco of stars) {
+      // game.js loadParadiseSourcePoints
+      const point = { radius: Math.max(10, Math.min(28, deco.w * 0.42)), major: deco.sprite === 'star_asset_01', r: deco.r };
+      const art = paradiseStarArt(point);
+      assert.equal(art.asset, deco.sprite);
+      assert.ok(Math.abs(art.side - deco.w) <= 0.6, `${deco.id} ${art.side} vs ${deco.w}`);
+      assert.equal(art.rotation, (deco.r * Math.PI) / 180);
+      assert.ok(existsSync(join(ROOT, `assets/decos/groddle/${deco.sprite}.webp`)));
+    }
+    assert.equal(PARADISE_STAR_SIDE, 2.38);
+    assert.match(fnBody(game(), 'loadParadiseSourcePoints'), /r: Number\(deco\.r\) \|\| 0/);
+  });
+
+  it('the stars are drawn from the decos, the box and the collision unchanged', () => {
+    const src = game();
+    assert.doesNotMatch(src, /function vectorStar\(/);
+    const spawn = fnBody(src, 'spawnParadisePickup');
+    assert.match(spawn, /sprite = paradiseStarPickup\(point\);\n\s*sprite\.baseScale = 1;/);
+    assert.match(fnBody(src, 'paradiseStarPickup'), /textureFromUrl\(`assets\/decos\/groddle\/\$\{art\.asset\}\.png`\)/);
+    // The touch box is still the radius each way at drawn scale 1.
+    const course = PARADISE_COURSES.radial_heights;
+    assert.equal(paradisePickupTouches(course, { x: 0, y: 0, radius: 23.9 }, { x: 0, y: 40 }, { drawnScale: 1 }),
+      paradisePickupTouches(course, { x: 0, y: 0, radius: 23.9 }, { x: 0, y: 40 }));
+  });
+
+  it('the way out is the street signpost under its source sign, the drawn arch only where nothing survives', () => {
+    const art = PARADISE_EXIT_ART.radial_heights;
+    assert.equal(art.kind, 'signpost');
+    const data = street('GHFQOLEIHN63P27');
+    const post = data.signposts[0];
+    const exit = PARADISE_COURSES.radial_heights.exit;
+    assert.ok(Math.abs(post.x - data.bounds.l - exit.x) <= 2 && Math.abs(post.y - data.bounds.t - exit.y) <= 20, 'the exit stands at the source signpost');
+    const sign = data.layers.flatMap((l) => l.decos || []).find((d) => d.id === 'groddle_sign_blank_1340666150610');
+    assert.deepEqual([sign.x, sign.y, sign.w, sign.h], [art.sign.x, art.sign.y, art.sign.w, art.sign.h]);
+    if (existsSync(XML('GHFQOLEIHN63P27'))) assert.match(readFileSync(XML('GHFQOLEIHN63P27'), 'utf8'), /<str id="sign_txt">Exit's down here!<\/str>/);
+    const src = game();
+    const spawn = fnBody(src, 'spawnParadiseExit');
+    assert.match(spawn, /oneArmSignpost\(PIXI, art\.arm/);
+    assert.match(spawn, /const arrow = art \? null : paradiseExitArch\(course, root\)/);
+    assert.match(src, /if \(paradiseExit\.arrow\) paradiseExit\.arrow\.visible = true;/);
+    assert.match(fnBody(src, 'buildRadialBackground'), /PARADISE_EXIT_ART\.radial_heights\.sign/);
+    assert.doesNotMatch(src, /EXIT'S DOWN HERE!/);
   });
 });

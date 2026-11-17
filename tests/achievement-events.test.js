@@ -30,7 +30,7 @@ import { slothsChewing } from '../public/js/features/resource-nodes-feature.js?v
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=7bb86248';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { normalizeAchievementSnapshot } from '../public/js/player-save.js?v=e076fea2';
+import { normalizeAchievementSnapshot } from '../public/js/player-save.js?v=fa0d92c8';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');

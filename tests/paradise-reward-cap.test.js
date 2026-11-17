@@ -59,7 +59,7 @@ describe('#156 Paradise energy and mood rewards', () => {
   });
 
   it('game.js credits Paradise quoins, Cloud Rings and the finish reward through it', () => {
-    const fn = game.slice(game.indexOf('function applyParadiseReward'), game.indexOf('function vectorStar'));
+    const fn = game.slice(game.indexOf('function applyParadiseReward'), game.indexOf('function paradiseStarPickup'));
     assert.match(fn, /creditMetabolicReward\(pc, rewardDef\.type, amount\)/);
     assert.doesNotMatch(fn, /clamp\([^)]*,\s*0,\s*100\)/);
     assert.doesNotMatch(fn, /already full/);
