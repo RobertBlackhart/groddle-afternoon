@@ -106,3 +106,26 @@ describe('G948 A25: the Egg Plant\'s egg is credited in training2, where it is h
     assert.deepEqual(two.reconciled.clamped, counts({ egg_plain: 1 }));
   });
 });
+
+describe('G948 A3: what the Craftybot holds is counted, so its making is never taken back', { skip }, () => {
+  // recipe:crystallizer, 20 Molybdenum -> a Crystallizer: the bot fetches, crafts, then Collect.
+  const job = (general = {}, complete = {}) => ({ craftybot: { version: 1, owned: true, queue: [{ item: 'crystallizer', count: 1, crafted: 0, holder: { general, complete } }] } });
+  const ledger = counts({ molybdenum: 20, pick: 1 });
+
+  it('fetched ingredients and made goods count; a held tool stays counted where it is', () => {
+    const h = php('holdings', [save({ inv: { pick: 1 }, features: job({ molybdenum: { count: 20 }, pick: { count: 1, tsid: { pick: 1 } } }, { crystallizer: { count: 1 } }) })]);
+    assert.deepEqual(h.items, { crystallizer: 1, molybdenum: 20, pick: 1 });
+  });
+
+  it('fetch, craft and Collect in three writes stand with no budget', () => {
+    const fetched = php('check', [ledger, credited(), save({ inv: { pick: 1 }, features: job({ molybdenum: { count: 20 } }) }), 0]);
+    assert.deepEqual(fetched.reconciled.clamped, none);
+    assert.deepEqual(fetched.after, ledger, 'a fetch is a move');
+    const made = php('check', [fetched.after, credited(), save({ inv: { pick: 1 }, features: job({}, { crystallizer: { count: 1 } }) }), 0]);
+    assert.deepEqual(made.reconciled.clamped, none);
+    assert.deepEqual(made.reconciled.made, { crystallizer: 1 }, 'the recipe explains it in the write that crafted it');
+    const collected = php('check', [made.after, credited(), save({ inv: { pick: 1, crystallizer: 1 }, features: job() }), 0]);
+    assert.deepEqual(collected.reconciled.clamped, none);
+    assert.deepEqual(collected.after, counts({ crystallizer: 1, pick: 1 }));
+  });
+});
