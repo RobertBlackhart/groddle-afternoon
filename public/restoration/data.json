@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2559,
+  "commits": 2563,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Home street trees, hills and cliffs stand on ground, on the street and in the Change Style tiles"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Butterflies say \"<333\", not \"&lt;333\": Glitch's text reaches the game as characters"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A Super Harvest says its bonus on its own line, so the float and the log add up"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "A planned Jellisac stands on flat floor where you can see it, not behind a curtain or inside a pipe"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A Jellisac seated in a hole sits in the hole's opening, turned holes included, and takes an open hole before one art covers"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A new player who owns no Musicblock finds one on the street the tutorial sets them down on, as on Hechey Track"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Streets no longer each hold a Musicblock; blocks come from Glitch's drop tables, Gentle Island and a new player's start street"
    }
   ]
  },
- "tests": 1103,
+ "tests": 1106,
  "generatedAt": "2026-11-17"
 }
