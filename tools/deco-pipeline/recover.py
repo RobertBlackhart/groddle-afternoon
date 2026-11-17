@@ -116,6 +116,12 @@ SCENE_DECOS.update({
     'homestreetstyle_sign_large_newxpblack': 'the hanging HOME STREET STYLE sign',
     'sign_t2streetstyle_newxp': 'the Go talk to your Magic Rock sign',
 })
+# Mental Block 1 and 2 (LIF3NLRNBBA3HD2, LIFE2JAV2FC3TPI) are lost; players' snaps (113711, 114019, reference
+# only) end each level at the newxpblack striped arch door, source/newxp/door_asset_striped_01a_newxpblack.swf.
+# js/quest-rooms/mental-block.js places it (G962).
+SCENE_DECOS.update({
+    'door_asset_striped_01a_newxpblack': 'the blue-grey striped arch door at the end of Mental Block 1 and 2',
+})
 # An Autumn Day's four memory rooms (LUVCCQSMDIB3HOI and its three feelings) are lost; their decos are
 # in quest01.swf. js/quest-rooms/an-autumn-day.js places the bench (the falling leaves and the girl play:
 # tools/deco-pipeline/animate.py SCENE_ANIMATED).

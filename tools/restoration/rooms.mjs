@@ -104,7 +104,7 @@ export const ROOM_NOTES = Object.freeze({
     about: 'Mental Block and its sequel were block-drop puzzles: build a staircase to a high ledge from a fixed sequence of blocks.',
     play: 'At each station, move the tube and drop blocks in order. Blue blocks stack on anything; red ones stack only on red and crush the blue beneath. Reset if you box yourself in.',
     source: 'The flags, rewards and the "Are you stuck?" prompt (not a timer: the sequel takes longer than five minutes).',
-    rebuilt: "Each station's block order, tube stops and ledge heights are measured from the level designer's two videos.",
+    rebuilt: "Each station's block order, tube stops and ledge heights are measured from the level designer's two videos. Players' Snaps show the pieces are Tiny Speck's own, from the new-player training rooms: the holey metal tube, the light-blue and red wooden blocks (the red washed to the Snaps' crimson) and the blue-grey striped arch door, sized to the Snaps. The black silhouettes, grey arrows and boards are flat, as the Snaps show them, under a plain grey sky.",
     footage: [{ id: 'mgsdduCR_Gc', label: 'Mental Block (level designer)' }, { id: 'Y0GgASrJ_GE', label: 'Mental Block 2 (level designer)' }],
   },
   an_autumn_day: {

@@ -11,7 +11,12 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
 import {
+  BLOCK_ART_W,
+  BLOCK_DECOS,
   CELL,
+  CRIMSON_WASH,
+  END_DOOR,
+  TUBE_ART_W,
   CORR_Y,
   EVAL_CURRANTS,
   EXIT_PROMPT_MS,
@@ -36,7 +41,7 @@ import {
   solidRects,
   solvingPlans,
   staticPlatforms,
-} from '../public/js/quest-rooms/mental-block.js?v=5dd2a852';
+} from '../public/js/quest-rooms/mental-block.js?v=0b75079c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -74,7 +79,6 @@ describe('Mental Block source', () => {
     for (const f of ['wall_button_lockOut.webp', 'wall_button_lockIn.webp', 'Teleporter_Base.webp', 'Teleporter_Beam.webp']) {
       assert.ok(existsSync(join(root, 'public/assets/sprites/quest-rooms/mental_block', f)), f);
     }
-    assert.ok(existsSync(join(root, 'public/assets/decos/groddle/door_asset_gray.webp')));
     assert.ok(existsSync(join(root, 'public', room.icon)));
   });
 });
@@ -217,5 +221,41 @@ describe('Mental Block geometry', () => {
       const geo = levelGeometry(stage);
       for (const s of geo.sections) for (const b of Object.values(s.buttons)) assert.equal(b.y, CORR_Y);
     }
+  });
+});
+
+describe('Mental Block art (G962)', () => {
+  const src = readFileSync(join(root, 'public/js/quest-rooms/mental-block.js'), 'utf8');
+  const decos = join(root, 'public/assets/decos/groddle');
+
+  it('draws the tube, blocks and end door from Tiny Speck decos, not vectors', () => {
+    assert.doesNotMatch(src, /function drawTube|function drawBlock|drawTube\(|drawBlock\(/, 'the code-drawn tube and blocks are gone');
+    assert.doesNotMatch(src, /door_asset_gray/, 'the tinted grey door stand-in is gone');
+    assert.doesNotMatch(src, /hills\.quadraticCurveTo/, 'the snaps show no far hills');
+    for (const n of ['newxpblack_tube_metal_01a_front', 'newxpblack_tube_metal_01a_back', BLOCK_DECOS.b, BLOCK_DECOS.r, END_DOOR]) {
+      assert.ok(existsSync(join(decos, `${n}.webp`)), n);
+      assert.match(src, new RegExp(n.startsWith('block_') ? 'BLOCK_DECOS' : n), n);
+    }
+    assert.equal(BLOCK_DECOS.b, 'block_lightblue');
+    assert.equal(BLOCK_DECOS.r, 'block_red');
+    assert.equal(END_DOOR, 'door_asset_striped_01a_newxpblack');
+  });
+
+  it('sizes the art to the snaps and washes block_red crimson', () => {
+    // Snap 114017: a block 72 px wide steps 62 px; the room steps one CELL.
+    assert.equal(BLOCK_ART_W, Math.round((CELL * 72) / 62));
+    assert.ok(TUBE_ART_W > CELL && TUBE_ART_W < 2 * CELL);
+    const wash = ([r, g, b]) => [0, 1, 2].map((row) => CRIMSON_WASH.slice(row * 5, row * 5 + 3).reduce((t, m, i) => t + m * [r, g, b][i], 0));
+    const [r, g, b] = wash([224, 94, 0]);
+    assert.ok(r > 170 && r < 210 && g > 50 && g < 80 && b > 55 && b < 85, `crimson, not orange: ${[r, g, b].map(Math.round)}`);
+  });
+
+  it('records the rendered door as a Tiny Speck CC0 deco with its SWF', () => {
+    const rec = JSON.parse(readFileSync(join(root, 'tools/deco-pipeline/recovered.json'), 'utf8')).decos[END_DOOR];
+    assert.ok(rec, 'door_asset_striped_01a_newxpblack is in recovered.json');
+    assert.match(rec.swf, /newxp_cloud\.swf#door_asset_striped_01a_newxpblack/);
+    assert.match(rec.scene, /Mental Block/);
+    const manifest = JSON.parse(readFileSync(join(root, 'public/assets/decos/manifest.json'), 'utf8'));
+    assert.ok(manifest.includes(END_DOOR));
   });
 });

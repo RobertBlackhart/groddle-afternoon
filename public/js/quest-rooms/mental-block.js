@@ -43,12 +43,15 @@
  * corridor), and any dropped block answers "Reset" so a player boxed into a
  * pit by their own columns is never stuck. Triple jump is off in here, like
  * the source's other jump boosts. Art: the recovered wall_button (lockOut /
- * lockIn), Teleporter_Base / Teleporter_Beam and door_asset_gray; the tube,
- * blocks, billboards and silhouettes are clean vectors.
+ * lockIn) and Teleporter_Base / Teleporter_Beam, and the newxpblack decos the
+ * players' snaps show (G962): the holey tube, block_lightblue, block_red washed
+ * crimson and the striped arch door. The silhouettes, arrows and billboards are
+ * flat, as the snaps show them.
  */
 
 import { pushOutOfSolids, spawnQuoins, takeQuoins, BODY_H } from './puzzle-kit.js?v=85204cf2';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { deco } from './kit.js?v=153fa0a9';
 
 const ROOM_ID = 'mental_block';
 const ART = `assets/sprites/quest-rooms/${ROOM_ID}/`;
@@ -477,42 +480,64 @@ export function gradeFor(resets) {
 /* Drawing                                                              */
 /* ------------------------------------------------------------------ */
 
-const BLOCK_COLORS = {
-  b: { fill: 0x86e3f6, top: 0xc9f5ff, edge: 0x4fb9d6, glow: 0x9feeff },
-  r: { fill: 0xe0484d, top: 0xf58a8a, edge: 0xa82a30, glow: 0xff7f7f },
-};
+/**
+ * The blocks and the tube are Tiny Speck's own newxpblack decos (G962; snaps 113711, 114017 and the
+ * Y0GgASrJ_GE contact sheets, reference only): block_lightblue, block_red washed from its orange
+ * toward the snaps' crimson, and newxpblack_tube_metal_01a_front over its _back.
+ */
+export const BLOCK_DECOS = Object.freeze({ b: 'block_lightblue', r: 'block_red' });
+/**
+ * Measured from snap 114017 (900 x 600): a block is 72 px wide and a stack steps 62 px, so at the
+ * room's 72-unit step a block is drawn 84 wide (its top face tucks under the block above).
+ */
+export const BLOCK_ART_W = 84;
+/** block_red (224, 94, 0) to the snaps' crimson (about 190, 65, 70): rows R, G, B, A; offsets 0-1. */
+export const CRIMSON_WASH = Object.freeze([
+  0.85, 0, 0, 0, 0,
+  0, 0.68, 0, 0, 0,
+  0.31, 0, 0, 0, 0,
+  0, 0, 0, 1, 0,
+]);
+/** The snaps' tube mouth is 97 px across at the same scale as the blocks: about 113 units. */
+export const TUBE_ART_W = 113;
+const TUBE_FRONT_PX = 420;
+/** Snap 114019: the end door is about 90 x 130 px there, so about 105 x 150 units (260 x 360 file). */
+export const END_DOOR = 'door_asset_striped_01a_newxpblack';
+const END_DOOR_SCALE = 0.41;
+export const SKY_STOPS = Object.freeze([[0, '#5d5d5d'], [0.75, '#2c2c2c'], [1, '#232323']]);
+let crimsonFilter = null;
 
-/** A glowing translucent cube, bottom-centre at (0, 0). */
-function drawBlock(g, color, size = CELL) {
-  const c = BLOCK_COLORS[color] || BLOCK_COLORS.b;
-  const w = size - 4;
-  const half = w / 2;
-  const top = Math.round(size * 0.16);
-  g.ellipse(0, -1, half + 8, 7).fill({ color: c.glow, alpha: 0.18 });
-  g.roundRect(-half, -w + top / 2, w, w - top / 2, 5).fill({ color: c.fill, alpha: 0.9 });
-  g.roundRect(-half, -w, w, top + 2, 5).fill({ color: c.top, alpha: 0.95 });
-  g.roundRect(-half + 5, -w + top + 5, 7, w - top - 14, 3).fill({ color: 0xffffff, alpha: 0.22 });
-  g.roundRect(-half, -w, w, w, 5).stroke({ width: 1.5, color: c.edge, alpha: 0.7 });
+function crimson(PIXI) {
+  if (!PIXI.ColorMatrixFilter) return null;
+  if (!crimsonFilter) {
+    crimsonFilter = new PIXI.ColorMatrixFilter();
+    crimsonFilter.matrix = [...CRIMSON_WASH];
+  }
+  return crimsonFilter;
 }
 
-/** The perforated block-dropping tube, its mouth at (0, 0). */
-function drawTube(g, len = 150) {
-  g.roundRect(-30, -len + 4, 64, len, 10).fill({ color: 0x000000, alpha: 0.25 });
-  g.moveTo(-26, -len);
-  g.lineTo(26, -len);
-  g.lineTo(22, -len * 0.45);
-  g.lineTo(32, -6);
-  g.lineTo(-32, -6);
-  g.lineTo(-22, -len * 0.45);
-  g.closePath();
-  g.fill(0x8f9294);
-  g.rect(-20, -len, 9, len - 10).fill({ color: 0xc3c6c8, alpha: 0.7 });
-  const holes = [[-8, 0.15, 7], [9, 0.22, 5], [-12, 0.34, 5], [6, 0.4, 8], [-4, 0.55, 6], [13, 0.6, 4], [-14, 0.7, 4], [4, 0.78, 6], [-6, 0.88, 4], [12, 0.9, 5]];
-  for (const [hx, at, r] of holes) {
-    g.ellipse(hx, -len + at * len, r, r * 1.1).fill({ color: 0x2b2d2f, alpha: 0.9 });
+/** One block (the CC0 deco in a unit-scale holder, so a shatter can scale it), bottom-centre at (0, 0). */
+function blockArt(PIXI, color, size = CELL) {
+  const c = new PIXI.Container();
+  const k = color === R ? R : B;
+  const w = (BLOCK_ART_W * size) / CELL;
+  const spr = deco(PIXI, BLOCK_DECOS[k], 0, 1, { scale: w / (k === R ? 360 : 358) });
+  if (k === R) {
+    const f = crimson(PIXI);
+    if (f) spr.filters = [f];
   }
-  g.ellipse(0, -6, 33, 9).fill(0x6e7173);
-  g.ellipse(0, -5, 27, 6).fill(0x1d1f20);
+  c.addChild(spr);
+  return c;
+}
+
+/** The perforated block-dropping tube, its mouth at (0, 0): the back shows through the front's holes. */
+function tubeArt(PIXI, width = TUBE_ART_W) {
+  const c = new PIXI.Container();
+  const s = width / TUBE_FRONT_PX;
+  // newxp-feature.js stands the back 10 stage units (20 px of the 2x file) above the front's foot.
+  c.addChild(deco(PIXI, 'newxpblack_tube_metal_01a_back', 0, -20 * s, { scale: s }));
+  c.addChild(deco(PIXI, 'newxpblack_tube_metal_01a_front', 0, 0, { scale: s }));
+  return c;
 }
 
 /** A grey down arrow (a tube stop), its tip at (0, 0). */
@@ -648,16 +673,8 @@ export const room = {
     ctx.data.geo = geo;
     const root = kit.sceneRoot(PIXI, geo.W, H);
     const sky = root.layer(0, 0);
-    sky.addChild(kit.gradient(PIXI, [[0, '#3c3e40'], [0.5, '#66696b'], [1, '#8b8e90']], 960, 640));
-    const far = root.layer(0.3, 1);
-    const hills = new PIXI.Graphics();
-    for (let i = 0; i < 14; i++) {
-      const x = i * 520;
-      hills.moveTo(x - 200, 760);
-      hills.quadraticCurveTo(x + 60, 520 + (i % 3) * 50, x + 360, 760);
-    }
-    hills.fill({ color: 0x2f3133, alpha: 0.35 });
-    far.addChild(hills);
+    // The snaps' sky: plain grey, lightest at the top (93) and darkest at the ground (44); no far hills.
+    sky.addChild(kit.gradient(PIXI, SKY_STOPS, 960, 640));
     const world = root.layer(1, 3);
     world.addChild(terrain(PIXI, geo));
     const lg = new PIXI.Graphics();
@@ -928,8 +945,7 @@ function makeStationView(ctx, s) {
   });
   v.blockLayer = new PIXI.Container();
   v.layer.addChild(v.blockLayer);
-  v.tube = new PIXI.Graphics();
-  drawTube(v.tube, 150);
+  v.tube = tubeArt(PIXI);
   v.tube.x = s.positions[s.tubeStart];
   v.tube.y = TUBE_MOUTH_Y;
   v.tubeX = v.tube.x;
@@ -1053,8 +1069,7 @@ function startFall(ctx, section, p, color, stack, crushed) {
   const s = ctx.data.geo.sections[section];
   const st = ctx.data.state[section];
   const v = ctx.data.view[section];
-  const g = new ctx.PIXI.Graphics();
-  drawBlock(g, color);
+  const g = blockArt(ctx.PIXI, color);
   g.x = s.positions[p];
   g.y = TUBE_MOUTH_Y + CELL - 6;
   v.blockLayer.addChild(g);
@@ -1307,7 +1322,7 @@ function makeEnd(ctx) {
     beam.alpha = 0.2;
     ctx.add(beam, 7);
     ctx.data.beam = beam;
-    const door = kit.deco(PIXI, 'door_asset_gray', end.padX, end.ledgeY + 2, { scale: 0.27, tint: 0x9db3d6 });
+    const door = kit.deco(PIXI, END_DOOR, end.padX, end.ledgeY + 2, { scale: END_DOOR_SCALE });
     ctx.add(door, 5);
     const sign = text(kit, PIXI, 'You done\ndid it!', end.padX - 150, SHELF_Y - 110, 26, 0xf5e61e, { stroke: { color: 0x111111, width: 4 } });
     ctx.add(sign, 9);
@@ -1317,7 +1332,7 @@ function makeEnd(ctx) {
     hit.y = SHELF_Y;
     ctx.data.endTarget = ctx.register({ classId: 'mental_block_teleporter', label: 'Teleporter', subtitle: 'The way out', sprite: hit });
   } else {
-    const door = kit.deco(PIXI, 'door_asset_gray', end.x, end.y + 4, { scale: 0.28, tint: 0x9db3d6 });
+    const door = kit.deco(PIXI, END_DOOR, end.x, end.y + 4, { scale: END_DOOR_SCALE });
     ctx.add(door, 5);
     const hit = new PIXI.Graphics();
     hit.rect(-50, -150, 100, 150).fill({ color: 0xffffff, alpha: 0.001 });
@@ -1445,8 +1460,7 @@ function miniColumn(ctx, parent, x, floorY, size = 22) {
   col.set = (colors) => {
     for (const s of col.sprites) s.destroy();
     col.sprites = colors.map((c, k) => {
-      const g = new PIXI.Graphics();
-      drawBlock(g, c, size);
+      const g = blockArt(PIXI, c, size);
       g.y = -k * size;
       layer.addChild(g);
       return g;
@@ -1455,8 +1469,7 @@ function miniColumn(ctx, parent, x, floorY, size = 22) {
   };
   col.drop = (color, fromY = -110) => {
     if (col.falling) return;
-    const g = new PIXI.Graphics();
-    drawBlock(g, color, size);
+    const g = blockArt(PIXI, color, size);
     g.y = fromY;
     layer.addChild(g);
     const { stack, crushed } = dropOnto(col.stack, color);
@@ -1490,9 +1503,7 @@ function makeIntro(ctx, intro) {
     const c = b.c;
     c.addChild(text(kit, PIXI, 'BLOCK DROP', 0, -178, 24, 0xf5e61e));
     c.addChild(text(kit, PIXI, 'arrows indicate where\ntube can move to', -88, -146, 12));
-    const tube = new PIXI.Graphics();
-    drawTube(tube, 130);
-    tube.scale.set(0.38);
+    const tube = tubeArt(PIXI, 14);
     tube.x = -112;
     tube.y = -86;
     c.addChild(tube);

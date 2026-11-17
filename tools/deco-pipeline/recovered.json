@@ -1437,6 +1437,26 @@
    ],
    "png_sha": "e32607d90b671b50"
   },
+  "door_asset_striped_01a_newxpblack": {
+   "swf": "bundle:newxp_cloud.swf#door_asset_striped_01a_newxpblack",
+   "swf_sha": "45a8b5b3ec3ce232",
+   "stage": [
+    130.0,
+    180.0
+   ],
+   "root_frames": 1,
+   "sprite_frames": 1,
+   "frame": 1,
+   "variants_differ": [],
+   "placed": 0,
+   "streets": 0,
+   "scene": "the blue-grey striped arch door at the end of Mental Block 1 and 2",
+   "png": [
+    260,
+    360
+   ],
+   "png_sha": "7de88f61d12955e4"
+  },
   "door_asset_tan": {
    "swf": "bundle:meomi2.swf#door_asset_tan",
    "swf_sha": "51536c5afc61a2c3",
