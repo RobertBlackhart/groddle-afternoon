@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.45.1",
+  "release": "v0.46.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 236,
+    "fixed": 237,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -343,6 +343,12 @@
           "text": "The signpost hint, the Butler's bubble and the construction tag could sit over other things.",
           "state": "fixed",
           "version": "v0.44.0"
+        },
+        {
+          "id": "G913",
+          "text": "A new game that skipped the tutorial started up in Hechey Track's treetops instead of on the ground.",
+          "state": "fixed",
+          "version": "v0.46.0"
         }
       ]
     },

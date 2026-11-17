@@ -2473,6 +2473,15 @@
         "game:dff8a1535ce",
         "site:f747acc"
       ]
+    },
+    {
+      "id": "G913",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "A new game that skipped the tutorial started up in Hechey Track's treetops instead of on the ground.",
+      "commits": [
+        "game:ce3163878aa"
+      ]
     }
   ]
 }
