@@ -49,7 +49,7 @@
  * 'restore', job type 5) and finishes the restore in its `onDone` hook.
  */
 
-import { pluralize } from '../words.js?v=ee4e72f8';
+import { pluralize } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=f49c8998';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
 import { ecologyForStreet } from '../street-ecology.js?v=9ee1ed3f';

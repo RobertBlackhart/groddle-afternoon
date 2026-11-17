@@ -24,7 +24,7 @@
  *     &crownrival=<seconds>                  pre-fill the first rival's clock; it starts as It (G304 loss splash)
  */
 
-import { pluralize } from '../words.js?v=ee4e72f8';
+import { pluralize } from '../words.js?v=274023af';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { OVERLAY_USES, playCountdownArt, playWindowOverlay } from '../overlays.js?v=eda942a8';
 import {

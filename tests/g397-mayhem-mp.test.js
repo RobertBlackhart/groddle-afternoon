@@ -284,7 +284,7 @@ describe('solo has no Math Mayhem', () => {
     assert.doesNotMatch(feature, /placementGroups/, 'no street plan changes, solo or online');
   });
   it('leaves Game of Crowns its arena when no Math Mayhem game holds it', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=411ed7a5');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=3c609d12');
     assert.deepEqual(crownsFeature.labelFor('CROWNS_00000000000000A1'), { street: 'Game of Crowns', hub: '', hubId: 'it_game' });
   });
 });

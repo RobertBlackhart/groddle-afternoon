@@ -22,9 +22,9 @@ import { runTransform } from '../public/js/item-transforms.js?v=051e04b6';
 import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=3bc48e3e';
 import { createPlot, performPlotVerb } from '../public/js/patches.js?v=c5256421';
 import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=781ad57f';
-import { runVerb } from '../public/content.js?v=7603825b';
+import { runVerb } from '../public/content.js?v=04f4b02e';
 import { applySetFree } from '../public/js/animal-set-free.js?v=55ad2f83';
-import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=bac50225';
+import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=12346629';
 import { room as topOfTree } from '../public/js/quest-rooms/top-of-tree.js?v=992d5cad';
 import { room as esquibeth } from '../public/js/quest-rooms/esquibeth.js?v=85385baf';
 

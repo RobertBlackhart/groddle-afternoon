@@ -5,6 +5,7 @@
 
 import { getVerbReward, applyVerbReward, formatActivityLine } from './js/verb-rewards.js?v=202a9e37';
 import { grantMoodXp } from './js/mood-xp.js?v=22648ec0';
+import { superHarvestWords } from './js/words.js?v=274023af';
 import {
   TRANT_META,
   resolveArborologyPackage,
@@ -35,7 +36,7 @@ import {
   GARDEN_FERTILIZE_MS,
   fertilizeCheck,
   fertilizePlot,
-} from './js/garden.js?v=97697984';
+} from './js/garden.js?v=3f0d93db';
 import { firstWorkingTool, HOE_TOOLS, WATERING_CAN_TOOLS } from './js/tools.js?v=8516a0c3';
 import { miningGemHint } from './js/gem-hints.js?v=4b65f7ac';
 import {
@@ -57,13 +58,13 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=592b90a4';
+} from './js/animals.js?v=1773b3d9';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
   performAnimalKinship,
   highestAnimalKinshipRank,
-} from './js/animal-kinship.js?v=d1fff152';
+} from './js/animal-kinship.js?v=15e88ddc';
 import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=20ba0fa0';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
@@ -1046,7 +1047,7 @@ function finalizeMsgs(msgs, effects) {
       energy: effects.energy,
       mood: effects.mood,
       xp: effects.img || effects.xp,
-      items: effects.items,
+      items: ordinaryItems(effects),
     },
     (id) => ITEM_LABELS[id] || ITEM_CATALOG[id]?.label || id
   );
@@ -1055,7 +1056,31 @@ function finalizeMsgs(msgs, effects) {
     msgs.unshift(line);
   }
   effects.activityLine = line;
+  // G953 (#436): a Super Harvest's own line follows (game.js floats it and logs it on its own).
+  if (effects.superLine && !msgs.includes(effects.superLine)) msgs.push(effects.superLine);
   return msgs;
+}
+
+/**
+ * The items a verb's own line counts: all it gave but a Super Harvest's bonus (effects.superItems),
+ * which Glitch granted apart with its own "Super Harvest! +N" line (js/words.js superHarvestWords).
+ */
+export function ordinaryItems(effects) {
+  const items = { ...(effects?.items || {}) };
+  for (const [id, n] of Object.entries(effects?.superItems || {})) {
+    const left = (Number(items[id]) || 0) - (Number(n) || 0);
+    if (left) items[id] = left;
+    else delete items[id];
+  }
+  return items;
+}
+
+/** Adds a Super Harvest's bonus and its line to a verb's effects (see ordinaryItems). */
+function addSuperHarvest(effects, superItems, line) {
+  if (!superItems || !line) return;
+  effects.superItems ||= {};
+  for (const [id, n] of Object.entries(superItems)) effects.superItems[id] = (effects.superItems[id] || 0) + n;
+  effects.superLine = line;
 }
 
 function spokenResult(classId, state, effects, options = {}) {
@@ -1132,6 +1157,12 @@ export function runVerb(target, verbId, ctx) {
     for (const [itemId, amount] of Object.entries(care.effects?.items || {})) {
       effects.items[itemId] = (effects.items[itemId] || 0) + amount;
     }
+    // G953 (#436): a Super Harvest's bonus gets its own line (npc_piggy.js 1590-1601).
+    if (care.superBonus > 0) {
+      const meta = ITEM_CATALOG[care.itemClassTsid] || {};
+      const single = meta.label || ITEM_LABELS[care.itemClassTsid] || care.itemClassTsid;
+      addSuperHarvest(effects, care.effects.superItems, superHarvestWords(care.superBonus, single, meta.namePlural || `${single}s`));
+    }
     return care;
   };
   // A verb that missed its success roll: the source's failure line, no slugs, marked failed.
@@ -1191,7 +1222,7 @@ export function runVerb(target, verbId, ctx) {
     }
     const speech = kinshipSpeech(care, 'nibble', care.superHarvest);
     effects._activityBase = care.ok ? 'You nibble a Piggy.' : triedLine('You try to nibble a Piggy.', care, true);
-    if (!speech && care.ok) msgs.push(`${care.superHarvest ? 'Super Harvest! ' : ''}The Piggy looks philosophical about it.`);
+    if (!speech && care.ok) msgs.push('The Piggy looks philosophical about it.');
     finalizeMsgs(msgs, effects);
     return {
       ok: care.ok,
@@ -1218,7 +1249,7 @@ export function runVerb(target, verbId, ctx) {
     }
     const speech = kinshipSpeech(care, 'squeeze', care.superHarvest);
     effects._activityBase = care.ok ? 'You squeeze a Chicken.' : triedLine('You try to squeeze a Chicken.', care);
-    if (!speech && care.ok) msgs.push(`${care.superHarvest ? 'Super Harvest! ' : ''}Buk!`);
+    if (!speech && care.ok) msgs.push('Buk!');
     else if (missFloat(care, speech)) msgs.push(missFloat(care, speech));
     finalizeMsgs(msgs, effects);
     return {
@@ -1280,7 +1311,7 @@ export function runVerb(target, verbId, ctx) {
     const care = performKinship('milk');
     const speech = kinshipSpeech(care, 'milk', care.superHarvest);
     effects._activityBase = care.ok ? 'You milk a Butterfly.' : triedLine('You try to milk a Butterfly.', care);
-    if (!speech && care.ok) msgs.push(`${care.superHarvest ? 'Super Harvest! ' : ''}The Butterfly offers its most precious essence.`);
+    if (!speech && care.ok) msgs.push('The Butterfly offers its most precious essence.');
     else if (missFloat(care, speech)) msgs.push(missFloat(care, speech));
     finalizeMsgs(msgs, effects);
     return {
@@ -1458,20 +1489,19 @@ export function runVerb(target, verbId, ctx) {
     }
     give(result.fruitClass, result.amount);
     const label = result.fruitLabel || result.fruitClass;
-    let line = `Harvested ${result.amount} ${label}.`;
+    const plural = ITEM_CATALOG[result.fruitClass]?.namePlural || `${label}s`;
+    // G953 (#436): the tree's own yield here, the Super Harvest's bonus on its own line, as
+    // include/trants.js 281-305 granted them (it was "SUPER harvest! 9 Cherries (3×)").
+    msgs.push(`Harvested ${result.baseAmount === 1 ? `1 ${label}` : `${result.baseAmount} ${plural}`}.`);
     if (result.superHarvest) {
-      line = `SUPER harvest! ${result.amount} ${label} (${result.superMultiplier}×).`;
+      addSuperHarvest(effects, { [result.fruitClass]: result.superAmount }, superHarvestWords(result.superAmount, label, plural));
     }
-    msgs.push(line);
     if (result.remainingOnTree <= 0) {
       msgs.push('The tree is bare for now.');
     } else {
       msgs.push(`${result.remainingOnTree} left on the tree.`);
     }
-    effects._activityBase =
-      result.superHarvest
-        ? `You super-harvest a ${TRANT_META[classId]?.label || 'tree'}.`
-        : `You harvest a ${TRANT_META[classId]?.label || 'tree'}.`;
+    effects._activityBase = `You harvest a ${TRANT_META[classId]?.label || 'tree'}.`;
     finalizeMsgs(msgs, effects);
     return {
       ok: true,
@@ -1638,6 +1668,7 @@ export function runVerb(target, verbId, ctx) {
           effects.items[id] = (effects.items[id] || 0) + n;
         }
       }
+      addSuperHarvest(effects, r.effects.superItems, r.superLine);
     }
     // Sync plot ref after mutation
     s.plot = garden.plots[key];

@@ -38,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=bac50225';
+} from '../public/js/resource-nodes.js?v=12346629';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import {
   TOOL_CONDITION_CATALOG,
@@ -315,7 +315,8 @@ describe('Jellisac Growth', () => {
     assert.deepEqual(skilled.costs, { energy: 5, mood: 0, xp: 3, toolWear: 0 });
     assert.deepEqual(skilled.superHarvest, { classTsid: 'jellisac_clump', qty: 3 });
     assert.equal(inv.jellisac_clump, 5);
-    assert.match(skilled.msgs.join(' '), /Super Harvest/);
+    // G953 (#436): the scoop's own clumps, then the bonus on its own line (jellisac.js 182-205).
+    assert.deepEqual(skilled.msgs.slice(0, 2), ['You scooped 1 Clump of Jellisac.', 'Super Harvest! +3 Clumps of Jellisac']);
   });
 });
 

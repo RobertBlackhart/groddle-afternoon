@@ -10,11 +10,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=97697984';
+import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=3f0d93db';
 import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=3f5274cc';
-import { FEATURES } from '../public/js/features/index.js?v=39d45ed0';
-import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=ea711e65';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=5f85131f';
+import { FEATURES } from '../public/js/features/index.js?v=44028acd';
+import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=6b5bc911';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
@@ -451,7 +451,7 @@ function rig({ street = COMMUNITY }) {
 
 describe('report 188: the Herb Gardens streets grow herbs in both beds', () => {
   it('streetGardenBed gives two herb beds there (herb2, herb) and crop then herb everywhere else', async () => {
-    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=97697984');
+    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=3f0d93db');
     assert.deepEqual([...HERB_GARDEN_STREETS].sort(), ['GA95U14319524O9', 'GA97L62229522GS', 'GA99U5PI39524GN']);
     for (const tsid of HERB_GARDEN_STREETS) {
       assert.deepEqual(streetGardenBed(tsid, 0), { bed: 'herb2', gardenType: 'herb', cols: 4 });

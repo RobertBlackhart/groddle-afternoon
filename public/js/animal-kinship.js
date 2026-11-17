@@ -365,6 +365,7 @@ export function performAnimalKinship(state, classId, verbId, ctx = {}) {
   let itemClassTsid = '';
   let itemCount = 0;
   let superHarvest = false;
+  let superBonus = 0;
   if (selected.bonusAmount > 0 && !['pet', 'massage'].includes(verbId)) {
     itemClassTsid = verbId === 'nibble'
       ? 'meat'
@@ -375,6 +376,10 @@ export function performAnimalKinship(state, classId, verbId, ctx = {}) {
     if (bonusTriggered) {
       itemCount *= selected.bonusMultiplier;
       superHarvest = true;
+      // G953 (#436): the bonus is the Super Harvest's own grant and line (npc_piggy.js 1590-1601:
+      // bonus_items = meat * (bonus_multiplier - 1)); the verb's line counts the ordinary yield.
+      superBonus = itemCount - selected.bonusAmount;
+      effects.superItems = { [itemClassTsid]: superBonus };
     }
     ctx.inv[itemClassTsid] = (Number(ctx.inv[itemClassTsid]) || 0) + itemCount;
     effects.items[itemClassTsid] = itemCount;
@@ -417,7 +422,7 @@ export function performAnimalKinship(state, classId, verbId, ctx = {}) {
     : itemClassTsid === 'grain'
       ? 'Grain'
       : 'Butterfly Milk';
-  const itemText = itemCount ? ` You receive ${itemCount} ${itemLabel}.` : '';
+  const itemText = itemCount ? ` You receive ${itemCount - superBonus} ${itemLabel}.` : '';
   return {
     ...quote,
     ok: true,
@@ -427,6 +432,7 @@ export function performAnimalKinship(state, classId, verbId, ctx = {}) {
     effects,
     itemClassTsid,
     itemCount,
+    superBonus,
     superHarvest,
     bonusTriggered,
     toolUse,

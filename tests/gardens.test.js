@@ -55,10 +55,10 @@ import {
   plotNeedsWater,
   gardenNeedsWater,
   GARDEN_NO_DRY_PLOTS_LINE,
-} from '../public/js/garden.js?v=97697984';
-import { getVerbsFor, runVerb } from '../public/content.js?v=7603825b';
+} from '../public/js/garden.js?v=3f0d93db';
+import { getVerbsFor, runVerb } from '../public/content.js?v=04f4b02e';
 import { plotPieces } from '../public/js/garden-view.js?v=04fe8467';
-import { plotsFor } from '../public/js/master-garden.js?v=ea711e65';
+import { plotsFor } from '../public/js/master-garden.js?v=6b5bc911';
 import {
   createInventory,
   countItem,
@@ -66,7 +66,7 @@ import {
   listPackToolSlots,
   isToolItem,
 } from '../public/js/inventory.js?v=f49c8998';
-import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=21f7901d';
+import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=37538dca';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -188,19 +188,31 @@ describe('plot lifecycle clean → plant → water → grow → harvest → clea
     assert.equal(getPlot(garden, key).state, 'clean');
   });
 
-  it('the Super Harvest float names the extra items only, with no multiplier sign (G900, #426)', () => {
+  it('the Super Harvest is its own line with the bonus only, the pick counts the rest (G900 #426, G953 #436)', () => {
     const garden = createGarden({ cols: 1, rows: 1, now: 0 });
     Object.assign(getPlot(garden, '1-1'), { state: 'crop', seed: 'seed_potato' });
     const r = harvestPlot(garden, '1-1', createInventory({}), { energy: 100, mood: 0, imagination: 0, xp: 0 }, { learned: ['croppery_1', 'croppery_2', 'croppery_3'], maxLuck: true, rng: () => 0 });
     assert.equal(r.superHarvest, true);
-    // include/garden.js 486-497: "Super Harvest! " and the bonus items given, not the whole pick.
-    assert.deepEqual(r.msgs, ['You picked some Potatoes.', `Super Harvest! +${r.bonusCount} more Potatoes.`]);
+    // include/garden.js 486-498: "Super Harvest! " and the bonus items given, apart from the pick.
+    assert.deepEqual(r.msgs, ['You picked some Potatoes.']);
+    assert.equal(r.superLine, `Super Harvest! +${r.bonusCount} Potatoes`);
+    // The pack gets the whole pick; superItems marks the bonus share the pick's line leaves out.
     assert.equal(r.effects.items.potato, r.baseCount + r.bonusCount);
-    assert.doesNotMatch(r.msgs.join(' '), /×/);
-    // One extra reads singular; the crops' own plurals.
-    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 1), 'Super Harvest! +1 more Purple Flower.');
-    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 2), 'Super Harvest! +2 more Purple Flowers.');
-    assert.equal(superHarvestLine({ cropId: 'tomato', cropLabel: 'Tomato' }, 3), 'Super Harvest! +3 more Tomatoes.');
+    assert.deepEqual(r.effects.superItems, { potato: r.bonusCount });
+    assert.doesNotMatch(r.superLine, /×|more/);
+    // One extra reads singular; the crops' own plurals (buildSimpleVerbMessage item_give, item.js 168-171).
+    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 1), 'Super Harvest! +1 Purple Flower');
+    assert.equal(superHarvestLine({ cropId: 'purple_flower', cropLabel: 'Purple Flower' }, 2), 'Super Harvest! +2 Purple Flowers');
+    assert.equal(superHarvestLine({ cropId: 'silvertongue', cropLabel: 'Sprig of Silvertongue' }, 6), 'Super Harvest! +6 Sprigs of Silvertongue');
+  });
+
+  it('a plain pick has no super line or bonus share', () => {
+    const garden = createGarden({ cols: 1, rows: 1, now: 0 });
+    Object.assign(getPlot(garden, '1-1'), { state: 'crop', seed: 'seed_potato' });
+    const r = harvestPlot(garden, '1-1', createInventory({}), { energy: 100, mood: 0, imagination: 0, xp: 0 }, { learned: ['croppery_1'], rng: () => 0.99 });
+    assert.equal(r.ok, true);
+    assert.equal(r.superLine, null);
+    assert.equal(r.effects.superItems, undefined);
   });
 
   it('crop yields are the source produces_count, halved once without Croppery', () => {

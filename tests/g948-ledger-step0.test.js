@@ -17,7 +17,7 @@ import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
 import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons.js?v=0d6b4965';
 import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
-import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=0e102383';
+import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=d9f5f2ff';
 import { FUNPICKLE } from '../public/js/funpickle.js?v=95796317';
 import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=72733693';
 

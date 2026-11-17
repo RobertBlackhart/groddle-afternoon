@@ -20,6 +20,7 @@ import { gardenGrowModifier } from './imagination-effects.js?v=70169933';
 import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
 import { isCropGardenStreet } from './garden-beds.js?v=831b1d97';
+import { superHarvestWords } from './words.js?v=274023af';
 
 /** @typedef {'clean'|'seeds'|'shoots'|'crop'|'dirty'} PlotState */
 
@@ -1658,16 +1659,18 @@ export function harvestPlot(garden, key, inv, pc, opts = {}) {
     bonusCount: bonus,
     superHarvest: bonus > 0,
     profile,
-    msgs: [
-      pickedLine(seed, n),
-      ...(bonus ? [superHarvestLine(seed, bonus)] : []),
-    ],
+    msgs: [pickedLine(seed, n)],
+    // G953 (#436): the bonus is its own line, beside the pick's (include/garden.js 486-505).
+    superLine: bonus ? superHarvestLine(seed, bonus) : null,
     speech: actionTalkback(garden, 'harvest', opts, { energy: cost, ...got }),
     effects: {
       energy: -cost,
       mood: profile.legacy ? 2 : profile.mood,
       xp: profile.legacy ? 2 : profile.xp,
+      // The whole pick reaches the pack; superItems is the Super Harvest's share of it, which the
+      // pick's own activity line leaves to the super line (content.js finalizeMsgs).
       items: { [seed.cropId]: n + bonus },
+      ...(bonus ? { superItems: { [seed.cropId]: bonus } } : {}),
     },
   };
 }
@@ -1688,17 +1691,17 @@ export const CROP_PLURALS = Object.freeze({
   gandlevery: 'Sprigs of Gandlevery',
 });
 
-/** include/garden.js 518-522: "You picked some Potatoes." (more than one) or "You picked an Onion." */
 /**
- * The Super Harvest float (G900, #426): the extra items only, as Glitch said it ("Super Harvest! "
- * and the item_give effect, include/garden.js 486-497: bonus_items = num * (bonus_multiplier - 1)).
- * "+2× Herbs" read as a multiplier beside the log's "+3 Herbs" (the whole pick); "more" says it is
- * on top of what was picked.
+ * The Super Harvest line (G900 #426, G953 #436): the extra items only, as Glitch said it ("Super
+ * Harvest! " and the item_give effect, include/garden.js 486-498: bonus_items = num *
+ * (bonus_multiplier - 1)), floated and logged on its own while the pick's line counts num, so the
+ * two add up to the pack's gain. G900's "+6 more" sat beside a log line of +9 (the whole pick).
  */
 export function superHarvestLine(seed, bonus) {
-  const name = bonus > 1 ? CROP_PLURALS[seed.cropId] || `${seed.cropLabel}s` : seed.cropLabel;
-  return `Super Harvest! +${bonus} more ${name}.`;
+  return superHarvestWords(bonus, seed.cropLabel, CROP_PLURALS[seed.cropId] || `${seed.cropLabel}s`);
 }
+
+/** include/garden.js 518-522: "You picked some Potatoes." (more than one) or "You picked an Onion." */
 
 export function pickedLine(seed, n) {
   if (n > 1) return `You picked some ${CROP_PLURALS[seed.cropId] || `${seed.cropLabel}s`}.`;

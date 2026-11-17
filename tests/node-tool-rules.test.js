@@ -11,14 +11,14 @@
 import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=bac50225';
+import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=12346629';
 import { bindToolInventory, createToolConditionState, setToolRemaining, toolCopies } from '../public/js/tools.js?v=8516a0c3';
 import { WORLD_DROP_RULES, dropFor } from '../public/js/world-drop.js?v=d152b2bb';
 import { CHOICE_MS, chooseTool, clearToolChoice, peekToolChoice, takeToolChoice } from '../public/js/tool-choice.js?v=e0dcb60e';
 import { PACK_TOOL_TEXT, nodesFor, packToolButtons, packToolCondition, planPackToolVerb } from '../public/js/pack-tool-verbs.js?v=479afbd9';
-import { packToolOrder } from '../public/js/features/resource-nodes-feature.js?v=009e8672';
+import { packToolOrder } from '../public/js/features/resource-nodes-feature.js?v=21f1f639';
 import { CREW_NODES, CREW_VERBS, HELP_SCRAPE_LABEL, helpScrapeMessage } from '../public/js/help-dig.js?v=ca0cc848';
-import { nodePerks } from '../public/js/street-objects.js?v=f118079c';
+import { nodePerks } from '../public/js/street-objects.js?v=0b2a052f';
 
 const NOW = 1_700_000_000_000;
 const ctx = (extra = {}) => ({ now: NOW, dayKey: 'd1', rng: () => 0.5, ...extra });

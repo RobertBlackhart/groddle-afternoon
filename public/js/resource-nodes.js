@@ -81,6 +81,7 @@ import { TOOL_CONDITION_CATALOG, canUseTool, toolCopies, useToolCondition } from
 import { getGameDayKey } from './game-day.js?v=72f37c7e';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
 import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
+import { superHarvestWords } from './words.js?v=274023af';
 
 export const RESOURCE_NODES_SOURCE = 'tinyspeck/glitch-GameServerJS CC0';
 export const RESOURCE_SPRITE_ROOT = 'assets/sprites/resources';
@@ -1707,8 +1708,10 @@ export function harvestResourceNode(node, inv, pc, ctx = {}) {
       node.units = def.stock.afterHarvest;
       node.regrowAt = now + regrowDelayMs(def, rng);
       const verbPast = def.classTsid === 'jellisac' ? 'scooped' : 'scraped';
-      msgs.push(`You ${verbPast} ${outputs.map((o) => plural(o.qty, o.classTsid)).join(' and ')}.`);
-      if (extra.superHarvest) msgs.push(`Super Harvest! +${plural(extra.superHarvest.qty, 'jellisac_clump')}`);
+      // G953 (#436): the scoop's own clumps here, the Super Harvest's bonus on its own line
+      // (jellisac.js 182-205: two grants); it read "You scooped 1 Jellisac Clump and 2 Jellisac Clumps."
+      msgs.push(`You ${verbPast} ${outputs.filter((o) => !o.superHarvest).map((o) => plural(o.qty, o.classTsid)).join(' and ')}.`);
+      if (extra.superHarvest) msgs.push(superHarvestWords(extra.superHarvest.qty, itemName('jellisac_clump', 1), itemName('jellisac_clump', 2)));
       break;
     }
     case 'dirt_pile': {

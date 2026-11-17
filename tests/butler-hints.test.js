@@ -13,11 +13,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=57456a7f';
-import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=2d0ccdc5';
-import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=c7a429a9';
+import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=e4a08fd4';
+import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=92d7fc02';
+import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=b41e8d33';
 import { homeTowerFeature, towerApi } from '../public/js/features/home-tower-feature.js?v=36f072a5';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=5bfdcb2b';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=dd99d7f7';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

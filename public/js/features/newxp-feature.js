@@ -135,7 +135,7 @@ import {
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
 } from '../newxp.js?v=02f902e6';
-import { countWords } from '../words.js?v=ee4e72f8';
+import { countWords } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
 import { soundForQuoin } from '../sound-moments.js?v=ac6375de';
@@ -151,7 +151,7 @@ import { upgradeSource } from '../sprite-hires.js?v=d2bcebbc';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
 import { HOME_MACHINE } from '../home-ticket.js?v=e73312c1';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=592b90a4';
+import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=1773b3d9';
 import {
   AK_ANIMALS,
   AK_BUBBLE,

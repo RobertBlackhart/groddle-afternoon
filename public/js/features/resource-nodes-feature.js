@@ -103,7 +103,7 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=bac50225';
+} from '../resource-nodes.js?v=12346629';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=8a52da9f';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
@@ -1517,8 +1517,11 @@ function applyResult(engine, entity, result) {
   let lift = 0;
   const merged = new Map();
   // A Sloth's Snails float as each round reaches the pack (paySlothSnails), not here.
-  for (const out of result.outputs || []) if (!out.due) merged.set(out.classTsid, (merged.get(out.classTsid) || 0) + out.qty);
-  for (const [classTsid, qty] of merged) {
+  // G953 (#436): a Super Harvest's bonus floats on its own, beside its own log line (jellisac.js
+  // 182-205 granted it apart), so no float says the sum while the log says the parts.
+  for (const out of result.outputs || []) if (!out.due && !out.superHarvest) merged.set(out.classTsid, (merged.get(out.classTsid) || 0) + out.qty);
+  const floats = [...merged].concat((result.outputs || []).filter((o) => o.superHarvest && !o.due).map((o) => [o.classTsid, o.qty]));
+  for (const [classTsid, qty] of floats) {
     floatGain(engine, anchorX, anchorY - lift, classTsid, qty);
     lift += 28;
   }

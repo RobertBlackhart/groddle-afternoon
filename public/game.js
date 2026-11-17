@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=7603825b';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=04f4b02e';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=39d45ed0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=44028acd';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=592b90a4';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=592b90a4';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=1773b3d9';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=1773b3d9';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -662,7 +662,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=97697984';
+} from './js/garden.js?v=3f0d93db';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -886,14 +886,14 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=21f7901d';
+} from './js/vendor.js?v=37538dca';
 import {
   animalAnchorX,
   animalAnchorY,
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=592b90a4';
+} from './js/animals.js?v=1773b3d9';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1086,7 +1086,7 @@ import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-s
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=4577c2ee';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=ee24f109';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=c45ab338';
@@ -8808,7 +8808,7 @@ function showSuperHarvestFx(target, itemClassTsid, amount) {
   const itemId = String(itemClassTsid || '').trim();
   // A tree already played its own harvest sound, so the rainbow brings RAINBOW_SUPERHARVEST (player.js
   // 3038-3065); an animal's super harvest sound is RAINBOW_SUPERHARVEST itself (sound-moments.js).
-  const tree = /^trant_|^paper_tree$/.test(String(target.classId || ''));
+  const tree = /^trant_|^paper_tree$|^garden_plot$/.test(String(target.classId || ''));
   const h = playerRainbow('rainbow_superharvest', { sound: tree });
   if (app?.canvas) {
     app.canvas.dataset.superHarvestFx = 'playing';
@@ -10168,6 +10168,9 @@ function executeVerb(target, verbId) {
     // #311: as long as the first line (life 110), so a three-line result is readable to the top.
     floatText(target.sprite.x, resultFloatY(target, spoke || Boolean(reactionText)) - i * 16, m, 0xfff4d6, { life: 110 });
   });
+  // G953 (#436): a Super Harvest's own line ("Super Harvest! +6 Sprigs of Silvertongue", floated above)
+  // is its own log entry, as the source's delayed grant sent it (players/inc_items.js 443-445).
+  if (result.ok && result.effects?.superLine) logGain(result.effects.superLine);
   // Floating metabolic deltas, unless the answer's slugs already show them
   // (the client's slugs fly to the stats instead, SlugAnimator.as).
   if (result.ok && result.effects && !(spoke && result.speech?.slugs)) {
@@ -10365,6 +10368,9 @@ function executeVerb(target, verbId) {
       for (const row of gardenPlotEvents(result.gardenPlot, currentStreet?.tsid || 'street')) {
         announceAchievementUpdates(applyAchievementProgress(achieveState, row.event, row.amount, pc));
       }
+      // include/garden.js 501: a plot's Super Harvest shows the rainbow too (G953 found it missing).
+      const plot = result.gardenPlot;
+      if (plot.superHarvest) showSuperHarvestFx(target, plot.cropId, plot.count - plot.baseCount);
     }
     if (ROCK_CATALOG[target.classId] && verbId === 'mine' && target.state?.rock?.depleted) {
       emitGameEvent(`rocks_depleted:${target.classId}`);
@@ -10392,7 +10398,8 @@ function executeVerb(target, verbId) {
 
   // show item gains
   if (result.effects?.items) {
-    Object.entries(result.effects.items).forEach(([id, n]) => {
+    // G953: the ordinary yield; a Super Harvest's bonus floats in its own line.
+    Object.entries(ordinaryItems(result.effects)).forEach(([id, n]) => {
       if (n > 0) floatText(target.sprite.x, target.sprite.y - 90, `+${n} ${ITEM_LABELS[id] || id}`, 0x7dcea0);
     });
   }
@@ -31939,11 +31946,13 @@ function runGardenPlotAction(key, action) {
   if (r.effects) {
     pushActivity({
       base: r.msgs?.[0] || 'You tended a plot',
-      effects: r.effects,
+      // G953: the pick's own items; the Super Harvest's bonus is its own line below.
+      effects: { ...r.effects, items: ordinaryItems(r.effects) },
     });
   } else {
     pushActivity(r.msgs?.[0]);
   }
+  if (r.superLine) pushActivity(r.superLine);
   toast(r.msgs?.[0] || 'Done.');
   playSound(soundForGardenAction(action), { volume: 0.6, jitter: 0.05 });
   if (player) floatText(player.x, player.y - 70, r.reason || '✓', 0x7dcea0);
@@ -34759,7 +34768,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=750bf77d').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=a60e1ac5').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.
