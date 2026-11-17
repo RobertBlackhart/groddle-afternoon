@@ -15,6 +15,8 @@ import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { PRACTICE_TOOLS, TRAINING2_DRINKS, TRAINING2_FOOD } from '../public/js/newxp.js?v=6d95626b';
 import { EZ_FOOD, EZ_KNIFE_AND_BOARD, SOIL_TOOLS } from '../public/js/practice-streets.js?v=557238c1';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
+import { MUSICBLOCK_ENDGAME_GIFT, START_STREET_MUSICBLOCKS } from '../public/js/musicblocks.js?v=20ba0fa0';
+import { musicblocksFeature } from '../public/js/features/musicblocks-feature.js?v=bc7c3cb6';
 
 const hasPhp = spawnSync('php', ['-v']).status === 0;
 const skip = skipWithoutSite || !hasPhp;
@@ -34,10 +36,11 @@ function php(op, args) {
 }
 
 const counts = (items = {}, currants = 0) => ({ items, currants });
-function save({ inv = {}, newxp = null, active = {}, completed = [], funpickle = null } = {}) {
+function save({ inv = {}, newxp = null, active = {}, completed = [], funpickle = null, musicblocks = null } = {}) {
   const features = {};
   if (newxp) features.newxp = { v: 1, ...newxp };
   if (funpickle) features.funpickle = funpickle;
+  if (musicblocks) features.musicblocks = musicblocks;
   return { playerState: JSON.stringify({ version: 7, inventory: inv, player: { currants: 0, xp: 300, level: 1 }, systems: { quests: { active, completed }, achievements: { unlocked: [] }, features } }) };
 }
 const credited = (tut = {}) => ({ base: { base: 1 }, level: { level: 1 }, mark: { base: 1, base905: 1 }, tut });
@@ -59,6 +62,13 @@ describe('G905: the tutorial\'s gifts stand once per character by the save\'s re
     assert.equal(sets.ak.items[PRACTICE_TOOLS.animalkinship_1.classTsid], 1);
     assert.equal(sets.lgt.items[PRACTICE_TOOLS.light_green_thumb_1.classTsid], 1);
     assert.deepEqual(sets.funpickle.items, { [AWARD_ITEM]: 1 });
+    // G938: the start street's block (its class from the record) and the 25-tune GNG gift.
+    assert.deepEqual(sets.startblock, { gate: 'startblock', items: { startblock: 1 } });
+    assert.deepEqual(sets.musicblockgift, { gate: 'musicblockgift', items: { [MUSICBLOCK_ENDGAME_GIFT]: 1 } });
+    const re = String(execFileSync('php', ['-r', `require ${JSON.stringify(SITE_DIR)} . '/src/LedgerMath.php'; echo Groddle\\Minn\\LedgerMath::START_BLOCK_CLASS;`]));
+    const pattern = new RegExp(re.slice(1, -1));
+    const all = ['b_brown', 'd_blue', 'd_green', 'd_red', 'x_shiny'].flatMap((s) => [1, 2, 3, 4, 5].map((n) => `musicblock_${s}_0${n}`));
+    assert.deepEqual(all.filter((c) => pattern.test(c)), [...START_STREET_MUSICBLOCKS].sort());
   });
 
   it('a new player\'s island Musicblock, practice tools, food and first harvests stand with no budget', () => {
@@ -97,6 +107,32 @@ describe('G905: the tutorial\'s gifts stand once per character by the save\'s re
     assert.deepEqual(r.reconciled.clamped, counts());
     const no = php('check', [counts(), credited(), save({ inv: { musicblock_goodnight_groddle: 1 }, funpickle: { givenAward: false } }), 0]);
     assert.deepEqual(no.reconciled.clamped, counts({ musicblock_goodnight_groddle: 1 }));
+  });
+
+  it('G938: the start street\'s Musicblock stands once its class is on the record, and only that class', () => {
+    // The game's own record: the slice musicblocks-feature saves.
+    musicblocksFeature._reset();
+    musicblocksFeature.restore({ startBlock: { tsid: 'GLI2V0UN7RD1T2J', classTsid: 'musicblock_d_red_01' } });
+    const record = musicblocksFeature.save();
+    const r = php('check', [counts(), credited(), save({ inv: { musicblock_d_red_01: 1, musicblock_d_blue_05: 1 }, musicblocks: record }), 0]);
+    assert.deepEqual(r.credits.detail.tutorial, { musicblock_d_red_01: 1 });
+    assert.equal(Object.fromEntries(tutRows(r).map(([, ref, n]) => [ref, n]))['startblock:startblock'], 1);
+    assert.ok(!('musicblock_d_red_01' in (r.reconciled.clamped.items || {})));
+    // Once per character: a second one goes through the budget (a rare find, so it waits).
+    const again = php('check', [counts(), credited({ 'startblock:startblock': 1 }), save({ inv: { musicblock_d_red_01: 1 }, musicblocks: record }), 0]);
+    assert.equal(again.credits.detail.tutorial?.musicblock_d_red_01, undefined);
+    // No record, or a class the start street never lays (a brown block, SB-1): nothing credited.
+    for (const classTsid of [null, 'musicblock_b_brown_02', 'musicblock_sb_secret_01']) {
+      const no = php('check', [counts(), credited(), save({ inv: { musicblock_b_brown_02: 1 }, musicblocks: { startBlock: classTsid ? { tsid: 'GLI2V0UN7RD1T2J', classTsid } : null, gift: false } }), 0]);
+      assert.equal(no.credits.detail.tutorial?.musicblock_b_brown_02, undefined, String(classTsid));
+    }
+  });
+
+  it('G938: the 25-tune GNG gift stands once it is on the record', () => {
+    const r = php('check', [counts(), credited(), save({ inv: { [MUSICBLOCK_ENDGAME_GIFT]: 1 }, musicblocks: { startBlock: null, gift: true } }), 0]);
+    assert.deepEqual(r.reconciled.clamped, counts());
+    const no = php('check', [counts(), credited(), save({ inv: { [MUSICBLOCK_ENDGAME_GIFT]: 1 }, musicblocks: { startBlock: null, gift: false } }), 0]);
+    assert.deepEqual(no.reconciled.clamped, counts({ [MUSICBLOCK_ENDGAME_GIFT]: 1 }));
   });
 
   it('an older character\'s finished sets are marked without paying; a set under way stays open', () => {
