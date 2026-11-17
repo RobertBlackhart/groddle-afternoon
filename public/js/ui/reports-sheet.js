@@ -664,7 +664,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     threadView.hidden = view !== 'thread';
     newView.hidden = view !== 'new';
     back.hidden = view === 'list';
-    newBtn.hidden = view === 'new';
+    // G925 (#454): Write to us is the list's button; on a report's thread it squeezed the title (Back returns to it).
+    newBtn.hidden = view !== 'list';
     if (view === 'list') title.textContent = T.sheet;
     if (view === 'new') title.textContent = T.newReport;
     drawHeld();
