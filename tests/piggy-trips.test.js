@@ -22,12 +22,12 @@ import {
   piggyWalkAt,
   tripBaseTime,
   tripFrom,
-} from '../public/js/street-creatures.js?v=3483f38a';
+} from '../public/js/street-creatures.js?v=e5bee05e';
 import { EAT_PAUSE_MS } from '../public/js/animal-mood.js?v=a49495fc';
-import { ANIMAL_BODY, TREE_FOOTPRINT, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=feeada1a';
+import { ANIMAL_BODY, TREE_FOOTPRINT, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=c9852cb0';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=72f37c7e';
-import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=1d530f74';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=dcbff7f3';
+import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=a98295e1';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=65860ac5';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
@@ -231,7 +231,7 @@ describe('a Piggy\'s trip: the feature', () => {
 
 describe('a Piggy\'s trip: animal mood', () => {
   it('a worked tree goes to the server once; the server\'s "ate" is the chew and "Yum!", never a walk of this page\'s own', async () => {
-    const { animalMoodFeature } = await import('../public/js/features/animal-mood-feature.js?v=89368400');
+    const { animalMoodFeature } = await import('../public/js/features/animal-mood-feature.js?v=e554321c');
     const said = [];
     const asked = [];
     const pig = { classId: 'npc_piggy', animalKey: 'G1:npc_piggy:0', state: { mood: 1, hunger: 4 }, sprite: { x: 100, y: 900, scale: { x: 1 }, range: 90, vx: 0.4, visible: true, destroyed: false } };

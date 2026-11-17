@@ -12,9 +12,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { STICK_PICKUP, YARD_FIXTURES, YARD_MACHINES_MAX, normalizeYardMachines, yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../public/js/yard-fixtures-mp.js?v=dd022fe8';
-import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=836d6c27';
-import { MAGIC_STICKS, REMOTE_MACHINES } from '../public/js/animal-husbandry.js?v=90f3435a';
-import { STICK_SCALE } from '../public/js/features/animal-husbandry-feature.js?v=a1ad5d57';
+import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=3430f20f';
+import { MAGIC_STICKS, REMOTE_MACHINES } from '../public/js/animal-husbandry.js?v=864f02c4';
+import { STICK_SCALE } from '../public/js/features/animal-husbandry-feature.js?v=428d95a6';
 import { GAME_DIR, HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const read = (rel) => readFileSync(join(GAME_DIR, rel), 'utf8');

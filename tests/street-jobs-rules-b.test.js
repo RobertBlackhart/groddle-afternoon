@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=f8b4d669';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=fad9d8b3';
 import {
   findWork,
   jobRewardsText,

@@ -20,6 +20,7 @@ import {
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
+import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=2a4d0a48';
 import { SLOTH_SPOTS } from './sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from './sloth-trees.js?v=a3299191';
 
@@ -183,7 +184,9 @@ export const MEASURED_NODE_SPOTS = Object.freeze({
   // G916 (#446): a street no full-street snap covers takes the spots measured on its other pictures
   // and the rest on its walls by rule (tools/build-barnacle-wall-spots.mjs, js/barnacle-walls.js).
   mortar_barnacle: Object.freeze({ variantPrefix: 'blister', streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...BARNACLE_SPOTS }) }),
-  jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: JELLISAC_SPOTS }),
+  // G933 (#453): a Jellisac the snaps never measured sits in its street's empty hole first
+  // (tools/build-jellisac-hole-spots.mjs); only those left over are planned on a floor.
+  jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: Object.freeze({ ...JELLISAC_SPOTS, ...JELLISAC_HOLE_SPOTS }) }),
   peat_1: Object.freeze({ variantPrefix: 'peat', streets: PEAT_SPOTS }),
   // A Paper Tree's art follows its paper and care, never a variant: its spots carry none (null).
   paper_tree: Object.freeze({ variantPrefix: '', streets: PAPER_TREE_SPOTS }),
