@@ -2181,7 +2181,7 @@
     "kind": "Story quest",
     "video": "WlAMZpSGPgQ",
     "shot": "shots/level-winter_walk.webp",
-    "note": "",
+    "note": "The hollow tree arch and the curling plants are new pictures made for Groddle.",
     "extra": null,
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&questdemo=winter&practice=1"
    },
@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2448,
+  "commits": 2451,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Winter Walk's caption stands inside its hollow tree arch, with curling plants in the snow"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "Winter Walk's hollow tree arch and curling plants, made for Groddle"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "The Super Harvest float says how many more you got, not \"+2×\""
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The Butler's long hints stay up long enough to read and land in Local chat"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Signpost words use the game's own rounded font on every device, smooth on a phone"
    }
   ]
  },
