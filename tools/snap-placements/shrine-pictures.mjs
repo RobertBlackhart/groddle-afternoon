@@ -35,7 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { platformYAt, platformsScreen } from '../../public/js/street-model.js?v=9f16f4ab';
-import { FRONT_HIDE_SHARE, PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=e2487473';
+import { FRONT_HIDE_SHARE, PLACEMENT_FOOTPRINTS, PLACEMENT_HEIGHTS, frontDecoCovers, hiddenBehindFront, streetReservedSpots } from '../../public/js/street-ecology.js?v=b0c9db4b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const check = process.argv.includes('--check');

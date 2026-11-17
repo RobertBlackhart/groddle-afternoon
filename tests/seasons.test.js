@@ -313,7 +313,7 @@ describe('Egg Hunt and Pi Day', () => {
   });
 
   it('counts each egg into the collection however it arrives, then gives the trophy for them (seasons-feature)', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=0c58b9df');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=7a06a2ae');
     const { createInventory, addItem, countItem, removeItem } = await import('../public/js/inventory.js?v=f49c8998');
     const unlocked = [];
     const counted = {};
@@ -387,7 +387,7 @@ describe('supply paths', () => {
 
 describe('a ?season= preview leaves the save alone (G342)', () => {
   it('a carved pumpkin survives previewing another season, and the save still remembers Zilloween', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=0c58b9df');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=7a06a2ae');
     const { createInventory, addItem, countItem } = await import('../public/js/inventory.js?v=f49c8998');
     const inv = createInventory();
     addItem(inv, 'pumpkin_carved_1', 2);

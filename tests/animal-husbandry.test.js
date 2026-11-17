@@ -48,11 +48,11 @@ import {
   stepHogtie,
   stickPlaceState,
   takePlop,
-} from '../public/js/animal-husbandry.js?v=ca2a9d0c';
-import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=9ff4ab1f';
-import { getVerbsFor, runVerb } from '../public/content.js?v=37d58385';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=e2487473';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=781d31ae';
+} from '../public/js/animal-husbandry.js?v=42e01978';
+import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=8faef3ed';
+import { getVerbsFor, runVerb } from '../public/content.js?v=ba801a5c';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=b0c9db4b';
+import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=85e4f076';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -556,7 +556,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=301cff8f');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=151c8c9b');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');

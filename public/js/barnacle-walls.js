@@ -26,7 +26,7 @@
  * it: a barnacle there reads as lying on the dirt. A spot hanging over the art's edge slides in until
  * it sits on it (SEAT_MAX). On the outer part of a round wall (a sprout, a bottle tree's body) a
  * barnacle faces outward and sits a few px in (ROUND_NUDGE). The barnacle art opens to the left
- * (mortar-barnacle-blister*.webp: the mouth sits left of the shell), so on the left part it stays as
+ * (BARNACLE_VARIANT_FACES: blister1/3/5 open to the left, 2/4/6 to the right), so on the left part it stays as
  * drawn and on the right part it is mirrored (`mirror: true`). Without masks the rule is G916's.
  */
 import { platformsScreen, isStandable } from './street-model.js?v=9f16f4ab';
@@ -58,6 +58,14 @@ export const GROUND_COVER_DECO = /^(front_ground|foreground|ground_(?!rootpipe)|
  */
 export const WALL_FOOT_DECO = /^legs_|^ground_rootpipe/;
 export const WALL_FOOT_SHARE = 0.15;
+/**
+ * G936: which way each blister variant's art faces (its open mouth): the full state of
+ * mortar-barnacle-blister1/3/5 opens to the left, 2/4/6 to the right (Austin 2026-11-17: the
+ * edge barnacles on Konka Brink's second sprout faced in because the rule took every variant as left).
+ * Glitch never mirrored a barnacle (itemstacks are not flipped); facing outward is the remake's polish.
+ */
+export const BARNACLE_VARIANT_FACES = Object.freeze({ 1: 'left', 2: 'right', 3: 'left', 4: 'right', 5: 'left', 6: 'right' });
+
 /** G936: round walls, whose outer barnacles turn to face outward (the root pipes are round barrels too: Austin 2026-11-17, Konka Brink). */
 export const ROUND_WALL_DECO = /^(background_)?sprout|^(background_)?bottletree_body|^ground_rootpipe/;
 /** G936: points of the barnacle art (from its bottom centre) that must sit on the wall's art: its shell, less the frame's rim. */
@@ -280,7 +288,8 @@ function faceOutward(spot, masks, plats) {
   const side = Math.sign(t);
   const nx = spot.x - side * ROUND_NUDGE;
   const fits = overFloor(plats, nx, spot.y) && seatsOn(wall, covers, masks, nx, spot.y);
-  return { ...out, x: fits ? nx : spot.x, ...(side > 0 ? { mirror: true } : {}) };
+  // The way it should face; the builder mirrors a variant whose art faces the other way (BARNACLE_VARIANT_FACES).
+  return { ...out, x: fits ? nx : spot.x, face: side > 0 ? 'right' : 'left' };
 }
 
 function undersideCandidates(plats, reserved) {

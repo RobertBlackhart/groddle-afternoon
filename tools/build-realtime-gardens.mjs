@@ -33,7 +33,7 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetGardenBoxBeds, streetReservedSpots } from '../public/js/street-ecology.js?v=e2487473';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetGardenBoxBeds, streetReservedSpots } from '../public/js/street-ecology.js?v=b0c9db4b';
 import { GARDEN_FERTILIZE_PERC, GARDEN_SPEEDUP, GARDEN_WATER_MS, LEGACY_GARDEN, SEED_CATALOG, legacyGrowMs, streetGardenBeds } from '../public/js/garden.js?v=97697984';
 import { GARDEN_LOCK_MS, SHARED_GARDEN_STREETS } from '../public/js/shared-gardens.js?v=464472e5';
 import { GARDEN_POTIONS, POTION_USES } from '../public/js/master-garden.js?v=ea711e65';

@@ -9,10 +9,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=e2487473';
-import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=eebefe5c';
-import { BARNACLE_GAP_CLOSE, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=3e4e2c94';
-import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=976d947e';
+import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=b0c9db4b';
+import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f62c5897';
+import { BARNACLE_GAP_CLOSE, BARNACLE_VARIANT_FACES, GROUND_COVER_DECO, ROUND_WALL_DECO, barnacleWallSpots, decoCovers } from '../public/js/barnacle-walls.js?v=f6598c43';
+import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=e9f16559';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
@@ -118,5 +118,17 @@ describe('G936: barnacles sit on the wall art, never under ground art', () => {
       assert.equal(Buffer.from(m.d, 'base64').length, Math.ceil((m.w * m.h) / 8), name);
     }
     assert.ok(ROUND_WALL_DECO.test('background_sprout') && ROUND_WALL_DECO.test('bottletree_body4') && !ROUND_WALL_DECO.test('legs_moss_2'));
+  });
+});
+
+describe('G936 follow-up: each variant faces its own way (Austin 2026-11-17, Konka Brink second sprout)', () => {
+  it('outer barnacles on a round wall face outward whatever their variant', () => {
+    assert.deepEqual(BARNACLE_VARIANT_FACES, { 1: 'left', 2: 'right', 3: 'left', 4: 'right', 5: 'left', 6: 'right' });
+    const rows = BARNACLE_WALL_SPOTS[KONKA];
+    const sprout2 = rows.filter(([x, y]) => x > 1380 && x < 1600 && y > 650 && y < 760);
+    assert.equal(sprout2.length, 3, JSON.stringify(sprout2));
+    const facing = ([, , v, , m]) => (m === 1 ? (BARNACLE_VARIANT_FACES[v] === 'left' ? 'right' : 'left') : BARNACLE_VARIANT_FACES[v]);
+    assert.equal(facing(sprout2[0]), 'left', `left ${sprout2[0]} faces out`);
+    assert.equal(facing(sprout2.at(-1)), 'right', `right ${sprout2.at(-1)} faces out`);
   });
 });

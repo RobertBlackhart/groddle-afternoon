@@ -12,11 +12,11 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=e2487473';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=eebefe5c';
-import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=3e4e2c94';
+import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=b0c9db4b';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f62c5897';
+import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=f6598c43';
 import { fixedPictureBoxes } from '../tools/build-barnacle-wall-spots.mjs';
-import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=976d947e';
+import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=e9f16559';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
