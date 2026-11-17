@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2477,
+  "commits": 2480,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The game no longer stops your own music on iPhone, with a new \"Let other apps' music keep playing\" sound setting"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "A Musicblock or gem the save checker cannot pay for yet waits in the pack instead of being taken back"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A link to a heading on the restoration report (/restoration/#made-h) lands on that heading"
    }
   ]
  },
- "tests": 1082,
+ "tests": 1084,
  "generatedAt": "2026-11-16"
 }
