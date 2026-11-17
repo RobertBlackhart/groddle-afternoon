@@ -41,8 +41,8 @@
   "counts": {
     "fixing": 1,
     "known": 13,
-    "unreleased": 0,
-    "fixed": 265,
+    "unreleased": 6,
+    "fixed": 259,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -257,6 +257,11 @@
           "state": "known"
         },
         {
+          "id": "G936",
+          "text": "Some barnacles on Jethimadh and Kalavana streets lay on the dirt in front of their trees, and edge barnacles faced the wrong way.",
+          "state": "unreleased"
+        },
+        {
           "id": "G678",
           "text": "In Thornfad Layers, the letter or heart that shows over your head by the locked door is not drawn yet.",
           "state": "fixed",
@@ -359,12 +364,6 @@
         {
           "id": "G920",
           "text": "A demo link or a street entered at a sideways spot could stand you in the treetops instead of on the ground.",
-          "state": "fixed",
-          "version": "v0.47.1"
-        },
-        {
-          "id": "G936",
-          "text": "Some barnacles on Jethimadh and Kalavana streets lay on the dirt in front of their trees, and edge barnacles faced the wrong way.",
           "state": "fixed",
           "version": "v0.47.1"
         },
@@ -598,6 +597,11 @@
           "state": "known"
         },
         {
+          "id": "G944",
+          "text": "Visitors didn't see what a home's owner did until they came back.",
+          "state": "unreleased"
+        },
+        {
           "id": "G640",
           "text": "Visitors see the owner's Garden Gnomes, Magic Sticks and animal machines on a home street.",
           "state": "fixed",
@@ -670,12 +674,6 @@
         {
           "id": "G934",
           "text": "Machines in your yard refused you after coming home with the Home button.",
-          "state": "fixed",
-          "version": "v0.47.1"
-        },
-        {
-          "id": "G944",
-          "text": "Visitors didn't see what a home's owner did until they came back.",
           "state": "fixed",
           "version": "v0.47.1"
         },
@@ -856,6 +854,11 @@
       "name": "Animals",
       "items": [
         {
+          "id": "G933",
+          "text": "Some Jellisacs stood on ledges while their street's holes sat empty.",
+          "state": "unreleased"
+        },
+        {
           "id": "G642",
           "text": "Chickens squawk and flutter off when you walk into them.",
           "state": "fixed",
@@ -946,12 +949,6 @@
           "text": "Sloths stood on made-up trees at random spots instead of hanging in their own street's trees.",
           "state": "fixed",
           "version": "v0.43.0"
-        },
-        {
-          "id": "G933",
-          "text": "Some Jellisacs stood on ledges while their street's holes sat empty.",
-          "state": "fixed",
-          "version": "v0.47.1"
         }
       ]
     },
@@ -1709,17 +1706,16 @@
       "name": "Gardens",
       "items": [
         {
+          "id": "G940",
+          "text": "Street gardens stood anywhere on the street, two beds at most, instead of where 2012 pictures show them.",
+          "state": "unreleased"
+        },
+        {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
           "report": 321,
           "state": "fixed",
           "version": "v0.38.1"
-        },
-        {
-          "id": "G940",
-          "text": "Street gardens stood anywhere on the street, two beds at most, instead of where 2012 pictures show them.",
-          "state": "fixed",
-          "version": "v0.47.1"
         }
       ]
     },
@@ -2087,8 +2083,7 @@
         {
           "id": "G938",
           "text": "Every street held a Musicblock that each player picked up separately; Glitch's came from drop tables and a new player's first street.",
-          "state": "fixed",
-          "version": "v0.47.1"
+          "state": "unreleased"
         }
       ]
     },
@@ -2098,8 +2093,7 @@
         {
           "id": "G948",
           "text": "Some earned things were taken back by the save checker: the Rube Shaped Potato, artifacts, Spinning Wheel prizes, a Craftybot's work, picked-up gnomes and icons, racing Cubimals, the Funpickle.",
-          "state": "fixed",
-          "version": "v0.47.1"
+          "state": "unreleased"
         }
       ]
     }
