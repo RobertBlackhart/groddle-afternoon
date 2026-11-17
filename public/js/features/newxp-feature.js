@@ -136,13 +136,13 @@ import {
   TUTORIAL_NAME_MAX,
 } from '../newxp.js?v=02f902e6';
 import { countWords } from '../words.js?v=274023af';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
 import { soundForQuoin } from '../sound-moments.js?v=ac6375de';
 import { IMAGINATION_UPGRADES } from '../imagination.js?v=1bdfd77c';
 import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?v=557238c1';
-import { assignQuest, completeQuest } from '../quests.js?v=185186c2';
-import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=394cbaf0';
+import { assignQuest, completeQuest } from '../quests.js?v=d057d5ec';
+import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=ed4e7435';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
 import * as kit from '../quest-rooms/kit.js?v=153fa0a9';
@@ -150,8 +150,8 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=074170c1';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=bc86e306';
+import { HOME_MACHINE } from '../home-ticket.js?v=99d88876';
+import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=e4f45db6';
 import {
   AK_ANIMALS,
   AK_BUBBLE,
@@ -170,6 +170,7 @@ import {
 } from '../skillquest-ak.js?v=397a9d19';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
+import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
 
 export const NEWXP_FEATURE_ID = 'newxp';
 /** newxp_training1.js 705-706 slothRemove: deleteWithPoof, then hideTree 0.5 s later. */
@@ -1927,7 +1928,7 @@ async function runTraining2(t) {
       nagAt = Date.now() + 6000;
     }
     // newxp_training2.js 506-507: full energy skips the wait (a new game day refills the meters here).
-    return run.data.eaten || training2MeterFull(pc.energy, pc.energyMax);
+    return run.data.eaten || training2MeterFull(pc.energy, energyMax(pc));
   }, { help: () => { if (!clickPackUse(engine, firstPick.classTsid)) run.data.eaten = true; setTimeout(() => { run.data.eaten = true; }, 900); } });
   clearInstruction();
   // food_eaten: energy to 80, the overlay, then the energy meter appears.
@@ -1979,7 +1980,7 @@ async function runTraining2(t) {
       say(db, LINES.t2DrinkFirst, 3000);
     }
     // newxp_training2.js 582-583: full mood skips the wait too.
-    return run.data.drank || training2MeterFull(pc.mood, pc.energyMax);
+    return run.data.drank || training2MeterFull(pc.mood, moodMax(pc));
   }, { help: () => { if (!clickPackUse(engine, drinkPick.classTsid)) run.data.drank = true; setTimeout(() => { run.data.drank = true; }, 900); } });
   clearInstruction();
   // drink_drank: the mood meter appears with its callout.

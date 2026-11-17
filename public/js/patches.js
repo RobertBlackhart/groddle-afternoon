@@ -36,9 +36,9 @@
 import { createTrantState, fruitCapacityAt, resetTrantDay } from './trants.js?v=4d6f5593';
 import { WOOD_TREE_MATURITY_MAP, adoptPlotWoodCounts, ensureWoodTreeState, resetWoodTreeDay } from './woodcutting.js?v=b43edbd8';
 import { canUseTool, useToolCondition } from './tools.js?v=8516a0c3';
-import { musicblockItemMeta } from './musicblocks.js?v=20ba0fa0';
+import { musicblockItemMeta } from './musicblocks.js?v=dc6b7003';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { metabolicGain, loseEnergy } from './metabolics.js?v=1383e6fd';
+import { metabolicGain, loseEnergy, moodMax } from './metabolics.js?v=1383e6fd';
 
 export const PATCH_SOURCE = 'tinyspeck/glitch-GameServerJS CC0';
 export const SOIL_SPRITE_ROOT = 'assets/sprites/soil';
@@ -887,7 +887,7 @@ function applyCosts(pc, costs) {
   // nothing while dead (inc_metabolics.js 79-86); costs.mood is what landed.
   if (costs.mood > 0 && !metabolicGain('mood').ok) costs.mood = 0;
   if (costs.mood) {
-    const cap = Number.isFinite(pc.maxMood) ? pc.maxMood : 100;
+    const cap = moodMax(pc);
     pc.mood = Math.min(cap, (Number(pc.mood) || 0) + costs.mood);
   }
   // inc_skill_packages.js 532, patch_seedling.js 210: stats_add_xp(n, false)

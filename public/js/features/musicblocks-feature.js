@@ -28,9 +28,9 @@
  * musicblockGift (given or none).
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
+import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { listDroppedStacks } from '../world-items.js?v=deadf665';
+import { listDroppedStacks } from '../world-items.js?v=053888d2';
 import {
   MUSICBLOCK_CATALOG,
   MUSICBLOCK_ENDGAME_GIFT,
@@ -39,7 +39,7 @@ import {
   chooseStartStreetMusicblock,
   endgameGiftDue,
   startStreetMusicblockDue,
-} from '../musicblocks.js?v=20ba0fa0';
+} from '../musicblocks.js?v=dc6b7003';
 
 const SYNC_MS = 1_000;
 const BLOCK_IDS = Object.keys(MUSICBLOCK_CATALOG);

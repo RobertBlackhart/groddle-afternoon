@@ -63,11 +63,11 @@
  * last release: released:respawned|new:<key>, or failed:<reason>).
  */
 
-import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=487b1b60';
 import { setToolRemaining, toolCopies } from '../tools.js?v=8516a0c3';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=24aa024c';
-import { rollResourceNodeDrop } from './drops-feature.js?v=1251db2f';
+import { rollResourceNodeDrop } from './drops-feature.js?v=89ee0a00';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { resourceNodeResponseKey, verbResponse } from '../verb-responses.js?v=97df8351';
@@ -103,17 +103,17 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=12346629';
+} from '../resource-nodes.js?v=1fe7236e';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=394cbaf0';
+import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=ed4e7435';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=98606052';
 import { playItemOverlay } from '../item-overlay.js?v=0c20633c';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=68e5539a';
-import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';
+import { salmonSwimAt } from '../street-creatures.js?v=d390cfd8';
+import { GAME_EPOCH_MS } from '../game-day.js?v=03b8d954';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
 export const RESOURCE_GROUP_PREFIX = 'resource:';

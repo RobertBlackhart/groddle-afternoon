@@ -8,8 +8,8 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=eacd0b0a';
-import { createInventory } from '../public/js/inventory.js?v=f49c8998';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=b0bb72c6';
+import { createInventory } from '../public/js/inventory.js?v=487b1b60';
 import { FakeEl, Display, fakePixi } from './fake-scene.js';
 
 const VIEW = {

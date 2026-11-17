@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GAME_DAY_MS } from '../public/js/game-day.js?v=72f37c7e';
+import { GAME_DAY_MS } from '../public/js/game-day.js?v=03b8d954';
 import {
   MUSICBLOCK_CATALOG,
   MUSICBLOCK_MONTH_MS,
@@ -31,11 +31,11 @@ import {
   START_STREET_MUSICBLOCKS,
   startStreetMusicblockDue,
   starterMusicblocks,
-} from '../public/js/musicblocks.js?v=20ba0fa0';
+} from '../public/js/musicblocks.js?v=dc6b7003';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
-import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=c5256421';
-import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=ff608cb8';
+import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=2281bd71';
+import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=2ac95241';
 import { ISLAND_MUSICBLOCKS } from '../public/js/newxp.js?v=02f902e6';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
 import {
@@ -43,8 +43,8 @@ import {
   addItem,
   countItem,
   createInventory,
-} from '../public/js/inventory.js?v=f49c8998';
-import { getVerbsFor } from '../public/content.js?v=8884fee5';
+} from '../public/js/inventory.js?v=487b1b60';
+import { getVerbsFor } from '../public/content.js?v=5dfc6bfe';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');
@@ -255,7 +255,7 @@ function fakeEngine({ streetTsid, inv, stacks = [] } = {}) {
 }
 
 async function freshFeature() {
-  const mod = await import('../public/js/features/musicblocks-feature.js?v=bc7c3cb6');
+  const mod = await import('../public/js/features/musicblocks-feature.js?v=2d0c4e26');
   mod.musicblocksFeature._reset();
   return mod;
 }
@@ -492,7 +492,7 @@ describe('Musicblock game integration', () => {
 
 describe('Musicblock collection badges from any source', () => {
   it('emits in_inventory the first time a block reaches the pack', async () => {
-    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=bc7c3cb6');
+    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=2d0c4e26');
     assert.deepEqual(newlyOwnedMusicblocks(new Set(['musicblock_d_blue_01']), {
       musicblock_d_blue_01: 2, musicblock_d_blue_02: 1, apple: 3, musicblock_trumpets: 1,
     }), ['musicblock_d_blue_02']);

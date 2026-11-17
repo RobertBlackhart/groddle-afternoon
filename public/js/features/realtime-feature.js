@@ -64,7 +64,7 @@ import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } fr
 import { ANIM_FPS, EMOTION_MS, animForState, crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { redrawFrame } from '../avatar-pack.js?v=65324246';
 import { movedLine } from '../admin-teleport.js?v=fa56e8df';
-import { ADMIN_TEXT, applyAdminGive, applyAdminRefill, showAdminMessage, showBooted } from '../admin-console-mp.js?v=bcbbb8fc';
+import { ADMIN_TEXT, applyAdminGive, applyAdminRefill, showAdminMessage, showBooted } from '../admin-console-mp.js?v=18a2ac79';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';

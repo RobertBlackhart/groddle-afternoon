@@ -19,7 +19,7 @@ import {
   toolCopies,
   TINKERTOOL_DROP_TIP,
 } from '../public/js/tools.js?v=8516a0c3';
-import { createInventory } from '../public/js/inventory.js?v=f49c8998';
+import { createInventory } from '../public/js/inventory.js?v=487b1b60';
 
 const remaining = (tools, cls) => toolCopies(tools, cls).map((c) => c.remaining);
 function kit(items) {

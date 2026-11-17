@@ -12,13 +12,13 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 
-import { DRAGON_PLAN_MOVES, SALMON_SWIM, creatureOf, dragonPlan, dragonWalkAt, salmonSwimAt } from '../public/js/street-creatures.js?v=68e5539a';
+import { DRAGON_PLAN_MOVES, SALMON_SWIM, creatureOf, dragonPlan, dragonWalkAt, salmonSwimAt } from '../public/js/street-creatures.js?v=d390cfd8';
 import { FIRE_DRAGON_WALK } from '../public/js/fire-dragon.js?v=b7f3d751';
-import { foxLegFrom, foxOnLeg } from '../public/js/foxes-mp.js?v=8a4cf44b';
-import { FOX_TIMING } from '../public/js/foxes.js?v=9b5a4fe8';
-import { SHARED_NODE_CLASSES, applyNodeState, freshenNode, sharedNodeVerb } from '../public/js/street-objects.js?v=0a7e6b54';
-import { createResourceNode } from '../public/js/resource-nodes.js?v=12346629';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=440192be';
+import { foxLegFrom, foxOnLeg } from '../public/js/foxes-mp.js?v=dbb25b21';
+import { FOX_TIMING } from '../public/js/foxes.js?v=6f3d5af8';
+import { SHARED_NODE_CLASSES, applyNodeState, freshenNode, sharedNodeVerb } from '../public/js/street-objects.js?v=9d62f517';
+import { createResourceNode } from '../public/js/resource-nodes.js?v=1fe7236e';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=2f63d0ff';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 describe('a shared Salmon', () => {

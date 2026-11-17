@@ -311,8 +311,8 @@ describe('training2 never holds a player who cannot eat or drink (reports 122-12
   });
 
   it('the eat and drink waits end on a full meter (food_wait_eat 506, drink_wait_drink 582)', () => {
-    assert.match(feature, /run\.data\.eaten \|\| training2MeterFull\(pc\.energy, pc\.energyMax\)/);
-    assert.match(feature, /run\.data\.drank \|\| training2MeterFull\(pc\.mood, pc\.energyMax\)/);
+    assert.match(feature, /run\.data\.eaten \|\| training2MeterFull\(pc\.energy, energyMax\(pc\)\)/);
+    assert.match(feature, /run\.data\.drank \|\| training2MeterFull\(pc\.mood, moodMax\(pc\)\)/);
   });
 
   it('eating or drinking while the first overlay is up still counts: the flags reset before the pickups', () => {

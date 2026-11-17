@@ -19,8 +19,8 @@ import {
   listPackRows,
   isToolItem,
   getItemUseInfo,
-} from '../public/js/inventory.js?v=f49c8998';
-import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=819002b7';
+} from '../public/js/inventory.js?v=487b1b60';
+import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=a16c767f';
 import {
   createQuestState,
   assignQuest,
@@ -28,7 +28,7 @@ import {
   getQuestProgress,
   listQuestTracker,
   QUEST_CATALOG,
-} from '../public/js/quests.js?v=185186c2';
+} from '../public/js/quests.js?v=d057d5ec';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const __dirnameUi = dirname(fileURLToPath(import.meta.url));
@@ -42,7 +42,7 @@ import {
   listBuyOffers,
   listSellOffers,
   createVendorSellQuote,
-} from '../public/js/vendor.js?v=37538dca';
+} from '../public/js/vendor.js?v=925b0f77';
 import {
   buildMapGraph,
   buildHubMapView,

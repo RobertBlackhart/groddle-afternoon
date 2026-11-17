@@ -47,15 +47,15 @@
  * window.groddlePlayerVerbs in multiplayer.
  */
 
-import { countItem, removeItem } from '../inventory.js?v=f49c8998';
+import { countItem, removeItem } from '../inventory.js?v=487b1b60';
 import { gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=1383e6fd';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
-import { ensureQuestOfferState } from '../quest-offers.js?v=394cbaf0';
-import { gameDayIndex, getMusicblock, isMusicblock } from '../musicblocks.js?v=20ba0fa0';
-import { GAME_DAY_MS } from '../game-day.js?v=72f37c7e';
+import { ensureQuestOfferState } from '../quest-offers.js?v=ed4e7435';
+import { gameDayIndex, getMusicblock, isMusicblock } from '../musicblocks.js?v=dc6b7003';
+import { GAME_DAY_MS } from '../game-day.js?v=03b8d954';
 import { playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { showRainbow, rainbowSound } from '../overlays.js?v=eda942a8';
-import { copyFromLedger, spendCopyCharge } from '../copy-charges.js?v=21689953';
+import { copyFromLedger, spendCopyCharge } from '../copy-charges.js?v=1c1efade';
 import {
   BEAR,
   CHARADES_BUFF,

@@ -49,11 +49,11 @@
  */
 
 import { playOverlay } from '../overlays.js?v=eda942a8';
-import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=487b1b60';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
-import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=394cbaf0';
+import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=ed4e7435';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
+import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
 import {
   BUILD_A_TOWER,
   ELEVATOR_MARK,

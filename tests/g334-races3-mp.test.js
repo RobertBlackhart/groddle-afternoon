@@ -15,12 +15,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=185186c2';
-import { pendingQuestOffers } from '../public/js/quest-offers.js?v=394cbaf0';
+import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+import { pendingQuestOffers } from '../public/js/quest-offers.js?v=ed4e7435';
 import { MP_RACE_QUESTS, MULTIPLAYER_QUESTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=34aebf1b';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=bf38176d';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
-import { HELL_LOCATION } from '../public/js/hell.js?v=df2b4357';
+import { HELL_LOCATION } from '../public/js/hell.js?v=7f2c9be1';
 import { HOG_MP_COURSE } from '../public/js/hog-haul-mp.js?v=67f873fe';
 import { CROWNS_TICKET } from '../public/js/game-of-crowns.js?v=e32f35f5';
 import { economyCredits } from '../tools/build-economy.mjs';
@@ -170,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=dfe9e2fd');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=5f63a6fd');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {
@@ -262,7 +262,7 @@ describe('a Game of Crowns reload asks the server, and the dead stay out (crowns
   });
 
   it('solo still gives a ticket back on a street change', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=5ab03625');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=d3c7230f');
     const engine = { mode: 'solo', inv: {}, query: () => null, toast() {}, updateHud() {}, param: () => null, instanceHold: null, setData() {} };
     crownsFeature.restore({ pendingTicket: CROWNS_TICKET }, engine);
     crownsFeature.onStreetEnter({ tsid: 'GA5' }, engine);

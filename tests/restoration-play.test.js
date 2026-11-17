@@ -16,7 +16,7 @@ import { NO_PLAY, PLAY_ROUTES, playFor, playRoute } from '../tools/restoration/p
 import { DESIGNER_LEVELS, TEXT_LEVELS, DESIGNERS } from '../tools/restoration/designer-levels.mjs';
 import { SHOTS } from '../tools/restoration/shots.mjs';
 import { BUILT_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
-import { PARADISE_COURSES } from '../public/js/paradise-flight.js?v=125375b0';
+import { PARADISE_COURSES } from '../public/js/paradise-flight.js?v=1f472b9d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const quests = JSON.parse(readFileSync(join(root, 'public/assets/content/quests.json'), 'utf8'));

@@ -31,11 +31,11 @@
  *     pack), seasonTrophy, seasonPlaced.
  */
 
-import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
-import { dametimeParts, getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=3f0d93db';
-import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=3f0d93db';
-import { setSeasonalRecipeCheck } from '../making.js?v=819002b7';
+import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=487b1b60';
+import { dametimeParts, getGameDayKey } from '../game-day.js?v=03b8d954';
+import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=15082e6f';
+import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=15082e6f';
+import { setSeasonalRecipeCheck } from '../making.js?v=a16c767f';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=8516a0c3';
 
 /*
@@ -73,13 +73,14 @@ function takePumpkin(engine, cls, copy) {
 }
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
-import { isBatterflyHabitat } from '../animal-husbandry.js?v=9ba33dc9';
-import { emblemCostFor } from '../shrines.js?v=f1a0a0d8';
+import { isBatterflyHabitat } from '../animal-husbandry.js?v=9ed2a680';
+import { emblemCostFor } from '../shrines.js?v=f48c0155';
 import { rollDropTable } from '../drop-tables.js?v=8bcf111f';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
-import { payDrop } from './drops-feature.js?v=1251db2f';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=f8764ec3';
+import { payDrop } from './drops-feature.js?v=89ee0a00';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=95aa25d0';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
+import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
 import {
   CANDY_CLASSES,
   CANDY_DAILY_MAX,
@@ -216,7 +217,8 @@ function grant(engine, stat, amount) {
     engine.updateHud?.();
     return amount;
   }
-  const cap = stat === 'energy' ? Math.max(100, Number(pc.energyMax) || 100) : 100;
+  // G965: mood tops out at the energy tank too (metabolics.js moodMax), not 100.
+  const cap = stat === 'energy' ? energyMax(pc) : moodMax(pc);
   const before = Math.max(0, Number(pc[stat]) || 0);
   pc[stat] = Math.max(0, Math.min(cap, before + amount));
   engine.updateHud?.();

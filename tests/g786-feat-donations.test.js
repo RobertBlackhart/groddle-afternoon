@@ -14,7 +14,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { DONATION_OP_RE, MP_DONATIONS, MP_PACE, donationOp, reportFor } from '../public/js/feats-mp.js?v=92c56f81';
+import { DONATION_OP_RE, MP_DONATIONS, MP_PACE, donationOp, reportFor } from '../public/js/feats-mp.js?v=cda27f60';
 import { featTable } from '../tools/build-realtime-feats.mjs';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 

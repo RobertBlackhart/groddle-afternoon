@@ -10,7 +10,7 @@
  * count, as before.
  */
 
-import { removeItem } from './inventory.js?v=f49c8998';
+import { removeItem } from './inventory.js?v=487b1b60';
 import { TOOL_CONDITION_CATALOG, chargesLeft, copyForVerb, setToolRemaining, useCharge } from './tools.js?v=8516a0c3';
 
 /** Whether this engine keeps `classTsid` per copy. */

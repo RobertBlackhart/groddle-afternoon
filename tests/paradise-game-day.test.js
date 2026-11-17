@@ -12,8 +12,8 @@ import {
   createParadiseState,
   normalizeParadiseState,
   paradiseDayKey,
-} from '../public/js/paradise-flight.js?v=125375b0';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=72f37c7e';
+} from '../public/js/paradise-flight.js?v=1f472b9d';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=03b8d954';
 
 const opts = (now) => ({ imagination: 999999, quoinMultiplier: 1, now });
 

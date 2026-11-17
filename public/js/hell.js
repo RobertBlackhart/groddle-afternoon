@@ -45,9 +45,10 @@
  * }
  */
 
-import { ensureItem } from './inventory.js?v=f49c8998';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=72f37c7e';
+import { ensureItem } from './inventory.js?v=487b1b60';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=03b8d954';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
+import { energyMax as tankEnergyMax, moodMax as tankMoodMax } from './metabolics.js?v=1383e6fd';
 
 export const HELL_STATE_VERSION = 1;
 
@@ -485,12 +486,14 @@ function cleanLocation(loc) {
   return out;
 }
 
+// G965: metabolics.top for both stats is the energy tank (metabolics.js moodMax/energyMax;
+// players/player.js resurrect 1345-1349 reads metabolics.energy.top and metabolics.mood.top).
 function energyMaxOf(pc) {
-  return Math.max(1, num(pc?.energyMax, 100));
+  return tankEnergyMax(pc);
 }
 
 function moodMaxOf(pc) {
-  return Math.max(1, num(pc?.moodMax, 100));
+  return tankMoodMax(pc);
 }
 
 function energyPercent(pc) {

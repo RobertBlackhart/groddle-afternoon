@@ -6,7 +6,7 @@
 /** @typedef {Record<string, number>} Inventory */
 
 /** Canonical icon path for a class_tsid (OGA iconic extract). */
-import { loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax, loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
 export function itemIcon(classTsid) {
   if (!classTsid) return 'assets/sprites/icons/apple.webp';
@@ -457,7 +457,7 @@ export function useItem(inv, pc, classTsid) {
     if (!info.effects.energy || (info.effects.energy > 0 && !metabolicGain('energy').ok)) return;
     const before = pc.energy || 0;
     if (info.effects.energy < 0) loseEnergy(pc, -info.effects.energy);
-    else pc.energy = Math.min(Math.max(100, Number(pc.energyMax) || 100), before + info.effects.energy);
+    else pc.energy = Math.min(energyMax(pc), before + info.effects.energy);
     if ((pc.energy || 0) !== before) effects.energy = (pc.energy || 0) - before;
   };
   const addMood = () => {

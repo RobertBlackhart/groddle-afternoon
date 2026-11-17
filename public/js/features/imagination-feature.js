@@ -26,10 +26,10 @@
  * imgLast, imgShuffled, imgAutoplay, imgBrain, imgEnergyMax.
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
-import { getGameDayKey } from '../game-day.js?v=72f37c7e';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
+import { getGameDayKey } from '../game-day.js?v=03b8d954';
 import { quoinDailyLimitFor } from '../quoins.js?v=a4208821';
-import { XP_FOR_LEVEL } from '../progression.js?v=72b2b22a';
+import { XP_FOR_LEVEL } from '../progression.js?v=4165e202';
 import {
   CARD_ART_LAYERS,
   HAND_SIZE,
@@ -58,7 +58,7 @@ import { brainCapacityRescale, skillTimeFactor } from '../imagination-effects.js
 import { betterLearningDiscount } from '../better-learning.js?v=044ff9ff';
 import { rescaleStudiesForLearningModifier } from '../skills.js?v=4542bdf9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
-import { hellFeature } from './hell-feature.js?v=5fdccf83';
+import { hellFeature } from './hell-feature.js?v=eb79a9c5';
 import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=0386b354';
 
 const ART = 'assets/imagination/cards/';

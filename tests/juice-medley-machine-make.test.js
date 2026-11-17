@@ -19,9 +19,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=185186c2';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=394cbaf0';
-import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=819002b7';
+import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=ed4e7435';
+import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=a16c767f';
 import { stationForRecipe } from '../public/js/make-tools.js?v=86877c3e';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

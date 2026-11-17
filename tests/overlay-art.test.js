@@ -19,7 +19,7 @@ import {
   sheetCell,
 } from '../public/js/overlay-art.js?v=98606052';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { DRINK_TICKS, applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=c499cf1a';
+import { DRINK_TICKS, applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
 import { MOOD_XP_SOURCES } from '../public/js/mood-xp.js?v=22648ec0';
 import { LONELY_RULES } from '../public/js/spirit-loneliness.js?v=9259917d';
 import { frameCount, loadFla, parseEdges } from '../tools/overlay-art/xfl-svg.mjs';

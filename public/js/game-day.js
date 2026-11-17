@@ -7,6 +7,7 @@
  */
 
 import { saveStore } from './save-store.js?v=cd053443';
+import { energyMax, moodMax } from './metabolics.js?v=1383e6fd';
 
 export const SPEED_MULTIPLIER = 6;
 export const GAME_EPOCH_MS = 1_238_562_000 * 1000;
@@ -251,8 +252,8 @@ export function newDayPending(now = Date.now()) {
 }
 
 export function applyNewDayRefill(pc, caps = {}) {
-  const eMax = caps.energyMax ?? Math.max(100, Number(pc.energyMax) || 100);
-  const mMax = caps.moodMax ?? eMax;
+  const eMax = caps.energyMax ?? energyMax(pc);
+  const mMax = caps.moodMax ?? moodMax(pc);
   const energyBefore = pc.energy;
   const moodBefore = pc.mood;
   pc.energy = eMax;

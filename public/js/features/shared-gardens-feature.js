@@ -64,10 +64,10 @@ import {
   hasWateringCan,
   pickSeedToPlant,
   seedFitsGarden,
-} from '../garden.js?v=3f0d93db';
+} from '../garden.js?v=15082e6f';
 import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=8516a0c3';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';
+import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=487b1b60';
 import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';

@@ -6,10 +6,10 @@ import { describe, it, afterEach } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=a4208821';
-import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=72b2b22a';
+import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=4165e202';
 import { loseMood, setMetabolicGainGate, setMoodLossNotice } from '../public/js/metabolics.js?v=1383e6fd';
-import { gameDayIndex } from '../public/js/musicblocks.js?v=20ba0fa0';
-import { GAME_EPOCH_MS, GAME_DAY_MS } from '../public/js/game-day.js?v=72f37c7e';
+import { gameDayIndex } from '../public/js/musicblocks.js?v=dc6b7003';
+import { GAME_EPOCH_MS, GAME_DAY_MS } from '../public/js/game-day.js?v=03b8d954';
 import { levelUpStreetLine } from '../public/js/features/level-up-mp-feature.js?v=22659e6d';
 
 const pub = (...p) => readFileSync(join(import.meta.dirname, '..', 'public', ...p), 'utf8');

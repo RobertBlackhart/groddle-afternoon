@@ -9,8 +9,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EXTRA_PARADISE_COURSES as PARADISE_COURSES, paradiseControls } from '../public/js/paradise-courses.js?v=622dcd46';
-import { BOARD_TEXT } from '../public/js/hi-signs-mp.js?v=24b2d923';
-import { HI_TEXT } from '../public/js/hi-signs.js?v=0436d54a';
+import { BOARD_TEXT } from '../public/js/hi-signs-mp.js?v=1415ecb7';
+import { HI_TEXT } from '../public/js/hi-signs.js?v=c9d1aedc';
 import { PHONE_TEXT } from '../public/js/phone/companion-data.js?v=06efdd67';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

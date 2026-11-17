@@ -61,8 +61,8 @@ import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=55ad2f83';
-import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { animalAnchorX, animalAnchorY, createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=bc86e306';
+import { getGameDayKey } from '../game-day.js?v=03b8d954';
+import { animalAnchorX, animalAnchorY, createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=e4f45db6';
 import {
   BABY_ANIMALS,
   BATTERFLY,
@@ -109,15 +109,15 @@ import {
   resetIncubation,
   stepHogtie,
   stickPlaceState,
-} from '../animal-husbandry.js?v=9ba33dc9';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=68e5539a';
+} from '../animal-husbandry.js?v=9ed2a680';
+import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=d390cfd8';
 import { loseEnergy, shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=78407552';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=23b5ec36';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=5375cfc6';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=d6b5cb71';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=570215e2';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';

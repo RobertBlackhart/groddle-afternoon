@@ -55,7 +55,7 @@
  * (game-day.js, the boundary every daily reset uses). Released and raised
  * animals (husbandry slots) stay gone, as in the source.
  */
-import { getGameDayStartMs } from './game-day.js?v=72f37c7e';
+import { getGameDayStartMs } from './game-day.js?v=03b8d954';
 
 /** config_prod.js population_controls 1205-1221. */
 export const POPULATION_CONTROLS = Object.freeze({

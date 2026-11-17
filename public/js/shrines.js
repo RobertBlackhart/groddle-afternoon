@@ -11,18 +11,18 @@
  * spend_points, emblem_base doSpend. See quoteFavorSpend / quoteEmblemSpend.
  */
 
-import { levelInfoForXp } from './progression.js?v=72b2b22a';
+import { levelInfoForXp } from './progression.js?v=4165e202';
 import {
   ITEM_CATALOG,
   addItem,
   ensureItem,
   isToolItem,
   removeItem,
-} from './inventory.js?v=f49c8998';
+} from './inventory.js?v=487b1b60';
 import {
   GAMESHOW_TICKET_ID,
   gameshowTicketChance,
-} from './spinning-wheel.js?v=ff608cb8';
+} from './spinning-wheel.js?v=2ac95241';
 import { metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';

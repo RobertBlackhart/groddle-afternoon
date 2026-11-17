@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MAIL_SUBJECTS, createMailboxState, deliverMail, mailTitle, normalizeMailboxState, seedMailbox, sendMail } from '../public/js/mailbox.js?v=a3e833ba';
 import { deliveryMail, mailSubject } from '../public/js/auctions.js?v=e857e831';
-import { NEIGHBOURS, doChore, normalizeNeighbourState, postNoteReply, visitorLetter } from '../public/js/neighbours.js?v=781ad57f';
+import { NEIGHBOURS, doChore, normalizeNeighbourState, postNoteReply, visitorLetter } from '../public/js/neighbours.js?v=bdb4247b';
 import { PLAYER_MAIL_TEXT, letterRow } from '../public/js/player-mail.js?v=af6a8b00';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 

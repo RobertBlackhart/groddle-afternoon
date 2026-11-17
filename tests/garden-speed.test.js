@@ -41,12 +41,12 @@ import {
   tickGarden,
   waterPlot,
   wetPlot,
-} from '../public/js/garden.js?v=3f0d93db';
-import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=a3305a36';
+} from '../public/js/garden.js?v=15082e6f';
+import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=75ac79c6';
 import { normalizeFeatureSlices } from '../public/js/feature-host.js?v=b620c6f2';
 import { applyPlot, localPlot, GARDEN_LOCK_MS } from '../public/js/shared-gardens.js?v=464472e5';
-import { applyTendAct } from '../public/js/neighbours-mp.js?v=ea03e02b';
-import { potionTendGarden } from '../public/js/master-garden.js?v=6b5bc911';
+import { applyTendAct } from '../public/js/neighbours-mp.js?v=8761b034';
+import { potionTendGarden } from '../public/js/master-garden.js?v=a50e3f32';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

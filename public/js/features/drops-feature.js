@@ -34,8 +34,9 @@
  *     dropTable, dropLast, dropRolls, dropHits, dropAutoplay.
  */
 
-import { addItem, ensureItem, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
-import { emblemCostFor } from '../shrines.js?v=f1a0a0d8';
+import { addItem, ensureItem, ITEM_CATALOG } from '../inventory.js?v=487b1b60';
+import { emblemCostFor } from '../shrines.js?v=f48c0155';
+import { energyMax } from '../metabolics.js?v=1383e6fd';
 import {
   DROP_ITEMS,
   DROP_TABLES,
@@ -108,7 +109,7 @@ export function payDrop(engine, result, { source = '' } = {}) {
     favor: shrine?.favor || engine.pc?.giantFavor || null,
     favorCap: shrine ? (g) => emblemCostFor(shrine, g) : undefined,
     addFavor: typeof engine.pc?.addGiantFavor === 'function' ? (g, n) => engine.pc.addGiantFavor(g, n) : undefined,
-    energyCap: Math.max(100, Number(engine.pc?.energyMax) || 100),
+    energyCap: energyMax(engine.pc),
     moodCap: 100,
   });
   const p = engine.player;

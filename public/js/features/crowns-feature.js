@@ -62,7 +62,7 @@ import {
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
 import { mayhemHoldsArena } from './mayhem-feature.js?v=ba703d27';
 import { wallsScreen } from '../street-model.js?v=9f16f4ab';
-import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
+import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';

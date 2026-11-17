@@ -19,10 +19,10 @@ import {
   salmonReleaseConditions,
   swimmingSalmonCount,
   tickResourceNode,
-} from '../public/js/resource-nodes.js?v=12346629';
+} from '../public/js/resource-nodes.js?v=1fe7236e';
 import { MOOD_XP_SOURCES } from '../public/js/mood-xp.js?v=22648ec0';
-import { resourceNodesFeature } from '../public/js/features/resource-nodes-feature.js?v=f8764ec3';
-import { eventIncrements } from '../public/js/solo-feats.js?v=2b83c824';
+import { resourceNodesFeature } from '../public/js/features/resource-nodes-feature.js?v=95aa25d0';
+import { eventIncrements } from '../public/js/solo-feats.js?v=8455be6a';
 
 const ROOT = join(import.meta.dirname, '..');
 const GSJS = join(ROOT, '..', 'glitch-GameServerJS');

@@ -34,20 +34,20 @@
  *   (rolled with the shared js/drop-tables.js runDropTable).
  */
 
-import { ITEM_CATALOG, ensureItem, getItemUseInfo } from './inventory.js?v=f49c8998';
+import { ITEM_CATALOG, ensureItem, getItemUseInfo } from './inventory.js?v=487b1b60';
 import { DROP_TABLES, applyDropResult, rollDropTable } from './drop-tables.js?v=8bcf111f';
 import { loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { musicblockItemMeta } from './musicblocks.js?v=20ba0fa0';
+import { musicblockItemMeta } from './musicblocks.js?v=dc6b7003';
 import { isEnchantedForest } from './enchanted-forests.js?v=da978edc';
 import { isSymphoniousTsid } from './symphonious-maximus.js?v=345ad437';
 import { isMissingFloorTsid } from './hidden-floors.js?v=014b5377';
 import { stationByTsid } from './subway.js?v=735bfbeb';
 import { ensurePiggyMood, piggyTwiceDailyTick, satePiggy } from './animal-mood.js?v=a49495fc';
-import { isCrowdSad } from './animal-crowding.js?v=3ee9671d';
+import { isCrowdSad } from './animal-crowding.js?v=45c663e8';
 import { ecologyForStreet } from './street-ecology.js?v=c4ce9ccd';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
-import { getGameDayKey } from './game-day.js?v=72f37c7e';
+import { getGameDayKey } from './game-day.js?v=03b8d954';
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;

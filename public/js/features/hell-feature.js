@@ -58,9 +58,10 @@ import {
   wineDrinkConditions,
   POOPED_ENERGY_PERCENT,
   SUPER_POOPED_CONSUMED_MULTIPLIER,
-} from '../hell.js?v=df2b4357';
-import { getGameDayKey } from '../game-day.js?v=72f37c7e';
-import { countItem, removeItem } from '../inventory.js?v=f49c8998';
+} from '../hell.js?v=7f2c9be1';
+import { getGameDayKey } from '../game-day.js?v=03b8d954';
+import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
+import { countItem, removeItem } from '../inventory.js?v=487b1b60';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
 
 const GRAPE_SCALE = 0.8;
@@ -298,7 +299,7 @@ function demoSetup(engine) {
   } else if ((demo === 'pooped' || demo === 'superpooped') && !state.isDead) {
     // checkPooped (inc_metabolics.js): alive, croaked today, energy at or under 5%, then a loss.
     const now = Date.now();
-    const max = Math.max(1, Number(engine.pc.energyMax) || 100);
+    const max = energyMax(engine.pc);
     // superpooped: today's energy_consumed one short of top * 20 (inc_metabolics.js 149), so the 1 lost next reaches it.
     const consumed = demo === 'superpooped' ? max * SUPER_POOPED_CONSUMED_MULTIPLIER - 1 : energyConsumedTodayFor(state, now);
     state = normalizeHellState({ ...state, deathsToday: Math.max(1, Number(state.deathsToday) || 0), deathsDayKey: getGameDayKey(now), pooped: null, dontGetPooped: false, energyConsumedToday: consumed, energyConsumedDayKey: getGameDayKey(now) });
@@ -598,14 +599,15 @@ export const hellFeature = {
   /**
    * Resurrect right away (the Get Out of Hell Free Card,
    * upgrade_card_instant_resurrection.js): pc.resurrect() then, with
-   * `full`, +999999 energy and mood, i.e. both tanks full.
+   * `full`, +999999 energy and mood, i.e. both tanks full (metabolics_add_mood
+   * caps at metabolics.mood.top, the energy tank: G965).
    */
   resurrectNow(engine, { full = false } = {}) {
     if (!state.isDead) return false;
     if (!doResurrect(engine)) return false;
     if (full) {
-      engine.pc.energy = Math.max(1, Number(engine.pc.energyMax) || 100);
-      engine.pc.mood = Math.max(1, Number(engine.pc.moodMax) || 100);
+      engine.pc.energy = energyMax(engine.pc);
+      engine.pc.mood = moodMax(engine.pc);
       engine.updateHud();
     }
     return true;

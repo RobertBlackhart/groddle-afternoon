@@ -20,7 +20,7 @@ import {
   placeDroppedBag,
   serializeDroppedItemState,
   takeDroppedRecord,
-} from '../public/js/world-items.js?v=deadf665';
+} from '../public/js/world-items.js?v=053888d2';
 import { bindToolInventory, createToolConditionState, pickToolCopies, placeToolCopies, toolCopies } from '../public/js/tools.js?v=8516a0c3';
 
 const root = join(import.meta.dirname, '..');

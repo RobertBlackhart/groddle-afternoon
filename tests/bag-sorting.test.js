@@ -31,8 +31,8 @@ import {
   unitOrder,
 } from '../public/js/pack-slots.js?v=4d446d78';
 import { SORT_TAG_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
-import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=f49c8998';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=c562644a';
+import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=487b1b60';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=c9b8530b';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { remakeStatus, isOfferedInRemake } from '../public/js/imagination-remake.js?v=c37ad887';
 

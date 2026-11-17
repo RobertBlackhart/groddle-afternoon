@@ -22,7 +22,7 @@ import {
   rollSlothBonusSnails,
   taskLimitMultiplier,
 } from '../public/js/imagination-effects.js?v=70169933';
-import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
+import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
 import { createToolConditionState, getToolCondition, setToolRemaining } from '../public/js/tools.js?v=8516a0c3';
 import {
   DEFAULT_TASK_LIMIT,
@@ -32,7 +32,7 @@ import {
   loadRecipeCatalogFromFile,
   makingSkillAdjustments,
   recipeTaskLimit,
-} from '../public/js/making.js?v=819002b7';
+} from '../public/js/making.js?v=a16c767f';
 import {
   assemblyCheck,
   assemblyEnergy,
@@ -43,7 +43,7 @@ import {
   finishMachineWork,
   startAssembly,
   startDisassembly,
-} from '../public/js/machines.js?v=f1b30bc0';
+} from '../public/js/machines.js?v=0af7364d';
 import {
   finishMeditation,
   levitationMinEnergy,
@@ -54,11 +54,11 @@ import {
 } from '../public/js/meditation.js?v=96f23682';
 import { skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
 import { strikeDamageFor } from '../public/js/rook-attack.js?v=5e62a79f';
-import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=c2964c53';
-import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=051e04b6';
-import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=9b5a4fe8';
+import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=187cd4b9';
+import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=fa7f5db1';
+import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=6f3d5af8';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=ac6375de';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=7f7c1a9c';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=4337af0f';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

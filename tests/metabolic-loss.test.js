@@ -18,18 +18,18 @@ import {
   setMetabolicLossGate,
   shiftMetabolic,
 } from '../public/js/metabolics.js?v=1383e6fd';
-import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=c499cf1a';
+import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=67b7ccad';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { HELL_TEXT, metabolicGate, normalizeHellState } from '../public/js/hell.js?v=df2b4357';
+import { HELL_TEXT, metabolicGate, normalizeHellState } from '../public/js/hell.js?v=7f2c9be1';
 import { BUTTER_UP, butterUpChicken } from '../public/js/animal-flattery.js?v=9700115b';
 import { SET_FREE, applySetFree } from '../public/js/animal-set-free.js?v=55ad2f83';
 import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=202a9e37';
-import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
-import { startAssembly, startDisassembly } from '../public/js/machines.js?v=f1b30bc0';
+import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
+import { startAssembly, startDisassembly } from '../public/js/machines.js?v=0af7364d';
 import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=8516a0c3';
-import { smeltMetalRocks } from '../public/js/mining.js?v=c2964c53';
-import { craftRecipe } from '../public/js/making.js?v=819002b7';
-import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=781ad57f';
+import { smeltMetalRocks } from '../public/js/mining.js?v=187cd4b9';
+import { craftRecipe } from '../public/js/making.js?v=a16c767f';
+import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=bdb4247b';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

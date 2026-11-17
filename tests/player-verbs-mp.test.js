@@ -27,12 +27,12 @@ import {
   targetSide,
   underTheInfluence,
 } from '../public/js/player-verbs-mp.js?v=4d0315f5';
-import { playerVerbsMpFeature } from '../public/js/features/player-verbs-mp-feature.js?v=03fd467a';
+import { playerVerbsMpFeature } from '../public/js/features/player-verbs-mp-feature.js?v=483200c3';
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=185186c2';
-import { pendingQuestOffers, acceptOffer } from '../public/js/quest-offers.js?v=394cbaf0';
+import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
+import { pendingQuestOffers, acceptOffer } from '../public/js/quest-offers.js?v=ed4e7435';
 import { MULTIPLAYER_QUESTS, MULTIPLAYER_QUESTS_LEFT_OUT, MP_FACTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=c1f18256';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=23248abe';
 import { economyCredits } from '../tools/build-economy.mjs';
 import { tradeTable } from '../tools/build-realtime-trade.mjs';
 

@@ -67,15 +67,15 @@
  *   butlerDialog, butlerLast, butlerVisitors, butlerAutoplay.
  */
 
-import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=487b1b60';
 import { homeStreetLayout, towerItem } from '../home-cultivation.js?v=5d66e832';
-import { homesFeature } from './homes-feature.js?v=4ba30c09';
-import { towerApi } from './home-tower-feature.js?v=c1ebf373';
-import { levelInfoForXp } from '../progression.js?v=72b2b22a';
+import { homesFeature } from './homes-feature.js?v=f873085d';
+import { towerApi } from './home-tower-feature.js?v=031c2947';
+import { levelInfoForXp } from '../progression.js?v=4165e202';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { NEIGHBOURS, NEIGHBOUR_ITEMS, neighbourById } from '../neighbours.js?v=781ad57f';
+import { NEIGHBOURS, NEIGHBOUR_ITEMS, neighbourById } from '../neighbours.js?v=bdb4247b';
 import { BUTLER_FEET, BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig, paintPortrait, portraitUrl } from '../butler-rig.js?v=86bb97ad';
-import { acceptOffer, declineOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=394cbaf0';
+import { acceptOffer, declineOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=ed4e7435';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
 import {
@@ -138,7 +138,7 @@ import {
   takeVisitorDelivery,
   teachButler,
   visitorsReport,
-} from '../butler.js?v=e4a08fd4';
+} from '../butler.js?v=2ad6ac58';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=52288b20';

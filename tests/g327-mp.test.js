@@ -29,12 +29,12 @@ import {
   recordLine,
   yesterdayLine,
   yourSignLine,
-} from '../public/js/hi-signs-mp.js?v=24b2d923';
-import { HI_VARIANTS, HI_VARIANT_COLORS, HI_VARIANT_NAMES, hiDay } from '../public/js/hi-signs.js?v=0436d54a';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=82c80b24';
-import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=9b80f6a4';
-import { addItem, countItem } from '../public/js/inventory.js?v=f49c8998';
-import { applyAchievementProgress, createAchievementState, getAchievementProgress, seedAchievementNearCompletion } from '../public/js/achievements.js?v=c1f18256';
+} from '../public/js/hi-signs-mp.js?v=1415ecb7';
+import { HI_VARIANTS, HI_VARIANT_COLORS, HI_VARIANT_NAMES, hiDay } from '../public/js/hi-signs.js?v=c9d1aedc';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=ec4958c8';
+import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=e9d6936f';
+import { addItem, countItem } from '../public/js/inventory.js?v=487b1b60';
+import { applyAchievementProgress, createAchievementState, getAchievementProgress, seedAchievementNearCompletion } from '../public/js/achievements.js?v=23248abe';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { HAS_SERVER, serverPath } from '../tools/repos.mjs';
 

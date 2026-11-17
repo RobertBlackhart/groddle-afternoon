@@ -48,8 +48,8 @@
  * teleportSummons (summonses today).
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
-import { getGameDayKey } from '../game-day.js?v=72f37c7e';
+import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
+import { getGameDayKey } from '../game-day.js?v=03b8d954';
 import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=8516a0c3';
 import {
   PAPER_CLASS,

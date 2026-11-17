@@ -31,9 +31,9 @@
  *   itemVerbLast, itemVerbBuzz, itemVerbDash.
  */
 
-import { addItem, countItem, removeItem } from '../inventory.js?v=f49c8998';
-import { moodMax } from '../metabolics.js?v=1383e6fd';
-import { listDroppedStacks } from '../world-items.js?v=deadf665';
+import { addItem, countItem, removeItem } from '../inventory.js?v=487b1b60';
+import { energyMax, moodMax } from '../metabolics.js?v=1383e6fd';
+import { listDroppedStacks } from '../world-items.js?v=053888d2';
 import {
   GARLIC_EAT_COUNTER,
   ITEM_VERBS,
@@ -45,7 +45,7 @@ import {
   itemVerbsFor,
   runItemVerb,
 } from '../item-verbs.js?v=994d3d4f';
-import { homesFeature } from './homes-feature.js?v=4ba30c09';
+import { homesFeature } from './homes-feature.js?v=f873085d';
 import { CROWNS_STREET } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { isRaceSceneTsid } from '../races.js?v=ab22a079';
@@ -72,7 +72,7 @@ let homeCheckAt = 0;
 let lastCultivated = -1;
 let demoDone = false;
 
-const energyCap = (pc) => Math.max(100, Number(pc?.energyMax) || 100);
+const energyCap = (pc) => energyMax(pc);
 
 export function isTrophyClass(classTsid) {
   return /^trophy_/.test(String(classTsid || '')) && !/_piece\d+$/.test(classTsid);

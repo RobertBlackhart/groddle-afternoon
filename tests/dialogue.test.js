@@ -11,7 +11,7 @@ import {
   nextDialogue,
   formatSpokenLine,
 } from '../public/js/dialogue.js?v=fcfed1af';
-import { runVerb } from '../public/content.js?v=8884fee5';
+import { runVerb } from '../public/content.js?v=5dfc6bfe';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

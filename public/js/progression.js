@@ -5,7 +5,7 @@
  * point balance; gameplay rewards normally increase both values together.
  */
 
-import { metabolicGain } from './metabolics.js?v=1383e6fd';
+import { energyMax, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 
 /** Cumulative XP thresholds for levels 2 through 60. */
 export const XP_FOR_LEVEL = Object.freeze([
@@ -117,9 +117,9 @@ export function reconcilePlayerProgression(pc, opts = {}) {
   const currants = currantRewardForLevel(toLevel);
   const favor = favorRewardForLevel(toLevel);
 
-  const energyTop = Math.max(0, Number(opts.energyTop) || Number(pc.energyMax) || 100);
+  const energyTop = Math.max(0, Number(opts.energyTop) || energyMax(pc));
   // Mood's maximum is the same tank (metabolics_recalc_limits).
-  const moodTop = Math.max(0, Number(opts.moodTop) || Number(pc.energyMax) || 100);
+  const moodTop = Math.max(0, Number(opts.moodTop) || moodMax(pc));
   const beforeEnergy = Number(pc.energy) || 0;
   const beforeMood = Number(pc.mood) || 0;
   // inc_stats.js 363-370: nothing refills while dead; metabolics_set_energy / _mood go through

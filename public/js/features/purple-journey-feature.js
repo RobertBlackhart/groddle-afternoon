@@ -38,7 +38,7 @@
  *   sheets' GPU MB). &onscreensharp=off keeps the 1x.
  */
 
-import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=f49c8998';
+import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=487b1b60';
 import { shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=a4208821';
 import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
@@ -67,7 +67,7 @@ import {
   scionWords,
 } from '../purple-journey.js?v=5e078ed8';
 import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=eaa28de5';
-import { homesFeature } from './homes-feature.js?v=4ba30c09';
+import { homesFeature } from './homes-feature.js?v=f873085d';
 
 export const PURPLE_FEATURE_ID = 'purple-journey';
 /** The scene's own TSID (the template is LNVV4OTMAUG2PQV). */

@@ -24,7 +24,7 @@
  * neighbours.
  */
 
-import { loseEnergy, metabolicGain } from './metabolics.js?v=1383e6fd';
+import { loseEnergy, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 
 export const NEIGHBOUR_SCENE_PREFIX = 'NB_';
 export const NEIGHBOUR_SCENE = Object.freeze({ width: 2200, height: 700, groundY: 620 });
@@ -255,7 +255,7 @@ export function doChore(state, neighbour, pc, ctx = {}) {
   pc.energy = whole(pc.energy);
   // Chores are remake design; their cost spends through the loss door like every source verb.
   const energy = loseEnergy(pc, chore.energy || 0);
-  const maxMood = Number.isFinite(pc.maxMood) ? pc.maxMood : 100;
+  const maxMood = moodMax(pc);
   const before = whole(pc.mood);
   // The chores are remake design; their mood goes through the same door as
   // every source gain (metabolics_add_mood, inc_metabolics.js 79-86).

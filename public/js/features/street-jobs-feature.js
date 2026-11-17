@@ -50,15 +50,15 @@
  */
 
 import { pluralize } from '../words.js?v=274023af';
-import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=487b1b60';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
 import { ecologyForStreet } from '../street-ecology.js?v=c4ce9ccd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=a1ce9368';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { GIANTS } from '../shrines.js?v=f1a0a0d8';
+import { GIANTS } from '../shrines.js?v=f48c0155';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=309d677a';
+import { teleportationFeature } from './teleportation-feature.js?v=9ce752fa';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,
@@ -115,7 +115,7 @@ import {
 } from '../street-jobs.js?v=edadd67d';
 import { PAPERS_BADGE } from '../subway.js?v=735bfbeb';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=0c97384c';
+import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=abee4a1f';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {

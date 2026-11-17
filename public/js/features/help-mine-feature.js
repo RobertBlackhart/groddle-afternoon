@@ -46,13 +46,13 @@
  *     data-help-mine-companion (the last companion swing: name:chunks).
  */
 
-import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=c2964c53';
-import { rockId } from '../street-objects.js?v=0a7e6b54';
-import { addItem } from '../inventory.js?v=f49c8998';
+import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=187cd4b9';
+import { rockId } from '../street-objects.js?v=9d62f517';
+import { addItem } from '../inventory.js?v=487b1b60';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { frameTexture, loadTexture } from '../textures.js?v=8e0a8c38';
-import { acceptOffer } from '../quest-offers.js?v=394cbaf0';
+import { acceptOffer } from '../quest-offers.js?v=ed4e7435';
 import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=ca0cc848';
 import {
   COMPANION_MINE_RULES,

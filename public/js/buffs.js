@@ -14,8 +14,8 @@ import { BUFF_ICONS } from './buff-triggers.js?v=a3093922';
 
 const SECOND = 1000;
 
-/** Energy tank size: 100 plus Energy Tank upgrade cards (pc.energyMax). */
-const energyCap = (pc) => Math.max(100, Number(pc?.energyMax) || 100);
+/** Energy tank size: 100 plus Energy Tank upgrade cards (metabolics.js energyMax). */
+const energyCap = (pc) => energyMax(pc);
 
 /** Pack items which legitimately create buffs in the original game. */
 export const BUFF_ITEM_CATALOG = Object.freeze({

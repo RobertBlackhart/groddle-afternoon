@@ -39,7 +39,7 @@
 
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=f49c8998';
+import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=487b1b60';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import {
   CAMERA_CLASS, CAPTION_MAX, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY as T, SNAP_MAX_BYTES, SNAP_QUALITY, SNAP_WIDTHS, TRAVEL,

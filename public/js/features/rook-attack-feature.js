@@ -58,11 +58,11 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=f49c8998';
+import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=487b1b60';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=5bc894c8';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { donationValueFor } from '../shrines.js?v=f1a0a0d8';
+import { donationValueFor } from '../shrines.js?v=f48c0155';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
 import {
@@ -125,7 +125,7 @@ import {
   syncObjs,
 } from '../rook-mp.js?v=eace1128';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
+import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=1c1efade';
 import { migrateClassValue } from '../tools.js?v=8516a0c3';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';

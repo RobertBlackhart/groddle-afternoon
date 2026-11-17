@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runVerb, ordinaryItems } from '../public/content.js?v=8884fee5';
-import { createGarden, getPlot } from '../public/js/garden.js?v=3f0d93db';
+import { runVerb, ordinaryItems } from '../public/content.js?v=5dfc6bfe';
+import { createGarden, getPlot } from '../public/js/garden.js?v=15082e6f';
 import { createTrantState } from '../public/js/trants.js?v=4d6f5593';
 import { superHarvestWords } from '../public/js/words.js?v=274023af';
 

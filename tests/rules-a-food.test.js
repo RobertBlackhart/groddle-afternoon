@@ -8,8 +8,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-import { CONSUME_FLAVOUR_LINES, getItemUseInfo, useItem } from '../public/js/inventory.js?v=f49c8998';
-import { useItemMany } from '../public/js/eat-many.js?v=5cd11d92';
+import { CONSUME_FLAVOUR_LINES, getItemUseInfo, useItem } from '../public/js/inventory.js?v=487b1b60';
+import { useItemMany } from '../public/js/eat-many.js?v=8a79c959';
 import { moodScaledXp } from '../public/js/mood-xp.js?v=22648ec0';
 
 const game = fs.readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');

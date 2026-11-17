@@ -9,12 +9,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyAchievementProgress, createAchievementState, getAchievementProgress, resetAchievementCounter, unlockAchievement } from '../public/js/achievements.js?v=c1f18256';
+import { applyAchievementProgress, createAchievementState, getAchievementProgress, resetAchievementCounter, unlockAchievement } from '../public/js/achievements.js?v=23248abe';
 import { COLLECTION_TROPHIES, COUNTED_ON_ARRIVAL, HELD_AT_ONCE, HELD_AT_ONCE_TEXT, collectionClasses, heldChanges, planCollectionTrophies } from '../public/js/collection-trophies.js?v=3760d603';
 import { TROPHY_WHERE_TEXT } from '../public/js/home-trophies.js?v=2020b29b';
-import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
-import { vendorSellValue } from '../public/js/vendor.js?v=37538dca';
-import { collectionTrophiesFeature as feature } from '../public/js/features/collection-trophies-feature.js?v=eb3d4e75';
+import { ITEM_CATALOG } from '../public/js/inventory.js?v=487b1b60';
+import { vendorSellValue } from '../public/js/vendor.js?v=925b0f77';
+import { collectionTrophiesFeature as feature } from '../public/js/features/collection-trophies-feature.js?v=e464c9f3';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const GS = join(here, '../../glitch-GameServerJS');

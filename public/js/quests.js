@@ -12,7 +12,7 @@
 
 import { getQuestCatalog } from './content-catalogs.js?v=10b118dd';
 import { questRewardModifier } from './imagination-effects.js?v=70169933';
-import { metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { energyMax, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
 import { decodeEntities } from './html-text.js?v=6bbf4d1f';
 
@@ -288,7 +288,7 @@ export function applyRewards(pc, rewards, opts = {}) {
   const energyBefore = Number(pc.energy) || 0;
   const moodBefore = Number(pc.mood) || 0;
   // G213: metabolics_add_energy / _mood refuse a gain while dead or Super Pooped (js/metabolics.js).
-  if (energy && metabolicGain('energy').ok) pc.energy = Math.min(Math.max(100, Number(pc.energyMax) || 100), (pc.energy || 0) + energy);
+  if (energy && metabolicGain('energy').ok) pc.energy = Math.min(energyMax(pc), (pc.energy || 0) + energy);
   if (mood && metabolicGain('mood').ok) pc.mood = Math.min(moodMax(pc), (pc.mood || 0) + mood);
   if (paid) {
     // What landed: metabolics_add_* returns the change after the cap (inc_metabolics.js 55-76).

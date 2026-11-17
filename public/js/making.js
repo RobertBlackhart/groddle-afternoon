@@ -16,7 +16,7 @@ import {
   itemIcon,
   ensureItem,
   registerItemUse,
-} from './inventory.js?v=f49c8998';
+} from './inventory.js?v=487b1b60';
 import { GRINDER_TOOLS, TOOL_CONDITION_CATALOG, brokenToolIcon, canUseTool, firstWorkingTool, setToolRemaining, toolCopies, useToolCondition } from './tools.js?v=8516a0c3';
 import { getSkillPackageOverride, highestSkillLevel, skillPackageDetails } from './skill-packages.js?v=bfb87281';
 import {
@@ -31,8 +31,8 @@ import {
   wondrousWeave,
 } from './imagination-effects.js?v=70169933';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { levelInfoForXp } from './progression.js?v=72b2b22a';
-import { getGameDayKey } from './game-day.js?v=72f37c7e';
+import { levelInfoForXp } from './progression.js?v=4165e202';
+import { getGameDayKey } from './game-day.js?v=03b8d954';
 import { loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
 
 /**

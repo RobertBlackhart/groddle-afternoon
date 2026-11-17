@@ -30,10 +30,10 @@
  * daily limit leaves (limitCountCap; the feature runs its rule for each one).
  */
 
-import { CONSUME_FLAVOUR_LINES, ITEM_CATALOG, countItem, getItemUseInfo, removeItem, useItem } from './inventory.js?v=f49c8998';
-import { loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
+import { CONSUME_FLAVOUR_LINES, ITEM_CATALOG, countItem, getItemUseInfo, removeItem, useItem } from './inventory.js?v=487b1b60';
+import { energyMax as tankEnergyMax, loseEnergy, loseMood, metabolicGain, moodMax } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
-import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=2728d1c6';
+import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=415fb86c';
 
 /**
  * Eat and drink verbs marked "is_single": 1 in GSJS items/*.js (verbs.eat:
@@ -214,7 +214,7 @@ export function useItemMany(inv, pc, classTsid, count = 1) {
     if (!amount || (amount > 0 && !metabolicGain('energy').ok)) return;
     const before = pc.energy || 0;
     if (amount < 0) loseEnergy(pc, -amount);
-    else pc.energy = Math.min(Math.max(100, Number(pc.energyMax) || 100), before + amount);
+    else pc.energy = Math.min(tankEnergyMax(pc), before + amount);
     if ((pc.energy || 0) !== before) effects.energy = (pc.energy || 0) - before;
   };
   const addMood = () => {
