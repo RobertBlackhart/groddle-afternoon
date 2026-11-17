@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2451,
+  "commits": 2458,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Pooped and Super Pooped show the client's own warning-sign bang on the red disc, not a redrawn white !"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The Rook badge's stun meter is Tiny Speck's own star arc, flashing and climbing as the client did"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The dots over another player typing in Local are Tiny Speck's own typing overlay, not a drawn bubble"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Other players see Tiny Speck's own pet, nibble, squeeze, milk, massage, harvest, scoop and revive words over you; Butterfly care drops its emoji and dots"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "A teleport or summons plays your Glitch's own hit1 for a second, not a lavender beam"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2911,34 +2936,9 @@
     "date": "2026-11-16",
     "kind": "new",
     "text": "The light-puzzle rooms' dishes, shades, poles, ledges, spotlights, caged bulbs and knobs, made for Groddle"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The signpost hint, the Butler's bubble and the construction tag no longer sit over other things"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A party invite accepted at home opens the teleporter there instead of refusing"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Arrival notices on an upright phone go under the route card instead of over it"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Speech bubbles no longer draw thin lines to the middle of the screen on some phones"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The Super Harvest float says how many more you got, not \"+2×\""
    }
   ]
  },
- "tests": 1078,
+ "tests": 1080,
  "generatedAt": "2026-11-16"
 }
