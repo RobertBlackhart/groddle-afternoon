@@ -18,10 +18,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js';
-import { nearestReached, reachableStreets } from '../public/js/quest-reach.js';
-import { routeGraph } from '../public/js/map-routes.js';
-import { nearestOpenStreet, reachableStreets, streetGraph } from '../public/js/street-graph.js';
+import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=5806a615';
+import { nearestOpenStreet, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
 import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';
