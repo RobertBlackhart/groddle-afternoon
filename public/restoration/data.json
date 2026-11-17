@@ -2814,9 +2814,54 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2501,
+  "commits": 2511,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Clicking the street map's arrow tab expands it again, not only hovering over it"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Helping someone mine counts for I Me Mine when everyone starts together"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Machines in your yard work again after you come home from a visit by the Home button"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Jellisacs the snaps never measured sit in their street's empty holes before any is planned on a ledge"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A pack stack dragged onto a Storage Display Box goes in it outside Decoration Mode too"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The making result says \"You made 2 Curries!\", using each item's own plural"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Hub Completist badges list their progress as Locations Visited, not \"Number 58\""
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Other players see your potion pour, powder shake, musicblock, Tinkertool repair, Wine of the Dead pour, Paper Tree harvest and petrified rock crack in a bubble over you"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Other players see your pick, shovel, scraper, hoe, hatchet, watering can or making tool at work in a thought bubble over you"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2891,54 +2936,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "The subway map link and the new sound switch follow the site menu, save store and focus rules"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The game no longer stops your own music on iPhone, with a new \"Let other apps' music keep playing\" sound setting"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The birds over Rooks' Woods are flapping rook silhouettes, not drawn strokes"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Poured Alphabet Sauce is Tiny Speck's own glowing column of letters, not a red puddle"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Starlit Night's cloud floor is the street's own clouds, and its way out is the street's EXIT door"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Radial Heights' stars are Tiny Speck's own star art, and its way out is the street's signpost under its \"Exit's down here!\" sign"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The tutorial's food table and drinks bench are Tiny Speck's White Tablecloth Table and Firebog Counter, not grey and brown shapes"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A new game starts on Hechey Track's ground by the Grand Mile signpost, not up in the pines"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Pooped and Super Pooped show the client's own warning-sign bang on the red disc, not a redrawn white !"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The Rook badge's stun meter is Tiny Speck's own star arc, flashing and climbing as the client did"
    }
   ]
  },
- "tests": 1091,
+ "tests": 1094,
  "generatedAt": "2026-11-17"
 }
