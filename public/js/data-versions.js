@@ -852,7 +852,7 @@
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",
       "restoration/gaps.json": "240933d5",
-      "restoration/made.json": "65efdfe2",
+      "restoration/made.json": "ced99f87",
       "restoration/maps.json": "0ed84718",
       "restoration/maps/2012/alakol.webp": "33373357",
       "restoration/maps/2012/andra.webp": "bd23c317",
