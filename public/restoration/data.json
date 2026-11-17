@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2465,
+  "commits": 2467,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A new game starts on Hechey Track's ground by the Grand Mile signpost, not up in the pines"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Walk Toward the Light and Radiant Glare draw their lamps, dishes, poles, ledges, spotlights, bulbs and knobs from the made art"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "new",
-    "text": "The light-puzzle rooms' dishes, shades, poles, ledges, spotlights, caged bulbs and knobs, made for Groddle"
    }
   ]
  },
- "tests": 1080,
+ "tests": 1081,
  "generatedAt": "2026-11-16"
 }
