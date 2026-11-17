@@ -8,9 +8,9 @@
  * reach first and the verb keeps its timing, costs and refusals; Feed opens its picker with the
  * dragged food chosen, and a shrine opens its donation window with it.
  *
- * Like features/garden-guano-feature.js (Guano on a garden plot, which stays there) this only
- * listens to the pack's HTML drag: it never answers packDragStart, so a move into a bag and a gift
- * to a player (features/gifts-feature.js, which wins over a player) keep working. A thing that
+ * Like features/garden-guano-feature.js (Guano on a garden plot, which stays there) this is a target
+ * of the drop registry (js/drop-targets.js, R9), asked after the pack bar, a player (features/gifts-feature.js,
+ * which wins over a player) and a plot, by the mouse and the touch lift alike. A thing that
  * has a rule for the stack but whose verb is unavailable shows the verb's reason in red and
  * refuses the drop. Both skins: the pack slots and the canvas are the same in Modern and Classic.
  *
@@ -26,6 +26,7 @@ import { isBagClass } from '../pack-slots.js?v=4d446d78';
 import { dropFor, dropTip } from '../world-drop.js?v=d152b2bb';
 import { canUseTool } from '../tools.js?v=8516a0c3';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
+import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 
 export const WORLD_DROP_FEATURE_ID = 'world-drop';
 
@@ -138,43 +139,45 @@ function wire(engine) {
   const canvas = document.querySelector('#game-root > canvas');
   if (!canvas) return;
   wired = true;
-  // After the pack slot's own dragstart: a drag it cancelled is no drag. A tool's slot drags too.
-  document.addEventListener('dragstart', (event) => {
-    const slot = event.target?.closest?.('.pack-slot');
-    const cls = slot?.dataset?.tsid || '';
-    const copy = slot?.dataset?.packCopy != null && slot.dataset.packCopy !== '' ? Number(slot.dataset.packCopy) : null;
-    dragging = !event.defaultPrevented && cls && !slot.dataset.packBag ? { cls, copy: Number.isInteger(copy) ? copy : null } : null;
-    if (dragging) engine.setData?.('worldDrag', `dragging:${cls}`);
-  });
-  document.addEventListener('dragend', () => { if (dragging) endDrag(engine); });
-  canvas.addEventListener('dragover', (event) => {
-    if (!dragging) return;
-    const over = overAt(engine, canvas, event.clientX, event.clientY, dragging.cls, dragging.copy);
-    if (!over) {
-      engine.setData?.('worldDrag', `dragging:${dragging.cls}`);
+  // R9 (G967): a thing on the street is a target of the drop registry (js/drop-targets.js), for the
+  // mouse and the touch lift alike; it asks last (DragVO.as 157-196: the location's itemstacks after
+  // players and plots). A tool's slot drags too; a bag does not.
+  registerDropTarget({
+    id: 'world',
+    order: 60,
+    scope: () => canvas,
+    start(d) {
+      const st = d.stack;
+      dragging = st.from === 'pack' && st.cls && !st.bag ? { cls: st.cls, copy: Number.isInteger(st.copy) ? st.copy : null } : null;
+      if (dragging) engine.setData?.('worldDrag', `dragging:${dragging.cls}`);
+    },
+    over(d, at) {
+      if (!dragging) return null;
+      const over = overAt(engine, canvas, at.x, at.y, dragging.cls, dragging.copy);
+      if (!over) {
+        engine.setData?.('worldDrag', `dragging:${dragging.cls}`);
+        showTip('');
+        light(engine, null);
+        return null;
+      }
+      engine.setData?.('worldDrag', `over:${over.target.classId}:${over.drop.verb.id}:${over.ok ? 'ok' : 'no'}`);
+      showTip(over.tip, !over.ok, at.x, at.y);
+      light(engine, over.target);
+      return { ok: over.ok };
+    },
+    leave() {
+      if (!dragging) return;
       showTip('');
       light(engine, null);
-      return;
-    }
-    engine.setData?.('worldDrag', `over:${over.target.classId}:${over.drop.verb.id}:${over.ok ? 'ok' : 'no'}`);
-    showTip(over.tip, !over.ok, event.clientX, event.clientY);
-    light(engine, over.target);
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = over.ok ? 'move' : 'none';
-  });
-  canvas.addEventListener('dragleave', () => {
-    if (!dragging) return;
-    showTip('');
-    light(engine, null);
-  });
-  canvas.addEventListener('drop', (event) => {
-    if (!dragging) return;
-    const { cls, copy } = dragging;
-    const over = overAt(engine, canvas, event.clientX, event.clientY, cls, copy);
-    endDrag(engine);
-    if (!over) return;
-    event.preventDefault();
-    runDrop(engine, over, cls, copy);
+    },
+    drop(d, at) {
+      if (!dragging) return;
+      const { cls, copy } = dragging;
+      const over = overAt(engine, canvas, at.x, at.y, cls, copy);
+      endDrag(engine);
+      if (over) runDrop(engine, over, cls, copy);
+    },
+    end() { if (dragging) endDrag(engine); },
   });
   // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
   exposeQA('groddleWorldDrop', {

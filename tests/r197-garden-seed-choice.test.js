@@ -18,7 +18,7 @@ import {
   seedDropCheck,
 } from '../public/js/garden.js?v=15082e6f';
 import { getVerbsFor, runVerb } from '../public/content.js?v=5dfc6bfe';
-import { plotDragClass, seedOver } from '../public/js/features/garden-guano-feature.js?v=876cc0ee';
+import { plotDragClass, seedOver } from '../public/js/features/garden-guano-feature.js?v=9019149d';
 import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=5761ac0b';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');

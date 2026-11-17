@@ -328,7 +328,8 @@ describe('vendor buy/sell', () => {
     assert.match(css, /\.vendor-sell-drop\.is-receipt/);
     assert.match(css, /\.pack-slots \.pack-slot\.is-dragging/);
     assert.match(game, /application\/x-groddle-item/);
-    assert.match(game, /addEventListener\('drop'/);
+    // R9 (G967): the sell box is a target of the drop registry (js/drop-targets.js).
+    assert.match(game, /id: 'vendor',\s+order: 10,\s+scope: \(\) => vendorDrop,/);
     assert.match(game, /createVendorSellQuote/);
     assert.match(game, /vendorSellReceipt/);
     assert.match(game, /data-pack-sell/);

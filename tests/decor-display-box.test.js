@@ -70,26 +70,29 @@ describe('a Storage Display Box takes things, as the original did', () => {
   });
 
   it('in Decoration Mode a pack stack dropped on a box goes in it, lit while it is over the box', () => {
-    const wire = homes.slice(homes.indexOf('function wirePackDrag('), homes.indexOf('function startPackDrag('));
-    const over = wire.slice(wire.indexOf("canvas.addEventListener('dragover'"), wire.indexOf("canvas.addEventListener('dragleave'"));
+    // R9 (G967): Decoration Mode's drop is a target of the drop registry (js/drop-targets.js).
+    const wire = homes.slice(homes.indexOf('const decorateTarget = (engine) => ({'), homes.indexOf('// --- #470:'));
+    const over = wire.slice(wire.indexOf('  over(d, at) {'), wire.indexOf('  leave() {'));
     assert.match(over, /const hit = displayDropAt\(toRoom\(worldPoint\(engine, e\)\), packDrag\.classTsid\);\s+drawDisplayTarget\(engine, hit\);\s+drawPackMarker\(engine, hit \? null : packDropTarget\(engine, e\)\);/);
-    const drop = wire.slice(wire.indexOf("canvas.addEventListener('drop'"), wire.indexOf("document.addEventListener('dragend'"));
+    const drop = wire.slice(wire.indexOf('  drop(d, at) {'), wire.indexOf('  end() {'));
     assert.match(drop, /if \(hit\) \{[\s\S]{0,80}const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
     assert.ok(drop.indexOf('depositInBox') < drop.indexOf('dropPackStackAt'), 'the box before the floor under it');
     assert.match(homes, /const tip = new PIXI\.Text\(\{ text: ok \? DISPLAY_TEXT\.dropTip : hit\.refusal\.msg/);
   });
 
   it('#470: outside Decorate a pack stack dropped on a box in your own house goes in it (bag_furniture_sdb.js 611-640)', () => {
-    const wire = homes.slice(homes.indexOf('function wireBoxDrop('), homes.indexOf('function startPackDrag('));
+    const wire = homes.slice(homes.indexOf('const boxTarget = (engine) => ({'), homes.indexOf('function wireDropTargets('));
     const here = homes.slice(homes.indexOf('function boxDropHere('), homes.indexOf('function endBoxDrag('));
     assert.match(here, /mode === 'decorate'/, 'Decorate keeps its own drop');
     assert.match(here, /scene\.room !== 'interior'/);
     assert.match(here, /ctx\?\.inHome/, 'your own home only: a visit is a VISIT_ scene, never inHome');
-    assert.match(wire, /document\.addEventListener\('dragstart'[\s\S]{0,200}event\.defaultPrevented/);
-    const drop = wire.slice(wire.indexOf("canvas.addEventListener('drop'"));
-    assert.match(drop, /if \(!hit\) return;\s+e\.preventDefault\(\);\s+const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
-    assert.doesNotMatch(wire, /dropPackStackAt|packDragStart/, 'only a drop over a box is taken');
-    assert.match(homes.slice(homes.indexOf('function afterEnter('), homes.indexOf('function afterEnter(') + 300), /wireBoxDrop\(engine\);/, 'wired when a home room is entered');
+    // R9 (G967): a target of the drop registry, so the touch lift reaches it too; a bag is no stack.
+    assert.match(wire, /id: 'home-display-box',[\s\S]{0,200}st\.from === 'pack' && st\.cls && !st\.bag && boxDropHere\(engine\)/);
+    assert.match(wire, /return hit \? \{ ok: !hit\.refusal \} : null;/, 'only a point over a box answers');
+    const drop = wire.slice(wire.indexOf('  drop(d, at) {'));
+    assert.match(drop, /if \(!hit\) return;\s+const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
+    assert.doesNotMatch(wire, /dropPackStackAt/, 'only a drop over a box is taken');
+    assert.match(homes.slice(homes.indexOf('function afterEnter('), homes.indexOf('function afterEnter(') + 300), /wireDropTargets\(engine\);/, 'wired when a home room is entered');
   });
 
   it('#473: a stack set down in the room dragged onto a box goes in whole from the floor, never through the pack (bag_furniture_sdb.js 718-741)', () => {
@@ -148,7 +151,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=3a223d89');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=6a54d198');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);

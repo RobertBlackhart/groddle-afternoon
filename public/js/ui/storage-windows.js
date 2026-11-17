@@ -24,6 +24,7 @@
 
 import { bindCountField, countKeyValue, countStepMarkup } from './count-chooser.js?v=5bc894c8';
 import { bindContextTrigger } from './context-menu.js?v=dfdf98f7';
+import { beginDrag, registerDropTarget, touchLift } from '../drop-targets.js?v=59e6edb4';
 
 const CSS = `
 .hst-win { position: fixed; z-index: calc(var(--z-panel) - 1); left: 50%; top: max(64px, 9vh); transform: translateX(-50%);
@@ -243,8 +244,6 @@ export function openCabinetWindow(opts) {
 
   let slots = [];
   let picked = null;
-  let packDrag = null; // a pack stack being dragged: { cls, count, copy }
-  let slotDrag = null; // a cabinet slot being dragged: index
 
   // Rows shown at once: rows_display slots tall (52 + 18 apart), the rest scrolled.
   wrap.style.maxHeight = `${rowsDisplay * 52 + (rowsDisplay - 1) * 18 + 24}px`;
@@ -315,25 +314,14 @@ export function openCabinetWindow(opts) {
     render();
   }
 
-  // —— Dragging from the pack (game.js pack slots are HTML5 drags with their class and count on the slot) ——
-  const packStackOf = (slot) => ({ cls: slot.dataset.tsid, count: Math.max(1, Math.floor(Number(slot.dataset.packCount) || 1)), copy: slot.dataset.packCopy != null ? Number(slot.dataset.packCopy) : null, bag: slot.dataset.packBag || '' });
-  const onDragStart = (e) => {
-    const slot = e.target?.closest?.('.pack-slot');
-    if (!slot || !slot.dataset.tsid || h.root.contains(slot)) return;
-    packDrag = packStackOf(slot);
-  };
-  const onDragEnd = () => {
-    packDrag = null;
-    slotDrag = null;
+  // Drags, through the drop registry (R9, G967: js/drop-targets.js): a pack stack onto a slot, by
+  // mouse or by the pack's touch lift (#407); a slot onto another slot or out onto the pack.
+  let lit = null;
+  const unlight = () => {
     tip.hidden = true;
+    lit = null;
     for (const b of grid.querySelectorAll('.is-over, .is-no')) b.classList.remove('is-over', 'is-no');
   };
-  document.addEventListener('dragstart', onDragStart, true);
-  document.addEventListener('dragend', onDragEnd, true);
-  h.onCleanup(() => {
-    document.removeEventListener('dragstart', onDragStart, true);
-    document.removeEventListener('dragend', onDragEnd, true);
-  });
 
   /** findDropTarget: an empty slot, or the same class under its stackmax. */
   function slotTakes(i, cls) {
@@ -344,6 +332,8 @@ export function openCabinetWindow(opts) {
 
   /** A slot under a dragged stack: lit with "Move Here" when it takes it, else the refusal. */
   function showOver(b, ok, why, x, y, fromPack) {
+    if (lit && lit !== b) lit.classList.remove('is-over', 'is-no');
+    lit = b;
     b.classList.toggle('is-over', ok);
     b.classList.toggle('is-no', !ok && fromPack);
     tip.textContent = ok ? (opts.moveHere || 'Move Here') : why;
@@ -361,113 +351,72 @@ export function openCabinetWindow(opts) {
     const why = accepts(stack.cls);
     if (why) return note(why, true);
     if (!slotTakes(i, stack.cls)) return undefined;
-    return put({ ...stack, slot: i });
+    return put({ cls: stack.cls, count: stack.count, copy: stack.copy ?? null, bag: stack.bag || '', slot: i });
   }
 
-  grid.addEventListener('dragover', (e) => {
-    const b = e.target?.closest?.('[data-hst-slot]');
-    for (const x of grid.querySelectorAll('.is-over, .is-no')) if (x !== b) x.classList.remove('is-over', 'is-no');
-    if (!b) return;
-    const i = Number(b.dataset.hstSlot);
-    let ok = false;
-    let why = '';
-    if (packDrag) ({ ok, why } = packFits(packDrag, i));
-    else if (slotDrag != null) ok = i !== slotDrag;
-    else return;
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = ok ? 'move' : 'none';
-    showOver(b, ok, why, e.clientX, e.clientY, Boolean(packDrag));
-  });
-  // #407: a touch drag from the pack (game.js setupPackDrops lifts it by hand: no HTML5 drag on
-  // touch) tells the element under the finger with 'pack-touch-over' while it moves and
-  // 'pack-touch-drop' where it is let go (the pack slot in detail.slot; preventDefault says we
-  // took it), and the document 'pack-touch-end' when the lift ends, as dragend.
-  const touchSlot = (e) => {
-    const b = e.target?.closest?.('[data-hst-slot]');
+  const slotAt = (at) => {
+    const b = at?.el?.closest?.('[data-hst-slot]');
     return b && grid.contains(b) ? b : null;
   };
-  const touchStack = (e) => {
-    const slot = e.detail?.slot;
-    return slot?.dataset?.tsid && !h.root.contains(slot) ? packStackOf(slot) : null;
+  // A pack stack (never one of this window's own) or one of this cabinet's slots.
+  const mine = (d) => (d.stack.from === 'cabinet' && d.stack.grid === grid) || (d.stack.from === 'pack' && d.stack.cls && !h.root.contains(d.stack.slot));
+  h.onCleanup(registerDropTarget({
+    id: 'cabinet',
+    order: 15,
+    scope: () => grid,
+    over(d, at) {
+      if (!mine(d)) return null;
+      const b = slotAt(at);
+      if (!b) {
+        unlight();
+        return null;
+      }
+      const i = Number(b.dataset.hstSlot);
+      const fromPack = d.stack.from === 'pack';
+      const { ok, why } = fromPack ? packFits(d.stack, i) : { ok: i !== d.stack.index, why: '' };
+      showOver(b, ok, why, at.x, at.y, fromPack);
+      return { ok };
+    },
+    drop(d, at) {
+      const b = slotAt(at);
+      unlight();
+      if (!b) return;
+      const i = Number(b.dataset.hstSlot);
+      if (d.stack.from === 'pack') dropPack(d.stack, i);
+      else if (d.stack.index !== i) move(d.stack.index, i);
+    },
+    leave: unlight,
+    end: unlight,
+  }));
+  // A slot dragged out onto the pack comes out (CabinetDialog: onto the pack, the stack is taken out).
+  h.onCleanup(registerDropTarget({
+    id: 'cabinet-out',
+    order: 16,
+    scope: () => document.getElementById('pack-bar'),
+    over: (d) => (d.stack.from === 'cabinet' && d.stack.grid === grid ? { ok: true } : null),
+    drop(d) {
+      take(d.stack.index, slots[d.stack.index]?.count || 0);
+    },
+  }));
+  const cabinetStack = (b) => {
+    const i = Number(b?.dataset?.hstSlot);
+    const s = Number.isInteger(i) ? slots[i] : null;
+    return s ? { from: 'cabinet', grid, index: i, cls: s.classTsid, count: s.count } : null;
   };
-  const onTouchOver = (e) => {
-    const b = touchSlot(e);
-    for (const x of grid.querySelectorAll('.is-over, .is-no')) if (x !== b) x.classList.remove('is-over', 'is-no');
-    const stack = touchStack(e);
-    if (!b || !stack) {
-      tip.hidden = true;
-      return;
-    }
-    e.preventDefault();
-    const { ok, why } = packFits(stack, Number(b.dataset.hstSlot));
-    showOver(b, ok, why, e.detail.x, e.detail.y, true);
-  };
-  const onTouchDrop = async (e) => {
-    const b = touchSlot(e);
-    const stack = touchStack(e);
-    onDragEnd();
-    if (!b || !stack) return;
-    e.preventDefault();
-    await dropPack(stack, Number(b.dataset.hstSlot));
-  };
-  document.addEventListener('pack-touch-over', onTouchOver);
-  document.addEventListener('pack-touch-drop', onTouchDrop);
-  document.addEventListener('pack-touch-end', onDragEnd);
-  h.onCleanup(() => {
-    document.removeEventListener('pack-touch-over', onTouchOver);
-    document.removeEventListener('pack-touch-drop', onTouchDrop);
-    document.removeEventListener('pack-touch-end', onDragEnd);
-  });
-  grid.addEventListener('dragleave', (e) => {
-    if (!grid.contains(e.relatedTarget)) tip.hidden = true;
-  });
-  grid.addEventListener('drop', async (e) => {
-    const b = e.target?.closest?.('[data-hst-slot]');
-    if (!b) return;
-    e.preventDefault();
-    const i = Number(b.dataset.hstSlot);
-    const was = packDrag;
-    const from = slotDrag;
-    onDragEnd();
-    if (was) await dropPack(was, i);
-    else if (from != null && from !== i) await move(from, i);
-    return undefined;
-  });
-
-  // —— Dragging a slot out (onto the pack: it comes out) or to another slot ——
   grid.addEventListener('dragstart', (e) => {
     const b = e.target?.closest?.('[data-hst-slot]');
-    if (!b || !slots[Number(b.dataset.hstSlot)]) return;
+    const stack = cabinetStack(b);
+    if (!stack) return;
     e.stopPropagation();
-    slotDrag = Number(b.dataset.hstSlot);
-    packDrag = null;
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('application/x-groddle-cabinet', String(slotDrag));
+      e.dataTransfer.setData('application/x-groddle-cabinet', String(stack.index));
       e.dataTransfer.setData('text/plain', b.dataset.cls || '');
     }
+    beginDrag(stack, { input: 'mouse' });
   });
-  const packBar = () => document.getElementById('pack-bar');
-  const onPackOver = (e) => {
-    if (slotDrag == null) return;
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-  };
-  const onPackDrop = async (e) => {
-    if (slotDrag == null) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const at = slotDrag;
-    onDragEnd();
-    await take(at, slots[at]?.count || 0);
-  };
-  const bar = packBar();
-  bar?.addEventListener('dragover', onPackOver, true);
-  bar?.addEventListener('drop', onPackDrop, true);
-  h.onCleanup(() => {
-    bar?.removeEventListener('dragover', onPackOver, true);
-    bar?.removeEventListener('drop', onPackDrop, true);
-  });
+  // A finger held still on a full slot lifts it, as the pack's do; a finger that moves scrolls the shelves.
+  h.onCleanup(touchLift(grid, { selector: '[data-hst-slot]', stackOf: cabinetStack }));
 
   grid.addEventListener('click', (e) => {
     const b = e.target?.closest?.('[data-hst-slot]');

@@ -71,6 +71,7 @@ import {
   goodsWithHeldTags,
 } from '../trade.js?v=ad258d88';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
+import { beginDrag, registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 
 export const TRADE_FEATURE_ID = 'trade';
 export const TRADE_VERB = 'trade_start';
@@ -242,19 +243,25 @@ function createSession(engine, client) {
   editBtn.addEventListener('click', () => unlock());
   offerBtn.addEventListener('click', () => accept());
   doneBtn.addEventListener('click', () => close());
-  // Drag a pack stack onto your side.
-  mineCol.addEventListener('dragover', (e) => {
-    if (!open || open.sealed || open.mine.accepted) return;
-    e.preventDefault();
-    mineCol.dataset.drop = 'true';
-  });
-  mineCol.addEventListener('dragleave', () => { delete mineCol.dataset.drop; });
-  mineCol.addEventListener('drop', (e) => {
-    delete mineCol.dataset.drop;
-    const c = e.dataTransfer?.getData('text/x-groddle-item');
-    if (!c) return;
-    e.preventDefault();
-    addFromPack(c);
+  // Drag a pack stack (from the pack or this window's own list) onto your side. R9 (G967): a target
+  // of the drop registry (js/drop-targets.js), so the touch lift reaches it too (LocalTradeBuySellUI.as
+  // is an IDragTarget of the client's one drag, DragVO.as).
+  registerDropTarget({
+    id: 'trade',
+    order: 12,
+    scope: () => (win.hidden ? null : mineCol),
+    over(d) {
+      const st = d.stack;
+      if (!open || open.sealed || open.mine.accepted || !st.cls || (st.from !== 'pack' && st.from !== 'trade')) return null;
+      mineCol.dataset.drop = 'true';
+      return { ok: true };
+    },
+    leave() { delete mineCol.dataset.drop; },
+    end() { delete mineCol.dataset.drop; },
+    drop(d) {
+      delete mineCol.dataset.drop;
+      addFromPack(d.stack.cls);
+    },
   });
 
   publish();
@@ -387,6 +394,7 @@ function createSession(engine, client) {
           return;
         }
         e.dataTransfer?.setData('text/x-groddle-item', row.classTsid);
+        beginDrag({ from: 'trade', cls: row.classTsid, count: left }, { input: 'mouse' });
       });
       buttons.push(b);
     }

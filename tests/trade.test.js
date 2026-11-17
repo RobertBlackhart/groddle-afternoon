@@ -29,8 +29,9 @@ import {
   tradeCommand,
   untradeableReason,
 } from '../public/js/trade.js?v=ad258d88';
-import { tradeFeature } from '../public/js/features/trade-feature.js?v=c3296368';
-import { FEATURES } from '../public/js/features/index.js?v=9fef78db';
+import { dropPage, fakeSlot, mouseDrop, touchDrop } from './drop-fake.js';
+import { tradeFeature } from '../public/js/features/trade-feature.js?v=0cbab6f1';
+import { FEATURES } from '../public/js/features/index.js?v=55eeaee1';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { GSJS } from '../tools/build-realtime-trade.mjs';
 
@@ -288,6 +289,22 @@ describe('trade feature (js/features/trade-feature.js)', () => {
     assert.equal(engine.inv.apple, 15);
     assert.ok(s.lines().includes('Bo added 7 Cherries'));
     assert.ok(s.lines().includes('You changed the amount from 12 to 5 Apples'));
+  });
+
+  it('R9 (G967): a pack stack dragged onto your side by touch or by the mouse goes to the trade (js/drop-targets.js)', async () => {
+    const s = globalThis.groddleTrade;
+    const mineCol = body.all().find((n) => n.dataset?.tradeMine != null);
+    const page = dropPage([]);
+    const key = fakeSlot('artifact_bee_key', 1);
+    page.row.contains = (n) => n === key;
+    const before = s.lines().length;
+    await touchDrop(page, key, mineCol);
+    // It reached addFromPack, which refuses an untradeable stack in the log (the drop's own rules).
+    assert.equal(s.lines().length, before + 1);
+    assert.equal(s.lines().at(-1), "You can't trade this item!");
+    assert.equal(page.doc.documentElement.dataset.dropLast, 'trade:ok:touch');
+    mouseDrop(page, key, mineCol);
+    assert.equal(s.lines().length, before + 2, 'the mouse the same');
   });
 
   it('accepts what it saw, and a done moves exactly the listed goods once', async () => {

@@ -39,7 +39,9 @@ describe('a stack\'s menu from a right-click or the menu keys', () => {
 
   it('a long press on touch stays the lift-and-drag', () => {
     assert.match(stackBlock, /if \(event\.pointerType === 'touch' \|\| event\.pointerType === 'pen'\) return;/);
-    assert.match(fnSource('setupPackDrops'), /bar\.addEventListener\('contextmenu', \(event\) => \{ if \(touch\) event\.preventDefault\(\); \}\);/);
+    // R9 (G967): the lift is the drop registry's touchLift, which keeps the long-press menu away while it holds.
+    assert.match(fnSource('setupPackDrops'), /touchLift\(bar, \{/);
+    assert.match(readFileSync(new URL('../public/js/drop-targets.js', import.meta.url), 'utf8'), /const noMenu = \(event\) => \{ if \(touch\) event\.preventDefault\(\); \};/);
   });
 
   it('opens the left click\'s popover on that slot, fresh, and never closes it', () => {

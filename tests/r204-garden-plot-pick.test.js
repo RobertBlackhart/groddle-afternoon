@@ -13,7 +13,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { gardenLayout, gardenStyle, nearestPlotIndex } from '../public/js/garden-view.js?v=04fe8467';
-import { plotHit } from '../public/js/features/garden-guano-feature.js?v=876cc0ee';
+import { plotHit } from '../public/js/features/garden-guano-feature.js?v=9019149d';
 
 const GARDEN_BACK_ROW_REACH = 24; // game.js: a back-row plot's reach over its plant
 const PAD = 8; // pickInteractableAt's spriteWorldHitBox pad

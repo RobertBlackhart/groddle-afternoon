@@ -103,6 +103,7 @@ import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js
 import { pickupCountTitle } from '../world-items.js?v=053888d2';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
 import { isBagClass } from '../pack-slots.js?v=4d446d78';
+import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
   CULTIVATION_CLASSES,
@@ -3283,7 +3284,6 @@ let wotdTreeDone = false;
 let pourSheets = null;
 let pourOverlay = null; // { clip, startedAt, lifeMs, end }
 let pourDrag = null; // { over }
-let pourDragWired = false;
 let pourTip = null;
 
 /** The live target drawn for a pour row: the one standing nearest its x. */
@@ -3445,47 +3445,44 @@ function dropPour(engine, row) {
   return confirmPour(engine, row);
 }
 
-function wirePourDrag(engine) {
-  const canvas = gameCanvas();
-  if (pourDragWired || !canvas) return Boolean(canvas);
-  pourDragWired = true;
-  canvas.addEventListener('dragover', (event) => {
-    if (!pourDrag) return;
-    const row = pourRowAt(engine, event.clientX, event.clientY);
+/**
+ * R9 (G967): the bottle dragged onto a cultivated item or a running proto is a target of the drop
+ * registry (js/drop-targets.js), so the touch lift pours as a mouse drag does.
+ */
+const pourTarget = (engine) => ({
+  id: 'home-pour',
+  order: 40,
+  scope: gameCanvas,
+  start(d) {
+    const st = d.stack;
+    pourDrag = st.from === 'pack' && !st.tool && !st.bag && st.cls === WOTD && mode !== 'decorate'
+      && countItem(engine.inv, WOTD) > 0 && pourTargets(engine).length ? { over: null } : null;
+    if (pourDrag) engine.setData('homePourDrag', 'dragging');
+  },
+  over(d, at) {
+    if (!pourDrag) return null;
+    const row = pourRowAt(engine, at.x, at.y);
     pourDrag.over = row;
     engine.setData('homePourDrag', row ? `over:${row.id}` : 'dragging');
-    if (!row) return showPourTip('');
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-    showPourTip(pourDropTip(ITEM_CATALOG[WOTD]?.label || 'Wine of the Dead', row.name), event.clientX, event.clientY);
-  });
-  canvas.addEventListener('dragleave', () => { if (pourDrag) showPourTip(''); });
-  canvas.addEventListener('drop', (event) => {
-    if (!pourDrag) return;
-    const row = pourRowAt(engine, event.clientX, event.clientY) || pourDrag.over;
+    if (!row) {
+      showPourTip('');
+      return null;
+    }
+    showPourTip(pourDropTip(ITEM_CATALOG[WOTD]?.label || 'Wine of the Dead', row.name), at.x, at.y);
+    return { ok: true };
+  },
+  leave() {
+    if (pourDrag) showPourTip('');
+  },
+  drop(d, at) {
+    const row = pourRowAt(engine, at.x, at.y) || pourDrag?.over;
     endPourDrag(engine);
-    if (!row) return;
-    event.preventDefault();
-    dropPour(engine, row);
-  });
-  document.addEventListener('dragend', () => { if (pourDrag) endPourDrag(engine); });
-  return true;
-}
-
-/** game.js pack slot dragstart: the bottle may go onto a cultivated item or running proto here. */
-function startPourDrag(classTsid, event, engine) {
-  // BUILDER: while decorating, a pack stack goes onto a shelf, a table or the floor instead.
-  if (mode === 'decorate') return startPackDrag(classTsid, event, engine);
-  if (classTsid !== WOTD || countItem(engine.inv, WOTD) < 1 || !pourTargets(engine).length || !wirePourDrag(engine)) return false;
-  pourDrag = { over: null };
-  engine.setData('homePourDrag', 'dragging');
-  if (event?.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('application/x-groddle-item', WOTD);
-    event.dataTransfer.setData('text/plain', WOTD);
-  }
-  return true;
-}
+    if (row) dropPour(engine, row);
+  },
+  end() {
+    if (pourDrag) endPourDrag(engine);
+  },
+});
 
 /**
  * G267: the home's yes / no questions are confirms, not quest offers: two
@@ -5217,7 +5214,6 @@ const swatchFilter = { wall: 'all', floor: 'all', ceiling: 'all' };
 let hoverId = null;
 let popModel = null;
 let packDrag = null; // { classTsid, count, furniture }
-let packDragWired = false;
 let lastClient = null; // the pointer's last client point while dragging
 let edgeSince = 0;
 const heldPan = new Set();
@@ -5613,32 +5609,48 @@ function endPackDrag(engine) {
   engine.setData('homeDrag', '');
 }
 
-function wirePackDrag(engine) {
-  const canvas = gameCanvas();
-  if (packDragWired || !canvas) return Boolean(canvas);
-  packDragWired = true;
-  canvas.addEventListener('dragover', (e) => {
-    if (!packDrag || mode !== 'decorate') return;
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-    lastClient = { x: e.clientX, y: e.clientY };
+/**
+ * R9 (G967): Decoration Mode's drop (a pack stack onto a shelf, a table, a box or the floor; furniture
+ * placed where it is let go) is a target of the drop registry (js/drop-targets.js): the mouse and the
+ * touch lift both reach it. It asks before players, plots and things (DragVO.as 147: no gifts while
+ * decorating), and in Decorate it takes every point of the room.
+ */
+const decorateTarget = (engine) => ({
+  id: 'home-decorate',
+  order: 30,
+  scope: gameCanvas,
+  start(d) {
+    const st = d.stack;
+    if (st.from !== 'pack' || st.tool || st.bag || mode !== 'decorate' || scene?.room !== 'interior' || scene.construction) return;
+    packDrag = { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)), furniture: Boolean(FURNITURE_CATALOG[st.cls]) };
+    if (packDrag.furniture) {
+      beginPlacing(engine, st.cls, 'pack');
+      carryBy = 'pointer';
+    }
+    engine.setData('homeDrag', `pack:${st.cls}:`);
+  },
+  over(d, at) {
+    if (!packDrag || mode !== 'decorate') return null;
+    const e = { clientX: at.x, clientY: at.y };
+    lastClient = { x: at.x, y: at.y };
     if (packDrag.furniture) {
       pointer = { ...worldPoint(engine, e), inside: true };
       updateGhost(engine);
-      return;
+      return { ok: true };
     }
     const hit = displayDropAt(toRoom(worldPoint(engine, e)), packDrag.classTsid);
     drawDisplayTarget(engine, hit);
     drawPackMarker(engine, hit ? null : packDropTarget(engine, e));
     engine.setData('homeDrag', `pack:${packDrag.classTsid}:${hit ? 'sdb' : 'room'}`);
-  });
-  canvas.addEventListener('dragleave', () => {
+    return { ok: true };
+  },
+  leave() {
     drawPackMarker(engine, null);
     clearDisplayTarget(engine);
-  });
-  canvas.addEventListener('drop', (e) => {
+  },
+  drop(d, at) {
     if (!packDrag || mode !== 'decorate') return;
-    e.preventDefault();
+    const e = { clientX: at.x, clientY: at.y };
     const was = packDrag;
     if (was.furniture) {
       pointer = { ...worldPoint(engine, e), inside: true };
@@ -5675,20 +5687,19 @@ function wirePackDrag(engine) {
       }
     }
     engine.setData('homeDropLast', res?.ok ? `stack:${was.classTsid}:${target.on ?? 'floor'}` : `refused:${res?.reason || ''}`);
-  });
-  document.addEventListener('dragend', () => { if (packDrag) endPackDrag(engine); });
-  return true;
-}
+  },
+  end() {
+    if (packDrag) endPackDrag(engine);
+  },
+});
 
 // --- #470: a pack stack dragged onto a Storage Display Box outside Decorate goes in it too. The
 // original took the drop any time (bag_furniture_sdb.js verbs.deposit 611-633: is_drop_target,
 // drop_ok_code; conditions 638-640: in a home only its owner), so at home, in your own
-// house, the box is a drop target as it is in Decoration Mode. This only listens to the pack's HTML
-// drag (as features/world-drop-feature.js does): it answers no packDragStart, so a move into a bag
-// still works, and only a drop over a box is taken.
+// house, the box is a drop target as it is in Decoration Mode. R9 (G967): a target of the drop
+// registry like the rest, so the touch lift reaches it; it takes only a drop over a box.
 
 let boxDrag = null; // { classTsid, count } a pack stack dragged while not decorating
-let boxDropWired = false;
 
 /** Whether a drag outside Decorate may go into a box here: your own house, its rooms drawn. */
 function boxDropHere(engine) {
@@ -5702,60 +5713,49 @@ function endBoxDrag(engine) {
   clearDisplayTarget(engine);
 }
 
-function wireBoxDrop(engine) {
-  const canvas = gameCanvas();
-  if (boxDropWired || !canvas || typeof document === 'undefined') return;
-  boxDropWired = true;
-  // After the pack slot's own dragstart: a drag it cancelled is no drag; a bag is no stack.
-  document.addEventListener('dragstart', (event) => {
-    const slot = event.target?.closest?.('.pack-slot');
-    const cls = slot?.dataset?.tsid || '';
-    boxDrag = !event.defaultPrevented && cls && !slot.dataset.packBag && boxDropHere(engine)
-      ? { classTsid: cls, count: Math.max(1, Math.floor(Number(slot.dataset.packCount) || 1)) }
-      : null;
-  });
-  document.addEventListener('dragend', () => { if (boxDrag) endBoxDrag(engine); });
-  canvas.addEventListener('dragover', (e) => {
-    if (!boxDrag || !boxDropHere(engine)) return;
-    const hit = displayDropAt(toRoom(worldPoint(engine, e)), boxDrag.classTsid);
+const boxTarget = (engine) => ({
+  id: 'home-display-box',
+  order: 45,
+  scope: gameCanvas,
+  start(d) {
+    const st = d.stack;
+    boxDrag = st.from === 'pack' && st.cls && !st.bag && boxDropHere(engine) ? { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)) } : null;
+  },
+  over(d, at) {
+    if (!boxDrag || !boxDropHere(engine)) return null;
+    const hit = displayDropAt(toRoom(worldPoint(engine, { clientX: at.x, clientY: at.y })), boxDrag.classTsid);
     drawDisplayTarget(engine, hit);
-    if (!hit) return;
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = hit.refusal ? 'none' : 'move';
-  });
-  canvas.addEventListener('dragleave', () => { if (boxDrag) clearDisplayTarget(engine); });
-  canvas.addEventListener('drop', (e) => {
+    return hit ? { ok: !hit.refusal } : null;
+  },
+  leave() {
+    if (boxDrag) clearDisplayTarget(engine);
+  },
+  drop(d, at) {
     if (!boxDrag || !boxDropHere(engine)) return;
     const was = boxDrag;
-    const hit = displayDropAt(toRoom(worldPoint(engine, e)), was.classTsid);
+    const hit = displayDropAt(toRoom(worldPoint(engine, { clientX: at.x, clientY: at.y })), was.classTsid);
     endBoxDrag(engine);
     if (!hit) return;
-    e.preventDefault();
     const res = depositInBox(engine, hit.box, was.classTsid, was.count);
     if (!res.ok) {
       if (res.msg) engine.toast(res.msg);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
     }
     engine.setData('homeDropLast', res.ok ? `display:${was.classTsid}:${hit.box.id}` : `refused:${res.reason || ''}`);
-  });
-}
+  },
+  end() {
+    if (boxDrag) endBoxDrag(engine);
+  },
+});
 
-/** game.js pack dragstart while decorating: a pack stack goes onto a shelf, a table or the floor. */
-function startPackDrag(classTsid, event, engine) {
-  if (mode !== 'decorate' || scene?.room !== 'interior' || scene.construction || !wirePackDrag(engine)) return false;
-  const count = Math.max(1, Math.floor(Number(event?.target?.closest?.('[data-pack-count]')?.dataset?.packCount) || 1));
-  packDrag = { classTsid, count, furniture: Boolean(FURNITURE_CATALOG[classTsid]) };
-  if (packDrag.furniture) {
-    beginPlacing(engine, classTsid, 'pack');
-    carryBy = 'pointer';
-  }
-  if (event?.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('application/x-groddle-item', classTsid);
-    event.dataTransfer.setData('text/plain', classTsid);
-  }
-  engine.setData('homeDrag', `pack:${classTsid}:`);
-  return true;
+/** The home's three drop targets (registered once; registering again replaces them with this engine). */
+let dropTargetsEngine = null;
+function wireDropTargets(engine) {
+  if (dropTargetsEngine === engine) return;
+  dropTargetsEngine = engine;
+  registerDropTarget(decorateTarget(engine));
+  registerDropTarget(pourTarget(engine));
+  registerDropTarget(boxTarget(engine));
 }
 
 // --- stacks set down in the room: select, drag to move, drag onto the pack to pick up
@@ -7833,8 +7833,8 @@ function homeScene(room, engine) {
 
 function afterEnter(engine) {
   bindPointer(engine);
-  // #470: at home a pack stack may go into a Storage Display Box without Decorate.
-  wireBoxDrop(engine);
+  // #470: at home a pack stack may go into a Storage Display Box without Decorate (R9: every home drop target).
+  wireDropTargets(engine);
   if ((mode === 'decorate' && scene.room !== 'interior') || (mode === 'cultivate' && scene.room !== 'street' && !inHouse())) {
     mode = null;
     placing = null;
@@ -8012,11 +8012,6 @@ export const homesFeature = {
   /** Opens that style picker. */
   openPieceStyle(id, engine) {
     return openUpgradeFor(engine, id);
-  },
-
-  /** game.js pack dragstart: Wine of the Dead onto a cultivated item (patch.js / trant / proto remove drop target). */
-  packDragStart(classTsid, event, engine) {
-    return startPourDrag(classTsid, event, engine) ? true : null;
   },
 
   /** Pack furniture: place it straight from the pack while inside the house. */

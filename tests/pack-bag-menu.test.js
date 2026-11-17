@@ -42,8 +42,9 @@ describe('a bag slot opens its Options', () => {
 
   it('a long press on touch still lifts the bag to drag, not a menu', () => {
     assert.match(bagBlock, /event\.pointerType === 'touch' \|\| event\.pointerType === 'pen'\) return;/);
-    // The bar's own long press (setupPackDrops) is untouched: it lifts the slot after HOLD_MS.
-    assert.match(fnSource('setupPackDrops'), /touch\.timer = setTimeout\(\(\) => \{[\s\S]*packDrag = \{/);
+    // The bar's own long press (setupPackDrops, R9: the drop registry's touchLift) lifts the slot after the hold.
+    assert.match(fnSource('setupPackDrops'), /touchLift\(bar, \{/);
+    assert.match(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/drop-targets.js'), 'utf8'), /t\.timer = setTimeout\(\(\) => \{[\s\S]*beginDrag\(stack, \{ input: 'touch' \}\);/);
   });
 
   it('opens the same popover as the tray\'s Options, anchored to that bag', () => {

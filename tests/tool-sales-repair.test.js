@@ -161,8 +161,10 @@ describe('vendors buy tools (inc_stores.js storeSell)', () => {
   it('a tool drags onto an open vendor, the dragged copy staged; it still never drags onto a player (ticket 43)', () => {
     const game = read('game.js');
     assert.match(game, /const toolSlot = Boolean\(s\.isTool \|\| opts\.toolRow\);\n\s*const canDragToVendor = true;/);
-    assert.match(game, /if \(!toolSlot && !s\.bag && features\.query\('packDragStart', s\.classTsid, event, engine\)\) return;/);
-    assert.match(game, /vendorDragCopy = toolSlot && s\.copy != null \? s\.copy : null;/);
+    // R9 (G967): the drag carries tool: toolSlot to every target (js/drop-targets.js); a player's (gifts-feature) refuses a tool.
+    assert.match(game, /beginDrag\(packStackOf\(slot, \{ copy: s\.copy \?\? null, tool: toolSlot, vendor: canDragToVendor \}\)/);
+    assert.match(read('js/features/gifts-feature.js'), /if \(st\.from === 'pack' && !st\.tool && !st\.bag && engine\?\.mode === 'multiplayer'\) startDrag\(st\.cls\);/);
+    assert.match(game, /vendorDragCopy = st\.tool && st\.copy != null \? st\.copy : null;/);
     assert.match(game, /if \(classTsid\) stageVendorSell\(classTsid, copy, place, bag\);/);
   });
 

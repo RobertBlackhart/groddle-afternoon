@@ -99,7 +99,8 @@ describe('the open bag follows a repair (Austin 2026-11-01: its wear bar changed
   it('a stack being dragged keeps its button: the pack waits for the drop or the drag\'s end', () => {
     const bar = fnSrc('renderPackBar');
     assert.match(bar, /if \(packDrag \|\| vendorDragTsid\) \{\s+packBarHeld = true;\s+return;/);
-    assert.match(game, /if \(packBarHeld\) renderPackBar\(\);\n      \}\);/);
+    // R9 (G967): the pack bar's drop target ends every drag (js/drop-targets.js), and draws what it held.
+    assert.match(game, /    end\(\) \{\n      unlight\(\);\n      packDrag = null;\n      if \(packBarHeld\) renderPackBar\(\);/);
   });
 });
 

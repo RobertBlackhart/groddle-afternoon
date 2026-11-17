@@ -126,7 +126,7 @@ describe('game.js: every sell path asks', () => {
   });
   it('the pack menu and a drag stage the bag they are about; tiles and the tile menu choose none', () => {
     assert.match(src, /stageVendorSell\(classTsid, copy, place, bag\);\n  \}\);\n  pop\.querySelector\('\[data-pack-drop\]'\)/);
-    assert.match(src, /vendorDragBag = s\.bag\?\.key \|\| '';/);
+    assert.match(src, /vendorDragBag = st\.bag \|\| '';/);
     assert.ok((src.match(/vendorSellBag = '';/g) || []).length >= 4);
   });
   it("the pack menu's Sell row is greyed with the words while the bag holds anything", () => {

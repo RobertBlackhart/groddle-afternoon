@@ -27,7 +27,7 @@
  *
  * - Drag a pack stack onto another player's Glitch (the source's "Or, drag
  *   item to player"): the tip says Give, and the drop opens the Give window
- *   for that player with that stack picked (game.js asks packDragStart).
+ *   for that player with that stack picked (a target of js/drop-targets.js, R9).
  *
  * QA: canvas data giftState (none|open|wrap|sending), giftLast, giftBoxes,
  * giftDrag (none|dragging|over:<id>); window.groddleGifts.
@@ -40,7 +40,7 @@ import { unitRankAt } from '../pack-slots.js?v=4d446d78';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
 // The same key as features/index.js: one module instance holds the carried notes.
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=62053395';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=b278f792';
 import {
   BOX_KEEP,
   BOX_SLOTS,
@@ -63,6 +63,7 @@ import {
   wrapBox,
 } from '../gifts.js?v=6b219144';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
+import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 
 export const GIFTS_FEATURE_ID = 'gifts';
 export const GIFT_VERB = 'gift_give';
@@ -676,7 +677,6 @@ function createSession(engine, client) {
   // soulbound one, "You can't give this item away!" in red), and a drop there (633-638, 848-853) opens
   // the give "as if they had already chosen give and an itemstack".
   let drag = null;
-  let dragWired = false;
   const tip = el('div', { class: 'gift-drag-tip', hidden: true, 'data-gift-drag-tip': '' });
   document.body.append(tip);
 
@@ -722,52 +722,59 @@ function createSession(engine, client) {
     engine.setData?.('giftDrag', 'none');
   }
 
-  function wireDrag() {
-    const canvas = canvasEl();
-    if (dragWired || !canvas) return Boolean(canvas);
-    dragWired = true;
-    canvas.addEventListener('dragover', (event) => {
-      if (!drag) return;
-      const p = playerAt(event.clientX, event.clientY);
-      drag.over = p;
-      engine.setData?.('giftDrag', p ? `over:${p.id}` : 'dragging');
-      if (!p) return dragTip('');
-      event.preventDefault();
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-      dragTip(drag.soulbound ? "You can't give this item away!" : GIFT_TEXT.verb, drag.soulbound, event.clientX, event.clientY);
-    });
-    canvas.addEventListener('dragleave', () => { if (drag) dragTip(''); });
-    canvas.addEventListener('drop', (event) => {
-      if (!drag) return;
-      const p = playerAt(event.clientX, event.clientY) || drag.over;
-      const c = drag.c;
-      const soulbound = drag.soulbound;
-      endDrag();
-      if (!p) return;
-      event.preventDefault();
-      if (soulbound) return;
-      open({ to: p, classTsid: c });
-    });
-    document.addEventListener('dragend', () => { if (drag) endDrag(); });
-    return true;
-  }
-
-  /** game.js's pack slot dragstart (the vendor closed): true when the drag may go on. */
-  function startDrag(classTsid, event) {
+  /** A pack stack dragged while others are here: true when it may go to a player (DragVO.as:148 item.giveable). */
+  function startDrag(classTsid) {
     const c = String(classTsid || '');
-    if (client.state !== 'online' || !others().length || c === GIFT_WRAPPED || !wireDrag()) return false;
+    drag = null;
+    // Not while decorating (DragVO.as findDragTargetForStack 147: !decorator_mode).
+    if (client.state !== 'online' || !others().length || c === GIFT_WRAPPED || engine.query?.('homeEditMode', engine)) return false;
     const reason = table ? giveReason(c, table, ITEM_CATALOG[c]?.tags) : '';
-    // Only a giveable stack targets a player (DragVO.as:148 item.giveable); a soulbound one shows the red tip.
+    // Only a giveable stack targets a player; a soulbound one shows the red tip.
     if (reason && reason !== GIFT_TEXT.soulbound) return false;
     drag = { c, soulbound: reason === GIFT_TEXT.soulbound, over: null };
     engine.setData?.('giftDrag', 'dragging');
-    if (event?.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('application/x-groddle-item', c);
-      event.dataTransfer.setData('text/plain', c);
-    }
     return true;
   }
+
+  // R9 (G967): another player is a target of the drop registry (js/drop-targets.js), for the mouse
+  // and the touch lift alike; it asks before plots and things, as DragVO.as asks players first.
+  registerDropTarget({
+    id: 'gift',
+    order: 35,
+    scope: canvasEl,
+    start(d) {
+      const st = d.stack;
+      drag = null;
+      if (st.from === 'pack' && !st.tool && !st.bag && engine?.mode === 'multiplayer') startDrag(st.cls);
+    },
+    over(d, at) {
+      if (!drag) return null;
+      const p = playerAt(at.x, at.y);
+      drag.over = p;
+      engine.setData?.('giftDrag', p ? `over:${p.id}` : 'dragging');
+      if (!p) {
+        dragTip('');
+        return null;
+      }
+      dragTip(drag.soulbound ? "You can't give this item away!" : GIFT_TEXT.verb, drag.soulbound, at.x, at.y);
+      return { ok: true };
+    },
+    leave() {
+      if (drag) dragTip('');
+    },
+    drop(d, at) {
+      if (!drag) return;
+      const p = playerAt(at.x, at.y) || drag.over;
+      const c = drag.c;
+      const soulbound = drag.soulbound;
+      endDrag();
+      if (!p || soulbound) return;
+      open({ to: p, classTsid: c });
+    },
+    end() {
+      if (drag) endDrag();
+    },
+  });
 
   publish();
 
@@ -855,12 +862,6 @@ export const giftsFeature = {
   runVerbOverride(target, verbId) {
     if (verbId !== GIFT_VERB || !session || !target?.playerId) return null;
     return session.open({ to: { id: Number(target.playerId), name: String(target.label || target.name || UNNAMED_PLAYER) } });
-  },
-
-  /** game.js pack slot dragstart: dragging a stack toward another player on the street (DragVO.as). */
-  packDragStart(classTsid, event, engine) {
-    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
-    return session.startDrag(classTsid, event) ? true : null;
   },
 
   /** The pack popover: Give to…, and the Gift Box's own verbs. */

@@ -105,10 +105,11 @@ describe('37: a stack dropped on a stack of its own class joins it', () => {
   it('the game hands a drop on a slot to packMove with that slot, mouse and touch alike', () => {
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
     assert.match(game, /const dropOn = \(el\) => \{/);
-    assert.match(game, /bar\.addEventListener\('drop', \(event\) => \{[\s\S]{0,400}dropOn\(el\);/);
-    // G865: a touch drop on a slot still goes to dropOn first; only a miss is offered to a cabinet.
-    assert.match(game, /if \(packDrag && !dropOn\(el\) && touchElsewhere\('pack-touch-drop'/);
-    assert.match(game, /event\.pointerType !== 'touch'/);
+    // R9 (G967): the pack bar is a target of the drop registry (js/drop-targets.js); the mouse and the
+    // touch lift both land in its drop, which hands the slot under the point to dropOn.
+    assert.match(game, /id: 'pack',[\s\S]{0,1600}drop\(d, at\) \{\n      dropOn\(targetOf\(at\.el\)\);/);
+    assert.match(game, /touchLift\(bar, \{/);
+    assert.match(readFileSync(join(root, 'public/js/drop-targets.js'), 'utf8'), /event\.pointerType !== 'touch'/);
   });
 
   it('the sources say so', { skip: !(existsSync(client) && existsSync(gsjs)) && 'needs glitch-client and glitch-GameServerJS beside the repo' }, () => {

@@ -4,7 +4,7 @@
  *   on it (items/wine_of_the_dead.js:213-262 modal_callback; js/wine-pour-fx.js,
  *   features/homes-feature.js pourFx, game.js engine.moveAvatar).
  * - The bottle drops onto an item (items/patch.js:44-74 remove, drop_tip
- *   "Pour {$stack_name} on {$item_name}"; homes-feature packDragStart).
+ *   "Pour {$stack_name} on {$item_name}"; homes-feature home-pour drop target).
  * - A pour that wears an item out sends no line (include/cultivation.js 52-82).
  * - The wee tree: maturity 1 is the "wee tree" (wood_tree.js:451) and its
  *   harvest says a harvest_state_1to0 line (wood_tree.js:1304-1310).
@@ -87,7 +87,8 @@ describe('the walk and the overlay', () => {
     const h = read('js/features/homes-feature.js');
     assert.match(h, /engine\.moveAvatar\?\.\(ap\.endpoint, ap\.face\);/);
     assert.match(h, /pourFx\(engine, row\);\n  removeItem\(engine\.inv, WOTD, 1\);/);
-    assert.match(h, /packDragStart\(classTsid, event, engine\) \{\n    return startPourDrag\(classTsid, event, engine\) \? true : null;/);
+    // R9 (G967): the pour is a target of the drop registry (js/drop-targets.js), mouse and touch alike.
+    assert.match(h, /id: 'home-pour',[\s\S]{0,200}st\.cls === WOTD && mode !== 'decorate'/);
     assert.doesNotMatch(h, /It wore out at once/);
     assert.match(h, /if \(!wotd\) engine\.pushActivity\(`Your \$\{result\.label\} wore out\./);
   });

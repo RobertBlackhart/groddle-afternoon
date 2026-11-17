@@ -210,8 +210,8 @@ describe('pack items on shelves and tables (the dropped-stack model)', () => {
     assert.match(fn.slice(0, 1200), /saveDroppedItems\(\);\s+refreshDroppedWorldItems\(\);/);
     const homes = read('public/js/features/homes-feature.js');
     assert.match(homes, /engine\.dropPackStackAt\?\.\(was\.classTsid, was\.count, target\.x \+ roomX0\(\), target\.y\)/);
-    // The pack's dragstart reaches the decorate drag through the pour hook.
-    assert.match(homes, /function startPourDrag\(classTsid, event, engine\) \{\n[^\n]*\n  if \(mode === 'decorate'\) return startPackDrag\(classTsid, event, engine\);/);
+    // R9 (G967): the pack's drag reaches Decoration Mode's drop through the drop registry (js/drop-targets.js).
+    assert.match(homes, /id: 'home-decorate',[\s\S]{0,300}if \(st\.from !== 'pack' \|\| st\.tool \|\| st\.bag \|\| mode !== 'decorate'/);
   });
 });
 

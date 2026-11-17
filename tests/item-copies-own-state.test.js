@@ -182,7 +182,8 @@ describe('a verb on the item you chose acts on that one (two Tinkertools, one in
     assert.match(game, /beforeRemove: \(\) => \{\n\s*takeChosenStack\(classTsid, 1, \{ copy \}\);\n\s*takeToolCopy\(toolState, classTsid, \{ copy \}\);/);
     assert.match(game, /takeChosenStack\(classTsid, 1, \{ copy: toolCopy \}\);/);
     assert.match(game, /stageVendorSell\(classTsid, copy, place, bag\);/);
-    assert.match(game, /vendorDragPlace = inLayout \? \{ cls: s\.classTsid, container: s\.container, index: s\.index \} : null;/);
+    // R9 (G967): the dragged stack's place comes with the drop registry's stack (js/drop-targets.js).
+    assert.match(game, /vendorDragPlace = st\.container != null \? \{ cls: st\.cls, container: st\.container, index: st\.index \} : null;/);
     assert.match(game, /if \(dropCopy != null\) takeToolCopy\(toolState, classTsid, \{ copy: dropCopy \}\);/);
     // Online drops and gives carry the chosen tool's own wear and take that one when the server answers.
     const drops = read('js/features/drops-mp-feature.js');

@@ -24,7 +24,7 @@ import {
   shareReason,
 } from '../public/js/drops-mp.js?v=89c3e58e';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=43b41edf';
-import { giftsFeature } from '../public/js/features/gifts-feature.js?v=b8bb0c5f';
+import { giftsFeature } from '../public/js/features/gifts-feature.js?v=359c57e7';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -97,7 +97,8 @@ describe('solo is untouched', () => {
     dropsMpFeature.onTick(16, 0, engine);
     assert.equal(globalThis.groddleDrops, undefined);
     giftsFeature.init(engine);
-    assert.equal(giftsFeature.packDragStart('cherry', {}, engine), null);
+    // R9 (G967): a player is a drop target only in multiplayer (js/drop-targets.js); solo has no hook for it.
+    assert.equal(giftsFeature.packDragStart, undefined);
   });
 
   it('is registered once, before street-objects, and game.js asks it only through hooks', () => {
@@ -110,7 +111,6 @@ describe('solo is untouched', () => {
     assert.match(game, /features\.query\('sharedPickup', target, engine, room != null && room < wantCount \? room : wantCount\)/);
     // #157: collected from every feature (the door keys share the street's ground too).
     assert.match(game, /features\.collect\('sharedDroppedStacks', droppedStacksTsid\(\), engine\)/);
-    assert.match(game, /features\.query\('packDragStart', s\.classTsid, event, engine\)/);
     assert.doesNotMatch(game, /from '[^']*drops-mp/, 'game.js imports nothing of it');
   });
 });

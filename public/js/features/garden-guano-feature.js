@@ -7,8 +7,8 @@
  * (GardenPlotView.as handleDrop 217-222, GardenView.as onPlotDrop). A drop on a plot that can't
  * take it does nothing, as handleDrop's null action does.
  *
- * The drag belongs to whoever else wants it (a gift to a player, a move into a bag), so this only
- * listens: it never answers packDragStart. On a visit the plot's verbs come from the neighbours
+ * The drag is the drop registry's (js/drop-targets.js, R9): a player under the stack asks first (a
+ * gift), and a plot answers only for Guano or a seed over it. On a visit the plot's verbs come from the neighbours
  * feature: a key-holder's copy offers fertilize (the site keeps the act as 'guano', src/HomeTending.php), and
  * without a key the plot has none, so Guano can't go on it.
  *
@@ -25,6 +25,7 @@
 
 import { FERTILIZE_TEXT, GARDEN_FERTILIZER, SEED_CATALOG, fertilizeCheck, seedDropCheck } from '../garden.js?v=15082e6f';
 import { nearestPlotIndex } from '../garden-view.js?v=04fe8467';
+import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 
 export const GARDEN_GUANO_FEATURE_ID = 'garden-guano';
 const VERB = 'fertilize';
@@ -118,44 +119,48 @@ function wire(engine) {
   const canvas = document.querySelector('#game-root > canvas');
   if (!canvas) return;
   wired = true;
-  // After the pack slot's own dragstart: a drag it cancelled is no drag.
-  document.addEventListener('dragstart', (event) => {
-    dragging = event.defaultPrevented ? '' : plotDragClass(event.target?.closest?.('.pack-slot')?.dataset?.tsid);
-    if (dragging === GARDEN_FERTILIZER) engine.setData?.('guanoDrag', 'dragging');
-    else if (dragging) engine.setData?.('seedDrag', `dragging:${dragging}`);
-  });
-  document.addEventListener('dragend', () => { if (dragging) endDrag(engine); });
-  canvas.addEventListener('dragover', (event) => {
-    if (!dragging) return;
-    // Decorate and Cultivate have the room's own drops.
-    const plot = engine.query?.('homeEditMode', engine) ? null : plotAt(engine, event);
-    const key = dragging === GARDEN_FERTILIZER ? 'guanoDrag' : 'seedDrag';
-    if (!plot) {
-      engine.setData?.(key, dragging === GARDEN_FERTILIZER ? 'dragging' : `dragging:${dragging}`);
-      showTip('');
-      return;
-    }
-    const over = overPlot(engine, plot, dragging);
-    engine.setData?.(key, `over:${plot.state?.plotKey}:${over.verb ? 'ok' : 'no'}`);
-    showTip(over.tip, !over.verb, event.clientX, event.clientY);
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = over.verb ? 'move' : 'none';
-  });
-  canvas.addEventListener('dragleave', () => { if (dragging) showTip(''); });
-  canvas.addEventListener('drop', (event) => {
-    if (!dragging) return;
-    const cls = dragging;
-    const plot = engine.query?.('homeEditMode', engine) ? null : plotAt(engine, event);
-    endDrag(engine);
-    if (!plot) return;
-    event.preventDefault();
-    const { verb } = overPlot(engine, plot, cls);
-    engine.setData?.(cls === GARDEN_FERTILIZER ? 'guanoDropLast' : 'seedDropLast', verb ? `ran:${plot.state?.plotKey}` : `refused:${plot.state?.plotKey}`);
-    if (!verb) {
-      engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
-      return;
-    }
-    engine.requestVerb?.(plot, verb);
+  // R9 (G967): a garden plot is a target of the drop registry (js/drop-targets.js), for the mouse and
+  // the touch lift alike (GardenPlotView.as is an IDragTarget; DragVO.as 166-180 asks a garden's plots).
+  registerDropTarget({
+    id: 'garden',
+    order: 50,
+    scope: () => canvas,
+    start(d) {
+      dragging = d.stack.from === 'pack' && !d.stack.bag ? plotDragClass(d.stack.cls) : '';
+      if (dragging === GARDEN_FERTILIZER) engine.setData?.('guanoDrag', 'dragging');
+      else if (dragging) engine.setData?.('seedDrag', `dragging:${dragging}`);
+    },
+    over(d, at) {
+      if (!dragging) return null;
+      // Decorate and Cultivate have the room's own drops.
+      const plot = engine.query?.('homeEditMode', engine) ? null : plotAt(engine, { currentTarget: canvas, clientX: at.x, clientY: at.y });
+      const key = dragging === GARDEN_FERTILIZER ? 'guanoDrag' : 'seedDrag';
+      if (!plot) {
+        engine.setData?.(key, dragging === GARDEN_FERTILIZER ? 'dragging' : `dragging:${dragging}`);
+        showTip('');
+        return null;
+      }
+      const over = overPlot(engine, plot, dragging);
+      engine.setData?.(key, `over:${plot.state?.plotKey}:${over.verb ? 'ok' : 'no'}`);
+      showTip(over.tip, !over.verb, at.x, at.y);
+      return { ok: Boolean(over.verb) };
+    },
+    leave() { if (dragging) showTip(''); },
+    drop(d, at) {
+      if (!dragging) return;
+      const cls = dragging;
+      const plot = engine.query?.('homeEditMode', engine) ? null : plotAt(engine, { currentTarget: canvas, clientX: at.x, clientY: at.y });
+      endDrag(engine);
+      if (!plot) return;
+      const { verb } = overPlot(engine, plot, cls);
+      engine.setData?.(cls === GARDEN_FERTILIZER ? 'guanoDropLast' : 'seedDropLast', verb ? `ran:${plot.state?.plotKey}` : `refused:${plot.state?.plotKey}`);
+      if (!verb) {
+        engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+        return;
+      }
+      engine.requestVerb?.(plot, verb);
+    },
+    end() { if (dragging) endDrag(engine); },
   });
 }
 

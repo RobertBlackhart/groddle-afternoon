@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=d152b2bb';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=31bf537d';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=956ce58d';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');
@@ -142,7 +142,7 @@ describe('the feature', () => {
     const index = pub('js/features/index.js');
     assert.match(index, /import \{ worldDropFeature \} from '\.\/world-drop-feature\.js[^']*'; FEATURES\.push\(worldDropFeature\);/);
     const feature = pub('js/features/world-drop-feature.js');
-    assert.doesNotMatch(feature, /packDragStart\(/, 'it only listens, as garden-guano-feature does');
+    assert.doesNotMatch(feature, /packDragStart\(/, 'a drop registry target (js/drop-targets.js), as garden-guano-feature is');
     assert.match(feature, /globalThis\.groddleGifts\?\.playerAt\?\.\(clientX, clientY\)/);
     const game = pub('game.js');
     assert.match(game, /openPicker: \(target, verb, pick = ''\) => openFeedPicker\(target, verb, pick\),/);

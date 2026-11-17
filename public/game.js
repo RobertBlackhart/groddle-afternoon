@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=5dfc6bfe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9fef78db';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=55eeaee1';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -500,6 +500,7 @@ import {
 import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=2020b29b';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=3760d603';
 import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=4d446d78';
+import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
@@ -5757,55 +5758,23 @@ function renderPackRow(box, slots, opts = {}) {
         openPackStackMenu(s, slot, { keys: true });
       });
     }
+    if (toolSlot) slot.dataset.packTool = '1';
     if (canDragToVendor || inLayout) {
+      // R9 (G967): the drag is the drop registry's (js/drop-targets.js): the pack bar (G152: between the
+      // pack and a bag, PackContainerView.as startDraggingAPISView), an open vendor (ticket 43), a cabinet,
+      // a trade, another player (G332), a home's boxes and rooms, a plot and a thing on the street each
+      // take it up in their own start, and the touch lift (setupPackDrops) carries the same stack.
       slot.addEventListener('dragstart', (event) => {
-        packDrag = inLayout ? { container: s.container, index: s.index, cls: s.classTsid, bag: s.bag?.key || '', copy: s.copy ?? null } : null;
-        if (!isVendorOpen() || !canDragToVendor) {
-          // G332: drag a pack item onto another player to give it (features/gifts-feature.js).
-          if (!toolSlot && !s.bag && features.query('packDragStart', s.classTsid, event, engine)) return;
-          if (inLayout) {
-            // G152: between the pack and a bag (PackContainerView.as startDraggingAPISView).
-            closePackPopover();
-            if (event.dataTransfer) {
-              event.dataTransfer.effectAllowed = 'move';
-              event.dataTransfer.setData('application/x-groddle-slot', `${s.container}:${s.index}`);
-              event.dataTransfer.setData('text/plain', s.classTsid);
-            }
-            slot.classList.add('is-dragging');
-            return;
-          }
-          event.preventDefault();
-          return;
-        }
         closePackPopover();
-        // A bag dragged to the vendor is the one that sells (its name goes with it).
-        if (s.bag) features.query('packBagLeaves', s.bag.key, engine);
-        vendorDragTsid = s.classTsid;
-        vendorDragCopy = toolSlot && s.copy != null ? s.copy : null;
-        vendorDragPlace = inLayout ? { cls: s.classTsid, container: s.container, index: s.index } : null;
-        vendorDragBag = s.bag?.key || '';
-        vendorSellReceipt = null;
-        vendorTab = 'sell';
-        vendorSelected = null;
-        vendorQty = 1;
-        syncVendorTabs();
         if (event.dataTransfer) {
           event.dataTransfer.effectAllowed = 'move';
           event.dataTransfer.setData('application/x-groddle-item', s.classTsid);
           event.dataTransfer.setData('text/plain', s.classTsid);
         }
         slot.classList.add('is-dragging');
-        renderVendorList();
-        document.getElementById('vendor-sell-drop')?.classList.add('is-dragover');
+        beginDrag(packStackOf(slot, { copy: s.copy ?? null, tool: toolSlot, vendor: canDragToVendor }), { input: 'mouse' });
       });
-      slot.addEventListener('dragend', () => {
-        vendorDragTsid = null;
-        packDrag = null;
-        slot.classList.remove('is-dragging');
-        document.getElementById('vendor-sell-drop')?.classList.remove('is-dragover');
-        document.querySelectorAll('.pack-bar .is-drop-target').forEach((el) => el.classList.remove('is-drop-target'));
-        if (packBarHeld) renderPackBar();
-      });
+      slot.addEventListener('dragend', () => slot.classList.remove('is-dragging'));
     }
     box.appendChild(slot);
   }
@@ -6023,12 +5992,17 @@ function packDropRepair(el) {
   return dropRepair(toolState, { cls: packDrag.cls, copy: packDrag.copy }, { cls: el.dataset.tsid, copy: packSlotCopy(el) });
 }
 
-/** G152: drops inside the pack bar move a stack between the pack and a bag (G794: or repair a tool). */
+/**
+ * G152: drops inside the pack bar move a stack between the pack and a bag (G794: or repair a tool).
+ * R9 (G967): the pack bar is one target of the drop registry (js/drop-targets.js), and the touch lift
+ * (report 37) is the registry's, so a finger reaches every target a mouse does (#407, #470, #473).
+ */
 function setupPackDrops() {
   const bar = document.getElementById('pack-bar');
   if (!bar || bar.dataset.packDropsReady === '1') return;
   bar.dataset.packDropsReady = '1';
-  const targetOf = (event) => event.target?.closest?.('.pack-slot[data-pack-container], .pack-slot.pack-empty, [data-pack-container]');
+  installDropRegistry(document);
+  const targetOf = (at) => at?.closest?.('.pack-slot[data-pack-container], .pack-slot.pack-empty, [data-pack-container]') || null;
   const destFor = (el) => {
     if (!el || !packDrag) return null;
     if (el.dataset.packBag && !packDrag.bag && el.dataset.packBag !== packDrag.container) return { bag: el.dataset.packBag };
@@ -6036,34 +6010,12 @@ function setupPackDrops() {
     if (!container) return null;
     return el.dataset.packIndex != null ? { container, index: Number(el.dataset.packIndex) } : { container };
   };
-  bar.addEventListener('dragover', (event) => {
-    if (!packDrag) return;
-    const el = targetOf(event);
-    const fix = packDropRepair(el);
-    const dest = fix ? null : destFor(el);
-    document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== el) n.classList.remove('is-drop-target'); });
-    if (fix) {
-      // tinkertool.js repair drop_tip: "Repair with your Tinkertool" (main.js 5491-5506: the reason when it can't).
-      event.preventDefault();
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-      el.classList.add('is-drop-target');
-      el.title = fix.refuse || TINKERTOOL_DROP_TIP;
-      if (app?.canvas) app.canvas.dataset.packDragTip = el.title;
-      return;
-    }
-    if (!dest) return;
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-    el.classList.add('is-drop-target');
-    const label = dest.bag ? document.querySelector(`.pack-slot[data-pack-bag="${dest.bag}"]`)?.getAttribute('aria-label')?.split(',')[0] : '';
-    el.title = dest.bag ? PACK_COPY.moveTo(label || 'the bag') : PACK_COPY.moveHere;
-    if (app?.canvas) app.canvas.dataset.packDragTip = el.title;
-  });
+  const unlight = (keep = null) => document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== keep) n.classList.remove('is-drop-target'); });
   // A drop on a slot: a move, or onto a stack of its own class a merge (pack-slots.js moveStack).
   const dropOn = (el) => {
     const fix = packDropRepair(el);
     const dest = fix ? null : destFor(el);
-    document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => n.classList.remove('is-drop-target'));
+    unlight();
     if (fix) {
       // G794: the repair verb on the drop (tinkertool.js handler 273-311), with the Repair verb's rules and costs.
       packDrag = null;
@@ -6084,94 +6036,58 @@ function setupPackDrops() {
     updateHud();
     return true;
   };
-  bar.addEventListener('drop', (event) => {
-    if (!packDrag) return;
-    const el = targetOf(event);
-    if (!packDropRepair(el) && !destFor(el)) {
-      document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => n.classList.remove('is-drop-target'));
-      return;
-    }
-    event.preventDefault();
-    dropOn(el);
+  registerDropTarget({
+    id: 'pack',
+    order: 20,
+    scope: () => bar,
+    start(d) {
+      const st = d.stack;
+      packDrag = st.from === 'pack' && st.container != null ? { container: st.container, index: st.index, cls: st.cls, bag: st.bag || '', copy: st.copy ?? null } : null;
+    },
+    over(d, at) {
+      if (!packDrag) return null;
+      const el = targetOf(at.el);
+      const fix = packDropRepair(el);
+      const dest = fix ? null : destFor(el);
+      unlight(el);
+      if (!fix && !dest) return null;
+      el.classList.add('is-drop-target');
+      if (fix) {
+        // tinkertool.js repair drop_tip: "Repair with your Tinkertool" (main.js 5491-5506: the reason when it can't).
+        el.title = fix.refuse || TINKERTOOL_DROP_TIP;
+      } else {
+        const label = dest.bag ? document.querySelector(`.pack-slot[data-pack-bag="${dest.bag}"]`)?.getAttribute('aria-label')?.split(',')[0] : '';
+        el.title = dest.bag ? PACK_COPY.moveTo(label || 'the bag') : PACK_COPY.moveHere;
+      }
+      if (app?.canvas) app.canvas.dataset.packDragTip = el.title;
+      return { ok: true };
+    },
+    drop(d, at) {
+      dropOn(targetOf(at.el));
+    },
+    leave() {
+      unlight();
+    },
+    end() {
+      unlight();
+      packDrag = null;
+      if (packBarHeld) renderPackBar();
+    },
   });
   // Touch (player report 37): a stack held still for a moment lifts, follows the finger and drops
   // where it is let go, as a mouse drag does; a finger that moves first scrolls the pack as before.
-  const HOLD_MS = 350;
-  let touch = null;
-  const endTouch = () => {
-    if (!touch) return;
-    clearTimeout(touch.timer);
-    touch.ghost?.remove();
-    touch.slot.classList.remove('is-dragging');
-    document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => n.classList.remove('is-drop-target'));
-    const lifted = touch.on;
-    touch = null;
-    if (lifted) {
-      document.dispatchEvent(new CustomEvent('pack-touch-end'));
-      packDrag = null;
-      if (packBarHeld) renderPackBar();
-    }
-  };
-  const under = (x, y) => document.elementFromPoint(x, y)?.closest?.('.pack-slot[data-pack-container], .pack-slot.pack-empty, [data-pack-container]') || null;
-  // #407: off the pack, the element under the finger hears the drag as a mouse drop target would
-  // (js/ui/storage-windows.js: a cabinet's slots); true when it took the stack.
-  const touchElsewhere = (type, x, y) => {
-    const at = document.elementFromPoint(x, y);
-    if (!at || bar.contains(at)) return false;
-    return !at.dispatchEvent(new CustomEvent(type, { bubbles: true, cancelable: true, detail: { slot: touch.slot, x, y } }));
-  };
-  bar.addEventListener('pointerdown', (event) => {
-    if (event.pointerType !== 'touch' || touch) return;
-    const slot = event.target?.closest?.('.pack-slot[data-pack-container][data-pack-index]');
-    if (!slot || !slot.draggable) return;
-    touch = { slot, id: event.pointerId, x: event.clientX, y: event.clientY, on: false, ghost: null };
-    touch.timer = setTimeout(() => {
-      if (!touch || touch.slot !== slot) return;
-      touch.on = true;
+  touchLift(bar, {
+    selector: '.pack-slot[data-pack-container][data-pack-index]',
+    stackOf: (slot) => (slot.draggable ? packStackOf(slot, { tool: slot.dataset.packTool === '1', vendor: true }) : null),
+    onLift(slot) {
       closePackPopover();
-      packDrag = { container: slot.dataset.packContainer, index: Number(slot.dataset.packIndex), cls: slot.dataset.tsid, bag: slot.dataset.packBag || '', copy: packSlotCopy(slot) };
       slot.classList.add('is-dragging');
-      const r = slot.getBoundingClientRect();
-      const ghost = slot.cloneNode(true);
-      ghost.removeAttribute('id');
-      ghost.classList.add('pack-touch-ghost');
-      ghost.style.cssText = `position:fixed;left:${touch.x - r.width / 2}px;top:${touch.y - r.height / 2}px;width:${r.width}px;height:${r.height}px;margin:0;pointer-events:none;opacity:.85;z-index:2147483000`;
-      document.body.appendChild(ghost);
-      touch.ghost = ghost;
-      if (app?.canvas) app.canvas.dataset.packTouchDrag = packDrag.cls || '';
-    }, HOLD_MS);
+      if (app?.canvas) app.canvas.dataset.packTouchDrag = slot.dataset.tsid || '';
+    },
+    onEnd(slot) {
+      slot.classList.remove('is-dragging');
+    },
   });
-  bar.addEventListener('pointermove', (event) => {
-    if (!touch || event.pointerId !== touch.id) return;
-    if (!touch.on) {
-      if (Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 10) endTouch();
-      return;
-    }
-    const r = touch.ghost.getBoundingClientRect();
-    touch.ghost.style.left = `${event.clientX - r.width / 2}px`;
-    touch.ghost.style.top = `${event.clientY - r.height / 2}px`;
-    const el = under(event.clientX, event.clientY);
-    document.querySelectorAll('.pack-bar .is-drop-target').forEach((n) => { if (n !== el) n.classList.remove('is-drop-target'); });
-    if (packDropRepair(el) || destFor(el)) el.classList.add('is-drop-target');
-    else touchElsewhere('pack-touch-over', event.clientX, event.clientY);
-  });
-  // Lifted, the finger drags the stack: no scrolling, no long-press menu, no native drag on top.
-  bar.addEventListener('touchmove', (event) => { if (touch?.on) event.preventDefault(); }, { passive: false });
-  bar.addEventListener('contextmenu', (event) => { if (touch) event.preventDefault(); });
-  bar.addEventListener('dragstart', (event) => { if (touch?.on) event.preventDefault(); }, true);
-  document.addEventListener('pointerup', (event) => {
-    if (!touch || event.pointerId !== touch.id) return;
-    if (touch.on) {
-      const el = under(event.clientX, event.clientY);
-      // The tap that ends a lift is not a click on the slot (that would open its menu).
-      const eat = (e) => { e.stopPropagation(); e.preventDefault(); };
-      document.addEventListener('click', eat, { capture: true, once: true });
-      setTimeout(() => document.removeEventListener('click', eat, true), 400);
-      if (packDrag && !dropOn(el) && touchElsewhere('pack-touch-drop', event.clientX, event.clientY) && app?.canvas) app.canvas.dataset.packDrop = 'elsewhere';
-    }
-    endTouch();
-  });
-  document.addEventListener('pointercancel', (event) => { if (touch && event.pointerId === touch.id) endTouch(); });
 }
 
 /**
@@ -33934,39 +33850,60 @@ async function main() {
     tab.focus({ preventScroll: true });
     if (tab.dataset.tab !== vendorTab) tab.click();
   });
+  // R9 (G967): an open vendor's sell box is a target of the drop registry (js/drop-targets.js), for the
+  // mouse and the touch lift alike (StoreSellUI.as is an IDragTarget, DragVO.as).
   const vendorDrop = document.getElementById('vendor-sell-drop');
-  vendorDrop?.addEventListener('dragenter', (event) => {
-    if (!isVendorOpen() || vendorTab !== 'sell') return;
-    event.preventDefault();
-    vendorDrop.classList.add('is-dragover');
-  });
-  vendorDrop?.addEventListener('dragover', (event) => {
-    if (!isVendorOpen() || vendorTab !== 'sell') return;
-    event.preventDefault();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-    vendorDrop.classList.add('is-dragover');
-  });
-  vendorDrop?.addEventListener('dragleave', (event) => {
-    if (!vendorDrop.contains(event.relatedTarget)) vendorDrop.classList.remove('is-dragover');
-  });
-  vendorDrop?.addEventListener('drop', (event) => {
-    if (!isVendorOpen() || vendorTab !== 'sell') return;
-    event.preventDefault();
-    vendorDrop.classList.remove('is-dragover');
-    const classTsid =
-      event.dataTransfer?.getData('application/x-groddle-item') ||
-      event.dataTransfer?.getData('text/plain') ||
-      vendorDragTsid;
-    const copy = classTsid === vendorDragTsid ? vendorDragCopy : null;
-    const place = classTsid === vendorDragTsid ? vendorDragPlace : null;
-    const bag = classTsid === vendorDragTsid ? vendorDragBag : '';
-    vendorDragTsid = null;
-    vendorDragCopy = null;
-    vendorDragPlace = null;
-    vendorDragBag = '';
-    // A dragged tool sells the copy that was dragged, a dragged bag that bag (refused with stuff in
-    // it, report #79), any other stack the one dragged (stageVendorSell).
-    if (classTsid) stageVendorSell(classTsid, copy, place, bag);
+  installDropRegistry(document);
+  registerDropTarget({
+    id: 'vendor',
+    order: 10,
+    scope: () => vendorDrop,
+    start(d) {
+      const st = d.stack;
+      if (st.from !== 'pack' || !st.vendor || !isVendorOpen()) return;
+      // A bag dragged to the vendor is the one that sells (its name goes with it).
+      if (st.bag) features.query('packBagLeaves', st.bag, engine);
+      vendorDragTsid = st.cls;
+      vendorDragCopy = st.tool && st.copy != null ? st.copy : null;
+      vendorDragPlace = st.container != null ? { cls: st.cls, container: st.container, index: st.index } : null;
+      vendorDragBag = st.bag || '';
+      vendorSellReceipt = null;
+      vendorTab = 'sell';
+      vendorSelected = null;
+      vendorQty = 1;
+      syncVendorTabs();
+      renderVendorList();
+      vendorDrop?.classList.add('is-dragover');
+    },
+    over() {
+      if (!vendorDragTsid || !isVendorOpen() || vendorTab !== 'sell') return null;
+      vendorDrop?.classList.add('is-dragover');
+      return { ok: true };
+    },
+    leave() {
+      vendorDrop?.classList.remove('is-dragover');
+    },
+    drop() {
+      vendorDrop?.classList.remove('is-dragover');
+      const classTsid = vendorDragTsid;
+      const copy = vendorDragCopy;
+      const place = vendorDragPlace;
+      const bag = vendorDragBag;
+      vendorDragTsid = null;
+      vendorDragCopy = null;
+      vendorDragPlace = null;
+      vendorDragBag = '';
+      // A dragged tool sells the copy that was dragged, a dragged bag that bag (refused with stuff in
+      // it, report #79), any other stack the one dragged (stageVendorSell).
+      if (classTsid) stageVendorSell(classTsid, copy, place, bag);
+    },
+    end() {
+      vendorDragTsid = null;
+      vendorDragCopy = null;
+      vendorDragPlace = null;
+      vendorDragBag = '';
+      vendorDrop?.classList.remove('is-dragover');
+    },
   });
 
   document.getElementById('garden-close')?.addEventListener('click', closeGardenPanel);

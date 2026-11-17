@@ -147,7 +147,9 @@ describe('G794: the pack drop (game.js setupPackDrops)', () => {
     assert.match(dropOn, /beginToolRepair\(fix\.classTsid, fix\.copy, \{ by: fix\.by \}\)/);
   });
   it('mouse and touch drags carry the tool\'s copy', () => {
-    assert.match(game, /packDrag = inLayout \? \{[^}]*copy: s\.copy \?\? null \}/);
-    assert.match(game, /bag: slot\.dataset\.packBag \|\| '', copy: packSlotCopy\(slot\) \}/);
+    // R9 (G967): both carry the drop registry's stack (js/drop-targets.js packStackOf reads data-pack-copy).
+    assert.match(game, /beginDrag\(packStackOf\(slot, \{ copy: s\.copy \?\? null,/);
+    assert.match(game, /packDrag = st\.from === 'pack' && st\.container != null \? \{[^}]*copy: st\.copy \?\? null \}/);
+    assert.match(readFileSync(new URL('../public/js/drop-targets.js', import.meta.url), 'utf8'), /const copy = d\.packCopy != null/);
   });
 });
