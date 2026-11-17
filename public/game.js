@@ -706,7 +706,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, loadStreetArrivals } from './js/street-arrival.js?v=ea525036';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=5a28b46e';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -25615,6 +25615,12 @@ async function enterStreet(tsid, opts = {}) {
   const entry = arrivalsTable && data.tsid !== STOOT_MEMORIAL_STREET_ID
     ? defaultArrival(data, await arrivalsTable, { worldW: WORLD_W, closed: features.query('closedRoads', engine) || [] })
     : null;
+  // G920: a spot given as x only (a demo link's streetx, a feature's trip naming an x) stands on the
+  // street's ground at that x, not at the planner's spot's height, which can be a canopy.
+  if (Number.isFinite(opts.spawnX) && !Number.isFinite(opts.spawnY)) {
+    const groundY = groundAt(streetPlatforms, clamp(opts.spawnX, 40, Math.max(80, WORLD_W - 40)), { tsid: data.tsid });
+    if (groundY != null) opts = { ...opts, spawnY: groundY };
+  }
   // Signposts, doors and ladder feet stay clear (street-ecology.js streetReservedSpots,
   // shared with the realtime server's layout).
   const reserved = streetReservedSpots(data);

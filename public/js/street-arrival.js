@@ -17,7 +17,8 @@
  * other street leads to takes its own way out nearest the middle, where /stuck stands you
  * (street-model.js stuckWay); with neither, null (game.js keeps the planner's spot).
  */
-import { stuckWay } from './street-model.js?v=9f16f4ab';
+import { inUnreachedRun, unreachedFloorsFor } from './street-ecology.js?v=feeada1a';
+import { isStandable, platformYAt, stuckWay } from './street-model.js?v=9f16f4ab';
 
 export const STREET_ARRIVALS_URL = 'assets/content/street-arrivals.json';
 
@@ -44,6 +45,28 @@ export function defaultArrival(street, table, { worldW, closed = [] } = {}) {
   }
   const way = stuckWay(street, mid, closed);
   return way && Number.isFinite(way.x) && Number.isFinite(way.y) ? { x: way.x, y: way.y, from: 'way' } : null;
+}
+
+/**
+ * PURE (G920): the height for a spot given as x only (a QA or demo link's streetx with no streety,
+ * a feature's trip that names an x): the street's ground at that x, the lowest standable floor
+ * under it (screen y grows down), where a drop from above the street ends once it has fallen
+ * through every ledge, branch and canopy. Floors nobody reaches (street-ecology.js
+ * unreachedFloorsFor of `tsid`, a pocket under the street) are passed over while a reached one stands
+ * at x. Null when no standable line spans x (game.js then keeps the old height).
+ */
+export function groundAt(platforms, x, { tsid = '', unreached = tsid ? unreachedFloorsFor(tsid) : null } = {}) {
+  if (!Number.isFinite(x)) return null;
+  let low = null;
+  let reached = null;
+  for (const p of platforms || []) {
+    if (!p || !isStandable(p) || Math.abs(p.x2 - p.x1) < 1) continue; // an upright line is no floor
+    const y = platformYAt(p, x, 0);
+    if (!Number.isFinite(y)) continue;
+    if (low == null || y > low) low = y;
+    if (!inUnreachedRun(unreached, p, x) && (reached == null || y > reached)) reached = y;
+  }
+  return reached ?? low;
 }
 
 let tablePromise = null;
