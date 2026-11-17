@@ -26,10 +26,12 @@
  *   (ChatArea.as 529-537, ACTIVITY_TIMER 4000); the others see a small "…"
  *   over your head for 5 s (duration 5000), gone as soon as your line comes
  *   (doLocalChat 1758 overlay_dismiss). The typer never sees their own
- *   (apiSendAnnouncementX). The source's typing_in_location_overlay SWF was
- *   never archived, so the dots are drawn (typingMark): a little white bubble,
- *   three dots in turn, over the name plate (ours: the source's delta_y -130
+ *   (apiSendAnnouncementX). G892: the mark is Tiny Speck's own
+ *   typing_in_location_overlay (glitch-overlays/Elip_while_typing.fla, its source:
+ *   tools/overlays/build.mjs), white dots coming in one by one, 40 px wide (the
+ *   source's width), standing over the name plate (ours: the source's delta_y -130
  *   sat where the remake's plate is). A blocked player's mark never shows.
+ *   QA: &typingdemo=1 draws it over your own Glitch, solo or online.
  * - The modern skin's Social drawer (engine.social, js/ui/social-drawer.js)
  *   is the chat log there: the state pill and Play here sit in its head, the
  *   arrivals and notes go to its Local tab with the emote buttons over them,
@@ -68,6 +70,7 @@ import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
+import { playOverlay } from '../overlays.js?v=eda942a8';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
@@ -82,7 +85,9 @@ export const TYPING_MS = 5000;
 /** One mark per line, and no sooner than this after the last (ChatArea.as:65 ACTIVITY_TIMER). */
 export const TYPING_EVERY_MS = 4000;
 /** The mark's foot, just over the name plate. */
-const TYPING_Y = PLATE_Y - 24;
+export const TYPING_Y = PLATE_Y - 24;
+/** G892: main.js doLocalChatStart 1680-1694: typing_in_location_overlay, width 40, height 40, no bubble. */
+export const TYPING_OVERLAY = Object.freeze({ key: 'typing_in_location_overlay', wh: 40 });
 
 /**
  * Whether a line in the chat input should show the typing mark: some text, no
@@ -97,29 +102,13 @@ export function typingCounts(text, localTab = true) {
 /** main.js doLocalChat 1709, the same words the channels answer (groddle-afternoon-server channels.go). */
 export const LOCAL_SUSPENDED = "Sorry, you're currently suspended from this chat.";
 
-/** The "…" drawn over a player who is typing (the SWF is lost): a bubble with three dots. */
-export function typingMark(PIXI) {
-  const mark = new PIXI.Container();
-  const bubble = new PIXI.Graphics();
-  bubble.roundRect(-17, -22, 34, 20, 10).fill({ color: 0xffffff, alpha: 0.96 }).stroke({ width: 1, color: 0x8c8378, alpha: 0.75 });
-  bubble.moveTo(-4, -2.5).lineTo(0, 4).lineTo(4, -2.5).closePath().fill({ color: 0xffffff, alpha: 0.96 });
-  mark.addChild(bubble);
-  mark.dots = [-8, 0, 8].map((x) => {
-    const d = new PIXI.Graphics();
-    d.circle(0, 0, 2.6).fill({ color: 0x5c554d });
-    d.x = x;
-    d.y = -12;
-    mark.addChild(d);
-    return d;
-  });
-  mark.y = TYPING_Y;
-  mark.visible = false;
-  return mark;
-}
-
-/** The dots light in turn, one each 220 ms. */
-export function typingDotAlpha(i, t) {
-  return Math.floor(t / 220) % 3 === i ? 1 : 0.35;
+/**
+ * G892: play the typing mark in `layer` standing on `at()` (a remote player's root, at its
+ * TYPING_Y, so it moves with them) while `alive()` holds; the overlay loops its 50 frames at
+ * 36 fps. Returns the overlay handle.
+ */
+export function playTypingMark(PIXI, layer, at, alive) {
+  return playOverlay(PIXI, TYPING_OVERLAY.key, { layer, at, wh: TYPING_OVERLAY.wh, durationMs: 0, loop: true, alive });
 }
 
 /**
@@ -358,8 +347,7 @@ function createSession(engine) {
     const plate = new PIXI.Graphics();
     plate.roundRect(-Math.ceil(name.width / 2) - 7, name.y - name.height - 4, Math.ceil(name.width) + 14, Math.ceil(name.height) + 7, 7)
       .fill({ color: 0xfffdf5, alpha: 0.86 }).stroke({ width: 1, color: 0x5fa83a, alpha: 0.7 });
-    const typing = typingMark(PIXI);
-    root.addChild(body, plate, name, typing);
+    root.addChild(body, plate, name);
     root.zIndex = remoteAvatarZ(arrivals++);
     root.eventMode = 'none';
     root.x = p.x;
@@ -375,7 +363,7 @@ function createSession(engine) {
       track: createTrack({ x: p.x, y: p.y, dir: p.dir, anim: p.anim }, performance.now()),
       emote: null,
       emoteUntil: 0,
-      typing,
+      typing: null,
       typingUntil: 0,
       packCheckAt: 0,
       target: { name: p.name, label: p.name, classId: 'pc_remote', sprite: root, artHeight: -PLATE_Y + 4 },
@@ -483,15 +471,20 @@ function createSession(engine) {
       const standing = at.anim === 'stand' || /^idle\d$/.test(at.anim);
       applyAnim(r, r.emote && wall < r.emoteUntil && standing ? r.emote : at.anim);
       const typingNow = wall < r.typingUntil;
-      if (r.typing.visible !== typingNow) {
-        r.typing.visible = typingNow;
+      if (Boolean(r.typing) !== typingNow) {
+        if (typingNow) {
+          // Held until the 5 s pass or the line comes (a missing sheet is not retried each frame).
+          r.typing = playTypingMark(engine.PIXI, r.root, () => ({ x: 0, y: TYPING_Y }), () => Date.now() < r.typingUntil && !r.root.destroyed);
+        } else {
+          r.typing?.stop();
+          r.typing = null;
+        }
         typingChanged = true;
       }
-      if (typingNow) r.typing.dots.forEach((d, i) => { d.alpha = typingDotAlpha(i, wall); });
     }
     if (typingChanged) {
       typingChanged = false;
-      engine.setData?.('realtimeTyping', [...remotes.values()].filter((r) => r.typing.visible).map((r) => r.id).join(','));
+      engine.setData?.('realtimeTyping', [...remotes.values()].filter((r) => r.typing).map((r) => r.id).join(','));
     }
     if (swapped) holdPacks();
   }
@@ -740,6 +733,8 @@ function createSession(engine) {
 
 let session = null;
 
+let typingDemo = null;
+
 export const realtimeFeature = {
   id: REALTIME_FEATURE_ID,
 
@@ -750,6 +745,10 @@ export const realtimeFeature = {
   },
 
   onTick(dtMs, now, engine) {
+    // QA: &typingdemo=1 shows the typing mark over your own Glitch, as the others see it (G892).
+    if (!typingDemo && engine.started && engine.player && engine.param?.('typingdemo') === '1') {
+      typingDemo = playTypingMark(engine.PIXI, engine.fxLayer, () => ({ x: engine.player.x, y: engine.player.y + TYPING_Y }), () => true);
+    }
     if (!session || !engine.started) return;
     if (session.client.state === 'idle') session.start();
     session.tick(performance.now());

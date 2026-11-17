@@ -70,6 +70,8 @@ const SHARP2_VECTOR = ['tower_sign_scaffolding_overlay'];
 const G379_VECTOR = ['overlay_sparkle_powder'];
 // Lane art 2026-11-08 (G387): the eyeballing bubble and the Crown Game Teleporter's overlay.
 const ART_NOV8_VECTOR = ['eyeballing', 'game_teleporter_overlay'];
+// G892: the 25 x 7 typing dots, drawn about 5 device px per stage px on a phone.
+const G892_VECTOR = ['typing_in_location_overlay'];
 /** G448: the overlays.json rows that do. */
 const G448_ART = ['overlay_sneezing_powder', 'focusing_orb_laser_beam', 'shrine_laser_beam_1', 'shrine_laser_beam_2', 'shrine_laser_beam_3', 'smoke_puff', 'proto_puff', 'secret_location_marker', 'icon_giant_love', 'race_winner', 'grabemgood_winner', 'thegreathoghaul_winner', 'game_of_crowns_winner', 'focusing_orb_attack'];
 /** The sharpness audit's first batch (2026-11-02, tests/sharp-rook-hi-overlays.test.js): the rest of the sheets the game shows. */
@@ -325,7 +327,7 @@ describe('G441: the super harvest arc drawn from its SVG frames on dense screens
     // 0.82 MB as built (about 100 KB gzipped), under the 1.3 MB sheet.
     assert.ok(readFileSync(vfile).length < 1_000_000);
     // G446: every 400 px rainbow (and the charades arc); G448: the other FLA overlays the audit found soft.
-    for (const [key, m] of Object.entries(manifest)) assert.equal(Boolean(m.vector), /^rainbow_|^charades_gameover$/.test(key) || G448_MORE.includes(key) || G397_VECTOR.includes(key) || SHARP1_MORE.includes(key) || SHARP2_VECTOR.includes(key) || G379_VECTOR.includes(key) || ART_NOV8_VECTOR.includes(key), key);
+    for (const [key, m] of Object.entries(manifest)) assert.equal(Boolean(m.vector), /^rainbow_|^charades_gameover$/.test(key) || G448_MORE.includes(key) || G397_VECTOR.includes(key) || SHARP1_MORE.includes(key) || SHARP2_VECTOR.includes(key) || G379_VECTOR.includes(key) || ART_NOV8_VECTOR.includes(key) || G892_VECTOR.includes(key), key);
   });
 
   it('vectorDensity: the sheet on a 1x screen, the SVG frames from 1.5 device px per stage px, capped', async () => {

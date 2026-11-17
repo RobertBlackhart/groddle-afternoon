@@ -1783,6 +1783,29 @@
    "sha256": "49139b6ee60248c81eb214e6cf63514f4beb42dfd2bbbc216287bb985cdd365a"
   }
  },
+ "typing_in_location_overlay": {
+  "kind": "sheet",
+  "src": "glitch-overlays/Elip_while_typing.fla",
+  "fla": "06fdcfa364972f4e24d841ffabb55694aa3bdea0",
+  "fps": 36,
+  "frames": 50,
+  "stage": [25, 7],
+  "box": [-1, -1, 26, 9],
+  "file": "typing_in_location_overlay@4x.webp",
+  "scale": 4,
+  "cell": [104, 36],
+  "cols": 22,
+  "order": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 0, 0, 0],
+  "bytes": 5778,
+  "sha256": "52df0052777a9e1f37b4124422dabbef059631a8a2e5073aca964caf3ad880fc",
+  "vector": {
+   "file": "typing_in_location_overlay.frames.json",
+   "frames": 22,
+   "order": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 0, 0, 0],
+   "bytes": 6373,
+   "sha256": "3f74fbe628a9d4f46a4bbdb5f6d79dbe12d330d9770ddee39145feda355fba1c"
+  }
+ },
  "vacuoles": {
   "kind": "sheet",
   "src": "glitch-overlays/vacuoles.fla",

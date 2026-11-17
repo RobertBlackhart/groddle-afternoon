@@ -150,6 +150,12 @@ export const OVERLAYS = Object.freeze({
   trant_harvest: word('trant_harvest'),
   rooked_revive: word('rooked_revive'),
   jellisac_scoop: small('jellisac_scoop'),
+  // G892: the "..." over a Glitch typing a Local line (main.js doLocalChatStart 1680-1694: pc_overlay
+  // typing_in_location_overlay, 40 x 40, delta_y -130, no bubble, 5 s, to everyone else). inc_data_overlays.js
+  // 187 names 2012-09-19/1348101063_7598.swf (not archived); Elip_while_typing.fla is its source: its one
+  // main frame includes "typing_in_location_overlay.as", and its elip symbol was last saved at 1348100477,
+  // ten minutes before that file. The 25 x 7 stage fitted to 40 px: drawn at 4x, with SVG frames.
+  typing_in_location_overlay: { fla: fla('Elip_while_typing'), scale: 4, step: 1, webp: 0.9, vector: true },
   // G395: the games' opening logos (one frame), drawn like the winner splashes.
   race_logo: { fla: fla('race_logo'), scale: 1.5, step: 1, webp: 0.9 },
   grabemgood_logo: { fla: fla('grabemgood_logo'), scale: 1.5, step: 1, webp: 0.9 },

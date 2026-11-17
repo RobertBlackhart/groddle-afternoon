@@ -201,5 +201,5 @@ import { skillBubblesFeature } from './skill-bubbles-feature.js?v=ec937e17'; FEA
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=99f39c2a'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=b29d3998'; FEATURES.push(streetObjectsFeature);
-import { realtimeFeature } from './realtime-feature.js?v=beb7697e'; FEATURES.push(realtimeFeature);
+import { realtimeFeature } from './realtime-feature.js?v=0ffeee41'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=c11d2556'; FEATURES.push(accountBackupFeature);

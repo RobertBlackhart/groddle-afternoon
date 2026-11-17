@@ -7,15 +7,16 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { readZip } from '../tools/avatar-compositor/xfl.mjs';
 
 import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=73e1ae86';
-import { TYPING_EVERY_MS, TYPING_MS, typingCounts, typingDotAlpha } from '../public/js/features/realtime-feature.js?v=beb7697e';
+import { TYPING_EVERY_MS, TYPING_MS, TYPING_OVERLAY, typingCounts } from '../public/js/features/realtime-feature.js?v=0ffeee41';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, commandHelp, imDelayMs, imLine, imText, normalizeImPrefs, parseButlerIm } from '../public/js/butler-im.js?v=44783638';
 import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=493b5ee7';
 import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=9e27379a';
-import { FEATURES } from '../public/js/features/index.js?v=bc030c33';
+import { FEATURES } from '../public/js/features/index.js?v=2da74b7e';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -63,13 +64,28 @@ describe('G366 typing mark: the client', () => {
     assert.equal(typingCounts('hi', false), false, 'a party, group or Butler chat is not the street');
   });
 
-  it('the source numbers: 5 s, once a line, 4 s apart; the dots light in turn', () => {
+  it('the source numbers: 5 s, once a line, 4 s apart; Tiny Speck\'s own dots (G892)', () => {
     assert.equal(TYPING_MS, 5000); // main.js:1682 duration
     assert.equal(TYPING_EVERY_MS, 4000); // ChatArea.as:65 ACTIVITY_TIMER
-    const lit = (t) => [0, 1, 2].filter((i) => typingDotAlpha(i, t) === 1);
-    assert.deepEqual(lit(0), [0]);
-    assert.deepEqual(lit(230), [1]);
-    assert.deepEqual(lit(450), [2]);
+    // main.js 1680-1694: typing_in_location_overlay, width 40, height 40.
+    assert.deepEqual({ ...TYPING_OVERLAY }, { key: 'typing_in_location_overlay', wh: 40 });
+    const row = JSON.parse(read('public/assets/sprites/overlays/overlays-more.json')).typing_in_location_overlay;
+    assert.equal(row.src, 'glitch-overlays/Elip_while_typing.fla');
+    assert.deepEqual(row.stage, [25, 7]);
+    assert.equal(row.frames, 50);
+    assert.ok(row.vector, 'SVG frames for dense screens');
+    const fla = join(root, '..', 'glitch-overlays/Elip_while_typing.fla');
+    const gsjs = join(root, '..', 'glitch-GameServerJS');
+    if (existsSync(fla) && existsSync(join(gsjs, 'main.js'))) {
+      // The FLA's one main frame includes the overlay's own script; the CDN file came after its last save.
+      const doc = readZip(fla).read('DOMDocument.xml').toString('utf8');
+      assert.match(doc, /include "typing_in_location_overlay\.as";/);
+      const saved = Number(doc.match(/href="elip\.xml"[^>]*lastModified="(\d+)"/)[1]);
+      const cdn = Number(readFileSync(join(gsjs, 'inc_data_overlays.js'), 'utf8').match(/'typing_in_location_overlay' : '[^']*\/(\d+)_\d+\.swf'/)[1]);
+      assert.ok(cdn - saved > 0 && cdn - saved < 3600, `${saved} then ${cdn}`);
+    }
+    const src = read('public/js/features/realtime-feature.js');
+    assert.ok(!/new PIXI\.Graphics\(\)[\s\S]{0,200}circle\(0, 0, 2\.6\)/.test(src), 'the drawn dots are gone');
   });
 
   it('the feature sends on input, clears on the line, hides the blocked, and asks the chat tab', () => {
