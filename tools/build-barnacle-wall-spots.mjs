@@ -16,20 +16,48 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { barnacleWallSpots } from '../public/js/barnacle-walls.js?v=6f696ff2';
-import { streetReservedSpots } from '../public/js/street-ecology.js?v=36015f53';
+import {
+  ecologyForStreet,
+  populationForStreet,
+  rockPlacementRequest,
+  setStreetEcologyCatalog,
+  shrinePlacementRequest,
+  streetReservedSpots,
+  treePlacementRequest,
+} from '../public/js/street-ecology.js?v=feeada1a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
 
+/**
+ * PURE: the things the planner seats where a picture shows them (trees, the shrine, rocks: the
+ * `fixed` points of their requests, which planStreetPlacements seats before anything else), as
+ * keep-clear boxes, so a barnacle the rule places never lands on one (the picture's spot wins).
+ */
+export function fixedPictureBoxes(population) {
+  const out = [];
+  for (const req of [treePlacementRequest(population), shrinePlacementRequest(population), rockPlacementRequest(population)]) {
+    for (const f of req?.fixed || []) {
+      if (!Number.isFinite(f?.x) || !Number.isFinite(f?.y)) continue;
+      const w = Number(f.w) || 100;
+      const h = Number(f.h) || 120;
+      out.push({ x: f.x, y: f.y, key: `fixed:${req.key}`, block: { l: f.x - w / 2, r: f.x + w / 2, t: f.y - h, b: f.y } });
+    }
+  }
+  return out;
+}
+
 /** A rule spot's blister variant, in the measured mix (101 of 201 are blister1, 55 blister2, 22 blister4...). */
 export const RULE_VARIANTS = Object.freeze([1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 6, 1, 4, 2, 5]);
 
 export function buildBarnacleWallSpots() {
-  const ecology = read('public/assets/content/street-ecology.json').streets;
+  const catalog = read('public/assets/content/street-ecology.json');
+  const ecology = catalog.streets;
   const snapped = read('public/assets/content/barnacle-spots.json').streets;
   const pictures = read('public/assets/content/barnacle-picture-spots.json').streets;
   const index = read('public/assets/streets/index.json').streets;
+  setStreetEcologyCatalog(catalog);
   const spots = {};
   const short = [];
   const tally = { picture: 0, rule: 0, streets: 0, pictured: 0, tiers: {} };
@@ -39,7 +67,10 @@ export function buildBarnacleWallSpots() {
     const street = read(`public/${index[tsid].file}`);
     const seen = (pictures[tsid]?.spots || []).slice(0, want).map(([x, y, v]) => [x, y, v, 0]);
     // The street's keep-clear spots, less the barnacles' own covers (which this file feeds).
-    const reserved = streetReservedSpots(street).filter((r) => !String(r.key || '').startsWith('node:mortar_barnacle:'));
+    const reserved = [
+      ...streetReservedSpots(street).filter((r) => !String(r.key || '').startsWith('node:mortar_barnacle:')),
+      ...fixedPictureBoxes(populationForStreet(tsid, ecologyForStreet(tsid))),
+    ];
     const rule = barnacleWallSpots(street, want - seen.length, { reserved, keep: seen.map(([x, y]) => ({ x, y })) });
     const rows = [...seen, ...rule.map((s, i) => [s.x, s.y, RULE_VARIANTS[i % RULE_VARIANTS.length], s.tier])]
       .sort((a, b) => a[0] - b[0] || a[1] - b[1]);

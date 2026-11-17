@@ -23,7 +23,7 @@ import {
   vendorHeld,
   vendorPlan,
   vendorWalkAt,
-} from '../public/js/vendor-walk.js?v=05f8eedd';
+} from '../public/js/vendor-walk.js?v=91a76a0d';
 import {
   VENDOR_NPC_ART,
   VENDOR_NPC_CLASSES,
@@ -33,7 +33,7 @@ import {
   vendorStates,
   vendorStrip,
 } from '../public/js/vendor-npcs.js?v=7d756a6d';
-import { walkerSpan } from '../public/js/street-creatures.js?v=d12254a1';
+import { walkerSpan } from '../public/js/street-creatures.js?v=bb82c745';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');

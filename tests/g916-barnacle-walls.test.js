@@ -12,10 +12,11 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=36015f53';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=48daaed2';
+import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=feeada1a';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=8ba3605f';
 import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=6f696ff2';
-import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=e9b3bdb2';
+import { fixedPictureBoxes } from '../tools/build-barnacle-wall-spots.mjs';
+import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=d9c1ad77';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
@@ -79,6 +80,19 @@ describe('#446 barnacles off the floor where no snap shows them', () => {
       }
     }
     assert.ok(n > 30);
+  });
+
+  it('keeps clear of the shrine, trees and rocks a picture places (Naatamo Way\'s shrine stays put)', () => {
+    const shrine = measuredShrineSpot('GIFN3FI0TNU10PS');
+    assert.deepEqual(shrine, { x: 2972, y: 848 }, 'where its picture shows it');
+    for (const { tsid } of fallback) {
+      const boxes = fixedPictureBoxes(populationForStreet(tsid, ecologyForStreet(tsid)));
+      for (const [x, y] of BARNACLE_WALL_SPOTS[tsid]) {
+        for (const { block: b } of boxes) {
+          assert.ok(!(x + 20 > b.l && x - 20 < b.r && y > b.t && y - 44 < b.b), `${tsid} barnacle ${x},${y} on a fixed spot`);
+        }
+      }
+    }
   });
 
   it('is deterministic and keeps away from the spots already measured', () => {
