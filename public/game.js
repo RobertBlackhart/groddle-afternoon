@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=78294ea6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d80f5af8';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d8773bae';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=3465cbc7';
+} from './js/player-save.js?v=a3305a36';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -532,11 +532,12 @@ import {
   endHomeVisit,
   enterHomeInterior,
   leaveHomeInterior,
+  homeMusicFile,
   homeStayAfterArrival,
   imagineHome,
   isHomePlaceTsid,
-} from './js/homes.js?v=631ab6b8';
-import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=e73312c1';
+} from './js/homes.js?v=c9fd92db';
+import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=074170c1';
 import {
   MAIL_COMPANIONS,
   archiveMail,
@@ -25024,11 +25025,18 @@ async function renderHomeScene(room = homeState.room || 'street', opts = {}) {
     label: room === 'interior' ? 'Your House' : 'Your Home Street',
     hubId: 'home',
     hubName: 'Homes',
+    // #474: the home's own music (its style's home street music_file, js/homes.js homeMusicFile).
+    musicFile: homeMusicFile(homeState.style),
     // The scene's own height (the street map's shape and dots: a home street is 972 tall).
     bounds: { l: 0, r: WORLD_W, t: 0, b: Number(bgLayer.worldH) || AUTHORED_VIEW_H },
     platforms: streetPlatforms,
     signposts: [],
   };
+  // #474: every way in (a trip, an instance's or quest room's way back, Teleport Home, the door,
+  // the Tower's elevator, a reload) names the music here, so the last place's never carries in.
+  // The same theme already playing carries on (setAmbientForStreet), so the door does not restart it.
+  if (app?.canvas) app.canvas.dataset.ambientTheme = resolveAmbientTheme(currentStreet);
+  if (state.started && audio.ctx) setAmbientForStreet(currentStreet);
   if (homeScene) {
     const targets = homeScene.spawnTargets() || {};
     homeMailboxTarget = targets.mailbox || null;

@@ -79,7 +79,7 @@ import {
   useScript,
 } from '../teleportation.js?v=e95cf7cb';
 import { energyMax, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { HOME_STREET_TSID } from '../homes.js?v=631ab6b8';
+import { HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
 
 export const TELEPORT_FEATURE_ID = 'teleportation';
 /** inc_teleportation.js 920-937: the cost is a share of your own energy tank (metabolics_get_max_energy). */

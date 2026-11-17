@@ -23,23 +23,39 @@ export const HOME_INTERIOR_TSID = 'RH_HOME_INT';
 
 // The three home styles; no blurbs (Austin, desk STYLECOPY): the Selection Machine had none
 // (homestreet_ticket_dispenser.js description is empty), only "Pick <Style> Style".
+// musicFile: each style's home street music_file key (music_map: HOME_STREET_GRODDLE_WHISTLE
+// 1344474851-Snappy_w_and_wo_whistle_Loop.mp3, HOME_STREET_FIREBOGS 1344474398-Firebogs_Home_
+// Street_Final_1.1.mp3, HOME_STREET_URALIA 1341949924-Musical_Party_Space_Uralia_1.3_plus_3db.mp3),
+// looped as a street's music_file is (location.js 481-482); ambient-music.json streetMusic maps them.
 export const HOME_STYLES = Object.freeze({
   meadow: Object.freeze({
     id: 'meadow',
     label: 'Meadow',
     accent: '#74b957',
+    musicFile: 'HOME_STREET_GRODDLE_WHISTLE',
   }),
   firebog: Object.freeze({
     id: 'firebog',
     label: 'Firebog',
     accent: '#d06d55',
+    musicFile: 'HOME_STREET_FIREBOGS',
   }),
   uralia: Object.freeze({
     id: 'uralia',
     label: 'Uralia',
     accent: '#8667b5',
+    musicFile: 'HOME_STREET_URALIA',
   }),
 });
+
+/**
+ * #474: the music of a home of `style` (its street, its house and its Tower floors alike, so the
+ * door and the elevator never restart it). Every arrival there names it, so whatever played before
+ * (an instance's, a quest room's, the last street's) never carries in.
+ */
+export function homeMusicFile(style) {
+  return (HOME_STYLES[style] || HOME_STYLES.meadow).musicFile;
+}
 
 function finiteInt(value, fallback = 0) {
   const number = Math.floor(Number(value));

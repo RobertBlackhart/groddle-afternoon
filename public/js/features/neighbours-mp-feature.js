@@ -115,8 +115,9 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=5d66e
 import { getPlot, tickGarden } from '../garden.js?v=3f0d93db';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=e4a08fd4';
-import { butlerApi } from './butler-feature.js?v=2c7604e3';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=fe6fdef4';
+import { butlerApi } from './butler-feature.js?v=79f2b0b9';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=40a374f2';
+import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
 import {
   BUTLER_MESSAGE_MAX,
@@ -413,6 +414,8 @@ function createSession(engine, client) {
       walls: [],
       spawn: { x, y: built.groundY },
       returnTo: visit.returnTo,
+      // #474: the visited home's own music (its style's home street music_file), as at your own.
+      musicFile: homeMusicFile(visitorHomeState(visit.view).style),
       // G944: rebuilt in place for the owner's change: the windows open here stay.
       keepWindows: quiet,
     };

@@ -150,7 +150,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=e73312c1';
+import { HOME_MACHINE } from '../home-ticket.js?v=074170c1';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=92a3a070';
 import {
   AK_ANIMALS,
