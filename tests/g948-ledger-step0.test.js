@@ -15,6 +15,9 @@ import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=74819fef';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
+import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons.js?v=0d6b4965';
+import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
+import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=afe01381';
 
 const root = join(import.meta.dirname, '..');
 const economy = () => JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));
@@ -127,5 +130,42 @@ describe('G948 A3: what the Craftybot holds is counted, so its making is never t
     const collected = php('check', [made.after, credited(), save({ inv: { pick: 1, crystallizer: 1 }, features: job() }), 0]);
     assert.deepEqual(collected.reconciled.clamped, none);
     assert.deepEqual(collected.after, counts({ crystallizer: 1, pick: 1 }));
+  });
+});
+
+describe('G948 A11: things set down (gnome, Giant Icons, Note Poles, pumpkins) are counted where they stand', { skip }, () => {
+  /** Put down then picked up again, each in its own write with no budget: nothing is clamped, the ledger never moves. */
+  const roundTrip = (ledger, down, up) => {
+    const a = php('check', [ledger, credited(), down, 0]);
+    assert.deepEqual(a.reconciled.clamped, none);
+    assert.deepEqual(a.after, ledger, 'setting it down is a move');
+    const b = php('check', [a.after, credited(), up, 0]);
+    assert.deepEqual(b.reconciled.clamped, none, 'picking it up is a move, not a gain');
+    assert.deepEqual(b.after, ledger);
+  };
+
+  it('a Garden Gnome placed at home and picked up', () => {
+    roundTrip(counts({ [GNOME_CLASS]: 1 }),
+      save({ features: { 'garden-gnome': { placed: [{ id: 'g1', place: 'street', x: 40, phrases: [] }] } } }),
+      save({ inv: { [GNOME_CLASS]: 1 } }));
+  });
+
+  it('a Giant Icon placed on a street and picked up (the game\'s own placeIcon / pickUpIcon)', () => {
+    const state = createIconState();
+    const inv = { icon_alph: 1 };
+    const put = placeIcon(state, inv, 'alph', 'LA5101HF7F429V5', 300, 500);
+    assert.ok(put.ok);
+    const down = save({ inv: { ...inv }, features: { 'giant-icons': JSON.parse(JSON.stringify({ version: 2, ...state })) } });
+    assert.ok(pickUpIcon(state, inv, 'LA5101HF7F429V5', put.row.id).ok);
+    roundTrip(counts({ icon_alph: 1 }), down, save({ inv: { ...inv }, features: { 'giant-icons': { version: 2, ...state } } }));
+  });
+
+  it('Note Poles at home and Zilloween pumpkins placed in the house', () => {
+    roundTrip(counts({ [NOTE_POLE_CLASS]: 2 }),
+      save({ features: { 'home-street-mp': { poles: [{ id: 1, room: 'street', rx: 10, cfg: {}, note: null }, { id: 2, room: 'house', rx: 20, cfg: {}, note: null }], nextPole: 3 } } }),
+      save({ inv: { [NOTE_POLE_CLASS]: 2 } }));
+    roundTrip(counts({ pumpkin_lit_2: 1 }),
+      save({ features: { seasons: { placed: [{ cls: 'pumpkin_lit_2', tsid: 'home', x: 100 }] } } }),
+      save({ inv: { pumpkin_lit_2: 1 } }));
   });
 });
