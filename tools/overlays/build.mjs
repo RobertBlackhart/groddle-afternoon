@@ -56,11 +56,13 @@ const small = (k, extra = {}) => ({ fla: fla(k), scale: 2, step: 1, webp: 0.85, 
 // The skill-package pictures (pig_pet, trant_harvest and the rest) fade their one
 // clip in and out with a CS4 motion object (motionObjectXML Alpha_Amount 0, 100 at
 // frame 6, 100 at 13, 0 at 19), which the classic-tween reader does not follow:
-// a config with motionAlpha: true applies that curve. They are not built: they are
-// the verb's word (pet, harvest, squeeze ...) and the client draws its word
-// progress bar instead whenever the announcement has word_progress
-// (InLocationAnnouncementOverlay.as 441-442), which every one of those calls
-// sends; only the 40 px bubble other players see uses them.
+// a config with motionAlpha: true applies that curve. Each is the verb's word (pet,
+// milk, squeeze ...). The actor never sees it: the client draws its word progress
+// bar instead whenever the announcement has word_progress (InLocationAnnouncementOverlay.as
+// 441-442), which every one of those calls sends. Everyone else on the street sees it
+// in a 40 px thought bubble over the actor (inc_skill_packages.js 294-314, G892:
+// js/skill-bubbles.js), so those are built, small.
+const word = (k, extra = {}) => small(k, { motionAlpha: true, ...extra });
 // G441/G446: every 400 px rainbow also keeps its frames as SVG (vector), drawn sharp on dense screens.
 const rainbow = (k) => ({ fla: fla(k), scale: 1.25, step: 1, webp: 0.8, vector: true });
 /** letter_A_overlay ... letter_Z_overlay and letter_heart_overlay (glitch-overlays). */
@@ -137,6 +139,17 @@ export const OVERLAYS = Object.freeze({
   // G398: the subway car's two windows (inc_transit.js transit_start_subway_windows 426-460: 275 x 161, 1:1).
   // inc_data_overlays.js 39 names 1296275255_7402.swf (not archived); subway_window_overlay.fla is the CC0 overlay of that name.
   subway_window: { fla: fla('subway_window_overlay'), scale: 1.5, step: 1, webp: 0.85 },
+  // G892: the skill-package words other players see over the actor (40 px bubble; rooked_revive 75,
+  // include/rook.js 128 bubble_width). jellisac_scoop has no motion object: its own tweens fade it in and out.
+  butterfly_milk: word('butterfly_milk'),
+  butterfly_massage: word('butterfly_massage'),
+  pig_pet: word('pig_pet'),
+  pig_nibble: word('pig_nibble'),
+  chicken_squeeze: word('chicken_squeeze'),
+  trant_pet: word('trant_pet'),
+  trant_harvest: word('trant_harvest'),
+  rooked_revive: word('rooked_revive'),
+  jellisac_scoop: small('jellisac_scoop'),
   // G395: the games' opening logos (one frame), drawn like the winner splashes.
   race_logo: { fla: fla('race_logo'), scale: 1.5, step: 1, webp: 0.9 },
   grabemgood_logo: { fla: fla('grabemgood_logo'), scale: 1.5, step: 1, webp: 0.9 },

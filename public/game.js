@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8f59eacd';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=bc030c33';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -9489,18 +9489,16 @@ function playVerbStartAnimation(target, verbId, durationMs = 0) {
   if (ROCK_CATALOG[target.classId] && baseVerb === 'mine') playPickAnimation(target);
 }
 
+/**
+ * A milk or massage holds the Butterfly still for the verb (G892: no squash, bounce, dots or
+ * emoji; the actor sees the word bar, the others the skill-bubbles feature's butterfly_milk /
+ * butterfly_massage word, npc_butterfly.js 736, 813).
+ */
 function playButterflyCareAnimation(target, verbId, durationMs = 0) {
   const spr = target?.sprite;
   if (!spr || spr.destroyed) return;
   const frames = Math.max(42, Math.ceil((Number(durationMs) || 900) / (1000 / 60)));
-  spr._butterflyCare = {
-    verbId,
-    phase: 0,
-    remaining: frames,
-    direction: Math.sign(spr.scale.x) || 1,
-    baseScale: Math.abs(spr.baseScale || spr.scale.y || ENTITY_SCALE.butterfly),
-  };
-  burst(spr.x, spr.y - 30, verbId === 'milk' ? 0x9adcf8 : 0xd7a9ff, verbId === 'milk' ? 12 : 16);
+  spr._butterflyCare = { verbId, remaining: frames };
   if (app?.canvas) app.canvas.dataset.butterflyCareAnimation = `${verbId}:playing`;
 }
 
@@ -10306,9 +10304,6 @@ function executeVerb(target, verbId) {
 
     // anim hooks
     if (!verbAnimationAlreadyStarted) playVerbStartAnimation(target, result.anim);
-    if (result.anim === 'massage' || result.anim === 'milk') {
-      floatText(target.sprite.x, target.sprite.y - 70, result.anim === 'milk' ? '🥛' : '✨', 0xc9a0ff);
-    }
 
     if (result.remove) {
       if (target.classId === 'apple') {
@@ -16491,16 +16486,8 @@ function physics(dt) {
   for (const b of butterflies) {
     if (b._butterflyCare) {
       const care = b._butterflyCare;
-      care.phase += 0.16 * dt;
       care.remaining -= dt;
-      const pulse = 1 + Math.sin(care.phase) * (care.verbId === 'milk' ? 0.11 : 0.07);
-      b.scale.x = care.direction * care.baseScale * pulse;
-      b.scale.y = care.baseScale * (2 - pulse * 0.96);
-      b.rotation = Math.sin(care.phase * 0.7) * (care.verbId === 'milk' ? 0.055 : 0.035);
       if (care.remaining <= 0) {
-        b.scale.x = care.direction * care.baseScale;
-        b.scale.y = care.baseScale;
-        b.rotation = 0;
         if (app?.canvas) app.canvas.dataset.butterflyCareAnimation = `${care.verbId}:complete`;
         delete b._butterflyCare;
       }

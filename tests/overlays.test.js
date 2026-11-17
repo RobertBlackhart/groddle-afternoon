@@ -114,7 +114,8 @@ describe('tools/overlays/build.mjs', () => {
     // 17.7 MB as built (the seven rainbows are 1.25-1.5 MB each at 30 fps, as overlay-art's are; each loads when first
     // shown). Lane art 2026-11-08 added 1.8 MB: the slather splatter, click_to_prime, eyeballing, the teleporter, the subway window.
     // G678 added 0.5 MB: the 27 one-frame letter indicators (about 18 KB each).
-    assert.ok(total < 18_700_000, `${total} bytes in all`);
+    // G892 added 0.24 MB: the nine skill-package words other players see in a bubble (16-64 KB each).
+    assert.ok(total < 18_950_000, `${total} bytes in all`);
   });
 
   it('is not one of the overlay-art keys (two manifests, no overlap)', () => {
@@ -222,11 +223,18 @@ describe('OVERLAY_USES against GSJS', { skip: !hasGsjs && 'glitch-GameServerJS i
     assert.ok(Math.abs((grab.frames * 1000) / manifest.glitchmas_cracker.fps - 3167) < 100);
   });
 
-  it('the skill-package words are not built: word_progress wins over swf_url for the actor (inc_skill_packages.js 256-310)', () => {
+  it('G892: the skill-package words are built for the others\' bubble; the actor sees word_progress (inc_skill_packages.js 256-314)', () => {
     const sp = src('players/inc_skill_packages.js');
     assert.match(sp, /word_progress: args\.word_progress/);
-    for (const key of ['pig_pet', 'pig_nibble', 'chicken_squeeze', 'butterfly_milk', 'butterfly_massage', 'trant_harvest', 'trant_pet', 'jellisac_scoop', 'rooked_revive']) {
-      assert.ok(!manifest[key], key);
+    // The bubble to everyone else: pc_overlay, bubble: true, 40 (bubble_width) x 40, delta_y -110, swf_url of the overlay.
+    assert.match(sp, /bubble: true,\s*width: args\.bubble_width \? args\.bubble_width : 40,\s*height: 40/);
+    assert.match(sp, /this\.location\.apiSendAnnouncementX\(anncx, this\)/);
+    for (const key of ['pig_pet', 'pig_nibble', 'chicken_squeeze', 'butterfly_milk', 'butterfly_massage', 'trant_pet', 'trant_harvest', 'jellisac_scoop', 'rooked_revive']) {
+      const m = manifest[key];
+      assert.ok(m, key);
+      assert.equal(m.frames, 20, key);
+      assert.ok(m.bytes < 70000, `${key} stays small for phones (${m.bytes})`);
+      assert.equal(m.src, `glitch-overlays/${key}.fla`);
     }
     const client = join(root, '..', 'glitch-client/com/tinyspeck/engine/view/gameoverlay/InLocationAnnouncementOverlay.as');
     if (existsSync(client)) assert.match(readFileSync(client, 'utf8'), /\} else if \(annc\.word_progress\) \{\s*_art_view = word_progress_bar;\s*\}\s*else if \(annc\.swf_url\)/);

@@ -62,6 +62,50 @@
    "sha256": "7a20e1485f451f3ed0245568ff29c6f82bfad699f2b9275abb2f34174d559054"
   }
  },
+ "butterfly_massage": {
+  "kind": "sheet",
+  "src": "glitch-overlays/butterfly_massage.fla",
+  "fla": "bfc8de142ffa36489514380b1f432cc9a3f1a62b",
+  "fps": 24,
+  "frames": 20,
+  "stage": [103.7, 27],
+  "box": [-1, -1, 106, 29],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "butterfly_massage@2x.webp",
+  "scale": 2,
+  "cell": [212, 58],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 26346,
+  "sha256": "0a4acec3a3f96b4101bb6ae672f705b2782acdc002e1b9c66ae28320a9ba49f0"
+ },
+ "butterfly_milk": {
+  "kind": "sheet",
+  "src": "glitch-overlays/butterfly_milk.fla",
+  "fla": "d3bd1f696523619a03907b32b20a867428ffbeeb",
+  "fps": 24,
+  "frames": 20,
+  "stage": [57.15, 27.75],
+  "box": [-1, -1, 60, 30],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "butterfly_milk@2x.webp",
+  "scale": 2,
+  "cell": [120, 60],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 16338,
+  "sha256": "5b9d9673b909af0123d82aabfdb9be26b51e7179e2f998adf9261651570e753c"
+ },
  "button_leave_game": {
   "kind": "sheet",
   "src": "glitch-overlays/button_leave_game.fla",
@@ -116,6 +160,28 @@
    "bytes": 242475,
    "sha256": "8eab8910ebc5dfce19eabebc378cf6153af194f7d1874821d0ea052c955b45ae"
   }
+ },
+ "chicken_squeeze": {
+  "kind": "sheet",
+  "src": "glitch-overlays/chicken_squeeze.fla",
+  "fla": "7272e56d2a309d7e278d9c4900bede72f2335065",
+  "fps": 24,
+  "frames": 20,
+  "stage": [95, 30.45],
+  "box": [-1, -1, 97, 33],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "chicken_squeeze@2x.webp",
+  "scale": 2,
+  "cell": [194, 66],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 25488,
+  "sha256": "c151acc45c12fa1dc58c01c9827b248195270cdd019826afd7ccc38bd3545632"
  },
  "click_to_donate": {
   "kind": "sheet",
@@ -509,6 +575,22 @@
   "order": [0],
   "bytes": 39704,
   "sha256": "3965275cb87d71a964a87282bc908ec406cae5e7609f194cd2ae7c350b5a0c72"
+ },
+ "jellisac_scoop": {
+  "kind": "sheet",
+  "src": "glitch-overlays/jellisac_scoop.fla",
+  "fla": "b6ff41b82f6a99a183b92ebf401773b5d66ca6a4",
+  "fps": 30,
+  "frames": 20,
+  "stage": [63.8, 27.15],
+  "box": [-1, -1, 66, 30],
+  "file": "jellisac_scoop@2x.webp",
+  "scale": 2,
+  "cell": [132, 60],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 16446,
+  "sha256": "e1fd48aeee4a6be906218703b9d37038ae5554628eb35c675444b0be7bfa6336"
  },
  "jellisac_splatter_on_shrine": {
   "kind": "sheet",
@@ -1098,6 +1180,50 @@
    "sha256": "01662239f1163c66b72ed1afe76110abc593d38d9b05cdb6fab1073186722959"
   }
  },
+ "pig_nibble": {
+  "kind": "sheet",
+  "src": "glitch-overlays/pig_nibble.fla",
+  "fla": "6a3213a5a5f5719762b1dc21e2feb819b7d72af7",
+  "fps": 24,
+  "frames": 20,
+  "stage": [68, 24.25],
+  "box": [-1, -1, 70, 27],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "pig_nibble@2x.webp",
+  "scale": 2,
+  "cell": [140, 54],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 17538,
+  "sha256": "94fb8321308e136ea48190228ab05ab78080c131efa4fcf84c534b0e95ffe76b"
+ },
+ "pig_pet": {
+  "kind": "sheet",
+  "src": "glitch-overlays/pig_pet.fla",
+  "fla": "8caf3bc676aa5d575e19b51e1d9e9639f6d92b53",
+  "fps": 24,
+  "frames": 20,
+  "stage": [49, 30.4],
+  "box": [-1, -1, 50, 33],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "pig_pet@2x.webp",
+  "scale": 2,
+  "cell": [100, 66],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 12360,
+  "sha256": "695f708a118b8c0612cf8ceef57ffa45c5e36702bdd8b0b1d2f4c860c98e87d2"
+ },
  "race_logo": {
   "kind": "sheet",
   "src": "glitch-overlays/race_logo.fla",
@@ -1321,6 +1447,28 @@
    "sha256": "6b959722f5a17f11b8ee4bd64a5d8d631023e26943d4bdea189be292d81af93f"
   }
  },
+ "rooked_revive": {
+  "kind": "sheet",
+  "src": "glitch-overlays/rooked_revive.fla",
+  "fla": "1cce2352e563e99799d462ebc977598e6b812259",
+  "fps": 24,
+  "frames": 20,
+  "stage": [122.75, 37.85],
+  "box": [-1, -1, 125, 40],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0.01]
+  ],
+  "file": "rooked_revive@2x.webp",
+  "scale": 2,
+  "cell": [250, 80],
+  "cols": 13,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12],
+  "bytes": 65610,
+  "sha256": "9218f6a0d41ddf473937acd28a63f105487dd91eb3b13d955967605b9acabc1a"
+ },
  "shrine_power_up": {
   "kind": "sheet",
   "src": "glitch-overlays/shrine_power_up.fla",
@@ -1500,6 +1648,50 @@
    "bytes": 72129,
    "sha256": "b45da341031dc28ab4ee6d5119f97a0272661b4963110d7b4d2b107e9bf30b40"
   }
+ },
+ "trant_harvest": {
+  "kind": "sheet",
+  "src": "glitch-overlays/trant_harvest.fla",
+  "fla": "d2eff721e14fd8d2a8b1d9dc85d002c7d8052fc0",
+  "fps": 24,
+  "frames": 20,
+  "stage": [92, 26.95],
+  "box": [-1, -1, 94, 29],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0.02]
+  ],
+  "file": "trant_harvest@2x.webp",
+  "scale": 2,
+  "cell": [188, 58],
+  "cols": 13,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12],
+  "bytes": 47788,
+  "sha256": "79491b8f3dc50f7d301232bfdcbdac3f8791a82ec72c6474213be439abc49ee2"
+ },
+ "trant_pet": {
+  "kind": "sheet",
+  "src": "glitch-overlays/trant_pet.fla",
+  "fla": "96d0486be5ec765ecd183411bfa047d9b22e180c",
+  "fps": 24,
+  "frames": 20,
+  "stage": [49, 30.4],
+  "box": [-1, -1, 50, 33],
+  "motionAlpha": [
+   [0, 0],
+   [6, 1],
+   [13, 1],
+   [19, 0]
+  ],
+  "file": "trant_pet@2x.webp",
+  "scale": 2,
+  "cell": [100, 66],
+  "cols": 7,
+  "order": [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 5, 4, 3, 2, 1, 0],
+  "bytes": 12476,
+  "sha256": "d2dc3ccf663a86fac65dd6d115c1812979bf827591b099d592e7cf04fb5ddd13"
  },
  "twelve_sided_die": {
   "kind": "sheet",

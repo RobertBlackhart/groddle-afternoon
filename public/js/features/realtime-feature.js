@@ -58,7 +58,7 @@
 
 import { chatBubbleText } from '../ui/chat-input.js?v=4cde830b';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
-import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=2663e2d3';
+import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=73e1ae86';
 import { ANIM_FPS, EMOTION_MS, animForState, crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { redrawFrame } from '../avatar-pack.js?v=65324246';
 import { movedLine } from '../admin-teleport.js?v=fa56e8df';

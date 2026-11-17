@@ -669,24 +669,13 @@ function extraWalk(engine, entity) {
 }
 
 /**
- * game.js plays a massage or milk on a Butterfly's sprite (playButterflyCareAnimation) but steps
- * the pulse only for street Butterflies: a Butterfly of yours steps it here, holding still.
+ * game.js holds a Butterfly still for a massage or milk (playButterflyCareAnimation) but steps
+ * the hold only for street Butterflies: a Butterfly of yours steps it here (G892: no pulse).
  */
 function stepButterflyCare(spr, dtMs) {
   const care = spr._butterflyCare;
-  const dt = dtMs / 16.67;
-  care.phase += 0.16 * dt;
-  care.remaining -= dt;
-  const pulse = 1 + Math.sin(care.phase) * (care.verbId === 'milk' ? 0.11 : 0.07);
-  spr.scale.x = care.direction * care.baseScale * pulse;
-  spr.scale.y = care.baseScale * (2 - pulse * 0.96);
-  spr.rotation = Math.sin(care.phase * 0.7) * (care.verbId === 'milk' ? 0.055 : 0.035);
-  if (care.remaining <= 0) {
-    spr.scale.x = care.direction * care.baseScale;
-    spr.scale.y = care.baseScale;
-    spr.rotation = 0;
-    delete spr._butterflyCare;
-  }
+  care.remaining -= dtMs / 16.67;
+  if (care.remaining <= 0) delete spr._butterflyCare;
 }
 
 /** Walking frames play while it walks; standing, it holds the first one (a Butterfly flaps on). */

@@ -13,7 +13,7 @@ import { loadFla } from '../tools/overlay-art/xfl-svg.mjs';
 import { SHRINE_SHEETS, shrineClassFor, shrineRegionForHub, shrineSheet, shrineVariantFor } from '../public/js/shrine-variants.js?v=7f11c97d';
 import { checkVariants, variantFiles } from '../tools/shrine-variants/build.mjs';
 import { SLATHER_VERB, SPLATTER_STAGE_SIDE, splatterDy, slatherVerb } from '../public/js/features/quest-verbs-feature.js?v=141a1290';
-import { OVERLAY_EMOTES, EMOTES } from '../public/js/realtime-client.js?v=2663e2d3';
+import { OVERLAY_EMOTES, EMOTES } from '../public/js/realtime-client.js?v=73e1ae86';
 import {
   GAME_TELEPORTER_DECO,
   GAME_TELEPORTER_PRICE,
@@ -151,7 +151,9 @@ describe('G387 Camera Mode\'s eyeballing bubble (main.js 6853-6868, 6896-6899)',
     assert.ok(OVERLAY_EMOTES.slice(2).every((e) => /^letter_/.test(e)));
     for (const e of OVERLAY_EMOTES) assert.ok(!EMOTES.includes(e));
     const client = read('js/realtime-client.js');
-    assert.match(client, /if \(p && OVERLAY_EMOTES\.includes\(msg\.e\)\) \{\s+emit\('overlay', \{ id: p\.id, e: msg\.e, player: p \}\);\s+return;\s+\}/);
+    // G892: overlayWord adds the skill-package words (sp_<overlay>_<seconds>, tests/skill-bubbles.test.js).
+    assert.match(client, /const overlayWord = \(e\) => OVERLAY_EMOTES\.includes\(e\) \|\| SKILL_BUBBLE_WORD\.test\(String\(e \|\| ''\)\);/);
+    assert.match(client, /if \(p && overlayWord\(msg\.e\)\) \{\s+emit\('overlay', \{ id: p\.id, e: msg\.e, player: p \}\);\s+return;\s+\}/);
     const cam = read('js/features/camera-mode-feature.js');
     assert.match(cam, /client\?\.emote\?\.\(on \? 'eyeballing' : 'eyeballing_done'\)/);
     assert.match(cam, /eyeballOff = client\.on\('overlay', \(msg\) => onEyeballing\(engine, msg\)\);/);

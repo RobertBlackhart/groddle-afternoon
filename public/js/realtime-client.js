@@ -72,6 +72,12 @@ export const EMOTES = Object.freeze(['happy', 'surprise', 'angry']);
 export const LETTER_WORD_OFF = 'letter_off';
 export const LETTER_WORDS = Object.freeze([...'abcdefghijklmnopqrstuvwxyz', 'heart'].map((c) => `letter_${c}`).concat(LETTER_WORD_OFF));
 export const OVERLAY_EMOTES = Object.freeze(['eyeballing', 'eyeballing_done', ...LETTER_WORDS]);
+/**
+ * G892: a skill-package word over a Glitch at work, sp_<overlay>_<seconds> (js/skill-bubbles.js
+ * skillBubbleWord; players/inc_skill_packages.js 294-314). Also an 'overlay' event, never 'emoted'.
+ */
+export const SKILL_BUBBLE_WORD = /^sp_[a-z_]{1,19}_\d{1,2}$/;
+const overlayWord = (e) => OVERLAY_EMOTES.includes(e) || SKILL_BUBBLE_WORD.test(String(e || ''));
 
 /** The wire word for a letter ('A'..'Z' or 'heart'), or letter_off. */
 export function letterWord(letter) {
@@ -412,7 +418,7 @@ export function createRealtimeClient({
       case 'emoted': {
         if (awaitingStreet) return;
         const p = players.get(Number(msg.id));
-        if (p && OVERLAY_EMOTES.includes(msg.e)) {
+        if (p && overlayWord(msg.e)) {
           emit('overlay', { id: p.id, e: msg.e, player: p });
           return;
         }
@@ -583,7 +589,7 @@ export function createRealtimeClient({
     },
 
     emote(e) {
-      if ((!EMOTES.includes(e) && !OVERLAY_EMOTES.includes(e)) || !want || !street) return false;
+      if ((!EMOTES.includes(e) && !overlayWord(e)) || !want || !street) return false;
       return send({ t: 'emote', e });
     },
   };
