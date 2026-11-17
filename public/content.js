@@ -35,7 +35,7 @@ import {
   GARDEN_FERTILIZE_MS,
   fertilizeCheck,
   fertilizePlot,
-} from './js/garden.js?v=fdd42396';
+} from './js/garden.js?v=97697984';
 import { firstWorkingTool, HOE_TOOLS, WATERING_CAN_TOOLS } from './js/tools.js?v=8516a0c3';
 import { miningGemHint } from './js/gem-hints.js?v=4b65f7ac';
 import {

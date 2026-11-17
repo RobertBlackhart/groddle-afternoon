@@ -126,6 +126,14 @@ describe('the site\'s side of a credit (LedgerCredits)', { skip }, () => {
     assert.deepEqual(ev, { id: 'cr-t-0a1b2c3d-1z', user: 7, why: 'take', got: counts({ cherry: 12 }), at: 1_800_000_000 });
   });
 
+  it('reads a garden event (G940, #469: crops of a bed the layout lost, owed by mail), its id the server\'s cr-g-<16 hex>', () => {
+    const ev = php('event', [{ id: 'cr-g-0123456789abcdef', user: 7, why: 'garden', got: { items: [{ c: 'rubeweed', n: 6 }], currants: 0 }, at: 1_800_000_000 }]);
+    assert.deepEqual(ev, { id: 'cr-g-0123456789abcdef', user: 7, why: 'garden', got: counts({ rubeweed: 6 }), at: 1_800_000_000 });
+    // A garden event is never a receipt: it goes as letters (LedgerCredits::record, GardenPayout::mail).
+    const src = readFileSync(join(SITE_DIR, 'src/LedgerCredits.php'), 'utf8');
+    assert.match(src, /if \(\$ev\['why'\] === 'garden'\) \{\n\s+\$letters = GardenPayout::mail\(\$db, \$user, \$ev\['got'\]\['items'\], GardenPayout::BED_TEXT, \$stamp\);[\s\S]{0,400}continue;/);
+  });
+
   it('refuses what is not an event', () => {
     const good = { id: 'cr-q-0a1b2c3d-1', user: 7, why: 'quoin', got: { items: [], currants: 3 } };
     for (const bad of [

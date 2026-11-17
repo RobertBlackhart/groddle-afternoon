@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=e61566f3';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=37d58385';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5b20c4f8';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2ea6db13';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -637,6 +637,7 @@ import {
   createGarden,
   fitGardenToBed,
   streetGardenBeds,
+  harvestLostBeds,
   tickGarden,
   plantPlot,
   waterPlot,
@@ -661,7 +662,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=fdd42396';
+} from './js/garden.js?v=97697984';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -885,7 +886,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=4c734fae';
+} from './js/vendor.js?v=21f7901d';
 import {
   animalAnchorX,
   animalAnchorY,
@@ -1085,7 +1086,7 @@ import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-s
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=af3a9175';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=4577c2ee';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=c45ab338';
@@ -25660,6 +25661,8 @@ async function enterStreet(tsid, opts = {}) {
   streetGardenBoxBeds(data, currentStreetPopulation).forEach((bed) => {
     spawnGarden({ x: bed.x, y: bed.y, cols: bed.cols, rows: bed.rows, gardenType: bed.gardenType, bed: bed.bed, style: 'none' });
   });
+  // G940 (#469): solo, a saved bed this street no longer has (its old herb bed) is harvested into the pack once.
+  if (GAME_MODE !== 'multiplayer') harvestLostStreetBeds();
   spawnMineRocks(currentStreetPopulation.rockClasses, rockSpawnPlan(currentStreetPopulation, placement('rocks'), data.tsid));
 
   if (player) {
@@ -31279,6 +31282,23 @@ function gardenPiece(name, scale = GARDEN_SCALE) {
 const GARDEN_BACK_ROW_REACH = 24;
 
 /**
+ * G940 (#469): the current street's saved beds it no longer draws (garden.js harvestLostBeds), their
+ * crops into the pack, with a line saying so. Solo only: online the realtime server mails them.
+ */
+function harvestLostStreetBeds() {
+  const state = streetWorldState();
+  if (!state?.gardens) return;
+  const keep = new Set(gardens.filter((g) => !g.state?.detached).map((g) => g.state?.garden?.bed || g.state?.garden?.gardenType || 'default'));
+  const { items, beds } = harvestLostBeds(state.gardens, keep);
+  if (!beds.length) return;
+  const got = Object.entries(items);
+  for (const [id, n] of got) addItem(inv, id, n);
+  if (app?.canvas) app.canvas.dataset.lostBeds = `${beds.join(',')}:${got.map(([id, n]) => `${id}=${n}`).join(',')}`;
+  if (got.length) toast(`The garden here is laid out as it was in 2012. What grew in the old bed is in your pack: ${got.map(([id, n]) => `${n} ${ITEM_LABELS[id] || id}`).join(', ')}.`, 6000);
+  savePlayerState();
+}
+
+/**
  * Place a multi-plot crop/herb garden on the street with individually
  * clickable plots in **world coordinates** (GardenPlotView, one per plot).
  *
@@ -34735,7 +34755,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=5cb94243').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=750bf77d').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

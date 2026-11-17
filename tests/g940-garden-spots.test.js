@@ -24,7 +24,7 @@ import {
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
 import { CROP_GARDEN_STREETS_2012, gardenBedWidth, isCropGardenStreet, measuredGardenBeds, measuredGardenVendor } from '../public/js/garden-beds.js?v=831b1d97';
-import { BED_KEY_RE, bedKind, streetGardenBeds } from '../public/js/garden.js?v=fdd42396';
+import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=97697984';
 import { bedKey, parsePlotId, plotId } from '../public/js/shared-gardens.js?v=464472e5';
 import { VENDOR_PLACEMENT_KEY, vendorNpcPlacementGroups, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
 import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=eceb02ed';
@@ -141,6 +141,23 @@ describe('G940: street gardens where the 2012 snaps show them', () => {
     assert.equal(bedKind('default7'), 'default');
     const world = normalizeWorldSnapshot({ streets: { [MIDDLE_ARBOR]: { gardens: { default8: { gardenType: 'default', cols: 3, rows: 3, plots: {} } } } } });
     assert.equal(world.streets[MIDDLE_ARBOR].gardens.default8.cols, 3);
+  });
+
+  it('solo: a saved bed the street no longer has (its old herb bed) is harvested into the pack once, the full crop', () => {
+    const herb = createGarden({ gardenType: 'herb', cols: 3, rows: 2 });
+    Object.assign(herb.plots['1-1'], { state: 'seeds', seed: 'herb_seed_rubeweed' });
+    Object.assign(herb.plots['2-1'], { state: 'crop', seed: 'herb_seed_rubeweed' });
+    Object.assign(herb.plots['3-1'], { state: 'dirty' });
+    const crop = createGarden({ cols: 4, rows: 2 });
+    Object.assign(crop.plots['1-1'], { state: 'shoots', seed: 'seed_spinach' });
+    const gardens = { default: crop, herb, notabed: { plots: {} } };
+    const out = harvestLostBeds(gardens, new Set(['default', 'default2']));
+    assert.deepEqual(out, { items: { [SEED_CATALOG.herb_seed_rubeweed.cropId]: 2 * SEED_CATALOG.herb_seed_rubeweed.produces }, beds: ['herb'] });
+    assert.deepEqual(Object.keys(gardens).sort(), ['default', 'notabed']);
+    assert.deepEqual(harvestLostBeds(gardens, new Set(['default'])), { items: {}, beds: [] }, 'once');
+    const game = read('public/game.js');
+    assert.match(game, /if \(GAME_MODE !== 'multiplayer'\) harvestLostStreetBeds\(\);/);
+    assert.match(game, /for \(const \[id, n\] of got\) addItem\(inv, id, n\);/);
   });
 
   it('the scarecrow stands where the snap shows it, at its index, seated late', () => {

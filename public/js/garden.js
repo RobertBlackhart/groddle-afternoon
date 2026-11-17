@@ -1128,6 +1128,32 @@ export function streetGardenBeds(tsid, points, population = {}) {
 }
 
 /**
+ * G940 (report #469): a solo save's beds a street no longer has (the made-up herb bed on the 2012
+ * crop-garden streets, gone since the beds follow the 2012 snaps) are harvested into the pack, once:
+ * every plot with seeds, shoots or a crop pays its crop's full produces_count (the multiplayer
+ * payout's rule, groddle-afternoon-site GardenPayout.php, Austin 2026-11-07), and the bed leaves the
+ * street's state. Online the realtime server mails them (gardens_payout.go). Mutates `gardens`
+ * (a street's state gardens: { [bed key]: garden }); `keep` is the street's bed keys now.
+ * @returns {{ items: Record<string, number>, beds: string[] }}
+ */
+export function harvestLostBeds(gardens, keep) {
+  const items = {};
+  const beds = [];
+  if (!gardens || typeof gardens !== 'object') return { items, beds };
+  for (const key of Object.keys(gardens)) {
+    if (keep.has(key) || !BED_KEY_RE.test(key)) continue;
+    for (const plot of Object.values(gardens[key]?.plots || {})) {
+      const seed = SEED_CATALOG[plot?.seed];
+      if (!seed || !(plot.state === 'seeds' || plot.state === 'shoots' || plot.state === 'crop') || !(seed.produces > 0)) continue;
+      items[seed.cropId] = (items[seed.cropId] || 0) + seed.produces;
+    }
+    delete gardens[key];
+    beds.push(key);
+  }
+  return { items, beds };
+}
+
+/**
  * Report #252: a saved street bed laid out again at another size (the Herb Gardens beds moved into
  * their planter boxes: herb2 from four plots by two to a 3x4 box). New plots come in empty; a plot
  * past the new size goes only when it is bare (clean, nothing sown), and one holding anything keeps

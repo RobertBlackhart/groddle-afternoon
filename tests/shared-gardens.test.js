@@ -10,11 +10,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=fdd42396';
+import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=97697984';
 import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=5206612f';
-import { FEATURES } from '../public/js/features/index.js?v=5b20c4f8';
-import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=6f765634';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=3f5274cc';
+import { FEATURES } from '../public/js/features/index.js?v=2ea6db13';
+import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=ea711e65';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
@@ -69,8 +69,11 @@ describe('the server\'s data and growth agree with the game', { skip: skipWithou
     assert.deepEqual(Object.keys(data.streets).sort(), [...SHARED_GARDEN_STREETS].sort());
     const plots = Object.values(data.streets).flat().reduce((n, b) => n + b[1] * b[2], 0);
     // Report #252: the three Herb Gardens streets' 20 planter boxes hold 117 plots (their old two planned beds 42).
-    assert.equal(Object.values(data.streets).flat().length, 34, '34 beds');
-    assert.equal(plots, 215, '215 plots');
+    // G940: every Garden the other streets' location files name, the snapped ones measured (Community
+    // Gardens 10 beds and 62 plots, Middle Arbor 8 and 63, Mmumawwa Wala 4 and 27, Egret Taun Towers
+    // Basement 3 and 36; Kipacre Greens 7 and Veldt Balm 6 planned 4 by 2), Hechey Track's own two (14).
+    assert.equal(Object.values(data.streets).flat().length, 60, '60 beds');
+    assert.equal(plots, 423, '423 plots');
     for (const [id, s] of Object.entries(SEED_CATALOG)) {
       assert.deepEqual(data.rules.seeds[id], [s.gardenType === 'herb' ? 'herb' : 'default', s.grow1Ms, s.grow2Ms, s.cropId, s.produces], id);
       assert.deepEqual(data.rules.legacy.seeds[id], [Math.max(4000, s.grow1H * 8000), Math.max(4000, s.grow2H * 8000)], id);
@@ -348,6 +351,14 @@ describe('the one-time payout by mail (site GardenPayout.php)', { skip: !HAS_SIT
     assert.deepEqual(streets, [COMMUNITY]);
   });
 
+  it('G940 (#469): a bed the layout lost pays by mail too, its own plain letter, in letters of at most 999', () => {
+    const out = php(`echo json_encode(['text' => P::BED_TEXT, 'subject' => P::BED_SUBJECT, 'letters' => P::letters(['rubeweed' => 1000, 'purple_flower' => 2, 'none' => 0])]);`);
+    assert.ok(out.text.length <= 300 && !/[\u2014\u2013]/.test(out.text));
+    assert.match(out.text, /laid out as they were in 2012/);
+    assert.equal(out.subject, 'Your garden crops');
+    assert.deepEqual(out.letters, [['purple_flower', 2], ['rubeweed', 999], ['rubeweed', 1]]);
+  });
+
   it('the letter is plain, short and has no em-dash', () => {
     const text = php('echo json_encode(P::TEXT);');
     assert.ok(text.length <= 300);
@@ -440,7 +451,7 @@ function rig({ street = COMMUNITY }) {
 
 describe('report 188: the Herb Gardens streets grow herbs in both beds', () => {
   it('streetGardenBed gives two herb beds there (herb2, herb) and crop then herb everywhere else', async () => {
-    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=fdd42396');
+    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=97697984');
     assert.deepEqual([...HERB_GARDEN_STREETS].sort(), ['GA95U14319524O9', 'GA97L62229522GS', 'GA99U5PI39524GN']);
     for (const tsid of HERB_GARDEN_STREETS) {
       assert.deepEqual(streetGardenBed(tsid, 0), { bed: 'herb2', gardenType: 'herb', cols: 4 });

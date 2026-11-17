@@ -23,12 +23,12 @@ import { GARDEN_SPEEDUP,
   tickGarden,
   gardenActionProfile,
   gardenTalkbackKey,
-} from '../public/js/garden.js?v=fdd42396';
-import { getVerbsFor, runVerb } from '../public/content.js?v=e61566f3';
+} from '../public/js/garden.js?v=97697984';
+import { getVerbsFor, runVerb } from '../public/content.js?v=37d58385';
 import { actionDurationFor, actionLabelFor } from '../public/js/action-timing.js?v=b6ce9561';
 import { gardenPlotEvents } from '../public/js/quest-offers.js?v=8a52da9f';
-import { applyTendAct, normalizeTendActs, plotsSnapshot, tendAct, tendedText } from '../public/js/neighbours-mp.js?v=c5210a69';
-import { guanoOver, plotHit } from '../public/js/features/garden-guano-feature.js?v=42beb9e8';
+import { applyTendAct, normalizeTendActs, plotsSnapshot, tendAct, tendedText } from '../public/js/neighbours-mp.js?v=dc8ab937';
+import { guanoOver, plotHit } from '../public/js/features/garden-guano-feature.js?v=65a41b56';
 
 const NOW = 1_000_000_000;
 

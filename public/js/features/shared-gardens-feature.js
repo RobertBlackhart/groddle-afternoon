@@ -64,7 +64,7 @@ import {
   hasWateringCan,
   pickSeedToPlant,
   seedFitsGarden,
-} from '../garden.js?v=fdd42396';
+} from '../garden.js?v=97697984';
 import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=8516a0c3';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';

@@ -110,8 +110,10 @@ describe('G570: the site titles its letters from nobody (src/LedgerMail.php subj
       'other' => M::subject(['from_id' => 0, 'text' => 'Something else']),
       'player' => M::subject(['from_id' => 7, 'text' => P::TEXT]),
       'subject' => P::SUBJECT,
+      'bed' => M::subject(['from_id' => 0, 'text' => P::BED_TEXT]),
     ]);`);
-    assert.deepEqual(out, { payout: 'Your garden crops', other: null, player: null, subject: 'Your garden crops' });
+    // G940: the crops of a bed the shared gardens' layout lost come under the same title.
+    assert.deepEqual(out, { payout: 'Your garden crops', other: null, player: null, subject: 'Your garden crops', bed: 'Your garden crops' });
     // G564: the street Patches payout's two letters.
     const patches = php(`echo json_encode([
       'refund' => M::subject(['from_id' => 0, 'text' => Q::REFUND_TEXT]),
