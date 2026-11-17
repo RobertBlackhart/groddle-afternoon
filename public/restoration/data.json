@@ -2814,9 +2814,39 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2494,
+  "commits": 2501,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "The region map's You star walks along your street as you do, and the streets you are not on are fainter, as in Glitch"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "On an upright phone, a signpost high on a street comes out from under the top bar and the street's name"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The Qurazy banner lands under the route card and the quest step line, not over them, on an upright phone"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "On an upright phone, Update ready waits in the Menu (a dot on Menu) instead of pushing the Menu off the top bar"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Reading a report, the Reports window drops \"Write to us\" from its header so the title has room"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "On an upright phone, full-screen layers (the award, an upgrade's card, the Map's backdrop, Reports) reach the right edge"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2906,39 +2936,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "The Rook badge's stun meter is Tiny Speck's own star arc, flashing and climbing as the client did"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "The dots over another player typing in Local are Tiny Speck's own typing overlay, not a drawn bubble"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Other players see Tiny Speck's own pet, nibble, squeeze, milk, massage, harvest, scoop and revive words over you; Butterfly care drops its emoji and dots"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "A teleport or summons plays your Glitch's own hit1 for a second, not a lavender beam"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Winter Walk's caption stands inside its hollow tree arch, with curling plants in the snow"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "new",
-    "text": "Winter Walk's hollow tree arch and curling plants, made for Groddle"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The restoration report's Gone for good list shows what can't come back"
    }
   ]
  },
- "tests": 1089,
- "generatedAt": "2026-11-16"
+ "tests": 1091,
+ "generatedAt": "2026-11-17"
 }
