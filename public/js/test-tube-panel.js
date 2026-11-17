@@ -29,7 +29,7 @@ import {
   setSlotCount,
   slotMax,
   slotsToInputs,
-} from './test-tube.js?v=be14084b';
+} from './test-tube.js?v=13b12081';
 
 /** MakingRecipeUI.as 64. */
 export const TRY_TILE_LABEL = 'Try to make something new';

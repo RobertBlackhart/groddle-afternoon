@@ -1541,6 +1541,16 @@ export function formatCraftResultLine(result) {
   return `You made ${name} (x${n})${meta.length ? ` ${meta.join(', ')}` : ''}.`;
 }
 
+/**
+ * MakingCompleteUI.as 146-169 getOutputText: "You made 2 Curries!", each output
+ * counted (count x units) with the item's own plural, never an added s (#466).
+ */
+export function madeHeadline(recipe, count) {
+  const outputs = (recipe?.outputs || []).filter((o) => o?.classTsid);
+  if (!outputs.length) return `You made ${recipe?.name || 'something'}!`;
+  return `You made ${prettyList(outputs.map((o) => pluralizeItem((Number(o.qty) || 1) * count, o.classTsid)), ', and ')}!`;
+}
+
 /** Build the shared result payload after one or more units have been crafted. */
 export function buildCraftBatchResult(inv, pc, recipeKey, made, qtyRequested = made, opts = {}) {
   ensureMakingItems();
@@ -1607,9 +1617,7 @@ export function buildCraftBatchResult(inv, pc, recipeKey, made, qtyRequested = m
     activityLine,
     headline: grinder
       ? `You crushed ${pluralizeItem(crushed, input?.classTsid)}!`
-      : count === 1
-      ? `You made ${recipe.name}!`
-      : `You made ${count} ${recipe.name}${recipe.name.endsWith('s') ? '' : 's'}!`,
+      : madeHeadline(recipe, count),
   };
 }
 

@@ -38,7 +38,8 @@ import {
   starterToolsInventory,
   starterCraftIngredients,
   pluralizeItem,
-} from '../public/js/making.js?v=66c4f499';
+  madeHeadline,
+} from '../public/js/making.js?v=819002b7';
 import { outputIconsHtml, outputsPhrase, recipeOutputRows } from '../public/js/ui/recipe-outputs.js?v=610c067f';
 import {
   createInventory,
@@ -121,6 +122,17 @@ describe('making (GSJS recipes + tools)', () => {
   before(async () => {
     await loadRecipeCatalogFromFile(recipesPath);
     ensureMakingItems();
+  });
+
+  it('the make result headline uses the item plural, never an added s (#466)', () => {
+    const curry = Object.values(RECIPE_CATALOG).find((r) => r.outputs?.length === 1 && r.outputs[0].classTsid === 'curry');
+    assert.ok(curry, 'a Curry recipe');
+    assert.equal(madeHeadline(curry, 2), 'You made 2 Curries!');
+    assert.equal(madeHeadline(curry, 1), 'You made 1 Curry!');
+    assert.equal(
+      madeHeadline({ name: 'Two', outputs: [{ classTsid: 'curry', qty: 2 }, { classTsid: 'flour', qty: 1 }] }, 3),
+      `You made 6 Curries, and ${pluralizeItem(3, 'flour')}!`
+    );
   });
 
   it('loads GSJS-derived catalog with required tools', () => {
@@ -463,7 +475,7 @@ describe('UI wiring', () => {
 
 describe('quest-taught recipes (learnt 3)', () => {
   it('Batterfly Bounty teaches the Batterfly Bounty Booster Bar', async () => {
-    const { RECIPE_CATALOG, canCraft, searchRecipes, recipeKnown, loadRecipeCatalog } = await import('../public/js/making.js?v=66c4f499');
+    const { RECIPE_CATALOG, canCraft, searchRecipes, recipeKnown, loadRecipeCatalog } = await import('../public/js/making.js?v=819002b7');
     if (typeof loadRecipeCatalog === 'function') await loadRecipeCatalog?.();
     const bar = Object.values(RECIPE_CATALOG).find((r) => r.id === '305');
     assert.ok(bar, 'recipe 305 imported');

@@ -28,7 +28,7 @@ import {
   loadRecipeCatalogFromFile,
   recipeToolFor,
   recipeToolInUse,
-} from '../public/js/making.js?v=66c4f499';
+} from '../public/js/making.js?v=819002b7';
 import { ITEM_CATALOG, countItem, createInventory, isToolItem } from '../public/js/inventory.js?v=f49c8998';
 import {
   GRINDER_TOOLS,
