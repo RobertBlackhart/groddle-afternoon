@@ -277,7 +277,7 @@ describe('icon conversations (G202: the shared record)', () => {
   });
 
   it('a version 1 save hands its talked list to the record once, in either restore order', async () => {
-    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=a2ebfe08');
+    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=51417fd2');
     const old = { version: 1, talked: ['icon_humbaba_1', 'icon_alph_1'] };
     const saved = { completed: { npc_chicken: { chickens_cautionary_tales_1: 700 } } };
     const t0 = Date.now();
@@ -316,7 +316,7 @@ describe('imagination cards', () => {
 
 describe('giant icons feature', () => {
   it('offers the source pack verbs and iconizes through the engine', async () => {
-    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=a2ebfe08');
+    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=51417fd2');
     giantIconsFeature._reset();
     const events = [];
     const granted = [];
@@ -349,7 +349,7 @@ describe('giant icons feature', () => {
   });
 
   it('Caress adds mood up to the real limit and never takes any away; the popup says what landed (ticket 48)', async () => {
-    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=a2ebfe08');
+    const { giantIconsFeature } = await import('../public/js/features/giant-icons-feature.js?v=51417fd2');
     giantIconsFeature._reset();
     const toasts = [];
     const engine = {
@@ -369,6 +369,41 @@ describe('giant icons feature', () => {
     giantIconsFeature.runPackVerb('emblem_lem', 'caress', engine);
     assert.equal(engine.pc.mood, 200);
     assert.equal(toasts.at(-1), 'You caressed an Emblem of Lem.');
+  });
+
+  it('online, Place keeps the Icon in the pack on a street others share (M20)', async () => {
+    const { giantIconsFeature, PLACE_TEXT } = await import('../public/js/features/giant-icons-feature.js?v=51417fd2');
+    giantIconsFeature._reset();
+    const said = [];
+    const offered = [];
+    const engine = {
+      mode: 'multiplayer',
+      inv: { icon_alph: 1 },
+      player: { x: 0, y: 0, scale: { x: 1 } },
+      pc: { level: 12, currants: 0, mood: 10, energy: 10, xp: 0, imagination: 0, imaginationUpgrades: [] },
+      learnedSkills: [], streetTsid: 'GLI2V0UN7RD1T2J', setData() {}, pushActivity: (m) => said.push(m), toast() {},
+      refreshPack() {}, updateHud() {}, save() {}, param: () => null, playSound() {}, achievement() {}, grantAchievement() {},
+      transientInstance: () => false, homeContext: () => ({ inHome: false }), offerQuestDialogue: (d) => offered.push(d),
+    };
+    giantIconsFeature.init(engine);
+    const place = () => giantIconsFeature.packVerbs('icon_alph', engine).find((v) => v.id === 'place');
+    assert.equal(place().enabled, false);
+    assert.equal(place().reason, PLACE_TEXT.shared);
+    assert.equal(giantIconsFeature.runPackVerb('icon_alph', 'place', engine), true);
+    assert.deepEqual(offered, [], 'no "picked up by anyone" prompt');
+    assert.equal(engine.inv.icon_alph, 1, 'still in the pack');
+    assert.equal(said.at(-1), PLACE_TEXT.shared);
+    // Solo, and on a place Glitch kept to one player, the source's prompt still comes.
+    engine.streetTsid = 'GA952QGCH3D31E2';
+    assert.equal(place().enabled, true);
+    engine.streetTsid = 'GLI2V0UN7RD1T2J';
+    engine.mode = 'solo';
+    assert.equal(place().enabled, true);
+    giantIconsFeature.runPackVerb('icon_alph', 'place', engine);
+    assert.match(offered[0].beats[0].text, /picked up by anyone/);
+    // Indoors stays the source's refusal.
+    engine.homeContext = () => ({ inHome: true });
+    assert.equal(place().reason, PLACE_TEXT.notStreet);
   });
 
   it('a placed Icon\'s own menu has no Talk to: the conversations feature adds it while one is offered', () => {

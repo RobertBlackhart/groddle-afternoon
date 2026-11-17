@@ -74,6 +74,7 @@ import { energyMax, metabolicGain, moodMax } from '../metabolics.js?v=1383e6fd';
 import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted, toldRecord } from '../conversations.js?v=7cbdfea4';
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { publicStreet } from '../shared-street.js?v=dce5694b';
 
 export const ICONS_FEATURE_ID = 'giant-icons';
 const WORLD_ART = (iconClass) => `assets/sprites/giant-icons/${iconClass}.webp`;
@@ -176,6 +177,26 @@ function emblemPackVerbs(giant, engine) {
   return rows;
 }
 
+/** Place's refusals: one not on a street, and (M20) one others share online. */
+export const PLACE_TEXT = Object.freeze({
+  notStreet: 'Icons can only be placed on a street.',
+  // ours: a placed Icon is kept in your own save, so online others would never see or take it.
+  shared: "Other players can't see a placed Icon yet, so it stays in your pack here.",
+});
+
+/**
+ * Why Place is refused here, or ''. icon_place_conditions (include/icon.js 18-24) only refuses
+ * someone else's POL, and on a public street icon_place warns "it can be picked up by anyone"
+ * (icon.js 26-46, canPickup 1-12). Online (audit M20, G945) a placed Icon is still per player
+ * (no realtime code holds it), so on a street others share it stays in the pack until the
+ * server can share it; a place Glitch kept to one player is yours alone, so Place works there.
+ */
+function placeRefusal(engine) {
+  if (engine.transientInstance?.() || engine.homeContext?.().inHome) return PLACE_TEXT.notStreet;
+  if (engine.mode === 'multiplayer' && publicStreet(engine)) return PLACE_TEXT.shared;
+  return '';
+}
+
 function iconPackVerbs(giant, engine) {
   syncPackIcons(state, engine.inv);
   const ctx = ctxFor(engine);
@@ -187,7 +208,8 @@ function iconPackVerbs(giant, engine) {
     const check = adoreCheck(state, { giant }, verb, ctx);
     rows.push({ id: verb, label: v.label, enabled: check.ok, reason: check.msg || '', tooltip: `${v.label}: ${v.stat === 'xp' ? 'iMG' : v.stat} from the Icon (${(state.pack[giant] || [])[0] ?? 0} actions left)` });
   }
-  rows.push({ id: 'place', label: 'Place', enabled: !engine.transientInstance?.() && !engine.homeContext?.().inHome, reason: 'Icons can only be placed on a street.', tooltip: 'Place this Icon on the ground' });
+  const refused = placeRefusal(engine);
+  rows.push({ id: 'place', label: 'Place', enabled: !refused, reason: refused || PLACE_TEXT.notStreet, tooltip: 'Place this Icon on the ground' });
   return rows;
 }
 
@@ -223,6 +245,8 @@ function runIconVerb(giant, verbId, engine, ref = { giant }) {
     return true;
   }
   if (verbId === 'place') {
+    const refused = placeRefusal(engine);
+    if (refused) return say(engine, refused, false), true;
     const p = engine.player;
     const x = (p?.x || 0) + 70 * (p?.scale?.x < 0 ? -1 : 1);
     const y = landingY(engine.platforms, x, (p?.y || engine.groundY) - 40) ?? p?.y ?? engine.groundY;
@@ -247,6 +271,8 @@ function runIconVerb(giant, verbId, engine, ref = { giant }) {
 
 function confirmPlace(giant, engine) {
   // icon_place on a public street: "it can be picked up by anyone. Proceed?"
+  const refused = placeRefusal(engine);
+  if (refused) return say(engine, refused, false), true;
   if (engine.param?.('iconautoplay')) return runIconVerb(giant, 'place', engine);
   engine.offerQuestDialogue?.({
     title: GIANT_ICON_DATA[giant].label,
