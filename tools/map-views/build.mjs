@@ -45,7 +45,7 @@
  *       drawing once as a <symbol>, one <use> a frame (the FLA's vectors through
  *       tools/overlay-art/xfl-svg.mjs)
  *   public/assets/maps/art/world/cards/<hub id>.svg  each region's hover card at its "over" stop
- *       (frame 10): the sketched frame, the region's painting at 2x in the thumbnail's 150 x 91 box
+ *       (the frame its "over" playhead holds on): the sketched frame, the region's painting at 2x in the thumbnail's 150 x 91 box
  *       (Tiny Speck's thumbnail where there is no painting), the lettered name
  *   public/assets/maps/art/world/cards/cards.json  which card carries which painting (hashes, recipe)
  *   public/js/map-views-data.js  HUB_COLOURS and WORLD_MAP (each region's click frame as a
@@ -61,7 +61,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import { readZip } from '../avatar-compositor/xfl.mjs';
-import { frameSvg, loadFla } from '../overlay-art/xfl-svg.mjs';
+import { frameSvg, loadFla, playhead, stateFrames } from '../overlay-art/xfl-svg.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const spike = join(here, '../..');
@@ -73,8 +73,24 @@ const MODULE = 'public/js/map-views-data.js';
 /** URLs as the game fetches them (relative to /play/). */
 const URL_DIR = 'assets/maps/art/world';
 export const FRAME = Object.freeze([760, 460]);
-/** The region clip's "over" playhead stops on frame 10 (index 9, stop()); 12 ticks from "over" is past it. */
-const CARD_TICK = 12;
+/** The library folders of a card's three parts: the sketched frame (zzz_misc_assets/frame 01), the lettered name, the thumbnail. */
+const CARD_FRAME = /^zzz_misc_assets\/frame\b/;
+const NAME_FOLDER = 'z_hub_text/';
+
+/**
+ * Where a region clip's "over" state holds (G949): the frame its playhead stops on, played from the
+ * "over" label by the clip's own frame scripts, and the ticks it takes to get there. Most clips stop
+ * on frame 10 (index 9); Callopee, Massadoe, Nottis, Pollokoo and region_119 run three frames longer
+ * and stop on frame 13 (index 12): their card's box was measured on frame 10, where only the small
+ * click frame is drawn, so the card came out as a picture-sized crop with no frame or name.
+ */
+export function overStop(fla, lib) {
+  const sym = fla.symbols.get(lib);
+  const { frames, loop, from } = stateFrames(fla, lib, 'over');
+  if (loop) throw new Error(`${FLA}: ${lib} never stops after "over"`);
+  const ticks = frames - 1;
+  return { index: playhead(sym, ticks, from), ticks };
+}
 /** The thumbnails' library folder in the FLA (sm_<region>.jpg, 150 x 91). */
 const THUMB_FOLDER = 'z_hub_maps_small/';
 /** The region paintings' manifest (tools/map-backgrounds/build.mjs). */
@@ -252,7 +268,17 @@ export function readWorldMap(flaPath = join(audit, FLA), picture = () => null) {
     const cy = r2(quad.reduce((s, p) => s + p[1], 0) / 4);
     // The card: the "over" stop's drawing, in the clip's own space, then placed by the clip's
     // matrix and slid inside the map where it would run past an edge.
-    const over = elementsAt(sym, 9);
+    const stop = overStop(fla, inst.lib);
+    for (const L of sym.layers) {
+      const f = L.frames.find((fr) => fr.index <= stop.index && fr.index + fr.duration > stop.index);
+      if (f?.tween && f.index !== stop.index) throw new Error(`${FLA}: region_${id} holds "over" inside a tween (layer ${L.name})`);
+    }
+    const over = elementsAt(sym, stop.index);
+    // Every card is the frame, the picture and the lettered name, as Tiny Speck drew them.
+    const parts = over.filter((e) => e.k === 'inst').map((e) => e.lib);
+    for (const [what, ok] of [['the sketched frame', (l) => CARD_FRAME.test(l)], ['the lettered name', (l) => l.startsWith(NAME_FOLDER)], ['the thumbnail', (l) => l.startsWith(THUMB_FOLDER)]]) {
+      if (parts.filter(ok).length !== 1) throw new Error(`${FLA}: region_${id}'s card at frame ${stop.index + 1} draws ${parts.filter(ok).length} of ${what}`);
+    }
     const cb = bounds(fla, over, I);
     const pad = 4;
     const box = [cb.x0 - pad, cb.y0 - pad, cb.x1 - cb.x0 + pad * 2, cb.y1 - cb.y0 + pad * 2].map(r2);
@@ -276,7 +302,7 @@ export function readWorldMap(flaPath = join(audit, FLA), picture = () => null) {
       const b = fla.bitmaps.get(thumb[0]);
       cardFla = { ...fla, bitmaps: new Map(fla.bitmaps).set(thumb[0], { ...b, px: { ...b.px, url } }) };
     }
-    const card = frameSvg(stageOf(cardFla, [{ ...inst, m: I }], 30), CARD_TICK, { box, start: { [inst.lib]: 'over' } });
+    const card = frameSvg(stageOf(cardFla, [{ ...inst, m: I }], 30), stop.ticks, { box, start: { [inst.lib]: 'over' } });
     cards.set(id, `${card}\n`);
     regions[id] = { quad, centre: [cx, cy], card: { box, m } };
   }

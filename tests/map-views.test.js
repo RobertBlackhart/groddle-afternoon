@@ -11,9 +11,10 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HUB_COLOURS, WORLD_MAP } from '../public/js/map-views-data.js?v=bf881f35';
-import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=3d5daed9';
-import { CARD_PICTURE, CARD_PICTURE_MAX, CARDS_MANIFEST, hubColours, readWorldMap } from '../tools/map-views/build.mjs';
+import { HUB_COLOURS, WORLD_MAP } from '../public/js/map-views-data.js?v=07734585';
+import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=119d8cc2';
+import { CARD_PICTURE, CARD_PICTURE_MAX, CARDS_MANIFEST, FLA, hubColours, overStop, readWorldMap } from '../tools/map-views/build.mjs';
+import { loadFla } from '../tools/overlay-art/xfl-svg.mjs';
 import { STATIONS } from '../public/js/subway.js?v=735bfbeb';
 import {
   MAP_VIEW_TITLES,
@@ -28,7 +29,7 @@ import {
   subwaySegments,
   worldCharts,
   worldRegionList,
-} from '../public/js/map-views.js?v=a4a08a24';
+} from '../public/js/map-views.js?v=275b0c40';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -499,6 +500,72 @@ describe('World charts on phones (G663)', () => {
     const calls = game.match(/^\s*(if \(!TOUCH_PHONE\) )?warmWorldCharts\(\);/gm) || [];
     assert.equal(calls.length, 2);
     for (const c of calls) assert.match(c, /if \(!TOUCH_PHONE\) warmWorldCharts\(\);/);
+  });
+});
+
+/**
+ * G949: five cards (Pollokoo, Callopee, Massadoe, Folivoria, Nottis) came out as a bare picture: their
+ * clips stop "over" three frames later than the rest, and the builder measured every card's box on
+ * frame 10, where those five draw only the small click frame. Read from the card files alone (not the
+ * builder), every card must show the sketched frame round its picture and the lettered name under it,
+ * all inside the box the World view draws it in.
+ */
+describe('every World map card is whole: the sketched frame, the picture and the lettered name (G949)', () => {
+  const nums = (s) => (String(s).match(/-?\d*\.?\d+(?:e-?\d+)?/g) || []).map(Number);
+  const apply = (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
+  const rect = (pts) => ({ x0: Math.min(...pts.map((p) => p[0])), y0: Math.min(...pts.map((p) => p[1])), x1: Math.max(...pts.map((p) => p[0])), y1: Math.max(...pts.map((p) => p[1])) });
+  /** A card file's viewBox, picture rectangle and each drawn path's bounds (map units, the card's own space). */
+  const parts = (svg) => {
+    const [vx, vy, vw, vh] = nums(svg.match(/viewBox="([^"]+)"/)[1]);
+    const img = svg.match(/<image id="(b\d+)" width="([\d.]+)" height="([\d.]+)"/);
+    const use = svg.match(new RegExp(`<use href="#${img[1]}" transform="matrix\\(([^)]+)\\)"`));
+    const um = nums(use[1]);
+    const [iw, ih] = [Number(img[2]), Number(img[3])];
+    const picture = rect([[0, 0], [iw, 0], [0, ih], [iw, ih]].map(([x, y]) => apply(um, x, y)));
+    const paths = [...svg.matchAll(/<path ([^>]*)\/>/g)].map((m) => m[1]).filter((a) => !/fill-opacity="0"/.test(a)).map((a) => {
+      const pm = a.match(/transform="matrix\(([^)]+)\)"/);
+      const mm = pm ? nums(pm[1]) : [1, 0, 0, 1, 0, 0];
+      const n = nums(a.match(/ d="([^"]+)"/)[1]);
+      const pts = [];
+      for (let i = 0; i + 1 < n.length; i += 2) pts.push(apply(mm, n[i], n[i + 1]));
+      return rect(pts);
+    });
+    return { box: { x0: vx, y0: vy, x1: vx + vw, y1: vy + vh, w: vw, h: vh }, picture, paths };
+  };
+  const inside = (r, b, tol = 0.5) => r.x0 >= b.x0 - tol && r.y0 >= b.y0 - tol && r.x1 <= b.x1 + tol && r.y1 <= b.y1 + tol;
+  const ids = Object.keys(WORLD_MAP.regions);
+  const card = (id) => read(`public/${WORLD_MAP.regions[id].card.href}`);
+
+  it('all 47 card files show the frame round the picture and the name under it, nothing cut off by the box', () => {
+    assert.equal(ids.length, 47);
+    for (const id of ids) {
+      const { box, picture, paths } = parts(card(id));
+      const pw = picture.x1 - picture.x0;
+      // Drifa's is Tiny Speck's smallest card (110 units, its frame drawn at 1.7 where the rest are 2.4); the bare pictures were 52 to 57.
+      assert.ok(box.w >= 100 && box.h >= 80, `card ${id}: ${box.w} x ${box.h} is a whole card, not a bare picture`);
+      assert.ok(inside(picture, box), `card ${id}: the picture lies inside the card's box`);
+      const frame = paths.filter((r) => r.x0 <= picture.x0 + 1 && r.y0 <= picture.y0 + 1 && r.x1 >= picture.x1 - 1 && r.y1 >= picture.y1 - 1);
+      assert.ok(frame.length >= 1, `card ${id}: a sketched frame round the picture`);
+      const name = paths.filter((r) => !frame.includes(r) && (r.y0 + r.y1) / 2 > picture.y1);
+      assert.ok(name.length >= 1, `card ${id}: the lettered name under the picture`);
+      const nameBox = rect(name.flatMap((r) => [[r.x0, r.y0], [r.x1, r.y1]]));
+      assert.ok(nameBox.x1 - nameBox.x0 >= pw * 0.15, `card ${id}: the name is a word wide (${(nameBox.x1 - nameBox.x0).toFixed(1)} units)`);
+      for (const r of paths) assert.ok(inside(r, box), `card ${id}: a drawn part runs out of the card's box (${JSON.stringify(r)} in ${JSON.stringify(box)})`);
+    }
+  });
+
+  it('the World view draws each card over the box its file was cut to', () => {
+    for (const id of ids) {
+      const { box } = parts(card(id));
+      assert.deepEqual(WORLD_MAP.regions[id].card.box, [box.x0, box.y0, box.w, box.h].map((v) => Math.round(v * 100) / 100), `card ${id}`);
+    }
+  });
+
+  it('each card is cut where its clip holds "over": frame 10, frame 13 for the five longer clips', () => {
+    const fla = loadFla(join(root, '..', FLA));
+    const at = Object.fromEntries(ids.map((id) => [id, overStop(fla, [...fla.symbols.keys()].find((k) => k.endsWith(`/region_${id}`))).index]));
+    assert.deepEqual(Object.keys(at).filter((id) => at[id] === 12).sort(), ['106', '107', '110', '119', '137']);
+    assert.ok(Object.values(at).every((i) => i === 9 || i === 12));
   });
 });
 

@@ -24,7 +24,7 @@
  * the same menu a street does on the region map (Set as Destination, Teleport Here) for its street
  * above ground; its region's name opens that region's map with the street found.
  */
-import { WORLD_MAP } from './map-views-data.js?v=bf881f35';
+import { WORLD_MAP } from './map-views-data.js?v=07734585';
 import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName } from './subway.js?v=735bfbeb';
 
 export const MAP_VIEWS = Object.freeze(['hub', 'world', 'subway']);

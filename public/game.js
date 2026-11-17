@@ -1003,11 +1003,11 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=3d5daed9';
+} from './js/map-graph.js?v=119d8cc2';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=a4a08a24';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=275b0c40';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=c2e2107d';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=f07e8d26';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
