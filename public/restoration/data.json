@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2485,
+  "commits": 2489,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "On a phone, pinned quests are one round button in the top bar"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Uralia Completist's badge text says six streets, as it now asks"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A wall barnacle placed by rule keeps clear of the shrine, trees and rocks the street's pictures place"
+   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Tower projects ask How many for each part"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A Gameshow Ticket dropped while mining waits in the pack instead of being taken back"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "new",
-    "text": "A refund letter gives back the machine output, crops, elements, tutorial gifts and rare finds the save checker took"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A new player's tutorial gifts and practice-street tools are no longer taken back by the save checker"
    }
   ]
  },
- "tests": 1086,
+ "tests": 1087,
  "generatedAt": "2026-11-16"
 }
