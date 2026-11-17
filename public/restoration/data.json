@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2491,
+  "commits": 2494,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "On a phone, notices keep clear of Act, Jump and the stick, and the quest step line no longer covers the street clock"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A spot given only as an x (demo links, the home page shots, the tutorial autoplay) stands on the street's ground, not up a tree"
+   },
    {
     "date": "2026-11-16",
     "kind": "improve",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-16",
     "kind": "fix",
     "text": "The restoration report's Gone for good list shows what can't come back"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "The subway map fits an upright phone and zooms and pans"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "improve",
-    "text": "Tower projects ask How many for each part"
    }
   ]
  },
- "tests": 1087,
+ "tests": 1089,
  "generatedAt": "2026-11-16"
 }
