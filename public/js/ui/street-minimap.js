@@ -874,8 +874,10 @@ export function createStreetMinimap(doc, host, opts = {}) {
     clearTimeout(rollTimer);
     if (expanded && !root.contains(doc.activeElement)) setExpanded(false);
   });
+  // A pointer click on the tab hands the focus back to the world (the game's focus-back rule), so a
+  // focus leaving while the pointer is still over the map is not a roll-out; pointerleave closes it.
   root.addEventListener('focusout', (e) => {
-    if (expanded && !root.contains(e.relatedTarget)) setExpanded(false);
+    if (expanded && !root.contains(e.relatedTarget) && !root.matches?.(':hover')) setExpanded(false);
   });
   tab.addEventListener('click', () => {
     clearTimeout(rollTimer);
