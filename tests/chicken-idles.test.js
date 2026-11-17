@@ -24,7 +24,7 @@ import {
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedDurationMs, packedFrameAt, packedRect } from '../public/js/packed-sheets.js?v=56e7cb7e';
 import { CHICKEN_PAUSE, chickenPlan, chickenSeed, chickenWalkAt } from '../public/js/street-creatures.js?v=5e8707e8';
-import { yardPlan, yardWanderAt, followYardPath } from '../public/js/yard-wander.js?v=280287f1';
+import { yardPlan, yardWanderAt, followYardPath } from '../public/js/yard-wander.js?v=ef6b0f49';
 import { imageSize } from '../tools/image-size.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

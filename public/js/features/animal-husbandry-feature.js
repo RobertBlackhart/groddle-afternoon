@@ -117,7 +117,7 @@ import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } fr
 import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=0a1da990';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot } from '../yard-wander.js?v=280287f1';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=ef6b0f49';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
@@ -845,6 +845,12 @@ function landStarvedRemains(engine) {
 // —— Sticks and machines (back yard) ——————————————————————————————————
 
 /** A placed Magic Animal Stick's world scale (its 1x art, a 3x twin on dense screens: js/sprite-hires.js). */
+/** G944 (M41): a visitor's act on one of my yard animals (home_yard_acted) holds its walk here too. */
+export function holdYardAnimal(id, nowMs = Date.now()) {
+  const e = extras.find((row) => row.row?.id === id);
+  return e ? holdYardWalk(e.drive, e.row.classId, nowMs) : 0;
+}
+
 export const STICK_SCALE = 0.5;
 
 function buildPlaced(engine, kind, row) {

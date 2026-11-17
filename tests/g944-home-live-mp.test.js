@@ -19,6 +19,7 @@ import {
   visitSceneKey,
 } from '../public/js/home-live.js?v=c24d82cb';
 import { createHomeLive, homeLiveFeature } from '../public/js/features/home-live-feature.js?v=ed80100f';
+import { YARD_ACT_HOLD_MS, YARD_LINGER_MS, followYardPath, holdYardWalk } from '../public/js/yard-wander.js?v=ef6b0f49';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -178,5 +179,41 @@ describe('G944 M4: furniture, decor and cultivations changed mid-visit reach vis
     assert.match(read('public/game.js'), /clearWorldEntities\(\{ keepWindows: scene\.keepWindows === true \}\)/);
     // The yard's copy goes with the cleared scene (it used to stay behind a same-street rebuild, drawn nowhere).
     assert.match(read('public/js/features/yard-verbs-mp-feature.js'), /cleared\(\) \{\n[^\n]*\n {6}clearVisit\(\);/);
+  });
+});
+
+describe('G944 M33: the owner\'s cabinet moves refresh a key-holder\'s open window', () => {
+  it('a cabinet\'s contents changing is a "boxes" change only', () => {
+    const s = ownerSave();
+    s.systems.features.homes.decor.placed[1].contents = [{ classTsid: 'cherry', count: 1 }];
+    assert.deepEqual(changedHomeKinds(homeLivePrints(ownerSave()), homeLivePrints(s)), ['boxes']);
+    assert.deepEqual(homeRefreshFrames(['boxes']), ['boxes']);
+  });
+
+  it('"boxes" reloads an open cabinet window of that owner', () => {
+    const src = read('public/js/features/home-storage-feature.js');
+    assert.match(src, /win\?\.kind === 'cabinet' && win\.owner === Number\(msg\.owner\)\) refreshVisitCabinet\(engine\)/);
+  });
+});
+
+describe('G944 M41: a yard animal someone else is using stands still on every page', () => {
+  it('holdYardWalk holds the walk for the act and the linger after it', () => {
+    const drive = { holdUntil: 0 };
+    const now = 1_000_000;
+    const until = holdYardWalk(drive, 'npc_piggy', now);
+    assert.equal(until, now + YARD_ACT_HOLD_MS + YARD_LINGER_MS.npc_piggy);
+    const spr = { x: 500, y: 300, scale: { x: 1 } };
+    const at = followYardPath(spr, drive, { animal: { id: 'a1', classId: 'npc_piggy', homeX: 500, worldW: 3000 }, nowMs: now + 1000, groundAt: () => 300 });
+    assert.equal(at.moving, false);
+    assert.equal(spr.x, 500);
+    // A shorter hold never cuts a longer one short.
+    assert.equal(holdYardWalk(drive, 'npc_piggy', now - 5000), until);
+  });
+
+  it('visitors hold on another player\'s act, the owner holds on a visitor\'s', () => {
+    const yard = read('public/js/features/yard-verbs-mp-feature.js');
+    assert.match(yard, /if \(a && Number\(msg\.from\?\.id\) !== me\(\)\) holdYardWalk\(a\.drive, a\.classId\);/);
+    assert.match(yard, /holdYardAnimal\(act\.target\);/);
+    assert.match(read('public/js/features/animal-husbandry-feature.js'), /export function holdYardAnimal\(id, nowMs = Date\.now\(\)\)/);
   });
 });

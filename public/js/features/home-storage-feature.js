@@ -1055,7 +1055,11 @@ function wire(engine) {
     redraw(engine, true);
   });
   client.on('msg:home_refresh', (msg) => {
-    if (msg.what === 'boxes' && visit && Number(msg.owner) === visit.owner) refreshVisit(engine);
+    if (msg.what !== 'boxes' || Number(msg.owner) !== (win?.owner || visit?.owner)) return;
+    if (visit && Number(msg.owner) === visit.owner) refreshVisit(engine);
+    // G944 (M33): the owner moved things in or out of a cabinet; my open window of it shows them
+    // (Glitch's cabinet was a bag in the shared location: bag_furniture_cabinet.js 452-466).
+    if (win?.kind === 'cabinet' && win.owner === Number(msg.owner)) refreshVisitCabinet(engine);
   });
   // What the server never answered is asked again (the site settles each op once).
   client.on('hello', () => {

@@ -63,6 +63,21 @@ export const YARD_LEGS = 12;
 export const YARD_MIN_STEP = 25;
 /** After a player was at it, it stands this long before walking on (npc_piggy.js 682, 903: 5 s). */
 export const YARD_LINGER_MS = Object.freeze({ npc_piggy: 5000, npc_chicken: 2500, npc_butterfly: 1500 });
+/**
+ * G944 (M41): someone else's verb on a yard animal holds it on every other page too, as the one
+ * npc stood still for everyone while a player used it (GSJS npc_piggy.js 1442, the walk stops for
+ * the verb). The server says only that the act landed, not how long it plays: ours, a pet's length.
+ */
+export const YARD_ACT_HOLD_MS = 2000;
+
+/** Hold a walk for another player's act on it (then it lingers, as after a hold of its own). */
+export function holdYardWalk(drive, classId, nowMs = Date.now(), ms = YARD_ACT_HOLD_MS) {
+  if (!drive) return 0;
+  const until = nowMs + Math.max(0, ms) + (YARD_LINGER_MS[classId] || 2000);
+  drive.holdUntil = Math.max(Number(drive.holdUntil) || 0, until);
+  return drive.holdUntil;
+}
+
 /** Back onto its path at this times its own pace (calm, not a jump). */
 export const YARD_CATCH_UP = 1.6;
 /** Farther than this from its path, it is put there (a stick placed across the street). */

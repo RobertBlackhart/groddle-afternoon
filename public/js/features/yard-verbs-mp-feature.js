@@ -71,6 +71,7 @@ import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation
 import { readVisitScene } from '../neighbours-mp.js?v=dc8ab937';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=47c80ffb';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=efe8e806';
 import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=4af438ad';
 import {
   YARD_STREET,
@@ -88,10 +89,10 @@ import {
   treeSnapshot,
   visitorAnimalState,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=44d0d509';
+} from '../yard-verbs-mp.js?v=f3e48ee7';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, stickForClass } from '../yard-wander.js?v=280287f1';
+import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=ef6b0f49';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=f49c8998';
@@ -919,6 +920,8 @@ function createSession(engine, client) {
     }
     const a = visit.animals.get(act.target);
     if (a) a.target.subtitle = animalStatusLabel(a.classId, a.state);
+    // G944 (M41): someone else is at this animal: it stands still here too.
+    if (a && Number(msg.from?.id) !== me()) holdYardWalk(a.drive, a.classId);
   });
 
   // G944 (M1, M4): the owner changed their yard (or their home: the yard is read with it); my copy reads the site again.
@@ -981,6 +984,8 @@ function createSession(engine, client) {
       } else if (changed.kind === 'animal') {
         const t = (engine.interactables || []).find((it) => it.husbandryAnimal === act.target);
         if (t) t.subtitle = animalStatusLabel(changed.row.classId, changed.row.state);
+        // G944 (M41): the visitor is at it: my page holds its walk too.
+        holdYardAnimal(act.target);
       }
     }
     applied = keepApplied(applied, fresh.map((a) => a.id));
