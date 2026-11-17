@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2563,
+  "commits": 2566,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The second and third rock shapes are sharp on high-density screens"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Streets no longer each hold four loose Apples; Apples come from their Glitch sources"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A planned Jellisac stands on flat floor where you can see it, not behind a curtain or inside a pipe"
    }
   ]
  },
- "tests": 1106,
+ "tests": 1107,
  "generatedAt": "2026-11-17"
 }
