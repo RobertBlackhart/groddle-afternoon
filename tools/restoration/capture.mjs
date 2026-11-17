@@ -9,6 +9,9 @@
  *   node tools/restoration/capture.mjs --hd            room modal images: 2x, no room card,
  *                                                     public/restoration/shots/hd/room-<id>.webp
  *
+ * Run it under the browser lock: GRODDLE_BROWSER_LOCK=<slot> node
+ * tools/qa/browser-lock.mjs run -- node tools/restoration/capture.mjs ...
+ *
  * The HUD rail, chat dock and activity feed are hidden so the street reads
  * cleanly. 'world' shots crop to the street view above the pack; 'panel'
  * shots keep the whole game area. Then run node tools/build-restoration.mjs.
@@ -39,7 +42,8 @@ const keys = (only.length ? only : Object.keys(SHOTS)).filter((k) => SHOTS[k] &&
 const fileFor = (key) => join(hd ? join(outDir, 'hd') : outDir, `${key.replace(/^(room|level):/, '$1-')}.webp`);
 
 mkdirSync(hd ? join(outDir, 'hd') : outDir, { recursive: true });
-const browser = await chromium.launch({ args: ['--ignore-certificate-errors', '--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] });
+// Muted: QA browsers never play sound (brief, 2026-11-15).
+const browser = await chromium.launch({ args: ['--ignore-certificate-errors', '--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist', '--mute-audio'] });
 let done = 0;
 for (const key of keys) {
   const target = fileFor(key);
