@@ -20,12 +20,12 @@ import { FIRST_SKILLS } from '../public/js/newxp.js?v=6d95626b';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=1ab231dd';
 import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=8653e59a';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=a9c6d0cd';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=90b11781';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=f7fe7857';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=6c07b8c6';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=8c10be35';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=1f53d243';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=da4b62ed';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=a6d0a701';
 import { Display, fakePixi } from './fake-scene.js';
 
 /** fake-scene's Pixi, with a texture source js/textures.js can wait on (the image never loads in Node). */

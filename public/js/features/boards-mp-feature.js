@@ -29,7 +29,7 @@ import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { BOARD_MP_TEXT, BOARD_NOTE_ID, boardFrom, carriedFromBoard, normalizeBoardNote, normalizeMineBoard, pinPayload, sameWords } from '../boards-mp.js?v=17a75d4d';
 // The same key as features/index.js: one module instance holds the carried notes and draws the boards.
-import { carriedNoteList, giveCarriedNote, refreshSharedBoards, takeCarriedNote } from './street-furniture-feature.js?v=9bb280b3';
+import { carriedNoteList, giveCarriedNote, refreshSharedBoards, takeCarriedNote } from './street-furniture-feature.js?v=fa0916cb';
 import { noteContent } from '../street-furniture.js?v=06481ee6';
 
 export const BOARDS_MP_FEATURE_ID = 'boards-mp';

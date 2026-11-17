@@ -23,7 +23,7 @@ import {
   parallaxLayerOffset,
   wholeTexels,
 } from '../public/js/street-render.js?v=d6241586';
-import { cameraTargetX } from '../public/js/movement.js?v=f05bb30a';
+import { cameraTargetX } from '../public/js/movement.js?v=f4be1a05';
 
 describe('edge mirror widths', () => {
   it('covers the reserve past the middleground end and nothing more without one', () => {

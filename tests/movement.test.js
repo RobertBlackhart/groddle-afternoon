@@ -25,7 +25,7 @@ import {
   yCamOffsetAnchor,
   cameraBottomSlack,
   cameraWorldHeightForGround,
-} from '../public/js/movement.js?v=f05bb30a';
+} from '../public/js/movement.js?v=f4be1a05';
 import { streetHeight, platformsScreen } from '../public/js/street-model.js?v=9f16f4ab';
 import { MIN_VP_H, MAX_VP_H, VIEW_CEIL_H, VIEW_FLOOR_H, locationViewHeightFor } from '../public/js/location-view.js?v=ac404fcb';
 
@@ -304,4 +304,20 @@ test.describe('smooth directional camera and client wiring', () => {
     assert.match(game, /TRIPLE JUMP ×/);
     assert.match(html, /id="mute-btn"[^>]*aria-label="Mute audio"/);
   });
+});
+
+// G928 (#459): upright on a phone the top bar and the street's name cover the canvas's top, so a signpost
+// high on a street sat under them. There the camera may rise above the street's top by that much.
+test('cameraTargetY: a top slack lets the camera rise above the street top by that much, never more (G928, #459)', () => {
+  assert.equal(cameraTargetY(20, 1_000, 1_000, 0.75), 0, 'no slack: it stops at the top');
+  assert.equal(cameraTargetY(20, 1_000, 1_000, 0.75, 169), -169, 'high up: it rises by the slack');
+  assert.equal(cameraTargetY(700, 1_000, 1_000, 0.75, 169), -50, 'part way: only as far as the anchor asks');
+  assert.equal(cameraTargetY(900, 1_000, 1_000, 0.75, 169), 0, 'on low ground: the slack changes nothing');
+  assert.equal(cameraTargetY(5_000, 10_000, 1_000, 0.75, 169), 4_250, 'a tall street scrolls as before');
+  assert.equal(cameraTargetY(20, 1_000, 1_000, 0.75, -40), 0, 'a negative slack is none');
+  const game = fs.readFileSync(path.join(root, 'public/game.js'), 'utf8');
+  assert.match(game, /cameraTargetY\(player\.y \+ cameraLook\.y, streetH, LOCATION_VIEW_H, anchor, cameraTopSlack\(\)\)/);
+  const slack = game.slice(game.indexOf('function cameraTopSlack()'), game.indexOf('function measureTopHudCss()'));
+  assert.match(slack, /if \(!TOUCH_PHONE \|\| !modernUi\(\) \|\| PINNED_VIEW_H > 0/, 'a phone in Modern only');
+  assert.match(slack, /root\.clientHeight <= root\.clientWidth\) return 0/, 'upright only');
 });

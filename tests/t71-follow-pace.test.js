@@ -31,7 +31,7 @@ import {
 } from '../public/js/follow-mp.js?v=be757faf';
 import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=794229af';
 import { coastX, NORMAL_BUFF, WALK_MAX } from '../public/js/avatar-step.js?v=a6f5a99b';
-import { createJumpState, matchLeaderJumpStep, queueJump, resolveQueuedJump } from '../public/js/movement.js?v=f05bb30a';
+import { createJumpState, matchLeaderJumpStep, queueJump, resolveQueuedJump } from '../public/js/movement.js?v=f4be1a05';
 
 const ROOT = join(import.meta.dirname, '..');
 const game = readFileSync(join(ROOT, 'public/game.js'), 'utf8');

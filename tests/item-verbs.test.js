@@ -21,8 +21,8 @@ import {
   homeTrophyCount,
   isTrophyClass,
   itemVerbsFeature,
-} from '../public/js/features/item-verbs-feature.js?v=9ac6e6e3';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=3252628f';
+} from '../public/js/features/item-verbs-feature.js?v=10cc1da8';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=eace47ee';
 import {
   applyAchievementProgress,
   createAchievementState,

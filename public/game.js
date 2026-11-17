@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=ed7a2a54';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=78f94fa6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f6cee966';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=45f46d1f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -136,7 +136,7 @@ import {
   travelToGregarious,
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
-import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=34e7e56f';
+import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=ad9b800d';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=801c58b3';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=801c58b3';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=9f460d2f';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=9f460d2f';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -777,7 +777,7 @@ import {
   cameraBottomSlack,
   cameraWorldHeightForGround,
   MIN_GROUND_CLEARANCE,
-} from './js/movement.js?v=f05bb30a';
+} from './js/movement.js?v=f4be1a05';
 import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
@@ -895,7 +895,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=801c58b3';
+} from './js/animals.js?v=9f460d2f';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1006,9 +1006,9 @@ import {
   PUBLIC_HUBS,
 } from './js/map-graph.js?v=7179ea52';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=496d6cac';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=a4a08a24';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=a41f92b8';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=c2e2107d';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
@@ -1029,7 +1029,7 @@ import {
   treePlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=feeada1a';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=bb82c745';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=3483f38a';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b12c43aa';
@@ -2160,7 +2160,7 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
   // CameraMan scales y_cam_offset with loc_vp_h: the avatar keeps its share of the view.
   if (world && Number.isFinite(camY)) {
     const anchor = streetCameraAnchor();
-    camY = clamp(camY - grew * anchor, 0, Math.max(0, activeCameraWorldHeight(anchor) - LOCATION_VIEW_H));
+    camY = clamp(camY - grew * anchor, -cameraTopSlack(), Math.max(0, activeCameraWorldHeight(anchor) - LOCATION_VIEW_H));
     world.y = -Math.round(camY * 2) / 2;
   }
   if (world && player && Number.isFinite(WORLD_W)) {
@@ -2376,6 +2376,39 @@ function streetCameraAnchor() {
 
 /** G673: CSS px of the canvas's bottom the phone's pack row covers (syncCameraSafeArea); NaN when not shown. */
 let cameraPackCoverCss = NaN;
+
+/**
+ * G928 (#459): upright on a phone the top bar and the street's name stand over the canvas's top, and the
+ * camera stopped at the street's top (movement.js cameraTargetY), so a signpost high on a street sat under
+ * them, out of sight and reach. There the camera may rise above the street's top by that much (world px);
+ * the dark band (G880) fills what shows above (syncLocationViewHeight clears the canvas to it). Glitch drew
+ * its location viewport below the header (the HUD never covered the street), so its camera never needed to.
+ */
+function cameraTopSlack() {
+  if (!TOUCH_PHONE || !modernUi() || PINNED_VIEW_H > 0 || !app?.canvas?.isConnected) return 0;
+  const root = document.getElementById('game-root');
+  if (!root || root.clientHeight <= root.clientWidth) return 0;
+  const now = performance.now();
+  if (now - cameraTopHudAt > 500) {
+    cameraTopHudAt = now;
+    cameraTopHudCss = measureTopHudCss();
+  }
+  return cameraTopHudCss > 0 && STAGE_SCALE > 0 ? cameraTopHudCss / STAGE_SCALE : 0;
+}
+
+/** G928: CSS px of the canvas's top the top bar and the street's name cover (measured at most twice a second). */
+let cameraTopHudCss = 0;
+let cameraTopHudAt = -Infinity;
+function measureTopHudCss() {
+  const c = app.canvas.getBoundingClientRect();
+  let low = c.top;
+  for (const el of [document.querySelector('#wrap > header.top-bar'), document.getElementById('street-nameplate')]) {
+    if (!el || !shownElement(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.height > 0) low = Math.max(low, r.bottom);
+  }
+  return Math.max(0, low - c.top);
+}
 
 /** G673: measure the phone's pack row over the canvas (on resize and zoom, not every frame). */
 function syncCameraPackCover() {
@@ -16647,7 +16680,7 @@ function physics(dt) {
   // Vertical follow for tall original streets
   const anchor = streetCameraAnchor();
   const streetH = activeCameraWorldHeight(anchor);
-  const targetY = cameraTargetY(player.y + cameraLook.y, streetH, LOCATION_VIEW_H, anchor);
+  const targetY = cameraTargetY(player.y + cameraLook.y, streetH, LOCATION_VIEW_H, anchor, cameraTopSlack());
   if (camY === undefined || Number.isNaN(camY)) camY = targetY;
   cameraRest.y = easeCameraAxis(camY, targetY, dampingAlpha(0.12, dt), camRes, cameraRest.y);
   camY = cameraRest.y.value;

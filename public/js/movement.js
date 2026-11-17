@@ -283,12 +283,16 @@ export function yCamOffsetAnchor(yCamOffset = 150, viewHeight = 408) {
  * chrome such as the pack. The original client calculated loc_vp_h after
  * reserving its pack height, then placed the avatar at 75% of that viewport:
  * viewport center plus the default 150px y_cam_offset scaled from max_vp_h 600.
+ * `topSlack` (G928, #459): how far above the street's top the camera may rise,
+ * in world px (an upright phone's top HUD over the canvas: game.js cameraTopSlack);
+ * 0 stops it at the top, as CameraMan did under a HUD that sat outside the view.
  */
-export function cameraTargetY(playerY, worldHeight, locationViewHeight, anchorRatio = 0.75) {
+export function cameraTargetY(playerY, worldHeight, locationViewHeight, anchorRatio = 0.75, topSlack = 0) {
   const view = Math.max(1, finite(locationViewHeight, 1));
   const world = Math.max(view, finite(worldHeight, view));
   const anchor = clamp(finite(anchorRatio, 0.75), 0, 1);
-  return clamp(finite(playerY) - view * anchor, 0, Math.max(0, world - view));
+  const slack = finite(topSlack);
+  return clamp(finite(playerY) - view * anchor, slack > 0 ? -slack : 0, Math.max(0, world - view));
 }
 
 /** Least ground the camera keeps between the avatar's feet and the pack. */

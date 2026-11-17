@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_PACK_HEIGHT, phoneCameraAnchor, stageFor } from '../public/js/location-view.js?v=ac404fcb';
-import { MIN_GROUND_CLEARANCE, cameraTargetY } from '../public/js/movement.js?v=f05bb30a';
+import { MIN_GROUND_CLEARANCE, cameraTargetY } from '../public/js/movement.js?v=f4be1a05';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
