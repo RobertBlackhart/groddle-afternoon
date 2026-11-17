@@ -13,29 +13,12 @@
  *     switch, so the hint says the switch then mutes the game too. Off asks for 'auto' again.
  *
  * The 2012 client had no such setting (a Flash game shared the speakers with everything); this
- * is a phone-era addition. The choice lives in localStorage on this device beside the other sound
- * settings (js/audio-pref.js), read and written in try/catch (private windows).
+ * is a phone-era addition. The choice is kept on this device with the other sound settings
+ * (js/audio-pref.js loadOtherMusic / saveOtherMusic); this module holds no storage of its own.
  */
 
-export const OTHER_MUSIC_KEY = 'groddle.audio.otherMusic';
 export const OTHER_MUSIC_LABEL = "Let other apps' music keep playing";
 export const OTHER_MUSIC_HINT = "The game's music stays off and its effects still play. On an iPhone the silent switch then mutes the game too.";
-
-export function loadOtherMusic(storage = globalThis.localStorage) {
-  try {
-    return storage?.getItem(OTHER_MUSIC_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-export function saveOtherMusic(on, storage = globalThis.localStorage) {
-  try {
-    storage?.setItem(OTHER_MUSIC_KEY, on ? '1' : '0');
-  } catch {
-    /* the choice just won't be remembered */
-  }
-}
 
 /**
  * PURE: whether the street music element may exist and play: never while muted, at Music 0

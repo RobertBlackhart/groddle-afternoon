@@ -66,7 +66,9 @@ describe('G917 the Subway System map page', () => {
   });
 
   it('is linked from the Encyclopedia home and the Streets list', () => {
-    assert.match(read('encyclopedia/index.html'), /<a class="ency-card" href="subway\/">/);
+    // A line under the section cards, not a card: the cards are the sections the site menu lists (tests/site-nav-menu.test.js).
+    assert.match(read('encyclopedia/index.html'), /<p class="ency-lead-small ency-subway-link">Riding the subway\? <a href="subway\/">The subway map<\/a> shows its 12 stations/);
+    assert.doesNotMatch(read('encyclopedia/index.html'), /<a class="ency-card" href="subway\/">/);
     assert.match(read('encyclopedia/streets/index.html'), /<a href="\.\.\/subway\/">subway map<\/a>/);
   });
 

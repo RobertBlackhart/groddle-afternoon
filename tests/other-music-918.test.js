@@ -10,16 +10,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  OTHER_MUSIC_HINT,
-  OTHER_MUSIC_KEY,
-  OTHER_MUSIC_LABEL,
-  applyAudioSession,
-  loadOtherMusic,
-  saveOtherMusic,
-  streetMusicWanted,
-} from '../public/js/other-music.js?v=df3315d1';
-import { otherMusicToggle } from '../public/js/ui/topbar.js?v=f94b211b';
+import { OTHER_MUSIC_HINT, OTHER_MUSIC_LABEL, applyAudioSession, streetMusicWanted } from '../public/js/other-music.js?v=f58af5e6';
+import { OTHER_MUSIC_KEY, loadOtherMusic, saveOtherMusic } from '../public/js/audio-pref.js?v=80d433c3';
+import { otherMusicToggle } from '../public/js/ui/topbar.js?v=c451ce11';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

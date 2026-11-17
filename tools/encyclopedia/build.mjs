@@ -795,8 +795,6 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
   const cards = [
     card('items/', 'Items', items.size, `Every item, how to get it and what it is for. ${fmt(itemsIn)} are in the remake.`, info('item:apple')?.icon),
     ...SECTIONS.map((s) => card(`${s.key}/`, s.label, s.cardCount ? s.cardCount(bySection[s.key]) : bySection[s.key].length, blurbOf(s), info(sample[s.key] || s.sample)?.icon || bySection[s.key][0]?.icon)),
-    // G917 (#445): the Subway System map (subway.mjs).
-    card('subway/', 'Subway map', `${fmt(stations)} stations`, 'The Red Line and the Blue Line under Ur, drawn as the game’s Map window draws them, and the street each station comes up on.', info('item:subway_map')?.icon),
   ];
   const body = `
   <header class="masthead note-head cat-head">
@@ -819,6 +817,7 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
       <ul class="ency-cards" id="cards">
         ${cards.join('\n        ')}
       </ul>
+      <p class="ency-lead-small ency-subway-link">Riding the subway? <a href="subway/">The subway map</a> shows its ${fmt(stations)} stations, both lines and the street each one comes up on.</p>
     </div>
   </main>
 `;

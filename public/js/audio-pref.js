@@ -79,3 +79,25 @@ export function saveAudioRestore(restore, storage = globalThis.localStorage) {
     /* the levels just won't be remembered */
   }
 }
+
+/**
+ * G918 (#447): "Let other apps' music keep playing" (js/other-music.js, the Sound popover), kept in
+ * this browser beside the other sound settings. Off unless the player turned it on.
+ */
+export const OTHER_MUSIC_KEY = 'groddle.audio.otherMusic';
+
+export function loadOtherMusic(storage = globalThis.localStorage) {
+  try {
+    return storage?.getItem(OTHER_MUSIC_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function saveOtherMusic(on, storage = globalThis.localStorage) {
+  try {
+    storage?.setItem(OTHER_MUSIC_KEY, on ? '1' : '0');
+  } catch {
+    /* the choice just won't be remembered */
+  }
+}

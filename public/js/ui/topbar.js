@@ -21,8 +21,8 @@
  * The pure helpers below are tested without a DOM (tests/topbar.test.js).
  */
 import { vitalLevel, vitalTitle } from '../vitals.js?v=85a51302';
-import { loadAudioRestore, saveAudioRestore } from '../audio-pref.js?v=6fe817bc';
-import { OTHER_MUSIC_HINT, OTHER_MUSIC_LABEL } from '../other-music.js?v=df3315d1';
+import { loadAudioRestore, saveAudioRestore } from '../audio-pref.js?v=80d433c3';
+import { OTHER_MUSIC_HINT, OTHER_MUSIC_LABEL } from '../other-music.js?v=f58af5e6';
 import { PHONE_ZOOM_HINT, ZOOM_FIXED_NOTE, ZOOM_KEYS_HINT, clampZoom, phoneSideways, phoneZoomEnds, phoneZoomLabel, phoneZoomValueText, zoomLabel, zoomValueText } from '../world-zoom.js?v=38816228';
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=9501b2ee';
@@ -1236,9 +1236,9 @@ function installSound(doc, audio) {
       names();
     });
   }
-  // It only sets things: a click on Mute, a channel or a slider gives the world the keys (focus-return.js).
-  pop.dataset.clickReleases = '';
   other?.input.addEventListener('change', draw);
+  // It only sets things: a click on Mute, a channel, a slider or the switch gives the world the keys (focus-return.js).
+  pop.dataset.clickReleases = '';
   popover(doc, btn, pop, { onOpen: () => { draw(); names(); other?.draw(); } });
   names();
   draw();
