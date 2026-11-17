@@ -140,7 +140,7 @@ import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=a4208821';
 import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
-import { FIRST_SKILLS } from '../newxp.js?v=6d95626b';
+import { FIRST_SKILLS } from '../newxp.js?v=02f902e6';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=a6f5a99b';
 
@@ -213,7 +213,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=82067547'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=e7638a90'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=95f7ba91'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=040c073c'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=ac487919'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=1337f73f'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=50186386'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=fe6b7aa6'),

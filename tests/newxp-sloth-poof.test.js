@@ -5,9 +5,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SLOTH_POOF_ART, slothPoofBase } from '../public/js/features/newxp-feature.js?v=9180bb76';
+import { SLOTH_POOF_ART, slothPoofBase } from '../public/js/features/newxp-feature.js?v=86c830f6';
 import { itemstackOverlayPoint, standPlacement } from '../public/js/overlay-art.js?v=98606052';
-import { training1Layout } from '../public/js/newxp.js?v=6d95626b';
+import { training1Layout } from '../public/js/newxp.js?v=02f902e6';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const manifest = JSON.parse(readFileSync(join(PUBLIC, 'assets/sprites/overlays/overlays.json'), 'utf8'));

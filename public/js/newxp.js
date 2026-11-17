@@ -1220,6 +1220,9 @@ export const ISLAND_FLAGS = Object.freeze([
   'mappery_upgrade', 'zoom_upgrade', 'other_upgrade', 'explain_upgrades', 'cray', 'currants_revealed',
   'musicblock', 'garden', 'gst', 'spirit_sang', 'spinach_hint_off_called', 'spinach_hint2_off_called',
   'musicblock_msg_off_called', 'butterfly_lotion_msg_off_called', 'butterfly_msg_off_called', 'returned',
+  // G948: the rock's ISLAND_CURRANTS were paid (set in the same tick, so a reload never pays twice and the
+  // site's ledger credits them once, LedgerMath::TUTORIAL_SETS islandcurrants).
+  'island_currants',
 ]);
 
 /** The island event boxes on one street. */

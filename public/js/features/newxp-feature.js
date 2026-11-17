@@ -134,7 +134,7 @@ import {
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=6d95626b';
+} from '../newxp.js?v=02f902e6';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
@@ -150,7 +150,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=d2bcebbc';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=b86b2119';
+import { HOME_MACHINE } from '../home-ticket.js?v=e73312c1';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=fea1fa89';
 import {
   AK_ANIMALS,
@@ -2642,10 +2642,16 @@ async function islandRockScript(engine, t, rock) {
     islandHud(engine);
     callout('.meta-stat.currants', 3000);
     await sleep(t, 2000);
-    engine.pc.currants = (Number(engine.pc.currants) || 0) + ISLAND_CURRANTS;
-    engine.floatText(P().x, P().y - 90, `+${ISLAND_CURRANTS} currants`, '#ffe28a');
-    engine.playSound('QUOIN_CURRANTS', { volume: 0.4 });
-    engine.updateHud();
+    // G948: paid once. The flag goes into the save in the same tick (setFlag saves), so a reload
+    // before save.island moves on replays the talk, not the 978, and the site credits the 978 from
+    // the flag (G942 gap A14: they came out of a new character's budget and were taken if it was spent).
+    if (!hasFlag('island_currants')) {
+      engine.pc.currants = (Number(engine.pc.currants) || 0) + ISLAND_CURRANTS;
+      setFlag('island_currants');
+      engine.floatText(P().x, P().y - 90, `+${ISLAND_CURRANTS} currants`, '#ffe28a');
+      engine.playSound('QUOIN_CURRANTS', { volume: 0.4 });
+      engine.updateHud();
+    }
     await sleep(t, 4000);
     await talk(t, rock, LINES.shortChange, { buttons: ['Thanks'] });
     await vog(t, LINES.thatWasQuest);
