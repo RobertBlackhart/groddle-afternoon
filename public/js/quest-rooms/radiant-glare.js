@@ -41,8 +41,8 @@
  * LIFFFRAHB4A3JHJ, reference only).
  */
 
-import { BODY_H, JUMP_GAP, JUMP_RISE, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=46560c2a';
-import { bulbSprite, dishSprite, knobSprite, ledgeStrip, mixHex, spotlightBeamX, spotlightSprite } from './light-rig-art.js?v=7fda94d2';
+import { BODY_H, JUMP_GAP, JUMP_RISE, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=e2ea6374';
+import { bulbSprite, dishSprite, knobSprite, ledgeStrip, mixHex, spotlightBeamX, spotlightSprite } from './light-rig-art.js?v=2eb5b775';
 
 export const W = 1100;
 export const H = 3400;

@@ -70,6 +70,38 @@
       ]
     },
     {
+      "id": "decos:ww",
+      "name": "Winter Walk's tree arch and curling plants",
+      "caption": "The big hollow tree arch and the pale green curling plants of Winter Walk, the snowy street a street spirit sends you down from level 7. The arch is two old trees whose branches cross overhead, with the walk's line about icicles written inside it. No picture of either survives in Tiny Speck's files, only in players' snapshots of the street from 2012, so they were made again. Each plant is two or three copies of one stalk, turned and mirrored, as the snapshots show a clump of curls.",
+      "display": {
+        "w": 289,
+        "h": 133
+      },
+      "image": {
+        "file": "public/assets/made-art/ww-props.webp",
+        "label": "Made for Groddle",
+        "alt": "Two bare grey-brown trees leaning together so their branches cross in an arch, a dark hollow in the right trunk and snow on the roots; beside them a clump of three pale green curling stalks and a low pair creeping along the ground."
+      },
+      "facts": [
+        {
+          "label": "What the 2012 street had",
+          "text": "A snowy wood of tall dead trees. Past the camp, two gnarled trees leaned together into an arch with the line about icicles inside it, and pale green stalks curled up out of the snow beside it and along the walk."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) for Austin, one chat for the arch and one for the plants. It was given our drawing of the sizes, three of the players' 2012 snapshots to look at, and Tiny Speck's own trees from the street to match the look. Austin chose the arch; of two tries, the first kept the two trees apart, as the snapshots do."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The arch was sized by its opening, so the line about icicles fits between the trunks as it does in the snapshots. The street was walked in the game on a desktop and a phone, in both looks, its floor, icicles and pillars unchanged."
+        },
+        {
+          "label": "In the game",
+          "text": "Winter Walk, offered by the street spirits from level 7, and its repeat."
+        }
+      ]
+    },
+    {
       "id": "decos:lp",
       "name": "Walk Toward the Light's dishes, shades, poles and ledges",
       "caption": "The dish platforms, ceiling lamp shades, striped poles and stone ledges of Walk Toward the Light, the second puzzle level a player meets. No picture of them survives in Tiny Speck's files, only in players' snapshots of the room from 2012, so they were made again. The dish and the pole are grey on purpose: the room tints one picture by the light it stands in, as the snapshots show the same dish in six colours.",

@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -24,6 +24,9 @@ showcase.json as it is, so a new piece does not need the older pieces' screensho
   rg-before.png       Radiant Glare (?questdemo=radiant_glare&questautoplay=mixer, 1280 x 800) at its
                       green mixer, likewise, with radiant-glare.js of b4381e64556
   rg-after.png        the same with today's room
+  ww-before.png       Winter Walk (?questdemo=winter, 1280 x 800) walked right to the caption (x -1547), every
+                      page element but the canvas hidden, with the street JSON of d9239df55e8 (before the made art)
+  ww-after.png        the same with today's street
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
@@ -183,6 +186,44 @@ def rg_props():
     return rig_sheet((290, 176), items)
 
 
+# Winter Walk: the made tree arch and one plant of each kind as the street sets them (js/winter-walk-streets.js
+# WINTER_WALK_ARCH, WINTER_WALK_CURL_SPLAYS tall3 and low2), on paper at 1.5 px a unit, all on one ground line.
+WW_S = 1.5
+CURL = {'tall': ('gz_ai_ww_curl_tall', 46, 120, 0.2383), 'low': ('gz_ai_ww_curl_low', 130, 43, 0.0721)}
+SPLAY = {'tall3': [(1, -5, False, -9), (0.84, 6, True, 10), (0.72, 1, False, 20)], 'low2': [(1, 5, False, 0), (0.78, -5, True, -4)]}
+
+
+def foot_turned(art, deg):
+    """The art turned `deg` clockwise (as Pixi's angle) about its bottom centre: returns the picture and its foot's place in it."""
+    w, h = art.size
+    pad = Image.new('RGBA', (w + 2 * h, 2 * h), (0, 0, 0, 0))
+    pad.alpha_composite(art, (h, 0))
+    return pad.rotate(-deg, resample=Image.BICUBIC), (h + w / 2, h)
+
+
+def ww_props():
+    W, H, GROUND = 840, 388, 368
+    img = Image.new('RGBA', (round(W * WW_S), round(H * WW_S)), PAPER)
+    used = {}
+
+    def put_art(name, cx, w, h, flip=False, deg=0):
+        p = os.path.join(PUB, 'assets/decos/groddle', f'{name}@1.5x.webp')
+        used[p] = source(p)
+        art = Image.open(p).convert('RGBA').resize((round(w * WW_S), round(h * WW_S)), Image.LANCZOS)
+        if flip:
+            art = art.transpose(Image.FLIP_LEFT_RIGHT)
+        art, (fx, fy) = foot_turned(art, deg)
+        img.alpha_composite(art, (round(cx * WW_S - fx), round(GROUND * WW_S - fy)))
+
+    put_art('gz_ai_ww_tree_arch', 20 + 229, 458, 348)
+    for kind, splay, root, sc in (('tall', 'tall3', 535, 1.05), ('low', 'low2', 700, 1)):
+        name, w0, h0, rf = CURL[kind]
+        for k, dx, flip, deg in SPLAY[splay]:
+            w, h = w0 * sc * k, h0 * sc * k
+            put_art(name, root + dx * sc - (rf - 0.5) * w * (-1 if flip else 1), w, h, flip, deg)
+    return img, list(used.values())
+
+
 # Region maps: none since lane maps17. The gallery of regions painted again from their thumbnails (maps:<hub>,...) lost its
 # last region when Vortex of Random took The Seams' restore (its 2012 map is the same painting), so the piece, its two
 # composed pictures (maps-thumbs.webp, maps-painted.webp) and this part were dropped; they stay in git history.
@@ -217,6 +258,23 @@ def main():
         img, used = rg_props()
         put('rg-props', webp(img, 'rg-props'), "Radiant Glare's made wall spotlight, caged bulbs and pipe knob",
             'the made decos (3x files) at the sizes of the brief, 3 px a unit, on paper: the spotlight, the caged bulb lit (top) and off (below) tinted red, yellow and blue as the switches tint them and untinted, and the knob', used)
+    if want('ww'):
+        img, used = ww_props()
+        put('ww-props', webp(img, 'ww-props'), "Winter Walk's made tree arch and curling plants",
+            'the made decos (3x files) at the sizes the street draws them, 1.5 px a unit, on paper, on one ground line: the tree arch, a tall plant of three copies of its stalk and a low plant of two, splayed as js/winter-walk-streets.js sets them', used)
+    if want('ww-room'):
+        box = (360, 60, 2160, 1118)
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'ww-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (2560, 1600), s.size
+            s = s.crop(box).resize((720, 423), Image.LANCZOS)
+            name = 'ww-room-before' if which == 'before' else 'ww-room'
+            what = "Winter Walk at its caption before the made art: a bare Tiny Speck tree and open snow" if which == 'before' else "Winter Walk at its caption with the made tree arch and curling plants"
+            street = 'the street JSON of d9239df55e8 (before the made art)' if which == 'before' else "today's street"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (1280 x 800, deviceScaleFactor 2, questdemo=winter, walked right to x -1547), every page element but the canvas hidden, {street}; cropped to x {box[0] // 2}-{box[2] // 2}, y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 423",
+                [{'shot': f'ww-{which}.png', 'sha256': sha(shot)}])
     # Crops in device px (CSS px x 2): the spotlight run's shades, poles, dishes and ledge; the mixer's console, dishes and spotlight.
     for room, title, how, box in (('lp', 'Walk Toward the Light at its spotlight run', 'questautoplay=final', (320, 160, 2240, 1288)),
                                   ('rg', "Radiant Glare's mixer lit green", 'questautoplay=mixer', (560, 472, 2480, 1600))):

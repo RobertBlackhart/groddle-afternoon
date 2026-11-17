@@ -58,9 +58,10 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.ok(!made.pieces.some((p) => p.id.startsWith('npc_fire_dragon')), 'the Fire Dragon experiment is not on the page');
     const dates = made.pieces.map((p) => p.made);
     assert.deepEqual(dates, [...dates].sort().reverse());
-    // 2026-11-16 leads: the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare). Then 2026-11-13 in the curated order: the
-    // Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World map at 2x; then the quest book (2026-11-12).
-    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
+    // 2026-11-16 leads: Winter Walk's tree arch and plants (G912), the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare).
+    // Then 2026-11-13 in the curated order: the Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World
+    // map at 2x; then the quest book (2026-11-12).
+    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:ww', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);
@@ -102,7 +103,10 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.ok(ez.facts.some((f) => f.label === 'What the 2012 street had' && /glass-topped serving counters/.test(f.text)));
     assert.deepEqual([piece('decos:ezc:room').original.src, piece('decos:ezc:room').image.src], ['/assets/made-art/ezc-room-stand-ins.webp', '/assets/made-art/ezc-room.webp']);
     // And the light-puzzle rooms' eleven (lane art01, 2026-11-16): one composed sheet each for gz_ai_lp_* and gz_ai_rg_*.
-    assert.deepEqual(Object.keys(more.decos.art).filter((n) => /^gz_ai_(ezc|lp|rg)_/.test(n)).sort(), Object.keys(more.decos.art).sort());
+    assert.deepEqual(Object.keys(more.decos.art).filter((n) => /^gz_ai_(ezc|lp|rg|ww)_/.test(n)).sort(), Object.keys(more.decos.art).sort());
+    // Winter Walk's three (lane art03, 2026-11-16, G912): one sheet of the arch and a plant of each kind.
+    assert.equal(piece('decos:ww').image.src, '/assets/made-art/ww-props.webp');
+    assert.ok(piece('decos:ww').made === '2026-11-16' && /2012/.test(piece('decos:ww').caption));
     assert.equal(piece('decos:lp').image.src, '/assets/made-art/lp-props.webp');
     assert.equal(piece('decos:rg').image.src, '/assets/made-art/rg-props.webp');
     for (const r of ['lp', 'rg']) assert.deepEqual([piece(`decos:${r}:room`).original.src, piece(`decos:${r}:room`).image.src], [`/assets/made-art/${r}-room-vectors.webp`, `/assets/made-art/${r}-room.webp`]);

@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=011ca8e5';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=dd4b914a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=9afd2e68';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=34e7e56f';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=8270ce2c';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=ad9b800d';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,
@@ -682,7 +682,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=7ed1bdfd';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=35320a94';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=bc438c50';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -711,7 +711,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=4a0f5c8f';
+} from './js/street-render.js?v=b444382d';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -1046,7 +1046,7 @@ import { loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodL
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=165dbd6e';
 import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
-import { installHiresDecos } from './js/deco-hires.js?v=f0419bc5';
+import { installHiresDecos } from './js/deco-hires.js?v=7a8904fa';
 import { loadAudioLevels, loadMutedPreference, saveAudioLevel, saveMutedPreference } from './js/audio-pref.js?v=6fe817bc';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=2abf9f70';
@@ -1078,7 +1078,7 @@ import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=83a031ee';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
-import { sceneAnim, syncAnim } from './js/deco-anim.js?v=7a7ef565';
+import { sceneAnim, syncAnim } from './js/deco-anim.js?v=f60bad7d';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=98606052';
 import * as textureUrls from './js/textures.js?v=8e0a8c38';

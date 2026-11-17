@@ -204,6 +204,27 @@
      "licence": "CC0 1.0, Tiny Speck: glitch-items misc/subway_map (subway_map.swf)"
     }
    ]
+  },
+  "public/assets/made-art/ww-props.webp": {
+   "what": "Winter Walk's made tree arch and curling plants",
+   "w": 1260,
+   "h": 582,
+   "sha256": "6366146ed39b0fa2de9a99bce8b184d4515ab8fa3cbf0bb45e86f74177eee84e",
+   "made": "the made decos (3x files) at the sizes the street draws them, 1.5 px a unit, on paper, on one ground line: the tree arch, a tall plant of three copies of its stalk and a low plant of two, splayed as js/winter-walk-streets.js sets them",
+   "from": [
+    {
+     "file": "public/assets/decos/groddle/gz_ai_ww_tree_arch@1.5x.webp",
+     "sha256": "12553e5f0a5e0c8c6654c6ac68d70ceb9c737a9b6fea5e621f7069e45d67a1cc"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_ww_curl_tall@1.5x.webp",
+     "sha256": "2bd751b121ac05cf914db1acc03a42db0ed1cff5d92c72563bac60f5c8b88ce0"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_ww_curl_low@1.5x.webp",
+     "sha256": "260816dac7737e581a9847dd33d0bcd1fa0294d2a0bbcdf74d7ad1008e01ccb4"
+    }
+   ]
   }
  }
 }

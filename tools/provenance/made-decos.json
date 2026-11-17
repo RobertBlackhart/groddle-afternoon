@@ -3,10 +3,10 @@
  "about": "New decos made for Groddle's own rebuilt streets (not a published zone): AI-generated or own work, dedicated CC0 1.0 with who or what made them and from what inputs (tools/builder/licence-policy.json). They ship as gz_ files beside the library's, kept out of assets/decos/manifest.json; tools/builder/build-zones.mjs lists them in js/deco-new-list.js after checking each file's sha256 here, and tests/g316-provenance.test.js allows exactly these files with the zones' new-art.json.",
  "references": [
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
-  "Players' 2012 Snaps of Walk Toward the Light and Radiant Glare (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
+  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare and Winter Walk (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 and 02: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
- "count": 14,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01, 02 and 03: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
+ "count": 17,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -1339,6 +1339,285 @@
    "intake": {
     "on": "2026-11-16",
     "by": "Claude (lane art01): sizes checked against attach/1 and the brief; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_ww_tree_arch": {
+   "what": "The hollow tree arch: two old bare trees whose branches cross overhead, round the walk's caption",
+   "file": "public/assets/decos/groddle/gz_ai_ww_tree_arch.webp",
+   "sha256": "e6311a411348a5df5af3f6d43052ed2d058e95628bf083ef09cc812235d0290d",
+   "bytes": 122224,
+   "file3": "public/assets/decos/groddle/gz_ai_ww_tree_arch@1.5x.webp",
+   "sha256_3": "12553e5f0a5e0c8c6654c6ac68d70ceb9c737a9b6fea5e621f7069e45d67a1cc",
+   "bytes3": 242932,
+   "w": 458,
+   "h": 348,
+   "size": "360 x 300 units in the brief (the trunks' span), opening about 200 x 170; the drawing (1966 x 1494 px, 1.32 to 1) is sized by its opening: the inner trunk edges at drop row 1000 (x 577-1499) set to 215 units, as Snaps 82043 and 81189 show it at the caption's height (about 215-220; the caption is 1 unit a px there), 4.288 px a unit; its branches reach wider than the brief's outline",
+   "replaces": "heights_tree_bare_4 (Tiny Speck, CC0 1.0), the bare two-trunk tree that stood near the caption; the arch itself was left out (no CC0 piece, Austin 2026-10-31)",
+   "streets": [
+    "GIFH2AKJ5I735SV"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "1 of 2 generations: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/model.txt (\"H-tree-arch.png (first try, two trees with crossing branches) is the keeper\"; H-tree-arch-2.png is not used)"
+   },
+   "settings": "4:3, transparent, 1 image; 2048 x 1536 (first try)",
+   "prompt": "Draw piece H from attachment 1: the big hollow two-trunk tree from the snowy quest street \"Winter Walk\" (attachments 2 and 3 show it in the middle of the picture, with a line of white text inside its arch; ignore the text).\n\nWhat it is: two large, old, leafless trees standing apart, each with its own roots on the ground, their gnarled grey-brown trunks leaning toward each other so their upper branches reach across and cross overhead, making a tall arch with open sky through the middle (as in attachments 2 and 3: the trunks never join). Bare, twisting, angular branches spread from the top and the sides. The right trunk has a large dark oval hollow in it, near its base. A little snow on the roots. The space inside the arch stays open and empty.\n\nSize: 360 x 300 units, the roots on the bottom edge, the opening inside the arch about 200 units wide and 170 tall. Draw it at 4 px per unit: 1440 x 1200 px.\n\nColour: as the pictures: muted grey-brown bark with darker grooves, the same family as the bare Tiny Speck trees in attachment 5.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/prompts/H-hollow-tree-arch.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-tree-arch-and-plants-snap-82043.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-tree-arch-snap-81189.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-curling-plants-snap-83816.png (a player's 2012 Snap: reference only, never in the repo)",
+    "deco:heights_tree_bare_4",
+    "deco:tree_bare_thin_1",
+    "deco:snow_pinecluster_01a_al1",
+    "deco:icicle_1b_al1",
+    "deco:heights_tree_bare_2"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "0031768f0c9a1bd8462d5c89b98b0008485aed332710879364003c18063dac5c",
+     "what": "the pieces as plain outlines with their sizes in game units, the caption kept open inside the arch",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-tree-arch-and-plants-snap-82043.png",
+     "sha256": "5add0fcb6720c69c819ca7832888a39617edafbae19d22782b78e431dee58714",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, a tall curling plant left of it, low ones on the ground",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-tree-arch-snap-81189.png",
+     "sha256": "84ac2f625ad9d8e50033aaf563d3b8cd11315e2041422c6d06d03368180b0cfe",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, its two trunks apart",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-curling-plants-snap-83816.png",
+     "sha256": "a04a7880bfc749751ac6c6ce5785f7c87a1f1966126ba4d8752bfcaff98e9abe",
+     "what": "a player's 2012 Snap of the walk's cliff end (named in the brief for the plants)",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "9bdc3b551478d8559f4eef116076c52259d43d7f7eb502986eb362f369b8007f",
+     "what": "heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2: Tiny Speck decos already on the street, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/H-tree-arch.png",
+    "dropSha256": "7b448c04b7e94f6ac7d26a709c514025cd801735fcadb56864ed65c91ac1240a",
+    "trim": "alpha over 8: x 44-2010, y 8-1502",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 916 x 696 and 1374 x 1044",
+    "masterSha256": {
+     "x2": "1e1c7cfabb33e37e98ba1f7e3bf165d0b530371e3bfb35a78f1db4dfd8785ddf",
+     "x3": "659909ec6b3ac51ce19b3913292390333de50c32c3d1059e8da67f8e738710d2"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art03): sizes checked against attach/1, the brief and the Snaps; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_ww_curl_tall": {
+   "what": "The tall curling plant (piece I): one pale green stalk curling over at the top; the street sets 2 or 3 copies in a splayed cluster",
+   "file": "public/assets/decos/groddle/gz_ai_ww_curl_tall.webp",
+   "sha256": "30ede705fc1d5314ffc9a1f3cae97e5ded75c1d9001096c8c0c400eeaf7edc8b",
+   "bytes": 6372,
+   "file3": "public/assets/decos/groddle/gz_ai_ww_curl_tall@1.5x.webp",
+   "sha256_3": "2bd751b121ac05cf914db1acc03a42db0ed1cff5d92c72563bac60f5c8b88ce0",
+   "bytes3": 10638,
+   "w": 46,
+   "h": 120,
+   "size": "70 x 120 units in the brief; drawn 321 x 842 px (0.38 to 1, thinner than 0.58), 46 x 120 at 120 tall; the clusters give the width (model.txt: 2-3 copies, mirrored, 70-100%, roots overlapping)",
+   "replaces": "nothing: the plants were left out (no CC0 piece, Austin 2026-10-31)",
+   "streets": [
+    "GIFH2AKJ5I735SV"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snaps 82043 and 81189, for Austin's preview on the street",
+    "on": "2026-11-16",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/model.txt (\"I-J-curl-both.png accepted\"; \"Room 03 complete with H-tree-arch.png\")"
+   },
+   "settings": "16:9, transparent, 1 image; 1536 x 864 holding I and J side by side",
+   "prompt": "Draw pieces I and J from attachment 1: the pale green curling plants that grow out of the snow on the quest street \"Winter Walk\" (attachment 2 shows several: one tall curl just left of the big tree, low ones along the ground; attachment 4 more).\n\nWhat they are: smooth, fleshy, pale sage-green stalks, a little like giant fiddlehead ferns or tendrils, each one rising from the snow and ending in a loose spiral curl, with soft lighter highlights along one side and a slightly darker green on the shaded side. No leaves.\n\nTwo pictures:\n1. piece I, a tall plant: one stalk rising and curling over at the top, 70 x 120 units (280 x 480 px);\n2. piece J, a low plant: one stalk creeping along the ground and curling up at its tip, 130 x 45 units (520 x 180 px).\nThe bottom of each touches the bottom edge of its picture.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/prompts/I-J-curling-plants.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-tree-arch-and-plants-snap-82043.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-tree-arch-snap-81189.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-curling-plants-snap-83816.png (a player's 2012 Snap: reference only, never in the repo)",
+    "deco:heights_tree_bare_4",
+    "deco:tree_bare_thin_1",
+    "deco:snow_pinecluster_01a_al1",
+    "deco:icicle_1b_al1",
+    "deco:heights_tree_bare_2"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "0031768f0c9a1bd8462d5c89b98b0008485aed332710879364003c18063dac5c",
+     "what": "the pieces as plain outlines with their sizes in game units, the caption kept open inside the arch",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-tree-arch-and-plants-snap-82043.png",
+     "sha256": "5add0fcb6720c69c819ca7832888a39617edafbae19d22782b78e431dee58714",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, a tall curling plant left of it, low ones on the ground",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-tree-arch-snap-81189.png",
+     "sha256": "84ac2f625ad9d8e50033aaf563d3b8cd11315e2041422c6d06d03368180b0cfe",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, its two trunks apart",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-curling-plants-snap-83816.png",
+     "sha256": "a04a7880bfc749751ac6c6ce5785f7c87a1f1966126ba4d8752bfcaff98e9abe",
+     "what": "a player's 2012 Snap of the walk's cliff end (named in the brief for the plants)",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "9bdc3b551478d8559f4eef116076c52259d43d7f7eb502986eb362f369b8007f",
+     "what": "heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2: Tiny Speck decos already on the street, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/I-J-curl-both.png",
+    "dropSha256": "1be0311ed0c99267b27bc8de0f1ec8c9a7fc512effc4ad974622d5ca03bd8d17",
+    "trim": "the left piece (split at x 552, in the empty columns), alpha over 8: x 178-499, y 17-859",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 92 x 240 and 138 x 360",
+    "masterSha256": {
+     "x2": "e4b01b4bbfc41217831779c3d8513e38a33611a4bcef8089e483d580c9e36ccd",
+     "x3": "e6b95f3b48316196a78463aae5635eff38367a2aa8148c98602b94e61115e38b"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art03): sizes checked against attach/1, the brief and the Snaps; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_ww_curl_low": {
+   "what": "The low curling plant (piece J): one pale green stalk creeping along the snow and curling up at its tip; set in pairs on the street",
+   "file": "public/assets/decos/groddle/gz_ai_ww_curl_low.webp",
+   "sha256": "456e1c9b86e1df7c3778593c790b908cbc3bbf1e23b93dbf7e6a5125b3446784",
+   "bytes": 6062,
+   "file3": "public/assets/decos/groddle/gz_ai_ww_curl_low@1.5x.webp",
+   "sha256_3": "260816dac7737e581a9847dd33d0bcd1fa0294d2a0bbcdf74d7ad1008e01ccb4",
+   "bytes3": 9934,
+   "w": 130,
+   "h": 43,
+   "size": "130 x 45 units in the brief; drawn 784 x 260 px (3.02 to 1 against 2.89), 130 x 43",
+   "replaces": "nothing: the plants were left out (no CC0 piece, Austin 2026-10-31)",
+   "streets": [
+    "GIFH2AKJ5I735SV"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Claude, checked against Snaps 82043 and 81189, for Austin's preview on the street",
+    "on": "2026-11-16",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/model.txt (\"I-J-curl-both.png accepted\"; \"Room 03 complete with H-tree-arch.png\")"
+   },
+   "settings": "16:9, transparent, 1 image; 1536 x 864 holding I and J side by side",
+   "prompt": "Draw pieces I and J from attachment 1: the pale green curling plants that grow out of the snow on the quest street \"Winter Walk\" (attachment 2 shows several: one tall curl just left of the big tree, low ones along the ground; attachment 4 more).\n\nWhat they are: smooth, fleshy, pale sage-green stalks, a little like giant fiddlehead ferns or tendrils, each one rising from the snow and ending in a loose spiral curl, with soft lighter highlights along one side and a slightly darker green on the shaded side. No leaves.\n\nTwo pictures:\n1. piece I, a tall plant: one stalk rising and curling over at the top, 70 x 120 units (280 x 480 px);\n2. piece J, a low plant: one stalk creeping along the ground and curling up at its tip, 130 x 45 units (520 x 180 px).\nThe bottom of each touches the bottom edge of its picture.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/prompts/I-J-curling-plants.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-tree-arch-and-plants-snap-82043.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-tree-arch-snap-81189.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-curling-plants-snap-83816.png (a player's 2012 Snap: reference only, never in the repo)",
+    "deco:heights_tree_bare_4",
+    "deco:tree_bare_thin_1",
+    "deco:snow_pinecluster_01a_al1",
+    "deco:icicle_1b_al1",
+    "deco:heights_tree_bare_2"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "0031768f0c9a1bd8462d5c89b98b0008485aed332710879364003c18063dac5c",
+     "what": "the pieces as plain outlines with their sizes in game units, the caption kept open inside the arch",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-tree-arch-and-plants-snap-82043.png",
+     "sha256": "5add0fcb6720c69c819ca7832888a39617edafbae19d22782b78e431dee58714",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, a tall curling plant left of it, low ones on the ground",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-tree-arch-snap-81189.png",
+     "sha256": "84ac2f625ad9d8e50033aaf563d3b8cd11315e2041422c6d06d03368180b0cfe",
+     "what": "a player's 2012 Snap of the walk: the tree arch round the caption, its two trunks apart",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-curling-plants-snap-83816.png",
+     "sha256": "a04a7880bfc749751ac6c6ce5785f7c87a1f1966126ba4d8752bfcaff98e9abe",
+     "what": "a player's 2012 Snap of the walk's cliff end (named in the brief for the plants)",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "9bdc3b551478d8559f4eef116076c52259d43d7f7eb502986eb362f369b8007f",
+     "what": "heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2: Tiny Speck decos already on the street, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos heights_tree_bare_4, tree_bare_thin_1, snow_pinecluster_01a_al1, icicle_1b_al1, heights_tree_bare_2 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/03-winter-walk/drop/I-J-curl-both.png",
+    "dropSha256": "1be0311ed0c99267b27bc8de0f1ec8c9a7fc512effc4ad974622d5ca03bd8d17",
+    "trim": "the right piece (split at x 552), alpha over 8: x 604-1388, y 599-859",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 260 x 86 and 390 x 129",
+    "masterSha256": {
+     "x2": "59dcaffadadc6b2bc903aaab484dcc0ab350e29e3a0d4c0c88d219635982e507",
+     "x3": "e0748dc9282b2fb283c927a361973d3e7332e40741c2f1b3027c8cb1c570b788"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-16",
+    "by": "Claude (lane art03): sizes checked against attach/1, the brief and the Snaps; cut, trimmed and resized as model.txt asks, nothing redrawn"
    }
   }
  }

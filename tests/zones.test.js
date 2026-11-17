@@ -388,7 +388,7 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     assert.throws(() => buildZones(fs), /not the picture its provenance names/);
   });
 
-  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street, and the light-puzzle rooms\' props', () => {
+  it('this checkout\'s made decos: the EZ Cookin\' props, each drawn on its street, the light-puzzle rooms\' props and Winter Walk\'s', () => {
     const made = json(MADE_DECOS).art;
     const ezc = Object.keys(made).filter((n) => n.startsWith('gz_ai_ezc_'));
     assert.deepEqual(ezc.sort(), ['gz_ai_ezc_glass_counter', 'gz_ai_ezc_hanging_lamp', 'gz_ai_ezc_round_table']);
@@ -397,6 +397,10 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     const rig = Object.keys(made).filter((n) => /^gz_ai_(lp|rg)_/.test(n));
     assert.equal(rig.length, 11);
     for (const n of rig) assert.equal(made[n].code, 'public/js/quest-rooms/light-rig-art.js', n);
-    assert.equal(ezc.length + rig.length, Object.keys(made).length);
+    // Winter Walk's tree arch and curling plants (lane art03, 2026-11-16, G912): street decos on the walk.
+    const ww = Object.keys(made).filter((n) => n.startsWith('gz_ai_ww_'));
+    assert.deepEqual(ww.sort(), ['gz_ai_ww_curl_low', 'gz_ai_ww_curl_tall', 'gz_ai_ww_tree_arch']);
+    for (const n of ww) assert.deepEqual(made[n].streets, ['GIFH2AKJ5I735SV']);
+    assert.equal(ezc.length + rig.length + ww.length, Object.keys(made).length);
   });
 });
