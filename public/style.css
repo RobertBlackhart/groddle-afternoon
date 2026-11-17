@@ -11481,6 +11481,70 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 [data-ui="modern"] body.nx-hide-map .more-list #menu-map-btn,
 [data-ui="modern"] body.nx-hide-currants .more-list #menu-currants { display: none; }
 /* —— end PAPER —— */
+/* === G919 (fix29): the phone's quest button === */
+/* G919 (Austin 2026-11-17, his iPhone): the pinned quests took a whole row upright and sat over the stick
+   sideways, so a phone shows them as one round button beside Quests and Report a problem
+   (js/ui/quest-pin-button.js): the quest book, a ring for the first quest's progress, a count badge with
+   two pinned. A tap opens the tracker's own card under it as a popover; a step that moves pops one short
+   line out of the button for 3 s, as "New Quest Added!" does under Quests. Computers, tablets and Classic
+   keep the card where it was. */
+#quest-pins-btn { display: none; }
+:root.touch-phone[data-ui="modern"] .top-bar .hud-actions #quest-pins-btn:not([hidden]) { display: inline-grid; order: 0; flex: none; width: var(--slot); height: var(--slot); }
+[data-ui="modern"] .top-bar #quest-pins-btn img { width: 22px; height: auto; }
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-ring {
+  position: absolute; top: 4px; left: 50%; width: 36px; height: 36px; margin-left: -18px;
+  transform: rotate(-90deg); pointer-events: none; overflow: visible;
+}
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-track { fill: none; stroke: var(--border); stroke-width: 1.5; }
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-fill {
+  fill: none; stroke: var(--good); stroke-width: 2.5; stroke-linecap: round;
+  transition: stroke-dasharray var(--motion-med) var(--ease-out);
+}
+/* A count, not an alert: the accent, not the Mail badge's red. */
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-badge { top: 0; right: 0; background: var(--accent); }
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-badge[hidden] { display: none; }
+[data-ui="modern"] .top-bar #quest-pins-btn .qpb-line {
+  position: absolute; right: 0; top: calc(100% + 6px); box-sizing: border-box;
+  max-width: min(280px, calc(100vw - 2 * var(--hud-inset) - var(--safe-l) - var(--safe-r)));
+  padding: var(--space-1) var(--space-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border-radius: var(--radius-pill); background: var(--surface-raised); box-shadow: var(--shadow-2);
+  color: var(--text); font-size: var(--fs-s); font-weight: var(--fw-heavy); line-height: var(--lh-tight);
+  pointer-events: none; transform-origin: top right; transform: scale(0.2); opacity: 0; visibility: hidden;
+  transition: transform var(--motion-med) var(--ease-out), opacity var(--motion-med), visibility 0s linear var(--motion-med);
+}
+[data-ui="modern"] .top-bar #quest-pins-btn[data-line="on"] .qpb-line {
+  transform: none; opacity: 1; visibility: visible;
+  transition: transform var(--motion-med) var(--ease-out), opacity var(--motion-med), visibility 0s;
+}
+/* Upright the bar's row is 402 px: the stats pill (rings, iMG, currants, favor; #372) and four 44 px buttons
+   do not fit (with 9,598 currants the Menu ran off the edge), so with the quest button there the four
+   are --hit wide (36 px), still 44 px tall. */
+@media (orientation: portrait) {
+  :root.touch-phone[data-ui="modern"] .top-bar .hud-actions:has(#quest-pins-btn:not([hidden])) :is(#quest-btn, #quest-pins-btn, #bug-btn, #more-btn) { width: var(--hit); }
+}
+/* While the line is out the bar draws over the street's name, which sits under it upright. */
+#wrap > header.top-bar:has(#quest-pins-btn[data-line="on"]) { z-index: calc(var(--z-hud) + 1); }
+#quest-pins-pop[hidden] { display: none; }
+:root.touch-phone[data-ui="modern"] .top-bar #quest-pins-pop {
+  width: min(300px, calc(100vw - 2 * var(--hud-inset) - var(--safe-l) - var(--safe-r))); padding: var(--space-1);
+  max-height: calc(100dvh - var(--hud-h) - 16px - 80px - var(--safe-t) - var(--safe-b));
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+}
+[data-ui="modern"] #quest-pins-pop #quest-pins:not([hidden]) {
+  display: block; color: var(--text); font-family: var(--font-ui); font-size: var(--fs-m);
+  font-weight: var(--fw-regular); line-height: var(--lh-tight);
+}
+[data-ui="modern"] #quest-pins-pop #quest-pins .quest-pins-head { padding: 0 var(--space-1); }
+[data-ui="modern"] #quest-pins-pop #quest-pins .quest-pins-toggle { display: none; }
+[data-ui="modern"] #quest-pins-pop #quest-pins .tq { min-height: 44px; }
+/* The top bar popover layer (G644, the HUB rules): over the sheets and the drawer while it is open. */
+#wrap > header.top-bar:has(#quest-pins-pop:not([hidden])) { z-index: var(--z-hud-pop); }
+#wrap:has(> header.top-bar #quest-pins-pop:not([hidden])) > #game-root .notify-notices { z-index: var(--z-hud-pop-under); }
+@media (prefers-reduced-motion: reduce) {
+  [data-ui="modern"] .top-bar #quest-pins-btn .qpb-fill,
+  [data-ui="modern"] .top-bar #quest-pins-btn .qpb-line { transition: none; }
+}
+/* === end G919 === */
 /* The quest pill (player report 37; features/quest-plate-feature.js, js/quest-plate.js): in a quest
    place the nameplate shows the quest on one line, at its own place and height. The room's card
    folds away and opens under the pill; its step or story line shows once as a caption under it.

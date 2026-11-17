@@ -12,12 +12,16 @@
  *
  * The pins themselves live in features/quest-pins-feature.js (the player save). QA: canvas data
  * questPins ("id:count,id:count", "" when none), questPinsCollapsed.
+ *
+ * G919 (Austin 2026-11-17): on a phone the card is the popover of one round button in the top bar
+ * (js/ui/quest-pin-button.js), drawn open; `button` is that button's controller.
  */
 
 import { escapeText } from './verb-menu.js?v=cd68932d';
 import { questTextPlain, questTextSegments } from '../quest-text.js?v=7f5d761c';
 import { createQuestPinMenu } from './quest-pin-menu.js?v=15c53e87';
 import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=c76b5244';
+import { createQuestPinButton } from './quest-pin-button.js?v=3f9476e0';
 
 /**
  * @param {{ el: HTMLElement|null, onOpen?: (classTsid: string) => void, onCollapse?: (on: boolean) => void,
@@ -68,7 +72,7 @@ function pinRowLabel(r) {
   return `${r.title}, ${r.steps.length - left.length} of ${r.steps.length} steps done${left.length ? `: ${left.join('; ')}` : ''}`;
 }
 
-export function createQuestTracker({ el, onOpen = () => {}, onCollapse = () => {}, onUnpin = () => {}, setData = () => {}, reducedMotion = () => false, now = () => Date.now() } = {}) {
+export function createQuestTracker({ el, onOpen: openQuest = () => {}, onCollapse = () => {}, onUnpin = () => {}, setData = () => {}, reducedMotion = () => false, now = () => Date.now(), setTimer, clearTimer } = {}) {
   const list = el?.querySelector('[data-pins-list]');
   const title = el?.querySelector('[data-pins-title]');
   const toggle = el?.querySelector('[data-pins-toggle]');
@@ -100,6 +104,12 @@ export function createQuestTracker({ el, onOpen = () => {}, onCollapse = () => {
    * contextmenu) open the row's menu; the contextmenu a key or a long press sends after it is not
    * a second open, and the click a long press or a Ctrl+click ends in opens nothing.
    */
+  // G919: the phone's quest button; opening a quest from its popover closes the popover first.
+  const button = createQuestPinButton({ card: el, menu, setData, ...(setTimer ? { setTimer } : {}), ...(clearTimer ? { clearTimer } : {}) });
+  function onOpen(id) {
+    button.close();
+    openQuest(id);
+  }
   bindContextTrigger(list, {
     rowOf,
     now,
@@ -124,9 +134,12 @@ export function createQuestTracker({ el, onOpen = () => {}, onCollapse = () => {
    *   `steps` (#397, quest-sheet questStep): a quest of several steps; `count` is then steps done/total.
    * @param {boolean} collapsed
    */
-  function render(rows, collapsed) {
+  function render(rows, folded) {
     if (!el) return;
     const shown = rows.slice(0, 2);
+    button.sync(shown);
+    // A phone's popover always shows the rows (G919); the fold stays saved for a computer.
+    const collapsed = folded && !button.active();
     el.hidden = shown.length === 0;
     titles.clear();
     for (const r of shown) titles.set(r.classTsid, r.title);
@@ -172,5 +185,5 @@ export function createQuestTracker({ el, onOpen = () => {}, onCollapse = () => {
     }
   }
 
-  return { render, menu };
+  return { render, menu, button };
 }

@@ -1071,7 +1071,7 @@ import { mountSocialDrawer } from './js/ui/social-drawer.js?v=90aee828';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=9645fa07';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=92c073ec';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=4492f756';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=c76b5244';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
@@ -34373,6 +34373,37 @@ async function main() {
       },
       /** HUB QA: how many award, new-day and Giant screens are queued or showing. */
       screensPending: () => awardsPending,
+    },
+    /**
+     * G919 QA: pinned quests. pin(id) takes a quest (prereqs aside) and pins it; step(id, n) moves its
+     * first unfinished count by n; fail(id) ends its try (report 127); button() reads the phone's quest
+     * button (js/ui/quest-pin-button.js: hidden, count, share, badge, open, line).
+     */
+    questPins: {
+      pin(id) {
+        try {
+          if (!questState.active[id]) assignQuest(questState, id, { ignorePrereq: true });
+          if (!questPins()?.isPinned(id)) questPins()?.toggle(id);
+          updateHud();
+          return questPins()?.pins() || [];
+        } catch {
+          return false;
+        }
+      },
+      step(id, n = 1) {
+        const p = getQuestProgress(questState, id);
+        const r = p?.active && p.requirements.find((q) => q.current < q.num);
+        if (!r) return false;
+        questState.active[id].progress[r.name] = Math.min(r.num, r.current + Number(n || 1));
+        updateHud();
+        return questState.active[id].progress[r.name];
+      },
+      fail(id) {
+        (questState.offers ||= {}).failed = { ...(questState.offers.failed || {}), [id]: Date.now() };
+        updateHud();
+        return true;
+      },
+      button: () => questTracker.button?.state?.() || null,
     },
     /**
      * MEMQA (ticket 21, tools/qa/street-memory.mjs): where memory goes, beyond renderStats: the
