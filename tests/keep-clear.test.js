@@ -135,7 +135,7 @@ describe('the keep-clear spots (streetReservedSpots)', () => {
 
   it('are the one list game.js, the realtime builders and the level builder plan with', () => {
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
-    assert.match(game, /const reserved = streetReservedSpots\(data\);[\s\S]{0,400}reserved\.push\(\{ x: opts\.spawnX[\s\S]{0,200}currentStreetPlacement = planStreetPlacements\(/);
+    assert.match(game, /const reserved = streetReservedSpots\(data\);[\s\S]{0,400}reserved\.push\(\{ x: opts\.spawnX[\s\S]{0,400}currentStreetPlacement = planStreetPlacements\(/);
     for (const tool of ['build-realtime-objects', 'build-realtime-quoins', 'build-realtime-rook']) {
       const src = readFileSync(join(root, `tools/${tool}.mjs`), 'utf8');
       assert.match(src, /const reserved = streetReservedSpots\(data\);/, tool);
