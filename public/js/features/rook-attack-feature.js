@@ -128,7 +128,9 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=21689953';
 import { migrateClassValue } from '../tools.js?v=8516a0c3';
 import { playPotionBottle } from '../potion-bottle-fx.js?v=1c78ef1a';
-import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e7c389ef';
+import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
+import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */
@@ -694,6 +696,13 @@ function textStyle(size, extra = {}) {
   };
 }
 
+/**
+ * The star arc's top over the head's centre: the 85 x 50 arc rings the disc's top, its middle
+ * stars clear of the white disc (r 38), as the client's sat over the head with no disc behind them
+ * (RookIncidentHeaderView.as 158-162: the health circle shows only below the arc).
+ */
+export const STARS_Y = -58;
+
 function buildHud(engine) {
   const { PIXI } = engine;
   const hud = ui.hud;
@@ -709,7 +718,18 @@ function buildHud(engine) {
   badge.y = fallback.y;
   const disc = new PIXI.Graphics();
   const arc = new PIXI.Graphics();
-  const stars = new PIXI.Graphics();
+  // G892: Tiny Speck's star arc and its eleven lit frames over the head (RookIncidentHeaderView.as 86-110).
+  const stars = new PIXI.Container();
+  const starsBg = new PIXI.Sprite(textureFromUrl(ROOK_STARS.bg));
+  const starsSource = sourceFromUrl(ROOK_STARS.stars);
+  const starFrames = Array.from({ length: ROOK_STARS.frames }, (_, i) => frameTexture(starsSource, new PIXI.Rectangle(0, i * ROOK_STARS.h, ROOK_STARS.w, ROOK_STARS.h)));
+  const starsLit = new PIXI.Sprite(starFrames[0]);
+  starsLit.visible = false;
+  for (const sp of [starsBg, starsLit]) {
+    sp.x = -Math.trunc(ROOK_STARS.w / 2);
+    sp.y = STARS_Y;
+    stars.addChild(sp);
+  }
   const head = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
   head.anchor.set(0.5, 0.6);
   head.scale.set(0.92);
@@ -722,8 +742,8 @@ function buildHud(engine) {
   clock.y = 44;
   const phase = new PIXI.Text({ text: '', style: textStyle(11, { fill: 0xffe7a8, fontWeight: '800', letterSpacing: 1 }) });
   phase.anchor.set(0.5, 1);
-  // Above the stun stars (ring 50, the lit star 7: tips at -57), not over them.
-  phase.y = -59;
+  // Above the stun stars (the arc's top star from STARS_Y), not over them.
+  phase.y = STARS_Y - 2;
   const stamp = new PIXI.Text({ text: 'STUN!', style: textStyle(24, { fill: 0xffffff, stroke: { color: 0x2a1438, width: 5 } }) });
   stamp.anchor.set(1, 0.5);
   stamp.x = -52; // left of the docked badge, so it grows inward
@@ -747,7 +767,7 @@ function buildHud(engine) {
   feed.y = 70;
   badge.addChild(disc, headMask, arc, stars, head, phase, clock, stamp, armor, feedBox, feed);
   hud.addChild(badge);
-  ui.badge = { root: badge, disc, arc, stars, head, clock, phase, stamp, armor, feedBox, feed, stampUntil: 0, feedX: fallback.feedX };
+  ui.badge = { root: badge, disc, arc, stars, starsLit, starFrames, starState: stunStarsState(), head, clock, phase, stamp, armor, feedBox, feed, stampUntil: 0, feedX: fallback.feedX };
   badgeDirty = true;
   ui.head = head;
   badge.visible = false;
@@ -798,16 +818,14 @@ function drawHud(engine, a) {
   b.arc.arc(0, 0, r - 1, 0, Math.PI).stroke({ width: 9, color: 0xd8d0d6, alpha: 1 });
   if (frac > 0) b.arc.arc(0, 0, r - 1, Math.PI - Math.PI * frac, Math.PI);
   b.arc.stroke({ width: 9, color: 0xb0132f, alpha: 1 });
-  // Stun: seven stars over the top.
-  b.stars.clear();
-  const filled = a.phase === 'stunned' || a.phase === 'dead' ? 7 : Math.floor((a.stun / a.maxStun) * 7 + 1e-6);
-  for (let i = 0; i < 7; i += 1) {
-    const ang = Math.PI + (Math.PI * (i + 0.5)) / 7;
-    const sx = Math.cos(ang) * (r + 12);
-    const sy = Math.sin(ang) * (r + 12);
-    const on = i < filled;
-    drawStar(b.stars, sx, sy, on ? 7 : 5.5, on ? 0xffd23c : 0xe9e4ea, on ? 0x9a6b00 : 0xb9b1bd);
-  }
+  // Stun: the lit frame of rook_star_stars over the empty arc (updateStun, moveStars, onStarTick).
+  const perc = a.phase === 'stunned' || a.phase === 'dead' ? 1 : a.maxStun ? a.stun / a.maxStun : 0;
+  const shown = stepStunStars(b.starState, perc, t);
+  b.starState = shown.state;
+  b.starsLit.visible = shown.frame >= 0;
+  if (shown.frame >= 0) b.starsLit.texture = b.starFrames[shown.frame];
+  b.starsLit.alpha = shown.alpha;
+  engine.setData?.('rookStars', `${shown.frame + 1}:${shown.state.target + 1}`);
   const clip = baseHeadClip(a);
   if (t >= ui.headLock) setHeadClip(clip);
   const clockS = rookClockS(a, t);

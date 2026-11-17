@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BADGE_PARTS, FEED_X, badgeExtent, feedZone, placeRookBadge, unionBox } from '../public/js/rook-badge-place.js?v=e7c389ef';
+import { BADGE_PARTS, FEED_X, badgeExtent, feedZone, placeRookBadge, unionBox } from '../public/js/rook-badge-place.js?v=e2bcbbaa';
 import { ZOOM_EVENT } from '../public/js/world-zoom.js?v=38816228';
 
 const here = dirname(fileURLToPath(import.meta.url));

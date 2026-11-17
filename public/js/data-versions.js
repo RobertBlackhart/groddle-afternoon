@@ -843,6 +843,8 @@
       "assets/streets/index.json": "b09ddc13",
       "assets/ui/quest-book-solid.webp": "a53d6aca",
       "assets/ui/quest_bubble_active.png": "2de1b09a",
+      "assets/ui/rook_star_bg.png": "41ff9651",
+      "assets/ui/rook_star_stars.png": "a0b900d9",
       "contribute/data.json": "5041fe65",
       "encyclopedia/search.json": "192b4daa",
       "landing/card-explore.webp": "7a2c1124",
