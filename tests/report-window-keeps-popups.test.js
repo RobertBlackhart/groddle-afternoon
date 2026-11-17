@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { isZoneDialog } from '../public/js/notify-view.js?v=ad784e1a';
+import { isZoneDialog } from '../public/js/notify-view.js?v=82d06f33';
 import { REPORT_WINDOW_SELECTOR } from '../public/js/window-stack.js?v=a7104f02';
 import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=c75bb986';
 

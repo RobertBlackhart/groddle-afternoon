@@ -20,7 +20,7 @@ import {
   summaryText,
   threadTarget,
 } from '../public/js/chat-threads.js?v=f1b1fbcc';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=90aee828';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=94d97746';
 import { createNotifier } from '../public/js/notify.js?v=91598c67';
 import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=0ef5d343';
 import { ACTIVE_EVERY_MS, activeDue, presenceMpFeature } from '../public/js/features/presence-mp-feature.js?v=21272297';

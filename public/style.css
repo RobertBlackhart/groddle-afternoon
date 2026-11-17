@@ -11504,7 +11504,7 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 [data-ui="modern"] .top-bar #quest-pins-btn .qpb-badge { top: 0; right: 0; background: var(--accent); }
 [data-ui="modern"] .top-bar #quest-pins-btn .qpb-badge[hidden] { display: none; }
 [data-ui="modern"] .top-bar #quest-pins-btn .qpb-line {
-  position: absolute; right: 0; top: calc(100% + 6px); box-sizing: border-box;
+  position: absolute; right: 0; top: calc(100% + 6px + var(--qpb-line-drop, 0px)); box-sizing: border-box;
   max-width: min(280px, calc(100vw - 2 * var(--hud-inset) - var(--safe-l) - var(--safe-r)));
   padding: var(--space-1) var(--space-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   border-radius: var(--radius-pill); background: var(--surface-raised); box-shadow: var(--shadow-2);
@@ -11545,6 +11545,14 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
   [data-ui="modern"] .top-bar #quest-pins-btn .qpb-line { transition: none; }
 }
 /* === end G919 === */
+/* === G921 (fix30): notices clear of the phone's controls === */
+/* G921 (lane fix29's review): on a phone held sideways the notices stood over Act. js/notify-view.js keeps
+   them clear of the stick, Act and Jump (beside the avatar, or centred in the band between them); here
+   the cards are smaller on a short screen, so more of them fit in the band under the top bar. */
+@media (orientation: landscape) and (max-height: 519px) {
+  :root.touch-phone .notify-card { padding: var(--sp-2) var(--sp-4); font-size: var(--fs-sm); line-height: var(--lh-tight); }
+}
+/* === end G921 === */
 /* The quest pill (player report 37; features/quest-plate-feature.js, js/quest-plate.js): in a quest
    place the nameplate shows the quest on one line, at its own place and height. The room's card
    folds away and opens under the pill; its step or story line shows once as a caption under it.

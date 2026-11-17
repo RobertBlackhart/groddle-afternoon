@@ -17,7 +17,7 @@ const css = readFileSync(join(root, 'public/style.css'), 'utf8');
 
 describe('notices keep clear of the HUD', () => {
   it('the pills and the tutorial pill are obstacles', () => {
-    assert.match(view, /for \(const sel of \['#hud-stats', 'header\.top-bar \.top-actions', '#newxp-pill'\]\) \{\s*const r = relRect\(document\.querySelector\(sel\), rr\);\s*if \(r\) blockers\.push\(r\);/);
+    assert.match(view, /for \(const sel of \['#hud-stats', 'header\.top-bar \.top-actions', '#newxp-pill', '#quest-pins-btn\[data-line="on"\] \.qpb-line'\]\) \{\s*const r = relRect\(document\.querySelector\(sel\), rr\);\s*if \(r\) blockers\.push\(r\);/);
   });
   it('a stack over a pill goes under it; one between the pills stays; one with no room waits', () => {
     const stats = { left: 8, top: 4, right: 204, bottom: 48 };

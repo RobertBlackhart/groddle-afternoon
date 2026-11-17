@@ -309,6 +309,53 @@ export function noticesBesideAvatar({ rect, avatar, rootW, rootH, insetL = 0, in
   return { left: Math.round(left), width, side };
 }
 
+/** PURE: whether box `r` comes within `margin` of any of `controls` (all { left, top, right, bottom }). */
+function nearControl(r, controls, margin) {
+  return (controls || []).some((c) => c && r.left < c.right + margin && r.right > c.left - margin
+    && r.top < c.bottom + margin && r.bottom > c.top - margin);
+}
+
+/**
+ * PURE (G921): whether the stack at `rect` stays clear of the phone's touch controls (`controls`: the
+ * stick, Act and Jump, #game-root px), `margin` apart. A notice over one takes the thumb's tap
+ * (lane fix29's sideways shots: "Your pack has 16 slots now" over Act).
+ */
+export function clearOfControls(rect, controls = [], margin = 8) {
+  return !rect || !nearControl(rect, controls, margin);
+}
+
+/**
+ * PURE (G921): the column the centred stack narrows to when it would reach down over a touch
+ * control: the band between the controls on the left of the screen and those on the right, at the
+ * stack's own centre as near as it fits, never wider than it was. Narrower cards wrap to more
+ * lines, so the height is estimated from the width (`h` the stack's height at `rect`'s width) and
+ * the band measured again. Null: it is clear already; { wait: true }: no band of BESIDE_MIN_W fits
+ * clear of them (the notices wait, as with no room); else { left, width, height }.
+ */
+export function noticesBetweenControls({ rect, h = rect ? rect.bottom - rect.top : 0, controls = [], rootW, insetL = 0, insetR = 0, safeL = 0, safeR = 0, margin = 8, edge = 8 } = {}) {
+  if (!rect || !controls?.length || clearOfControls(rect, controls, margin)) return null;
+  const w = rect.right - rect.left;
+  const mid = rootW / 2;
+  let minL = edge + Math.max(0, insetL, safeL);
+  let maxR = rootW - edge - Math.max(0, insetR, safeR);
+  let width = w;
+  let height = h;
+  for (let pass = 0; pass < 3; pass += 1) {
+    const span = { left: minL, right: maxR, top: rect.top, bottom: rect.top + height };
+    for (const c of controls) {
+      if (!c || !(span.top < c.bottom + margin && span.bottom > c.top - margin)) continue;
+      if ((c.left + c.right) / 2 < mid) minL = Math.max(minL, c.right + margin);
+      else maxR = Math.min(maxR, c.left - margin);
+    }
+    width = Math.floor(Math.min(NOTICE_W, w, maxR - minL));
+    if (width < BESIDE_MIN_W) return { wait: true };
+    height = Math.ceil((h * w) / width);
+  }
+  const left = Math.round(Math.min(Math.max(rect.left + (w - width) / 2, minL), maxR - width));
+  if (nearControl({ left, right: left + width, top: rect.top, bottom: rect.top + height }, controls, margin)) return { wait: true };
+  return { left, width, height };
+}
+
 /** The screen's safe area at the sides, CSS px (0 where there is none or no stylesheet). */
 function safeSides(el) {
   try {
@@ -334,7 +381,7 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
   /** name → rect (#game-root px) reserved by its owner (reserve()). */
   const reserved = new Map();
   let measuredAt = -Infinity;
-  let zones = { top: 12, banner: [], blockers: [], maxBottom: Infinity, rootW: 0, rootH: 0, insetL: 0, insetR: 0, avatar: null };
+  let zones = { top: 12, banner: [], blockers: [], maxBottom: Infinity, rootW: 0, rootH: 0, insetL: 0, insetR: 0, avatar: null, controls: [] };
   /** LANDSCAPE: the column beside the avatar the stack stands in ({ left, width }), or null (centred). */
   let beside = null;
   /** G878: the column the stack stood in last frame, held while notices are up (noticesBesideAvatar hold). */
@@ -408,7 +455,8 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
     // The mobile QA (2026-11-12): with no street name above them (the tutorial hides it) the notices
     // sat at the top over the top bar's pills and the tutorial pill. On a wide window they fit between
     // the pills and never meet them; on a narrow one they go under whatever they would cover.
-    for (const sel of ['#hud-stats', 'header.top-bar .top-actions', '#newxp-pill']) {
+    // G921: and the phone's quest step line while it is out (under the street's name upright).
+    for (const sel of ['#hud-stats', 'header.top-bar .top-actions', '#newxp-pill', '#quest-pins-btn[data-line="on"] .qpb-line']) {
       const r = relRect(document.querySelector(sel), rr);
       if (r) blockers.push(r);
     }
@@ -448,6 +496,8 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
       rootH: rr.height,
       avatar: rr.height < SHORT_SCREEN_H ? (() => { try { return avatarBox(); } catch { return null; } })() : null,
       keepOut: rr.height < SHORT_SCREEN_H ? ['.touch-stick', '.touch-jump'].map((sel) => relRect(root.querySelector(sel), rr)).filter(Boolean) : [],
+      // G921: every touch control the stack keeps off on a short screen, Act too (clearOfControls).
+      controls: rr.height < SHORT_SCREEN_H ? ['.touch-stick', '.touch-act', '.touch-jump'].map((sel) => relRect(root.querySelector(sel), rr)).filter(Boolean) : [],
       // The screen's safe area (style.css LANDSCAPE-HUD --safe-l / --safe-r, env() resolved).
       ...(rr.height < SHORT_SCREEN_H ? safeSides(root) : { safeL: 0, safeR: 0 }),
       // A side sheet on the left (VERBS' panel shell) as well as a drawer's own left.
@@ -529,17 +579,36 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
       ? noticesBesideAvatar({ rect: probe, avatar: zones.avatar, rootW: zones.rootW, rootH: zones.rootH, insetL: zones.insetL, insetR: zones.insetR, safeL: zones.safeL, safeR: zones.safeR, keepOut: zones.keepOut, hold: besideHold })
       : null;
     if (side) {
-      const sh = beside ? h : Math.ceil((h * w) / side.width);
+      const sh = beside && beside.width === side.width ? h : Math.ceil((h * (beside ? beside.width : w)) / side.width);
       const sideRect = { left: side.left, right: side.left + side.width, top: zones.top, bottom: zones.top + sh };
-      // Beside the avatar it covers nothing it keeps clear of, so it may run down to the pack row.
+      // Beside the avatar it covers nothing it keeps clear of, so it may run down to the pack row,
+      // but not over Act, the stick or Jump (G921).
       const sidePlace = placeBelow(sideRect, zones.blockers, { margin: 6, maxBottom: zones.floorBottom });
-      if (!sidePlace.wait) {
+      if (!sidePlace.wait && clearOfControls({ ...sideRect, top: sideRect.top + sidePlace.dy, bottom: sideRect.bottom + sidePlace.dy }, zones.controls)) {
         rect = sideRect;
         place = sidePlace;
       }
     }
-    setBeside(rect === centred ? null : side);
-    besideHold = rect === centred ? null : side;
+    // G921: centred, it narrows to the band between the touch controls rather than reach over one.
+    let band = null;
+    if (rect === centred && !place.wait && zones.controls?.length) {
+      const shown = { ...centred, top: centred.top + place.dy, bottom: centred.bottom + place.dy };
+      const fit = noticesBetweenControls({ rect: shown, h: ch, controls: zones.controls, rootW: zones.rootW, insetL: zones.insetL, insetR: zones.insetR, safeL: zones.safeL, safeR: zones.safeR });
+      if (fit?.wait) place = { dy: 0, wait: true };
+      else if (fit) {
+        const bandRect = { left: fit.left, right: fit.left + fit.width, top: zones.top, bottom: zones.top + fit.height };
+        const bandPlace = placeBelow(bandRect, zones.blockers, { margin: 6, maxBottom: zones.maxBottom });
+        const clear = clearOfControls({ ...bandRect, top: bandRect.top + bandPlace.dy, bottom: bandRect.bottom + bandPlace.dy }, zones.controls);
+        if (bandPlace.wait || !clear) place = { dy: 0, wait: true };
+        else {
+          band = { left: fit.left, width: fit.width, side: 'band' };
+          rect = bandRect;
+          place = bandPlace;
+        }
+      }
+    }
+    setBeside(band || (rect === centred ? null : side));
+    besideHold = rect === centred || band ? null : side;
     const top = Math.round(zones.top + place.dy);
     if (stack.style.top !== `${top}px`) stack.style.top = `${top}px`;
     shownBox = place.wait ? null : { left: rect.left, right: rect.right, top, bottom: top + h };

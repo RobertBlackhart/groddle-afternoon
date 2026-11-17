@@ -21,7 +21,7 @@ import { escapeText } from './verb-menu.js?v=cd68932d';
 import { questTextPlain, questTextSegments } from '../quest-text.js?v=7f5d761c';
 import { createQuestPinMenu } from './quest-pin-menu.js?v=15c53e87';
 import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=c76b5244';
-import { createQuestPinButton } from './quest-pin-button.js?v=3f9476e0';
+import { createQuestPinButton } from './quest-pin-button.js?v=5578cc7c';
 
 /**
  * @param {{ el: HTMLElement|null, onOpen?: (classTsid: string) => void, onCollapse?: (on: boolean) => void,

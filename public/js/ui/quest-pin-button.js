@@ -83,6 +83,24 @@ export function pinStepLine(prev, next) {
   return stepWords(next.step, next.count, Number(next.percent) >= 100);
 }
 
+/** The gap (px) between the step line and what it sits under (style.css .qpb-line top: 100% + 6px). */
+export const PIN_LINE_GAP = 6;
+
+/**
+ * PURE (G921): how far (px) the step line drops so it clears the street's name pill. Upright the
+ * pill sits under the top bar, and the line, right-aligned under the button, covered its clock: it
+ * then starts under the pill. `btn` and `plate` are client rects, `lineW` / `lineH` the line's laid
+ * out size (offsetWidth / offsetHeight: its pop-in scale does not count). 0 when it misses the pill
+ * (sideways the pill stands in the bar's row, above the line).
+ */
+export function pinLineDrop(btn, plate, lineW, lineH, gap = PIN_LINE_GAP) {
+  if (!btn || !plate || !(plate.right > plate.left) || !(plate.bottom > plate.top)) return 0;
+  const line = { left: btn.right - (Number(lineW) || 0), right: btn.right, top: btn.bottom + gap };
+  line.bottom = line.top + (Number(lineH) || 0);
+  const hits = line.left < plate.right && line.right > plate.left && line.top < plate.bottom && line.bottom > plate.top;
+  return hits ? Math.ceil(plate.bottom + gap - line.top) : 0;
+}
+
 /**
  * The phone's quest button. `card` is the tracker's #quest-pins; `menu` its row menu (an open menu
  * keeps the popover open). Returns { sync(rows), active(), isOpen(), open(), close(), state() };
@@ -159,6 +177,11 @@ export function createQuestPinButton({ card, menu = null, setData = () => {}, se
     lineText = text;
     line.textContent = text;
     say.textContent = text;
+    // G921: under the street's name pill, not over its clock.
+    const plate = doc.getElementById?.('street-nameplate');
+    const drop = plate && !plate.hidden && typeof plate.getBoundingClientRect === 'function' ? pinLineDrop(btn.getBoundingClientRect(), plate.getBoundingClientRect(), line.offsetWidth, line.offsetHeight) : 0;
+    if (drop) btn.style?.setProperty?.('--qpb-line-drop', `${drop}px`);
+    else btn.style?.removeProperty?.('--qpb-line-drop');
     btn.dataset.line = 'on';
     setData('questPinLine', text);
     lineTimer = setTimer(hideLine, PIN_LINE_MS);

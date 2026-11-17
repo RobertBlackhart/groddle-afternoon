@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BESIDE_MIN_W, NOTICE_W, SHORT_SCREEN_H, noticesBesideAvatar } from '../public/js/notify-view.js?v=ad784e1a';
+import { BESIDE_MIN_W, NOTICE_W, SHORT_SCREEN_H, noticesBesideAvatar } from '../public/js/notify-view.js?v=82d06f33';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -84,7 +84,8 @@ describe('G878 (#425): a notice column beside the avatar keeps its side while no
   it('the view holds it for the notices\' life and forgets it when they are gone', () => {
     const view = read('public/js/notify-view.js');
     assert.match(view, /keepOut: zones\.keepOut, hold: besideHold \}\)/);
-    assert.match(view, /setBeside\(rect === centred \? null : side\);\n    besideHold = rect === centred \? null : side;/);
+    // G921: a band between the touch controls is centred, never held.
+    assert.match(view, /setBeside\(band \|\| \(rect === centred \? null : side\)\);\n    besideHold = rect === centred \|\| band \? null : side;/);
     assert.match(view, /shownBox = null;\n      \/\/ G878: [^\n]*\n      besideHold = null;\n      return;/);
   });
 });
