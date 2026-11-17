@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2586,
+  "commits": 2588,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Feat progress sent to the server is never lost: every counted report waits in the save until the server takes it"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "improve",
     "text": "Herbs in a garden bed that went are harvested into your pack, and online mailed to you"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Street gardens stand where the 2012 snaps show them, every bed the street had"
    }
   ]
  },
- "tests": 1113,
+ "tests": 1114,
  "generatedAt": "2026-11-17"
 }
