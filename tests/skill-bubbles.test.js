@@ -1,15 +1,31 @@
 // G892: the skill-package words other players see in a bubble over a Glitch at work
 // (public/js/skill-bubbles.js, features/skill-bubbles-feature.js), held to the GSJS calls they
 // cite, the wire word to the server's word rule, and Butterfly care to no drawn stand-ins.
+// G923 (#460): every GSJS skill package is accounted for, and every tool one the others see
+// draws that tool's own tool_animation.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SKILL_BUBBLE, SKILL_BUBBLES, parseSkillBubbleWord, skillBubbleFor, skillBubbleWord } from '../public/js/skill-bubbles.js?v=5805a64a';
+import {
+  BUBBLE_ITEMS,
+  GSJS_SKILL_PACKAGES,
+  SKILL_BUBBLE,
+  SKILL_BUBBLES,
+  SKILL_BUBBLE_OFF,
+  SKILL_TOOL_PACKAGES,
+  bubbleItemSheet,
+  itemBubbleWord,
+  parseSkillBubbleWord,
+  skillBubbleFor,
+  skillBubbleWord,
+  skillToolClass,
+  skillToolFor,
+} from '../public/js/skill-bubbles.js?v=2a5ea48c';
 import { SKILL_BUBBLE_WORD } from '../public/js/realtime-client.js?v=73e1ae86';
-import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=ec937e17';
+import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=8447f5f9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');
@@ -42,16 +58,101 @@ describe('skill-bubbles: which verb shows which word', () => {
     assert.equal(SKILL_BUBBLE.dy, -110);
     for (const [key, row] of Object.entries(SKILL_BUBBLES)) {
       assert.ok(manifest[key], `${key} built`);
-      const [file, line] = row.src.split(' ');
-      const text = readFileSync(join(gsjs, file), 'utf8').split('\n');
-      assert.match(text[Number(line.replace(',', '')) - 1], new RegExp(`overlay_id\\s*[:=]\\s*'${key}'`), row.src);
+      // Every call cited (G923: each one, not only the first; a bare file name is in items/).
+      for (const part of row.src.split(', ')) {
+        const [name, line] = part.split(' ');
+        const file = name.includes('/') ? name : `items/${name}`;
+        const text = readFileSync(join(gsjs, file), 'utf8').split('\n');
+        assert.match(text[Number(line) - 1], new RegExp(`overlay_id\\s*[:=]\\s*'${key}'`), part);
+      }
     }
     assert.match(readFileSync(join(gsjs, 'items/include/rook.js'), 'utf8'), /overlay_id:'rooked_revive'[^\n]*bubble_width: 75/);
     assert.equal(SKILL_BUBBLES.rooked_revive.wh, 75);
   });
 });
 
+describe('skill-bubbles: every skill package (G923)', () => {
+  it('lists every package in catalog_skill_packages.js, and only those', { skip: !hasGsjs }, () => {
+    const src = readFileSync(join(gsjs, 'items/catalog_skill_packages.js'), 'utf8');
+    const ids = [...src.matchAll(/^\t"([a-z_0-9]+)" : \{/gm)].map((m) => m[1]).sort();
+    assert.equal(ids.length, 64);
+    assert.deepEqual(Object.keys(GSJS_SKILL_PACKAGES).sort(), ids);
+  });
+
+  it('every shared package has its row, and every row its art', () => {
+    const toolPkgs = Object.values(SKILL_TOOL_PACKAGES).flatMap((r) => r.pkgs);
+    for (const [pkg, how] of Object.entries(GSJS_SKILL_PACKAGES)) {
+      if (how === 'tool') assert.ok(toolPkgs.includes(pkg), `${pkg} has a tool row`);
+      else assert.ok(!toolPkgs.includes(pkg), `${pkg} is not a tool row`);
+      if (how !== 'overlay' && how !== 'tool' && how !== 'making') assert.match(how, /^none: /, pkg);
+    }
+    for (const [key, row] of Object.entries(SKILL_TOOL_PACKAGES)) {
+      assert.ok(Object.keys(row.on).length > 0, key);
+      for (const tool of row.tools) {
+        assert.ok(BUBBLE_ITEMS.includes(tool), `${key}: ${tool} has a wire code`);
+        const def = bubbleItemSheet(tool);
+        assert.ok(def, `${key}: ${tool} has a tool_animation`);
+        assert.ok(existsSync(join(root, 'public', def.path)), def.path);
+      }
+    }
+    for (const tool of BUBBLE_ITEMS) assert.ok(bubbleItemSheet(tool), `${tool} draws`);
+    // The making packages' tools (smelting, spinning, crystallizing, refining): the Make panel's bubble.
+    for (const tool of ['smelter', 'spindle', 'splendid_spindle', 'crystallizer', 'ore_grinder', 'grand_ol_grinder']) assert.ok(BUBBLE_ITEMS.includes(tool), tool);
+  });
+
+  it('each tool row cites a runSkillPackage call with a tool_item', { skip: !hasGsjs }, () => {
+    for (const [key, row] of Object.entries(SKILL_TOOL_PACKAGES)) {
+      const [file, line] = row.src.split(' ');
+      const text = readFileSync(join(gsjs, file), 'utf8').split('\n');
+      const [from, to] = line.replace(',', '').split('-').map(Number);
+      const lines = text.slice(from - 1, to || from).join('\n');
+      assert.match(lines, /runSkillPackage\(/, row.src);
+      assert.match(lines, /tool_item: |args\.tool_item|package_name/, row.src);
+    }
+  });
+
+  it('maps the remake verbs to their package and tool (#460: mining, digging, peat)', () => {
+    assert.equal(skillToolFor('rock_beryl_1', 'mine'), 'mining');
+    assert.equal(skillToolFor('rock_metal_1', 'mine'), 'mining');
+    assert.equal(skillToolFor('dirt_pile', 'dig'), 'dig_dirt_pile');
+    assert.equal(skillToolFor('peat_2', 'harvest'), 'peat_harvest');
+    assert.equal(skillToolFor('mortar_barnacle', 'scrape'), 'scraping');
+    assert.equal(skillToolFor('patch', 'tend'), 'soil_appreciation');
+    assert.equal(skillToolFor('trant_gas_dead', 'clear'), 'dead_trant_clearing');
+    assert.equal(skillToolFor('wood_tree', 'harvest'), 'wood_tree_harvest');
+    assert.equal(skillToolFor('trant_bean', 'water'), 'watering');
+    assert.equal(skillToolFor('garden_new', 'water'), null, 'a garden sends its own bubble (shared-gardens)');
+    assert.equal(skillToolFor('npc_piggy', 'pet'), null);
+    assert.equal(skillBubbleFor('paper_tree', 'pet'), 'trant_pet');
+    // The tool the player works with: a working Fancy Pick first, an Irrigator first, else what they own.
+    assert.equal(skillToolClass('mining', { pick: 1 }), 'pick');
+    assert.equal(skillToolClass('mining', { pick: 1, fancy_pick: 1 }), 'fancy_pick');
+    assert.equal(skillToolClass('watering', { watering_can: 1, irrigator_9000: 1 }), 'irrigator_9000');
+    assert.equal(skillToolClass('dig_dirt_pile', { shovel: 1 }), 'shovel');
+    assert.equal(skillToolClass('soil_appreciation', {}), 'hoe');
+  });
+});
+
 describe('skill-bubbles: the wire word', () => {
+  it('item words: a two-letter code, mirrored as im, in the server and pre-G923 client rules', () => {
+    for (const tool of BUBBLE_ITEMS) {
+      for (const flipped of [false, true]) {
+        const w = itemBubbleWord(tool, 99_000, { flipped });
+        assert.match(w, /^[a-z0-9_]{1,24}$/, w);
+        assert.match(w, SKILL_BUBBLE_WORD, w);
+        assert.deepEqual(parseSkillBubbleWord(w), { item: tool, flipped, durationMs: 99_000 });
+      }
+    }
+    assert.equal(itemBubbleWord('pick', 12_400), 'sp_i_aa_12');
+    assert.equal(itemBubbleWord('pick', 300_000, { flipped: true }), 'sp_im_aa_99');
+    assert.equal(itemBubbleWord('not_a_tool', 1000), null);
+    assert.equal(parseSkillBubbleWord('sp_i_zz_3'), null, 'a code this build does not know');
+    assert.deepEqual(parseSkillBubbleWord(SKILL_BUBBLE_OFF), { off: true });
+    assert.match(SKILL_BUBBLE_OFF, SKILL_BUBBLE_WORD);
+    // A pre-G923 client parsed sp_<key>_<s> against its nine overlays only: the new words are not among them.
+    for (const w of ['sp_i_aa_3', 'sp_im_aa_3', SKILL_BUBBLE_OFF]) assert.ok(!SKILL_BUBBLES[/^sp_([a-z_]+)_\d+$/.exec(w)[1]]);
+  });
+
   it('round-trips whole seconds and fits the server word rule (hub.go wordRe [a-z0-9_]{1,24})', () => {
     for (const key of Object.keys(SKILL_BUBBLES)) {
       const w = skillBubbleWord(key, 99_000);
@@ -94,12 +195,45 @@ describe('skill-bubbles feature', () => {
     assert.equal(sent.length, 1);
   });
 
+  it('online, a mine sends the pick the player works with, mirrored for a rock on the left (#460)', () => {
+    const sent = [];
+    const online = fakeEngine('multiplayer', sent, { inv: { pick: 1 }, toolState: null, player: { x: 500, y: 0 } });
+    skillBubblesFeature.verbStarted({ classId: 'rock_beryl_1', sprite: { x: 400 } }, { id: 'mine', durationMs: 12_000 }, online);
+    assert.deepEqual(sent, ['sp_im_aa_12']);
+    skillBubblesFeature.verbStarted({ classId: 'dirt_pile', sprite: { x: 600 } }, { id: 'dig', durationMs: 4000 }, { ...online, inv: { shovel: 1 } });
+    assert.equal(sent[1], itemBubbleWord('shovel', 4000));
+    // The cancel takes it down for the others; a cancel of something else does not.
+    skillBubblesFeature.verbCancelled({ classId: 'rock_beryl_1' }, 'mine', online);
+    assert.equal(sent.length, 2);
+    const pile = { classId: 'dirt_pile', sprite: { x: 600 } };
+    skillBubblesFeature.verbStarted(pile, { id: 'dig', durationMs: 4000 }, { ...online, inv: { shovel: 1 } });
+    skillBubblesFeature.verbCancelled(pile, 'dig', online);
+    assert.equal(sent.at(-1), SKILL_BUBBLE_OFF);
+    skillBubblesFeature.onStreetClear();
+  });
+
+  it('a make sends its tool for the batch, again past 99 s, and off when stopped early', () => {
+    const sent = [];
+    const online = fakeEngine('multiplayer', sent);
+    skillBubblesFeature.itemBubbleStarted('smelter', 150_000, online);
+    assert.deepEqual(sent, [itemBubbleWord('smelter', 99_000)]);
+    skillBubblesFeature.itemBubbleStopped(online);
+    assert.deepEqual(sent.at(-1), SKILL_BUBBLE_OFF);
+    skillBubblesFeature.itemBubbleStopped(online);
+    assert.equal(sent.length, 2, 'nothing running, nothing sent');
+    const game = readFileSync(join(root, 'public/game.js'), 'utf8');
+    assert.match(game, /features\.query\('itemBubbleStarted', recipe\.tool,/);
+    assert.match(game, /features\.query\('itemBubbleStopped', engine\)/);
+  });
+
   it('another player\'s word draws a bubble over that player only while they are here', () => {
     const sent = [];
     let here = true;
     const engine = fakeEngine('multiplayer', sent, { query: (hook) => (hook === 'remoteAvatar' && here ? { x: 10, y: 20 } : null) });
     assert.equal(onSkillBubble(engine, { id: 4, e: 'sp_pig_pet_2' }), true);
     assert.equal(onSkillBubble(engine, { id: 4, e: 'eyeballing' }), false);
+    assert.equal(onSkillBubble(engine, { id: 4, e: 'sp_im_aa_12' }), true);
+    assert.equal(onSkillBubble(engine, { id: 4, e: SKILL_BUBBLE_OFF }), true);
     here = false;
     assert.equal(onSkillBubble(engine, { id: 4, e: 'sp_pig_pet_2' }), false);
   });

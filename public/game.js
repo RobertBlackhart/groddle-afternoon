@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=78f94fa6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=45f46d1f';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a338369b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -29080,6 +29080,8 @@ function updateMakeProgressUi(record) {
 function finishMakeCraft(record, { close = false, cancelled = false, quiet = false } = {}) {
   if (activeCraftSession === record) activeCraftSession = null;
   stopCraftSoundLoop();
+  // G923: a make that stops early takes the tool bubble down for the others (main.js 4971-4972).
+  features.query('itemBubbleStopped', engine);
   setMakeCraftingUi(false);
   const prog = document.getElementById('make-progress');
   if (prog) {
@@ -29291,6 +29293,8 @@ function runMakeCraft(key, qty) {
   setMakeCraftingUi(true);
   renderMakeProgressStage(activeCraftSession);
   startCraftSoundLoop(recipe.tool);
+  // G923: everyone else sees the tool at work over you for the batch (players/inc_making.js 465, 663).
+  features.query('itemBubbleStarted', recipe.tool, timer.durations ? timer.durations.reduce((a, b) => a + b, 0) : timer.durationMs * n, engine);
 }
 
 /**
