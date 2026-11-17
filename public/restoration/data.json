@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2516,
+  "commits": 2522,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A new player who owns no Musicblock finds one on the street the tutorial sets them down on, as on Hechey Track"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Streets no longer each hold a Musicblock; blocks come from Glitch's drop tables, Gentle Island and a new player's start street"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Uralia Completist's badge text says six streets, as it now asks"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A wall barnacle placed by rule keeps clear of the shrine, trees and rocks the street's pictures place"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "Barnacles on streets with no snap hang on the walls (from pictures where they show, else by a rule) instead of standing on the floor"
    }
   ]
  },
