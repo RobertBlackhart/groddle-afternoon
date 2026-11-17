@@ -41,7 +41,7 @@ import {
 } from '../public/js/feats-mp.js?v=cda27f60';
 import { FEAT_BY_ID, WIRED_FEATS, vogTextFor } from '../public/js/solo-feats.js?v=8455be6a';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=03b8d954';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=1b49d24d';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=d5d2a974';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/solo-feats-feature.js'), 'utf8');
@@ -224,37 +224,56 @@ function mpEngine(client) {
 }
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
+/** A feat_add without its kind and report id (G968). */
+const bare = ({ kind, id, ...rest }) => rest;
+/** The server counts a report in full and says so, by its id (feats.go reply). */
+function answer(client, add, extra = {}) {
+  client.deliver({ t: 'feat_counted', feat: add.feat, id: add.id, n: add.n, done: add.n, want: add.n, run: 0, total: 0, mine: 0, place: 0, ...extra });
+}
 
 describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () => {
   it('sends today\'s increments to the server and keeps no personal goal', async () => {
     const client = fakeClient();
     const engine = mpEngine(client);
+    const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
     soloFeatsFeature.init(engine);
     soloFeatsFeature.restore({}, engine);
     soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
     assert.deepEqual(client.sent.map((m) => m.kind), ['feat_sync']);
-    // Before the server names today's Feat, nothing is sent.
+    // Before the server names today's Feat, nothing is sent; the pet is held (G968) and counts if it is today's Feat.
     soloFeatsFeature.onEvent('npc_piggy:pet', 1, engine);
     assert.equal(client.sent.length, 1);
     client.deliver({ t: 'feat_state', now: Date.now(), run: 5348, feat: 'animal_love', start: Date.now() - 1000, end: Date.now() + RUN_MS, total: 0, goal: 150, bonus: 300, super: 450, tier: 0, count: 0, mine: 0, place: 0, top: [] });
+    assert.deepEqual(adds().map(bare), [{ feat: 'animal_love', n: 1 }]);
+    assert.match(adds()[0].id, /^fo-[a-z0-9]{8,32}$/);
+    soloFeatsFeature.onEvent('npc_piggy:pet', 1, engine);
     soloFeatsFeature.onEvent('npc_piggy:pet', 1, engine);
     soloFeatsFeature.onEvent('emotional_bear:hug', 1, engine);
     soloFeatsFeature.onEvent('players_hugged', 1, engine); // Tottly's Toys: not today's
-    assert.deepEqual(client.sent.slice(1), [{ kind: 'feat_add', feat: 'animal_love', n: 1 }]);
-    // Feeds keep the source's three-per-animal cap on the client too.
+    assert.equal(adds().length, 1, 'one report at a time');
+    answer(client, adds()[0], { total: 1, mine: 1, place: 1 });
+    // The two made while the first was on its way went as one report.
+    assert.deepEqual(adds().slice(1).map(bare), [{ feat: 'animal_love', n: 2 }]);
+    answer(client, adds()[1], { total: 3, mine: 3, place: 1 });
+    // Feeds keep the source's three-per-animal cap on the client too (owed ones hold their place).
     for (let i = 0; i < 5; i += 1) soloFeatsFeature.onEvent('npc_piggy:feed:cherry', 1, engine, { animal: 'GA5:npc_piggy:0' });
-    assert.equal(client.sent.filter((m) => m.kind === 'feat_add').length, 4);
+    assert.equal(soloFeatsFeature.save().owed.length, 3);
+    for (let i = 0; i < 3; i += 1) answer(client, adds().at(-1));
+    assert.equal(adds().length, 5);
+    // The cap was spent as the server accepted each one (G968).
+    assert.deepEqual(Object.values(soloFeatsFeature.save().caps), [3]);
     // featsIncrement call sites (crabs) keep their cap.
     soloFeatsFeature.featsIncrement('animal_love', 1, { cap: { key: 'crab:GA5:hug', max: 1 } }, engine);
     soloFeatsFeature.featsIncrement('animal_love', 1, { cap: { key: 'crab:GA5:hug', max: 1 } }, engine);
-    assert.equal(client.sent.filter((m) => m.kind === 'feat_add').length, 5);
+    assert.equal(adds().length, 6);
     const save = soloFeatsFeature.save();
     assert.deepEqual(save.progress, {});
     assert.equal(save.mpRun, 'animal_love:5348');
     // The answer: down_to_the_wire on a counted contribution (inc_feats.js 104-106).
-    client.deliver({ t: 'feat_counted', feat: 'animal_love', run: 5348, n: 1, total: 1, mine: 1, place: 1 });
-    assert.deepEqual(engine.calls.grant, ['down_to_the_wire']);
-    assert.equal(engine.calls.data.mpFeat, 'animal_love:1/150:1:1');
+    answer(client, adds()[5], { run: 5348, total: 7, mine: 7, place: 1 });
+    assert.deepEqual([...new Set(engine.calls.grant)], ['down_to_the_wire']);
+    assert.equal(engine.calls.data.mpFeat, 'animal_love:7/150:7:1');
+    assert.equal(soloFeatsFeature.save().owed.length, 0);
   });
 
   it('shows the goals the server sent, not its own table (G656)', () => {
@@ -317,70 +336,79 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
     assert.equal(engine2.inv.petrified_rock_large, 1);
   });
 
-  it('keeps a Qurazy owed until the server answers it (G754, #328 #335)', () => {
-    const client = fakeClient();
-    const engine = mpEngine(client);
-    let now = 0;
-    const tickPoll = () => { now += 1000; soloFeatsFeature.onTick(16, now, engine); };
-    const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
-    const ramble = { t: 'feat_state', now: Date.now(), run: 5347, feat: 'qurazy_quoin_collecting', start: Date.now() - 1000, end: Date.now() + RUN_MS, total: 0, goal: 27, bonus: 54, super: 81, tier: 0, count: 0, mine: 0, place: 0, top: [] };
-    soloFeatsFeature.init(engine);
-    soloFeatsFeature.restore({}, engine);
-    soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
-    tickPoll(); // the count already seen
-    // Found before the server named today's Feat: owed, not lost.
-    engine.quoinState.qurazyFound = 1;
-    tickPoll();
-    assert.equal(adds().length, 0);
-    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, ['GA5101HF7F429V5']);
-    client.deliver(ramble);
-    assert.deepEqual(adds(), [{ kind: 'feat_add', feat: 'qurazy_quoin_collecting', n: 1, act: 'quoin', street: 'GA5101HF7F429V5' }]);
-    tickPoll();
-    assert.equal(adds().length, 1, 'asked once while the answer is on its way');
-    // Held by the pace (a repeat visit): still owed, asked again later, not every tick.
-    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'pace', street: 'GA5101HF7F429V5', run: 5347, total: 0, mine: 0, place: 0 });
-    tickPoll();
-    assert.equal(adds().length, 1);
-    assert.equal(engine.calls.data.mpFeatQurazyOwed, '1');
-    // A new connection asks again once the Feat is known.
-    client.emit('hello');
-    client.deliver(ramble);
-    assert.equal(adds().length, 2);
-    // Counted: settled. An answer from a server without the street echo matches the oldest asked.
-    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 1, run: 5347, total: 1, mine: 1, place: 1 });
-    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
-    // Two streets: each its own report, each settled by its own answer.
-    soloFeatsFeature.onStreetClear(engine);
-    soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V6' }, engine);
-    engine.quoinState.qurazyFound = 2;
-    soloFeatsFeature.onStreetClear(engine); // picked up just before leaving: still this street's
-    soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V7' }, engine);
-    engine.quoinState.qurazyFound = 3;
-    tickPoll();
-    assert.deepEqual(adds().slice(2).map((m) => m.street), ['GA5101HF7F429V6', 'GA5101HF7F429V7']);
-    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 1, street: 'GA5101HF7F429V7', run: 5347, total: 2, mine: 2, place: 1 });
-    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, ['GA5101HF7F429V6']);
-    client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'already', street: 'GA5101HF7F429V6', run: 5347, total: 2, mine: 2, place: 1 });
-    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
-    // A save that still owes one asks after the load; on another Feat's day it can never count and is dropped.
-    const client2 = fakeClient();
-    const engine2 = mpEngine(client2);
-    soloFeatsFeature.init(engine2);
-    soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8', '<b>'] }, engine2);
-    soloFeatsFeature.onStreetEnter({ tsid: engine2.streetTsid }, engine2);
-    client2.deliver(ramble);
-    assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add').map((m) => m.street), ['GA5101HF7F429V8']);
-    const client3 = fakeClient();
-    const engine3 = mpEngine(client3);
-    soloFeatsFeature.init(engine3);
-    soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8'] }, engine3);
-    soloFeatsFeature.onStreetEnter({ tsid: engine3.streetTsid }, engine3);
-    client3.deliver({ ...ramble, feat: 'animal_love' });
-    assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
-    assert.deepEqual(soloFeatsFeature.save().qurazyOwed, []);
+  it('keeps a Qurazy owed until the server answers it (G754, #328 #335; one queue since G968)', () => {
+    const realNow = Date.now;
+    let clock = realNow();
+    Date.now = () => clock;
+    try {
+      const client = fakeClient();
+      const engine = mpEngine(client);
+      let now = 0;
+      const tickPoll = (ms = 1000) => { clock += ms; now += ms; soloFeatsFeature.onTick(16, now, engine); };
+      const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
+      const ramble = () => ({ t: 'feat_state', now: clock, run: 5347, feat: 'qurazy_quoin_collecting', start: clock - 60_000, end: clock + RUN_MS, total: 0, goal: 27, bonus: 54, super: 81, tier: 0, count: 0, mine: 0, place: 0, top: [] });
+      soloFeatsFeature.init(engine);
+      soloFeatsFeature.restore({}, engine);
+      soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
+      tickPoll(); // the count already seen
+      // Found before the server named today's Feat: owed, not lost.
+      engine.quoinState.qurazyFound = 1;
+      tickPoll();
+      assert.equal(adds().length, 0);
+      assert.deepEqual(soloFeatsFeature.save().owed.map((e) => e.street), ['GA5101HF7F429V5']);
+      client.deliver(ramble());
+      assert.deepEqual(adds().map(bare), [{ feat: 'qurazy_quoin_collecting', n: 1, act: 'quoin', street: 'GA5101HF7F429V5' }]);
+      const id = adds()[0].id;
+      tickPoll();
+      assert.equal(adds().length, 1, 'asked once while the answer is on its way');
+      // Held by the pace (a repeat visit): still owed, asked again later, not every tick.
+      client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'pace', street: 'GA5101HF7F429V5', id, done: 0, want: 1, run: 5347, total: 0, mine: 0, place: 0 });
+      tickPoll();
+      assert.equal(adds().length, 1);
+      assert.equal(engine.calls.data.mpFeatQurazyOwed, '1');
+      // A new connection asks again once the Feat is known, under the same id.
+      client.emit('hello');
+      client.deliver(ramble());
+      assert.equal(adds().length, 2);
+      assert.equal(adds()[1].id, id);
+      answer(client, adds()[1], { total: 1, mine: 1, place: 1 });
+      assert.deepEqual(soloFeatsFeature.save().owed, []);
+      // Two streets: each its own report, each settled by its own answer.
+      soloFeatsFeature.onStreetClear(engine);
+      soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V6' }, engine);
+      engine.quoinState.qurazyFound = 2;
+      soloFeatsFeature.onStreetClear(engine); // picked up just before leaving: still this street's
+      soloFeatsFeature.onStreetEnter({ tsid: 'GA5101HF7F429V7' }, engine);
+      engine.quoinState.qurazyFound = 3;
+      tickPoll();
+      assert.deepEqual(soloFeatsFeature.save().owed.map((e) => e.street), ['GA5101HF7F429V6', 'GA5101HF7F429V7']);
+      assert.equal(adds()[2].street, 'GA5101HF7F429V6');
+      client.deliver({ t: 'feat_counted', feat: 'qurazy_quoin_collecting', n: 0, reason: 'already', street: 'GA5101HF7F429V6', id: adds()[2].id, run: 5347, total: 1, mine: 1, place: 1 });
+      assert.equal(adds()[3].street, 'GA5101HF7F429V7');
+      answer(client, adds()[3], { total: 2, mine: 2, place: 1 });
+      assert.deepEqual(soloFeatsFeature.save().owed, []);
+      // An older save's qurazyOwed asks after the load; on another Feat's day it can never count and is dropped.
+      const client2 = fakeClient();
+      const engine2 = mpEngine(client2);
+      soloFeatsFeature.init(engine2);
+      soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8', '<b>'] }, engine2);
+      soloFeatsFeature.onStreetEnter({ tsid: engine2.streetTsid }, engine2);
+      client2.deliver(ramble());
+      assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add').map((m) => m.street), ['GA5101HF7F429V8']);
+      const client3 = fakeClient();
+      const engine3 = mpEngine(client3);
+      soloFeatsFeature.init(engine3);
+      soloFeatsFeature.restore({ qurazyOwed: ['GA5101HF7F429V8'] }, engine3);
+      soloFeatsFeature.onStreetEnter({ tsid: engine3.streetTsid }, engine3);
+      client3.deliver({ ...ramble(), feat: 'animal_love' });
+      assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
+      assert.deepEqual(soloFeatsFeature.save().owed, []);
+    } finally {
+      Date.now = realNow;
+    }
   });
 
-  it('keeps quests owed until the server\'s count of yours reaches them, at its pace (G896, #428)', () => {
+  it('keeps quests owed until the server counts them, at its pace (G896, #428; one queue since G968)', () => {
     const realNow = Date.now;
     let clock = realNow();
     Date.now = () => clock;
@@ -391,9 +419,8 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
       let now = 0;
       const tickPoll = (ms = 1000) => { clock += ms; now += ms; soloFeatsFeature.onTick(16, now, engine); };
       const adds = () => client.sent.filter((m) => m.kind === 'feat_add');
-      const syncs = () => client.sent.filter((m) => m.kind === 'feat_sync').length;
       const finish = (id) => { engine.questState.completed.push(id); engine.questState.doneAt[id] = clock; };
-      const contests = { t: 'feat_state', now: clock, run: 5350, feat: 'reminscequests', start: clock - 1000, end: clock + RUN_MS, total: 0, goal: 15, bonus: 30, super: 45, tier: 0, count: 0, mine: 0, place: 0, top: [] };
+      const contests = () => ({ t: 'feat_state', now: clock, run: 5350, feat: 'reminscequests', start: clock - 60_000, end: clock + RUN_MS, total: 0, goal: 15, bonus: 30, super: 45, tier: 0, count: 0, mine: 0, place: 0, top: [] });
       soloFeatsFeature.init(engine);
       soloFeatsFeature.restore({}, engine);
       soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
@@ -403,10 +430,9 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
       finish('quest_b');
       tickPoll();
       assert.equal(adds().length, 0);
-      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: '', done: 0, held: 2 });
-      client.deliver(contests);
-      assert.deepEqual(adds(), [{ kind: 'feat_add', feat: 'reminscequests', n: 2 }]);
-      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: 'reminscequests:5350', done: 2, held: 0 });
+      assert.equal(engine.calls.data.mpFeatQuestOwed, '2');
+      client.deliver(contests());
+      assert.deepEqual(adds().map(bare), [{ feat: 'reminscequests', n: 2 }]);
       // A repeat finished and taken again inside one poll still counts (quest-offers.js acceptOffer).
       finish('quest_c');
       tickPoll(100);
@@ -415,54 +441,48 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
       finish('quest_d');
       engine.questState.completed = engine.questState.completed.filter((id) => id !== 'quest_d');
       tickPoll();
-      assert.equal(soloFeatsFeature.save().questOwed.done, 4);
+      assert.equal(engine.calls.data.mpFeatQuestOwed, '4');
       assert.equal(adds().length, 1, 'one report at a time');
-      // The pace took one of two: the rest waits a pace interval, not every tick.
-      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 1, run: 5350, total: 1, mine: 1, place: 1 });
+      // The pace took one of two: the rest waits a pace interval (one quest a minute), not every tick.
+      answer(client, adds()[0], { n: 1, done: 1, want: 2, total: 1, mine: 1, place: 1 });
       assert.equal(engine.calls.data.mpFeatQuestOwed, '3');
       tickPoll(30_000);
       assert.equal(adds().length, 1);
       tickPoll(31_000);
-      assert.deepEqual(adds().slice(1), [{ kind: 'feat_add', feat: 'reminscequests', n: 3 }]);
+      assert.deepEqual(adds().slice(1).map(bare), [{ feat: 'reminscequests', n: 1 }]);
+      assert.equal(adds()[1].id, adds()[0].id, 'the rest of the same report');
       // Refused by the pace: asked again a minute later.
-      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 0, reason: 'pace', run: 5350, total: 1, mine: 1, place: 1 });
+      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 0, reason: 'pace', id: adds()[1].id, done: 1, want: 2, run: 5350, total: 1, mine: 1, place: 1 });
       tickPoll(5_000);
       assert.equal(adds().length, 2);
       tickPoll(56_000);
       assert.equal(adds().length, 3);
-      // The answer never comes (a dropped socket): the server's count decides, nothing is sent twice.
+      // The answer never comes (a dropped socket): asked again under the same id (the server answers dup if it counted).
       tickPoll(21_000);
-      assert.equal(syncs(), 2);
-      assert.equal(adds().length, 3);
-      client.deliver({ ...contests, mine: 3, total: 3 });
-      assert.deepEqual(adds().slice(3), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
-      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 1, run: 5350, total: 4, mine: 4, place: 1 });
+      assert.equal(adds().length, 4);
+      assert.equal(adds()[3].id, adds()[2].id);
+      client.deliver({ t: 'feat_counted', feat: 'reminscequests', n: 0, reason: 'dup', id: adds()[3].id, done: 2, want: 2, run: 5350, total: 2, mine: 2, place: 1 });
+      assert.deepEqual(adds().slice(4).map(bare), [{ feat: 'reminscequests', n: 2 }]);
+      answer(client, adds()[4], { total: 4, mine: 4, place: 1 });
       assert.equal(engine.calls.data.mpFeatQuestOwed, '0');
       tickPoll(120_000);
-      assert.equal(adds().length, 4);
-      // A new connection: owed quests wait for its count of yours, and a count above ours is taken as ours.
-      client.emit('hello');
-      finish('quest_e');
-      tickPoll();
-      assert.equal(adds().length, 4);
-      client.deliver({ ...contests, mine: 6, total: 6 });
-      assert.deepEqual(adds().slice(4), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
-      // A save that still owes one asks after the load; on another Feat's day they are dropped.
+      assert.equal(adds().length, 5);
+      // An older save's questOwed asks what it held above the server's count of yours; on another Feat's day it is dropped.
       const client2 = fakeClient();
       const engine2 = mpEngine(client2);
       soloFeatsFeature.init(engine2);
       soloFeatsFeature.restore({ questOwed: { run: 'reminscequests:5350', done: 8, held: 0 } }, engine2);
       soloFeatsFeature.onStreetEnter({ tsid: engine2.streetTsid }, engine2);
-      client2.deliver({ ...contests, mine: 7, total: 7 });
-      assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add'), [{ kind: 'feat_add', feat: 'reminscequests', n: 1 }]);
+      client2.deliver({ ...contests(), mine: 7, total: 7 });
+      assert.deepEqual(client2.sent.filter((m) => m.kind === 'feat_add').map(bare), [{ feat: 'reminscequests', n: 1 }]);
       const client3 = fakeClient();
       const engine3 = mpEngine(client3);
       soloFeatsFeature.init(engine3);
       soloFeatsFeature.restore({ questOwed: { run: 'reminscequests:5349', done: 3, held: 2 } }, engine3);
       soloFeatsFeature.onStreetEnter({ tsid: engine3.streetTsid }, engine3);
-      client3.deliver({ ...contests, feat: 'animal_love' });
+      client3.deliver({ ...contests(), feat: 'animal_love' });
       assert.equal(client3.sent.filter((m) => m.kind === 'feat_add').length, 0);
-      assert.deepEqual(soloFeatsFeature.save().questOwed, { run: '', done: 0, held: 0 });
+      assert.deepEqual(soloFeatsFeature.save().owed, []);
     } finally {
       Date.now = realNow;
     }
@@ -473,7 +493,7 @@ describe('the feature keeps solo as it was', () => {
   it('gates every shared path on multiplayer', () => {
     assert.match(feature, /function increment\(engine, featId, amount, opts = \{\}\) \{\n  \/\/ Multiplayer: today's shared Feat, counted by the server \(feats\.go\)\.\n  if \(mpMode\) return mpReport/);
     assert.match(feature, /function reopenDue\(engine, now = Date\.now\(\)\) \{\n  if \(mpMode\) return \[\];/);
-    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run, qurazyOwed: \[\.\.\.qurazyOwed\], questOwed: \{ \.\.\.questOwed \} \};\n    return state;/);
+    assert.match(feature, /if \(mpMode\) return \{ \.\.\.state, applied: \[\.\.\.mpLists\.applied\], rewarded: \[\.\.\.mpLists\.rewarded\], mpRun: mpLists\.run, owed: owedSave\(owed\) \};\n    return state;/);
     assert.match(feature, /if \(mpMode\) ensureMp\(engine\);\n    else applyDemo\(engine\);/);
   });
 

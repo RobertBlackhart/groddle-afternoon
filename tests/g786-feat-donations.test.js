@@ -50,7 +50,8 @@ describe('G786: a donation report names its spend', () => {
   it('marks the spend applied with the trades before it reports (trade-feature ledgerReceipt)', () => {
     const src = read('public/js/features/solo-feats-feature.js');
     assert.match(src, /if \(engine\.query\?\.\('ledgerReceipt', id, engine\) === true\) op = id;/);
-    assert.match(src, /reportFor\(s\.run, featId, amount, op \? \{ \.\.\.opts, op \} : opts\)/);
+    // G968: owed with its spend id until the server answers (js/feat-owed.js sends it as op).
+    assert.match(src, /oweReport\(owed, \{ feat: featId, n: amount, act: opts\.act, street: opts\.street, op, cap \}, run\)/);
     // The shrine's donation still reports the chunks given (game.js doShrineDonation).
     assert.match(read('public/game.js'), /if \(result\.classTsid === 'sparkly'\) engine\.featsIncrement\('donate_sparkly', result\.qty\);/);
   });

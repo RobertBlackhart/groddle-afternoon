@@ -82,9 +82,16 @@
  *   soloFeatWired, soloFeatUnwired, soloFeatRuns (id:runs for every Feat
  *   finished at least once), soloFeatReopens (id:ms until it opens again).
  *   Multiplayer: mpFeat (feat:total/goal:mine:place), mpFeatLast (the last
- *   server message), mpFeatRewards (ids applied), mpFeatQurazyOwed (Qurazys
- *   the server has not answered yet, G754), mpFeatQuestOwed (quests the
- *   server's count of yours has not reached yet, G896); window.groddleFeats (QA).
+ *   server message), mpFeatRewards (ids applied), mpFeatOwed (reports the
+ *   server has not answered yet, G968), mpFeatQurazyOwed (of them, Qurazys,
+ *   G754), mpFeatQuestOwed (quests left to count, G896); window.groddleFeats (QA).
+ *
+ * Owed reports (G968, root R10): every count reported to the server goes
+ * through one queue (js/feat-owed.js) kept in this slice as `owed`: held until
+ * the server answers it, asked again after a failed send, a dropped socket or
+ * a pace refusal, under an id the server remembers so nothing counts twice.
+ * A per-animal cap is spent when the server accepts. The Qurazy and quest
+ * owed lists (qurazyOwed, questOwed) of older saves are read into it once.
  */
 
 import { addItem } from '../inventory.js?v=487b1b60';
@@ -104,6 +111,7 @@ import {
   addPending,
   completionText,
   createSoloFeatState,
+  eventIncrements,
   featEventIncrements,
   featRows,
   featSummary,
@@ -118,6 +126,21 @@ import {
   takePending,
 } from '../solo-feats.js?v=8455be6a';
 import { saveStore } from '../save-store.js?v=cd053443';
+import {
+  capHeld,
+  createOwed,
+  nextReport,
+  oweReport,
+  owedAnswer,
+  owedCount,
+  owedOffline,
+  owedReconnected,
+  owedRestore,
+  owedSave,
+  owedSent,
+  placeOwed,
+  runKey,
+} from '../feat-owed.js?v=bad2d279';
 import { gainMetabolic } from '../metabolics.js?v=1383e6fd';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { GIANTS } from '../shrines.js?v=f48c0155';
@@ -149,26 +172,14 @@ const COUNTDOWN_MS = 30_000;
 const ROCK_ICON = 'assets/sprites/moment/petrified_rock_small.webp';
 /** Archived street TSIDs (assets/streets/index.json): homes, neighbours and instances use other ids. */
 const REAL_STREET = /^G[A-Z0-9]{12,14}$/;
-/** G754: the Ramble's Qurazys, owed to the server until it answers (feats.go add). */
+/** G754: the Ramble's Qurazys (feats.go add, act quoin with the street it was found on). */
 const QURAZY_FEAT = 'qurazy_quoin_collecting';
-/** A repeat-visit Qurazy the pace held is asked again this much later (the pace frees one a 48 minutes). */
-const QURAZY_RETRY_MS = 5 * 60_000;
-/** Answers that will not change on asking again: the Qurazy is settled (counted, already counted, or cannot count). */
-const QURAZY_FINAL = new Set(['', 'already', 'not_today', 'street', 'act', 'amount']);
-/** The most Qurazys kept owed (a long time offline on a Ramble day). */
+/** The most Qurazys an older save's qurazyOwed held. */
 const QURAZY_OWED_MAX = 50;
 const OWED_STREET = /^[A-Za-z0-9_-]{1,32}$/;
-/** G896 (#428): Questing and Contesting's quests, owed until the server's count of yours reaches them. */
+/** G896 (#428): Questing and Contesting's quests. */
 const QUEST_FEAT = 'reminscequests';
-/** The server lets one quest a minute through and holds three (feats.go take, data/feats.json pace). */
-const QUEST_PACE_MS = 60_000;
-const QUEST_BURST = 3;
-/** No answer this long (a dropped socket): ask the server for its count again before sending more. */
-const QUEST_ANSWER_MS = 20_000;
-/** The send was refused (offline, or this tab is playing somewhere else): tried again this often. */
-const QUEST_OFFLINE_MS = 5_000;
 const QUEST_RUN = /^reminscequests:\d{1,12}$/;
-const QUEST_NONE = Object.freeze({ run: '', done: 0, held: 0 });
 
 let state = createSoloFeatState();
 let last = '';
@@ -185,14 +196,12 @@ let countdownAt = 0;
 let mpMode = false;
 let mp = null;
 let mpLists = { applied: [], rewarded: [], run: '' };
-/** Multiplayer (G754): the streets of Qurazys found that the server has not answered yet (saved as qurazyOwed). */
-let qurazyOwed = [];
-/**
- * Multiplayer (G896): quests finished on Questing and Contesting's day (saved as questOwed). run is
- * the run they count toward, done how many of yours it should hold (begun at the server's count),
- * held those finished before the server named today's Feat. What is owed is done less the server's.
- */
-let questOwed = { ...QUEST_NONE };
+/** Multiplayer (G968): every counted report the server has not answered yet (saved as owed; js/feat-owed.js). */
+let owed = createOwed();
+/** The owed queue changed: saved at the next poll (a save per pet would serialize the whole game each time). */
+let owedDirty = false;
+/** An older save's questOwed run (G896: measured against the server's count of yours), read once that count is known. */
+let legacyQuest = null;
 /** The completed quests last seen (G896): ids and finish times, so a repeat taken again cannot hide a finish. */
 let questSeen = null;
 
@@ -227,8 +236,9 @@ function publish(engine) {
     engine.setData('mpFeat', run ? `${run.feat}:${run.total}/${run.goal}:${run.mine}:${run.place}` : 'none');
     engine.setData('mpFeatRewards', mpLists.rewarded.join(',') || 'none');
     engine.setData('mpFeatSent', mp?.sent || 0);
-    engine.setData('mpFeatQurazyOwed', qurazyOwed.length);
-    engine.setData('mpFeatQuestOwed', questsOwed());
+    engine.setData('mpFeatOwed', owed.list.length);
+    engine.setData('mpFeatQurazyOwed', owedCount(owed, QURAZY_FEAT).reports);
+    engine.setData('mpFeatQuestOwed', owedCount(owed, QUEST_FEAT).amount);
   }
   engine.setData('soloFeatReopens', WIRED_FEATS.filter((f) => reopensAt(state, f.id)).map((f) => `${f.id}:${Math.max(0, reopensAt(state, f.id) - now)}`).join(',') || 'none');
 }
@@ -300,13 +310,21 @@ function increment(engine, featId, amount, opts = {}) {
 function onFeatEvent(engine, counter, amount, detail) {
   // Before the caps are read: a reopened Feat frees its own.
   reopenDue(engine);
-  for (const row of featEventIncrements(state, counter, amount, detail)) {
+  // Multiplayer (G968): a capped row's cap (three feeds an animal) is spent when the server accepts the report, not here.
+  const rows = mpMode ? eventIncrements(counter, amount, detail) : featEventIncrements(state, counter, amount, detail);
+  for (const row of rows) {
     if (row.mode === 'direct') {
       // The Lucky Streak's one event rule is the Spinning Wheel's Cubimal box (feats-mp.js MP_ACTS wheel).
-      increment(engine, row.featId, row.amount, row.featId === 'streaking' ? { act: 'wheel' } : {});
+      const opts = row.featId === 'streaking' ? { act: 'wheel' } : {};
+      increment(engine, row.featId, row.amount, row.cap ? { ...opts, cap: row.cap } : opts);
     } else if (row.mode === 'commit') {
       // Multiplayer: kindnesses wait for leaving the street only while "… And Ask Nothing in Return" is today's Feat.
       if (mpMode && mp?.run?.feat !== 'pet_only') continue;
+      // The pile is the game's own (feats.to_commit), so its cap is spent as it grows (the pile is owed once committed).
+      if (mpMode && row.cap?.key) {
+        if ((state.caps[row.cap.key] || 0) + capHeld(owed, row.cap.key) >= row.cap.max) continue;
+        state.caps[row.cap.key] = (state.caps[row.cap.key] || 0) + 1;
+      }
       if (addPending(state, row.amount, Date.now())) {
         last = `pending:+${row.amount}:${state.pending}`;
         render();
@@ -333,24 +351,26 @@ function poll(engine) {
     if (panel && !panel.hidden) render();
   }
   const d = questsFinished(engine.questState);
-  if (d > 0) {
-    // Multiplayer (G896): owed until the server's count of yours reaches them.
-    if (mpMode) oweQuests(engine, d);
-    else increment(engine, QUEST_FEAT, d);
-  }
+  // Multiplayer (G896, G968): owed until the server counts them.
+  if (d > 0) increment(engine, QUEST_FEAT, d);
   const qurazy = Number(engine.quoinState?.qurazyFound);
   if (Number.isFinite(qurazy)) {
     if (state.qurazyBase == null || qurazy < state.qurazyBase) state.qurazyBase = qurazy;
     else if (qurazy > state.qurazyBase) {
       const d = qurazy - state.qurazyBase;
       state.qurazyBase = qurazy;
-      // Multiplayer (G754): each is owed until the server answers it; a refusal for pace is asked again.
-      if (mpMode) owe(engine, d);
-      else increment(engine, QURAZY_FEAT, d, { act: 'quoin', street: engine.streetTsid });
+      if (mpMode) {
+        // Multiplayer (G754, G968): one report each, for the street it was found on (the server counts a street once).
+        const street = String(streetTsid || engine.streetTsid || '');
+        if (OWED_STREET.test(street)) for (let i = 0; i < d; i += 1) increment(engine, QURAZY_FEAT, 1, { act: 'quoin', street });
+      } else increment(engine, QURAZY_FEAT, d, { act: 'quoin', street: engine.streetTsid });
     }
   }
-  if (mpMode && qurazyOwed.length && t >= (mp?.qurazyRetryAt || 0)) flushQurazy(engine);
-  if (mpMode && (questOwed.held || questOwed.run)) flushQuests(engine, t);
+  if (mpMode && owed.list.length) flushOwed(engine, t);
+  if (owedDirty) {
+    owedDirty = false;
+    engine.save?.();
+  }
 }
 
 function questSnapshot(qs) {
@@ -385,148 +405,6 @@ function questsFinished(qs) {
   questSeen = questSnapshot(qs);
   state.questBase = n;
   return d;
-}
-
-/** Multiplayer: what is owed to the server for quests (the panel's QA hook). */
-function questsOwed() {
-  const run = mp?.run;
-  const placed = run && questOwed.run === `${run.feat}:${run.run}` ? Math.max(0, questOwed.done - run.mine) : 0;
-  return questOwed.held + placed;
-}
-
-/** Multiplayer: n quests just finished. */
-function oweQuests(engine, n) {
-  questOwed.held = Math.min(questOwed.held + n, 1000);
-  placeQuests(mp);
-  engine.save?.();
-  flushQuests(engine);
-  publish(engine);
-}
-
-/**
- * Moves the quests held into today's run once the server has named it and given its count of
- * yours (feat_state); on another Feat's day they can never count, so they are dropped. A new run
- * starts from the server's count, and a count above ours (another device) is taken as ours.
- */
-function placeQuests(s) {
-  if (!s?.run || !s.questSynced) return false;
-  if (s.run.feat !== QUEST_FEAT) {
-    const had = questOwed.held || questOwed.run;
-    questOwed = { ...QUEST_NONE };
-    return Boolean(had);
-  }
-  const key = `${s.run.feat}:${s.run.run}`;
-  if (questOwed.run !== key) questOwed = { run: key, done: s.run.mine, held: questOwed.held };
-  questOwed.done = Math.max(questOwed.done, s.run.mine) + questOwed.held;
-  questOwed.held = 0;
-  return true;
-}
-
-/**
- * Sends what is owed for quests: one report at a time, at most the server's burst, and after a
- * short count the rest waits a pace interval (feats.go take: one a minute, three held). Nothing is
- * counted twice: what is owed is always measured against the server's own count of yours.
- */
-function flushQuests(engine, now = Date.now()) {
-  const s = ensureMp(engine);
-  if (!s?.run || !s.questSynced) return;
-  if (placeQuests(s)) engine.save?.();
-  if (questOwed.run !== `${s.run.feat}:${s.run.run}`) return;
-  if (s.questFlight) {
-    if (now - s.questAskedAt < QUEST_ANSWER_MS) return;
-    // No answer: the server's count says whether it was taken.
-    s.questFlight = 0;
-    s.questSynced = false;
-    s.sync();
-    return;
-  }
-  if (now < s.questRetryAt) return;
-  const owed = questOwed.done - s.run.mine;
-  if (owed <= 0) return;
-  const n = Math.min(owed, QUEST_BURST);
-  if (!s.client.send('feat_add', { feat: QUEST_FEAT, n })) {
-    s.lastReason = 'offline';
-    s.questRetryAt = now + QUEST_OFFLINE_MS;
-    return;
-  }
-  s.sent += 1;
-  s.questFlight = n;
-  s.questAskedAt = now;
-  publish(engine);
-}
-
-/** feat_counted for a quest report (after the run took its count of yours). */
-function questAnswered(engine, s, msg) {
-  if (!s.questFlight) return;
-  s.questFlight = 0;
-  if (String(msg.reason || '') === 'not_today') {
-    questOwed = { ...QUEST_NONE };
-    engine.save?.();
-    return;
-  }
-  // Short (the pace held some or all): the rest is asked again a pace interval later.
-  if (s.run && questOwed.done > s.run.mine) s.questRetryAt = Date.now() + QUEST_PACE_MS;
-  flushQuests(engine);
-}
-
-/** Multiplayer: the Qurazys just found, owed for the street they were found on. */
-function owe(engine, n) {
-  const street = String(streetTsid || engine.streetTsid || '');
-  if (!OWED_STREET.test(street)) return;
-  for (let i = 0; i < n; i += 1) qurazyOwed.push(street);
-  qurazyOwed = qurazyOwed.slice(-QURAZY_OWED_MAX);
-  engine.save?.();
-  flushQurazy(engine);
-  publish(engine);
-}
-
-/**
- * Sends the owed Qurazys not yet asked: once the server names today's Feat; on another
- * Feat's day they can never count, so they are dropped.
- */
-function flushQurazy(engine) {
-  const s = ensureMp(engine);
-  if (!s?.run || !qurazyOwed.length) return;
-  if (s.run.feat !== QURAZY_FEAT) {
-    qurazyOwed = [];
-    s.qurazyFlight = [];
-    engine.save?.();
-    publish(engine);
-    return;
-  }
-  const asking = [...s.qurazyFlight];
-  for (const street of qurazyOwed) {
-    const at = asking.indexOf(street);
-    if (at >= 0) {
-      asking.splice(at, 1);
-      continue;
-    }
-    const report = reportFor(s.run, QURAZY_FEAT, 1, { act: 'quoin', street });
-    if (!report) continue;
-    if (!s.client.send('feat_add', report)) {
-      s.lastReason = 'offline';
-      break;
-    }
-    s.sent += 1;
-    s.qurazyFlight.push(street);
-  }
-  publish(engine);
-}
-
-/** feat_counted for a Qurazy: settled (counted, or cannot count) or held by the pace (asked again later). */
-function qurazyAnswered(engine, s, msg) {
-  const street = typeof msg.street === 'string' ? msg.street : '';
-  const at = street ? s.qurazyFlight.indexOf(street) : 0;
-  if (at < 0 || !s.qurazyFlight.length) return;
-  const [asked] = s.qurazyFlight.splice(at, 1);
-  const reason = String(msg.reason || '');
-  if (Number(msg.n) > 0 || QURAZY_FINAL.has(reason)) {
-    const owed = qurazyOwed.indexOf(asked);
-    if (owed >= 0) qurazyOwed.splice(owed, 1);
-    engine.save?.();
-  } else if (reason === 'pace') {
-    s.qurazyRetryAt = Date.now() + QURAZY_RETRY_MS;
-  }
 }
 
 // —— Panel ———————————————————————————————————————————————————————————————
@@ -776,30 +654,76 @@ async function persist(engine) {
   return saveStore.state === 'saved';
 }
 
-/** pc.feats_increment in multiplayer: today's Feat only, counted by the server. Returns 0 (the answer comes as feat_counted). */
+/**
+ * pc.feats_increment in multiplayer: today's Feat only, counted by the server. Owed until it answers
+ * (G968, js/feat-owed.js); made before the server names today's Feat, it is held and counts if that
+ * Feat is today's. Returns 0 (the answer comes as feat_counted).
+ */
 function mpReport(engine, featId, amount, opts = {}) {
+  if (!FEAT_BY_ID[featId]) return 0;
   const s = ensureMp(engine);
+  const run = s?.synced ? s.run : null;
+  if (run && run.feat !== featId) return 0;
+  // An act the server takes (feats-mp.js MP_ACTS), checked as the report will be sent.
+  if (!reportFor(run || { feat: featId }, featId, amount, opts)) return 0;
   // G786 (#361): a donation goes through the ledger: its spend id, marked applied with the trades
   // as the items have just left the pack (trade-feature ledgerReceipt), so the ledger counts them
   // once and the realtime server can count every one (feats-mp.js MP_DONATIONS).
   let op = '';
-  if (s?.run?.feat === featId && MP_DONATIONS[featId]) {
+  if (run && MP_DONATIONS[featId]) {
     const id = donationOp();
     if (engine.query?.('ledgerReceipt', id, engine) === true) op = id;
   }
-  const report = s ? reportFor(s.run, featId, amount, op ? { ...opts, op } : opts) : null;
-  if (!report) return 0;
-  // The source's per-animal limits (hugged_for_feat and the rest), kept here as in solo (incrementFeat opts.cap).
-  if (opts?.cap?.key) {
-    const key = String(opts.cap.key).slice(0, 120);
-    const max = Math.max(1, Math.floor(Number(opts.cap.max)) || 1);
-    if ((state.caps[key] || 0) >= max) return 0;
-    state.caps[key] = (state.caps[key] || 0) + 1;
-  }
-  s.sent += 1;
-  if (!s.client.send('feat_add', report)) s.lastReason = 'offline';
+  // The source's per-animal limits (hugged_for_feat and the rest), kept here as in solo (incrementFeat
+  // opts.cap): spent when the server accepts (owedAccepted); one owed for that key holds its place.
+  const cap = opts?.cap?.key ? { key: String(opts.cap.key).slice(0, 120), max: Math.max(1, Math.floor(Number(opts.cap.max)) || 1) } : null;
+  if (cap && (state.caps[cap.key] || 0) + capHeld(owed, cap.key) >= cap.max) return 0;
+  if (!oweReport(owed, { feat: featId, n: amount, act: opts.act, street: opts.street, op, cap }, run)) return 0;
+  owedDirty = true;
+  flushOwed(engine);
   publish(engine);
   return 0;
+}
+
+/**
+ * Sends the next owed report once the server has named today's Feat on this connection: one at a
+ * time, at the server's pace (js/feat-owed.js nextReport). Reports for another Feat's day are dropped.
+ */
+function flushOwed(engine, now = Date.now()) {
+  const s = ensureMp(engine);
+  if (!s?.synced || !s.run) return;
+  if (legacyQuest) {
+    // G896's questOwed: what it held above the server's count of yours.
+    if (legacyQuest.run === runKey(s.run)) oweReport(owed, { feat: QUEST_FEAT, n: legacyQuest.done - s.run.mine }, s.run, now);
+    legacyQuest = null;
+    owedDirty = true;
+  }
+  if (placeOwed(owed, s.run)) owedDirty = true;
+  const next = nextReport(owed, s.run, now);
+  if (next) {
+    if (s.client.send('feat_add', next.report)) {
+      s.sent += 1;
+      owedSent(owed, next.entry, now);
+      owedDirty = true;
+    } else {
+      s.lastReason = 'offline';
+      owedOffline(owed, now);
+    }
+  }
+  publish(engine);
+}
+
+/** feat_counted for an owed report: settled, or asked again later; the cap is spent once accepted. */
+function owedAnswered(engine, msg) {
+  const ans = owedAnswer(owed, msg);
+  if (!ans) return;
+  const cap = ans.entry.cap;
+  if (ans.accepted && cap && !ans.entry.capSpent) {
+    ans.entry.capSpent = true;
+    state.caps[cap.key] = (state.caps[cap.key] || 0) + 1;
+  }
+  owedDirty = true;
+  flushOwed(engine);
 }
 
 function ensureMp(engine) {
@@ -827,7 +751,8 @@ function startedRun(run) {
 
 function createMp(engine, client) {
   let offset = 0;
-  const s = { client, run: null, last: null, sent: 0, lastReason: '', applying: new Set(), qurazyFlight: [], qurazyRetryAt: 0, questSynced: false, questFlight: 0, questAskedAt: 0, questRetryAt: 0, get offset() { return offset; } };
+  // synced: this connection has heard today's Feat (feat_state); owed reports wait for it (G968).
+  const s = { client, run: null, last: null, sent: 0, lastReason: '', applying: new Set(), synced: false, get offset() { return offset; } };
   const clock = (msg) => {
     if (Number(msg?.now) > 0) offset = Number(msg.now) - Date.now();
   };
@@ -841,13 +766,9 @@ function createMp(engine, client) {
   };
   s.sync = () => client.send('feat_sync', {});
   client.on('hello', () => {
-    // A new connection: what was asked on the old one is asked again once today's Feat is known.
-    s.qurazyFlight = [];
-    s.qurazyRetryAt = 0;
-    // G896: quests wait for the new connection's count of yours.
-    s.questSynced = false;
-    s.questFlight = 0;
-    s.questRetryAt = 0;
+    // A new connection: what was asked on the old one is asked again (same ids) once today's Feat is known.
+    s.synced = false;
+    owedReconnected(owed);
     s.sync();
   });
   if (client.state === 'online') s.sync();
@@ -861,9 +782,8 @@ function createMp(engine, client) {
     if (startedRun(run)) engine.save?.();
     seen('feat_state');
     refresh();
-    flushQurazy(engine);
-    s.questSynced = true;
-    flushQuests(engine);
+    s.synced = true;
+    flushOwed(engine);
   });
   client.on('msg:feat_progress', (msg) => {
     if (!s.run || Number(msg.run) !== s.run.run || msg.feat !== s.run.feat) return;
@@ -874,13 +794,12 @@ function createMp(engine, client) {
   });
   client.on('msg:feat_counted', (msg) => {
     s.lastReason = String(msg.reason || '');
-    if (msg.feat === QURAZY_FEAT) qurazyAnswered(engine, s, msg);
     if (s.run && Number(msg.run) === s.run.run && msg.feat === s.run.feat) {
       s.run.total = Math.max(s.run.total, Number(msg.total) || 0);
       s.run.mine = Number(msg.mine) || s.run.mine;
       s.run.place = Number(msg.place) || s.run.place;
     }
-    if (msg.feat === QUEST_FEAT) questAnswered(engine, s, msg);
+    owedAnswered(engine, msg);
     if (Number(msg.n) > 0) {
       // inc_feats.js 104-106: every contribution grants Down to the Wire (once).
       engine.grantAchievement?.('down_to_the_wire');
@@ -1089,6 +1008,32 @@ function renderWorld(box) {
   }
 }
 
+/**
+ * The owed queue from a save (G968). A save from before it kept two lists: qurazyOwed (G754, the
+ * streets of Qurazys not answered) and questOwed (G896: held quests, and a run's count of yours to
+ * reach); they are read into the queue once, held until the server names today's Feat.
+ */
+function restoreOwed(slice) {
+  owed = owedRestore(slice?.owed);
+  owedDirty = false;
+  legacyQuest = null;
+  if (!slice || Array.isArray(slice.owed)) return;
+  const now = Date.now();
+  if (Array.isArray(slice.qurazyOwed)) {
+    for (const street of slice.qurazyOwed.filter((k) => typeof k === 'string' && OWED_STREET.test(k)).slice(-QURAZY_OWED_MAX)) {
+      oweReport(owed, { feat: QURAZY_FEAT, n: 1, act: 'quoin', street }, null, now);
+    }
+  }
+  const qo = slice.questOwed;
+  if (qo && typeof qo === 'object') {
+    const held = Math.min(Math.max(0, Math.floor(Number(qo.held)) || 0), 1000);
+    if (held) oweReport(owed, { feat: QUEST_FEAT, n: held }, null, now);
+    const done = Math.min(Math.max(0, Math.floor(Number(qo.done)) || 0), 1e6);
+    if (QUEST_RUN.test(String(qo.run || '')) && done) legacyQuest = { run: String(qo.run), done };
+  }
+  owedDirty = owed.list.length > 0 || Boolean(legacyQuest);
+}
+
 // —— Feature ————————————————————————————————————————————————————————————
 
 export const soloFeatsFeature = {
@@ -1167,7 +1112,7 @@ export const soloFeatsFeature = {
 
   save() {
     // Multiplayer: the ids applied (the site's LedgerMath::FEAT_SLICE) and the run whose caps are in state. Solo saves what it always did.
-    if (mpMode) return { ...state, applied: [...mpLists.applied], rewarded: [...mpLists.rewarded], mpRun: mpLists.run, qurazyOwed: [...qurazyOwed], questOwed: { ...questOwed } };
+    if (mpMode) return { ...state, applied: [...mpLists.applied], rewarded: [...mpLists.rewarded], mpRun: mpLists.run, owed: owedSave(owed) };
     return state;
   },
 
@@ -1175,15 +1120,7 @@ export const soloFeatsFeature = {
     if (engine) mpMode = engine.mode === 'multiplayer';
     mpLists = mpMode ? { applied: appliedFrom(slice), rewarded: appliedFrom({ applied: slice?.rewarded }), run: String(slice?.mpRun || '').slice(0, 24) } : { applied: [], rewarded: [], run: '' };
     state = normalizeSoloFeatState(slice || {});
-    qurazyOwed = mpMode && Array.isArray(slice?.qurazyOwed)
-      ? slice.qurazyOwed.filter((k) => typeof k === 'string' && OWED_STREET.test(k)).slice(-QURAZY_OWED_MAX)
-      : [];
-    const qo = mpMode ? slice?.questOwed : null;
-    questOwed = qo && typeof qo === 'object' ? {
-      run: QUEST_RUN.test(String(qo.run || '')) ? String(qo.run) : '',
-      done: Math.min(Math.max(0, Math.floor(Number(qo.done)) || 0), 1e6),
-      held: Math.min(Math.max(0, Math.floor(Number(qo.held)) || 0), 1000),
-    } : { ...QUEST_NONE };
+    restoreOwed(mpMode ? slice : null);
     questSeen = null;
     // When the Feats first opened to this save (quick_on_your_feat).
     if (!state.openedAt) state.openedAt = Date.now();
