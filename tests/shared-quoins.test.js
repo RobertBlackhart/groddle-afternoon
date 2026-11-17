@@ -24,7 +24,7 @@ import {
   shardFor,
   statusOf,
 } from '../public/js/shared-quoins.js?v=89d7b201';
-import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=d8556d06';
+import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=b10477ee';
 import {
   QUOIN_SHARD_FLOOR,
   QUOIN_SHARD_NEAR,

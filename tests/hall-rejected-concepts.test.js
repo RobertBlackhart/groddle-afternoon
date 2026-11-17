@@ -24,8 +24,8 @@ import {
   STAND,
   WALL_BUTTON,
   hallLayout,
-} from '../public/js/hall-rejected-concepts.js?v=fbcdf64b';
-import { MEZZ, MEZZANINE_TSID, midTowerRoomByTsid } from '../public/js/tower-mid-rooms.js?v=22bef2ca';
+} from '../public/js/hall-rejected-concepts.js?v=04d831b8';
+import { MEZZ, MEZZANINE_TSID, midTowerRoomByTsid } from '../public/js/tower-mid-rooms.js?v=908fef6e';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(spike, '../glitch-GameServerJS');
@@ -268,7 +268,7 @@ describe('Hall of Rejected Concepts: the Wall Buttons', () => {
       globalThis.PIXI = { Sprite: Obj, Container: Obj, AnimatedSprite: Anim, Rectangle, ImageSource: Source, Texture: class { constructor(o) { Object.assign(this, o); } } };
       globalThis.Image = class { set src(_u) {} decode() { return new Promise(() => {}); } };
       globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage() {} }) }) };
-      ({ midTowerFeature: feature } = await import('../public/js/features/mid-tower-feature.js?v=8653e59a'));
+      ({ midTowerFeature: feature } = await import('../public/js/features/mid-tower-feature.js?v=0fd582c4'));
     });
     after(() => {
       for (const [k, v] of Object.entries(saved)) globalThis[k] = v;

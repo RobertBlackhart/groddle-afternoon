@@ -55,7 +55,7 @@
  */
 
 import { towerRoomIndexEntry } from './tower-rooms.js?v=4f1f6af7';
-import { anyTowerRoomStreet, barriersFor, collector, flat } from './tower-challenge-rooms.js?v=bfc49d89';
+import { anyTowerRoomStreet, barriersFor, collector, flat } from './tower-challenge-rooms.js?v=01f1c620';
 
 export const ROOM_23_TSID = 'GCR8MORFJI12IR4';
 export const ROOM_23_SOURCE_TSID = 'LCR8MORFJI12IR4';
@@ -362,6 +362,10 @@ function buildRoom23() {
     tsid: ROOM_23_TSID,
     sourceTsid: ROOM_23_SOURCE_TSID,
     label: 'Room 23',
+    // G945 (audit M22): the record is lost; this is its instance row. A tower_quest instance
+    // (npc_widget.js 423, 431: container.isInstance('tower_quest')) of one player
+    // (player.js teleportToLocation 628-648, inc_instances.js 88-90). tools/private-streets reads it.
+    instance: Object.freeze({ id: 'tower_quest', maxMembers: 1, why: 'npc_widget.js 423, 431 container.isInstance(\'tower_quest\'); inc_instances.js instances_get_max_members defaults to 1.' }),
     hub: ROOM_23_HUB,
     swf: 'firebog.swf',
     bounds,

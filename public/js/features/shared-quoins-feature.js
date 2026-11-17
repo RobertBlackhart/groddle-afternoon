@@ -42,6 +42,7 @@
 import { QUOIN_TYPES, creditQuoinStat } from '../quoins.js?v=a4208821';
 import { quoinShardGrabberSound, quoinShardSoundKey } from '../quoin-shards.js?v=121156a0';
 import { LOCAL_STATES, SHARD_STATS, createSharedQuoinBook, fxShards, normalizeGrab, shardFor, statusOf } from '../shared-quoins.js?v=89d7b201';
+import { publicStreet } from '../shared-street.js?v=dce5694b';
 
 export const SHARED_QUOINS_FEATURE_ID = 'shared-quoins';
 /** Status goes out on a change, and at least this often while on a street. */
@@ -70,9 +71,8 @@ function sharedStreet(engine) {
   // G334: a Party Space's members share its quoins on the space's hub street (party-spaces-feature).
   const own = engine.query?.('sharedQuoinStreet', engine);
   if (own) return String(own);
-  if (engine.transientInstance?.()) return '';
-  if (engine.homeContext?.().inHome) return '';
-  return String(engine.streetTsid);
+  // G945: a place Glitch kept to one player keeps its quoins local (js/shared-street.js).
+  return publicStreet(engine);
 }
 
 /** The world's natural quoins (the street's own spots, not quest or Qurazy ones). */

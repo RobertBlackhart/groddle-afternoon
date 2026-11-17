@@ -50,8 +50,8 @@
  */
 
 import { towerRoomIndexEntry } from './tower-rooms.js?v=4f1f6af7';
-import { DOOR, anyTowerRoomStreet, barriersFor, collector, flat, ladder, plaque, shell } from './tower-challenge-rooms.js?v=bfc49d89';
-import { HALL, HALL_TSID, buildHall } from './hall-rejected-concepts.js?v=fbcdf64b';
+import { DOOR, anyTowerRoomStreet, barriersFor, collector, flat, ladder, plaque, shell } from './tower-challenge-rooms.js?v=01f1c620';
+import { HALL, HALL_TSID, buildHall } from './hall-rejected-concepts.js?v=04d831b8';
 
 export const STAIRS_TSID = 'GIFFUV4ATQ72I6D';
 export const MEZZANINE_TSID = 'GIFGJ2246R72LJL';

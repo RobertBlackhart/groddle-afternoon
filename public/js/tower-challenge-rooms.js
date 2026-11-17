@@ -47,6 +47,18 @@ import { BRIDGE_LINE, WALKWAY_LINE, decoPoint, hangingSign, stepsPiece, TOWER_RO
 import { TOWER_ROOM_4_FILES } from './tower-room-4-art.js?v=6a934af6';
 import { TOWER_ROOM_16_FILES } from './tower-room-16-art.js?v=eaafb5f7';
 
+/**
+ * G945 (audit M22): each challenge room was a place of your own, an instance of one (as the
+ * colour levels' records say: instance_me, max members 1; locations/inc_instances.js 88-90).
+ * The rooms' records are lost, so this row stands in for theirs (W Key spawn table:
+ * "Challenge Room 8, once per instance", "Challenge Room 16, once per instance"; Austin
+ * 2026-11-17: the tower challenge rooms are private online). tools/private-streets reads it.
+ */
+export const CHALLENGE_ROOM_INSTANCE = Object.freeze({
+  maxMembers: 1,
+  why: 'W Key spawn table: Challenge Rooms 8 and 16 drop their key "once per instance"; Austin 2026-11-17 rules every tower challenge room private online.',
+});
+
 export const ROOM_4_TSID = 'GIF1Q6PMN7123NQ';
 export const ROOM_8_TSID = 'GIF1FHA10312KLV';
 export const ROOM_16_TSID = 'GTJ11V9DK812UNL';
@@ -339,6 +351,7 @@ function buildRoom4() {
 
   return {
     tsid: ROOM_4_TSID,
+    instance: CHALLENGE_ROOM_INSTANCE,
     sourceTsid: 'LIF1Q6PMN7123NQ',
     label: 'Room 4',
     bounds,
@@ -500,6 +513,7 @@ function buildRoom8() {
 
   return {
     tsid: ROOM_8_TSID,
+    instance: CHALLENGE_ROOM_INSTANCE,
     sourceTsid: 'LIF1FHA10312KLV',
     label: 'Room 8',
     bounds,
@@ -617,6 +631,7 @@ function buildRoom16() {
 
   return {
     tsid: ROOM_16_TSID,
+    instance: CHALLENGE_ROOM_INSTANCE,
     sourceTsid: 'LTJ11V9DK812UNL',
     label: 'Room 16',
     bounds,

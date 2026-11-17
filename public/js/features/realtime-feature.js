@@ -71,6 +71,7 @@ import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { playOverlay } from '../overlays.js?v=eda942a8';
+import { publicStreet } from '../shared-street.js?v=dce5694b';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
@@ -158,15 +159,13 @@ export function poseOf(player) {
   };
 }
 
-/** The street others can share with you now, or '' in a private place. */
+/** The street others can share with you now, or '' in a private place (js/shared-street.js). */
 export function sharedStreet(engine) {
   if (!engine?.player || !engine.streetTsid) return '';
   // A private scene some players share (a multiplayer race: races-feature realtimeStreet, RACE_<match>).
   const own = engine.query?.('realtimeStreet', engine);
   if (own) return String(own);
-  if (engine.transientInstance?.()) return '';
-  if (engine.homeContext?.().inHome) return '';
-  return String(engine.streetTsid);
+  return publicStreet(engine);
 }
 
 /** What others draw you with: the character builder's vector look. */

@@ -12,11 +12,11 @@ import { join } from 'node:path';
 import { readZip } from '../tools/avatar-compositor/xfl.mjs';
 
 import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=73e1ae86';
-import { TYPING_EVERY_MS, TYPING_MS, TYPING_OVERLAY, typingCounts } from '../public/js/features/realtime-feature.js?v=e59d3336';
+import { TYPING_EVERY_MS, TYPING_MS, TYPING_OVERLAY, typingCounts } from '../public/js/features/realtime-feature.js?v=964a7a8b';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, commandHelp, imDelayMs, imLine, imText, normalizeImPrefs, parseButlerIm } from '../public/js/butler-im.js?v=44783638';
 import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=72d814fa';
 import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=d2caa08e';
-import { FEATURES } from '../public/js/features/index.js?v=be3ffec1';
+import { FEATURES } from '../public/js/features/index.js?v=f6e08ead';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

@@ -131,6 +131,7 @@ import { playPotionBottle } from '../potion-bottle-fx.js?v=eaebe689';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { publicStreet } from '../shared-street.js?v=dce5694b';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */
@@ -2305,10 +2306,7 @@ function costOf(sourceValue, opts = {}) {
 
 /** realtime-feature sharedStreet: the street others share, or '' in a private place. */
 function mpSharedStreet(engine) {
-  if (!engine?.player || !engine.streetTsid) return '';
-  if (engine.transientInstance?.()) return '';
-  if (engine.homeContext?.().inHome) return '';
-  return String(engine.streetTsid);
+  return publicStreet(engine);
 }
 
 function mpBind(engine) {

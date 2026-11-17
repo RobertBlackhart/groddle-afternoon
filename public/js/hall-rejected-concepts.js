@@ -56,7 +56,7 @@
  * (the tower's own jethimadh_int set) and the spotlight sizes.
  */
 
-import { DOOR, barriersFor, flat, plaque } from './tower-challenge-rooms.js?v=bfc49d89';
+import { DOOR, barriersFor, flat, plaque } from './tower-challenge-rooms.js?v=01f1c620';
 import { HALL_ART, HALL_ART_ROOT } from './hall-concepts-art.js?v=a86307eb';
 
 export const HALL_TSID = 'GA9L33D5CNE3I0J';

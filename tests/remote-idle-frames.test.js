@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { remotesOnFreedFrames } from '../public/js/features/realtime-feature.js?v=e59d3336';
+import { remotesOnFreedFrames } from '../public/js/features/realtime-feature.js?v=964a7a8b';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
