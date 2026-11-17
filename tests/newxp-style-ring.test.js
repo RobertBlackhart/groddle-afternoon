@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { STYLE_RING_DWELL_MS, STYLE_RING_STILL_VX, styleRingHint } from '../public/js/features/newxp-feature.js?v=88139df9';
+import { STYLE_RING_DWELL_MS, STYLE_RING_STILL_VX, styleRingHint } from '../public/js/features/newxp-feature.js?v=0679b02f';
 
 const src = readFileSync(new URL('../public/js/features/newxp-feature.js', import.meta.url), 'utf8');
 

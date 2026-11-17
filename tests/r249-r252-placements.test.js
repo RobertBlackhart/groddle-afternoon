@@ -32,8 +32,8 @@ import {
   streetGardenBoxBeds,
   streetGardenBoxes,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=42bbe693';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f5f0e24f';
+} from '../public/js/street-ecology.js?v=b394a0ec';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=b54691bd';
 import { JELLISAC_SPOTS, PEAT_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
 import { bedKind, createGarden, fitGardenToBed, plantPlot } from '../public/js/garden.js?v=73a80be0';
 import { bedKey, parsePlotId } from '../public/js/shared-gardens.js?v=c1f90bc0';
@@ -130,7 +130,8 @@ describe('reports #249, #250: the ones the snaps do not show', () => {
     assert.equal(PLACEMENT_FOOTPRINTS['resource:peat_1'], 180);
     assert.equal(PLACEMENT_FOOTPRINTS['resource:jellisac'], 60);
     assert.deepEqual({ ...STEADY_FLOOR_GROUPS['resource:peat_1'] }, { maxSlope: 0.15, ledgeRun: 0, edgeDrop: 12 });
-    assert.deepEqual({ ...STEADY_FLOOR_GROUPS['resource:jellisac'] }, { maxSlope: 0.25, ledgeRun: 240, edgeDrop: 12 });
+    // G939: a planned Jellisac on flat ground (0.1; was 0.25).
+    assert.deepEqual({ ...STEADY_FLOOR_GROUPS['resource:jellisac'] }, { maxSlope: 0.1, ledgeRun: 240, edgeDrop: 12 });
     assert.equal(PLANNED_NODE_CAPS.jellisac, 4);
     assert.equal(PLANNED_NODE_CAPS.peat_1, 3);
     assert.equal(PLANNED_NODE_CAPS.mortar_barnacle, 6);

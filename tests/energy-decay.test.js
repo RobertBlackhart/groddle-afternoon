@@ -17,8 +17,8 @@ import {
   periodicEnergyLoss,
 } from '../public/js/energy-decay.js?v=01009c8b';
 // The feature imports these with their browser cache tags; load the same module instances.
-import { energyDecayContext, energyDecayFeature, runEnergyLossTick } from '../public/js/features/energy-decay-feature.js?v=9489145b';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=88139df9';
+import { energyDecayContext, energyDecayFeature, runEnergyLossTick } from '../public/js/features/energy-decay-feature.js?v=773d7067';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=0679b02f';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=5fdccf83';
 import { HELL_TEXT } from '../public/js/hell.js?v=df2b4357';
 import { SCENE_TSIDS } from '../public/js/newxp.js?v=6d95626b';

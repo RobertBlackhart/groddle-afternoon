@@ -6,7 +6,9 @@
  *
  * G939 (the placement audit of all 261): a hole is the deco street-render.js turns about its bottom
  * centre, so a seat goes on the turned opening's centre (Blottnass' hollows lie on their sides); never
- * two in one hole; and open holes before the ones art is drawn over (Lagan Lark's stalks).
+ * two in one hole; open holes before the ones art is drawn over (Lagan Lark's stalks); and a planned
+ * Jellisac stands on flat floor, out from behind the front layers (Quinmchary's curtain, Clam
+ * Calumny's root pipe).
  *
  * Run: node --test tests/g933-jellisac-holes.test.js
  */
@@ -29,7 +31,20 @@ import {
 } from '../tools/build-jellisac-hole-spots.mjs';
 import { JELLISAC_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
 import { JELLISAC_HOLE_SPOTS } from '../public/js/jellisac-hole-spots-data.js?v=256c00e9';
-import { measuredNodeSpots } from '../public/js/street-ecology.js?v=42bbe693';
+import {
+  STEADY_FLOOR_GROUPS,
+  ecologyForStreet,
+  frontDecoCovers,
+  hiddenBehindFront,
+  measuredNodeSpots,
+  planStreetPlacements,
+  populationForStreet,
+  setStreetEcologyCatalog,
+  streetReservedSpots,
+} from '../public/js/street-ecology.js?v=b394a0ec';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+import { placementRequests } from '../tools/build-realtime-objects.mjs';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -40,6 +55,7 @@ const streetOf = (tsid) => JSON.parse(read(`public/${index.streets[tsid].file}`)
 const QUINMCHARY = 'GTJ101FB0SO17JK';
 const BLOTTNASS = 'GTJLTCN21IQ1URB';
 const LAGAN_LARK = 'GTJ2S0EVDSV1HQ0';
+const CLAM_CALUMNY = 'GTJ1024R2DQ1B5S';
 const hole = (cx, cy, extra = {}) => ({ sprite: 'ground_cutaway_hollow3', cx, cy, ex: 24, ey: 28, ...extra });
 
 describe('Jellisacs sit in their street\'s empty holes first (#453)', () => {
@@ -150,5 +166,37 @@ describe('G939: every hole holds one Jellisac, seated in its turned opening', ()
     // A covered hole still comes before none: the order only.
     assert.deepEqual(seatInHoles([], [hole(100, 500, { cover: 0.9 }), hole(300, 500)], 2).map(([x]) => x), [100, 300]);
     assert.deepEqual(seatInHoles([], [hole(100, 500, { cover: 0.9 }), hole(300, 500)], 1).map(([x]) => x), [300]);
+  });
+});
+
+describe('G939: a planned Jellisac stands on flat floor, out from behind the front layers', () => {
+  setStreetEcologyCatalog(ecology);
+  setZoneStreetsShown(false);
+  applyStreetIndex(index);
+  const planned = async (tsid) => {
+    const data = await loadStreetDataFromFs(tsid, join(root, 'public/assets/streets'));
+    const pop = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === index.default });
+    const reserved = streetReservedSpots(data);
+    const plan = planStreetPlacements(platformsScreen(data), placementRequests(pop), { worldW: streetWidth(data), seed: data.tsid, reserved });
+    return { points: plan.groups['resource:jellisac'] || [], fronts: frontDecoCovers(data) };
+  };
+
+  it('the rule: no floor steeper than 0.1', () => {
+    assert.equal(STEADY_FLOOR_GROUPS['resource:jellisac'].maxSlope, 0.1);
+  });
+
+  it('Quinmchary\'s eleventh is not behind the foreground curtain, nor Clam Calumny\'s inside the root pipe', async () => {
+    const q = await planned(QUINMCHARY);
+    assert.equal(q.points.length, 1);
+    // Before: 1121, 715, behind the curtain (71% of the sack hidden in the contact sheet).
+    assert.equal(hiddenBehindFront({ x: 1121, y: 715 }, 'resource:jellisac', q.fronts), true);
+    assert.equal(hiddenBehindFront(q.points[0], 'resource:jellisac', q.fronts), false);
+    const c = await planned(CLAM_CALUMNY);
+    assert.equal(c.points.length, 2);
+    // Before: 1660, 565, inside ground_rootpipe2 on the foreground.
+    for (const p of c.points) {
+      assert.ok(Math.abs(p.x - 1660) > 60, `${p.x}`);
+      assert.equal(hiddenBehindFront(p, 'resource:jellisac', c.fronts), false);
+    }
   });
 });

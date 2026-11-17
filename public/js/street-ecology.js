@@ -936,7 +936,8 @@ export const PLACEMENT_FOOTPRINTS = Object.freeze({
  */
 export const STEADY_FLOOR_GROUPS = Object.freeze({
   'resource:mortar_barnacle': Object.freeze({ maxSlope: 0.4, ledgeRun: 240 }),
-  'resource:jellisac': Object.freeze({ maxSlope: 0.25, ledgeRun: 240, edgeDrop: 12 }),
+  // G939: a planned Jellisac stands on flat ground (0.1; Clam Calumny's sat on a 0.15 ledge lip).
+  'resource:jellisac': Object.freeze({ maxSlope: 0.1, ledgeRun: 240, edgeDrop: 12 }),
   'resource:peat_1': Object.freeze({ maxSlope: 0.15, ledgeRun: 0, edgeDrop: 12 }),
   'resource:dirt_pile': Object.freeze({ maxSlope: 0.25, ledgeRun: 240, edgeDrop: 12 }),
   'resource:ice_knob': Object.freeze({ maxSlope: 0.4, ledgeRun: 240, edgeDrop: 12 }),
@@ -1517,9 +1518,10 @@ export function frontCoverShare(spot, w, h, fronts) {
  * reach check is about floors): a shrine (one 151 x 188 cell at spawnShrine's 0.78) and the
  * vendor (PLACEMENT_HEIGHTS). Megna Burrow (GA912TJ0KF328Q3) planned its shrine on the slope
  * that runs up through the cave's rock, behind the middleplus fill, so it and a player at it
- * could not be seen.
+ * could not be seen. G939: a planned Jellisac too (its widest cell, jellySack4): Quinmchary's stood
+ * behind the foreground curtain and one on Clam Calumny inside the foreground's root pipe.
  */
-export const FRONT_BOXES = Object.freeze({ shrine: [118, 147], vendor: [105, 127] });
+export const FRONT_BOXES = Object.freeze({ shrine: [118, 147], vendor: [105, 127], 'resource:jellisac': [47, 52] });
 
 /**
  * PURE: whether a thing of `key` at `spot` is behind the front decos (frontDecoCovers): one big
