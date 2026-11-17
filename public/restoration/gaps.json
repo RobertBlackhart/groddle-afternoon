@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.47.0",
+  "release": "v0.47.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 241,
+    "fixed": 265,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -355,6 +355,24 @@
           "text": "Barnacles in Kalavana and Jethimadh stood on the floor instead of hanging on walls.",
           "state": "fixed",
           "version": "v0.47.0"
+        },
+        {
+          "id": "G920",
+          "text": "A demo link or a street entered at a sideways spot could stand you in the treetops instead of on the ground.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G936",
+          "text": "Some barnacles on Jethimadh and Kalavana streets lay on the dirt in front of their trees, and edge barnacles faced the wrong way.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G943",
+          "text": "Every street had four loose Apples that Glitch never had.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -426,6 +444,24 @@
           "text": "The Map did not dim the names of streets you had not visited, as Glitch did.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G935",
+          "text": "The region map's star sat in the middle of your street instead of moving along it as you walked.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G937",
+          "text": "The street map's arrow tab didn't expand it on a click, only on hovering.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G949",
+          "text": "Five World map cards showed a bare picture without their frame and name.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -624,6 +660,24 @@
           "text": "Adding parts to a tower floor had no count picker, so wall segments went all or none.",
           "state": "fixed",
           "version": "v0.45.1"
+        },
+        {
+          "id": "G930",
+          "text": "A stack couldn't be dragged onto a Storage Display Box outside Decoration Mode.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G934",
+          "text": "Machines in your yard refused you after coming home with the Home button.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G944",
+          "text": "Visitors didn't see what a home's owner did until they came back.",
+          "state": "fixed",
+          "version": "v0.47.1"
         },
         {
           "id": "G48",
@@ -892,6 +946,12 @@
           "text": "Sloths stood on made-up trees at random spots instead of hanging in their own street's trees.",
           "state": "fixed",
           "version": "v0.43.0"
+        },
+        {
+          "id": "G933",
+          "text": "Some Jellisacs stood on ledges while their street's holes sat empty.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -1070,6 +1130,24 @@
           "text": "A party invite couldn't be taken from a quest room, puzzle or race; in Glitch the room waited for you and a race was given up.",
           "state": "fixed",
           "version": "v0.45.0"
+        },
+        {
+          "id": "G923",
+          "text": "Online you couldn't see other players mining, digging or harvesting: Glitch showed every timed skill to the street in a thought bubble.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G929",
+          "text": "Mining together didn't count for helping or the I Me Mine quest when everyone started at once. Fixed on public streets; home streets still to come.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G945",
+          "text": "Places Glitch kept to one player, like Gentle Island and the colour levels, were shared online.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -1403,6 +1481,42 @@
           "text": "On an iPhone the game stopped music playing in other apps, even with its own music at 0.",
           "state": "fixed",
           "version": "v0.47.0"
+        },
+        {
+          "id": "G921",
+          "text": "On a phone, notices covered Act, Jump and the stick, and the quest step line covered the clock.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G924",
+          "text": "On an upright phone, full-screen windows stopped short of the right edge.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G925",
+          "text": "Reading a report, a Write to us button squeezed the report's title.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G926",
+          "text": "On an upright phone, the update button pushed the Menu off the top bar.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G927",
+          "text": "The Qurazy quoin banner covered the route card on upright phones.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        },
+        {
+          "id": "G928",
+          "text": "On upright phones, signposts high on a street were hidden under the top bar.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -1600,6 +1714,12 @@
           "report": 321,
           "state": "fixed",
           "version": "v0.38.1"
+        },
+        {
+          "id": "G940",
+          "text": "Street gardens stood anywhere on the street, two beds at most, instead of where 2012 pictures show them.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     },
@@ -1936,6 +2056,50 @@
           "text": "Solo street projects near the start asked for nearly as much as far ones, with the same skills.",
           "state": "fixed",
           "version": "v0.43.0"
+        }
+      ]
+    },
+    {
+      "name": "Achievements",
+      "items": [
+        {
+          "id": "G931",
+          "text": "Completist badges listed their progress as Number 58.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        }
+      ]
+    },
+    {
+      "name": "Making",
+      "items": [
+        {
+          "id": "G932",
+          "text": "Making said 2 Currys instead of the item's own plural.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        }
+      ]
+    },
+    {
+      "name": "Musicblocks",
+      "items": [
+        {
+          "id": "G938",
+          "text": "Every street held a Musicblock that each player picked up separately; Glitch's came from drop tables and a new player's first street.",
+          "state": "fixed",
+          "version": "v0.47.1"
+        }
+      ]
+    },
+    {
+      "name": "Economy",
+      "items": [
+        {
+          "id": "G948",
+          "text": "Some earned things were taken back by the save checker: the Rube Shaped Potato, artifacts, Spinning Wheel prizes, a Craftybot's work, picked-up gnomes and icons, racing Cubimals, the Funpickle.",
+          "state": "fixed",
+          "version": "v0.47.1"
         }
       ]
     }

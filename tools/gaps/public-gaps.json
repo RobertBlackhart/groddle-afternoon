@@ -2523,6 +2523,253 @@
         "game:15b8deec3b2",
         "game:0384542cd8e"
       ]
+    },
+    {
+      "id": "G920",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "A demo link or a street entered at a sideways spot could stand you in the treetops instead of on the ground.",
+      "commits": [
+        "game:4b3f13cf622"
+      ]
+    },
+    {
+      "id": "G921",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On a phone, notices covered Act, Jump and the stick, and the quest step line covered the clock.",
+      "commits": [
+        "game:c2399117265"
+      ]
+    },
+    {
+      "id": "G923",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Online you couldn't see other players mining, digging or harvesting: Glitch showed every timed skill to the street in a thought bubble.",
+      "commits": [
+        "game:cca651a60e6",
+        "game:35f8f84edc0"
+      ]
+    },
+    {
+      "id": "G924",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an upright phone, full-screen windows stopped short of the right edge.",
+      "commits": [
+        "game:398c116e729"
+      ]
+    },
+    {
+      "id": "G925",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Reading a report, a Write to us button squeezed the report's title.",
+      "commits": [
+        "game:1cf684bac0b"
+      ]
+    },
+    {
+      "id": "G926",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an upright phone, the update button pushed the Menu off the top bar.",
+      "commits": [
+        "game:7bff743400e"
+      ]
+    },
+    {
+      "id": "G927",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "The Qurazy quoin banner covered the route card on upright phones.",
+      "commits": [
+        "game:abc341b08b4"
+      ]
+    },
+    {
+      "id": "G928",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On upright phones, signposts high on a street were hidden under the top bar.",
+      "commits": [
+        "game:87980868825"
+      ]
+    },
+    {
+      "id": "G929",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Mining together didn't count for helping or the I Me Mine quest when everyone started at once. Fixed on public streets; home streets still to come.",
+      "commits": [
+        "game:ddcba6a787c"
+      ]
+    },
+    {
+      "id": "G930",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "A stack couldn't be dragged onto a Storage Display Box outside Decoration Mode.",
+      "commits": [
+        "game:d4d9d7dd243"
+      ]
+    },
+    {
+      "id": "G931",
+      "area": "Achievements",
+      "show": "fixing",
+      "text": "Completist badges listed their progress as Number 58.",
+      "commits": [
+        "game:75b20d108a8"
+      ]
+    },
+    {
+      "id": "G932",
+      "area": "Making",
+      "show": "fixing",
+      "text": "Making said 2 Currys instead of the item's own plural.",
+      "commits": [
+        "game:f40d07e3e61"
+      ]
+    },
+    {
+      "id": "G933",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Some Jellisacs stood on ledges while their street's holes sat empty.",
+      "commits": [
+        "game:78570e48e37",
+        "game:cb24ba2f467",
+        "game:beba8838767",
+        "server:cdbb4e6",
+        "server:7a14bf0"
+      ]
+    },
+    {
+      "id": "G934",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Machines in your yard refused you after coming home with the Home button.",
+      "commits": [
+        "game:529d7bf96d2"
+      ]
+    },
+    {
+      "id": "G935",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The region map's star sat in the middle of your street instead of moving along it as you walked.",
+      "commits": [
+        "game:a887b22c041"
+      ]
+    },
+    {
+      "id": "G936",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Some barnacles on Jethimadh and Kalavana streets lay on the dirt in front of their trees, and edge barnacles faced the wrong way.",
+      "commits": [
+        "game:f6f5025106f",
+        "game:4bcb3590aa3",
+        "game:15d8a54c1d9",
+        "game:78153c855b6",
+        "server:f8aa698",
+        "server:0bf5b24",
+        "server:dab404d"
+      ]
+    },
+    {
+      "id": "G937",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The street map's arrow tab didn't expand it on a click, only on hovering.",
+      "commits": [
+        "game:16160693dbf"
+      ]
+    },
+    {
+      "id": "G938",
+      "area": "Musicblocks",
+      "show": "fixing",
+      "text": "Every street held a Musicblock that each player picked up separately; Glitch's came from drop tables and a new player's first street.",
+      "commits": [
+        "game:81193e2c892",
+        "game:b7922295289",
+        "site:e406fe1"
+      ]
+    },
+    {
+      "id": "G940",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "Street gardens stood anywhere on the street, two beds at most, instead of where 2012 pictures show them.",
+      "commits": [
+        "game:c0a39998511",
+        "game:ef251949931",
+        "server:70c934b",
+        "site:e8b5aee"
+      ]
+    },
+    {
+      "id": "G943",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Every street had four loose Apples that Glitch never had.",
+      "commits": [
+        "game:7a5fc2a934d"
+      ]
+    },
+    {
+      "id": "G944",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Visitors didn't see what a home's owner did until they came back.",
+      "commits": [
+        "game:c25071fb6d7",
+        "game:bec21f7d1dd",
+        "server:b3523bb"
+      ]
+    },
+    {
+      "id": "G945",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Places Glitch kept to one player, like Gentle Island and the colour levels, were shared online.",
+      "commits": [
+        "game:dfa8ae0f253",
+        "game:5439aedb617",
+        "game:1e45da83903",
+        "game:ecf1ce7adf9"
+      ]
+    },
+    {
+      "id": "G948",
+      "area": "Economy",
+      "show": "fixing",
+      "text": "Some earned things were taken back by the save checker: the Rube Shaped Potato, artifacts, Spinning Wheel prizes, a Craftybot's work, picked-up gnomes and icons, racing Cubimals, the Funpickle.",
+      "commits": [
+        "game:3adcddff23a",
+        "game:6678f9d8d16",
+        "game:953fbc8b4be",
+        "game:2f3866dc2cb",
+        "site:5f4f501",
+        "site:e5bfebd",
+        "site:e973611",
+        "site:57551d5",
+        "site:da603f2",
+        "site:8f4dc71",
+        "site:8ed4ed4"
+      ]
+    },
+    {
+      "id": "G949",
+      "area": "Map",
+      "show": "fixing",
+      "text": "Five World map cards showed a bare picture without their frame and name.",
+      "commits": [
+        "game:59eb30117ff"
+      ]
     }
   ]
 }
