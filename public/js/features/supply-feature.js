@@ -99,7 +99,7 @@ import {
   completePapersCheck,
 } from '../bureaucracy.js?v=cadcccba';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
-import { setMetalMakingMusic } from '../sound-moments.js?v=ac6375de';
+import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 
 export const SUPPLY_FEATURE_ID = 'supply';

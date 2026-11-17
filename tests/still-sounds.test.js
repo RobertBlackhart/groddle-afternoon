@@ -13,9 +13,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInventory, countItem } from '../public/js/inventory.js?v=487b1b60';
 import { copyForVerb, copyTags, createToolConditionState, setCopyTag } from '../public/js/tools.js?v=8516a0c3';
-import { resolveSound } from '../public/js/sound-board.js?v=efa15368';
+import { resolveSound } from '../public/js/sound-board.js?v=f41980b8';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=4337af0f';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
 import { STILL, advanceStill, createStillState, stillStopsAt } from '../public/js/machines.js?v=0af7364d';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

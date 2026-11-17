@@ -57,8 +57,8 @@ import { strikeDamageFor } from '../public/js/rook-attack.js?v=5e62a79f';
 import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=187cd4b9';
 import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=fa7f5db1';
 import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=6f3d5af8';
-import { soundForMakingTool } from '../public/js/sound-moments.js?v=ac6375de';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=4337af0f';
+import { soundForMakingTool } from '../public/js/sound-moments.js?v=3e66996f';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

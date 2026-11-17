@@ -24,9 +24,9 @@ import {
   startAssembly,
   startDisassembly,
 } from '../public/js/machines.js?v=0af7364d';
-import { resolveSound } from '../public/js/sound-board.js?v=efa15368';
+import { resolveSound } from '../public/js/sound-board.js?v=f41980b8';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=4337af0f';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=1f7fb81a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '..', 'glitch-GameServerJS', 'items');

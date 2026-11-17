@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=5dfc6bfe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=35182bde';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=91f79e21';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1038,9 +1038,10 @@ import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=0c20633c';
 import { isCrowdSad } from './js/animal-crowding.js?v=45c663e8';
-import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=efa15368';
+import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
   actionLoopFor,
+  createToolLoopLedger,
   legacySoundKey,
   soundForAward,
   soundForConsume,
@@ -1052,7 +1053,7 @@ import {
   soundForGameEvent,
   soundForQuoin,
   soundForVerb,
-} from './js/sound-moments.js?v=ac6375de';
+} from './js/sound-moments.js?v=3e66996f';
 import { energyMax, loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodLossNotice } from './js/metabolics.js?v=1383e6fd';
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=165dbd6e';
@@ -7156,6 +7157,8 @@ function sfxVolumeSetting() {
  */
 function playSound(key, opts = {}) {
   if (state.muted || !audio.board) return null;
+  // G963: a verb's finish never plays again the tool sound its action loop just played.
+  if (finishingVerb && toolLoopsEnded.repeats(finishingVerb.target, finishingVerb.verbId, key)) return null;
   const handle = audio.board.play(key, opts);
   if (app?.canvas && handle) {
     app.canvas.dataset.lastSound = handle.kind === 'loading' ? `${handle.key}:loading` : audio.board.stats.last;
@@ -7199,11 +7202,22 @@ function playFeatureVerbSound(target, verbId) {
 /** The tool's own class sound repeats while a timed verb or making job runs. */
 let actionSoundLoop = null;
 let craftSoundLoop = null;
+/**
+ * G963: the tool loops that ran to their end, per target (js/sound-moments.js createToolLoopLedger),
+ * and the verb whose finish runs now (executeVerb), so playSound skips the loop's key at the finish.
+ * Keys compare by the file they play, so an alias (SUPER_SCRAPER) counts as its key.
+ */
+const toolLoopsEnded = createToolLoopLedger({
+  same: (a, b) => a === b || Boolean(audio.board?.resolve(a)?.file && audio.board.resolve(a).file === audio.board.resolve(b)?.file),
+});
+let finishingVerb = null;
 
+/** Starts the tool's loop for a timed verb; returns its key (null when the verb has none). */
 function startActionSoundLoop(classId, verbId, durationMs) {
   stopActionSoundLoop();
   const spec = actionLoopFor(classId, verbId);
   if (spec) actionSoundLoop = playSoundLoop(spec.key, { intervalMs: spec.intervalMs, durationMs, volume: 0.5 });
+  return spec ? spec.key : null;
 }
 
 function stopActionSoundLoop() {
@@ -9910,7 +9924,8 @@ function beginVerbAction(target, verb) {
   };
   clearHoverGlow();
   playVerbStartAnimation(target, verb.id, durationMs);
-  startActionSoundLoop(target.classId, verb.id, durationMs);
+  toolLoopsEnded.started(target);
+  currentAction.toolSound = state.muted ? null : startActionSoundLoop(target.classId, verb.id, durationMs);
   renderCurrentAction();
   // G207 help mine: a mine swing joins the rock's crew (features/help-mine-feature.js).
   features.query('verbStarted', target, verb, engine);
@@ -9946,6 +9961,8 @@ function updateCurrentAction(deltaMs) {
   const completed = currentAction;
   currentAction = null;
   stopActionSoundLoop();
+  // G963: the finish (now, or online on the server's go-ahead) does not play the tool again.
+  toolLoopsEnded.ended(completed.target, completed.verbId, completed.toolSound);
   stopTrantHarvestAnimation(completed.target, 'complete');
   // The pick loops on the rock until the swing lands (playPickAnimation).
   if (actionToolFx?._toolAnimationDataset === 'pickAnimation') clearActionToolFx('complete');
@@ -9971,7 +9988,18 @@ const SPEECH_REACTION_VERBS = new Set([
   'water',
 ]);
 
+/** G963: the verb's finish, with its target named for playSound (toolLoopsEnded). */
 function executeVerb(target, verbId) {
+  const outer = finishingVerb;
+  finishingVerb = { target, verbId };
+  try {
+    runVerbFinish(target, verbId);
+  } finally {
+    finishingVerb = outer;
+  }
+}
+
+function runVerbFinish(target, verbId) {
   // Legalize It's steps on the station's stairs and the street's hall door.
   const legalizeStep = legalizeRealTarget(target);
   if (legalizeStep) {
@@ -34790,7 +34818,7 @@ async function main() {
   };
   window.groddleQA = qaHandlesAllowed() ? fullQA : pickReadOnly(fullQA, READ_ONLY_QA);
   if (new URLSearchParams(location.search).has('soundtest')) {
-    import('./js/sound-test.js?v=9aad3d32').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
+    import('./js/sound-test.js?v=e83bbfe7').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
       state.muted = false;
       if (audio.ctx?.state === 'suspended') {
         try { await audio.ctx.resume(); } catch (_) { /* opt-in */ }

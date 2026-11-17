@@ -120,6 +120,47 @@ export function actionLoopFor(classId, verbId) {
   return null;
 }
 
+/**
+ * G963: a tool's sound belongs to the action, not to its finish. Glitch's skill package announced the
+ * tool's class sound when the action began and only stopped it at the end (players/inc_skill_packages.js
+ * 388 and 424); a watering's finish announced nothing more (items/include/trants.js onWateringComplete
+ * 140-200). The remake's finish tables (soundForVerb, soundForGardenAction, resource-nodes sfxFor) name
+ * the same key the loop played, so one watering, hoeing or clearing played the tool twice.
+ *
+ * This ledger remembers, per target, the tool loop that ran to its end; the verb's finish then skips
+ * that same key once. It waits for the finish (online the verb lands on the server's go-ahead, after
+ * the swing), is forgotten when a new action starts on the target, and goes stale after maxAgeMs.
+ * `same(a, b)` compares two keys (game.js compares what they play, so an alias counts as its key).
+ */
+export function createToolLoopLedger({ maxAgeMs = 30000, same = (a, b) => a === b } = {}) {
+  const ended = new WeakMap();
+  const baseVerb = (verbId) => String(verbId || '').split(':')[0];
+  return {
+    /** A new action on this target: whatever ended there before no longer counts. */
+    started(target) {
+      if (target && typeof target === 'object') ended.delete(target);
+    },
+    /** The action's tool loop ran to the end (not cancelled): its finish may not play it again. */
+    ended(target, verbId, key, now = Date.now()) {
+      if (!target || typeof target !== 'object' || !key) return;
+      ended.set(target, { verb: baseVerb(verbId), key, at: now });
+    },
+    /** True (once) when `key`, played by this verb's finish on this target, is the loop that just played. */
+    repeats(target, verbId, key, now = Date.now()) {
+      if (!target || typeof target !== 'object' || !key) return false;
+      const row = ended.get(target);
+      if (!row) return false;
+      if (now - row.at > maxAgeMs) {
+        ended.delete(target);
+        return false;
+      }
+      if (row.verb !== baseVerb(verbId) || !same(row.key, key)) return false;
+      ended.delete(target);
+      return true;
+    },
+  };
+}
+
 /** Garden plot actions (items/include/garden.js announces HOE and WATERING_CAN). */
 export function soundForGardenAction(action) {
   const a = String(action || '');

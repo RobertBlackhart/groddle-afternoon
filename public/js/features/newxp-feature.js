@@ -138,7 +138,7 @@ import {
 import { countWords } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
-import { soundForQuoin } from '../sound-moments.js?v=ac6375de';
+import { soundForQuoin } from '../sound-moments.js?v=3e66996f';
 import { IMAGINATION_UPGRADES } from '../imagination.js?v=1bdfd77c';
 import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?v=557238c1';
 import { assignQuest, completeQuest } from '../quests.js?v=d057d5ec';
