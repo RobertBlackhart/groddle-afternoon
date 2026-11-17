@@ -15,8 +15,8 @@ import { buildArrivals, render } from '../tools/build-street-arrivals.mjs';
 import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=ea525036';
 import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=f12d3466';
-import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=1bbc932c';
+import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=36015f53';
+import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=d6fd91db';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

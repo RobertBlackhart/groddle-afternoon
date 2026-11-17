@@ -21,7 +21,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GAME_DIR } from '../repos.mjs';
 import { loadValidatorContext } from './validator-context.mjs';
-import { validateZone } from '../../public/js/builder/validate.js?v=a59e593a';
+import { validateZone } from '../../public/js/builder/validate.js?v=fb13e3f1';
 import { buildZones, commitOverlay, files, overlay, publishedZone, sha256, spritesUsed, zoneText, ZONES_DIR, DECO_DIR } from './zones.mjs';
 
 const ID = /^[a-z][a-z0-9-]{2,47}$/;

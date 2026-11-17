@@ -8,6 +8,7 @@ import { behindFloor } from './reach.js?v=8e52df56';
 import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=06481ee6';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
+import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=e9b3bdb2';
 import {
   JELLISAC_SPOTS,
   PAPER_TREE_SPOTS,
@@ -151,9 +152,11 @@ export const RESOURCE_NODE_CAPS = Object.freeze({
  * ground. The location files only count them, so a street whose players' snaps show where they were
  * has measured spots (MEASURED_NODE_SPOTS, assets/content/barnacle-spots.json from
  * tools/snap-placements/barnacles.py) and every barnacle the file names, measured first. Any the
- * snaps did not show are planned on a floor, as are all of a street with no snap, and of those the
- * planner seats at most PLANNED_NODE_CAPS: a floor is never where the original had them, so an
- * invented row of 13 along the ground is worse than a few.
+ * snaps did not show are planned on a floor, and of those the planner seats at most
+ * PLANNED_NODE_CAPS: a floor is never where the original had them, so an invented row of 13 along
+ * the ground is worse than a few. G916 (#446): a street with no snap has every barnacle its file
+ * names on a wall instead (js/barnacle-wall-spots-data.js: measured on its other pictures, else by
+ * js/barnacle-walls.js's rule), so the cap no longer applies there.
  *
  * Player reports #249 and #250: Jellisacs and Peat Bogs were set by hand too (jellisac.js and
  * peat_base.js obey_physics false). Every Jellisac on Vuoksi Vale sat in a dark hole in the rock
@@ -177,7 +180,9 @@ export const PLANNED_NODE_CAPS = Object.freeze({
 
 /** Measured spots per class: { [class]: { [G tsid]: [[x, y, variant number], ...] } } (street px). */
 export const MEASURED_NODE_SPOTS = Object.freeze({
-  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', streets: BARNACLE_SPOTS }),
+  // G916 (#446): a street no full-street snap covers takes the spots measured on its other pictures
+  // and the rest on its walls by rule (tools/build-barnacle-wall-spots.mjs, js/barnacle-walls.js).
+  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...BARNACLE_SPOTS }) }),
   jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: JELLISAC_SPOTS }),
   peat_1: Object.freeze({ variantPrefix: 'peat', streets: PEAT_SPOTS }),
   // A Paper Tree's art follows its paper and care, never a variant: its spots carry none (null).

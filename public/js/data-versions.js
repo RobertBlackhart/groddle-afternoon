@@ -23,6 +23,7 @@
       "assets/audio/sfx/WM_E2.mp3": "6d6cb2ba",
       "assets/content/achievements.json": "89792b62",
       "assets/content/ambient-music.json": "fd84e46f",
+      "assets/content/barnacle-picture-spots.json": "a384faa9",
       "assets/content/barnacle-spots.json": "ea6c5ca0",
       "assets/content/deco-catalog.json": "3700a8f7",
       "assets/content/node-spots.json": "d0c87cff",

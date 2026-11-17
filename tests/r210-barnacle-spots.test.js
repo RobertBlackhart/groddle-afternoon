@@ -26,12 +26,12 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   steadyFloor,
-} from '../public/js/street-ecology.js?v=f12d3466';
+} from '../public/js/street-ecology.js?v=36015f53';
 import {
   prepareStreetResourceNodes,
   resourcePlacementGroups,
   resourceSpawnPlan,
-} from '../public/js/features/resource-nodes-feature.js?v=9d5a57ac';
+} from '../public/js/features/resource-nodes-feature.js?v=48daaed2';
 import { BARNACLE_SPOTS } from '../public/js/barnacle-spots-data.js?v=cea3daec';
 
 const root = join(import.meta.dirname, '..');
@@ -124,13 +124,15 @@ describe('player report #210: barnacles the snaps do not show', () => {
     ]);
   });
 
-  it('caps the planned ones on a street with no snap (Kiehiman Course names 13)', () => {
+  it('caps the planned ones; a street with no snap has every one on a wall since G916 (Kiehiman Course names 13)', () => {
     const tsid = 'GIF15S7VPRV1DIP';
-    assert.equal(measuredNodeSpots(tsid), null);
+    assert.equal(measuredNodeSpots(tsid).mortar_barnacle.length, 13, 'G916: js/barnacle-wall-spots-data.js');
     const pop = populationForStreet(tsid, ecologyForStreet(tsid));
     assert.equal(pop.resourceCounts.mortar_barnacle, 13, 'the file count is kept');
-    assert.equal(pop.resourceNodeClasses.filter((id) => id === 'mortar_barnacle').length, PLANNED_NODE_CAPS.mortar_barnacle);
+    assert.equal(pop.resourceNodeClasses.filter((id) => id === 'mortar_barnacle').length, 13);
     assert.equal(PLANNED_NODE_CAPS.mortar_barnacle, 6);
+    const capped = populationForStreet('GTJ12PGU9KV1MGI', ecologyForStreet('GTJ12PGU9KV1MGI'));
+    assert.ok(capped.resourceNodeClasses.filter((id) => id === 'mortar_barnacle').length <= capped.resourceCounts.mortar_barnacle);
     // The other standing nodes keep every one the file names (G399).
     assert.equal(PLANNED_NODE_CAPS.ice_knob, undefined);
   });

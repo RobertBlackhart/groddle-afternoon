@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SLOTH_KNOCKER, verbsForTarget, slothGeometry } from '../public/js/features/resource-nodes-feature.js?v=9d5a57ac';
+import { SLOTH_KNOCKER, verbsForTarget, slothGeometry } from '../public/js/features/resource-nodes-feature.js?v=48daaed2';
 import { createResourceNode, resourceNodeVerbs } from '../public/js/resource-nodes.js?v=2659c4e8';
 import { verbMenuKey } from '../public/js/ui/verb-menu.js?v=cd68932d';
 import { SLOTH_SPOTS } from '../public/js/sloth-spots-data.js?v=7396e9db';
