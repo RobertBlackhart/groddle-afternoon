@@ -102,7 +102,7 @@
     "public/assets/streets/index.json"
    ],
    "shot": "shots/streets.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&practice=1"
   },
   {
    "id": "navigation",
@@ -251,7 +251,7 @@
     "public/js/features/camera-mode-feature.js"
    ],
    "shot": "shots/camera.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&camerademo=1&cameraskill=1&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&camerademo=1&cameraskill=1&practice=1"
   },
   {
    "id": "newxp",
@@ -420,7 +420,7 @@
     "public/js/street-creatures.js"
    ],
    "shot": "shots/butterflies.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&animaldemo=butterfly&animalrank=2&tooldemo=butterfly_lotion&toolremaining=5&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI32G3NUTD100I&animaldemo=butterfly&animalrank=2&tooldemo=butterfly_lotion&toolremaining=5&practice=1"
   },
   {
    "id": "trants",
@@ -467,7 +467,7 @@
     "public/js/foxes-mp.js"
    ],
    "shot": "shots/foxes.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&foxdemo=1&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&foxdemo=1&practice=1"
   },
   {
    "id": "crabs",
@@ -560,7 +560,7 @@
     "public/assets/content/recipes.json"
    ],
    "shot": "shots/cooking.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&practice=1"
   },
   {
    "id": "powders",
@@ -651,7 +651,7 @@
     "public/js/features/quoin-shards-feature.js"
    ],
    "shot": "shots/quoins.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&quoindemo=qurazy&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&practice=1"
   },
   {
    "id": "mystery-quoins",
@@ -750,7 +750,7 @@
     "public/js/imagination.js"
    ],
    "shot": "shots/imagination.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&imgdemo=1&imglevel=12&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&imgdemo=1&imglevel=12&practice=1"
   },
   {
    "id": "levels",
@@ -782,7 +782,7 @@
     "public/js/exploration.js"
    ],
    "shot": "shots/badges.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&badgeqa=1&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&badgeqa=1&practice=1"
   },
   {
    "id": "trading",
@@ -830,7 +830,7 @@
     "public/js/quests-mp.js"
    ],
    "shot": "shots/quests.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=now&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=now&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&practice=1"
   },
   {
    "id": "quest-rooms",
@@ -948,7 +948,7 @@
     "public/js/features/street-jobs-feature.js"
    ],
    "shot": "shots/street-jobs.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&jobdemo=351&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&jobdemo=351&practice=1"
   },
   {
    "id": "feats",
@@ -996,7 +996,7 @@
     "public/js/quest-rooms/penalty.js"
    ],
    "shot": "shots/smuggling.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&smugglingdemo=give&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=2700&streety=840&smugglingdemo=give&practice=1"
   },
   {
    "id": "seasons",
@@ -1170,7 +1170,7 @@
     "public/js/rook-mp.js"
    ],
    "shot": "shots/rooks.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&rookdemo=attack&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&rookdemo=attack&practice=1"
   },
   {
    "id": "skills",
@@ -1185,7 +1185,7 @@
     "public/js/skills.js"
    ],
    "shot": "shots/skills.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&skilltree=mining_3&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&skilltree=mining_3&practice=1"
   },
   {
    "id": "better-learning",
@@ -1215,7 +1215,7 @@
     "public/js/teleportation.js"
    ],
    "shot": "shots/meditation.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&meditatedemo=all&meditateroll=0.99&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&meditatedemo=all&meditateroll=0.99&practice=1"
   },
   {
    "id": "icons",
@@ -1229,7 +1229,7 @@
     "public/js/giant-icons.js"
    ],
    "shot": "shots/icons.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&icondemo=1&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&icondemo=1&practice=1"
   },
   {
    "id": "rube",
@@ -1243,7 +1243,7 @@
     "public/js/rube.js"
    ],
    "shot": "shots/rube.webp",
-   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&rubedemo=1&rubeseed=3&practice=1"
+   "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&streetdemo=GLI2V0UN7RD1T2J&streetx=3200&streety=820&rubedemo=1&rubeseed=3&practice=1"
   },
   {
    "id": "hell",
@@ -1496,9 +1496,9 @@
      "Breezy, EZ Cookin'"
     ],
     "built": true,
-    "shot": null,
+    "shot": "shots/room-ez_cookin.webp",
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&questdemo=ezcooking_1&practice=1",
-    "hd": null,
+    "hd": "shots/hd/room-ez_cookin.webp",
     "offer": "So, you have an interest in cooking, huh?",
     "note": {
      "tagline": "A Knife & Board, three counters of food and a flamingo who says hello.",
@@ -1849,9 +1849,9 @@
      "Talking ‘bout Soil Appreciation"
     ],
     "built": true,
-    "shot": null,
+    "shot": "shots/room-soil_appreciation.webp",
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&timedemo=day&questdemo=soilappreciation_1&practice=1",
-    "hd": null,
+    "hd": "shots/hd/room-soil_appreciation.webp",
     "offer": "Kid, can I ask you a question?",
     "note": {
      "tagline": "A Hoe, a Shovel, a Patch to tend and a Dirt Pile to dig.",
@@ -2814,7 +2814,7 @@
   "deployed": "2026-11-16"
  },
  "git": {
-  "commits": 2458,
+  "commits": 2465,
   "since": "2026-10-19",
   "recent": [
    {
