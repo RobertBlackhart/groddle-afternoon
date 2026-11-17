@@ -24,7 +24,7 @@
       "assets/content/achievements.json": "8fd2e8b0",
       "assets/content/ambient-music.json": "fd84e46f",
       "assets/content/barnacle-spots.json": "ea6c5ca0",
-      "assets/content/deco-catalog.json": "3ba04081",
+      "assets/content/deco-catalog.json": "3700a8f7",
       "assets/content/node-spots.json": "d0c87cff",
       "assets/content/puzzle-triggers.json": "9b2a1658",
       "assets/content/quests.json": "4f583ad5",
