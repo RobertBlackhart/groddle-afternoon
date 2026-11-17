@@ -132,7 +132,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../seasons.js?v=1978c3f3';
+} from '../seasons.js?v=887d886e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { playOverlay } from '../overlays.js?v=eda942a8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';

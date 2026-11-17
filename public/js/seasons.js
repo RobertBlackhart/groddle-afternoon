@@ -21,8 +21,10 @@
  *    inc_achievements.js 392-420). So it is not a dated event here either:
  *    EGG_HUNT below describes it, and it is never in activeSeasons.
  *
- * The remake drives each event from the player's real-world date instead
- * (windows below), keeps the source's Dametime Zilloween (Remember 25-37,
+ * The remake drives each event from the real-world date instead (windows
+ * below), one date for every player: the date on Ur's own clock, Pacific
+ * time, as the source's cut-offs were written (isGlitchmas "2012-01-03 10AM
+ * PST", isZilloween "6pm PST"), never the device's time zone (audit M40), and keeps the source's Dametime Zilloween (Remember 25-37,
  * about two real days in every 51) and the exact Pi Day test, and accepts a
  * `?season=<id>` QA override (`none` forces every event off; an id that is
  * not a dated event, such as egg_hunt, overrides nothing) and
@@ -94,15 +96,25 @@ export const EGG_HUNT = Object.freeze({
 
 /* -------------------------------------------------------- calendar math */
 
-/** Local calendar parts of a timestamp (the player's own date). */
-function local(now) {
-  const d = new Date(now);
-  return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() };
+/**
+ * M40 (G945): the calendar's time zone. Glitch's servers kept Pacific time (common.js
+ * isGlitchmas 297-300 "2012-01-03 10AM PST", isZilloween 271-273 "6pm PST"), so every
+ * player is on the same date: two players near midnight never see different seasons.
+ */
+export const SEASON_TIME_ZONE = 'America/Los_Angeles';
+
+let urDateFormat = null;
+
+/** Calendar parts of a timestamp on Ur's clock (SEASON_TIME_ZONE), the same for every player. */
+export function urDate(now) {
+  urDateFormat ||= new Intl.DateTimeFormat('en-US', { timeZone: SEASON_TIME_ZONE, year: 'numeric', month: 'numeric', day: 'numeric' });
+  const parts = Object.fromEntries(urDateFormat.formatToParts(new Date(now)).map((p) => [p.type, p.value]));
+  return { y: Number(parts.year), m: Number(parts.month), d: Number(parts.day) };
 }
 
 const dayIndex = (y, m, d) => Math.floor(Date.UTC(y, m - 1, d) / DAY_MS);
 
-/** Whether a local date falls in [from, to] (inclusive month/day pairs, may wrap the year). */
+/** Whether a calendar date falls in [from, to] (inclusive month/day pairs, may wrap the year). */
 function inWindow({ m, d }, from, to) {
   const v = m * 100 + d;
   const a = from[0] * 100 + from[1];
@@ -131,7 +143,7 @@ export function isDametimeZilloween(parts) {
 
 /** Which real-world windows contain `now`, in priority order. */
 export function calendarSeasons(now = Date.now()) {
-  const t = local(now);
+  const t = urDate(now);
   const out = [];
   if (isPiDay(now)) out.push('pi_day');
   if (inWindow(t, REAL_WINDOWS.zilloween.from, REAL_WINDOWS.zilloween.to)) out.push('zilloween');
@@ -139,11 +151,11 @@ export function calendarSeasons(now = Date.now()) {
   return out;
 }
 
-/** Parse `?seasondate=YYYY-MM-DD` into a local-noon timestamp (or null). */
+/** Parse `?seasondate=YYYY-MM-DD` into noon of that date on Ur's clock (20:00 UTC: noon PST, 1pm PDT), or null. */
 export function parseSeasonDate(text) {
   const m = String(text || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return null;
-  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12, 0, 0).getTime();
+  return Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 20, 0, 0);
 }
 
 /**
@@ -166,7 +178,7 @@ export function activeSeasons(now = Date.now(), opts = {}) {
 
 /** A stable key for one occurrence of an event (resets yearly flags). */
 export function seasonYearKey(id, now = Date.now()) {
-  const t = local(now);
+  const t = urDate(now);
   // Glitchmas spans New Year: January belongs to the previous December's season.
   if (id === 'glitchmas' && t.m === 1) return `${id}:${t.y - 1}`;
   return `${id}:${t.y}`;
@@ -512,7 +524,7 @@ export const saysYay = (text) => /\byay\b/i.test(String(text || ''));
 
 /** The Yeti's cracker letter: once a Glitchmas, from December 24 (source: 2011-12-24 4pm). */
 export function yetiMailDue(state, now = Date.now()) {
-  const t = local(now);
+  const t = urDate(now);
   const key = seasonYearKey('glitchmas', now);
   if (state.yetiMail.includes(key)) return null;
   if (t.m === 12 && t.d >= 24) return key;
@@ -561,7 +573,7 @@ export function estimatePi(rng = Math.random, { favor = true } = {}) {
 
 /** Days left in an event window (for the season chip), or null. */
 export function daysLeft(id, now = Date.now()) {
-  const t = local(now);
+  const t = urDate(now);
   const today = dayIndex(t.y, t.m, t.d);
   let end = null;
   if (id === 'zilloween') end = dayIndex(t.y, 11, 1);

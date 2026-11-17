@@ -5,6 +5,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +19,7 @@ import {
   LIT_CLASSES,
   PI_DIGITS,
   SEASONS,
+  SEASON_TIME_ZONE,
   activeSeasons,
   calendarSeasons,
   candyEatGate,
@@ -40,6 +42,7 @@ import {
   recordCarvedFace,
   saysYay,
   seasonYearKey,
+  urDate,
   seasonalConversions,
   seasonalSources,
   smashOutcome,
@@ -47,7 +50,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../public/js/seasons.js?v=1978c3f3';
+} from '../public/js/seasons.js?v=887d886e';
 import { SEASON_DATA } from '../public/js/seasons-data.js?v=b5174bc9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -90,8 +93,28 @@ describe('seasonal calendar', () => {
     // ?season=egg_hunt names no dated event, so it overrides nothing.
     assert.deepEqual(activeSeasons(quiet, { override: 'egg_hunt' }), activeSeasons(quiet));
     assert.deepEqual(activeSeasons(at(2026, 10, 20), { override: 'egg_hunt' }).ids, ['zilloween']);
-    assert.equal(parseSeasonDate('2026-12-24'), at(2026, 12, 24));
+    assert.equal(parseSeasonDate('2026-12-24'), Date.UTC(2026, 11, 24, 20), 'noon on Ur\'s clock (PST)');
+    assert.deepEqual(urDate(parseSeasonDate('2026-12-24')), { y: 2026, m: 12, d: 24 });
     assert.equal(seasonYearKey('glitchmas', at(2027, 1, 2)), 'glitchmas:2026');
+  });
+
+  it('turns seasons on by the date on Ur\'s clock (Pacific), the same for every player (M40)', () => {
+    assert.equal(SEASON_TIME_ZONE, 'America/Los_Angeles');
+    // 00:30 on October 17 in New York is still October 16 on Ur's clock; 01:00 PDT is the 17th.
+    assert.deepEqual(calendarSeasons(Date.UTC(2026, 9, 17, 4, 30)), []);
+    assert.deepEqual(calendarSeasons(Date.UTC(2026, 9, 17, 8, 0)), ['zilloween']);
+    // Glitchmas ends with January 3 on Ur's clock, even where it is already the 4th.
+    assert.deepEqual(calendarSeasons(Date.UTC(2027, 0, 4, 7, 30)), ['glitchmas']);
+    assert.deepEqual(calendarSeasons(Date.UTC(2027, 0, 4, 8, 30)), []);
+    assert.equal(seasonYearKey('glitchmas', Date.UTC(2027, 0, 1, 5)), 'glitchmas:2026', 'New Year in London is still December 31 on Ur');
+    // A device in any time zone reaches the same answer for the same moment.
+    const moments = [Date.UTC(2026, 9, 17, 4, 30), Date.UTC(2026, 9, 17, 8, 0), Date.UTC(2027, 0, 4, 7, 30), Date.UTC(2026, 11, 12, 7, 59)];
+    const here = moments.map((t) => calendarSeasons(t));
+    const mod = new URL('../public/js/seasons.js', import.meta.url).href;
+    for (const TZ of ['Asia/Tokyo', 'Pacific/Kiritimati', 'Pacific/Pago_Pago', 'Europe/London']) {
+      const out = execFileSync(process.execPath, ['--input-type=module', '-e', `const m = await import(${JSON.stringify(mod)}); console.log(JSON.stringify(${JSON.stringify(moments)}.map((t) => m.calendarSeasons(t))))`], { env: { ...process.env, TZ }, encoding: 'utf8' });
+      assert.deepEqual(JSON.parse(out), here, TZ);
+    }
   });
 
   it('has art for every event icon and every holiday item', () => {
@@ -290,7 +313,7 @@ describe('Egg Hunt and Pi Day', () => {
   });
 
   it('counts each egg into the collection however it arrives, then gives the trophy for them (seasons-feature)', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=ab27342e');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=36d23631');
     const { createInventory, addItem, countItem, removeItem } = await import('../public/js/inventory.js?v=f49c8998');
     const unlocked = [];
     const counted = {};
@@ -364,7 +387,7 @@ describe('supply paths', () => {
 
 describe('a ?season= preview leaves the save alone (G342)', () => {
   it('a carved pumpkin survives previewing another season, and the save still remembers Zilloween', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=ab27342e');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=36d23631');
     const { createInventory, addItem, countItem } = await import('../public/js/inventory.js?v=f49c8998');
     const inv = createInventory();
     addItem(inv, 'pumpkin_carved_1', 2);

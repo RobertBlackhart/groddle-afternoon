@@ -32,7 +32,7 @@ import {
   SEASONAL_STOCK,
   SEASONS,
   SEASON_IDS,
-} from '../../public/js/seasons.js?v=1978c3f3';
+} from '../../public/js/seasons.js?v=887d886e';
 import { SEASON_DATA } from '../../public/js/seasons-data.js?v=b5174bc9';
 import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=72f37c7e';
 import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=73a80be0';
