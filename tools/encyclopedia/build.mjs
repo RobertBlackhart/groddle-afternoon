@@ -28,6 +28,7 @@ import { GIANTS, PUB, SECTIONS, giantIcon, loadEncyclopedia, picture, questTakes
 import { SOUND_GROUPS } from './sounds.mjs';
 import { MORE_PAGES } from './sections.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from './never-released.mjs';
+import { tablesForSkill, timeLead, timeTableHtml } from './skill-times.mjs';
 import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
 import { regionMoreStreets, regionStreetName, streetPage, streetsIndex } from './streets.mjs';
 import { storePage } from './stores.mjs';
@@ -431,6 +432,8 @@ function skillPage(e, P, { linkFor, backOf, uniqBy, info }) {
   const creatures = uniqBy(backOf(e.key, (b) => b.rel === 'skill'), (b) => b.from).map((b) => P.tile(b.from));
   const chips = [P.chip(`Learn time ${learnTime(s.pointCost)}`, { cls: 'ency-chip-xp' }), s.requiresLevel ? P.chip(`Level ${fmt(s.requiresLevel)} or more`) : '', P.chip(esc(e.group))].filter(Boolean);
   const own = Boolean(s.remake);
+  // G956: how long each go takes at each rank, and with each speed card (skill-times.mjs).
+  const times = tablesForSkill(e.id);
   return `${entryHead(e, P, { subline: esc(`${e.group} skill`) })}
   <main>
     <section class="band cat-original" aria-labelledby="orig-h">
@@ -443,7 +446,7 @@ function skillPage(e, P, { linkFor, backOf, uniqBy, info }) {
         <p class="cat-source">${own ? 'Its words are the remake’s: the original’s did not survive.' : 'From Tiny Speck’s game code.'} The learn time is how long it takes in the remake, before Better Learning.</p>
       </div>
     </section>
-${band('needs-h', 'What it needs', P.tiles(needs) || '<p class="cat-muted">Nothing: anyone can learn it.</p>', { alt: true })}
+${times.length ? band('time-h', 'How long it takes', times.map((t) => timeTableHtml(t, P, info, { skill: e.id })).join('\n        '), { lead: timeLead(times) }) : ''}${band('needs-h', 'What it needs', P.tiles(needs) || '<p class="cat-muted">Nothing: anyone can learn it.</p>', { alt: true })}
 ${band('opens-h', 'What it opens', [sub('Skills', P.tiles(unlocks)), sub('Quests', P.tiles(quests)), sub('Things you can make with it', P.tiles(recipes)), sub('Creatures and people it changes', P.tiles(creatures))].filter(Boolean).join('\n        '))}
 ${remakeBand(e)}
   </main>`;

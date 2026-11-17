@@ -20,6 +20,7 @@ import {
 } from '../../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../../public/js/imagination-remake.js?v=c37ad887';
 import { andList, esc, fmt } from './parts.mjs';
+import { tablesForCard, timeLead, timeTableHtml } from './skill-times.mjs';
 
 const ART = 'assets/imagination/cards/';
 const CARD = { w: 230, h: 310 };
@@ -120,6 +121,8 @@ function page(e, P, { info, d, uniqBy, kit }) {
   const skills = e.skillsOpened.filter((s) => info(`skills:${s}`)).map((s) => P.tile(`skills:${s}`, { sub: 'needs this card' }));
   const item = u.config.item_tsid && info(`item:${u.config.item_tsid}`) ? P.tiles([P.tile(`item:${u.config.item_tsid}`, { sub: 'goes into your pack' })]) : '';
   const others = uniqBy([...(d.back.get(e.key) || [])].filter((b) => !b.from.startsWith('imagination:')), (b) => b.from).map((b) => P.tile(b.from));
+  // G956: the skill times this card changes, its column marked (skill-times.mjs).
+  const times = tablesForCard(e.id);
   const cost = u.options || /^keepable_(reshuffle|instant_resurrection)$/.test(e.id) ? 'varies' : `${fmt(u.cost)} iMG`;
   return `${entryHead(e, P, { subline: esc(`Imagination upgrade · ${e.group}`), hero: cardArt(u, '../../../', 'ency-card-art ency-card-hero') })}
   <main>
@@ -140,7 +143,7 @@ function page(e, P, { info, d, uniqBy, kit }) {
         ${costHtml(e.id, u) ? sub('Price', costHtml(e.id, u)) : ''}
       </div>
     </section>
-${band('needs-h', 'What it needs', `${lines.length ? `<ul class="cat-list">${lines.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}${P.tiles(tiles)}` || '<p class="cat-muted">Nothing: any player can be dealt it.</p>', { alt: true })}
+${times.length ? band('time-h', 'How long it takes', times.map((t) => timeTableHtml(t, P, info, { card: e.id })).join('\n        '), { lead: timeLead(times) }) : ''}${band('needs-h', 'What it needs', `${lines.length ? `<ul class="cat-list">${lines.map((l) => `<li>${l}</li>`).join('')}</ul>` : ''}${P.tiles(tiles)}` || '<p class="cat-muted">Nothing: any player can be dealt it.</p>', { alt: true })}
 ${band('opens-h', 'What it opens', [sub('Cards', P.tiles(opens)), sub('Skills', P.tiles(skills)), sub('What you get', item)].filter(Boolean).join('\n        '))}
 ${band('rel-h', 'Linked to this card', P.tiles(others), { alt: true })}
 ${band('remake-h', 'In the remake', `<div class="cat-remake-body">${remakeWords(e.id, e)}</div>`)}

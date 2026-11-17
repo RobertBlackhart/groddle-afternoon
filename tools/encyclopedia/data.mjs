@@ -47,7 +47,7 @@ const ALL_SECTIONS = [
   { key: 'quests', label: 'Quests', one: 'quest', blurb: 'How to get each quest, every step, what it needs and what it gives.' },
   { key: 'animals', label: 'Animals and creatures', one: 'creature', blurb: 'Where they live, what you can do with them and what they give.' },
   { key: 'people', label: 'People', one: 'person', blurb: 'Vendors and what they sell, the Giants’ shrines and everyone else you meet.' },
-  { key: 'skills', label: 'Skills', one: 'skill', blurb: 'What each skill needs, how long it takes and what it opens.' },
+  { key: 'skills', label: 'Skills', one: 'skill', blurb: 'What each skill needs, how long it takes and what it opens.', css: 'encyclopedia/sections.css' },
   { key: 'places', label: 'Places', one: 'region', blurb: 'Every region on the map, its streets and what lives on them.' },
   { key: 'achievements', label: 'Achievements', one: 'achievement', blurb: 'Every badge, what earns it and what it rewards.' },
   { key: 'sounds', label: 'Music and sounds', one: 'sound', blurb: 'Every tune and sound of the original, what the remake plays for it, and what is still missing.' },

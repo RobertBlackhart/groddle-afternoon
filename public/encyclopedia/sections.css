@@ -56,3 +56,26 @@
   .ency-tile-portrait .ency-tile-pic { width: 62px; height: 100px; }
   .ency-tile-portrait .ency-ic { max-width: 62px; max-height: 100px; }
 }
+
+/*
+ * How long a timed skill takes (tools/encyclopedia/skill-times.mjs, G956): changelog.css's
+ * note-table, with the page's own rank (a skill page) or card (a card page) tinted.
+ */
+.ency-time + .ency-time { margin-top: 28px; }
+.ency-time-table th[scope="row"] { white-space: nowrap; font-size: inherit; letter-spacing: 0; text-transform: none; color: var(--fg); font-weight: 400; }
+.ency-time-table thead th, .ency-time-table thead th.num-col { vertical-align: bottom; white-space: normal; }
+.ency-time-table thead th a, .ency-time-table thead th strong { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.ency-time-with { display: block; }
+.ency-time-table tr.ency-time-here > *, .ency-time-table .ency-time-here {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.ency-time-mark { display: block; color: var(--muted); font-size: 13px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+.ency-time-notes { margin: 10px 0 0; max-width: 44em; }
+@media (max-width: 560px) {
+  .ency-time-table th, .ency-time-table td { padding: 8px 4px; }
+  .ency-time-table th:first-child, .ency-time-table td:first-child { padding-left: 8px; }
+  .ency-time-table th:last-child, .ency-time-table td:last-child { padding-right: 8px; }
+  .ency-time-table { font-size: 13px; }
+  .ency-time-table thead th { font-size: 11px; letter-spacing: 0; }
+  .ency-time-table thead th a, .ency-time-table thead th strong, .ency-time-mark { font-size: 12px; }
+}
