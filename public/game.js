@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0cb5c6db';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=789fd1c9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=db705126';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -13160,6 +13160,8 @@ const engine = {
   beginVerb: (target, verb) => beginVerbAction(target, verb),
   /** What a click at this world point would open, and closing the verb menu (homes-feature: a press that turns into a drag). */
   interactableAt: (x, y) => pickInteractableAt(x, y),
+  /** G972: a window a dragged stack opens closes the bag tray it came from (report #168, as the shrine). */
+  closePackTray: () => closePackTray(),
   closeVerbMenu: () => closeVerbMenu(),
   /** The menu's way into a verb: walks into reach first (a drop on a thing, features/garden-guano-feature.js). */
   requestVerb: (target, verb, opts) => requestVerb(target, verb, opts),

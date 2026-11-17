@@ -67,7 +67,7 @@ describe('one registry (R9, G967)', () => {
       'js/features/homes-feature.js': ['home-decorate', 'home-pour', 'home-display-box'],
       'js/features/garden-guano-feature.js': ['garden'],
       'js/features/world-drop-feature.js': ['world'],
-      'js/butler-drop.js': ['butler'],
+      'js/butler-drop.js': ['butler', 'butler-own'],
     };
     const orders = {};
     for (const [f, ids] of Object.entries(want)) {
@@ -83,7 +83,7 @@ describe('one registry (R9, G967)', () => {
     // DragVO.as findDragTargetForStack: windows over the room first; then players (not while
     // decorating, which asks first and takes the room), plots, and the location's things last
     // (G972: a friend's Butler is one of them, asked before the street's other things).
-    assert.deepEqual(asked, ['vendor', 'trade', 'cabinet', 'cabinet-out', 'pack', 'home-decorate', 'gift', 'home-pour', 'home-display-box', 'garden', 'butler', 'world']);
+    assert.deepEqual(asked, ['vendor', 'trade', 'cabinet', 'cabinet-out', 'pack', 'home-decorate', 'gift', 'home-pour', 'home-display-box', 'garden', 'butler', 'butler-own', 'world']);
   });
 
   it('the pack bar\'s mouse drag and its touch lift both go through the registry', () => {

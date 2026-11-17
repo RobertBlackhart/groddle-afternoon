@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=c679b93f';
-import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=cd78c81c';
+import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=0d767f93';
 import { soloNeed } from '../public/js/street-jobs.js?v=5806a615';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import {

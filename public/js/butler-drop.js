@@ -28,6 +28,8 @@ import { VISITOR_BUTLER_TEXT } from './neighbours-mp.js?v=eeba8bcb';
 
 /** leave_package's drop_tip (bag_butler.js 1003). */
 export const BUTLER_DROP_TIP = 'Leave a package with the Butler';
+/** give's drop_tip, the owner's own Butler (bag_butler.js 632). */
+export const BUTLER_GIVE_TIP = 'Ask the Butler to give this to visitors';
 
 const GIFT_WRAPPED = 'bag_gift_box_wrapped';
 
@@ -50,10 +52,16 @@ export function butlerCarries(cls) {
  * Returns null (not a target) or { ok, tip }.
  */
 export function butlerDropAnswer(stack, butler, takes = butlerCarries) {
-  if (!butler || butler.mine) return null; // conditions: state null for the owner (bag_butler.js 1024, 1046)
+  if (!butler) return null;
+  // leave_package: state null for the owner (bag_butler.js 1024, 1046); the owner's drop is give
+  // (bag_butler.js 608-660: is_drop_target, drop_tip, conditions enabled for the owner only), asked
+  // only where the owner's own Butler says `give: true`.
+  if (butler.mine && !butler.give) return null;
+  if (!butler.mine && butler.give) return null;
   if (!stack || stack.from !== 'pack' || !stack.cls || stack.bag) return null;
   if (!takes(stack.cls)) return null; // drop_ok_code false: not a target
   if (butler.busy) return { ok: false, tip: VISITOR_BUTLER_TEXT.interactFail };
+  if (butler.mine) return { ok: true, tip: BUTLER_GIVE_TIP };
   if (butler.full) return { ok: false, tip: String(butler.full) };
   return { ok: true, tip: BUTLER_DROP_TIP };
 }
@@ -64,6 +72,19 @@ export function butlerDropAnswer(stack, butler, takes = butlerCarries) {
  * Returns the unregister.
  */
 export function registerButlerDrop({ engine, scope, butlerAt, takes = butlerCarries, leave }) {
+  return registerDropTarget({ id: 'butler', order: 55, ...butlerTarget({ engine, scope, butlerAt, takes, leave }) });
+}
+
+/**
+ * The owner's own Butler (bag_butler.js give, 608-660): a stack dropped on it opens the "give"
+ * flow that leaves a gift for visitors, with that stack chosen. `butlerAt` answers
+ * { target, mine: true, give: true, busy } over the Butler; `give({ cls, count })` opens the flow.
+ */
+export function registerOwnButlerDrop({ engine, scope, butlerAt, takes = butlerCarries, give }) {
+  return registerDropTarget({ id: 'butler-own', order: 56, ...butlerTarget({ engine, scope, butlerAt, takes, leave: give }) });
+}
+
+function butlerTarget({ engine, scope, butlerAt, takes, leave }) {
   let lit = null;
   const light = (t) => {
     if (lit === t) return;
@@ -79,9 +100,7 @@ export function registerButlerDrop({ engine, scope, butlerAt, takes = butlerCarr
     const res = butlerDropAnswer(d.stack, b, takes);
     return res ? { b, res } : null;
   };
-  return registerDropTarget({
-    id: 'butler',
-    order: 55,
+  return {
     scope,
     over(d, at) {
       const hit = answer(d, at);
@@ -107,6 +126,8 @@ export function registerButlerDrop({ engine, scope, butlerAt, takes = butlerCarr
         engine?.toast?.(hit.res.tip, 2400);
         return;
       }
+      // Report #168: the Butler's window opens over the tray the stack came from, so the tray closes.
+      engine?.closePackTray?.();
       const { cls, count, copy } = d.stack;
       engine?.setData?.('butlerDropLast', `left:${cls}:${count}`);
       leave({ cls, count: Math.max(1, Math.floor(Number(count) || 1)), copy: Number.isInteger(copy) ? copy : null });
@@ -115,5 +136,5 @@ export function registerButlerDrop({ engine, scope, butlerAt, takes = butlerCarr
       if (lit) clear();
       engine?.setData?.('butlerDrag', 'none');
     },
-  });
+  };
 }

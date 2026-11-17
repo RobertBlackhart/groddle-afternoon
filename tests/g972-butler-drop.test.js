@@ -17,9 +17,9 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, it } from 'node:test';
 
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=f8226eec';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=9f040f70';
 import { createInventory, ensureItem } from '../public/js/inventory.js?v=6414dbdc';
-import { BUTLER_DROP_TIP, butlerCarries, butlerDropAnswer } from '../public/js/butler-drop.js?v=67b880de';
+import { BUTLER_DROP_TIP, BUTLER_GIVE_TIP, butlerCarries, butlerDropAnswer } from '../public/js/butler-drop.js?v=aee1730b';
 import { dropTargetIds, currentDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 import { dropPage, fakeSlot, mouseDrop, touchDrop } from './drop-fake.js';
 import { FakeEl, Display, fakePixi } from './fake-scene.js';
@@ -41,6 +41,11 @@ describe('leave_package as a drop (pure)', () => {
     const st = (cls, extra = {}) => ({ from: 'pack', cls, count: 1, ...extra });
     assert.equal(butlerDropAnswer(st('apple'), null), null);
     assert.equal(butlerDropAnswer(st('apple'), { mine: true }), null, 'conditions: state null for the owner');
+    // G972 follow-up: the owner's own Butler takes the drop as give (bag_butler.js 608-660).
+    assert.deepEqual(butlerDropAnswer(st('apple'), { mine: true, give: true }), { ok: true, tip: BUTLER_GIVE_TIP });
+    assert.equal(butlerDropAnswer(st('apple'), { mine: true, give: true, busy: true }).ok, false, 'refused while the Butler talks');
+    assert.equal(butlerDropAnswer(st('g972_no_trade'), { mine: true, give: true }), null, 'no_trade is no gift either');
+    assert.equal(butlerDropAnswer(st('apple'), { mine: false, give: true }), null, "give is the owner's alone");
     for (const cls of ['g972_no_trade', 'bag_generic', 'furniture_chair', 'trophy_x']) assert.equal(butlerCarries(cls), false, cls);
     assert.equal(butlerCarries('bag_gift_box_wrapped'), true, 'a wrapped Gift Box goes though no_trade (bag_butler.js 1013)');
     assert.equal(butlerDropAnswer(st('g972_no_trade'), { mine: false }), null);

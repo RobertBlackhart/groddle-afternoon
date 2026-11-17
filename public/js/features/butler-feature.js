@@ -142,6 +142,8 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=aee1730b';
+import { worldPoint } from './world-drop-feature.js?v=999cb78c';
 
 export const BUTLER_FEATURE_ID = 'butler';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -1667,12 +1669,16 @@ function zombie(engine) {
   startWalk(engine, away, { clip: 'walk3' });
 }
 
-/** give: pick a pack stack and a count, confirm, then the old gift comes back. */
-function giveMenu(engine) {
+/**
+ * give: pick a pack stack and a count, confirm, then the old gift comes back. `pre` ({ cls, count })
+ * is a stack dropped on the Butler (G972, bag_butler.js give is_drop_target): it starts chosen.
+ */
+function giveMenu(engine, pre = null) {
   const slots = listPackItemSlots(engine.inv).filter((s) => giftable(s.classTsid));
   if (!slots.length) return line(engine, 'give:none', BUTLER_STRINGS.visitorGiftNoPrevious.trim(), 'Oh, ok.');
-  let chosen = slots[0].classTsid;
-  let count = 1;
+  const dropped = pre && slots.find((s) => s.classTsid === pre.cls);
+  let chosen = dropped ? dropped.classTsid : slots[0].classTsid;
+  let count = dropped ? Math.max(1, Math.min(countItem(engine.inv, chosen), Math.floor(Number(pre.count) || 1))) : 1;
   // #141: the shared item picker (js/ui/item-picker.js), the one Give and the Auction House use: this
   // grid was its model; it adds a search and the count badge, How many stays right under it.
   const render = (el) => {
@@ -2208,12 +2214,36 @@ function autoplayStep(engine) {
 // Feature
 // ---------------------------------------------------------------------------
 
+/**
+ * G972: a pack stack dropped on your own Butler opens "give" with it chosen (bag_butler.js give,
+ * drop_tip "Ask the Butler to give this to visitors"; conditions: refused while the Butler talks).
+ */
+let ownDropOff = null;
+function installOwnButlerDrop(engine) {
+  ownDropOff?.();
+  const gameCanvas = () => document.querySelector?.('#game-root > canvas') || null;
+  ownDropOff = registerOwnButlerDrop({
+    engine,
+    scope: gameCanvas,
+    butlerAt(x, y) {
+      if (!view?.butler?.target || !st.owned) return null;
+      const canvas = gameCanvas();
+      const p = canvas && worldPoint(engine, canvas, x, y);
+      if (!p || engine.interactableAt?.(p.x, p.y)?.classId !== BUTLER.CLASS) return null;
+      return { target: view.butler.target, mine: true, give: true, busy: rt.mode === 'interacting' && !!dialog };
+    },
+    takes: giftable,
+    give: ({ cls, count }) => giveMenu(engine, { cls, count }),
+  });
+}
+
 export const butlerFeature = {
   id: BUTLER_FEATURE_ID,
 
   init(engine) {
     installQuestGate(engine);
     publish(engine, true);
+    installOwnButlerDrop(engine);
   },
 
   save() {
