@@ -18,7 +18,7 @@ import {
   rockClassFor,
   rockItems,
   soilKeyMap,
-} from '../public/js/features/homes-feature.js?v=4be9fbde';
+} from '../public/js/features/homes-feature.js?v=c7a429a9';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { canPlantBean } from '../public/js/patches.js?v=c5256421';
@@ -291,7 +291,8 @@ describe('#117: garden beds stand on the field, not over the backdrop', () => {
 
   it('drawLandscape draws the field from that edge and raises layers but not pieces hanging from the top', () => {
     assert.match(feature, /const \{ fieldTop, rise \} = landscapeGeometry\(style, groundY\);/);
-    assert.match(feature, /field\.rect\(-50, fieldTop, width \+ 100, groundY - fieldTop \+ 40\)/);
+    // G951: from as far left to as far right as the camera can show (tests/home-landscape-edge.test.js).
+    assert.match(feature, /field\.rect\(gx, fieldTop, gw, groundY - fieldTop \+ 40\)/);
     assert.match(feature, /item\.y \+ lift - \(item\.hang \|\| item\.flipY \? 0 : rise\)/);
     assert.match(feature, /const by = layer\.band\.y \+ lift - rise;/);
     // The test's bed geometry is the one the yard uses.

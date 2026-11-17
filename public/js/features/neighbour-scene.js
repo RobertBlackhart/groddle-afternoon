@@ -10,10 +10,11 @@
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=781ad57f';
 import { textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { sharpRoomDeco } from '../deco-hires.js?v=6d3c1226';
+import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
 
 const DECO = 'assets/decos/groddle/';
-/** The widest view the parallax layers must cover (js/location-view.js: 1680, wider on ultrawide windows). */
-const VIEW_W = 2000;
+/** The widest view the parallax layers must cover (js/landscape-reach.js). */
+const VIEW_W = LANDSCAPE_VIEW_W;
 
 /** Exact source sizes of every deco used here. */
 export const SCENE_DECO_SIZES = Object.freeze({
@@ -214,12 +215,16 @@ export function buildNeighbourBackground(PIXI, neighbour) {
     const lc = new PIXI.Container();
     lc.zIndex = -90 + li;
     const span = width * layer.f + VIEW_W * (1 - layer.f) + 400;
+    // G951: pieces either side wherever the camera can still see the row (js/landscape-reach.js).
+    const win = landscapeWindow(width, layer.f, VIEW_W);
     for (const item of layer.items) {
-      let i = 0;
-      for (let x = (item.offset || 0) - 200; x < span; x += item.every) {
+      const base = (item.offset || 0) - 200;
+      const run = rowRange({ base, every: item.every, half: (size(item.s)[0] * item.scale) / 2, jitter: item.jitter || 0 }, win);
+      const last = Math.max(run.last, Math.ceil((span - base) / item.every) - 1);
+      for (let i = run.first; i <= last; i += 1) {
+        const x = base + i * item.every;
         const jx = item.jitter ? (hash01(`${neighbour.id}:${li}:${item.s}:${i}`) - 0.5) * item.jitter * 2 : 0;
         lc.addChild(decoSprite(PIXI, item.s, item.scale, x + jx, item.y, hash01(`${neighbour.id}:${item.s}:${i}:flip`) > 0.5));
-        i += 1;
       }
     }
     lc.parallaxF = layer.f;
@@ -227,18 +232,24 @@ export function buildNeighbourBackground(PIXI, neighbour) {
     parallax.push(lc);
   });
 
+  // The field and soil as far as the camera can see past the street's ends (G951).
+  const ground = landscapeWindow(width, 1, VIEW_W);
+  const gx = ground.left - 50;
+  const gw = ground.right + 50 - gx;
   const field = new PIXI.Graphics();
   field.zIndex = -40;
-  field.rect(-50, 586, width + 100, groundY - 586 + 40).fill(style.field);
-  field.rect(-50, groundY + 10, width + 100, 30).fill({ color: style.fieldDark, alpha: 0.5 });
+  field.rect(gx, 586, gw, groundY - 586 + 40).fill(style.field);
+  field.rect(gx, groundY + 10, gw, 30).fill({ color: style.fieldDark, alpha: 0.5 });
   root.addChild(field);
   const soilFill = new PIXI.Graphics();
   soilFill.zIndex = -39.5;
-  soilFill.rect(-50, groundY + 30, width + 100, 240).fill(style.soilColor);
+  soilFill.rect(gx, groundY + 30, gw, 240).fill(style.soilColor);
   root.addChild(soilFill);
   const [sw, sh] = size(style.soil);
   const soilW = sw * 0.6;
-  for (let x = -40; x < width + soilW; x += soilW - 2) {
+  const soilStep = soilW - 2;
+  const soilFrom = -40 - soilStep * Math.ceil(Math.max(0, -40 - ground.left) / soilStep);
+  for (let x = soilFrom; x < Math.max(width + soilW, ground.right); x += soilStep) {
     const soil = new PIXI.Sprite(textureFromUrl(`${DECO}${style.soil}.png`));
     soil.anchor.set(0, 0);
     soil.width = soilW;

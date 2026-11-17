@@ -263,6 +263,7 @@ import {
 import { getGameDayKey } from '../game-day.js?v=72f37c7e';
 import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=e73312c1';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
+import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
 import { storagePickupLock } from '../home-storage.js?v=b0225465';
 import {
@@ -307,8 +308,8 @@ const HOME_INTERIOR_TSID = 'RH_HOME_INT';
  */
 const TOWER_DROP_PREFIX = 'RH_HOME_TOWER_';
 const HOUSE_FLOOR_DROP_PREFIX = 'RH_HOME_FLOOR_';
-/** The widest view the parallax layers must cover (js/location-view.js: 1680, wider on ultrawide windows). */
-const VIEW_W = 2000;
+/** The widest view the parallax layers must cover (js/landscape-reach.js). */
+const VIEW_W = LANDSCAPE_VIEW_W;
 const DECO = 'assets/decos/groddle/';
 /** The house interior and Tower floors: walk line of the room shell. */
 const GROUND_Y = 620;
@@ -1927,6 +1928,12 @@ function decoSprite(PIXI, item, x, y, flip = false, texture = null) {
   return spr;
 }
 
+/** Half the widest sprite a repeated landscape item draws (any of its alts), as sizeDecoSprite sizes it. */
+export function landscapeItemHalf(item) {
+  const rows = item?.alts?.length ? item.alts : [item];
+  return Math.max(0, ...rows.map((row) => (Number(row?.w ?? item.w) || 0) * (Number(item.scale) || 0) / 2));
+}
+
 /** A repeated item's sprite at position i: one of its alts, by a stable hash. */
 function pickAlt(item, seed) {
   if (!item.alts) return item;
@@ -1992,7 +1999,7 @@ export function landscapeGeometry(look, groundY) {
  * deeper field's rise (landscapeGeometry). Returns the parallax update for
  * bgLayer.updateParallax.
  */
-function drawLandscape(engine, root, style, seed, { width, groundY, lift, skipNear = () => false, moveNear = null, lot = null }) {
+export function drawLandscape(engine, root, style, seed, { width, groundY, lift, skipNear = () => false, moveNear = null, lot = null }) {
   const { fieldTop, rise } = landscapeGeometry(style, groundY);
   const { PIXI } = engine;
   const artist = landscapeArtist(engine, root);
@@ -2004,6 +2011,9 @@ function drawLandscape(engine, root, style, seed, { width, groundY, lift, skipNe
 
   const parallax = [];
   const spanFor = (f) => width * f + VIEW_W * (1 - f) + 400;
+  // G951: what the camera can show past the street's ends, the drawer open or the street narrower
+  // than the view (js/landscape-reach.js); the field, soil and every layer reach it.
+  const ground = landscapeWindow(width, 1, VIEW_W);
   if (style.stars) {
     // A night sky: fixed dots, as the Toxic Moon and Midnight Glow headers show.
     const lc = new PIXI.Container();
@@ -2028,21 +2038,28 @@ function drawLandscape(engine, root, style, seed, { width, groundY, lift, skipNe
     lc.zIndex = -90 + li;
     // A layer spans what the camera can reveal at its parallax rate.
     const span = spanFor(layer.f);
+    const win = landscapeWindow(width, layer.f, VIEW_W);
     if (layer.band) {
       const band = new PIXI.Graphics();
       const by = layer.band.y + lift - rise;
-      band.rect(-200, by, span + 200, layer.band.h).fill({ color: layer.band.color, alpha: layer.band.alpha ?? 1 });
-      band.homeLayoutFills = [[-200, by, span + 200, layer.band.h, layer.band.color, layer.band.alpha ?? 1]];
+      const bx = Math.min(-200, win.left - 50);
+      const bw = Math.max(span, win.right) + 200 - bx;
+      band.rect(bx, by, bw, layer.band.h).fill({ color: layer.band.color, alpha: layer.band.alpha ?? 1 });
+      band.homeLayoutFills = [[bx, by, bw, layer.band.h, layer.band.color, layer.band.alpha ?? 1]];
       lc.addChild(band);
     }
     for (const item of layer.items || []) {
-      let i = 0;
-      for (let x = (item.offset || 0) - 200; x < span; x += item.every) {
+      // Piece i stands at base + i * every as it always did; G951 adds pieces either side
+      // wherever the camera can still see the row (rowRange), never fewer than before.
+      const base = (item.offset || 0) - 200;
+      const run = rowRange({ base, every: item.every, half: landscapeItemHalf(item), jitter: item.jitter || 0 }, win);
+      const last = Math.max(run.last, Math.ceil((span - base) / item.every) - 1);
+      for (let i = run.first; i <= last; i += 1) {
+        const x = base + i * item.every;
         const jx = item.jitter ? (hash01(`${seed}:${li}:${item.s}:${i}`) - 0.5) * item.jitter * 2 : 0;
         const row = pickAlt(item, `${seed}:${li}:${item.s}:${i}:alt`);
         if (row.tint == null && layer.tint != null) row.tint = layer.tint;
         lc.addChild(artist.sprite(PIXI, row, x + jx, item.y + lift - (item.hang || item.flipY ? 0 : rise), hash01(`${item.s}:${i}:flip`) > 0.5));
-        i += 1;
       }
     }
     if (layer.alpha != null) lc.alpha = layer.alpha;
@@ -2051,28 +2068,33 @@ function drawLandscape(engine, root, style, seed, { width, groundY, lift, skipNe
     parallax.push(lc);
   });
 
-  // The walkable field and the soil cross-section below it.
+  // The walkable field and the soil cross-section below it, as far as the camera can see (G951).
+  const gx = ground.left - 50;
+  const gw = ground.right + 50 - gx;
   const field = new PIXI.Graphics();
   field.zIndex = -40;
-  field.rect(-50, fieldTop, width + 100, groundY - fieldTop + 40).fill(style.field);
-  field.rect(-50, groundY + 10, width + 100, 30).fill({ color: style.fieldDark, alpha: 0.5 });
-  field.homeLayoutFills = [[-50, fieldTop, width + 100, groundY - fieldTop + 40, style.field, 1], [-50, groundY + 10, width + 100, 30, style.fieldDark, 0.5]];
+  field.rect(gx, fieldTop, gw, groundY - fieldTop + 40).fill(style.field);
+  field.rect(gx, groundY + 10, gw, 30).fill({ color: style.fieldDark, alpha: 0.5 });
+  field.homeLayoutFills = [[gx, fieldTop, gw, groundY - fieldTop + 40, style.field, 1], [gx, groundY + 10, gw, 30, style.fieldDark, 0.5]];
   root.addChild(field);
   const soilFill = new PIXI.Graphics();
   soilFill.zIndex = -39.5;
-  soilFill.rect(-50, groundY + 30, width + 100, 240).fill(style.soilColor || 0x5c3b25);
-  soilFill.homeLayoutFills = [[-50, groundY + 30, width + 100, 240, style.soilColor || 0x5c3b25, 1]];
+  soilFill.rect(gx, groundY + 30, gw, 240).fill(style.soilColor || 0x5c3b25);
+  soilFill.homeLayoutFills = [[gx, groundY + 30, gw, 240, style.soilColor || 0x5c3b25, 1]];
   root.addChild(soilFill);
   const soilW = 1038 * 0.6;
   if (!style.soil) {
-    soilFill.rect(-50, groundY + 30, width + 100, 6).fill({ color: 0x000000, alpha: 0.22 });
-    soilFill.homeLayoutFills.push([-50, groundY + 30, width + 100, 6, 0x000000, 0.22]);
-    for (let x = 30; x < width; x += 140) {
+    soilFill.rect(gx, groundY + 30, gw, 6).fill({ color: 0x000000, alpha: 0.22 });
+    soilFill.homeLayoutFills.push([gx, groundY + 30, gw, 6, 0x000000, 0.22]);
+    for (let x = 30 - 140 * Math.ceil(Math.max(0, -ground.left) / 140); x < ground.right; x += 140) {
       const r = 6 + hash01(`pebble:${x}`) * 10;
       soilFill.ellipse(x + hash01(`p2:${x}`) * 60, groundY + 70 + hash01(`p3:${x}`) * 50, r * 1.6, r).fill({ color: 0x000000, alpha: 0.14 });
     }
   }
-  for (let x = -40; style.soil && x < width + soilW; x += soilW - 2) {
+  // The cross-section's tiles keep their place in the street; more run on past either end.
+  const soilStep = soilW - 2;
+  const soilFrom = -40 - soilStep * Math.ceil(Math.max(0, -40 - ground.left) / soilStep);
+  for (let x = soilFrom; style.soil && x < Math.max(width + soilW, ground.right); x += soilStep) {
     const soil = new PIXI.Sprite(textureFromUrl(decoUrl(style.soil)));
     soil.anchor.set(0, 0);
     soil.width = soilW;
