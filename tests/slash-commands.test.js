@@ -19,12 +19,12 @@ import {
   unknownLine,
 } from '../public/js/slash-commands.js?v=fb3a8442';
 import { slashCommandsFeature, slashContext } from '../public/js/features/slash-commands-feature.js?v=361434e6';
-import { smallItemsFeature } from '../public/js/features/small-items-feature.js?v=635ff759';
+import { smallItemsFeature } from '../public/js/features/small-items-feature.js?v=5e9cfc2c';
 import { towerApi } from '../public/js/features/home-tower-feature.js?v=36f072a5';
 import { BUTLER_STRINGS } from '../public/js/butler.js?v=57456a7f';
 import { butlerFeature } from '../public/js/features/butler-feature.js?v=21e5fc1e';
-import { FEATURES } from '../public/js/features/index.js?v=2ea6db13';
-import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
+import { FEATURES } from '../public/js/features/index.js?v=bebf14fe';
+import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
 import { countItem } from '../public/js/inventory.js?v=f49c8998';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -42,8 +42,8 @@ import {
   waterPlot,
   wetPlot,
 } from '../public/js/garden.js?v=97697984';
-import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=eceb02ed';
-import { normalizeFeatureSlices } from '../public/js/feature-host.js?v=a0bd032a';
+import { normalizeGardenSnapshot } from '../public/js/player-save.js?v=7152843e';
+import { normalizeFeatureSlices } from '../public/js/feature-host.js?v=b620c6f2';
 import { applyPlot, localPlot, GARDEN_LOCK_MS } from '../public/js/shared-gardens.js?v=464472e5';
 import { applyTendAct } from '../public/js/neighbours-mp.js?v=dc8ab937';
 import { potionTendGarden } from '../public/js/master-garden.js?v=ea711e65';

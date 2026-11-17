@@ -3,8 +3,8 @@
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=37d58385';
-import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2ea6db13';
+import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=bebf14fe';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=eceb02ed';
+} from './js/player-save.js?v=7152843e';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -14032,7 +14032,8 @@ const engine = {
    * location's avatar filter, setAvatarTone.)
    */
   enterScene(scene) {
-    clearWorldEntities();
+    // G944: a visited home rebuilt in place (the owner changed it) keeps its windows, as decorating does.
+    clearWorldEntities({ keepWindows: scene.keepWindows === true });
     if (scene.avatarFilters) setAvatarTone(scene.avatarFilters);
     if (bgLayer && world) {
       world.removeChild(bgLayer);
@@ -15650,19 +15651,22 @@ function savePlayerState() {
   try {
     syncAnimalWorldState();
     syncToolCopies(toolState);
-    const serialized = serializePlayerSave(createPlayerSave({
+    const save = createPlayerSave({
       inventory: inv,
       player: pc,
       systems: persistentSystems(),
       world: persistentWorldState,
       savedAt: Date.now(),
       build: PAGE_BUILD,
-    }));
+    });
+    const serialized = serializePlayerSave(save);
     // savedAt changes each capture; compare gameplay payloads before writing.
     const comparable = serialized.replace(/"savedAt":\d+/, '"savedAt":0');
     if (comparable !== lastSerializedPlayerState) {
       saveStore.set(PLAYER_STATE_STORAGE_KEY, serialized);
       lastSerializedPlayerState = comparable;
+      // G944: the owner's home changes reach visitors (features/home-live-feature.js).
+      features.collect('onSaved', save, engine);
     }
     saveHealth.ok();
     return true;

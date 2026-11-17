@@ -117,6 +117,7 @@ import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '..
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=57456a7f';
 import { butlerApi } from './butler-feature.js?v=21e5fc1e';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=47c80ffb';
+import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
 import {
   BUTLER_MESSAGE_MAX,
   KEY_VERB,
@@ -266,6 +267,8 @@ function createSession(engine, client) {
   let tendApplied = 0;
   let parcelsMerged = 0;
   let lastGardenScan = 0;
+  let liveLast = '';
+  let liveRebuilds = 0;
 
   const me = () => Number(client.me?.id) || 0;
 
@@ -390,7 +393,7 @@ function createSession(engine, client) {
     }
   }
 
-  async function showScene(room, { arrive, floor, via, at }) {
+  async function showScene(room, { arrive, floor, via, at, quiet = false }) {
     const built = visitorHomeScene(engine, visit.view, room, { returnLabel: wayOutOf(visit.returnTo).label, floor, via });
     const tower = room === 'tower' ? visitorHomeState(visit.view).tower : null;
     const stop = tower ? elevatorStops(tower).find((row) => row.index === built.floor) : null;
@@ -410,6 +413,8 @@ function createSession(engine, client) {
       walls: [],
       spawn: { x, y: built.groundY },
       returnTo: visit.returnTo,
+      // G944: rebuilt in place for the owner's change: the windows open here stay.
+      keepWindows: quiet,
     };
     const from = { label: engine.street?.label || '', hub: engine.street?.hubName || '' };
     const setup = () => {
@@ -431,7 +436,7 @@ function createSession(engine, client) {
       publish();
     };
     const fx = document.getElementById('screen-transition');
-    if (!fx) setup();
+    if (!fx || quiet) setup();
     else {
       await runStreetTransition(fx, {
         fromLabel: from.label,
@@ -473,6 +478,80 @@ function createSession(engine, client) {
     visit.targets = t;
     visit.gardens = new Set(spots.gardens || []);
     visit.beds = mapBeds(room, spots.gardens || []);
+  }
+
+  // G944 (M4): the owner changed their home while I am there.
+
+  let homeReading = false;
+  let homeAgain = false;
+
+  /**
+   * home_refresh "home" (features/home-live-feature.js, homes_street.go): the owner's home is read
+   * again from the site. A different look (furniture, decor, cultivations, styles, the Tower)
+   * builds the room I stand in again where I stand, with no loading card (Glitch sent the whole
+   * location the new geometry: inc_homes.js apiGeometryUpdated); the same look with other crops
+   * updates the gardens in place. `rebuild`: build it again whatever changed (the yard named
+   * something new or gone, features/yard-verbs-mp-feature.js).
+   */
+  async function refreshHome({ rebuild = false } = {}) {
+    if (!visit) return false;
+    if (homeReading) {
+      homeAgain = true;
+      return true;
+    }
+    homeReading = true;
+    const owner = visit.owner;
+    try {
+      // My own garden acts not yet sent go first, so the site's copy has them.
+      lastGardenScan = 0;
+      scanGardens(Date.now());
+      const view = normalizeHomeView(await account.home(owner));
+      if (!view || visit?.owner !== owner || !readVisitScene(engine.streetTsid)) return false;
+      const same = !rebuild && visitSceneKey(view) === visitSceneKey(visit.view);
+      visit.view = view;
+      visit.key = visit.key || view.key === true;
+      if (same) applyGardens(view);
+      else await rebuildRoom();
+      liveLast = same ? 'gardens' : 'rebuilt';
+      publish();
+      return true;
+    } catch (err) {
+      console.warn('[neighbours]', err?.message || err);
+      return false;
+    } finally {
+      homeReading = false;
+      if (homeAgain) {
+        homeAgain = false;
+        refreshHome();
+      }
+    }
+  }
+
+  /** The room I stand in, built again from visit.view where I stand. */
+  async function rebuildRoom() {
+    if (!visit || showing) return false;
+    showing += 1;
+    try {
+      await showScene(visit.room, { arrive: '', floor: visit.floor || 0, via: '', at: Math.round(engine.player?.x || 0), quiet: true });
+    } finally {
+      showing -= 1;
+    }
+    liveRebuilds += 1;
+    return true;
+  }
+
+  /** Each garden drawn here takes its plots from the site's view (as revertPlot does for one). */
+  function applyGardens(view) {
+    for (const [e, bed] of visit.beds) {
+      const plots = visitGardenPlots(view, bed.yard, bed.id);
+      const garden = e.state?.garden;
+      if (!plots || !garden?.plots) continue;
+      for (const [key, plot] of Object.entries(plots)) {
+        if (garden.plots[key] && plot && typeof plot === 'object') Object.assign(garden.plots[key], JSON.parse(JSON.stringify(plot)));
+      }
+      bed.snap = plotsSnapshot(garden);
+      engine.refreshGarden?.(e);
+    }
   }
 
   // —— Slice 2: the owner's gardens on a visit ——
@@ -1266,6 +1345,10 @@ function createSession(engine, client) {
     // A new socket: the server forgot the pass (it goes with a socket that dropped).
     sendPass();
   });
+  // G944 (M4): the owner changed their home (yard-verbs-mp-feature reads the yard on "home" and "yard").
+  client.on('msg:home_refresh', (msg) => {
+    if (msg.what === 'home' && visit && Number(msg.owner) === visit.owner) refreshHome();
+  });
   client.on('msg:home_pass_ok', (msg) => {
     if (!visit || Number(msg.owner) !== visit.owner) return;
     visit.key = visit.key || msg.key === true;
@@ -1467,6 +1550,10 @@ function createSession(engine, client) {
   return {
     client,
     get visit() { return visit; },
+    /** G944: the visited home read again (rebuild: built again whatever changed). */
+    refreshHome,
+    /** QA: what the last owner's change did here ('gardens' | 'rebuilt') and how many rebuilds. */
+    live: () => ({ last: liveLast, rebuilds: liveRebuilds }),
     /** G367: the owner's Butler says a line to the street you visit (butler_said): its name, or '' when not drawn here. */
     butlerSays(owner, text) {
       if (!vb?.target || vb.box.destroyed || visit?.owner !== Number(owner) || visit.room !== 'street' || !text) return '';
@@ -1771,6 +1858,13 @@ export const neighboursMpFeature = {
     const v = session?.visit;
     if (!v || engine?.mode !== 'multiplayer' || readVisitScene(engine.streetTsid)?.owner !== v.owner) return null;
     return { owner: v.owner, name: v.name, gnomes: Array.isArray(v.view?.gnomes) ? v.view.gnomes : [] };
+  },
+
+  /** G944 (yard-verbs-mp-feature): the yard I visit names something new or gone; true once the room is being built again. */
+  homeVisitRebuild(engine) {
+    if (!session?.visit || engine?.mode !== 'multiplayer' || !readVisitScene(engine.streetTsid)) return null;
+    session.refreshHome({ rebuild: true });
+    return true;
   },
 
   /** GATESIGN: game.js homeWayOut, the Imagination menu's Back to world while you visit a home. */

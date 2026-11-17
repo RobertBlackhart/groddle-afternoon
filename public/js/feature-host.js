@@ -42,6 +42,8 @@
  *   mapCards(engine)                      // -> [HTMLElement] cards shown above the Map canvas
  *   furnitureRow(street, base, engine)    // -> street furniture row (base = the archived row or null),
  *                                         //    row.at[classTsid] = fixed screen points (engine.query)
+ *   onSaved(save, engine)                 // game.js savePlayerState, the save it captured (when it changed;
+ *                                         //    G944 features/home-live-feature.js)
  *   save()                                // -> JSON-safe slice (a throw keeps the last good slice)
  *   restore(slice, engine)                // slice may be undefined on a fresh game; a throw keeps
  *                                         //    the raw slice, saved back unchanged

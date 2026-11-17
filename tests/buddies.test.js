@@ -34,7 +34,7 @@ import { buddiesFeature } from '../public/js/features/buddies-feature.js?v=c7026
 import { BUDDY_DESTINATION_TEXT, BUDDY_DESTINATION_VERB, buddyDestination, buddyFaceUrl, createFaceMemory } from '../public/js/buddy-list.js?v=b418f3f2';
 import { STREET_INDEX } from '../public/js/street-loader.js?v=90517e2f';
 import { FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=4577c2ee';
-import { FEATURES } from '../public/js/features/index.js?v=2ea6db13';
+import { FEATURES } from '../public/js/features/index.js?v=bebf14fe';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

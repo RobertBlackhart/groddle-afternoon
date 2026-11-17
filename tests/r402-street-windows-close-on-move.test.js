@@ -49,7 +49,8 @@ describe('#402: windows tied to the street close on any move', () => {
   it('every move runs it: clearWorldEntities, which enterScene (a Ticket\'s scene) and enterStreet call', () => {
     const clear = fn('clearWorldEntities');
     assert.match(clear, /if \(!keepWindows\) closeStreetBoundWindows\(\);/);
-    assert.match(src, /enterScene\(scene\) \{\n {4}clearWorldEntities\(\);/, 'a scene is a move');
+    // G944: only a visited home rebuilt in place for its owner's change (scene.keepWindows) is no move.
+    assert.match(src, /enterScene\(scene\) \{\n(?: {4}\/\/[^\n]*\n)? {4}clearWorldEntities\(\{ keepWindows: scene\.keepWindows === true \}\);/, 'a scene is a move');
     const enter = fn('enterStreet');
     assert.match(enter, /\n {2}clearWorldEntities\(\);/, 'a street is a move');
   });

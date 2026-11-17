@@ -6,7 +6,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createFeatureHost } from '../public/js/feature-host.js?v=a0bd032a';
+import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
 import { createInventory, countItem } from '../public/js/inventory.js?v=f49c8998';
 import { bindToolInventory, createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
 import { levitateHint, meditationFeature } from '../public/js/features/meditation-feature.js?v=ca569a98';

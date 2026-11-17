@@ -401,7 +401,7 @@ function createSession(engine, client) {
 
   function draw(view, tsid, name) {
     clearVisit();
-    visit = { owner: view.owner, name, tsid, view, plots: new Map(), trees: new Map(), animals: new Map(), rocks: new Map(), nodes: new Map(), fixtures: [], fixturesKey: '' };
+    visit = { owner: view.owner, name, tsid, view, idsKey: yardIdsKey(view), plots: new Map(), trees: new Map(), animals: new Map(), rocks: new Map(), nodes: new Map(), fixtures: [], fixturesKey: '' };
     const hx = houseX(view);
     view.patches.forEach((p, i) => drawPatch(p, hx + p.rx, i));
     for (const row of view.animals) drawAnimal(row);
@@ -607,11 +607,18 @@ function createSession(engine, client) {
   async function refreshVisit() {
     if (!visit) return;
     const tsid = visit.tsid;
+    // G944: what my own verbs changed goes to the site before the site's copy replaces mine.
+    scan();
     try {
       const answer = await site.yard(visit.owner);
       const view = normalizeYardView(answer);
       if (!view || !visit || visit.tsid !== tsid) return;
       view.stock = normalizeStockView(answer);
+      // G944 (M1, M4): the owner added or took away a rock, node, Patch or animal since: the visit's
+      // scene is built again (neighbours-mp-feature), which draws this yard afresh.
+      if (yardIdsKey(view) !== visit.idsKey) {
+        if (engine.query?.('homeVisitRebuild', engine)) return;
+      }
       visit.view = view;
       for (const row of view.stock.rocks) {
         const r = visit.rocks.get(row.id);
@@ -665,6 +672,12 @@ function createSession(engine, client) {
     } catch (err) {
       console.warn('[yard]', err?.message || err);
     }
+  }
+
+  /** The things a site's view names (drawn from one, another key: something new or gone). */
+  function yardIdsKey(view) {
+    const ids = (rows, f) => rows.map(f).map(String).sort().join(',');
+    return [ids(view.stock.rocks, (r) => r.id), ids(view.stock.nodes, (r) => r.id), ids(view.patches, (p) => p.key), ids(view.animals, (a) => a.id)].join('|');
   }
 
   function redrawPlot(e) {
@@ -908,6 +921,12 @@ function createSession(engine, client) {
     if (a) a.target.subtitle = animalStatusLabel(a.classId, a.state);
   });
 
+  // G944 (M1, M4): the owner changed their yard (or their home: the yard is read with it); my copy reads the site again.
+  client.on('msg:home_refresh', (msg) => {
+    if (!visit || Number(msg.owner) !== visit.owner) return;
+    if (msg.what === 'yard' || msg.what === 'home') refreshVisit();
+  });
+
   // —— My own home: what visitors did ——
 
   function ownSlots() {
@@ -1091,7 +1110,8 @@ function createSession(engine, client) {
       wasHome = home;
     },
     cleared() {
-      if (visit && engine.streetTsid !== visit.tsid) visit = null;
+      // G944: the scene was cleared (left, or rebuilt in place for the owner's change): the next tick draws it again.
+      clearVisit();
     },
     /** QA: run a verb on something drawn here ('plot:<key>', 'tree:<key>', 'animal:<id>'); no verb: the menu ids. */
     act(what, verbId) {
