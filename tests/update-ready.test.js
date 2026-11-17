@@ -333,6 +333,25 @@ describe('the pill', () => {
   });
 });
 
+// G926 (#455): upright on a phone the pill pushed the Menu off the bar, so there it waits in the Menu (the
+// phone's Now group, first) with a dot on the Menu button; sideways and on a computer the bar keeps it.
+describe('the offer on an upright phone (G926, #455)', () => {
+  it('a Menu row that mirrors the pill, first in the phone\'s Now group, and the pill off the upright bar', async () => {
+    const src = read('public/js/features/update-ready-feature.js');
+    assert.match(src, /row\.id = 'menu-update-btn'/);
+    assert.match(src, /getElementById\('more-list'\)\?\.append\(row\)/, 'in the Menu');
+    assert.match(src, /if \(btn\.hidden === show\) btn\.hidden = !show;\n\s+if \(row\.hidden === show\) row\.hidden = !show;/, 'shown and hidden with the pill (blocking UI too)');
+    assert.match(src, /row\.addEventListener\('click', update\)/, 'the same save and reload');
+    const portrait = src.slice(src.indexOf('@media (orientation: portrait) {'), src.indexOf('`;', src.indexOf('@media (orientation: portrait) {')));
+    assert.match(portrait, /:root\.touch-phone\[data-ui="modern"\] \.top-bar \.update-ready-btn \{ display: none; \}/);
+    assert.match(portrait, /\.more-list #menu-update-btn:not\(\[hidden\]\) \{ display: flex;/);
+    assert.match(portrait, /\.more-menu:has\(#menu-update-btn:not\(\[hidden\]\)\) #more-btn::before \{ content: '';/, 'a dot on the Menu');
+    assert.match(src, /^#menu-update-btn \{ display: none; \}$/m, 'off a phone held upright the row never shows');
+    const { menuRowFor } = await import('../public/js/ui/topbar.js?v=2106ede1');
+    assert.deepEqual(menuRowFor('menu-update-btn', { phone: true }), { group: 'now', rank: -1 });
+  });
+});
+
 // #307/#308 (G703): a tab left open across releases got "You need to be closer" beside shared rocks the
 // server had moved; the server's line says a reload fixes it, and a page that already knows a newer
 // build says its Update ready notice again. Never a reload by itself.

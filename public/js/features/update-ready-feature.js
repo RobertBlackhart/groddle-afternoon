@@ -40,13 +40,24 @@ const STYLE = `
 }
 [data-ui="modern"] .top-bar .update-ready-btn:hover { filter: brightness(0.97); }
 [data-ui="modern"] .top-bar .update-ready-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.update-ready-btn svg { width: 14px; height: 14px; flex: none; }
+.update-ready-btn svg, #menu-update-btn svg { width: 14px; height: 14px; flex: none; }
 /* A narrow window keeps the street's name: the pill shows its arrow only (its tooltip and name still say it). */
 @media (max-width: 1000px) {
   [data-ui="modern"] .top-bar .update-ready-btn { width: 28px; padding: 0; justify-content: center; }
   [data-ui="modern"] .top-bar .update-ready-btn > span { display: none; }
 }
 .update-ready-btn[aria-busy="true"] { cursor: progress; opacity: 0.75; }
+/* G926 (#455): an upright phone's bar holds the stats and three or four 44 px buttons, and the pill pushed
+   the Menu off the right edge. There it waits in the Menu instead (the Now group's first row, in the
+   accent) with a dot on the Menu button, as Projects marks a finished project; sideways and on a computer
+   the bar keeps it. */
+#menu-update-btn { display: none; }
+@media (orientation: portrait) {
+  :root.touch-phone[data-ui="modern"] .top-bar .update-ready-btn { display: none; }
+  :root.touch-phone[data-ui="modern"] .more-list #menu-update-btn:not([hidden]) { display: flex; align-items: center; gap: var(--space-2); grid-column: 1 / -1; color: var(--accent); font-weight: var(--fw-heavy); }
+  :root.touch-phone[data-ui="modern"] .top-bar .more-menu:has(#menu-update-btn:not([hidden])) #more-btn { position: relative; }
+  :root.touch-phone[data-ui="modern"] .top-bar .more-menu:has(#menu-update-btn:not([hidden])) #more-btn::before { content: ''; position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: var(--radius-round); background: var(--accent); box-shadow: 0 0 0 2px var(--surface-raised); pointer-events: none; }
+}
 `;
 
 /** The circling arrow beside the words. */
@@ -72,6 +83,20 @@ function createSession(engine, own) {
   const actions = document.querySelector('.top-bar .top-actions') || document.querySelector('.top-actions');
   if (actions) actions.insertBefore(btn, actions.firstChild);
   else (document.getElementById('game-root') || document.body).append(btn);
+  // G926 (#455): the same offer as a Menu row, shown upright on a phone only (STYLE), where the pill is off
+  // the bar (js/ui/topbar.js MENU_ROWS places it first in the phone's Now group).
+  const row = document.createElement('button');
+  row.type = 'button';
+  row.id = 'menu-update-btn';
+  row.className = 'chrome-btn menu-phone-row';
+  row.hidden = true;
+  row.title = UPDATE_TEXT.tip;
+  row.setAttribute('aria-label', `${UPDATE_TEXT.pill}. ${UPDATE_TEXT.tip}`);
+  row.innerHTML = ICON;
+  const rowWords = document.createElement('span');
+  rowWords.textContent = UPDATE_TEXT.pill;
+  row.append(rowWords);
+  document.getElementById('more-list')?.append(row);
 
   let announced = '';
   let busy = false;
@@ -81,6 +106,7 @@ function createSession(engine, own) {
     const ready = Boolean(check.latest);
     const show = ready && (busy || !blockingUi(engine));
     if (btn.hidden === show) btn.hidden = !show;
+    if (row.hidden === show) row.hidden = !show;
   }
 
   const check = createUpdateCheck({
@@ -113,6 +139,7 @@ function createSession(engine, own) {
     busy = true;
     btn.setAttribute('aria-busy', 'true');
     words.textContent = UPDATE_TEXT.saving;
+    rowWords.textContent = UPDATE_TEXT.saving;
     const store = saveStore?.kind === 'multiplayer' ? saveStore : null;
     const reloaded = await saveThenReload({
       engine,
@@ -124,10 +151,13 @@ function createSession(engine, own) {
       busy = false;
       btn.removeAttribute('aria-busy');
       words.textContent = UPDATE_TEXT.pill;
+      rowWords.textContent = UPDATE_TEXT.pill;
       place();
     }
   }
   btn.addEventListener('click', update);
+  // The Menu closes on a pick (game.js installMoreMenu), then the game saves and reloads.
+  row.addEventListener('click', update);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') check.shown();
@@ -158,6 +188,7 @@ function createSession(engine, own) {
     get own() { return own; },
     get checks() { return check.checks; },
     get button() { return btn; },
+    get menuRow() { return row; },
     tick() {
       watchRealtime();
       engine.setData?.('updateChecks', String(check.checks));

@@ -7,7 +7,7 @@ import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { STUCK_MENU, STUCK_TEXT } from '../public/js/slash-commands.js?v=fb3a8442';
 import { placeStuckRow, runStuckFromMenu, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=ce44550a';
-import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=c451ce11';
+import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=2106ede1';
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 const AWAY = { owned: true, inHome: false, room: 'street' };
