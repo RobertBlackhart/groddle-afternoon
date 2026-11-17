@@ -126,12 +126,15 @@ import {
   talkPages,
   training1Layout,
   training2Layout,
+  TRAINING2_TABLE_ART,
+  TRAINING2_TABLE_SCALE,
+  TRAINING2_TABLE_SINK,
   tutorialPhysics,
   SKIP_TUTORIAL_CARDS,
   vogPages,
   tutorialNameDefault,
   TUTORIAL_NAME_MAX,
-} from '../newxp.js?v=1f52edd5';
+} from '../newxp.js?v=6ef1ea3a';
 import { countWords } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=f49c8998';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
@@ -147,7 +150,7 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } fro
 import { upgradeSource } from '../sprite-hires.js?v=d2bcebbc';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
-import { HOME_MACHINE } from '../home-ticket.js?v=259bf38e';
+import { HOME_MACHINE } from '../home-ticket.js?v=6241101a';
 import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=0c6762ce';
 import {
   AK_ANIMALS,
@@ -1798,14 +1801,18 @@ function buildTraining2(engine) {
   // The green glow the tables stand on (greenbase_01a_newxpblack, 4:04-6:32).
   for (const tab of Object.values(L.tables)) root.addChild(stageDeco(PIXI, 'greenbase_01a_newxpblack', tab.x, L.floorY + 4, { scale: 0.95 }));
   drawPlatforms(PIXI, root, L.platforms);
-  const g = new PIXI.Graphics();
-  // Table one (white cloth) and the wooden drinks bench: no Tiny Speck art for them survives in
-  // the CC0 sets, so they stay drawn.
-  g.ellipse(L.tables.food.x, L.floorY - 76, 120, 18).fill(0xf4f4f4);
-  g.rect(L.tables.food.x - 120, L.floorY - 76, 240, 70).fill(0xe6e6e6);
-  g.roundRect(L.tables.drinks.x - 130, L.floorY - 70, 260, 66, 8).fill(0x9a5a2b);
-  g.roundRect(L.tables.drinks.x - 130, L.floorY - 74, 260, 10, 4).fill(0xb87240);
-  root.addChild(g);
+  // Table one (the White Tablecloth Table) and the drinks bench (the Firebog Counter): Tiny Speck's
+  // furniture renders (js/newxp.js TRAINING2_TABLE_ART, G892), standing on the glow.
+  for (const [kind, tab] of Object.entries(L.tables)) {
+    const art = TRAINING2_TABLE_ART[kind];
+    const table = new PIXI.Sprite(textureFromUrl(art.path));
+    table.anchor.set(0.5, 1);
+    table.x = tab.x;
+    table.y = L.floorY + TRAINING2_TABLE_SINK;
+    table.scale.set(TRAINING2_TABLE_SCALE);
+    table.label = `training2-table-${kind}`;
+    root.addChild(table);
+  }
   // The walls are Tiny Speck's dark wall panels (the tube building's, 7:20-7:32).
   const walls = {};
   for (const b of L.barriers.filter((w) => w.id !== 'left')) {

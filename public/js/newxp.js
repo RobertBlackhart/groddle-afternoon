@@ -1044,6 +1044,48 @@ export function training2Layout() {
   };
 }
 
+/**
+ * G892: training2's two tables are Tiny Speck's own furniture (glitch-items, CC0), the renders the
+ * furniture upgrades already ship (tools/furniture-upgrades, js/furniture-upgrades-data.js), not
+ * drawn shapes. Table one is the White Tablecloth Table (furniture_table upgrade 63,
+ * furniture_table_white_tablecloth_table.swf): its frame 1 matches the recording at 6:00
+ * (K2q5GXruLvE). The drinks bench is the Firebog Counter (furniture_counter upgrade 408,
+ * furniture_counter_firebog_counter.swf): the recording at 6:25 shows its planked orange front,
+ * pale inset top and rounded ends, as wide as table one. `rest` is where things stand on each
+ * (catalog plat minus art foot, as js/home-decor.js surfaceHeight reads it). The level kept no
+ * location XML, so the scale is the one that stands the GSJS items (newxp_training2.js
+ * location_targets food_2 76 px and drink_1 70 px over the floor) on those tops.
+ */
+export const TRAINING2_TABLE_ART = Object.freeze({
+  food: Object.freeze({
+    classTsid: 'furniture_table',
+    upgrade: '63',
+    swf: 'furniture/furniture_table/furniture_table_white_tablecloth_table.swf',
+    path: 'assets/sprites/furniture/upgrades/furniture_table/63@3x.webp',
+    w: 229,
+    h: 88,
+    rest: 68,
+  }),
+  drinks: Object.freeze({
+    classTsid: 'furniture_counter',
+    upgrade: '408',
+    swf: 'furniture/furniture_counter/furniture_counter_firebog_counter.swf',
+    path: 'assets/sprites/furniture/upgrades/furniture_counter/408@3x.webp',
+    w: 226,
+    h: 77,
+    rest: 64,
+  }),
+});
+/** Both tables' draw scale, and how far under the floor line their art's bottom sits (on the green glow). */
+export const TRAINING2_TABLE_SCALE = 1.17;
+export const TRAINING2_TABLE_SINK = 4;
+
+/** PURE: the world y of a training2 table's top (where its food or drinks stand). */
+export function training2TableTop(kind, floorY) {
+  const art = TRAINING2_TABLE_ART[kind];
+  return floorY + TRAINING2_TABLE_SINK - art.rest * TRAINING2_TABLE_SCALE;
+}
+
 /* ------------------------------------------------------------------ */
 /* Gentle Island scripts (newbie_island.js and the six streets' events) */
 /* ------------------------------------------------------------------ */

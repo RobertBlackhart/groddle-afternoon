@@ -49,7 +49,7 @@ import {
 } from '../public/js/practice-streets.js?v=557238c1';
 import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=ce74b07a';
 import { BUILT_ROOMS, QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
-import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=1f52edd5';
+import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=6ef1ea3a';
 import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=77fee627';
 import { HELLO as SOIL_HELLO, TEND_FIRST, patchArt, patchVerbs, room as soilRoom } from '../public/js/quest-rooms/soil-appreciation.js?v=40cbe9b3';
 

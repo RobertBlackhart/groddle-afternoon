@@ -41,7 +41,7 @@ import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=13819ec0';
 import { STREET_INDEX } from '../street-loader.js?v=7ed1bdfd';
-import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=1f52edd5';
+import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=6ef1ea3a';
 import { OVERLAY_BASE, cellRect, loadOverlayManifest, overlayAlpha, overlayFrameAt, standPlacement, trackOverlay } from '../overlay-art.js?v=98606052';
 import {
   AWARD_ITEM,
