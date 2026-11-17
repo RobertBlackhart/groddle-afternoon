@@ -44,6 +44,10 @@
  *   ones leave their husbandry slot for good (target.husbandryVanish).
  *   Chickens and Butterflies somewhere depressing leave or vanish on load
  *   (npc_chicken.js / npc_butterfly.js onLoad).
+ *   Online on a street others share (M15), the street's own animals are
+ *   everyone's (street-objects-feature, objects_creatures.go): they still
+ *   count toward the crowd, but never sulk, leave or vanish on one screen
+ *   (serverStreetAnimal); only your released ones (private, G593) do.
  *
  * Multiplayer (G334): a street Piggy is everyone's. The realtime server
  * (objects_pigs.go, through street-objects-feature) holds its mood, hunger
@@ -108,6 +112,8 @@ import { isInHell } from '../hell.js?v=df2b4357';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
 import { animalStatusLabel } from '../animals.js?v=fea1fa89';
+import { LOCAL_STATES } from '../shared-quoins.js?v=89d7b201';
+import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { quoteAnimalKinship } from '../animal-kinship.js?v=d1fff152';
 import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0b948684';
 import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=d66a4345';
@@ -319,6 +325,23 @@ function homeOf(target) {
 
 function isExtra(target) {
   return Boolean(target?.husbandryAnimal);
+}
+
+/**
+ * M15: online on a street others share, a street (ecology) animal is the same for everyone
+ * (street-objects-feature: its shared path, sprite._path or _walkerPath; the server holds it
+ * from the snapshot on, so the street alone decides before the snapshot comes). Crowding
+ * counts it but never sends it off on one player's screen: only released animals, which
+ * are private (G593), check. Off the realtime server (solo, signed out) nothing is shared.
+ */
+function serverStreetAnimal(engine, target) {
+  if (isExtra(target)) return false;
+  const spr = target?.sprite;
+  if (spr?._path || spr?._walkerPath) return true;
+  if (engine?.mode !== 'multiplayer') return false;
+  const client = engine.query?.('realtimeClient');
+  if (!client || LOCAL_STATES.has(client.state)) return false;
+  return publicStreet(engine) !== '';
 }
 
 /** Multiplayer: the realtime server holds this street Piggy (street-objects-feature). */
@@ -967,6 +990,7 @@ function puffAt(engine, target) {
 function runCrowdCheck(engine, target, population, max) {
   const rec = crowd.get(target);
   if (rec?.mode === 'leaving' || target._crowdGone) return null;
+  if (serverStreetAnimal(engine, target)) return null;
   crowdStats.checks += 1;
   const depressing = animalPlaceIsDepressing(engine);
   const res = sadnessCheck({
@@ -1088,6 +1112,8 @@ function adoptCrowd(engine) {
     for (const target of crowdAnimals(engine, classId)) {
       if (crowdSeen.has(target)) continue;
       crowdSeen.add(target);
+      // M15: a shared street animal is the server's: no saved departure or sulk hides it here.
+      if (serverStreetAnimal(engine, target)) continue;
       const s = target.state;
       if (Number(s.crowdGone) > 0 && !isExtra(target)) {
         if (!crowdGoneReturns(s.crowdGone, boundary)) {

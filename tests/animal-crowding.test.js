@@ -32,7 +32,7 @@ import { createAnimalState } from '../public/js/animals.js?v=fea1fa89';
 import { GAME_DAY_MS, getGameDayStartMs } from '../public/js/game-day.js?v=72f37c7e';
 import { advanceYard, capturePiggy, createMachine, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=d66a4345';
 import { getVerbsFor } from '../public/content.js?v=3e445ae8';
-import { animalCrowdChanged, animalMoodFeature, crowdLimit } from '../public/js/features/animal-mood-feature.js?v=5457700d';
+import { animalCrowdChanged, animalMoodFeature, crowdLimit } from '../public/js/features/animal-mood-feature.js?v=31077bc8';
 
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
 const fixed = (v) => () => v;
@@ -423,6 +423,48 @@ describe('Crowding on the street (animal-mood feature)', () => {
     assert.equal(crowdLimit(engine, 'npc_piggy'), 20);
     engine.pc.imaginationUpgrades.push('herdkeeping_animal_sadness_2');
     assert.equal(crowdLimit(engine, 'npc_piggy'), 22);
+  });
+
+  /** M15: online, with the realtime client up (street-objects-feature shares the street's animals). */
+  const online = (engine) => Object.assign(engine, {
+    mode: 'multiplayer',
+    homeContext: () => ({ inHome: false }),
+    query: (h) => (h === 'realtimeClient' ? { state: 'online' } : null),
+  });
+
+  it('online, counts the shared street animals but sends only your released ones away (M15)', () => {
+    Date.now = () => clock;
+    const shared = herd('npc_chicken', 6);
+    const released = herd('npc_chicken', 4).map((c, i) => Object.assign(c, { husbandryAnimal: `r${i}` }));
+    const engine = online(street([...shared, ...released], { animalcrowdroll: '0.03' }));
+    tick(engine);
+    // Ten on a 6000 px public street (limit 10): every released chicken checks at 10/10.
+    assert.equal(animalCrowdChanged(engine, 'npc_chicken'), 10);
+    assert.equal(animalMoodFeature._state().crowdStats.checks, 4, 'only the four released chickens rolled');
+    assert.equal(engine.said.filter(([, m]) => m === CROWD_LEAVE_LINE).length, 4);
+    assert.ok(shared.every((c) => c.state.crowdGone === undefined && !c.state.crowdSadUntil), 'no shared chicken leaves or sulks on one screen');
+    assert.ok(engine.data.animalCrowd.split(',').includes('npc_chicken:10/10'), 'yet all ten count');
+  });
+
+  it('online, keeps a shared street animal a saved departure would hide (M15)', () => {
+    Date.now = () => clock;
+    const left = animal('npc_piggy');
+    left.state.crowdGone = Math.max(getGameDayStartMs(clock) + 1, clock - HOUR);
+    const pathed = animal('npc_chicken');
+    pathed.sprite._path = () => {};
+    const engine = online(street([left, pathed]));
+    tick(engine);
+    assert.deepEqual(engine.interactables, [left, pathed], 'still on the street for everyone');
+    assert.equal(left.sprite.visible, true);
+  });
+
+  it('on a place Glitch kept to one player, the street animals are yours and crowd as solo (G945)', () => {
+    Date.now = () => clock;
+    const chickens = herd('npc_chicken', 10);
+    const engine = online(street(chickens, { animalcrowdroll: '0.03' }, { tsid: 'GA952QGCH3D31E2' }));
+    tick(engine);
+    animalCrowdChanged(engine, 'npc_chicken', { exclude: chickens[9] });
+    assert.equal(animalMoodFeature._state().crowdStats.checks, 9);
   });
 });
 
