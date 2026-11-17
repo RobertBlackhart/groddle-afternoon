@@ -180,7 +180,9 @@ describe('new art from published zones (level builder P6) and made decos', () =>
       assert.ok(!art[name], `${name}: both a zone's and a made deco`);
       assert.equal(policy.licences[row.licence]?.origin, 'new', `${name}: ${row.licence}`);
       for (const k of policy.licences[row.licence].requires) assert.ok(row[k], `${name}: ${k}`);
-      assert.ok(row.inputs.every((i) => /^(deco:|own:|ref:)/.test(i)), `${name}: inputs`);
+      // cc0: Tiny Speck art the game ships outside the deco library (the Outer Mind's style sheet: the Inner Mind's arbito1.swf pieces).
+      assert.ok(row.inputs.every((i) => /^(deco:|own:|ref:|cc0:)/.test(i)), `${name}: inputs`);
+      assert.ok(row.inputs.filter((i) => i.startsWith('cc0:')).every((i) => existsSync(join(root, i.slice(4).split(' ')[0]))), `${name}: cc0 inputs ship`);
       assert.ok(row.inputs.filter((i) => i.startsWith('deco:')).every((i) => existsSync(join(decos, `${i.slice(5)}.webp`))), `${name}: library inputs`);
       // Five files given per chat (room 04's tree edits gave four: the CC0 tree and three pictures), numbered in order.
       assert.ok([4, 5].includes(row.inputFiles.length), `${name}: the files given`);
@@ -191,7 +193,7 @@ describe('new art from published zones (level builder P6) and made decos', () =>
       if (row.rooms) {
         // A quest-room prop: the rooms exist and the code that draws them names the deco.
         const roomSrc = readdirSync(join(pub, 'js/quest-rooms')).map((f) => readFileSync(join(pub, 'js/quest-rooms', f), 'utf8')).join('\n');
-        assert.ok(row.rooms.length > 0 && row.rooms.every((r) => roomSrc.includes(`id: '${r}'`)), `${name}: rooms`);
+        assert.ok(row.rooms.length > 0 && row.rooms.every((r) => roomSrc.includes(`id: '${r}'`) || roomSrc.includes(`ROOM_ID = '${r}'`)), `${name}: rooms`);
         assert.ok(readFileSync(join(root, row.code), 'utf8').includes(`'${name}'`), `${name}: ${row.code} draws it`);
         assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: snaps are reference only`);
         continue;
@@ -253,7 +255,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=9d0aadb0');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=acf6a6c1');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, om-room) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -27,6 +27,10 @@ showcase.json as it is, so a new piece does not need the older pieces' screensho
   ww-before.png       Winter Walk (?questdemo=winter, 1280 x 800) walked right to the caption (x -1547), every
                       page element but the canvas hidden, with the street JSON of d9239df55e8 (before the made art)
   ww-after.png        the same with today's street
+  om-before.png       The Outer Mind (?questdemo=tower_quest_part2, a 1280 x 1700 window at deviceScaleFactor 1, the whole
+                      room's height in view), the avatar placed mid-room on the floor, every page element but the canvas
+                      hidden, with gwendolyn.js of 3f234fd386b (before the made art and the re-lay)
+  om-after.png        the same with today's room (the avatar at x 720 on its floor)
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
@@ -300,6 +304,19 @@ def main():
             how = ('the made decos (their 2x files, the drop at its own resolution) at the heights the haven draws them, 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flips them'
                    if made else 'Tiny Speck\'s heights_tree_bare_3, _2 and _4 (CC0 1.0), cropped to their drawn rows and drawn at the haven\'s old scales (0.7, 0.75, 0.5), 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flipped them')
             put(name, webp(img, name), what, how, used)
+    if want('om'):
+        box = (0, 192, 1280, 1504)
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'om-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (1280, 1700), s.size
+            s = s.crop(box).resize((640, 656), Image.LANCZOS)
+            name = 'om-room-vectors' if which == 'before' else 'om-room'
+            what = "The Outer Mind before: a wide band drawn in plain shapes, four tiers of tube" if which == 'before' else "The Outer Mind re-laid to its 2012 shape with its made pictures"
+            module = 'gwendolyn.js of 3f234fd386b (before the made art and the re-lay)' if which == 'before' else "today's room"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (a 1280 x 1700 window, deviceScaleFactor 1, questdemo=tower_quest_part2, the avatar placed mid-room on the floor), every page element but the canvas hidden, {module}; cropped to y {box[1]}-{box[3]}, Lanczos to 640 x 656",
+                [{'shot': f'om-{which}.png', 'sha256': sha(shot)}])
     if want('ww-room'):
         box = (360, 60, 2160, 1118)
         for which in ('before', 'after'):

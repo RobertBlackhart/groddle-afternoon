@@ -10,7 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=c24fa532';
+import * as kit from '../public/js/quest-rooms/kit.js?v=05ab8eea';
 import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, ensureQuestOfferState, questStatus, turnInQuest } from '../public/js/quest-offers.js?v=38a0cac5';
@@ -44,11 +44,15 @@ import {
   heatTick,
   innerLayout,
   outerLayout,
+  OUTER,
+  OUTER_ART,
+  footEnd,
+  socketRing,
   resetChain,
   room,
   stageForQuest,
   thirdPartFor,
-} from '../public/js/quest-rooms/gwendolyn.js?v=33595b1b';
+} from '../public/js/quest-rooms/gwendolyn.js?v=1975acd6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = (p) => join(root, 'public', p);
@@ -263,27 +267,73 @@ describe("Gwendolyn's Task: Area 42 (archived street)", () => {
 
 describe("Gwendolyn's Task: The Outer Mind", () => {
   const L = outerLayout(kit);
+  const byId = (id) => L.platforms.find((p) => p.id === id);
+  const line = (prefix) => L.platforms.filter((p) => p.id.startsWith(prefix));
 
-  it('climbs from the checkered floor to the mouth, one hop per tier', () => {
+  it('G922: is re-laid to its 2012 shape, 4:3, the head picture the whole room', () => {
+    assert.equal(L.W / L.H, 4 / 3);
+    assert.deepEqual([OUTER_ART.head.w, OUTER_ART.head.h], [L.W, L.H]);
+    // Three glass eyes as Snaps 191039 and 26533 show them: two up top, the right-hand one taking the tube.
+    assert.equal(L.eyes.length, 3);
+    assert.deepEqual(L.eyes.map((e) => Boolean(e.socket)), [false, false, true]);
+    const [e1, e2, e3] = L.eyes;
+    assert.ok(e1.x < e2.x && e2.x < e3.x && e3.y > e1.y && e3.y > e2.y);
+    // ONE tube: from under the foot to the socket's ring, unbroken, narrowing into the ring.
+    const ring = socketRing();
+    const end = L.tube.at(-1);
+    assert.ok(Math.abs(end.x - ring.x) <= 6 && Math.abs(end.y - ring.y) <= 2, 'the tube ends in the ring');
+    assert.ok(end.w <= ring.h, 'no wider than the ring');
+    const foot = footEnd();
+    assert.ok(Math.abs(L.tube[0].y - foot.y) < 1 && L.tube[0].x < foot.x, "the tube starts under the foot's open end");
+    for (let i = 1; i < L.tube.length; i++) {
+      const d = Math.hypot(L.tube[i].x - L.tube[i - 1].x, L.tube[i].y - L.tube[i - 1].y);
+      assert.ok(d > 0 && d < 40, `tube sample ${i} is ${d.toFixed(1)} from the last`);
+    }
+    // The foot's end is drawn as thick as the tube (P's 122 px end to the tube's 60).
+    assert.equal(OUTER.foot.s * (OUTER_ART.foot.end[1] - OUTER_ART.foot.end[0]), OUTER.T);
+  });
+
+  it('climbs by walking up the foot, one hop at each turn, to the squid by the eye', () => {
     const r = reach(L.platforms, [], 'om_floor');
     for (const p of L.platforms) assert.ok(r.reachedIds.has(p.id), p.id);
     assert.ok(r.reached(L.squid.x, L.squid.y), 'the squid spot');
-    // Every piece of the path is needed: skip one and the mouth is out of reach.
-    for (const id of L.path.slice(0, -1)) {
-      const { reachedIds } = reach(L.platforms, [], 'om_floor', new Set([id]));
-      assert.ok(!reachedIds.has('om_mouth'), `skipping ${id} still reaches the mouth`);
+    // Each line is walked end to end: its pieces meet, and none is steeper than the foot's ankle (0.6).
+    for (const prefix of ['om_foot_', 'om_run_', 'om_top_']) {
+      const ps = line(prefix).sort((a, b) => a.x1 - b.x1);
+      for (let i = 1; i < ps.length; i++) assert.deepEqual([ps[i - 1].x2, ps[i - 1].y2], [ps[i].x1, ps[i].y1], `${ps[i].id} meets ${ps[i - 1].id}`);
+      for (const p of ps) assert.ok(Math.abs(p.y2 - p.y1) <= 0.6 * (p.x2 - p.x1), `${p.id} slope`);
     }
-    // Each hop is a comfortable ~90 px, and tiers you walk under leave head room.
-    for (let i = 1; i < L.path.length; i++) {
-      const a = L.platforms.find((p) => p.id === L.path[i - 1]);
-      const b = L.platforms.find((p) => p.id === L.path[i]);
+    // The foot starts on the floor; the two hops are comfortable (~90), straight up through the tube above.
+    const toes = line('om_foot_').sort((a, b) => a.x1 - b.x1)[0];
+    assert.equal(toes.y1, L.FLOOR);
+    assert.equal(L.hops.length, 2);
+    for (const h of L.hops) {
+      const a = byId(h.from);
+      const b = byId(h.to);
       const xs = [Math.max(a.x1, b.x1), Math.min(a.x2, b.x2)];
+      assert.ok(xs[1] - xs[0] >= 20, `${h.from} -> ${h.to} overlap`);
       const rise = Math.min(...xs.map((x) => kit.surfaceAt(a, x) - kit.surfaceAt(b, x)));
-      assert.ok(rise >= 80 && rise <= 96, `${a.id} -> ${b.id} rise ${rise}`);
+      assert.ok(rise >= 80 && rise <= 96, `${h.from} -> ${h.to} rise ${rise}`);
     }
-    const t2 = L.platforms.find((p) => p.id === 'om_t2');
-    const t3 = L.platforms.find((p) => p.id === 'om_t3');
-    assert.ok(kit.surfaceAt(t2, 2000) - kit.surfaceAt(t3, 2000) > 160, 'room to walk under the tier above');
+    // Each hop is needed: without the foot the run is out of reach, without the run the top is.
+    const noFoot = reach(L.platforms, [], 'om_floor', new Set(line('om_foot_').map((p) => p.id)));
+    assert.ok(!line('om_run_').some((p) => noFoot.reachedIds.has(p.id)), 'the run without the foot');
+    const noRun = reach(L.platforms, [], 'om_floor', new Set(line('om_run_').map((p) => p.id)));
+    assert.ok(!line('om_top_').some((p) => noRun.reachedIds.has(p.id)), 'the top without the run');
+  });
+
+  it('walks on the drawn tube: every walking line rides inside the tube, just over its centre line', () => {
+    const near = (x, y) => L.tube.reduce((best, t) => {
+      const d = Math.hypot(t.x - x, t.y - y);
+      return d < best.d ? { d, t } : best;
+    }, { d: Infinity, t: null });
+    for (const p of [...line('om_run_'), ...line('om_top_'), byId(L.hops[0].from)]) {
+      for (let x = p.x1; x <= p.x2; x += 5) {
+        const y = kit.surfaceAt(p, x);
+        const { d, t } = near(x, y);
+        assert.ok(d <= t.w / 2 - 4, `${p.id} at ${x}: ${d.toFixed(1)} off the tube's centre (half width ${t.w / 2})`);
+      }
+    }
   });
 
   it('places the boxes in order along the path', () => {
@@ -291,11 +341,31 @@ describe("Gwendolyn's Task: The Outer Mind", () => {
     assert.ok(L.appear.yMax > L.squid.y && L.appear.yMax - L.squid.y < 40);
     assert.ok(L.appear.x2 - L.squid.x < 480, 'the squid bamfs in on screen');
     assert.ok(L.endBox.x1 <= L.squid.x && L.endBox.x2 >= L.squid.x);
-    const mouth = L.platforms.find((p) => p.id === 'om_mouth');
-    assert.ok(L.squid.x >= mouth.x1 && L.squid.x <= mouth.x2);
-    // The source spawn sits ~480 px below the squid's waiting spot; ours climbs a little more.
+    const top = line('om_top_');
+    assert.ok(top.some((p) => L.squid.x >= p.x1 && L.squid.x <= p.x2), 'the squid waits over the top run');
+    // Only the top run is in the appear box's height: the run below stays under its line.
+    for (const p of line('om_run_')) assert.ok(Math.min(p.y1, p.y2) > L.appear.yMax, p.id);
+    for (const p of top) assert.ok(Math.max(p.y1, p.y2) <= L.appear.yMax, p.id);
+    // The source spawn (-911, -410) sits 540 below and 368 left of the squid's spot (-543, -950).
     const rise = L.FLOOR - L.squid.y;
     assert.ok(rise >= 480 && rise <= 720, `rise ${rise}`);
+    assert.ok(Math.abs(L.squid.x - L.spawn.x - 368) <= 20, 'the squid waits right of the spawn');
+  });
+
+  it('G922: draws the made pictures, every one with its provenance', () => {
+    const made = JSON.parse(readFileSync(join(root, 'tools/provenance/made-decos.json'), 'utf8')).art;
+    const src = readFileSync(pub('js/quest-rooms/gwendolyn.js'), 'utf8');
+    for (const piece of Object.values(OUTER_ART)) {
+      const row = made[piece.name];
+      assert.ok(row, piece.name);
+      assert.deepEqual(row.rooms, ['gwendolyn']);
+      assert.equal(row.code, 'public/js/quest-rooms/gwendolyn.js');
+      assert.equal(row.w, piece.w, `${piece.name}: its size in units`);
+      assert.ok(existsSync(join(root, row.file)), row.file);
+    }
+    // No vector stand-ins left: the old strokes, rim and burst are gone, and the eyes no longer track (fixed irises in every Snap).
+    assert.doesNotMatch(src, /const PINK = |roundRect\(head\.x|eye\.iris\.x/);
+    assert.match(src, /new PIXI\.Mesh\(/, 'the tube is N bent along its path');
   });
 });
 

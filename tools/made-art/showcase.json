@@ -120,6 +120,32 @@
     }
    ]
   },
+  "public/assets/made-art/om-room-vectors.webp": {
+   "what": "The Outer Mind before: a wide band drawn in plain shapes, four tiers of tube",
+   "w": 640,
+   "h": 656,
+   "sha256": "1a96f38a09957ab467a3597f6415021a177d66422deb07f686d5f143e8c40cd0",
+   "made": "screenshot of the game (a 1280 x 1700 window, deviceScaleFactor 1, questdemo=tower_quest_part2, the avatar placed mid-room on the floor), every page element but the canvas hidden, gwendolyn.js of 3f234fd386b (before the made art and the re-lay); cropped to y 192-1504, Lanczos to 640 x 656",
+   "from": [
+    {
+     "shot": "om-before.png",
+     "sha256": "819b028f564e634cbe1223956264e29a7658c8e17dabe1ec442f4d61052c991f"
+    }
+   ]
+  },
+  "public/assets/made-art/om-room.webp": {
+   "what": "The Outer Mind re-laid to its 2012 shape with its made pictures",
+   "w": 640,
+   "h": 656,
+   "sha256": "0440dd288a82d4d40b0b90b21d0041eeeb59c777ed1d66dec1faa57d97ac25e0",
+   "made": "screenshot of the game (a 1280 x 1700 window, deviceScaleFactor 1, questdemo=tower_quest_part2, the avatar placed mid-room on the floor), every page element but the canvas hidden, today's room; cropped to y 192-1504, Lanczos to 640 x 656",
+   "from": [
+    {
+     "shot": "om-after.png",
+     "sha256": "184e1f987ee409531a281ed226fe30758a3fbb0713c4ca07aa88b46e3823bd53"
+    }
+   ]
+  },
   "public/assets/made-art/rg-props.webp": {
    "what": "Radiant Glare's made wall spotlight, caged bulbs and pipe knob",
    "w": 870,

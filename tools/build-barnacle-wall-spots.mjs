@@ -24,7 +24,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=fd6c9f68';
-import { DECO_TWINS } from '../public/js/street-render.js?v=9d0aadb0';
+import { DECO_TWINS } from '../public/js/street-render.js?v=acf6a6c1';
 import {
   ecologyForStreet,
   populationForStreet,

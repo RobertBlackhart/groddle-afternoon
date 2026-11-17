@@ -2,6 +2,55 @@
   "note": "Written by tools/made-art/build-data.mjs from the provenance lists in tools/provenance/, tools/made-art/showcase.json and tools/made-art/pieces.json. Edit those, never this file.",
   "pieces": [
     {
+      "id": "decos:om",
+      "anchor": "made-the-outer-mind",
+      "name": "The Outer Mind",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "The Outer Mind, the second part of Gwendolyn's Task, where you walk through your own head: a rock-rimmed head floating in space with a sunburst brain, glass eyes, and one long pink tube that runs from a giant foot on a checkered floor up and across into an eye. None of its pictures survive in Tiny Speck's files, only in players' snapshots from 2012, so the head, the eyes, the tube, the foot and the floor were drawn again, and the room was laid out again in the snapshots' shape.",
+      "display": {
+        "w": 289,
+        "h": 296
+      },
+      "image": {
+        "src": "/assets/made-art/om-room.webp",
+        "w": 640,
+        "h": 656,
+        "label": "With the pictures made for Groddle",
+        "alt": "A giant head of cracked grey rock with an orange and pink sunburst inside, three glassy blue eyes, and a pink tube looping from a pink foot on a cyan and white checkered floor into the right-hand eye."
+      },
+      "original": {
+        "src": "/assets/made-art/om-room-vectors.webp",
+        "w": 640,
+        "h": 656,
+        "kind": "original",
+        "alt": "The same room before: a flat orange and pink sunburst, white cartoon eyes and straight pink bars stacked in tiers over a grey floor.",
+        "label": "Drawn in plain shapes"
+      },
+      "facts": [
+        {
+          "label": "What the 2012 room had",
+          "text": "A head about as tall as it was wide, its rim cracked rock, the sunburst dense and three-coloured, two eyes at the top and a third whose socket took the tube, and one tube winding from the foot up to it, as players' snapshots show."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) for Austin, one chat for each piece, from our drawing of their sizes, three of the players' 2012 snapshots and Tiny Speck's own pieces from the Inner Mind next door. The head was drawn wide and pressed to the snapshots' shape. The tube was drawn as one straight stretch that repeats, and the game bends it along the whole path."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The room was measured from the snapshots by the player's height and laid out in their shape: up the foot, a hop at each turn, along the top to the squid. It was played through on a computer and a phone, in both looks."
+        },
+        {
+          "label": "In the game",
+          "text": "Gwendolyn's Task, part two, in Jethimadh's tower from level 12, and every time the task is taken again."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
       "id": "decos:ww",
       "anchor": "made-winter-walk-s-tree-arch-and-curling-plants",
       "name": "Winter Walk's tree arch and curling plants",

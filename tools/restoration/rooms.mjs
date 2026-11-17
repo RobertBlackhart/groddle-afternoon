@@ -184,7 +184,7 @@ export const ROOM_NOTES = Object.freeze({
     about: "Gwendolyn's Task is a three-part journey set by the ghost of Gwendolyn: survive the desert heat of Area 42, walk through your own mind, and find her chamber.",
     play: 'Follow the squid through the scorching desert, climb the pink tube path of the Outer Mind, cross the crystal Inner Mind, and meet Gwendolyn for a Random Kindness.',
     source: "Area 42 survives and runs on its real street; the heat, the desert script, the cactus and squid dialogue and the rewards are original.",
-    rebuilt: 'The Outer Mind, Inner Mind and chamber are rebuilt from three runthrough recordings.',
+    rebuilt: "The Outer Mind, Inner Mind and chamber are rebuilt from three runthrough recordings. The Outer Mind is laid out in the shape players' 2012 Snaps show, a rock-rimmed head with a sunburst brain, glass eyes and one long pink tube from a foot on a checkered floor into an eye. No CC0 piece matches them, so its pictures are reimagined: new pictures made with GPT Image 2.6 Sunburst from our drawing of their sizes, the Snaps and Tiny Speck's own art, dedicated CC0 1.0 like everything else here.",
     footage: [{ id: 'V51lCz1q0qI', label: "Gwendolyn's Quest" }, { id: '01_XPTF2lZ0', label: 'The Gwendolyn Quest' }, { id: '89tShFGl3uc', label: "Gwendolyn's Chamber runthrough" }],
   },
   penalty: {

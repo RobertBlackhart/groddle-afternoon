@@ -3,10 +3,10 @@
  "about": "New decos made for Groddle's own rebuilt streets (not a published zone): AI-generated or own work, dedicated CC0 1.0 with who or what made them and from what inputs (tools/builder/licence-policy.json). They ship as gz_ files beside the library's, kept out of assets/decos/manifest.json; tools/builder/build-zones.mjs lists them in js/deco-new-list.js after checking each file's sha256 here, and tests/g316-provenance.test.js allows exactly these files with the zones' new-art.json.",
  "references": [
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
-  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare and Winter Walk, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
+  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare, Winter Walk and The Outer Mind, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 04: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
- "count": 20,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
+ "count": 26,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -1852,6 +1852,542 @@
    "intake": {
     "on": "2026-11-17",
     "by": "Claude (lane art45): sized by height to the CC0 tree it replaces as the haven draws it, its own width kept; trimmed, faint alpha cut and resized, nothing redrawn"
+   }
+  },
+  "gz_ai_om_head": {
+   "what": "The head: the cracked grey rock rim, the sunburst brain, space and planets; the Outer Mind's back layer, the whole room",
+   "file": "public/assets/decos/groddle/gz_ai_om_head.webp",
+   "sha256": "b87b7f93ba9c0ec2df75a8406985033fdff60aced0134a4ea00747dbb6c1657d",
+   "bytes": 726854,
+   "w": 1440,
+   "h": 1080,
+   "size": "16:9 in the brief, at least 1920 x 1080; the drop is 3840 x 2160, squeezed horizontally to 2880 x 2160 (4:3, the Snaps' shape, Austin's ruling) and drawn as the room's 1440 x 1080 units at 2 px a unit; no @1.5x copy, since the drop holds 2 px a unit",
+   "replaces": "the rim, sunburst and stars that buildOuter drew in vector shapes (the wide four-tier band, re-laid to 4:3)",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"L-head.png ACCEPTED 2026-11-16 night (Austin: \\\"yes\\\"): ship as is, squeezed horizontally to the snaps' 4:3 at intake\"; 1 generation, no re-ask)"
+   },
+   "settings": "transparency off (opaque), 16:9 Ultra 4K, 1 image; 3840 x 2160",
+   "prompt": "Draw piece L from attachment 1: the background of \"The Outer Mind\", a dream room in the game Glitch (attachments 2 and 3 show the whole room; attachment 4 its lower right).\n\nWhat it is: a giant cut-open head floating in space, seen from the front and filling most of the picture. Its edge is a thick rim of pale grey rock, cracked and chipped, with a darker grey outer edge. Inside the rim, a dazzling sunburst: hundreds of thin rays fanning out from a point a little left of and above the centre, alternating hot orange, magenta-pink and pale yellow, with a smooth orange glow in the middle and a faint moire ripple where the rays meet. Outside the head, the four corners are deep purple space with small white stars, and the curved edge of a lime-green planet peeking in at the lower left and lower right.\n\nLeave out everything else: no eyeballs, no pink tubes or foot, no checkered floor, no characters, no text. The game adds them on top.\n\nSize: 16:9, as large as offered (at least 1920 x 1080). Fill the whole picture: opaque, no transparency needed.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), clean shapes and crisp rays, no photo texture, not 3D-rendered.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/L-head-background.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/L-head.png",
+    "dropSha256": "f979e34fa1bcb9a15283ad4ad67abe55cd58e8846d6deef562963e69aa6c01e9",
+    "trim": "none (opaque, the whole picture)",
+    "resize": "Lanczos squeeze to 2880 x 2160 (4:3), no faint-alpha cut (opaque)",
+    "masterSha256": {
+     "x2": "5fb7bd520a7da4f6e0c39de0f8f291c16eeae525e8c4fd126d0477119e273f7f"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_om_eye": {
+   "what": "The glass eye, plain (two of them up top)",
+   "file": "public/assets/decos/groddle/gz_ai_om_eye.webp",
+   "sha256": "15878069ada8b0a8d1f543f838eec20b753e6c7067cc1558f0cda6b4fa7b6677",
+   "bytes": 11252,
+   "file3": "public/assets/decos/groddle/gz_ai_om_eye@1.5x.webp",
+   "sha256_3": "5eaffff678d590d221603282d0b7e7390a03b52204208fc76f749e5045c48098",
+   "bytes3": 17718,
+   "w": 135,
+   "h": 137,
+   "size": "180 x 180 units in the brief; the plain picture (the left of the pair) is 407 x 411 px, its ball 410 px across; drawn by public/js/quest-rooms/gwendolyn.js buildOuter 150 across (r 75, Snap 191039's eyes); units are a third of the drop, so the @1.5x copy is the drop at its own resolution",
+   "replaces": "drawEye: vector eyes whose irises followed the player (the pictures' irises stay put, as in every Snap)",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"M-eye-both.png\": both pictures side by side, accepted with the room's pieces)"
+   },
+   "settings": "transparent, 1 image; 1024 x 1024 holding both eyes side by side",
+   "prompt": "Draw piece M from attachment 1: the giant eyeball of \"The Outer Mind\" (attachments 2 and 3 show three of them on the sunburst; the one at the right has the pink tube going into it).\n\nWhat it is: a big glossy eyeball, a pale icy-blue glass sphere with a soft blue shaded edge, a large curved white highlight at the top left and a small one at the bottom right, and a small purple iris with a dark pupil and a white catchlight, looking slightly off to one side.\n\nTwo pictures:\n1. the plain eyeball, 180 x 180 units (720 x 720 px);\n2. the same eyeball with a round socket on its left side where a pink tube plugs in: a dark pink ring at the left edge of the sphere, the tube itself not drawn. Same size.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/M-eyeball.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/M-eye-both.png",
+    "dropSha256": "96c27678b9a457645f162e56362e335946c3a58c0f0c15192a822b9fa8b0e267",
+    "trim": "split at x 504 (the empty columns), the left piece, alpha over 20: x 57-464, y 313-724; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 270 x 274 and 405 x 411",
+    "masterSha256": {
+     "x2": "4685888389b092020df367f9de450f0719fcab38eb33dc1acf216ff1b2783f1b",
+     "x3": "83dc41935c3e0ee05421bc50d1f86842e2d6a46c58fea63239decea2981a92e8"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_om_eye_socket": {
+   "what": "The glass eye with the pink socket ring on its left that takes the tube's end (the right-hand eye)",
+   "file": "public/assets/decos/groddle/gz_ai_om_eye_socket.webp",
+   "sha256": "8a6835c76b66cbc6861cdb2d5c09557dd6d7a357f550948468fe81d26a7ced14",
+   "bytes": 11900,
+   "file3": "public/assets/decos/groddle/gz_ai_om_eye_socket@1.5x.webp",
+   "sha256_3": "46056451895c1d791fc5476db7f2f193fb687932ebff5a4c12f6a5532c6ce5c4",
+   "bytes3": 18812,
+   "w": 138,
+   "h": 137,
+   "size": "180 x 180 units in the brief; the socket picture (the right of the pair) is 416 x 412 px, its ball 411 px across, the ring at x 4-50, y 179-289; drawn by public/js/quest-rooms/gwendolyn.js buildOuter 150 across, the tube narrowing into the ring",
+   "replaces": "drawEye (as the plain eye); the tube ended at no socket before",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"M-eye-both.png\": both pictures side by side, accepted with the room's pieces)"
+   },
+   "settings": "transparent, 1 image; 1024 x 1024 holding both eyes side by side",
+   "prompt": "Draw piece M from attachment 1: the giant eyeball of \"The Outer Mind\" (attachments 2 and 3 show three of them on the sunburst; the one at the right has the pink tube going into it).\n\nWhat it is: a big glossy eyeball, a pale icy-blue glass sphere with a soft blue shaded edge, a large curved white highlight at the top left and a small one at the bottom right, and a small purple iris with a dark pupil and a white catchlight, looking slightly off to one side.\n\nTwo pictures:\n1. the plain eyeball, 180 x 180 units (720 x 720 px);\n2. the same eyeball with a round socket on its left side where a pink tube plugs in: a dark pink ring at the left edge of the sphere, the tube itself not drawn. Same size.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/M-eyeball.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/M-eye-both.png",
+    "dropSha256": "96c27678b9a457645f162e56362e335946c3a58c0f0c15192a822b9fa8b0e267",
+    "trim": "split at x 504, the right piece, alpha over 20: x 545-961, y 313-725; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 276 x 274 and 414 x 411",
+    "masterSha256": {
+     "x2": "a53644d74d12f856032ac19b36d8aa46e37703f172e3b8191252258dad847b15",
+     "x3": "e4f8c0f8860779b249dda1067523027e1363ea83191bcd722f2a9f3a30b42cda"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_om_tube": {
+   "what": "The straight pink tube N, made to tile: the room bends it along the tube's whole path, from the foot to the eye",
+   "file": "public/assets/decos/groddle/gz_ai_om_tube.webp",
+   "sha256": "5f76e15011a7ca517ab361684f6bf122049c8dd87da8a4ef47ab38234d8c197a",
+   "bytes": 2078,
+   "file3": "public/assets/decos/groddle/gz_ai_om_tube@1.5x.webp",
+   "sha256_3": "0ede60e6908a7a962418604c8a4eb2e469ff2b6d2a4c56c67d3bf7d75f2cbb9d",
+   "bytes3": 3132,
+   "w": 331,
+   "h": 31,
+   "size": "320 x 48 units in the brief; N is the band at the top of the drop, 995 x 95 px cut inside its open ends; drawn by public/js/quest-rooms/gwendolyn.js buildOuter 60 thick, bent along the path as one mesh of whole tiles (tile 628 long); O, the U-turn below it (x 306-718, y 288-659), is not shipped: the 2012 turns are tighter than O's 170 between arms",
+   "replaces": "drawTube: the vector tube strokes ('tube' and 'knot' platforms) and the decorative nerves from the eyes",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"N-O-tube-both.png: re-ask ... Asked for open straight-cut tileable ends ... (tiles; 3x preview clean)\"; N-O-tube-both-2.png (closed rounded ends) not used)"
+   },
+   "settings": "transparent toggled on but the picture came back opaque on black (RGB), 4:3 Standard 1K, 1 image; 1024 x 768 holding N and O; a re-ask in the N-O chat (started from the first picture) asking for open straight-cut ends that tile; the re-ask's own words are not kept in the pack (model.txt records what it asked)",
+   "prompt": "Draw pieces N and O from attachment 1: the pink nerve tube the player walks along in \"The Outer Mind\" (attachments 2 and 3 show it winding across the head from the floor to the eyeball).\n\nWhat it is: a soft, fleshy pink tube, like a thick worm or a nerve, lying on its side: medium pink with a lighter pink stripe running along the middle, a thin dark purple outline along its top and bottom edges, and a few short dark dashes along the top edge. Its top edge is where the player walks, so it is flat enough to stand on.\n\nTwo pictures:\n1. piece N, a straight horizontal stretch that tiles seamlessly left to right: 320 x 48 units (1280 x 192 px);\n2. piece O, a U-turn where the tube bends back on itself, open end on the left: 140 x 168 units (560 x 672 px), the same tube thickness (48) and look, so it joins piece N cleanly at both open ends.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/N-O-tube.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/N-O-tube-both.png",
+    "dropSha256": "c547d9292b406e489b4c52f93dfb4b92e4a35c784c8524444ea5472786a0f984",
+    "trim": "black keyed by a flood fill from the picture's edges, max channel 10 or under (594748 px; no global colour key, so the dark purple outline and the dashes stay), its 5799 anti-aliased rim px given the outline's colour and alpha by brightness; N cut at x 14-1009, y 91-186 (the columns that match best, 0.79 of 255 apart on average against 0.38 for neighbours), checked tiled three times (no seam)",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 662 x 62 and 993 x 93",
+    "masterSha256": {
+     "x2": "ec68bb4a2c4fe919ec4a5709d6c6a273e78c6ac59b8ed235b2271c69ef427ef6",
+     "x3": "1fc315637249b8d1dd0b163cbd818a1f3260dd5468d12482f591ff64a9bc3c48"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_om_foot": {
+   "what": "The foot the tube ends in, standing on the checker floor (drawn toes left, as the Snaps show it)",
+   "file": "public/assets/decos/groddle/gz_ai_om_foot.webp",
+   "sha256": "61e05008b9cb78d576e607a39b6d0c9c3e01f06dd171b416cce8b99205cb3c51",
+   "bytes": 16556,
+   "file3": "public/assets/decos/groddle/gz_ai_om_foot@1.5x.webp",
+   "sha256_3": "5af36b043a51cae96961ba9127b5fb44d4b9adf5491a03211fc8f0fba236736e",
+   "bytes3": 28114,
+   "w": 334,
+   "h": 155,
+   "size": "320 x 160 units in the brief; the foot is 1004 x 467 px, its tube end 122 px thick against N's 95; drawn by public/js/quest-rooms/gwendolyn.js buildOuter at 60/122 so the end matches the tube's 60 and joins it (494 x 230), flipped",
+   "replaces": "the tube's start on the floor (om_t1)",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-17",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"P-foot.png ... No re-ask\")"
+   },
+   "settings": "transparent (real alpha), 1 image; 1024 x 768",
+   "prompt": "Draw piece P from attachment 1: the end of the pink nerve tube in \"The Outer Mind\", which turns into a giant foot resting on the floor (attachment 4 shows it at the right; attachments 2 and 3 at the bottom of the room).\n\nWhat it is: the same pink tube as in the room (medium pink, a lighter stripe along the middle, a thin dark purple outline) coming in from the top left and ending in a big soft pink foot seen from the side, its sole flat on the ground, with five round toes at the right end and a few dark crease lines at the ankle and toes.\n\nSize: 320 x 160 units, the sole along the bottom edge, the tube's open end at the top left (48 units thick, so it joins the straight tube cleanly). Draw it at 4 px per unit: 1280 x 640 px.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/P-foot.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/P-foot.png",
+    "dropSha256": "8d539e2d415a7f3dcea930c7dcfb990e6941c13eb0bdc98d0d290cc742d228e4",
+    "trim": "alpha over 20: x 10-1014, y 151-618; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 668 x 310 and 1002 x 465",
+    "masterSha256": {
+     "x2": "6eda7d96ec32e1f160efddfd4b57c1816c958ba4e70e1ed7ba44fa0a29c7d7ed",
+     "x3": "c5181943a58d76001625b3f1b0093afb013896264ebb41fe9a56fbf2125cf883"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
+   }
+  },
+  "gz_ai_om_floor": {
+   "what": "The cyan and white checker floor on its cracked rock lip, drawn a little tilted",
+   "file": "public/assets/decos/groddle/gz_ai_om_floor.webp",
+   "sha256": "b9a626f2d2bb9e617a8ff898d9636f721067c37aef643fea2e9be28f7730463b",
+   "bytes": 57766,
+   "file3": "public/assets/decos/groddle/gz_ai_om_floor@1.5x.webp",
+   "sha256_3": "436a4c222415b37ed90036c9390caf03d89a74e02327cf2a15c0354b04028029",
+   "bytes3": 92202,
+   "w": 983,
+   "h": 146,
+   "size": "1000 x 140 units in the brief; the floor is 2951 x 440 px, its checkers from row 8 to 281 at the middle (deeper than a flat strip); drawn by public/js/quest-rooms/gwendolyn.js buildOuter 1240 wide (x 100-1340), its top surface fitted so the floor line crosses it 60% of the way from the back edge to the front at the middle",
+   "replaces": "the vector checker strip and floor slab",
+   "rooms": [
+    "gwendolyn"
+   ],
+   "code": "public/js/quest-rooms/gwendolyn.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-17",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/model.txt (\"Q-floor.png ... No re-ask\")"
+   },
+   "settings": "transparent (real alpha), 1 image; 3072 x 1312",
+   "prompt": "Draw piece Q from attachment 1: the floor of \"The Outer Mind\" (attachment 4 shows it under the player; attachments 2 and 3 at the bottom of the head).\n\nWhat it is: a flat floor of bright cyan and white squares in a checkerboard, seen from the front and a little above, so the squares shrink toward the back. Along its front edge, a lip of pale grey rock, cracked and chipped, with a darker grey underside. The back edge of the floor is straight.\n\nSize: 1000 x 140 units (the checkered top about 100, the rock lip about 40). Draw it at 2 px per unit: 2000 x 280 px, on a wider canvas if needed (keep it about 7 times as wide as tall).\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the coloured glow, the background or any character from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/prompts/Q-checker-floor.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from players' 2012 Snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-whole-head-snap-191039.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:3-ref-whole-head-snap-26533.png (a player's 2012 Snap: reference only, never in the repo)",
+    "ref:4-ref-foot-and-floor-snap-28112.png (a player's 2012 Snap: reference only, never in the repo)",
+    "cc0:public/assets/sprites/quest-rooms/gwendolyn/inner_mind (Tiny Speck's arbito1.swf decos, the style sheet attach/5-cc0-style.png)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c9ec01eabf51559e93caebde31376ef61083a418e27569993c74ff2e35a1ff88",
+     "what": "the pieces as plain outlines with their sizes in game units",
+     "source": "our own measurement drawing (research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/attach/1-measurements-ours.svg): sizes and shapes measured from players' 2012 Snaps, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-whole-head-snap-191039.png",
+     "sha256": "0dd32d4f49766161c6e5562fb099cff7f3abf59ca99cf4c64e98dc05ea8d9e3e",
+     "what": "a player's 2012 Snap of the whole room: the head, the sunburst, three eyes, the tube from the foot to the right eye",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-whole-head-snap-26533.png",
+     "sha256": "af68a94ee57117556c994247adb636b00d654e4f109dd33800347e5d27218dc3",
+     "what": "a player's 2012 Snap of the whole room, a player on the tube's middle run",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-foot-and-floor-snap-28112.png",
+     "sha256": "9551aa369227909fa2a8ee10f2195c9877d50c9ed8b949c7bcd86085db6b57cf",
+     "what": "a player's 2012 Snap of the foot on the checker floor and its rock lip",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's room, kept in research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/ref, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "7c64e6d7a6a3d04bfa2a633537c087b2ced8d1815d87576f3aee1fe26ea2041a",
+     "what": "Tiny Speck's arbito1.swf decos from the Inner Mind next door (glossy jelly, glass dome, shards, glass platform), for the style",
+     "source": "Tiny Speck, CC0 1.0: tinyspeck/glitch-locations arbito1.swf, as the game ships it (public/assets/sprites/quest-rooms/gwendolyn/inner_mind, tools/room-art set gwendolyn_inner_mind)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/05-the-outer-mind/drop/Q-floor.png",
+    "dropSha256": "57bf27f37a4ae415caf00cb547cc1f5a2d38e4a6b22d49bd498133d1064ebce1",
+    "trim": "alpha over 20: x 60-3011, y 496-936; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 1966 x 292 and 2949 x 438",
+    "masterSha256": {
+     "x2": "f19c1a801d36067f30963d3c7e69184e729d6b276b5177f7c9043354e93b813b",
+     "x3": "e2cc1fe3ed86a114877c57f20105b411664f8fad05d6cd87183b5bcd60b64dc7"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sizes checked against attach/1, the brief and the Snaps; cut, keyed, trimmed and resized as model.txt and Austin's rulings ask, nothing redrawn"
    }
   }
  }

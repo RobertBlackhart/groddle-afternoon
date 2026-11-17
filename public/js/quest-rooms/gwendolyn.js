@@ -39,7 +39,9 @@
  * three reference recordings (V51lCz1q0qI, 01_XPTF2lZ0, 89tShFGl3uc) show
  * it. The Outer Mind, The Inner Mind and the Chamber are lost and rebuilt
  * from those recordings: a head floating in space with a sunburst brain,
- * eyeballs and pink tube paths over a checkered floor (clean vector); a white
+ * glass eyes and one long pink tube from a foot on a checkered floor (G922:
+ * re-laid to the 2012 Snaps' 4:3 shape, its pictures made for Groddle, see
+ * outerLayout and buildOuter); a white
  * void of glossy shards, jellies, glass domes and glass stairs with mood and
  * energy quoins, a Gurly Drink and the EXIT arrow, matched to its five player
  * Snaps and drawn with the tower_quest set's own CC0 arbito1.swf decos
@@ -212,49 +214,195 @@ export function resetChain(questState) {
 /* ------------------------------------------------------------------ */
 
 /**
- * The Outer Mind: a head in space. From the checkered floor a pink tube
- * winds right, back left and up to the mouth, where Zzybzfrx waits; a short
- * knot at each turn is the hop between tubes (every hop ~90 px), and the
- * tiers are far enough apart to walk under. Falling drops you back to the
- * floor. The source spawn (-911,-410) sits ~480 px under the squid's spot
- * (-543,-950); this climb is a little taller.
+ * The Outer Mind, re-laid to its 2012 shape (G922; Austin 2026-11-16: "re-laid to its 2012 shape, about 4:3,
+ * one long tube loop"). Players' Snaps 191039 and 26533 show the whole room (28112 the foot, 28116 the top run
+ * and the squid): a rock-rimmed head about 4:3 with a sunburst brain, two glass eyes up top and a third at the
+ * right whose socket takes the tube, and ONE long pink tube from a foot standing on the checker floor, up its
+ * ankle to a sharp turn at the right, back left along a gently rising run, round a U-turn at the left and right
+ * again along the top into the right eye.
+ *
+ * Measured from Snap 191039 (1250 x 937 px): its avatar stands 124 px tall (hair to feet), as tall as the
+ * remake's avatar in units (about 125 with its hair; the checker's 40-unit squares show the remake's view at
+ * 1 unit a px), so the snap is read at 1 px a unit. The room is the head picture's size, 1440 x 1080 (4:3); the
+ * floor line sits on that picture's own rock lip (960, the checker floor's lip over the head's), and everything
+ * else keeps the Snap's place over the floor and across, shifted (+40, +108): the floor line under the avatar's
+ * feet 852 -> 960, the foot's toes 710 -> about 720, the turn at the right about 1230-1240, the U-turn's outer
+ * edge about 195 -> 225, the top run about 360 -> 460, the eyes (447, 217), (792, 175) and (1093, 357) ->
+ * (487, 325), (832, 283), (1133, 465), 150 px across -> r 75 (the head picture's sunburst is taller than the
+ * Snap's, so the floor sits lower in it). The source agrees: the
+ * spawn (-911, -410) sits 540 under the squid's spot (-543, -950); here the climb is 512 (floor 960 to the top
+ * run's walking line, 448) and the squid waits 360 right of the spawn (source 368).
+ *
+ * The tube is walkable along its centre line (8 units above it, the avatar's feet on the ribbon as the Snaps
+ * show them standing in its middle): up the foot to the ankle's end, one hop (90) up onto the run above at the
+ * right turn, left along the run, one hop (90) up onto the top run at the U-turn, right along the top to the
+ * squid by the eye. Falling drops you back to the floor.
  */
-export function outerLayout(kit) {
-  const W = 2800;
-  const H = 1320;
-  const FLOOR = H - 80;
-  const platforms = [
-    kit.plat(0, FLOOR, W, FLOOR, 'invisible', { id: 'om_floor' }),
-    kit.plat(900, FLOOR, 1800, FLOOR - 40, 'tube', { id: 'om_t1' }),
-    kit.plat(1700, 1110, 1840, 1110, 'knot', { id: 'om_k1' }),
-    kit.plat(1780, 1020, 2600, 1000, 'tube', { id: 'om_t2' }),
-    kit.plat(2460, 910, 2620, 910, 'knot', { id: 'om_k2' }),
-    kit.plat(1460, 800, 2560, 822, 'tube', { id: 'om_t3' }),
-    kit.plat(1380, 710, 1540, 710, 'knot', { id: 'om_k3' }),
-    kit.plat(300, 620, 1460, 620, 'tube', { id: 'om_mouth' }),
+export const OUTER = Object.freeze({
+  W: 1440,
+  H: 1080,
+  FLOOR: 960,
+  /** The tube's drawn thickness, and where it narrows into the eye's socket (2012: the top run thins to the eye). */
+  T: 60,
+  T_END: 38,
+  /** Feet stand this far above the tube's centre line. */
+  WALK: 8,
+  /** The foot: its tube end's right edge (x), its sole's line, and its scale (the end's 122 px to the tube's 60). */
+  foot: Object.freeze({ x: 1214, sole: 970, s: 60 / 122 }),
+  /** The two turns: centre and radius of each half circle. */
+  turnRight: Object.freeze({ x: 1235, r: 45 }),
+  turnLeft: Object.freeze({ x: 300, y: 520, r: 45 }),
+  /** Centre line of the run back left (from the right turn) and of the top run (from the U-turn into the eye). */
+  run: Object.freeze([[1100, 690], [950, 672], [800, 652], [650, 634], [500, 608], [380, 582]]),
+  top: Object.freeze([[450, 468], [600, 456], [750, 464], [900, 455], [1000, 461]]),
+  eyes: Object.freeze([
+    Object.freeze({ x: 487, y: 325, r: 75 }),
+    Object.freeze({ x: 832, y: 283, r: 75 }),
+    Object.freeze({ x: 1133, y: 465, r: 75, socket: true }),
+  ]),
+});
+
+/**
+ * The made pictures (G922; tools/provenance/made-decos.json): each deco's size in units (its 2x file is twice
+ * that in px) and the drop measures the room fits them by (px in the trimmed drop).
+ */
+export const OUTER_ART = Object.freeze({
+  head: Object.freeze({ name: 'gz_ai_om_head', w: 1440, h: 1080 }),
+  eye: Object.freeze({ name: 'gz_ai_om_eye', w: 135, px: 407, ball: 410, centre: Object.freeze([201, 205]) }),
+  eyeSocket: Object.freeze({ name: 'gz_ai_om_eye_socket', w: 138, px: 416, ball: 411, centre: Object.freeze([210.5, 205.5]), ring: Object.freeze({ x: 27, y: 234, h: 110 }) }),
+  tube: Object.freeze({ name: 'gz_ai_om_tube', w: 331, px: Object.freeze([995, 95]) }),
+  foot: Object.freeze({ name: 'gz_ai_om_foot', w: 334, px: Object.freeze([1004, 467]), end: Object.freeze([2, 124]) }),
+  floor: Object.freeze({ name: 'gz_ai_om_floor', w: 983, px: Object.freeze([2951, 440]), top: 8, front: 281, x1: 100, x2: 1340 }),
+});
+
+/** The foot's tube end: its centre (y) and right edge (x). */
+export function footEnd(O = OUTER) {
+  const { foot } = O;
+  const [, ph] = OUTER_ART.foot.px;
+  const [e1, e2] = OUTER_ART.foot.end;
+  return { x: foot.x, y: foot.sole - (ph - (e1 + e2) / 2) * foot.s };
+}
+
+/** Where the socket's ring is (the tube's end goes into it): its centre and height, in room units. */
+export function socketRing(O = OUTER) {
+  const eye = O.eyes.find((e) => e.socket);
+  const a = OUTER_ART.eyeSocket;
+  const k = (2 * eye.r) / a.ball;
+  return { x: eye.x + (a.ring.x - a.centre[0]) * k, y: eye.y + (a.ring.y - a.centre[1]) * k, h: a.ring.h * k };
+}
+
+/** A Catmull-Rom curve through `pts` (each [x, y]), `n` samples a span, the last point included. */
+function spline(pts, n = 10) {
+  const out = [];
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let k = 0; k < n; k += 1) {
+      const t = k / n;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      const f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]);
+    }
+  }
+  out.push(pts.at(-1));
+  return out;
+}
+
+/** Half a circle about (cx, cy) from angle a0 to a1 (radians, screen y down). */
+function arc(cx, cy, r, a0, a1, n = 14) {
+  const out = [];
+  for (let k = 0; k <= n; k += 1) {
+    const a = a0 + ((a1 - a0) * k) / n;
+    out.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  return out;
+}
+
+/**
+ * The tube's centre line from under the foot to the eye's ring, sampled, each point with the tube's width there:
+ * [{ x, y, w }]. Pure (tests check that the walking lines ride on it).
+ */
+export function outerTube(O = OUTER) {
+  const end = footEnd(O);
+  const ring = socketRing(O);
+  const tr = O.turnRight;
+  const tl = O.turnLeft;
+  const runY = end.y - 2 * tr.r;
+  const pts = [
+    [end.x - 8, end.y],
+    ...arc(tr.x, end.y - tr.r, tr.r, Math.PI / 2, -Math.PI / 2).map(([x, y], i) => (i === 0 ? [x, y] : [x, y])),
   ];
+  const run = spline([[tr.x, runY], ...O.run, [tl.x, tl.y + tl.r]]);
+  const turn = arc(tl.x, tl.y, tl.r, Math.PI / 2, (3 * Math.PI) / 2);
+  const top = spline([[tl.x, tl.y - tl.r], ...O.top, [ring.x + 4, ring.y]]);
+  const line = [...pts, ...run.slice(1), ...turn.slice(1), ...top.slice(1)];
+  // The width: T, narrowing along the top run from x 520 to the ring's height at the eye.
+  const endW = Math.min(O.T_END, ring.h * 0.95);
+  const topStart = pts.length + run.length + turn.length - 3;
+  return line.map(([x, y], i) => {
+    if (i < topStart || x < 520) return { x, y, w: O.T };
+    const t = Math.min(1, (x - 520) / (ring.x - 520));
+    return { x, y, w: O.T + (endW - O.T) * t * t };
+  });
+}
+
+/** The walking lines over the tube: [x, y] points of the foot, the run back left and the top run (pure). */
+export function outerWalks(O = OUTER) {
+  const end = footEnd(O);
+  const w = O.WALK;
+  const { foot } = O;
+  // The foot's top, flipped (toes left): the toes' top, the instep, then a straight line up the ankle to the end
+  // (inside the ankle's tube, under its top edge), and on along the end to the turn.
+  const fx = (px) => foot.x - px * foot.s;
+  const fy = (py) => foot.sole - (OUTER_ART.foot.px[1] - py) * foot.s;
+  const footLine = [[fx(1032), O.FLOOR], [fx(900), fy(369) + 2], [fx(500), fy(255) + 2], [end.x, end.y - w], [O.turnRight.x + 25, end.y - w]];
+  const runY = end.y - 2 * O.turnRight.r - w;
+  const runLine = [[O.turnRight.x + 27, runY], [O.turnRight.x, runY], ...O.run.map(([x, y]) => [x, y - w]), [O.turnLeft.x, O.turnLeft.y + O.turnLeft.r - w], [O.turnLeft.x - 26, O.turnLeft.y + O.turnLeft.r - w - 8]];
+  const ring = socketRing(O);
+  const topLine = [[O.turnLeft.x - 38, O.turnLeft.y - O.turnLeft.r - w], [O.turnLeft.x, O.turnLeft.y - O.turnLeft.r - w], ...O.top.map(([x, y]) => [x, y - w]), [ring.x - 6, ring.y - w]];
+  return { foot: footLine, run: runLine, top: topLine };
+}
+
+export function outerLayout(kit) {
+  const O = OUTER;
+  const { W, H, FLOOR } = O;
+  const walks = outerWalks(O);
+  const seg = (line, id, style) => line.slice(0, -1).map((a, i) => kit.plat(a[0], a[1], line[i + 1][0], line[i + 1][1], style, { id: `${id}_${i + 1}` }));
+  const foot = seg(walks.foot, 'om_foot', 'tube');
+  const run = seg(walks.run, 'om_run', 'tube');
+  const top = seg(walks.top, 'om_top', 'tube');
+  const platforms = [kit.plat(0, FLOOR, W, FLOOR, 'invisible', { id: 'om_floor' }), ...foot, ...run, ...top];
+  const squidX = 940;
+  const squidY = Math.round(top.map((p) => kit.surfaceAt(p, squidX)).find((y) => y != null));
+  const topYs = walks.top.map(([, y]) => y);
+  const yMax = Math.ceil(Math.max(...topYs)) + 12;
   return {
     W,
     H,
     FLOOR,
     platforms,
-    path: ['om_t1', 'om_k1', 'om_t2', 'om_k2', 'om_t3', 'om_k3', 'om_mouth'],
-    spawn: { x: 300, y: FLOOR },
-    checker: { x1: 60, x2: 980 },
-    vogX: 1060,
-    /** make_squid_appear: walking along the mouth. */
-    appear: { x1: 300, x2: 1150, yMax: 650 },
-    squid: { x: 700, y: 620 },
-    /** end_squiddy_convo: next to the squid. */
-    endBox: { x1: 480, x2: 900, yMax: 650 },
-    head: { x: 40, y: 330, w: W - 80, h: H - 290, r: 340 },
-    eyes: [
-      { x: 1080, y: 450, r: 88 },
-      { x: 1900, y: 560, r: 84 },
-      { x: 2420, y: 700, r: 66 },
-      { x: 520, y: 900, r: 64 },
-      { x: 1250, y: 960, r: 54 },
+    /** The climb, in order: the foot's pieces, the hop at the right turn, the run, the hop at the U-turn, the top. */
+    path: [...foot, ...run, ...top].map((p) => p.id),
+    /** The two hops between tiers: from the end of one line to the start of the next. */
+    hops: [
+      { from: foot.at(-1).id, to: run[0].id },
+      { from: run.at(-1).id, to: top[0].id },
     ],
+    spawn: { x: squidX - 360, y: FLOOR },
+    /** Q's top surface: the walking line crosses it 60% of the way from its back edge to its front at the middle. */
+    floorArt: { x1: OUTER_ART.floor.x1, x2: OUTER_ART.floor.x2, depth: 0.6 },
+    /** innermind_vog_interrupt: soon after you start, walking toward the foot. */
+    vogX: squidX - 260,
+    /** make_squid_appear: anywhere on the top run (the run below stays under yMax's line). */
+    appear: { x1: walks.top[0][0], x2: walks.top.at(-1)[0], yMax },
+    squid: { x: squidX, y: squidY },
+    /** end_squiddy_convo: next to the squid. */
+    endBox: { x1: squidX - 180, x2: walks.top.at(-1)[0], yMax },
+    eyes: O.eyes.map((e) => ({ ...e })),
+    tube: outerTube(O),
   };
 }
 
@@ -1001,47 +1149,94 @@ function tickDesert(ctx, dtMs, now) {
 /* The Outer Mind                                                       */
 /* ------------------------------------------------------------------ */
 
-const PINK = { deep: 0xd94a92, mid: 0xf27ab8, light: 0xffb3da, shine: 0xffe1f0 };
-
-/** A pink brain tube whose top runs along (x1,y1)-(x2,y2); `sag` bows decorative nerves. */
-function drawTube(PIXI, g, x1, y1, x2, y2, width = 36, sag = 0) {
-  const cx = (x1 + x2) / 2;
-  const cy = (y1 + y2) / 2 + sag;
-  const layers = [[width, PINK.deep, 1], [width - 10, PINK.mid, 1], [width * 0.32, PINK.light, 0.9]];
-  for (const [w, color, alpha] of layers) {
-    g.setStrokeStyle({ width: w, color, alpha: alpha ?? 1, cap: 'round', join: 'round' });
-    const lift = w === width ? 0 : w === width - 10 ? -1 : -width * 0.22;
-    g.moveTo(x1, y1 + width / 2 - 2 + lift);
-    g.quadraticCurveTo(cx, cy + width / 2 - 2 + lift, x2, y2 + width / 2 - 2 + lift);
-    g.stroke();
+/**
+ * The tube (G922): the straight tube picture N (gz_ai_om_tube, made to tile) bent along the tube's centre line as
+ * one mesh, a whole number of tiles end to end, each tile's ends meeting the next's (the drop's columns 14-1008
+ * match as neighbouring columns do). Bent rather than built from N straights and the U-turn O: the 2012 tube winds
+ * (Snaps 191039, 26533) and its turns are tighter than O's (its arms are 170 apart at the tube's 60), so O is not
+ * shipped. The tile's dashed edge stays on top along both runs (its bands are otherwise the same top and bottom).
+ */
+function drawTube(PIXI, kit, tube) {
+  const art = OUTER_ART.tube;
+  const len = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+  let total = 0;
+  for (let i = 1; i < tube.length; i += 1) total += len(tube[i - 1], tube[i]);
+  const tileLen = OUTER.T * (art.px[0] / art.px[1]);
+  const tiles = Math.max(1, Math.round(total / tileLen));
+  const step = total / tiles;
+  // Split the line at each tile's end, so each tile maps u 0..1 (its end vertex doubled: u 1, then u 0).
+  const pts = [];
+  let s = 0;
+  for (let i = 0; i < tube.length; i += 1) {
+    const p = tube[i];
+    if (i > 0) {
+      const a = tube[i - 1];
+      const d = len(a, p);
+      let next = (Math.floor(s / step + 1e-9) + 1) * step;
+      while (next < s + d - 1e-6) {
+        const t = (next - s) / d;
+        pts.push({ x: a.x + (p.x - a.x) * t, y: a.y + (p.y - a.y) * t, w: a.w + (p.w - a.w) * t, s: next, seam: true });
+        next += step;
+      }
+      s += d;
+    }
+    pts.push({ ...p, s });
   }
+  const positions = [];
+  const uvs = [];
+  const indices = [];
+  let last = -1;
+  pts.forEach((p, i) => {
+    const a = pts[Math.max(0, i - 1)];
+    const b = pts[Math.min(pts.length - 1, i + 1)];
+    let tx = b.x - a.x;
+    let ty = b.y - a.y;
+    const tl = Math.hypot(tx, ty) || 1;
+    tx /= tl;
+    ty /= tl;
+    // The left-hand normal is up when running right; running left the tile turns over so its dashes stay on top.
+    const flip = tx < 0 ? -1 : 1;
+    const nx = ty * flip;
+    const ny = -tx * flip;
+    const h = p.w / 2;
+    const tileU = (p.s / step) % 1;
+    const us = p.seam && i > 0 ? [1, 0] : [tileU || (p.s > 0 && i === pts.length - 1 ? 1 : 0)];
+    for (const u of us) {
+      const k = positions.length / 2;
+      positions.push(p.x + nx * h, p.y + ny * h, p.x - nx * h, p.y - ny * h);
+      uvs.push(u, flip > 0 ? 0 : 1, u, flip > 0 ? 1 : 0);
+      if (last >= 0 && !(us.length === 2 && u === 0)) indices.push(last, last + 1, k, k, last + 1, k + 1);
+      last = k;
+    }
+  });
+  const geometry = new PIXI.MeshGeometry({ positions: new Float32Array(positions), uvs: new Float32Array(uvs), indices: new Uint32Array(indices) });
+  const mesh = new PIXI.Mesh({ geometry, texture: textureFromUrl(`${kit.DECO_DIR}${art.name}.png`) });
+  mesh.eventMode = 'none';
+  mesh.tiles = tiles;
+  return mesh;
 }
 
-function drawEye(PIXI, eye) {
-  const c = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  g.ellipse(6, eye.r * 0.15, eye.r * 1.02, eye.r * 0.98).fill({ color: 0x2a1440, alpha: 0.25 });
-  g.circle(0, 0, eye.r).fill(0xbfe9ff);
-  g.circle(-eye.r * 0.12, -eye.r * 0.12, eye.r * 0.86).fill(0xffffff);
-  g.circle(0, 0, eye.r).stroke({ width: 3, color: 0x7fb6d8, alpha: 0.8 });
-  c.addChild(g);
-  const iris = new PIXI.Graphics();
-  iris.circle(0, 0, eye.r * 0.36).fill(0x7b3fc2);
-  iris.circle(0, 0, eye.r * 0.17).fill(0x2a0f45);
-  iris.circle(-eye.r * 0.1, -eye.r * 0.12, eye.r * 0.07).fill({ color: 0xffffff, alpha: 0.85 });
-  c.addChild(iris);
-  c.x = eye.x;
-  c.y = eye.y;
-  c.iris = iris;
-  c.r = eye.r;
-  return c;
+/** A glass eye (the plain one, or the one whose socket takes the tube), its ball `2r` across, centred on (x, y). */
+function drawEye(PIXI, kit, eye) {
+  const art = eye.socket ? OUTER_ART.eyeSocket : OUTER_ART.eye;
+  const drawnW = art.px * ((2 * eye.r) / art.ball);
+  const spr = kit.deco(PIXI, art.name, eye.x, eye.y, { ax: art.centre[0] / art.px, ay: art.centre[1] / art.px, scale: drawnW / (art.w * 2) });
+  spr.eventMode = 'none';
+  return spr;
 }
 
+/**
+ * The Outer Mind (G922): the made head picture behind everything (gz_ai_om_head, L squeezed to 4:3), the two
+ * plain eyes, the tube, the eye whose socket takes the tube's end, the checker floor on its rock lip (Q, its top
+ * surface fitted to the floor line) and the foot standing on it, the tube's start under its ankle. The eyes'
+ * irises are drawn into the pictures and stay put, as in every Snap (191039, 26533, 28116: each looks down and
+ * left wherever the player stands).
+ */
 function buildOuter(ctx) {
   const { PIXI, kit } = ctx;
   const L = outerLayout(kit);
   const root = kit.sceneRoot(PIXI, L.W, L.H);
-  // Space, with stars.
+  // Space, with stars, behind the head where a wide window shows past its picture.
   const space = root.layer(0, 0);
   space.addChild(kit.gradient(PIXI, [[0, '#1d0b3a'], [0.6, '#3a1660'], [1, '#2b0f4d']], 960, 640));
   const stars = new PIXI.Graphics();
@@ -1051,61 +1246,24 @@ function buildOuter(ctx) {
   }
   space.addChild(stars);
   const world = root.layer(1, 2);
-  // The head: grey rock rim around a sunburst brain.
-  const head = L.head;
-  const rim = new PIXI.Graphics();
-  rim.roundRect(head.x - 34, head.y - 34, head.w + 68, head.h + 68, head.r + 30).fill(0x8c8f99);
-  rim.roundRect(head.x - 18, head.y - 18, head.w + 36, head.h + 36, head.r + 14).fill(0xb9bcc6);
-  rim.roundRect(head.x - 6, head.y - 6, head.w + 12, head.h + 12, head.r + 4).fill({ color: 0x6f7280, alpha: 0.6 });
-  world.addChild(rim);
-  const burst = new PIXI.Container();
-  const fill = new PIXI.Graphics();
-  fill.rect(head.x, head.y, head.w, head.h).fill(0xff9a2e);
-  const cx = L.W * 0.45;
-  const cy = 700;
-  const R = 2600;
-  const N = 140;
-  for (let i = 0; i < N; i++) {
-    const a1 = (i / N) * Math.PI * 2;
-    const a2 = ((i + 0.5) / N) * Math.PI * 2;
-    fill.moveTo(cx, cy);
-    fill.lineTo(cx + Math.cos(a1) * R, cy + Math.sin(a1) * R);
-    fill.lineTo(cx + Math.cos(a2) * R, cy + Math.sin(a2) * R);
-    fill.closePath();
-    fill.fill(i % 2 ? 0xff5fa8 : 0xff7a3d);
-  }
-  fill.circle(cx, cy, 80).fill({ color: 0xffc15a, alpha: 0.5 });
-  burst.addChild(fill);
-  const mask = new PIXI.Graphics();
-  mask.roundRect(head.x, head.y, head.w, head.h, head.r).fill(0xffffff);
-  burst.addChild(mask);
-  burst.mask = mask;
-  world.addChild(burst);
-  // Nerve tubes from the eyes (decor), then the eyes.
-  const nerves = new PIXI.Graphics();
-  for (const [i, eye] of L.eyes.entries()) {
-    const tx = eye.x + (i % 2 ? -260 : 240);
-    const ty = eye.y + 160 + (i % 3) * 40;
-    drawTube(PIXI, nerves, eye.x, eye.y + eye.r * 0.6, tx, ty, 22, 30);
-  }
-  world.addChild(nerves);
-  ctx.data.eyes = L.eyes.map((eye) => world.addChild(drawEye(PIXI, eye)));
-  // The checkered floor on a rock slab, and the rock base.
-  const floor = new PIXI.Graphics();
-  floor.rect(0, L.FLOOR, L.W, 120).fill(0x9a9ca6);
-  floor.rect(0, L.FLOOR + 26, L.W, 120).fill(0x7c7f8a);
-  const T = 40;
-  for (let x = L.checker.x1, i = 0; x < L.checker.x2; x += T, i++) {
-    for (let r = 0; r < 2; r++) {
-      floor.rect(x, L.FLOOR + r * 13, T, 13).fill((i + r) % 2 ? 0x2fd3e6 : 0xffffff);
-    }
-  }
-  floor.moveTo(0, L.FLOOR).lineTo(L.W, L.FLOOR).stroke({ width: 2, color: 0x5f6270, alpha: 0.8 });
-  world.addChild(floor);
-  // The walkable tubes.
-  const tubes = new PIXI.Graphics();
-  for (const p of L.platforms.filter((q) => q.style === 'tube' || q.style === 'knot')) drawTube(PIXI, tubes, p.x1, p.y1, p.x2, p.y2, p.style === 'knot' ? 30 : 38);
-  world.addChild(tubes);
+  const head = OUTER_ART.head;
+  world.addChild(kit.deco(PIXI, head.name, 0, 0, { ax: 0, ay: 0, scale: L.W / (head.w * 2) }));
+  const eyes = L.eyes.map((eye) => drawEye(PIXI, kit, eye));
+  for (const [i, e] of eyes.entries()) if (!L.eyes[i].socket) world.addChild(e);
+  const tube = drawTube(PIXI, kit, L.tube);
+  world.addChild(tube);
+  for (const [i, e] of eyes.entries()) if (L.eyes[i].socket) world.addChild(e);
+  ctx.data.eyes = eyes;
+  ctx.data.tubeTiles = tube.tiles;
+  // The floor: its top surface's line at `depth` of the way from its back edge to its front, on the floor line.
+  const fl = OUTER_ART.floor;
+  const k = (fl.x2 - fl.x1) / fl.px[0];
+  const top = L.FLOOR - (fl.top + (fl.front - fl.top) * L.floorArt.depth) * k;
+  world.addChild(kit.deco(PIXI, fl.name, (fl.x1 + fl.x2) / 2, top, { ay: 0, scale: (fl.x2 - fl.x1) / (fl.w * 2) }));
+  // The foot, toes left, its tube end on the tube's start.
+  const ft = OUTER_ART.foot;
+  const fs = OUTER.foot.s;
+  world.addChild(kit.deco(PIXI, ft.name, OUTER.foot.x, OUTER.foot.sole, { ax: 0, ay: 1, scale: (ft.px[0] * fs) / (ft.w * 2), flip: true }));
   return {
     label: INSTANCES.outer_mind.label,
     width: L.W,
@@ -1194,13 +1352,6 @@ function tickOuter(ctx, dtMs, now) {
   const L = d.outer;
   const p = ctx.player;
   if (!p || !L) return;
-  // The eyes follow you.
-  for (const eye of d.eyes || []) {
-    if (eye.destroyed) continue;
-    const ang = Math.atan2(p.y - 60 - eye.y, p.x - eye.x);
-    eye.iris.x = Math.cos(ang) * eye.r * 0.42;
-    eye.iris.y = Math.sin(ang) * eye.r * 0.42;
-  }
   if (!free(ctx)) return;
   if (!d.vogShown && p.x >= L.vogX) {
     // innermind_vog_interrupt (once: pc['!innermind_vog_interrupt_collided']).

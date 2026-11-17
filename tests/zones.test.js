@@ -405,6 +405,10 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     const wh = Object.keys(made).filter((n) => n.startsWith('gz_ai_wh_'));
     assert.deepEqual(wh.sort(), ['gz_ai_wh_tree_bare_2', 'gz_ai_wh_tree_bare_3', 'gz_ai_wh_tree_bare_4']);
     for (const n of wh) assert.ok(made[n].streets.join() === 'GIFNNTRK1073PQ6' && !made[n].file3, n);
-    assert.equal(ezc.length + rig.length + ww.length + wh.length, Object.keys(made).length);
+    // The Outer Mind's six (lane art45, G922): quest-room pictures drawn by js/quest-rooms/gwendolyn.js; the head 2x only.
+    const om = Object.keys(made).filter((n) => n.startsWith('gz_ai_om_'));
+    assert.deepEqual(om.sort(), ['gz_ai_om_eye', 'gz_ai_om_eye_socket', 'gz_ai_om_floor', 'gz_ai_om_foot', 'gz_ai_om_head', 'gz_ai_om_tube']);
+    for (const n of om) assert.equal(made[n].code, 'public/js/quest-rooms/gwendolyn.js', n);
+    assert.equal(ezc.length + rig.length + ww.length + wh.length + om.length, Object.keys(made).length);
   });
 });
