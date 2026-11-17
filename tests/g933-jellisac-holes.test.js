@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildJellisacHoleSpots, seatInHoles, streetHoles } from '../tools/build-jellisac-hole-spots.mjs';
 import { JELLISAC_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
-import { measuredNodeSpots } from '../public/js/street-ecology.js?v=c9852cb0';
+import { measuredNodeSpots } from '../public/js/street-ecology.js?v=535aaba4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -112,7 +112,7 @@ import { playItemOverlay } from '../item-overlay.js?v=b12c43aa';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=e5bee05e';
+import { salmonSwimAt } from '../street-creatures.js?v=9736f549';
 import { GAME_EPOCH_MS } from '../game-day.js?v=72f37c7e';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
@@ -244,6 +244,7 @@ export function resourceSpawnPlan(population, placement, street = null) {
       plan.push({
         key: `${classTsid}:${index}`, classTsid, x: spot.x, y: spot.y, wall: true,
         ...(spot.variant ? { variant: spot.variant } : {}),
+        ...(spot.mirror ? { mirror: true } : {}),
         ...(spot.sloth ? { sloth: spot.sloth } : {}),
       });
     });
@@ -734,6 +735,8 @@ function buildGroundView(engine, entity) {
     sprite.anchor.set(0.5, 1);
     sprite.x = entity.x;
     sprite.y = entity.y;
+    // G936: a barnacle on a round wall's right part faces outward (the art opens to the left).
+    if (entity.mirror) sprite.scale.x = -1;
   } else {
     sprite.anchor.set(0.5, frame?.sheet ? footAnchor(frame.sheet, frame.frameIndex) : 1);
     sprite.x = entity.x;

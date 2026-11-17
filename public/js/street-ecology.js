@@ -8,7 +8,7 @@ import { behindFloor } from './reach.js?v=8e52df56';
 import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furniture.js?v=06481ee6';
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
-import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=d9c1ad77';
+import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=afcde8cf';
 import {
   JELLISAC_SPOTS,
   PAPER_TREE_SPOTS,
@@ -183,7 +183,8 @@ export const PLANNED_NODE_CAPS = Object.freeze({
 export const MEASURED_NODE_SPOTS = Object.freeze({
   // G916 (#446): a street no full-street snap covers takes the spots measured on its other pictures
   // and the rest on its walls by rule (tools/build-barnacle-wall-spots.mjs, js/barnacle-walls.js).
-  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...BARNACLE_SPOTS }) }),
+  // G936: a rule row's fifth field 1 draws the barnacle mirrored (it faces outward on a round wall's right part).
+  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', mirrorField: 4, streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...BARNACLE_SPOTS }) }),
   // G933 (#453): a Jellisac the snaps never measured sits in its street's empty hole first
   // (tools/build-jellisac-hole-spots.mjs); only those left over are planned on a floor.
   jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: Object.freeze({ ...JELLISAC_SPOTS, ...JELLISAC_HOLE_SPOTS }) }),
@@ -206,6 +207,7 @@ export const MEASURED_NODE_SPOTS = Object.freeze({
 /**
  * A street's measured node spots, { [class]: [{ x, y, variant }] } (street px, the art's frame cell
  * bottom centre: resource-nodes-feature draws these wall-mounted), or null when it has none.
+ * G936: `mirror: true` on a spot whose row sets its class's mirrorField to 1 (drawn mirrored).
  */
 export function measuredNodeSpots(tsid) {
   let out = null;
@@ -225,7 +227,8 @@ export function measuredNodeSpots(tsid) {
         const [x, y, v] = row;
         // A class with more to a row than its variant (the Sloth) reads it with its own `extra`.
         if (source.extra) return { x, y, variant: null, ...source.extra(row) };
-        return { x, y, variant: Number.isFinite(v) ? `${source.variantPrefix}${v}` : null };
+        const mirror = source.mirrorField != null && row[source.mirrorField] === 1;
+        return { x, y, variant: Number.isFinite(v) ? `${source.variantPrefix}${v}` : null, ...(mirror ? { mirror: true } : {}) };
       });
   }
   return out;

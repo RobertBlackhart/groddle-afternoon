@@ -9,13 +9,22 @@
  * which street-ecology.js MEASURED_NODE_SPOTS reads beside BARNACLE_SPOTS, so every barnacle the
  * file names is drawn wall-mounted, keyed mortar_barnacle:<i> left to right.
  *
- *   node tools/build-barnacle-wall-spots.mjs          write
- *   node tools/build-barnacle-wall-spots.mjs --check  exit 1 if stale or a street is short
+ *
+ * G936: the rule reads the art's masks (tools/barnacle-wall-masks.json: each wall and ground deco these
+ * streets draw, its alpha on a grid of at most MASK_MAX cells a side, measured from
+ * public/assets/decos/groddle/<art>.webp with ImageMagick by --measure), so a spot sits on a wall's
+ * drawn art under no ground art; a row's fifth field is 1 when the barnacle is drawn mirrored.
+ *
+ *   node tools/build-barnacle-wall-spots.mjs            write
+ *   node tools/build-barnacle-wall-spots.mjs --check    exit 1 if stale, a street is short or a mask is missing
+ *   node tools/build-barnacle-wall-spots.mjs --measure  measure the masks again (needs ImageMagick), then write
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { barnacleWallSpots } from '../public/js/barnacle-walls.js?v=6f696ff2';
+import { barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=fd6c9f68';
+import { DECO_TWINS } from '../public/js/street-render.js?v=d6241586';
 import {
   ecologyForStreet,
   populationForStreet,
@@ -24,11 +33,54 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=c9852cb0';
+} from '../public/js/street-ecology.js?v=535aaba4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';
+const MASKS = 'tools/barnacle-wall-masks.json';
+/** A mask's cells a side at most; else one cell per MASK_CELL px of the art. */
+export const MASK_MAX = 64;
+const MASK_CELL = 3;
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
+
+/** The streets this file places barnacles on: [tsid, street row, wanted count]. */
+function builderStreets(ecology, snapped, index) {
+  return Object.entries(ecology)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([tsid, row]) => [tsid, Number(row?.counts?.mortar_barnacle) || 0])
+    .filter(([tsid, want]) => want && !snapped[tsid]?.length && index[tsid]);
+}
+
+/**
+ * G936: measure the alpha mask of every wall and ground deco the builder's streets draw (the art
+ * street-render.js draws for the name: DECO_TWINS when the manifest lacks it; null when there is no art).
+ * { [sprite]: { w, h, d } }: w x h cells, d base64 bits row-major, 1 where the cell is mostly drawn.
+ */
+export function measureMasks() {
+  const ecology = read('public/assets/content/street-ecology.json').streets;
+  const snapped = read('public/assets/content/barnacle-spots.json').streets;
+  const index = read('public/assets/streets/index.json').streets;
+  const available = new Set(read('public/assets/decos/manifest.json'));
+  const names = new Set();
+  for (const [tsid] of builderStreets(ecology, snapped, index)) for (const n of barnacleMaskSprites(read(`public/${index[tsid].file}`))) names.add(n);
+  const out = {};
+  for (const name of [...names].sort()) {
+    const art = available.has(name) ? name : DECO_TWINS[name];
+    const file = art && join(root, 'public/assets/decos/groddle', `${art}.webp`);
+    if (!file || !existsSync(file)) {
+      out[name] = null;
+      continue;
+    }
+    const [iw, ih] = execFileSync('magick', ['identify', '-format', '%w %h', file], { encoding: 'utf8' }).trim().split(' ').map(Number);
+    const w = Math.max(1, Math.min(MASK_MAX, Math.ceil(iw / MASK_CELL)));
+    const h = Math.max(1, Math.min(MASK_MAX, Math.ceil(ih / MASK_CELL)));
+    const raw = execFileSync('magick', [file, '-alpha', 'extract', '-filter', 'box', '-resize', `${w}x${h}!`, '-depth', '8', 'gray:-']);
+    const bytes = Buffer.alloc(Math.ceil((w * h) / 8));
+    for (let i = 0; i < w * h; i += 1) if (raw[i] >= 128) bytes[i >> 3] |= 1 << (7 - (i & 7));
+    out[name] = { w, h, d: bytes.toString('base64') };
+  }
+  return out;
+}
 
 /**
  * PURE: the things the planner seats where a picture shows them (trees, the shrine, rocks: the
@@ -51,7 +103,7 @@ export function fixedPictureBoxes(population) {
 /** A rule spot's blister variant, in the measured mix (101 of 201 are blister1, 55 blister2, 22 blister4...). */
 export const RULE_VARIANTS = Object.freeze([1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 6, 1, 4, 2, 5]);
 
-export function buildBarnacleWallSpots() {
+export function buildBarnacleWallSpots({ masks = read(MASKS).masks } = {}) {
   const catalog = read('public/assets/content/street-ecology.json');
   const ecology = catalog.streets;
   const snapped = read('public/assets/content/barnacle-spots.json').streets;
@@ -60,19 +112,19 @@ export function buildBarnacleWallSpots() {
   setStreetEcologyCatalog(catalog);
   const spots = {};
   const short = [];
-  const tally = { picture: 0, rule: 0, streets: 0, pictured: 0, tiers: {} };
-  for (const [tsid, row] of Object.entries(ecology).sort(([a], [b]) => a.localeCompare(b))) {
-    const want = Number(row?.counts?.mortar_barnacle) || 0;
-    if (!want || snapped[tsid]?.length || !index[tsid]) continue;
+  const unmeasured = new Set();
+  const tally = { picture: 0, rule: 0, streets: 0, pictured: 0, tiers: {}, mirrored: 0 };
+  for (const [tsid, want] of builderStreets(ecology, snapped, index)) {
     const street = read(`public/${index[tsid].file}`);
+    for (const n of barnacleMaskSprites(street)) if (!Object.prototype.hasOwnProperty.call(masks, n)) unmeasured.add(n);
     const seen = (pictures[tsid]?.spots || []).slice(0, want).map(([x, y, v]) => [x, y, v, 0]);
     // The street's keep-clear spots, less the barnacles' own covers (which this file feeds).
     const reserved = [
       ...streetReservedSpots(street).filter((r) => !String(r.key || '').startsWith('node:mortar_barnacle:')),
       ...fixedPictureBoxes(populationForStreet(tsid, ecologyForStreet(tsid))),
     ];
-    const rule = barnacleWallSpots(street, want - seen.length, { reserved, keep: seen.map(([x, y]) => ({ x, y })) });
-    const rows = [...seen, ...rule.map((s, i) => [s.x, s.y, RULE_VARIANTS[i % RULE_VARIANTS.length], s.tier])]
+    const rule = barnacleWallSpots(street, want - seen.length, { reserved, keep: seen.map(([x, y]) => ({ x, y })), masks });
+    const rows = [...seen, ...rule.map((s, i) => [s.x, s.y, RULE_VARIANTS[i % RULE_VARIANTS.length], s.tier, ...(s.mirror ? [1] : [])])]
       .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
     if (rows.length < want) short.push(`${index[tsid].label} (${tsid}): ${rows.length} of ${want}`);
     spots[tsid] = rows;
@@ -81,6 +133,7 @@ export function buildBarnacleWallSpots() {
     tally.picture += seen.length;
     tally.rule += rule.length;
     for (const s of rule) tally.tiers[s.tier] = (tally.tiers[s.tier] || 0) + 1;
+    tally.mirrored += rule.filter((s) => s.mirror).length;
   }
   const lines = Object.entries(spots).map(([tsid, list]) => `  ${tsid}: Object.freeze([${list.map((r) => `[${r.join(', ')}]`).join(', ')}]),`);
   const text = `// Generated by tools/build-barnacle-wall-spots.mjs: never edit by hand.
@@ -89,26 +142,36 @@ export function buildBarnacleWallSpots() {
  * (mortar_barnacle:<i> is the i-th): [x, y, blister, tier] in street px (0, 0 = the street's top
  * left; x, y the art's bottom centre, as barnacle-spots.json). tier 0 measured on a picture
  * (assets/content/barnacle-picture-spots.json cites it), 1 a wall of the kinds the measured streets
- * use, 2 another big deco, 3 a ledge's underside, 4 the floor (js/barnacle-walls.js).
+ * use, 2 another big deco, 3 a ledge's underside, 4 the floor (js/barnacle-walls.js). G936: a fifth
+ * field 1 draws the barnacle mirrored (it faces outward on a round wall's right part).
  * street-ecology.js MEASURED_NODE_SPOTS reads them beside BARNACLE_SPOTS.
  */
 export const BARNACLE_WALL_SPOTS = Object.freeze({
 ${lines.join('\n')}
 });
 `;
-  return { text, spots, short, tally };
+  return { text, spots, short, tally, unmeasured: [...unmeasured].sort() };
 }
 
 function main() {
   const check = process.argv.includes('--check');
-  const { text, short, tally } = buildBarnacleWallSpots();
+  if (process.argv.includes('--measure')) {
+    const masks = measureMasks();
+    const about = 'G936: alpha masks of the wall and ground decos the barnacle wall rule reads (js/barnacle-walls.js). Generated by node tools/build-barnacle-wall-spots.mjs --measure from public/assets/decos/groddle; do not edit by hand. { [sprite]: { w, h, d } }: w x h cells, d base64 bits row-major (1 = drawn); null = no art.';
+    const rows = Object.entries(masks).map(([k, v]) => `${JSON.stringify(k)}:${JSON.stringify(v)}`);
+    const text = `{"about":${JSON.stringify(about)},\n"masks":{\n${rows.join(',\n')}\n}}\n`;
+    writeFileSync(join(root, MASKS), text);
+    console.log(`${MASKS}: ${Object.keys(masks).length} decos`);
+  }
+  const { text, short, tally, unmeasured } = buildBarnacleWallSpots();
   const out = join(root, OUT);
   let before = '';
   try { before = readFileSync(out, 'utf8'); } catch { /* new */ }
   if (short.length) console.error(`streets short of their count: ${short.join('; ')}`);
-  const summary = `${tally.streets} streets, ${tally.picture} barnacles measured on pictures (${tally.pictured} streets), ${tally.rule} by the wall rule (tiers ${JSON.stringify(tally.tiers)})`;
+  if (unmeasured.length) console.error(`decos with no mask (run node tools/build-barnacle-wall-spots.mjs --measure): ${unmeasured.join(', ')}`);
+  const summary = `${tally.streets} streets, ${tally.picture} barnacles measured on pictures (${tally.pictured} streets), ${tally.rule} by the wall rule (tiers ${JSON.stringify(tally.tiers)}, ${tally.mirrored} mirrored)`;
   if (check) {
-    if (before !== text || short.length) {
+    if (before !== text || short.length || unmeasured.length) {
       console.error(`${OUT} is stale: run node tools/build-barnacle-wall-spots.mjs`);
       process.exit(1);
     }
