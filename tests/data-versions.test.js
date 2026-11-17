@@ -180,7 +180,7 @@ describe('asset keys written into HTML and CSS (2026-10-29)', () => {
   });
 
   it('no data or art URL in markup, a style attribute, a <style> block or a style sheet is left without ?v=<key>', () => {
-    const VERSIONED = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml)(?:[?#]|$)/i;
+    const VERSIONED = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml|ktx2)(?:[?#]|$)/i;
     const external = (u) => /^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(u) || /\$\{|\{\{/.test(u);
     const unkeyed = (u) => !external(u) && VERSIONED.test(u) && !/[?&]v=[0-9a-f]{8}(?:[&#]|$)/.test(u.replace(/&amp;/g, '&'));
     const files = keyedFiles(root);

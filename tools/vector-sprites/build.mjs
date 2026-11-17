@@ -68,6 +68,17 @@
  *    fitted to 215-325 px, spirit-portraits.json). Such a manifest also
  *    names its own "results" file and "module" (js/sprite-dense.js), so
  *    js/sprite-hires.js and results.json stay the 3x sheets.
+ *  - manifest "onScreen": { "maxSide": px, "quality": q } writes no grid:
+ *    each sheet's "groups" ({ label: [first cell, count] }) are packed into
+ *    KTX2 atlases (<name>.<label>.a<n>@3x.ktx2, Basis Universal ETC1S at
+ *    quality q, premultiplied alpha), each frame cropped to its own alpha box
+ *    on a 4 px block grid, at most maxSide square. The atlases and every
+ *    frame's place go in results.json (`onScreen`) and the manifest's
+ *    "module" (js/sprite-onscreen.js, ONSCREEN_SPRITES), never in
+ *    js/sprite-hires.js: art too big to keep decoded (the Scion of Purple,
+ *    G961), loaded by its feature only while it is on screen and only on
+ *    computers (js/onscreen-sharp.js). Needs basisu (brew install
+ *    basis_universal).
  *  - manifest "lossy": q writes lossy WebP at quality q with lossless alpha
  *    (cwebp -q q -alpha_q 100 -exact), as the 1x strips it doubles
  *    (street-spirits.json: the OGA strips are lossy q88 too).
@@ -136,6 +147,8 @@ let sheetMin = SHEET_MIN;
 let budget = null;
 /** The manifest "webp": always lossless WebP, set in main. */
 let alwaysWebp = false;
+/** The manifest "onScreen" (KTX2 atlases per label), set in main. */
+let onScreen = null;
 
 // ---------------------------------------------------------------------------
 // Pixels (ImageMagick for codecs, plain typed arrays for the maths)
@@ -462,6 +475,7 @@ function buildSheet(job, sheet, labels, frameDir) {
   if (frames.some((f) => f.missing)) reasons.push('SWF has fewer frames than the sheet');
   if (reasons.length) return { ...result, status: 'rejected', reason: reasons.join('; '), frames };
   if (DRY) return { ...result, status: 'dry', frames };
+  if (onScreen) return { ...result, ...writeOnScreen(sheet, oga, (k) => join(frameDir, `${frameOf(k, best.shift)}.png`), best.mirror, dx, dy), frames };
 
   // Compose the 3x sheet: each frame clipped to its own cell. A sheet whose
   // 3x would break the budget as one file is written as parts instead, its
@@ -584,7 +598,7 @@ export function writeModule(results) {
 }
 
 export function moduleText(results) {
-  const ok = Object.entries(results).filter(([, r]) => r.status === 'ok').sort(([a], [b]) => a.localeCompare(b));
+  const ok = Object.entries(results).filter(([, r]) => r.status === 'ok' && !r.onScreen).sort(([a], [b]) => a.localeCompare(b));
   const entries = ok.filter(([, r]) => !r.parts).map(([path, r]) => `  [${JSON.stringify(path)}, ${JSON.stringify(r.hires)}],`).join('\n');
   const split = ok.filter(([, r]) => r.parts).map(([path, r]) => `  [${JSON.stringify(path)}, { fw: ${r.fw}, fh: ${r.fh}, cols: ${r.cols}, parts: [${r.parts.map((p) => `[${JSON.stringify(p.hires)}, ${p.from}, ${p.count}, ${p.cols}]`).join(', ')}] }],`).join('\n');
   const firstDraw = ok.filter(([, r]) => r.firstDraw).map(([path]) => `  ${JSON.stringify(path)},`).join('\n');
@@ -840,6 +854,8 @@ async function main() {
   S = manifest.density ?? 3;
   if (!Number.isInteger(S) || S < 2 || S > 9) throw new Error(`density ${S}: an integer 2-9`);
   lossy = manifest.lossy ?? 0;
+  onScreen = manifest.onScreen || null;
+  if (onScreen && !manifest.module) throw new Error('"onScreen" needs its own "module"');
   if (S !== 3 && !(manifest.results && manifest.module)) throw new Error('a density other than 3 needs its own "results" and "module"');
   if (manifest.results) RESULTS = join(HERE, manifest.results);
   if (manifest.module) MODULE = join(PUBLIC, manifest.module);
@@ -956,10 +972,10 @@ async function main() {
     for (const p of paths) {
       const r = results[p];
       if (!r || !['ok', 'dry'].includes(r.status)) continue;
-      for (const f of r.parts ? r.parts.map((x) => x.hires) : [r.hires]) {
+      for (const f of outputFiles(r)) {
         if (f && existsSync(join(PUBLIC, f)) && !DRY) unlinkSync(join(PUBLIC, f));
       }
-      results[p] = { ...r, status: 'rejected', reason: `held back: ${c} also needs ${basename(bad)} (${results[bad]?.status || 'not built'})`, hires: undefined, parts: undefined, bytes: undefined };
+      results[p] = { ...r, status: 'rejected', reason: `held back: ${c} also needs ${basename(bad)} (${results[bad]?.status || 'not built'})`, hires: undefined, parts: undefined, onScreen: undefined, bytes: undefined };
       console.log(`  held ${basename(p)}: ${c} also needs ${basename(bad)}`);
     }
   }
@@ -969,11 +985,11 @@ async function main() {
   }
   for (const [path, r] of Object.entries(results)) {
     if (r.status !== 'ok') continue;
-    const files = r.parts ? r.parts.map((p) => p.hires) : [r.hires];
-    if (files.some((f) => !existsSync(join(PUBLIC, f)))) delete results[path];
+    const files = outputFiles(r);
+    if (!files.length || files.some((f) => !f || !existsSync(join(PUBLIC, f)))) delete results[path];
   }
   writeFileSync(RESULTS, `${JSON.stringify(results, null, 1)}\n`);
-  writeFileSync(MODULE, S === 3 && !manifest.module ? moduleText(results) : denseModuleText(results));
+  writeFileSync(MODULE, generatedModule(manifest, results));
 }
 
 /** The 1x file's pixel size from a PNG or WebP header (no ImageMagick: --check runs anywhere). */
@@ -1003,6 +1019,17 @@ function checkManifest(manifest, results) {
       if (!r) { bad.push(`${sheet.path}: no result`); continue; }
       if (!existsSync(join(PUBLIC, sheet.path))) bad.push(`${sheet.path}: 1x sheet missing`);
       if (r.status !== 'ok') continue;
+      if (onScreen) {
+        if (!r.onScreen) { bad.push(`${sheet.path}: no onScreen atlases`); continue; }
+        for (const a of Object.values(r.onScreen.groups).flat()) {
+          if (!existsSync(join(PUBLIC, a.file))) { bad.push(`${a.file}: missing`); continue; }
+          const got = ktx2Size(join(PUBLIC, a.file));
+          if (got.w !== a.w || got.h !== a.h) bad.push(`${a.file}: ${got.w}x${got.h}, want ${a.w}x${a.h}`);
+        }
+        const one = headerSize(join(PUBLIC, sheet.path));
+        if (one.w < sheet.fw * (sheet.cols ?? 1)) bad.push(`${sheet.path}: narrower than its grid`);
+        continue;
+      }
       const d = r.density ?? 3;
       if (d !== S) bad.push(`${sheet.path}: density ${d}, manifest ${S}`);
       const one = headerSize(join(PUBLIC, sheet.path));
@@ -1022,7 +1049,7 @@ function checkManifest(manifest, results) {
       if (r.cells !== (sheet.frames ?? r.cells)) bad.push(`${sheet.path}: ${r.cells} cells, manifest ${sheet.frames}`);
     }
   }
-  const want = S === 3 && !manifest.module ? moduleText(results) : denseModuleText(results);
+  const want = generatedModule(manifest, results);
   if (!existsSync(MODULE) || readFileSync(MODULE, 'utf8') !== want) bad.push(`${relative(ROOT, MODULE)} is stale`);
   for (const b of bad) console.log(`stale: ${b}`);
   console.log(bad.length ? `${bad.length} problem(s)` : `${relative(ROOT, manifestPath)}: ok`);
@@ -1097,6 +1124,195 @@ export function denseFrame(dense, index) {
   const c = cols || dense.cols;
   return { url, x: (j % c) * w, y: Math.floor(j / c) * h, w, h };
 }
+`;
+}
+
+// ---------------------------------------------------------------------------
+// On-screen atlases (manifest "onScreen", G961)
+// ---------------------------------------------------------------------------
+
+/** The files an ok result wrote (one sheet, its parts or its KTX2 atlases). */
+function outputFiles(r) {
+  if (r.onScreen) return Object.values(r.onScreen.groups).flat().map((a) => a.file);
+  if (r.parts) return r.parts.map((p) => p.hires);
+  return r.hires ? [r.hires] : [];
+}
+
+/** The module a manifest's results generate. */
+function generatedModule(manifest, results) {
+  if (manifest.onScreen) return onScreenModuleText(results);
+  return S === 3 && !manifest.module ? moduleText(results) : denseModuleText(results);
+}
+
+/** A KTX2 file's pixel size (header: 12-byte identifier, vkFormat, typeSize, pixelWidth, pixelHeight). */
+function ktx2Size(file) {
+  const b = readFileSync(file);
+  if (b.toString('latin1', 1, 7) !== 'KTX 20') throw new Error(`${file}: not KTX2`);
+  return { w: b.readUInt32LE(20), h: b.readUInt32LE(24) };
+}
+
+/** Block grid of the GPU formats a KTX2 transcodes to (BC7, ASTC 4x4, ETC2). */
+export const BLOCK = 4;
+const up = (n) => Math.ceil(n / BLOCK) * BLOCK;
+
+/**
+ * PURE: shelf-pack boxes ({ w, h }, any order) into the fewest, smallest pages of at most
+ * maxSide x maxSide. Every box starts on the 4 px block grid with a clear block between
+ * neighbours, so no compressed block mixes two frames. Tries every page width on the
+ * block grid and keeps the fewest pages within 5% of the least total area (fewer files to
+ * fetch for the same GPU bytes), then the least area. Returns
+ * [{ w, h, boxes: [{ i, x, y }] }] (i: the box's index), or null when a box does not fit.
+ */
+export function packAtlases(boxes, maxSide = 4096) {
+  if (boxes.some((b) => up(b.w) > maxSide || up(b.h) > maxSide)) return null;
+  const order = boxes.map((b, i) => ({ ...b, i })).sort((a, b) => b.h - a.h || b.w - a.w || a.i - b.i);
+  const widest = Math.max(BLOCK, ...boxes.map((b) => up(b.w)));
+  const tries = [];
+  for (let W = widest; W <= maxSide; W += BLOCK) {
+    const pages = [];
+    let page = null;
+    let x = 0;
+    let y = 0;
+    let rowH = 0;
+    for (const b of order) {
+      const w = up(b.w);
+      const h = up(b.h);
+      if (page && x + w > W) {
+        x = 0;
+        y += rowH + BLOCK;
+        rowH = 0;
+      }
+      if (!page || y + h > maxSide) {
+        page = { w: 0, h: 0, boxes: [] };
+        pages.push(page);
+        x = 0;
+        y = 0;
+        rowH = 0;
+      }
+      page.boxes.push({ i: b.i, x, y });
+      page.w = Math.max(page.w, x + w);
+      page.h = Math.max(page.h, y + h);
+      x += w + BLOCK;
+      rowH = Math.max(rowH, h);
+    }
+    tries.push({ area: pages.reduce((a, p) => a + p.w * p.h, 0), pages });
+  }
+  const least = Math.min(...tries.map((t) => t.area));
+  const best = tries.filter((t) => t.area <= least * 1.05).sort((a, b) => a.pages.length - b.pages.length || a.area - b.area)[0];
+  for (const p of best.pages) p.boxes.sort((a, b) => a.i - b.i);
+  return best.pages;
+}
+
+/** The alpha box of an RGBA buffer (alpha > 0), or null when empty. */
+function alphaBox(buf, w, h) {
+  let x0 = w;
+  let y0 = h;
+  let x1 = -1;
+  let y1 = -1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (!buf[(y * w + x) * 4 + 3]) continue;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+    }
+  }
+  return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+
+/**
+ * Write a sheet's "groups" as KTX2 atlases: each cell's Sx frame (placed by the
+ * frame match, clipped to its Sx cell) cropped to its alpha box, premultiplied,
+ * packed per label. Returns { onScreen: { density, fw, fh, groups: { label:
+ * [{ file, w, h, bytes, frames: [[cell, x, y, w, h, cx, cy], ...] }] } }, bytes }:
+ * (x, y, w, h) the frame's box in the atlas, (cx, cy) where it sits in its Sx
+ * cell. A blank cell has no entry (its 1x frame stays).
+ */
+function writeOnScreen(sheet, oga, frameFile, mirror, dx, dy) {
+  const fw3 = sheet.fw * S;
+  const fh3 = sheet.fh * S;
+  const stem = oga.slice(0, -extname(oga).length);
+  const base = basename(stem);
+  for (const f of readdirSync(dirname(oga))) {
+    if (f.startsWith(`${base}.`) && new RegExp(`\\.a\\d+@${S}x\\.ktx2$`).test(f)) unlinkSync(join(dirname(oga), f));
+  }
+  const groups = {};
+  let bytes = 0;
+  for (const [label, [first, count]] of Object.entries(sheet.groups || { all: [0, sheet.frames] })) {
+    const cells = [];
+    for (let k = first; k < first + count; k++) {
+      const raw = readRGBA(frameFile(k));
+      const img = mirror ? mirrorRaw(raw) : raw;
+      const cell = new Uint8Array(fw3 * fh3 * 4);
+      for (let y = 0; y < img.h; y++) {
+        const ty = y + dy;
+        if (ty < 0 || ty >= fh3) continue;
+        for (let x = 0; x < img.w; x++) {
+          const tx = x + dx;
+          if (tx < 0 || tx >= fw3) continue;
+          const s = (y * img.w + x) * 4;
+          const d = (ty * fw3 + tx) * 4;
+          const a = img.raw[s + 3];
+          // Premultiplied: the KTX2 is uploaded as is (no browser premultiply for compressed data).
+          cell[d] = Math.round((img.raw[s] * a) / 255);
+          cell[d + 1] = Math.round((img.raw[s + 1] * a) / 255);
+          cell[d + 2] = Math.round((img.raw[s + 2] * a) / 255);
+          cell[d + 3] = a;
+        }
+      }
+      const box = alphaBox(cell, fw3, fh3);
+      if (box) cells.push({ k, cell, box });
+    }
+    const pages = packAtlases(cells.map((c) => c.box), onScreen.maxSide || 4096);
+    if (!pages) throw new Error(`${label}: a frame is over ${onScreen.maxSide} px`);
+    groups[label] = pages.map((page, n) => {
+      const out = new Uint8Array(page.w * page.h * 4);
+      const frames = [];
+      for (const { i, x, y } of page.boxes) {
+        const { k, cell, box } = cells[i];
+        for (let r = 0; r < box.h; r++) {
+          const s = ((box.y + r) * fw3 + box.x) * 4;
+          out.set(cell.subarray(s, s + box.w * 4), ((y + r) * page.w + x) * 4);
+        }
+        frames.push([k, x, y, box.w, box.h, box.x, box.y]);
+      }
+      const name = `${stem}.${label}.a${n + 1}@${S}x`;
+      const png = join(WORK, `${basename(name)}.tmp.png`);
+      execFileSync('magick', ['-size', `${page.w}x${page.h}`, '-depth', '8', 'rgba:-', '-strip', `PNG32:${png}`], { input: out, maxBuffer: 1 << 26 });
+      const file = `${name}.ktx2`;
+      // ETC1S (BasisLZ): about 1 bit a texel on the wire, transcoded on load to BC7 / ASTC 4x4 / ETC2 (8 bits a texel).
+      execFileSync('basisu', ['-ktx2', '-quality', String(onScreen.quality ?? 255), '-effort', String(onScreen.effort ?? 6), '-file', png, '-output_file', file], { stdio: 'ignore' });
+      unlinkSync(png);
+      const size = statSync(file).size;
+      bytes += size;
+      return { file: relative(PUBLIC, file), w: page.w, h: page.h, bytes: size, frames };
+    });
+  }
+  return { status: 'ok', onScreen: { density: S, fw: sheet.fw, fh: sheet.fh, groups }, bytes };
+}
+
+/** js/sprite-onscreen.js: the "onScreen" results (KTX2 atlases per label). */
+export function onScreenModuleText(results) {
+  const ok = Object.entries(results).filter(([, r]) => r.status === 'ok' && r.onScreen).sort(([a], [b]) => a.localeCompare(b));
+  const entries = ok.map(([path, r]) => {
+    const groups = Object.entries(r.onScreen.groups).map(([label, atlases]) => `${JSON.stringify(label)}: [${atlases.map((a) => `[${JSON.stringify(a.file)}, ${a.w}, ${a.h}, ${JSON.stringify(a.frames)}]`).join(', ')}]`).join(',\n    ');
+    return `  [${JSON.stringify(path)}, { density: ${r.onScreen.density}, fw: ${r.onScreen.fw}, fh: ${r.onScreen.fh}, groups: {\n    ${groups},\n  } }],`;
+  }).join('\n');
+  return `/**
+ * Sharp art too big to keep decoded (generated by tools/vector-sprites/build.mjs
+ * from a manifest with "onScreen"; do not edit by hand). Each 1x sheet's frames
+ * are Tiny Speck's vector SWF (CC0) at zoom = density, frame-matched to the 1x
+ * cells (results.json), each cropped to its own box and packed per label into
+ * KTX2 atlases (Basis Universal ETC1S, premultiplied alpha). js/onscreen-sharp.js
+ * loads a label's atlases only while something on screen plays it, on
+ * computers only. 1x path -> { density, fw, fh (1x cell), groups: { label:
+ * [[url, w, h, frames], ...] } }; a frame is [cell, x, y, w, h, cx, cy]: its box
+ * in the atlas (texels) and where that box sits in its density x cell.
+ */
+export const ONSCREEN_SPRITES = new Map([
+${entries}
+]);
 `;
 }
 

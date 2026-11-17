@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=8884fee5';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e28c281b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b990dac2';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -1066,6 +1066,7 @@ import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.j
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
 import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=24aa024c';
+import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { denseSprite } from './js/sprite-dense.js?v=2a0ce07a';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=2dde9014';
@@ -34467,7 +34468,8 @@ async function main() {
         const kind = textureUrls.sourceUrl(s) ? 'url' : s.constructor?.name || 'other';
         const row = (kinds[kind] ||= { count: 0, mb: 0 });
         row.count += 1;
-        row.mb += ((s.pixelWidth || 0) * (s.pixelHeight || 0) * 4) / 1048576;
+        // G961: a compressed texture (the Scion's KTX2 atlases) is a byte a texel, not four.
+        row.mb += textureBytes(s) / 1048576;
       }
       for (const row of Object.values(kinds)) row.mb = +row.mb.toFixed(1);
       const onGpu = new Set(app?.renderer?.texture?.managedTextures || []);
@@ -34478,7 +34480,7 @@ async function main() {
       const r = app?.renderer;
       const managed = r?.texture?.managedTextures || [];
       let bytes = 0;
-      for (const s of managed) if (s) bytes += (s.pixelWidth || 0) * (s.pixelHeight || 0) * 4;
+      for (const s of managed) if (s) bytes += textureBytes(s);
       return {
         pixi: PIXI.VERSION,
         renderer: r?.name || null,

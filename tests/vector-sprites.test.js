@@ -51,7 +51,8 @@ describe('3x vector sprite sheets', () => {
   });
 
   it('the list matches the @3x sheets on disk and the pipeline results', () => {
-    const ok = Object.entries(results).filter(([, r]) => r.status === 'ok');
+    // G961: "onScreen" sheets (KTX2 atlases, js/sprite-onscreen.js) are never in js/sprite-hires.js.
+    const ok = Object.entries(results).filter(([, r]) => r.status === 'ok' && !r.onScreen);
     assert.deepEqual(ok.filter(([, r]) => !r.parts).map(([p]) => p).sort(), [...HIRES_SPRITES.keys()].sort());
     assert.deepEqual(ok.filter(([, r]) => r.parts).map(([p]) => p).sort(), [...SPLIT_SPRITES.keys()].sort());
     // Each pipeline sheet has exactly its listed 3x file (or parts) beside it
@@ -64,9 +65,9 @@ describe('3x vector sprite sheets', () => {
         .filter((f) => f === `${base}@3x.png` || f === `${base}@3x.webp` || (f.startsWith(`${base}.p`) && /^\d+@3x\.(png|webp)$/.test(f.slice(base.length + 2))))
         .map((f) => `${dirname(path)}/${f}`)
         .sort();
-      const want = r.status !== 'ok' ? [] : r.parts ? r.parts.map((p) => p.hires).sort() : [r.hires];
+      const want = r.status !== 'ok' || r.onScreen ? [] : r.parts ? r.parts.map((p) => p.hires).sort() : [r.hires];
       assert.deepEqual(found, want, path);
-      if (r.status === 'ok' && !r.parts) assert.equal(HIRES_SPRITES.get(path), r.hires, path);
+      if (r.status === 'ok' && !r.parts && !r.onScreen) assert.equal(HIRES_SPRITES.get(path), r.hires, path);
     }
   });
 

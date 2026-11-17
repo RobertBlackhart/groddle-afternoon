@@ -49,7 +49,7 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const MAP_PATH = 'public/js/data-versions.js';
 
 /** Versioned extensions (keep in step with public/js/data-urls.js EXT). */
-export const EXT = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml)$/i;
+export const EXT = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml|ktx2)$/i;
 
 /** Built by tools/deploy/kinsta.sh (and the lead's build-restoration run), so only keyed with --built. */
 export const BUILT = ['restoration/data.json', 'restoration/history.json', 'codebase/data.json'];

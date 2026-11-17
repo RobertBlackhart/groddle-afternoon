@@ -44,7 +44,7 @@
   if (!g || g.groddleDataUrl) return;
 
   /** Extensions that are versioned (keep in step with tools/data-versions/build.mjs EXT). */
-  var EXT = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml)$/i;
+  var EXT = /\.(?:json|png|webp|jpe?g|gif|svg|mp3|ogg|wav|m4a|atlas|xml|ktx2)$/i;
   var SKIP = /^(?:data|blob|about|javascript|mailto):/i;
 
   function versions() {

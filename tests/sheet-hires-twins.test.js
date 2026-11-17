@@ -6,6 +6,7 @@
  * SHEETS, feature and quest-room tables, kit calls, animals, NPCs, vendors, trees, rocks, tools,
  * overlays) and passes a 1x sheet only when one of these covers it:
  *  - a twin in js/sprite-hires.js (HIRES_SPRITES, SPLIT_SPRITES) or js/sprite-dense.js;
+ *  - 3x atlases drawn only while on screen, on computers (js/sprite-onscreen.js, G961: the Scion);
  *  - an NPC Glitch's own @2x sheet (js/npc-glitch-sheets.js `hires`);
  *  - an overlay's SVG frames, drawn at the screen's density (overlays.json `vector`);
  *  - art already 2x or more inside the 1x file, drawn scaled down (POTION_ART and the Door Drink
@@ -24,6 +25,7 @@ import { fileURLToPath } from 'node:url';
 import { collectSheets, gameSheetTable } from './sheet-sources.js';
 import { HIRES_SPRITES, SPLIT_SPRITES } from '../public/js/sprite-hires.js?v=24aa024c';
 import { DENSE_SPRITES } from '../public/js/sprite-dense.js?v=2a0ce07a';
+import { ONSCREEN_SPRITES } from '../public/js/sprite-onscreen.js?v=cdeffc77';
 import { HIRES_ICONS } from '../public/js/icon-hires.js?v=165dbd6e';
 import { NPC_GLITCH_SHEETS } from '../public/js/npc-glitch-sheets.js?v=1163dc99';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
@@ -37,8 +39,6 @@ export const ALLOWED_1X = new Map([
   ['assets/sprites/butler/butler_v10_idle0.webp', 'BUTLER_FALLBACK: shown only until js/butler-rig.js (bag_butler.swf vectors, painted at the screen\'s density) has loaded'],
   ['assets/sprites/butler/butler_v10_walk4.webp', 'BUTLER_FALLBACK: shown only until js/butler-rig.js (bag_butler.swf vectors, painted at the screen\'s density) has loaded'],
   ['assets/sprites/overlays/rainbow_winner@1.25x.webp', 'nothing draws it: js/race-render.js drawWinnerRainbow has no caller (desk decision), so it has no SVG frames (tests/overlays.test.js)'],
-  ['assets/sprites/potions/scion_of_purple.webp', 'zoom 1 render of purple_apparition.swf sprite 81 drawn at scale 1: a 3x twin is 86 cells of 993 x 1080, about 370 MB decoded, for one quest NPC (phone memory, G663); needs Austin\'s call'],
-  ['assets/sprites/potions/scion_of_purple_fade.webp', 'zoom 1 render of purple_apparition.swf sprite 81 drawn at scale 1: a 3x twin is 32 cells of 2160 x 1269, about 350 MB decoded; needs Austin\'s call'],
   ['assets/sprites/powders/extremely_hallowed_shrine_powder-tool.webp', POWDER_WHY],
   ['assets/sprites/powders/fairly_hallowed_shrine_powder-tool.webp', POWDER_WHY],
   ['assets/sprites/powders/fertilidust-tool.webp', POWDER_WHY],
@@ -52,8 +52,8 @@ export const ALLOWED_1X = new Map([
   ['assets/sprites/quest-rooms/an_autumn_day/crow.webp', 'one-colour silhouette (G308: rook_fly_side.swf flattened) drawn at scale 0.42 in An Autumn Day and 0.2 over Rook Woods; a twin needs the flatten step on a vector render'],
   ['assets/sprites/quest-rooms/esquibeth/conch_decoy.webp', 'tools/vector-sprites rejected the render: mean frame score 0.884 under its 0.9 bar (results.json)'],
 ]);
-/** ALLOWED_1X's size when G957 closed. Lower it as entries go; never raise it. */
-export const ALLOWED_1X_MAX = 17;
+/** ALLOWED_1X's size (17 when G957 closed, 15 once G961 drew the Scion). Lower it as entries go; never raise it. */
+export const ALLOWED_1X_MAX = 15;
 
 const clean = (p) => String(p).split('?')[0];
 const atDensity = (p) => Number(/@(\d+(?:\.\d+)?)x\./.exec(p)?.[1] || 1);
@@ -70,6 +70,7 @@ function coverage() {
   const iconId = (p) => /^assets\/sprites\/icons\/([^/@]+)\.(webp|png)$/.exec(p)?.[1];
   return (path) => {
     if (HIRES_SPRITES.has(path) || SPLIT_SPRITES.has(path) || DENSE_SPRITES.has(path)) return 'twin';
+    if (ONSCREEN_SPRITES.has(path)) return 'on-screen 3x';
     if (npcHires.has(path)) return 'npc @2x';
     if (vector.has(path)) return 'svg frames';
     if ((inline.get(path) || 0) >= 2 - 1e-3) return 'dense file';
@@ -98,6 +99,15 @@ describe('G957: hi-res twins for every sheet the game draws', () => {
     assert.ok(sheets.size > 700, `collected ${sheets.size} sheets`);
     const missing = [...sheets].filter(([path]) => !covered(path) && !ALLOWED_1X.has(path)).map(([path, name]) => `${path} (${name})`);
     assert.deepEqual(missing, [], 'render a twin (tools/vector-sprites) or, with a reason, allowlist it');
+  });
+
+  it('G961: the Scion of Purple\'s two sheets are drawn sharp on screen, off the allowlist', async () => {
+    const sheets = await sheets1x();
+    for (const p of ['assets/sprites/potions/scion_of_purple.webp', 'assets/sprites/potions/scion_of_purple_fade.webp']) {
+      assert.ok(sheets.has(p), p);
+      assert.equal(coverage()(p), 'on-screen 3x', p);
+      assert.ok(!ALLOWED_1X.has(p), p);
+    }
   });
 
   it('the rock shapes (the sheets G957 found) all have 3x twins', async () => {

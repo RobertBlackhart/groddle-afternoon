@@ -22,6 +22,9 @@
  * - Leaving the room early (the Map) stops the Scions, as onPlayerExit did;
  *   the buff runs out wherever you are. A journey due while you are in a
  *   quest room, a memory or your house waits until you are back on a street.
+ * - G961: on a computer the Scion draws sharp (its 3x atlases, js/onscreen-sharp.js), held one
+ *   state ahead (scionHeldLabels) and destroyed when it fades; phones and low-memory devices keep
+ *   the 1x sheets and load nothing more. The 1x sheets go too when the room is left.
  * - Not built: Purpled Out's chat scrambling (main.js:1747, the remake has
  *   no chat).
  *
@@ -30,13 +33,16 @@
  *   &purplefast=1 for a countdown ten times faster), =room skips straight
  *   into the room, =wasted sips twice. &purplehold=1 keeps the room open
  *   (the buff is held at full). Canvas: purpleStage, purpleTaken,
- *   purpleRoom, purpleScions, purpleQuoins, purpleLast, purpleVog.
+ *   purpleRoom, purpleScions, purpleQuoins, purpleLast, purpleVog, purpleSharp (G961: on or
+ *   off:<reason>; the sharp labels in; their GPU MB; atlases fetched; the GPU format; the 1x
+ *   sheets' GPU MB). &onscreensharp=off keeps the 1x.
  */
 
 import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=f49c8998';
 import { shiftMetabolic } from '../metabolics.js?v=1383e6fd';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=a4208821';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { createOnscreenSharp, ktx2Loader, maxTextureSizeOf, rendererCompressedFormats, sharpAllowed, textureBytes } from '../onscreen-sharp.js?v=75b8a30d';
 import { playPoofIn } from '../overlay-art.js?v=98606052';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
@@ -76,7 +82,7 @@ let cursor = 0; // next TIMELINE row
 let run = null; // { returnTo, enteredAt, nextScionAt, nextQuoinAt, scions, feelingBetter }
 let journeyOn = false; // the purple_journey buff, last tick
 let counterAt = 0;
-let scions = []; // { sprite, label, born, spoke, talkUntil, idleAt, vanishing }
+let scions = []; // { sprite, label, born, spoke, talkUntil, idleAt, vanishing, state, idleKind, held, sharp }
 let quoins = []; // { sprite, x, y, type, amount }
 let last = '';
 let demoDone = false;
@@ -96,6 +102,19 @@ function publish(engine) {
   engine.setData('purpleScions', String(run?.scions || 0));
   engine.setData('purpleQuoins', String(quoins.length));
   engine.setData('purpleLast', last);
+  // G961 QA: whether this device draws the Scion sharp, the labels in and their GPU MB.
+  const st = run ? sharp?.stats() : null;
+  engine.setData('purpleSharp', st ? `${st.allowed ? 'on' : `off:${st.reason}`};${st.held.filter((r) => r.loaded).map((r) => r.label).join(',')};${st.gpuMB};${st.loads};${st.held.find((r) => r.loaded)?.format || ''};${scionSheetsGpuMB(engine)}` : '');
+}
+
+/** G961 QA: MB of the Scion's 1x sheets on the GPU now. */
+function scionSheetsGpuMB(engine) {
+  const managed = engine.renderer?.texture?.managedTextures;
+  if (!scionFrames || !managed) return 0;
+  const sources = new Set(Object.values(scionFrames).map((set) => set.all[0]?.source).filter(Boolean));
+  let bytes = 0;
+  for (const src of sources) if (managed.includes(src)) bytes += textureBytes(src);
+  return +(bytes / 1048576).toFixed(1);
 }
 
 function isDead(engine) {
@@ -297,6 +316,7 @@ function between(rng, [a, b]) {
 
 /* ---- Scions of Purple ---- */
 
+const SCION_SHEETS = ['scion_of_purple', 'scion_of_purple_fade'];
 let scionFrames = null;
 function scionTextures(engine) {
   if (scionFrames) return scionFrames;
@@ -309,23 +329,137 @@ function scionTextures(engine) {
       frames.push(frameTexture(base, new PIXI.Rectangle((i % art.cols) * art.cellW, Math.floor(i / art.cols) * art.cellH, art.cellW, art.cellH)));
     }
     const labels = {};
-    for (const [label, [start, count]] of Object.entries(art.labels)) labels[label] = { frames: frames.slice(start, start + count), art };
+    for (const [label, [start, count]] of Object.entries(art.labels)) labels[label] = { frames: frames.slice(start, start + count), art, start, all: frames };
     return labels;
   };
-  scionFrames = { ...cut('scion_of_purple'), ...cut('scion_of_purple_fade') };
+  scionFrames = Object.assign({}, ...SCION_SHEETS.map(cut));
   return scionFrames;
+}
+
+/** The 1x sheets go when the room is left (they were kept for the rest of the session before G961). */
+function releaseScionTextures() {
+  if (!scionFrames) return;
+  const seen = new Set();
+  for (const set of Object.values(scionFrames)) {
+    if (seen.has(set.art.url)) continue;
+    seen.add(set.art.url);
+    const source = set.all[0]?.source;
+    for (const t of set.all) if (!t.destroyed) t.destroy(false);
+    forgetTexture(set.art.url);
+    if (source && !source.destroyed) source.destroy();
+  }
+  scionFrames = null;
+}
+
+/* ---- G961: the Scion sharp while it is on screen ---- */
+
+/** purple_apparition.js: what a Scion plays after each state (idle1 or idle2 is picked when it appears). */
+export function scionNextState(state, idleKind) {
+  return { fadeIn: 'talk', talk: 'idle0', idle0: idleKind, idle1: 'fadeOut', idle2: 'fadeOut' }[state] || null;
+}
+
+/** PURE: the labels a Scion holds sharp: the one it plays and the next (fetched while this one plays). */
+export function scionHeldLabels(state, idleKind) {
+  return [state, scionNextState(state, idleKind)].filter(Boolean);
+}
+
+let sharp = null; // js/onscreen-sharp.js holder, once the device has been asked
+function scionSharp(engine) {
+  if (sharp) return sharp;
+  const { PIXI } = engine;
+  const renderer = engine.renderer;
+  if (!PIXI?.loadKTX2onWorker || !renderer) return null;
+  const formats = rendererCompressedFormats(renderer);
+  const allowed = sharpAllowed({
+    off: engine.param?.('onscreensharp') === 'off',
+    device: globalThis.GRODDLE_DEVICE || null,
+    resolution: (renderer.resolution || 1) * Math.abs(engine.stage?.scale?.x || 1),
+    deviceMemory: globalThis.navigator?.deviceMemory ?? null,
+    maxTextureSize: maxTextureSizeOf(renderer),
+    formats,
+  });
+  sharp = createOnscreenSharp({ PIXI, allowed, load: ktx2Loader(PIXI, formats), onReady: () => sharpenScions() });
+  return sharp;
+}
+
+const scionArtPath = (label) => scionFrames?.[label]?.art.url || null;
+
+/** The label's frames with the sharp ones in, or null until they are. */
+function sharpFrames(set, label) {
+  const map = sharp?.frames(set.art.url, label);
+  return map ? set.frames.map((t, j) => map.get(set.start + j) || t) : null;
+}
+
+/** PURE: what a Scion lets go of and takes up when it changes state (gone: everything goes). */
+export function scionHoldChange(held, state, idleKind, gone = false) {
+  const want = gone ? [] : scionHeldLabels(state, idleKind);
+  return { release: [...held].filter((l) => !want.includes(l)), hold: want.filter((l) => !held.has(l)) };
+}
+
+function holdScionArt(s) {
+  if (!sharp) return;
+  const { release, hold } = scionHoldChange(s.held, s.state, s.idleKind, s.vanished);
+  for (const label of release) {
+    sharp.release(scionArtPath(label), label);
+    s.held.delete(label);
+  }
+  for (const label of hold) if (sharp.hold(scionArtPath(label), label)) s.held.add(label);
+}
+
+/** A held label arrived: Scions playing it swap to the sharp frames where they are. */
+function sharpenScions() {
+  for (const s of scions) {
+    if (s.sharp || s.sprite.destroyed || !s.state) continue;
+    const set = scionFrames?.[s.state];
+    const frames = set && sharpFrames(set, s.state);
+    if (!frames) continue;
+    const frame = s.sprite.currentFrame;
+    const playing = s.sprite.playing;
+    s.sprite.textures = frames;
+    if (playing) s.sprite.gotoAndPlay(frame);
+    else s.sprite.gotoAndStop(frame);
+    s.sharp = true;
+  }
+  unloadScionSheets(scions[0]?.engine);
+}
+
+/**
+ * Once every Scion on screen draws sharp, the 1x sheets' GPU copies go (the fade sheet is drawn for
+ * the moment a Scion's sharp fade-in is still loading); the decoded images stay, so a Scion drawn at
+ * 1x again uploads them again.
+ */
+function unloadScionSheets(engine) {
+  const managed = engine?.renderer?.texture?.managedTextures;
+  if (!scionFrames || !managed || !scions.length || scions.some((s) => !s.sharp && !s.sprite.destroyed)) return;
+  for (const set of Object.values(scionFrames)) {
+    const src = set.all[0]?.source;
+    if (src && !src.destroyed && managed.includes(src)) src.unload?.();
+  }
+}
+
+function dropScion(s) {
+  s.vanished = true;
+  holdScionArt(s);
+  if (!s.sprite.destroyed) {
+    s.sprite.parent?.removeChild(s.sprite);
+    s.sprite.destroy();
+  }
 }
 
 function setScionState(s, label, loop = true) {
   const set = scionTextures(s.engine)[label];
   if (!set || s.sprite.destroyed) return;
-  s.sprite.textures = set.frames;
+  s.state = label;
+  holdScionArt(s);
+  const crisp = sharpFrames(set, label);
+  s.sharp = Boolean(crisp);
+  s.sprite.textures = crisp || set.frames;
   s.sprite.anchor.set(set.art.anchorX / set.art.cellW, set.art.anchorY / set.art.cellH);
   s.sprite.scale.set(set.art.scale);
   s.sprite.loop = loop;
   s.sprite.animationSpeed = 10 / 60;
   s.sprite.gotoAndPlay(0);
-  s.state = label;
+  if (crisp) unloadScionSheets(s.engine);
 }
 
 function scionContext(engine) {
@@ -363,13 +497,14 @@ function manifestScion(engine) {
   const pos = toScreen(...Object.values(emperorPosition(geoPlayer)));
   const first = scionTextures(engine).fadeIn;
   if (!first) return;
+  scionSharp(engine);
   const spr = new PIXI.AnimatedSprite(first.frames);
   spr.x = pos.x;
   spr.y = pos.y;
   spr.zIndex = 45;
   spr.eventMode = 'none';
   engine.entityLayer.addChild(spr);
-  const s = { engine, sprite: spr, label: 'Scion of Purple', born: now(), spoke: false, talkUntil: 0, idleAt: 0, vanishing: false, state: '' };
+  const s = { engine, sprite: spr, label: 'Scion of Purple', born: now(), spoke: false, talkUntil: 0, idleAt: 0, vanishing: false, state: '', idleKind: Math.random() < 0.5 ? 'idle1' : 'idle2', held: new Set(), sharp: false, vanished: false };
   setScionState(s, 'fadeIn', false);
   scions.push(s);
   run.scions += 1;
@@ -380,6 +515,7 @@ function tickScions(engine, t) {
   for (const s of [...scions]) {
     const age = t - s.born;
     if (s.sprite.destroyed) {
+      dropScion(s);
       scions = scions.filter((x) => x !== s);
       continue;
     }
@@ -395,15 +531,14 @@ function tickScions(engine, t) {
       setScionState(s, 'idle0');
       s.idleAt = t + SCION.idleAfterTalkMs;
     } else if (s.idleAt && t >= s.idleAt && s.state === 'idle0') {
-      setScionState(s, Math.random() < 0.5 ? 'idle1' : 'idle2');
+      setScionState(s, s.idleKind);
     }
     if (!s.vanishing && age >= SCION.vanishMs) {
       s.vanishing = true;
       setScionState(s, 'fadeOut', false);
     }
     if (age >= SCION.dieMs) {
-      s.sprite.parent?.removeChild(s.sprite);
-      s.sprite.destroy();
+      dropScion(s);
       scions = scions.filter((x) => x !== s);
     }
   }
@@ -477,10 +612,12 @@ function tickQuoins(engine) {
 }
 
 function clearRoomEntities() {
-  for (const s of scions) if (!s.sprite.destroyed) s.sprite.destroy();
+  for (const s of scions) dropScion(s);
   for (const q of quoins) if (!q.sprite.destroyed) q.sprite.destroy();
   scions = [];
   quoins = [];
+  sharp?.releaseAll();
+  releaseScionTextures();
 }
 
 function tickRoom(engine, t) {
@@ -630,7 +767,7 @@ export const purpleJourneyFeature = {
 
   /** Tests. */
   _state() {
-    return { taken, startedAt, cursor, run: run ? { ...run } : null, journeyOn, counterAt, scions: scions.length, quoins: quoins.length, last };
+    return { taken, startedAt, cursor, run: run ? { ...run } : null, journeyOn, counterAt, scions: scions.length, quoins: quoins.length, last, scionStates: scions.map((s) => ({ state: s.state, sharp: s.sharp, held: [...s.held] })), sharp: sharp?.stats() || null };
   },
   _reset() {
     taken = false;
@@ -645,6 +782,7 @@ export const purpleJourneyFeature = {
     demoDone = false;
     autoplay = null;
     scionFrames = null;
+    sharp = null;
     quoinBase = null;
   },
 };
