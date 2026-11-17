@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.46.0",
+  "release": "v0.47.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 237,
+    "fixed": 241,
     "lost": 5,
     "purpose": 15,
     "idea": 11
@@ -349,6 +349,12 @@
           "text": "A new game that skipped the tutorial started up in Hechey Track's treetops instead of on the ground.",
           "state": "fixed",
           "version": "v0.46.0"
+        },
+        {
+          "id": "G916",
+          "text": "Barnacles in Kalavana and Jethimadh stood on the floor instead of hanging on walls.",
+          "state": "fixed",
+          "version": "v0.47.0"
         }
       ]
     },
@@ -1391,6 +1397,12 @@
           "text": "On an upright phone the subway map didn't fit and couldn't be zoomed or panned.",
           "state": "fixed",
           "version": "v0.45.1"
+        },
+        {
+          "id": "G918",
+          "text": "On an iPhone the game stopped music playing in other apps, even with its own music at 0.",
+          "state": "fixed",
+          "version": "v0.47.0"
         }
       ]
     },
@@ -1642,6 +1654,12 @@
           "text": "Any click or key stopped a walk to a destination, where Glitch kept walking while you used the Map, chat or quests.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G915",
+          "text": "The route arrow took a signpost from the floor below it and carried you to the next street.",
+          "state": "fixed",
+          "version": "v0.47.0"
         }
       ]
     },
@@ -1895,6 +1913,12 @@
           "text": "Ix Completist came after seven streets instead of every Ix street.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G914",
+          "text": "Hub Completist badges could be earned before visiting every street of their hub.",
+          "state": "fixed",
+          "version": "v0.47.0"
         }
       ]
     },

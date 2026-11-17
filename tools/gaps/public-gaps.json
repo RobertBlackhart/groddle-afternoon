@@ -2482,6 +2482,47 @@
       "commits": [
         "game:ce3163878aa"
       ]
+    },
+    {
+      "id": "G914",
+      "area": "Badges",
+      "show": "fixing",
+      "text": "Hub Completist badges could be earned before visiting every street of their hub.",
+      "commits": [
+        "game:257eed8214e",
+        "game:004590b43e2"
+      ]
+    },
+    {
+      "id": "G915",
+      "area": "Navigation",
+      "show": "fixing",
+      "text": "The route arrow took a signpost from the floor below it and carried you to the next street.",
+      "commits": [
+        "game:e27f560bc34"
+      ]
+    },
+    {
+      "id": "G916",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Barnacles in Kalavana and Jethimadh stood on the floor instead of hanging on walls.",
+      "commits": [
+        "game:879f1dd99fc",
+        "game:8936bef8b58",
+        "server:d58fce4",
+        "server:80132ee"
+      ]
+    },
+    {
+      "id": "G918",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On an iPhone the game stopped music playing in other apps, even with its own music at 0.",
+      "commits": [
+        "game:15b8deec3b2",
+        "game:0384542cd8e"
+      ]
     }
   ]
 }
