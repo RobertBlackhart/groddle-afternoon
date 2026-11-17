@@ -114,6 +114,7 @@ import { DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID } from '../publi
 import { PHANTOM_QUEST_ID, REMEMBER_QUEST_ID } from '../public/js/ghost-quest.js?v=5f3cc133';
 import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
+import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const OUT = sitePath('data', 'economy.json');
@@ -170,11 +171,25 @@ export function unitValue(classTsid) {
   return base > 0 ? Math.max(1, Math.round(base * BEST_HAGGLE)) : FALLBACK_VALUE;
 }
 
+/**
+ * Every .js file under a public/ folder, its subfolders too, in a stable order. G948 (G942 gap A20):
+ * the scan read public/js and public/js/features only, so a class named only in js/quest-rooms (the
+ * Extremely Rare Items Vendor's Rube Shaped Potato, quest-rooms/penalty.js RARE_STORE) read as
+ * granted by nothing and went "credit": a buyer lost 500,000 currants and the potato.
+ */
+export function gameFiles(dir = 'public/js') {
+  const out = [];
+  for (const e of readdirSync(join(root, dir), { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    if (e.isDirectory()) out.push(...gameFiles(`${dir}/${e.name}`));
+    else if (e.name.endsWith('.js')) out.push(`${dir}/${e.name}`);
+  }
+  return out;
+}
+
 /** The game's code and content, without the catalogs (store-catalog.js keeps its offers, loses its base-cost table). */
-function gameText() {
+export function gameText() {
   const list = [
-    ...readdirSync(join(root, 'public/js')).filter((f) => f.endsWith('.js')).map((f) => `public/js/${f}`),
-    ...readdirSync(join(root, 'public/js/features')).filter((f) => f.endsWith('.js')).map((f) => `public/js/features/${f}`),
+    ...gameFiles('public/js'),
     'public/game.js',
     'public/content.js',
     ...readdirSync(join(root, 'public/assets/content')).filter((f) => f.endsWith('.json')).map((f) => `public/assets/content/${f}`),
@@ -347,6 +362,10 @@ export async function economyTable() {
   // ordinary class, not a drop capped at 5 a day. The site's ledger credits it from the save's shrine
   // record, a few a day (G895, LedgerMath::earned), since donated goods no longer refill the budget (G742).
   for (const id of Object.keys(GIANTS)) ordinary.add(`emblem_${id}`);
+  // G948 (G942 gap A21): the Toy Vendor sells the Camera online (js/snaps.js withCamera adds CAMERA_OFFER
+  // to its stock at run time, so job-obtainable never sees it): an ordinary class, not a drop capped at
+  // 5 a day (a 6th bought in a day was taken back).
+  ordinary.add(CAMERA_OFFER.classTsid);
   const drops = dropCounts();
   const items = {};
   for (const [c, row] of Object.entries(trade.items)) {
