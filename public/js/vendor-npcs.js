@@ -291,10 +291,21 @@ export function vendorNpcList(row) {
 
 export const VENDOR_PLACEMENT_KEY = 'vendor-npcs';
 
-/** Planner group for the shared street placement (features placementGroups hook). */
-export function vendorNpcPlacementGroups(row) {
-  const count = vendorNpcList(row).length;
-  return count ? [{ key: VENDOR_PLACEMENT_KEY, count, clearance: 140 }] : [];
+/**
+ * Planner group for the shared street placement (features placementGroups hook). `spots` maps a
+ * class to where a snap shows it (G940, #469: the scarecrow, garden-beds.js measuredGardenVendor):
+ * that NPC stands there, at its index in the list (a `fixed` point), the rest are planned. The
+ * group is `late`: its fixed point is seated at its own turn, after the core groups, so no tree,
+ * rock or animal the realtime server lays out moves for it.
+ */
+export function vendorNpcPlacementGroups(row, spots = {}) {
+  const list = vendorNpcList(row);
+  if (!list.length) return [];
+  const fixed = list.map((classTsid, index) => {
+    const at = spots?.[classTsid];
+    return at && Number.isFinite(at.x) && Number.isFinite(at.y) ? { x: at.x, y: at.y, index } : null;
+  }).filter(Boolean);
+  return [{ key: VENDOR_PLACEMENT_KEY, count: list.length, clearance: 140, ...(fixed.length ? { fixed, late: true } : {}) }];
 }
 
 /**

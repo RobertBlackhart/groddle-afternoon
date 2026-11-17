@@ -56,11 +56,14 @@ export function isSharedGardenStreet(tsid) {
 
 /**
  * A bed key as the server names it: default, herb, or herb2..herb9 (a Herb Gardens street's other
- * herb beds, one per planter box: street-ecology.js streetGardenBoxBeds, report #252).
+ * herb beds, one per planter box: street-ecology.js streetGardenBoxBeds, report #252), or
+ * default2..default12 (G940: a street's other crop beds, garden.js streetGardenBeds).
  */
 export function bedKey(bed) {
-  return /^herb[2-9]?$/.test(String(bed || '')) ? bed : 'default';
+  return BED_RE.test(String(bed || '')) ? bed : 'default';
 }
+
+const BED_RE = /^(default(?:[2-9]|1[0-2])?|herb[2-9]?)$/;
 
 /** The key of a street garden object: its bed (herb2) or its kind. */
 export function gardenBedKey(garden) {
@@ -73,7 +76,7 @@ export function plotId(bed, key) {
 
 /** "herb:2-1" -> { bed: 'herb', key: '2-1' }, or null. */
 export function parsePlotId(id) {
-  const m = String(id || '').match(/^(default|herb[2-9]?):(\d{1,2}-\d{1,2})$/);
+  const m = String(id || '').match(/^(default(?:[2-9]|1[0-2])?|herb[2-9]?):(\d{1,2}-\d{1,2})$/);
   return m ? { bed: m[1], key: m[2] } : null;
 }
 

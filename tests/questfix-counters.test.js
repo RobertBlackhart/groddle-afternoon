@@ -28,7 +28,7 @@ import {
   PURPLE_JOURNEY_STREETS,
   COLD_COMFORT,
   COLD_COMFORT_LEAVE_TEXT,
-} from '../public/js/quest-offers.js?v=38a0cac5';
+} from '../public/js/quest-offers.js?v=8a52da9f';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=bac50225';
 import { createPlot, performPlotVerb } from '../public/js/patches.js?v=c5256421';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
@@ -39,7 +39,7 @@ import {
   SLATHER_VERB,
   SLATHER_COPY,
 } from '../public/js/features/quest-verbs-feature.js?v=141a1290';
-import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=ba74a8de';
+import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=9a5069ea';
 import {
   cubimalFor,
   giveCubimalVerb,

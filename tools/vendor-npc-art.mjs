@@ -20,7 +20,7 @@ import { mkdirSync, readdirSync, rmSync, mkdtempSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import { VENDOR_NPC_ART, VENDOR_NPC_MOTION_ART, stripCols } from '../public/js/vendor-npcs.js?v=7d756a6d';
+import { VENDOR_NPC_ART, VENDOR_NPC_MOTION_ART, stripCols } from '../public/js/vendor-npcs.js?v=90b0c123';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OGA = join(os.homedir(), 'Documents/glitch-audit/opengameart/extracted_vendors/glitch-assets');

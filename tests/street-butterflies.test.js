@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { butterflySplit, populationForStreet } from '../public/js/street-ecology.js?v=d3832c0c';
+import { butterflySplit, populationForStreet } from '../public/js/street-ecology.js?v=e2487473';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8'));

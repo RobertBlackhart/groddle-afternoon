@@ -30,7 +30,7 @@ import {
   ensureQuestOfferState,
   routeQuestEvent,
   routesCounter,
-} from '../public/js/quest-offers.js?v=38a0cac5';
+} from '../public/js/quest-offers.js?v=8a52da9f';
 import { racesFeature } from '../public/js/features/races-feature.js?v=5a5ccc51';
 import { raceSceneTsid } from '../public/js/races.js?v=ab22a079';
 import { HOG_HAUL_STREET_ID } from '../public/js/hog-haul.js?v=50d2e072';

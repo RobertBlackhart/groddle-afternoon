@@ -19,6 +19,7 @@ import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
 import { gardenGrowModifier } from './imagination-effects.js?v=70169933';
 import { metabolicGain, moodMax, loseEnergy, loseMood } from './metabolics.js?v=1383e6fd';
 import { grantMoodXp } from './mood-xp.js?v=22648ec0';
+import { isCropGardenStreet } from './garden-beds.js?v=831b1d97';
 
 /** @typedef {'clean'|'seeds'|'shoots'|'crop'|'dirty'} PlotState */
 
@@ -1070,13 +1071,60 @@ export function streetGardenBed(tsid, index) {
 
 /**
  * A street bed's key: default, herb, or herb2..herb9 (a Herb Gardens street's other herb beds: its
- * second planned bed before report #252, now one per planter box, street-ecology.js streetGardenBoxBeds).
+ * second planned bed before report #252, now one per planter box, street-ecology.js streetGardenBoxBeds),
+ * or default2..default12 (G940: a street's other crop beds, every Garden its location file names).
  */
-export const BED_KEY_RE = /^(default|herb[2-9]?)$/;
+export const BED_KEY_RE = /^(default(?:[2-9]|1[0-2])?|herb[2-9]?)$/;
 
-/** A bed key's kind: herb2..herb9 are herb beds. */
+/** A bed key's kind: herb2..herb9 are herb beds, default2..default12 crop beds. */
 export function bedKind(bed) {
   return /^herb[2-9]?$/.test(String(bed || '')) ? 'herb' : 'default';
+}
+
+/**
+ * G940 (report #469): a street's beds from its plan's garden points (street-ecology.js
+ * gardenPlacementRequest; the measured beds lead the group, population.gardenBeds), in order:
+ * [{ bed, gardenType, cols, rows, x, y, style? }], x, y the bed's foot (game.js spawnGarden's origin).
+ * - A measured bed is the size, kind and bed art its snap shows, standing where it shows it.
+ * - A planned bed on a street whose 2012 gardens were crop gardens (garden-beds.js
+ *   isCropGardenStreet: measured, or on Zog's 2012 list) is a crop bed, 4 by 2.
+ * - Elsewhere (Hechey Track's onboarding beds, a feature-built row) streetGardenBed's crop then herb
+ *   bed, then crop beds.
+ * Keys: the crop bed that holds the old four-by-two crop bed's plots (the first one at least 4 by 2,
+ * else the first crop bed) keeps `default`, so a street's saved plots stay with it (spawnGarden
+ * fitGardenToBed), the others default2, default3... left to right; herb beds the same with herb.
+ * @param {string} tsid
+ * @param {{ x: number, y: number }[]} points placement('gardens')
+ * @param {{ gardenBeds?: any[] }} [population]
+ */
+export function streetGardenBeds(tsid, points, population = {}) {
+  const measured = (population?.gardenBeds || []).slice(0, (points || []).length);
+  const crop2012 = measured.length > 0 || isCropGardenStreet(tsid);
+  const beds = (points || []).map((p, index) => {
+    const m = measured[index];
+    if (m) return { gardenType: m.gardenType, cols: m.cols, rows: m.rows, x: m.x, y: m.y, style: m.style };
+    if (crop2012 || index >= 2) return { gardenType: 'default', cols: 4, rows: 2, x: p.x, y: p.y + 2 };
+    const legacy = streetGardenBed(tsid, index);
+    return { bed: legacy.bed, gardenType: legacy.gardenType, cols: legacy.cols, rows: 2, x: p.x, y: p.y + 2 };
+  });
+  const taken = new Set(beds.map((b) => b.bed).filter(Boolean));
+  for (const [kind, first, fits] of [['default', 'default', [4, 2]], ['herb', 'herb', [3, 2]]]) {
+    const open = beds.filter((b) => !b.bed && b.gardenType === kind);
+    if (!open.length) continue;
+    if (!taken.has(first)) {
+      const pick = open.find((b) => b.cols >= fits[0] && b.rows >= fits[1]) || open[0];
+      pick.bed = first;
+      taken.add(first);
+    }
+    let n = 2;
+    for (const b of open) {
+      if (b.bed) continue;
+      while (taken.has(`${first}${n}`)) n += 1;
+      b.bed = `${first}${n}`;
+      taken.add(b.bed);
+    }
+  }
+  return beds.map(({ bed, gardenType, cols, rows, x, y, style }) => ({ bed, gardenType, cols, rows, x, y, ...(style ? { style } : {}) }));
 }
 
 /**

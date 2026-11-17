@@ -20,6 +20,7 @@ import {
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
+import { gardenBedWidth, measuredGardenBeds } from './garden-beds.js?v=831b1d97';
 import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=256c00e9';
 import { SLOTH_SPOTS } from './sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from './sloth-trees.js?v=a3299191';
@@ -510,6 +511,27 @@ export function treePlacementRequest(population) {
   return { key: 'trees', count: population?.treeClasses?.length || 0, clearance: 135, ...(fixed.length ? { fixed } : {}) };
 }
 
+/** G940 (#469): a street's beds measured on its snaps (garden-beds.js), as a population field. */
+function gardenBedsField(tsid) {
+  const beds = measuredGardenBeds(tsid);
+  return beds ? { gardenBeds: beds } : {};
+}
+
+/**
+ * The gardens' planner request (G940, report #469): every Garden the street's location file names,
+ * the beds its snaps show as `fixed` points where they show them (planStreetPlacements seats them
+ * first, they lead the group, and nothing else stands on one: each its own width, garden-beds.js
+ * gardenBedWidth, by PLACEMENT_HEIGHTS.gardens), the rest planned. garden.js streetGardenBeds lays
+ * out the beds from the plan's points. game.js enterStreet, the realtime builders and the level
+ * builder all ask with this.
+ */
+export function gardenPlacementRequest(population) {
+  const count = population?.gardens || 0;
+  const fixed = (population?.gardenBeds || []).slice(0, count)
+    .map((b) => ({ x: b.x, y: b.y, w: gardenBedWidth(b), h: PLACEMENT_HEIGHTS.gardens }));
+  return { key: 'gardens', count, clearance: 165, ...(fixed.length ? { fixed } : {}) };
+}
+
 function whole(value, fallback = 0, max = 999) {
   const n = Number(value);
   return Math.max(0, Math.min(max, Math.floor(Number.isFinite(n) ? n : fallback)));
@@ -734,7 +756,9 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
       ...butterflySplit(counts.npc_butterfly),
       treeClasses: expandClasses(counts, TREE_CLASSES, 8),
       rockClasses: expandClasses(counts, ROCK_CLASSES),
-      gardens: Math.min(whole(counts.garden), 2),
+      // G940 (#469): every Garden the location file names (the cap of two lifted), the snapped ones measured.
+      gardens: whole(counts.garden),
+      ...gardenBedsField(tsid),
       vendor: whole(counts.street_spirit) > 0,
       shrine: !!entry.giantId,
       apples: 0,
@@ -760,7 +784,8 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
 
   let treeClasses = expandClasses(counts, TREE_CLASSES, 8);
   let rockClasses = expandClasses(counts, ROCK_CLASSES);
-  let gardens = Math.min(whole(counts.garden), 2);
+  // G940 (#469): every Garden the location file names (the cap of two lifted).
+  let gardens = whole(counts.garden);
   let vendor = whole(counts.street_spirit) > 0;
   let shrine = !!entry?.giantId;
   let starterRockSpots = null;
@@ -811,6 +836,7 @@ export function populationForStreet(tsid, entry, { starter = false } = {}) {
     rockClasses,
     gardens,
     ...(gardenBoxes ? { gardenBoxes } : {}),
+    ...(gardens && !starter ? gardenBedsField(tsid) : {}),
     vendor,
     shrine,
     // Feature-built rows (private instances such as party spaces) may pin

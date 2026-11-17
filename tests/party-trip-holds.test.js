@@ -27,8 +27,8 @@ import {
   stuckPromptDue,
 } from '../public/js/quest-instance.js?v=2fdff4a7';
 import { normalizePartyRecord } from '../public/js/party-spaces.js?v=c667e9e2';
-import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=95e83b5f';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=a21e58c3';
+import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=07ed9c4e';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=eda868ee';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

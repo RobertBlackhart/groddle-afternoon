@@ -19,7 +19,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=d3832c0c';
+} from '../public/js/street-ecology.js?v=e2487473';
 import {
   FURNITURE_GROUPS,
   STONE_DEAD_END_PX,

@@ -64,7 +64,7 @@ import {
   hasWateringCan,
   pickSeedToPlant,
   seedFitsGarden,
-} from '../garden.js?v=73a80be0';
+} from '../garden.js?v=fdd42396';
 import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=8516a0c3';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=f49c8998';
@@ -83,7 +83,7 @@ import {
   parsePlotId,
   plotId,
   rollPasses,
-} from '../shared-gardens.js?v=c1f90bc0';
+} from '../shared-gardens.js?v=464472e5';
 
 export const SHARED_GARDENS_FEATURE_ID = 'shared-gardens';
 const REQUEST_TIMEOUT_MS = 8000;

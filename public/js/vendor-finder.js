@@ -17,7 +17,7 @@
  * Pure; the panel is js/ui/topbar.js installCurrants, the game side features/vendor-finder-feature.js.
  */
 import { STORE_CATALOG } from './store-catalog.js?v=74b56af3';
-import { VENDOR_NPCS } from './vendor-npcs.js?v=7d756a6d';
+import { VENDOR_NPCS } from './vendor-npcs.js?v=90b0c123';
 
 /** The panel's words (the remake's own). */
 export const VENDOR_FINDER_TEXT = Object.freeze({

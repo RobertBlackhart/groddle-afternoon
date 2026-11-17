@@ -18,10 +18,10 @@ import { join } from 'node:path';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=d3832c0c';
-import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=80f2b38f';
-import { FEATURES } from '../public/js/features/index.js?v=b80e79cc';
-import { streetGardenBed } from '../public/js/garden.js?v=73a80be0';
+import { ecologyForStreet, gardenPlacementRequest, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=e2487473';
+import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=eebefe5c';
+import { FEATURES } from '../public/js/features/index.js?v=5b20c4f8';
+import { streetGardenBeds } from '../public/js/garden.js?v=fdd42396';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
@@ -43,14 +43,16 @@ function plannerCall() {
 function clientCoreGroups() {
   const call = plannerCall();
   const core = call.slice(0, call.indexOf("...features.collect('placementGroups'"));
-  // The rocks', trees' and shrine's groups are rockPlacementRequest, treePlacementRequest and
-  // shrinePlacementRequest(currentStreetPopulation) (the rocks and trees the snaps show, the shrine its picture shows, fixed).
-  const rows = [...core.matchAll(/\{ key: '([a-zA-Z]+)', count: ([^,]+), clearance: (\d+) \}|rockPlacementRequest\(currentStreetPopulation\)|treePlacementRequest\(currentStreetPopulation\)|shrinePlacementRequest\(currentStreetPopulation\)/g)];
+  // The rocks', trees', gardens' and shrine's groups are rockPlacementRequest, treePlacementRequest,
+  // gardenPlacementRequest and shrinePlacementRequest(currentStreetPopulation) (the rocks, trees and
+  // garden beds the snaps show, the shrine its picture shows, fixed).
+  const rows = [...core.matchAll(/\{ key: '([a-zA-Z]+)', count: ([^,]+), clearance: (\d+) \}|rockPlacementRequest\(currentStreetPopulation\)|treePlacementRequest\(currentStreetPopulation\)|gardenPlacementRequest\(currentStreetPopulation\)|shrinePlacementRequest\(currentStreetPopulation\)/g)];
   assert.ok(rows.length >= 13, `read ${rows.length} planner groups from game.js`);
   return rows.map(([whole, key, expr, clearance]) => {
     if (whole.startsWith('rockPlacementRequest')) return { key: 'rocks', request: (pop) => rockPlacementRequest(pop) };
     if (whole.startsWith('treePlacementRequest')) return { key: 'trees', request: (pop) => treePlacementRequest(pop) };
     if (whole.startsWith('shrinePlacementRequest')) return { key: 'shrine', request: (pop) => shrinePlacementRequest(pop) };
+    if (whole.startsWith('gardenPlacementRequest')) return { key: 'gardens', request: (pop) => gardenPlacementRequest(pop) };
     if (/^\d+$/.test(expr.trim())) return { key, count: () => Number(expr), clearance: Number(clearance) };
     const m =/^currentStreetPopulation\.(\w+)(\.length| \? 1 : 0)?$/.exec(expr.trim());
     assert.ok(m, `game.js count for ${key} reads the street's population: ${expr}`);
@@ -154,7 +156,8 @@ describe('the page lays out each street where the realtime server checks reach',
       }
       // Shared public gardens (gardens.go): each bed's key (its plot ids), width and spot by the page's bed index.
       // Report #252: then the beds in a Herb Gardens street's planter boxes (game.js: x, y as they are, rows from the box).
-      const beds = placement('gardens');
+      // G940: the planned and measured beds as game.js lays them out (garden.js streetGardenBeds).
+      const beds = streetGardenBeds(tsid, placement('gardens'), population);
       const boxed = streetGardenBoxBeds(data, population);
       for (const [index, [key, cols, rows, x, y]] of (gardens[tsid] || []).entries()) {
         if (index >= beds.length) {
@@ -162,8 +165,8 @@ describe('the page lays out each street where the realtime server checks reach',
           if (!b || differs({ x: b.x, y: b.y - 2 }, x, y) || b.bed !== key || b.cols !== cols || b.rows !== rows) bad.push(`garden ${index} page ${b?.bed} ${b?.cols}x${b?.rows} at ${b?.x},${b?.y} server ${key} ${cols}x${rows} at ${x},${y}`);
           continue;
         }
-        const bed = streetGardenBed(tsid, index);
-        if (differs(beds[index], x, y) || bed.bed !== key || bed.cols !== cols) bad.push(`garden ${index} page ${bed.bed} ${bed.cols} at ${at(beds[index])} server ${key} ${cols} at ${x},${y}`);
+        const bed = beds[index];
+        if (differs({ x: bed.x, y: bed.y - 2 }, x, y) || bed.bed !== key || bed.cols !== cols || bed.rows !== rows) bad.push(`garden ${index} page ${bed.bed} ${bed.cols}x${bed.rows} at ${bed.x},${bed.y} server ${key} ${cols}x${rows} at ${x},${y}`);
       }
       if ((gardens[tsid] || []).length && (gardens[tsid] || []).length !== beds.length + boxed.length) bad.push(`gardens: page ${beds.length + boxed.length} server ${(gardens[tsid] || []).length}`);
       if (bad.length) drift.push(`${tsid} ${data.label}: ${bad.slice(0, 4).join('; ')}${bad.length > 4 ? ` (+${bad.length - 4})` : ''}`);

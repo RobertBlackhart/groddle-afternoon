@@ -8,12 +8,12 @@
 import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=814ba28e';
-import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=0c9b6ab1';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=d3832c0c';
+import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=55f4616a';
+import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=a25ea362';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=e2487473';
 import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=90517e2f';
-import { selectVendorProfile } from '../public/js/vendor.js?v=4eb4c4f7';
+import { selectVendorProfile } from '../public/js/vendor.js?v=4c734fae';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');

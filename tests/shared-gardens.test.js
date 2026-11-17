@@ -10,11 +10,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=73a80be0';
-import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=c1f90bc0';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=56c2bb78';
-import { FEATURES } from '../public/js/features/index.js?v=b80e79cc';
-import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=6fa88b8a';
+import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=fdd42396';
+import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=5206612f';
+import { FEATURES } from '../public/js/features/index.js?v=5b20c4f8';
+import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=6f765634';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
@@ -440,7 +440,7 @@ function rig({ street = COMMUNITY }) {
 
 describe('report 188: the Herb Gardens streets grow herbs in both beds', () => {
   it('streetGardenBed gives two herb beds there (herb2, herb) and crop then herb everywhere else', async () => {
-    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=73a80be0');
+    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=fdd42396');
     assert.deepEqual([...HERB_GARDEN_STREETS].sort(), ['GA95U14319524O9', 'GA97L62229522GS', 'GA99U5PI39524GN']);
     for (const tsid of HERB_GARDEN_STREETS) {
       assert.deepEqual(streetGardenBed(tsid, 0), { bed: 'herb2', gardenType: 'herb', cols: 4 });
@@ -461,17 +461,18 @@ describe('report 188: the Herb Gardens streets grow herbs in both beds', () => {
     assert.deepEqual(parsePlotId('herb3:1-1'), { bed: 'herb3', key: '1-1' });
     assert.equal(parsePlotId('herb10:1-1'), null);
     assert.equal(parsePlotId('herb1:1-1'), null);
-    const { gardenBedKey } = await import('../public/js/shared-gardens.js?v=c1f90bc0');
+    const { gardenBedKey } = await import('../public/js/shared-gardens.js?v=464472e5');
     assert.equal(gardenBedKey(createGarden({ gardenType: 'herb', bed: 'herb2' })), 'herb2');
     assert.equal(gardenBedKey(createGarden({ gardenType: 'herb' })), 'herb');
     assert.equal(gardenBedKey(createGarden({})), 'default');
     const src = readFileSync(new URL('../public/js/player-save.js', import.meta.url), 'utf8');
-    assert.match(src, /for \(const type of \['default', 'herb', 'herb2', 'herb3', 'herb4', 'herb5', 'herb6', 'herb7', 'herb8', 'herb9'\]\)/);
+    assert.match(src, /'default', 'herb', 'herb2', 'herb3', 'herb4', 'herb5', 'herb6', 'herb7', 'herb8', 'herb9',/);
+    assert.match(src, /for \(const type of STREET_BED_KEYS\)/);
   });
 
-  it('game.js lays the street beds out by streetGardenBed and keeps each under its own key', () => {
+  it('game.js lays the street beds out by streetGardenBeds and keeps each under its own key', () => {
     const src = readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');
-    assert.match(src, /const bed = streetGardenBed\(data\.tsid, index\);/);
+    assert.match(src, /streetGardenBeds\(data\.tsid, placement\('gardens'\), currentStreetPopulation\)/);
     assert.match(src, /streetState\.gardens\[bedKey\] = garden;/);
   });
 });

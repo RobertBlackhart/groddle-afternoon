@@ -52,7 +52,7 @@
 import { pluralize } from '../words.js?v=ee4e72f8';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=f49c8998';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=8516a0c3';
-import { ecologyForStreet } from '../street-ecology.js?v=d3832c0c';
+import { ecologyForStreet } from '../street-ecology.js?v=e2487473';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=a1ce9368';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
@@ -115,7 +115,7 @@ import {
 } from '../street-jobs.js?v=950e9c22';
 import { PAPERS_BADGE } from '../subway.js?v=735bfbeb';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=fc51a023';
+import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=2dddd1c7';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {

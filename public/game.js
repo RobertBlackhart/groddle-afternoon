@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=3e445ae8';
+import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=e61566f3';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b80e79cc';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5b20c4f8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -37,8 +37,8 @@ import {
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=7f5d761c';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=c6476b8c';
-import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=38a0cac5';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=b8bdc515';
+import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=8a52da9f';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -502,8 +502,8 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=fea1fa89';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=fea1fa89';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=9ff4ab1f';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=9ff4ab1f';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -522,7 +522,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=0e7ba77a';
+} from './js/player-save.js?v=eceb02ed';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -636,7 +636,7 @@ import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineA
 import {
   createGarden,
   fitGardenToBed,
-  streetGardenBed,
+  streetGardenBeds,
   tickGarden,
   plantPlot,
   waterPlot,
@@ -661,7 +661,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=73a80be0';
+} from './js/garden.js?v=fdd42396';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -687,7 +687,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=c7ceeaa2';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=75919425';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -706,7 +706,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=4610ba84';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=c6fa2ae2';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -885,14 +885,14 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=4eb4c4f7';
+} from './js/vendor.js?v=4c734fae';
 import {
   animalAnchorX,
   animalAnchorY,
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=fea1fa89';
+} from './js/animals.js?v=9ff4ab1f';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1028,9 +1028,10 @@ import {
   rockSpawnPlan,
   shrinePlacementRequest,
   treePlacementRequest,
+  gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=d3832c0c';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=20cee4ea';
+} from './js/street-ecology.js?v=e2487473';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=5e8707e8';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=4c43bfeb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b12c43aa';
@@ -1058,7 +1059,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=6d3c1226';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=47b04ca4';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=b8c31e13';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1084,7 +1085,7 @@ import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-s
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=be4653f1';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=af3a9175';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=c45ab338';
@@ -25579,7 +25580,8 @@ async function enterStreet(tsid, opts = {}) {
       { key: 'player', count: 1, clearance: 190 },
       // Trees the snaps show stand where they show them, at their own index (fixed points), the rest are planned.
       treePlacementRequest(currentStreetPopulation),
-      { key: 'gardens', count: currentStreetPopulation.gardens, clearance: 165 },
+      // G940 (#469): every Garden the street names, the beds its snaps show where they show them (fixed).
+      gardenPlacementRequest(currentStreetPopulation),
       { key: 'vendor', count: currentStreetPopulation.vendor ? 1 : 0, clearance: 120 },
       // The shrine where its street's picture shows it (fixed), else planned.
       shrinePlacementRequest(currentStreetPopulation),
@@ -25649,17 +25651,10 @@ async function enterStreet(tsid, opts = {}) {
   if (currentStreetPopulation.vendor) spawnVendorNpc(placement('vendor')[0]);
   if (currentStreetPopulation.shrine) await spawnShrine(placement('shrine')[0]);
   refreshDroppedWorldItems();
-  placement('gardens').forEach((point, index) => {
-    // The first bed grows crops and the second herbs, except on the Herb Gardens streets (report 188).
-    const bed = streetGardenBed(data.tsid, index);
-    spawnGarden({
-      x: point.x,
-      y: point.y + 2,
-      cols: bed.cols,
-      rows: 2,
-      gardenType: bed.gardenType,
-      bed: bed.bed,
-    });
+  // G940 (#469): each bed its snap's size, kind and art where it shows it; planned beds crops on the
+  // 2012 crop-garden streets, else the crop then the herb bed (report 188; garden.js streetGardenBeds).
+  streetGardenBeds(data.tsid, placement('gardens'), currentStreetPopulation).forEach((bed) => {
+    spawnGarden({ x: bed.x, y: bed.y, cols: bed.cols, rows: bed.rows, gardenType: bed.gardenType, bed: bed.bed, ...(bed.style ? { style: bed.style } : {}) });
   });
   // Report #252: a Herb Gardens street's beds, one in each planter box (the box is the bed: style none).
   streetGardenBoxBeds(data, currentStreetPopulation).forEach((bed) => {
@@ -34740,7 +34735,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=7adc71ad').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=5cb94243').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

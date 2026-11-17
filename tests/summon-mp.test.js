@@ -23,9 +23,9 @@ import {
   rollTeleportDay,
 } from '../public/js/teleportation.js?v=e95cf7cb';
 import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '../public/js/summon-mp.js?v=7598f381';
-import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=895a5209';
-import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=be4653f1';
-import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=972f2d54';
+import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=c5210a69';
+import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=af3a9175';
+import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=f0d650d7';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=ada01ec9';
 
 const ROOT = join(import.meta.dirname, '..');

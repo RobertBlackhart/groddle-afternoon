@@ -11,7 +11,7 @@ import { normalizeEmotionalBearState } from './emotional-bear.js?v=172f393b';
 import { normalizeHomeState } from './homes.js?v=631ab6b8';
 import { normalizeMailboxState } from './mailbox.js?v=a3e833ba';
 import { normalizeFeatureSlices } from './feature-host.js?v=a0bd032a';
-import { normalizeQuestOfferState } from './quest-offers.js?v=38a0cac5';
+import { normalizeQuestOfferState } from './quest-offers.js?v=8a52da9f';
 import { cleanBuild } from './save-build.js?v=588eae75';
 
 export const PLAYER_SAVE_VERSION = 7;
@@ -357,10 +357,16 @@ export function normalizeGardenSnapshot(seed = {}) {
   };
 }
 
+const STREET_BED_KEYS = Object.freeze([
+  'default', 'herb', 'herb2', 'herb3', 'herb4', 'herb5', 'herb6', 'herb7', 'herb8', 'herb9',
+  ...Array.from({ length: 11 }, (_, i) => `default${i + 2}`),
+]);
+
 function normalizeStreetSnapshot(seed = {}) {
   const gardens = {};
-  // herb2..herb9: a Herb Gardens street's other herb beds (garden.js BED_KEY_RE; report #252: one per planter box).
-  for (const type of ['default', 'herb', 'herb2', 'herb3', 'herb4', 'herb5', 'herb6', 'herb7', 'herb8', 'herb9']) {
+  // herb2..herb9: a Herb Gardens street's other herb beds (garden.js BED_KEY_RE; report #252: one per planter box);
+  // default2..default12: a street's other crop beds (G940: every Garden its location file names).
+  for (const type of STREET_BED_KEYS) {
     if (seed?.gardens?.[type]) gardens[type] = normalizeGardenSnapshot(seed.gardens[type]);
   }
   const trees = (Array.isArray(seed?.trees) ? seed.trees : []).slice(0, 40).map((row) => ({

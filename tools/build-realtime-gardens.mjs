@@ -5,11 +5,11 @@
  *
  * For each street of js/shared-gardens.js SHARED_GARDEN_STREETS it lays the
  * beds out exactly as game.js enterStreet does (placement('gardens') from the
- * same planner groups tools/build-realtime-objects.mjs uses; spawnGarden:
- * the first point is the crop bed, 4 by 2, the second the herb bed, 3 by 2, both herb beds
- * on the Herb Gardens streets (js/garden.js streetGardenBed: the first keyed herb2; since report #252
- * one bed in each planter box there instead, street-ecology.js streetGardenBoxBeds),
- * each standing at y + 2), so the server knows each bed and can check a
+ * same planner groups tools/build-realtime-objects.mjs uses; js/garden.js streetGardenBeds: since
+ * G940 every Garden the location file names, the beds the snaps show where they show them, each its
+ * own size and kind, keyed default, default2...; planned beds stand at y + 2; on the Herb Gardens
+ * streets one bed in each planter box, street-ecology.js streetGardenBoxBeds, report #252),
+ * so the server knows each bed and can check a
  * player stands near it. The rules come from js/garden.js: each seed's garden
  * type, its two stage times (seedDef: the source's hours at GARDEN_SPEEDUP times
  * Glitch's speed, Austin 2026-11-10: about 10; "pace" is that number), its crop
@@ -33,10 +33,10 @@ import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetGardenBoxBeds, streetReservedSpots } from '../public/js/street-ecology.js?v=d3832c0c';
-import { GARDEN_FERTILIZE_PERC, GARDEN_SPEEDUP, GARDEN_WATER_MS, LEGACY_GARDEN, SEED_CATALOG, legacyGrowMs, streetGardenBed } from '../public/js/garden.js?v=73a80be0';
-import { GARDEN_LOCK_MS, SHARED_GARDEN_STREETS } from '../public/js/shared-gardens.js?v=c1f90bc0';
-import { GARDEN_POTIONS, POTION_USES } from '../public/js/master-garden.js?v=6fa88b8a';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetGardenBoxBeds, streetReservedSpots } from '../public/js/street-ecology.js?v=e2487473';
+import { GARDEN_FERTILIZE_PERC, GARDEN_SPEEDUP, GARDEN_WATER_MS, LEGACY_GARDEN, SEED_CATALOG, legacyGrowMs, streetGardenBeds } from '../public/js/garden.js?v=fdd42396';
+import { GARDEN_LOCK_MS, SHARED_GARDEN_STREETS } from '../public/js/shared-gardens.js?v=464472e5';
+import { GARDEN_POTIONS, POTION_USES } from '../public/js/master-garden.js?v=6f765634';
 import { placementRequests } from './build-realtime-objects.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -53,11 +53,9 @@ export function streetGardenLayout(data) {
     seed: data.tsid,
     reserved: streetReservedSpots(data),
   });
-  // streetGardenBed: crop then herb, or two herb beds (herb2, herb) on the Herb Gardens streets.
-  const planned = (plan.groups.gardens || []).map((p, index) => {
-    const bed = streetGardenBed(data.tsid, index);
-    return [bed.bed, bed.cols, 2, r1(p.x), r1(p.y + 2)];
-  });
+  // G940 (#469): each bed its snap's size and kind where it shows it, planned beds crops on the 2012
+  // crop-garden streets, else crop then herb (garden.js streetGardenBeds, as game.js enterStreet).
+  const planned = streetGardenBeds(data.tsid, plan.groups.gardens || [], population).map((b) => [b.bed, b.cols, b.rows, r1(b.x), r1(b.y)]);
   // Report #252: a Herb Gardens street's beds are in its planter boxes (game.js enterStreet, style none).
   const boxed = streetGardenBoxBeds(data, population).map((b) => [b.bed, b.cols, b.rows, r1(b.x), r1(b.y)]);
   return [...planned, ...boxed];

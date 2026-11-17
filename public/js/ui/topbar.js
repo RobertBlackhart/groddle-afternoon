@@ -27,7 +27,7 @@ import { PHONE_ZOOM_HINT, ZOOM_FIXED_NOTE, ZOOM_KEYS_HINT, clampZoom, phoneSidew
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=711f19b6';
 import { focusBack } from './focus-return.js?v=da190597';
-import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=814ba28e';
+import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=55f4616a';
 
 /** The Menu's groups, in the mock's order; Social shows only when something is in it. */
 export const MENU_GROUPS = Object.freeze([

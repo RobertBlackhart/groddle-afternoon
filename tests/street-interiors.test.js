@@ -17,7 +17,7 @@ import {
   ecologyForStreet,
   interiorReason,
   populationForStreet,
-} from '../public/js/street-ecology.js?v=d3832c0c';
+} from '../public/js/street-ecology.js?v=e2487473';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(spike, rel), 'utf8'));
@@ -127,8 +127,8 @@ describe('interior rows in the catalog', () => {
         tsid,
       );
     }
-    // The Egret Taun basement keeps its archived Gardens (three, capped at two).
-    assert.equal(populationForStreet('GHVEI9NVJ203LRO', ecologyForStreet('GHVEI9NVJ203LRO', catalog)).gardens, 2);
+    // The Egret Taun basement keeps its archived Gardens: all three (G940 lifted the cap of two).
+    assert.equal(populationForStreet('GHVEI9NVJ203LRO', ecologyForStreet('GHVEI9NVJ203LRO', catalog)).gardens, 3);
   });
 
   it('outdoor control streets keep their rows and outdoor populations', () => {
