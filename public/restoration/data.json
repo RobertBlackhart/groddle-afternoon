@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2566,
+  "commits": 2570,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The map and Find the closest Shrine name the Giant whose shrine the street really stands"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Coming home always plays your home's own music, not the last place's"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A whole stack dragged from the floor onto a Storage Display Box goes in"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Released animals no longer make shared street animals leave on one screen online"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Places Glitch kept to one player stay private online (Gentle Island, newxp exits, colour levels, challenge rooms, Room 23)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A barnacle on the right of a round root pipe faces outward, as on sprouts and bottle trees"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Streets no longer each hold four loose Apples; Apples come from their Glitch sources"
    }
   ]
  },
- "tests": 1107,
+ "tests": 1109,
  "generatedAt": "2026-11-17"
 }
