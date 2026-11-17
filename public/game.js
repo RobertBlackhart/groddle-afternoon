@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS } from './content.js?v=662a4744';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=a0bd032a';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2ceb7e4a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fa33bd42';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -701,6 +701,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=2918abe5';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=db8c4d21';
+import { defaultArrival, loadStreetArrivals } from './js/street-arrival.js?v=5d803e9d';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -25381,6 +25382,8 @@ async function enterStreet(tsid, opts = {}) {
     assistedFeatChain = null;
     clearFeatCompanionTimers();
   }
+  // G913: an arrival with no spot of its own stands on the street's incoming arrival (js/street-arrival.js).
+  const arrivalsTable = Number.isFinite(opts.spawnX) ? null : loadStreetArrivals();
   const data = await loadStreetData(tsid);
   assertStreetGeometry(data);
   if (LAST_FEAT_STREET_LABELS[data.tsid]) {
@@ -25473,6 +25476,11 @@ async function enterStreet(tsid, opts = {}) {
   for (const feature of features.features) {
     if (typeof feature.vendorProfile === 'function') activeVendor = feature.vendorProfile(activeVendor, engine) || activeVendor;
   }
+  // G913: no spot given: where Glitch set you down on this street (an incoming arrival), not the
+  // planner's free spot, which can be up a tree since every floor height counts (30e8eca38dd).
+  const entry = arrivalsTable && data.tsid !== STOOT_MEMORIAL_STREET_ID
+    ? defaultArrival(data, await arrivalsTable, { worldW: WORLD_W, closed: features.query('closedRoads', engine) || [] })
+    : null;
   // Signposts, doors and ladder feet stay clear (street-ecology.js streetReservedSpots,
   // shared with the realtime server's layout).
   const reserved = streetReservedSpots(data);
@@ -25481,6 +25489,8 @@ async function enterStreet(tsid, opts = {}) {
   // rock, tree and node in the same place.
   if (GAME_MODE !== 'multiplayer' && Number.isFinite(opts.spawnX) && Number.isFinite(opts.spawnY)) {
     reserved.push({ x: opts.spawnX, y: opts.spawnY, key: 'saved-arrival', clearance: 210 });
+  } else if (GAME_MODE !== 'multiplayer' && entry) {
+    reserved.push({ x: entry.x, y: entry.y, key: 'saved-arrival', clearance: 210 });
   }
   currentStreetPlacement = planStreetPlacements(
     streetPlatforms,
@@ -25580,9 +25590,10 @@ async function enterStreet(tsid, opts = {}) {
   if (player) {
     const spawn = placement('player')[0];
     const sourceSpawnX =
-      data.tsid === STOOT_MEMORIAL_STREET_ID ? WORLD_W * 0.72 : spawn?.x;
+      data.tsid === STOOT_MEMORIAL_STREET_ID ? WORLD_W * 0.72 : entry?.x ?? spawn?.x;
+    const sourceSpawnY = entry?.y ?? spawn?.y;
     player.x = opts.spawnX ?? sourceSpawnX ?? WORLD_W * 0.5;
-    player.y = opts.spawnY ?? spawn?.y ?? GROUND_Y;
+    player.y = opts.spawnY ?? sourceSpawnY ?? GROUND_Y;
     // Clamp saved/spawn coords into street bounds
     player.x = clamp(player.x, 40, Math.max(80, WORLD_W - 40));
     const streetH = bgLayer?.worldH || VIEW_H;
@@ -25592,7 +25603,7 @@ async function enterStreet(tsid, opts = {}) {
       ? {
         tsid: data.tsid,
         x: clamp(sourceSpawnX ?? WORLD_W * 0.5, 40, Math.max(80, WORLD_W - 40)),
-        y: clamp(spawn?.y ?? GROUND_Y, 40, Math.max(80, streetH - 20)),
+        y: clamp(sourceSpawnY ?? GROUND_Y, 40, Math.max(80, streetH - 20)),
         from: 'street',
       }
       : { tsid: data.tsid, x: player.x, y: player.y, from: 'arrival' };

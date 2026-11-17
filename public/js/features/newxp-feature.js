@@ -2894,10 +2894,14 @@ export function exitLeadsHome(tsid, { graph, closed = [], start = DEFAULT_START 
   return false;
 }
 
-/** player.js teleportHome's pick, kept to exits with a way out; the starting street when none has one. */
+/**
+ * player.js teleportHome's pick, kept to exits with a way out; the starting street when none has one,
+ * with no spot (G913: game.js enterStreet stands you on its arrival, js/street-arrival.js; a drop at
+ * x 0, mid-street, came down in Hechey Track's pines).
+ */
 export function pickOpenExit(rng, exists, open) {
   if (!open) return pickNewxpExit(rng, exists);
-  return pickNewxpExit(rng, (tsid) => exists(tsid) && open(tsid)) || { sourceTsid: '', tsid: DEFAULT_START, x: 0, y: 0 };
+  return pickNewxpExit(rng, (tsid) => exists(tsid) && open(tsid)) || { sourceTsid: '', tsid: DEFAULT_START, x: null, y: null };
 }
 
 /** A predicate for streets a new player can walk out of; null while the roads or the graph are unknown. */
@@ -2915,7 +2919,7 @@ async function exitRoads(engine) {
 /** player.js teleportHome: the source x, dropped in from above (x 0 is mid-street). */
 function dropAtExit(engine, exit) {
   const b = engine.street?.bounds;
-  if (b && engine.streetTsid === exit.tsid) place(Math.max(60, Math.min(b.r - b.l - 60, exit.x - b.l)), 40);
+  if (b && engine.streetTsid === exit.tsid && Number.isFinite(exit.x)) place(Math.max(60, Math.min(b.r - b.l - 60, exit.x - b.l)), 40);
 }
 
 /** The tutorial's chrome is down once the island is left: nothing of it holds the avatar on the exit street. */
@@ -4102,7 +4106,8 @@ export const newxpFeature = {
 
   reloadLocation(saved, engine) {
     // A reload inside a training scene restarts that scene once the game starts.
-    if (isNewxpSceneTsid(saved?.tsid)) return { tsid: DEFAULT_START, x: 0, y: 0 };
+    // No spot (G913): the starting street's own arrival (game.js enterStreet), not its corner at 0, 0.
+    if (isNewxpSceneTsid(saved?.tsid)) return { tsid: DEFAULT_START, x: null, y: null };
     return null;
   },
 

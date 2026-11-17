@@ -1,0 +1,65 @@
+/**
+ * G913: where you stand when you come onto a street with no spot of your own (a new game's first
+ * street, Skip to Ur, the tutorial skipped from its scenes, a trip that names no signpost or door).
+ *
+ * Glitch never set anyone down on a street at a made-up spot: a signpost or door landed you on its
+ * connect's x and y, and a Map teleport on one of the street's incoming links, the points other
+ * streets' signposts and doors land you on (players/inc_teleportation.js 482-503,
+ * geo_links_get_incoming in locations/inc_geo_links.js 336-357; a street with none on one of its
+ * teleport markers). The remake once took the street placement planner's spot (street-ecology.js
+ * planStreetPlacements 'player', the free spot nearest the middle), and since the planner counts
+ * every floor height (30e8eca38dd) that spot can be a tree's canopy: a fresh game began high in
+ * Hechey Track's pines.
+ *
+ * So an arrival with no spot takes the street's incoming arrival nearest its middle
+ * (assets/content/street-arrivals.json, tools/build-street-arrivals.mjs; one fixed point, so every
+ * new game starts in the same place, where Glitch's teleport picked one at random). A street no
+ * other street leads to takes its own way out nearest the middle, where /stuck stands you
+ * (street-model.js stuckWay); with neither, null (game.js keeps the planner's spot).
+ */
+import { stuckWay } from './street-model.js?v=2918abe5';
+
+export const STREET_ARRIVALS_URL = 'assets/content/street-arrivals.json';
+
+/** PURE: the street's incoming arrivals ([[x, y], ...], screen space) under its tsid or its G/L alias. */
+export function arrivalsFor(table, tsid) {
+  if (!table || !tsid) return [];
+  const id = String(tsid);
+  const rows = table[id] || table[`G${id.slice(1)}`] || table[`L${id.slice(1)}`];
+  return Array.isArray(rows) ? rows.filter((p) => Number.isFinite(p?.[0]) && Number.isFinite(p?.[1])) : [];
+}
+
+/**
+ * PURE: the spot an arrival with no spot of its own stands on: { x, y, from } with `from`
+ * 'incoming' (an arrival from another street) or 'way' (the street's own signpost or door), or null.
+ * `worldW` the street's width (screen space), `closed` the streets still being built (stuckWay).
+ */
+export function defaultArrival(street, table, { worldW, closed = [] } = {}) {
+  if (!street) return null;
+  const mid = Number.isFinite(worldW) && worldW > 0 ? worldW / 2 : 0;
+  const rows = arrivalsFor(table, street.tsid);
+  if (rows.length) {
+    const [x, y] = rows.reduce((best, p) => (Math.abs(p[0] - mid) < Math.abs(best[0] - mid) ? p : best));
+    return { x, y, from: 'incoming' };
+  }
+  const way = stuckWay(street, mid, closed);
+  return way && Number.isFinite(way.x) && Number.isFinite(way.y) ? { x: way.x, y: way.y, from: 'way' } : null;
+}
+
+let tablePromise = null;
+/**
+ * The arrivals table, fetched once and shared. Resolves null when it cannot be had (offline, an old
+ * build): defaultArrival then takes the street's own way out; a failed load is tried again next time.
+ */
+export function loadStreetArrivals(fetchFn = globalThis.fetch) {
+  if (typeof fetchFn !== 'function') return Promise.resolve(null);
+  tablePromise ||= Promise.resolve()
+    .then(() => fetchFn(STREET_ARRIVALS_URL))
+    .then((r) => (r?.ok ? r.json() : null))
+    .catch(() => null)
+    .then((table) => {
+      if (!table) tablePromise = null;
+      return table;
+    });
+  return tablePromise;
+}

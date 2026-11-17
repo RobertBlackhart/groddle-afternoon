@@ -20,7 +20,7 @@ import { join } from 'node:path';
 
 import { NEWXP_EXITS, GENTLE_ISLAND, indexTsid, normalizeNewxpSave } from '../public/js/newxp.js?v=1f52edd5';
 import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=950e9c22';
-import { newxpFeature, __newxpTest, exitLeadsHome, pickOpenExit } from '../public/js/features/newxp-feature.js?v=bf8d60a9';
+import { newxpFeature, __newxpTest, exitLeadsHome, pickOpenExit } from '../public/js/features/newxp-feature.js?v=a24f44a8';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -65,7 +65,7 @@ describe('1. an exit counts only when its roads lead back to Hechey Track', () =
   });
 
   it('with every road shut it falls back to the starting street; unknown roads keep the source pick', () => {
-    assert.deepEqual(pickOpenExit(() => 0.5, exists, () => false), { sourceTsid: '', tsid: HECHEY, x: 0, y: 0 });
+    assert.deepEqual(pickOpenExit(() => 0.5, exists, () => false), { sourceTsid: '', tsid: HECHEY, x: null, y: null });
     assert.equal(pickOpenExit(() => 0.64, exists, null).tsid, RAPPAM);
   });
 
