@@ -92,13 +92,39 @@ describe('a Storage Display Box takes things, as the original did', () => {
     assert.match(homes.slice(homes.indexOf('function afterEnter('), homes.indexOf('function afterEnter(') + 300), /wireBoxDrop\(engine\);/, 'wired when a home room is entered');
   });
 
-  it('a stack set down in the room dragged onto a box goes in by its own Pick up, then the deposit (the ledger sees moves only)', () => {
+  it('#473: a stack set down in the room dragged onto a box goes in whole from the floor, never through the pack (bag_furniture_sdb.js 718-741)', () => {
     const end = homes.slice(homes.indexOf('function endStackDrag('));
     assert.match(end.slice(0, 1200), /if \(hit\) return stackIntoBox\(engine, was\.id, hit\);\s+return moveStack\(engine, was\.id, p\);/);
-    const fn = homes.slice(homes.indexOf('function stackIntoBox('), homes.indexOf('function stackPop('));
-    assert.match(fn, /engine\.pickUpDroppedStack\?\.\(id\)/);
+    const fn = homes.slice(homes.indexOf('function stackIntoBox('), homes.indexOf('let stackCount = null;'));
+    // The player's own plain stack: taken from the floor and deposited, the pack untouched.
+    assert.match(fn, /if \(!row\.shared && !row\.contents\?\.length && !row\.name && engine\.takeDroppedStack\) \{\s+const taken = engine\.takeDroppedStack\(id\);/);
+    assert.match(fn, /displayDeposit\(decor, \{ \[cls\]: taken\.count \}, hit\.box\.id, cls, taken\.count\)/);
+    assert.ok(fn.indexOf('takeDroppedStack') < fn.indexOf('pickUpDroppedStack'), 'the pack only for a shared, bag or named stack');
+    // A shared stack is the street's: its own Pick up first, then the deposit.
     assert.match(fn, /depositInBox\(engine, hit\.box, cls, got\)/);
-    assert.doesNotMatch(fn, /removeItem|addItem|inv\[cls\] [-+]?=/);
+    assert.doesNotMatch(fn, /removeItem|addItem|engine\.inv\[cls\] [-+]?=/);
+    // The stack's canPickup still holds on the way (a Still mid-collect).
+    const game = read('public/game.js');
+    const take = game.slice(game.indexOf('  takeDroppedStack(id) {'), game.indexOf('  pickUpDroppedStack(id, count = Infinity) {'));
+    assert.match(take, /features\.query\('groundPickupRefused', target, engine\)/);
+  });
+
+  it('#473: forty emblems on the floor all go in, whatever room the pack has (capacity 1000 stacks, stackmax 1)', async () => {
+    const { createDroppedItemState, dropInventoryStack, pickupDroppedStack } = await import('../public/js/world-items.js?v=deadf665');
+    const state = room();
+    const dropped = createDroppedItemState();
+    const inv = { emblem_alph: 40 };
+    dropInventoryStack(dropped, inv, 'RH_HOME_INT', 'emblem_alph', 40, { x: 500, y: 560 });
+    assert.equal(inv.emblem_alph || 0, 0);
+    delete inv.emblem_alph;
+    const id = dropped.streets.RH_HOME_INT[0].id;
+    // engine.takeDroppedStack: the whole stack off the floor into nothing (no pack), then the deposit.
+    const taken = pickupDroppedStack(dropped, {}, 'RH_HOME_INT', id, Infinity);
+    assert.equal(taken.count, 40);
+    const res = displayDeposit(state, { emblem_alph: taken.count }, 8, 'emblem_alph', taken.count);
+    assert.deepEqual(res.display, { classTsid: 'emblem_alph', count: 40 });
+    assert.equal(dropped.streets.RH_HOME_INT, undefined, 'nothing left behind');
+    assert.deepEqual(inv, {}, 'the pack never held them');
   });
 
   it('shows what it holds where the original did (26 px over the stage bottom, the art 12 px under it)', () => {
@@ -122,7 +148,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=3c328baa');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=fe6fdef4');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);

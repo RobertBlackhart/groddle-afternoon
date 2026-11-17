@@ -149,6 +149,8 @@ describe('Decoration Mode', () => {
   it('dragging onto the pack and onto a Storage Display Box still takes the whole stack', () => {
     assert.match(homes, /if \(overPack\(e\.clientX, e\.clientY\)\) return pickUpStack\(engine, was\.id\);/);
     const box = homes.slice(homes.indexOf('function stackIntoBox('), homes.indexOf('let stackCount = null;'));
+    // #473: the player's own stack goes from the floor whole (takeDroppedStack), a shared one by its Pick up.
+    assert.match(box, /const taken = engine\.takeDroppedStack\(id\);/);
     assert.match(box, /if \(!engine\.pickUpDroppedStack\?\.\(id\)\) \{/);
   });
 

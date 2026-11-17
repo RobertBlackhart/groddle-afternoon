@@ -53,7 +53,7 @@ import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, receiveToolCopy, setCopy
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=ea03e02b';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { homesFeature } from './homes-feature.js?v=3c328baa';
+import { homesFeature } from './homes-feature.js?v=fe6fdef4';
 import {
   SDB_PRICE_MAX,
   STORAGE_TEXT as T,

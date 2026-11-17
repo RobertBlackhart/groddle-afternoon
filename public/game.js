@@ -4,7 +4,7 @@
  */
 import { getVerbsFor, runVerb, ITEM_ICONS, ITEM_LABELS, ordinaryItems } from './content.js?v=78294ea6';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c6a265e4';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d80f5af8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
@@ -13821,6 +13821,10 @@ const engine = {
    */
   takeDroppedStack(id) {
     if (!currentStreetTsid) return { ok: false, reason: 'not_started' };
+    // The stack's own canPickup still holds (a Still mid-collect, supply-feature groundPickupRefused).
+    const target = interactables.find((t) => t.classId === 'dropped_item' && t.worldItemId === id);
+    const refused = target ? features.query('groundPickupRefused', target, engine) : null;
+    if (refused) return { ok: false, reason: 'refused', msg: refused };
     const result = pickupDroppedStack(droppedItemState, {}, droppedStacksTsid(), id, Infinity);
     if (!result.ok) return result;
     saveDroppedItems();

@@ -5874,9 +5874,13 @@ function pickUpStack(engine, id, count = Infinity) {
 }
 
 /**
- * A stack set down in the room dragged onto a Storage Display Box goes in it: by the item's own
- * Pick up, then the deposit, so the pack, the dropped stacks and the box each see one move (a full
- * pack leaves it where it was). A box that will not take it says why; the stack stays put.
+ * A stack set down in the room dragged onto a Storage Display Box goes in it whole, straight from the
+ * floor: verbs.deposit's handler (bag_furniture_sdb.js 718-741) locks the stack in the location
+ * (apiLockStack target_itemstack_tsid) and adds it to the box, never through the pack. #473: going
+ * through the pack's Pick up capped it at the pack's free room (13 emblems, stackmax 1, moved and the
+ * rest stayed down). The dropped stacks and the box each see one move; the ledger counts both
+ * (LedgerMath holdings: droppedItems and a placed row's display). A stack shared with the street, or
+ * a bag or named stack, still goes by its own Pick up. A box that will not take it says why.
  */
 function stackIntoBox(engine, id, hit) {
   const row = stackRow(engine, id);
@@ -5888,13 +5892,30 @@ function stackIntoBox(engine, id, hit) {
     return { ok: false, ...hit.refusal };
   }
   const cls = row.classTsid;
-  const had = Number(engine.inv[cls]) || 0;
-  if (!engine.pickUpDroppedStack?.(id)) {
-    engine.setData('homeStackLast', `refused:${id}:pack`);
-    return { ok: false, reason: 'pack' };
+  let res;
+  if (!row.shared && !row.contents?.length && !row.name && engine.takeDroppedStack) {
+    const taken = engine.takeDroppedStack(id);
+    if (!taken?.ok) {
+      if (taken?.msg) engine.toast(taken.msg);
+      engine.setData('homeStackLast', `refused:${id}:${taken?.reason || 'gone'}`);
+      return { ok: false, reason: taken?.reason || 'gone' };
+    }
+    res = displayDeposit(decor, { [cls]: taken.count }, hit.box.id, cls, taken.count);
+    if (res.ok) {
+      engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+      renderFurniture(engine);
+      renderBar(engine);
+      engine.save();
+    }
+  } else {
+    const had = Number(engine.inv[cls]) || 0;
+    if (!engine.pickUpDroppedStack?.(id)) {
+      engine.setData('homeStackLast', `refused:${id}:pack`);
+      return { ok: false, reason: 'pack' };
+    }
+    const got = (Number(engine.inv[cls]) || 0) - had;
+    res = got > 0 ? depositInBox(engine, hit.box, cls, got) : { ok: false, reason: 'missing' };
   }
-  const got = (Number(engine.inv[cls]) || 0) - had;
-  const res = got > 0 ? depositInBox(engine, hit.box, cls, got) : { ok: false, reason: 'missing' };
   if (selected?.kind === 'stack') selected = null;
   drawStackSelection(engine);
   engine.setData('homeStackLast', res.ok ? `display:${id}:${hit.box.id}` : `refused:${id}:${res.reason || ''}`);
