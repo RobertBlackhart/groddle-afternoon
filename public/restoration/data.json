@@ -2814,9 +2814,84 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2527,
+  "commits": 2548,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A key-holder's open cabinet shows the owner's moves, and a yard animal someone uses stands still for everyone"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "What a home's owner does at home reaches visitors live (picks, plants, cultivations, furniture, styles)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Herbs in a garden bed that went are harvested into your pack, and online mailed to you"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Street gardens stand where the 2012 snaps show them, every bed the street had"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Gentle Island's rock pays its 978 currants once, flagged in the same save so the save checker credits them"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A Spinning Wheel prize is no longer taken back: the Gameshow Ticket is spent as the prize lands"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "An artifact or necklace goes into the pack as its pieces leave, so the save checker no longer takes it back"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The economy builder reads every game folder, so the Rube Shaped Potato and the Camera are gated right"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "World map cards for Pollokoo, Callopee, Massadoe, Folivoria and Nottis show the sketched frame and the lettered name"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Seasons turn on by the date on Ur's clock, so every player sees the same season"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Online, a Giant Icon stays in your pack on shared streets instead of a placement nobody else sees"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Released animals no longer make shared street animals leave on one screen online"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Places Glitch kept to one player stay private online (Gentle Island, newxp exits, colour levels, challenge rooms, Room 23)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A barnacle on the right of a round root pipe faces outward, as on sprouts and bottle trees"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Streets no longer each hold four loose Apples; Apples come from their Glitch sources"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2861,84 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Helping someone mine counts for I Me Mine when everyone starts together"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Machines in your yard work again after you come home from a visit by the Home button"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Jellisacs the snaps never measured sit in their street's empty holes before any is planned on a ledge"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A pack stack dragged onto a Storage Display Box goes in it outside Decoration Mode too"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The making result says \"You made 2 Curries!\", using each item's own plural"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Hub Completist badges list their progress as Locations Visited, not \"Number 58\""
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Other players see your potion pour, powder shake, musicblock, Tinkertool repair, Wine of the Dead pour, Paper Tree harvest and petrified rock crack in a bubble over you"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Other players see your pick, shovel, scraper, hoe, hatchet, watering can or making tool at work in a thought bubble over you"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "The region map's You star walks along your street as you do, and the streets you are not on are fainter, as in Glitch"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, a signpost high on a street comes out from under the top bar and the street's name"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The Qurazy banner lands under the route card and the quest step line, not over them, on an upright phone"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, Update ready waits in the Menu (a dot on Menu) instead of pushing the Menu off the top bar"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Reading a report, the Reports window drops \"Write to us\" from its header so the title has room"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, full-screen layers (the award, an upgrade's card, the Map's backdrop, Reports) reach the right edge"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "On a phone, notices keep clear of Act, Jump and the stick, and the quest step line no longer covers the street clock"
-   },
-   {
-    "date": "2026-11-16",
-    "kind": "fix",
-    "text": "A spot given only as an x (demo links, the home page shots, the tutorial autoplay) stands on the street's ground, not up a tree"
    }
   ]
  },
- "tests": 1096,
+ "tests": 1100,
  "generatedAt": "2026-11-17"
 }
