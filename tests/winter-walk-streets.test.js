@@ -14,7 +14,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=9f16f4ab';
 import { OWNED_STREETS, streetOwner } from '../public/js/location-events.js?v=05663361';
-import { JUMP_GAP } from '../public/js/quest-rooms/puzzle-kit.js?v=e2ea6374';
+import { JUMP_GAP } from '../public/js/quest-rooms/puzzle-kit.js?v=70deb926';
 import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../public/js/winter-walk.js?v=a5c63b75';
 import {
   WINTER_HAVEN_BOARDWALK_Y,
@@ -23,6 +23,7 @@ import {
   WINTER_HAVEN_LADDER,
   WINTER_HAVEN_LANDING,
   WINTER_HAVEN_PILLARS,
+  WINTER_HAVEN_TREES,
   WINTER_HAVEN_SOURCE_TSID,
   WINTER_HAVEN_STEP,
   WINTER_HAVEN_TSID,
@@ -41,8 +42,8 @@ import {
   WINTER_WALK_TSID,
   isWinterStreetTsid,
   winterStreetEcology,
-} from '../public/js/winter-walk-streets.js?v=65458036';
-import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=fe1533a1';
+} from '../public/js/winter-walk-streets.js?v=8a3f74b9';
+import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=ab4d4e00';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=7905fc7f';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -339,6 +340,25 @@ describe('Winter Haven after the snaps', () => {
     const pillars = haven.layers.find((l) => l.id === 'T_wh_pillars').decos;
     assert.equal(pillars.filter((d) => d.sprite === 'icicle_1b_al1').length, WINTER_HAVEN_PILLARS.length);
     assert.ok(pillars.some((d) => d.id === 'haven_fire'));
+  });
+
+  it('G922: the snowy trees are the made ones, at the CC0 trees\' heights, with their own widths', () => {
+    const trees = haven.layers.find((l) => l.id === 'T_wh_trees').decos;
+    assert.deepEqual(trees.map((d) => d.sprite), WINTER_HAVEN_TREES.map((t) => t.sprite));
+    assert.ok(!haven.layers.some((l) => l.decos.some((d) => /^heights_tree_bare_/.test(d.sprite))), 'no bare CC0 tree left in the haven');
+    // Heights: the CC0 tree's drawn rows at the street's old scale (2: 1287 x 0.75, 3: 1150 x 0.7, 4: 1294 x 0.5).
+    const cc0 = { heights_tree_bare_2: [334, 1287, 0.75], heights_tree_bare_3: [362, 1150, 0.7], heights_tree_bare_4: [1136, 1294, 0.5] };
+    for (const [d, t] of trees.map((q, i) => [q, WINTER_HAVEN_TREES[i]])) {
+      const [cw, ch, s] = cc0[t.replaces];
+      assert.ok(Math.abs(d.h - ch * s) <= 1, `${d.sprite} ${d.h} tall`);
+      const wider = d.w / d.h / (cw / ch) - 1;
+      assert.ok(wider > 0.05 && wider < 0.2, `${d.sprite} ${(wider * 100).toFixed(1)}% wider`);
+      const row = madeDecos[d.sprite];
+      assert.ok(row.streets.includes(WINTER_HAVEN_TSID) && row.replaces.startsWith(t.replaces), d.sprite);
+      assert.ok(Math.abs(row.w / row.h - d.w / d.h) < 0.01, `${d.sprite}: drawn at its own aspect`);
+    }
+    assert.match(haven.why.made, /made for Groddle/);
+    assert.doesNotMatch(haven.why.notBuilt, /snow/i);
   });
 
   it('the EXIT ladder\'s landing is the highest platform (the route puts the exit there), and a ladder climbs to it from the boardwalk', () => {

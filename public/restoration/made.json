@@ -84,6 +84,55 @@
       ]
     },
     {
+      "id": "decos:wh",
+      "anchor": "made-winter-haven-s-snowy-trees",
+      "name": "Winter Haven's snowy trees",
+      "made": "2026-11-16",
+      "madeLabel": "16 November 2026",
+      "caption": "The three snowy trees of Winter Haven, the cave at the end of Winter Walk: the branches reaching in at both sides and the trees by the exit ladder. Tiny Speck's files have the bare trees but not their snow, which only players' pictures of the haven from 2013 show, so the trees were drawn again with snow along their branches and a few short icicles.",
+      "display": {
+        "w": 289,
+        "h": 210
+      },
+      "image": {
+        "src": "/assets/made-art/wh-trees.webp",
+        "w": 828,
+        "h": 600,
+        "label": "Made for Groddle",
+        "alt": "Three dark bare trees, a tall single one, a taller forked one and a group of four, with white snow along the tops of their branches and short icicles hanging under them."
+      },
+      "original": {
+        "src": "/assets/made-art/wh-trees-before.webp",
+        "w": 828,
+        "h": 600,
+        "kind": "original",
+        "alt": "The same three Tiny Speck trees, bare, at the same heights.",
+        "label": "Tiny Speck's bare trees"
+      },
+      "facts": [
+        {
+          "label": "What the haven had",
+          "text": "Bare dead trees reaching in from the cave's edges, every branch capped with snow, as four players' pictures of the haven from early 2013 show."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) for Austin. It was given each Tiny Speck tree and asked only to add snow; it drew each tree again instead, close to the original but not the same, so they count as new pictures rather than Tiny Speck's own."
+        },
+        {
+          "label": "How it was checked",
+          "text": "Each tree stands as tall as the Tiny Speck tree it replaces, a little wider, its root on the same spot. The haven was climbed in the game on a computer and a phone, in both looks, its rubble, pillars and ladder unchanged."
+        },
+        {
+          "label": "In the game",
+          "text": "Winter Haven, the second street of Winter Walk, offered by the street spirits from level 7, and its repeat."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
       "id": "decos:lp",
       "anchor": "made-walk-toward-the-light-s-dishes-shades-poles-and-ledges",
       "name": "Walk Toward the Light's dishes, shades, poles and ledges",

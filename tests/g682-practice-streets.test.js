@@ -47,7 +47,7 @@ import {
   practiceStreetEcology,
   soilStreet,
 } from '../public/js/practice-streets.js?v=557238c1';
-import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=ce74b07a';
+import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=cf607e31';
 import { BUILT_ROOMS, QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=6d95626b';
 import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=77fee627';
@@ -109,7 +109,8 @@ describe('G682 practice streets: street JSON', () => {
     for (const s of [file(EZ_COOKIN_TSID), file(SOIL_TSID)]) {
       for (const d of decos(s)) assert.ok(manifest.has(d.sprite) || (s.tsid === EZ_COOKIN_TSID && made[d.sprite]), `${s.label}: ${d.sprite} in the deco manifest`);
     }
-    for (const name of Object.keys(made)) assert.ok(NEW_DECOS.has(name) && NEW_DECOS_HIRES.has(name), `${name}: the renderer draws it, 2x and 3x`);
+    // 2x always; 3x where the drop held 3 px a unit (G922: Winter Haven's trees have no upscaled @1.5x copy).
+    for (const name of Object.keys(made)) assert.ok(NEW_DECOS.has(name) && NEW_DECOS_HIRES.has(name) === Boolean(made[name].file3), `${name}: the renderer draws it, 2x and 3x where it has the file`);
   });
 
   it("EZ Cookin's made props stand where the snaps have them: a glass counter under a lamp at each food stop, the round table under the Knife & Board", () => {

@@ -3,10 +3,10 @@
  "about": "New decos made for Groddle's own rebuilt streets (not a published zone): AI-generated or own work, dedicated CC0 1.0 with who or what made them and from what inputs (tools/builder/licence-policy.json). They ship as gz_ files beside the library's, kept out of assets/decos/manifest.json; tools/builder/build-zones.mjs lists them in js/deco-new-list.js after checking each file's sha256 here, and tests/g316-provenance.test.js allows exactly these files with the zones' new-art.json.",
  "references": [
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
-  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare and Winter Walk (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
+  "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare and Winter Walk, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01, 02 and 03: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
- "count": 17,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 04: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt",
+ "count": 20,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -1618,6 +1618,240 @@
    "intake": {
     "on": "2026-11-16",
     "by": "Claude (lane art03): sizes checked against attach/1, the brief and the Snaps; cut, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_wh_tree_bare_3": {
+   "what": "Tiny Speck's heights_tree_bare_3 with snow caps and short icicles, redrawn: the branches reaching in at the haven's left edge",
+   "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_3.webp",
+   "sha256": "c34721783f7a82be118d95dc6eeff946cd2f63ff32cb0689b5b13b2b2a3a49d9",
+   "bytes": 52264,
+   "w": 264,
+   "h": 767,
+   "size": "the CC0 tree is 362 x 1166 (drawn rows 1150), drawn in Winter Haven at x0.7: 253 x 805; the made tree (529 x 1535 px, 9.5% wider for its height) is drawn at the same height with its own width, 277 x 805. The file is the drop at its own resolution (264 x 767 units at 2 px a unit); no @1.5x copy, since the drop holds less than 3 px a unit at the haven's size",
+   "replaces": "heights_tree_bare_3 (Tiny Speck, CC0 1.0) in Winter Haven only; the snow on the haven's branches was left out before (no CC0 piece)",
+   "streets": [
+    "GIFNNTRK1073PQ6"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/model.txt (\"ACCEPTED 2026-11-16 night (Austin: \\\"Take them\\\"): all three ship as made art for Groddle (redrawn, not exact CC0 edits; snow caps and icicles; only in Winter Haven)\")"
+   },
+   "reimagined": "Asked as an edit of the CC0 tree (snow added, every branch kept); the model redrew it instead. Snow caps and a few icicles; trunk and branches redrawn close to the CC0 but not pixel-identical (branch shapes and joints shift slightly); the CC0's purple base shadow is gone. It ships as made art, not as Tiny Speck's tree.",
+   "settings": "aspect auto 9:16, transparent, 1 image; 864 x 1536, the tree 529 x 1535 (0.345 to 1 against the CC0 0.31)",
+   "prompt": "This is an edit, not a new drawing. Attachment 1 is a bare tree from Tiny Speck's game Glitch (heights_tree_bare_3). Give me back exactly the same tree with snow on it, as the snowy trees in the game's \"Winter Haven\" look (attachments 2 and 3 at the right and left edges; attachment 4 close up).\n\nAdd: a soft cap of white snow (pale lilac-white, with a light blue-grey shaded underside) lying along the top of every branch and twig and on the forks, thicker on the big branches, thin on the twigs; here and there a short icicle hanging from a branch.\nKeep: every trunk, branch and twig exactly where it is, the same shapes, the same bark colour, the same size and framing. Do not add, remove or move any branch. Do not add ground, sky or a background.\n\nOutput: the same size and shape as attachment 1, the tree alone on a fully transparent background (if transparency is not possible, the same flat pure magenta #FF00FF as attachment 1, with nothing else on it). No text, no frame, no watermark.\nIf the picture has to be another shape, keep the tree in the middle at exactly its own proportions, never stretched, and fill the rest with the same background.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/prompts/snow-heights_tree_bare_3.txt (outside git), with the four attachments in inputFiles in this order (this pack gave four, not five).",
+   "inputs": [
+    "deco:heights_tree_bare_3",
+    "ref:2-ref-snowy-branches-8416817377.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:3-ref-snowy-branches-8417913246.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:4-ref-closeup-snowy-tree.png (a player's 2013 picture or a crop of one: reference only, never in the repo)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-cc0-to-edit-heights_tree_bare_3.png",
+     "sha256": "c913ef66690850994453a77b4fadebb6b86326ca4d490b08b841599ef27160c6",
+     "what": "heights_tree_bare_3, the Tiny Speck tree to edit, on flat magenta",
+     "source": "Tiny Speck, CC0 1.0: library deco heights_tree_bare_3 (public/assets/decos/groddle; research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/cc0-source keeps it with its transparency)"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-snowy-branches-8416817377.png",
+     "sha256": "f02d8338e5f4def303b1d48622746d6cebf1b383ef3cf196d76bf7319f1d6c9a",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8416817377): the snowy tree whole at the right, snowy branches at the edges",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-snowy-branches-8417913246.png",
+     "sha256": "653511decf4ccbefe30a2434b2658bd85a71cd8d6705bf93d97c358deba555f3",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8417913246): snowy branches at the left edge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeup-snowy-tree.png",
+     "sha256": "77e6359d134c1fcd7f4734c197bb8e2255900d5311b5e1491301e0b06d697d85",
+     "what": "an enlarged crop of the snowy tree in Flickr 8416817377",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/K-snowy-heights_tree_bare_3.png",
+    "dropSha256": "72cec334fb6571c6ea1f97e88ae20610ed0c23bf26ff84b140d2e6bfa0b1225b",
+    "trim": "alpha over 20: x 163-692, y 1-1536; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 px a unit: 528 x 1534",
+    "masterSha256": {
+     "x2": "85ff6182cba92e6ae3b021fe43c96f325c284afeafcc8da74274d74c004802c1"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sized by height to the CC0 tree it replaces as the haven draws it, its own width kept; trimmed, faint alpha cut and resized, nothing redrawn"
+   }
+  },
+  "gz_ai_wh_tree_bare_2": {
+   "what": "Tiny Speck's heights_tree_bare_2 with snow caps and short icicles, redrawn: the branches reaching in at the haven's right edge (flipped)",
+   "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_2.webp",
+   "sha256": "70283bf63265866dfe0291f23320e9fa852065d1e99cb8ab238542066bd44f97",
+   "bytes": 44504,
+   "w": 233,
+   "h": 758,
+   "size": "the CC0 tree is 334 x 1288 (drawn rows 1287), drawn in Winter Haven at x0.75: 250 x 965; the made tree (467 x 1517 px, 18.6% wider for its height) is drawn at the same height with its own width, 297 x 965. The file is the drop at its own resolution (233 x 758 units at 2 px a unit); no @1.5x copy, since the drop holds less than 3 px a unit at the haven's size",
+   "replaces": "heights_tree_bare_2 (Tiny Speck, CC0 1.0) in Winter Haven only; the snow on the haven's branches was left out before (no CC0 piece)",
+   "streets": [
+    "GIFNNTRK1073PQ6"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/model.txt (\"ACCEPTED 2026-11-16 night (Austin: \\\"Take them\\\"): all three ship as made art for Groddle (redrawn, not exact CC0 edits; snow caps and icicles; only in Winter Haven)\")"
+   },
+   "reimagined": "Asked as an edit of the CC0 tree (snow added, every branch kept); the model redrew it instead. Snow and icicles; the top twigs are redrawn and differ from the CC0 most of the three. It ships as made art, not as Tiny Speck's tree.",
+   "settings": "aspect auto 9:16, transparent, 1 image; 864 x 1536, the tree 467 x 1517 (0.308 to 1 against the CC0 0.259, about 19% wider)",
+   "prompt": "This is an edit, not a new drawing. Attachment 1 is a bare tree from Tiny Speck's game Glitch (heights_tree_bare_2). Give me back exactly the same tree with snow on it, as the snowy trees in the game's \"Winter Haven\" look (attachments 2 and 3 at the right and left edges; attachment 4 close up).\n\nAdd: a soft cap of white snow (pale lilac-white, with a light blue-grey shaded underside) lying along the top of every branch and twig and on the forks, thicker on the big branches, thin on the twigs; here and there a short icicle hanging from a branch.\nKeep: every trunk, branch and twig exactly where it is, the same shapes, the same bark colour, the same size and framing. Do not add, remove or move any branch. Do not add ground, sky or a background.\n\nOutput: the same size and shape as attachment 1, the tree alone on a fully transparent background (if transparency is not possible, the same flat pure magenta #FF00FF as attachment 1, with nothing else on it). No text, no frame, no watermark.\nIf the picture has to be another shape, keep the tree in the middle at exactly its own proportions, never stretched, and fill the rest with the same background.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/prompts/snow-heights_tree_bare_2.txt (outside git), with the four attachments in inputFiles in this order (this pack gave four, not five).",
+   "inputs": [
+    "deco:heights_tree_bare_2",
+    "ref:2-ref-snowy-branches-8416817377.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:3-ref-snowy-branches-8417913246.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:4-ref-closeup-snowy-tree.png (a player's 2013 picture or a crop of one: reference only, never in the repo)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-cc0-to-edit-heights_tree_bare_2.png",
+     "sha256": "9c4d76c96266a2a1dcb22bb1befa46f891ff237f592be7daf21651be3cfc7a58",
+     "what": "heights_tree_bare_2, the Tiny Speck tree to edit, on flat magenta",
+     "source": "Tiny Speck, CC0 1.0: library deco heights_tree_bare_2 (public/assets/decos/groddle; research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/cc0-source keeps it with its transparency)"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-snowy-branches-8416817377.png",
+     "sha256": "f02d8338e5f4def303b1d48622746d6cebf1b383ef3cf196d76bf7319f1d6c9a",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8416817377): the snowy tree whole at the right, snowy branches at the edges",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-snowy-branches-8417913246.png",
+     "sha256": "653511decf4ccbefe30a2434b2658bd85a71cd8d6705bf93d97c358deba555f3",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8417913246): snowy branches at the left edge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeup-snowy-tree.png",
+     "sha256": "77e6359d134c1fcd7f4734c197bb8e2255900d5311b5e1491301e0b06d697d85",
+     "what": "an enlarged crop of the snowy tree in Flickr 8416817377",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/K-snowy-heights_tree_bare_2.png",
+    "dropSha256": "47b2288eb381289742455b4e197d2740f7c54e97ae99d5516bc10f2bde0471fc",
+    "trim": "alpha over 20: x 174-641, y 12-1529; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 px a unit: 466 x 1516",
+    "masterSha256": {
+     "x2": "ebb52b643bc0809adf8d3080e7c407d649f6389e50e53bf44113a0fb8c7388c0"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sized by height to the CC0 tree it replaces as the haven draws it, its own width kept; trimmed, faint alpha cut and resized, nothing redrawn"
+   }
+  },
+  "gz_ai_wh_tree_bare_4": {
+   "what": "Tiny Speck's heights_tree_bare_4 with snow caps and short icicles, redrawn: the group of trees between the fire and the ladder (flipped)",
+   "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_4.webp",
+   "sha256": "25f4a28f56965235eb71265823ee74c46df1e4b35d55ae4f4a20379156140060",
+   "bytes": 87856,
+   "w": 491,
+   "h": 510,
+   "size": "the CC0 tree is 1138 x 1294 (drawn rows 1294), drawn in Winter Haven at x0.5: 568 x 647; the made tree (982 x 1021 px, 9.6% wider for its height) is drawn at the same height with its own width, 622 x 647. The file is the drop at its own resolution (491 x 510 units at 2 px a unit); no @1.5x copy, since the drop holds less than 3 px a unit at the haven's size",
+   "replaces": "heights_tree_bare_4 (Tiny Speck, CC0 1.0) in Winter Haven only; the snow on the haven's branches was left out before (no CC0 piece)",
+   "streets": [
+    "GIFNNTRK1073PQ6"
+   ],
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-16",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-16",
+    "of": "1 generation, no re-ask: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/model.txt (\"ACCEPTED 2026-11-16 night (Austin: \\\"Take them\\\"): all three ship as made art for Groddle (redrawn, not exact CC0 edits; snow caps and icicles; only in Winter Haven)\")"
+   },
+   "reimagined": "Asked as an edit of the CC0 tree (snow added, every branch kept); the model redrew it instead. Snow and icicles on all four; the right-hand tree's branch is redrawn differently from the CC0. It ships as made art, not as Tiny Speck's tree.",
+   "settings": "aspect auto 1:1, transparent, 1 image; 1024 x 1024, the group 982 x 1021 (0.96 to 1 against the CC0 0.88)",
+   "prompt": "This is an edit, not a new drawing. Attachment 1 is a bare tree from Tiny Speck's game Glitch (heights_tree_bare_4). Give me back exactly the same tree with snow on it, as the snowy trees in the game's \"Winter Haven\" look (attachments 2 and 3 at the right and left edges; attachment 4 close up).\n\nAdd: a soft cap of white snow (pale lilac-white, with a light blue-grey shaded underside) lying along the top of every branch and twig and on the forks, thicker on the big branches, thin on the twigs; here and there a short icicle hanging from a branch.\nKeep: every trunk, branch and twig exactly where it is, the same shapes, the same bark colour, the same size and framing. Do not add, remove or move any branch. Do not add ground, sky or a background.\n\nOutput: the same size and shape as attachment 1, the tree alone on a fully transparent background (if transparency is not possible, the same flat pure magenta #FF00FF as attachment 1, with nothing else on it). No text, no frame, no watermark.\nIf the picture has to be another shape, keep the tree in the middle at exactly its own proportions, never stretched, and fill the rest with the same background.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/prompts/snow-heights_tree_bare_4.txt (outside git), with the four attachments in inputFiles in this order (this pack gave four, not five).",
+   "inputs": [
+    "deco:heights_tree_bare_4",
+    "ref:2-ref-snowy-branches-8416817377.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:3-ref-snowy-branches-8417913246.png (a player's 2013 picture or a crop of one: reference only, never in the repo)",
+    "ref:4-ref-closeup-snowy-tree.png (a player's 2013 picture or a crop of one: reference only, never in the repo)"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-cc0-to-edit-heights_tree_bare_4.png",
+     "sha256": "0e612c62912583087353e3720d59492d03a08f963babe4f88f00a8f7db63d268",
+     "what": "heights_tree_bare_4, the Tiny Speck tree to edit, on flat magenta",
+     "source": "Tiny Speck, CC0 1.0: library deco heights_tree_bare_4 (public/assets/decos/groddle; research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/cc0-source keeps it with its transparency)"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-snowy-branches-8416817377.png",
+     "sha256": "f02d8338e5f4def303b1d48622746d6cebf1b383ef3cf196d76bf7319f1d6c9a",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8416817377): the snowy tree whole at the right, snowy branches at the edges",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-snowy-branches-8417913246.png",
+     "sha256": "653511decf4ccbefe30a2434b2658bd85a71cd8d6705bf93d97c358deba555f3",
+     "what": "a 2013 picture of Winter Haven (Cleops, Flickr 8417913246): snowy branches at the left edge",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-closeup-snowy-tree.png",
+     "sha256": "77e6359d134c1fcd7f4734c197bb8e2255900d5311b5e1491301e0b06d697d85",
+     "what": "an enlarged crop of the snowy tree in Flickr 8416817377",
+     "source": "reference only (Austin 2026-11-16: player snaps may be attached to the prompts; output ships CC0 with provenance): a player's picture of Tiny Speck's street, kept in research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/ref, never copied into the repo"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/quest-rooms-2026-11-16/04-winter-haven/drop/K-snowy-heights_tree_bare_4.png",
+    "dropSha256": "86d79b2a6f1541fa0c9ae6b438149a38275e7fb3698ecd398edea15f935696cb",
+    "trim": "alpha over 20: x 5-987, y 2-1023; alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 px a unit: 982 x 1020",
+    "masterSha256": {
+     "x2": "a5af3812772b4bb1a8bd74a84856c1432d21684593c0ac849d9bd9452ba73b51"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-17",
+    "by": "Claude (lane art45): sized by height to the CC0 tree it replaces as the haven draws it, its own width kept; trimmed, faint alpha cut and resized, nothing redrawn"
    }
   }
  }

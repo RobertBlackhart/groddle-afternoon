@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, om-room) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -224,6 +224,38 @@ def ww_props():
     return img, list(used.values())
 
 
+# Winter Haven (G922): the three made snowy trees beside the Tiny Speck trees they were redrawn from, each at the
+# height the haven draws it (js/winter-walk-streets.js WINTER_HAVEN_TREES), its root on one ground line, flipped as
+# the haven flips it. The CC0 trees at their own drawn rows times the street's old scale.
+WH_S = 0.6  # px a unit
+WH_TREES = (  # made name, its haven size, the CC0 tree, the CC0 drawn rows (alpha over 20), the haven's old scale, flip
+    ('gz_ai_wh_tree_bare_3', 277, 805, 'heights_tree_bare_3', (0, 1, 362, 1151), 0.7, False),
+    ('gz_ai_wh_tree_bare_2', 297, 965, 'heights_tree_bare_2', (0, 0, 334, 1287), 0.75, True),
+    ('gz_ai_wh_tree_bare_4', 622, 647, 'heights_tree_bare_4', (0, 0, 1136, 1294), 0.5, True),
+)
+
+
+def wh_sheet(made):
+    W, H, GROUND = 1380, 1000, 985
+    img = Image.new('RGBA', (round(W * WH_S), round(H * WH_S)), PAPER)
+    used = {}
+    for x, (name, w, h, cc0, box, scale, flip) in zip((40, 380, 720), WH_TREES):
+        if made:
+            p = os.path.join(PUB, 'assets/decos/groddle', f'{name}.webp')
+            art = Image.open(p).convert('RGBA')
+        else:
+            p = os.path.join(PUB, 'assets/decos/groddle', f'{cc0}.webp')
+            art = Image.open(p).convert('RGBA')
+            art = art.crop(box)  # the library file is the CC0 tree at 1 px a unit
+            w, h = round((box[2] - box[0]) * scale), round((box[3] - box[1]) * scale)
+        used[p] = source(p)
+        art = art.resize((round(w * WH_S), round(h * WH_S)), Image.LANCZOS)
+        if flip:
+            art = art.transpose(Image.FLIP_LEFT_RIGHT)
+        img.alpha_composite(art, (round(x * WH_S), round((GROUND - h) * WH_S)))
+    return img, list(used.values())
+
+
 # Region maps: none since lane maps17. The gallery of regions painted again from their thumbnails (maps:<hub>,...) lost its
 # last region when Vortex of Random took The Seams' restore (its 2012 map is the same painting), so the piece, its two
 # composed pictures (maps-thumbs.webp, maps-painted.webp) and this part were dropped; they stay in git history.
@@ -262,6 +294,12 @@ def main():
         img, used = ww_props()
         put('ww-props', webp(img, 'ww-props'), "Winter Walk's made tree arch and curling plants",
             'the made decos (3x files) at the sizes the street draws them, 1.5 px a unit, on paper, on one ground line: the tree arch, a tall plant of three copies of its stalk and a low plant of two, splayed as js/winter-walk-streets.js sets them', used)
+    if want('wh'):
+        for made, name, what in ((True, 'wh-trees', "Winter Haven's made snowy trees"), (False, 'wh-trees-before', "the Tiny Speck trees Winter Haven's snowy trees were redrawn from")):
+            img, used = wh_sheet(made)
+            how = ('the made decos (their 2x files, the drop at its own resolution) at the heights the haven draws them, 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flips them'
+                   if made else 'Tiny Speck\'s heights_tree_bare_3, _2 and _4 (CC0 1.0), cropped to their drawn rows and drawn at the haven\'s old scales (0.7, 0.75, 0.5), 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flipped them')
+            put(name, webp(img, name), what, how, used)
     if want('ww-room'):
         box = (360, 60, 2160, 1118)
         for which in ('before', 'after'):

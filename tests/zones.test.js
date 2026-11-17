@@ -401,6 +401,10 @@ describe('made decos: new art for Groddle\'s own rebuilt streets (tools/provenan
     const ww = Object.keys(made).filter((n) => n.startsWith('gz_ai_ww_'));
     assert.deepEqual(ww.sort(), ['gz_ai_ww_curl_low', 'gz_ai_ww_curl_tall', 'gz_ai_ww_tree_arch']);
     for (const n of ww) assert.deepEqual(made[n].streets, ['GIFH2AKJ5I735SV']);
-    assert.equal(ezc.length + rig.length + ww.length, Object.keys(made).length);
+    // Winter Haven's three snowy trees (lane art45, 2026-11-17, G922): street decos in the haven, 2x only (no upscaled 3x).
+    const wh = Object.keys(made).filter((n) => n.startsWith('gz_ai_wh_'));
+    assert.deepEqual(wh.sort(), ['gz_ai_wh_tree_bare_2', 'gz_ai_wh_tree_bare_3', 'gz_ai_wh_tree_bare_4']);
+    for (const n of wh) assert.ok(made[n].streets.join() === 'GIFNNTRK1073PQ6' && !made[n].file3, n);
+    assert.equal(ezc.length + rig.length + ww.length + wh.length, Object.keys(made).length);
   });
 });

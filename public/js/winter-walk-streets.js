@@ -46,8 +46,9 @@
  * snow_pinecluster_01a_al1, the dead trees heights_tree_bare_* and
  * tree_bare_*, the drums ground_rootpipe2 darkened, the boardwalk
  * wood_platform on wood_cover_middleplus posts, the ladder
- * ladder_interior_4steps. The snow on the haven's branches is left out (no
- * CC0 piece).
+ * ladder_interior_4steps. The snow on the haven's branches had no CC0 piece;
+ * G922 (2026-11-16): the haven's three trees are made for Groddle with their snow
+ * (gz_ai_wh_*, WINTER_HAVEN_TREES), reimagined from Tiny Speck's own trees.
  * - Round 5 (2026-10-31), the walk after the Glitch Tribute Blog's posts
  *   (johnexploresur.tumblr.com 37358133852, 37366254046, and the four icicle
  *   posts 37374550569, 37415159206, 37421343721, 37429063895, filed as Winter
@@ -650,14 +651,28 @@ function havenCeilingDecos(w) {
   return out;
 }
 
-/** Bare branches reaching in from both sides, and the tree between the fire and the ladder (8416817377). */
+/**
+ * G922: the haven's three snowy trees, made for Groddle (gz_ai_wh_*: snow caps and short icicles on Tiny Speck's
+ * heights_tree_bare_2, _3 and _4, redrawn by an image model; tools/provenance/made-decos.json). Each is drawn at
+ * the height the CC0 tree it replaces stood (its drawn rows times the street's scale: 0.7, 0.75, 0.5) and keeps
+ * its own width (9-19% wider), its root where the CC0 tree's stood.
+ */
+export const WINTER_HAVEN_TREES = Object.freeze([
+  Object.freeze({ sprite: 'gz_ai_wh_tree_bare_3', replaces: 'heights_tree_bare_3', w: 277, h: 805 }),
+  Object.freeze({ sprite: 'gz_ai_wh_tree_bare_2', replaces: 'heights_tree_bare_2', w: 297, h: 965 }),
+  Object.freeze({ sprite: 'gz_ai_wh_tree_bare_4', replaces: 'heights_tree_bare_4', w: 622, h: 647 }),
+]);
+
+/** Snowy branches reaching in from both sides, and the tree between the fire and the ladder (8416817377). */
 function havenTreeDecos() {
   const ox = -HB.l;
   const oy = -HB.t;
+  const [t3, t2, t4] = WINTER_HAVEN_TREES;
   return [
-    deco('heights_tree_bare_3', HB.l + 40 + ox, HG + 10 + oy, 362 * 0.7, 1166 * 0.7, 0),
-    deco('heights_tree_bare_2', HB.r - 30 + ox, HG + 10 + oy, 334 * 0.75, 1288 * 0.75, 1, { flip: true }),
-    deco('heights_tree_bare_4', 1010 + ox, HW + 6 + oy, 1138 * 0.5, 1294 * 0.5, 2, { flip: true }),
+    // The CC0 tree's canvas left 15 px under its root (x 0.7): the made one stands on the same spot.
+    deco(t3.sprite, HB.l + 32 + ox, HG + oy, t3.w, t3.h, 0),
+    deco(t2.sprite, HB.r - 22 + ox, HG + 9 + oy, t2.w, t2.h, 1, { flip: true }),
+    deco(t4.sprite, 1011 + ox, HW + 6 + oy, t4.w, t4.h, 2, { flip: true }),
   ];
 }
 
@@ -826,7 +841,8 @@ export function winterHavenStreet() {
       bounds: 'No source size: 2600 x 1300, room for the boardwalk, the pillars\' climb and the landing above.',
       layout: 'You arrive on the snowy rubble under the boardwalk, step up at its left end, and climb the snow pillars on their drums (short, tall, short; past the fire; then a run of rising tops) to the landing at the top right, which the ladder also reaches from the boardwalk.',
       route: 'js/winter-walk.js puts the haven motes on the way up and the EXIT ladder on the highest platform, the landing.',
-      notBuilt: 'Snow on the branches has no separate CC0 piece; the drums are a darkened CC0 pipe, not the pictures\' exact clusters.',
+      made: 'G922: the three snowy trees (the branches reaching in at both sides and the tree by the ladder) are made for Groddle (Austin 2026-11-16: "Take them"): Tiny Speck\'s heights_tree_bare_2, _3 and _4 redrawn by an image model with snow caps and short icicles, as the four 2013 pictures show them, dedicated CC0 1.0 (tools/provenance/made-decos.json). They are reimagined, not exact edits of the CC0 trees.',
+      notBuilt: 'The drums are a darkened CC0 pipe, not the pictures\' exact clusters.',
     },
   });
 }

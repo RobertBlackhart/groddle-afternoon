@@ -46,7 +46,7 @@ export const DESIGNER_LEVELS = Object.freeze([
   level('beam_me_down', 'trac', 'Beam Me Down', 'Ticket to Paradise', 'scenedemo=beam_me_down', 'JyE3RpWp9nc', 'level:beam_me_down'),
   level('constellation', 'trac', 'Constellation', 'Bonus level', 'scenedemo=constellation', '-iW1b8ix3W8', 'level:constellation'),
   level('winter_walk', 'trac', 'Winter Walk', 'Story quest', 'questdemo=winter', 'WlAMZpSGPgQ', 'level:winter_walk',
-    'The hollow tree arch and the curling plants are new pictures made for Groddle.'),
+    'The hollow tree arch, the curling plants and Winter Haven\'s snowy trees are new pictures made for Groddle (reimagined, the trees redrawn from Tiny Speck\'s own with their snow).'),
   level('greedy', 'trac', 'The Greedy Street Spirit', 'Story quest', 'questdemo=greedy', 'hn9J_fDveXI', 'level:greedy'),
   level('radiant_glare', 'trac', 'Radiant Glare', 'Quest room', 'questdemo=radiant_glare', 'ZQQydNM9THI', 'room:radiant_glare'),
   level('picto_pattern', 'trac', 'Picto-Pattern', 'Quest room', 'questdemo=picto_pattern', 'UryaMaICZFg', 'room:picto_pattern'),

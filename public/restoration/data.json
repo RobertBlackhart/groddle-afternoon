@@ -2181,7 +2181,7 @@
     "kind": "Story quest",
     "video": "WlAMZpSGPgQ",
     "shot": "shots/level-winter_walk.webp",
-    "note": "The hollow tree arch and the curling plants are new pictures made for Groddle.",
+    "note": "The hollow tree arch, the curling plants and Winter Haven's snowy trees are new pictures made for Groddle (reimagined, the trees redrawn from Tiny Speck's own with their snow).",
     "extra": null,
     "play": "../play/?autostart=1&fresh=1&resetgame=1&questoffer=off&questdemo=winter&practice=1"
    },
@@ -2814,89 +2814,9 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2513,
+  "commits": 2495,
   "since": "2026-10-19",
   "recent": [
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Mortar Barnacles placed by rule sit on the wall art, never on the dirt in front of it, and the ones on a round trunk's right side face outward"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Clicking the street map's arrow tab expands it again, not only hovering over it"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Helping someone mine counts for I Me Mine when everyone starts together"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Machines in your yard work again after you come home from a visit by the Home button"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Jellisacs the snaps never measured sit in their street's empty holes before any is planned on a ledge"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A pack stack dragged onto a Storage Display Box goes in it outside Decoration Mode too"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The making result says \"You made 2 Curries!\", using each item's own plural"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Hub Completist badges list their progress as Locations Visited, not \"Number 58\""
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Other players see your potion pour, powder shake, musicblock, Tinkertool repair, Wine of the Dead pour, Paper Tree harvest and petrified rock crack in a bubble over you"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Other players see your pick, shovel, scraper, hoe, hatchet, watering can or making tool at work in a thought bubble over you"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "The region map's You star walks along your street as you do, and the streets you are not on are fainter, as in Glitch"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, a signpost high on a street comes out from under the top bar and the street's name"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The Qurazy banner lands under the route card and the quest step line, not over them, on an upright phone"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, Update ready waits in the Menu (a dot on Menu) instead of pushing the Menu off the top bar"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Reading a report, the Reports window drops \"Write to us\" from its header so the title has room"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "On an upright phone, full-screen layers (the award, an upgrade's card, the Map's backdrop, Reports) reach the right edge"
-   },
    {
     "date": "2026-11-16",
     "kind": "fix",
@@ -2936,9 +2856,89 @@
     "date": "2026-11-16",
     "kind": "improve",
     "text": "Hub Completists need every street of their hub; stations and start streets no longer count"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The subway map link and the new sound switch follow the site menu, save store and focus rules"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The game no longer stops your own music on iPhone, with a new \"Let other apps' music keep playing\" sound setting"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The birds over Rooks' Woods are flapping rook silhouettes, not drawn strokes"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Poured Alphabet Sauce is Tiny Speck's own glowing column of letters, not a red puddle"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Starlit Night's cloud floor is the street's own clouds, and its way out is the street's EXIT door"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Radial Heights' stars are Tiny Speck's own star art, and its way out is the street's signpost under its \"Exit's down here!\" sign"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The tutorial's food table and drinks bench are Tiny Speck's White Tablecloth Table and Firebog Counter, not grey and brown shapes"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "A new game starts on Hechey Track's ground by the Grand Mile signpost, not up in the pines"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Pooped and Super Pooped show the client's own warning-sign bang on the red disc, not a redrawn white !"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The Rook badge's stun meter is Tiny Speck's own star arc, flashing and climbing as the client did"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "The dots over another player typing in Local are Tiny Speck's own typing overlay, not a drawn bubble"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Other players see Tiny Speck's own pet, nibble, squeeze, milk, massage, harvest, scoop and revive words over you; Butterfly care drops its emoji and dots"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "A teleport or summons plays your Glitch's own hit1 for a second, not a lavender beam"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "improve",
+    "text": "Winter Walk's caption stands inside its hollow tree arch, with curling plants in the snow"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "new",
+    "text": "Winter Walk's hollow tree arch and curling plants, made for Groddle"
+   },
+   {
+    "date": "2026-11-16",
+    "kind": "fix",
+    "text": "The restoration report's Gone for good list shows what can't come back"
    }
   ]
  },
- "tests": 1095,
+ "tests": 1089,
  "generatedAt": "2026-11-17"
 }

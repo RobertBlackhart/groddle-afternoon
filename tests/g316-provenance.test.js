@@ -29,6 +29,9 @@
  * 2026-11-16 (lane art01, Austin: player snaps may be attached to the prompts, output ships CC0 with
  * provenance): made decos may also be quest-room props (`rooms` and the `code` that draws them, in place of
  * `streets`), and their inputs may name the attached snaps as `ref:` (reference only, never in the repo).
+ *
+ * 2026-11-17 (lane art45, G922): a made deco may come without a @1.5x copy when its drop holds less than
+ * 3 px a unit (Winter Haven's trees, the Outer Mind's head), and a chat may have been given four files.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -179,8 +182,12 @@ describe('new art from published zones (level builder P6) and made decos', () =>
       for (const k of policy.licences[row.licence].requires) assert.ok(row[k], `${name}: ${k}`);
       assert.ok(row.inputs.every((i) => /^(deco:|own:|ref:)/.test(i)), `${name}: inputs`);
       assert.ok(row.inputs.filter((i) => i.startsWith('deco:')).every((i) => existsSync(join(decos, `${i.slice(5)}.webp`))), `${name}: library inputs`);
-      assert.equal(row.inputFiles.length, 5, `${name}: the five files given`);
-      for (const f of [row.file, row.file3]) assert.ok(existsSync(join(root, f)), f);
+      // Five files given per chat (room 04's tree edits gave four: the CC0 tree and three pictures), numbered in order.
+      assert.ok([4, 5].includes(row.inputFiles.length), `${name}: the files given`);
+      assert.deepEqual(row.inputFiles.map((f) => f.n), row.inputFiles.map((_, i) => i + 1), `${name}: files in order`);
+      // The @1.5x copy only where the drop holds 3 px a unit (G922: no upscaled copies).
+      for (const f of [row.file, row.file3].filter(Boolean)) assert.ok(existsSync(join(root, f)), f);
+      if (!row.file3) assert.match(row.size, /no @1\.5x copy/, `${name}: says why it has no @1.5x copy`);
       if (row.rooms) {
         // A quest-room prop: the rooms exist and the code that draws them names the deco.
         const roomSrc = readdirSync(join(pub, 'js/quest-rooms')).map((f) => readFileSync(join(pub, 'js/quest-rooms', f), 'utf8')).join('\n');
@@ -246,7 +253,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=d6241586');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=9d0aadb0');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

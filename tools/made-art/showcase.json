@@ -205,6 +205,48 @@
     }
    ]
   },
+  "public/assets/made-art/wh-trees-before.webp": {
+   "what": "the Tiny Speck trees Winter Haven's snowy trees were redrawn from",
+   "w": 828,
+   "h": 600,
+   "sha256": "7a8c7224047f4fe9fc38e75859154268efc306cdf369c439da2ec84d8fe96428",
+   "made": "Tiny Speck's heights_tree_bare_3, _2 and _4 (CC0 1.0), cropped to their drawn rows and drawn at the haven's old scales (0.7, 0.75, 0.5), 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flipped them",
+   "from": [
+    {
+     "file": "public/assets/decos/groddle/heights_tree_bare_3.webp",
+     "sha256": "ce7bdc5ace9ac56f12b890c010b831ca029bc2137781525ced9a8ceb9f7ba3aa"
+    },
+    {
+     "file": "public/assets/decos/groddle/heights_tree_bare_2.webp",
+     "sha256": "57bbc22432dd59fc9155da6a0cd871c31a1da52486956b5b3c3a9f286f851b1b"
+    },
+    {
+     "file": "public/assets/decos/groddle/heights_tree_bare_4.webp",
+     "sha256": "b77b81ff5c95b9e9a273f73aa8ff5b4df23ff75b42020dbe3702cb54e9f1305a"
+    }
+   ]
+  },
+  "public/assets/made-art/wh-trees.webp": {
+   "what": "Winter Haven's made snowy trees",
+   "w": 828,
+   "h": 600,
+   "sha256": "640e4cdc9b15a0aa898d5da98dbe258b64da78495cdf08451510d9386034356e",
+   "made": "the made decos (their 2x files, the drop at its own resolution) at the heights the haven draws them, 0.6 px a unit, on paper, roots on one ground line, flipped as the haven flips them",
+   "from": [
+    {
+     "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_3.webp",
+     "sha256": "c34721783f7a82be118d95dc6eeff946cd2f63ff32cb0689b5b13b2b2a3a49d9"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_2.webp",
+     "sha256": "70283bf63265866dfe0291f23320e9fa852065d1e99cb8ab238542066bd44f97"
+    },
+    {
+     "file": "public/assets/decos/groddle/gz_ai_wh_tree_bare_4.webp",
+     "sha256": "25f4a28f56965235eb71265823ee74c46df1e4b35d55ae4f4a20379156140060"
+    }
+   ]
+  },
   "public/assets/made-art/ww-props.webp": {
    "what": "Winter Walk's made tree arch and curling plants",
    "w": 1260,

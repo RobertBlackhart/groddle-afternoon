@@ -212,11 +212,11 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=98606052';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d9f5dd4a';
 import { fadeInNewNear } from '../poof-fade.js?v=17fc143a';
-import { projectApi } from './street-jobs-feature.js?v=378f13d5';
+import { projectApi } from './street-jobs-feature.js?v=f019bd92';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=2d71091c';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=c5037c77';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=d36fd510';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
-import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=7a8904fa';
+import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=d227f802';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=28262069';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=54cef7d8';
 import { patchesFeature } from './patches-feature.js?v=fcbd0894';
@@ -242,7 +242,7 @@ import {
 } from '../home-styles.js?v=13fe0aaa';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
-import { oneArmSignpost } from '../street-render.js?v=d6241586';
+import { oneArmSignpost } from '../street-render.js?v=9d0aadb0';
 import { ROCK_CATALOG } from '../mining.js?v=c2964c53';
 import {
   HOUSE_SIGN,
