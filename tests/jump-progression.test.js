@@ -34,7 +34,7 @@ import { isOfferedInRemake, isOfferedOnline } from '../public/js/imagination-rem
 import { imaginationFeature } from '../public/js/features/imagination-feature.js?v=09179b4e';
 import { NORMAL_BUFF, jumpApex } from '../public/js/avatar-step.js?v=6122a615';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=633a59ad';
-import { WINTER_WALK_START, WINTER_WALK_TSID } from '../public/js/winter-walk-streets.js?v=d1c7d113';
+import { WINTER_WALK_START, WINTER_WALK_TSID } from '../public/js/winter-walk-streets.js?v=65458036';
 import { SKIP_TUTORIAL_CARDS } from '../public/js/newxp.js?v=1f52edd5';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', rel), 'utf8');

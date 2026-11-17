@@ -225,6 +225,32 @@
      "sha256": "260816dac7737e581a9847dd33d0bcd1fa0294d2a0bbcdf74d7ad1008e01ccb4"
     }
    ]
+  },
+  "public/assets/made-art/ww-room-before.webp": {
+   "what": "Winter Walk at its caption before the made art: a bare Tiny Speck tree and open snow",
+   "w": 720,
+   "h": 423,
+   "sha256": "efccc140bb34689431b0d6aa150f70a425b8806dbf3b3b5cf9638b975080a4ec",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questdemo=winter, walked right to x -1547), every page element but the canvas hidden, the street JSON of d9239df55e8 (before the made art); cropped to x 180-1080, y 30-559 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "ww-before.png",
+     "sha256": "72d1f013b160de916ea59a136c02f7d2c31357ac1dfa5b37c96edfe0282147a8"
+    }
+   ]
+  },
+  "public/assets/made-art/ww-room.webp": {
+   "what": "Winter Walk at its caption with the made tree arch and curling plants",
+   "w": 720,
+   "h": 423,
+   "sha256": "8208c33545710f441bec1424ae4b19bef0bfc480e9b047fe371b6a480caac9d7",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, questdemo=winter, walked right to x -1547), every page element but the canvas hidden, today's street; cropped to x 180-1080, y 30-559 (CSS px), Lanczos to 720 x 423",
+   "from": [
+    {
+     "shot": "ww-after.png",
+     "sha256": "d658f7a686e1e17ea1d109f4c9c928c1e48c66fbc7bd30ae9c5d74e5c95fb02f"
+    }
+   ]
   }
  }
 }

@@ -64,7 +64,7 @@ import {
   winterHavenStreet,
   winterWalkIndexEntry,
   winterWalkStreet,
-} from '../public/js/winter-walk-streets.js?v=d1c7d113';
+} from '../public/js/winter-walk-streets.js?v=65458036';
 import {
   HOUSE_GROUND_ART,
   LOUISE_PASTURE_DOOR,

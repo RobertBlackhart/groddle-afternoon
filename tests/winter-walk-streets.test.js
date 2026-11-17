@@ -3,7 +3,8 @@
  * (js/winter-walk-streets.js, written by tools/build-rebuilt-rooms.mjs; the
  * timed route in js/winter-walk.js and game.js runs on them). Cleops' and
  * URvonb's snaps (research/flickr-2026-10-27, reference only) guide the
- * layout; every deco is CC0 art already shipped.
+ * layout; every deco is CC0 art already shipped, Tiny Speck's or made for Groddle
+ * (G912: the walk's tree arch and curling plants, tools/provenance/made-decos.json).
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -27,7 +28,11 @@ import {
   WINTER_HAVEN_TSID,
   WINTER_HUB,
   WINTER_REPEAT_SOURCE_TSIDS,
+  WINTER_WALK_ARCH,
   WINTER_WALK_CAMP,
+  WINTER_WALK_CAPTION,
+  WINTER_WALK_CURLS,
+  WINTER_WALK_CURL_SPLAYS,
   WINTER_WALK_ICICLES,
   WINTER_WALK_OVERHANG,
   WINTER_WALK_PILLARS,
@@ -36,8 +41,8 @@ import {
   WINTER_WALK_TSID,
   isWinterStreetTsid,
   winterStreetEcology,
-} from '../public/js/winter-walk-streets.js?v=d1c7d113';
-import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=dad750d2';
+} from '../public/js/winter-walk-streets.js?v=65458036';
+import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=fe1533a1';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=633a59ad';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -46,6 +51,7 @@ const streets = join(pub, 'assets/streets');
 const gsjs = join(spike, '../glitch-GameServerJS');
 const index = JSON.parse(readFileSync(join(streets, 'index.json'), 'utf8')).streets;
 const manifest = new Set(JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8')));
+const madeDecos = JSON.parse(readFileSync(join(spike, 'tools/provenance/made-decos.json'), 'utf8')).art;
 const street = (tsid) => JSON.parse(readFileSync(join(streets, `${tsid}.json`), 'utf8'));
 const walk = street(WINTER_WALK_TSID);
 const haven = street(WINTER_HAVEN_TSID);
@@ -85,11 +91,12 @@ describe('Winter Walk and Winter Haven: street JSON', () => {
     }
   });
 
-  it('draw only CC0 decos already shipped', () => {
+  it('draw only CC0 decos already shipped (Tiny Speck\'s, or made for this street with its provenance)', () => {
     for (const s of [walk, haven]) {
       for (const layer of s.layers) {
         for (const d of layer.decos) {
-          assert.ok(manifest.has(d.sprite), `${s.label}: ${d.sprite} in the deco manifest`);
+          const made = madeDecos[d.sprite];
+          assert.ok(manifest.has(d.sprite) || made?.streets.includes(s.tsid), `${s.label}: ${d.sprite} in the deco manifest or made for it`);
           assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${d.sprite}.webp`)), `${s.label}: ${d.sprite}`);
         }
       }
@@ -170,11 +177,49 @@ describe('Winter Walk, round 5 (the Tribute Blog and the 147 Snaps)', () => {
   const layer = (id) => walk.layers.find((l) => l.id === id);
   const mid = layer('middleground').decos;
 
-  it('the arched hollow tree and the curling plants are not built as stand-ins (Austin 2026-10-31)', () => {
-    assert.ok(!walk.layers.some((l) => /arch|curl/i.test(l.id)));
+  it('G912: the made tree arch stands round the caption, the caption between its trunks (Snaps 82043, 81189)', () => {
     const sprites = new Set(walk.layers.flatMap((l) => l.decos.map((d) => d.sprite)));
+    // No CC0 stand-ins (Austin 2026-10-31), and the bare tree that stood in its place is gone from there.
     for (const name of ['corey3_tree_redBare_n2', 'ground_cutaway_hollow3', 'plant_fern_1', 'plant_fern_4', 'plant_giant_fern_1']) assert.ok(!sprites.has(name), name);
-    assert.match(walk.why.notBuilt, /not built: no CC0 piece/);
+    const arch = mid.filter((d) => d.sprite === 'gz_ai_ww_tree_arch');
+    assert.equal(arch.length, 1);
+    const [a] = arch;
+    assert.deepEqual([a.w, a.h, a.x], [WINTER_WALK_ARCH.w, WINTER_WALK_ARCH.h, WINTER_WALK_ARCH.x]);
+    assert.ok(a.y >= WINTER_WALK_START.y && a.y - WINTER_WALK_START.y <= 16, 'its roots on the floor');
+    assert.ok(!mid.some((d) => d.sprite === 'heights_tree_bare_4' && Math.abs(d.x - a.x) < a.w / 2), 'no bare tree inside the arch');
+    // The caption sits midway between the trunks, inside the opening and under the crossing branches.
+    const [l, r] = WINTER_WALK_ARCH.trunks.map((f) => a.x - a.w / 2 + f * a.w);
+    assert.ok(Math.abs((l + r) / 2 - WINTER_WALK_CAPTION.x) <= 4, 'centred between the trunks');
+    assert.ok(WINTER_WALK_CAPTION.y > a.y - a.h && WINTER_WALK_CAPTION.y < a.y - 100);
+    // Nothing else grows under the caption between the trunks but the low plants (82043, 81189: open snow).
+    for (const d of mid.filter((q) => q.x > l + 40 && q.x < r - 40 && q.z > a.z)) assert.match(d.sprite, /^gz_ai_ww_curl_/, `${d.sprite} at ${d.x}`);
+    assert.match(walk.why.made, /made for Groddle/);
+    assert.doesNotMatch(walk.why.notBuilt, /arch|curling|no CC0 piece/);
+  });
+
+  it('G912: the curling plants grow as splayed clusters of two or three copies, mirrored, 70-100%, roots together', () => {
+    const curls = mid.filter((d) => /^gz_ai_ww_curl_/.test(d.sprite));
+    assert.equal(curls.length, WINTER_WALK_CURLS.reduce((n, c) => n + WINTER_WALK_CURL_SPLAYS[c.splay].length, 0));
+    for (const [i, c] of WINTER_WALK_CURLS.entries()) {
+      const copies = curls.filter((d) => d.id.startsWith(`walk_curl_${i + 1}_`));
+      assert.ok(copies.length >= 2 && copies.length <= 3, `plant ${i + 1}`);
+      assert.ok(copies.every((d) => d.sprite === `gz_ai_ww_curl_${c.kind}`));
+      assert.ok(copies.some((d) => d.flip) && copies.some((d) => !d.flip), `plant ${i + 1}: one copy mirrored`);
+      const hs = copies.map((d) => d.h);
+      assert.ok(Math.min(...hs) / Math.max(...hs) >= 0.69, `plant ${i + 1}: 70-100%`);
+      assert.ok(Math.max(...copies.map((d) => d.x)) - Math.min(...copies.map((d) => d.x)) < Math.max(...copies.map((d) => d.w)), `plant ${i + 1}: roots together`);
+      // They stand on the floor, behind the front ground plane (its top is 26 under the feet).
+      assert.ok(copies.every((d) => d.y >= WINTER_WALK_START.y && d.y < WINTER_WALK_START.y + 26));
+      // Clear of the icicles' fall and the pillars.
+      for (const ic of WINTER_WALK_ICICLES) assert.ok(Math.abs(c.x - ic.x) > 80, `plant ${i + 1} clear of the icicle at ${ic.x}`);
+      for (const p of WINTER_WALK_PILLARS) assert.ok(Math.abs(c.x - p.x) > p.w, `plant ${i + 1} clear of the pillar at ${p.x}`);
+    }
+    // Where the Snaps show them: the tall ones left of the arch and at its right trunk, a low one in front of it.
+    const archL = WINTER_WALK_ARCH.x - WINTER_WALK_ARCH.w / 2;
+    const archR = WINTER_WALK_ARCH.x + WINTER_WALK_ARCH.w / 2;
+    assert.ok(WINTER_WALK_CURLS.some((c) => c.kind === 'tall' && c.x < archL + 40 && c.x > archL - 120));
+    assert.ok(WINTER_WALK_CURLS.some((c) => c.kind === 'tall' && c.x > WINTER_WALK_ARCH.x && c.x < archR));
+    assert.ok(WINTER_WALK_CURLS.some((c) => c.kind === 'low' && c.x > archL && c.x < archR));
   });
 
   it('big icicles hang from the streaked overhang, over head height and clear of the pillar tops', () => {

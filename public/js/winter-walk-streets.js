@@ -57,12 +57,18 @@
  *   (research/coverage/snaps-round3-2026-10-31/winter_walk), reference only:
  *   white streaks on the overhang, big icicles under it, a cliff block with
  *   icy ledges behind the far end, and the blizzard bank with three more
- *   pillars. Known from those pictures but not built: the big hollow two-trunk
+ *   pillars. Known from those pictures but not built then: the big hollow two-trunk
  *   tree arching round the caption (82043, 81189; blog 37366254046) and the
  *   pale green curling plants in the snow (82043, 81185, 83816; blog
  *   37366254046, 37415159206). No CC0 piece is either (checked against the 62
  *   location bundles and the per-deco sources of tinyspeck/glitch-locations),
  *   and stand-ins were not wanted (Austin 2026-10-31).
+ * - G912 (2026-11-16): both are made for Groddle now (Austin 2026-11-16: "Winter Walk's made
+ *   pieces are welcome"): gz_ai_ww_tree_arch, two trees whose branches cross overhead, stands
+ *   round the caption where heights_tree_bare_4 stood; gz_ai_ww_curl_tall and _low grow as
+ *   splayed clusters of two or three copies of one stalk (mirrored, 70-100%, roots together),
+ *   where Snaps 82043, 81189, 82039 and 81185 show them. Image model pictures dedicated CC0 1.0,
+ *   provenance in tools/provenance/made-decos.json (the Snaps reference only).
  * The walk's caption line (WINTER_WALK_CAPTION) is placed in the walk as the
  * pictures show it (G352, Austin 2026-10-28: one-off approval); Being Watched
  * places its own (js/quest-rooms/being-watched.js CAPTION).
@@ -225,8 +231,8 @@ export const WINTER_WALK_CAMP = Object.freeze({ fire: -2760, tent: -2540 });
  * it was deco sign text placed in the lost template (the client's Deco sign_txt,
  * DecoRenderer.as 287-311), so it stays put as you walk: both pictures show it at the same spot,
  * dark grey, centred in four lines, just right of the hollow two-trunk tree past the camp,
- * about 140 px above the floor. Here that is right of the two-trunk heights_tree_bare_4 (-1720, its right trunk near -1658)
- * and short of the next tree (-1430), clear of the trunks. World x, y of its centre; drawn by
+ * about 140 px above the floor. G912: the made tree arch (WINTER_WALK_ARCH) now stands round it, the caption
+ * centred between its two trunks as both Snaps show. World x, y of its centre; drawn by
  * features/rebuilt-rooms-feature.js.
  * Austin 2026-10-28: one-off approval.
  */
@@ -326,13 +332,21 @@ function walkGroundDecos() {
   return out;
 }
 
-/** Bare dead trees along the walk (the pictures: tall, dark, spiky). */
+/**
+ * G912: the hollow tree arch round the caption (Snaps 82043, 81189; made for Groddle, 458 x 348
+ * units, sized by its opening: 215 between the trunks at the caption's height). Its trunks stand
+ * at 23% and 79% of its width, so x puts the caption midway between them.
+ */
+export const WINTER_WALK_ARCH = Object.freeze({ sprite: 'gz_ai_ww_tree_arch', x: -1551, w: 458, h: 348, trunks: Object.freeze([0.2335, 0.7937]) });
+
+/** Bare dead trees along the walk (the pictures: tall, dark, spiky); the arch in the wood among them. */
 export const WINTER_WALK_TREES = Object.freeze([
   ['heights_tree_bare_1', -2985, 0.42, false],
   ['tree_bare_bunch_1', -2330, 0.44, false],
   ['heights_tree_bare_3', -2080, 0.5, true],
-  ['heights_tree_bare_4', -1720, 0.42, false],
-  ['heights_tree_bare_2', -1430, 0.52, false],
+  // G912: was -1430, where the arch's right tree stands now; moved to the gap left of it (82043: thin dark trees there).
+  ['heights_tree_bare_2', -1880, 0.52, false],
+  [WINTER_WALK_ARCH.sprite, WINTER_WALK_ARCH.x, 1, false],
   ['tree_bare_thin_1', -1180, 0.4, true],
   ['heights_tree_bare_1', -860, 0.4, true],
   ['tree_bare_bunch_1', -420, 0.4, true],
@@ -343,7 +357,57 @@ export const WINTER_WALK_TREES = Object.freeze([
   ['heights_tree_bare_4', 2330, 0.55, false],
 ]);
 
-const TREE_DIMS = { heights_tree_bare_1: [752, 2138], heights_tree_bare_2: [334, 1288], heights_tree_bare_3: [362, 1166], heights_tree_bare_4: [1138, 1294], tree_bare_bunch_1: [1398, 1318], tree_bare_thin_1: [550, 1568], tree_bare_tall_1: [430, 2016] };
+const TREE_DIMS = { [WINTER_WALK_ARCH.sprite]: [WINTER_WALK_ARCH.w, WINTER_WALK_ARCH.h], heights_tree_bare_1: [752, 2138], heights_tree_bare_2: [334, 1288], heights_tree_bare_3: [362, 1166], heights_tree_bare_4: [1138, 1294], tree_bare_bunch_1: [1398, 1318], tree_bare_thin_1: [550, 1568], tree_bare_tall_1: [430, 2016] };
+
+/**
+ * G912: the curling plants' art (made for Groddle): size in units at 100%, and where the stalk's root
+ * stands, as a fraction of the width from the left (the art's bottom rows).
+ */
+const CURL_ART = Object.freeze({
+  tall: Object.freeze({ sprite: 'gz_ai_ww_curl_tall', w: 46, h: 120, root: 0.2383 }),
+  low: Object.freeze({ sprite: 'gz_ai_ww_curl_low', w: 130, h: 43, root: 0.0721 }),
+});
+/**
+ * One plant is two or three copies of one stalk splayed from one root, as the Snaps show each plant
+ * (a cluster of several curling stalks): [scale, root dx, mirrored, tilt in degrees about the foot].
+ */
+export const WINTER_WALK_CURL_SPLAYS = Object.freeze({
+  tall3: Object.freeze([[1, -5, false, -9], [0.84, 6, true, 10], [0.72, 1, false, 20]]),
+  tall2: Object.freeze([[1, -3, true, 7], [0.76, 4, false, -12]]),
+  low2: Object.freeze([[1, 5, false, 0], [0.78, -5, true, -4]]),
+});
+/**
+ * Where they grow (world x of the root, a scale for the whole plant): right of the teepee (82039),
+ * left of the arch and at and past its right trunk's foot (82043, 81189), low ones in the snow in
+ * front of it and past it (82043, 81189), and by the cliffs (81185).
+ */
+export const WINTER_WALK_CURLS = Object.freeze([
+  Object.freeze({ kind: 'tall', splay: 'tall3', x: -2010, s: 0.95 }),
+  Object.freeze({ kind: 'tall', splay: 'tall3', x: -1762, s: 1.05 }),
+  Object.freeze({ kind: 'low', splay: 'low2', x: -1580, s: 1, dy: 16 }),
+  Object.freeze({ kind: 'tall', splay: 'tall2', x: -1478, s: 0.7 }),
+  Object.freeze({ kind: 'tall', splay: 'tall2', x: -1335, s: 0.6 }),
+  Object.freeze({ kind: 'low', splay: 'low2', x: -1190, s: 0.85, dy: 10 }),
+  Object.freeze({ kind: 'low', splay: 'low2', x: 760, s: 0.9, dy: 10 }),
+  Object.freeze({ kind: 'tall', splay: 'tall3', x: 950, s: 1.1 }),
+]);
+const countCurlDecos = () => WINTER_WALK_CURLS.reduce((n, c) => n + WINTER_WALK_CURL_SPLAYS[c.splay].length, 0);
+
+function walkCurlDecos(z0) {
+  const out = [];
+  let z = z0;
+  for (const [i, c] of WINTER_WALK_CURLS.entries()) {
+    const art = CURL_ART[c.kind];
+    for (const [j, [k, dx, flip, tilt]] of WINTER_WALK_CURL_SPLAYS[c.splay].entries()) {
+      const w = art.w * c.s * k;
+      const h = art.h * c.s * k;
+      // The art turns about its bottom centre: put that where the root lands once mirrored.
+      const x = c.x + dx * c.s - (art.root - 0.5) * w * (flip ? -1 : 1);
+      out.push(deco(art.sprite, x, WF + 4 + (c.dy || 0), w, h, z++, { id: `walk_curl_${i + 1}_${j + 1}`, ...(tilt ? { r: tilt } : {}), ...(flip ? { flip: true } : {}) }));
+    }
+  }
+  return out;
+}
 
 function walkMiddleDecos() {
   const out = [];
@@ -358,7 +422,8 @@ function walkMiddleDecos() {
   out.push(deco('juju_grandma_campfire_01a_al1', WINTER_WALK_CAMP.fire, WF + 16, 140, 140, z++, { id: 'campfire' }));
   out.push(deco('pampas_2', -2975, WF + 4, 214 * 0.32, 326 * 0.32, z++));
   // Snow-covered bushes and dry grass (the pictures: low white-topped scrub, sprigs).
-  const bushes = [-2380, -2230, -1900, -1560, -1290, -980, -700, -520, -150, 240, 650, 820, 1180, 1500, 2240, 2620];
+  // G912: the bush once at -1560 sat inside the arch, under the caption (82043, 81189: open snow there); it grows at -1100.
+  const bushes = [-2380, -2230, -1900, -1100, -1290, -980, -700, -520, -150, 240, 650, 820, 1180, 1500, 2240, 2620];
   bushes.forEach((x, i) => {
     const sprite = ['snow_bush_01a_al1', 'snow_bush_01b_al1', 'snow_bush_01c_al1'][i % 3];
     const [sw, sh] = { snow_bush_01a_al1: [306, 178], snow_bush_01b_al1: [222, 168], snow_bush_01c_al1: [248, 78] }[sprite];
@@ -368,6 +433,9 @@ function walkMiddleDecos() {
   for (const [i, x] of [-1800, -1000, -330, 360, 1020, 2460].entries()) out.push(deco('pampas_2', x, WF - 2, 214 * 0.3, 326 * 0.3, z++, i % 2 ? { flip: true } : {}));
   // Snowy rocks here and there.
   for (const [i, x] of [-640, 560, 1380, 2560].entries()) out.push(deco('rock_snowy_1a_al1', x, WF - 4, 386 * 0.32, 282 * 0.32, z++, i % 2 ? { flip: true } : {}));
+  // G912: the curling plants, in front of the trees and the scrub.
+  out.push(...walkCurlDecos(z));
+  z += countCurlDecos();
   // The grey basalt overhang along the top at the cliffs' end (8417912992), hung from the street top.
   // Round 5: it ends short of the blizzard bank (Snaps 81936, 82325: open sky over the far
   // pillars), and its rock carries Alakol's own white streaks, as the Snaps' pale cliffs do
@@ -508,7 +576,8 @@ export function winterWalkStreet() {
       bounds: 'onStarted drops you at -2875,-81 (winter_walk.js:105), so the walk is the standard -3000..3000 with its floor at -81.',
       layout: 'Left to right: the camp (campfire, teepee) where you start, a wood of bare dead trees and snowy scrub, the caption, an open snowfield, then the cliffs\' end with a streaked basalt overhang hung with big icicles, three snow pillars and a cliff block with icy ledges, and at the far end a white blizzard bank with three more pillars, short, middle and tall, before the passage; firs, white hills and snowy basalt mountains behind.',
       route: 'js/winter-walk.js runs the timed route: motes spread over the platforms, the passage to Winter Haven at the right end, and the way home at the same end on the return.',
-      notBuilt: 'The big hollow two-trunk tree arching round the caption and the pale green curling plants are known from the blog and the Snaps but not built: no CC0 piece is either. The big icicles fall when walked under and stand as pillars (G472, js/winter-icicles.js; the recording 2Xko9Hy-cLE).',
+      made: 'G912: the big hollow two-trunk tree arching round the caption and the pale green curling plants, known from the blog and the Snaps, are made for Groddle (no CC0 piece is either; Austin 2026-11-16): new pictures by an image model from our drawing of their sizes, the Snaps and Tiny Speck\'s own art, dedicated CC0 1.0 (tools/provenance/made-decos.json).',
+      notBuilt: 'Nothing the pictures show is left out now. The big icicles fall when walked under and stand as pillars (G472, js/winter-icicles.js; the recording 2Xko9Hy-cLE).',
       caption: 'The pictures\' caption line is drawn at the same spot by features/rebuilt-rooms-feature.js (WINTER_WALK_CAPTION; Austin 2026-10-28: one-off approval).',
     },
   });

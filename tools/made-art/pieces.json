@@ -102,6 +102,36 @@
       ]
     },
     {
+      "id": "decos:ww:room",
+      "name": "Winter Walk",
+      "caption": "The same stretch of the walk before and after, at the line about icicles. Until the new pieces came, a bare Tiny Speck tree stood near the line and the snow around it was open.",
+      "display": {
+        "w": 289,
+        "h": 170
+      },
+      "image": {
+        "file": "public/assets/made-art/ww-room.webp",
+        "label": "With the pieces made for Groddle",
+        "alt": "The snowy walk: the line about icicles inside an arch of two leaning trees, pale green curling plants at their feet."
+      },
+      "original": {
+        "file": "public/assets/made-art/ww-room-before.webp",
+        "kind": "original",
+        "label": "With Tiny Speck's trees only",
+        "alt": "The same walk with the line about icicles over open snow, a snowy bush under it and straight bare trunks around."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "The arch and the plants are by an image model ({tool}). Everything else on the walk is Tiny Speck's own art, laid out where the 2012 snapshots show it."
+        },
+        {
+          "label": "In the game",
+          "text": "Both pictures are the game itself, the walk's own floor and line, with only the art changed."
+        }
+      ]
+    },
+    {
       "id": "decos:lp",
       "name": "Walk Toward the Light's dishes, shades, poles and ledges",
       "caption": "The dish platforms, ceiling lamp shades, striped poles and stone ledges of Walk Toward the Light, the second puzzle level a player meets. No picture of them survives in Tiny Speck's files, only in players' snapshots of the room from 2012, so they were made again. The dish and the pole are grey on purpose: the room tints one picture by the light it stands in, as the snapshots show the same dish in six colours.",
