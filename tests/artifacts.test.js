@@ -30,8 +30,8 @@ import {
   rollCrack,
   stackMaxFor,
 } from '../public/js/artifacts.js?v=fc419ecf';
-import { artifactsFeature, finishCrack } from '../public/js/features/artifacts-feature.js?v=2486432a';
-import { FEATURES } from '../public/js/features/index.js?v=8c01b318';
+import { artifactsFeature, finishCrack } from '../public/js/features/artifacts-feature.js?v=993ca715';
+import { FEATURES } from '../public/js/features/index.js?v=70ca31ae';
 import { DROP_ITEMS, DROP_TABLES, rollDropTable } from '../public/js/drop-tables.js?v=8bcf111f';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=f49c8998';
 import { createToolConditionState, getToolCondition } from '../public/js/tools.js?v=8516a0c3';
@@ -163,7 +163,7 @@ describe('the feature: watcher, overlay, arrival, badges', () => {
     assert.equal(ITEM_CATALOG.artifact_wooden_apple.donatable, false);
   });
 
-  it('assembles 1 s after the last piece arrives, locks for 5 s and delivers 5 s later', (t) => {
+  it('assembles 1 s after the last piece arrives, locks for 5 s and announces the arrival 5 s later', (t) => {
     // G534: the feature stamps its waits with Date.now, so the clock is the test's own; this ran on the
     // real one and read 5001 ms after a moment it had taken before the stamp (failed under load).
     t.mock.timers.enable({ apis: ['Date'], now: 1_000_000 });
@@ -188,15 +188,41 @@ describe('the feature: watcher, overlay, arrival, badges', () => {
     assert.equal(artifactsFeature._state().overlay.text, "You've combined all the artifact pieces to make a Chicken-Shaped Brick!");
     assert.deepEqual(artifactsFeature.physics(), { speed: 0, jump: 0 });
     assert.deepEqual(log.counters, [['artifacts_made:artifact_chicken_brick', 1]]);
-    assert.equal(inv.artifact_chicken_brick, undefined, 'arrives later');
+    // G948 (G942 gap A2): in the pack in the same tick the pieces left, so one save write holds both
+    // (the site's artifact: transform); the source's 5 s wait is the arrival's sound and "+1" only.
+    assert.equal(inv.artifact_chicken_brick, 1, 'in the pack with the pieces\' removal');
     tick(4999);
-    assert.equal(inv.artifact_chicken_brick, undefined, 'still 1 ms short');
     assert.deepEqual(artifactsFeature.physics(), { speed: 0, jump: 0 });
+    assert.equal(artifactsFeature._state().arrivals.length, 1, 'still 1 ms short of the arrival');
     tick(1);
-    assert.equal(inv.artifact_chicken_brick, 1);
+    assert.equal(artifactsFeature._state().arrivals.length, 0);
+    assert.equal(inv.artifact_chicken_brick, 1, 'given once');
     assert.equal(artifactsFeature._state().overlay, null);
     assert.equal(artifactsFeature.physics(), null);
     assert.deepEqual(artifactsFeature.save().made, { artifact_chicken_brick: 1 });
+  });
+
+  it('G948: the save that takes the pieces or beads already holds the artifact or necklace (one ledger write)', () => {
+    const pieces = ARTIFACT_MAP.nose_of_china.pieces;
+    for (const [inv, made] of [
+      [Object.fromEntries(pieces.map((p) => [p, 1])), 'artifact_nose_of_china'],
+      [{ artifact_necklace_onyx_piece: 19 }, 'artifact_necklace_onyx'],
+    ]) {
+      artifactsFeature._reset();
+      const { engine } = makeEngine({});
+      const saves = [];
+      engine.save = () => saves.push({ ...engine.inv });
+      artifactsFeature.init(engine);
+      artifactsFeature.onTick(16, 10, engine);
+      Object.assign(engine.inv, inv);
+      artifactsFeature.onTick(16, 400, engine);
+      const key = [...artifactsFeature._state().pending.keys()][0];
+      artifactsFeature._state().pending.get(key).at = Date.now() - 1;
+      artifactsFeature.onTick(16, Date.now(), engine);
+      assert.equal(saves.length, 1);
+      assert.equal(saves[0][made], 1, made);
+      for (const c of Object.keys(inv)) assert.equal(saves[0][c] || 0, 0, c);
+    }
   });
 
   it('threads a necklace from beads with the source count in the overlay', () => {

@@ -177,10 +177,17 @@ function pieceAdded(engine, classTsid) {
   pending.set(key, { plan, at: Date.now() + ASSEMBLE_DELAY_MS });
 }
 
-/** createArtifact / createArtifactNecklace. */
+/**
+ * createArtifact / createArtifactNecklace. G948 (G942 gap A2): the artifact goes into the pack in the
+ * same tick as its pieces leave, so one save write holds both and the site's ledger reads the
+ * artifact:/necklace: transform (LedgerMath::explain) instead of a wasted loss and a gain it then
+ * took back. The source's 5 s wait (createItemFromGround after the overlay) is kept for the arrival's
+ * sound and "+1" only; a reload in that wait no longer loses the artifact either.
+ */
 function assemble(engine, plan) {
   if (!consumeForAssembly(engine.inv, plan)) return false;
   const made = plan.kind === 'necklace' ? plan.produces : plan.artifact;
+  addItem(engine.inv, made, 1);
   showOverlay(plan.kind === 'necklace'
     ? CRACK_COPY.combinedBeads(plan.required, labelOf(made))
     : CRACK_COPY.combined(labelOf(made)));
@@ -219,14 +226,11 @@ function tickAssembly(engine, now) {
     if (due.length) {
       arrivals = arrivals.filter((a) => now < a.at);
       for (const a of due) {
-        // createItemFromGround: the artifact arrives in the pack.
-        addItem(engine.inv, a.id, 1);
+        // createItemFromGround: the artifact's arrival (it went into the pack at assembly, G948).
         engine.playSound?.('DISCOVER_USEFUL_NEW_ITEM', { volume: 0.55 });
         const p = engine.player;
         if (p) engine.floatText?.(p.x, (p.y || 0) - 130, `+1 ${labelOf(a.id)}`, 0xffe39a);
       }
-      engine.refreshPack?.();
-      engine.save?.();
     }
   }
   if (overlay && now >= overlay.until) hideOverlay();
