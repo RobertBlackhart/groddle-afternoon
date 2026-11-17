@@ -25,6 +25,8 @@
  * js/street-jobs.js is what it was (tests/street-jobs-solo-scale.test.js).
  */
 
+import { hopsOverEveryRoad } from './street-graph.js?v=114647c2';
+
 /** A skillDrop that waives every level (no project skill goes above VI). */
 export const SKILLS_WAIVED = 99;
 
@@ -50,32 +52,11 @@ const g = (t) => {
 
 /**
  * Signposts walked from `start` to every street (G tsids): a breadth-first walk over the graph's
- * signposts and doors, each way in the direction it goes. Returns { tsid: hops }.
+ * signposts and doors, each way in the direction it goes, built or not. Returns { tsid: hops }.
+ * The walk is the street graph's (js/street-graph.js hopsOverEveryRoad, R11 G969); `graph` is the
+ * street graph or signpost-graph.json.
  */
-export function hopsFromStart(graph, start) {
-  const out = {};
-  const home = g(start);
-  if (!home || !graph || typeof graph !== 'object') return out;
-  const next = new Map();
-  for (const kind of ['streets', 'doors']) {
-    for (const [from, tos] of Object.entries(graph[kind] || {})) {
-      const k = g(from);
-      if (!next.has(k)) next.set(k, []);
-      for (const to of Array.isArray(tos) ? tos : []) next.get(k).push(g(to));
-    }
-  }
-  out[home] = 0;
-  const queue = [home];
-  for (let i = 0; i < queue.length; i += 1) {
-    const at = queue[i];
-    for (const to of next.get(at) || []) {
-      if (to in out) continue;
-      out[to] = out[at] + 1;
-      queue.push(to);
-    }
-  }
-  return out;
-}
+export const hopsFromStart = (graph, start) => hopsOverEveryRoad(graph, start);
 
 /** The curve's row for a distance (unknown: the last row). { hops, divisor, skillDrop }. */
 export function soloTerms(hops, curve = SOLO_CURVE) {

@@ -17,7 +17,9 @@
  *    leaves the tracker and the pins until the road opens. Nothing is stored: the
  *    hold is worked out from the roads each time, so it can never go stale.
  *
- * Pure: the street index, the ways between streets and the closed streets come in.
+ * Pure: the street index and the reach come in. The reach itself, and the projects on the way to a
+ * held quest's street, are walks over the street graph (js/street-graph.js reachableStreets,
+ * fewestClosures), which holds the closed roads (R11, G969).
  * Where a requirement can happen comes from its COUNTER_ROUTES rows
  * (quest-offers.js routesForCounter): a requirement is bound to streets only when
  * every route that can advance it happens on named streets.
@@ -102,87 +104,6 @@ export function questPlaceNeeds(def, idx) {
   }
   byIdx.set(def.classTsid, out);
   return out;
-}
-
-/**
- * Every street you can walk, ride or be set down on with the roads as they stand: from
- * the starts (the starter street, where you are, the streets already open to you) over
- * the ways a closure can hold (`graph`, never into a `shut` street) and the ways none
- * holds (`free`: the subway, the Collision-triggered Teleporters), as the ticket 50 test does.
- */
-export function reachableStreets({ graph = {}, free = {}, shut = [], starts = [] } = {}) {
-  const closed = shut instanceof Set ? shut : new Set(shut);
-  const seen = new Set();
-  const queue = [];
-  for (const s of starts.map(G)) if (s && !seen.has(s)) (seen.add(s), queue.push(s));
-  while (queue.length) {
-    const at = queue.shift();
-    for (const to of graph[at] || []) if (!closed.has(to) && !seen.has(to)) (seen.add(to), queue.push(to));
-    for (const to of free[at] || []) if (!seen.has(to)) (seen.add(to), queue.push(to));
-  }
-  return seen;
-}
-
-/**
- * Live report 212 (2026-11-12): the street of `reach` (the open world) nearest `from` by roads,
- * counting every road whether it is built yet or not (`graph`, plus `free` ways), so a pick that
- * lands past a closed road moves to the closest street still joined to the rest of Ur. `from`
- * itself when it is in reach; null when nothing in reach connects to it. `skip(tsid)` passes over
- * streets that will not do as a landing (the walk goes on through them).
- */
-export function nearestReached({ graph = {}, free = {}, reach, from = '', skip = null } = {}) {
-  const start = G(from);
-  if (!start || !reach || typeof reach.has !== 'function') return null;
-  const seen = new Set([start]);
-  const queue = [start];
-  for (let i = 0; i < queue.length; i += 1) {
-    const at = queue[i];
-    if (reach.has(at) && !skip?.(at)) return at;
-    for (const to of [...(graph[at] || []), ...(free[at] || [])]) if (!seen.has(to)) (seen.add(to), queue.push(to));
-  }
-  return null;
-}
-
-/**
- * The street projects to build, in order, on the way from the starts to any of `targets`: the
- * fewest of them (0-1 search, entering a closed street costs one, as openWayHome), where a
- * closed street can only be entered from one of its project board streets (`boards`: street ->
- * the streets its road opens from, street-jobs.json `connecting`), since that is where it is
- * built: Hazy Gate 3's board stands on Ramble Way 4, inside Xalanga, so Xalanga's way in is
- * another one. [{ street, board }], the first one buildable now.
- */
-export function closuresInTheWay({ graph = {}, free = {}, shut = [], starts = [], targets = [], boards = null } = {}) {
-  const closed = shut instanceof Set ? shut : new Set(shut);
-  const goal = new Set(targets.map(G));
-  const cost = new Map();
-  const prev = new Map();
-  const deque = [];
-  for (const s of starts.map(G)) if (s && !cost.has(s)) (cost.set(s, 0), prev.set(s, null), deque.push(s));
-  let end = null;
-  while (deque.length) {
-    const at = deque.shift();
-    if (goal.has(at)) {
-      end = at;
-      break;
-    }
-    const c = cost.get(at);
-    const step = (to, w) => {
-      if (cost.has(to) && cost.get(to) <= c + w) return;
-      cost.set(to, c + w);
-      prev.set(to, at);
-      if (w) deque.push(to);
-      else deque.unshift(to);
-    };
-    for (const to of graph[at] || []) {
-      if (!closed.has(to)) step(to, 0);
-      else if (!boards || boards[to]?.includes(at)) step(to, 1);
-    }
-    for (const to of free[at] || []) step(to, 0);
-  }
-  if (!end) return [];
-  const path = [];
-  for (let at = end; at; at = prev.get(at)) if (closed.has(at)) path.push({ street: at, board: prev.get(at) || '' });
-  return path.reverse();
 }
 
 /**

@@ -501,32 +501,6 @@ export function sparedBySignpost(player, startedAt, signposts = []) {
   return signposts.some((s) => Math.abs(s.x - player.x) < DEIMAGINATOR.signpostPx && Math.abs(s.y - player.y) < DEIMAGINATOR.signpostPx);
 }
 
-/**
- * Breadth-first route through visible signposts (the client path the map
- * drew). graph: tsid -> neighbour tsids (street-index keys). Returns the
- * street list from `from` to `to` inclusive, or null.
- */
-export function routeTo(graph, from, to) {
-  if (!graph || !from || !to) return null;
-  if (from === to) return [from];
-  const prev = new Map([[from, null]]);
-  const queue = [from];
-  while (queue.length) {
-    const cur = queue.shift();
-    for (const next of graph[cur] || []) {
-      if (prev.has(next)) continue;
-      prev.set(next, cur);
-      if (next === to) {
-        const path = [to];
-        for (let at = cur; at != null; at = prev.get(at)) path.unshift(at);
-        return path;
-      }
-      queue.push(next);
-    }
-  }
-  return null;
-}
-
 /** HUD copy for the run in progress. */
 export function carryObjective({ destinationLabel = '', nextLabel = '', arrived = false, offPath = false } = {}) {
   if (arrived) return `You made it to ${destinationLabel}. Look around for your contact.`;

@@ -11,7 +11,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROUTE_TEXT, createRouteState, findRoute, planRoute } from '../public/js/map-routes.js?v=f23b16a2';
+import { ROUTE_TEXT, createRouteState, findRoute, planRoute } from '../public/js/map-routes.js?v=84356b3e';
+import { streetGraph } from '../public/js/street-graph.js?v=114647c2';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorRowWhere } from '../public/js/vendor-finder.js?v=55f4616a';
 
 const root = join(import.meta.dirname, '..');
@@ -24,8 +25,8 @@ const KALLA = 'GIF13QL5IG02UAI'; // Kalla Chase, another Gardening Tools vendor
 describe('routes go round closed streets and their arms', () => {
   it('Middle Arbor still being built: no route through the crossed arm, and the Map says so', () => {
     assert.ok(graph[JUNCTION].includes(ARBOR), 'the junction has an arm to Middle Arbor');
-    assert.equal(findRoute(graph, JUNCTION, ARBOR, { blocked: [ARBOR] }), null);
-    const res = planRoute(createRouteState(), graph, { from: JUNCTION, to: ARBOR, blocked: [ARBOR] });
+    assert.equal(findRoute(streetGraph(graph, { closed: [ARBOR] }), JUNCTION, ARBOR), null);
+    const res = planRoute(createRouteState(), streetGraph(graph, { closed: [ARBOR] }), { from: JUNCTION, to: ARBOR });
     assert.equal(res.ok, false);
     assert.equal(res.error, ROUTE_TEXT.noRoad);
     assert.equal(ROUTE_TEXT.noRoad, 'No road there yet');
@@ -35,7 +36,7 @@ describe('routes go round closed streets and their arms', () => {
   });
 
   it('a street beyond a closed one goes round it, never through the closed arm', () => {
-    const path = findRoute(graph, JUNCTION, BEYOND, { blocked: [ARBOR] });
+    const path = findRoute(streetGraph(graph, { closed: [ARBOR] }), JUNCTION, BEYOND);
     assert.ok(path, 'there is another way');
     assert.equal(path.includes(ARBOR), false);
     assert.equal(findRoute(graph, JUNCTION, BEYOND)?.includes(ARBOR), true, 'open, the arm is the short way');
@@ -43,7 +44,7 @@ describe('routes go round closed streets and their arms', () => {
 
   it('the vendor finder takes the nearest open street it can reach, else "No road there yet"', () => {
     const find = (streets) => {
-      const p = findRoute(graph, JUNCTION, streets, { blocked: [ARBOR] });
+      const p = findRoute(streetGraph(graph, { closed: [ARBOR] }), JUNCTION, streets);
       return p ? { destination: p.at(-1), hops: p.length - 1 } : null;
     };
     const kinds = [{ key: 'gardening_tools', label: 'Gardening Tools Vendor', streets: [ARBOR, KALLA] }, { key: 'only_closed', label: 'X', streets: [ARBOR] }];
@@ -52,6 +53,6 @@ describe('routes go round closed streets and their arms', () => {
     assert.equal(tools.destination, KALLA);
     assert.ok(tools.hops > 1);
     assert.equal(vendorRowWhere(rows.find((r) => r.key === 'only_closed')), VENDOR_FINDER_TEXT.noWay);
-    assert.equal(planRoute(createRouteState(), graph, { from: JUNCTION, to: [ARBOR, KALLA], blocked: [ARBOR] }).route.destination, KALLA);
+    assert.equal(planRoute(createRouteState(), streetGraph(graph, { closed: [ARBOR] }), { from: JUNCTION, to: [ARBOR, KALLA] }).route.destination, KALLA);
   });
 });

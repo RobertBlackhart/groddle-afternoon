@@ -26,12 +26,13 @@ import {
 } from '../public/js/ghost-quest.js?v=5f3cc133';
 import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=edadd67d';
-import { routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
+import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
+import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
-import { placeIndex, questHold, questStoryNeeds, reachableStreets } from '../public/js/quest-reach.js?v=abee4a1f';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=89c0bcb9';
+import { placeIndex, questHold, questStoryNeeds } from '../public/js/quest-reach.js?v=164158a0';
+import { reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');
@@ -56,7 +57,7 @@ function freshReach() {
   const state = normalizeStreetJobState({});
   initializeStreetJobs(state, [HOME]);
   const shut = new Set(closedStreets(state, catalog, { exemptFrom: [HOME] }));
-  return reachableStreets({ graph, free, shut, starts: [HOME, ...state.grandfathered] });
+  return reachableStreets(streetGraph(graph, { closed: shut }), { free, starts: [HOME, ...state.grandfathered] });
 }
 const OLD_FIRST_SEVEN = ['Balcam Stacks', 'Burnabee', 'Follybottom Stritt', 'Grimssea Bottom', 'Hackfast Quicks', 'Firdaus Finds', 'Murrukku Meander'];
 const activeQuests = () => {

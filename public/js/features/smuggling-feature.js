@@ -45,7 +45,7 @@ import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { isStandable, worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { hellFeature } from './hell-feature.js?v=eb79a9c5';
-import { questRoomConverse } from './quest-instances-feature.js?v=d4e13016';
+import { questRoomConverse } from './quest-instances-feature.js?v=c5ef475a';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,
@@ -75,15 +75,15 @@ import {
   isSmugglerStreet,
   receiveConversation,
   redirectDestination,
-  routeTo,
   sameStreet,
   smugglerTouches,
   sourceKey,
   spawnOffset,
   sparedBySignpost,
-} from '../smuggling.js?v=ab6ee12a';
+} from '../smuggling.js?v=56263f15';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
+import { findRoute, loadStreetGraph, openRoads, roadsFor, streetGraphLoaded } from '../street-graph.js?v=114647c2';
 
 export const SMUGGLING_FEATURE_ID = 'smuggling';
 const ART = 'assets/sprites/smuggling/';
@@ -114,8 +114,6 @@ let giver = null; // the red give Smuggler on this street (hidden until he arriv
 let receiver = null; // the green contact on the destination street
 let deim = null; // a Deimaginator chasing you
 let dropped = null; // a confiscated box on the ground
-let graph = null;
-let graphPromise = null;
 let rng = Math.random;
 let last = '';
 let hud = null;
@@ -135,20 +133,8 @@ function seeded(seed) {
   };
 }
 
-function loadGraph() {
-  if (graph) return Promise.resolve(graph);
-  graphPromise ||= fetch('assets/content/signpost-graph.json?v=smuggling-1')
-    .then((r) => r.json())
-    .then((json) => {
-      graph = json.streets || {};
-      return graph;
-    })
-    .catch(() => {
-      graph = {};
-      return graph;
-    });
-  return graphPromise;
-}
+/** The street graph (js/street-graph.js, fetched once for every feature): closed roads are part of it (R11, G969). */
+const loadGraph = () => loadStreetGraph();
 
 const indexKey = (tsid) => (tsid ? resolveIndexTsid(tsid) : null);
 function streetLabel(tsid) {
@@ -224,6 +210,7 @@ function streetBlocked(engine) {
 }
 
 function route(engine) {
+  const graph = roadsFor(engine);
   if (!state.run || !graph) return null;
   const from = indexKey(engine.streetTsid);
   const to = indexKey(state.run.destination);
@@ -232,7 +219,8 @@ function route(engine) {
   const shared = engine.query?.('mapRoute', 'get', null, engine);
   const at = shared?.source === 'smuggling' && shared.path ? shared.path.indexOf(from) : -1;
   if (at > -1) return shared.path.slice(at);
-  return routeTo(graph, from, to);
+  // Else the street graph's own route: it goes round streets under construction too (R11, G969).
+  return findRoute(graph, from, to);
 }
 
 function frames(engine, prefix, clip, defs) {
@@ -467,7 +455,7 @@ function renderHud(engine) {
     destinationLabel: streetLabel(dest),
     nextLabel: path && path.length > 1 ? streetLabel(path[1]) : '',
     arrived,
-    offPath: Boolean(graph) && !arrived && !path,
+    offPath: streetGraphLoaded() && !arrived && !path,
   });
   hud.style.display = 'grid';
   hud.innerHTML = `<img src="assets/sprites/icons/contraband.webp" alt="" style="width:30px;height:auto" />
@@ -1018,7 +1006,7 @@ function demoSetup(engine) {
     loadGraph().then(() => {
       if (demo === 'receive') state.run.destination = sourceKey(indexKey(engine.streetTsid));
       if (demo === 'carry') {
-        const next = (graph[indexKey(engine.streetTsid)] || [])[0];
+        const next = openRoads(roadsFor(engine), indexKey(engine.streetTsid))[0];
         if (next) state.run.destination = sourceKey(next);
       }
       clearStreet(engine);
@@ -1095,8 +1083,8 @@ async function autoplay(engine, demo, mode) {
     if (demo === 'carry' && mode === 'lostcard') {
       // G198 QA: the run fails while a street loading card is up (reconcile or onTick),
       // and its prompt must wait for the card (screen-fx streetCardUp, G192).
-      await waitFor(() => graph && state.run);
-      const next = (graph[indexKey(engine.streetTsid)] || [])[0];
+      await waitFor(() => streetGraphLoaded() && state.run);
+      const next = openRoads(roadsFor(engine), indexKey(engine.streetTsid))[0];
       if (!next) return engine.setData('smugAutoplay', 'no-signpost');
       engine.travel?.(next, { label: streetLabel(next) });
       await waitFor(() => engine.streetCardUp?.(), 4000);

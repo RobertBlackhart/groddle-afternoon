@@ -21,13 +21,14 @@ import { join } from 'node:path';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=d057d5ec';
 import { acceptOffer, pendingQuestOffers, setQuestHeldCheck } from '../public/js/quest-offers.js?v=ed4e7435';
-import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=edadd67d';
-import { applyWorld } from '../public/js/street-jobs-mp.js?v=1e19532c';
-import { routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
+import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
+import { applyWorld } from '../public/js/street-jobs-mp.js?v=3ac15476';
+import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
-import { closuresInTheWay, holdNote, placeIndex, questHold, questPlaceNeeds, reachableStreets } from '../public/js/quest-reach.js?v=abee4a1f';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=89c0bcb9';
+import { holdNote, placeIndex, questHold, questPlaceNeeds } from '../public/js/quest-reach.js?v=164158a0';
+import { fewestClosures, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');
@@ -58,14 +59,14 @@ function freshJobs() {
 function world(state) {
   const shut = new Set(closedStreets(state, catalog, opts));
   const starts = [HOME, ...state.grandfathered];
-  return { shut, starts, reach: reachableStreets({ graph, free, shut, starts }) };
+  return { shut, starts, reach: reachableStreets(streetGraph(graph, { closed: shut }), { free, starts }) };
 }
 const holdIn = (state, id) => questHold(getQuestCatalog()[id], world(state).reach, idx);
 /** The street projects the hold's chain builds, by job id. */
 function chainJobs(state, id) {
   const w = world(state);
   const hold = questHold(getQuestCatalog()[id], w.reach, idx);
-  return closuresInTheWay({ graph, free, shut: w.shut, starts: w.starts, targets: hold.streets, boards })
+  return fewestClosures(streetGraph(graph, { closed: w.shut }), { free, starts: w.starts, targets: hold.streets, boards })
     .map(({ street }) => Object.keys(catalog.jobs).find((j) => catalog.jobs[j].kind === 'street' && catalog.jobs[j].street === street));
 }
 
@@ -120,9 +121,9 @@ describe('which quests wait for a road on a fresh world', () => {
     // Without the three roads only Level 2 West's Key 7 door is left; with that door gone too it is held.
     const none = freshJobs();
     const shutAlso = new Set([...closedStreets(none, catalog, opts), ...['201', '206', '240'].map((id) => catalog.jobs[id].street)]);
-    assert.equal(questHold(getQuestCatalog()[XALANGA], reachableStreets({ graph, free, shut: shutAlso, starts: [HOME] }), idx), null, 'the door still gets there');
+    assert.equal(questHold(getQuestCatalog()[XALANGA], reachableStreets(streetGraph(graph, { closed: shutAlso }), { free, starts: [HOME] }), idx), null, 'the door still gets there');
     const noDoor = { ...graph, GHH1011JSO11ORS: graph.GHH1011JSO11ORS.filter((t) => t !== 'GDOHDJ84BST2UI2') };
-    assert.ok(questHold(getQuestCatalog()[XALANGA], reachableStreets({ graph: noDoor, free, shut: shutAlso, starts: [HOME] }), idx), 'held without them');
+    assert.ok(questHold(getQuestCatalog()[XALANGA], reachableStreets(streetGraph(noDoor, { closed: shutAlso }), { free, starts: [HOME] }), idx), 'held without them');
   });
 
   it('a quest that can happen anywhere, or on a street you reach, never waits', () => {
@@ -137,7 +138,7 @@ describe('which quests wait for a road on a fresh world', () => {
     const w = world(state);
     for (const id of [PURPLE, 'sparkly_of_interest_1', 'sparkly_of_interest_2', 'sparkly_of_interest_3', 'sparkly_of_interest_4']) {
       const hold = holdIn(state, id);
-      const chain = closuresInTheWay({ graph, free, shut: w.shut, starts: w.starts, targets: hold.streets, boards });
+      const chain = fewestClosures(streetGraph(graph, { closed: w.shut }), { free, starts: w.starts, targets: hold.streets, boards });
       assert.ok(w.reach.has(chain[0].board), `${id}: the first board is reachable now`);
       for (const step of chain) assert.ok(boards[step.street].includes(step.board), `${id}: built at its own board`);
     }

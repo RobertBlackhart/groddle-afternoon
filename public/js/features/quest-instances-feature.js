@@ -118,7 +118,8 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=2fdff4a7';
+} from '../quest-instance.js?v=13b8ee09';
+import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=c8175e77';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
@@ -213,7 +214,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=a0fa2e8a'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=c616b773'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=5b9e8ca4'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=f6b2ffb4'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=1d25fd43'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=f17aca78'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=69a15e18'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=766b58b1'),
@@ -1450,19 +1451,18 @@ function ordinaryStreet(tsid, engine) {
   return urReach ? urReach.has(gKey(tsid)) : true;
 }
 
-/** The Map's signpost graph (same URL as map-routes-feature, so the browser keeps one copy). */
+/** The street graph (js/street-graph.js, fetched once for every feature). */
 function loadUrReach() {
   if (urReach || urLoading || typeof fetch !== 'function' || typeof window === 'undefined') return;
-  urLoading = fetch('assets/content/signpost-graph.json?v=g198-1')
-    .then((r) => r.json())
-    .then((graph) => {
-      urReach = streetsReachingUr(graph);
-      // A last street kept before the graph came (or by an older build) that has no road to Ur goes.
-      if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid)) save.lastStreet = null;
-    })
-    .catch(() => {
+  urLoading = loadStreetGraph().then((ok) => {
+    if (!ok) {
       urLoading = null;
-    });
+      return;
+    }
+    urReach = streetsReachingUr(worldRoads());
+    // A last street kept before the graph came (or by an older build) that has no road to Ur goes.
+    if (save.lastStreet && !ordinaryStreet(save.lastStreet.tsid)) save.lastStreet = null;
+  });
 }
 
 /** The last ordinary street, kept as the way out (instances_get_exit's "where you came in"). */

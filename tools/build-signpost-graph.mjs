@@ -1,7 +1,7 @@
 // Build public/assets/content/signpost-graph.json: every imported street's
 // visible signpost neighbours (and, under `doors`, its door neighbours), keyed by street-index TSID, so a feature can
 // route across streets without loading 1,400 street files (the Contraband's
-// "check the address" path, js/smuggling.js routeTo).
+// "check the address" path, js/street-graph.js findRoute).
 //
 // Usage: node tools/build-signpost-graph.mjs           write it
 //        node tools/build-signpost-graph.mjs --check   exit 1 if the file is stale (tests/map-routes.test.js)

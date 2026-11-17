@@ -136,6 +136,7 @@ import {
   TUTORIAL_NAME_MAX,
 } from '../newxp.js?v=02f902e6';
 import { countWords } from '../words.js?v=274023af';
+import { loadRoadsFor, reachableStreets } from '../street-graph.js?v=114647c2';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=487b1b60';
 import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=a4208821';
 import { soundForQuoin } from '../sound-moments.js?v=3e66996f';
@@ -2868,44 +2869,24 @@ async function autoLeave(engine, t) {
 /* Exits with a way out (G401)                                          */
 /* ------------------------------------------------------------------ */
 
-/** The Map's signpost graph (map-routes-feature, same URL so the browser keeps one copy). */
-const EXIT_GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';
-let exitGraph = null;
-
 /**
  * G401 (Austin 2026-10-28, stranded on Rappam Rolls after the tutorial): an exit only counts when its
  * roads lead back to the starting street. The remake opens most of Ur through street projects (a road
  * into a street still being built stays closed: js/street-jobs.js roadClosure), while newxp_exits is from
  * a world whose roads were all built, so on a fresh world 100 of the 115 drops were pockets with every
  * signpost closed ("still under construction"), and a new player has no Teleportation for the Map.
- * `graph` is assets/content/signpost-graph.json (signposts; doors, which no road closure holds, except
- * keyed ones), `closed` the streets whose roads are closed now (street-jobs-feature closedRoads),
- * `start` the street the open world grows from (Hechey Track: its roads are never closed).
+ * `graph` is the street graph (js/street-graph.js: signposts and doors, the closed roads out, R11 G969;
+ * a door into a street under construction is closed too, as Glitch locked it, inc_jobs.js
+ * jobs_modify_connections), walked without keyed doors (a new player holds no keys); `start` the
+ * street the open world grows from (Hechey Track: its roads are never closed).
  */
-export function exitLeadsHome(tsid, { graph, closed = [], start = DEFAULT_START } = {}) {
+export function exitLeadsHome(tsid, graph, start = DEFAULT_START) {
   const g = (t) => { const s = String(t || ''); return s.startsWith('L') ? `G${s.slice(1)}` : s; };
   const from = g(tsid);
   const home = g(start);
-  if (!from || !graph?.streets) return false;
+  if (!from || !graph) return false;
   if (from === home) return true;
-  const shut = new Set((closed || []).map(g));
-  const keyed = new Set(Object.keys(graph.doorKeys || {}));
-  const seen = new Set([from]);
-  const queue = [from];
-  for (let i = 0; i < queue.length; i += 1) {
-    const at = queue[i];
-    const next = [
-      ...(graph.streets[at] || []).filter((to) => !shut.has(to)),
-      ...(graph.doors?.[at] || []).filter((to) => !keyed.has(`${at}>${to}`)),
-    ];
-    for (const to of next) {
-      if (to === home) return true;
-      if (seen.has(to)) continue;
-      seen.add(to);
-      queue.push(to);
-    }
-  }
-  return false;
+  return reachableStreets(graph, { starts: [from], keyed: false }).has(home);
 }
 
 /**
@@ -2920,14 +2901,10 @@ export function pickOpenExit(rng, exists, open) {
 
 /** A predicate for streets a new player can walk out of; null while the roads or the graph are unknown. */
 async function exitRoads(engine) {
-  if (!exitGraph && typeof fetch === 'function') {
-    exitGraph = fetch(EXIT_GRAPH_URL).then((r) => r.json()).catch(() => null);
-  }
-  const graph = await exitGraph;
-  if (!graph?.streets) exitGraph = null; // a failed load is tried again next time
-  const closed = engine.query?.('closedRoads', engine);
-  if (!graph?.streets || !Array.isArray(closed)) return null;
-  return (tsid) => exitLeadsHome(tsid, { graph, closed });
+  // A failed load is tried again next time (loadRoadsFor fetches again).
+  const graph = await loadRoadsFor(engine);
+  if (!graph || !Array.isArray(engine.query?.('closedRoads', engine))) return null;
+  return (tsid) => exitLeadsHome(tsid, graph);
 }
 
 /** player.js teleportHome: the source x, dropped in from above (x 0 is mid-street). */
@@ -4247,7 +4224,7 @@ export const __newxpTest = {
   rescueStranded,
   get rooted() { return rooted; },
   set rooted(v) { rooted = Boolean(v); },
-  resetExits() { exitGraph = null; strandChecked = ''; strandRetryAt = 0; },
+  resetExits() { strandChecked = ''; strandRetryAt = 0; },
   // Ticket 26: On to the Big Time's 15 s on a real street.
   leaveFlagTick,
   resetLeave() { leaveSince = 0; leaveFinishing = false; },

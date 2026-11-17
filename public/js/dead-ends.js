@@ -27,10 +27,7 @@
  * (the remake keeps these instance copies as plain streets anyone can reach by a link or a save).
  */
 
-import { streetsReachingUr } from './quest-instance.js?v=2fdff4a7';
-
-/** The Map's signpost graph (same URL as map-routes-feature, so the browser keeps one copy). */
-export const DEAD_END_GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';
+import { STRAY_FALLBACK_TSID, streetsReachingUr } from './quest-instance.js?v=13b8ee09';
 
 /** The exit's art and words (the arrow and its word as js/practice-streets.js EZ_EXIT_SIGN). */
 export const DEAD_END_EXIT = Object.freeze({
@@ -70,14 +67,7 @@ export const indexShaped = (tsid) => /^[GL][A-Z0-9]{8,}$/.test(String(tsid || ''
  * out a feature runs itself, a hidden floor's teleporter), a G-keyed Set, or null without a graph.
  */
 export function urReach(graph, roads = []) {
-  if (!graph?.streets) return null;
-  const extra = { ...(graph.doors || {}) };
-  for (const r of roads || []) {
-    if (!r?.from || !r?.to) continue;
-    const from = gKey(r.from);
-    extra[from] = [...(extra[from] || []), gKey(r.to)];
-  }
-  return streetsReachingUr({ ...graph, doors: extra });
+  return streetsReachingUr(graph, STRAY_FALLBACK_TSID, roads);
 }
 
 /** A dead end: a street of the index (`known`) that `reach` (urReach) does not hold. Unknown until the graph is in. */

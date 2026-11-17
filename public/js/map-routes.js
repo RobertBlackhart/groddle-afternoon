@@ -45,7 +45,7 @@
  * Remake: routes run over public/assets/content/signpost-graph.json
  * (tools/build-signpost-graph.mjs): visible signposts under `streets`, and
  * since G192 the doors under `doors` (fixed-destination, visible doors; key
- * locked ones listed in `doorKeys`). routeGraph() joins them, so a route can
+ * locked ones listed in `doorKeys`). js/street-graph.js joins them, closed roads out, so a route can
  * end inside a door-only room (the Hell Bar behind Panka Surazu, Vicar's
  * Peak). On a street the client looks for a signpost to the next street first
  * and a door second (TSFrontController.startLocationPath 1791-1799,
@@ -58,6 +58,14 @@
  * once it is restored (the source kept previous_map_path for ever and could
  * restore a stale one after a later croak).
  */
+
+import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=114647c2';
+
+/**
+ * R11 (G969): the graph and its walks live in js/street-graph.js, closed roads included; these
+ * names stay here for the modules and tests that import them from the Map's rules.
+ */
+export { doorRooms, findRoute, graphKey, routeGraph, sameStreet, tsidAliases };
 
 /** Player-facing copy, verbatim from the source. */
 export const ROUTE_TEXT = Object.freeze({
@@ -114,128 +122,6 @@ export const ROUTE_SOURCES = Object.freeze([
   Object.freeze({ id: 'player', title: 'Your own destination (Map)', gsjs: 'main.js:137-138, 6455-6475', target: 'any street', playable: true, wired: 'js/features/map-routes-feature.js (Map: Set a destination)' }),
   Object.freeze({ id: 'tutorial_reinforcement', title: 'A Little Tutorial Reinforcement', gsjs: 'quests/tutorial_reinforcement.js:36-41 (map_dest_reached)', target: 'any destination you set', playable: false, why: 'the catalog marks the quest removed_feature (never offered); the remake still counts map_dest_reached' }),
 ]);
-
-/** L/G (and LLI/GLI, LIF/GIF) aliases of a TSID. */
-export function tsidAliases(tsid) {
-  const t = String(tsid || '');
-  if (!t) return [];
-  const out = new Set([t]);
-  if (t.startsWith('L')) out.add(`G${t.slice(1)}`);
-  if (t.startsWith('G')) out.add(`L${t.slice(1)}`);
-  return [...out];
-}
-
-/** The graph key for a TSID (the street-index key), or null. */
-export function graphKey(graph, tsid) {
-  if (!graph || !tsid) return null;
-  for (const alias of tsidAliases(tsid)) if (Object.prototype.hasOwnProperty.call(graph, alias)) return alias;
-  return null;
-}
-
-export const sameStreet = (a, b) => Boolean(a && b) && String(a).slice(1) === String(b).slice(1);
-
-/**
- * The route graph from signpost-graph.json: signpost and door neighbours in
- * one adjacency map, plus the locked door edges ("from>to" keys) that a route
- * avoids while it can (G192).
- * @param {{ streets?: Record<string, string[]>, doors?: Record<string, string[]>, doorKeys?: Record<string, number> }} json
- * @returns {{ graph: Record<string, string[]>, doors: Record<string, string[]>, locked: Set<string> }}
- */
-export function routeGraph(json = {}) {
-  const graph = {};
-  for (const [k, v] of Object.entries(json?.streets || {})) graph[k] = [...(v || [])];
-  const doors = {};
-  for (const [k, v] of Object.entries(json?.doors || {})) {
-    doors[k] = [...(v || [])];
-    const out = new Set(graph[k] || []);
-    for (const to of v || []) out.add(to);
-    graph[k] = [...out];
-    for (const to of v || []) graph[to] ||= [];
-  }
-  return { graph, doors, locked: new Set(Object.keys(json?.doorKeys || {})) };
-}
-
-/**
- * The rooms behind doors (G198): streets no hub map draws (signpost-graph
- * `offMap`) that a door leads into, so the Map can offer them as
- * destinations. The client offered destinations only from a hub map's street
- * menu (InteractionMenuController.startLocationMenu 133-160 "Set as
- * Destination") and its search (WorldModel.searchLocations 349-373 over the
- * hub maps' streets, Hub.as 51-53), plus GetInfoDialog's "nearest ... Set as
- * destination" (1088-1104); a room that is only behind a door was reached by
- * a quest's route or not at all. Rooms behind rooms (Jethimadh Tower's rooms)
- * hang off the drawn street their first door is on.
- * @param {{ doors?: Record<string, string[]>, doorKeys?: Record<string, number>, offMap?: string[] }} json
- * @returns {{ room: string, street: string, via: string, locked: boolean }[]}
- *   room: the room's key; street: the drawn street whose door leads in;
- *   via: the street or room right before it; locked: that door needs a key.
- */
-export function doorRooms(json = {}) {
-  const off = new Set(json?.offMap || []);
-  const doors = json?.doors || {};
-  const keyed = json?.doorKeys || {};
-  const out = new Map();
-  const queue = [];
-  for (const [from, list] of Object.entries(doors)) {
-    if (off.has(from)) continue;
-    for (const to of list || []) {
-      if (!off.has(to) || out.has(to)) continue;
-      out.set(to, { room: to, street: from, via: from, locked: Boolean(keyed[`${from}>${to}`]) });
-      queue.push(to);
-    }
-  }
-  for (let i = 0; i < queue.length; i++) {
-    const at = queue[i];
-    for (const to of doors[at] || []) {
-      if (!off.has(to) || out.has(to)) continue;
-      out.set(to, { room: to, street: out.get(at).street, via: at, locked: Boolean(keyed[`${at}>${to}`]) });
-      queue.push(to);
-    }
-  }
-  return [...out.values()];
-}
-
-/**
- * Shortest route over visible signposts (apiFindGlobalPathX, or
- * apiFindShortestGlobalPath when `to` lists several streets). Returns the
- * street keys from `from` to the destination inclusive, [from] when you are
- * already there, or null. `blocked` lists streets whose road is closed
- * (street projects, js/street-jobs.js closedStreets): the route goes round
- * them and never through one (Glitch hid their signpost arms, so its global
- * path finding had no road there: locations/inc_jobs.js jobs_modify_connections,
- * jobs_unlock apiReloadDataForGlobalPathFinding), and never ends on one either: with its arms
- * hidden, apiFindShortestGlobalPath could not reach a closed street at all (#355), and the Map
- * marked it not_a_destination (location.js 2915-2935). Of several destinations (the nearest
- * shrine, the nearest vendor) the nearest open one wins; only closed ones is no route (Austin
- * 2026-11-15: a route to Middle Arbor ran through its crossed signpost arm).
- * `locked` lists door edges ("from>to", routeGraph) that need a key: the
- * route takes one only when nothing else gets there (G192).
- * `oneWay` (oneWayRoads) and `startCut` (startCut) keep a route off the roads a one-way street
- * does not lead to from where you came in, or from where you stand (player report 82).
- * @param {Record<string, string[]>} graph
- * @param {string} from
- * @param {string|string[]} to
- * @param {{ blocked?: Iterable<string>, locked?: Set<string>|null, rides?: Record<string, string[]>|null, oneWay?: Record<string, object>|null, startCut?: Iterable<string>|null }} [opts]
- */
-export function findRoute(graph, from, to, { blocked = null, locked = null, rides = null, oneWay = null, startCut = null } = {}) {
-  const start = graphKey(graph, from);
-  if (!start) return null;
-  const targets = new Set((Array.isArray(to) ? to : [to]).map((t) => graphKey(graph, t)).filter(Boolean));
-  if (!targets.size) return null;
-  if (targets.has(start)) return [start];
-  const closed = new Set();
-  for (const t of blocked || []) for (const a of tsidAliases(t)) closed.add(a);
-  for (const t of [...targets]) if (closed.has(t)) targets.delete(t);
-  if (!targets.size) return null;
-  const keyed = locked && locked.size ? locked : null;
-  const ways = { oneWay: oneWay && Object.keys(oneWay).length ? oneWay : null, startCut: startCut ? new Set(startCut) : null };
-  const noKey = (extra) => bfs(graph, start, targets, closed, keyed, extra, ways);
-  const anyDoor = (extra) => (keyed ? bfs(graph, start, targets, closed, null, extra, ways) : null);
-  // The subway only when no road gets there (Austin, 2026-11-03: the way to Xalanga rides to Onto
-  // Parada), and a locked door only when neither does: the subway needs no key, and the rare keys
-  // would otherwise send a fresh player's road to Xalanga through Level 2 West's Key 7 door again.
-  return noKey(null) || (rides ? noKey(rides) : null) || anyDoor(null) || (rides ? anyDoor(rides) : null);
-}
 
 /**
  * One-way roads (player report 82): public/assets/content/one-way-roads.json
@@ -330,51 +216,7 @@ export function isRide(graph, rides, a, b) {
   if (!rides || !a || !b) return false;
   const ka = graphKey(graph, a) || a;
   const kb = graphKey(graph, b) || b;
-  return Boolean(rides[ka]?.includes(kb)) && !(graph?.[ka] || []).includes(kb);
-}
-
-/** Whether the route back from `state` already passes `street`. */
-function onChain(seen, state, street) {
-  for (let at = state; at != null; at = seen.get(at).back) if (seen.get(at).street === street) return true;
-  return false;
-}
-
-/**
- * Breadth first over (street, the street you came in from) on the one-way streets and over plain
- * streets elsewhere, so a one-way street can be passed one way and still be a dead end the other.
- */
-function bfs(graph, start, targets, closed, locked, rides = null, { oneWay = null, startCut = null } = {}) {
-  // A state is the street key, or "street<from" on a street with one-way roads.
-  const stateOf = (street, from) => (oneWay?.[street] ? `${street}<${from}` : street);
-  const first = stateOf(start, '');
-  const seen = new Map([[first, { street: start, from: '', back: null }]]);
-  const queue = [first];
-  for (let i = 0; i < queue.length; i++) {
-    const cur = queue[i];
-    const { street, from } = seen.get(cur);
-    const cut = i === 0 ? startCut : oneWay?.[street]?.cut?.[from] ? new Set(oneWay[street].cut[from]) : null;
-    const roads = graph[street] || [];
-    const on = rides?.[street] ? [...roads, ...rides[street]] : roads;
-    for (const next of on) {
-      if (cut && cut.has(next)) continue;
-      if (locked && locked.has(`${street}>${next}`)) continue;
-      if (closed.has(next)) continue;
-      // A ride comes up the station stairs, not off a signpost: an arrival the file does not know.
-      const came = roads.includes(next) ? street : '';
-      const state = stateOf(next, came);
-      if (seen.has(state)) continue;
-      // A one-way street is a state per arrival: never twice on one route (routeStep finds its place by street).
-      if (oneWay?.[next] && onChain(seen, cur, next)) continue;
-      seen.set(state, { street: next, from: came, back: cur });
-      if (targets.has(next)) {
-        const path = [];
-        for (let at = state; at != null; at = seen.get(at).back) path.unshift(seen.get(at).street);
-        return path;
-      }
-      queue.push(state);
-    }
-  }
-  return null;
+  return Boolean(rides[ka]?.includes(kb)) && !hasRoad(graph, ka, kb);
 }
 
 export function createRouteState() {
@@ -413,22 +255,20 @@ export function normalizeRouteState(seed = {}) {
  * several destinations: the closest one wins.
  * @returns {{ ok: boolean, state: object, route?: object, error?: string }}
  */
-export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, blocked = null, locked = null, rides = null, oneWay = null, startCut = null, now = Date.now() } = {}) {
+export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, locked = undefined, rides = null, oneWay = null, startCut = null, now = Date.now(), ...rest } = {}) {
   const s = normalizeRouteState(state);
   if (inHome) return { ok: false, state: s, error: ROUTE_TEXT.fromHome };
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
   if (!list.length) return { ok: false, state: s, error: ROUTE_TEXT.notFound };
   if (from && list.some((t) => sameStreet(t, from))) return { ok: false, state: s, error: ROUTE_TEXT.alreadyThere };
-  const path = from ? findRoute(graph, from, list, { blocked, locked, rides, oneWay, startCut }) : null;
-  if (!path && from && graphKey(graph, from) && blocked) {
-    const shut = new Set([...blocked].flatMap((t) => tsidAliases(t)));
-    const open = list.filter((t) => !shut.has(graphKey(graph, t) || t));
-    // Every destination still under construction: no route through its crossed arm (not_a_destination).
-    if (!open.length) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, closed: graphKey(graph, list[0]) || String(list[0]), through: [] };
-    // Only closed roads in the way (street projects): no route, and which streets are still being built.
-    const any = findRoute(graph, from, open, { locked, rides, oneWay, startCut });
-    if (any) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, through: any.slice(1).filter((t) => shut.has(t)) };
-  }
+  const ways = { ...rest, locked, rides, oneWay, startCut };
+  const path = from ? findRoute(graph, from, list, ways) : null;
+  // No route, but the roads would get there once built (street projects): say so (not_a_destination).
+  const why = !path && from ? closedOnTheWay(graph, from, list, ways) : null;
+  // Every destination still under construction: no route through its crossed arm.
+  if (why?.closed) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, closed: graphKey(graph, list[0]) || String(list[0]), through: [] };
+  // Only closed roads in the way: no route, and which streets are still being built.
+  if (why?.through) return { ok: false, state: s, error: ROUTE_TEXT.noRoad, through: why.through };
   // A route from somewhere off the graph (an instance, Hell One) still keeps its
   // destination: the GPS says "Return to world for directions" until a street on
   // the graph finds the way (GpsUI moveMoveEnded asks again on every arrival).
@@ -461,9 +301,8 @@ export function routeStep(route, graph, currentTsid) {
     return { status: 'on', index, next: path[index + 1], remaining: path.slice(index) };
   }
   // Off the path: any later street a signpost here links to (walked from the end).
-  const links = new Set(here ? graph?.[here] || [] : []);
   for (let i = path.length - 1; i >= 0; i--) {
-    if (links.has(path[i])) return { status: 'on', index: -1, next: path[i], remaining: [here, ...path.slice(i)] };
+    if (here && hasRoad(graph, here, path[i])) return { status: 'on', index: -1, next: path[i], remaining: [here, ...path.slice(i)] };
   }
   return { status: 'off', index: -1, next: '', remaining: path };
 }
@@ -476,7 +315,7 @@ export function routeStep(route, graph, currentTsid) {
  * know (homes, instances, Hell One).
  * @returns {{ state: object, events: string[] }}
  */
-export function enterStreet(state, graph, currentTsid, { now = Date.now(), offWorld = false, blocked = null, locked = null, rides = null, oneWay = null, startCut = null } = {}) {
+export function enterStreet(state, graph, currentTsid, { now = Date.now(), offWorld = false, locked = undefined, rides = null, oneWay = null, startCut = null, ...rest } = {}) {
   let s = normalizeRouteState(state);
   const events = [];
   const r = s.route;
@@ -498,7 +337,7 @@ export function enterStreet(state, graph, currentTsid, { now = Date.now(), offWo
   // route saved before one-way roads were known): a new route from here, as off the path.
   const cutOff = step.status === 'on' && Boolean(startCut?.length) && startCut.includes(graphKey(graph, step.next) || step.next);
   if ((step.status === 'off' || cutOff) && !offWorld && graphKey(graph, currentTsid)) {
-    const path = findRoute(graph, currentTsid, r.destination, { blocked, locked, rides, oneWay, startCut });
+    const path = findRoute(graph, currentTsid, r.destination, { ...rest, locked, rides, oneWay, startCut });
     if (path && path.length > 1) {
       s = { ...s, route: { ...r, path } };
       events.push('rerouted');

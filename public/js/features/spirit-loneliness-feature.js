@@ -59,7 +59,8 @@
 
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { getStreetEcologyCatalog } from '../street-ecology.js?v=c4ce9ccd';
-import { graphKey, routeGraph, tsidAliases } from '../map-routes.js?v=f23b16a2';
+import { graphKey, tsidAliases } from '../map-routes.js?v=84356b3e';
+import { _useStreetGraph, loadStreetGraph, roadsFor, routeDistances, streetGraphLoaded } from '../street-graph.js?v=114647c2';
 import { STREET_SPIRIT_VARIANTS, portraitFit, portraitSheet, spiritForStreet } from '../street-spirits.js?v=f9e88445';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { denseFrame, denseSprite } from '../sprite-dense.js?v=2a0ce07a';
@@ -95,7 +96,6 @@ import {
 } from '../spirit-loneliness.js?v=9259917d';
 
 export const SPIRIT_LONELINESS_FEATURE_ID = 'spirit-loneliness';
-const GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';
 /** street-spirits-feature tickOffer: the collision box round the spirit. */
 const VISIT_DX = 90;
 const VISIT_DY = 120;
@@ -103,8 +103,6 @@ const VISIT_DY = 120;
 const SETTLE_MS = 8000;
 
 let state = createLonelyState();
-let graph = null;
-let graphPromise = null;
 let rt = freshRuntime();
 
 function freshRuntime() {
@@ -133,20 +131,8 @@ function freshRuntime() {
 
 /* ------------------------------------------------------------ helpers */
 
-function loadGraph() {
-  if (graph) return Promise.resolve(graph);
-  graphPromise ||= fetch(GRAPH_URL)
-    .then((r) => r.json())
-    .then((json) => {
-      graph = routeGraph(json).graph;
-      return graph;
-    })
-    .catch(() => {
-      graph = {};
-      return graph;
-    });
-  return graphPromise;
-}
+/** The street graph (js/street-graph.js): streets under construction are not there yet, and no way through (R11, G969). */
+const loadGraph = () => loadStreetGraph();
 
 function indexMeta(tsid) {
   const streets = STREET_INDEX.streets || {};
@@ -170,35 +156,19 @@ function hasSpirit(tsid) {
   return Number(e?.counts?.street_spirit) > 0;
 }
 
-/** Streets still under construction (street-jobs-feature closedRoads): not there yet, and no way through. */
-function closedSet(engine) {
-  const out = new Set();
-  for (const t of engine?.query?.('closedRoads', engine) || []) for (const a of tsidAliases(t)) out.add(a);
-  return out;
-}
-
-/** Route lengths (streets, both ends counted) from `from` to every street, over the signpost graph. */
-function pathLengths(from, closed = new Set()) {
-  const start = graphKey(graph, from);
+/**
+ * Route lengths (streets, both ends counted) from `from` to every street, over the street graph's
+ * open roads (js/street-graph.js routeDistances): a street under construction is not there yet.
+ */
+function pathLengths(engine, from) {
   const out = new Map();
-  if (!start) return out;
-  out.set(start, 1);
-  const queue = [start];
-  while (queue.length) {
-    const at = queue.shift();
-    for (const next of graph[at] || []) {
-      if (out.has(next) || closed.has(next)) continue;
-      out.set(next, out.get(at) + 1);
-      queue.push(next);
-    }
-  }
+  for (const [k, n] of routeDistances(roadsFor(engine), from)) out.set(k, n + 1);
   return out;
 }
 
-function pathLength(from, to, closed) {
-  const lengths = pathLengths(from, closed);
-  const key = graphKey(graph, to);
-  return key ? lengths.get(key) || 0 : 0;
+function pathLength(engine, from, to) {
+  const key = graphKey(roadsFor(engine), to);
+  return key ? pathLengths(engine, from).get(key) || 0 : 0;
 }
 
 function offWorld(engine) {
@@ -904,16 +874,15 @@ function tickHere(engine, now) {
 function lookForLonely(engine, now) {
   state.nextCheckAt = now + LONELY_RULES.checkEveryMs;
   const here = engine.streetTsid;
-  const closed = closedSet(engine);
-  const lengths = pathLengths(here, closed);
+  const lengths = pathLengths(engine, here);
   const candidates = [];
   for (const tsid of spiritStreets()) {
-    const key = graphKey(graph, tsid);
+    const key = graphKey(roadsFor(engine), tsid);
     candidates.push({ tsid, pathLength: key ? lengths.get(key) || 0 : 0 });
   }
   const pick = pickLonelySpirit(state, candidates, { now });
   rt.last = pick ? `picked:${pick}` : 'picked:none';
-  if (!pick || !canInvite({ here, lonely: pick, offWorld: offWorld(engine), pathLength: pathLength(here, pick, closed) })) {
+  if (!pick || !canInvite({ here, lonely: pick, offWorld: offWorld(engine), pathLength: pathLength(engine, here, pick) })) {
     engine.save?.();
     return null;
   }
@@ -929,7 +898,7 @@ function demo(engine, now) {
     rt.demoDone = true;
     return;
   }
-  if (!graph || now - rt.enteredAt < 1500 || !engine.player) return;
+  if (!streetGraphLoaded() || now - rt.enteredAt < 1500 || !engine.player) return;
   rt.demoDone = true;
   for (const t of String(engine.param('lonelyseed') || '').split(',').map((s) => s.trim()).filter(Boolean)) {
     state.visits[streetKey(t)] = { n: 1, lastAt: 0 };
@@ -938,7 +907,7 @@ function demo(engine, now) {
   if (mode === 'here') begin(engine, engine.streetTsid, now);
   else if (mode === 'pick') lookForLonely(engine, now);
   else if (/^[GL][A-Z0-9]+$/.test(mode)) {
-    const ok = canInvite({ here: engine.streetTsid, lonely: mode, offWorld: offWorld(engine), pathLength: pathLength(engine.streetTsid, mode) });
+    const ok = canInvite({ here: engine.streetTsid, lonely: mode, offWorld: offWorld(engine), pathLength: pathLength(engine, engine.streetTsid, mode) });
     rt.last = ok ? 'demo' : 'demo:too-close';
     begin(engine, mode, now);
   }
@@ -1065,7 +1034,7 @@ export const spiritLonelinessFeature = {
       } else if (lonelyHere(engine)) {
         tickHere(engine, now);
       }
-    } else if (graph && checkDue(state, now) && now - rt.enteredAt > SETTLE_MS && dialogFree(engine) && !offWorld(engine) && !qaRoute(engine)) {
+    } else if (streetGraphLoaded() && checkDue(state, now) && now - rt.enteredAt > SETTLE_MS && dialogFree(engine) && !offWorld(engine) && !qaRoute(engine)) {
       lookForLonely(engine, now);
     }
     autoplay(engine, now);
@@ -1099,7 +1068,7 @@ export const spiritLonelinessFeature = {
     rt = freshRuntime();
   },
   _setGraph(g) {
-    graph = g && g.streets ? routeGraph(g).graph : g;
+    _useStreetGraph(g);
   },
   _begin(engine, tsid, opts = {}) {
     return begin(engine, tsid, opts.now || Date.now(), opts);

@@ -11,7 +11,8 @@ import { readFileSync } from 'node:fs';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=55f4616a';
 import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=1f51f2eb';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=c4ce9ccd';
-import { findRoute } from '../public/js/map-routes.js?v=f23b16a2';
+import { findRoute } from '../public/js/map-routes.js?v=84356b3e';
+import { streetGraph } from '../public/js/street-graph.js?v=114647c2';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=90517e2f';
 import { selectVendorProfile } from '../public/js/vendor.js?v=925b0f77';
 
@@ -169,7 +170,7 @@ describe('G774: the route skips a street under construction when an open one has
   it('findRoute: of several destinations an open one wins', () => {
     const graph = { A: ['B', 'C'], B: ['A', 'D'], C: ['A'], D: ['B'] };
     assert.deepEqual(findRoute(graph, 'A', ['C', 'D']), ['A', 'C']);
-    assert.deepEqual(findRoute(graph, 'A', ['C', 'D'], { blocked: ['C'] }), ['A', 'B', 'D']);
+    assert.deepEqual(findRoute(streetGraph(graph, { closed: ['C'] }), 'A', ['C', 'D']), ['A', 'B', 'D']);
   });
 });
 

@@ -33,11 +33,11 @@ import {
   giveEncounter,
   isSmugglerStreet,
   receiveConversation,
-  routeTo,
   sourceKey,
   spawnOffset,
   sparedBySignpost,
-} from '../public/js/smuggling.js?v=ab6ee12a';
+} from '../public/js/smuggling.js?v=56263f15';
+import { findRoute, streetGraph } from '../public/js/street-graph.js?v=114647c2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -198,14 +198,16 @@ describe('smuggling rules', () => {
       assert.ok(key(from), `smuggler street ${from} is playable`);
       for (const to of list) {
         if (!key(to)) continue;
-        const path = routeTo(graph, key(from), key(to));
+        const path = findRoute(graph, key(from), key(to));
         assert.ok(path && path.length >= 2, `${from} -> ${to}`);
         routed += 1;
       }
     }
     assert.ok(routed >= 40, `routed ${routed}`);
-    assert.deepEqual(routeTo({ a: ['b'], b: ['c'], c: [] }, 'a', 'c'), ['a', 'b', 'c']);
-    assert.equal(routeTo({ a: [] }, 'a', 'z'), null);
+    assert.deepEqual(findRoute({ a: ['b'], b: ['c'], c: [] }, 'a', 'c'), ['a', 'b', 'c']);
+    assert.equal(findRoute({ a: [] }, 'a', 'z'), null);
+    // R11 (G969): the run's route is the street graph's, so it goes round a street under construction.
+    assert.deepEqual(findRoute(streetGraph({ a: ['b', 'x'], b: ['c'], x: ['c'], c: [] }, { closed: ['b'] }), 'a', 'c'), ['a', 'x', 'c']);
   });
 
   it('describes the run for the HUD', () => {

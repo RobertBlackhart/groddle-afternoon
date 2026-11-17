@@ -21,10 +21,10 @@ import {
   chooseDestination,
   redirectDestination,
   sourceKey,
-} from '../public/js/smuggling.js?v=ab6ee12a';
+} from '../public/js/smuggling.js?v=56263f15';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=90517e2f';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=89c0bcb9';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=335beda1';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=9f337cb1';
 import { createInventory, addItem } from '../public/js/inventory.js?v=487b1b60';
 
 const PUB = join(import.meta.dirname, '..', 'public');

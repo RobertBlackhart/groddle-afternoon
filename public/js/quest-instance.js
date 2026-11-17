@@ -23,6 +23,8 @@
  * run held while you are away at a party is saved whole (heldRunSave).
  */
 
+import { isGraphSource, streetsLeadingTo } from './street-graph.js?v=114647c2';
+
 export const QUEST_SCENE_PREFIX = 'QI_';
 /** The default exit delay of questInstanceLocation rooms. */
 export const DEFAULT_INSTANCE_MS = 5 * 60 * 1000;
@@ -395,35 +397,16 @@ export function strayWayOut({ lastStreet = null, homeTsid = null, ordinary = nul
 }
 
 /**
- * G887: the streets whose roads lead back to Hechey Track (`graph` is
- * assets/content/signpost-graph.json: signposts and doors; road closures are ignored, a road still
- * being built is still Ur's). A G-keyed Set, or null without a graph. Only these are kept as the
- * last ordinary street: Orangian (its one door leads to itself) once was, and the way out of a
- * quest room led back onto it.
+ * G887: the streets whose roads lead back to Hechey Track (`graph` is the street graph or
+ * assets/content/signpost-graph.json: signposts and doors; road closures are not counted, a road still
+ * being built is still Ur's: js/street-graph.js streetsLeadingTo, R11 G969). A G-keyed Set, or null
+ * without a graph. Only these are kept as the last ordinary street: Orangian (its one door leads to
+ * itself) once was, and the way out of a quest room led back onto it. `extra` ({ from, to } rows)
+ * adds the ways out a feature runs itself (js/dead-ends.js urReach).
  */
-export function streetsReachingUr(graph, start = STRAY_FALLBACK_TSID) {
-  if (!graph?.streets) return null;
-  const g = (t) => { const s = String(t || ''); return s.startsWith('L') ? `G${s.slice(1)}` : s; };
-  const into = new Map();
-  const link = (from, to) => {
-    const k = g(to);
-    if (!into.has(k)) into.set(k, []);
-    into.get(k).push(g(from));
-  };
-  for (const kind of ['streets', 'doors']) {
-    for (const [from, tos] of Object.entries(graph[kind] || {})) for (const to of tos || []) link(from, to);
-  }
-  const home = g(start);
-  const seen = new Set([home]);
-  const queue = [home];
-  for (let i = 0; i < queue.length; i += 1) {
-    for (const from of into.get(queue[i]) || []) {
-      if (seen.has(from)) continue;
-      seen.add(from);
-      queue.push(from);
-    }
-  }
-  return seen;
+export function streetsReachingUr(graph, start = STRAY_FALLBACK_TSID, extra = []) {
+  if (!isGraphSource(graph)) return null;
+  return streetsLeadingTo(graph, start, extra);
 }
 
 /**

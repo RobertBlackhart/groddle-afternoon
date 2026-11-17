@@ -7,7 +7,7 @@
  * reaches it by open roads, and otherwise sets you down on the open-world street nearest it.
  *
  * 1. On a fresh world none of the 26 is open (the bug's cause), and for each the nearest open
- *    street (quest-reach nearestReached) is reachable from Hechey Track.
+ *    street (street-graph nearestOpenStreet) is reachable from Hechey Track.
  * 2. openBootTarget: an open pick stands; a closed one moves (to one of the 26 at its arrival
  *    point, else to the street's own arrival); no answer keeps the pick.
  * 3. The wiring: juju-bandits-feature asks street-jobs-feature's openStreetNear, which grows the
@@ -18,9 +18,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=edadd67d';
-import { nearestReached, reachableStreets } from '../public/js/quest-reach.js?v=abee4a1f';
-import { routeGraph } from '../public/js/map-routes.js?v=f23b16a2';
+import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
+import { nearestOpenStreet, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
 import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';
@@ -34,7 +34,7 @@ const { graph } = routeGraph(json('public/assets/content/signpost-graph.json'));
 
 const fresh = normalizeStreetJobState({ initialized: true });
 const shut = new Set(closedStreets(fresh, catalog, { exemptFrom: [index.default] }));
-const reach = reachableStreets({ graph, shut, starts: [index.default] });
+const reach = reachableStreets(streetGraph(graph, { closed: shut }), { starts: [index.default] });
 // The kick never lands in the Savanna it sends you from (Xalanga's Languid Line S is the nearest open street to Andra's six).
 const skip = (t) => SAVANNA_HUBS.includes(String(index.streets[t]?.hubId));
 
@@ -46,7 +46,7 @@ describe('1. a fresh world: the 26 boot streets are all past closed roads', () =
 
   it('each has an open-world street near it, reachable and outside the Savanna', () => {
     for (const row of NOSTALGIA_BOOT_STREETS) {
-      const near = nearestReached({ graph, reach, from: row.tsid, skip });
+      const near = nearestOpenStreet(graph, { reach, from: row.tsid, skip });
       assert.ok(near, `${row.label}: no open street joins it`);
       assert.ok(reach.has(near), `${row.label} -> ${near}`);
       assert.ok(index.streets[near], `${near} is a real street`);
@@ -55,13 +55,13 @@ describe('1. a fresh world: the 26 boot streets are all past closed roads', () =
   });
 
   it('without the skip, Andra\'s nearest open street would be in Xalanga (a Savanna hub)', () => {
-    const near = nearestReached({ graph, reach, from: NOSTALGIA_BOOT_STREETS.find((r) => r.hubId === '89').tsid });
+    const near = nearestOpenStreet(graph, { reach, from: NOSTALGIA_BOOT_STREETS.find((r) => r.hubId === '89').tsid });
     assert.equal(skip(near), true);
   });
 
   it('an open street is its own nearest', () => {
-    assert.equal(nearestReached({ graph, reach, from: index.default }), index.default);
-    assert.equal(nearestReached({ graph, reach: null, from: index.default }), null);
+    assert.equal(nearestOpenStreet(graph, { reach, from: index.default }), index.default);
+    assert.equal(nearestOpenStreet(graph, { reach: null, from: index.default }), null);
   });
 });
 
@@ -80,7 +80,7 @@ describe('2. openBootTarget', () => {
   });
 
   it('moves a closed pick to any open street, landing at that street\'s own arrival', () => {
-    const near = nearestReached({ graph, reach, from: pick.tsid, skip });
+    const near = nearestOpenStreet(graph, { reach, from: pick.tsid, skip });
     const out = openBootTarget(pick, near, NOSTALGIA_BOOT_STREETS);
     assert.equal(out.tsid, near);
     assert.equal(out.arrive, null);

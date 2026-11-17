@@ -20,7 +20,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pickRandomTeleport } from '../public/js/funpickle.js?v=95796317';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=90517e2f';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=89c0bcb9';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');
@@ -87,7 +87,9 @@ describe('G793: the other street-picking errands already ask the roads', () => {
     assert.match(read('js/features/smuggling-feature.js'), /engine\.query\?\.\('streetsReachable', engine\)/);
     assert.match(read('game.js'), /reachable: features\.query\('streetsReachable', engine\) \|\| null/);
     assert.match(read('js/features/juju-bandits-feature.js'), /engine\.query\?\.\('openStreetNear', pick\.tsid, engine/);
-    assert.match(read('js/features/spirit-loneliness-feature.js'), /engine\?\.query\?\.\('closedRoads', engine\)/);
-    assert.match(read('js/features/map-routes-feature.js'), /blocked: closedRoads\(engine\)/);
+    // R11 (G969): the lonely spirit and map routes walk the street graph, which holds the closed roads.
+    assert.match(read('js/features/spirit-loneliness-feature.js'), /routeDistances\(roadsFor\(engine\), from\)/);
+    assert.match(read('js/features/map-routes-feature.js'), /const roads = \(engine\) => roadsFor\(engine\);/);
+    assert.match(read('js/street-graph.js'), /engine\.query\?\.\('closedRoads', engine\)/);
   });
 });

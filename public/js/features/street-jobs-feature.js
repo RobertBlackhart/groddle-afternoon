@@ -112,10 +112,11 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=edadd67d';
+} from '../street-jobs.js?v=43cb0e02';
 import { PAPERS_BADGE } from '../subway.js?v=735bfbeb';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=1383e6fd';
-import { closuresInTheWay, holdNote, nearestReached, placeIndex, questHold, questStoryKey, reachableStreets } from '../quest-reach.js?v=abee4a1f';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=164158a0';
+import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
@@ -139,7 +140,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=1e19532c';
+} from '../street-jobs-mp.js?v=3ac15476';
 import { grantMoodXp } from '../mood-xp.js?v=22648ec0';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -148,17 +149,17 @@ import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { SIGN_ARMS, routeGraph } from '../map-routes.js?v=f23b16a2';
+import { SIGN_ARMS } from '../map-routes.js?v=84356b3e';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=667c0f96';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=f038049f';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=6a7cf8fc';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=d30e2464';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=2020b29b';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
-import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=24c5b7be';
+import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=04ea0019';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';
@@ -228,27 +229,31 @@ function nextPhaseName(job, next) {
 }
 
 /**
- * Every way between streets, for openWayHome (ticket 50, Wintry Place): signposts and doors a
- * closure can hold (assets/content/signpost-graph.json, as the Map reads it), and the ways none
- * holds: the subway between its streets and the Collision-triggered Teleporters.
+ * Every way between streets, for openWayHome (ticket 50, Wintry Place): the street graph
+ * (js/street-graph.js: signposts and doors, with this world's closed roads in it, R11 G969), and the
+ * ways no closure holds: the subway between its streets and the Collision-triggered Teleporters.
  */
 let ways = null;
-/** The signpost graph, fetched once for the ways home and the solo distances (report #425). */
-let graphJson = null;
-const loadGraph = () => (graphJson ||= fetch('assets/content/signpost-graph.json?v=g198-1').then((r) => r.json()));
+/** The street graph, fetched once for every feature (the ways home and the solo distances, report #425). */
+const loadGraph = () => loadStreetGraph().then((ok) => (ok ? worldRoads() : Promise.reject(new Error('street graph'))));
+/** The street projects as they stand: the closed roads the graph holds (closedRoads below). */
+const closedNowHere = () => (catalog ? closedStreets(state, catalog, opts()) : null);
 function loadWays() {
   ways ||= loadGraph()
-    .then((json) => {
+    .then((roads) => {
       const free = {};
       const rails = {};
       const add = (a, b) => (free[a] ||= []).push(b);
       for (const a of SUBWAY_STREETS) for (const b of SUBWAY_STREETS) if (a !== b) { add(a, b); (rails[a] ||= []).push(b); }
       const g = (t) => String(t || '').replace(/^L/, 'G');
       for (const t of [...TELEPORTERS, ...WINTRY_PORTAL_TELEPORTERS]) add(g(t.from), g(t.to));
-      waysReady = { graph: routeGraph(json).graph, free, rails };
+      waysReady = { graph: streetGraph(roads, { closed: closedNowHere }), free, rails };
       return waysReady;
     })
-    .catch(() => null);
+    .catch(() => {
+      ways = null;
+      return null;
+    });
   return ways;
 }
 let waysReady = null;
@@ -275,9 +280,8 @@ function questReach(engine) {
   const key = roadsKey(engine);
   if (reachCache.key !== key) {
     placeIdx ||= placeIndex(streetIndex);
-    const shut = new Set(closedStreets(state, catalog, opts()));
     const starts = [streetIndex.default, engine?.streetTsid, ...state.grandfathered].filter(Boolean);
-    reachCache = { key, shut, starts, reach: reachableStreets({ ...waysReady, shut, starts }), holds: new Map() };
+    reachCache = { key, starts, reach: reachableStreets(waysReady.graph, { free: waysReady.free, starts }), holds: new Map() };
   }
   return reachCache;
 }
@@ -302,12 +306,11 @@ function openStreetNear(tsid, engine, { skipHubs = [] } = {}) {
   const key = `${state.grandfathered.length}|${done}|${papers ? 1 : 0}|${demo?.jobId || ''}`;
   if (openWorldCache.key !== key) {
     const terms = wayHomeTerms({ starter: streetIndex.default, free: waysReady.free, rails: waysReady.rails, papers });
-    const shut = new Set(closedStreets(state, catalog, opts()));
-    openWorldCache = { key, free: terms.free, reach: reachableStreets({ graph: waysReady.graph, free: terms.free, shut, starts: [streetIndex.default] }) };
+    openWorldCache = { key, free: terms.free, reach: reachableStreets(waysReady.graph, { free: terms.free, starts: [streetIndex.default] }) };
   }
   const hubs = new Set((skipHubs || []).map(String));
   const skip = hubs.size ? (t) => hubs.has(String(streetIndex.streets?.[t]?.hubId ?? '')) : null;
-  return nearestReached({ graph: waysReady.graph, free: openWorldCache.free, reach: openWorldCache.reach, from: tsid, skip });
+  return nearestOpenStreet(waysReady.graph, { free: openWorldCache.free, reach: openWorldCache.reach, from: tsid, skip });
 }
 
 /** Each project street's board streets (street-jobs.json connecting), G tsids. */
@@ -340,7 +343,7 @@ function qaOpenRoad(engine, now) {
   if (want.startsWith('for:')) {
     const r = questReach(engine);
     const hold = r && questHold(questCatalog()?.[want.slice(4)], r.reach, placeIdx);
-    const chain = hold ? closuresInTheWay({ ...waysReady, shut: r.shut, starts: r.starts, targets: hold.streets, boards: boardsOf() }) : [];
+    const chain = hold ? fewestClosures(waysReady.graph, { free: waysReady.free, starts: r.starts, targets: hold.streets, boards: boardsOf() }) : [];
     ids = chain.map(({ street }) => Object.keys(catalog.jobs).find((id) => catalog.jobs[id].kind === 'street' && catalog.jobs[id].street === street));
   }
   const opened = [];
@@ -367,7 +370,7 @@ function questHoldFor(classTsid, engine) {
   let out = null;
   const hold = questHold(def, r.reach, placeIdx, engine?.questState);
   if (hold) {
-    const first = closuresInTheWay({ ...waysReady, shut: r.shut, starts: r.starts, targets: hold.streets, boards: boardsOf() })[0] || null;
+    const first = fewestClosures(waysReady.graph, { free: waysReady.free, starts: r.starts, targets: hold.streets, boards: boardsOf() })[0] || null;
     const jobId = first ? Object.keys(catalog.jobs || {}).find((id) => catalog.jobs[id].kind === 'street' && catalog.jobs[id].street === first.street) || '' : '';
     const job = jobId ? catalog.jobs[jobId] : null;
     out = { ...hold, street: first?.street || '', jobId, building: job ? job.label || streetLabel(first.street) : '', board: first?.board ? streetLabel(first.board) : '' };

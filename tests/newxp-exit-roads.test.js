@@ -19,8 +19,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { NEWXP_EXITS, GENTLE_ISLAND, indexTsid, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
-import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=edadd67d';
-import { newxpFeature, __newxpTest, exitLeadsHome, pickOpenExit } from '../public/js/features/newxp-feature.js?v=8d402a23';
+import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
+import { newxpFeature, __newxpTest, exitLeadsHome, pickOpenExit } from '../public/js/features/newxp-feature.js?v=96dc9dc5';
+import { _useStreetGraph, streetGraph } from '../public/js/street-graph.js?v=114647c2';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -35,7 +36,9 @@ const RAPPAM = 'GHV3ISF18352QIP';
 // A new player's world: nothing built, the island grandfathered, Hechey Track's roads exempt.
 const fresh = normalizeStreetJobState({ initialized: true, grandfathered: Object.values(GENTLE_ISLAND) });
 const closed = closedStreets(fresh, catalog, { exemptFrom: [index.default] });
-const open = (tsid) => exitLeadsHome(tsid, { graph, closed });
+// R11 (G969): the street graph holds the closed roads (js/street-graph.js).
+const roads = streetGraph(graph, { closed });
+const open = (tsid) => exitLeadsHome(tsid, roads);
 const exists = (tsid) => Boolean(index.streets[tsid]);
 
 describe('1. an exit counts only when its roads lead back to Hechey Track', () => {
@@ -71,13 +74,16 @@ describe('1. an exit counts only when its roads lead back to Hechey Track', () =
 
   it('walks signposts around closed streets and through doors, but not keyed doors', () => {
     const g = { streets: { A: ['B', 'C'], B: ['H'], C: [] }, doors: { C: ['D'], D: ['H'] }, doorKeys: {} };
-    assert.equal(exitLeadsHome('A', { graph: g, closed: [], start: 'H' }), true);
-    assert.equal(exitLeadsHome('A', { graph: g, closed: ['B'], start: 'H' }), true, 'round by the door');
-    assert.equal(exitLeadsHome('A', { graph: { ...g, doorKeys: { 'C>D': 3 } }, closed: ['B'], start: 'H' }), false);
+    const shut = (src, closed) => streetGraph(src, { closed });
+    assert.equal(exitLeadsHome('A', shut(g, []), 'H'), true);
+    assert.equal(exitLeadsHome('A', shut(g, ['B']), 'H'), true, 'round by the door');
+    assert.equal(exitLeadsHome('A', shut({ ...g, doorKeys: { 'C>D': 3 } }, ['B']), 'H'), false);
+    // R11 (G969): a door into a street under construction is closed too (Glitch locked it, inc_jobs.js jobs_modify_connections).
+    assert.equal(exitLeadsHome('A', shut(g, ['B', 'D']), 'H'), false, 'the door leads into a closed street');
     // A closed road into the start itself still closes it (Hechey's own roads are exempt upstream).
-    assert.equal(exitLeadsHome('A', { graph: { streets: { A: ['H'] } }, closed: ['H'], start: 'H' }), false);
-    assert.equal(exitLeadsHome('H', { graph: g, closed: [], start: 'H' }), true);
-    assert.equal(exitLeadsHome('A', { graph: null, closed: [], start: 'H' }), false);
+    assert.equal(exitLeadsHome('A', shut({ streets: { A: ['H'] } }, ['H']), 'H'), false);
+    assert.equal(exitLeadsHome('H', shut(g, []), 'H'), true);
+    assert.equal(exitLeadsHome('A', null, 'H'), false);
   });
 });
 
@@ -116,6 +122,7 @@ describe('2-3. leaving the island, and a player already stranded', () => {
   beforeEach(() => {
     realFetch = globalThis.fetch;
     globalThis.fetch = async () => ({ json: async () => graph });
+    _useStreetGraph(null);
     __newxpTest.resetExits();
   });
   afterEach(() => {

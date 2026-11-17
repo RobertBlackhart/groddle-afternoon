@@ -51,7 +51,7 @@
 
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { SUBWAY_STREETS } from '../street-jobs.js?v=edadd67d';
+import { SUBWAY_STREETS } from '../street-jobs.js?v=43cb0e02';
 import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=735bfbeb';
 import { hellFeature } from './hell-feature.js?v=eb79a9c5';
 import { postReachY } from '../street-model.js?v=9f16f4ab';
@@ -62,7 +62,6 @@ import {
   clearRoute,
   createRouteState,
   croakRoute,
-  doorRooms,
   doorToward,
   enterStreet,
   findRoute,
@@ -74,30 +73,30 @@ import {
   oneWayRoads,
   planRoute,
   resurrectRoute,
-  routeGraph,
   routeStep,
   routeStopsLine,
   sameStreet,
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=f23b16a2';
+} from '../map-routes.js?v=84356b3e';
+import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=114647c2';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
-const GRAPH_URL = 'assets/content/signpost-graph.json?v=g198-1';
 /** One-way roads (player report 82, tools/routes/build-one-way.mjs); js/data-urls.js keys the URL. */
 const ONE_WAY_URL = 'assets/content/one-way-roads.json';
 
 let state = createRouteState();
-let graph = null;
-/** Locked door edges ("from>to"): a route takes one only when it must (G192). */
-let lockedDoors = null;
+/**
+ * R11 (G969): the street graph with this engine's closed roads (js/street-graph.js), null until it
+ * loads: every route here goes round streets under construction without being told, and takes a
+ * locked door only when it must (G192).
+ */
+const roads = (engine) => roadsFor(engine);
 /** The subway between its surface streets (map-routes.js subwayRides): a route rides it when no road leads there. */
 const rides = subwayRides(SUBWAY_STREETS);
 /** The rebuilt stations' street keys (js/subway.js): a surface street's subway entrance is its door to one. */
 const STATION_STREETS = new Set(STATIONS.map((st) => st.streetTsid));
-/** Rooms behind doors that no hub map draws (map-routes.js doorRooms, G198). */
-let rooms = [];
 let graphPromise = null;
 /** The signposts a one-way street does not lead to from where you came in (map-routes.js oneWayRoads). */
 let oneWay = null;
@@ -131,24 +130,16 @@ let canvasBound = false;
 /* ------------------------------------------------------------ helpers */
 
 function loadGraph() {
-  if (graph) return Promise.resolve(graph);
+  if (streetGraphLoaded() && oneWay) return Promise.resolve(true);
   // Without the one-way file every road is two-way, as before it.
   graphPromise ||= Promise.all([
-    fetch(GRAPH_URL).then((r) => r.json()),
+    loadStreetGraph(),
     fetch(ONE_WAY_URL).then((r) => r.json()).then((json) => oneWayRoads(json)).catch(() => ({})),
-  ])
-    .then(([json, roads]) => {
-      const built = routeGraph(json);
-      graph = built.graph;
-      lockedDoors = built.locked;
-      rooms = doorRooms(json);
-      oneWay = roads;
-      return graph;
-    })
-    .catch(() => {
-      graph = {};
-      return graph;
-    });
+  ]).then(([ok, ways]) => {
+    oneWay = ways;
+    if (!ok) graphPromise = null;
+    return ok;
+  });
   return graphPromise;
 }
 
@@ -170,7 +161,7 @@ function offWorld(engine) {
 function currentStep(engine) {
   if (!state.route) return { status: 'none', index: -1, next: '', remaining: [] };
   if (offWorld(engine)) return { status: 'off', index: -1, next: '', remaining: state.route.path || [] };
-  return routeStep(state.route, graph || {}, routeStreet(engine));
+  return routeStep(state.route, roads(engine) || {}, routeStreet(engine));
 }
 
 /** Underground (a station or the train) the route goes on from the station's surface street (subway-feature mapStreet). */
@@ -226,17 +217,12 @@ function checkLanding(engine) {
   const step = currentStep(engine);
   if (step.status !== 'on' || !step.next) return;
   const cut = cutHere(engine);
-  if (!cut?.length || !cut.includes(graphKey(graph || {}, step.next) || step.next)) return;
-  const res = enterStreet(state, graph || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), blocked: closedRoads(engine), locked: lockedDoors, rides, oneWay, startCut: cut });
+  if (!cut?.length || !cut.includes(graphKey(roads(engine) || {}, step.next) || step.next)) return;
+  const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides, oneWay, startCut: cut });
   state = res.state;
   engine.setData?.('routeLast', `landed:${res.events.join(',')}`);
   if (res.events.length) engine.save?.();
   refresh(engine);
-}
-
-/** Streets still under construction (street-jobs-feature closedRoads): routes go round them. */
-function closedRoads(engine) {
-  return engine.query?.('closedRoads', engine) || null;
 }
 
 function questActive(engine, quest) {
@@ -247,14 +233,12 @@ function questActive(engine, quest) {
 
 function setRoute(engine, opts = {}) {
   const from = opts.from || (offWorld(engine) ? '' : engine.streetTsid);
-  const res = planRoute(state, graph || {}, {
+  const res = planRoute(state, roads(engine) || {}, {
     from,
     to: opts.to,
     source: opts.source || 'player',
     quest: opts.quest || '',
     inHome: !opts.from && Boolean(engine.homeContext?.().inHome),
-    blocked: closedRoads(engine),
-    locked: lockedDoors,
     rides,
     oneWay,
     // From where you stand, when the route starts on the street you are on.
@@ -271,12 +255,13 @@ function setRoute(engine, opts = {}) {
 
 /** G774: where a route to the nearest of `opts.to` would end and how many streets away, without setting it. */
 function findNearest(engine, opts = {}) {
+  const graph = roads(engine);
   if (!graph) {
     loadGraph();
     return { unknown: true };
   }
   if (offWorld(engine) || engine.homeContext?.().inHome) return { unknown: true };
-  const path = findRoute(graph, engine.streetTsid, opts.to, { blocked: closedRoads(engine), locked: lockedDoors, rides, oneWay, startCut: cutHere(engine) });
+  const path = findRoute(graph, engine.streetTsid, opts.to, { rides, oneWay, startCut: cutHere(engine) });
   return path ? { destination: path[path.length - 1], hops: path.length - 1 } : null;
 }
 
@@ -328,7 +313,7 @@ function placeHighlight(engine, next) {
     placeSubwayGlow(engine, next, key);
     return;
   }
-  if (isRide(graph, rides, routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
+  if (isRide(roads(engine), rides, routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
   if (placeSignGlow(engine, next, key)) return;
   placeDoorGlow(engine, next, key);
 }
@@ -353,7 +338,7 @@ function placeTransportGlow(engine, next, key) {
 function placeSubwayGlow(engine, next, key) {
   if (isCarTsid(engine.streetTsid)) return false;
   if (stationByTsid(engine.streetTsid)) {
-    if (!isRide(graph, rides, routeStreet(engine), next)) {
+    if (!isRide(roads(engine), rides, routeStreet(engine), next)) {
       const stairs = doorTargets(engine).find((t) => sameStreet(t.door?.connect?.street, routeStreet(engine)));
       return stairs ? glowTarget(engine, key, stairs, 'door', 'enter') : false;
     }
@@ -970,7 +955,7 @@ function mapCard(engine) {
     head = shared ? quest.title : `${ROUTE_TEXT.to}${dest}`;
     // A subway hop reads "by subway" (map-routes.js isRide).
     const from = step.remaining[0];
-    const hop = (t, i) => (isRide(graph, rides, i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
+    const hop = (t, i) => (isRide(roads(engine), rides, i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
     // #104: a long route names the next few stops, counts the rest, then the destination.
     const stops = rest.map(hop);
     const cut = routeStopsLine(stops);
@@ -1070,7 +1055,7 @@ function mapCard(engine) {
  */
 function roomsInHub(hubId) {
   if (!hubId) return [];
-  return rooms
+  return (worldRoads()?.rooms || [])
     .filter((row) => hubOf(row.street) === String(hubId))
     .map((row) => ({ ...row, label: label(row.room), streetLabel: label(row.street), viaLabel: label(row.via) }))
     .sort((a, b) => a.streetLabel.localeCompare(b.streetLabel) || a.label.localeCompare(b.label));
@@ -1199,7 +1184,7 @@ export const mapRoutesFeature = {
     if (action === 'find') return findNearest(engine, opts || {});
     if (action === 'clear') return dropRoute(engine, opts || {});
     if (action === 'set') {
-      if (graph) return setRoute(engine, opts || {});
+      if (streetGraphLoaded()) return setRoute(engine, opts || {});
       loadGraph().then(() => setRoute(engine, opts || {}));
       return { ok: true, pending: true };
     }
@@ -1216,7 +1201,7 @@ export const mapRoutesFeature = {
     demoSetup(engine);
     const apply = () => {
       if (state.route) {
-        const res = enterStreet(state, graph || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), blocked: closedRoads(engine), locked: lockedDoors, rides, oneWay, startCut: cutHere(engine) });
+        const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides, oneWay, startCut: cutHere(engine) });
         state = res.state;
         if (res.events.includes('arrived')) {
           // locations/location.js 310-313: pc.quests_inc_counter('map_dest_reached', 1).
@@ -1227,7 +1212,7 @@ export const mapRoutesFeature = {
       }
       refresh(engine);
     };
-    if (graph) apply();
+    if (streetGraphLoaded()) apply();
     else loadGraph().then(apply);
   },
 
@@ -1258,7 +1243,7 @@ export const mapRoutesFeature = {
     if (now - lastPublish > 120) {
       lastPublish = now;
       // Doors (doors-feature) and signposts can register after the street is entered: look again.
-      if (state.route && !highlight && graph && engine.streetTsid && now - lastLook > 400) {
+      if (state.route && !highlight && streetGraphLoaded() && engine.streetTsid && now - lastLook > 400) {
         lastLook = now;
         refresh(engine);
       }
@@ -1288,18 +1273,9 @@ export const mapRoutesFeature = {
     airborne = false;
     oneWayAt = { tsid: '', ways: null, key: null };
   },
-  /** Tests: a plain adjacency map, or signpost-graph.json as fetched ({ streets, doors, doorKeys }). */
+  /** Tests: a plain adjacency map, or signpost-graph.json as fetched ({ streets, doors, doorKeys }): the game's street graph (js/street-graph.js). */
   _setGraph(g) {
-    if (g && g.streets && typeof g.streets === 'object' && !Array.isArray(g.streets)) {
-      const built = routeGraph(g);
-      graph = built.graph;
-      lockedDoors = built.locked;
-      rooms = doorRooms(g);
-    } else {
-      graph = g;
-      lockedDoors = null;
-      rooms = [];
-    }
+    _useStreetGraph(g);
   },
   /** Tests (report 82): one-way-roads.json as fetched, or null for none. */
   _setOneWay(json) {

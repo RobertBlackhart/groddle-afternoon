@@ -18,10 +18,10 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=89c0bcb9';
-import { soloNeed } from '../public/js/street-jobs.js?v=edadd67d';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=02f60e52';
+import { soloNeed } from '../public/js/street-jobs.js?v=43cb0e02';
 import { createToolConditionState } from '../public/js/tools.js?v=8516a0c3';
-import { soloTerms } from '../public/js/street-jobs-solo.js?v=24c5b7be';
+import { soloTerms } from '../public/js/street-jobs-solo.js?v=04ea0019';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

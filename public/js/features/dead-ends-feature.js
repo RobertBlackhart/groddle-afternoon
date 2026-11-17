@@ -25,9 +25,10 @@
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_GRAPH_URL, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=24145409';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=c488dc3a';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
-import { strayWayOut } from '../quest-instance.js?v=2fdff4a7';
+import { strayWayOut } from '../quest-instance.js?v=13b8ee09';
+import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
 
 export const DEAD_ENDS_FEATURE_ID = 'dead-ends';
@@ -90,15 +91,16 @@ function rebuild(engine) {
 
 function loadReach(engine) {
   if (reach || loading || typeof fetch !== 'function' || typeof window === 'undefined') return;
-  loading = fetch(DEAD_END_GRAPH_URL)
-    .then((r) => r.json())
-    .then((g) => {
-      graph = g;
-      rebuild(engine);
-    })
-    .catch(() => {
+  // The street graph (js/street-graph.js, fetched once for every feature); a dead end is geography,
+  // so the walk counts roads still being built (streetsLeadingTo).
+  loading = loadStreetGraph().then((ok) => {
+    if (!ok) {
       loading = null;
-    });
+      return;
+    }
+    graph = worldRoads();
+    rebuild(engine);
+  });
 }
 
 /** Where the exit leads now ({ tsid, x, y }), for its words and its own way out. */

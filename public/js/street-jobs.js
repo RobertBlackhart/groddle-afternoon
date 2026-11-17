@@ -61,8 +61,9 @@
 export const SOLO_DIVISOR = 50;
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 import { loseEnergy } from './metabolics.js?v=1383e6fd';
-import { soloSkill } from './street-jobs-solo.js?v=24c5b7be';
+import { soloSkill } from './street-jobs-solo.js?v=04ea0019';
 import { htmlToText } from './html-text.js?v=6bbf4d1f';
+import { fewestClosures, streetGraph } from './street-graph.js?v=114647c2';
 /** items/include/jobs.js startJobWork unit_duration. */
 export const WORK_UNIT_MS = 1500;
 /** locations/inc_jobs.js jobs_get_available: 30 * 60 seconds. */
@@ -189,41 +190,21 @@ export function noteArrival(state, catalog, tsid, opts = {}) {
  * remake replays the build-out, and a subway, a teleporter, a quest or a door can set you down past
  * a closed road. So when no open way leads from `here` to a home street (the starter street or a
  * subway street), the closed roads on the way with the fewest of them open for you (grandfathered).
- * `graph` holds the roads a closure holds (signposts, doors), `free` the ways none does (the subway,
- * Collision-triggered Teleporters); both street -> [streets], G tsids. Returns the streets opened.
+ * `graph` holds the roads a closure holds (signposts, doors: a street graph or an adjacency map, js/street-graph.js
+ * fewestClosures), `free` the ways none does (the subway, Collision-triggered Teleporters); both street ->
+ * [streets], G tsids. Returns the streets opened, in the order walked.
  */
 export function openWayHome(state, catalog, { graph = {}, free = {}, here = '', homes = [], opts = {} } = {}) {
   const from = gTsid(here);
-  const goal = new Set(homes.map(gTsid));
-  if (!from || !goal.size || goal.has(from)) return [];
-  const shut = new Set(closedStreets(state, catalog, opts));
-  // 0-1 search: entering a closed street costs one, anything else nothing.
-  const cost = new Map([[from, 0]]);
-  const prev = new Map([[from, null]]);
-  const deque = [from];
-  let end = null;
-  while (deque.length) {
-    const at = deque.shift();
-    if (goal.has(at)) {
-      end = at;
-      break;
-    }
-    const c = cost.get(at);
-    const step = (to, w) => {
-      if (cost.has(to) && cost.get(to) <= c + w) return;
-      cost.set(to, c + w);
-      prev.set(to, at);
-      if (w) deque.push(to);
-      else deque.unshift(to);
-    };
-    for (const to of graph[at] || []) step(to, shut.has(to) ? 1 : 0);
-    for (const to of free[at] || []) step(to, 0);
-  }
-  if (!end || !cost.get(end)) return [];
-  const opened = [];
-  for (let at = end; at; at = prev.get(at)) if (shut.has(at) && !state.grandfathered.includes(at)) opened.push(at);
+  const goal = homes.map(gTsid);
+  if (!from || !goal.length || goal.includes(from)) return [];
+  // The street graph with this state's closures (R11, G969): the fewest closed roads on the way home.
+  const roads = streetGraph(graph, { closed: closedStreets(state, catalog, opts) });
+  const opened = fewestClosures(roads, { starts: [from], targets: goal, free })
+    .map(({ street }) => street)
+    .filter((t) => !state.grandfathered.includes(t));
   state.grandfathered.push(...opened);
-  return opened.reverse();
+  return opened;
 }
 
 /**

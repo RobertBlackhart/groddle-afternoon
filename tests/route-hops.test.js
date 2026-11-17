@@ -13,11 +13,12 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { SIGN_ARMS, doorToward, findRoute, isRide, planRoute, createRouteState, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=f23b16a2';
-import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=edadd67d';
+import { SIGN_ARMS, doorToward, findRoute, isRide, planRoute, createRouteState, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=84356b3e';
+import { streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=43cb0e02';
 import { stationByTsid } from '../public/js/subway.js?v=735bfbeb';
 import { reachRoutes, reachStreet } from '../public/js/builder/reach-graph.js?v=33f40cb6';
-import { applyWorld } from '../public/js/street-jobs-mp.js?v=1e19532c';
+import { applyWorld } from '../public/js/street-jobs-mp.js?v=3ac15476';
 import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=c0814575';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 
@@ -117,12 +118,12 @@ describe('every way in the route graph is one a player can take', () => {
 
 describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)", () => {
   const shut = () => shutIn(fresh());
-  const route = () => findRoute(graph, THICKET, HAZY_GATE_3, { blocked: shut(), locked, rides: RIDES });
+  const route = () => findRoute(streetGraph(graph, { closed: shut() }), THICKET, HAZY_GATE_3, { locked, rides: RIDES });
 
   it('a fresh world rides the subway to Onto Parada and walks the roads opened from the start', () => {
     assert.deepEqual(route().map(label), ['Thicket', "Pasha's Place", 'Groddle Forest Junction', 'Onto Parada', 'Konemaen Jaunt', 'Simo Steer', 'Kala Close', 'Shinso Ello', 'Ramyeon Kon', 'Teobocci Shasha', 'Glutton Greens', 'Shim Shiri', 'Yellow Yawning', 'Hazy Gate 3']);
-    assert.ok(findRoute(graph, THICKET, HAZY_GATE_3, { blocked: shut(), locked }).includes(OPPIDAN), 'without the subway only Level 2 West\'s locked door gets there');
-    const res = planRoute(createRouteState(), graph, { from: THICKET, to: HAZY_GATE_3, blocked: shut(), locked, rides: RIDES });
+    assert.ok(findRoute(streetGraph(graph, { closed: shut() }), THICKET, HAZY_GATE_3, { locked }).includes(OPPIDAN), 'without the subway only Level 2 West\'s locked door gets there');
+    const res = planRoute(createRouteState(), streetGraph(graph, { closed: shut() }), { from: THICKET, to: HAZY_GATE_3, locked, rides: RIDES });
     assert.equal(res.ok, true);
     assert.ok(!route().includes(OPPIDAN), 'not through Oppidan Avenue');
   });
@@ -190,7 +191,7 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
 
   it('the GPS lights a Light Beam or a subway entrance before a post (map-routes-feature placeHighlight)', () => {
     const feature = readFileSync(join(PUB, 'js/features/map-routes-feature.js'), 'utf8');
-    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(graph, rides, routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
+    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(roads\(engine\), rides, routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
     // Underground: the Red Button for a ride, the stairs once off at the route's stop.
     assert.match(feature, /const stairs = doorTargets\(engine\)\.find\(\(t\) => sameStreet\(t\.door\?\.connect\?\.street, routeStreet\(engine\)\)\);/);
     assert.match(readFileSync(join(PUB, 'js/features/puzzles-feature.js'), 'utf8'), /routeTo: t\.dest,\n\s+routeVerb: BEAM_UP_VERB,/);
@@ -211,7 +212,7 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
     let routes = 0;
     for (const to of Object.keys(index.streets)) {
       if (to === HOME) continue;
-      const path = findRoute(graph, HOME, to, { blocked: shut, locked });
+      const path = findRoute(streetGraph(graph, { closed: shut }), HOME, to, { locked });
       if (!path) continue;
       routes += 1;
       assertWalkable(path, `to ${label(to)}`);

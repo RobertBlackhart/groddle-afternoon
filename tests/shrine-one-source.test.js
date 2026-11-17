@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildHubMapView } from '../public/js/map-graph.js?v=78a605db';
 import { ecologyForStreet, populationForStreet, setStreetEcologyCatalog, shrineStreetsFor } from '../public/js/street-ecology.js?v=c4ce9ccd';
-import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=edadd67d';
+import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=43cb0e02';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
