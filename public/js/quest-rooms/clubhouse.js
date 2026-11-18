@@ -525,7 +525,8 @@ function buildClub(ctx) {
   const sky = root.layer(0, 0);
   sky.addChild(kit.gradient(PIXI, [[0, '#18202d'], [0.55, '#2c3a4a'], [1, '#4a5a63']], 960, 640));
   const far = root.layer(0.2, 1);
-  // Parallax layer y: screen y = y - factor * cameraY (camera y runs ~600 on the jars deck to ~1150 on the floor).
+  // Parallax layer y: screen y = y - factor * cameraY for a 408 px view (camera y runs ~600 on the jars deck to
+  // ~1150 on the floor); a taller view keeps the layers where its bottom edge would (kit.js roomLayerOffset, G999).
   for (let i = 0; i < 4; i++) far.addChild(kit.deco(PIXI, i % 2 ? 'pinehills_2' : 'pinehills_1', 500 + i * 1000, 560, { scale: 0.62, tint: 0x24382a }));
   const mid = root.layer(0.5, 2);
   for (let i = 0; i < 14; i++) {
@@ -680,7 +681,8 @@ function buildProsa(ctx) {
   const sky = root.layer(0, 0);
   sky.addChild(kit.gradient(PIXI, [[0, '#0b2430'], [0.55, '#123a40'], [1, '#1b5550']], 960, 640));
   for (let i = 0; i < 2; i++) sky.addChild(kit.deco(PIXI, 'sky_stars_1', 240 + i * 480, 640, { scale: 0.8, alpha: 0.75 }));
-  // Parallax layer y: screen y = y - factor * cameraY (camera y runs ~290 on the top pad to ~790 on the floor).
+  // Parallax layer y: screen y = y - factor * cameraY for a 408 px view (camera y runs ~290 on the top pad to ~790
+  // on the floor); a taller view keeps the layers where its bottom edge would (kit.js roomLayerOffset, G999).
   const far = root.layer(0.3, 1);
   // Bottoms stay under the floor line at every camera height; canopy tops clear the sky on the floor.
   for (let i = 0; i < 11; i++) far.addChild(kit.deco(PIXI, 'tree_group_bg_2_maytang', 80 + i * 330, 830, { scale: 0.75 + (i % 3) * 0.05, tint: 0x6e3d4b, alpha: 0.75 }));

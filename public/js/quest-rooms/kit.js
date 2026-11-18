@@ -13,6 +13,7 @@ import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from 
 import { quoinTouches } from '../quoins.js?v=6a2cac74';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
+import { VIEW_FLOOR_H } from '../location-view.js?v=ac404fcb';
 
 export const DECO_DIR = 'assets/decos/groddle/';
 export const ICON_DIR = 'assets/sprites/icons/';
@@ -75,9 +76,36 @@ export function fillView(layer, viewW, viewH) {
 }
 
 /**
+ * G999 (#495): the view height the rooms' parallax layers were placed for. Each room set a layer's
+ * pieces for a 408 px view with the feet at 0.75 of it (an-autumn-day.js woodLayer camY0 = floor - 306,
+ * rainbow-run-scene.js CAM_GROUND, the camera ranges clubhouse.js names), so its trees and hills stood
+ * with their feet behind the floor only while the view's bottom edge was where that view's was.
+ */
+export const ROOM_LAYER_VIEW_H = VIEW_FLOOR_H;
+
+/**
+ * PURE (G999): a parallax layer's offset in the room for the camera at (camX, camY) and a view
+ * `viewH` tall: x camX * (1 - factor) as always; y as a ROOM_LAYER_VIEW_H view with the same
+ * bottom edge puts it ((camY + viewH - ROOM_LAYER_VIEW_H) * (1 - factor)), so a taller view (an
+ * upright phone's is the room's own height, up to 1000 px; a big window's up to 720) shows the
+ * layers where the room drew them over its floor, with more above. They had followed the view's
+ * top: on an upright phone the clubhouse's hills and pines stood up to 450 px over the floor (#495).
+ * Factor 0 stays fixed to the screen (camY), and a call with no view height keeps the plain rule,
+ * as does a layer that is itself the sky (sceneRoot: one holding a gradient, the Purple Journey's at
+ * 0.05), whose top must stay above the view's.
+ */
+export function roomLayerOffset(factor, camX = 0, camY = 0, viewH = 0) {
+  const f = Number(factor) || 0;
+  const h = Number(viewH);
+  const lift = f > 0 && h > 0 ? h - ROOM_LAYER_VIEW_H : 0;
+  return { x: camX * (1 - f), y: (camY + lift) * (1 - f) };
+}
+
+/**
  * The scene root: a container with `worldW`/`worldH` and parallax layers.
- * layer(factor) returns a child container shifted by camera * (1 - factor),
- * so factor 1 moves with the world and 0 stays fixed to the screen.
+ * layer(factor) returns a child container shifted by camera * (1 - factor)
+ * (roomLayerOffset: for the view's bottom edge, G999), so factor 1 moves with
+ * the world and 0 stays fixed to the screen.
  */
 export function sceneRoot(PIXI, width, height) {
   const root = new PIXI.Container();
@@ -85,6 +113,12 @@ export function sceneRoot(PIXI, width, height) {
   root.worldH = height;
   root.sortableChildren = true;
   const layers = [];
+  // G999: a moving layer that holds a sky gradient (kit.gradient's viewFill) keeps to the view's top.
+  const skies = new WeakMap();
+  const isSky = (c) => {
+    if (!skies.has(c)) skies.set(c, (c.children || []).some((child) => child?.viewFill && typeof child.viewFill === 'object'));
+    return skies.get(c);
+  };
   root.layer = (factor = 1, zIndex = 0) => {
     const c = new PIXI.Container();
     c.zIndex = zIndex;
@@ -103,8 +137,9 @@ export function sceneRoot(PIXI, width, height) {
   });
   root.updateParallax = (camX = 0, camY = 0, viewW = 0, viewH = 0, canvasH = viewH) => {
     for (const c of layers) {
-      c.x = camX * (1 - c.factor);
-      c.y = camY * (1 - c.factor);
+      const at = roomLayerOffset(c.factor, camX, camY, isSky(c) ? 0 : viewH);
+      c.x = at.x;
+      c.y = at.y;
       if (c.factor === 0) fillView(c, viewW, canvasH);
     }
   };
