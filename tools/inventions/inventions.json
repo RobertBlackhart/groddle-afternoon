@@ -4507,6 +4507,23 @@
    ],
    "why": "#480: the package shuts the subway and teleports, and the remake keeps street-project roads closed, so in a fresh world 8 of the 10 give Smugglers' streets reach none of contraband.js's destinations on foot. Glitch had every street walkable. Hiding the Smuggler there (no run offered) beats a run nobody can deliver; the other choice is any street the roads reach on foot, which is not from Glitch's lists.",
    "rows": []
+  },
+  {
+   "id": "loading-card-min-hold",
+   "title": "The street loading card stays up until its Home to: list has been visible its reading time (at least 2.5 s)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/screen-fx.js",
+     "symbol": "loadCardHoldMs"
+    }
+   ],
+   "why": "#478: Glitch sent the Home to: list with the move start (NetController.as 1388-1395), so it was up for the whole load; the remake only knows what a street holds once it is built, so under Glitch's 200 ms hold (TSMainView.as 1766) the list was up for a blink. The card now holds 300 ms a word of the list (read-time.js READ_PER_WORD_MS), at least 2.5 s, at most 10 s; a card without a list keeps Glitch's timings.",
+   "ruling": "Austin 2026-11-18 (G993, calls P9iN1Q8WPs8rYTDVPGLfXp): hold the card until the list has been up its reading time (~2.5 s)",
+   "rows": [
+    "G993"
+   ]
   }
  ]
 }

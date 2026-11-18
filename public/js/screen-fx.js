@@ -11,16 +11,35 @@ import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBo
 import { formatLoadingTime, ordinal } from './exploration.js?v=5f533ebf';
 import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3850c51c';
 import { decodeEntities, htmlToText } from './html-text.js?v=6bbf4d1f';
+import { READ_MAX_MS, READ_PER_WORD_MS, wordCount } from './read-time.js?v=3151fb1a';
 
 /**
- * Street-load timings (seconds).
- * Slightly slower than original LoadingLocationView so teleports read as intentional
- * and the crossfade cannot be rushed past.
+ * Street-load timings (seconds), Glitch's own (#478): the card fades in over 0.2 s
+ * (LoadingLocationView.as 383, easeInCubic), stays until the street is ready, then 200 ms
+ * later (TSMainView.as 1766-1772) fades out over 0.5 s (LoadingLocationView.as 389-390).
+ * The remake had made them slower (0.45 / 480 ms / 0.85).
  */
-export const LOAD_FADE_IN = 0.45;
-export const LOAD_FADE_OUT = 0.85;
-/** Pause after street is ready, before fade-out (ms). */
-export const LOAD_HOLD_MS = 480;
+export const LOAD_FADE_IN = 0.2;
+export const LOAD_FADE_OUT = 0.5;
+/** Pause after street is ready, before fade-out (ms): TSMainView.as 1766 setTimeout 200. */
+export const LOAD_HOLD_MS = 200;
+/**
+ * #478 (G993, Austin 2026-11-18): a card that shows a Home to: list stays up until the list has
+ * been visible for its reading time, then fades. Glitch sent the list with the move start
+ * (NetController.as 1388-1395), so it was up for the whole load; the remake only knows it once
+ * the street is built (exploration.js streetFeaturesFromTargets), so without this it was up for a
+ * blink. The hold is the remake's own rule (invention loading-card-min-hold): 300 ms a word
+ * (read-time.js READ_PER_WORD_MS), at least LOAD_LIST_MIN_MS, at most READ_MAX_MS. A card with
+ * no list keeps Glitch's LOAD_HOLD_MS.
+ */
+export const LOAD_LIST_MIN_MS = 2500;
+
+/** How long the card holds once the street is ready: the list's reading time when it shows one. */
+export function loadCardHoldMs(homeToText = '', base = LOAD_HOLD_MS) {
+  const words = wordCount(homeToText);
+  if (!words) return base;
+  return Math.max(base, LOAD_LIST_MIN_MS, Math.min(READ_MAX_MS, words * READ_PER_WORD_MS));
+}
 /** BaseScreenView.as 33-34 fade_in_secs / fade_out_secs (tweens 109 and 153). */
 export const AWARD_FADE_IN = 0.4;
 export const AWARD_FADE_OUT = 0.3;
@@ -915,7 +934,10 @@ async function streetTransition(el, opts) {
     // LocationRenderer READYING_TEXT, counted up over the hold so travel is no slower.
     // QA only (js/loading-card-qa.js): &loadcardhold=<ms> keeps the card up for screenshots.
     const qaHold = Number(new URLSearchParams(globalThis.location?.search || '').get('loadcardhold')) || 0;
-    const hold = qaHold || (opts.holdMs ?? LOAD_HOLD_MS);
+    // #478: a Home to: list in view holds the card its reading time (loadCardHoldMs).
+    const listText = home && !home.hidden ? String(home.innerHTML || '').replace(/&nbsp;/g, ' ') : '';
+    const hold = qaHold || loadCardHoldMs(listText, opts.holdMs ?? LOAD_HOLD_MS);
+    el.dataset.stHoldMs = String(hold);
     const steps = 6;
     setStatus(LOAD_STATUS.splines);
     for (let i = 1; i <= steps; i += 1) {

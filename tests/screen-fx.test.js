@@ -18,14 +18,15 @@ import {
   awardRewardTokens,
   runStreetTransition,
   showAwardScreen,
-} from '../public/js/screen-fx.js?v=5db43b45';
+} from '../public/js/screen-fx.js?v=3af58308';
 
 describe('screen-fx timings (LoadingLocationView / BaseScreenView)', () => {
   it('uses the street card windows and the BaseScreenView fades (seconds)', () => {
-    // Teleport slightly slower than original LoadingLocationView (~0.2 / 0.5)
-    assert.ok(LOAD_FADE_IN >= 0.35 && LOAD_FADE_IN <= 0.7);
-    assert.ok(LOAD_FADE_OUT >= 0.6 && LOAD_FADE_OUT <= 1.2);
-    assert.ok(LOAD_HOLD_MS >= 300 && LOAD_HOLD_MS <= 800);
+    // #478: Glitch's own: LoadingLocationView.as 383 fade in .2, TSMainView.as 1766 200 ms after
+    // the street is ready, LoadingLocationView.as 389 fade out .5.
+    assert.equal(LOAD_FADE_IN, 0.2);
+    assert.equal(LOAD_FADE_OUT, 0.5);
+    assert.equal(LOAD_HOLD_MS, 200);
     // BaseScreenView.as 33-34: fade_in_secs .4, fade_out_secs .3.
     assert.equal(AWARD_FADE_IN, 0.4);
     assert.equal(AWARD_FADE_OUT, 0.3);
@@ -165,7 +166,7 @@ describe('badge + loading asset maps (local pack)', () => {
 
 describe('award card text', () => {
   it('drops GSJS item links and tags but keeps the words', async () => {
-    const { awardText, normalizeAwardPages } = await import('../public/js/screen-fx.js?v=5db43b45');
+    const { awardText, normalizeAwardPages } = await import('../public/js/screen-fx.js?v=3af58308');
     assert.equal(
       awardText('Give 6 <a href="event:item|npc_piggy">Piggies</a> the pleasuring of a lifetime. By petting them, of course.'),
       'Give 6 Piggies the pleasuring of a lifetime. By petting them, of course.',
@@ -176,7 +177,7 @@ describe('award card text', () => {
   });
 });
 
-import { LOAD_STATUS, loadStatusLabel, loadingSplit, cssColor } from '../public/js/screen-fx.js?v=5db43b45';
+import { LOAD_STATUS, loadStatusLabel, loadingSplit, cssColor } from '../public/js/screen-fx.js?v=3af58308';
 
 describe('loading card status and hub split (LoadingLocationView.as)', () => {
   it('uses the client status labels with the TimerBar percent', () => {
@@ -224,7 +225,7 @@ import {
   polGradient,
   polNeighbours,
   polVisitLine,
-} from '../public/js/screen-fx.js?v=5db43b45';
+} from '../public/js/screen-fx.js?v=3af58308';
 
 describe('home loading card (G249, LoadingLocationPOLView.as)', () => {
   it('names the place as setText does (215-235)', () => {
@@ -304,11 +305,82 @@ describe('home loading card (G249, LoadingLocationPOLView.as)', () => {
 
 describe('home loading card on a narrow screen', () => {
   it('scales the holder and the fill to fit with 16 px gutters', async () => {
-    const { polCardScale } = await import('../public/js/screen-fx.js?v=5db43b45');
+    const { polCardScale } = await import('../public/js/screen-fx.js?v=3af58308');
     const house = polCardLayout('interior');
     assert.equal(polCardScale(house, 1280), 1);
     assert.equal(polCardScale(house, 390), (390 - 32) / 616);
     assert.equal(polCardScale(house, 0), 1);
     assert.equal(polGradient(house, 0.5), 'radial-gradient(circle 100px at calc(50% - 139px) 50%, #d5ede1 35.3%, #adccbd 100%)');
+  });
+});
+
+import { LOAD_LIST_MIN_MS, loadCardHoldMs } from '../public/js/screen-fx.js?v=3af58308';
+
+describe('#478 the loading card holds its Home to: list (G993, invention loading-card-min-hold)', () => {
+  it('a card with no list keeps Glitch hold; a list holds at least 2.5 s, 300 ms a word, at most 10 s', () => {
+    assert.equal(LOAD_LIST_MIN_MS, 2500);
+    assert.equal(loadCardHoldMs(''), LOAD_HOLD_MS);
+    assert.equal(loadCardHoldMs('', 0), 0);
+    assert.equal(loadCardHoldMs('<b>Home to:</b><ul><li>A Shrine to Mab</li></ul>'), 2500);
+    const long = `<b>Home to:</b><ul>${Array.from({ length: 12 }, (_, i) => `<li>${i + 2} Piggies</li>`).join('')}</ul>`;
+    assert.equal(loadCardHoldMs(long), 26 * 300);
+    assert.equal(loadCardHoldMs(`${long}${long}`), 10000);
+    // The caller's own longer hold still wins.
+    assert.equal(loadCardHoldMs('<b>Home to:</b><ul><li>Vendor</li></ul>', 6000), 6000);
+  });
+
+  it('the card fades only after the list has been up its reading time; without one it fades at Glitch pace', async () => {
+    const saved = { document: globalThis.document, raf: globalThis.requestAnimationFrame };
+    globalThis.document = { documentElement: Object.assign(new EventTarget(), { dataset: {} }) };
+    globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+    const card = () => {
+      const home = { innerHTML: '', hidden: true };
+      const el = {
+        dataset: {},
+        style: {},
+        hidden: true,
+        setAttribute() {},
+        querySelector: (sel) => (sel === '[data-st-home]' ? home : null),
+        classList: {
+          add() {},
+          remove: (c) => {
+            if (c === 'is-visible') el.fadeOutAt = Date.now();
+          },
+        },
+      };
+      el.home = home;
+      return el;
+    };
+    try {
+      const withList = card();
+      let listUpAt = 0;
+      await runStreetTransition(withList, {
+        toLabel: 'Test Street',
+        details: () => {
+          listUpAt = Date.now();
+          return { features: ['A Shrine to Mab', 'A Street Spirit'] };
+        },
+      });
+      assert.equal(withList.home.hidden, false);
+      // "Home to: A Shrine to Mab A Street Spirit": 9 words at 300 ms.
+      assert.equal(withList.dataset.stHoldMs, '2700');
+      assert.ok(withList.fadeOutAt - listUpAt >= 2650, `list up ${withList.fadeOutAt - listUpAt} ms`);
+
+      const bare = card();
+      let readyAt = 0;
+      await runStreetTransition(bare, {
+        toLabel: 'Test Street',
+        details: () => {
+          readyAt = Date.now();
+          return { features: [] };
+        },
+      });
+      assert.equal(bare.home.hidden, true);
+      assert.equal(bare.dataset.stHoldMs, String(LOAD_HOLD_MS));
+      assert.ok(bare.fadeOutAt - readyAt < 1000);
+    } finally {
+      globalThis.document = saved.document;
+      globalThis.requestAnimationFrame = saved.raf;
+    }
   });
 });

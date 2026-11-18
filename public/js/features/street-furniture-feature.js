@@ -43,7 +43,7 @@ import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f'
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition } from '../tools.js?v=4156bba8';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { runStreetTransition } from '../screen-fx.js?v=5db43b45';
+import { runStreetTransition } from '../screen-fx.js?v=3af58308';
 import { STREET_VISITS_SLOT, loadingCardDetails, recordStreetEntry, streetLoadingVisit } from '../exploration.js?v=5f533ebf';
 import {
   BOARD_ART,
@@ -127,7 +127,7 @@ import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteVie
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=be55db1b';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { butlerApi } from './butler-feature.js?v=8181266a';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=31b380a2';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=1bc08b61';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=6ec01afb';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
