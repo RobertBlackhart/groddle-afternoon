@@ -530,8 +530,9 @@ function createSession(engine, client) {
     let verb;
     if (v.kind === 'rock') {
       if (base !== 'mine') return notMine();
-      // The visitor's own side refuses locally, as in solo (a pick, Mining I, energy; a mined-out rock).
-      if (target.state?.rock?.depleted || !rockReady(target.state?.rock, { inv: engine.inv, pc: engine.pc, learned: engine.learnedSkills || [], toolState: engine.toolState })) return null;
+      // The visitor's own side refuses locally, as in solo (a pick, Mining I, energy; a mined-out rock,
+      // unless this swing started at a crew's rock while it had chunks: G947, home-crew-mp-feature).
+      if ((target.state?.rock?.depleted && !engine.query?.('homeCrewSwinging', target)) || !rockReady(target.state?.rock, { inv: engine.inv, pc: engine.pc, learned: engine.learnedSkills || [], toolState: engine.toolState })) return null;
       verb = 'mine';
     } else {
       const e = visit.nodes.get(v.id);

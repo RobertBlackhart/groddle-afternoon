@@ -31,6 +31,8 @@ const LAND_WAIT_MS = 4000;
 let client = null;
 let owner = 0;
 let crews = new Map();
+/** The rocks my own swing is at now (started, not yet landed or cancelled). */
+const swinging = new Set();
 let req = 0;
 const landing = new Map();
 let unbind = [];
@@ -71,6 +73,7 @@ function here() {
   if (now !== owner) {
     owner = now;
     crews = new Map();
+    swinging.clear();
     publish();
   }
   return owner;
@@ -89,6 +92,8 @@ function swing(target, what, kind) {
   if (what !== 'start' && what !== 'stop') return null;
   const id = idOf(target);
   if (!id || !id.startsWith(kind)) return null;
+  if (what === 'start') swinging.add(id);
+  else swinging.delete(id);
   return client.send('home_crew', { owner, id, do: what }) !== false;
 }
 
@@ -103,6 +108,23 @@ export const homeCrewMpFeature = {
 
   onStreetClear() {
     crews = new Map();
+    swinging.clear();
+  },
+
+  /**
+   * yard-verbs-mp-feature: my swing at this home rock started while it had chunks (a crew's rock
+   * another has emptied since still lands: include/mining.js 215-217, 293-383), or null.
+   */
+  homeCrewSwinging(target) {
+    const id = idOf(target);
+    return id && swinging.has(id) ? true : null;
+  },
+
+  /** The swing landed (game.js, after help-mine-feature's own rockMined): it is off the rock. */
+  rockMined(target) {
+    const id = idOf(target);
+    if (id) swinging.delete(id);
+    return undefined;
   },
 
   homeCrewId(target) {
@@ -150,6 +172,7 @@ export const homeCrewMpFeature = {
     client = null;
     owner = 0;
     crews = new Map();
+    swinging.clear();
     for (const w of landing.values()) clearTimeout(w.timer);
     landing.clear();
     req = 0;

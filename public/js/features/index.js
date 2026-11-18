@@ -169,7 +169,7 @@ import { snapsFeature } from './snaps-feature.js?v=5033ab5c'; FEATURES.push(snap
 import { homeStreetMpFeature } from './home-street-mp-feature.js?v=e03badb5'; FEATURES.push(homeStreetMpFeature);
 import { swoonerfliesFeature } from './swoonerflies-feature.js?v=debe70e7'; FEATURES.push(swoonerfliesFeature);
 import { homePoolMpFeature } from './home-pool-mp-feature.js?v=eda3419c'; FEATURES.push(homePoolMpFeature);
-import { yardVerbsMpFeature } from './yard-verbs-mp-feature.js?v=10eedfae'; FEATURES.push(yardVerbsMpFeature);
+import { yardVerbsMpFeature } from './yard-verbs-mp-feature.js?v=273b6548'; FEATURES.push(yardVerbsMpFeature);
 import { homeMachinesFeature } from './home-machines-feature.js?v=d632bd7e'; FEATURES.push(homeMachinesFeature);
 import { homeStorageFeature } from './home-storage-feature.js?v=67c80312'; FEATURES.push(homeStorageFeature);
 import { homeLiveFeature } from './home-live-feature.js?v=ed80100f'; FEATURES.push(homeLiveFeature);
@@ -200,7 +200,7 @@ import { streetFixesFeature } from './street-fixes-feature.js?v=06e9f5a2'; FEATU
 import { skillBubblesFeature } from './skill-bubbles-feature.js?v=cd2df262'; FEATURES.push(skillBubblesFeature);
 import { chickenScareFeature } from './chicken-scare-feature.js?v=5b862602'; FEATURES.push(chickenScareFeature);
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
-import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=0707df8c'; FEATURES.push(homeCrewMpFeature);
+import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=78ded3fe'; FEATURES.push(homeCrewMpFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1df09118'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).

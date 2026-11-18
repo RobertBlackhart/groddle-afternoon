@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { HOME_CREW_ID, homeCrewId, homeCrewOwner, normalizeHomeCrews } from '../public/js/home-crew-mp.js?v=b98f8214';
-import { homeCrewMpFeature } from '../public/js/features/home-crew-mp-feature.js?v=0707df8c';
+import { homeCrewMpFeature } from '../public/js/features/home-crew-mp-feature.js?v=78ded3fe';
 import { createMineRock } from '../public/js/mining.js?v=afb2b145';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
@@ -92,6 +92,19 @@ describe('features/home-crew-mp-feature.js answers help-mine-feature on a home s
     assert.equal(homeCrewMpFeature.sharedMineSwing(rock, 'stop'), true);
     assert.deepEqual(client.sent, [{ kind: 'home_crew', owner: 7, id: 'rock:0', do: 'start' }, { kind: 'home_crew', owner: 7, id: 'rock:0', do: 'stop' }]);
     assert.equal(homeCrewMpFeature.homeCrewId(rock), 'rock:0');
+  });
+
+  it('a swing that started is still running until it lands (a mined-out copy lets it reach the site)', () => {
+    stage({ me: 9 });
+    const rock = { classId: 'rock_metal_1', yardVisit: { kind: 'rock', id: 'rock:1' } };
+    assert.equal(homeCrewMpFeature.homeCrewSwinging(rock), null);
+    homeCrewMpFeature.sharedMineSwing(rock, 'start');
+    assert.equal(homeCrewMpFeature.homeCrewSwinging(rock), true);
+    homeCrewMpFeature.rockMined(rock);
+    assert.equal(homeCrewMpFeature.homeCrewSwinging(rock), null, 'landed');
+    homeCrewMpFeature.sharedMineSwing(rock, 'start');
+    homeCrewMpFeature.sharedMineSwing(rock, 'stop');
+    assert.equal(homeCrewMpFeature.homeCrewSwinging(rock), null, 'cancelled');
   });
 
   it('a visitor digs a Dirt Pile copy; the server\'s crews there are the diggers', () => {
@@ -235,7 +248,7 @@ describe('the site takes and credits the crew\'s help (HomeYard::judgeStock)', {
     systems: { features: { homes: { cult: { items } } } },
     world: { streets: { RH_HOME_EXT: { rocks: [{ classId: 'rock_metal_1', rock: { chunksRemaining: 20, depleted: false, respawnAt: 0 } }] } } },
   };
-  const judge = (id, verb, help) => JSON.parse(execFileSync('php', ['-r', `foreach (["HomePool", "HomeYard"] as $c) require ${JSON.stringify(SITE_DIR)} . "/src/$c.php"; use Groddle\\Minn\\HomeYard; $s = json_decode(${JSON.stringify(JSON.stringify(state))}, false); echo json_encode(HomeYard::judgeStock(HomeYard::rules(), $s, [], [], [], ${JSON.stringify(id.startsWith('rock') ? 'rock' : 'node')}, ${JSON.stringify(id)}, ${JSON.stringify(verb)}, 1800000000000, fn($a, $b) => $a, HomeYard::crewHelp(json_decode(${JSON.stringify(JSON.stringify(help))}, true))));`]).toString());
+  const judge = (id, verb, help, waiting = '[]', started = 0) => JSON.parse(execFileSync('php', ['-r', `foreach (["HomePool", "HomeYard"] as $c) require ${JSON.stringify(SITE_DIR)} . "/src/$c.php"; use Groddle\\Minn\\HomeYard; $s = json_decode(${JSON.stringify(JSON.stringify(state))}, false); $h = HomeYard::crewHelp(json_decode(${JSON.stringify(JSON.stringify(help))}, true)); if (${started} > 0) { $h['started'] = ${started}; } echo json_encode(HomeYard::judgeStock(HomeYard::rules(), $s, ${waiting}, [], [], ${JSON.stringify(id.startsWith('rock') ? 'rock' : 'node')}, ${JSON.stringify(id)}, ${JSON.stringify(verb)}, 1800000000000, fn($a, $b) => $a, $h));`]).toString());
 
   it('a swing\'s bonus comes off the rock with its own chunks and is credited', () => {
     const r = judge('rock:0', 'mine', { bonus: 3 });
@@ -245,6 +258,18 @@ describe('the site takes and credits the crew\'s help (HomeYard::judgeStock)', {
     assert.ok(r.took >= 3 + 1);
     assert.equal(judge('rock:0', 'mine', {}).help, undefined, 'no crew, no help');
     assert.equal(judge('rock:0', 'mine', { bonus: 999 }).help, 30, 'at most nine helps\' worth (mining.js 335-337)');
+  });
+
+  it('a crew swing that started while the rock had chunks is paid after another emptied it (mining.js 215-217, 293-383)', () => {
+    const now = 1800000000000;
+    const emptied = `[['id' => 'yd-1', 'kind' => 'rock', 'target' => 'rock:0', 'verb' => 'mine', 'took' => 20, 'at_ms' => ${now - 2000}]]`;
+    assert.equal(judge('rock:0', 'mine', {}, emptied).why, 'empty', 'no crew swing: mined out');
+    const late = judge('rock:0', 'mine', {}, emptied, now - 5000);
+    assert.equal(late.late, true);
+    assert.equal(late.left, 0);
+    assert.equal(late.pool, '', 'only the swing that mined it out pays the owner');
+    assert.ok(late.took >= 1);
+    assert.equal(judge('rock:0', 'mine', {}, emptied, now - 1000).why, 'empty', 'a swing started after it was mined out');
   });
 
   it('a dig\'s bonus items, and Loam for the yield and the bonus when the crew\'s chance came up', { skip: !readFileSync(join(SITE_DIR, 'data', 'yard-verbs.json'), 'utf8').includes('proto_dirt_pile') ? 'no Dirt Pile cultivation in the yard rules' : false }, () => {
