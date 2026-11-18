@@ -51,9 +51,9 @@ const {
   servingsLeft,
   settleFeastDay,
   thanksgivingDay,
-} = await import('../public/js/feast-day.js?v=3302a66f');
+} = await import('../public/js/feast-day.js?v=1940dee3');
 const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=89e24bce');
-const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=570eeef1');
+const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=a585668b');
 
 const at = (y, m, d, h = 12) => Date.UTC(y, m - 1, d, h + 8); // Pacific standard time
 const fixed = (v) => () => v;
@@ -68,22 +68,27 @@ describe('the day (Ur clock)', () => {
     assert.equal(feastDayKey(at(2026, 11, 27, 0)), '');
   });
 
-  it('lays its spots where feast_day.go does: 230 to 750, clear of the Hardware Vendor', () => {
-    assert.equal(FEAST_SPOTS.length, 20);
+  it('lays its spots where feast_day.go does: 230 to 700, off the spice tree\'s trunk, clear of the vendor and shrine (G1015a)', () => {
+    assert.equal(FEAST_SPOTS.length, FEAST_DAY_RULES.piles);
+    assert.equal(FEAST_SPOTS.length, 16);
     assert.equal(FEAST_SPOTS[0], 230);
-    assert.equal(FEAST_SPOTS[19], 750);
-    assert.equal(FEAST_SPOTS[1], 257); // feast_day.go: 230 + (520 + 9) / 19
+    assert.equal(FEAST_SPOTS[1], 253); // feast_day.go: 230 + (115 + 2) / 5
+    assert.equal(FEAST_SPOTS[6], 490);
+    assert.equal(FEAST_SPOTS[15], 700); // the shrine's (and solo the Hardware Vendor's) base starts ~730
+    // The spice tree at x 422: its trunk and roots ~379-451 stay bare.
+    assert.equal(FEAST_SPOTS.filter((x) => x > 345 && x < 490).length, 0);
+    FEAST_SPOTS.forEach((x, i) => assert.ok(i === 0 || x > FEAST_SPOTS[i - 1] + 20, `spot ${i} apart`));
   });
 });
 
 describe('the pool', () => {
-  it('a thin week is topped up to 20 dishes by Pot, a full one is not', () => {
+  it('a thin week is topped up to 20 dishes by Pot (16 out, 4 to come), a full one is not', () => {
     const s = createFeastDayState();
     assert.equal(settleFeastDay(s, 'feast_day:2026', { corn: 6, carrot: 1 }, fixed(0)), 'started');
     const pot = Object.values(s.pot).reduce((a, n) => a + n, 0);
     assert.equal(pot, 13);
     assert.deepEqual(Object.keys(s.pot).sort(), [...HARVEST_DISHES].sort());
-    assert.equal(s.piles.filter((p) => p.b === 3).length, 20);
+    assert.equal(s.piles.filter((p) => p.b === 3).length, 16);
     assert.equal(servingsLeft(s, { corn: 6, carrot: 1 }), 60);
     const full = createFeastDayState();
     settleFeastDay(full, 'feast_day:2026', { corn: 30 }, fixed(0));
@@ -127,8 +132,13 @@ describe('the pool', () => {
 
   it('a lay on the day gives an empty spot something again, 20 s later', () => {
     const s = createFeastDayState();
-    settleFeastDay(s, 'feast_day:2026', {}, fixed(0)); // Pot's 20, all out
-    for (let i = 0; i < 3; i += 1) biteSolo(s, 0, s.piles[0].n, {}, 1000);
+    settleFeastDay(s, 'feast_day:2026', {}, fixed(0)); // Pot's 20: 16 out, 4 to come
+    // Spot 0 emptied five times; the last time nothing is left to lay there (the cap is not under test).
+    for (let round = 0; round < 5; round += 1) {
+      s.ate = 0;
+      for (let i = 0; i < 3; i += 1) assert.equal(biteSolo(s, 0, s.piles[0].n, {}, 1000).ok, true);
+      if (round < 4) assert.deepEqual(refillDue(s, {}, 1000 + FEAST_DAY_RULES.refillMs, fixed(0)), [0]);
+    }
     assert.equal(s.refill[0], undefined, 'nothing left to lay');
     assert.deepEqual(refillDue(s, {}, 50_000), []);
     assert.deepEqual(refillDue(s, { corn: 1 }, 60_000, fixed(0)), [], 'armed, not yet laid');
@@ -223,8 +233,8 @@ describe('the feature lays, draws and eats the piles solo', () => {
     feastDayFeature.onStreetEnter({}, engine);
   });
 
-  it('20 piles of the week’s food stand right of the table, at their spots', () => {
-    assert.equal(piles().length, 20);
+  it('16 piles of the week’s food stand right of the table, at their spots', () => {
+    assert.equal(piles().length, 16);
     assert.equal(piles()[0].label.toLowerCase(), 'corn');
     assert.equal(piles()[0].sprite.x, 230 + 3000);
     assert.equal(piles()[0].subtitle, 'Thanksgiving feast · 90 servings left');
@@ -258,10 +268,10 @@ describe('the feature lays, draws and eats the piles solo', () => {
     for (let s = 6; eaten.length < 11; s += 1) {
       feastDayFeature.runVerb(spot(s), 'eat', engine);
     }
-    assert.equal(feastDayFeature.verbsFor(spot(19), engine)[0].enabled, false);
-    feastDayFeature.runVerb(spot(19), 'eat', engine);
+    assert.equal(feastDayFeature.verbsFor(spot(15), engine)[0].enabled, false);
+    feastDayFeature.runVerb(spot(15), 'eat', engine);
     assert.equal(eaten.length, 11);
-    assert.equal(spot(19).sprite.destroyed, false);
+    assert.equal(spot(15).sprite.destroyed, false);
   });
 
   it('the solo feast is saved with the player and packed away the next day', () => {

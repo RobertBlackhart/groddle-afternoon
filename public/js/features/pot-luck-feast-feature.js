@@ -37,7 +37,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=d4e55862';
 import { openListDialog } from '../ui/storage-windows.js?v=4992800f';
-import { servingsText } from '../feast-day.js?v=3302a66f';
+import { servingsText } from '../feast-day.js?v=1940dee3';
 import {
   DISHES_NEEDED,
   DISH_BOX,

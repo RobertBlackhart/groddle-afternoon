@@ -16,7 +16,8 @@
  *    is left of each, as a Glitch spawner refills (items/spawner.js 23-31, 163-174).
  *  - A bite is the food's own eat (energy, mood, fullness, variety iMG: include/food.js), refused at
  *    full energy as any food is (food.js 126-128), 11 bites a player for the day.
- *  - A thin week (under 20 dishes laid) is topped up to 20 by Pot with his own harvest dishes.
+ *  - A thin week (under 20 dishes laid) is topped up to 20 by Pot with his own harvest dishes; 16 of
+ *    them lie out at once (one per spot), the rest as spots empty.
  *  - At midnight the leftovers are packed away; the table stays until Pot Luck Day ends.
  */
 
@@ -27,24 +28,30 @@ export const FEAST_DAY_ID = 'feast_day';
 export const FEAST_PILE_CLASS = 'feast_day_pile';
 
 export const FEAST_DAY_RULES = Object.freeze({
-  /** Piles on the street at once. */
-  piles: 20,
+  /** Piles on the street at once: one per spot (G1015a: 16 fit clear of the street tree's trunk). */
+  piles: 16,
+  /** A thin week is topped up to this many dishes by Pot (G1009: 20 dishes' worth). */
+  potDishes: 20,
   /** Bites in a pile: one laid dish or crop's worth. */
   bites: 3,
   /** Bites a player may eat on the day. */
   cap: 11,
   /** An emptied spot is laid again this long after. */
   refillMs: 20_000,
-  /** Where the piles lie, the street's source x: right of the Harvest Table, clear of the Hardware Vendor (~790). */
-  from: 230,
-  to: 750,
+  /**
+   * Where the piles lie, the street's source x, as runs [from, to, spots]: right of the Harvest
+   * Table (its right end ~202), either side of the spice tree's trunk (x 422, trunk and roots
+   * ~379-451; G1015a), ending at 700 clear of the Hardware Vendor solo and the shrine online (~790,
+   * base from ~730).
+   */
+  runs: Object.freeze([Object.freeze([230, 345, 6]), Object.freeze([490, 700, 10])]),
 });
 
-/** Each spot's source x, evenly from `from` to `to` (feast_day.go feastDaySpots, the same rounding). */
-export const FEAST_SPOTS = Object.freeze(Array.from({ length: FEAST_DAY_RULES.piles }, (_, i) => {
-  const n = FEAST_DAY_RULES.piles - 1;
-  return FEAST_DAY_RULES.from + Math.floor((i * (FEAST_DAY_RULES.to - FEAST_DAY_RULES.from) + Math.floor(n / 2)) / n);
-}));
+/** Each spot's source x, each run evenly from its `from` to its `to` (feast_day.go feastDaySpots, the same rounding). */
+export const FEAST_SPOTS = Object.freeze(FEAST_DAY_RULES.runs.flatMap(([from, to, spots]) => Array.from({ length: spots }, (_, i) => {
+  const n = spots - 1;
+  return from + Math.floor((i * (to - from) + Math.floor(n / 2)) / n);
+})));
 
 export const FEAST_DAY_LINES = Object.freeze({
   verb: 'Eat',
@@ -177,7 +184,7 @@ export function settleFeastDay(state, key, counts = {}, roll = Math.random) {
   Object.assign(state, createFeastDayState(), { key });
   if (!key) return had ? 'packed' : '';
   const total = Object.values(clean(counts)).reduce((a, n) => a + n, 0);
-  for (let i = 0; total + i < FEAST_DAY_RULES.piles; i += 1) {
+  for (let i = 0; total + i < FEAST_DAY_RULES.potDishes; i += 1) {
     const c = HARVEST_DISHES[i % HARVEST_DISHES.length];
     state.pot[c] = (state.pot[c] || 0) + 1;
   }
