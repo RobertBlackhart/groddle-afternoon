@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { PACK_FLIGHT, packFlightFrames, packFlightCountFrames, packFlightCount, flyItemToPack } from '../public/js/pack-flight.js?v=fb063fdc';
+import { PACK_FLIGHT, packFlightFrames, packFlightCountFrames, packFlightCount, flyItemToPack, noteFlown, unflownItems } from '../public/js/pack-flight.js?v=8da4ab78';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -104,5 +104,39 @@ describe('#498 who flies what', () => {
     assert.match(smug, /engine\.flyToPack\?\.\(RECEIVE_REWARDS\.item, RECEIVE_REWARDS\.count, from\.sprite\)/);
     assert.match(smug, /giveRewards\(engine, npc\)/);
     assert.match(smug, /giveRewards\(engine, receiver\)/);
+  });
+});
+
+describe('G1016 an item that flew is not floated from the avatar too (Glitch showed only the flight)', () => {
+  it('a flown item drops out of the gain\'s floats for one flight\'s time; others stay', () => {
+    const t0 = 5_000_000;
+    noteFlown('fox_brush', t0);
+    assert.deepEqual(unflownItems({ fox_brush: 1, fox_bait: 5 }, t0 + 10), { fox_bait: 5 });
+    const span = PACK_FLIGHT.riseMs + PACK_FLIGHT.holdMs + PACK_FLIGHT.flyMs;
+    assert.deepEqual(unflownItems({ fox_brush: 1 }, t0 + span), {});
+    assert.deepEqual(unflownItems({ fox_brush: 1 }, t0 + span + 1), { fox_brush: 1 }, 'a later gain of the same item floats again');
+    assert.deepEqual(unflownItems(undefined, t0), {});
+  });
+
+  it('game.js notes only a flight it drew and pushActivity floats the rest; the log line keeps the item', () => {
+    const g = read('public/game.js');
+    const fly = g.slice(g.indexOf('function flyToPackFrom('), g.indexOf('function slugFlightTarget('));
+    assert.match(fly, /if \(flight\) noteFlown\(classTsid\)/);
+    const push = g.slice(g.indexOf('function pushActivity('), g.indexOf('function logGain('));
+    assert.match(push, /notify\.activity\(msg, \{ labelOf \}\)/);
+    assert.match(push, /floatGains\(effectTokens\(\{ \.\.\.msg\.effects, items: unflownItems\(msg\.effects\.items\) \}, labelOf\)\)/);
+  });
+
+  it('every handover flies before its gain line: the Fox Ranger and the Smuggler (the Rube and the bartender log plain lines)', () => {
+    const fox = read('public/js/features/foxes-feature.js');
+    assert.ok(fox.indexOf('engine.flyToPack?.(FOX_BRUSH_ID') < fox.indexOf("base: 'The Fox Ranger gave you a Fox Brush'"));
+    assert.ok(fox.indexOf('engine.flyToPack?.(FOX_BAIT_ID') < fox.indexOf("base: 'The Fox Ranger gave you Fox Bait'"));
+    const smug = read('public/js/features/smuggling-feature.js');
+    const fn = smug.slice(smug.indexOf('function giveRewards('), smug.indexOf('function deliver('));
+    assert.ok(fn.indexOf('engine.refreshPack?.()') < fn.indexOf('engine.flyToPack?.('));
+    assert.ok(fn.indexOf('engine.flyToPack?.(') < fn.indexOf('engine.pushActivity?.('));
+    assert.doesNotMatch(read('public/js/features/rube-feature.js'), /pushActivity\?\.\(\{[^}]*effects/);
+    const bar = read('public/js/features/hell-bar-feature.js');
+    assert.doesNotMatch(bar.slice(bar.indexOf('function applyGrant('), bar.indexOf('function converse(')), /effects: \{ items/);
   });
 });

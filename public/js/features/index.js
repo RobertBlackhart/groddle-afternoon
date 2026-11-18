@@ -77,7 +77,7 @@ export const FEATURES = [
   newxpFeature,
   streetMinimapFeature,
 ];
-import { smugglingFeature } from './smuggling-feature.js?v=a1248ae2'; FEATURES.push(smugglingFeature);
+import { smugglingFeature } from './smuggling-feature.js?v=38683f25'; FEATURES.push(smugglingFeature);
 import { homeTowerFeature } from './home-tower-feature.js?v=6b94072f'; FEATURES.push(homeTowerFeature);
 import { secretSpotsFeature } from './secret-spots-feature.js?v=b2238ad9'; FEATURES.push(secretSpotsFeature);
 import { musicblocksFeature } from './musicblocks-feature.js?v=0fade116'; FEATURES.push(musicblocksFeature);
@@ -113,7 +113,7 @@ import { powdersFeature } from './powders-feature.js?v=712ae534'; FEATURES.push(
 import { itemVerbsFeature } from './item-verbs-feature.js?v=6e480e45'; FEATURES.push(itemVerbsFeature);
 import { artifactsFeature } from './artifacts-feature.js?v=c12c3aa0'; FEATURES.push(artifactsFeature);
 import { doorDrinkFeature } from './door-drink-feature.js?v=a65f467f'; FEATURES.push(doorDrinkFeature);
-import { buffTriggersFeature } from './buff-triggers-feature.js?v=278479ec'; FEATURES.push(buffTriggersFeature);
+import { buffTriggersFeature } from './buff-triggers-feature.js?v=200d1db5'; FEATURES.push(buffTriggersFeature);
 import { snoConesFeature } from './sno-cones-feature.js?v=c81dda8c'; FEATURES.push(snoConesFeature);
 import { bureaucraticHallsFeature } from './bureaucratic-halls-feature.js?v=65ea8e38'; FEATURES.push(bureaucraticHallsFeature);
 import { potionsFeature } from './potions-feature.js?v=8280c322'; FEATURES.push(potionsFeature);

@@ -4674,7 +4674,7 @@
    "id": "pack-flight-rise",
    "title": "How high an item given from the street rises before it flies into the pack, and the colour of its +N",
    "kind": "visual",
-   "status": "proposed",
+   "status": "kept",
    "where": [
     {
      "file": "public/js/pack-flight.js",
@@ -4682,7 +4682,10 @@
     }
    ],
    "why": "#498: the flight itself is Glitch's FLOOR_TO_PACK (ItemstackAnimation.as 237-269: grow 1 s, sit 0.7 s, fly 0.5 s). Its float height came from the client's stylesheet (offsets.itemstack_animation_zenith) and the count's colour from its itemstack_animation_add class, neither of which survived; 60 px up and a white count with the source's dark glow fill them.",
-   "rows": []
+   "ruling": "Austin 2026-11-18 (G1016, calls 64cHAfNFUXcFeypA13swjm): keep the flight's 60 px rise and white +N; the avatar's own \"+N <item>\" float for a flown item goes (Glitch showed only the flight)",
+   "rows": [
+    "G1016"
+   ]
   }
  ]
 }

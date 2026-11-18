@@ -418,15 +418,16 @@ function giveRewards(engine, from = null) {
   const xp = grantMoodXp(pc, RECEIVE_REWARDS.xp);
   pc.currants = (pc.currants || 0) + RECEIVE_REWARDS.currants;
   addItem(engine.inv, RECEIVE_REWARDS.item, RECEIVE_REWARDS.count);
+  engine.refreshPack?.();
+  // #498: the item flies from the Smuggler into the pack (npc_smuggler.js 518 pc.createItemFromSource);
+  // G1016: before the gain line, so the line floats the xp and currants and not the item as well.
+  if (from?.sprite) engine.flyToPack?.(RECEIVE_REWARDS.item, RECEIVE_REWARDS.count, from.sprite);
   engine.pushActivity?.({
     base: `The Smuggler slipped you ${RECEIVE_REWARDS.currants} currants`,
     effects: { xp, items: { [RECEIVE_REWARDS.item]: RECEIVE_REWARDS.count } },
   });
   engine.playSound?.('QUOIN_CURRANTS', { volume: 0.5 });
-  engine.refreshPack?.();
   engine.updateHud?.();
-  // #498: the item flies from the Smuggler into the pack (npc_smuggler.js 518 pc.createItemFromSource).
-  if (from?.sprite) engine.flyToPack?.(RECEIVE_REWARDS.item, RECEIVE_REWARDS.count, from.sprite);
 }
 
 function deliver(engine) {

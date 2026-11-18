@@ -110,3 +110,26 @@ export function flyItemToPack({ doc = globalThis.document, from, to, iconUrl, co
   anim.oncancel = finish;
   return el;
 }
+
+/*
+ * G1016 (Austin 2026-11-18): an item that flies into the pack is not also floated as "+N <item>"
+ * from the avatar: Glitch showed only the flight (the FLOOR_TO_PACK announcement was the gain's one
+ * picture). game.js notes each flight drawn; pushActivity floats only the items that did not fly.
+ */
+const flown = new Map();
+
+/** Note that `classTsid` just flew into the pack (a flight was drawn). */
+export function noteFlown(classTsid, now = Date.now()) {
+  if (classTsid) flown.set(String(classTsid), now);
+}
+
+/** A gain's items minus those that flew into the pack within one flight's time (theirs is the flight). */
+export function unflownItems(items = {}, now = Date.now(), A = PACK_FLIGHT) {
+  const out = {};
+  for (const [id, n] of Object.entries(items || {})) {
+    const at = flown.get(id);
+    if (at != null && now - at >= 0 && now - at <= total(A)) continue;
+    out[id] = n;
+  }
+  return out;
+}

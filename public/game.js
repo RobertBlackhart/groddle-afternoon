@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=dbe1e7a2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7dc6c87a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1070,7 +1070,7 @@ import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
-import { flyItemToPack } from './js/pack-flight.js?v=fb063fdc';
+import { flyItemToPack, noteFlown, unflownItems } from './js/pack-flight.js?v=8da4ab78';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=98fff2d4';
@@ -3797,7 +3797,8 @@ function pushActivity(msg) {
   else if (msg && typeof msg === 'object' && msg.effects) msg = { ...msg, effects: wholeEffects(msg.effects) };
   const labelOf = (id) => ITEM_LABELS[id] || id;
   notify.activity(msg, { labelOf });
-  if (msg && typeof msg === 'object' && msg.effects) floatGains(effectTokens(msg.effects, labelOf));
+  // G1016: an item that flew into the pack (flyToPackFrom) is not floated from the avatar as well.
+  if (msg && typeof msg === 'object' && msg.effects) floatGains(effectTokens({ ...msg.effects, items: unflownItems(msg.effects.items) }, labelOf));
 }
 
 /** A gain line for the log only (its floats are the caller's): verb results, quoins. */
@@ -8554,7 +8555,10 @@ function flyToPackFrom(classTsid, count = 1, source = null) {
   const from = { x: c.left + g.x * (c.width / VIEW_W), y: c.top + g.y * (c.height / VIEW_H) };
   const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   setCanvasData('packFlightLast', `${classTsid}:${count}`);
-  return flyItemToPack({ doc: document, from, to, iconUrl: itemIconUrl(classTsid), count, reduced });
+  const flight = flyItemToPack({ doc: document, from, to, iconUrl: itemIconUrl(classTsid), count, reduced });
+  // G1016: the flight is this gain's picture; pushActivity does not float it from the avatar too.
+  if (flight) noteFlown(classTsid);
+  return flight;
 }
 
 /** The HUD point a slug's amount flies to, in client pixels (SlugAnimator.as 110-132). */
