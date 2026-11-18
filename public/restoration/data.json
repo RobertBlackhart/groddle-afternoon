@@ -2810,132 +2810,132 @@
   ]
  },
  "release": {
-  "game": "0.48.1",
+  "game": "0.49.0",
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2675,
+  "commits": 2717,
   "since": "2026-10-19",
   "recent": [
    {
     "date": "2026-11-18",
     "kind": "fix",
-    "text": "The street schema and the builder's style tools know the subway's own-file decos"
+    "text": "The feast's QA setup sets energy through the stat API, and three tests follow today's merged code"
    },
    {
     "date": "2026-11-18",
     "kind": "fix",
-    "text": "A flattered or hugged Crab holds its reaction until it walks on"
+    "text": "A Piggy or Chicken that loses its line after a jump stands on the nearest one (#497, with #494's follow)"
    },
    {
     "date": "2026-11-18",
     "kind": "fix",
-    "text": "A subway station's street map shows the station, not a bare wall and floor"
+    "text": "A Piggy or Chicken that jumps along its shared walk stands on its line again instead of walking inside the ground"
    },
    {
     "date": "2026-11-18",
     "kind": "fix",
-    "text": "Musicblocks play in Hell, as in Glitch"
+    "text": "Wine of the Dead flies from Hell's Bartender into your pack, as items handed over by NPCs did in Glitch"
    },
    {
     "date": "2026-11-18",
     "kind": "fix",
-    "text": "Trees and pours stay on their own Patch after a Patch in the yard wears out"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Make menu icons keep their shape and the way back to a tool stays inside its pill"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A quest with a recipe or item reward keeps the iMG, currants and favor icons on its complete card"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Sky no longer shows between the ground and the bottom rock strip with the camera low on a street"
+    "text": "A report picture with the game's UI matches the screen: its fonts, and scrolled lists where they were scrolled"
    },
    {
     "date": "2026-11-18",
     "kind": "improve",
-    "text": "An open verb menu is drawn again only when what it shows changed"
+    "text": "A dish laid on Thanksgiving Day joins the feast at once, even where the piles had run out"
    },
    {
     "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Smuggling runs only send you where you can walk, and their route never takes the subway"
+    "kind": "new",
+    "text": "Thanksgiving Day's feast: eat the week's Harvest Table food where it lies in Groddle Forest Junction"
    },
    {
     "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A click on a far signpost walks there first, and Camera Mode clicks no longer act"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A shared tree's menu no longer offers Water or Pet again while the street is still answering"
-   },
-   {
-    "date": "2026-11-17",
     "kind": "improve",
-    "text": "Paradise skies are Radial Heights' own gradient instead of colours we picked"
+    "text": "A Hoe says whether aggressive hoeing is on and what a cleared plot wears"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A visitor's swing at a home rock that started before it ran out reaches the site"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "new",
+    "text": "Help mine and help dig at a friend's home rocks and Dirt Piles count for the crew"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Only the nodes hidden behind front art move; every other street object keeps its spot"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The Meal Vendor stands on its floor when the page opens part way through its walk"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Peat Bogs, Dirt Piles, Paper Trees, Barnacles, Ice Nubbins and Salmon are no longer planned behind front art"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A refused Group Hall claim says why in the hall box instead of going back to the question"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Pumpkins and the seven herbs can be laid on the Harvest Table, as the crops they were in Glitch"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "new",
+    "text": "The Harvest Table's Look opens a list of everything on it, newest first, with who laid each"
+   },
+   {
+    "date": "2026-11-18",
     "kind": "improve",
-    "text": "A dead end's EXIT hangs on the wall as the source's arrow sign, with no post"
+    "text": "The Harvest Table is three boards long and shows its newest twelve dishes in one row, none over another"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "A named Cubimal or worn tool left with a friend's Butler arrives as it was"
+    "text": "Dishes laid on the Harvest Table stay drawn instead of vanishing until a reload"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "The site's ledger knows Buy a Bag starts without its prerequisites (G979)"
+    "text": "Quest room hills and trees stand on the floor on an upright phone and in tall windows"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "Online, the Rook knows a street upgrade's shrine once it is built"
+    "text": "Vasko Shift's third Mortar Barnacle hangs on its beehive hut, and no snapped street plans one on the floor"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "Online, Piggies, Chickens and resting Butterflies stand on the line on the server too (G975)"
+    "text": "The soil under home streets meets at every join instead of stepping down"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "Buy a Bag starts with your first skill, not at level 2 (G979)"
+    "text": "The loading card counts its Home to: list's words from the text, not the HTML"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "A quoin's amount reads over toasts on a phone instead of rising behind them (G976)"
+    "text": "Map routes ride the subway when it saves more than about 5 streets of walking"
    },
    {
-    "date": "2026-11-17",
+    "date": "2026-11-18",
     "kind": "fix",
-    "text": "The Butler gift autoplay reports what it played instead of nothing (G971)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A letter to a companion sends the copy you picked, not the last one (G974)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Pot's Cornucopia's ground art comes from the world-art renderer, and the made art lists its Tiny Speck inputs (G982)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A dish dropped on the Harvest Table goes on the table, not to the Piggy standing in front of it (G982)"
+    "text": "Firefly Whistle and the Tower quest rooms show no Go back once solved"
    }
   ]
  },
