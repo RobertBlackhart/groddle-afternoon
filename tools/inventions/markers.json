@@ -487,6 +487,9 @@
   "public/js/features/small-items-feature.js": {
     "reimagined: * away from you with a bounce (reimagined motion, see": "ball-hit-arc"
   },
+  "public/js/features/smuggling-feature.js": {
+    "remake-own: false); the give Smuggler then stays hidden. The remake's own rule (Glitch had every": "smuggler-hidden-no-walkable-run"
+  },
   "public/js/features/street-jobs-feature.js": {
     "no-source: a gem ask still open (the remake's own line; no source).": "gem-hints",
     "ours: street's (game.js clears it); only its bubble is ours.": "ours-street-jobs",

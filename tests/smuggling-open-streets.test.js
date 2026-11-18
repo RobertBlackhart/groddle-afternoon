@@ -21,10 +21,10 @@ import {
   chooseDestination,
   redirectDestination,
   sourceKey,
-} from '../public/js/smuggling.js?v=56263f15';
+} from '../public/js/smuggling.js?v=2fde7da3';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=90517e2f';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=bcf5c460';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=8ef149a5';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=eda4d6a4';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=03678dc2';
 import { createInventory, addItem } from '../public/js/inventory.js?v=6414dbdc';
 
 const PUB = join(import.meta.dirname, '..', 'public');
@@ -55,8 +55,8 @@ describe('smuggling destinations: only open streets (pure)', () => {
     }
   });
 
-  it('keeps the source pick only when nothing at all is open, and with no test changes nothing', () => {
-    assert.ok(DESTINATIONS[EAST_SPICE].includes(chooseDestination(EAST_SPICE, { open: () => false, rng: () => 0 })));
+  it('#480: nothing reachable is no destination (no run); with no test it changes nothing', () => {
+    assert.equal(chooseDestination(EAST_SPICE, { open: () => false, rng: () => 0 }), null);
     assert.equal(chooseDestination(EAST_SPICE, { rng: () => 0 }), SOGGY_BOTTOMS);
   });
 
@@ -130,6 +130,7 @@ describe('smuggling destinations: a fresh world', () => {
       pushActivity: (t) => activity.push(t),
       query: (hook, ...args) => {
         if (hook === 'streetsReachable') return streetJobsFeature.streetsReachable(game);
+        if (hook === 'streetsWalkable') return streetJobsFeature.streetsWalkable(args[0], game);
         if (hook === 'closedRoads') return streetJobsFeature.closedRoads(game);
         if (hook === 'mapRoute') {
           if (args[0] === 'get') return { source: 'smuggling', path: null };

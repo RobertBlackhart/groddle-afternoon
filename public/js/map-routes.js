@@ -219,6 +219,18 @@ export function isRide(graph, rides, a, b) {
   return Boolean(rides[ka]?.includes(kb)) && !hasRoad(graph, ka, kb);
 }
 
+/**
+ * #480: the route sources that never ride the subway. Warm and Smuggly's run (source 'smuggling')
+ * carries the package, and the gate refuses anyone carrying it (subway_gate.js 72-76, js/subway.js
+ * gateRefusal 'dubious'), so its route keeps to the roads.
+ */
+export const NO_RIDE_SOURCES = Object.freeze(['smuggling']);
+
+/** The rides (subwayRides) a route from this source may take: none for NO_RIDE_SOURCES. */
+export function routeRides(rides, source) {
+  return NO_RIDE_SOURCES.includes(String(source || '')) ? null : rides;
+}
+
 export function createRouteState() {
   return { route: null, previous: null, reached: 0, lastCleared: '' };
 }

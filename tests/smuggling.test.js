@@ -36,7 +36,7 @@ import {
   sourceKey,
   spawnOffset,
   sparedBySignpost,
-} from '../public/js/smuggling.js?v=56263f15';
+} from '../public/js/smuggling.js?v=2fde7da3';
 import { findRoute, streetGraph } from '../public/js/street-graph.js?v=114647c2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

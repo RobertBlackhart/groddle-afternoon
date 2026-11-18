@@ -73,13 +73,14 @@ import {
   oneWayRoads,
   planRoute,
   resurrectRoute,
+  routeRides,
   routeStep,
   routeStopsLine,
   sameStreet,
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=84356b3e';
+} from '../map-routes.js?v=6adc8198';
 import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=114647c2';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
@@ -95,6 +96,8 @@ let state = createRouteState();
 const roads = (engine) => roadsFor(engine);
 /** The subway between its surface streets (map-routes.js subwayRides): a route rides it when no road leads there. */
 const rides = subwayRides(SUBWAY_STREETS);
+/** #480: the rides the route in force may take (none on a smuggling run: map-routes.js routeRides). */
+const ridesNow = () => routeRides(rides, state.route?.source);
 /** The rebuilt stations' street keys (js/subway.js): a surface street's subway entrance is its door to one. */
 const STATION_STREETS = new Set(STATIONS.map((st) => st.streetTsid));
 let graphPromise = null;
@@ -218,7 +221,7 @@ function checkLanding(engine) {
   if (step.status !== 'on' || !step.next) return;
   const cut = cutHere(engine);
   if (!cut?.length || !cut.includes(graphKey(roads(engine) || {}, step.next) || step.next)) return;
-  const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides, oneWay, startCut: cut });
+  const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides: ridesNow(), oneWay, startCut: cut });
   state = res.state;
   engine.setData?.('routeLast', `landed:${res.events.join(',')}`);
   if (res.events.length) engine.save?.();
@@ -239,7 +242,7 @@ function setRoute(engine, opts = {}) {
     source: opts.source || 'player',
     quest: opts.quest || '',
     inHome: !opts.from && Boolean(engine.homeContext?.().inHome),
-    rides,
+    rides: routeRides(rides, opts.source || 'player'),
     oneWay,
     // From where you stand, when the route starts on the street you are on.
     startCut: opts.from && !sameStreet(opts.from, engine.streetTsid) ? null : cutHere(engine),
@@ -313,7 +316,7 @@ function placeHighlight(engine, next) {
     placeSubwayGlow(engine, next, key);
     return;
   }
-  if (isRide(roads(engine), rides, routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
+  if (isRide(roads(engine), ridesNow(), routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
   if (placeSignGlow(engine, next, key)) return;
   placeDoorGlow(engine, next, key);
 }
@@ -338,7 +341,7 @@ function placeTransportGlow(engine, next, key) {
 function placeSubwayGlow(engine, next, key) {
   if (isCarTsid(engine.streetTsid)) return false;
   if (stationByTsid(engine.streetTsid)) {
-    if (!isRide(roads(engine), rides, routeStreet(engine), next)) {
+    if (!isRide(roads(engine), ridesNow(), routeStreet(engine), next)) {
       const stairs = doorTargets(engine).find((t) => sameStreet(t.door?.connect?.street, routeStreet(engine)));
       return stairs ? glowTarget(engine, key, stairs, 'door', 'enter') : false;
     }
@@ -955,7 +958,7 @@ function mapCard(engine) {
     head = shared ? quest.title : `${ROUTE_TEXT.to}${dest}`;
     // A subway hop reads "by subway" (map-routes.js isRide).
     const from = step.remaining[0];
-    const hop = (t, i) => (isRide(roads(engine), rides, i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
+    const hop = (t, i) => (isRide(roads(engine), ridesNow(), i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
     // #104: a long route names the next few stops, counts the rest, then the destination.
     const stops = rest.map(hop);
     const cut = routeStopsLine(stops);
@@ -1201,7 +1204,7 @@ export const mapRoutesFeature = {
     demoSetup(engine);
     const apply = () => {
       if (state.route) {
-        const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides, oneWay, startCut: cutHere(engine) });
+        const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides: ridesNow(), oneWay, startCut: cutHere(engine) });
         state = res.state;
         if (res.events.includes('arrived')) {
           // locations/location.js 310-313: pc.quests_inc_counter('map_dest_reached', 1).

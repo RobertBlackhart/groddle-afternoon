@@ -45,7 +45,7 @@ import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { isStandable, worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { hellFeature } from './hell-feature.js?v=6da8c49f';
-import { questRoomConverse } from './quest-instances-feature.js?v=53728767';
+import { questRoomConverse } from './quest-instances-feature.js?v=67d2d6c3';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,
@@ -68,6 +68,7 @@ import {
   cleanSeen,
   createSmugglingState,
   deimaginatorSpawns,
+  destinationPool,
   deimaginatorTouches,
   followDecision,
   giveConversation,
@@ -80,7 +81,7 @@ import {
   sourceKey,
   spawnOffset,
   sparedBySignpost,
-} from '../smuggling.js?v=56263f15';
+} from '../smuggling.js?v=2fde7da3';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { findRoute, loadStreetGraph, openRoads, roadsFor, streetGraphLoaded } from '../street-graph.js?v=114647c2';
@@ -149,18 +150,20 @@ function streetHub(tsid) {
 
 /**
  * Austin's ruling 2026-11-11 ("Pick only open streets"): whether the player can reach a street
- * now. The reach the On hold quests use (street-jobs-feature streetsReachable: open roads from
- * where you stand, the starter street and the streets opened for you), else, while the ways
- * load, not under construction (closedRoads, the predicate behind the map's barricades). Null
- * when neither is known yet: the pick stands, and steerRun checks it again later.
+ * from `from`, the run's start. #480: on foot only (street-jobs-feature streetsWalkable: open
+ * roads, no subway ride, no Teleporter), as the package shuts both (subway_gate.js 72-76,
+ * inc_teleportation.js 165). Else, while the ways load, not under construction (closedRoads, the
+ * predicate behind the map's barricades). Null when neither is known yet: the pick stands, and
+ * steerRun checks it again later.
  */
-function openTest(engine) {
+function openTest(engine, from) {
   const forms = (t) => {
     const s = String(t || '');
     const key = indexKey(s);
     return [s, `G${s.slice(1)}`, `L${s.slice(1)}`, key].filter(Boolean);
   };
-  const reach = engine.query?.('streetsReachable', engine);
+  const start = indexKey(from) || from;
+  const reach = start ? engine.query?.('streetsWalkable', start, engine) : null;
   if (reach && typeof reach.has === 'function') return (t) => forms(t).some((f) => reach.has(f));
   const closed = engine.query?.('closedRoads', engine);
   if (!Array.isArray(closed)) return null;
@@ -177,7 +180,7 @@ function openTest(engine) {
 function steerRun(engine) {
   if (!state.run || engine.param?.('smugglingdemo')) return false;
   const was = state.run.destination;
-  const next = redirectDestination(state.run, { resolve: indexKey, open: openTest(engine), rng });
+  const next = redirectDestination(state.run, { resolve: indexKey, open: openTest(engine, state.run.from), rng });
   if (!next) return false;
   state.run.destination = next;
   const text = TEXT.redirected(streetLabel(was), streetLabel(next));
@@ -191,6 +194,21 @@ function steerRun(engine) {
   return true;
 }
 let lastSteer = 0;
+
+/**
+ * #480: the roads as they stand leave no destination on foot from this street (unknown while they
+ * load: false); the give Smuggler then stays hidden. The remake's own rule (Glitch had every street
+ * walkable, so contraband.js always had one): a run nobody can deliver would pin the carrier.
+ */
+function nowhereToGo(engine) {
+  if (engine.param?.('smugglingdemo')) return false;
+  const open = openTest(engine, engine.streetTsid);
+  if (!open || destinationPool(engine.streetTsid, { resolve: indexKey, open }).length) return false;
+  if (giver) giver.state = 'rolled';
+  last = 'give:nowhere';
+  publish(engine);
+  return true;
+}
 
 function questActive(engine) {
   return Boolean(engine.questState?.active?.[SMUGGLING_QUEST]);
@@ -377,10 +395,13 @@ function failRun(engine, text) {
 }
 
 function startRun(engine, from) {
+  // #480: a street the roads leave no destination on foot from has no run to give (the QA demos pick their own).
+  const open = engine.param?.('smugglingdemo') ? null : openTest(engine, from);
+  const destination = chooseDestination(from, { resolve: indexKey, open, rng });
+  if (!destination && open) return false;
   const res = acceptOffer(engine.questState, SMUGGLING_QUEST, questCtx(engine));
   if (!res.ok) return false;
   if (countItem(engine.inv, CONTRABAND) < 1) addItem(engine.inv, CONTRABAND, 1);
-  const destination = chooseDestination(from, { resolve: indexKey, open: openTest(engine), rng });
   state.run = { from: sourceKey(from), destination, startedAt: Date.now() };
   state.started += 1;
   engine.pushActivity?.(`New quest: Warm and Smuggly`);
@@ -1161,7 +1182,8 @@ export const smugglingFeature = {
     }
     const busy = engine.acting?.() || engine.questDialogueOpen?.() || talking;
     // onPlayerCollision with the unseen Smuggler: walking through his spot.
-    if (giver?.state === 'hidden' && !busy && p.onGround && Math.abs(p.x - giver.x) <= SMUGGLER.hitW / 2 + 20) {
+    // #480: where no destination is reachable on foot, the Smuggler stays hidden (no run to give).
+    if (giver?.state === 'hidden' && !busy && p.onGround && Math.abs(p.x - giver.x) <= SMUGGLER.hitW / 2 + 20 && !nowhereToGo(engine)) {
       const res = giveEncounter(state, {
         level: engine.pc?.level,
         carrying: carrying(engine) || questActive(engine),

@@ -4493,6 +4493,20 @@
    "rows": [
     "G982"
    ]
+  },
+  {
+   "id": "smuggler-hidden-no-walkable-run",
+   "title": "Warm and Smuggly: the give Smuggler stays hidden on a street with no destination reachable on foot",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/smuggling-feature.js",
+     "symbol": "nowhereToGo"
+    }
+   ],
+   "why": "#480: the package shuts the subway and teleports, and the remake keeps street-project roads closed, so in a fresh world 8 of the 10 give Smugglers' streets reach none of contraband.js's destinations on foot. Glitch had every street walkable. Hiding the Smuggler there (no run offered) beats a run nobody can deliver; the other choice is any street the roads reach on foot, which is not from Glitch's lists.",
+   "rows": []
   }
  ]
 }

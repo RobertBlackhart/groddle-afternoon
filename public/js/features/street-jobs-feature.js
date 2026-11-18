@@ -150,7 +150,7 @@ import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { SIGN_ARMS } from '../map-routes.js?v=84356b3e';
+import { SIGN_ARMS } from '../map-routes.js?v=6adc8198';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=34f60876';
@@ -287,6 +287,27 @@ function questReach(engine) {
   }
   return reachCache;
 }
+/**
+ * #480: the streets `from` reaches on foot by the roads as they stand: closed roads stay closed,
+ * and no subway ride or Teleporter counts (no `free` ways). Warm and Smuggly's package shuts both
+ * (subway_gate.js 72-76, players/inc_teleportation.js 165), so its destinations come from these.
+ * A Set of G tsids, or null while the ways load. Glitch had every street walkable, so contraband.js
+ * picked from its lists with no check.
+ */
+let walkCache = { key: '', reach: null };
+function walkReach(from, engine) {
+  if (!catalog || !from) return null;
+  if (!waysReady) {
+    loadWays();
+    return null;
+  }
+  let done = 0;
+  for (const row of Object.values(state.jobs)) if (row?.doneAt) done += 1;
+  const key = `${state.grandfathered.length}|${done}|${demo?.jobId || ''}|${from}`;
+  if (walkCache.key !== key) walkCache = { key, reach: reachableStreets(waysReady.graph, { starts: [from] }) };
+  return walkCache.reach;
+}
+
 /**
  * Live report 212 (2026-11-12): the open world, the streets the starter street reaches by the roads
  * as they stand (never from where you stand, which may be a pocket the roads have not reached), and
@@ -3155,6 +3176,11 @@ export const streetJobsFeature = {
    */
   streetsReachable(engine) {
     return questReach(engine)?.reach || null;
+  },
+
+  /** #480: the streets `from` reaches on foot as the roads stand (walkReach), or null while they load. */
+  streetsWalkable(from, engine) {
+    return walkReach(from, engine);
   },
 
   /** Report 212: the open-world street nearest `tsid` (itself when open), or null while the roads load. */

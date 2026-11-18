@@ -396,23 +396,31 @@ export function cleanSeen(state, now = Date.now()) {
  * (null when the remake lacks it); unplayable picks are skipped.
  *
  * Austin's ruling 2026-11-11 ("Pick only open streets"): `open(tsid)`, when
- * given, says whether the player can reach that street now (street-jobs-feature
- * streetsReachable, else not in closedRoads). Glitch had every street open, so
- * contraband.js never checked; the remake keeps 684 street-project streets
- * closed in a fresh world, and 47 of the map's 49 destinations stand on them
- * (East Spice sent you to Soggy Bottoms). Order: an open street from the start's
- * own list, else an open default (Hechey Track, the starter street, is one),
- * else the source's pick as before (only when nothing at all is open).
+ * given, says whether the player can reach that street. Glitch had every
+ * street open, so contraband.js never checked; the remake keeps 684
+ * street-project streets closed in a fresh world, and 47 of the map's 49
+ * destinations stand on them (East Spice sent you to Soggy Bottoms).
+ * #480: that reach is on foot from the start (street-jobs-feature
+ * streetsWalkable): the package shuts the subway and teleports (subway_gate.js
+ * 72-76, inc_teleportation.js 165), and a default reached only by train sent a
+ * Kajuu run to Groddle Meadow. Order: a reachable street from the start's own
+ * list, else a reachable default (Hechey Track, the starter street, is one),
+ * else none (an empty list: the Smuggler has no run to give there).
  * `exclude`: a destination to skip (the one a run is moving away from).
  */
-export function chooseDestination(fromTsid, { resolve = (t) => t, open = null, exclude = '', rng = Math.random } = {}) {
+export function destinationPool(fromTsid, { resolve = (t) => t, open = null, exclude = '' } = {}) {
   const key = sourceKey(fromTsid);
   const skip = exclude ? sourceKey(exclude) : '';
   const playable = (t) => resolve(t) && sourceKey(t) !== key && sourceKey(t) !== skip;
   const ok = (t) => playable(t) && (!open || open(t));
   const pool = (DESTINATIONS[key] || DEFAULT_DESTINATIONS).filter(ok);
-  const list = pool.length ? pool : DEFAULT_DESTINATIONS.filter(ok);
-  if (!list.length) return open ? chooseDestination(fromTsid, { resolve, exclude, rng }) : null;
+  return pool.length ? pool : DEFAULT_DESTINATIONS.filter(ok);
+}
+
+/** A destination from destinationPool, or null when it is empty. */
+export function chooseDestination(fromTsid, { resolve = (t) => t, open = null, exclude = '', rng = Math.random } = {}) {
+  const list = destinationPool(fromTsid, { resolve, open, exclude });
+  if (!list.length) return null;
   return list[Math.min(list.length - 1, Math.floor(rng() * list.length))];
 }
 
