@@ -235,6 +235,11 @@ export function seedMailbox(state, now = Date.now()) {
   return state;
 }
 
+/**
+ * A letter to a companion (solo). `beforeTake(item)`: called once the letter will go, just before
+ * the attached stack's count goes down (R18 G974: the copy chosen in Attach moves last so it is the
+ * one that leaves, js/copy-picks.js takeCopies).
+ */
 export function sendMail(
   state,
   player,
@@ -248,6 +253,7 @@ export function sendMail(
     replyTo = null,
     now = Date.now(),
     replyDelayMs = 8_000,
+    beforeTake = null,
   } = {}
 ) {
   const normalized = normalizeMailboxState(state);
@@ -273,6 +279,7 @@ export function sendMail(
   }
 
   player.currants = finiteInt(player.currants) - cost;
+  if (item && typeof beforeTake === 'function') beforeTake(item);
   if (item) inventory[item.classTsid] = finiteInt(inventory[item.classTsid]) - item.count;
   const id = nextMessageId(state);
   const sent = normalizeMessage({

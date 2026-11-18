@@ -39,14 +39,14 @@ import {
   sendAuctionsToMailbox,
   sendCarriedToMailbox,
   sendDueToMailbox,
-} from '../public/js/mail-courier.js?v=68125101';
+} from '../public/js/mail-courier.js?v=f4555a8b';
 import {
   createMailboxState,
   deliverMail,
   normalizeMailboxState,
   receiveMailAttachments,
   seedMailbox,
-} from '../public/js/mailbox.js?v=a3e833ba';
+} from '../public/js/mailbox.js?v=6ec01afb';
 import { DISPATCHER_ART, FROG_ART, MAIL_NPC_ART_DIR } from '../public/js/mail-npc-art.js?v=1ed97a5d';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -373,7 +373,7 @@ describe('mail courier feature', () => {
   it('calls the frog with the source prompt once a letter is due, and waits in an instance', async () => {
     mock.timers.enable({ apis: ['Date'], now: 1_000_000 });
     try {
-      const { mailCourierFeature } = await import('../public/js/features/mail-courier-feature.js?v=e854f124');
+      const { mailCourierFeature } = await import('../public/js/features/mail-courier-feature.js?v=4e951842');
       const st = createMailboxState();
       const prompts = [];
       let instance = false;

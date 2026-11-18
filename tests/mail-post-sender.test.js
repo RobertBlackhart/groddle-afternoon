@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { MAIL_POST_SENDER, deliverMail, mailSender, normalizeMailboxState, seedMailbox } from '../public/js/mailbox.js?v=a3e833ba';
-import { letterLine } from '../public/js/mail-courier.js?v=68125101';
-import { STREET_MAIL_WELCOME } from '../public/js/features/street-furniture-feature.js?v=6d5d7d5b';
+import { MAIL_POST_SENDER, deliverMail, mailSender, normalizeMailboxState, seedMailbox } from '../public/js/mailbox.js?v=6ec01afb';
+import { letterLine } from '../public/js/mail-courier.js?v=f4555a8b';
+import { STREET_MAIL_WELCOME } from '../public/js/features/street-furniture-feature.js?v=5a88f5ce';
 
 const publicDir = join(import.meta.dirname, '..', 'public');
 

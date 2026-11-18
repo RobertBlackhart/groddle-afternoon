@@ -129,7 +129,7 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { butlerApi } from './butler-feature.js?v=02976f94';
 import { neighboursMpApi } from './neighbours-mp-feature.js?v=50e56dd5';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
+import { MAIL_POST_SENDER } from '../mailbox.js?v=6ec01afb';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
 export const FURNITURE_FEATURE_ID = 'street-furniture';

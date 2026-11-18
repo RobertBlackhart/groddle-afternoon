@@ -25,7 +25,8 @@ import {
 } from '../public/js/tools.js?v=4156bba8';
 import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=11b1eb70';
 import { scriptTag } from '../public/js/teleportation.js?v=e95cf7cb';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=81ebe78f';
+import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=6ec01afb';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=6248b586';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');
@@ -308,5 +309,46 @@ describe('R18 mail: Attach offers each copy, the letter carries it and it is the
     assert.equal(countItem(inv, 'npc_cubimal_chick'), 1);
     assert.deepEqual(copyTags(state, 'npc_cubimal_chick'), [null], 'the named one left; the other stays');
     assert.match(read('game.js'), /const attachable = online\.attachable \? online\.attachable\(packSlots\) : packSlots;/);
+  });
+});
+
+describe('R18 solo mail (G974): a letter to a companion takes the copy chosen in Attach, not the last', () => {
+  it('two Cubimals, one named: the named one is picked and leaves; the other stays', () => {
+    const { inv, state } = pack({ npc_cubimal_chick: 2 });
+    setCopyTag(state, 'npc_cubimal_chick', 0, 'Rufus');
+    const options = packPicks(state, [{ c: 'npc_cubimal_chick', classTsid: 'npc_cubimal_chick', label: 'Chick Cubimal', count: 2 }]);
+    const named = options.find((o) => o.note === '“Rufus”');
+    const marked = [];
+    const engine = { toolState: state, query: (name, c, rank, n) => marked.push([name, c, rank, n]) };
+    const player = { currants: 100 };
+    const res = sendMail(createMailboxState(), player, inv, {
+      recipient: MAIL_COMPANIONS[0],
+      text: 'For you',
+      attachment: { classTsid: 'npc_cubimal_chick', count: 1 },
+      attachmentBaseCost: 10,
+      beforeTake: () => { if (markLeaving(engine, 'npc_cubimal_chick', named, 1)) takeCopies(state, 'npc_cubimal_chick', named, 1); },
+    });
+    assert.equal(res.ok, true, JSON.stringify(res));
+    assert.equal(countItem(inv, 'npc_cubimal_chick'), 1);
+    assert.deepEqual(copyTags(state, 'npc_cubimal_chick'), [null], 'the named one left');
+    assert.deepEqual(marked, [['packTakeUnit', 'npc_cubimal_chick', 0, 1]], 'its own pack slot empties');
+  });
+
+  it('a letter that cannot go moves nothing', () => {
+    const { inv, state } = pack({ npc_cubimal_chick: 2 });
+    let called = 0;
+    const res = sendMail(createMailboxState(), { currants: 0 }, inv, {
+      recipient: MAIL_COMPANIONS[0], text: 'Hi', attachment: { classTsid: 'npc_cubimal_chick', count: 1 }, attachmentBaseCost: 10, beforeTake: () => { called += 1; },
+    });
+    assert.equal(res.ok, false);
+    assert.equal(called, 0);
+    assert.equal(countItem(inv, 'npc_cubimal_chick'), 2);
+  });
+
+  it('game.js: solo Attach offers each copy and sends the chosen one', () => {
+    const src = read('game.js');
+    const solo = src.slice(src.indexOf('function renderMailboxCompose('), src.indexOf('function themeMailPickers('));
+    assert.match(solo, /const attachable = packPicks\(toolState, listPackItemSlots\(inv\)/);
+    assert.match(solo, /beforeTake: pick \? \(\) => \{ if \(markLeaving\(engine, classTsid, pick, count\)\) takeCopies\(toolState, classTsid, pick, count\); \} : null/);
   });
 });

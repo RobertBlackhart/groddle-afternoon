@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1173b26c';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e0933ed8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=47b7d580';
+} from './js/player-save.js?v=b30980c4';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -556,7 +556,7 @@ import {
   seedMailbox,
   sendMail,
   unreadMailCount,
-} from './js/mailbox.js?v=a3e833ba';
+} from './js/mailbox.js?v=6ec01afb';
 import {
   TOOL_CONDITION_CATALOG,
   createToolConditionState,
@@ -1117,6 +1117,7 @@ import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; /
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=d69d66b4';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
+import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=11b1eb70';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -24441,9 +24442,12 @@ function renderMailboxCompose(recipient = '', replyTo = null) {
   mailboxComposeReplyTo = replyTo || '__new_mail__';
   const reply = mailboxState.messages.find((message) => message.id === replyTo);
   const selectedRecipient = recipient || reply?.sender || MAIL_COMPANIONS[0];
-  const attachable = listPackItemSlots(inv)
+  // R18 (G974): one choice per copy where a class's copies differ, as online (js/copy-picks.js).
+  const attachable = packPicks(toolState, listPackItemSlots(inv)
     .filter((slot) => slot.count > 0)
-    .slice(0, 80);
+    .slice(0, 80)
+    .map((slot) => ({ ...slot, c: slot.classTsid })))
+    .map((slot) => ({ ...slot, label: slot.note ? `${slot.label} (${slot.note})` : slot.label }));
   reader.innerHTML = `
     <form id="mail-compose-form" class="mail-compose-form">
       <label>To
@@ -24458,7 +24462,7 @@ function renderMailboxCompose(recipient = '', replyTo = null) {
         <label>Attach one stack
           <select name="attachment">
             <option value="">Nothing</option>
-            ${attachable.map((slot) => `<option value="${escapeHtml(slot.classTsid)}" data-count="${slot.count}" data-icon="${escapeHtml(slot.icon || '')}">${escapeHtml(slot.label)}</option>`).join('')}
+            ${attachable.map((slot) => `<option value="${escapeHtml(slot.key || slot.classTsid)}" data-count="${slot.count}" data-icon="${escapeHtml(slot.icon || '')}">${escapeHtml(slot.label)}</option>`).join('')}
           </select>
         </label>
         <label>Qty
@@ -24482,7 +24486,8 @@ function renderMailboxCompose(recipient = '', replyTo = null) {
   themeMailPickers(form);
   const updateCost = () => {
     const data = new FormData(form);
-    const classTsid = String(data.get('attachment') || '');
+    const key = String(data.get('attachment') || '');
+    const classTsid = attachable.find((s) => s.key === key)?.classTsid || key;
     const count = Math.max(0, Math.floor(Number(data.get('quantity')) || 0));
     const currants = Math.max(0, Math.floor(Number(data.get('currants')) || 0));
     const cost = mailCost({
@@ -24501,12 +24506,18 @@ function renderMailboxCompose(recipient = '', replyTo = null) {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const data = new FormData(form);
-    const classTsid = String(data.get('attachment') || '');
-    const count = classTsid ? Math.max(1, Math.floor(Number(data.get('quantity')) || 1)) : 0;
+    const key = String(data.get('attachment') || '');
+    const slot = attachable.find((s) => s.key === key);
+    const classTsid = slot?.classTsid || key;
+    // R18 (G974): a copy chosen goes by itself, or with the ones just like it (its count), and is the one that leaves.
+    const pick = Array.isArray(slot?.copies) ? slot : null;
+    const asked = classTsid ? Math.max(1, Math.floor(Number(data.get('quantity')) || 1)) : 0;
+    const count = pick ? Math.min(asked, pick.count) : asked;
     const result = sendMail(mailboxState, pc, inv, {
       recipient: String(data.get('recipient') || ''),
       text: String(data.get('text') || ''),
       attachment: classTsid ? { classTsid, count } : null,
+      beforeTake: pick ? () => { if (markLeaving(engine, classTsid, pick, count)) takeCopies(toolState, classTsid, pick, count); } : null,
       attachmentBaseCost: ITEM_CATALOG[classTsid]?.baseCost || 10,
       currants: Math.max(0, Math.floor(Number(data.get('currants')) || 0)),
       replyTo: mailboxComposeReplyTo === '__new_mail__' ? null : mailboxComposeReplyTo,
