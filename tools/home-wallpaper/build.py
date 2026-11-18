@@ -24,6 +24,7 @@ Outputs
 Usage (python3.11 has numpy + Pillow; FFDec needs Java 21; cwebp 1.6; node for the GSJS configs):
   python3.11 -I tools/home-wallpaper/build.py --work <scratch dir> [--force] [--only a,b]
   python3.11 -I tools/home-wallpaper/build.py --check       (no rendering; exit 1 on a problem)
+  python3.11 -I tools/home-wallpaper/build.py --edges       (joining edges that fade; exit 1 on any)
 Glitch-locations and GameServerJS are data only: SWFs are read by FFDec, configs are evaluated in an
 empty node vm, nothing from either is executed otherwise.
 """
@@ -107,6 +108,117 @@ SHELL = {
         'towerbase_ceiling': (1177, 50),
     },
 }
+
+
+# Edges where a piece meets another piece in a room (js/home-wallpaper.js roomPieces): L / R are
+# its first / last column, T / B its top / bottom row. Wallpaper runs meet each other side by side,
+# the floor under them and the ceiling over them; floor and ceiling runs meet side by side; a
+# floor's `left` piece starts the run at the room's end, so only its inner side meets the next tile.
+# End caps, left_open, swatches and shadows meet nothing edge to edge (the caps reach under the
+# back wall by END_SEAM). Shell runs: attic and basement rows, the tower base's two walls, the
+# 1500 px frame strip the house repeats.
+SHELL_JOINS = {
+    'attic_end_left': 'R', 'attic_tile': 'LR', 'attic_end_right': 'L',
+    'crosssection_ground_end_left_groddle1': 'R', 'crosssection_ground_tile_groddle1': 'LR',
+    'crosssection_ground_end_right_groddle1': 'L',
+    'crosssection_horizontal_1500px_groddle1': 'LR',
+    'towerbase_wallpaper_wall': 'LR', 'towerbase_wallpaper_wall_2': 'LR',
+}
+
+
+def joining_edges(maps):
+    """{piece: 'LRTB' subset}: the edges of each shipped piece that meet another piece."""
+    out = {}
+
+    def join(piece, edges):
+        out[piece] = ''.join(sorted(set(out.get(piece, '')) | set(edges)))
+
+    for kind, rows in maps.items():
+        for row in rows.values():
+            for field, val in row.items():
+                piece, _, flag = val.partition(',')
+                if kind == 'walls' and field not in ('left', 'right', 'left_open', 'swatch'):
+                    join(piece, 'LRTB')
+                elif kind == 'floors' and field.startswith('main'):
+                    join(piece, 'LRT')
+                elif kind == 'floors' and field == 'left':
+                    join(piece, 'L' if flag == 'FLIP' else 'R')
+                elif kind == 'ceilings' and field.startswith('main'):
+                    join(piece, 'LRB')
+    for piece, edges in SHELL_JOINS.items():
+        join(piece, edges)
+    return out
+
+
+EDGE_SLACK = 3      # alpha steps an edge pixel may sit under the art inward before it is filled
+SEAM_DEFICIT = 1.0  # mean alpha steps a joining edge line may sit under the art inward (capped at 250)
+
+
+def edge_deficit(edge_alpha, ref_alpha):
+    """How far an edge line falls short of the line `depth` pixels inward, in mean alpha steps.
+    Textured art (hell floors) varies by a few steps pixel to pixel; a fade (#508) covers the line."""
+    return float(np.maximum(0, np.minimum(ref_alpha, 250) - edge_alpha).mean())
+
+
+def edge_lines(a, side):
+    """A view of the RGBA array `a` with the `side` edge as line 0 and lines running inward."""
+    if side == 'L':
+        return a.transpose(1, 0, 2)
+    if side == 'R':
+        return a.transpose(1, 0, 2)[::-1]
+    return a if side == 'T' else a[::-1]
+
+
+def bleed_edges(img, edges, depth):
+    """A piece whose art stops a hair short of its stage (a stage of 150.05 px, a last column
+    the resample half covers) fades out in its outermost pixels; laid edge to edge, the room's
+    dark backdrop shows through as a hairline (#508). On each joining edge, every pixel in the
+    run of outer pixels (at most `depth`, 2 placed px) more transparent than the art `depth`
+    pixels inward is laid over that inward pixel, as if the art went on under its faded edge.
+    Only lines that fall short as a whole (edge_deficit over SEAM_DEFICIT) are touched; opaque
+    edges and art that is transparent all the way in (holes, shapes) are left alone."""
+    if not edges:
+        return img, ''
+    a = np.array(img).astype(np.float32)
+    done = ''
+    for side in edges:
+        v = edge_lines(a, side)
+        if v.shape[0] <= depth:
+            continue
+        ref = v[depth].copy()
+        if edge_deficit(v[0][:, 3], ref[:, 3]) <= SEAM_DEFICIT:
+            continue
+        run = np.ones(ref.shape[0], bool)
+        for k in range(depth):
+            line = v[k]
+            run &= line[:, 3] < ref[:, 3] - EDGE_SLACK
+            if not run.any():
+                break
+            fa = line[run, 3:4] / 255.0
+            ra = ref[run, 3:4] / 255.0
+            oa = fa + ra * (1 - fa)
+            line[run, :3] = (line[run, :3] * fa + ref[run, :3] * ra * (1 - fa)) / oa
+            line[run, 3] = oa[:, 0] * 255.0
+            if side not in done:
+                done += side
+    if not done:
+        return img, ''
+    return Image.fromarray(np.clip(np.round(a), 0, 255).astype(np.uint8), 'RGBA'), done
+
+
+def weak_edges(path, edges, depth):
+    """[(side, deficit, mean alpha % of the edge line)] for joining edges of a shipped file that
+    fall short of the art `depth` pixels inward (the check bleed_edges makes)."""
+    a = np.asarray(Image.open(path).convert('RGBA')).astype(np.int32)
+    out = []
+    for side in edges:
+        v = edge_lines(a, side)
+        if v.shape[0] <= depth:
+            continue
+        deficit = edge_deficit(v[0][:, 3], v[depth][:, 3])
+        if deficit > SEAM_DEFICIT:
+            out.append((side, round(deficit, 1), round(float(v[0][:, 3].mean()) / 2.55, 1)))
+    return out
 
 
 def sha(data):
@@ -285,6 +397,7 @@ def render_all(work, todo):
 def build(args):
     cfg = gsjs_configs()
     pieces, maps = wanted_pieces(cfg)
+    joins = joining_edges(maps)
     work = os.path.abspath(args.work)
     os.makedirs(work, exist_ok=True)
     bins = {b: bundle_bins(work, b) for b in BUNDLES}
@@ -337,8 +450,12 @@ def build(args):
             if meta.get('tiles'):
                 img2, sealed = seal_edges(img2, 4)
                 img3, _ = seal_edges(img3, 6)
+            img2, bled2 = bleed_edges(img2, joins.get(piece, ''), 4)
+            img3, bled3 = bleed_edges(img3, joins.get(piece, ''), 6)
             gain = gain_3x(img3, img2)
             row = {**meta, 'gain_3x': gain, 'sealed': sealed}
+            if bled2 or bled3:
+                row['bled'] = ''.join(sorted(set(bled2 + bled3)))
             d2 = os.path.join(OUT, piece + '@2x.webp')
             d3 = os.path.join(OUT, piece + '@3x.webp')
             row['lossless_2x'], row['err_2x'] = encode(img2, d2, tmp)
@@ -420,6 +537,22 @@ def check():
     return 1 if bad else 0
 
 
+def edges_report():
+    """Print every joining edge of a shipped piece that fades under the art beside it; exit 1 on any."""
+    plan = json.load(open(PLAN))
+    bad = 0
+    for piece, edges in sorted(joining_edges(plan['maps']).items()):
+        for tag, depth in (('2x', 4), ('3x', 6)):
+            p = os.path.join(OUT, f'{piece}@{tag}.webp')
+            if not os.path.exists(p):
+                continue
+            for side, deficit, mean in weak_edges(p, edges, depth):
+                print(f'{piece} {side} @{tag}: edge line {mean}% opaque, {deficit} alpha steps under the art inward')
+                bad += 1
+    print(f'{bad} weak joining edges')
+    return 1 if bad else 0
+
+
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('--work')
@@ -428,9 +561,12 @@ def main():
     a.add_argument('--batch', type=int, default=120)
     a.add_argument('--max-load', type=float, default=40)
     a.add_argument('--check', action='store_true')
+    a.add_argument('--edges', action='store_true')
     args = a.parse_args()
     if args.check:
         sys.exit(check())
+    if args.edges:
+        sys.exit(edges_report())
     if not args.work:
         a.error('--work is required')
     build(args)

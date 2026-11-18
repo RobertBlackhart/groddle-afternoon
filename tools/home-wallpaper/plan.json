@@ -1706,18 +1706,19 @@
    "tiles": false
   },
   "blue_stripes_wall": {
+   "bled": "BLR",
    "bundle": "home_wallpaper",
-   "bytes_2x": 2158,
-   "bytes_3x": 3780,
-   "err_2x": 2.35,
-   "err_3x": 2.1,
+   "bytes_2x": 2098,
+   "bytes_3x": 3698,
+   "err_2x": 2.36,
+   "err_3x": 2.07,
    "frames": 1,
-   "gain_3x": 13.5,
+   "gain_3x": 12.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "bd1801ee135246fe",
-   "sha_3x": "8eaf94ff9ac54c33",
+   "sha_2x": "4d0922cc6ba7bbc3",
+   "sha_3x": "1f64e93b4b4fd89a",
    "size": [
     150,
     300
@@ -6002,18 +6003,19 @@
    "tiles": true
   },
   "greystone_floor_left": {
+   "bled": "R",
    "bundle": "home_wallpaper",
-   "bytes_2x": 6200,
-   "bytes_3x": 11282,
+   "bytes_2x": 6192,
+   "bytes_3x": 11264,
    "err_2x": 2.13,
-   "err_3x": 2.07,
+   "err_3x": 2.06,
    "frames": 1,
-   "gain_3x": 29.0,
+   "gain_3x": 22.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "368329f45b80e97c",
-   "sha_3x": "58703567bfcc6944",
+   "sha_2x": "e8eda71789b625b3",
+   "sha_3x": "0fa25c9eba0f7ef0",
    "size": [
     150,
     108
@@ -6386,18 +6388,19 @@
    "tiles": true
   },
   "hell_floor": {
+   "bled": "L",
    "bundle": "home_wallpaper",
-   "bytes_2x": 9914,
-   "bytes_3x": 17328,
-   "err_2x": 3.01,
-   "err_3x": 2.51,
+   "bytes_2x": 9810,
+   "bytes_3x": 16976,
+   "err_2x": 3.02,
+   "err_3x": 2.47,
    "frames": 1,
    "gain_3x": 23.6,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "f6f1c6b56b31e33f",
-   "sha_3x": "5408e6d2e768ba20",
+   "sha_2x": "2253415681f9f25f",
+   "sha_3x": "b27b8567c4dbaf8c",
    "size": [
     150,
     108
@@ -6410,18 +6413,19 @@
    "tiles": true
   },
   "hell_floor_2": {
+   "bled": "LT",
    "bundle": "home_wallpaper",
-   "bytes_2x": 9278,
-   "bytes_3x": 15716,
-   "err_2x": 2.76,
+   "bytes_2x": 9230,
+   "bytes_3x": 15600,
+   "err_2x": 2.77,
    "err_3x": 2.24,
    "frames": 1,
    "gain_3x": 24.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "d53b3d2530fb662c",
-   "sha_3x": "e5eb1654804a0575",
+   "sha_2x": "4a95c05a156ee911",
+   "sha_3x": "83f3c8fa0f7b0859",
    "size": [
     150,
     108
@@ -7234,9 +7238,10 @@
    "tiles": true
   },
   "marble_floor": {
+   "bled": "R",
    "bundle": "home_wallpaper",
    "bytes_2x": 448,
-   "bytes_3x": 1210,
+   "bytes_3x": 938,
    "err_2x": 0.42,
    "err_3x": 0.33,
    "frames": 1,
@@ -7245,7 +7250,7 @@
    "lossless_3x": false,
    "sealed": true,
    "sha_2x": "c32f0862e0751859",
-   "sha_3x": "87f8c9497a3b388f",
+   "sha_3x": "5aa1e4447b4580a0",
    "size": [
     150,
     108
@@ -7258,18 +7263,19 @@
    "tiles": true
   },
   "marble_floor_left": {
+   "bled": "R",
    "bundle": "home_wallpaper",
-   "bytes_2x": 3844,
-   "bytes_3x": 5860,
-   "err_2x": 0.63,
-   "err_3x": 0.5,
+   "bytes_2x": 3542,
+   "bytes_3x": 5516,
+   "err_2x": 0.64,
+   "err_3x": 0.51,
    "frames": 1,
    "gain_3x": 51.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "f639e8c9b6082478",
-   "sha_3x": "5e3f260f6d58ec57",
+   "sha_2x": "586bb23877eb7c42",
+   "sha_3x": "ba6cc3156aa184dd",
    "size": [
     150,
     108
@@ -7390,18 +7396,19 @@
    "tiles": true
   },
   "metal_floor_left": {
+   "bled": "R",
    "bundle": "home_wallpaper",
-   "bytes_2x": 6014,
-   "bytes_3x": 10112,
-   "err_2x": 2.29,
+   "bytes_2x": 5992,
+   "bytes_3x": 9920,
+   "err_2x": 2.3,
    "err_3x": 2.03,
    "frames": 1,
    "gain_3x": 25.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "bada279c93d2426d",
-   "sha_3x": "e6ea1ee7a4564854",
+   "sha_2x": "ca976fab81b9d827",
+   "sha_3x": "2e490ea20748dc10",
    "size": [
     150,
     108
@@ -11330,9 +11337,10 @@
    "tiles": true
   },
   "violetvoyage_floor_left": {
+   "bled": "R",
    "bundle": "home_wallpaper",
-   "bytes_2x": 3704,
-   "bytes_3x": 6336,
+   "bytes_2x": 3674,
+   "bytes_3x": 6322,
    "err_2x": 2.59,
    "err_3x": 2.25,
    "frames": 1,
@@ -11340,8 +11348,8 @@
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "bdec458030952810",
-   "sha_3x": "add813b92abd69c7",
+   "sha_2x": "84e286101aea26b4",
+   "sha_3x": "1d709bf369da090a",
    "size": [
     150,
     108
@@ -12278,18 +12286,19 @@
    "tiles": false
   },
   "wood_cave_ceiling": {
+   "bled": "BR",
    "bundle": "home_wallpaper",
-   "bytes_2x": 2092,
-   "bytes_3x": 3762,
-   "err_2x": 1.95,
-   "err_3x": 1.91,
+   "bytes_2x": 2032,
+   "bytes_3x": 3630,
+   "err_2x": 1.97,
+   "err_3x": 1.9,
    "frames": 1,
-   "gain_3x": 58.0,
+   "gain_3x": 56.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "fc5f7af751f42523",
-   "sha_3x": "2c21878b77294b90",
+   "sha_2x": "7beda83d61f20f1e",
+   "sha_3x": "01d24a6319836ab7",
    "size": [
     150,
     63
@@ -12538,18 +12547,19 @@
    "tiles": true
   },
   "wooden_cave_wall_2": {
+   "bled": "BLR",
    "bundle": "home_wallpaper",
-   "bytes_2x": 50384,
-   "bytes_3x": 86580,
-   "err_2x": 2.09,
+   "bytes_2x": 50298,
+   "bytes_3x": 86660,
+   "err_2x": 2.1,
    "err_3x": 1.84,
    "frames": 1,
-   "gain_3x": 18.0,
+   "gain_3x": 15.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "1006941f8347b2c1",
-   "sha_3x": "4d6604e09de554a2",
+   "sha_2x": "267de07228316638",
+   "sha_3x": "21cb9af5ec05b24f",
    "size": [
     150,
     300
@@ -13030,18 +13040,19 @@
    "tiles": true
   },
   "woodpanel_1_floor_left": {
+   "bled": "R",
    "bundle": "home_wallpaper",
-   "bytes_2x": 2974,
-   "bytes_3x": 6042,
-   "err_2x": 1.96,
-   "err_3x": 1.77,
+   "bytes_2x": 2756,
+   "bytes_3x": 5686,
+   "err_2x": 1.93,
+   "err_3x": 1.78,
    "frames": 1,
    "gain_3x": 55.0,
    "lossless_2x": false,
    "lossless_3x": false,
    "sealed": false,
-   "sha_2x": "88c57ad194b3bace",
-   "sha_3x": "d6f74f3f6a8bb2a8",
+   "sha_2x": "1d9fa64c1e5b475f",
+   "sha_3x": "81371d1bc89adeea",
    "size": [
     150,
     108
