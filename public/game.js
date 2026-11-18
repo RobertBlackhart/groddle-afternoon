@@ -28610,6 +28610,11 @@ function itemIconUrl(classTsid) {
   return ITEM_CATALOG[classTsid]?.icon || `assets/sprites/icons/${classTsid}.webp`;
 }
 
+/** #491: the 22 px icon on a Make ingredient or "you have" row; style.css keeps its shape (object-fit). */
+function makeRowIconHtml(classTsid) {
+  return `<img src="${escapeHtml(itemIconUrl(classTsid))}" alt="" width="22" height="22" style="vertical-align:middle;margin-right:4px"/>`;
+}
+
 /** #103: "20 Red Elements" for one output row (making.js pluralizeItem). */
 function outputCountLabel(classTsid, qty) {
   return pluralizeItem(qty, classTsid);
@@ -29501,12 +29506,12 @@ function renderMakePanel() {
         .map((i) => {
           const have = recipeInputHave(inv, i, recipeOpts(recipe).toolState);
           const lab = recipeInputLabel(recipe, i);
-          return `<div class="q-req"><img src="${itemIconUrl(i.classTsid)}" alt="" width="22" height="22" style="vertical-align:middle;margin-right:4px"/> <strong>${i.qty} ${lab}</strong> · you have ${have}</div>`;
+          return `<div class="q-req">${makeRowIconHtml(i.classTsid)} <strong>${i.qty} ${lab}</strong> · you have ${have}</div>`;
         })
         .join('');
       // #365: how many of the product you already carry, as the ingredient lines say it.
       const haveHtml = productHaveRows(outRows, (cls) => countItem(inv, cls), (cls) => ITEM_CATALOG[cls]?.label || cls)
-        .map((h) => `<div class="q-req" data-make-have="${escapeHtml(h.classTsid)}"><img src="${itemIconUrl(h.classTsid)}" alt="" width="22" height="22" style="vertical-align:middle;margin-right:4px"/> <strong>${escapeHtml(h.name)}</strong> · you have ${h.have}</div>`)
+        .map((h) => `<div class="q-req" data-make-have="${escapeHtml(h.classTsid)}">${makeRowIconHtml(h.classTsid)} <strong>${escapeHtml(h.name)}</strong> · you have ${h.have}</div>`)
         .join('');
       detail.innerHTML = `
         ${outRows.length > 1
