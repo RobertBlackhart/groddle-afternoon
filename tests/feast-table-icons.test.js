@@ -53,8 +53,8 @@ const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=173fb649
 installPixiFixes(PIXI);
 const { isLoaded } = await import('../public/js/textures.js?v=1c44e7c3');
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');
-const { TABLE_RULES, TABLE_STREET, HARVEST_DISHES, STUFFING } = await import('../public/js/pot-luck-feast.js?v=f18b9ecf');
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=834623e0');
+const { TABLE_RULES, TABLE_STREET, HARVEST_DISHES, STUFFING } = await import('../public/js/pot-luck-feast.js?v=5ecf8e53');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=1b68c769');
 
 // The first four dishes go on first; the last two arrive later, with icons not yet loaded.
 const DISHES = HARVEST_DISHES.slice(0, 4);
@@ -89,7 +89,7 @@ const engine = {
 };
 
 /** The dish sprites on the table now. */
-const icons = () => target.sprite.children[2].children; // the two boards, the dishes, the count
+const icons = () => target.sprite.children.find((c) => !(c instanceof PIXI.Sprite) && !(c instanceof PIXI.Text)).children; // after the boards, before the count
 
 function lay(n, from = 0) {
   for (let i = 0; i < n; i += 1) {

@@ -3,7 +3,7 @@
  * Pot's Empty Table, Harvest Stuffing and Pot's Cornucopia. The rules are js/pot-luck-feast.js
  * (all ours: Glitch never ran a Thanksgiving event); this module puts them in the world.
  *
- *  - The table: Tiny Speck's deco_table_wooden_ghtest twice, end to end, by the street's hub
+ *  - The table: Tiny Speck's deco_table_wooden_ghtest three times, end to end, by the street's hub
  *    signpost, only while the season is on. Lay a dish or a crop on it (its Lay a dish verb, a
  *    picker of what the pack holds, or a stack dropped on it: js/world-drop.js lay_feast); the
  *    newest dishes stand on it, drawn with their own Tiny Speck icons, and its card counts them all.
@@ -36,6 +36,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import {
   DISHES_NEEDED,
+  DISH_BOX,
   FEAST_BADGE,
   FEAST_SEASON,
   HARVEST_DISHES,
@@ -56,6 +57,7 @@ import {
   createQuestState,
   createTableState,
   dishClasses,
+  dishSpots,
   layCheck,
   layOffering,
   layableKind,
@@ -65,7 +67,7 @@ import {
   questRows,
   shownRows,
   tableCountLabel,
-} from '../pot-luck-feast.js?v=f18b9ecf';
+} from '../pot-luck-feast.js?v=5ecf8e53';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -213,30 +215,31 @@ function spawnTable(engine) {
   const root = new PIXI.Container();
   root.x = x;
   root.y = y + 2;
-  // deco_table_wooden_ghtest is 492 x 188 in its 2x file: two of them at the drawn 186 x 71.
+  // deco_table_wooden_ghtest is 492 x 188 in its 2x file: three of them at the drawn 186 x 71.
   const tex = textureFromUrl(`assets/decos/groddle/${TABLE_DECO}.webp`);
   const { w, h } = TABLE_AT.piece;
   const step = w - TABLE_AT.overlap;
-  for (const side of [-1, 1]) {
+  const half = ((TABLE_AT.pieces - 1) * step) / 2; // the middle of the end tables
+  for (let k = 0; k < TABLE_AT.pieces; k += 1) {
     const piece = new PIXI.Sprite(tex);
     piece.anchor?.set?.(0.5, 1);
     piece.width = w;
     piece.height = h;
-    // The right one mirrored, so the long table's grain runs out from the middle.
-    if (side > 0) piece.scale.x *= -1;
-    piece.x = (side * step) / 2;
+    // The right-hand one mirrored, so the long table's grain runs out to both ends.
+    if (k === TABLE_AT.pieces - 1) piece.scale.x *= -1;
+    piece.x = k * step - half;
     root.addChild(piece);
   }
   const icons = new PIXI.Container();
   root.addChild(icons);
   const label = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0xfff3d6, stroke: { color: 0x4a2c14, width: 3 } } });
   label.anchor?.set?.(0.5, 0);
-  // The count stands on the right-hand table's apron, clear of the seam.
-  label.x = step / 2;
+  // The count stands on the right-hand table's apron, clear of the seams.
+  label.x = half;
   label.y = -h + 17;
   root.addChild(label);
   root.zIndex = 2;
-  root._worldHitW = step + w;
+  root._worldHitW = half * 2 + w;
   root._worldHitH = h + 40;
   engine.entityLayer.addChild(root);
   const target = engine.register({
@@ -247,7 +250,7 @@ function spawnTable(engine) {
     sprite: root,
     artHeight: h + 30,
   });
-  view = { target, root, icons, label, w, h, step };
+  view = { target, root, icons, label, w, h, step, half };
   redraw(engine);
 }
 
@@ -281,9 +284,7 @@ function redraw(engine) {
   const { PIXI } = engine;
   const t = shownTable();
   const rows = shownRows(t);
-  const span = view.step * 2 - 24;
-  const slot = rows.length > 1 ? span / Math.max(rows.length, 6) : 0;
-  const box = 34;
+  const spots = dishSpots(rows.length);
   // One sprite a slot, kept from lay to lay: a slot whose dish changed only takes the new icon.
   const kids = view.icons.children;
   while (kids.length > rows.length) view.icons.removeChildAt(kids.length - 1).destroy();
@@ -295,10 +296,9 @@ function redraw(engine) {
       s.anchor?.set?.(0.5, 1);
       view.icons.addChild(s);
     } else if (s.texture !== tex) s.texture = tex;
-    fitIcon(s, tex, box);
-    // Newest at the left, then older to the right, with a little stagger front and back.
-    s.x = -span / 2 + 16 + i * slot;
-    s.y = -view.h + 14 + (i % 2) * 3;
+    fitIcon(s, tex, DISH_BOX);
+    s.x = spots[i].x;
+    s.y = spots[i].y;
   });
   view.label.text = t.total ? tableCountLabel(t.total) : '';
   view.target.subtitle = TABLE_LINES.subtitle(t.total);
@@ -576,9 +576,9 @@ export const potLuckFeastFeature = {
    */
   dropTargetAt(x, y, cls, engine) {
     if (!view || view.root.destroyed || !kindOf(cls)) return null;
-    const half = (view.step + view.w) / 2;
+    const reach = view.half + view.w / 2;
     const top = view.root.y - view.h - 30;
-    return Math.abs(x - view.root.x) <= half && y >= top && y <= view.root.y + 6 ? view.target : null;
+    return Math.abs(x - view.root.x) <= reach && y >= top && y <= view.root.y + 6 ? view.target : null;
   },
 
   /** js/world-drop.js lay_feast: a dish or crop dragged onto the table. */

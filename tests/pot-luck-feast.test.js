@@ -22,8 +22,11 @@ import {
   STUFFING_ITEM,
   STUFFING_RECIPE,
   TABLE_LINES,
+  TABLE_AT,
   TABLE_RULES,
   TABLE_STREET,
+  DISH_BOX,
+  dishSpots,
   createQuestState,
   createTableState,
   dishClasses,
@@ -35,7 +38,7 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=f18b9ecf';
+} from '../public/js/pot-luck-feast.js?v=5ecf8e53';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=80957092';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
@@ -86,6 +89,26 @@ describe('the Harvest Table (pot-luck-feast.js)', () => {
     assert.equal(t.total, TABLE_RULES.keep + 7);
     assert.equal(tableCountLabel(1000), '999+');
     assert.equal(tableCountLabel(12), '12');
+  });
+
+  it('draws the newest twelve in one row on three boards, none over another (2026-11-18)', () => {
+    assert.equal(TABLE_RULES.shown, 12);
+    assert.equal(TABLE_AT.pieces, 3);
+    const spots = dishSpots(TABLE_RULES.shown);
+    assert.equal(spots.length, 12);
+    assert.equal(dishSpots(40).length, 12, 'never more than the table shows');
+    assert.deepEqual(dishSpots(3), spots.slice(0, 3), 'fixed slots from the left: a short table does not spread out');
+    const step = TABLE_AT.piece.w - TABLE_AT.overlap;
+    const edge = ((TABLE_AT.pieces - 1) * step) / 2 + TABLE_AT.top / 2;
+    for (let i = 0; i < spots.length; i += 1) {
+      assert.ok(Math.abs(spots[i].x) + DISH_BOX / 2 <= edge, `dish ${i} on the board`);
+      assert.equal(spots[i].y, spots[0].y, 'one row');
+      // A 40 px icon fitted to the 34 px box draws its food in about 30 px: slots this far apart never cover each other.
+      if (i) assert.ok(spots[i].x - spots[i - 1].x >= 30, `dish ${i} clear of dish ${i - 1}`);
+    }
+    // The table's middle stays right of the hub signpost (signpost_2 at x -291), its left end clear of the post.
+    const leftEnd = TABLE_AT.x - ((TABLE_AT.pieces - 1) * step) / 2 - TABLE_AT.piece.w / 2;
+    assert.ok(leftEnd > -291 + 40, `left end ${leftEnd}`);
   });
 
   it('is packed away when the season is over or a new year begins', () => {

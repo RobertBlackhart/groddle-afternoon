@@ -10,7 +10,7 @@
  *  - The table stands by the Groddle Forest Junction signpost because players there used to bring
  *    crops on Croppaday, a day Glitch's calendar named and never ran (research/audits-2026-11-17/
  *    seasons/seasons-audit.md). It is Tiny Speck's own rustic table deco, deco_table_wooden_ghtest,
- *    twice, end to end, so it reads as one long feast table.
+ *    three times, end to end, so it reads as one long feast table.
  *  - A dish goes on by dropping it on the table or by the table's verb, which asks which dish, as a
  *    Still on the ground asks what to distill (still.js verbs.distill, a target-item picker).
  *  - The first offering of a game day pays a little mood and favor with Pot, as a shrine donation
@@ -28,12 +28,16 @@ export const TABLE_STREET = 'GLI3272LOTD1B1F';
 export const TABLE_CLASS = 'pot_luck_harvest_table';
 export const TABLE_DECO = 'deco_table_wooden_ghtest';
 /**
- * Where the table stands: its middle, 250 px right of the street's hub signpost (signpost_2 at
- * x -291: Hechey Track, Pasha's Place, Northwest Passage, Burnabee). Two tables of the deco's drawn
+ * Where the table stands: its middle, 280 px right of the street's hub signpost (signpost_2 at
+ * x -291: Hechey Track, Pasha's Place, Northwest Passage, Burnabee). Three tables of the deco's drawn
  * size (186 x 71, rebuilt-rooms.js Gwendolyn's table) end to end: the deco's top is 143 of its 186
- * (its legs splay past it) and its ends are rounded, so they overlap by 66 and the two tops run on as one long board.
+ * (its legs splay past it) and its ends are rounded, so they overlap by 66 and the three tops run on as
+ * one long board (two held ten dishes only by overlapping them: 2026-11-18, Austin "maybe a bigger table").
  */
-export const TABLE_AT = Object.freeze({ x: -41, y: -122, piece: Object.freeze({ w: 186, h: 71 }), overlap: 66 });
+export const TABLE_AT = Object.freeze({ x: -11, y: -122, piece: Object.freeze({ w: 186, h: 71 }), overlap: 66, pieces: 3, top: 143 });
+
+/** A dish icon's box on the table (its icon scaled to fit). */
+export const DISH_BOX = 34;
 
 /** The five harvest dishes the quest asks for, all existing recipes (recipes.json). */
 export const HARVEST_DISHES = Object.freeze(['pumpkin_pie', 'hot_potatoes', 'wavy_gravy', 'corny_fritter', 'potcorn']);
@@ -42,8 +46,8 @@ export const HARVEST_DISHES = Object.freeze(['pumpkin_pie', 'hot_potatoes', 'wav
 export const COOKING_TOOLS = Object.freeze(['frying_pan', 'knife_and_board', 'awesome_pot', 'saucepan', 'mike_tyson_grill', 'famous_pugilist_grill', 'blender', 'cocktail_shaker']);
 
 export const TABLE_RULES = Object.freeze({
-  /** Dishes drawn on the table, newest first (left to right). */
-  shown: 10,
+  /** Dishes drawn on the table, newest first (left to right): one row, none over another. */
+  shown: 12,
   /** Offerings the table remembers to draw (the count goes on past it). */
   keep: 40,
   /** The count on the table's card reads "999+" past this. */
@@ -213,6 +217,20 @@ export function layOffering(table, { c, by = 0, name = '', who = 'me', day = '' 
   const first = table.daily[who] !== day;
   table.daily[who] = day;
   return { row, total: table.total, first };
+}
+
+/**
+ * Where each drawn dish stands on the table top, relative to the table's foot middle: one row of
+ * fixed slots from the left end of the long board to the right, the newest at the left, so a lay
+ * moves the others one slot along and nothing stands on another.
+ */
+export function dishSpots(n = TABLE_RULES.shown, at = TABLE_AT) {
+  const step = at.piece.w - at.overlap;
+  const reach = ((at.pieces - 1) * step) / 2 + at.top / 2 - DISH_BOX / 2 - 2;
+  const slot = (2 * reach) / Math.max(1, TABLE_RULES.shown - 1);
+  const out = [];
+  for (let i = 0; i < Math.min(n, TABLE_RULES.shown); i += 1) out.push({ x: Math.round(-reach + i * slot), y: -at.piece.h + 14 });
+  return out;
 }
 
 /** The dishes drawn on the table, newest first. */
