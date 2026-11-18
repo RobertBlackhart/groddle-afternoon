@@ -2810,13 +2810,68 @@
   ]
  },
  "release": {
-  "game": "0.49.1",
+  "game": "0.50.0",
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2728,
+  "commits": 2747,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "No hairline seam at the tower's elevator end of the floor"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The display box list keeps one column wide, and the subway's red button has no route halo spilling off the box"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The subway's red button sits where the 2012 stations had it, at its size"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A display box offers every item it can take, and the counts in its list no longer clip"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Spinning, smelting and crushing take as much as the pack holds, so Spin Doctor can be earned"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Replies to older chat lines go through, and a refused reply keeps its words with a Send in Global instead button"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Garden, patch and street object verbs wait as long as the server can take, and a late answer still lands"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "No dark hairline where home floor, wall and ceiling pieces meet"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "new",
+    "text": "Reports in the game show the chat's emoji reactions under each message, and you can add your own"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Encyclopedia item pages say how to get each item from where the game hands it out, not \"Part of the Hell Bar in the remake\""
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The featured street project says \"opens in N min\" while its street rests after a build, instead of sending players to a street with no board"
+   },
    {
     "date": "2026-11-18",
     "kind": "fix",
@@ -2881,61 +2936,6 @@
     "date": "2026-11-18",
     "kind": "fix",
     "text": "A report picture with the game's UI matches the screen: its fonts, and scrolled lists where they were scrolled"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "improve",
-    "text": "A dish laid on Thanksgiving Day joins the feast at once, even where the piles had run out"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "new",
-    "text": "Thanksgiving Day's feast: eat the week's Harvest Table food where it lies in Groddle Forest Junction"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "improve",
-    "text": "A Hoe says whether aggressive hoeing is on and what a cleared plot wears"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A visitor's swing at a home rock that started before it ran out reaches the site"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "new",
-    "text": "Help mine and help dig at a friend's home rocks and Dirt Piles count for the crew"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Only the nodes hidden behind front art move; every other street object keeps its spot"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The Meal Vendor stands on its floor when the page opens part way through its walk"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Peat Bogs, Dirt Piles, Paper Trees, Barnacles, Ice Nubbins and Salmon are no longer planned behind front art"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A refused Group Hall claim says why in the hall box instead of going back to the question"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Pumpkins and the seven herbs can be laid on the Harvest Table, as the crops they were in Glitch"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "new",
-    "text": "The Harvest Table's Look opens a list of everything on it, newest first, with who laid each"
    }
   ]
  },
