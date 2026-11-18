@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2597,
+  "commits": 2600,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "new",
+    "text": "Drop a stack on your own Butler to leave it as a gift for visitors"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Edge barnacles on round trunks face outward whichever art variant they are"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Stack repairs: imports and test steps the lane merges dropped"
    }
   ]
  },
- "tests": 1118,
+ "tests": 1119,
  "generatedAt": "2026-11-17"
 }
