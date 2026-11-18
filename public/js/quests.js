@@ -370,16 +370,19 @@ export function questRewardSummary(rewards = {}, opts = {}) {
       }))
       .filter((row) => row.recipeId),
   };
-  const lines = [];
-  if (summary.xp) lines.push(`+${summary.xp.toLocaleString('en-US')} iMG`);
-  if (summary.currants) lines.push(`+${summary.currants.toLocaleString('en-US')} currants`);
-  if (summary.mood) lines.push(`+${summary.mood} mood`);
-  if (summary.energy) lines.push(`+${summary.energy} energy`);
-  for (const entry of summary.favor) lines.push(`+${entry.points} ${giantLabel(entry.giant)} favor`);
-  for (const item of summary.items) lines.push(`${item.count}× ${item.label}`);
-  for (const recipe of summary.recipes) lines.push(`Recipe: ${recipe.label || recipe.recipeId}`);
-  summary.lines = lines;
-  summary.subtitle = lines.join(' · ');
+  // #492: the award card takes these rows as they are (questAwardPayload `rewards`), one chip each
+  // with its own icon (glitch-client Slug.as getIcon 223-245: a slug per reward, items with their icon).
+  const rows = [];
+  if (summary.xp) rows.push({ kind: 'img', amount: summary.xp, text: `+${summary.xp.toLocaleString('en-US')} iMG` });
+  if (summary.currants) rows.push({ kind: 'currants', amount: summary.currants, text: `+${summary.currants.toLocaleString('en-US')} currants` });
+  if (summary.mood) rows.push({ kind: 'mood', amount: summary.mood, text: `+${summary.mood} mood` });
+  if (summary.energy) rows.push({ kind: 'energy', amount: summary.energy, text: `+${summary.energy} energy` });
+  for (const entry of summary.favor) rows.push({ kind: 'favor', amount: entry.points, giant: entry.giant, text: `+${entry.points} ${giantLabel(entry.giant)} favor` });
+  for (const item of summary.items) rows.push({ kind: 'item', amount: item.count, classTsid: item.classTsid, text: `${item.count}× ${item.label}` });
+  for (const recipe of summary.recipes) rows.push({ kind: 'recipe', recipeId: recipe.recipeId, text: `Recipe: ${recipe.label || recipe.recipeId}` });
+  summary.rows = rows;
+  summary.lines = rows.map((row) => row.text);
+  summary.subtitle = summary.lines.join(' · ');
   return summary;
 }
 

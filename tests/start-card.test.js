@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { START_CARD_SELECTOR, SCREEN_SELECTOR, WINDOW_SELECTOR, stackZ } from '../public/js/window-stack.js?v=a7104f02';
-import { createPromptStack } from '../public/js/prompt-stack.js?v=5718128a';
+import { createPromptStack } from '../public/js/prompt-stack.js?v=1904789c';
 import {
   _resetFamiliarDialog,
   familiarDialogFeature,

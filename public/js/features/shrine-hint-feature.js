@@ -27,11 +27,11 @@
  *   wrong-shrine:<giant>), giantLoveScreen (open | ready | closed),
  *   giantLoveLine, giantLoveSound.
  */
-import { questStatus } from '../quest-offers.js?v=d13ce526';
+import { questStatus } from '../quest-offers.js?v=8b51ffce';
 import { GIANT_SCREEN_FADE_MS, giantLoveResponse } from '../giant-love.js?v=aa9ea315';
 import { GIANTS, inEmblemHitbox } from '../shrines.js?v=15d03920';
 import { vogPages } from '../newxp.js?v=02f902e6';
-import { screenInput } from '../screen-fx.js?v=f227c6d1';
+import { screenInput } from '../screen-fx.js?v=5db43b45';
 
 export const SHRINE_HINT_FEATURE_ID = 'shrine-hint';
 export const SHRINES_TO_PASS = 3;

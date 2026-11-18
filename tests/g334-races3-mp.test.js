@@ -15,10 +15,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=92c75858';
-import { pendingQuestOffers } from '../public/js/quest-offers.js?v=d13ce526';
+import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
+import { pendingQuestOffers } from '../public/js/quest-offers.js?v=8b51ffce';
 import { MP_RACE_QUESTS, MULTIPLAYER_QUESTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=0b747f6e';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=e76f6d7a';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 import { HELL_LOCATION } from '../public/js/hell.js?v=834960da';
 import { HOG_MP_COURSE } from '../public/js/hog-haul-mp.js?v=67f873fe';
@@ -170,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=b793f436');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=53287cfd');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {

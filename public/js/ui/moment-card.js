@@ -86,14 +86,20 @@ export function momentArtShape(url = '') {
   return /quest-book(-solid)?\.webp/.test(String(url)) ? 'book' : 'square';
 }
 
-/** A reward's icon: iMG, currants and a Giant's favor have one; the rest show words only. */
-export function rewardIcon(text = '', kind = '') {
+/**
+ * A reward's icon: iMG, currants and a Giant's favor have one, and an item given as a reward row
+ * (`classTsid`) its own (glitch-client Slug.as getIcon 228-233, ItemIconView); the rest show words only.
+ */
+export function rewardIcon(text = '', kind = '', row = {}) {
   if (kind === 'img') return 'assets/imagination/ui/imagination_button.webp';
   if (kind === 'currants') return 'assets/sprites/icons/pile_of_currants@3x.webp';
   if (kind === 'favor') {
+    const giant = String(row?.giant || '').toLowerCase();
+    if (GIANTS.includes(giant)) return `assets/sprites/icons/emblem_${giant}@3x.webp`;
     const m = String(text).toLowerCase().match(new RegExp(`\\b(${GIANTS.join('|')})\\b`));
     return m ? `assets/sprites/icons/emblem_${m[1]}@3x.webp` : null;
   }
+  if (kind === 'item' && /^[a-z0-9_]+$/.test(String(row?.classTsid || ''))) return `assets/sprites/icons/${row.classTsid}.webp`;
   return null;
 }
 
@@ -103,13 +109,15 @@ export function isRewardText(text = '') {
 }
 
 /**
- * The chips for a reward summary ("+300 iMG · +40 Grendaline favor"), or [] when any part
- * is not a reward ("Onwards and upwards!", "2 levels gained" stay words). `tokens` are
- * screen-fx.js awardRewardTokens(subtitle).
+ * The chips for a reward summary: one chip per line, each with its own icon where it has one.
+ * `tokens` are the payload's reward rows (awardTokens: quests.js questRewardSummary rows, marked
+ * `row`) or screen-fx.js awardRewardTokens(subtitle). [] only when no line is a reward
+ * ("Onwards and upwards!" stays words). #492: a recipe or "1× Pan" line made the whole card fall
+ * back to words, so iMG, currants and favor lost their icons.
  */
 export function rewardChips(tokens = []) {
-  if (!tokens.length || !tokens.every((t) => isRewardText(t.text))) return [];
-  return tokens.map((t) => ({ ...t, icon: rewardIcon(t.text, t.kind) }));
+  if (!tokens.some((t) => t.row || isRewardText(t.text))) return [];
+  return tokens.map((t) => ({ ...t, icon: rewardIcon(t.text, t.kind, t) }));
 }
 
 /** The queued line: screens waiting behind this one ("1 more"), or ''. */

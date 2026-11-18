@@ -81,7 +81,7 @@ import {
   parseQuestConversation,
   cleanQuestMarkup,
   eventToCounter,
-} from './quests.js?v=92c75858';
+} from './quests.js?v=4a3fb1da';
 
 /** Original: only one offer every 5 minutes (quests_offer delay = 60 * 5). */
 export const OFFER_INTERVAL_MS = 5 * 60 * 1000;
@@ -1801,6 +1801,7 @@ export function questAwardPayload(def, summary = {}) {
     title: def?.title || 'Quest complete',
     body: steps.length ? '' : cleanQuestMarkup(def?.desc || ''),
     subtitle: summary.subtitle || '',
+    rewards: summary.rows || [],
     steps,
     primaryLabel: 'OK',
   };

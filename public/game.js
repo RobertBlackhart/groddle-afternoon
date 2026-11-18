@@ -4,12 +4,12 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=823f43fe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=581c19fc';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fbbf9e2f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=5718128a';
+import { createPromptStack } from './js/prompt-stack.js?v=1904789c';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=49228b02';
 import {
@@ -33,12 +33,12 @@ import {
   cleanQuestMarkup,
   questDoneAt,
   paidRewardBits,
-} from './js/quests.js?v=92c75858';
+} from './js/quests.js?v=4a3fb1da';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=563d4523';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=d13ce526';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=d315ed1e';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=8b51ffce';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -134,7 +134,7 @@ import {
   qualificationVerb,
   requestLegalizeQualification,
   travelToGregarious,
-} from './js/legalize-it.js?v=08820e49';
+} from './js/legalize-it.js?v=a5016c3a';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=5529dc91';
@@ -414,7 +414,7 @@ import {
   consumeAchievementCounters,
   resetAchievementCounter,
   purchaseAchievementUpdates,
-} from './js/achievements.js?v=c3e8be23';
+} from './js/achievements.js?v=7b03d657';
 import {
   applyStreetVisit,
   topUpCompletists,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=614937f8';
+} from './js/player-save.js?v=0e129801';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -812,8 +812,8 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=f227c6d1';
-import { momentMoreText } from './js/ui/moment-card.js?v=3f08b37c';
+} from './js/screen-fx.js?v=5db43b45';
+import { momentMoreText } from './js/ui/moment-card.js?v=3850c51c';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=4cde830b';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
 import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e021b';
@@ -826,7 +826,7 @@ import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=7f5009dd';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=b7075834';
 import {
   planTravel,
   listMapDestinations,

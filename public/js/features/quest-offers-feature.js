@@ -111,10 +111,10 @@ import {
   COLD_COMFORT_LEAVE_TEXT,
   HOME_TREE_GROWN_TEXT,
   SEED_TO_SCYTHE,
-} from '../quest-offers.js?v=d13ce526';
+} from '../quest-offers.js?v=8b51ffce';
 import { PEAT_TEXT, retireSoloPeatQuest } from '../peat-quest.js?v=c7baea41';
 import { retireDeadQuests, retiredQuestLine } from '../retired-quests.js?v=61758261';
-import { parseQuestConversation } from '../quests.js?v=92c75858';
+import { parseQuestConversation } from '../quests.js?v=4a3fb1da';
 import { questRequirementText, renderQuestText, withQuestMarkup } from '../quest-text.js?v=4d0f8703';
 import { addItem, removeItem, countItem } from '../inventory.js?v=6414dbdc';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';

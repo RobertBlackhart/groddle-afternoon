@@ -36,11 +36,11 @@ import { ensureCubimalItems } from '../public/js/cubimals.js?v=07f59f2f';
 import { addItem, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { bindToolInventory, copyTags, createToolConditionState, setCopyTag } from '../public/js/tools.js?v=4156bba8';
 import { cleanCopyTagOf } from '../public/js/copy-tags.js?v=7eec7d48';
-import { FEATURES } from '../public/js/features/index.js?v=581c19fc';
+import { FEATURES } from '../public/js/features/index.js?v=fbbf9e2f';
 import { cubimalBattleFeature, CUBIMAL_BATTLE_FEATURE_ID } from '../public/js/features/cubimal-battle-feature.js?v=cee3361b';
 import { cubimalRaceFeature } from '../public/js/features/cubimal-race-feature.js?v=deeb5129';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=c3e8be23';
+import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=7b03d657';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

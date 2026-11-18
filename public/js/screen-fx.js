@@ -9,7 +9,7 @@
 
 import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBounce, mountPetRock } from './familiar.js?v=b9597cd3';
 import { formatLoadingTime, ordinal } from './exploration.js?v=5f533ebf';
-import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3f08b37c';
+import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3850c51c';
 import { decodeEntities, htmlToText } from './html-text.js?v=6bbf4d1f';
 
 /**
@@ -330,6 +330,16 @@ export function awardRewardTokens(subtitle = '') {
 }
 
 /**
+ * The award's reward pills: the payload's own reward rows when it brings them (#492, quest-offers.js
+ * questAwardPayload `rewards`: kind, amount, giant, classTsid), else read off the subtitle.
+ */
+export function awardTokens(payload = {}) {
+  const rows = Array.isArray(payload?.rewards) ? payload.rewards.filter((r) => r && String(r.text || '').trim()) : [];
+  if (!rows.length) return awardRewardTokens(awardText(payload?.subtitle));
+  return rows.map((r) => ({ ...r, text: String(r.text).trim(), kind: String(r.kind || 'item'), row: true }));
+}
+
+/**
  * Fills `sub` with reward pills (awardRewardTokens). The modern card gives each the icon
  * js/ui/moment-card.js names (iMG, currants, a Giant's emblem).
  */
@@ -343,6 +353,7 @@ function fillRewardTokens(sub, rewards, { icons = false } = {}) {
       icon.src = reward.icon;
       icon.alt = '';
       icon.className = 'award-reward-icon';
+      icon.onerror = () => icon.remove();
       token.appendChild(icon);
     }
     token.appendChild(document.createTextNode(reward.text));
@@ -1205,7 +1216,7 @@ async function showAwardPages(el, { payload, pages, next, close, body, sub }) {
         body.hidden = !page.text;
       }
       if (sub) {
-        const tokens = awardRewardTokens(payload.subtitle);
+        const tokens = awardTokens(payload);
         const chips = modern ? rewardChips(tokens) : [];
         fillRewardTokens(sub, final ? (chips.length ? chips : tokens) : [], { icons: modern });
         sub.hidden = !final || !payload.subtitle;
@@ -1368,7 +1379,7 @@ export async function showAwardScreen(el, payload) {
     body.hidden = !bodyText;
   }
   if (sub) {
-    const chips = modern && !paged ? rewardChips(awardRewardTokens(awardText(payload.subtitle))) : [];
+    const chips = modern && !paged ? rewardChips(awardTokens(payload)) : [];
     if (chips.length) fillRewardTokens(sub, chips, { icons: true });
     else {
       sub.textContent = awardText(payload.subtitle);

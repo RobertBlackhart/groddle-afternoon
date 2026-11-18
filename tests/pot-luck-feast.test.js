@@ -40,7 +40,7 @@ import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=80957
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=ca034a11';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
 import { dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=c3e8be23';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
 import { setContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

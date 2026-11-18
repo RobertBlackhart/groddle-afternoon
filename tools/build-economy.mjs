@@ -106,7 +106,7 @@ import { creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=1fc5ff58'
 import { FURNITURE_STARTER_KIT } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { GIANTS } from '../public/js/shrines.js?v=15d03920';
 import { FOUR_LETTER_QUEST_ID } from '../public/js/four-letter-quest.js?v=a5574ac7';
-import { LEGALIZE_QUEST_ID } from '../public/js/legalize-it.js?v=08820e49';
+import { LEGALIZE_QUEST_ID } from '../public/js/legalize-it.js?v=a5016c3a';
 import { GREEDY_STREET_SPIRIT_QUEST_ID, GREEDY_STREET_SPIRIT_REPEAT_ID } from '../public/js/greedy-street-spirit.js?v=4d19b0e9';
 import { WINTER_WALK_QUEST_ID, WINTER_WALK_REPEAT_QUEST_ID } from '../public/js/winter-walk.js?v=6e67699f';
 import { SUMMERS_DAY_QUEST_ID, SUMMERS_DAY_REPEAT_QUEST_ID } from '../public/js/summers-day.js?v=680eca6e';
@@ -117,7 +117,7 @@ import { PHANTOM_QUEST_ID, REMEMBER_QUEST_ID } from '../public/js/ghost-quest.js
 import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
 // G979: Buy a Bag starts with the first skill learned, without its prerequisites (learn_first_skill.js 74-76).
-import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=d13ce526';
+import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=8b51ffce';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
