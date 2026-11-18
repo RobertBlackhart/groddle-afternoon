@@ -51,7 +51,7 @@
 
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { SUBWAY_STREETS } from '../street-jobs.js?v=5806a615';
+import { SUBWAY_STREETS } from '../street-jobs.js?v=71fa73cd';
 import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=247cf59b';
 import { hellFeature } from './hell-feature.js?v=6da8c49f';
 import { postReachY } from '../street-model.js?v=9f16f4ab';
@@ -80,8 +80,8 @@ import {
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=6adc8198';
-import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=114647c2';
+} from '../map-routes.js?v=3cadc716';
+import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=dcc5cae4';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
 /** One-way roads (player report 82, tools/routes/build-one-way.mjs); js/data-urls.js keys the URL. */
@@ -94,7 +94,7 @@ let state = createRouteState();
  * locked door only when it must (G192).
  */
 const roads = (engine) => roadsFor(engine);
-/** The subway between its surface streets (map-routes.js subwayRides): a route rides it when no road leads there. */
+/** The subway between its surface streets (map-routes.js subwayRides): a route rides it when that saves walking (street-graph.js SUBWAY_RIDE_STREETS). */
 const rides = subwayRides(SUBWAY_STREETS);
 /** #480: the rides the route in force may take (none on a smuggling run: map-routes.js routeRides). */
 const ridesNow = () => routeRides(rides, state.route?.source);

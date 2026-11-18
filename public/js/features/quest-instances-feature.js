@@ -123,8 +123,8 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=b6e0fbd2';
-import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
+} from '../quest-instance.js?v=7365a572';
+import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=36df38e1';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
@@ -220,7 +220,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=d1f91878'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=63a88d27'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=4ac9fb81'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=61b2c5e9'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=28d5429b'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=3fa9effc'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=11faf087'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=7bc93213'),

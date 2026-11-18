@@ -25,8 +25,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GAME_WEEK_DAYS, GAME_WEEK_MS, REWARD_ITEM, SOLO_FEATS } from '../../public/js/solo-feats.js?v=3bc9b43c';
 import { CIGAR_PLACES, LARGE_PLACES, MP_BONUS, MP_GOAL_SCALE, MP_ORDER, MP_REWARD, MP_SUPER, ROCK_LARGE, ROCK_MEDIUM, TOP_PLACES, mpGoals } from '../../public/js/feats-mp.js?v=d5cb2199';
-import { CONTRIBUTION_BADGES, SOLO_DIVISOR, soloNeed } from '../../public/js/street-jobs.js?v=5806a615';
-import { SOLO_CURVE } from '../../public/js/street-jobs-solo.js?v=04ea0019';
+import { CONTRIBUTION_BADGES, SOLO_DIVISOR, soloNeed } from '../../public/js/street-jobs.js?v=71fa73cd';
+import { SOLO_CURVE } from '../../public/js/street-jobs-solo.js?v=3bcf5d1c';
 import { esc, fmt, tsHtml } from './parts.mjs';
 
 const PUB = join(import.meta.dirname, '..', '..', 'public');

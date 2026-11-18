@@ -14,8 +14,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { questSceneTsid, wayBackFrom } from '../public/js/quest-instance.js?v=b6e0fbd2';
-import * as club from '../public/js/quest-rooms/clubhouse.js?v=61b2c5e9';
+import { questSceneTsid, wayBackFrom } from '../public/js/quest-instance.js?v=7365a572';
+import * as club from '../public/js/quest-rooms/clubhouse.js?v=28d5429b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, 'public', p), 'utf8');

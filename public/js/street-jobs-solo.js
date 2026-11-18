@@ -25,7 +25,7 @@
  * js/street-jobs.js is what it was (tests/street-jobs-solo-scale.test.js).
  */
 
-import { hopsOverEveryRoad } from './street-graph.js?v=114647c2';
+import { hopsOverEveryRoad } from './street-graph.js?v=dcc5cae4';
 
 /** A skillDrop that waives every level (no project skill goes above VI). */
 export const SKILLS_WAIVED = 99;

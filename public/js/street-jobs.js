@@ -61,9 +61,9 @@
 export const SOLO_DIVISOR = 50;
 import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
-import { soloSkill } from './street-jobs-solo.js?v=04ea0019';
+import { soloSkill } from './street-jobs-solo.js?v=3bcf5d1c';
 import { htmlToText } from './html-text.js?v=6bbf4d1f';
-import { fewestClosures, streetGraph } from './street-graph.js?v=114647c2';
+import { fewestClosures, streetGraph } from './street-graph.js?v=dcc5cae4';
 /** items/include/jobs.js startJobWork unit_duration. */
 export const WORK_UNIT_MS = 1500;
 /** locations/inc_jobs.js jobs_get_available: 30 * 60 seconds. */

@@ -59,7 +59,7 @@
  * restore a stale one after a later croak).
  */
 
-import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=114647c2';
+import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
 
 /**
  * R11 (G969): the graph and its walks live in js/street-graph.js, closed roads included; these
@@ -200,7 +200,8 @@ export function startCut(entry, platforms, x, y) {
 /**
  * The subway as route links (Austin, 2026-11-03): between every two of its surface streets, a
  * ride (js/subway.js: in at the street's subway entrance, a Red Line or Blue Line ticket, off at
- * the other stop, up its stairs). findRoute takes one only when no road leads there.
+ * the other stop, up its stairs). findRoute takes one when it saves more than
+ * SUBWAY_RIDE_STREETS streets of walking (street-graph.js, #488).
  * @param {string[]} streets  the stations' surface street keys (js/street-jobs.js SUBWAY_STREETS)
  * @returns {Record<string, string[]>}
  */

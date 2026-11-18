@@ -37,7 +37,7 @@ import {
   spawnOffset,
   sparedBySignpost,
 } from '../public/js/smuggling.js?v=2fde7da3';
-import { findRoute, streetGraph } from '../public/js/street-graph.js?v=114647c2';
+import { findRoute, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

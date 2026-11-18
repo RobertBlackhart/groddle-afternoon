@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildHubMapView } from '../public/js/map-graph.js?v=78a605db';
 import { ecologyForStreet, populationForStreet, setStreetEcologyCatalog, shrineStreetsFor } from '../public/js/street-ecology.js?v=62ca408f';
-import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=5806a615';
+import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=71fa73cd';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -1062,6 +1062,10 @@
     "ours: reworded since (old text -> the text shown now): our own": "ours-street-furniture",
     "remake-own: // The word filter (the remake's own addition, js/word-filter.js): written with a bad": "word-filter"
   },
+  "public/js/street-graph.js": {
+    "guess: subway only when no road gets there). A tunable guess, ours: Glitch found its paths in": "subway-ride-cost",
+    "ours: only when no road gets there). A tunable guess, ours: Glitch found its paths in": "subway-ride-cost"
+  },
   "public/js/street-jobs-mp.js": {
     "ours: 'Opens once a group claims this project.', // ours": "remake-copy",
     "ours: (group) => `${group} owns a new group hall!`, // ours": "remake-copy",

@@ -256,6 +256,58 @@ function bfs(roads, start, targets, closed, locked, rides = null, { oneWay = nul
   return null;
 }
 
+/**
+ * #488 (G1002, Austin 2026-11-18): what a subway ride costs a route, in streets walked. A route
+ * rides when walking would take more than this many streets longer than the walk the ride leaves
+ * (to the station and from it); a short walk still beats a ride. This replaces the 2026-11-03 rule
+ * (the subway only when no road gets there). A tunable guess, ours: Glitch found its paths in the
+ * game server (apiFindGlobalPathX), whose weights are lost.
+ */
+export const SUBWAY_RIDE_STREETS = 5;
+
+/**
+ * The cheapest route over the roads and the rides, a road costing one street and a ride
+ * SUBWAY_RIDE_STREETS: bfs with weights (a bucket queue). Returns { path, cost } or null.
+ */
+function cheapest(roads, start, targets, closed, locked, rides, { oneWay = null, startCut = null } = {}) {
+  const stateOf = (street, from) => (oneWay?.[street] ? `${street}<${from}` : street);
+  const first = stateOf(start, '');
+  const best = new Map([[first, { street: start, from: '', back: null, cost: 0 }]]);
+  const buckets = [[first]];
+  const done = new Set();
+  for (let c = 0; c < buckets.length; c++) {
+    for (const cur of buckets[c] || []) {
+      const node = best.get(cur);
+      if (done.has(cur) || node.cost !== c) continue;
+      done.add(cur);
+      if (cur !== first && targets.has(node.street)) {
+        const path = [];
+        for (let at = cur; at != null; at = best.get(at).back) path.unshift(best.get(at).street);
+        return { path, cost: c };
+      }
+      const { street, from } = node;
+      const cut = cur === first ? startCut : oneWay?.[street]?.cut?.[from] ? new Set(oneWay[street].cut[from]) : null;
+      const here = roads[street] || [];
+      const on = rides?.[street] ? [...here, ...rides[street]] : here;
+      for (const next of on) {
+        if (cut && cut.has(next)) continue;
+        if (locked && locked.has(`${street}>${next}`)) continue;
+        if (closed.has(next)) continue;
+        const road = here.includes(next);
+        const state = stateOf(next, road ? street : '');
+        if (done.has(state)) continue;
+        if (oneWay?.[next] && onChain(best, cur, next)) continue;
+        const cost = c + (road ? 1 : SUBWAY_RIDE_STREETS);
+        const prev = best.get(state);
+        if (prev && prev.cost <= cost) continue;
+        best.set(state, { street: next, from: road ? street : '', back: cur, cost });
+        (buckets[cost] ||= []).push(state);
+      }
+    }
+  }
+  return null;
+}
+
 function routeOver(graph, from, to, closed, { locked = undefined, rides = null, oneWay = null, startCut = null } = {}) {
   const roads = roadsOf(graph);
   const start = graphKey(graph, from);
@@ -268,12 +320,17 @@ function routeOver(graph, from, to, closed, { locked = undefined, rides = null, 
   const doorKeys = locked !== undefined ? locked : baseFor(graph).locked;
   const keyed = doorKeys && doorKeys.size ? doorKeys : null;
   const ways = { oneWay: oneWay && Object.keys(oneWay).length ? oneWay : null, startCut: startCut ? new Set(startCut) : null };
-  const noKey = (extra) => bfs(roads, start, targets, closed, keyed, extra, ways);
-  const anyDoor = (extra) => (keyed ? bfs(roads, start, targets, closed, null, extra, ways) : null);
-  // The subway only when no road gets there (Austin, 2026-11-03: the way to Xalanga rides to Onto
-  // Parada), and a locked door only when neither does: the subway needs no key, and the rare keys
-  // would otherwise send a fresh player's road to Xalanga through Level 2 West's Key 7 door again.
-  return noKey(null) || (rides ? noKey(rides) : null) || anyDoor(null) || (rides ? anyDoor(rides) : null);
+  // The walk, or a ride when it saves more than SUBWAY_RIDE_STREETS streets of walking (#488); a
+  // tie walks, and a walk is the same shortest walk as before.
+  const pick = (doors) => {
+    const walk = bfs(roads, start, targets, closed, doors, null, ways);
+    const ride = rides ? cheapest(roads, start, targets, closed, doors, rides, ways) : null;
+    if (!ride) return walk;
+    return walk && walk.length - 1 <= ride.cost ? walk : ride.path;
+  };
+  // A locked door only when no way without one gets there: the subway needs no key, and the rare
+  // keys would otherwise send a fresh player's road to Xalanga through Level 2 West's Key 7 door.
+  return pick(keyed) || (keyed ? pick(null) : null);
 }
 
 /**
@@ -285,7 +342,8 @@ function routeOver(graph, from, to, closed, { locked = undefined, rides = null, 
  * (location.js 2915-2935). Of several destinations (the nearest shrine, the nearest vendor) the
  * nearest open one wins; only closed ones is no route (Austin 2026-11-15: a route to Middle Arbor
  * ran through its crossed signpost arm). A locked door (graph.locked, or `locked`) is taken only
- * when nothing else gets there (G192); `rides` (the subway) only when no road does. `oneWay` and
+ * when nothing else gets there (G192); `rides` (the subway) when a ride saves more than
+ * SUBWAY_RIDE_STREETS streets of walking (#488). `oneWay` and
  * `startCut` (map-routes.js oneWayRoads, startCut) keep a route off the roads a one-way street does
  * not lead to from where you came in, or from where you stand (player report 82).
  * @param {object} graph  a street graph (an adjacency map is one with no closed roads)

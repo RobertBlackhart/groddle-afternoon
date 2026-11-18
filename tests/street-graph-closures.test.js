@@ -32,8 +32,8 @@ import {
   streetGraph,
   streetsLeadingTo,
   worldRoads,
-} from '../public/js/street-graph.js?v=114647c2';
-import { createRouteState, enterStreet, planRoute, routeStep } from '../public/js/map-routes.js?v=6adc8198';
+} from '../public/js/street-graph.js?v=dcc5cae4';
+import { createRouteState, enterStreet, planRoute, routeStep } from '../public/js/map-routes.js?v=3cadc716';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');

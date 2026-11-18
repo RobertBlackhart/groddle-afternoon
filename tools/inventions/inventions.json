@@ -4564,6 +4564,23 @@
    "rows": [
     "G995"
    ]
+  },
+  {
+   "id": "subway-ride-cost",
+   "title": "Routes count a subway ride as 5 streets: a route rides when walking would be more than 5 streets longer",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/street-graph.js",
+     "symbol": "SUBWAY_RIDE_STREETS / cheapest / routeOver"
+    }
+   ],
+   "why": "#488: Glitch's routing was server-native (apiFindGlobalPathX) and its weights are lost. The 2026-11-03 rule rode only when no road existed, so once a region's roads were built a route walked 19 streets from Chakra Phool to Torpan Cleft instead of riding from Jutuan Central. 5 is a guess to tune. Smuggling routes still never ride (#480); the gate still wants Your Papers.",
+   "ruling": "Austin 2026-11-18 (G1002, calls P9iN1Q8WPs8rYTDVPGLfXp): a subway ride costs about 5 streets in routing, replacing the 2026-11-03 roads-first rule; 5 is a guess to tune",
+   "rows": [
+    "G1002"
+   ]
   }
  ]
 }

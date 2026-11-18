@@ -49,7 +49,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 import { TOWER_JOBS, towerFloorClass } from '../public/js/home-tower.js?v=77d57cda';
-import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, SUBWAY_STREETS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=5806a615';
+import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, SUBWAY_STREETS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=71fa73cd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const CATALOG = join(root, 'public/assets/content/street-jobs.json');

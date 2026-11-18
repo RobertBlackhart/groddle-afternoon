@@ -23,7 +23,7 @@
  * run held while you are away at a party is saved whole (heldRunSave).
  */
 
-import { isGraphSource, streetsLeadingTo } from './street-graph.js?v=114647c2';
+import { isGraphSource, streetsLeadingTo } from './street-graph.js?v=dcc5cae4';
 
 export const QUEST_SCENE_PREFIX = 'QI_';
 /** The default exit delay of questInstanceLocation rooms. */

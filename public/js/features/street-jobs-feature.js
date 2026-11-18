@@ -113,11 +113,11 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=5806a615';
+} from '../street-jobs.js?v=71fa73cd';
 import { PAPERS_BADGE } from '../subway.js?v=247cf59b';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=cccfda88';
-import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=114647c2';
+import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
@@ -141,7 +141,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=73d86611';
+} from '../street-jobs-mp.js?v=45ec5aca';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -150,17 +150,17 @@ import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { SIGN_ARMS } from '../map-routes.js?v=6adc8198';
+import { SIGN_ARMS } from '../map-routes.js?v=3cadc716';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=34f60876';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ae042c42';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=fe5054b5';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=d705c6b7';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
-import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=04ea0019';
+import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
