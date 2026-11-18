@@ -295,6 +295,9 @@
     "glitch-had-none: * project at a time. Glitch had no featured-project screen (Tiny Speck chose which": "featured-project",
     "ours: * so the screen and its words are ours.": "featured-project"
   },
+  "public/js/features/aggressive-hoeing-feature.js": {
+    "ours: players lost track of why one plot took 4 wear. Ours says": "hoe-mode-line"
+  },
   "public/js/features/animal-mood-feature.js": {
     "ours: checks reach from where it keeps them; a walk of our own across the street": "ours-animal-mood"
   },

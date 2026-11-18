@@ -4615,6 +4615,24 @@
    ],
    "why": "JobDialog.as closes on \"Yes, I can!\" and the original answered a refused claim with its own dialog; online the refusal came as a 3.2 s toast and the box went back to the question (#502). The sentences reword the server's refusals (group_halls.go projectText*) and are ours.",
    "rows": []
+  },
+  {
+   "id": "hoe-mode-line",
+   "title": "A Hoe's pack card and slot tooltip say whether aggressive hoeing is on and what a cleared plot wears (#503).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/aggressive-hoeing-feature.js",
+     "symbol": "hoeModeNote"
+    },
+    {
+     "file": "public/js/features/aggressive-hoeing-feature.js",
+     "symbol": "packKindNote"
+    }
+   ],
+   "why": "Glitch showed the mode only through which verb the Hoe offered (hoe.js 70-126), and a player lost track of why one plot took 4 wear (#503). Austin asked for the Hoe to show the mode (2026-11-18). The wear comes from gardenActionProfile, the rule clearing uses.",
+   "rows": []
   }
  ]
 }
