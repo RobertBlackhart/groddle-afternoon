@@ -116,7 +116,7 @@ import { bindChatInput } from './chat-input.js?v=4cde830b';
 import { createNodeCache, pressLeavesKeys, reconcileChildren, uniqueKeys } from './keyed-nodes.js?v=9ab4de5c';
 import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { sameWords } from '../chat-reactions.js?v=38460172';
-import { THREAD_TEXT, mergeReplies, normalSummary, summaryText } from '../chat-threads.js?v=f1b1fbcc';
+import { THREAD_TEXT, mergeReplies, normalSummary, summaryText } from '../chat-threads.js?v=2ba621c8';
 import { buddyFaceUrl, createFaceMemory } from '../buddy-list.js?v=b418f3f2';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../whos-here.js?v=cb52c987';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deleteConfirmRows } from '../chat-delete.js?v=c55a1043';
@@ -453,7 +453,9 @@ export function mountSocialDrawer({
       host: () => root,
     })
     : null;
-  // THREADS: tk (the line's rk) -> { n, last, replies, loaded, loading, note, parent }; the sender once a feature connects one.
+  // THREADS: tk (the line's rk) -> { n, last, replies, loaded, loading, note, parent, sending, offer }; the sender once a
+  // feature connects one. sending: the words of a reply the server has not taken yet; offer: the words of one it refused
+  // because its line is not there to reply to (R5), with the "Send in Global instead" button under the refusal.
   const threadStore = new Map();
   let threader = null;
   /** The thread open in place of its conversation: { chat, tk }, or null. */
@@ -462,7 +464,7 @@ export function mountSocialDrawer({
   const threadRows = new Map();
   function storeOf(tk) {
     let st = threadStore.get(tk);
-    if (!st) threadStore.set(tk, (st = { n: 0, last: null, replies: [], loaded: false, loading: false, note: '', parent: null }));
+    if (!st) threadStore.set(tk, (st = { n: 0, last: null, replies: [], loaded: false, loading: false, note: '', parent: null, sending: '', offer: '' }));
     return st;
   }
   const threadable = (chatId, line) => Boolean(online && threader && line?.rk && !line.note && !line.sep && !line.reply && tabs.get(chatId)?.threads);
@@ -1273,9 +1275,42 @@ export function mountSocialDrawer({
     const count = st.replies.length;
     nodes.push(cache.get(`count|${count}|${st.loading}`, () => el('div', { class: 'social-time social-thread-count', 'data-social-thread-count': String(count) }, count ? THREAD_TEXT.count(count) : st.loading ? THREAD_TEXT.loading : THREAD_TEXT.empty)));
     for (const r of st.replies) nodes.push(decorateRow(cache.get(`reply|${lineKey(t.id, r)}|${r.rk}`, () => lineNode(r)), r, '', t.id));
-    if (st.note) nodes.push(cache.get(`note|${st.note}`, () => lineNode({ note: true, text: st.note })));
+    if (st.note && st.offer) nodes.push(cache.get(`offer|${th.tk}|${st.note}|${st.offer}`, () => offerNode(th.tk, st.note)));
+    else if (st.note) nodes.push(cache.get(`note|${st.note}`, () => lineNode({ note: true, text: st.note })));
     cache.sweep();
     return nodes;
+  }
+
+  /**
+   * R5 (G1025): a reply refused because its line is not there to reply to: the refusal, and one button
+   * that says the same words in Global Chat (Austin 2026-11-18: offered, one tap, never sent by itself).
+   * Ours: Glitch's chat had no threads (the register's thread-reply-send-global).
+   */
+  function offerNode(tk, note) {
+    const wrap = el('div', { class: 'social-thread-offer', 'data-social-thread-offer': tk });
+    const b = el('button', { type: 'button', class: 'social-chip social-thread-global', 'data-thread-global': tk }, THREAD_TEXT.sendGlobal);
+    b.addEventListener('click', () => sendInGlobal(tk));
+    wrap.append(lineNode({ note: true, text: note }), b);
+    return wrap;
+  }
+  /** The refused reply's words said in Global Chat, through the feature that speaks there. */
+  function sendInGlobal(tk) {
+    const st = threadStore.get(tk);
+    const text = st?.offer || '';
+    if (!text || !threader?.sayGlobal) return false;
+    let ok = false;
+    try {
+      ok = Boolean(threader.sayGlobal(text));
+    } catch (e) {
+      console.warn('social', e);
+    }
+    if (!ok) return false;
+    st.offer = '';
+    st.note = '';
+    if (input && String(input.value || '').trim() === text.trim()) input.value = '';
+    if (thread?.tk === tk) closeThread();
+    else render();
+    return true;
   }
 
   function renderView() {
@@ -1545,7 +1580,9 @@ export function mountSocialDrawer({
     const st = storeOf(tk);
     if (parent) st.parent = normal(parent);
     else if (!st.parent) st.parent = t.lines.find((l) => l.rk === tk) || null;
-    st.note = '';
+    // R5: a refused reply's words come back into the box with its refusal and the Global button.
+    if (!st.offer) st.note = '';
+    else if (input && !input.value) input.value = st.offer;
     st.loading = !st.loaded;
     thread = { chat: chatId, tk };
     closeDrawerMenu();
@@ -1853,6 +1890,11 @@ export function mountSocialDrawer({
       e.stopPropagation?.();
       input.value = '';
       const { chat, tk } = thread;
+      // R5: the words are kept until the server takes the reply; a refusal gives them back.
+      const st = storeOf(tk);
+      st.sending = text;
+      st.offer = '';
+      st.note = '';
       let sent = false;
       try {
         sent = Boolean(threader.send(chat, tk, text));
@@ -1860,7 +1902,9 @@ export function mountSocialDrawer({
         console.warn('social', err);
       }
       if (!sent) {
-        storeOf(tk).note = THREAD_TEXT.offline;
+        st.sending = '';
+        st.note = THREAD_TEXT.offline;
+        if (!input.value) input.value = text;
         render();
       }
       return;
@@ -2140,6 +2184,36 @@ export function mountSocialDrawer({
         st.loading = false;
         if (thread?.tk === k) render();
         return true;
+      },
+      /** R5: the server took the reply sent last in this thread (its thread_said came back). */
+      accepted(tk) {
+        const st = threadStore.get(String(tk || ''));
+        if (!st?.sending) return false;
+        st.sending = '';
+        return true;
+      },
+      /**
+       * R5: the server refused the reply sent last in this thread: its words go back in the box (the
+       * thread open, the box empty), with the refusal; `old` (its line is not there to reply to) adds
+       * the "Send in Global instead" button. Null message: only the words come back (slow down).
+       */
+      refused(tk, message, { old = false } = {}) {
+        const k = String(tk || '');
+        const st = threadStore.get(k);
+        if (!st?.sending) return false;
+        const text = st.sending;
+        st.sending = '';
+        if (message) st.note = String(message);
+        st.offer = old ? text : '';
+        st.loading = false;
+        if (thread?.tk === k && input && !input.value) input.value = text;
+        if (thread?.tk === k) render();
+        return true;
+      },
+      /** R5: whether a reply's words wait on the server (the tk, or '' for none). */
+      get sending() {
+        for (const [k, st] of threadStore) if (st.sending) return k;
+        return '';
       },
       open: (chat, tk, opts) => openThread(chat, String(tk || ''), opts),
       close: (opts) => closeThread(opts),

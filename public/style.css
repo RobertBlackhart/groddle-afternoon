@@ -10614,6 +10614,8 @@ html[data-street-cards] .notify-notices { visibility: hidden; }
 .social-chip:hover { background: var(--surface-parchment); }
 .social-chip:disabled { opacity: 0.55; cursor: default; }
 .social-manage { align-self: flex-start; }
+/* R5: a refused thread reply's "Send in Global instead" under its refusal. */
+.social-thread-offer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); margin-bottom: var(--sp-3); }
 .social-buddies { display: grid; gap: var(--sp-1); margin: 0; padding: 0; list-style: none; }
 .social-buddies li { display: flex; align-items: center; gap: var(--sp-4); min-height: 40px; padding: var(--sp-1) var(--sp-2); border-radius: var(--radius-sm); }
 .social-buddies li[data-online="false"] .social-av { opacity: 0.55; }

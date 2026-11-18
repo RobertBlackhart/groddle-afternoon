@@ -15,6 +15,9 @@
  * - a reply's reactions are a line's (chat-reactions-feature: reacted by its lid; here a thread's
  *   replies bring their own).
  * - Blocks: a reply by a player you block is never shown (buddies-feature realtimeHidden).
+ * - R5 (G1025): a reply's words stay with the drawer until the server takes it (its own thread_said);
+ *   a refusal naming the line ("parent") gives them back, and one whose line is not there to reply to
+ *   ("old") offers to say them in Global Chat instead (groups-feature chatSayIn), one tap.
  * - A reply an administrator deleted (chat_deleted with "parent", groddle-afternoon-server
  *   chatdelete.go) leaves its thread and the count goes down; a thread open on a deleted line closes.
  *
@@ -22,7 +25,7 @@
  *
  * QA: canvas data threadLast (the last thing that happened); window.groddleThreads.
  */
-import { THREAD_TEXT, replyFrame, siteKey, threadTarget } from '../chat-threads.js?v=f1b1fbcc';
+import { THREAD_TEXT, replyFrame, siteKey, threadTarget } from '../chat-threads.js?v=2ba621c8';
 import { chatLine, shownName } from '../groups.js?v=c9635d96';
 import { drawerLine, normalLine } from '../player-im.js?v=da51888c';
 import { imKey, lineKey, normalReactions } from '../chat-reactions.js?v=38460172';
@@ -126,6 +129,13 @@ function createSession(engine, client) {
       if (ok) note(`sent:${tk}`);
       return ok;
     },
+    /** R5: "Send in Global instead": the words go to Global Chat (groups-feature opens it if need be). */
+    sayGlobal(text) {
+      if (client.state !== 'online') return false;
+      const ok = Boolean(engine.query?.('chatSayIn', 'global', text, engine));
+      if (ok) note('global');
+      return ok;
+    },
     load(chat, tk) {
       const target = threadTarget(chat, tk);
       if (!target) return;
@@ -148,6 +158,7 @@ function createSession(engine, client) {
     const tk = lineKey(parent);
     const l = replyLine(m.line, { me: me(), hidden });
     if (l) th.push(tk, l, hidden(Number(m?.last?.id)) ? null : { n: m.n, last: m.last });
+    if (l?.mine) th.accepted?.(tk);
     note(`said:${tk}`);
   });
   client.on('msg:channel_joined', (m) => {
@@ -167,12 +178,22 @@ function createSession(engine, client) {
     } else if (th.current?.tk === lineKey(lid)) th.close();
     note(`deleted:${lineKey(lid)}`);
   });
-  client.on('error', ({ code, message }) => {
+  client.on('error', ({ code, message, parent, old }) => {
+    // R5: too fast (channels.go allow): the words of a reply waiting on the server come back.
+    if (code === 'slow_down') {
+      const tk = th.sending;
+      if (tk) th.refused?.(tk, '', { old: false });
+      return;
+    }
     if (code !== 'thread') return;
     const open = th.current;
-    if (open) th.note(open.tk, message || THREAD_TEXT.failed);
+    const p = Math.floor(Number(parent)) || 0;
+    const tk = p ? lineKey(p) : open?.tk || '';
+    if (tk && th.refused?.(tk, message || THREAD_TEXT.failed, { old: old === true })) {
+      if (open?.tk !== tk) engine.toast?.(message || THREAD_TEXT.failed, 3200);
+    } else if (open) th.note(open.tk, message || THREAD_TEXT.failed);
     else engine.toast?.(message || THREAD_TEXT.failed, 3200);
-    note(`refused:${message}`);
+    note(`refused:${message}${old === true ? ':old' : ''}`);
   });
 
   return {

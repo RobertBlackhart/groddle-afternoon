@@ -988,6 +988,21 @@ function createSession(engine, client) {
     decline,
     openPanel,
     closePanel,
+    /**
+     * R5: a line said in a channel from elsewhere (chat-threads-feature's "Send in Global instead"):
+     * the channel opened first when it is not (no first-time dialog), then shown in the drawer.
+     */
+    sayIn(channel, text) {
+      const t = String(text || '').trim();
+      if (!t || !knownChat(channel) || !mayOpen(channel, list)) return false;
+      if (!chats.has(channel)) openChat(channel, { focus: true, intro: false });
+      else if (social) {
+        tab = channel;
+        social.select(channel);
+      }
+      if (!chats.has(channel)) return false;
+      return say(channel, t);
+    },
     /** What the dock's submit does with a line (QA and tests). */
     submit(text) {
       if (!input) return false;
@@ -1022,5 +1037,11 @@ export const groupsFeature = {
   /** The chat a typed line is for ('street', 'party' or a channel), for realtime-feature's typing mark. */
   chatTab() {
     return session ? session.tab : null;
+  },
+
+  /** R5: chat-threads-feature's "Send in Global instead": the words said in that channel; true when sent. */
+  chatSayIn(channel, text, engine) {
+    if (engine?.mode !== 'multiplayer') return false;
+    return Boolean(ensure(engine)?.sayIn(channel, text));
   },
 };

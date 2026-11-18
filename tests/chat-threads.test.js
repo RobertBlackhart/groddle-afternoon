@@ -19,10 +19,10 @@ import {
   siteKey,
   summaryText,
   threadTarget,
-} from '../public/js/chat-threads.js?v=f1b1fbcc';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=98fff2d4';
+} from '../public/js/chat-threads.js?v=2ba621c8';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=59b08b8e';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=66d8b228';
+import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=29207f5c';
 import { ACTIVE_EVERY_MS, activeDue, presenceMpFeature } from '../public/js/features/presence-mp-feature.js?v=21272297';
 import { channelOpts, normalLine } from '../public/js/player-im.js?v=da51888c';
 import { SETTINGS_COPY, mountPresenceSetting } from '../public/js/account-forms.js?v=6729bb05';
@@ -241,6 +241,7 @@ describe('threads: the feature, and IM replies', () => {
   let r;
   let client;
   let fetched = [];
+  const saidIn = [];
   before(() => {
     for (const k of SAVED) saved[k] = globalThis[k];
     r = drawerRig();
@@ -258,7 +259,10 @@ describe('threads: the feature, and IM replies', () => {
       social: r.drawer,
       setData: (k, v) => { r.t.data[k] = v; },
       toast: () => {},
-      query: (hook, id) => (hook === 'realtimeClient' ? client : hook === 'realtimeHidden' ? id === 13 : null),
+      query: (hook, id, text) => {
+        if (hook === 'chatSayIn') return saidIn.push([id, text]) > 0;
+        return hook === 'realtimeClient' ? client : hook === 'realtimeHidden' ? id === 13 : null;
+      },
     };
     chatThreadsFeature.onTick(16, 0, engine);
     r.drawer.channel('global', { label: 'Global Chat', threads: true });
@@ -308,6 +312,40 @@ describe('threads: the feature, and IM replies', () => {
   it('a refusal shows in the open thread', () => {
     client.emit('error', { code: 'thread', message: 'That line is too old to reply to here.' });
     assert.match(r.log().textContent, /too old/);
+  });
+
+  it('R5: a refused reply\'s words come back, with one tap to say them in Global instead; a taken one is let go', () => {
+    r.t.input.value = '';
+    r.drawer.threads.open('global', 'l:55');
+    r.t.input.value = 'are you still selling?';
+    r.t.form.dispatch('submit');
+    assert.equal(r.t.input.value, '', 'the box clears as it sends');
+    assert.equal(r.drawer.threads.sending, 'l:55', 'the words wait on the server');
+    client.emit('error', { code: 'thread', message: 'That line is not there to reply to any more.', channel: 'global', parent: 55, old: true });
+    assert.equal(r.t.input.value, 'are you still selling?', 'the words are back');
+    const b = r.log().querySelector('[data-thread-global="l:55"]');
+    assert.ok(b, 'the Global button');
+    assert.equal(b.textContent, THREAD_TEXT.sendGlobal);
+    assert.equal(saidIn.length, 0, 'never sent by itself');
+    b.click();
+    assert.deepEqual(saidIn, [['global', 'are you still selling?']]);
+    assert.equal(r.t.input.value, '');
+    assert.equal(r.drawer.threads.current, null, 'back to the chat');
+    // Too fast (slow_down): only the words come back, no Global button.
+    r.drawer.threads.open('global', 'l:55');
+    r.t.input.value = 'again';
+    r.t.form.dispatch('submit');
+    client.emit('error', { code: 'slow_down', message: 'Slow down a little.' });
+    assert.equal(r.t.input.value, 'again');
+    assert.equal(r.log().querySelector('[data-thread-global]'), null);
+    // Taken: its own thread_said lets the words go; a later refusal finds nothing to give back.
+    r.t.input.value = 'once more';
+    r.t.form.dispatch('submit');
+    client.emit('msg:thread_said', { channel: 'global', parent: 55, line: { id: 7, name: 'Ada', text: 'once more', at: 9, lid: 77 }, n: 2, last: { id: 7, name: 'Ada' } });
+    assert.equal(r.drawer.threads.sending, '');
+    client.emit('error', { code: 'slow_down', message: 'Slow down a little.' });
+    assert.equal(r.t.input.value, '');
+    r.drawer.threads.close();
   });
 
   it('an IM thread\'s reply goes as im_send with parent, and its replies come from the site too', async () => {

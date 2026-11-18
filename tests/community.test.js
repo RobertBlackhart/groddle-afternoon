@@ -314,14 +314,21 @@ describe('who may read the kept chat (src/ChatHistory.php)', { skip: skipWithout
     const c = src('src/ChatHistory.php');
     const routes = [...c.matchAll(/#\[Route\(Method::(\w+), '([^']+)', policy: new Policy\(Access::(\w+)\)\)\]/g)].map((m) => [m[1], m[2], m[3]]);
     assert.deepEqual(routes.map((r) => r[1]), [
-      '/groddle/v1/chat/ingest', '/groddle/v1/chat/channels', '/groddle/v1/chat/channels/{key:global|help|trade|group-[1-9][0-9]{0,18}}', '/groddle/v1/chat/channels/{key:global|help|trade}',
+      // R5: the server asks whether an older line is kept (signed, as ingest).
+      '/groddle/v1/chat/ingest', '/groddle/v1/chat/line', '/groddle/v1/chat/channels', '/groddle/v1/chat/channels/{key:global|help|trade|group-[1-9][0-9]{0,18}}', '/groddle/v1/chat/channels/{key:global|help|trade}',
       // The website's chat app (Austin 2026-11-04): your IM conversations, an IM written there, threads on channel and IM lines.
       '/groddle/v1/chat/ims', '/groddle/v1/chat/ims/{with:[1-9][0-9]{0,18}}', '/groddle/v1/chat/ims/{with:[1-9][0-9]{0,18}}',
       '/groddle/v1/chat/channels/{key:global|help|trade|group-[1-9][0-9]{0,18}}/threads/{lid:[1-9][0-9]{0,18}}', '/groddle/v1/chat/channels/{key:global|help|trade}/threads/{lid:[1-9][0-9]{0,18}}',
       '/groddle/v1/chat/ims/{with:[1-9][0-9]{0,18}}/threads/{line:[1-9][0-9]{0,18}}',
     ]);
-    for (const [, path, access] of routes) assert.equal(access, path.endsWith('/ingest') ? 'Public' : 'SignedIn', path);
+    const signed = (p) => p.endsWith('/ingest') || p.endsWith('/chat/line');
+    for (const [, path, access] of routes) assert.equal(access, signed(path) ? 'Public' : 'SignedIn', path);
     assert.match(c, /ServiceCall::verify\(\$request->header\(ServiceCall::HEADER\), 'POST', '\/groddle\/v1\/chat\/ingest', \$request->body, \$secret, time\(\)\)/);
+    assert.match(c, /ServiceCall::verify\(\$request->header\(ServiceCall::HEADER\), 'POST', '\/groddle\/v1\/chat\/line', \$request->body, \$secret, time\(\)\)/);
+    // The kept-line answer says yes or no only: no words, no author.
+    const line = c.slice(c.indexOf('public function line('), c.indexOf('public function line(') + 1400);
+    assert.match(line, /'status' => \$kept \? 'settled' : 'refused'/);
+    assert.match(line, /SELECT parent_lid, deleted_ms FROM/);
     assert.match(c, /->withHeader\('Cache-Control', 'private, no-store'\)->withHeader\('X-Robots-Tag', 'noindex'\)/);
     // The page draws the channels only for a signed-in reader; a visitor gets the sign-in line alone.
     const pages = src('src/CommunityPages.php');

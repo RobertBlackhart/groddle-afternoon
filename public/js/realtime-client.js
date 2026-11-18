@@ -430,7 +430,8 @@ export function createRealtimeClient({
         return;
       }
       case 'error':
-        emit('error', { code: String(msg.code || ''), message: String(msg.message || '') });
+        // A thread reply's refusal names its line (groddle-afternoon-server threads.go refuseReply, R5).
+        emit('error', { code: String(msg.code || ''), message: String(msg.message || ''), ...(msg.parent ? { parent: Number(msg.parent), channel: String(msg.channel || ''), old: msg.old === true } : {}) });
         return;
       default:
         // pong, and the kinds the server's modules send (groddle-afternoon-server/modules.go):

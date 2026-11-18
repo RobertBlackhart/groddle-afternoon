@@ -30,7 +30,7 @@ import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deletableChannel, deleteConfirmRows, lineLidOf, mayDelete } from '../public/js/chat-delete.js?v=c55a1043';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 import { bootDataFrom } from '../public/js/online-boot.js?v=d3834f20';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=98fff2d4';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=59b08b8e';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
 

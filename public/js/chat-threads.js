@@ -25,6 +25,8 @@ export const THREAD_TEXT = Object.freeze({
   placeholder: 'Reply in thread',
   inputLabel: 'Reply in thread',
   offline: 'Replies need you online. Try again in a moment.',
+  // R5, ours: a reply refused because its line is not there to reply to says its words in Global Chat instead.
+  sendGlobal: 'Send in Global instead',
   count: (n) => `${n} ${n === 1 ? 'reply' : 'replies'}`,
 });
 

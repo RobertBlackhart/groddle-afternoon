@@ -11,12 +11,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readZip } from '../tools/avatar-compositor/xfl.mjs';
 
-import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=09683d6b';
-import { TYPING_EVERY_MS, TYPING_MS, TYPING_OVERLAY, typingCounts } from '../public/js/features/realtime-feature.js?v=412edfed';
+import { createRealtimeClient, CORE_KINDS } from '../public/js/realtime-client.js?v=1108c7c5';
+import { TYPING_EVERY_MS, TYPING_MS, TYPING_OVERLAY, typingCounts } from '../public/js/features/realtime-feature.js?v=0fb7be85';
 import { BUTLER_IM_TEXT, BUTLER_IM_VERBS, HELP_AGAIN_MS, commandHelp, imDelayMs, imLine, imText, normalizeImPrefs, parseButlerIm } from '../public/js/butler-im.js?v=44783638';
 import { butlerImFeature, BUTLER_TAB } from '../public/js/features/butler-im-feature.js?v=aa146280';
 import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=29a6a4de';
-import { FEATURES } from '../public/js/features/index.js?v=dc26b0e2';
+import { FEATURES } from '../public/js/features/index.js?v=67eef62a';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

@@ -213,6 +213,7 @@
     "remake-own: * Reactions on chat lines (the remake's own addition, Austin 2026-11-04: \"Another": "chat-reactions"
   },
   "public/js/chat-threads.js": {
+    "ours: // R5, ours: a reply refused because its line is not there": "thread-reply-send-global",
     "remake-own: * Threads on chat lines (the remake's own addition, Austin 2026-11-04: \"Is it possible to": "chat-threads"
   },
   "public/js/chicken-scare.js": {
@@ -1182,6 +1183,9 @@
   },
   "public/js/ui/reports-sheet.js": {
     "remake-own: * Reactions (Austin 2026-11-18, the remake's own as the chat's are): under each message of a": "report-reactions"
+  },
+  "public/js/ui/social-drawer.js": {
+    "ours: * Ours: Glitch's chat had no threads (the register's": "thread-reply-send-global"
   },
   "public/js/ui/street-minimap.js": {
     "ours: // RIGHTCLICK: the map is ours; only a player's dot and a signpost open a": "right-click-menus",

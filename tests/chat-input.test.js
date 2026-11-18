@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CHAT_BUBBLE_CHARS, CHAT_MAX_CHARS, MAX_ROWS, bindChatInput, chatBubbleText, fitHeight, heldAtFocus, historyKey, keyWatch, oneLine, sendKey, strayRepeat } from '../public/js/ui/chat-input.js?v=4cde830b';
 import { FakeEl } from './social-fake-dom.js';
-import { MAX_CHAT } from '../public/js/realtime-client.js?v=09683d6b';
+import { MAX_CHAT } from '../public/js/realtime-client.js?v=1108c7c5';
 import { SERVER_DIR, SITE_DIR, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

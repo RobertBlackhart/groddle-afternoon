@@ -4741,6 +4741,28 @@
    ],
    "why": "Glitch's server held the player's items itself, so there was no save to write before an act; the remake's site ledger learns of a seed bought a moment ago through the save write, and a slow save used to drop the plant unsent behind a misleading \"did not answer\" (lane next, 2026-11-18).",
    "rows": []
+  },
+  {
+   "id": "thread-reply-send-global",
+   "title": "Chat threads online: a reply refused because its line is not there to reply to gives its words back, with a \"Send in Global instead\" button that says them in Global Chat on one tap (R5, G1025).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/social-drawer.js",
+     "symbol": "offerNode"
+    },
+    {
+     "file": "public/js/chat-threads.js",
+     "symbol": "THREAD_TEXT.sendGlobal"
+    },
+    {
+     "file": "public/js/features/groups-feature.js",
+     "symbol": "chatSayIn"
+    }
+   ],
+   "why": "Glitch's chat had no threads; the remake's threads refused a reply to an older line and lost the typed words. Austin chose the button (offered, one tap, never sent by itself) on 2026-11-18 (lane next).",
+   "rows": []
   }
  ]
 }
