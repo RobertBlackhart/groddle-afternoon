@@ -32,7 +32,7 @@ import {
   loadRecipeCatalogFromFile,
   makingSkillAdjustments,
   recipeTaskLimit,
-} from '../public/js/making.js?v=80957092';
+} from '../public/js/making.js?v=3ee33b55';
 import {
   assemblyCheck,
   assemblyEnergy,
@@ -121,7 +121,9 @@ describe('making cards (inc_making.js, main.js, spindle.js, loomer.js)', () => {
     assert.equal(recipeTaskLimit(RECIPE_CATALOG.general_fabric, ['recipe_task_limit_loomer_1']), 25);
     assert.equal(recipeTaskLimit(RECIPE_CATALOG.grade_aa_earth_block, ['recipe_task_limit_machines_1']), 15);
     assert.equal(recipeTaskLimit(RECIPE_CATALOG.essence_of_gandlevery, ['recipe_task_limit_tincturing_1']), 20);
-    assert.equal(recipeTaskLimit(RECIPE_CATALOG.spin_thread, ['recipe_task_limit_loomer_1']), DEFAULT_TASK_LIMIT, 'no source limit');
+    // #507: the spin verb had no task limit at all (spindle.js spin): the pack and the energy set it.
+    assert.equal(recipeTaskLimit(RECIPE_CATALOG.spin_thread, ['recipe_task_limit_loomer_1']), Infinity, 'no source limit');
+    assert.equal(recipeTaskLimit(RECIPE_CATALOG.divine_crepes ? { ...RECIPE_CATALOG.divine_crepes, taskLimit: 0 } : null, []), DEFAULT_TASK_LIMIT);
   });
 
   it('burns 20 / 40% less Blockmaker fuel (inc_making.js:368-375)', () => {

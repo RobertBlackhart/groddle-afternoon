@@ -377,6 +377,30 @@ export function batchWearUnits(recipe, count) {
   return grinder && !barnacle ? Math.round(n / 3) || 1 : n;
 }
 
+/** #507: the verbs' refusal when the tool has too few uses for the whole run (spindle.js 397, smelter.js 535, ore_grinder.js 533). */
+export const VERB_WORN_LINES = Object.freeze({
+  spindle: "Your Spindle doesn't have enough uses left. Try repairing it, replacing it, or spinning a smaller amount of Fiber.",
+  smelter: "Your Smelter doesn't have enough uses left. Try repairing it, replacing it, or smelting a smaller amount of rock.",
+  ore_grinder: "Your Grinder doesn't have enough uses left. Try repairing it, replacing it, or crushing a smaller amount.",
+});
+
+/**
+ * #507: a verb batch takes its whole wear in one run (runSkillPackage tool_wear_multiplier: threads,
+ * ingots, a third of the chunks), so a tool with fewer uses left refuses it before it starts rather
+ * than breaking part way. The refusal line, or null when the run may start.
+ */
+export function verbBatchWornLine(inv, recipe, qty, opts = {}) {
+  if (!isVerbBatchRecipe(recipe) || !opts.toolState) return null;
+  const upgrades = Array.isArray(opts.upgrades) ? opts.upgrades : [];
+  const adjust = makingSkillAdjustments(recipe, opts.learned, upgrades);
+  const base = opts.toolWear || adjust.toolWear || recipe.toolWear || 1;
+  const tool = opts.stationTool === recipe.tool ? recipe.tool : recipeToolInUse(inv, recipe.tool, opts.toolState, base);
+  const total = Math.floor(base * batchWearUnits(recipe, qty) * toolWearMultiplier(tool, upgrades) + 1e-9);
+  if (total <= 0 || canUseTool(opts.toolState, tool, total).ok) return null;
+  const kind = /spindle/.test(recipe.tool) ? 'spindle' : recipe.tool === 'smelter' ? 'smelter' : 'ore_grinder';
+  return VERB_WORN_LINES[kind];
+}
+
 /** ore_grinder.js 336, grand_ol_grinder.js: the refusal without a pouch. */
 export const NEED_POUCH_LINE = 'You need an Elemental Pouch to use this.';
 
@@ -565,12 +589,28 @@ export function recipeEnergyCost(recipe, learned, upgrades = []) {
 export const DEFAULT_TASK_LIMIT = 99;
 
 /**
+ * #507 (G1026): the tools whose recipes are a verb in the source, not a catalog recipe: smelter.js
+ * smelt, ore_grinder.js crush (grand_ol_grinder.js the same), spindle.js / splendid_spindle.js spin.
+ * Their count chooser went up to what the pack held, with only the energy check (no task_limit), so
+ * a spin of 2,051 Fiber (Spin Doctor) was possible. They take no cap here either.
+ */
+export const VERB_BATCH_TOOLS = Object.freeze(['smelter', 'ore_grinder', 'grand_ol_grinder', 'spindle', 'splendid_spindle']);
+
+/** A recipe made by one of the source's verbs (VERB_BATCH_TOOLS). */
+export function isVerbBatchRecipe(recipe) {
+  return VERB_BATCH_TOOLS.includes(recipe?.tool);
+}
+
+/**
  * The most units one make can ask for: the recipe's task_limit (main.js
  * recipe catalog, the client's quantity cap), after the batch-size cards
- * (get_task_limit_multiplier). Recipes the source gave no limit keep 99.
+ * (get_task_limit_multiplier). Recipes the source gave no limit keep 99;
+ * the verb recipes (VERB_BATCH_TOOLS) have none: Infinity, so the pack and
+ * the energy set it.
  */
 export function recipeTaskLimit(recipe, upgrades = []) {
   const base = Number(recipe?.taskLimit) || 0;
+  if (!(base > 0) && isVerbBatchRecipe(recipe)) return Infinity;
   if (!(base > 0)) return DEFAULT_TASK_LIMIT;
   return Math.max(1, adjustedTaskLimit(base, recipe.tool, upgrades));
 }
@@ -1479,6 +1519,11 @@ function unitDuration(session) {
  */
 export function craftUnitDurations(recipe, qty, learned, upgrades = []) {
   const n = Math.max(1, Math.floor(Number(qty) || 1));
+  if (isVerbBatchRecipe(recipe)) {
+    // #507: the verb's one run, the package's duration then its add_duration, laid over the units.
+    const base = craftDurationFor(recipe, learned, upgrades);
+    return Array.from({ length: n }, (_, i) => (i === 0 ? base : 0) + verbUnitAddMs(recipe, i + 1, upgrades));
+  }
   const adjust = makingSkillAdjustments(recipe, learned, upgrades);
   if (adjust.makingType === 'transmogrification') {
     return Array.from({ length: n }, (_, i) => Math.round(transmogUnitSeconds(i + 1) * 1000 * adjust.waitMultiplier));
@@ -1488,6 +1533,23 @@ export function craftUnitDurations(recipe, qty, learned, upgrades = []) {
     return Array.from({ length: n }, (_, i) => each + (i === 0 ? MACHINE_EXTRA_WAIT_MS : 0));
   }
   return null;
+}
+
+/**
+ * #507: what unit k (1-based) adds to a verb batch's run, the source's add_duration a unit at a time:
+ * spindle.js 389-391 (0.2 s a Thread up to 10, then 0.1 s), ore_grinder.js 506-515 (0.2 s a chunk up
+ * to 10, then 0.1 s; Refined Speed I / II take 20 / 40% off), smelter.js 524-530 (2, 1.6, 1.2, 0.8,
+ * 0.4 s for the first five ingots, then 0.4 s each).
+ */
+export function verbUnitAddMs(recipe, k, upgrades = []) {
+  const tool = recipe?.tool;
+  if (tool === 'smelter') return [2000, 1600, 1200, 800, 400][k - 1] ?? 400;
+  const step = k <= 10 ? 200 : 100;
+  if (tool === 'ore_grinder' || tool === 'grand_ol_grinder') {
+    if (upgrades.includes('refining_time_2')) return step * 0.6;
+    if (upgrades.includes('refining_time_1')) return step * 0.8;
+  }
+  return step;
 }
 
 /** Advance a making timer without touching inventory or player stats. */

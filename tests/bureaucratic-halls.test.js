@@ -16,7 +16,7 @@ import {
   HALL_LEAVE_VERB,
   bureaucraticHallsFeature,
   hallSceneTsid,
-} from '../public/js/features/bureaucratic-halls-feature.js?v=8e57d2e4';
+} from '../public/js/features/bureaucratic-halls-feature.js?v=405be922';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=1d6610ef';
 import { LEGALIZE_HALL_TSID, LEGALIZE_SHARED_HALL } from '../public/js/legalize-it.js?v=a5016c3a';
 

@@ -28,7 +28,7 @@
 
 import { addItem, countItem, ensureItem, itemIcon, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
-import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=80957092';
+import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=3ee33b55';
 import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8b81947e';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=e8de6d53';

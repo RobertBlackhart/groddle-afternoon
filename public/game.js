@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=67eef62a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1e613e49';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -628,13 +628,14 @@ import {
   hasTool,
   MAKING_TOOL_SKILLS,
   recipeTaskLimit,
+  verbBatchWornLine,
   recipeToolInUse,
   pluralizeItem,
-} from './js/making.js?v=80957092';
+} from './js/making.js?v=3ee33b55';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=8a388807';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=8f617c14';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=d5785ef4';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=7fdd6a0a';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=a5301d82';
 import {
@@ -29073,6 +29074,14 @@ function runMakeCraft(key, qty) {
   }
   if (!check.ok) {
     toast(makeBlockedLine(recipe, check));
+    renderMakePanel();
+    return;
+  }
+  // #507: a spin, smelt or crush takes its whole wear in one run (spindle.js 397).
+  const worn = verbBatchWornLine(inv, recipe, n, opts);
+  if (worn) {
+    toast(worn);
+    pushActivity(worn);
     renderMakePanel();
     return;
   }
