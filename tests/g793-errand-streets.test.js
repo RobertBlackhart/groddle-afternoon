@@ -84,7 +84,8 @@ describe('G793: the Broken Teleporter lands only on a street a road reaches', ()
 
 describe('G793: the other street-picking errands already ask the roads', () => {
   it('Contraband, the haunts, the nostalgia boot street, the lonely spirit, map routes', () => {
-    assert.match(read('js/features/smuggling-feature.js'), /engine\.query\?\.\('streetsReachable', engine\)/);
+    // #480: Contraband asks the roads on foot from the run's start (streetsWalkable: closed roads closed, no subway or Teleporter).
+    assert.match(read('js/features/smuggling-feature.js'), /engine\.query\?\.\('streetsWalkable', start, engine\)/);
     assert.match(read('game.js'), /reachable: features\.query\('streetsReachable', engine\) \|\| null/);
     assert.match(read('js/features/juju-bandits-feature.js'), /engine\.query\?\.\('openStreetNear', pick\.tsid, engine/);
     // R11 (G969): the lonely spirit and map routes walk the street graph, which holds the closed roads.

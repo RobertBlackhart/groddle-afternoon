@@ -191,7 +191,13 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
 
   it('the GPS lights a Light Beam or a subway entrance before a post (map-routes-feature placeHighlight)', () => {
     const feature = readFileSync(join(PUB, 'js/features/map-routes-feature.js'), 'utf8');
-    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(roads\(engine\), rides, routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
+    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(roads\(engine\), ridesNow\(\), routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
+    // #480: only a smuggling route drops the rides; a route set on the Map still rides where it did.
+    assert.match(feature, /const ridesNow = \(\) => routeRides\(rides, state\.route\?\.source\);/);
+    assert.match(feature, /rides: routeRides\(rides, opts\.source \|\| 'player'\),/);
+    // #500: the route's own hop through a post still travels at once (no walk first: armWhenThere is the world click's).
+    assert.match(feature, /if \(engine\.travel\) engine\.travel\(step\.next, \{ label: c\.label \|\| label\(step\.next\), arrive: c\.arrive \}\);/);
+    assert.doesNotMatch(feature, /armWhenThere/);
     // Underground: the Red Button for a ride, the stairs once off at the route's stop.
     assert.match(feature, /const stairs = doorTargets\(engine\)\.find\(\(t\) => sameStreet\(t\.door\?\.connect\?\.street, routeStreet\(engine\)\)\);/);
     assert.match(readFileSync(join(PUB, 'js/features/puzzles-feature.js'), 'utf8'), /routeTo: t\.dest,\n\s+routeVerb: BEAM_UP_VERB,/);
