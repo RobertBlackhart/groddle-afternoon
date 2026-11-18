@@ -23,9 +23,9 @@ import {
   sadnessMax,
   yardClassCap,
 } from '../public/js/animal-crowding.js?v=1966bc21';
-import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=0bf703b3';
+import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=6fee6d54';
 import { homeStreetLayout, normalizeCultivationState } from '../public/js/home-cultivation.js?v=57afc9e2';
-import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=b42d2367';
+import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=f99088bd';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

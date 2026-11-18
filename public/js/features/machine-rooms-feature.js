@@ -91,7 +91,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inv
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { nearestSurfaceY } from '../walk-surface.js?v=c399a2f8';
+import { nearestSurfaceY } from '../walk-surface.js?v=e8de6d53';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { createSheetLoader } from '../sprite-sheets.js?v=11d9014e';
 import {

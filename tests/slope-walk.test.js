@@ -14,7 +14,7 @@ import { isStandable, platformYAt, platformsScreen, resolveGround } from '../pub
 import { NORMAL_BUFF, avatarGround, stepAvatar } from '../public/js/avatar-step.js?v=a6f5a99b';
 import { convertLocationXml } from '../public/js/location-xml.js?v=9bae75b2';
 import { avatarAnimState } from '../public/js/avatar-anims.js?v=fb921bf4';
-import { landingY } from '../public/js/walk-surface.js?v=c399a2f8';
+import { landingY } from '../public/js/walk-surface.js?v=e8de6d53';
 
 const root = join(import.meta.dirname, '..');
 const babySteppes = JSON.parse(readFileSync(join(root, 'public/assets/streets/GM416LNIKVLM1.json'), 'utf8'));

@@ -94,3 +94,28 @@ export function nearestSurfaceY(platforms, x, refY, solid = isItemSolid) {
   }
   return best;
 }
+
+/** How far a walker looks up or down from its feet for the line it walks on (a step, a slope). */
+export const WALKER_REACH_PX = 24;
+/** The most a walker's feet move to a new line in one frame (a step where two lines meet). */
+export const WALKER_STEP_PX = 1.5;
+
+/**
+ * #497: a walking animal's feet y for this frame at x (game.js followWalkFloor: Piggies, Chickens).
+ * On its line it follows it: a step where two lines meet is taken over a few frames. A walker whose
+ * x jumped (multiplayer: a shared path snaps it to where the server's walk has it after a hidden tab
+ * or a reload, js/street-creatures.js followPath SNAP_PX) can land where its line is more than
+ * WALKER_REACH_PX above or below its feet; it then stands on the line nearest its feet at once, as
+ * the server kept every NPC on its platform line. Before, it kept the old y and walked on inside the
+ * ground (the front grass hid its legs) or in the air. Unchanged with no line at x at all.
+ */
+export function walkerFloorY(platforms, x, y, dt = 1, solid = isItemSolid) {
+  const near = walkSurfaceY(platforms, x, y, { up: WALKER_REACH_PX, down: WALKER_REACH_PX }, solid);
+  if (!Number.isFinite(near)) {
+    const any = nearestSurfaceY(platforms, x, y, solid);
+    return Number.isFinite(any) ? any : y;
+  }
+  const d = near - y;
+  const most = WALKER_STEP_PX * Math.max(1, dt);
+  return y + (Math.abs(d) <= most ? d : Math.sign(d) * most);
+}

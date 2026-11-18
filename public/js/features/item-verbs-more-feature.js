@@ -52,7 +52,7 @@ import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy
 import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=fc4fb6ca';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=1c44e7c3';
-import { landingY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
+import { landingY, walkSurfaceY } from '../walk-surface.js?v=e8de6d53';
 import { overlayOrStandIn } from '../overlay-stand-in.js?v=e206bc4b';
 import {
   BUNDLE_OF_JOY,

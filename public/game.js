@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=770943ac';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c80b68dc';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -835,7 +835,7 @@ import {
 } from './js/travel.js?v=7fd6e363';
 import { facingScaleX, facingFromVelocity } from './js/avatar.js?v=c4da73ea';
 import { AFK_TIMEOUT_MS, ANIMS, ANIM_FPS, CORE_FRAMES, EMOTIONS, EMOTION_MS, IDLE_SHEETS, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, animForState, avatarAnimState, createIdleClock, crowdScaleX, idleSheetFor } from './js/avatar-anims.js?v=fb921bf4';
-import { followFloorY, landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=c399a2f8';
+import { followFloorY, landingY, stackRestY, walkerFloorY, walkSurfaceY } from './js/walk-surface.js?v=e8de6d53';
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=a6f5a99b';
 import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from './js/user-path.js?v=68e6892c';
@@ -1033,7 +1033,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=87ed5120';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=61780906';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=eabce31a';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';
@@ -16281,7 +16281,12 @@ function followWalkFloor(spr, dt = 1) {
   const from = Number.isFinite(spr._floorX) ? spr._floorX : spr.x;
   spr._floorX = spr.x;
   const y = followFloorY(streetPlatforms, from, spr.y, spr.x, { up: 24, down: 24 });
-  if (!Number.isFinite(y)) return;
+  // #497: a walker that lost its line (a jump along a sloped shared path, past the 24 px window) stands
+  // on the nearest line instead of keeping its old height and walking inside the ground.
+  if (!Number.isFinite(y)) {
+    spr.y = walkerFloorY(streetPlatforms, spr.x, spr.y, dt);
+    return;
+  }
   // A step where two lines meet is taken over a few frames, not in one hop; a jump lands.
   const d = y - spr.y;
   const most = 1.5 * Math.max(1, dt);
