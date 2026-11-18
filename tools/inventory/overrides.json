@@ -1967,9 +1967,6 @@
   "item:cup_of_water": {
     "reason": "how: Get water from the Water Cooler in a Bureaucratic Hall (js/features/bureaucratic-halls-feature.js:166 calls getWater, js/water-cooler.js:80 adds the cup)"
   },
-  "item:drink_ticket": {
-    "reason": "how: Handed to you when you take the quest Beelzebooze, and a mourner at your grave can leave one once you have started it (js/features/hell-tickets-feature.js:375-377 hell_quest onAccepted and 145-147 recognizeDeath's grant_item, grantTicket at 139-142)"
-  },
   "item:game_box": {
     "reason": "how: Made when all three SWFs are in your pack at once (js/features/swf-feature.js:190-197, the create stage after drop1-drop3)"
   },

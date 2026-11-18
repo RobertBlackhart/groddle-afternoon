@@ -43,7 +43,7 @@ const ANIMAL_GIVES = {
 const GSJS_HOW = {
   'npc_crab>crabato_juice': 'hug it',
   'npc_crab>crabphones': 'play it a musicblock',
-  'hell_bartender>wine_of_the_dead': 'trade a Drink Ticket',
+  'hell_bartender>wine_of_the_dead': 'trade a Diabolical Drink Ticket',
   'hell_bartender>drink_ticket': null,
   'npc_smuggler>gem_diamond': 'talk to them',
   'npc_kitty_chicken>grain': 'squeeze it',

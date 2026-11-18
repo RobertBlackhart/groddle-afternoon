@@ -978,7 +978,7 @@
       "assets/ui/rook_star_bg.png": "41ff9651",
       "assets/ui/rook_star_stars.png": "a0b900d9",
       "contribute/data.json": "5041fe65",
-      "encyclopedia/items/data.json": "e5860455",
+      "encyclopedia/items/data.json": "1d6c6a4d",
       "encyclopedia/search.json": "76ce0ba2",
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",

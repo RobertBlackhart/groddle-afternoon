@@ -25,7 +25,14 @@
  *    Ranger and Bureaucratic Hall stores, assets/content/recipes.json,
  *    making-items.json (food and drink use), buffs.json, js/buffs.js, the
  *    harvest systems (trants, mining, resource nodes, soil) and
- *    tools/job-obtainable.mjs supplyConversions (garden, transforms, machines).
+ *    tools/job-obtainable.mjs supplyConversions (garden, transforms, machines);
+ *    the Race Ticket Dispenser (js/races.js RACE_STORE_ITEMS), Imagination
+ *    cards that put an item in your pack (js/imagination-data.js, dealt per
+ *    js/imagination-remake.js), the items and rewards of quests the game
+ *    offers (quests.json, the inventory's quest status), the Party Spaces'
+ *    goods, the Street Creator Trophies and the Glitchmas Cracker's table;
+ *    then tools/catalog/handouts.mjs for what a person or scene hands over
+ *    (G1021: never the file name of whatever gave it).
  *
  * Words about the original game on the pages are Tiny Speck's, from GSJS.
  * Words about the remake are ours.
@@ -47,6 +54,7 @@ import { neverReleased, neverReleasedNote, neverReleasedTag } from '../encyclope
 import { loadCosts } from './costs.mjs';
 import { loadHero } from './hero.mjs';
 import { loadUses } from './uses.mjs';
+import { loadHandouts } from './handouts.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..', '..');
@@ -313,8 +321,15 @@ function iconOf(id, files) {
 
 /* -- The remake ---------------------------------------- */
 
-async function readRemake(names) {
+async function readRemake(names, questOffered = () => false) {
   const vendor = await import(js('vendor.js'));
+  const races = await import(js('races.js'));
+  const raceCourses = await import(js('race-courses.js'));
+  const imaginationData = await import(js('imagination-data.js'));
+  const imaginationRemake = await import(js('imagination-remake.js'));
+  const partySpaces = await import(js('party-spaces.js'));
+  const streetJobs = await import(js('street-jobs.js'));
+  const seasons = await import(js('seasons.js'));
   const foxes = await import(js('foxes.js'));
   const bureaucracy = await import(js('bureaucracy.js'));
   const trants = await import(js('trants.js'));
@@ -349,6 +364,13 @@ async function readRemake(names) {
   for (const o of foxes.FOX_RANGER_STORE.items) push(soldBy, o.classTsid, { key: 'fox_ranger', label: foxes.FOX_RANGER_STORE.name, price: o.cost });
   vendors.push({ key: 'bureaucracy', label: 'Bureaucratic Hall clerk' });
   for (const [id, row] of Object.entries(bureaucracy.BUREAUCRACY_ITEMS)) push(soldBy, id, { key: 'bureaucracy', label: 'Bureaucratic Hall clerk', price: row.cost });
+  // The Race Ticket Dispenser (store 20, js/races.js RACE_STORE_ITEMS): the tickets for games the
+  // remake runs (features/races-feature.js buyTicket's playable: It, the Hog Haul and the courses).
+  const raceRuns = new Set(['it_game', races.HOG_HAUL_GAME_ID, ...raceCourses.RACE_COURSE_IDS]);
+  vendors.push({ key: 'race_ticket_dispenser', label: 'Race Ticket Dispenser' });
+  for (const o of races.RACE_STORE_ITEMS) {
+    if (raceRuns.has(o.classTsid.replace(/^race_ticket_/, ''))) push(soldBy, o.classTsid, { key: 'race_ticket_dispenser', label: 'Race Ticket Dispenser', price: o.cost });
+  }
 
   // Recipes (assets/content/recipes.json, from catalog_recipes.js by build-recipes.mjs).
   const madeBy = new Map();
@@ -393,6 +415,36 @@ async function readRemake(names) {
     const c = { inputs: [bead], tool: null, outputs: [n.produces], source: 'assembly', count: n.required };
     push(otherMade, n.produces, c);
     push(otherUses, bead, c);
+  }
+
+  // Street Creator Trophies (js/street-jobs.js planStreetTrophies): one of each piece becomes the trophy.
+  for (const family of streetJobs.TROPHY_FAMILIES) {
+    const pieces = streetJobs.TROPHY_PIECES.filter((id) => id.startsWith(`trophy_street_creator_${family}_piece`));
+    const c = { inputs: pieces, tool: null, outputs: [`trophy_street_creator_${family}`], source: 'trophy' };
+    push(otherMade, c.outputs[0], c);
+    for (const piece of pieces) push(otherUses, piece, c);
+  }
+
+  // Given: lines for the tables that hand an item over (G1021), in our words.
+  const given = new Map();
+  // Imagination cards that put an item in your pack (rewards type 8), for the cards the remake deals.
+  for (const [id, card] of Object.entries(imaginationData.IMAGINATION_UPGRADES)) {
+    if (!imaginationRemake.isOfferedInRemake(id)) continue;
+    for (const r of card.rewards || []) if (r.type === 8 && r.data?.class_id) push(given, r.data.class_id, { text: `Comes with the Imagination upgrade card “${card.name}”.`, from: `imagination:${id}` });
+  }
+  // Quests the game offers: what you are handed on taking one (giveItems) and its item rewards.
+  const quests = content('quests.json');
+  for (const [id, q] of Object.entries(quests)) {
+    if (!questOffered(id)) continue;
+    const title = `“${String(q.title || id).trim()}”`;
+    for (const g of q.giveItems || []) push(given, g.classTsid, { text: `Handed to you when you take the quest ${title}.`, from: `quest:${id}` });
+    for (const r of Object.values(q.rewards?.items || {})) push(given, r.class_tsid, { text: `A reward for the quest ${title}.`, from: `quest:${id}` });
+  }
+  // The Party Spaces (js/party-spaces.js): their goods, tools and keys lie there while the party lasts.
+  for (const space of Object.values(partySpaces.PARTY_SPACES)) {
+    for (const list of [space.goods, space.tools, space.keys]) {
+      for (const row of list || []) push(given, row.classTsid || row[0], { text: `Lying in the ${space.label} Party Space while a party is on.`, from: `party:${space.label}` });
+    }
   }
 
   // Harvests: each as { text, tool? } in our words, naming the remake's own labels.
@@ -457,6 +509,8 @@ async function readRemake(names) {
   }
   const rockName = (id) => `${article(names.get(id)?.name || id)} ${names.get(id)?.name || id}`;
   for (const [id, rocks] of cracked) push(harvests, id, { text: `Cracked out of ${orList([...new Set(rocks)].map(rockName))}` });
+  // The Glitchmas Cracker (js/seasons.js CRACKER, features/seasons-feature.js popCracker rolls its table).
+  for (const id of dropIds(seasons.CRACKER.table)) push(harvests, id, { text: `Sometimes pops out of ${rockName('glitchmas_cracker')} when someone helps you pull it` });
   const soilIds = new Set([...tableIds(patches.SOIL_DROP_TABLES), ...Object.keys(patches.SOIL_ITEM_DEFS)]);
   for (const id of soilIds) push(harvests, id, { text: 'Sometimes found while digging soil patches, with Soil Appreciation.' });
   for (const id of Object.keys(mining.PICK_TOOLS)) push(toolUses, id, { text: 'Mine rocks for chunks' });
@@ -485,7 +539,7 @@ async function readRemake(names) {
     return `${s.name}${roman && Object.values(skills).some((o) => o.name === s.name && o.classTsid !== s.classTsid) ? ` ${roman}` : ''}`;
   };
   return {
-    vendors, soldBy, madeBy, usedIn, toolFor, otherMade, otherUses, harvests, toolUses, starter, isTool, itemBuffs, questTimers,
+    vendors, soldBy, madeBy, usedIn, toolFor, otherMade, otherUses, harvests, given, toolUses, starter, isTool, itemBuffs, questTimers,
     uses: makingItems, buffItems: buffsMod.BUFF_ITEM_CATALOG, skillName, names,
   };
 }
@@ -509,33 +563,6 @@ export function readQuestTimers(gsjs = GSJS) {
   }
   return out;
 }
-
-/** Remake files that hand items out (inventory evidence `addItem at js/...`), named for players. */
-const FEATURE_NAMES = {
-  'doors': 'the locked doors and their keys',
-  'door-keys': 'the door keys lying on their streets',
-  'party-spaces': 'the Party Spaces',
-  'street-jobs': 'street projects',
-  'juju-camp': 'the Juju camp quest',
-  'hell-bar': 'the Hell Bar',
-  'newxp': 'the new player tour',
-  'street-furniture': 'the street furniture',
-  'esquibeth': 'the Esquibeth quest',
-  'teleportation': 'teleportation',
-  'smuggling': 'smuggling',
-  'small-items': 'the small pack items',
-  'races': 'the races',
-  'puzzle-scenes': 'the puzzle streets',
-  'imagination': 'Imagination upgrades',
-  'crabs': 'the crabs and their crabphones',
-  'butler': 'the Butler',
-  'bureaucracy': 'the Bureaucratic Hall',
-  'making': 'making',
-  'ghost-quest': 'the Phantom hunt',
-  'home-tower': 'the home Tower',
-  'seasons': 'the holidays',
-  'giant-icons': 'the Giants’ shrines',
-};
 
 /** Stores the inventory names that are not ordinary street spirits (evidence `vendor:<key>`). */
 const EXTRA_VENDORS = {
@@ -570,16 +597,21 @@ export function howOf(evidence) {
   return text ? (/[.!?]$/.test(text) ? text : `${text}.`) : null;
 }
 
-/** What the inventory says gave a source item to the player, when no other route above names it. */
-function evidenceWay(evidence, quests, takeable) {
+/**
+ * What the inventory says gave a source item to the player, when no table and no handover names it,
+ * or null when it says nothing a player can follow (G1021: the page never names the remake file
+ * that gave it; tools/catalog/handouts.mjs takes such an item). A quest reward counts only for a
+ * quest the game offers.
+ */
+function evidenceWay(evidence, quests, takeable, questOffered = () => true) {
   const ob = /obtainable: ([^|]*)/.exec(evidence || '')?.[1]?.trim() || '';
   let m;
   if ((m = /^vendor:([a-z0-9_]+)/.exec(ob))) return { kind: 'sold', vendor: m[1], label: EXTRA_VENDORS[m[1]] || m[1].replace(/_/g, ' ') };
   if ((m = /^drop table [a-z0-9_]+ \(skill package ([a-z0-9_]+)/.exec(ob)) && PACKAGE_ACTS[m[1]]) {
     return { kind: 'harvest', harvest: { text: `Sometimes drops when you ${PACKAGE_ACTS[m[1]]}.` } };
   }
-  if ((m = /^reward of quest ([a-z0-9_]+)/.exec(ob))) return `A reward for the quest ${quests[m[1]]?.title ? `“${quests[m[1]].title}”` : m[1]}.`;
-  if ((m = /^given on accepting quest ([a-z0-9_]+)/.exec(ob))) return `Handed to you when you take the quest ${quests[m[1]]?.title ? `“${quests[m[1]].title}”` : m[1]}.`;
+  if ((m = /^reward of quest ([a-z0-9_]+)/.exec(ob))) return questOffered(m[1]) ? `A reward for the quest ${quests[m[1]]?.title ? `“${quests[m[1]].title}”` : m[1]}.` : null;
+  if ((m = /^given on accepting quest ([a-z0-9_]+)/.exec(ob))) return questOffered(m[1]) ? `Handed to you when you take the quest ${quests[m[1]]?.title ? `“${quests[m[1]].title}”` : m[1]}.` : null;
   if (/^street-project/.test(ob)) return 'Dropped as a reward when you finish a street project.';
   if (/^imagination/.test(ob)) return 'Comes with an Imagination upgrade card.';
   if (/^drop:egg_plant_pet/.test(ob)) return 'Petting an Egg Plant can drop one, any time of year.';
@@ -594,16 +626,13 @@ function evidenceWay(evidence, quests, takeable) {
   if (/giant-icons-feature\.js/.test(ob)) return 'A Giant’s shrine hands it over as your favor fills.';
   if (/home cultivation/.test(evidence)) return 'Placed in your home yard with Cultivate.';
   if (!takeable || /street-ecology/.test(evidence)) return 'Found out in the world.';
-  for (const [, file] of String(evidence).matchAll(/(?:js\/)?(?:features\/|quest-rooms\/)?([a-z0-9-]+?)(?:-feature)?\.js/g)) {
-    if (FEATURE_NAMES[file]) return `Part of ${FEATURE_NAMES[file]} in the remake.`;
-  }
   if (/spawned|placed/.test(evidence)) return 'Found out in the world.';
-  return 'The remake gives it out as you play.';
+  return null;
 }
 
 /* -- Build --------------------------------------------- */
 
-export async function buildCatalog({ inventory = readInventory(), evidence = readEvidence(), encyclopedia = null } = {}) {
+export async function buildCatalog({ inventory = readInventory(), evidence = readEvidence(), questStatus = readQuestStatus(), encyclopedia = null } = {}) {
   // The encyclopedia's cross references (tools/encyclopedia/data.mjs): quests, creatures, people and places of each item.
   const ency = encyclopedia || await loadEncyclopedia();
   const ids = [...inventory.keys()].filter((id) => existsSync(join(GSJS, 'items', `${id}.js`)));
@@ -621,7 +650,9 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
     .sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id));
   const inCatalog = new Set(listed.map((i) => i.id));
   const names = new Map([...all.values()].map((i) => [i.id, { name: i.name, plural: i.plural }]));
-  const remake = await readRemake(names);
+  // G1021: only quests the game offers are a way to get anything (questOffered).
+  const questOffered = (id) => QUEST_OFFERED.has(questStatus.get(id));
+  const remake = await readRemake(names, questOffered);
   // Recipe skills, energy and time, and vendors' sell prices (tools/catalog/costs.mjs).
   const costs = await loadCosts(root);
   // The picture at the top of each page (tools/catalog/hero.mjs).
@@ -629,6 +660,8 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   // "What it is for" beyond recipes and food (tools/catalog/uses.mjs, uses.json).
   const usesFor = await loadUses(root);
   const quests = content('quests.json');
+  const gsjsName = (id) => names.get(id)?.name || (existsSync(join(GSJS, 'items', `${id}.js`)) ? readGsjsItem(id).name : '');
+  const { byItem: handouts, problems } = await loadHandouts({ nameOf: gsjsName, quests, offered: questOffered, skillName: remake.skillName });
   const iconFiles = new Set(readdirSync(ICONS));
   const musicblocks = JSON.parse(readFileSync(join(pub, 'musicblocks', 'data.json'), 'utf8'));
   const musicCards = new Set(musicblocks.sets.flatMap((s) => s.blocks.map((b) => b.id)));
@@ -636,7 +669,8 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   const entries = listed.map((it) => {
     const inv = inventory.get(it.id);
     const status = inv.status;
-    const ways = status === 'source' ? waysFor(it.id, remake, evidence.get(it.id), quests, it.takeable) : [];
+    const ways = status === 'source' ? waysFor(it.id, remake, evidence.get(it.id), quests, it.takeable, handouts, questOffered) : [];
+    if (status === 'source' && !ways.length) problems.push(`${it.id}: in the remake, but no table or handover says how to get it (tools/catalog/handouts.mjs)`);
     return {
       it,
       status,
@@ -662,6 +696,7 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
     categories: CATEGORIES.filter((c) => entries.some((e) => e.category === c)),
     gets: GETS.map(({ key, label }) => ({ key, label })),
     vendors: [...remake.vendors, ...Object.entries(EXTRA_VENDORS).map(([key, label]) => ({ key, label }))]
+      .filter((v, i, all) => all.findIndex((o) => o.key === v.key) === i)
       .filter((v) => entries.some((e) => e.ways.some((w) => w.vendor === v.key))),
     items: entries.map((e) => ({
       id: e.it.id,
@@ -686,13 +721,26 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   for (const e of entries) e.hero = heroFor(e.it.id, e.icon);
   entries.forEach((e, i) => {
     files[`${OUT}/${e.it.id}/index.html`] = itemPage(e, {
-      prev: entries[i - 1], next: entries[i + 1], remake, inCatalog, names, musicCards, quests, total: entries.length, index: i, ency, costs, usesFor,
+      prev: entries[i - 1], next: entries[i + 1], remake, inCatalog, names, musicCards, quests, total: entries.length, index: i, ency, costs, usesFor, questStatus,
     });
   });
   // Each page's icons and art carry their content keys (tools/data-versions/build.mjs keyAssetUrls).
   const keys = committedMap();
   for (const path of Object.keys(files)) if (path.endsWith('.html')) files[path] = keyAssetUrls(files[path], path, keys);
-  return { files, data, excludedIds: excluded, stubIds: stubs };
+  return { files, data, excludedIds: excluded, stubIds: stubs, problems };
+}
+
+/** Quest statuses the game offers a quest in (the inventory's): solo, rebuilt or between players. */
+export const QUEST_OFFERED = new Set(['source', 'rebuilt', 'solo', 'multiplayer']);
+
+/** The inventory's quest statuses, id -> status. */
+export function readQuestStatus(path = INVENTORY_DB) {
+  const db = new DatabaseSync(path, { readOnly: true });
+  try {
+    return new Map(db.prepare("SELECT id, status FROM entities WHERE kind = 'quest'").all().map((r) => [r.id, r.status]));
+  } finally {
+    db.close();
+  }
 }
 
 export function readEvidence(path = INVENTORY_DB) {
@@ -711,19 +759,28 @@ export const GETS = [
   { key: 'other', label: 'Found or given' },
 ];
 
-/** Every way a player gets this item in the remake today: [{ kind, vendor?, recipe?, conv?, harvest?, text? }]. */
-function waysFor(id, remake, evidence, quests, takeable) {
+/**
+ * Every way a player gets this item in the remake today: [{ kind, vendor?, recipe?, conv?, harvest?, text? }].
+ * The tables first (stores, recipes, conversions, harvests and drops, what quests and cards hand
+ * over), then the handovers (tools/catalog/handouts.mjs); an inventory override's `how:` only when
+ * no handover names the item; the inventory's evidence only when nothing else does. [] when nothing
+ * says how (buildCatalog reports it: G1021).
+ */
+function waysFor(id, remake, evidence, quests, takeable, handouts, questOffered) {
   const ways = [];
   for (const v of remake.soldBy.get(id) || []) ways.push({ kind: 'sold', vendor: v.key, label: v.label, price: v.price });
   for (const r of remake.madeBy.get(id) || []) ways.push({ kind: 'made', recipe: r });
   for (const c of remake.otherMade.get(id) || []) ways.push({ kind: 'made', conv: c });
   for (const h of remake.harvests.get(id) || []) ways.push({ kind: 'harvest', harvest: h });
   if (remake.starter.has(id)) ways.push({ kind: 'other', text: 'Every new player starts with one.' });
-  const how = howOf(evidence);
+  for (const g of remake.given.get(id) || []) ways.push({ kind: 'other', text: g.text });
+  const handed = handouts.get(id) || [];
+  for (const h of handed) ways.push({ kind: 'other', text: h.text });
+  const how = handed.length ? null : howOf(evidence);
   if (how) ways.push({ kind: 'other', text: how });
   if (!ways.length) {
-    const way = evidenceWay(evidence, quests, takeable);
-    ways.push(typeof way === 'string' ? { kind: 'other', text: way } : way);
+    const way = evidenceWay(evidence, quests, takeable, questOffered);
+    if (way) ways.push(typeof way === 'string' ? { kind: 'other', text: way } : way);
   }
   return ways;
 }
@@ -862,6 +919,7 @@ function itemPage(e, ctx) {
       case 'ore_grinder': return `Ground from ${ins} in ${tool('ore_grinder')}.`;
       case 'smelter': return `Smelted from five ${link('metal_rock', pluralOf('metal_rock'))} in ${tool('smelter')}.`;
       case 'iconize': return `Made from ${ins}.`;
+      case 'trophy': return `Made when you hold one of each of its five pieces (${andList(c.inputs.map((i, n) => link(i, `piece ${n + 1}`)))}), which finished street projects give out: the collection takes them and gives you the trophy.`;
       default: return `Made from ${ins}.`;
     }
   };
@@ -1013,8 +1071,12 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const fromAll = (test) => backs.filter((b) => test(b) && ency.entries.has(b.from)).filter((b, i, a) => a.findIndex((x) => x.from === b.from) === i);
   const QUEST_REL = { needs: 'needs it', tool: 'needs it as a tool', rewards: 'a reward', gives: 'given to you', mentions: 'named in it', involves: 'involves it' };
   const qRank = { needs: 0, tool: 1, rewards: 2, gives: 3, involves: 4, mentions: 5 };
+  // G1021: a quest the game never offers is no way to get it: its reward or gift reads as what it is.
+  const NOT_OFFERED = { unbuilt_original: 'never offered in Glitch' };
+  const unoffered = (b) => (b.rel === 'rewards' || b.rel === 'gives') && !QUEST_OFFERED.has(ctx.questStatus?.get(b.from.slice(7)));
   const questTiles = fromAll((b) => b.from.startsWith('quests:')).map((b) => ({ ...b, rel: backs.filter((x) => x.from === b.from).sort((x, y) => qRank[x.rel] - qRank[y.rel])[0].rel }))
-    .sort((a, b) => qRank[a.rel] - qRank[b.rel]).map((b) => P.tile(b.from, { sub: QUEST_REL[b.rel] || '' }));
+    .map((b) => (unoffered(b) ? { ...b, rel: 'unoffered', sub: `${QUEST_REL[b.rel]}, ${NOT_OFFERED[ctx.questStatus?.get(b.from.slice(7))] || 'not offered in the remake'}` } : b))
+    .sort((a, b) => (qRank[a.rel] ?? 6) - (qRank[b.rel] ?? 6)).map((b) => P.tile(b.from, { sub: b.sub || QUEST_REL[b.rel] || '' }));
   const placeChips = fromAll((b) => b.from.startsWith('places:') && b.rel === 'lives').sort((a, b) => b.n - a.n)
     .map((b) => P.chip(`${esc(ency.entries.get(b.from).name)} <b>${fmt(b.n)}</b>`, { link: P.href(b.from), cls: 'ency-place' }));
   const achTiles = fromAll((b) => b.from.startsWith('achievements:')).map((b) => P.tile(b.from, { sub: b.n > 1 ? `${fmt(b.n)} times` : '' }));
@@ -1132,7 +1194,11 @@ export function staleFiles(files) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const t0 = performance.now();
-  const { files, data } = await buildCatalog();
+  const { files, data, problems } = await buildCatalog();
+  if (problems.length) {
+    console.error(`Item catalog: ${problems.length} item ${problems.length === 1 ? 'way is' : 'ways are'} not backed by the game (G1021):\n  ${problems.join('\n  ')}`);
+    process.exit(1);
+  }
   if (process.argv.includes('--check')) {
     const stale = staleFiles(files);
     if (stale.length) {
