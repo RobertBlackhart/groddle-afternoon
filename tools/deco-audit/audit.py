@@ -143,7 +143,8 @@ def placements(index=None):
         for layer in street.get('layers') or []:
             for d in layer.get('decos') or []:
                 sp = d.get('sprite')
-                if not sp:
+                # A deco naming its own file (src: the subway's subway1.swf art, js/subway.js) is not the library's.
+                if not sp or d.get('src'):
                     continue
                 e = out.setdefault(sp, {'count': 0, 'streets': set(), 'example': None, 'sizes': collections.Counter(),
                                         'bundles': collections.Counter()})

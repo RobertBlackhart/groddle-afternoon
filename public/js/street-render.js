@@ -2746,6 +2746,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
       const blur = flashBlurSize(layer.filters?.blur);
       if (!far && !blur) return;
       for (const deco of layer.decos || []) {
+        if (deco.src) continue;
         const url = `${decoBase}${decoArt(deco, available)}.png`;
         if (isSharpDeco(url) && !animates(deco, decoArt(deco, available))) wanted.push([url, far, blur]);
       }
@@ -2813,8 +2814,12 @@ export function buildStreetView(street, PIXI, opts = {}) {
       const pos = parallax || /^T_/.test(String(layer.id || ''))
         ? { x: deco.x, y: deco.y }
         : worldToScreen(street, deco.x, deco.y);
-      const sprite = available.has(deco.sprite) ? deco.sprite : DECO_TWINS[deco.sprite] || deco.sprite;
-      if (!available.has(sprite)) {
+      // #482: a reconstructed street's own art (the subway's stations and car, js/subway.js
+      // stationDecos / carDecos) names its file outright, outside the deco library, and may
+      // name a crop of it (`frame`: x, y, w, h in the file's own px).
+      const own = Boolean(deco.src);
+      const sprite = own ? deco.sprite : available.has(deco.sprite) ? deco.sprite : DECO_TWINS[deco.sprite] || deco.sprite;
+      if (!own && !available.has(sprite)) {
         missingSprites.add(deco.sprite);
         // skip tiny missing decorations to reduce noise; keep platform-like names as placeholders
         if (/platform|dirt|mound|crosssection|patch|trunk|ladder/i.test(deco.sprite)) {
@@ -2822,14 +2827,15 @@ export function buildStreetView(street, PIXI, opts = {}) {
         }
         continue;
       }
-      const url = `${decoBase}${sprite}.png`;
-      const farUrl = far ? decoUrl(url) : null;
+      const url = own ? deco.src : `${decoBase}${sprite}.png`;
+      const farUrl = far && !own ? decoUrl(url) : null;
       // A playing deco draws its strip (the still until it loads), never a sharp copy.
-      const animated = animates(deco, sprite);
-      const sharp = !animated && isSharpDeco(url);
+      const animated = !own && animates(deco, sprite);
+      const sharp = !own && !animated && isSharpDeco(url);
       let pick = sharp ? sharpPick(url, far, blur) : null;
       if (pick && (far || blur) && !farAdmitted.has(pick.url)) pick = null;
-      const tex = pick ? sharpTexture(pick) : farUrl ? textureFromUrl(farUrl, { raw: true }) : textureFromUrl(url);
+      let tex = pick ? sharpTexture(pick) : farUrl ? textureFromUrl(farUrl, { raw: true }) : textureFromUrl(url);
+      if (own && deco.frame) tex = frameTexture(tex, new PIXI.Rectangle(...deco.frame));
       const spr = animated ? new PIXI.AnimatedSprite([tex]) : new PIXI.Sprite(tex);
       anchorBottomCentre(spr, 'deco');
       // h_flip mirrors the deco about its registration point.

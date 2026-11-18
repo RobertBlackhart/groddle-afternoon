@@ -43,7 +43,7 @@ import { countItem } from '../inventory.js?v=6414dbdc';
 import { isEditableTarget } from '../held-keys.js?v=a28eb293';
 import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
-import { doorsFeature } from './doors-feature.js?v=cdb2e0a7';
+import { doorsFeature } from './doors-feature.js?v=ee0f2f5d';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
 import { frameTexture, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import {
@@ -71,7 +71,6 @@ import {
   announce,
   boardingSpot,
   canDisembark,
-  carArt,
   createRide,
   disembarkSpot,
   findStation,
@@ -86,14 +85,13 @@ import {
   rideNext,
   rideTiming,
   stationArrival,
-  stationArt,
   stationById,
   stationByTsid,
   stationScreen,
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=735bfbeb';
+} from '../subway.js?v=247cf59b';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
@@ -661,7 +659,7 @@ function addSprite(engine, row, bounds) {
 
 function drawStation(engine, street, station) {
   const b = street.bounds;
-  for (const row of stationArt(station)) addSprite(engine, row, b);
+  // The station's art is the street's own (subway.js stationDecos, #482); the two things it clicks stay here.
   // A Red Button on the green gate box's face, under the grille, as the 2012 snaps show it (G838, #385);
   // it stood on the stone block beside the box before.
   const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 26, h: 45, z: 4 }, b);
@@ -693,16 +691,14 @@ function drawStation(engine, street, station) {
 function drawCar(engine, street) {
   const b = street.bounds;
   const { PIXI } = engine;
-  for (const row of carArt()) addSprite(engine, row, b);
+  // The car's wall, ads and panes are the street's own (subway.js carDecos, #482).
   // The black of the tile's last rows, under the carried-on floor (a view taller than the car).
   const under = new PIXI.Graphics().rect(0, CAR_TILE_TOP + 700 + CAR_FLOOR_RUN - b.t - 2, b.r - b.l, 900).fill(CAR_UNDERFLOOR);
   under.zIndex = -71;
   under.eventMode = 'none';
   engine.entityLayer.addChild(under);
   views.push(under);
-  const [, ww, wh] = SUBWAY_ART.subway_window_static;
   for (const cx of CAR_WINDOWS) {
-    addSprite(engine, { piece: 'subway_window_static', x: cx, y: CAR_WINDOW_BOTTOM, w: ww, h: wh, z: -62 }, b);
     // G398: while the train moves, Tiny Speck's subway_window overlay plays over the pane (setMoving).
     windows.push({ engine, x: cx - b.l, y: CAR_WINDOW_BOTTOM - b.t, handle: null });
   }

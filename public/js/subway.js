@@ -449,19 +449,53 @@ export function stationArt(station) {
   return rows;
 }
 
+/** Art rows at or over the avatar (game.js makePlayer zIndex 50) stand in the station's front layer. */
+export const FRONT_Z = 50;
+
 /**
- * The platform floor: the street's own middleground decos (subway_platform_1
- * is already a street deco), so the street renderer draws it under the
- * feature's art; nothing behind it reaches below its top edge (F - 120).
+ * An art row as a street deco (x centre, y bottom, as a deco's registration point), its
+ * subway1.swf file named outright (street-render.js deco.src). `origin` puts it in a T_ layer's
+ * screen space.
  */
-export function stationDecos() {
+function artDeco(row, i, origin = null) {
+  return {
+    id: `subway_${row.piece}_${i}`,
+    sprite: row.piece,
+    src: `${SUBWAY_ART_BASE}${SUBWAY_ART[row.piece][0]}`,
+    x: origin ? row.x - origin.l : row.x,
+    y: origin ? row.y - origin.t : row.y,
+    w: row.w,
+    h: row.h,
+    z: row.z,
+    r: 0,
+    ...(row.flip ? { flip: true } : {}),
+    ...(row.frame ? { frame: [...row.frame] } : {}),
+  };
+}
+
+/**
+ * The station's middleground: the platform floor (subway_platform_1 is a library deco), then
+ * the station's art behind the avatar (stationArt). #482: the art is the street's own, so the
+ * street map's snapshot (a picture of the street view) shows the station, not a bare wall and
+ * floor; only A Red Button and the Subway Map post, which take clicks, stay the feature's.
+ * Nothing behind the floor reaches below its top edge (F - 120).
+ */
+export function stationDecos(station) {
   const { l, r } = STATION_BOUNDS;
   const out = [];
   let i = 0;
   for (let x = l - 20; x < r + 20; x += 954, i += 1) {
-    out.push({ id: `subway_platform_${i}`, sprite: 'subway_platform_1', x: Math.round(x + 957 / 2), y: STATION_FLOOR + 127, w: 957, h: 247, z: i, r: 0 });
+    out.push({ id: `subway_platform_${i}`, sprite: 'subway_platform_1', x: Math.round(x + 957 / 2), y: STATION_FLOOR + 127, w: 957, h: 247, z: -100 + i, r: 0 });
   }
+  stationArt(station).forEach((row, n) => {
+    if (row.z < FRONT_Z) out.push(artDeco(row, n));
+  });
   return out;
+}
+
+/** The station's art in front of the avatar (the column's foot), a T_ layer in screen space. */
+export function stationFrontDecos(station) {
+  return stationArt(station).flatMap((row, n) => (row.z >= FRONT_Z ? [artDeco(row, n, STATION_BOUNDS)] : []));
 }
 
 /*
@@ -524,7 +558,14 @@ export function carArt() {
     rows.push(art(`subway_ad_${AD_CYCLE[i % AD_CYCLE.length]}`, x, adBottom, -64));
   }
   rows.push(art('subway_ad_6', CAR_WINDOWS[0] - 225, CAR_TILE_TOP + 456, -63));
+  // The static panes; while the train moves the window overlay plays over each (subway-feature setMoving).
+  for (const cx of CAR_WINDOWS) rows.push(art('subway_window_static', cx, CAR_WINDOW_BOTTOM, -62));
   return rows;
+}
+
+/** The car's middleground: its wall, ads and windows as the street's own art (#482, as stationDecos). */
+export function carDecos() {
+  return carArt().map((row, n) => artDeco(row, n));
 }
 
 /**
@@ -609,10 +650,13 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     physics: { setting: { y_cam_offset: STATION_Y_CAM_OFFSET }, delta: {} },
     bounds: { ...STATION_BOUNDS },
     platforms,
-    layers: [{ id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: stationDecos() }],
+    layers: [
+      { id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: stationDecos(station) },
+      { id: 'T_subway_station_front', name: 'middleplus', z: 1, w: 0, h: 0, decos: stationFrontDecos(station) },
+    ],
     signposts: [],
     doors: [door],
-    stats: { platformCount: platforms.length, layerCount: 1, decoCount: stationDecos().length, signpostCount: 0, doorCount: 1, ladderCount: 0, barrierCount: 0 },
+    stats: { platformCount: platforms.length, layerCount: 2, decoCount: stationDecos(station).length + stationFrontDecos(station).length, signpostCount: 0, doorCount: 1, ladderCount: 0, barrierCount: 0 },
     gradient: { top: '3A3B36', bottom: '55564F' },
     ladders: [],
     subway: { station: station.id },
@@ -640,12 +684,12 @@ export function carStreet() {
     bounds: { ...CAR_BOUNDS },
     platforms,
     layers: [
-      { id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: [] },
+      { id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: carDecos() },
       { id: 'T_subway_car_front', name: 'middleplus', z: 1, w: 0, h: 0, decos: carFrontDecos() },
     ],
     signposts: [],
     doors: [],
-    stats: { platformCount: platforms.length, layerCount: 2, decoCount: carFrontDecos().length, signpostCount: 0, doorCount: 0, ladderCount: 0, barrierCount: 0 },
+    stats: { platformCount: platforms.length, layerCount: 2, decoCount: carDecos().length + carFrontDecos().length, signpostCount: 0, doorCount: 0, ladderCount: 0, barrierCount: 0 },
     gradient: { top: '2E2F2A', bottom: '45463F' },
     ladders: [],
     subway: { car: true },

@@ -156,7 +156,8 @@ def placement_stats():
             blurred = (Number(layer.get('filters') or {}, 'blur')) > 0
             for d in layer.get('decos') or []:
                 sp = d.get('sprite')
-                if not sp:
+                # A deco naming its own file (src: the subway's subway1.swf art, js/subway.js) is not the library's.
+                if not sp or d.get('src'):
                     continue
                 e = out.setdefault(sp, {'count': 0, 'sizes': collections.Counter(), 'sharp': 0})
                 e['count'] += 1

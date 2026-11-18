@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { canvasTransparent, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=d2c7b0e0';
 import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=92ae727c';
-import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=c05c4045';
+import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=2d5a9737';
 import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=6cba14a5';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');

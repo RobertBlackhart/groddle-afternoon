@@ -15,7 +15,7 @@ import { HUB_COLOURS, WORLD_MAP } from '../public/js/map-views-data.js?v=0773458
 import { buildHubMapView, goColour, GO_FALLBACK_COLOUR, PUBLIC_HUBS, renderHubMapSvg } from '../public/js/map-graph.js?v=78a605db';
 import { CARD_PICTURE, CARD_PICTURE_MAX, CARDS_MANIFEST, FLA, hubColours, overStop, readWorldMap } from '../tools/map-views/build.mjs';
 import { loadFla } from '../tools/overlay-art/xfl-svg.mjs';
-import { STATIONS } from '../public/js/subway.js?v=735bfbeb';
+import { STATIONS } from '../public/js/subway.js?v=247cf59b';
 import {
   MAP_VIEW_TITLES,
   SUBWAY_PAPER,
@@ -29,7 +29,7 @@ import {
   subwaySegments,
   worldCharts,
   worldRegionList,
-} from '../public/js/map-views.js?v=275b0c40';
+} from '../public/js/map-views.js?v=4f7889df';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -188,6 +188,9 @@ def placements(plan):
             blurred = blur > 0
             gain = round(matrix_gain(l.get('filters')), 3)
             for d in l.get('decos') or []:
+                # A deco naming its own file (src: the subway's subway1.swf art, js/subway.js) is not the library's.
+                if d.get('src'):
+                    continue
                 sp = d.get('sprite')
                 sp = sp if sp in manifest else twins.get(sp, sp)
                 if sp not in manifest or sp not in plan:

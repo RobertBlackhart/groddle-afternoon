@@ -33,6 +33,7 @@ import {
   STATION_X,
   STATION_Y_CAM_OFFSET,
   SUBWAY_ART,
+  SUBWAY_ART_BASE,
   SUBWAY_BADGES,
   SUBWAY_LINE,
   TEXT,
@@ -58,8 +59,8 @@ import {
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=735bfbeb';
-import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=bd92da96';
+} from '../public/js/subway.js?v=247cf59b';
+import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=6aae073a';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -489,5 +490,41 @@ describe('#387: subway cards and the keyboard', () => {
     assert.match(prompt, /focus: false/);
     assert.doesNotMatch(prompt, /onTimeout/);
     assert.match(src, /if \(opts\.focus !== false && dialogMayTakeFocus\(document, el\)\) actions\.querySelector\('button'\)\?\.focus/);
+  });
+});
+
+describe('#482: the station and the car are their streets\' own art', () => {
+  it('a station\'s street (what its street map snapshots) holds the station, not only its floor', () => {
+    for (const station of STATIONS) {
+      const street = readJson(`assets/streets/${station.streetTsid}.json`);
+      const decos = street.layers.flatMap((layer) => layer.decos.map((d) => ({ ...d, layer: layer.id })));
+      const pieces = new Set(decos.map((d) => d.sprite));
+      for (const piece of ['subway_platform_1', 'wall_1', 'train_1', 'subway_gate_static', 'ticket_post_back', 'column_1', signPiece(station)]) {
+        assert.ok(pieces.has(piece), `${station.name}: ${piece}`);
+      }
+      assert.ok(decos.length > 4, `${station.name}: more than its floor`);
+      // The column's foot stands in front of the avatar: a front (T_) layer, in screen space.
+      const column = decos.find((d) => d.sprite === 'column_1');
+      assert.match(column.layer, /^T_/);
+      // Every art row is a deco naming its subway1.swf file outright.
+      for (const d of decos.filter((x) => x.sprite !== 'subway_platform_1')) assert.equal(d.src, `${SUBWAY_ART_BASE}${SUBWAY_ART[d.sprite][0]}`, d.id);
+      // The floor draws under the art.
+      const floorZ = Math.max(...decos.filter((d) => d.sprite === 'subway_platform_1').map((d) => d.z));
+      assert.ok(decos.filter((d) => d.layer === 'middleground' && d.src).every((d) => d.z > floorZ));
+    }
+  });
+
+  it('the car\'s wall, ads and panes are its street\'s too', () => {
+    const car = readJson(`assets/streets/${CAR_TSID}.json`);
+    const pieces = car.layers.find((l) => l.id === 'middleground').decos.map((d) => d.sprite);
+    assert.ok(pieces.includes('subway_interior_1') && pieces.includes('subway_window_static') && pieces.some((p) => p.startsWith('subway_ad_')));
+  });
+
+  it('the feature draws only what takes a click, and the renderer draws a deco by its own file', () => {
+    const feature = readFileSync(join(pub, 'js/features/subway-feature.js'), 'utf8');
+    assert.doesNotMatch(feature, /stationArt\(|carArt\(/);
+    const render = readFileSync(join(pub, 'js/street-render.js'), 'utf8');
+    assert.match(render, /const url = own \? deco\.src :/);
+    assert.match(render, /if \(own && deco\.frame\) tex = frameTexture/);
   });
 });

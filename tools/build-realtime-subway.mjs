@@ -23,7 +23,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { STATIONS, SUBWAY_LINE, rideTiming } from '../public/js/subway.js?v=735bfbeb';
+import { STATIONS, SUBWAY_LINE, rideTiming } from '../public/js/subway.js?v=247cf59b';
 
 const outPath = serverPath('data', 'subway.json');
 
