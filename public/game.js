@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5d65ed01';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9721f0f4';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -396,7 +396,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=f595cd00';
+} from './js/paradise-course-runtime.js?v=21c555d9';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=2dd95179';
 import {
   createAchievementState,
@@ -2460,7 +2460,7 @@ let interactables = [];
 const animalStateCache = new Map();
 /** Versioned ecology snapshot. Runtime targets point directly into these street records. */
 const persistentWorldState = { animals: {}, streets: {} };
-let piggies = [], chickens = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], particles = [], speechBubbles = [];
+let piggies = [], chickens = [], droppedItemSprites = [], quoins = [], butterflies = [], trees = [], speechBubbles = [];
 let textures = {};
 let time = 0;
 let menuTarget = null;
@@ -4272,7 +4272,6 @@ function runEmotionalBearAction(actionId, target = '') {
       actionId === 'anthropomorphize' ? `+${result.effects.mood} mood` : EMOTIONAL_BEAR_ACTIONS[actionId].label,
       0xf09ac1
     );
-    burst(player.x, player.y - 45, 0xf09ac1, 18);
   }
   if (app?.canvas) {
     app.canvas.dataset.emotionalBearAction = actionId;
@@ -6841,10 +6840,8 @@ function usePackItem(classTsid, count = 1) {
       r.effectLabel ? (r.pending ? `${r.effectLabel} soon…` : r.effectLabel) : '✓',
       r.pending ? 0xc98cff : 0x7dcea0
     );
-    if (r.effectLabel) burst(player.x, player.y - 40, r.pending ? 0xa020f0 : 0x8fe3b0, 12);
     if (foodResult?.bonus) {
       floatText(player.x + 18, player.y - 95, `+${foodResult.bonus} variety iMG`, 0xf0c85a);
-      burst(player.x, player.y - 45, 0xf0c85a, 12);
     }
   }
   if (app?.canvas && ordinaryInfo?.usable) app.canvas.dataset.packEaten = `${classTsid}:${eaten}:${r.effects?.energy || 0}:${r.effects?.mood || 0}:${r.effects?.xp || 0}`;
@@ -6880,7 +6877,6 @@ function openPackedCubimalBox(classTsid) {
   pushActivity(result.message);
   if (player) {
     floatText(player.x, player.y - 88, result.prize.label, 0xf0c85a);
-    burst(player.x, player.y - 46, 0xffd76b, 22);
   }
   const achievementUpdates = applyAchievementProgress(
     achieveState,
@@ -6944,7 +6940,6 @@ function setPackedCubimalFree(classTsid, opts = {}) {
   });
   if (player) {
     floatText(player.x, player.y - 92, `+${result.reward} iMG`, 0xf0c85a);
-    burst(player.x, player.y - 44, 0xffd76b, 24);
   }
   const achievementUpdates = applyAchievementProgress(
     achieveState,
@@ -6985,7 +6980,6 @@ function playPackMusicblock(classTsid) {
   });
   if (player) {
     floatText(player.x, player.y - 86, `♪ ${result.def.label}`, 0xd6a6ff);
-    burst(player.x, player.y - 46, 0xb783e6, 14);
   }
   const achievementUpdates = applyAchievementProgress(
     achieveState,
@@ -7007,7 +7001,6 @@ function checkQuest() {
   if (main.every((id) => questState.completed.includes(id))) {
     state.questDone = true;
     floatText(player.x, player.y - 90, 'QUESTS ✓', 0xffe066);
-    burst(player.x, player.y - 50, 0xffe066, 22);
     updateHud();
     enqueueAward({
       kind: 'quest',
@@ -8711,20 +8704,6 @@ function resultFloatY(target, speaking = false) {
   return target.sprite.y - (speaking ? RESULT_FLOAT_UNDER_SPEECH : RESULT_FLOAT_RISE);
 }
 
-function burst(x, y, color = 0xffe066, n = 10) {
-  for (let i = 0; i < n; i++) {
-    const g = new PIXI.Graphics();
-    g.circle(0, 0, 2 + Math.random() * 3).fill({ color: color, alpha: 0.9 });
-    g.x = x; g.y = y;
-    g._vx = (Math.random() - 0.5) * 3.5;
-    g._vy = -1 - Math.random() * 2.5;
-    g._life = 0;
-    g._max = 25 + Math.random() * 20;
-    particles.push(g);
-    fxLayer.addChild(g);
-  }
-}
-
 /**
  * show_rainbow (players/player.js 3014-3029) at the avatar: Tiny Speck's 400 x 400 arc for 4 s
  * (js/overlays.js), with the sound the source pairs with it (3038-3065).
@@ -9501,7 +9480,6 @@ function playTrantHarvestAnimation(target, durationMs = 0) {
     baseScaleY: spr.scale.y,
     baseRotation: spr.rotation || 0,
   };
-  burst(spr.x, spr.y - Math.min(120, Math.abs(spr.height) * 0.55), 0x9bd66f, 8);
   if (app?.canvas) app.canvas.dataset.trantHarvestAnimation = 'playing';
   return spr._trantHarvestFx;
 }
@@ -10247,7 +10225,6 @@ function runVerbFinish(target, verbId) {
       target.subtitle = animalStatusLabel(target.classId, target.state);
     }
     playSound(soundForVerb(target.classId, verbId, result), { volume: 0.7, jitter: 0.06 });
-    burst(target.sprite.x, target.sprite.y - 30, 0xffe066, 8);
 
     // Refresh trant subtitle after tend/harvest
     if (TRANT_META[target.classId] && target.state) {
@@ -11255,7 +11232,6 @@ function updateSpinningWheel() {
       emitGameEvent(`drop_table_${result.reward.table || 'spinning_wheel'}_${result.reward.kind === 'currants' ? 'currants' : result.reward.classTsid}`, result.reward.amount);
       toast(`You won ${result.label}!`, 4200);
       floatText(target.sprite.x, target.sprite.y - 170, result.label, 0xffdc5e);
-      burst(target.sprite.x, target.sprite.y - 90, 0xffdc5e, result.tier === 4 ? 32 : 18);
       playSfx(result.tier === 4 ? 'quest' : 'pickup', {
         volume: result.tier === 4 ? 0.76 : 0.58,
         rate: result.tier === 1 ? 0.86 : 1.08,
@@ -14941,7 +14917,6 @@ function dropPackItem(classTsid, requested = 1) {
   toast(line);
   pushActivity(line);
   floatText(result.stack.x, result.stack.y - 55, `−${result.count} ${label}`, 0xf2c879);
-  burst(result.stack.x, result.stack.y - 12, 0xd8c49a, 7);
   playSound('ITEM_DROP', { volume: 0.6 });
   updateHud();
 }
@@ -14997,7 +14972,6 @@ function dropPackBag(classTsid, key) {
   toast(line);
   pushActivity(line);
   floatText(result.stack.x, result.stack.y - 55, `−1 ${label}`, 0xf2c879);
-  burst(result.stack.x, result.stack.y - 12, 0xd8c49a, 7);
   playSound('ITEM_DROP', { volume: 0.6 });
   updateHud();
 }
@@ -15038,7 +15012,6 @@ function pickupDroppedBag(target) {
   toast(line);
   pushActivity(line);
   floatText(x, y - 55, `+1 ${label}`, 0x7dcea0);
-  burst(x, y - 12, 0xffe066, 10);
   playSound('ITEM_PICKUP', { volume: 0.65, jitter: 0.04 });
   refreshDroppedWorldItems();
   updateHud();
@@ -15140,7 +15113,6 @@ function pickupDroppedWorldItem(target, requested = Infinity) {
   toast(line);
   pushActivity(line);
   floatText(x, y - 55, `+${result.count} ${label}`, 0x7dcea0);
-  burst(x, y - 12, 0xffe066, 10);
   playSound('ITEM_PICKUP', { volume: 0.65, jitter: 0.04 });
   refreshDroppedWorldItems();
   updateHud();
@@ -15336,7 +15308,6 @@ function grabWorldQuoin(q, shared = null) {
     handleSkillCompletions(result.acceleration.completed);
   }
   quoinGotText(q.x, q.y, copy, rewardDef.color);
-  burst(q.x, q.y, rewardDef.color, result.typeId === 'qurazy' ? 28 : 12);
   applyQuestProgress(questState, 'quoins_collected', 1, pc);
   if (result.resolvedTypeId === 'favor') {
     const shrine = interactables.find((target) => target.classId?.startsWith('npc_shrine_'));
@@ -15948,10 +15919,7 @@ function performPlayerJump(result, baseVelocity, now, { counted = true } = {}) {
     playSfx('jump', { volume: 0.58, rate: 1 });
     const boost = result.multiplier.toFixed(2).replace(/0$/, '');
     floatText(player.x, player.y - 82, `TRIPLE JUMP ×${boost}`, 0xffd85a);
-    burst(player.x, player.y, 0xffd85a, 18);
     pushActivity(`${result.profile.label}! Triple jump ×${boost}.`);
-  } else {
-    burst(player.x, player.y, 0xd4c4a0, 5);
   }
   publishJumpState(result);
   updateHud();
@@ -17398,7 +17366,6 @@ function handleHogHaulTarget(target) {
     target.sprite.eventMode = 'none';
     clearHogHaulHoverTarget(target);
     playSfx('pickup', { volume: 0.7, rate: 1.14 });
-    burst(target.sprite.x, target.sprite.y - 18, 0xffd762, 12);
     toast('You have bait, now go get a piggy!', 2700);
     pushActivity('You picked up Pig Bait. Find a loose Piggy!');
   } else if (target.classId === 'race_piggy') {
@@ -17412,7 +17379,6 @@ function handleHogHaulTarget(target) {
     target.sprite.eventMode = 'none';
     clearHogHaulHoverTarget(target);
     playSfx('pet', { volume: 0.72, rate: 1.25 });
-    burst(target.sprite.x, target.sprite.y - 26, 0xffa2c3, 16);
     toast(
       hogHaulState.playerScore === 0
         ? 'You hogtied a piggy, now take it to the Pig Pen!'
@@ -17425,7 +17391,6 @@ function handleHogHaulTarget(target) {
     if (!result.ok) return result;
     spawnHogHaulPenPiggy(result.score - 1);
     playSfx('pickup', { volume: 0.8, rate: 0.82 });
-    burst(target.sprite.x, target.sprite.y - 42, 0xffd85a, 24);
     if (result.won) {
       finishHogHaulRace();
     } else {
@@ -17814,7 +17779,6 @@ function handleFourLetterTarget(target, verbId) {
   target.subtitle = `Shows ${result.letter} · spins through ${target.state.letters.join(', ')}`;
   renderFourLetterHud(index);
   playSfx('pickup', { volume: 0.32, rate: 0.72 + index * 0.08 });
-  burst(target.sprite.x, target.sprite.y - 60, 0xffd86b, 7);
   if (!result.solved) return;
 
   floatText(target.sprite.x, target.sprite.y - 118, `${result.word}!`, 0xffe066);
@@ -18467,7 +18431,6 @@ function finishLegalizePurchase() {
   playSfx('pickup', { volume: 0.55, rate: 0.88 });
   pushActivity(`You paid ${result.cost} currants and received a Card-Carrying Qualification.`);
   floatText(player.x, player.y - 90, 'Qualification acquired', 0xffe066);
-  burst(player.x, player.y - 50, 0xffe066, 15);
   renderLegalizeHud();
   updateHud();
   // The visit then shows items/npc_bureaucrat.js showEndPrompt (js/bureaucratic-hall.js).
@@ -19753,7 +19716,6 @@ function collectWinterWalkMote(entry) {
   const big = result.amount >= 1000 || result.kind === 'qurazy';
   playSfx('quoin', { volume: big ? 0.8 : 0.56, rate: big ? 1.18 : 1.04 });
   floatText(x, y - 18, `+${amount.toLocaleString()} iMG`, 0xc98dff);
-  burst(x, y, 0xb873ed, big ? 26 : 13);
   pushActivity(`A winter mote sparkles into imagination. +${amount.toLocaleString()} iMG.`);
   renderWinterWalkHud();
   updateHud();
@@ -20171,7 +20133,6 @@ function revealSummersDayAnnex() {
   summersDayAnnexReveal.touched = true;
   const { sprite } = summersDayAnnexReveal;
   if (sprite?.parent) {
-    burst(sprite.x, sprite.y, 0xdff8ff, 9);
     sprite.parent.removeChild(sprite);
   }
   playSfx('quoin', { volume: 0.32, rate: 1.24 });
@@ -20578,7 +20539,6 @@ function updateSummersDay(dt) {
       entityLayer.removeChild(q);
       playSfx('quoin', { volume: 0.48, rate: 1.08 });
       floatText(x, y - 18, `+${landed} ${label}`, 0xeafcff);
-      burst(x, y, 0xdff8ff, 11);
       pushActivity(`A memory quoin: +${landed} ${label}.`);
       updateHud();
     }
@@ -20854,7 +20814,6 @@ function updateRookEggSmashVisual(action) {
     rookWoodsState.eggState = state;
     rookEggTarget.sprite.texture = rookEggTexture(state);
     playSfx('pickup', { volume: 0.32, rate: 0.56 + (5 - state) * 0.08 });
-    burst(rookEggTarget.sprite.x, rookEggTarget.sprite.y - 56, 0x9b997c, 8);
   }
   const pulse = Math.sin(action.progress * Math.PI * 8);
   rookEggTarget.sprite.rotation = pulse * 0.025;
@@ -21099,7 +21058,6 @@ function handleRookEggTarget(target, verbId) {
   target.sprite.scale.set(0.84);
   target.subtitle = "It's been smashed already.";
   playSfx('quest', { volume: 0.76, rate: 0.92 });
-  burst(target.sprite.x, target.sprite.y - 58, 0xd2c281, 34);
   floatText(target.sprite.x, target.sprite.y - 122, 'ROOK EGG SMASHED!', 0xf0d78d);
   const updates = applyQuestProgress(questState, 'rook_egg_smashed', 1, pc);
   announceQuestCompletions(
@@ -21135,7 +21093,6 @@ function beginRookCrusherHit(entry, now) {
     toX: rookWoodsState.spawn.x,
     toY: rookWoodsState.spawn.y,
   };
-  burst(player.x, player.y - 48, 0xa79d7b, 26);
   // crusher.js: the hit pose through the knockback, then angry on arrival.
   engine.playHit('hit1', rookHitFx.durationMs);
   engine.playEmotion('angry', rookHitFx.durationMs);
@@ -21191,7 +21148,6 @@ function updateRookWoods(dt) {
     entry.sprite.position.set(position.x, position.y);
     const impact = position.phase === 'impact';
     if (impact && entry.sprite._lastPhase !== 'impact') {
-      burst(position.x, position.y + entry.spec.size * 0.45, 0x7d765f, 12);
       playSfx('pickup', { volume: 0.24, rate: 0.42 });
     }
     entry.sprite._lastPhase = position.phase;
@@ -22087,7 +22043,6 @@ function pickUpSmallWorthless() {
   if (glint && !glint.destroyed) glint.destroy();
   if (smallWorthlessTarget) unregisterTarget(smallWorthlessTarget);
   smallWorthlessTarget = null;
-  burst(pickupX, pickupY - 23, 0xffef9a, 18);
   floatText(pickupX, pickupY - 56, 'SMALL! SHINY! WORTHLESS!', 0xffe899);
   pushActivity('You found the small shiny object with no intrinsic value.');
   renderDeEmbiggenifyHud();
@@ -22394,7 +22349,6 @@ function paradiseCourseHost() {
       return queued;
     },
     playSfx,
-    burst,
     toast,
     setPlayerAnim,
     applyPlayerFacing,
@@ -23560,7 +23514,6 @@ function collectParadiseEntry(entry) {
   const color = paradiseRewardColor(result.reward);
   playSfx('quoin', { volume: 0.58, rate: 0.92 + (entry.index % 5) * 0.07 });
   floatText(x, y - 20, applied.copy, color);
-  burst(x, y, color, result.reward.amount >= 500 ? 24 : 12);
   pushActivity(`${paradiseCourse().name}: ${applied.copy}.`);
   updateHud();
   renderParadiseFlightHud();
@@ -23577,7 +23530,6 @@ function passParadiseRingEntry(entry) {
   entry.sprite.scale.set(1.18);
   playSfx('quest', { volume: 0.5, rate: 0.86 + entry.index * 0.08 });
   floatText(entry.sprite.x, entry.sprite.y - 130, applied.copy, 0xffe278);
-  burst(entry.sprite.x, entry.sprite.y, 0xffe278, 28);
   pushActivity(`Cloud Ring ${entry.index + 1}: ${applied.copy}.`);
   updateHud();
   renderParadiseFlightHud();
@@ -23592,7 +23544,6 @@ function unlockParadiseExit() {
   paradiseExit.sprite.alpha = 1;
   paradiseExit.sprite.scale.set(1.05);
   playSfx('quest', { volume: 0.62, rate: 1.08 });
-  burst(paradiseExit.sprite.x, paradiseExit.sprite.y - 55, 0xd6f6ff, 25);
   const course = paradiseCourse();
   toast(course.completion, 4800);
   if (course.completionSound) playSound(course.completionSound, { volume: 0.8 });
@@ -23704,7 +23655,6 @@ function handleParadiseSlideInput() {
       player.vy = -8.9 - Math.min(1.8, Math.abs(player.vx) * 0.13);
       player.onGround = false;
       playSfx('jump', { volume: 0.48, rate: 1.08 });
-      burst(player.x, player.y - 2, 0xe9f7f7, 9);
     }
   }
   applyPlayerFacing();
@@ -23822,7 +23772,6 @@ function paradiseSlidePhysics(dt) {
       player.vy = 0;
       player.onGround = true;
       playSfx('step', { volume: 0.18, rate: 1.25 });
-      burst(player.x, player.y, 0xf3fbfb, Math.abs(player.vx) > 6 ? 12 : 6);
     }
   }
   const groundAngle = Math.atan(slipTerrainSlope(player.x));
@@ -24227,7 +24176,6 @@ function releasePackedIlmenskieJones() {
   releaseIlmenskieJones(rescue, currentStreetTsid);
   const target = spawnIlmenskieJones({ released: true });
   playSfx('pickup', { volume: 0.46, rate: 1.25 });
-  burst(target?.sprite?.x || player.x, (target?.sprite?.y || player.y) - 55, 0xe8e1ce, 18);
   pushActivity('You released Ilmenskie Jones.');
   openScriptedQuestDialogue({
     title: 'Ilmenskie Jones',
@@ -28744,7 +28692,6 @@ function handleBuffEvents(events = []) {
       pushActivity({ base: `${name} kicks in`, effects: event.effects });
       if (player) {
         floatText(player.x, player.y - 82, name, event.classTsid === 'purple_flower' ? 0xc070e8 : 0x8fe3b0);
-        burst(player.x, player.y - 42, event.classTsid === 'purple_flower' ? 0xa020f0 : 0x8fe3b0, 14);
       }
       if (event.classTsid === 'purple_flower') pulsePurpleJunk();
     } else if (event.type === 'tick') {
@@ -30323,7 +30270,6 @@ function doShrineDonation(target, classTsid, qty) {
     // 636-650: the sound tier follows the donation's base cost (a lucky bonus plays the fourth).
     playSound(soundForDonation(result.baseCost, result.bonus), { volume: 0.65 });
   } else if (result.gameshowTicket) toast(line, 4200);
-  burst(target.sprite.x, target.sprite.y - 85, 0xffe066, 20);
   announceAchievementUpdates(
     applyAchievementProgress(achieveState, `shrines_donated:${giantId}`, 1, pc)
   );

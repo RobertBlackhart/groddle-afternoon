@@ -849,13 +849,10 @@ export const paradiseCourseRuntime = {
     for (const event of events) {
       runtimeState.lastEvent = event;
       if (event === 'jump') host.playSfx('jump', { volume: 0.45 });
-      else if (event === 'stroke') {
-        host.playSfx('jump', { volume: 0.3, rate: 0.72 });
-        host.burst(player.x, player.y - 40, 0xcfe9ff, 7);
-      } else if (event === 'bounce') {
+      else if (event === 'stroke') host.playSfx('jump', { volume: 0.3, rate: 0.72 });
+      else if (event === 'bounce') {
         runtimeState.bounces += 1;
         host.playSfx('jump', { volume: 0.42, rate: 1.28 });
-        host.burst(player.x, player.y, 0xffffff, 10);
         const cloud = host.bgLayer?.paradiseCourseArt?.bouncers?.get(player.lastBounce);
         if (cloud) cloud._squashAt = host.now();
       } else if (event === 'land') host.playSfx('step', { volume: 0.2, rate: 1.1 });
@@ -863,11 +860,9 @@ export const paradiseCourseRuntime = {
         runtimeState.backToTop += 1;
         host.playSfx('jump', { volume: 0.4, rate: 0.8 });
         host.toast(course.backToTopToast || 'Back to the top!', 1800);
-        host.burst(player.x, player.y - 30, 0xffffff, 14);
       } else if (event === 'respawn') {
         runtimeState.respawns += 1;
         host.toast(course.respawnToast || 'Whoops! Back to the last rock.', 1800);
-        host.burst(player.x, player.y - 30, 0xffffff, 14);
       }
     }
     const swimming = course.movement === 'swim' || course.movement === 'glide' ||

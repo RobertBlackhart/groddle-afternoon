@@ -38,3 +38,13 @@ describe('G978: dropped inventions stay gone', () => {
     assert.match(read('public/js/features/street-spirits-feature.js'), /const \[body, label\] = g\.children;/);
   });
 });
+
+describe('G978: no dot bursts', () => {
+  it('nothing scatters coloured dots round the avatar after an action (no client counterpart)', () => {
+    dropped('burst-dots');
+    assert.doesNotMatch(game, /\bburst\(/);
+    assert.doesNotMatch(game, /\bparticles\b/);
+    assert.doesNotMatch(read('public/js/paradise-course-runtime.js'), /host\.burst/);
+    assert.doesNotMatch(read('public/js/features/seasons-feature.js'), /\bburst\(|tickFx/);
+  });
+});

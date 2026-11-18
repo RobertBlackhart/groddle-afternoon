@@ -36,7 +36,7 @@ describe('#146 resource node gains show their item', () => {
 
   it('floatText draws the pack icon beside the words, one float (game.js)', () => {
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
-    const fn = game.slice(game.indexOf('function floatText('), game.indexOf('function burst('));
+    const fn = game.slice(game.indexOf('function floatText('), game.indexOf('function quoinGotText('));
     assert.match(fn, /if \(opts\.icon\) \{/);
     assert.match(fn, /new PIXI\.Sprite\(textureFromUrl\(itemIconUrl\(opts\.icon\)\)\)/);
     assert.match(fn, /float\.addChild\(icon, t\);/);

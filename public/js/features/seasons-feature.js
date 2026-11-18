@@ -161,7 +161,6 @@ let lastCheck = 0;
 let last = '';
 let spawnedFor = null;
 let decor = []; // { kind, sprite, target?, glow?, t, ... }
-let fx = [];
 let snow = null;
 let chip = null;
 let carving = null; // { until, step, face?, toolSprite }
@@ -730,7 +729,6 @@ function tickCarve(engine, now) {
     if (recordCarvedFace(state, out.face)) engine.grantAchievement?.('pumpkin_carver');
   }
   state.stats.carved = (state.stats.carved || 0) + 1;
-  burst(engine, 0xffa53a);
   say(engine, out.growl, true, effects);
   engine.save?.();
 }
@@ -745,7 +743,6 @@ function lightPumpkin(engine, cls) {
   emptyJar(engine);
   const effects = grantAll(engine, { energy: -LIGHT.energy, mood: LIGHT.mood, xp: LIGHT.xp });
   engine.achievement?.(`VERB:light:${cls}`, 1);
-  burst(engine, 0xffe27a);
   say(engine, `You lit ${ITEM_CATALOG[cls]?.label || 'the pumpkin'} with seven Fireflies.`, true, effects);
   engine.save?.();
   return true;
@@ -759,7 +756,6 @@ function smashPumpkin(engine, cls, copy = null) {
   for (const [id, qty] of out.items) addItem(engine.inv, id, qty);
   if (isLitPumpkin(cls)) delete state.pumpkinPhrases[cls];
   engine.playSound?.('ITEM_DROP', { volume: 0.5 });
-  burst(engine, 0xff9a2a);
   say(engine, out.line);
   engine.save?.();
   return true;
@@ -930,8 +926,6 @@ function tickCracker(engine, now) {
   cracker.art?.stop();
   cracker = null;
   if (!removeItem(engine.inv, 'glitchmas_cracker', 1)) return;
-  burst(engine, 0xff5a5a, 22);
-  burst(engine, 0x7ad37a, 12);
   // crackerPull: the helper gets the joke or fun fact (a critter cannot read, so it hands it to you); the owner gets the toy.
   const note = crackerNote(sleepyRng);
   addItem(engine.inv, note.classTsid, 1);
@@ -1050,36 +1044,6 @@ function onChatSubmit(event) {
 }
 
 /* ------------------------------------------------------------------- misc */
-
-function burst(engine, color, n = 14) {
-  const p = engine.player;
-  if (!p || !engine.fxLayer) return;
-  const { PIXI } = engine;
-  for (let i = 0; i < n; i += 1) {
-    const g = new PIXI.Graphics();
-    g.circle(0, 0, 2 + Math.random() * 3).fill({ color: color, alpha: 0.95 });
-    g.x = p.x;
-    g.y = (p.y || 0) - 70;
-    engine.fxLayer.addChild(g);
-    const a = Math.random() * Math.PI * 2;
-    const v = 1.5 + Math.random() * 3.5;
-    fx.push({ g, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2.5, life: 900 });
-  }
-}
-
-function tickFx(dtMs) {
-  if (!fx.length) return;
-  const k = dtMs / 16.67;
-  for (const f of fx) {
-    f.life -= dtMs;
-    f.g.x += f.vx * k;
-    f.g.y += f.vy * k;
-    f.vy += 0.15 * k;
-    f.g.alpha = Math.max(0, f.life / 900);
-    if (f.life <= 0 && !f.g.destroyed) f.g.destroy();
-  }
-  fx = fx.filter((f) => f.life > 0);
-}
 
 function lanternSpeak(engine, d, text, now) {
   d.talkUntil = now + speechMs(text);
@@ -1417,8 +1381,6 @@ export const seasonsFeature = {
     }
     decor = [];
     clearSnow();
-    for (const f of fx) if (!f.g.destroyed) f.g.destroy();
-    fx = [];
     cracker?.art?.stop();
     if (cracker) cracker.art = null;
     if (carving?.toolSprite && !carving.toolSprite.destroyed) carving.toolSprite.destroy();
@@ -1443,7 +1405,6 @@ export const seasonsFeature = {
     tickBoosts(engine, now);
     tickDecor(engine, dtMs, now);
     tickSnow(dtMs);
-    tickFx(dtMs);
     if (isOn('glitchmas') && engine.started) {
       const key = yetiMailDue(state, nowForCalendar(engine));
       if (key && SEASON_DATA.yetiMail) {
@@ -1612,7 +1573,6 @@ export const seasonsFeature = {
       if (countItem(engine.inv, 'glitchmas_present') < 1) return true;
       removeItem(engine.inv, 'glitchmas_present', 1);
       addItem(engine.inv, 'collectors_edition_2010_glitchmas_yeti', 1);
-      burst(engine, 0xd94a4a);
       engine.playSound?.('DISCOVER_USEFUL_NEW_ITEM', { volume: 0.6 });
       say(engine, `${SOURCE_LINES.unwrap} It's a Collectors' Edition 2010 Glitchmas Yeti!`);
       engine.save?.();
