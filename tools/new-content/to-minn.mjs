@@ -7,6 +7,8 @@
  * each entry is written up here as its plan first, then kept as the record of
  * what was built. The plan's working copy is research/seasonal/pot-luck-day-plan.md
  * (section 9) and the seasons audit research/audits-2026-11-17/seasons/.
+ * The page wears the site's nc- styles (style.css): rules, badges, items and
+ * steps as cards in the Project page's sewn-on look, each with a Tiny Speck icon.
  *
  *   MINN_USER=admin MINN_PASS=... node tools/new-content/to-minn.mjs [--site=https://groddle.localhost] [--dry] [--force]
  *
@@ -25,10 +27,47 @@ const list = (items, { ordered = false, cls = '' } = {}) => {
   const attrs = { ...(ordered ? { ordered: true } : {}), ...(cls ? { className: cls } : {}) };
   return block('list', Object.keys(attrs).length ? attrs : null, `<${tag} class="wp-block-list${cls ? ` ${cls}` : ''}">${items.map(li).join('\n')}</${tag}>`);
 };
-const table = (head, rows) => block('table', null,
-  `<figure class="wp-block-table"><table><thead><tr>${head.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${
-    rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></figure>`);
+/** A core table in the Notes table look (.note-table-wrap); columns in numCols are right aligned. */
+const table = (head, rows, { cls = '', numCols = [] } = {}) => {
+  const cell = (tag, i, words) => (numCols.includes(i) ? `<${tag} class="has-text-align-right" data-align="right">${words}</${tag}>` : `<${tag}>${words}</${tag}>`);
+  const className = `note-table-wrap${cls ? ` ${cls}` : ''}`;
+  return block('table', { hasFixedLayout: false, className }, `<figure class="wp-block-table ${className}"><table><thead><tr>${head.map((c, i) => cell('th', i, c)).join('')}</tr></thead><tbody>${
+    rows.map((r) => `<tr>${r.map((c, i) => cell('td', i, c)).join('')}</tr>`).join('')}</tbody></table></figure>`);
+};
 const band = (id, alt, title, inner) => group('section', `band${alt ? ' band-alt' : ''}`, id, [group('div', 'wrap', null, [h(2, title, { id: `${id}-h` }), ...inner])]);
+/** A small rounded label (.nc-chip), inside a paragraph. */
+const chip = (words, tone = '') => `<span class="nc-chip${tone ? ` nc-chip-${tone}` : ''}">${words}</span>`;
+/**
+ * Each card wears a Tiny Speck icon (CC0, the game's public/assets/sprites/icons)
+ * through its nc-icon-<name> class in the site's style.css, and a tone
+ * (nc-tone-moss, -sky, -sun, -plum, -accent).
+ */
+const card = (cls, icon, tone, inner) => group('div', `${cls} nc-icon-${icon} nc-tone-${tone}`, null, inner);
+
+/** The rules every new piece follows: a title, its line, the icon and tone of its card. */
+export const RULES = [
+  { title: 'Tiny Speck’s own work first', icon: 'tinkertool', tone: 'moss', words: 'New things are built from the original art, sounds and game code wherever they can be: a new creature starts from an original animal’s own art file, a new recipe from existing ingredients.' },
+  { title: 'New art is marked as new', icon: 'note', tone: 'sun', words: 'Anything drawn for Groddle is labelled that way, on the <a href="/restoration/">Restoration</a> report and in the game’s credits.' },
+  { title: 'Sized like Glitch’s own events', icon: 'egghunt_egg_1', tone: 'sky', words: 'Glitch’s seasons were small: a handful of items and a badge or two. New events aim for the same.' },
+  { title: 'Nothing that lasts as power', icon: 'bag_gift_box_wrapped', tone: 'plum', words: 'Seasonal rewards are looks, mood, favor and keepsakes. Seasonal things end gracefully, and what stays is a badge or a keepsake.' },
+  { title: 'Shared where it can be', icon: 'street_spirit_groddle', tone: 'accent', words: 'When something happens on a street, everyone there should see it.' },
+];
+/** Pot Luck Day's badges. */
+export const BADGES = [
+  { name: 'Feast Bringer', icon: 'potians_feast', tone: 'sun', words: 'Finishing the festival’s quest, Pot’s Empty Table' },
+  { name: 'Plume Fluffer I, II and III', icon: 'chick', tone: 'plum', words: 'Dressing 5, 23 and 61 chickens in costume', tiers: [['I', 5], ['II', 23], ['III', 61]] },
+  { name: 'Good Neighbor', icon: 'pumpkin_pie', tone: 'moss', words: 'Laying 11 dishes or crops on the Harvest Table' },
+];
+/** Pot Luck Day's new items, and what becomes of each after the season (its chip tone). */
+export const ITEMS = [
+  { name: 'Turkey Tailfan', icon: 'paper', words: 'A paper-plate costume for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
+  { name: 'Rooster Plume', icon: 'party_pack_double_rainbow', words: 'A tall comb and tail for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
+  { name: 'Fancy feather', icon: 'quill', words: 'Sometimes dropped by a dressed chicken when squeezed', after: 'Rots to compost', tone: 'plum' },
+  { name: 'Harvest Stuffing', icon: 'awesome_pot', words: 'A new dish for the Awesome Pot', after: 'Food', tone: 'sky' },
+  { name: 'Pot’s Cornucopia', icon: 'cornucopia_crops', words: 'A keepsake for your home, the quest’s reward, drawn from Tiny Speck’s Cornucopia of Crops', after: 'Stays', tone: 'moss' },
+];
+/** Every Tiny Speck icon the page's cards wear (each needs its nc-icon-<name> rule in style.css). */
+export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
 
 /** The page's blocks. */
 export function newContentContent() {
@@ -44,72 +83,107 @@ export function newContentContent() {
 
     band('how', false, 'How new content is made', [
       p('section-lead', 'A few rules every new piece follows, so it sits beside the original without standing out.'),
-      list([
-        '<strong>Tiny Speck’s own work first.</strong> New things are built from the original art, sounds and game code wherever they can be: a new creature starts from an original animal’s own art file, a new recipe from existing ingredients.',
-        '<strong>New art is marked as new.</strong> Anything drawn for Groddle is labelled that way, on the <a href="/restoration/">Restoration</a> report and in the game’s credits.',
-        '<strong>Sized like Glitch’s own events.</strong> Glitch’s seasons were small: a handful of items and a badge or two. New events aim for the same.',
-        '<strong>Nothing that lasts as power.</strong> Seasonal rewards are looks, mood, favor and keepsakes. Seasonal things end gracefully, and what stays is a badge or a keepsake.',
-        '<strong>Shared where it can be.</strong> When something happens on a street, everyone there should see it.',
-      ]),
+      group('div', 'nc-rules', null, RULES.map((r) => card('nc-rule', r.icon, r.tone, [h(3, r.title, { cls: 'nc-rule-title' }), p('nc-rule-line', r.words)]))),
     ]),
 
-    band('pot-luck-day', true, 'Pot Luck Day', [
-      p('section-lead', '<strong>Status: planning.</strong> A harvest festival for Thanksgiving week, November 22 to 29, 2026. Pot, the Giant of cooking and plenty, hosts it.'),
-      h(3, 'Why a new festival'),
-      p('', 'Glitch never had a Thanksgiving, or any harvest feast. Its calendar named a crop day, Croppaday, and Pot’s day, Pot Twoday, but nothing happened on either. Players filled the gap themselves, bringing crops to the signpost at Groddle Forest Junction. Pot Luck Day starts from that: a table by that signpost, filled by everyone.'),
-      h(3, 'How big it is'),
-      p('', 'Glitch’s seasonal events were built from items and verbs, almost never quests. Pot Luck Day is sized against them:'),
-      table(['Event', 'New items', 'Quests', 'Badges'], [
-        ['Zilloween (Glitch’s largest)', '18, plus 5 recipes', '0', '12'],
-        ['Glitchmas 2011', '6', '0', '1'],
-        ['Egg Hunt', '6', '0', '1'],
-        ['Pi Day', '1', '0', '0'],
-        ['<strong>Pot Luck Day (planned)</strong>', '<strong>5</strong>', '<strong>1</strong>', '<strong>4</strong>'],
+    group('section', 'band band-alt nc-band', 'pot-luck-day', [group('div', 'wrap', null, [
+      card('nc-event', 'emblem_pot', 'accent', [
+        p('nc-chips', `${chip('Status: planning', 'status')} ${chip('Nov 22-29, 2026', 'date')}`),
+        h(2, 'Pot Luck Day', { id: 'pot-luck-day-h', cls: 'nc-event-title' }),
+        p('nc-event-line', 'A harvest festival for Thanksgiving week, November 22 to 29, 2026. Pot, the Giant of cooking and plenty, hosts it.'),
       ]),
-      h(3, 'Badges'),
-      p('', 'The event is built backward from its badges: each one names something to do, and everything else exists to make that possible.'),
-      table(['Badge', 'Earned by'], [
-        ['Feast Bringer', 'Finishing the festival’s quest, Pot’s Empty Table'],
-        ['Plume Fluffer I, II and III', 'Dressing 5, 23 and 61 chickens in costume'],
-        ['Good Neighbor', 'Laying 11 dishes or crops on the Harvest Table'],
+
+      group('div', 'nc-split', null, [
+        group('div', 'nc-part', null, [
+          h(3, 'Why a new festival'),
+          p('', 'Glitch never had a Thanksgiving, or any harvest feast. Its calendar named a crop day, Croppaday, and Pot’s day, Pot Twoday, but nothing happened on either. Players filled the gap themselves, bringing crops to the signpost at Groddle Forest Junction. Pot Luck Day starts from that: a table by that signpost, filled by everyone.'),
+        ]),
+        group('div', 'nc-part', null, [
+          h(3, 'How big it is'),
+          p('', 'Glitch’s seasonal events were built from items and verbs, almost never quests. Pot Luck Day is sized against them:'),
+          table(['Event', 'New items', 'Quests', 'Badges'], [
+            ['Zilloween (Glitch’s largest)', '18, plus 5 recipes', '0', '12'],
+            ['Glitchmas 2011', '6', '0', '1'],
+            ['Egg Hunt', '6', '0', '1'],
+            ['Pi Day', '1', '0', '0'],
+            ['<strong>Pot Luck Day (planned)</strong>', '<strong>5</strong>', '<strong>1</strong>', '<strong>4</strong>'],
+          ], { cls: 'nc-size', numCols: [1, 2, 3] }),
+        ]),
       ]),
-      h(3, 'The Harvest Table'),
-      p('', 'A long table by the Groddle Forest Junction signpost. Lay a dish or a crop on it and it stays there for others to see, so the table fills up as the week goes on. Each day’s first offering brings a little mood and favor with Pot.'),
-      h(3, 'The quest: Pot’s Empty Table'),
-      list([
-        'Pot wants a feast, and a feast needs a cook.',
-        'Make three harvest dishes from recipes the game already has: Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn.',
-        'Dress one chicken for the occasion.',
-        'Lay your dishes on the Harvest Table. Pot gives you the Cornucopia keepsake, some favor and the Feast Bringer badge.',
-      ], { ordered: true }),
-      h(3, 'Chicken costumes'),
-      p('', 'Drop a costume on a chicken and it wears it for the rest of the week, then the costume falls off. Glitch never dressed its animals, but its chickens already take items dropped on them, so this follows the same habit. The costumes are drawn from Tiny Speck’s own chicken art file: one is a paper-plate turkey tail tied on behind, the other a tall rooster plume.'),
-      h(3, 'New items'),
-      table(['Item', 'What it is', 'After the season'], [
-        ['Turkey Tailfan', 'A paper-plate costume for a chicken, from the Toy Vendor', 'Used up'],
-        ['Rooster Plume', 'A tall comb and tail for a chicken, from the Toy Vendor', 'Used up'],
-        ['Fancy feather', 'Sometimes dropped by a dressed chicken when squeezed', 'Rots to compost'],
-        ['Harvest Stuffing', 'A new dish for the Awesome Pot', 'Food'],
-        ['Pot’s Cornucopia', 'A keepsake for your home, the quest’s reward, drawn from Tiny Speck’s Cornucopia of Crops', 'Stays'],
+
+      group('div', 'nc-part', null, [
+        h(3, 'Badges'),
+        p('nc-part-lead', 'The event is built backward from its badges: each one names something to do, and everything else exists to make that possible.'),
+        group('div', 'nc-badges', null, BADGES.map((b) => card('nc-badge', b.icon, b.tone, [
+          p('nc-medal', '<span>art coming</span>'),
+          h(4, b.name, { cls: 'nc-badge-name' }),
+          p('nc-badge-line', b.words),
+          ...(b.tiers ? [p('nc-chips nc-tiers', b.tiers.map(([tier, n]) => chip(`${tier} · ${n}`)).join(' '))] : []),
+        ]))),
       ]),
-      h(3, 'What lasts'),
-      list([
-        'The four badges, which count toward your totals.',
-        'The Cornucopia keepsake.',
-        'Everything else ends on its own: costumes fall off, feathers rot and the table is packed away.',
+
+      card('nc-feature', 'furniture_table', 'moss', [
+        h(3, 'The Harvest Table', { cls: 'nc-feature-title' }),
+        p('nc-feature-line', 'A long table by the Groddle Forest Junction signpost. Lay a dish or a crop on it and it stays there for others to see, so the table fills up as the week goes on. Each day’s first offering brings a little mood and favor with Pot.'),
       ]),
-      h(3, 'Left for another year'),
-      p('', 'A cranberry crop, a turkey round-up race, gratitude notes, leaf piles to jump in, a Golden Turkey to find, new music and a festival street. Each would make the festival bigger than any of Glitch’s own except Zilloween.'),
-      h(3, 'Still to decide'),
-      list([
-        'Whether costumed chickens are seen by everyone on the street (the plan) or only by the player who dressed them.',
-        'Turkey, rooster or both costumes.',
-        'One shared Harvest Table for everyone, or one each.',
-        'Whether the festival returns on Pot Twoday in the game’s own calendar, for players who miss November.',
+
+      group('div', 'nc-part', null, [
+        h(3, 'The quest: Pot’s Empty Table'),
+        list([
+          'Pot wants a feast, and a feast needs a cook.',
+          'Make three harvest dishes from recipes the game already has: Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn.',
+          'Dress one chicken for the occasion.',
+          'Lay your dishes on the Harvest Table. Pot gives you the Cornucopia keepsake, some favor and the Feast Bringer badge.',
+        ], { ordered: true, cls: 'nc-steps' }),
       ]),
-      h(3, 'Art'),
-      p('', 'The badges’ pictures are being drawn now in the style of Tiny Speck’s own badges, and the costumes are rendered from the original chicken’s art file. They will be shown here as they are approved.'),
-    ]),
+
+      card('nc-feature', 'chicken_egg', 'plum', [
+        h(3, 'Chicken costumes', { cls: 'nc-feature-title' }),
+        p('nc-feature-line', 'Drop a costume on a chicken and it wears it for the rest of the week, then the costume falls off. Glitch never dressed its animals, but its chickens already take items dropped on them, so this follows the same habit. The costumes are drawn from Tiny Speck’s own chicken art file: one is a paper-plate turkey tail tied on behind, the other a tall rooster plume.'),
+      ]),
+
+      group('div', 'nc-part', null, [
+        h(3, 'New items'),
+        group('div', 'nc-items', null, ITEMS.map((it) => card('nc-item', it.icon, it.tone, [
+          h(4, it.name, { cls: 'nc-item-name' }),
+          p('nc-item-line', it.words),
+          p('nc-item-after', `After the season ${chip(it.after, it.tone)}`),
+        ]))),
+      ]),
+
+      group('div', 'nc-part', null, [
+        h(3, 'What lasts'),
+        group('div', 'nc-lasts', null, [
+          group('div', 'nc-last nc-tone-moss', null, [
+            h(4, 'Stays', { cls: 'nc-last-title' }),
+            list(['The four badges, which count toward your totals.', 'The Cornucopia keepsake.']),
+          ]),
+          group('div', 'nc-last nc-tone-sun', null, [
+            h(4, 'Ends on its own', { cls: 'nc-last-title' }),
+            p('', 'Everything else ends on its own: costumes fall off, feathers rot and the table is packed away.'),
+          ]),
+          group('div', 'nc-last nc-tone-sky', null, [
+            h(4, 'Later: left for another year', { cls: 'nc-last-title' }),
+            p('', 'A cranberry crop, a turkey round-up race, gratitude notes, leaf piles to jump in, a Golden Turkey to find, new music and a festival street. Each would make the festival bigger than any of Glitch’s own except Zilloween.'),
+          ]),
+        ]),
+      ]),
+
+      group('div', 'nc-callout', null, [
+        h(3, 'Still to decide'),
+        list([
+          'Whether costumed chickens are seen by everyone on the street (the plan) or only by the player who dressed them.',
+          'Turkey, rooster or both costumes.',
+          'One shared Harvest Table for everyone, or one each.',
+          'Whether the festival returns on Pot Twoday in the game’s own calendar, for players who miss November.',
+        ]),
+      ]),
+
+      card('nc-note', 'camera', 'sky', [
+        h(3, 'Art', { cls: 'nc-note-title' }),
+        p('nc-note-line', 'The badges’ pictures are being drawn now in the style of Tiny Speck’s own badges, and the costumes are rendered from the original chicken’s art file. They will be shown here as they are approved.'),
+      ]),
+    ])]),
 
     group('div', 'wrap report-foot', null, [
       p('', 'Everything on this page is a plan until it ships; the <a href="/changelog/">Notes</a> say when it does.'),
