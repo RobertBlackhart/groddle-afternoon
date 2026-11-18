@@ -92,7 +92,9 @@ export function overAt(engine, canvas, clientX, clientY, cls, copy = null) {
   if (globalThis.groddleGifts?.playerAt?.(clientX, clientY)) return null;
   const p = worldPoint(engine, canvas, clientX, clientY);
   if (!p) return null;
-  const target = engine.interactableAt?.(p.x, p.y);
+  // G982: a feature's own drop target under the point wins over whatever stands in front of it (the
+  // Harvest Table over a street Piggy), as DragVO.as findDragTargetForStack asks the thing that takes the stack.
+  const target = engine.query?.('dropTargetAt', p.x, p.y, cls, engine) || engine.interactableAt?.(p.x, p.y);
   if (!target || target.classId === 'garden_plot') return null;
   const verbs = engine.targetVerbs?.(target) || [];
   const drop = dropFor(dropClassOf(target), cls, verbs, ctxFor(engine, target, copy));

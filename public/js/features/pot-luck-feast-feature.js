@@ -555,6 +555,17 @@ export const potLuckFeastFeature = {
     return verbId === 'lay' && view && target === view.target ? false : null;
   },
 
+  /**
+   * The table under a world point for a dragged dish or crop (world-drop-feature overAt asks it first):
+   * a street Piggy or a Chicken standing in front of the table never takes a drop meant for it.
+   */
+  dropTargetAt(x, y, cls, engine) {
+    if (!view || view.root.destroyed || !kindOf(cls)) return null;
+    const half = (view.step + view.w) / 2;
+    const top = view.root.y - view.h - 30;
+    return Math.abs(x - view.root.x) <= half && y >= top && y <= view.root.y + 6 ? view.target : null;
+  },
+
   /** js/world-drop.js lay_feast: a dish or crop dragged onto the table. */
   feastTakes(target, cls, engine) {
     if (!view || target !== view.target) return null;

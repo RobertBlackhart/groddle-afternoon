@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=0b4f1e4d';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=8db93ce5';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=79dcaafd';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');
@@ -107,6 +107,24 @@ describe('the feature', () => {
     assert.equal(o.ok, true);
     assert.equal(overAt(engine, canvas, 100, 300, 'egg_plain'), null);
     assert.equal(overAt(engine, canvas, 480, 300, 'cherry'), null);
+  });
+
+  it('G982: the Harvest Table under the point wins over a Piggy standing in front of it', () => {
+    const piggy = { classId: 'npc_piggy', label: 'Piggy' };
+    const table = { classId: 'pot_luck_harvest_table', label: 'Harvest Table' };
+    const { engine, calls } = fakeEngine(piggy, [{ id: 'feed', enabled: true }, { id: 'lay', enabled: true }], { corn: 2 });
+    // The feature answers for points on its table (pot-luck-feast-feature dropTargetAt); the Piggy is what interactableAt finds.
+    engine.query = (hook, x, y, cls) => {
+      if (hook === 'dropTargetAt') return Math.abs(x - 1480) < 100 && cls === 'corn' ? table : null;
+      if (hook === 'feastTakes') return true;
+      return null;
+    };
+    const o = overAt(engine, canvas, 480, 300, 'corn');
+    assert.equal(o.target, table);
+    assert.equal(o.drop.rule.id, 'lay_feast');
+    assert.match(o.tip, /^Lay corn on the Harvest Table$/i);
+    runDrop(engine, o, 'corn');
+    assert.deepEqual(calls.filter((c) => c[0] === 'picker'), [['picker', 'lay', 'corn']]);
   });
 
   it('a drop runs the verb through the walk into reach; Feed and donate pick the dragged stack', () => {

@@ -142,8 +142,8 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=7761af4e';
-import { worldPoint } from './world-drop-feature.js?v=8db93ce5';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=5e318c96';
+import { worldPoint } from './world-drop-feature.js?v=79dcaafd';
 import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
