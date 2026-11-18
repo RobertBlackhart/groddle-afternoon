@@ -64,7 +64,7 @@ import {
   questRows,
   shownRows,
   tableCountLabel,
-} from '../pot-luck-feast.js?v=e5f12825';
+} from '../pot-luck-feast.js?v=d051373d';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -219,6 +219,8 @@ function spawnTable(engine) {
     piece.anchor?.set?.(0.5, 1);
     piece.width = w;
     piece.height = h;
+    // The right one mirrored, so the long table's grain runs out from the middle.
+    if (side > 0) piece.scale.x *= -1;
     piece.x = (side * step) / 2;
     root.addChild(piece);
   }
@@ -226,7 +228,9 @@ function spawnTable(engine) {
   root.addChild(icons);
   const label = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0xfff3d6, stroke: { color: 0x4a2c14, width: 3 } } });
   label.anchor?.set?.(0.5, 0);
-  label.y = -h + 28;
+  // The count stands on the right-hand table's apron, clear of the seam.
+  label.x = step / 2;
+  label.y = -h + 17;
   root.addChild(label);
   root.zIndex = 2;
   root._worldHitW = step + w;
@@ -259,7 +263,7 @@ function redraw(engine) {
   const t = shownTable();
   view.icons.removeChildren().forEach((c) => c.destroy());
   const rows = shownRows(t);
-  const span = view.step + view.w - 60;
+  const span = view.step * 2 - 24;
   const slot = rows.length > 1 ? span / Math.max(rows.length, 6) : 0;
   const box = 34;
   rows.forEach((row, i) => {
@@ -274,8 +278,8 @@ function redraw(engine) {
     fit();
     s.texture?.once?.('update', fit);
     // Newest at the left, then older to the right, with a little stagger front and back.
-    s.x = -span / 2 + 20 + i * slot;
-    s.y = -view.h + 16 + (i % 2) * 5;
+    s.x = -span / 2 + 16 + i * slot;
+    s.y = -view.h + 14 + (i % 2) * 3;
     view.icons.addChild(s);
   });
   view.label.text = t.total ? tableCountLabel(t.total) : '';
@@ -435,7 +439,7 @@ function addRecipe() {
 function demoSetup(engine) {
   if (demoDone || !engine.param?.('feastdemo')) return;
   demoDone = true;
-  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 12], ['pinch_of_salt', 4], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 1]];
+  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 24], ['pinch_of_salt', 8], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 1]];
   for (const [cls, n] of kit) if (countItem(engine.inv, cls) < n) addItem(engine.inv, cls, n - countItem(engine.inv, cls));
   engine.refreshPack?.();
 }

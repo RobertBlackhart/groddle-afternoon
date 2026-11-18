@@ -30,9 +30,10 @@ export const TABLE_DECO = 'deco_table_wooden_ghtest';
 /**
  * Where the table stands: its middle, 250 px right of the street's hub signpost (signpost_2 at
  * x -291: Hechey Track, Pasha's Place, Northwest Passage, Burnabee). Two tables of the deco's drawn
- * size (186 x 71, rebuilt-rooms.js Gwendolyn's table) side by side, a little overlapped.
+ * size (186 x 71, rebuilt-rooms.js Gwendolyn's table) end to end: the deco's top is 143 of its 186
+ * (its legs splay past it) and its ends are rounded, so they overlap by 66 and the two tops run on as one long board.
  */
-export const TABLE_AT = Object.freeze({ x: -41, y: -122, piece: Object.freeze({ w: 186, h: 71 }), overlap: 14 });
+export const TABLE_AT = Object.freeze({ x: -41, y: -122, piece: Object.freeze({ w: 186, h: 71 }), overlap: 66 });
 
 /** The five harvest dishes the quest asks for, all existing recipes (recipes.json). */
 export const HARVEST_DISHES = Object.freeze(['pumpkin_pie', 'hot_potatoes', 'wavy_gravy', 'corny_fritter', 'potcorn']);
