@@ -213,14 +213,14 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=7a63d78f';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { fadeInNewNear } from '../poof-fade.js?v=b9b5246d';
-import { projectApi } from './street-jobs-feature.js?v=06f7606f';
+import { projectApi } from './street-jobs-feature.js?v=191aeb84';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=77d57cda';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=1e18c26a';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=5c0694a5';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=ee2657b6';
-import { patchesFeature } from './patches-feature.js?v=eff168b0';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=f5f9b55d';
+import { patchesFeature } from './patches-feature.js?v=75656272';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=db04987b';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
@@ -2567,7 +2567,7 @@ function spawnStreetTargets(engine) {
   standOnFeet(mailbox);
   // PORCH: where you moved it, else the house's sign corner.
   mailbox.x = Math.round(fixtureWorldX('mailbox') ?? bg?.houseSignX ?? layout.houseX - 260);
-  mailbox.y = STREET_GROUND_Y + 4;
+  mailbox.y = STREET_GROUND_Y;
   mailbox.zIndex = 30;
   engine.entityLayer.addChild(mailbox);
   const mailTarget = engine.register({
@@ -7448,7 +7448,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
         const usual = Math.round(background.houseSignX ?? layout.houseX - 260);
         const moved = fixtureRx(st, 'mailbox', { at: { mailboxX: usual, doorway: background.houseDoorway } });
         mailbox.x = moved == null ? usual : layout.houseX + moved;
-        mailbox.y = STREET_GROUND_Y + 4;
+        mailbox.y = STREET_GROUND_Y;
         mailbox.zIndex = 30;
         eng.entityLayer.addChild(mailbox);
         const door = new PIXI.Graphics();

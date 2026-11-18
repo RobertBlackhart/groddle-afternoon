@@ -69,8 +69,8 @@
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { homeStreetLayout, towerItem } from '../home-cultivation.js?v=57afc9e2';
-import { homesFeature } from './homes-feature.js?v=057ea614';
-import { towerApi } from './home-tower-feature.js?v=1e18c26a';
+import { homesFeature } from './homes-feature.js?v=d4140290';
+import { towerApi } from './home-tower-feature.js?v=5c0694a5';
 import { levelInfoForXp } from '../progression.js?v=05ff0260';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { NEIGHBOURS, NEIGHBOUR_ITEMS, neighbourById } from '../neighbours.js?v=13f35acd';
@@ -142,8 +142,8 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=c577eff8';
-import { worldPoint } from './world-drop-feature.js?v=ffbf832a';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=5aa14bf1';
+import { worldPoint } from './world-drop-feature.js?v=e2926cce';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const BUTLER_FEATURE_ID = 'butler';
@@ -461,7 +461,7 @@ function spawnBox(engine) {
   const spr = new PIXI.Sprite(textureFromUrl(BUTLER_BOX_ART));
   standOnFeet(spr);
   spr.x = houseX() + BOX_RX;
-  spr.y = engine.groundY + 2;
+  spr.y = engine.groundY;
   spr.zIndex = Z.box;
   engine.entityLayer.addChild(spr);
   const target = engine.register({

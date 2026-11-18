@@ -49,7 +49,7 @@ export function addFlamingo(ctx, tsid, at) {
   standOnFeet(fl);
   fl.scale.set(-FLAMINGO.scale, FLAMINGO.scale);
   fl.x = p.x;
-  fl.y = p.y + 2;
+  fl.y = p.y;
   ctx.add(fl, 30);
   ctx.data.flamingo = fl;
   ctx.data.flamingoStep = 'wait';

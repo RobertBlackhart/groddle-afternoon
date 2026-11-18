@@ -58,7 +58,7 @@
  */
 
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { getStreetEcologyCatalog } from '../street-ecology.js?v=c4ce9ccd';
+import { getStreetEcologyCatalog } from '../street-ecology.js?v=62ca408f';
 import { graphKey, tsidAliases } from '../map-routes.js?v=84356b3e';
 import { _useStreetGraph, loadStreetGraph, roadsFor, routeDistances, streetGraphLoaded } from '../street-graph.js?v=114647c2';
 import { STREET_SPIRIT_VARIANTS, portraitFit, portraitSheet, spiritForStreet } from '../street-spirits.js?v=f9e88445';

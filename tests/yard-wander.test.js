@@ -22,10 +22,10 @@ import {
   yardPlan,
   yardWanderAt,
   yardWindow,
-} from '../public/js/yard-wander.js?v=7bfc0a93';
-import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=34bc0400';
-import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=08c4e201';
-import { MAGIC_STICKS, STICK_DISTANCE } from '../public/js/animal-husbandry.js?v=0429b2e9';
+} from '../public/js/yard-wander.js?v=00e587d6';
+import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=7487d94f';
+import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=03cf3bc3';
+import { MAGIC_STICKS, STICK_DISTANCE } from '../public/js/animal-husbandry.js?v=cdeb38db';
 import { GAME_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
 const read = (rel) => readFileSync(join(GAME_DIR, rel), 'utf8');

@@ -74,12 +74,12 @@ function takePumpkin(engine, cls, copy) {
 }
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
-import { isBatterflyHabitat } from '../animal-husbandry.js?v=0429b2e9';
+import { isBatterflyHabitat } from '../animal-husbandry.js?v=cdeb38db';
 import { emblemCostFor } from '../shrines.js?v=15d03920';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=439d100b';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=ee2657b6';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=f5f9b55d';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
@@ -500,7 +500,7 @@ function spawnLantern(engine, pt, index) {
   const spr = new PIXI.AnimatedSprite(talkFrames(engine, face));
   standOnFeet(spr);
   spr.x = pt.x;
-  spr.y = y + 3;
+  spr.y = y;
   // pumpkin_lit_N is a normal item (NRM_ITEM): in front of the trants beside the path.
   spr.zIndex = itemZ(litClass(face), 1);
   spr.animationSpeed = 0.5;
@@ -588,7 +588,7 @@ function spawnPlaced(engine, row) {
   const spr = lit ? new PIXI.AnimatedSprite(talkFrames(engine, faceOf(row.cls))) : new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${row.cls}.webp`));
   standOnFeet(spr);
   spr.x = row.x;
-  spr.y = y + 3;
+  spr.y = y;
   spr.zIndex = itemZ(row.cls, 1);
   if (lit) {
     spr.animationSpeed = 0.5;

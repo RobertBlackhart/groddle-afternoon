@@ -276,7 +276,7 @@ function spawnBot(wctx, station) {
   const spr = new PIXI.AnimatedSprite([b.moveTex]);
   standOnFeet(spr);
   spr.x = spot.x;
-  spr.y = spot.y + 2;
+  spr.y = spot.y;
   // Out of fuel: slumped and dull.
   spr.rotation = -0.22;
   spr.tint = 0xa3a39c;

@@ -246,7 +246,7 @@ function spawnGrapes(street, engine) {
     standOnFeet(sprite);
     sprite.scale.set(GRAPE_SCALE);
     sprite.x = grape.x;
-    sprite.y = grape.y + 2;
+    sprite.y = grape.y;
     sprite.zIndex = 21;
     sprite.eventMode = 'static';
     sprite.cursor = 'pointer';

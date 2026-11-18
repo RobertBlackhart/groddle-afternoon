@@ -223,7 +223,7 @@ describe('Color Unblocking (color_unblocking)', () => {
 
 describe('Vision Quest (vision_quest)', () => {
   it('uses the archived Institute street and the six source objects', async () => {
-    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=98ed2e19');
+    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=6b722de4');
     assert.equal(mod.STREET, 'GNV1T7PCUM53T25');
     assert.deepEqual(Object.keys(mod.OBJECTS).sort(), ['lemburger', 'npc_crab', 'npc_piggy', 'pumpkin', 'rock_sparkly_1', 'trant_fruit']);
     assert.equal(mod.WRONG_THINGS.length, 7);
@@ -231,7 +231,7 @@ describe('Vision Quest (vision_quest)', () => {
   });
 
   it('#329 (G749): the first Talk to plays only the introduction; the question waits for a later talk', async () => {
-    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=98ed2e19');
+    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=6b722de4');
     const said = [];
     const ctx = {
       data: { object: 'pumpkin', rng: () => 0 },
@@ -278,7 +278,7 @@ describe("Mr. Block's playroom (kids_room)", () => {
 
 describe('The Wrizzards and The Rube (rube_yard)', () => {
   it('hides ten Wrizzards where the camera and room card leave them visible', async () => {
-    const mod = await import('../public/js/quest-rooms/rube-yard.js?v=3f8df52c');
+    const mod = await import('../public/js/quest-rooms/rube-yard.js?v=d2d6413f');
     assert.equal(mod.WRIZZARDS_NEEDED, 10);
     assert.equal(mod.HIDING_SPOTS.length, 10);
     assert.equal(new Set(mod.HIDING_SPOTS.map((s) => s.id)).size, 10);
@@ -307,7 +307,7 @@ describe('Le Misérable (le_miserable)', () => {
   const STEP_BY_TINT = { 16777024: 1, 16750144: 2, 10436052: 3, 3394764: 4 };
 
   async function setup() {
-    const mod = await import('../public/js/quest-rooms/le-miserable.js?v=4b7d5a11');
+    const mod = await import('../public/js/quest-rooms/le-miserable.js?v=80fbfe43');
     const ev = await import('../public/js/location-events.js?v=7fd40f71');
     const { readFileSync } = await import('node:fs');
     const street = JSON.parse(readFileSync(streetFile, 'utf8'));
@@ -441,7 +441,7 @@ describe('G311: a failed room quest is Try again in the quest log', () => {
   };
 
   it('a run lost to a reload marks a startable quest failed, not a retry prompt', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=1c1ef8dc');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=707de300');
     const { ensureQuestOfferState } = await import('../public/js/quest-offers.js?v=4debd26e');
     assert.equal(getQuestCatalog().mental_block?.needsStart, true);
     assert.notEqual(getQuestCatalog().help_juju_bandits?.needsStart, true, 'no onStarted in GSJS');
@@ -505,7 +505,7 @@ describe('G313: failed room quests the source removes', () => {
   });
 
   it('a reload removes a source-removed quest and its offers, and keeps the prompt for the three', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=1c1ef8dc');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=707de300');
     const { questStatus } = await import('../public/js/quest-offers.js?v=4debd26e');
     const t = Date.now() - 60_000;
     questInstancesFeature.restore({ memory: {}, retry: { tower_quest: t, le_miserable_part_2: t, smuggle_the_smuggler_part2: t } });
@@ -533,7 +533,7 @@ describe('G313: failed room quests the source removes', () => {
   });
 
   it('has no map card', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=1c1ef8dc');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=707de300');
     assert.equal(questInstancesFeature.mapCards, undefined);
     const src = readFileSync(join(root, 'public/js/features/quest-instances-feature.js'), 'utf8');
     assert.doesNotMatch(src, /Unfinished quest places/);
@@ -554,7 +554,7 @@ describe('#107: a choice dialog can be dismissed', () => {
   const src = readFileSync(join(root, 'public/js/features/quest-instances-feature.js'), 'utf8');
 
   it('Escape and a click outside make the cancel choice (ChoicesDialog.as _escKeyHandler: cancel_value first)', async () => {
-    const { cancelChoice } = await import('../public/js/features/quest-instances-feature.js?v=1c1ef8dc');
+    const { cancelChoice } = await import('../public/js/features/quest-instances-feature.js?v=707de300');
     const memories = [{ label: 'Four Letter Words', value: 'letter_block_2' }, { label: 'Hog Haul', value: 'hogtie_piggies' }, { label: 'Never mind', value: '', cancel: true }];
     assert.equal(cancelChoice(memories), '');
     assert.equal(cancelChoice([{ label: 'Stay', value: 'stay', cancel: true }, { label: 'Leave', value: 'leave' }]), 'stay');

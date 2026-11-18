@@ -1289,7 +1289,7 @@ function spawnForehorseman(engine) {
   spr.loop = true;
   spr.play();
   spr.x = x;
-  spr.y = y + 2;
+  spr.y = y;
   spr.zIndex = itemZ('npc_forehorseman', 4);
   spr.scale.set(0.78);
   spr._worldHitW = 90;

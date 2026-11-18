@@ -158,7 +158,7 @@ function setupWorld(engine) {
     const spr = anim(engine, 'pigBait', { speed: 0.1, scale: 0.92 });
     if (spr) {
       spr.x = b.x;
-      spr.y = b.y + 2;
+      spr.y = b.y;
       spr.zIndex = 34;
       spr.bob = i * 0.85;
       engine.entityLayer.addChild(spr);
@@ -169,7 +169,7 @@ function setupWorld(engine) {
     const spr = anim(engine, 'piggyWalk', { speed: 0.14, slice: [0, 8], scale: PIGGY_SCALE });
     if (spr) {
       spr.x = p.x;
-      spr.y = p.y + 2;
+      spr.y = p.y;
       spr.zIndex = 35;
       engine.entityLayer.addChild(spr);
     }

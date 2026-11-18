@@ -28,9 +28,9 @@
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { ANIMAL_PATROL } from '../street-ecology.js?v=c4ce9ccd';
+import { ANIMAL_PATROL } from '../street-ecology.js?v=62ca408f';
 import { forcedRoll } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdSad } from './animal-mood-feature.js?v=802c02fd';
+import { animalCrowdSad } from './animal-mood-feature.js?v=addd6f5c';
 import {
   CHICKEN_CLASS,
   CHICKEN_HOP,
@@ -175,7 +175,7 @@ function endFlight(engine, target, rec, { settle = true } = {}) {
   spr.baseX = spr.x;
   if (sad) return;
   const surface = (x, y) => walkSurfaceY(engine.platforms, x, y, { up: 24, down: 24 });
-  const range = landedRange(spr.x, spr.y - 2, surface, ANIMAL_PATROL.chickens);
+  const range = landedRange(spr.x, spr.y, surface, ANIMAL_PATROL.chickens);
   delete spr._pause;
   delete spr._nextPauseMs;
   if (range < 10) {
@@ -199,7 +199,7 @@ function stepFlights(engine, dtMs) {
     // The Rook struck it in the air: it drops where it is and the rook feature has it.
     if (engine.query?.('targetRooked', target, engine)) {
       const floor = landingY(engine.platforms, spr.x, spr.y);
-      if (floor != null) spr.y = floor + 2;
+      if (floor != null) spr.y = floor;
       endFlight(engine, target, rec, { settle: false });
       continue;
     }
@@ -212,7 +212,7 @@ function stepFlights(engine, dtMs) {
     if (f.phase === 'air' && f.y > rec.startY + LOST_DROP) {
       // No floor under it at all: back where it took off.
       f.x = rec.startX;
-      f.y = rec.startY - 2;
+      f.y = rec.startY;
       f.vx = 0;
       f.vy = 0;
       f.phase = 'landed';
@@ -220,7 +220,8 @@ function stepFlights(engine, dtMs) {
       events.push('landed');
     }
     spr.x = f.x;
-    spr.y = f.phase === 'air' ? f.y : f.y + 2;
+    // Landed, its measured feet on the floor (js/sprite-feet.js; R12: no 2 px into the line).
+    spr.y = f.y;
     if (events.includes('no_feathers')) setClip(spr, rec, 'flying_no_feathers');
     if (events.includes('landed')) setClip(spr, rec, 'land', { loop: false });
     if (events.includes('done')) endFlight(engine, target, rec);

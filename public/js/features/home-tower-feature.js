@@ -445,7 +445,7 @@ export function drawTowerBench(engine, { groundY }) {
   standOnFeet(bench);
   bench.scale.set(BENCH_SCALE);
   bench.x = TOWER_GEO.workbenchX;
-  bench.y = groundY + 2;
+  bench.y = groundY;
   bench.zIndex = 20;
   engine.entityLayer.addChild(bench);
   return bench;

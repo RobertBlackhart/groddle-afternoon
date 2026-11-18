@@ -6,11 +6,11 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { SLOTH_COLLISION, slothGeometry, slothPeekBox, touchesSloth } from '../public/js/features/resource-nodes-feature.js?v=ee2657b6';
+import { SLOTH_COLLISION, slothGeometry, slothPeekBox, touchesSloth } from '../public/js/features/resource-nodes-feature.js?v=f5f9b55d';
 import { SLOTH_SPOTS } from '../public/js/sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from '../public/js/sloth-trees.js?v=a3299191';
 import { platformsScreen, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
-import { avatarHitBox, behindFloor } from '../public/js/reach.js?v=8e52df56';
+import { avatarHitBox, behindFloor } from '../public/js/reach.js?v=1fd5de5a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = (tsid) => JSON.parse(readFileSync(join(root, 'public/assets/streets', `${tsid}.json`), 'utf8'));

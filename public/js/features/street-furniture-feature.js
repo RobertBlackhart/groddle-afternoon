@@ -126,8 +126,8 @@ import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } 
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=eca7de52';
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=be55db1b';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { butlerApi } from './butler-feature.js?v=ab6a4016';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=957e92b7';
+import { butlerApi } from './butler-feature.js?v=e10f382f';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=dd5de5a0';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
@@ -432,7 +432,7 @@ function buildMailbox(engine, x, y, facing = 1) {
   // mailboxRight (npc_mailbox.js variant) is mailboxLeft's art mirrored.
   if (facing < 0) spr.scale.x = -1;
   spr.x = x;
-  spr.y = y + 2;
+  spr.y = y;
   spr.zIndex = itemZ(MAILBOX_CLASS, 4);
   spr._worldHitW = 70;
   spr._worldHitH = 140;
@@ -497,7 +497,7 @@ function buildNote(engine, x, y, index, row) {
   const spr = new PIXI.Sprite(textureFromUrl(NOTE_ART.path));
   standOnFeet(spr);
   spr.x = x;
-  spr.y = y + 1;
+  spr.y = y;
   spr.rotation = ((index * 37) % 11 - 5) * 0.02;
   spr.zIndex = itemZ(NOTE_CLASS, 3);
   spr._worldHitW = 60;
@@ -580,7 +580,7 @@ function buildBoard(engine, x, y, index, opts = {}) {
   const spr = new PIXI.Sprite(textureFromUrl(BOARD_ART.path(Math.min(BOARD_CAPACITY, pins.length))));
   standOnFeet(spr);
   spr.x = x;
-  spr.y = y + 2;
+  spr.y = y;
   spr.zIndex = itemZ(BOARD_CLASS, 0.5);
   engine.entityLayer.addChild(spr);
   const entity = { sprite: spr, index, target: null, pins: opts.pins || null };
@@ -764,7 +764,7 @@ function buildStone(engine, x, y, index, opts = {}) {
   const spr = new PIXI.Sprite(textureFromUrl(STONE_ART.path));
   standOnFeet(spr);
   spr.x = x;
-  spr.y = y + 3;
+  spr.y = y;
   spr.zIndex = itemZ(STONE_CLASS, 2);
   engine.entityLayer.addChild(spr);
   const dir = opts.dir || (opts.home ? 'right' : slot(engine).stoneDir[index]) || 'right';

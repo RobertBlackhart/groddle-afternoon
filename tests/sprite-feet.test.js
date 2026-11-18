@@ -60,6 +60,40 @@ test('every anchorBottomCentre names one of the reasons', async () => {
   assert.ok(feet.length > 100, `standOnFeet at ${feet.length} sites`);
 });
 
+// The walkers' + 2 (and the eyeballed + 1 to + 8 on mailboxes, boards, boxes, Rube, bots) made up
+// for the cells' blank rows; on its measured feet a sprite stands on its line, as the client put an
+// item's registration on its y (LocationItemstackView.as 853-854). Offsets that stay say why.
+const KEPT_OFFSETS = [
+  [/^game\.js: sprite\.position\.set\(hall\.shrineStand\.x, ROOK_MUSEUM_WORLD\.floorY - stand\.h \+ 83\)/, 'the speaker sits on its stand: the stand\'s height, not a gap'],
+  [/^js\/features\/newxp-feature\.js: egg\.y = L\.eggPlant\.y \+ 2;/, 'trees stand 2 px into their line (js/enchanted-forests.js grimssea, measured on the snap)'],
+  [/^js\/features\/enchanted-forest-feature\.js: sprite\.y = entity\.y \+ 2;/, 'trees stand 2 px into their line (the same snap)'],
+  [/^js\/features\/giant-icons-feature\.js: spr\.y = row\.y \+ 2;/, 'world art is not measured (trimmed to its SWF state): nothing to make up for'],
+  [/^js\/features\/hell-feature\.js: graveSprite\.y = marker\.y \+ 29;/, 'the source raises the grave marker 29 px above the croak point'],
+  [/^js\/features\/homes-feature\.js: spr\.y = groundY \+ 6;/, 'the yard\'s cultivation line, shared with the depleted art\'s own anchors'],
+];
+
+test('nothing on its measured feet is pushed into its line by hand (R12: the walkers\' + 2 and the like)', () => {
+  const lines = codeLines();
+  const found = [];
+  lines.forEach(({ rel, line }, i) => {
+    const m = /standOnFeet\(([\w.]+)\)/.exec(line);
+    if (!m || rel === 'js/sprite-feet.js') return;
+    const v = m[1].replace(/\./g, '\\.');
+    const set = new RegExp(`^\\s*${v}\\.(?:y\\s*=|position\\.set\\().*\\+\\s*[1-9]\\d*\\s*(?:\\)|;)`);
+    for (let j = i + 1; j < Math.min(lines.length, i + 16) && lines[j].rel === rel; j += 1) {
+      if (set.test(lines[j].line)) found.push(`${rel}: ${lines[j].line.trim()}`);
+    }
+  });
+  const left = found.filter((f) => !KEPT_OFFSETS.some(([re]) => re.test(f)));
+  assert.deepEqual(left, [], 'stand it on its line, or list why the offset stays');
+  for (const [re, why] of KEPT_OFFSETS) assert.ok(found.some((f) => re.test(f)), `unused allowance: ${why}`);
+  // The walkers: the floor they follow, their spawns, a Chicken landing from a scare, a yard animal.
+  const read = (p) => readFileSync(join(pub, p), 'utf8');
+  assert.match(read('game.js'), /function followWalkFloor[\s\S]{0,400}const d = y - spr\.y;/);
+  assert.doesNotMatch(read('js/features/chicken-scare-feature.js'), /f\.y \+ 2|floor \+ 2/);
+  assert.doesNotMatch(read('js/yard-wander.js'), /floor \+ 2/);
+});
+
 test('footOf reads the measured foot for the cut, and the bottom centre for anything else', async () => {
   const { footOf, feetKey } = await import('../public/js/sprite-feet.js?v=7363f23d');
   const { SPRITE_FEET } = await import('../public/js/sprite-feet-data.js?v=0d9bcdd4');

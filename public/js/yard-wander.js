@@ -39,7 +39,7 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
-import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=6076a836';
+import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=7f6269a0';
 
 /** Speeds (px/s), pauses and windows per class. */
 export const YARD_WANDER = Object.freeze({
@@ -306,7 +306,7 @@ export function followYardPath(spr, drive, { animal, nowMs = Date.now(), dtMs = 
     // Eased, so a new height (a hold let go, a step in the floor) is flown to, not jumped to.
     y = Number.isFinite(Number(spr.y)) ? curY + (want - curY) * Math.min(1, 0.08 * (dtMs / 16.67)) : want;
   } else {
-    y = floor + 2;
+    y = floor;
   }
   spr.x = x;
   spr.y = y;

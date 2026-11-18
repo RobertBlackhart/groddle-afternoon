@@ -53,7 +53,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } fr
 import { canUseTool, getToolCondition, setToolRemaining } from '../tools.js?v=4156bba8';
 import { MAKING_TOOL_SKILLS, listRecipes, recipeKnown, TOOL_CATALOG } from '../making.js?v=af1c7d5b';
 import { listDroppedStacks } from '../world-items.js?v=4057c421';
-import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=057ea614';
+import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=d4140290';
 import { cabinetTake, isCabinetClass } from '../home-storage.js?v=b0225465';
 import {
   CRAFTYBOT,
@@ -580,7 +580,7 @@ function spawnBox(engine) {
   const spr = new PIXI.Sprite(textureFromUrl(BOX_ART_3X));
   standOnFeet(spr);
   spr.x = boxX(engine);
-  spr.y = groundYAt(engine, spr.x, 'interior') + 2;
+  spr.y = groundYAt(engine, spr.x, 'interior');
   spr.zIndex = itemZ(BOX, 7);
   engine.entityLayer.addChild(spr);
   const target = engine.register({

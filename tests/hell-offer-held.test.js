@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=90fca48a';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=a7e32435';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=ff83841c';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=61b1a4f0';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');

@@ -441,7 +441,7 @@ function spawnClerk(engine, point) {
   const spr = new PIXI.Sprite(frameTexture(base, new PIXI.Rectangle(0, 0, CLERK_FRAME.w, CLERK_FRAME.h)));
   standOnFeet(spr);
   spr.x = point.x;
-  spr.y = point.y + 2;
+  spr.y = point.y;
   // npc_bureaucrat is a foreground item: in front of the trees and the project sign.
   spr.zIndex = itemZ(CLERK_CLASS, 0);
   spr._worldHitW = 60;

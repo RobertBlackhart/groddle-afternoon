@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { avatarHitBox, behindFloor } from '../public/js/reach.js?v=8e52df56';
+import { avatarHitBox, behindFloor } from '../public/js/reach.js?v=1fd5de5a';
 import { avatarHeadReach } from '../public/js/street-model.js?v=9f16f4ab';
 import { inVerbReach, verbRange } from '../public/js/walk-over.js?v=277ab977';
 import { litByTier, radiantLayout, walkable } from '../public/js/quest-rooms/radiant-glare.js?v=b10d2496';

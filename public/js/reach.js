@@ -59,7 +59,7 @@ export function boxesTouch(a, b) {
 
 /**
  * How far up a thing's box the reach line ends: a thing stands on its floor
- * (trees and animals sit 2 px into it), so the line aims just over that floor.
+ * (trees sit 2 px into it, everything else on its measured feet), so the line aims just over that floor.
  */
 export const STAND_LIFT = 8;
 

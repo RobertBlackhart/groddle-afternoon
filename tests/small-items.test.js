@@ -28,14 +28,14 @@ import {
   planBallHit,
   reconcileFortunes,
 } from '../public/js/small-items.js?v=78d0056a';
-import { smallItemsFeature } from '../public/js/features/small-items-feature.js?v=3a72127f';
-import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=1a36bef4';
-import { FEATURES } from '../public/js/features/index.js?v=6e9bab6d';
+import { smallItemsFeature } from '../public/js/features/small-items-feature.js?v=7e72a8e2';
+import { streetFurnitureFeature } from '../public/js/features/street-furniture-feature.js?v=b81e64cc';
+import { FEATURES } from '../public/js/features/index.js?v=8f5ce3e5';
 import { countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { pickWoodTool, quoteWoodTreeHarvest, harvestWoodTree, woodToolLabel } from '../public/js/woodcutting.js?v=9e9af511';
 import { TOOL_CONDITION_CATALOG, createToolConditionState, getToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
 import { HOG_HAUL_GAME_ID, HOG_HAUL_TICKET, RACE_STORE_ITEMS } from '../public/js/races.js?v=ab22a079';
-import { racesFeature } from '../public/js/features/races-feature.js?v=67120733';
+import { racesFeature } from '../public/js/features/races-feature.js?v=adfbccde';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');

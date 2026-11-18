@@ -165,7 +165,7 @@ function spawnPig(engine, point) {
   standOnFeet(sprite);
   sprite.scale.set(1 / 3);
   sprite.x = point.x;
-  sprite.y = point.y + 2;
+  sprite.y = point.y;
   sprite.zIndex = 19;
   sprite.eventMode = 'static';
   sprite.cursor = 'pointer';

@@ -39,8 +39,8 @@ import {
   talkStateFor,
 } from '../public/js/hell-bar.js?v=870b4794';
 import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=d901894f';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=a7e32435';
-import { FEATURES } from '../public/js/features/index.js?v=6e9bab6d';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=61b1a4f0';
+import { FEATURES } from '../public/js/features/index.js?v=8f5ce3e5';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

@@ -216,7 +216,7 @@ function spawnMachines(engine, street, layout) {
     const sprite = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${def.classTsid}.webp`));
     standOnFeet(sprite);
     sprite.x = p.x;
-    sprite.y = y + 4;
+    sprite.y = y;
     sprite.zIndex = 8;
     engine.entityLayer.addChild(sprite);
     const m = { def, sprite, baseY: sprite.y, tank: slot.tanks[def.id], target: null, near: false, fx: null, frames: null, frame: -1, art: '' };

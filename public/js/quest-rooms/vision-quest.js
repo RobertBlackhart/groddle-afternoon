@@ -95,7 +95,7 @@ function objectSprite(ctx, cls) {
     const spr = new PIXI.Sprite(tex);
     standOnFeet(spr);
     spr.x = x;
-    spr.y = y + 4;
+    spr.y = y;
     return spr;
   }
   return kit.icon(PIXI, cls, x, y + 2, { scale: 1.6 });

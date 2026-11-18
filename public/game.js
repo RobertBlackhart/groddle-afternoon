@@ -2,12 +2,12 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=48523352';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=faea267c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6e9bab6d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8f5ce3e5';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
-import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
+import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
 import { createPromptStack } from './js/prompt-stack.js?v=5718128a';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
@@ -504,8 +504,8 @@ import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchL
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=398f4897';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=398f4897';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=d8e13374';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=d8e13374';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -691,7 +691,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=f40ebeb8';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=5f4182e2';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -710,7 +710,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=9f16f4ab';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=b4099ba0';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=ab06747b';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=d0468567';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -893,7 +893,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=398f4897';
+} from './js/animals.js?v=d8e13374';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1031,8 +1031,8 @@ import {
   treePlacementRequest,
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=c4ce9ccd';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=6076a836';
+} from './js/street-ecology.js?v=62ca408f';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=7f6269a0';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=6421701e';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=f7119b49';
@@ -10973,7 +10973,7 @@ function spawnSpinningWheel({ now = Date.now(), ticket = null } = {}) {
   standOnFeet(sprite);
   sprite.scale.set(0.72);
   sprite.x = clamp(player.x + 100, 95, Math.max(95, WORLD_W - 100));
-  sprite.y = resolveGround(sprite.x, player.y) + 2;
+  sprite.y = resolveGround(sprite.x, player.y);
   sprite.zIndex = itemZ('npc_spinning_wheel', 9);
   // The 514×450 animation cell includes transparent registration padding.
   sprite._worldHitW = 155;
@@ -11060,7 +11060,7 @@ function spawnStootMemorial() {
   standOnFeet(doll);
   doll.scale.set(1.18);
   doll.x = memorial.x - 132;
-  doll.y = ground + 1;
+  doll.y = ground;
   doll.zIndex = itemZ(STOOT_DOLL_ID, 12);
   doll._worldHitW = 68;
   doll._worldHitH = 76;
@@ -14281,7 +14281,7 @@ function spawnPiggies(xs) {
     });
     spr.baseScale = ENTITY_SCALE.piggy;
     spr.x = x;
-    spr.y = GROUND_Y + 2;
+    spr.y = GROUND_Y;
     spr.vx = (i % 2 === 0 ? 1 : -1) * 0.45;
     spr.baseX = x;
     spr.range = ANIMAL_PATROL.piggies;
@@ -14334,7 +14334,7 @@ function spawnChickens(xs) {
     // G515, G583), for every clip it plays (walk, peck, stand, the idles).
     spr.baseScale = ENTITY_SCALE.chicken;
     spr.x = x;
-    spr.y = GROUND_Y + 2;
+    spr.y = GROUND_Y;
     spr.vx = i % 2 ? -0.5 : 0.5;
     spr.baseX = x;
     spr.range = ANIMAL_PATROL.chickens;
@@ -14392,7 +14392,7 @@ function spawnButterflies(xs, flyingSpots) {
     spr.baseScale = ENTITY_SCALE.butterfly;
     spr.scale.set(ENTITY_SCALE.butterfly);
     spr.x = x;
-    spr.y = GROUND_Y + 2;
+    spr.y = GROUND_Y;
     spr.zIndex = itemZ('npc_butterfly', 3);
     spr.bob = i;
     spr._ambient = false;
@@ -16218,7 +16218,9 @@ function handleInput() {
 /**
  * A street Piggy or Chicken keeps its feet on its floor as it walks, up and down a slope: the
  * original's walked the platform lines by apiFindPath (npc_piggy.js onCreate 1437-1444,
- * npc_chicken.js onCreate 1008-1023, onPathing). Planted 2 px into the line, as enterStreet does.
+ * npc_chicken.js onCreate 1008-1023, onPathing). Its measured feet on the line (js/sprite-feet.js), as
+ * enterStreet sets it: the client put an NPC's registration on its y (LocationItemstackView.as 853-854);
+ * the old 2 px into the line made up for the cells' blank rows (R12).
  */
 /**
  * A solo Chicken's pauses (js/street-creatures.js chickenPauseRoll; online its shared path has them,
@@ -16259,10 +16261,10 @@ function soloChickenPause(c, dt) {
 }
 
 function followWalkFloor(spr, dt = 1) {
-  const y = walkSurfaceY(streetPlatforms, spr.x, spr.y - 2, { up: 24, down: 24 });
+  const y = walkSurfaceY(streetPlatforms, spr.x, spr.y, { up: 24, down: 24 });
   if (!Number.isFinite(y)) return;
   // A step where two lines meet is taken over a few frames, not in one hop.
-  const d = y + 2 - spr.y;
+  const d = y - spr.y;
   const most = 1.5 * Math.max(1, dt);
   spr.y += Math.abs(d) <= most ? d : Math.sign(d) * most;
 }
@@ -16769,7 +16771,7 @@ function spawnPhantomQuestEncounter() {
     scale: encounter.kind === 'final' ? 0.7 : 0.62,
   });
   sprite.x = point.x;
-  sprite.y = point.y + 2;
+  sprite.y = point.y;
   sprite.zIndex = 44;
   sprite.alpha = encounter.kind === 'final' ? 0.94 : 0.9;
   if (encounter.kind === 'echo') sprite.blendMode = 'screen';
@@ -17083,7 +17085,7 @@ function positionHogHaulCarrySprite() {
 function spawnHogHaulBait(point, index) {
   const spr = makeAnimated('pigBait', { animationSpeed: 0.1, scale: 0.92 });
   spr.x = point.x;
-  spr.y = point.y + 2;
+  spr.y = point.y;
   spr.baseY = spr.y;
   spr.bob = index * 0.85;
   spr.zIndex = 34;
@@ -17111,7 +17113,7 @@ function spawnHogHaulPiggy(point, index) {
   });
   spr.baseScale = ENTITY_SCALE.piggy;
   spr.x = point.x;
-  spr.y = point.y + 2;
+  spr.y = point.y;
   spr.vx = (index % 2 === 0 ? 1 : -1) * 0.48;
   spr.baseX = point.x;
   spr.range = Math.max(42, Math.min(105, Number(point.clearance) || 86));
@@ -21392,7 +21394,7 @@ function spawnRookMuseumExhibits() {
       sprite.position.set(exhibit.x, floor);
       const stand = new PIXI.Sprite(textureFromUrl(ROOK_MUSEUM_STAND_ART.file));
       standOnFeet(stand);
-      stand.position.set(ROOK_MUSEUM_HALL.shrineStand.x, floor + 1);
+      stand.position.set(ROOK_MUSEUM_HALL.shrineStand.x, floor);
       stand.zIndex = 40;
       stand.eventMode = 'none';
       entityLayer.addChild(stand);
@@ -25610,7 +25612,7 @@ async function enterStreet(tsid, opts = {}) {
   // A walking animal turns before its floor ends (street-ecology.js animalPatrolRange).
   piggies.forEach((spr, i) => {
     const p = pigPoints[i];
-    if (p) { spr.x = p.x; spr.y = p.y + 2; spr.baseX = p.x; spr.range = animalPatrolRange('piggies', p.room); }
+    if (p) { spr.x = p.x; spr.y = p.y; spr.baseX = p.x; spr.range = animalPatrolRange('piggies', p.room); }
     // Its own walk (features/animal-mood-feature.js walks it back here after food).
     spr.home = { x: spr.baseX, range: spr.range };
   });
@@ -25618,7 +25620,7 @@ async function enterStreet(tsid, opts = {}) {
   chickens = spawnChickens(chickenPoints.map((p) => p.x));
   chickens.forEach((spr, i) => {
     const p = chickenPoints[i];
-    if (p) { spr.x = p.x; spr.y = p.y + 2; spr.baseX = p.x; spr.range = animalPatrolRange('chickens', p.room); }
+    if (p) { spr.x = p.x; spr.y = p.y; spr.baseX = p.x; spr.range = animalPatrolRange('chickens', p.room); }
   });
   const butterflyPoints = placement('butterflies');
   butterflies = spawnButterflies(
@@ -25633,7 +25635,7 @@ async function enterStreet(tsid, opts = {}) {
     restIdx += 1;
     if (p) {
       spr.x = p.x;
-      spr.y = p.y + 2;
+      spr.y = p.y;
       spr._groundY = p.y;
     }
   });
@@ -31180,7 +31182,7 @@ async function spawnShrine(placement = null) {
   spr.scale.set(0.78);
   spr.gotoAndStop(0);
   spr.x = clamp(point.x + (placement ? 0 : -95), 90, Math.max(90, WORLD_W - 90));
-  spr.y = point.y + 2;
+  spr.y = point.y;
   spr.zIndex = itemZ(`npc_shrine_${giant.id}`, 8);
   spr.eventMode = 'static';
   spr.cursor = 'pointer';

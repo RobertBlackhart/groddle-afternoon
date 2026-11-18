@@ -260,7 +260,7 @@ export const room = {
       standOnFeet(bot);
       bot.animationSpeed = 0.3;
       bot.x = sx(BOT.x);
-      bot.y = sy(BOT.y) + 2;
+      bot.y = sy(BOT.y);
       ctx.data.bot = bot;
       ctx.add(bot, 30);
       useBot(ctx, ctx.data.botIdle);

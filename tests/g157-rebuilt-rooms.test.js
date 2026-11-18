@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
-import { populationForStreet } from '../public/js/street-ecology.js?v=c4ce9ccd';
+import { populationForStreet } from '../public/js/street-ecology.js?v=62ca408f';
 import { checkDoorEntry, doorAt, doorDestination } from '../public/js/doors.js?v=727d0e0b';
 import { eventCounters, SEAM_STREETS } from '../public/js/quest-offers.js?v=4debd26e';
 import {
@@ -53,7 +53,7 @@ import {
   rebuiltRoomEcology,
 } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=a28b92c4';
-import { FEATURES } from '../public/js/features/index.js?v=6e9bab6d';
+import { FEATURES } from '../public/js/features/index.js?v=8f5ce3e5';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

@@ -147,7 +147,7 @@ export const room = {
     const rube = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
     standOnFeet(rube);
     rube.x = 470;
-    rube.y = FLOOR + 4;
+    rube.y = FLOOR;
     rube.scale.set(-0.95, 0.95); // the sheets face left; turn him toward the yard
     rube.animationSpeed = 24 / 60;
     const play = (set, loop = true) => {

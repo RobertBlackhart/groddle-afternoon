@@ -45,7 +45,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=c4ce9ccd';
+} from '../public/js/street-ecology.js?v=62ca408f';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=6589dda5';
@@ -183,8 +183,8 @@ describe('walking animals', () => {
     assert.deepEqual({ ...ANIMAL_PATROL }, { piggies: 90, chickens: 100 });
     assert.match(game, /spr\.range = ANIMAL_PATROL\.piggies;/);
     assert.match(game, /spr\.range = ANIMAL_PATROL\.chickens;/);
-    assert.match(game, /if \(p\) \{ spr\.x = p\.x; spr\.y = p\.y \+ 2; spr\.baseX = p\.x; spr\.range = animalPatrolRange\('piggies', p\.room\); \}/);
-    assert.match(game, /if \(p\) \{ spr\.x = p\.x; spr\.y = p\.y \+ 2; spr\.baseX = p\.x; spr\.range = animalPatrolRange\('chickens', p\.room\); \}/);
+    assert.match(game, /if \(p\) \{ spr\.x = p\.x; spr\.y = p\.y; spr\.baseX = p\.x; spr\.range = animalPatrolRange\('piggies', p\.room\); \}/);
+    assert.match(game, /if \(p\) \{ spr\.x = p\.x; spr\.y = p\.y; spr\.baseX = p\.x; spr\.range = animalPatrolRange\('chickens', p\.room\); \}/);
     assert.equal(animalPatrolRange('chickens', 238), 100);
     assert.equal(animalPatrolRange('chickens', 1000), 100);
     assert.equal(animalPatrolRange('chickens', 98), 30);

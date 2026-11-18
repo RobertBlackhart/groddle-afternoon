@@ -38,7 +38,7 @@ import {
   gardenPlacementRequest,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=c4ce9ccd';
+} from '../public/js/street-ecology.js?v=62ca408f';
 import {
   MYSTERY_QUOIN_KINDS,
   QUOIN_CLASSES,

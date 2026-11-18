@@ -152,7 +152,7 @@ import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=7a63d78f';
 import { HOME_MACHINE } from '../home-ticket.js?v=e882731b';
-import { createAnimalState } from '../animals.js?v=398f4897';
+import { createAnimalState } from '../animals.js?v=d8e13374';
 import {
   AK_ANIMALS,
   AK_BUBBLE,
@@ -1827,7 +1827,9 @@ function buildTraining2(engine) {
   const egg = new PIXI.Sprite(textureFromUrl('assets/sprites/trants/frames/trant_egg_m10.webp'));
   standOnFeet(egg);
   egg.x = L.eggPlant.x;
-  egg.y = L.eggPlant.y + 8;
+  // On its measured foot (the old + 8 made up for the frame's 7 blank rows), 2 px into the line as
+  // every tree stands (js/enchanted-forests.js grimssea: measured on the snap).
+  egg.y = L.eggPlant.y + 2;
   egg.scale.set(0.8);
   // The Go talk to your Magic Rock sign, on the way to the rock (sign_t2streetstyle_newxp, 7:36).
   root.addChild(stageDeco(PIXI, 'sign_t2streetstyle_newxp', 3150, L.floorY + 6, { ay: 1 }));
@@ -2404,7 +2406,7 @@ function akSpawn(engine, classId) {
   spr.animationSpeed = def.airborne ? 0.25 : 0.13;
   spr.zIndex = def.airborne ? 40 : 20;
   spr.x = at.x;
-  spr.y = def.airborne ? at.y : groundBelow(engine, at.x, at.y - 20) + 2;
+  spr.y = def.airborne ? at.y : groundBelow(engine, at.x, at.y - 20);
   spr.alpha = 0;
   spr.play();
   engine.entityLayer.addChild(spr);

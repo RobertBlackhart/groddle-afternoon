@@ -75,7 +75,7 @@ import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
 import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
 import { slothTrees } from '../sloth-trees.js?v=a3299191';
-import { avatarHitBox, boxesTouch } from '../reach.js?v=8e52df56';
+import { avatarHitBox, boxesTouch } from '../reach.js?v=1fd5de5a';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -112,7 +112,7 @@ import { playItemOverlay } from '../item-overlay.js?v=f7119b49';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=a468ad38';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=6076a836';
+import { salmonSwimAt } from '../street-creatures.js?v=7f6269a0';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';

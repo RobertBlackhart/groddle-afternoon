@@ -33,7 +33,7 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=c4ce9ccd';
+} from '../public/js/street-ecology.js?v=62ca408f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';

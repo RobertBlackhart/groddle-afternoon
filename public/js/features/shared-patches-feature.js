@@ -73,7 +73,7 @@
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { patchesFeature } from './patches-feature.js?v=eff168b0';
+import { patchesFeature } from './patches-feature.js?v=75656272';
 import {
   COPY,
   GRANT_CLASSES,
@@ -98,7 +98,7 @@ import {
   sharedTreeReady,
   sharedTreeSkill,
   TRANTSFORM_VERB,
-} from '../shared-patches.js?v=625c687d';
+} from '../shared-patches.js?v=99cbfc34';
 
 export const SHARED_PATCHES_FEATURE_ID = 'shared-patches';
 const REQUEST_TIMEOUT_MS = 8000;
