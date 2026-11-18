@@ -3124,19 +3124,28 @@
       "id": "G1000",
       "area": "Sounds",
       "show": "fixing",
-      "text": "After stepping away, music and sounds can stop and not come back until you reload."
+      "text": "After stepping away, music and sounds can stop and not come back until you reload.",
+      "commits": [
+        "game:22a8901a7b7"
+      ]
     },
     {
       "id": "G1004",
       "area": "Quests",
       "show": "fixing",
-      "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer."
+      "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
+      "commits": [
+        "game:015f0a013fe"
+      ]
     },
     {
       "id": "G1005",
       "area": "Animals",
       "show": "fixing",
-      "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb."
+      "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb.",
+      "commits": [
+        "game:947a78a1a23"
+      ]
     },
     {
       "id": "G1002",
@@ -3235,6 +3244,15 @@
         "server:1a56af8",
         "site:83152b4",
         "site:df9865b"
+      ]
+    },
+    {
+      "id": "G1020",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "Some short looping street music, like the subway stations', could play twice at once in Safari.",
+      "commits": [
+        "game:b31721557e1"
       ]
     }
   ]

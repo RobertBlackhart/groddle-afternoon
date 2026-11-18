@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.49.0",
+  "release": "v0.49.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 4,
+    "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 311,
+    "fixed": 315,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -146,11 +146,6 @@
     {
       "name": "Quests",
       "items": [
-        {
-          "id": "G1004",
-          "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
-          "state": "fixing"
-        },
         {
           "id": "F11",
           "text": "Chasing Hubba Dubba Hugs is offered but cannot be finished, and Tend to Your Community never ticks its Herb Gardens step.",
@@ -270,6 +265,12 @@
           "text": "Some quest completion cards showed their rewards as plain text without icons.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G1004",
+          "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
+          "state": "fixed",
+          "version": "v0.49.1"
         }
       ]
     },
@@ -528,11 +529,6 @@
       "name": "Sounds",
       "items": [
         {
-          "id": "G1000",
-          "text": "After stepping away, music and sounds can stop and not come back until you reload.",
-          "state": "fixing"
-        },
-        {
           "id": "G636",
           "text": "Short lines from animals and characters stay up for Glitch's own times, such as three seconds for a Yum!",
           "state": "fixed",
@@ -576,6 +572,18 @@
           "text": "Watering, hoeing and clearing could play their sound twice.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G1000",
+          "text": "After stepping away, music and sounds can stop and not come back until you reload.",
+          "state": "fixed",
+          "version": "v0.49.1"
+        },
+        {
+          "id": "G1020",
+          "text": "Some short looping street music, like the subway stations', could play twice at once in Safari.",
+          "state": "fixed",
+          "version": "v0.49.1"
         },
         {
           "id": "G11",
@@ -974,11 +982,6 @@
       "name": "Animals",
       "items": [
         {
-          "id": "G1005",
-          "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb.",
-          "state": "fixing"
-        },
-        {
           "id": "G642",
           "text": "Chickens squawk and flutter off when you walk into them.",
           "state": "fixed",
@@ -1093,6 +1096,12 @@
           "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1005",
+          "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb.",
+          "state": "fixed",
+          "version": "v0.49.1"
         },
         {
           "id": "G1012",
