@@ -90,7 +90,7 @@ test('nothing on its measured feet is pushed into its line by hand (R12: the wal
   // The walkers: the floor they follow, their spawns, a Chicken landing from a scare, a yard animal.
   const read = (p) => readFileSync(join(pub, p), 'utf8');
   // #497: the walkers' floor step lives in js/walk-surface.js walkerFloorY (no offset added there either).
-  assert.match(read('game.js'), /function followWalkFloor[\s\S]{0,200}spr\.y = walkerFloorY\(streetPlatforms, spr\.x, spr\.y, dt\);/);
+  assert.match(read('game.js'), /function followWalkFloor[\s\S]{0,900}spr\.y = walkerFloorY\(streetPlatforms, spr\.x, spr\.y, dt\);/);
   assert.match(read('js/walk-surface.js'), /export function walkerFloorY[\s\S]{0,900}const d = near - y;/);
   assert.doesNotMatch(read('js/features/chicken-scare-feature.js'), /f\.y \+ 2|floor \+ 2/);
   assert.doesNotMatch(read('js/yard-wander.js'), /floor \+ 2/);

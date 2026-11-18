@@ -193,7 +193,7 @@ describe('pack / inventory', () => {
     const game = files[0];
     assert.match(game, /classTsid === 'fruit_changing_machine'[\s\S]*?'Convert fruit'/);
     // The tool's condition is said once, on the stack menu's kind line (VERBS).
-    assert.equal((game.match(/\[conditionNote, foodMemory, /g) || []).length, 1);
+    assert.equal((game.match(/\[conditionNote, (?:featureNote, )?foodMemory, /g) || []).length, 1);
   });
 
   it('starts with sound on, remembers a mute, and offers the mute control', () => {

@@ -28,7 +28,7 @@ import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { energyMax } from '../metabolics.js?v=48f784bf';
+import { energyMax, forceMetabolic } from '../metabolics.js?v=48f784bf';
 import { TABLE_AT, TABLE_STREET } from '../pot-luck-feast.js?v=89e24bce';
 import {
   FEAST_DAY_LINES,
@@ -298,7 +298,7 @@ function demoSetup(engine) {
   // A full energy refuses every bite (include/food.js 126-128): QA starts with room to eat.
   const max = energyMax(engine.pc);
   if (Number(engine.pc.energy) >= max * 0.5) {
-    engine.pc.energy = Math.round(max * 0.3);
+    forceMetabolic(engine.pc, 'energy', Math.round(max * 0.3));
     engine.updateHud?.();
   }
 }

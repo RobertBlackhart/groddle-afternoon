@@ -189,7 +189,7 @@ describe('buff save and client wiring', () => {
     const game = readFileSync(join(root, 'game.js'), 'utf8');
     const html = readFileSync(join(root, 'play/index.html'), 'utf8');
     const css = readFileSync(join(root, 'style.css'), 'utf8');
-    assert.match(game, /activateBuffItem\(buffState, inv, pc/);
+    assert.match(game, /activateBuffItem\(buffState, (?:inv|from), pc/);
     assert.match(game, /tickBuffs\(buffState, pc/);
     assert.match(game, /buffPhysics\(buffState/);
     assert.match(game, /buffedRandom\(buffState/);
@@ -268,7 +268,7 @@ describe('Yellow Crumb items speed up the study in progress', () => {
 
   it('the pack applies the acceleration after the buff lands', () => {
     const game = readFileSync(join(root, 'game.js'), 'utf8');
-    assert.match(game, /activateBuffItem\(buffState, inv, pc, classTsid, Date\.now\(\), \{ study: studyBuffContext\(\), dead: playerIsDead\(\) \}\)/);
+    assert.match(game, /activateBuffItem\(buffState, (?:inv|from), pc, classTsid, Date\.now\(\), \{ study: studyBuffContext\(\), dead: playerIsDead\(\) \}\)/);
     assert.match(game, /accelerateActiveStudy\(skillState, r\.info\.studyAccelerationSeconds, Date\.now\(\)\)/);
   });
 });
