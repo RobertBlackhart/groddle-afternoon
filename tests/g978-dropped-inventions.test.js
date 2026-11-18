@@ -149,3 +149,12 @@ describe('G978: Paradise skies are Radial Heights\' gradient', () => {
     assert.deepEqual(street.gradient, { top: '00222E', bottom: '00222E' });
   });
 });
+
+describe('G978: no dots in place of a lonely spirit\'s fireworks', () => {
+  it('without the fireworks art nothing is drawn', () => {
+    dropped('lonely-fireworks-dots');
+    const lonely = read('public/js/features/spirit-loneliness-feature.js');
+    assert.doesNotMatch(lonely, /function burst\(|lonely-fireworks|'dots'/);
+    assert.match(lonely, /rt\.fireworksArt = ok \? 'under' : 'none';/);
+  });
+});

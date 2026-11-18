@@ -34,8 +34,8 @@
  * The fireworks are Tiny Speck's own overlays (glitch-overlays
  * fireworks_1/2/3.fla, recovered as vector frames by tools/overlay-art,
  * register G237), drawn through js/overlay-art.js at the source positions
- * and times; a plain burst of dots stands in only if their art fails to
- * load. The bubble is drawn from
+ * and times; if their art fails to load nothing is drawn (G978: the
+ * dots that stood in are gone). The bubble is drawn from
  * loneliness_quest_bubble_overlay.fla's shape (a 246 x 90 white rounded box,
  * tail at the bottom right, Arial 12 text field 226 x 73, drop shadow).
  *
@@ -226,10 +226,10 @@ function publish(engine) {
 /* ------------------------------------------------------------ DOM: invite, overlays, fireworks */
 
 const CSS = `
-.lonely-invite,.lonely-street,.lonely-fireworks{position:absolute;pointer-events:none;z-index:var(--z-dialog)}
-.lonely-invite[hidden],.lonely-street[hidden],.lonely-fireworks[hidden]{display:none!important}
+.lonely-invite,.lonely-street{position:absolute;pointer-events:none;z-index:var(--z-dialog)}
+.lonely-invite[hidden],.lonely-street[hidden]{display:none!important}
 .lonely-invite canvas{position:absolute;left:0;top:0}
-#game-root .lonely-invite canvas.lonely-portrait,#game-root canvas.lonely-fireworks.lonely-fireworks{width:var(--lw)!important;height:var(--lh)!important;display:block}
+#game-root .lonely-invite canvas.lonely-portrait{width:var(--lw)!important;height:var(--lh)!important;display:block}
 .lonely-bubble{position:absolute;box-sizing:border-box;background:var(--surface-bright);border-radius:var(--radius-xl);
   padding:calc(var(--k,1)*9px) calc(var(--k,1)*11px);transform:translateY(-100%);
   filter:drop-shadow(1.4px 1.4px 1px color-mix(in srgb, var(--c-black) 65%, transparent))}
@@ -257,7 +257,7 @@ function ensureCss() {
 /** The location viewport inside #game-root, in CSS px, and the logical-px scale (the view's width, g458). */
 function viewport() {
   const root = rootEl();
-  const canvas = root?.querySelector('canvas:not(.lonely-portrait):not(.lonely-fireworks)');
+  const canvas = root?.querySelector('canvas:not(.lonely-portrait)');
   if (!root || !canvas) return null;
   const r = root.getBoundingClientRect();
   const c = canvas.getBoundingClientRect();
@@ -511,7 +511,7 @@ function hideStreetOverlay() {
 /**
  * lonelinessEndPartyOverlay's vp_overlay: the fireworks SWF at 1:1 on the
  * 960-wide viewport, its stage centred on the x/y percentages, shown for
- * fireworkMs. A burst of dots stands in if the art cannot load.
+ * fireworkMs. Without its art nothing is drawn (G978).
  * Austin, 2026-10-25 (desk FIREWORKS, register G250): keep them 1:1 but
  * under speech bubbles and prompts, so the spirit's lines stay readable. The
  * client drew a vp_overlay over the whole location; here each frame is
@@ -522,15 +522,13 @@ function hideStreetOverlay() {
 function fireworks(engine, at) {
   const vp = viewport();
   if (!vp) return;
-  ensureCss();
   rt.fireworks = (rt.fireworks || 0) + 1;
   fireworksUnder(engine, at, vp, LONELY_RULES.fireworkMs).then((ok) => {
     if (ok === null) {
       rt.fireworksArt = 'cancelled'; // a street change took it down (G311)
       return;
     }
-    if (!ok) burst(at);
-    rt.fireworksArt = ok ? 'under' : 'dots';
+    rt.fireworksArt = ok ? 'under' : 'none';
   });
 }
 
@@ -619,54 +617,6 @@ export async function fireworksUnder(engine, at, vp, durationMs) {
 /** Load the three fireworks before the party ends (the client loaded each SWF on announce). */
 function preloadFireworks() {
   for (const key of new Set(LONELY_RULES.fireworks.map((fw) => fw.key))) loadVectorFrames(key).catch(() => {});
-}
-
-function burst(at) {
-  const root = rootEl();
-  const vp = viewport();
-  if (!root || !vp || typeof document === 'undefined') return;
-  ensureCss();
-  const c = document.createElement('canvas');
-  c.className = 'lonely-fireworks';
-  const w = Math.round(vp.width);
-  const h = Math.round(vp.height);
-  c.width = w;
-  c.height = h;
-  Object.assign(c.style, { left: `${vp.left}px`, top: `${vp.top}px` });
-  c.style.setProperty('--lw', `${w}px`);
-  c.style.setProperty('--lh', `${h}px`);
-  root.appendChild(c);
-  // The stand-in goes with the street too (G311).
-  let cancelled = false;
-  const release = trackOverlay(() => {
-    cancelled = true;
-    c.remove();
-  });
-  const ctx = c.getContext('2d');
-  const cx = w * at.x;
-  const cy = h * at.y;
-  const colors = ['#ffd54a', '#ff7a59', '#7fd3ff', '#b58cff', '#8be07a'];
-  const dots = Array.from({ length: 48 }, (_, i) => ({ a: (i / 48) * Math.PI * 2, v: 0.6 + (i % 5) * 0.12, c: colors[i % colors.length] }));
-  const t0 = performance.now();
-  const step = (t) => {
-    if (cancelled) return;
-    const p = Math.min(1, (t - t0) / LONELY_RULES.fireworkMs);
-    ctx.clearRect(0, 0, w, h);
-    const r = 150 * vp.scale * Math.sqrt(p);
-    ctx.globalAlpha = 1 - p;
-    for (const d of dots) {
-      ctx.fillStyle = d.c;
-      ctx.beginPath();
-      ctx.arc(cx + Math.cos(d.a) * r * d.v, cy + Math.sin(d.a) * r * d.v + 40 * vp.scale * p * p, 3 * vp.scale, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (p < 1) requestAnimationFrame(step);
-    else {
-      release();
-      c.remove();
-    }
-  };
-  requestAnimationFrame(step);
 }
 
 /* ------------------------------------------------------------ the event */

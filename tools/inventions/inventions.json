@@ -1394,6 +1394,25 @@
    ]
   },
   {
+   "id": "lonely-fireworks-dots",
+   "title": "A ring of coloured dots in place of a Street Spirit's party fireworks when their art fails to load",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/features/spirit-loneliness-feature.js",
+     "symbol": "burst",
+     "gone": true
+    }
+   ],
+   "why": "A stand-in for fireworks_1/2/3 (loneliness.js lonelinessEndPartyOverlay) when the recovered frames do not load; no client counterpart.",
+   "ruling": "Austin 2026-11-17 (G978, lead's word): drop, as the dot bursts; without the art nothing is drawn",
+   "rows": [
+    "G978",
+    "G237"
+   ]
+  },
+  {
    "id": "paradise-exit-shut-sign",
    "title": "Planks and a SHUT sign over a closed Paradise exit",
    "kind": "visual",
