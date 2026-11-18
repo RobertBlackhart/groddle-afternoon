@@ -88,7 +88,7 @@ export function newContentContent() {
 
     group('section', 'band band-alt nc-band', 'pot-luck-day', [group('div', 'wrap', null, [
       card('nc-event', 'emblem_pot', 'accent', [
-        p('nc-chips', `${chip('Status: planning', 'status')} ${chip('Nov 22-29, 2026', 'date')}`),
+        p('nc-chips', `${chip('Status: building', 'status')} ${chip('Nov 22-29, 2026', 'date')}`),
         h(2, 'Pot Luck Day', { id: 'pot-luck-day-h', cls: 'nc-event-title' }),
         p('nc-event-line', 'A harvest festival for Thanksgiving week, November 22 to 29, 2026. Pot, the Giant of cooking and plenty, hosts it.'),
       ]),
@@ -170,12 +170,12 @@ export function newContentContent() {
       ]),
 
       group('div', 'nc-callout', null, [
-        h(3, 'Still to decide'),
+        h(3, 'Decided'),
         list([
-          'Whether costumed chickens are seen by everyone on the street (the plan) or only by the player who dressed them.',
-          'Turkey, rooster or both costumes.',
-          'One shared Harvest Table for everyone, or one each.',
-          'Whether the festival returns on Pot Twoday in the game’s own calendar, for players who miss November.',
+          'Costumed chickens are seen by everyone on the street, and the costume falls off when the festival ends.',
+          'Both costumes: the Turkey Tailfan and the Rooster Plume.',
+          'One shared Harvest Table for everyone, filled together.',
+          'November only this year, as Pot Luck Day. A return on Pot Twoday can wait for another year.',
         ]),
       ]),
 
