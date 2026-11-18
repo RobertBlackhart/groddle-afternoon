@@ -12118,10 +12118,11 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 #wrap:has(> header.top-bar :is(#more-list, #sound-pop, #vitals-menu, #player-menu, #favor-pop, #vendor-finder-pop):not([hidden])) > #game-root .notify-notices {
   z-index: var(--z-hud-pop-under);
 }
-/* G1004: "New Quest Added!" (QUEST_ADDED's only picture, 3.3 s) hangs from the bar's quest button and
-   drew under the minimap and the open Social drawer. While it shows, the bar lifts as for a popover. */
-#wrap > header.top-bar:has(.quest-added-notice.is-shown) { z-index: var(--z-hud-pop); }
 /* —— end HUB top bar layer —— */
+/* G1004: "New Quest Added!" (QUEST_ADDED's only picture, 3.3 s) hangs from the bar's quest button and
+   drew under the minimap and the open Social drawer. While it shows, the bar lifts as for a popover
+   (outside the HUB block, which names only the popover lift and the notices). */
+#wrap > header.top-bar:has(.quest-added-notice.is-shown) { z-index: var(--z-hud-pop); }
 
 /* Ticket 21 (2026-11-01) lifted the top bar over a quest card so its bug button could be clicked;
    Austin 2026-11-15 dropped that: R opens Reports from anywhere, and the report sheet itself still
