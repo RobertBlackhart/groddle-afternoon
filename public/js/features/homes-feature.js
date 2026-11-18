@@ -264,7 +264,7 @@ import {
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=e882731b';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
-import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
+import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
 import { storagePickupLock } from '../home-storage.js?v=b0225465';
 import {
@@ -2169,13 +2169,13 @@ export function drawLandscape(engine, root, style, seed, { width, groundY, lift,
     }
   }
   // The cross-section's tiles keep their place in the street; more run on past either end.
-  const soilStep = soilW - 2;
-  const soilFrom = -40 - soilStep * Math.ceil(Math.max(0, -40 - ground.left) / soilStep);
-  for (let x = soilFrom; style.soil && x < Math.max(width + soilW, ground.right); x += soilStep) {
+  // Every other tile is mirrored and each overlaps the last so the grass edge meets (G997).
+  for (const { x, flip } of style.soil ? soilTiles(soilW, ground.left, Math.max(width + soilW, ground.right)) : []) {
     const soil = new PIXI.Sprite(textureFromUrl(decoUrl(style.soil)));
-    soil.anchor.set(0, 0);
+    soil.anchor.set(flip ? 1 : 0, 0);
     soil.width = soilW;
     soil.height = 150;
+    if (flip) soil.scale.x *= -1;
     soil.x = x;
     soil.y = groundY + 26;
     soil.zIndex = -39;

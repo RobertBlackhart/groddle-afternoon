@@ -73,3 +73,29 @@ export function rowRange({ base = 0, every, half = 0, jitter = 0 }, win) {
   const last = Math.ceil((win.right + reach - base) / step) - 1;
   return { first, last };
 }
+
+/**
+ * How much of a soil cross-section tile the next one covers (G997, #481). The strip under a home
+ * street (crosssection_short_3) was drawn as one piece that stands alone: its grass edge sits
+ * about 40 px down at the left (rounded off at the corner) and about 21 px at the right, and both
+ * bottom corners round off. Tiled end to end it stepped 10 to 30 px at every join. Each other tile
+ * is mirrored so a join always meets the same end of the art, and the tiles overlap by this share
+ * of their width so the rounded corners sit over the neighbour's solid art.
+ */
+export const SOIL_JOIN = 0.13;
+
+/**
+ * The soil tiles a strip needs from `left` to `right`, `tileW` wide: [{ x, flip }]. Tile 0 stands
+ * at `origin` as the scenes always drew it, so the tiles in the street keep their place; tiles at
+ * odd steps from it are mirrored (drawn with anchor x 1 and a negative scale, so x is still the
+ * tile's left edge).
+ */
+export function soilTiles(tileW, left, right, { origin = -40, join = SOIL_JOIN } = {}) {
+  const w = num(tileW);
+  const step = w * (1 - Math.min(0.5, Math.max(0, num(join))));
+  if (!(step > 0)) return [];
+  const out = [];
+  const first = -Math.ceil(Math.max(0, origin - num(left)) / step);
+  for (let i = first; origin + i * step < num(right); i += 1) out.push({ x: origin + i * step, flip: Math.abs(i) % 2 === 1 });
+  return out;
+}

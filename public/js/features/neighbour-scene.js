@@ -10,7 +10,7 @@
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=13f35acd';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
-import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
+import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
 const DECO = 'assets/decos/groddle/';
@@ -248,13 +248,16 @@ export function buildNeighbourBackground(PIXI, neighbour) {
   root.addChild(soilFill);
   const [sw, sh] = size(style.soil);
   const soilW = sw * 0.6;
-  const soilStep = soilW - 2;
-  const soilFrom = -40 - soilStep * Math.ceil(Math.max(0, -40 - ground.left) / soilStep);
-  for (let x = soilFrom; x < Math.max(width + soilW, ground.right); x += soilStep) {
+  // The meadow's cross-section: mirrored every other tile and overlapped so its joins meet (G997).
+  const tiles = style.soil === 'crosssection_short_3'
+    ? soilTiles(soilW, ground.left, Math.max(width + soilW, ground.right))
+    : soilTiles(soilW, ground.left, Math.max(width + soilW, ground.right), { join: 2 / soilW }).map((t) => ({ ...t, flip: false }));
+  for (const { x, flip } of tiles) {
     const soil = new PIXI.Sprite(textureFromUrl(`${DECO}${style.soil}.png`));
-    soil.anchor.set(0, 0);
+    soil.anchor.set(flip ? 1 : 0, 0);
     soil.width = soilW;
     soil.height = Math.min(150, sh * 0.6);
+    if (flip) soil.scale.x *= -1;
     soil.x = x;
     soil.y = groundY + 26;
     soil.zIndex = -39;
