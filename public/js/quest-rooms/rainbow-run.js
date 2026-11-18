@@ -16,8 +16,8 @@
  * with more up the slide and in the planet.
  */
 
-import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=c4d2c503';
-import { touchesQuoin } from './kit.js?v=436636b4';
+import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=261e9006';
+import { touchesQuoin } from './kit.js?v=ec17ee93';
 
 export { rainbowCoins, rainbowPlatforms };
 export const RUN_MS = 30_000;

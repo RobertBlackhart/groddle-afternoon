@@ -46,8 +46,8 @@
 
 import { insideBottomRect } from '../doors.js?v=727d0e0b';
 import { assignQuest } from '../quests.js?v=92c75858';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import {
   GREETERBOT,
   MEZZANINE_TSID,
@@ -58,6 +58,7 @@ import {
 } from '../tower-mid-rooms.js?v=908fef6e';
 import { touchWords } from '../touch-controls.js?v=b10f17bb';
 import { CLICK_ANYWHERE, HALL, HALL_ART, HALL_ART_ROOT, HALL_BUTTON_CLASS, HALL_WIDGET, WALL_BUTTON } from '../hall-rejected-concepts.js?v=04d831b8';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const MID_TOWER_FEATURE_ID = 'mid-tower';
 export const ROOK_HALL_START = 'rook_hall_start';
@@ -154,7 +155,7 @@ export function greet(engine, speaker) {
 function drawGreeter(engine, room, street) {
   const { PIXI } = engine;
   const sprite = new PIXI.Sprite(textureFromUrl(GREETERBOT.art));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.x = room.greeterbot.x - street.bounds.l;
   sprite.y = room.greeterbot.y - street.bounds.t;
   sprite.zIndex = 30;
@@ -177,7 +178,7 @@ function drawGreeter(engine, room, street) {
 function artSprite(engine, art, x, y, street, z, size = {}) {
   const { PIXI } = engine;
   const sprite = new PIXI.Sprite(textureFromUrl(`${HALL_ART_ROOT}${HALL_ART[art].file}`));
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.x = x - street.bounds.l;
   sprite.y = y - street.bounds.t;
   if (size.w) sprite.width = size.w;
@@ -237,7 +238,7 @@ function drawHallWidget(engine, w, street) {
     frames.push(frameTexture(source, new PIXI.Rectangle((i % w.cols) * w.frameW, Math.floor(i / w.cols) * w.frameH, w.frameW, w.frameH)));
   }
   const sprite = new PIXI.AnimatedSprite(frames);
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.x = w.x - street.bounds.l;
   sprite.y = w.y - street.bounds.t;
   sprite.zIndex = -9;

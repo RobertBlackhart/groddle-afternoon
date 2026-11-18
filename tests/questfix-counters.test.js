@@ -30,7 +30,7 @@ import {
   COLD_COMFORT_LEAVE_TEXT,
 } from '../public/js/quest-offers.js?v=4debd26e';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=67d08c97';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=db04987b';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { performEmotionalBearAction, createEmotionalBearState } from '../public/js/emotional-bear.js?v=1c88a46a';
 import {
@@ -38,14 +38,14 @@ import {
   slatherVerb,
   SLATHER_VERB,
   SLATHER_COPY,
-} from '../public/js/features/quest-verbs-feature.js?v=c4a40c09';
+} from '../public/js/features/quest-verbs-feature.js?v=f9471992';
 import { onOwnYard } from '../public/js/features/quest-offers-feature.js?v=23f081e1';
 import {
   cubimalFor,
   giveCubimalVerb,
   GIVE_CUBIMAL_VERB,
   CUBIMAL_GIFT_RESPONSES,
-} from '../public/js/features/quest-verbs-feature.js?v=c4a40c09';
+} from '../public/js/features/quest-verbs-feature.js?v=f9471992';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
 
 const here = dirname(fileURLToPath(import.meta.url));

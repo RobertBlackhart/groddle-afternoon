@@ -210,18 +210,18 @@ import {
 } from '../home-cultivation.js?v=57afc9e2';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
-import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=98606052';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
-import { fadeInNewNear } from '../poof-fade.js?v=17fc143a';
-import { projectApi } from './street-jobs-feature.js?v=c679b93f';
+import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=7a63d78f';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { fadeInNewNear } from '../poof-fade.js?v=b9b5246d';
+import { projectApi } from './street-jobs-feature.js?v=06f7606f';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=77d57cda';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=39ba28bf';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=1e18c26a';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=5656bfba';
-import { patchesFeature } from './patches-feature.js?v=d5f4344d';
-import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=67d08c97';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=ee2657b6';
+import { patchesFeature } from './patches-feature.js?v=eff168b0';
+import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=db04987b';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
@@ -241,9 +241,9 @@ import {
   yardStyleChoices,
   yardStyleFor,
 } from '../home-styles.js?v=13fe0aaa';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=0729bf92';
-import { oneArmSignpost } from '../street-render.js?v=c0814575';
+import { oneArmSignpost } from '../street-render.js?v=6589dda5';
 import { ROCK_CATALOG } from '../mining.js?v=c13f0259';
 import {
   HOUSE_SIGN,
@@ -291,6 +291,7 @@ import {
   unexpandHouseFloors,
 } from '../home-floors.js?v=fbae0b05';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -1056,7 +1057,7 @@ function spawnInteriorTargets(engine) {
   // home_groddle.swf door_asset_entry_basic, 75 x 236 on the right end wall.
   const spec = scene?.background?.room?.door || { piece: 'door_asset_entry_basic', x: interiorDoorX(), y: GROUND_Y + 18, w: 75, h: 236 };
   const door = new PIXI.Sprite(textureFromUrl(pieceUrl(spec.piece, wantsHiresPieces(engine))));
-  door.anchor.set(0.5, 1);
+  anchorBottomCentre(door, 'deco');
   door.width = spec.w;
   door.height = spec.h;
   door.x = roomX0() + spec.x;
@@ -2563,7 +2564,7 @@ function spawnStreetTargets(engine) {
   const mailbox = new PIXI.Sprite(textureFromUrl(unread > 0
     ? 'assets/sprites/mailbox/npc_mailbox_variant_mailboxRight_x1_has_mail_idle_png_1354832230.webp'
     : 'assets/sprites/mailbox/npc_mailbox_variant_mailboxRight_x1_idle_png_1354832227.webp'));
-  mailbox.anchor.set(0.5, 1);
+  standOnFeet(mailbox);
   // PORCH: where you moved it, else the house's sign corner.
   mailbox.x = Math.round(fixtureWorldX('mailbox') ?? bg?.houseSignX ?? layout.houseX - 260);
   mailbox.y = STREET_GROUND_Y + 4;
@@ -2668,7 +2669,7 @@ function furnitureView(PIXI, item) {
     box.addChildAt(shadow, 0);
     if (item.slot === 'wall') {
       const silhouette = new PIXI.Sprite(textureFromUrl(art.path));
-      silhouette.anchor.set(0.5, 1);
+      anchorBottomCentre(silhouette, 'held');
       silhouette.scale.copyFrom(spr.scale);
       silhouette.tint = 0x000000;
       silhouette.alpha = 0.16;
@@ -2891,7 +2892,7 @@ function spawnCultivations(engine, st = activeCult()) {
     if (!def.art) continue;
     const art = POD_ART[def.art];
     const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/cultivation/${def.art}.webp`));
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.x = cultivationWorldX(item, st);
     spr.y = groundY + 6;
     spr.zIndex = 14;
@@ -3348,7 +3349,7 @@ function pourFx(engine, row) {
     const layer = engine.fxLayer || engine.entityLayer;
     if (!frames.length || engine.streetTsid !== tsid || !layer) return;
     const clip = new PIXI.AnimatedSprite(frames);
-    clip.anchor.set(0.5, 1);
+    anchorBottomCentre(clip, 'held');
     clip.x = at.x;
     clip.y = at.y;
     clip.scale.x = ap.flipped ? -1 : 1;
@@ -5096,7 +5097,7 @@ function makeGhost(engine) {
     g.half = half;
     // CultCarryUI: the item's own art over its placement line.
     const art = new PIXI.Sprite(textureFromUrl(cultivationIcon(placing.protoClass)));
-    art.anchor.set(0.5, 1);
+    standOnFeet(art);
     art.alpha = 0.85;
     const fit = () => {
       const w = art.texture?.width || 1;
@@ -5538,7 +5539,7 @@ function drawDisplayTarget(engine, hit) {
     fontFamily: 'Trebuchet MS, sans-serif', fontSize: 12, fontWeight: '700', fill: 0xffffff,
     stroke: { color: 0x3b2a1f, width: 3 }, align: 'center', wordWrap: true, wordWrapWidth: 180,
   } });
-  tip.anchor.set(0.5, 1);
+  anchorBottomCentre(tip, 'text');
   tip.x = b.x + b.w / 2;
   tip.y = b.y - 9;
   g.addChild(ring, tip);
@@ -5587,7 +5588,7 @@ function drawPackMarker(engine, target, what = packDrag) {
   const iconUrl = ITEM_CATALOG[what.classTsid]?.icon || `assets/sprites/icons/${what.classTsid}.webp`;
   const art = worldArtFor(what.classTsid, what.count, iconUrl);
   const icon = new PIXI.Sprite(textureFromUrl(art?.url || iconUrl));
-  icon.anchor.set(0.5, 1);
+  standOnFeet(icon);
   icon.width = art?.w || WORLD_ART_FALLBACK_MAX;
   icon.height = art?.h || WORLD_ART_FALLBACK_MAX;
   icon.alpha = 0.85;
@@ -7236,7 +7237,7 @@ function rockStill(PIXI, endClass) {
   const def = ROCK_CATALOG[rockClassFor(endClass)] || ROCK_CATALOG.rock_metal_1;
   const source = sourceFromUrl(`${def.worldSheet}?v=exact-rock-cells-1`);
   const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(0.85);
   onLoaded(source, () => {
     if (!spr.destroyed) spr.texture = frameTexture(source, new PIXI.Rectangle(0, 0, def.frameWidth, def.frameHeight));
@@ -7309,7 +7310,7 @@ function drawVisitorYard(engine, st, groundY, houseX, opts = {}) {
     if (def.art && POD_ART[def.art]) {
       const art = POD_ART[def.art];
       const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/cultivation/${def.art}.webp`));
-      spr.anchor.set(0.5, 1);
+      standOnFeet(spr);
       spr.x = x;
       spr.y = groundY + 6;
       spr.zIndex = 14;
@@ -7414,7 +7415,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
           });
           const spec = background.room?.door || { piece: 'door_asset_entry_basic', x: interiorDoorX(), y: GROUND_Y + 18, w: 75, h: 236 };
           const door = new PIXI.Sprite(textureFromUrl(pieceUrl(spec.piece, wantsHiresPieces(eng))));
-          door.anchor.set(0.5, 1);
+          anchorBottomCentre(door, 'deco');
           door.width = spec.w;
           door.height = spec.h;
           door.x = x0 + spec.x;
@@ -7442,7 +7443,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
       populate(eng) {
         const { PIXI } = eng;
         const mailbox = new PIXI.Sprite(textureFromUrl('assets/sprites/mailbox/npc_mailbox_variant_mailboxRight_x1_idle_png_1354832227.webp'));
-        mailbox.anchor.set(0.5, 1);
+        standOnFeet(mailbox);
         // PORCH: where the owner moved it (their street's cultivation state), else the house's sign corner.
         const usual = Math.round(background.houseSignX ?? layout.houseX - 260);
         const moved = fixtureRx(st, 'mailbox', { at: { mailboxX: usual, doorway: background.houseDoorway } });
@@ -7599,7 +7600,7 @@ function spawnDoorTargets(engine) {
     const role = doorRole(floors, floor, item.id);
     if (!role) continue;
     const spr = new PIXI.Sprite(textureFromUrl(doorArtUrl(item, floor)));
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'deco');
     const art = furnitureDef(DOOR_CLASS).art;
     spr.width = art.w;
     spr.height = art.h;

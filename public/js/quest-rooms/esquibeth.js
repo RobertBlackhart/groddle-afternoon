@@ -83,10 +83,11 @@
  *    on its marks as the song is played.
  */
 
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from './esquibeth-art.js?v=fe515887';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const ROOM_ID = 'esquibeth';
 export const MAIN = 'last_pilgrimage_of_esquibeth';
@@ -783,7 +784,7 @@ function ghostSheets(ctx) {
 function makeGhost(ctx, x, y) {
   const { PIXI } = ctx;
   const spr = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 0.93);
+  standOnFeet(spr);
   spr.animationSpeed = 0.5;
   spr.x = x;
   spr.y = y;

@@ -32,9 +32,10 @@
  * end beside the painted EXIT (or Leave). js/operation-grow-scene.js builds it.
  */
 
-import { JUMP_GAP, JUMP_RISE } from './puzzle-kit.js?v=bbac1b53';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { buildGrowBackground, makeStalk } from '../operation-grow-scene.js?v=91b88d1f';
+import { JUMP_GAP, JUMP_RISE } from './puzzle-kit.js?v=b3adb50f';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { buildGrowBackground, makeStalk } from '../operation-grow-scene.js?v=eb2744d3';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const W = 2500;
 export const H = 960;
@@ -138,7 +139,7 @@ function drawHint(PIXI, kit) {
   }
   c.addChild(dots);
   const mab = new PIXI.Sprite(textureFromUrl('assets/sprites/icons/icon_mab@3x.webp'));
-  mab.anchor.set(0.5, 1);
+  anchorBottomCentre(mab, 'held');
   mab.scale.set(0.42);
   mab.x = -60;
   mab.y = -112;

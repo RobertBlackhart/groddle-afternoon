@@ -16,7 +16,7 @@
  * many are drawn), swoonerflyAt (x,y of the first).
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
 import {
   SWOONERFLY_CLASS,
@@ -28,6 +28,7 @@ import {
 } from '../swoonerflies.js?v=75b61747';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { hideNameTip, wireNameTip } from '../world-name-tip.js?v=78a0ca81';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const SWOONERFLIES_FEATURE_ID = 'swoonerflies';
 
@@ -40,7 +41,7 @@ function spawn(engine, point) {
   const { PIXI } = engine;
   const frames = loader.frames(SWOONERFLY_SHEET);
   const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = point.x;
   spr.y = point.y;
   // npc_swoonerfly sets neither flag (items/npc_swoonerfly.js itemDef): a normal item.

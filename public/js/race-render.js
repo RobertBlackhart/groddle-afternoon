@@ -9,8 +9,9 @@
  * updateParallax(camX, camY) for the far layers.
  */
 
-import { textureFromUrl } from './textures.js?v=8e0a8c38';
-import { playSheetOverlay } from './overlay-art.js?v=98606052';
+import { textureFromUrl } from './textures.js?v=1c44e7c3';
+import { playSheetOverlay } from './overlay-art.js?v=7a63d78f';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 const DECO_DIR = 'assets/decos/groddle/';
 
@@ -564,7 +565,7 @@ function drawSlimeLadder(g, w, ctx) {
   let i = 0;
   for (let y = w.yBot; y > w.yTop - 10; y -= 58) {
     const sprite = new ctx.PIXI.Sprite(textureFromUrl(`${DECO_DIR}arbito_ladder_tile_center_0${(i % 3) + 1}_stone.png`));
-    sprite.anchor.set(0.5, 1);
+    anchorBottomCentre(sprite, 'deco');
     sprite.scale.set(0.6);
     sprite.x = w.x;
     sprite.y = y + 6;
@@ -1037,7 +1038,7 @@ function drawWinnerArc(PIXI) {
     fill: 0xffffff,
     stroke: { color: 0x6b3fa0, width: 5 },
   } });
-  text.anchor.set(0.5, 1);
+  anchorBottomCentre(text, 'text');
   text.y = -112;
   c.addChild(text);
   return c;

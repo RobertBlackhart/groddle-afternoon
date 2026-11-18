@@ -31,8 +31,8 @@ import {
 } from '../public/js/street-ecology.js?v=c4ce9ccd';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SHEETS } from '../public/js/shrine-variants.js?v=7f11c97d';
-import { adoptedPlan } from '../public/js/features/patches-feature.js?v=d5f4344d';
-import { createPlot } from '../public/js/patches.js?v=67d08c97';
+import { adoptedPlan } from '../public/js/features/patches-feature.js?v=eff168b0';
+import { createPlot } from '../public/js/patches.js?v=db04987b';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -72,7 +72,7 @@ describe('the footprints', () => {
     assert.equal(PERCH_DROP_PX, 150);
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
     assert.match(game, /trantDisplayScale\(tex, \{ targetH: 210, maxScale: 1 \}\)/);
-    assert.match(game, /const body = new PIXI\.Sprite\(textureFromUrl\('assets\/decos\/groddle\/vendor\.png'\)\);\s*body\.anchor\.set\(0\.5, 1\);\s*body\.scale\.set\(0\.25\);/);
+    assert.match(game, /const body = new PIXI\.Sprite\(textureFromUrl\('assets\/decos\/groddle\/vendor\.png'\)\);\s*anchorBottomCentre\(body, 'deco'\);\s*body\.scale\.set\(0\.25\);/);
     // The plain shrine's cell (js/shrine-variants.js, read by game.js ensureShrineTextures).
     assert.deepEqual({ ...SHRINE_SHEETS.base }, { fw: 151, fh: 188, cols: 6, open: 22, close: 23 });
     assert.match(game, /const sheet = shrineSheet\(region, giantId, motion\);/);

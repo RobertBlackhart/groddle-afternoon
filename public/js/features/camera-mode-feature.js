@@ -44,10 +44,11 @@
  * cameraEyeballSent.
  */
 
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=eda942a8';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=68c0a634';
 import { SPEECH_BUBBLE_Z } from '../fx-z.js?v=18dda7e3';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const CAMERA_FEATURE_ID = 'camera-mode';
 /** getCameraAbilities: range without Eyeballery, px from the avatar. */
@@ -122,7 +123,7 @@ export function playEyeballing(engine, at, alive = null) {
   let bubble = null;
   if (PIXI?.Sprite) {
     bubble = new PIXI.Sprite(textureFromUrl(OVERLAY_BUBBLE_URL, { scale: 4, resolution: 4 }));
-    bubble.anchor.set(0.5, 1);
+    anchorBottomCentre(bubble, 'held');
     bubble.width = box.w;
     bubble.height = box.h;
     bubble.alpha = 0;

@@ -57,12 +57,13 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { animalAnchorX, animalAnchorY, createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=99a80423';
+import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=398f4897';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 import {
   BABY_ANIMALS,
   BATTERFLY,
@@ -112,16 +113,16 @@ import {
 } from '../animal-husbandry.js?v=0429b2e9';
 import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=6076a836';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=260ef36d';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=802c02fd';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=7bfc0a93';
-import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=570215e2';
+import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=6421701e';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
-import { createPackedLoader } from '../packed-sheets.js?v=2e19bbab';
+import { createPackedLoader } from '../packed-sheets.js?v=be3cff3a';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';
 export const BATTERFLY_GROUP = 'batterfly';
@@ -590,8 +591,9 @@ function buildExtraAnimal(engine, row) {
   const frames = animalFrames(engine, row.classId);
   const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
   const scale = row.classId === 'npc_piggy' ? 0.97 : row.classId === 'npc_chicken' ? 0.7 : 0.7;
-  // Under the animal, so it turns on the spot (js/animals.js ANIMAL_ANCHOR_X).
-  spr.anchor.set(animalAnchorX(row.classId), row.classId === 'npc_butterfly' ? 0.5 : animalAnchorY(row.classId));
+  // On its feet, turning about its own middle (js/sprite-feet.js; a Butterfly hangs from its centre).
+  if (row.classId === 'npc_butterfly') spr.anchor.set(0.5, 0.5);
+  else standOnFeet(spr);
   spr.baseScale = scale;
   spr.scale.set(scale);
   spr.animationSpeed = row.classId === 'npc_butterfly' ? 0.25 : 0.13;

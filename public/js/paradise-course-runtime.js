@@ -19,7 +19,8 @@
 import { heldDirection } from './held-keys.js?v=a28eb293';
 import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=622dcd46';
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
-import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=8e0a8c38';
+import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 const DECO_ROOT = 'assets/decos/groddle';
 const decoUrl = (name) => `${DECO_ROOT}/${name}.png`;
@@ -675,7 +676,7 @@ function paintSkyPlunge(root, course, fg, art) {
   // The two doors (CC0 door_asset_heights_interior), their feet in the mist.
   for (const x of [course.backToTop?.x, course.exit.x].filter((v) => v != null)) {
     const door = new PIXI.Sprite(textureFromUrl(skyPlungeUrl('door_asset_heights_interior')));
-    door.anchor.set(0.5, 1);
+    anchorBottomCentre(door, 'deco');
     door.position.set(x, landingY + 14);
     door.zIndex = -7;
     root.addChild(door);

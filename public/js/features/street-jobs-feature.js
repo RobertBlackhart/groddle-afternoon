@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=c4ce9ccd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=c0814575';
+import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=6589dda5';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -144,7 +144,7 @@ import {
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=05498227';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
@@ -160,6 +160,7 @@ import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine }
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=04ea0019';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';
@@ -645,7 +646,7 @@ function spawnBoard(engine, point) {
   const { PIXI } = engine;
   const spr = new PIXI.Container();
   const sign = new PIXI.Sprite(textureFromUrl(BOARD_ART));
-  sign.anchor.set(0.5, 1);
+  standOnFeet(sign);
   spr.addChild(sign);
   // Gap 4: the board where no spirit stands carries the same bubble.
   boardIndicator = createJobIndicator(PIXI, { onClick: () => openGiver(engine, 'board'), textureFor: textureFromUrl });
@@ -847,7 +848,7 @@ function drawFlora(engine) {
   const points = engine.placement('street-job-flora');
   points.forEach((p, i) => {
     const spr = new engine.PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${art[i % art.length]}.png`));
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'deco');
     spr.scale.set(0.55);
     spr.x = p.x;
     spr.y = p.y + 6;

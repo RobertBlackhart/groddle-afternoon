@@ -35,10 +35,10 @@
  * items' art is Tiny Speck's own tool_animation sheets, already shipped for the actor.
  */
 
-import { OVERLAY_BUBBLE_URL, loadMoreOverlays, overlayBubbleBox, playOverlay } from './overlays.js?v=eda942a8';
-import { loadTexture, textureFromUrl } from './textures.js?v=8e0a8c38';
+import { OVERLAY_BUBBLE_URL, loadMoreOverlays, overlayBubbleBox, playOverlay } from './overlays.js?v=68c0a634';
+import { loadTexture, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { SPEECH_BUBBLE_Z } from './fx-z.js?v=18dda7e3';
-import { playItemOverlay } from './item-overlay.js?v=0c20633c';
+import { playItemOverlay } from './item-overlay.js?v=f7119b49';
 import { jobWorkToolSheet } from './job-work-fx.js?v=e16ca80f';
 import { MAKE_TOOL_SHEETS } from './make-tool-sheets.js?v=6f758e09';
 import { ROCK_CATALOG } from './mining.js?v=c13f0259';
@@ -49,6 +49,7 @@ import { potionBottleClasses, potionBottleSheet } from './potion-bottles.js?v=17
 import { powderShakerSheet } from './powder-shakers.js?v=fcd18855';
 import { WOTD_TOOL } from './wine-pour-fx.js?v=364e22d2';
 import { firstWorkingTool } from './tools.js?v=4156bba8';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 /** inc_skill_packages.js 294-305: the bubble the others see. */
 export const SKILL_BUBBLE = Object.freeze({ wh: 40, dy: -110, src: 'players/inc_skill_packages.js 294-314' });
@@ -310,7 +311,7 @@ export function playSkillBubble(engine, key, at, { durationMs = 2000, alive = nu
     const box = overlayBubbleBox(sw * k, sh * k);
     const point = () => { const p = at(); return { x: p.x, y: p.y + SKILL_BUBBLE.dy }; };
     const bubble = new PIXI.Sprite(textureFromUrl(OVERLAY_BUBBLE_URL, { scale: 4, resolution: 4 }));
-    bubble.anchor.set(0.5, 1);
+    anchorBottomCentre(bubble, 'held');
     bubble.width = box.w;
     bubble.height = box.h;
     bubble.alpha = 0;
@@ -383,7 +384,7 @@ function drawItemBubble(engine, handle, def, at, { durationMs, flipped, alive, h
   const box = overlayBubbleBox(cw * k, ch * k);
   const point = () => { const p = at(); return { x: p.x, y: p.y + dy }; };
   const bubble = new PIXI.Sprite(textureFromUrl(OVERLAY_BUBBLE_URL, { scale: 4, resolution: 4 }));
-  bubble.anchor.set(0.5, 1);
+  anchorBottomCentre(bubble, 'held');
   bubble.width = box.w;
   bubble.height = box.h;
   bubble.alpha = 0;

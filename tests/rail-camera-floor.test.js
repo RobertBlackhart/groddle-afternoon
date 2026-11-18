@@ -12,8 +12,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { cameraTargetX, cameraLocationViewWidth, cameraOverlayCenterX } from '../public/js/movement.js?fresh=railcam';
-import { TRANT_FRAME_FOOT, trantFootAnchorY } from '../public/js/trants.js?fresh=railcam';
-import { ANIMAL_ANCHOR_Y, animalAnchorY } from '../public/js/animals.js?fresh=railcam';
+import { footOf } from '../public/js/sprite-feet.js?fresh=railcam';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -104,38 +103,47 @@ describe('G875 (#423): upright on a phone the folded rail floats over the sky, s
 });
 
 describe('G583: trees and Chickens stand on their feet', () => {
-  it('every measured trant frame matches the shipped file and lifts its foot onto the line', () => {
-    for (const [classId, row] of Object.entries(TRANT_FRAME_FOOT)) {
-      for (const [stage, pad] of Object.entries(row.pad)) {
-        const { h } = webpSize(join(root, `public/assets/sprites/trants/frames/${classId}_m${stage}.webp`));
-        assert.equal(h, row.h, `${classId} m${stage} height`);
-        assert.ok(pad > 0 && pad < row.h / 4, `${classId} m${stage} pad ${pad}`);
-        const y = trantFootAnchorY(classId, Number(stage));
-        assert.ok(Math.abs((1 - y) * row.h - pad) < 1e-9);
+  // G583's hand measurements (fixc lane, 2026-11-08): [cell height, blank rows under the trunk's
+  // lowest solid row] per stage. R12 measures every sprite the same way (js/sprite-feet-data.js).
+  const TRANT_PADS = {
+    trant_fruit: [249, { 1: 7, 3: 7, 5: 3, 7: 10, 10: 6 }],
+    trant_egg: [278, { 1: 15, 3: 15, 5: 12, 7: 14, 10: 7 }],
+    trant_bean: [270, { 1: 14, 3: 13, 5: 12, 7: 8, 10: 4 }],
+    trant_bubble: [277, { 1: 9, 3: 9, 5: 10, 7: 11, 10: 7 }],
+    trant_gas: [258, { 1: 17, 3: 16, 5: 15, 7: 10, 10: 5 }],
+    trant_spice: [250, { 1: 36, 3: 26, 5: 20, 7: 21, 10: 6 }],
+  };
+  it('every trant frame stands on its trunk: the measured feet keep G583 (within a pixel), x in the middle', () => {
+    for (const [classId, [h, pads]] of Object.entries(TRANT_PADS)) {
+      for (const [stage, pad] of Object.entries(pads)) {
+        const url = `assets/sprites/trants/frames/${classId}_m${stage}.webp?v=1`;
+        assert.equal(webpSize(join(root, 'public', url.split('?')[0])).h, h, `${classId} m${stage} height`);
+        const foot = footOf(url);
+        assert.ok(Math.abs((1 - foot.y) * h - pad) <= 1, `${classId} m${stage}: ${(1 - foot.y) * h} blank rows, G583 measured ${pad}`);
+        assert.equal(foot.x, 0.5, 'a still picture keeps its middle');
       }
     }
-    assert.equal(trantFootAnchorY('wood_tree', 6), 1);
-    assert.equal(trantFootAnchorY('trant_bubble', 2), 1);
-    // The reported tree: the Bubble Tree's full-grown frames stand 7 and 11 px lower than before.
-    assert.equal(TRANT_FRAME_FOOT.trant_bubble.pad[7], 11);
   });
 
-  it('street, demo and Patch trees take the foot anchor whenever their texture changes', () => {
+  it('street, demo and Patch trees stand on their feet, and again whenever their texture changes', () => {
     const game = read('public/game.js');
-    assert.match(game, /trantFootOf\.set\(tex, trantFootAnchorY\(classTsid, m\)\)/);
-    assert.match(game, /spr\.anchor\.set\(0\.5, treeAnchorY\(tex\)\)/);
-    assert.equal((game.match(/sprite\.anchor\.y = treeAnchorY\(/g) || []).length, 3);
-    assert.match(read('public/js/features/patches-feature.js'), /trantFootAnchorY\(plot\.tree\.classId, trantFrameStage\(/);
+    assert.match(game, /spawnTrees[\s\S]*?const spr = new PIXI\.Sprite\(tex\);[\s\S]{0,400}standOnFeet\(spr\)/);
+    assert.doesNotMatch(game, /treeAnchorY|trantFootOf/);
+    assert.match(read('public/js/features/patches-feature.js'), /standOnFeet\(sprite\)/);
   });
 
   it('a Chicken stands on its feet in the street, the yard, the tutorial and husbandry', () => {
-    assert.equal(animalAnchorY('npc_chicken'), 97 / 110);
-    assert.equal(animalAnchorY('npc_piggy'), 1);
-    assert.ok(Object.isFrozen(ANIMAL_ANCHOR_Y));
+    // The walk's feet: 96 of its 110 px cell (G583 hand-measured 97: the lowest row with one texel).
+    const walk = footOf('assets/sprites/npc_chicken__x1_walk_png_1354830385.webp', { width: 148, height: 110 });
+    assert.equal(walk.y * 110, 96);
+    for (const url of ['assets/sprites/npc_chicken__x1_pecking_once_png_1354830398.webp', 'assets/sprites/animals/npc_chicken_stand.webp']) {
+      assert.ok(footOf(url, { width: 148, height: 110 }).y * 110 >= 96, url);
+    }
     const game = read('public/game.js');
-    assert.match(game, /function spawnChickens[\s\S]*?spr\.anchor\.y = animalAnchorY\('npc_chicken'\)/);
+    assert.match(game, /function makeAnimated[\s\S]*?standOnFeet\(anim\)/);
+    assert.match(game, /function spawnChickens[\s\S]*?makeAnimated\('chickenWalk'/);
     for (const f of ['yard-verbs-mp-feature.js', 'animal-husbandry-feature.js', 'newxp-feature.js']) {
-      assert.match(read(`public/js/features/${f}`), /anchor\.set\(animalAnchorX\([^)]*\), [^;]*animalAnchorY\(/, f);
+      assert.match(read(`public/js/features/${f}`), /else standOnFeet\(spr\);/, f);
     }
   });
 });

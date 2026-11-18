@@ -26,7 +26,7 @@
 
 import { pluralize } from '../words.js?v=274023af';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
-import { OVERLAY_USES, playCountdownArt, playWindowOverlay } from '../overlays.js?v=eda942a8';
+import { OVERLAY_USES, playCountdownArt, playWindowOverlay } from '../overlays.js?v=68c0a634';
 import {
   CROWNS_ID,
   CROWNS_LADDERS,
@@ -60,12 +60,12 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=b92068b7';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=0d0e6317';
 import { wallsScreen } from '../street-model.js?v=9f16f4ab';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
+import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=49228b02';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
   CROWNS_MP_TEXT,
@@ -80,6 +80,7 @@ import {
   normalizeCrownsReward,
   normalizeCrownsState,
 } from '../crowns-mp.js?v=ab077bca';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 const ICON = 'assets/sprites/races/';
 const CROWN_DIR = 'assets/sprites/races/crowns/';
@@ -227,7 +228,7 @@ function setupArena(street, engine) {
       sprite.eventMode = 'none';
       engine.entityLayer.addChild(sprite);
       label = new PIXI.Text({ text: r.name, style: { fontFamily: 'Arial', fontSize: 13, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
-      label.anchor.set(0.5, 1);
+      anchorBottomCentre(label, 'text');
       label.zIndex = 47;
       engine.entityLayer.addChild(label);
     }
@@ -236,7 +237,7 @@ function setupArena(street, engine) {
   });
   lockSprites = game.locks.map((lock) => {
     const sprite = new PIXI.Sprite(textureFromUrl(`${CROWN_DIR}crown_game_lock.webp`));
-    sprite.anchor.set(0.5, 1);
+    standOnFeet(sprite);
     sprite.scale.set(1.2);
     sprite.x = lock.x;
     sprite.y = lock.y - 4;
@@ -245,7 +246,7 @@ function setupArena(street, engine) {
     return sprite;
   });
   crownSprite = new PIXI.Sprite(textureFromUrl(`${CROWN_DIR}game_crown_unlocked.webp`));
-  crownSprite.anchor.set(0.5, 1);
+  standOnFeet(crownSprite);
   crownSprite.scale.set(0.8);
   crownSprite.zIndex = 60;
   engine.entityLayer.addChild(crownSprite);
@@ -1239,7 +1240,7 @@ function mpSetupArena(street, engine) {
   actors = {};
   lockSprites = (mp.locks.length ? mp.locks : LOCK_POINTS).map((lock) => {
     const sprite = new PIXI.Sprite(textureFromUrl(`${CROWN_DIR}crown_game_lock.webp`));
-    sprite.anchor.set(0.5, 1);
+    standOnFeet(sprite);
     sprite.scale.set(1.2);
     sprite.x = lock.x;
     sprite.y = lock.y - 4;
@@ -1248,7 +1249,7 @@ function mpSetupArena(street, engine) {
     return sprite;
   });
   crownSprite = new PIXI.Sprite(textureFromUrl(`${CROWN_DIR}game_crown_unlocked.webp`));
-  crownSprite.anchor.set(0.5, 1);
+  standOnFeet(crownSprite);
   crownSprite.scale.set(0.8);
   crownSprite.zIndex = 60;
   crownSprite.visible = false;

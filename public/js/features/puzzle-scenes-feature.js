@@ -50,9 +50,10 @@ import {
   sceneTsid,
 } from '../puzzle-scenes.js?v=946a3e28';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
 const TICKET = 'paradise_ticket_beam_me_down';
@@ -302,7 +303,7 @@ function buildBeamMeDown(engine) {
   root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x0 + 60, scene.startCloud.y + 135, 560, { squash: 0.7 }));
   root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x1 - 40, scene.startCloud.y + 120, 430, { flip: true, squash: 0.7 }));
   const sign = new PIXI.Text({ text: scene.sign.replace(' here!', '\nhere!'), style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 22, fontWeight: '700', fill: 0xffffff, align: 'center' } });
-  sign.anchor.set(0.5, 1);
+  anchorBottomCentre(sign, 'text');
   sign.x = (scene.startCloud.x0 + scene.startCloud.x1) / 2;
   sign.y = scene.startCloud.y - 110;
   sign.alpha = 0.9;
@@ -311,7 +312,7 @@ function buildBeamMeDown(engine) {
   const bravo = new PIXI.Text({ text: scene.completion.replace('! ', '!\n').replace('You made', 'You\nmade'), style: {
     fontFamily: 'Trebuchet MS, sans-serif', fontSize: 46, fontWeight: '800', fill: 0xe8d23a, align: 'center', lineHeight: 50,
   } });
-  bravo.anchor.set(0.5, 1);
+  anchorBottomCentre(bravo, 'text');
   bravo.x = scene.width / 2;
   bravo.y = scene.floorY - 160;
   bravo.alpha = 0;
@@ -325,7 +326,7 @@ function exitDoor(engine, scene) {
   if (scene.id === 'beam_me_down') {
     // G962: the street snap's EXIT is door_asset_heights_interior darkened, a pale plank across it.
     const wood = new PIXI.Sprite(textureFromUrl(BEAM_ART.door));
-    wood.anchor.set(0.5, 1);
+    anchorBottomCentre(wood, 'deco');
     wood.scale.set(BEAM_ART.doorHeight / 188);
     wood.tint = BEAM_ART.doorTint;
     door.addChild(wood);

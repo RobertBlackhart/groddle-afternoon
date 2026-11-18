@@ -48,7 +48,7 @@
  *   towerWork, towerAutoplay, towerSecrets, towerRock, towerVisited, towerTopY (street).
  */
 
-import { playOverlay } from '../overlays.js?v=eda942a8';
+import { playOverlay } from '../overlays.js?v=68c0a634';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=4debd26e';
@@ -114,13 +114,14 @@ import {
   towerSpotsFor,
   workCheck,
 } from '../home-tower.js?v=77d57cda';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { pieceUrl } from '../home-wallpaper.js?v=f1969400';
 import { wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=5bc894c8';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 /** 3x tower pieces where the screen has more than 2.25 backing pixels per world pixel. */
 function hires(engine) {
@@ -338,7 +339,7 @@ export function visitorTowerView(engine, towerState, { x, groundY, built }) {
 export function drawTowerElevator(engine, { floor, groundY }) {
   const { PIXI } = engine;
   const lift = new PIXI.Sprite(textureFromUrl(pieceUrl('signpost_asset_elevator_tower', hires(engine))));
-  lift.anchor.set(0.5, 1);
+  anchorBottomCentre(lift, 'deco');
   lift.width = 180;
   lift.height = 514;
   lift.x = 90;
@@ -362,7 +363,7 @@ export function drawTowerElevator(engine, { floor, groundY }) {
 export function drawTowerExit(engine, { doorX, groundY }) {
   const { PIXI } = engine;
   const door = new PIXI.Sprite(textureFromUrl(pieceUrl('door_asset_entry_basic', hires(engine))));
-  door.anchor.set(0.5, 1);
+  anchorBottomCentre(door, 'deco');
   door.width = 75;
   door.height = 236;
   door.x = doorX;
@@ -441,7 +442,7 @@ function benchTexture(engine) {
 /** The Workbench on the floor under construction (tower_get_bounds expansion.job: x 260 + 80, on the planks the floor is walkable to, 290); G795: a visitor's floor draws it too. */
 export function drawTowerBench(engine, { groundY }) {
   const bench = new engine.PIXI.Sprite(benchTexture(engine));
-  bench.anchor.set(0.5, 1);
+  standOnFeet(bench);
   bench.scale.set(BENCH_SCALE);
   bench.x = TOWER_GEO.workbenchX;
   bench.y = groundY + 2;
@@ -468,7 +469,7 @@ function spawnFloor(engine, { width, groundY, doorX }) {
   // Elevator: home_tower.swf signpost_asset_elevator_tower, 180 x 514 at x 90 (tower_build_elevator),
   // standing on the floor's bound (the walk line + 43 + the 28 px frame).
   const lift = new PIXI.Sprite(textureFromUrl(pieceUrl('signpost_asset_elevator_tower', hires(engine))));
-  lift.anchor.set(0.5, 1);
+  anchorBottomCentre(lift, 'deco');
   lift.width = 180;
   lift.height = 514;
   lift.x = 90;
@@ -503,7 +504,7 @@ function spawnFloor(engine, { width, groundY, doorX }) {
   if (floor === 0) {
     // tower_build_exit: door_asset_entry_basic (75 x 236) at exit_door (w - 67, b - 53).
     const door = new PIXI.Sprite(textureFromUrl(pieceUrl('door_asset_entry_basic', hires(engine))));
-    door.anchor.set(0.5, 1);
+    anchorBottomCentre(door, 'deco');
     door.width = 75;
     door.height = 236;
     door.x = doorX;
@@ -612,7 +613,7 @@ function startWork(engine, rid) {
   }
   const { PIXI } = engine;
   const icon = new PIXI.Sprite(textureFromUrl(itemIcon(check.tool)));
-  icon.anchor.set(0.5, 1);
+  standOnFeet(icon);
   icon.scale.set(0.8);
   icon.zIndex = 40;
   engine.entityLayer.addChild(icon);

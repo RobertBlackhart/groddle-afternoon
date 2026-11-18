@@ -105,19 +105,19 @@
  *   animalMoodRooting (Piggies rooting now), animalMoodLast (root:look | root:sniff).
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { isInHell } from '../hell.js?v=834960da';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
-import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
-import { animalStatusLabel } from '../animals.js?v=99a80423';
+import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
+import { animalStatusLabel } from '../animals.js?v=398f4897';
 import { LOCAL_STATES } from '../shared-quoins.js?v=89d7b201';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { quoteAnimalKinship } from '../animal-kinship.js?v=75d3cb34';
 import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0777b59b';
 import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=0429b2e9';
-import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=ff0d794a';
+import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=b5a07955';
 import { ANIMAL_BODY, ANIMAL_PATROL, TREE_FOOTPRINT } from '../street-ecology.js?v=c4ce9ccd';
 import {
   CHECK_ON_REMOVE,

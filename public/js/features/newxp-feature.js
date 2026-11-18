@@ -146,13 +146,13 @@ import { assignQuest, completeQuest } from '../quests.js?v=92c75858';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=4debd26e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
-import * as kit from '../quest-rooms/kit.js?v=436636b4';
-import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=8e0a8c38';
+import * as kit from '../quest-rooms/kit.js?v=ec17ee93';
+import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=1c44e7c3';
 import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=98606052';
+import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=7a63d78f';
 import { HOME_MACHINE } from '../home-ticket.js?v=e882731b';
-import { animalAnchorX, animalAnchorY, createAnimalState } from '../animals.js?v=99a80423';
+import { createAnimalState } from '../animals.js?v=398f4897';
 import {
   AK_ANIMALS,
   AK_BUBBLE,
@@ -172,6 +172,7 @@ import {
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const NEWXP_FEATURE_ID = 'newxp';
 /** newxp_training1.js 705-706 slothRemove: deleteWithPoof, then hideTree 0.5 s later. */
@@ -1015,7 +1016,7 @@ function addPickup(engine, id, classTsid, count, x, y, onPick) {
   const { PIXI } = engine;
   const box = new PIXI.Container();
   const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${classTsid}.webp`));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(0.8);
   box.addChild(spr);
   box.x = x;
@@ -1808,7 +1809,7 @@ function buildTraining2(engine) {
   for (const [kind, tab] of Object.entries(L.tables)) {
     const art = TRAINING2_TABLE_ART[kind];
     const table = new PIXI.Sprite(textureFromUrl(art.path));
-    table.anchor.set(0.5, 1);
+    standOnFeet(table);
     table.x = tab.x;
     table.y = L.floorY + TRAINING2_TABLE_SINK;
     table.scale.set(TRAINING2_TABLE_SCALE);
@@ -1824,7 +1825,7 @@ function buildTraining2(engine) {
   }
   // Egg Plant (trant_egg) on its ledge.
   const egg = new PIXI.Sprite(textureFromUrl('assets/sprites/trants/frames/trant_egg_m10.webp'));
-  egg.anchor.set(0.5, 1);
+  standOnFeet(egg);
   egg.x = L.eggPlant.x;
   egg.y = L.eggPlant.y + 8;
   egg.scale.set(0.8);
@@ -2332,7 +2333,7 @@ function akSideTable(engine) {
   const floor = groundBelow(engine, top.x, top.y + 25);
   const at = akSideTablePlacement(floor + (bounds?.t ?? 0));
   const spr = new engine.PIXI.Sprite(textureFromUrl(AK_SIDE_TABLE.art));
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'deco');
   spr.x = top.x;
   spr.y = floor + 2;
   spr.width = at.width;
@@ -2395,8 +2396,9 @@ function akSpawn(engine, classId) {
   const frames = akFrames(engine, classId);
   const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
   const scale = classId === 'npc_piggy' ? 0.97 : 0.7;
-  // Under the animal, so it turns on the spot (js/animals.js ANIMAL_ANCHOR_X).
-  spr.anchor.set(animalAnchorX(classId), def.airborne ? 0.5 : animalAnchorY(classId));
+  // On its feet, turning about its own middle (js/sprite-feet.js; a flier hangs from its centre).
+  if (def.airborne) spr.anchor.set(0.5, 0.5);
+  else standOnFeet(spr);
   spr.baseScale = scale;
   spr.scale.set(scale);
   spr.animationSpeed = def.airborne ? 0.25 : 0.13;

@@ -92,8 +92,8 @@ import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { createSheetLoader } from '../sprite-sheets.js?v=d8e87813';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { createSheetLoader } from '../sprite-sheets.js?v=77b5924d';
 import {
   LOW_FUEL_BUBBLE_MS,
   LOW_FUEL_LINE,
@@ -104,6 +104,7 @@ import {
   machineSheetDef,
   roomMachineState,
 } from '../machine-art.js?v=26ed750c';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const MACHINE_ROOMS_FEATURE_ID = 'machine-rooms';
 const MUSIC_CARD = 'metalmaking_music';
@@ -213,7 +214,7 @@ function spawnMachines(engine, street, layout) {
     const p = worldToScreen(street, def.x, -130);
     const y = nearestSurfaceY(engine.platforms, p.x, p.y) ?? p.y;
     const sprite = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${def.classTsid}.webp`));
-    sprite.anchor.set(0.5, 1);
+    standOnFeet(sprite);
     sprite.x = p.x;
     sprite.y = y + 4;
     sprite.zIndex = 8;

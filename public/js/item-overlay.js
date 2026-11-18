@@ -23,10 +23,11 @@
  * sheet marked `keep` is one another module draws from too, and is left alone.
  */
 
-import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=98606052';
-import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=2e19bbab';
+import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=7a63d78f';
+import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=be3cff3a';
 import { upgradeSource } from './sprite-hires.js?v=24aa024c';
-import { forgetTexture, loadTexture, whenLoaded } from './textures.js?v=8e0a8c38';
+import { forgetTexture, loadTexture, whenLoaded } from './textures.js?v=1c44e7c3';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 /** Decoded sheets kept after their overlay ends. */
 export const KEEP_SHEETS = 2;
@@ -148,7 +149,7 @@ export function playItemOverlay(PIXI, def, { layer, at, wh = 0, flipped = false,
       return;
     }
     const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    sprite.anchor.set(0.5, 1);
+    anchorBottomCentre(sprite, 'held');
     sprite.eventMode = 'none';
     sprite.zIndex = zIndex;
     sprite.alpha = 0;

@@ -25,7 +25,8 @@
  * returns. The avatar stays put while looking.
  */
 
-import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const STREET = 'GNV1T7PCUM53T25';
 const BOUNDS = { l: -1500, t: -600 };
@@ -92,7 +93,7 @@ function objectSprite(ctx, cls) {
     const base = sourceFromUrl('assets/sprites/mining/rock_sparkly.webp');
     const tex = frameTexture(base, new PIXI.Rectangle(0, 0, 131, 127));
     const spr = new PIXI.Sprite(tex);
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.x = x;
     spr.y = y + 4;
     return spr;
@@ -289,7 +290,7 @@ export const room = {
     const frogTalk = kit.sheetFrames(PIXI, `${ART}frog_talk.webp`, 16, 4, 62); // OGA npc_myopic_frog talk: 62 cells (G276)
     const frogMove = kit.sheetFrames(PIXI, `${ART}frog_move.webp`, 12, 2, 24);
     const frog = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-    frog.anchor.set(0.5, 1);
+    standOnFeet(frog);
     frog.animationSpeed = 0.3;
     frog.x = sx(1000);
     frog.y = sy(-200);

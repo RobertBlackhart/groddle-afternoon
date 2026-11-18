@@ -87,7 +87,7 @@ import {
   stillWaitsToStart,
 } from '../machines.js?v=ab7d71da';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
-import { createSheetLoader } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader } from '../sprite-sheets.js?v=77b5924d';
 import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=3a1b5812';
 import {
   BUREAUCRACY_ITEMS,
@@ -98,10 +98,11 @@ import {
   completePapers,
   completePapersCheck,
 } from '../bureaucracy.js?v=62eded48';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const SUPPLY_FEATURE_ID = 'supply';
 export const CLERK_CLASS = 'npc_bureaucrat';
@@ -438,7 +439,7 @@ function spawnClerk(engine, point) {
   const { PIXI } = engine;
   const base = sourceFromUrl(CLERK_ART);
   const spr = new PIXI.Sprite(frameTexture(base, new PIXI.Rectangle(0, 0, CLERK_FRAME.w, CLERK_FRAME.h)));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = point.x;
   spr.y = point.y + 2;
   // npc_bureaucrat is a foreground item: in front of the trees and the project sign.

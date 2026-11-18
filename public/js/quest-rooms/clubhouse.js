@@ -55,8 +55,9 @@
  * signpost are drawn here.
  */
 
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { butlerApi } from '../features/butler-feature.js?v=5fb01840';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { butlerApi } from '../features/butler-feature.js?v=ab6a4016';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 // source: questInstanceLocation(..., 5*60) -> instances_schedule_exit_prompt (a prompt, not a clock).
 export const EXIT_PROMPT_MS = 5 * 60 * 1000;
@@ -847,7 +848,7 @@ function enterClub(ctx) {
   setDoor(ctx, Boolean(ctx.data.solved));
   // The Curious Painting over the fireplace.
   const pic = new ctx.PIXI.Sprite(textureFromUrl(`${ART}club_house_picture.webp`));
-  pic.anchor.set(0.5, 1);
+  anchorBottomCentre(pic, 'held');
   pic.scale.set(0.62);
   pic.x = CLUBHOUSE.fireplaceX;
   pic.y = cy - CLUBHOUSE.pictureUp + 47;

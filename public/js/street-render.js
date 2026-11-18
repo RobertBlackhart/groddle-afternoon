@@ -11,12 +11,13 @@ import {
   pickConnection,
 } from './street-model.js?v=9f16f4ab';
 import { availableStreetTsids } from './street-loader.js?v=90517e2f';
-import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=8e0a8c38';
+import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDeco, NEW_DECOS } from './deco-hires.js?v=03ac6512';
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
-import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=f3ab0d19';
+import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=41a70b24';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**
@@ -123,12 +124,12 @@ export function oneArmSignpost(PIXI, text, { left = true, fill = SIGN_TEXT_FILL 
   holder.scale.set(SIGNPOST.scale);
   box.addChild(holder);
   const shadow = new PIXI.Sprite(textureFromUrl(SIGNPOST.shadow));
-  shadow.anchor.set(0.5, 1);
+  anchorBottomCentre(shadow, 'deco');
   shadow.y = 6;
   shadow.alpha = 0.75;
   shadow.label = 'sign-shadow';
   const post = new PIXI.Sprite(textureFromUrl(SIGNPOST.post));
-  post.anchor.set(0.5, 1);
+  anchorBottomCentre(post, 'deco');
   post.label = 'sign-post';
   holder.addChild(shadow, post);
   const arm = new PIXI.Container();
@@ -247,7 +248,7 @@ function buildSignpostSprite(PIXI, signpost, pos) {
   // Shadow
   if (tex.shadow && !tex.shadow.source?.destroyed) {
     const shadow = new PIXI.Sprite(tex.shadow);
-    shadow.anchor.set(0.5, 1);
+    anchorBottomCentre(shadow, 'deco');
     shadow.y = 6;
     shadow.alpha = 0.75;
     shadow.label = 'sign-shadow';
@@ -257,7 +258,7 @@ function buildSignpostSprite(PIXI, signpost, pos) {
   let postH = 200;
   if (tex.post && !tex.post.source?.destroyed) {
     const post = new PIXI.Sprite(tex.post);
-    post.anchor.set(0.5, 1);
+    anchorBottomCentre(post, 'deco');
     post.y = 0;
     post.label = 'sign-post';
     holder.addChild(post);
@@ -378,7 +379,7 @@ function buildSignpostSprite(PIXI, signpost, pos) {
       fill: 0x3a2a18,
       fontWeight: '700',
     } });
-    empty.anchor.set(0.5, 1);
+    anchorBottomCentre(empty, 'text');
     empty.y = -postH - 8;
     empty.label = 'sign-label';
     empty._baseFill = 0x3a2a18;
@@ -2833,7 +2834,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
       if (pick && (far || blur) && !farAdmitted.has(pick.url)) pick = null;
       const tex = pick ? sharpTexture(pick) : farUrl ? textureFromUrl(farUrl, { raw: true }) : textureFromUrl(url);
       const spr = animated ? new PIXI.AnimatedSprite([tex]) : new PIXI.Sprite(tex);
-      spr.anchor.set(0.5, 1);
+      anchorBottomCentre(spr, 'deco');
       // h_flip mirrors the deco about its registration point.
       const sizeDeco = () => {
         // The street may be gone before a slow texture arrives.

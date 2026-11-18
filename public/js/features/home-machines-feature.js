@@ -102,15 +102,16 @@ import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { RECIPE_CATALOG } from '../making.js?v=af1c7d5b';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=57afc9e2';
-import { lookOf, poseOf } from './realtime-feature.js?v=941eff12';
+import { lookOf, poseOf } from './realtime-feature.js?v=fc00c6e5';
 import { readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { createSheetLoader } from '../sprite-sheets.js?v=d8e87813';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=90b42c0d';
-import { payAltarBonus } from './machine-rooms-feature.js?v=732b98a3';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { createSheetLoader } from '../sprite-sheets.js?v=77b5924d';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=057ea614';
+import { payAltarBonus } from './machine-rooms-feature.js?v=bef20a3b';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export { HOME_MACHINES_ID };
 
@@ -326,7 +327,7 @@ function createSession(engine, client) {
     const { PIXI } = engine;
     if (!PIXI || !engine.entityLayer || !home) return;
     const sprite = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${m.classTsid}.webp`));
-    sprite.anchor.set(0.5, 1);
+    standOnFeet(sprite);
     sprite.x = Math.round(home.x0 + m.rx);
     sprite.y = home.groundY + 2;
     sprite.zIndex = 14;

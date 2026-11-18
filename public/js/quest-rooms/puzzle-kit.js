@@ -10,8 +10,9 @@
  * rooms keep every required rise <= 100 px and every gap <= 150 px.
  */
 
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { touchesQuoin } from './kit.js?v=436636b4';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { touchesQuoin } from './kit.js?v=ec17ee93';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const JUMP_RISE = 100;
 export const JUMP_GAP = 150;
@@ -131,7 +132,7 @@ export function makeSwitch(ctx, { id, color, x, y, on = false, label }) {
 export function beamSprite(ctx, x, y, color, height = 300) {
   // puzzles/light_beam.webp: the same pixels as color_unblocking/light_beam.webp, with a 3x render (lane sharp).
   const spr = new ctx.PIXI.Sprite(textureFromUrl('assets/sprites/puzzles/light_beam.webp'));
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'deco');
   spr.x = x;
   spr.y = y;
   spr.scale.set(0.8, height / 382);

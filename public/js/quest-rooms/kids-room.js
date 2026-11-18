@@ -31,9 +31,10 @@
 
 import { applyRewards } from '../quests.js?v=92c75858';
 import { ITEM_CATALOG, isToolItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
-import { playPoofIn } from '../overlay-art.js?v=98606052';
-import { KIDS_ROOM_FLOOR, KIDS_ROOM_H, KIDS_ROOM_W, buildKidsRoomScene } from '../kids-room-scene.js?v=0915b7a0';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
+import { playPoofIn } from '../overlay-art.js?v=7a63d78f';
+import { KIDS_ROOM_FLOOR, KIDS_ROOM_H, KIDS_ROOM_W, buildKidsRoomScene } from '../kids-room-scene.js?v=83bd0547';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const W = KIDS_ROOM_W;
 const H = KIDS_ROOM_H;
@@ -212,7 +213,7 @@ function mrBlockSprite(ctx, letter) {
   const apply = () => { spr.texture = frameTexture(base, new PIXI.Rectangle(0, 0, 121, 117)); };
   if (isLoaded(base)) apply();
   else onLoaded(base, apply);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(1.15);
   return spr;
 }
@@ -289,7 +290,7 @@ function createBlocks(ctx) {
   ctx.data.spelled = [];
   ctx.data.blocks = START_LETTERS.map((letter, i) => {
     const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.scale.set(0.74);
     spr.x = BLOCK_X[i];
     spr.y = FLOOR;

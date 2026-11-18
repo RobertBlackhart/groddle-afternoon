@@ -14,8 +14,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/js/quest-instance.js?v=13b8ee09';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=221b67a9';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=45b5a665';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=76970b3d';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=1c1ef8dc';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=77753c74';
 import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -62,7 +62,8 @@ import {
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl } from '../textures.js?v=1c44e7c3';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const GRAPE_SCALE = 0.8;
 const GRAVE_GIANTS = new Set(HELL_SPRITES.graveside.giants);
@@ -242,7 +243,7 @@ function spawnGrapes(street, engine) {
   const grapes = isInHellOne(street.tsid) ? HELL_ONE_GRAPES : planHellGrapes(street);
   for (const grape of remainingGrapes(state, grapes)) {
     const sprite = new engine.PIXI.Sprite(grapeTexture(engine, grape.variant));
-    sprite.anchor.set(0.5, 1);
+    standOnFeet(sprite);
     sprite.scale.set(GRAPE_SCALE);
     sprite.x = grape.x;
     sprite.y = grape.y + 2;
@@ -275,7 +276,7 @@ function spawnGrave(street, engine) {
   graveSprite = new PIXI.Sprite(
     frameTexture(base, new PIXI.Rectangle(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH))
   );
-  graveSprite.anchor.set(0.5, 1);
+  standOnFeet(graveSprite);
   graveSprite.x = marker.x;
   // The source raises the marker 29px above the croak point; anchor at the feet.
   graveSprite.y = marker.y + 29;

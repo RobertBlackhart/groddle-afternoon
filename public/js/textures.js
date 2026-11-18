@@ -178,6 +178,8 @@ export function sourceFromUrl(url, opts = {}) {
   let source = sources.get(key);
   if (!source || source.destroyed) {
     source = createSource(key, opts);
+    // The URL as the game named it, before a route picked a 3x copy (js/sprite-feet.js reads it).
+    source[LOAD].asked = String(url);
     sources.set(key, source);
   }
   return source;
@@ -264,6 +266,12 @@ const sourceOf = (t) => t?.source ?? t;
 /** The URL a TextureSource was loaded from by this module, or null. */
 export function sourceUrl(textureOrSource) {
   return sourceOf(textureOrSource)?.[LOAD]?.url || null;
+}
+
+/** The URL the game asked for (before js/sprite-hires.js and friends routed it), or null. */
+export function askedUrl(textureOrSource) {
+  const state = sourceOf(textureOrSource)?.[LOAD];
+  return state ? state.asked || state.url : null;
 }
 
 /** Has the image arrived? Non-URL sources (canvas, render textures) are always loaded. */

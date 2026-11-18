@@ -381,7 +381,7 @@ print(json.dumps(out))`;
   test('the 3x covers the wheel\'s draw scale on a 2x laptop at Original zoom, and loads before it plays', async () => {
     const { stageFor } = await import('../public/js/location-view.js?v=ac404fcb');
     const game = fs.readFileSync(path.join(root, 'public/game.js'), 'utf8');
-    const scale = Number(/new PIXI\.AnimatedSprite\(textures\.wheelAppear\.frames\);\n\s+sprite\.anchor\.set\(0\.5, 1\);\n\s+sprite\.scale\.set\(([\d.]+)\);/.exec(game)?.[1]);
+    const scale = Number(/new PIXI\.AnimatedSprite\(textures\.wheelAppear\.frames\);\n\s+standOnFeet\(sprite\);\n\s+sprite\.scale\.set\(([\d.]+)\);/.exec(game)?.[1]);
     assert.equal(scale, 0.72);
     for (const [w, h] of [[1280, 740], [1512, 880], [1728, 1010]]) {
       const draw = scale * stageFor({ width: w, height: h, sceneWidth: 4000, sceneHeight: 1000, zoom: 1 }).scale * 2;

@@ -12,7 +12,7 @@
  */
 
 import { TOOL_CONDITION_CATALOG, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
-import { fruitCapacityAt, fruitProductionAt } from './trants.js?v=4d6f5593';
+import { fruitCapacityAt, fruitProductionAt } from './trants.js?v=b9147016';
 import { scaledToolWear, toolWearMultiplier } from './imagination-effects.js?v=70169933';
 import { loseEnergy, loseMood, shiftMetabolic } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';

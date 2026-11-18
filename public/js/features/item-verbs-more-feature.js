@@ -38,8 +38,8 @@
  *   packVerbNet, packVerbDefect.
  */
 
-import { displayTopOf } from '../overlay-art.js?v=98606052';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
+import { displayTopOf } from '../overlay-art.js?v=7a63d78f';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
@@ -50,10 +50,10 @@ import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=4156bba8';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=0429b2e9';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
-import { sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { sourceFromUrl, frameTexture } from '../textures.js?v=1c44e7c3';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
+import { overlayOrStandIn } from '../overlay-stand-in.js?v=a500bed5';
 import {
   BUNDLE_OF_JOY,
   BUTTERFLY_NET,
@@ -119,6 +119,7 @@ import {
 } from '../item-verbs-more.js?v=377f760a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const ITEM_VERBS_MORE_FEATURE_ID = 'item-verbs-more';
 
@@ -677,7 +678,7 @@ function drawJoy(engine, joy) {
   const frames = joyFrames(engine);
   if (!frames.length) return;
   const spr = new PIXI.AnimatedSprite(frames);
-  spr.anchor.set(0.5, 0.96);
+  standOnFeet(spr);
   spr.baseScale = 0.9;
   spr.scale.set(0.9);
   spr.animationSpeed = 0.4;
@@ -792,7 +793,7 @@ function defectSprite(engine, sheet, x, y) {
   if (!PIXI?.AnimatedSprite || !engine.entityLayer) return null;
   loader ||= createSheetLoader(PIXI);
   const spr = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = x;
   spr.y = y;
   spr.zIndex = 30;

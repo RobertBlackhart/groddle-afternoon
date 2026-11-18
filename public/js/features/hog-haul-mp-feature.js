@@ -32,10 +32,11 @@ import {
   pigPose,
   touches,
 } from '../hog-haul-mp.js?v=67f873fe';
-import { HOG_HAUL_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
+import { HOG_HAUL_SPLASH, splashFor } from '../game-splash.js?v=49228b02';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { playCountdownArt } from '../overlays.js?v=eda942a8';
+import { playCountdownArt } from '../overlays.js?v=68c0a634';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const HOLD = 'hog-haul-mp';
 const BAIT_ICON = 'assets/sprites/icons/pig_bait.webp'; // the races/ copy's pixels, with a 3x render
@@ -145,7 +146,7 @@ function anim(engine, key, { speed = 0.12, slice = null, scale = 1 } = {}) {
   if (!frames.length) return null;
   const spr = new PIXI.AnimatedSprite(frames);
   spr.animationSpeed = speed;
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(scale);
   spr.play();
   return spr;

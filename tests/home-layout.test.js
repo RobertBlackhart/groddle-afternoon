@@ -17,13 +17,13 @@ import { homedir } from 'node:os';
 import {
   HOME_LAYOUT_ART_ROOTS, HOME_LAYOUT_KINDS, HOME_LAYOUT_LIMITS, HOME_LAYOUT_TEXTS, HOME_LAYOUT_VERSION,
   HOME_FRAME_WINDOW, boxFromCorners, buildHomeLayout, describeHomeThing, hexColour, homeLayoutJson, homeLayoutKeyOf, homeViewFrame, layoutArtPath, splitFrameToSheet,
-} from '../public/js/home-layout.js?v=74ca3e6d';
-import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=7fcc084f';
+} from '../public/js/home-layout.js?v=222ed9f4';
+import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=c737144c';
 import { phoneStage, stageFor } from '../public/js/location-view.js?v=ac404fcb';
-import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=90b42c0d';
+import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=057ea614';
 import { AVATAR_STILL, homeKeyOf } from '../public/js/profiles.js?v=054ca723';
 import { HIRES_SPRITES, SPLIT_SPRITES } from '../public/js/sprite-hires.js?v=24aa024c';
-import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=90b42c0d';
+import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=057ea614';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

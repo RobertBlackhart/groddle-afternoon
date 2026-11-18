@@ -2,16 +2,16 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0cb5c6db';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=48523352';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=db705126';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6e9bab6d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=8e52df56';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
 import { createPromptStack } from './js/prompt-stack.js?v=5718128a';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
-import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=44a586ca';
+import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=49228b02';
 import {
   actionDurationFor,
   createTimedAction,
@@ -20,7 +20,7 @@ import {
 } from './js/action-timing.js?v=b6ce9561';
 import { createWordProgressView, wordAnchor, heldActionDelta, MAX_PUSH_DOWN } from './js/word-progress.js?v=98366023';
 // G374/G375/G378: Tiny Speck's quoin-limit and super-harvest rainbows and the musicblock notes.
-import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=eda942a8';
+import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=68c0a634';
 import {
   createQuestState,
   assignQuest,
@@ -86,7 +86,7 @@ import {
   spinFourLetterBlock,
   startFourLetterPuzzle,
 } from './js/four-letter-quest.js?v=a5574ac7';
-import { KIDS_ROOM_W, buildKidsRoomScene } from './js/kids-room-scene.js?v=0915b7a0';
+import { KIDS_ROOM_W, buildKidsRoomScene } from './js/kids-room-scene.js?v=83bd0547';
 import {
   AXIS_DENYDE_STREET_ID,
   HOGTIED_JONES_ID,
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=08820e49';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=ece88bea';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=77ed1ac9';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -396,7 +396,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=f51896f4';
+} from './js/paradise-course-runtime.js?v=c65b021a';
 import {
   createAchievementState,
   applyAchievementProgress as applyAchievementProgressRaw,
@@ -504,8 +504,8 @@ import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchL
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=99a80423';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=99a80423';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=398f4897';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=398f4897';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -691,7 +691,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=b0c3fa20';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=f40ebeb8';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -722,7 +722,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=c0814575';
+} from './js/street-render.js?v=6589dda5';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -801,9 +801,8 @@ import {
   refillFruit,
   maturityLabel,
   trantStatusLabel,
-  trantFootAnchorY,
-} from './js/trants.js?v=4d6f5593';
-import { growStreetTrant } from './js/patches.js?v=67d08c97';
+} from './js/trants.js?v=b9147016';
+import { growStreetTrant } from './js/patches.js?v=db04987b';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -845,7 +844,7 @@ import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverG
 import { hellBuffDesc, isInHell } from './js/hell.js?v=834960da';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
-import { createNpcGlitchKit } from './js/npc-glitch.js?v=7967d1fd';
+import { createNpcGlitchKit } from './js/npc-glitch.js?v=d048721f';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=8b20791a';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
 import { catalogItem, lookKey, randomVectorFields, resolveLook, variantSwatch } from './js/avatar-looks.js?v=76eb9653';
@@ -891,12 +890,10 @@ import {
   VENDOR_BAG_HOLDS,
 } from './js/vendor.js?v=3025c322';
 import {
-  animalAnchorX,
-  animalAnchorY,
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=99a80423';
+} from './js/animals.js?v=398f4897';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -941,7 +938,7 @@ import {
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
-import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=2a43f991';
+import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=c380df0c';
 import {
   GAMESHOW_TICKET_ID,
   applySpinningWheelReward,
@@ -1036,9 +1033,9 @@ import {
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=c4ce9ccd';
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=6076a836';
-import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=570215e2';
+import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=6421701e';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=0c20633c';
+import { itemOverlayStats } from './js/item-overlay.js?v=f7119b49';
 import { isCrowdSad } from './js/animal-crowding.js?v=1966bc21';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1092,12 +1089,12 @@ import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=a7f873d2';
-import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=8e0a8c38';
+import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=1c44e7c3';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=0729bf92';
-import { sceneAnim, syncAnim } from './js/deco-anim.js?v=f3ab0d19';
+import { sceneAnim, syncAnim } from './js/deco-anim.js?v=41a70b24';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
-import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=98606052';
-import * as textureUrls from './js/textures.js?v=8e0a8c38';
+import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=7a63d78f';
+import * as textureUrls from './js/textures.js?v=1c44e7c3';
 import { canvasTransparent, ensureDepthStencil, probeRenderTexture, renderProbeLine } from './js/render-probe.js?v=d2c7b0e0';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
@@ -1118,6 +1115,7 @@ import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=d69d66b4';
+import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=7363f23d';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -7564,19 +7562,10 @@ function textureForTrant(classTsid, maturity) {
     // Reject leftover multi-plant sheets (very wide or sparse tall grids)
     if (tex.width > tex.height * 2.2) continue;
     if (tex.height < 60) continue;
-    trantFootOf.set(tex, trantFootAnchorY(classTsid, m));
     return tex;
   }
   if (textures.treeFruit?.frames?.[0]) return textures.treeFruit.frames[0];
   return null;
-}
-
-/** G583: each trant frame's anchor y (js/trants.js trantFootAnchorY), set as textureForTrant picks it. */
-const trantFootOf = new WeakMap();
-
-/** G583: the anchor y that stands a tree's trunk on its y (the cell's bottom for art without a measured foot). */
-function treeAnchorY(tex) {
-  return trantFootOf.get(tex) ?? 1;
 }
 
 /** Six official Wood Tree maturity frames, from stump to mighty trunk. */
@@ -9627,7 +9616,7 @@ async function playPickAnimation(target) {
   const tool = new PIXI.AnimatedSprite(swing);
   const place = nodeToolOverlay(target.classId, spr.x, player.x);
   const at = itemstackOverlayPoint(spr.x, displayTopOf(spr), { dx: place.deltaX, dy: place.deltaY });
-  tool.anchor.set(0.5, 1);
+  anchorBottomCentre(tool, 'held');
   tool.x = at.x;
   tool.y = at.y;
   tool.scale.set(place.flipped ? -1 : 1, 1);
@@ -10888,7 +10877,7 @@ function makeAnimated(sheetKey, { animationSpeed = 0.12, frameSlice = null, scal
   if (frameSlice) frames = frames.slice(frameSlice[0], frameSlice[1]);
   const anim = new PIXI.AnimatedSprite(frames);
   anim.animationSpeed = animationSpeed;
-  anim.anchor.set(0.5, 1);
+  standOnFeet(anim);
   anim.scale.set(scale);
   anim.play();
   return anim;
@@ -10981,7 +10970,7 @@ function spawnSpinningWheel({ now = Date.now(), ticket = null } = {}) {
   const wheel = createSpinningWheelState('player', now, { ticket });
   wheel.phase = 'appear';
   const sprite = new PIXI.AnimatedSprite(textures.wheelAppear.frames);
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.scale.set(0.72);
   sprite.x = clamp(player.x + 100, 95, Math.max(95, WORLD_W - 100));
   sprite.y = resolveGround(sprite.x, player.y) + 2;
@@ -11068,7 +11057,7 @@ function spawnStootMemorial() {
   entityLayer.addChild(memorial);
 
   const doll = new PIXI.Sprite(stootDollTexture());
-  doll.anchor.set(0.5, 1);
+  standOnFeet(doll);
   doll.scale.set(1.18);
   doll.x = memorial.x - 132;
   doll.y = ground + 1;
@@ -11276,7 +11265,7 @@ function makePlayer() {
   body.animationSpeed = 0.18;
   body.loop = true;
   body.gotoAndStop(0);
-  body.anchor.set(0.5, 1);
+  anchorBottomCentre(body, 'stage');
   // Glitch sheets: each frame carries its sheet's feet anchor; drawn at world scale.
   body.anims = pack.anims || null;
   body.pack = pack;
@@ -11339,7 +11328,7 @@ function makeLocalCompanion(profile) {
     fontWeight: '700',
     dropShadow: { alpha: 0.92, blur: 2, color: 0xffffff, distance: 0 },
   } });
-  name.anchor.set(0.5, 1);
+  anchorBottomCentre(name, 'text');
   name.y = npc ? -Math.round((npc.look.entry.sheets.base.fh || 140) + 6) : -104;
   const plate = new PIXI.Graphics();
   plate.roundRect(
@@ -11941,7 +11930,7 @@ function swapPlayerPack(pack) {
   player.appearanceKey = pack.key;
   player.anims = pack.anims || null;
   player.updateAnchor = Boolean(pack.anims);
-  if (!pack.anims) player.anchor.set(0.5, 1);
+  if (!pack.anims) anchorBottomCentre(player, 'stage');
   player.glitchState = null;
   if (was === 'walk' || was === 'climb') {
     player.textures = player.texturesWalk;
@@ -13514,8 +13503,8 @@ const engine = {
     if (!meta || !target.sprite || !target.state || target.grownFromBean) return;
     const tex = textureForTrant(target.classId, target.state.maturity);
     if (tex) {
+      // A tree sprite re-reads its foot when its texture changes (js/sprite-feet.js standOnFeet).
       target.sprite.texture = tex;
-      target.sprite.anchor.y = treeAnchorY(tex);
       const s = trantDisplayScale(tex, { targetH: 210, maxScale: 1 });
       target.sprite.scale.set((target.sprite._woodDirection || 1) * s, s);
     }
@@ -14341,10 +14330,8 @@ function spawnChickens(xs) {
       frameSlice: [0, 6],
       scale: ENTITY_SCALE.chicken,
     });
-    // Anchored under the bird, so it turns on the spot (js/animals.js ANIMAL_ANCHOR_X, lane CHICKWALK).
-    spr.anchor.x = animalAnchorX('npc_chicken');
-    // G583: and on its feet, not on the cell's empty rows under them (ANIMAL_ANCHOR_Y).
-    spr.anchor.y = animalAnchorY('npc_chicken');
+    // makeAnimated stands it on its feet and turns it about the bird, not the cell (js/sprite-feet.js:
+    // G515, G583), for every clip it plays (walk, peck, stand, the idles).
     spr.baseScale = ENTITY_SCALE.chicken;
     spr.x = x;
     spr.y = GROUND_Y + 2;
@@ -14401,7 +14388,7 @@ function spawnButterflies(xs, flyingSpots) {
   // Resting on the path — same native sheet family + scale as flyers (not the old upscaled 39px crop).
   (xs !== undefined ? xs : [450, 980, 1450, 2000]).forEach((x, i) => {
     const spr = new PIXI.Sprite(restFrames[i % restFrames.length] || restFrames[0]);
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.baseScale = ENTITY_SCALE.butterfly;
     spr.scale.set(ENTITY_SCALE.butterfly);
     spr.x = x;
@@ -14546,8 +14533,9 @@ function spawnTrees(spots) {
     // Linear filtering without a mip chain (Pixi 8 sources have none by default).
     if (tex.source) tex.source.scaleMode = 'linear';
     const spr = new PIXI.Sprite(tex);
-    // G583: the trunk's foot on the platform line, not the frame's empty rows under it.
-    spr.anchor.set(0.5, treeAnchorY(tex));
+    // G583, R12: the trunk's foot on the platform line, not the frame's empty rows under it, for
+    // every frame it later shows (js/sprite-feet.js).
+    standOnFeet(spr);
     spr.roundPixels = true;
     // Never upscale x1 OGA rasters. Cap height so tall egg/fruit plants fit in view
     // (~VIEW_H * 0.42) without clipping against the camera top.
@@ -14711,7 +14699,7 @@ function spawnDroppedItemStack(stack) {
   const worldArt = worldArtFor(stack.classTsid, stack.count, item.icon);
   const spr = new PIXI.Sprite(textureFromUrl(worldArt?.url || item.icon || `assets/sprites/icons/${stack.classTsid}.webp`));
   spr.label = 'world-item-stack';
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.worldArt = worldArt;
   if (stack.count > 1) {
     const badge = new PIXI.Container();
@@ -17149,7 +17137,7 @@ function spawnHogHaulPen(point) {
   // The authored street already paints the fence and "Pig Pen" sign. This
   // transparent Sprite contributes only a generous collision/interaction box.
   const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'shape');
   spr.x = point.x;
   spr.y = point.y + 5;
   spr.width = 310;
@@ -17188,7 +17176,7 @@ function spawnHogHaulRival(point) {
 function spawnHogHaulPenPiggy(index) {
   if (!hogHaulPenTarget?.sprite || !textures.piggyWalk?.frames?.length) return;
   const spr = new PIXI.AnimatedSprite(textures.piggyWalk.frames.slice(0, 8));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.animationSpeed = 0.1;
   spr.baseScale = ENTITY_SCALE.piggy * 0.8;
   spr.scale.set(index % 2 ? -spr.baseScale : spr.baseScale, spr.baseScale);
@@ -17270,7 +17258,7 @@ function setupHogHaulWorld() {
   spawnHogHaulRival(penPoint);
 
   hogHaulCarrySprite = new PIXI.Sprite(textures.hogtiedPiggy.frames[0]);
-  hogHaulCarrySprite.anchor.set(0.5, 1);
+  anchorBottomCentre(hogHaulCarrySprite, 'held');
   hogHaulCarrySprite.scale.set(1.05);
   hogHaulCarrySprite.visible = false;
   hogHaulCarrySprite.zIndex = 100;
@@ -17703,7 +17691,7 @@ function spawnFourLetterBlocks() {
     const letter = fourLetterState.letters[index];
     const spr = new PIXI.Sprite(fourLetterTexture(letter));
     spr.name = block.id;
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.scale.set(0.74);
     spr.x = xs[index];
     spr.y = 620;
@@ -17729,7 +17717,7 @@ function spawnFourLetterBlocks() {
 function spawnFourLetterMrBlock() {
   const spr = new PIXI.Sprite(textures.mrBlock?.frames?.[0] || PIXI.Texture.WHITE);
   spr.label = 'mr-block';
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(1.15);
   spr.x = FOUR_LETTER_LAYOUT.mrBlock.x;
   spr.y = FOUR_LETTER_LAYOUT.mrBlock.y;
@@ -18276,7 +18264,7 @@ function makeLegalizeBureaucrat(index, x, y, scale = 0.86) {
   spr.texturesTalk = talk?.length ? talk : spr.texturesIdle;
   spr.texturesWalk1 = textures[`bureaucrat${index}Walk1`]?.frames?.length ? textures[`bureaucrat${index}Walk1`].frames : spr.texturesIdle;
   spr.texturesWalk2 = textures[`bureaucrat${index}Walk2`]?.frames?.length ? textures[`bureaucrat${index}Walk2`].frames : spr.texturesWalk1;
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.position.set(x, y);
   spr.scale.set(scale);
   // The sheets are the SWF's 30 fps frames (sprite-sheets.js pixiSpeed); slower, the idle's blink came every 8 s.
@@ -18896,7 +18884,7 @@ function greedyButtonSprite(actIndex, x, y) {
   root.name = `greedy-story-act-${actIndex + 1}`;
   root.sortableChildren = true;
   const button = new PIXI.Sprite(greedyButtonFrames('out')[GREEDY_BUTTON_FRAMES - 1]);
-  button.anchor.set(0.5, 1);
+  standOnFeet(button);
   button.width = GREEDY_BUTTON_FRAME_W;
   button.height = GREEDY_BUTTON_FRAME_H;
   button.zIndex = 1;
@@ -18909,7 +18897,7 @@ function greedyButtonSprite(actIndex, x, y) {
     stroke: { color: 0x422b54, width: 4 },
     dropShadow: { blur: 2, color: 0x24172e, distance: 1 },
   } });
-  label.anchor.set(0.5, 1);
+  anchorBottomCentre(label, 'text');
   label.y = -GREEDY_BUTTON_FRAME_H - 4;
   label.zIndex = 2;
   root.addChild(label);
@@ -19527,7 +19515,7 @@ function spawnWinterPortal(stage) {
     const ladder = new PIXI.Sprite(
       textureFromUrl('assets/decos/groddle/ladder_interior_4steps.png')
     );
-    ladder.anchor.set(0.5, 1);
+    anchorBottomCentre(ladder, 'deco');
     ladder.scale.set(0.58);
     root.addChild(ladder);
 
@@ -20011,7 +19999,7 @@ function summersDayLightFilter(filters) {
 /** A Tiny Speck deco from assets/decos/groddle, anchored at its foot centre, sized w x h. */
 function summersDayAnnexDeco(name, x, y, w, h, { flip = false, z = 0 } = {}) {
   const sprite = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${name}.png`));
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.position.set(x, y);
   sprite.zIndex = z;
   sprite.label = name;
@@ -20757,7 +20745,7 @@ function drawRookWoodsBackground() {
 
   // The Egg's nest: the rook_nest deco (js/rook-woods.js ROOK_NEST).
   const nest = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${ROOK_NEST.asset}`));
-  nest.anchor.set(0.5, 1);
+  anchorBottomCentre(nest, 'deco');
   nest.position.set(ROOK_NEST.x, ROOK_NEST.y);
   nest.width = ROOK_NEST.w;
   nest.height = ROOK_NEST.h;
@@ -20813,7 +20801,7 @@ function spawnRookCrushers() {
 
 function spawnRookEgg() {
   const sprite = new PIXI.Sprite(rookEggTexture(rookWoodsState?.eggState));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.scale.set(0.84);
   sprite.position.set(2140, 784);
   // rook_egg is in_background (BG_ITEM): under the avatars. The Crushers stay over them.
@@ -21246,7 +21234,7 @@ function rookMuseumIsInstanced() {
 /** A tower deco in the museum hall: bottom-centre at (x, y), world px, turned `r` degrees. */
 function addRookMuseumDeco(root, name, x, y, w, h, { z = -900, r = 0, tint, alpha = 1, flip = false } = {}) {
   const sprite = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${name}.png`));
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.position.set(x, y);
   sprite.width = w;
   sprite.height = h;
@@ -21334,7 +21322,7 @@ function makeRookMuseumSpeaker(exhibit) {
   const sprite = new PIXI.Sprite(
     textureFromUrl(`${ROOK_MUSEUM_ASSET_ROOT}/rook_hall_speaker__x1_stop_png_1354835940.webp`)
   );
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   const hall = ROOK_MUSEUM_HALL;
   if (exhibit.kind === 'painting') {
     sprite.position.set(exhibit.x + hall.paintingSpeaker.dx, hall.paintingSpeaker.bottom);
@@ -21393,16 +21381,17 @@ function spawnRookMuseumExhibits() {
       sprite = new PIXI.Sprite(
         textureFromUrl(`${ROOK_MUSEUM_ASSET_ROOT}/rook_hall_focusing_orb__x1_1_png_1354835872.webp`)
       );
-      sprite.anchor.set(0.5, 1);
+      standOnFeet(sprite);
       sprite.position.set(exhibit.x, floor);
     } else {
       sprite = new PIXI.Sprite(
         textureFromUrl(`${ROOK_MUSEUM_ASSET_ROOT}/rook_hall_shrine_holofilm__x1_stop_png_1354835839.webp`)
       );
-      sprite.anchor.set(0.5, 1);
-      sprite.position.set(exhibit.x, floor + 15);
+      standOnFeet(sprite);
+      // On its feet (standOnFeet): the 16 blank rows under the art the old + 15 made up for.
+      sprite.position.set(exhibit.x, floor);
       const stand = new PIXI.Sprite(textureFromUrl(ROOK_MUSEUM_STAND_ART.file));
-      stand.anchor.set(0.5, 1);
+      standOnFeet(stand);
       stand.position.set(ROOK_MUSEUM_HALL.shrineStand.x, floor + 1);
       stand.zIndex = 40;
       stand.eventMode = 'none';
@@ -21417,7 +21406,7 @@ function spawnRookMuseumExhibits() {
 function spawnRookMuseumGreeter() {
   // npc_quest_widget, variant widgetWood (rook_hall.js onEnterLocation): the Mezzanine Greeterbot's art.
   const sprite = new PIXI.Sprite(textureFromUrl(ROOK_MUSEUM_HALL.greeterArt));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   // An NPC is an item: under the avatars (MiddleGroundRenderer 111-171).
   sprite.zIndex = 46;
   sprite.position.set(ROOK_MUSEUM_HALL.greeterStart.x, ROOK_MUSEUM_HALL.greeterStart.y);
@@ -21900,7 +21889,7 @@ function spawnMrHairball() {
   const sprite = new PIXI.AnimatedSprite(idleFrames?.length ? idleFrames : [fallback]);
   sprite.texturesIdle = idleFrames?.length ? idleFrames : [fallback];
   sprite.texturesTalk = talkFrames?.length ? talkFrames : sprite.texturesIdle;
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   // The x1 sheets at the street's own scale; our spot (EESTI_HAIRBALL_SPOT), on the item line.
   const at = eestiStreetPoint(EESTI_HAIRBALL_SPOT);
   sprite.position.set(at.x, at.y);
@@ -21934,7 +21923,7 @@ function spawnSmallWorthless() {
   const sprite = new PIXI.Sprite(
     textureFromUrl(`${EESTI_ASSET_ROOT}/small_worthless__x1_1_x1_2_png_1354829517.webp`)
   );
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   // Inside the archived box on the tabletop; the street's own cake (middleplus, in front of
   // the avatars) hides its right half. A restrained glint makes the target discoverable
   // without turning the hidden-object beat into guesswork.
@@ -22477,7 +22466,7 @@ function paradiseStarPickup(point) {
 function addParadiseCloud(root, x, y, width, height, alpha = 0.9, tint = 0xffffff) {
   const kind = width > 520 ? 'cloud_fluffy_2' : 'cloud_fluffy_1';
   const cloud = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${kind}.png`));
-  cloud.anchor.set(0.5, 1);
+  anchorBottomCentre(cloud, 'deco');
   cloud.position.set(x, y);
   cloud.width = width;
   cloud.height = height;
@@ -22641,7 +22630,7 @@ function buildStarlitBackground(root, course, points) {
   const cloudTexture = textureFromUrl(`assets/decos/groddle/${STARLIT_NIGHT_CLOUD_SPRITE}.png`);
   root.paradiseStarlitClouds = STARLIT_NIGHT_CLOUDS.map((spec) => {
     const cloud = new PIXI.Sprite(cloudTexture);
-    cloud.anchor.set(0.5, 1);
+    anchorBottomCentre(cloud, 'deco');
     cloud.position.set(spec.x, spec.y);
     cloud.rotation = (spec.r * Math.PI) / 180;
     const applySize = () => {
@@ -22695,7 +22684,7 @@ function buildStarlitBackground(root, course, points) {
 function addSlipRecoveredDeco(root, spec) {
   const texture = textureFromUrl(`assets/decos/groddle/${spec.sprite}.png`);
   const sprite = new PIXI.Sprite(texture);
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.position.set(
     spec.x,
     slipTerrainY(spec.x) + (Number(spec.groundOffset) || 0)
@@ -23049,7 +23038,7 @@ function spawnParadiseExit(course) {
     root.addChild(post);
   } else if (art?.kind === 'door') {
     const door = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${art.sprite}.png`));
-    door.anchor.set(0.5, 1);
+    anchorBottomCentre(door, 'deco');
     door.width = art.w;
     door.height = art.h;
     door.label = 'paradise-exit-door';
@@ -24081,7 +24070,7 @@ function spawnIlmenskieJones({ released = false } = {}) {
   const frames = textures.jonesWalk?.frames || [];
   const spr = new PIXI.AnimatedSprite(frames.length ? frames.slice(0, 8) : [PIXI.Texture.WHITE]);
   spr.label = 'ilmenskie-jones';
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.animationSpeed = 0.08;
   spr.loop = true;
   spr.scale.set(1.28);
@@ -24872,7 +24861,7 @@ function drawHomeBackground(styleId, room) {
       uralia: { path: 'assets/decos/groddle/cl2_housePurple_back_01.png', width: 320 },
     }[style.id];
     const house = new PIXI.Sprite(textureFromUrl(houseAsset.path));
-    house.anchor.set(0.5, 1);
+    anchorBottomCentre(house, 'deco');
     house.x = 1020;
     house.y = 620;
     house.scale.set(Math.min((style.id === 'uralia' ? 540 : 650) / houseAsset.width, 1));
@@ -24890,7 +24879,7 @@ function makeHomeDoorSprite(room) {
     uralia: { path: 'assets/decos/groddle/door_asset_house_medium_03.png', height: 586 },
   }[homeState.style] || { path: 'assets/decos/groddle/door_asset_house_large_01.png', height: 668 };
   const sprite = new PIXI.Sprite(textureFromUrl(asset.path));
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.x = room === 'interior' ? 1220 : 1000;
   sprite.y = GROUND_Y;
   sprite.scale.set((room === 'interior' ? 240 : 190) / asset.height);
@@ -24930,7 +24919,7 @@ function spawnHomeSceneTargets(room) {
     const mailbox = new PIXI.Sprite(textureFromUrl(unread > 0
       ? 'assets/sprites/mailbox/npc_mailbox_variant_mailboxRight_x1_has_mail_idle_png_1354832230.webp'
       : 'assets/sprites/mailbox/npc_mailbox_variant_mailboxRight_x1_idle_png_1354832227.webp'));
-    mailbox.anchor.set(0.5, 1);
+    standOnFeet(mailbox);
     mailbox.x = 430;
     mailbox.y = GROUND_Y;
     mailbox.zIndex = itemZ('npc_mailbox', 4);
@@ -31187,7 +31176,7 @@ async function spawnShrine(placement = null) {
   const points = placement ? [] : samplePlatformPoints(10);
   const point = placement || points[7] || points[points.length - 1] || { x: WORLD_W * 0.72, y: GROUND_Y };
   const spr = new PIXI.AnimatedSprite(frames);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(0.78);
   spr.gotoAndStop(0);
   spr.x = clamp(point.x + (placement ? 0 : -95), 90, Math.max(90, WORLD_W - 90));
@@ -31220,7 +31209,7 @@ function spawnVendorNpc(placement = null) {
   g.y = p.y;
   g.zIndex = itemZ(activeVendor.id, 5);
   const body = new PIXI.Sprite(textureFromUrl('assets/decos/groddle/vendor.png'));
-  body.anchor.set(0.5, 1);
+  anchorBottomCentre(body, 'deco');
   body.scale.set(0.25);
   g.addChild(body);
   const crest = new PIXI.Graphics();
@@ -31237,7 +31226,7 @@ function spawnVendorNpc(placement = null) {
   badge.y = -84;
   g.addChild(badge);
   const label = new PIXI.Text({ text: activeVendor.label, style: WORLD_LABEL_STYLE(12) });
-  label.anchor.set(0.5, 1);
+  anchorBottomCentre(label, 'text');
   label.y = -124;
   g.addChild(label);
   // A click on the vendor is a click on any target: its verb menu, Browse goods walks you over
@@ -31377,7 +31366,7 @@ function spawnGarden(opts = {}) {
   const tag = new PIXI.Text(
     { text: opts.label || (gardenType === 'herb' ? 'Herbs' : 'Garden'), style: WORLD_LABEL_STYLE(11) }
   );
-  tag.anchor.set(0.5, 1);
+  anchorBottomCentre(tag, 'text');
   // Above the back row's grown plants (the tallest crop reaches 66 px over its plot).
   tag.x = Math.round((layout.box.x0 + layout.box.x1) / 2);
   tag.y = Math.round(Math.min(layout.box.y0, -66 * layout.scale)) - 4;
@@ -31726,7 +31715,7 @@ function spawnMineRock(classTsid, x, y, index = 0, shape = 1) {
   // `?v=exact-rock-cells-1` the _1 sheets carry, so that suffix made a second copy of its image.
   const fallbackTexture = textureFromUrl(SHEETS[look.textureKey]?.url || `${look.worldSheet}?v=exact-rock-cells-1`);
   const spr = new PIXI.Sprite(loadedFrames[0] || fallbackTexture);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   // Use exact, preloaded frame cells. Creating a subtexture before an image
   // finishes loading can leave a permanently invalid frame (the missing
   // Sparkly Rock failure).
@@ -33024,7 +33013,6 @@ async function main() {
         const replacement = textureForTrant(requested, harvestTarget.state.maturity);
         if (replacement) {
           harvestTarget.sprite.texture = replacement;
-          harvestTarget.sprite.anchor.y = treeAnchorY(replacement);
         }
         const treeIndex = trees.indexOf(harvestTarget.sprite);
         if (treeIndex >= 0) {
@@ -33048,7 +33036,6 @@ async function main() {
       const replacement = textureForTrant(requested, maturity);
       if (replacement) {
         harvestTarget.sprite.texture = replacement;
-        harvestTarget.sprite.anchor.y = treeAnchorY(replacement);
         const scale = trantDisplayScale(replacement, { targetH: 210, maxScale: 1 });
         harvestTarget.sprite.scale.set(
           (harvestTarget.sprite._woodDirection || 1) * scale,

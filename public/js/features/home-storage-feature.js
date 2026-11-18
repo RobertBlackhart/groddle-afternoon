@@ -46,14 +46,14 @@ import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=6414dbdc';
 import { displayRefusal, furnitureDef, furnitureSize, isFurniture, pieceArt } from '../home-decor.js?v=06be9c65';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=4d446d78';
 import { ELEMENT_CLASSES, NO_BAG_CLASSES, NO_SLOT_CLASSES } from '../pack-slots-data.js?v=800f664c';
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { homesFeature } from './homes-feature.js?v=90b42c0d';
+import { homesFeature } from './homes-feature.js?v=057ea614';
 import {
   SDB_PRICE_MAX,
   STORAGE_TEXT as T,
@@ -90,6 +90,7 @@ import {
   openStoreDialog,
   storageWindowKind,
 } from '../ui/storage-windows.js?v=2cab2235';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const HOME_STORAGE_ID = 'home-storage';
 export const CLASS_STORAGE = 'home_storage';
@@ -281,7 +282,7 @@ function draw(engine) {
     if (owner && shown?.income > 0) {
       // sdb_collect (959-976): for the owner only, at -16, -6 from the box.
       const coin = new PIXI.Sprite(textureFromUrl(PILE_ART));
-      coin.anchor.set(0.5, 1);
+      anchorBottomCentre(coin, 'held');
       coin.width = 20;
       coin.height = 24;
       coin.x = Math.round(x) - 16;

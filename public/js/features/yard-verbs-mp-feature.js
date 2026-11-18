@@ -61,18 +61,18 @@
  * yardApplied (acts applied to my home), yardSent (acts the site took).
  */
 
-import { performPlotVerb, plotArtPath, plotLabel, plotStatusLabel, plotVerbs } from '../patches.js?v=67d08c97';
+import { performPlotVerb, plotArtPath, plotLabel, plotStatusLabel, plotVerbs } from '../patches.js?v=db04987b';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { trantStatusLabel } from '../trants.js?v=4d6f5593';
+import { trantStatusLabel } from '../trants.js?v=b9147016';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
-import { animalAnchorX, animalAnchorY, animalStatusLabel } from '../animals.js?v=99a80423';
-import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { animalStatusLabel } from '../animals.js?v=398f4897';
+import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=57afc9e2';
 import { readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=90b42c0d';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=78b9fd33';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=d5f4344d';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=057ea614';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=08c4e201';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=eff168b0';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -89,18 +89,18 @@ import {
   treeSnapshot,
   visitorAnimalState,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=e44de6fd';
+} from '../yard-verbs-mp.js?v=34bc0400';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=7bfc0a93';
-import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=570215e2';
+import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=6421701e';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=c13f0259';
 import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=cf9aae18';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { rockReady } from '../street-objects.js?v=6d51771b';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=5656bfba';
+import { rockReady } from '../street-objects.js?v=153e9f15';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=ee2657b6';
 import {
   ROCK_RESPAWN_MS,
   STOCK_NODE_VERBS,
@@ -110,6 +110,7 @@ import {
   visitorNode,
   visitorRock,
 } from '../yard-stock-mp.js?v=216570f7';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export { YARD_VERBS_MP_ID };
 
@@ -229,7 +230,7 @@ function createSession(engine, client) {
     const rows = yardFixtureRows(view);
     for (const row of rows) {
       const sprite = new engine.PIXI.Sprite(textureFromUrl(row.art));
-      sprite.anchor.set(0.5, 1);
+      standOnFeet(sprite);
       sprite.scale.set(row.scale);
       sprite.zIndex = itemZ(row.classTsid, { background: 7, normal: 3 });
       sprite.x = row.x;
@@ -270,7 +271,7 @@ function createSession(engine, client) {
     const { PIXI } = engine;
     const isWood = classId === 'wood_tree';
     const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.zIndex = 16;
     spr._woodDirection = direction;
     const fit = (tex) => {
@@ -298,8 +299,9 @@ function createSession(engine, client) {
       : classId === 'npc_chicken' ? (t.chickenWalk?.frames || []).slice(0, 6) : (t.butterfly?.frames || []).slice(0, 14);
     const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
     const scale = classId === 'npc_piggy' ? 0.97 : 0.7;
-    // Under the animal, so it turns on the spot (js/animals.js ANIMAL_ANCHOR_X).
-    spr.anchor.set(animalAnchorX(classId), classId === 'npc_butterfly' ? 0.5 : animalAnchorY(classId));
+    // On its feet, turning about its own middle (js/sprite-feet.js; a Butterfly hangs from its centre).
+    if (classId === 'npc_butterfly') spr.anchor.set(0.5, 0.5);
+    else standOnFeet(spr);
     spr.baseScale = scale;
     spr.scale.set(scale);
     spr.animationSpeed = classId === 'npc_butterfly' ? 0.25 : 0.13;
@@ -432,7 +434,7 @@ function createSession(engine, client) {
     const frames = engine.textures?.[def.textureKey]?.frames || [];
     const base = textureFromUrl(`${def.worldSheet}?v=exact-rock-cells-1`);
     const spr = new PIXI.Sprite(frames[0] || base);
-    spr.anchor.set(0.5, 1);
+    standOnFeet(spr);
     spr.scale.set(0.85);
     spr.eventMode = 'none';
     root.addChild(spr);

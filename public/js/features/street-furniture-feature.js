@@ -37,7 +37,7 @@
  * neighbourChore, neighbourLetters, furnitureLast.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
@@ -122,14 +122,15 @@ import {
   recordVisit,
   visitorLetter,
 } from '../neighbours.js?v=13f35acd';
-import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=08b5833e';
+import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=e48cec69';
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=eca7de52';
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=be55db1b';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { butlerApi } from './butler-feature.js?v=5fb01840';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=9f040f70';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { butlerApi } from './butler-feature.js?v=ab6a4016';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=957e92b7';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const FURNITURE_FEATURE_ID = 'street-furniture';
 const PLAYER_ID = 'player';
@@ -427,7 +428,7 @@ function buildMailbox(engine, x, y, facing = 1) {
   const { PIXI } = engine;
   const frames = loader.frames(MAILBOX_SHEETS.idle);
   const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 0.99);
+  standOnFeet(spr);
   // mailboxRight (npc_mailbox.js variant) is mailboxLeft's art mirrored.
   if (facing < 0) spr.scale.x = -1;
   spr.x = x;
@@ -494,7 +495,7 @@ function streetNotes(engine, count) {
 function buildNote(engine, x, y, index, row) {
   const { PIXI } = engine;
   const spr = new PIXI.Sprite(textureFromUrl(NOTE_ART.path));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = x;
   spr.y = y + 1;
   spr.rotation = ((index * 37) % 11 - 5) * 0.02;
@@ -577,7 +578,7 @@ function buildBoard(engine, x, y, index, opts = {}) {
   const { PIXI } = engine;
   const pins = opts.pins || boardPins(engine, index);
   const spr = new PIXI.Sprite(textureFromUrl(BOARD_ART.path(Math.min(BOARD_CAPACITY, pins.length))));
-  spr.anchor.set(0.5, 0.99);
+  standOnFeet(spr);
   spr.x = x;
   spr.y = y + 2;
   spr.zIndex = itemZ(BOARD_CLASS, 0.5);
@@ -761,7 +762,7 @@ function addToBoard(engine, entity, { reopen = true } = {}) {
 function buildStone(engine, x, y, index, opts = {}) {
   const { PIXI } = engine;
   const spr = new PIXI.Sprite(textureFromUrl(STONE_ART.path));
-  spr.anchor.set(0.5, 0.99);
+  standOnFeet(spr);
   spr.x = x;
   spr.y = y + 3;
   spr.zIndex = itemZ(STONE_CLASS, 2);
@@ -1034,7 +1035,7 @@ function choreArt(engine, neighbour, layout) {
     box.y = y + 6;
     box.zIndex = 10;
     const planter = new PIXI.Sprite(textureFromUrl(`${DECO}firebog_planter_box_2x3.png`));
-    planter.anchor.set(0.5, 1);
+    anchorBottomCentre(planter, 'deco');
     planter.width = 764 * 0.3;
     planter.height = 174 * 0.3;
     box.addChild(planter);
@@ -1101,7 +1102,7 @@ function paintGarden(engine, box, neighbour, done) {
     const name = done ? kinds[i] : 'grass_solid';
     const [w, h, s] = sizes[name];
     const p = new PIXI.Sprite(textureFromUrl(`${DECO}${name}.png`));
-    p.anchor.set(0.5, 1);
+    anchorBottomCentre(p, 'deco');
     p.width = w * s;
     p.height = h * s * (done ? 1 : 0.8);
     p.x = dx;

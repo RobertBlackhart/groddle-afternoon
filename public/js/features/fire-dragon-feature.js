@@ -16,7 +16,7 @@
  * Canvas: fireDragons, fireDragonLast, fireDragonPos, fireDragonMode.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { followPath } from '../street-creatures.js?v=6076a836';
@@ -37,6 +37,7 @@ import {
   normalizeDragonMemory,
   petFireDragon,
 } from '../fire-dragon.js?v=b7f3d751';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 let loader = null;
 let generation = 0;
@@ -102,7 +103,7 @@ function spawn(engine, key, point) {
   const { PIXI } = engine;
   const frames = loader.frames(FIRE_DRAGON_SHEET);
   const spr = new PIXI.AnimatedSprite(frames.length ? frames : [PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = point.x;
   spr.y = point.y + FIRE_DRAGON_SHEET.feetPad;
   spr.zIndex = 40;

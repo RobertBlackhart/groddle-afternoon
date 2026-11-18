@@ -36,9 +36,9 @@ import {
   sharedCreatureLabel,
   walkerAt,
 } from '../public/js/street-creatures.js?v=6076a836';
-import { actMessage, createStreetCopy, guanoPiles, idKind, reconcile, takeObjs } from '../public/js/street-objects.js?v=6d51771b';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=48d6ca25';
-import { FEATURES } from '../public/js/features/index.js?v=db705126';
+import { actMessage, createStreetCopy, guanoPiles, idKind, reconcile, takeObjs } from '../public/js/street-objects.js?v=153e9f15';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=d6627007';
+import { FEATURES } from '../public/js/features/index.js?v=6e9bab6d';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=50c112eb';
 import { creatureRequests, setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
@@ -250,20 +250,25 @@ describe('street animals: a Chicken\'s walk, turns and pauses (lane CHICKWALK)',
   });
 
   it('the art turns on the spot: the sprite is anchored under the bird (Chicken sheets are cut 27 px off centre)', async () => {
-    const { ANIMAL_ANCHOR_X, animalAnchorX } = await import('../public/js/animals.js?v=99a80423');
-    assert.equal(animalAnchorX('npc_chicken'), 101 / 148);
-    assert.equal(animalAnchorX('npc_piggy'), 0.5);
-    assert.equal(animalAnchorX('npc_butterfly'), 0.5);
-    assert.ok(Object.isFrozen(ANIMAL_ANCHOR_X));
-    // Turned round, the bird's middle (101 of the 148 px cell) stays at x, where at 0.5 it moved
-    // 2 x 27 px x 0.702 = 38 px.
+    const { footOf } = await import('../public/js/sprite-feet.js?v=7363f23d');
+    const cell = { width: 148, height: 110 };
+    const walk = footOf('assets/sprites/npc_chicken__x1_walk_png_1354830385.webp', cell);
+    // The bird's middle across the walk (G515 measured 101 of the 148 px cell; R12's builder 101.5).
+    assert.ok(Math.abs(walk.x * 148 - 101) <= 1, String(walk.x * 148));
+    // Every Chicken clip shares it, so a change of animation never slides the bird.
+    for (const url of ['assets/sprites/npc_chicken__x1_pecking_once_png_1354830398.webp', 'assets/sprites/animals/npc_chicken_stand.webp']) {
+      assert.equal(footOf(url, cell).x, walk.x, url);
+    }
+    // The Piggy's and the Butterfly's sheets are near centred.
+    assert.ok(Math.abs(footOf('assets/sprites/npc_piggy__x1_walk_png_1354829432.webp', { width: 88, height: 62 }).x - 0.5) < 0.02);
+    // Turned round, the bird's middle stays at x, where at 0.5 it moved 2 x 27 px x 0.702 = 38 px.
     const drawnMid = (anchor, sx) => sx * (101 - anchor * 148) * 0.702;
-    assert.equal(Math.abs(drawnMid(animalAnchorX('npc_chicken'), 1) - drawnMid(animalAnchorX('npc_chicken'), -1)), 0);
+    assert.ok(Math.abs(drawnMid(walk.x, 1) - drawnMid(walk.x, -1)) < 1);
     assert.ok(Math.abs(drawnMid(0.5, 1) - drawnMid(0.5, -1)) > 37);
-    // Every Chicken sprite takes it: the street's, released and raised ones, the tutorial's, a visited yard's.
-    assert.match(read('public/game.js'), /function spawnChickens[\s\S]*?spr\.anchor\.x = animalAnchorX\('npc_chicken'\)/);
+    // Every Chicken sprite takes it: the street's (makeAnimated), the tutorial's, a visited yard's, husbandry's.
+    assert.match(read('public/game.js'), /function makeAnimated[\s\S]*?standOnFeet\(anim\)/);
     for (const f of ['animal-husbandry-feature.js', 'newxp-feature.js', 'yard-verbs-mp-feature.js']) {
-      assert.match(read(`public/js/features/${f}`), /anchor\.set\(animalAnchorX\(/, f);
+      assert.match(read(`public/js/features/${f}`), /standOnFeet\(spr\)/, f);
     }
   });
 

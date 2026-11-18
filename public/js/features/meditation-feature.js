@@ -75,9 +75,9 @@ import {
 import { energyMax, forceMetabolic, gainMetabolic, loseEnergy, loseMood, metabolicGain, moodMax } from '../metabolics.js?v=48f784bf';
 import { levitationCards } from '../imagination-effects.js?v=70169933';
 import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=7fd40f71';
-import { sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
-import { rainbowSound, showRainbow } from '../overlays.js?v=eda942a8';
+import { rainbowSound, showRainbow } from '../overlays.js?v=68c0a634';
 import { moodScaledXp } from '../mood-xp.js?v=e311b45c';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
@@ -100,6 +100,7 @@ import {
   radiatorEnd,
   radiatorLine,
 } from '../radiance-mp.js?v=b3137af4';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const MEDITATION_FEATURE_ID = 'meditation';
 /** metabolics_get_max_energy: the energy tank (100 plus Energy Tank cards). */
@@ -222,7 +223,7 @@ function buildMeditationFx(engine) {
   root.zIndex = 40;
   const orb = new PIXI.AnimatedSprite(orbTextures(engine));
   // The client's overlay art is registered bottom-centre.
-  orb.anchor.set(0.5, 1);
+  anchorBottomCentre(orb, 'stage');
   orb.width = ORB_HELD_SIZE;
   orb.height = ORB_HELD_SIZE;
   orb.animationSpeed = 0.42; // 31 frames ~ 1.2 s, a slow swirl

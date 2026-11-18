@@ -12,10 +12,10 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { racesFeature } from '../public/js/features/races-feature.js?v=1cd77dbc';
-import { crownsFeature } from '../public/js/features/crowns-feature.js?v=edb846e4';
-import { mayhemFeature } from '../public/js/features/mayhem-feature.js?v=b92068b7';
-import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=cf68ec0c';
+import { racesFeature } from '../public/js/features/races-feature.js?v=67120733';
+import { crownsFeature } from '../public/js/features/crowns-feature.js?v=bf9c6a63';
+import { mayhemFeature } from '../public/js/features/mayhem-feature.js?v=0d0e6317';
+import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=3ea6a5e2';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

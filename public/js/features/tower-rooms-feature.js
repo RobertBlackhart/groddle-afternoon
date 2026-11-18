@@ -41,10 +41,11 @@
 import { addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { DOOR_TEXT, doorKeyClass, insideBottomRect } from '../doors.js?v=727d0e0b';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ROOM_15_TSID } from '../tower-rooms.js?v=4f1f6af7';
 import { anyTowerRoomByTsid as baseRoomByTsid } from '../tower-challenge-rooms.js?v=01f1c620';
 import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=908fef6e';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 const anyTowerRoomByTsid = (tsid) => baseRoomByTsid(tsid) || midTowerRoomByTsid(tsid);
 
@@ -150,7 +151,7 @@ function drawArt(engine, room, street) {
       continue;
     }
     const s = new PIXI.Sprite(textureFromUrl(a.src));
-    s.anchor.set(0.5, 1);
+    anchorBottomCentre(s, 'deco');
     s.x = a.x - l;
     s.y = a.y - t;
     s.width = a.w;
@@ -170,7 +171,7 @@ function drawArt(engine, room, street) {
 function drawKey(engine, box) {
   const { PIXI } = engine;
   const s = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${doorKeyClass(box.key)}.webp`));
-  s.anchor.set(0.5, 1);
+  standOnFeet(s);
   s.x = box.x;
   s.y = box.y - 32; // the box bottom sits 30 px under the shelf top
   s.zIndex = 4;
@@ -213,7 +214,7 @@ function drawItem(engine, street, item) {
   const { PIXI } = engine;
   const box = new PIXI.Container();
   const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${item.cls}.webp`));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(0.8);
   box.addChild(spr);
   box.x = item.x - street.bounds.l;

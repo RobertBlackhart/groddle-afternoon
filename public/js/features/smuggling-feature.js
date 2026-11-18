@@ -44,8 +44,8 @@ import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { isStandable, worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { hellFeature } from './hell-feature.js?v=dba6adad';
-import { questRoomConverse } from './quest-instances-feature.js?v=45b5a665';
+import { hellFeature } from './hell-feature.js?v=a7e32435';
+import { questRoomConverse } from './quest-instances-feature.js?v=1c1ef8dc';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,
@@ -81,9 +81,10 @@ import {
   spawnOffset,
   sparedBySignpost,
 } from '../smuggling.js?v=56263f15';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { findRoute, loadStreetGraph, openRoads, roadsFor, streetGraphLoaded } from '../street-graph.js?v=114647c2';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const SMUGGLING_FEATURE_ID = 'smuggling';
 const ART = 'assets/sprites/smuggling/';
@@ -922,7 +923,7 @@ function caught(engine) {
   engine.playSound?.('DEIMAGINATOR_TAKES_BOX', { volume: 0.7 });
   // The box lands at its feet and is gone 2 s later (onDropped).
   const box = new engine.PIXI.Sprite(textureFromUrl('assets/sprites/icons/contraband.webp'));
-  box.anchor.set(0.5, 1);
+  standOnFeet(box);
   box.x = deim.x;
   box.y = deim.y;
   box.zIndex = 10;

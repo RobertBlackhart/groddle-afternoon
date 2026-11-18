@@ -42,10 +42,10 @@
 import { countItem } from '../inventory.js?v=6414dbdc';
 import { isEditableTarget } from '../held-keys.js?v=a28eb293';
 import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
-import { doorsFeature } from './doors-feature.js?v=92df6537';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
+import { doorsFeature } from './doors-feature.js?v=be577a69';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
-import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import {
   CAR_FLOOR,
   CAR_FLOOR_LIGHTS,
@@ -95,6 +95,7 @@ import {
   ticketOffer,
 } from '../subway.js?v=735bfbeb';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const SUBWAY_FEATURE_ID = 'subway';
 const STYLE_ID = 'subway-feature-style';
@@ -644,7 +645,7 @@ function clearViews(engine) {
 function addSprite(engine, row, bounds) {
   const base = textureFromUrl(artUrl(row.piece));
   const s = new engine.PIXI.Sprite(row.frame ? frameTexture(base, new engine.PIXI.Rectangle(...row.frame)) : base);
-  s.anchor.set(0.5, 1);
+  anchorBottomCentre(s, 'deco');
   s.x = row.x - bounds.l;
   s.y = row.y - bounds.t;
   s.width = row.w;

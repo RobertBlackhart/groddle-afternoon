@@ -31,11 +31,12 @@
  * groddle1.swf decos; their placement is read off the Snap.
  */
 
-import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=67d08c97';
+import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=db04987b';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const PART_1 = 'smuggle_the_smuggler_part1';
 export const PART_2 = 'smuggle_the_smuggler_part2';
@@ -206,7 +207,7 @@ function drawPatch(ctx) {
     c.addChild(g);
   }
   const art = new PIXI.Sprite(textureFromUrl(plotArtPath(ctx.data.plot)));
-  art.anchor.set(0.5, 1);
+  standOnFeet(art);
   art.scale.set(1.6);
   art.y = 6;
   c.addChild(art);

@@ -29,7 +29,8 @@ import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach }
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { strayWayOut } from '../quest-instance.js?v=13b8ee09';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const DEAD_ENDS_FEATURE_ID = 'dead-ends';
 export const DEAD_END_EXIT_CLASS = 'dead_end_exit';
@@ -154,7 +155,7 @@ function buildView(engine, spot) {
   root.addChild(post);
   const tex = textureFromUrl(e.art);
   const board = new PIXI.Sprite(tex);
-  board.anchor.set(0.5, 1);
+  anchorBottomCentre(board, 'held');
   board.x = 0;
   board.y = -e.post + 8;
   const size = () => {

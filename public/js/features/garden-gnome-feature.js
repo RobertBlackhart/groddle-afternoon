@@ -24,11 +24,11 @@
  */
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { GNOME_ART, GNOME_ART_DIR } from '../garden-gnome-art.js?v=994b7c76';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
-import { homesFeature } from './homes-feature.js?v=90b42c0d';
+import { homesFeature } from './homes-feature.js?v=057ea614';
 import {
   GNOME_CLASS,
   GNOME_PHRASE_MAX,

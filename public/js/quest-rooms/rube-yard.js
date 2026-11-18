@@ -22,8 +22,9 @@
  * recovered talk and offer_accept sheets (108x154 cells, facing left).
  */
 
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
-import { YARD_FRONT, YARD_H, YARD_W, buildRubeYardBackground, yardDeco } from '../rube-yard-scene.js?v=e7447536';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
+import { YARD_FRONT, YARD_H, YARD_W, buildRubeYardBackground, yardDeco } from '../rube-yard-scene.js?v=ebec740b';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const W = YARD_W;
 const H = YARD_H;
@@ -144,7 +145,7 @@ export const room = {
     const talk = rubeFrames(PIXI, 'rube_talk.webp', 7, 20);
     const cheer = rubeFrames(PIXI, 'rube_offer_accept.webp', 9, 70);
     const rube = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-    rube.anchor.set(0.5, 1);
+    standOnFeet(rube);
     rube.x = 470;
     rube.y = FLOOR + 4;
     rube.scale.set(-0.95, 0.95); // the sheets face left; turn him toward the yard

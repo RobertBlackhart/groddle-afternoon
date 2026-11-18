@@ -44,7 +44,7 @@ import {
   fireflyJarInUse,
   resourceNodesFeature,
   setFireflyJar,
-} from '../public/js/features/resource-nodes-feature.js?v=5656bfba';
+} from '../public/js/features/resource-nodes-feature.js?v=ee2657b6';
 import { toolBreakEvents } from '../public/js/quest-offers.js?v=4debd26e';
 
 const root = join(import.meta.dirname, '..');

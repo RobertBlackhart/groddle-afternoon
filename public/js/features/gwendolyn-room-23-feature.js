@@ -31,8 +31,8 @@
 
 import { acceptOffer, declineOffer, npcQuestOffers } from '../quest-offers.js?v=4debd26e';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import * as kit from '../quest-rooms/kit.js?v=436636b4';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import * as kit from '../quest-rooms/kit.js?v=ec17ee93';
 import { GREETERBOT } from '../tower-mid-rooms.js?v=908fef6e';
 import { ROOM_23_FILES } from '../gwendolyn-room-23-art.js?v=1de55db7';
 import {
@@ -64,6 +64,7 @@ import {
   leadPath,
   toScreen,
 } from '../gwendolyn-room-23.js?v=918c0f6b';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const GWENDOLYN_ROOM_23_FEATURE_ID = 'gwendolyn-room-23';
 const CHECK_MS = 120;
@@ -150,7 +151,7 @@ function add(engine, child, z) {
 function drawGreeter(engine) {
   const { PIXI } = engine;
   const sprite = new PIXI.Sprite(textureFromUrl(GREETERBOT.art));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   const x = ROOM_23.greeter.x;
   const y = ROOM_23.floor;
   const p = toScreen(x, y - ROOM_23.greeter.hover);
@@ -226,7 +227,7 @@ function drawArrow(engine) {
   // The @1.5x file is its world size (js/textures.js); drawn a little smaller, like S1's.
   const [file] = ROOM_23_FILES.firebog_up_arrows;
   const sprite = new PIXI.Sprite(textureFromUrl(`${ROOM_23_ART_ROOT}${file}`));
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.scale.set(0.8);
   const p = toScreen(ROOM_23.arrow.x, ROOM_23.arrow.y);
   sprite.x = p.x;

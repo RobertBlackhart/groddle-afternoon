@@ -12,11 +12,11 @@ import {
   canHarvestTrant,
   harvestTrant,
   maturityLabel,
-} from './js/trants.js?v=4d6f5593';
+} from './js/trants.js?v=b9147016';
 import {
   quoteTrantCare,
   performTrantCare,
-} from './js/trant-care.js?v=4d522292';
+} from './js/trant-care.js?v=9fba26b5';
 import {
   listPlantableSeeds,
   waterAllPlots,
@@ -58,7 +58,7 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=99a80423';
+} from './js/animals.js?v=398f4897';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,

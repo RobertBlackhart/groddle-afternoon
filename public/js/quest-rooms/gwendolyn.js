@@ -68,9 +68,10 @@
 import { ensureQuestOfferState } from '../quest-offers.js?v=4debd26e';
 import { MEDITATION_MUSIC, ORB_TOOL_SHEET } from '../meditation.js?v=96f23682';
 import { gainMetabolic, loseMood } from '../metabolics.js?v=48f784bf';
-import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { GWENDOLYN_INNER_FILES } from './gwendolyn-inner-art.js?v=06b4d5d6';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const ROOM_ID = 'gwendolyn';
 const ART = `assets/sprites/quest-rooms/${ROOM_ID}/`;
@@ -720,7 +721,7 @@ function swoonerfly(ctx, offX, offY) {
   if (!p) return;
   const fall = kit.sheetFrames(PIXI, `${ART}swoonerfly_fall.webp`, SWOON_FRAMES, 1, SWOON_FRAMES);
   const spr = new PIXI.AnimatedSprite(fall.frames.length ? fall.frames : [PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.animationSpeed = 0.5;
   if (!fall.frames.length) onLoaded(fall.base, () => setTimeout(() => { if (!spr.destroyed) { spr.textures = fall.frames; spr.play(); } }, 0));
   else spr.play();

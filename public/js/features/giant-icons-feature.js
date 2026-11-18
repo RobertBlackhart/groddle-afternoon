@@ -67,14 +67,15 @@ import {
   titheIcon,
   useEmblem,
 } from '../giant-icons.js?v=0d6b4965';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { forceMetabolic, gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted, toldRecord } from '../conversations.js?v=7cbdfea4';
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const ICONS_FEATURE_ID = 'giant-icons';
 const WORLD_ART = (iconClass) => `assets/sprites/giant-icons/${iconClass}.webp`;
@@ -288,7 +289,7 @@ function spawnIcon(engine, row) {
   const { PIXI } = engine;
   const def = GIANT_ICON_DATA[row.giant];
   const spr = new PIXI.Sprite(textureFromUrl(WORLD_ART(def.iconClass)));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = row.x;
   spr.y = row.y + 2;
   spr.zIndex = itemZ(def.iconClass, 2);

@@ -19,7 +19,7 @@
  */
 
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import {
   CLOSE_AFTER_MS,
   DOOR_DRINK,
@@ -40,6 +40,7 @@ import {
   prunePortals,
   useDoorDrink,
 } from '../door-drink.js?v=15add3b8';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const DOOR_DRINK_FEATURE_ID = 'door-drink';
 const NARAKA_HUB_ID = '40';
@@ -101,7 +102,7 @@ function spawnDoor(engine, id, portal) {
   if (!PIXI || views.has(id) || !engine.entityLayer) return;
   const f = cutFrames(PIXI);
   const sprite = new PIXI.Sprite(f[PORTAL_SHEET.closed[0]]);
-  sprite.anchor.set(0.5, 0.99);
+  standOnFeet(sprite);
   sprite.scale.set(PORTAL_SHEET.scale);
   sprite.x = portal.x;
   sprite.y = portal.y;

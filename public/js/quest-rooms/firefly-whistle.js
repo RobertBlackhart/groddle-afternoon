@@ -57,10 +57,11 @@
  * Tiny Speck SWF (glitch-items/quest_items/firefly_whistle) at 2x.
  */
 
-import { advanceVpOverlay, vpOverlay, vpSequence } from './vp-overlay.js?v=316addb9';
-import { ENTRY, FLOOR, H, W, buildFront, buildLab, labPlatforms, sx, sy } from './firefly-whistle-scene.js?v=93f720f8';
-import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { goToFallingLevel, withFallingRoom } from './falling-room.js?v=d86c5bd4';
+import { advanceVpOverlay, vpOverlay, vpSequence } from './vp-overlay.js?v=a468ad38';
+import { ENTRY, FLOOR, H, W, buildFront, buildLab, labPlatforms, sx, sy } from './firefly-whistle-scene.js?v=3e5e9235';
+import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { goToFallingLevel, withFallingRoom } from './falling-room.js?v=7ce99765';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const QUEST = 'firefly_whistle';
 export const TEMPLATE = Object.freeze({ prod: 'LM113UBSS8P18ET', dev: 'LHH11C4QUBP1DQD' });
@@ -164,7 +165,7 @@ function addStand(ctx) {
   const d = ctx.data;
   d.standOn = kit.sheetFrames(PIXI, `${ART}whistle_stand_on.webp`, STAND_FRAMES.cols, STAND_FRAMES.rows, STAND_FRAMES.count);
   const stand = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  stand.anchor.set(0.5, 1);
+  standOnFeet(stand);
   stand.animationSpeed = 0.25;
   stand.x = P(LAYOUT.stand);
   stand.y = FLOOR - 10; // Snap PIFISEG38S535GC_56237: its foot a little behind the avatar's
@@ -195,7 +196,7 @@ function addControl(ctx) {
   const { PIXI } = ctx;
   const d = ctx.data;
   const unit = new PIXI.Sprite(textureFromUrl(`${ART}teleporter_control.webp`));
-  unit.anchor.set(0.5, 1);
+  standOnFeet(unit);
   unit.x = P(LAYOUT.control);
   unit.y = FLOOR - 4; // just behind the walking line, so the avatar passes in front
   d.control = unit;
@@ -203,7 +204,7 @@ function addControl(ctx) {
   d.controlTarget = ctx.register({ classId: 'teleporter_button', label: TEXT.controlLabel, subtitle: 'TELEPORTER SECURITY V2000', sprite: unit });
 
   const beam = new PIXI.Sprite(textureFromUrl('assets/decos/groddle/Teleporter_Beam.png'));
-  beam.anchor.set(0.5, 1);
+  anchorBottomCentre(beam, 'deco');
   beam.scale.set(BEAM.w / 550);
   beam.x = P(BEAM.x);
   beam.y = sy(BEAM.y);

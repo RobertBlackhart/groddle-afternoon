@@ -147,7 +147,7 @@ ROCK_MIN_FULL = 0.75  # a refined hit under this at full resolution was a lucky 
 # so they stay planned.
 #   trees: each trant's grown frames (assets/sprites/trants/frames/<class>_m<stage>, stages 10, 7 and
 #     5: Anrasan Glance's young Fruit Tree is a 5; a younger one is a sprout that matches anything). A spot is [x, y, class, stage]: the trunk's
-#     foot in street px (the frame's lowest solid row, js/trants.js TRANT_FRAME_FOOT, where spawnTrees
+#     foot in street px (the frame's lowest solid row, js/sprite-feet-data.js, where spawnTrees
 #     stands a tree) and what the snap shows. A street keeps at most its file's trant count: the trants
 #     of each class the file names first, then any trant seen in place of another (a trant spot was a
 #     spot: a dead tree left a patch there and the patch grew whatever was planted). Its class stays the
@@ -538,7 +538,7 @@ def art_templates(np, Image, cfg):
             solid = np.where((full[..., 3] > 0.5).any(axis=1))[0]
             if len(solid) < 4:
                 continue
-            # The trunk's foot: under its lowest solid row (js/trants.js TRANT_FRAME_FOOT); a mailbox's cell bottom less its pad.
+            # The trunk's foot: under its lowest solid row (js/sprite-feet-data.js); a mailbox's cell bottom less its pad.
             ay = int(solid[-1]) + 1 if anchor == 'foot' else fh - MAILBOX_FOOT_PAD
             d = cfg['down']
             small = full if d == 1 else np.asarray(cell.resize((max(4, round(fw * d)), max(4, round(fh * d))), Image.LANCZOS)).astype(np.float64) / 255

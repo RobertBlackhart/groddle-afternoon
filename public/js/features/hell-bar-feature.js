@@ -29,8 +29,8 @@
  */
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { ensureHellItems, HELL_BARTENDER, HELL_SPRITES } from '../hell.js?v=834960da';
 import { questFlagsFeature } from './quest-flags-feature.js?v=17c6ef48';
 import {
@@ -49,6 +49,7 @@ import {
   pickBartenderLine,
   talkStateFor,
 } from '../hell-bar.js?v=870b4794';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const HELL_BAR_FEATURE_ID = 'hell-bar';
 const CLASS = 'hell_bartender';
@@ -131,7 +132,7 @@ function drawArt(engine, street) {
       view.rect(a.x1 - l, a.y1 - t, a.x2 - a.x1, a.y2 - a.y1).fill({ color: a.fill, alpha: a.alpha ?? 1 });
     } else {
       view = new PIXI.Sprite(textureFromUrl(a.src));
-      view.anchor.set(0.5, 1);
+      anchorBottomCentre(view, 'deco');
       view.x = a.x - l;
       view.y = a.y - t;
       view.width = a.w;
@@ -174,7 +175,7 @@ function drawBartender(engine, street) {
   const { PIXI } = engine;
   const frames = Object.fromEntries(Object.entries(SHEETS).map(([k, sheet]) => [k, sheetFrames(engine, sheet)]));
   const sprite = new PIXI.AnimatedSprite(frames.idle1);
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.x = BARTENDER.x - street.bounds.l;
   sprite.y = BARTENDER.y - street.bounds.t;
   sprite.zIndex = -49;

@@ -29,7 +29,7 @@
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { loadDecoManifest } from '../street-render.js?v=c0814575';
+import { loadDecoManifest } from '../street-render.js?v=6589dda5';
 import {
   DOOR_KEYS,
   DOOR_KEY_BASE_COST,
@@ -46,9 +46,10 @@ import {
   normalizeDoorState,
   visibleDoors,
 } from '../doors.js?v=727d0e0b';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { doorLockArt } from '../door-lock-art.js?v=e656851c';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const DOORS_FEATURE_ID = 'doors';
 const DECO_BASE = 'assets/decos/groddle/';
@@ -148,7 +149,7 @@ function buildView(engine, door, available) {
   const art = lockArt || saleArt;
   const tex = door.src ? textureFromUrl(door.src) : art ? textureFromUrl(art) : hasArt ? textureFromUrl(`${DECO_BASE}${door.sprite}.png`) : drawnDoorTexture(PIXI, door);
   const sprite = new PIXI.Sprite(tex);
-  sprite.anchor.set(0.5, 1);
+  anchorBottomCentre(sprite, 'deco');
   sprite.x = door.x;
   sprite.y = door.y;
   sprite.rotation = ((Number(door.r) || 0) * Math.PI) / 180;
@@ -171,7 +172,7 @@ function buildView(engine, door, available) {
       fill: 0xfff6dc,
       stroke: { color: 0x3a2a18, width: 3 },
     } });
-    plate.anchor.set(0.5, 1);
+    anchorBottomCentre(plate, 'text');
     plate.x = door.x;
     plate.y = door.y - (door.h || 110) - 4;
     addExtra(engine, view, plate);

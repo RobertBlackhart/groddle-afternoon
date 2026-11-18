@@ -20,13 +20,13 @@ import { KITTY_PET, createKitty, petKitty } from '../public/js/heli-kitties.js?v
 import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=650ecd58';
 import { runTransform } from '../public/js/item-transforms.js?v=3a1b5812';
 import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=646d1bc1';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=67d08c97';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=db04987b';
 import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=13f35acd';
-import { runVerb } from '../public/content.js?v=0cb5c6db';
+import { runVerb } from '../public/content.js?v=48523352';
 import { applySetFree } from '../public/js/animal-set-free.js?v=6fcd8355';
 import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { room as topOfTree } from '../public/js/quest-rooms/top-of-tree.js?v=d68c9f79';
-import { room as esquibeth } from '../public/js/quest-rooms/esquibeth.js?v=3387a823';
+import { room as esquibeth } from '../public/js/quest-rooms/esquibeth.js?v=3451a159';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

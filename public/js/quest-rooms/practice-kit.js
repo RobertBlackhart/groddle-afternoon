@@ -7,6 +7,7 @@
  */
 
 import { inPracticeBox, practiceScreen } from '../practice-streets.js?v=557238c1';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const FLAMINGO_ART = 'assets/sprites/newxp/';
 /** features/newxp-feature.js SHEETS.flamingo: the npc_flamingo x1 sheets. */
@@ -45,7 +46,7 @@ export function addFlamingo(ctx, tsid, at) {
   const { PIXI } = ctx;
   const p = practiceScreen(tsid, at.x, at.y);
   const fl = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  fl.anchor.set(0.5, 0.97);
+  standOnFeet(fl);
   fl.scale.set(-FLAMINGO.scale, FLAMINGO.scale);
   fl.x = p.x;
   fl.y = p.y + 2;

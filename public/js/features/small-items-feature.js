@@ -24,10 +24,10 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { openNoteView, openNotePicker } from '../note-view.js?v=eca7de52';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=2b692ca8';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=1a36bef4';
 import {
   BALL,
   BALL_HIT,
@@ -51,6 +51,7 @@ import {
   reconcileFortunes,
 } from '../small-items.js?v=78d0056a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const SMALL_ITEMS_FEATURE_ID = 'small-items';
 const BALL_GROUP = 'smallItemsBall';
@@ -273,7 +274,7 @@ function spawnBall(engine, point, { persist = true } = {}) {
   const x = Number(slot.ballX);
   const y = groundAt(engine, x, Number(slot.ballY));
   const sprite = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.x = x;
   sprite.y = y - BALL_HIT.draw.lift;
   sprite.width = BALL_HIT.draw.w;

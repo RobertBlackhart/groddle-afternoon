@@ -104,17 +104,18 @@ import {
   takeDueSnails,
   tickResourceNode,
 } from '../resource-nodes.js?v=cf9aae18';
-import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=4debd26e';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
-import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=98606052';
-import { playItemOverlay } from '../item-overlay.js?v=0c20633c';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
+import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=7a63d78f';
+import { playItemOverlay } from '../item-overlay.js?v=f7119b49';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
-import { vpSequence } from '../quest-rooms/vp-overlay.js?v=316addb9';
+import { vpSequence } from '../quest-rooms/vp-overlay.js?v=a468ad38';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { salmonSwimAt } from '../street-creatures.js?v=6076a836';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
 export const RESOURCE_GROUP_PREFIX = 'resource:';
@@ -733,7 +734,7 @@ function buildGroundView(engine, entity) {
   if (entity.wall) {
     // Player report #210: a measured spot is the frame cell's bottom centre on the wall the snap shows
     // (obey_physics false: no floor under it), so every growth state keeps its place in the cell.
-    sprite.anchor.set(0.5, 1);
+    anchorBottomCentre(sprite, 'snap');
     sprite.x = entity.x;
     sprite.y = entity.y;
     // G936: a barnacle on a round wall's right part faces outward (the art opens to the left).
@@ -1238,7 +1239,7 @@ function showJar(engine, flies, state = 'closing') {
     if (!frames.length) return;
     if (jarFx && !jarFx.destroyed) jarFx.alpha = 0;
     const jarSprite = new engine.PIXI.AnimatedSprite(frames);
-    jarSprite.anchor.set(0.5, 1);
+    anchorBottomCentre(jarSprite, 'held');
     jarSprite.scale.set(0.7);
     jarSprite.loop = false;
     jarSprite.animationSpeed = 0.35;

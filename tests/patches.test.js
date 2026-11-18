@@ -22,7 +22,7 @@ import {
   soilSpawnClasses,
   tickPlot,
   archivedSeedlingTrant,
-} from '../public/js/patches.js?v=67d08c97';
+} from '../public/js/patches.js?v=db04987b';
 import { createToolConditionState, getToolCondition } from '../public/js/tools.js?v=4156bba8';
 import { harvestWoodTree, noteWoodCare } from '../public/js/woodcutting.js?v=9e9af511';
 

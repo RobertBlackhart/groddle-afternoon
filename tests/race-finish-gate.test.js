@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { FINISH_GATE } from '../public/js/race-render.js?v=34f80320';
+import { FINISH_GATE } from '../public/js/race-render.js?v=2f1bb81c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = (p) => join(root, 'public', p);

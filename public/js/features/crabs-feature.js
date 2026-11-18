@@ -36,7 +36,7 @@
  * Canvas: crabs, crabLast, crabClip, crabOutcome, crabMemory, crabTalk.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=6414dbdc';
 import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=650ecd58';
 import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f784bf';
@@ -78,6 +78,7 @@ import {
   normalizeCrabMemory,
   playToday,
 } from '../crabs.js?v=f1c48c4d';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const ART = 'assets/sprites/crabs/';
 /** OGA npc_crab sheets: 131x129 cells, 6 columns; populated counts measured. */
@@ -183,7 +184,7 @@ function resume(crab, waitMs) {
 function spawn(engine, key, point) {
   const { PIXI } = engine;
   const spr = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(CRAB_SCALE);
   spr.x = point.x;
   spr.y = point.y + FEET_PAD * CRAB_SCALE;

@@ -50,7 +50,8 @@
 import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=c4ce9ccd';
-import { trantFootAnchorY, trantStatusLabel } from '../trants.js?v=4d6f5593';
+import { trantStatusLabel } from '../trants.js?v=b9147016';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   GROWN_TREE_LABELS,
@@ -71,11 +72,11 @@ import {
   soilSpawnClasses,
   soilSpritePaths,
   tickPlot,
-} from '../patches.js?v=67d08c97';
-import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+} from '../patches.js?v=db04987b';
+import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { plotSignature, replayRng } from '../shared-patches.js?v=0f107341';
+import { plotSignature, replayRng } from '../shared-patches.js?v=625c687d';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PATCHES_FEATURE_ID = 'patches';
@@ -378,8 +379,8 @@ async function buildView(engine, entity, myGeneration, { grow = false } = {}) {
   sprite.roundPixels = true;
   if (plot.stage === 'tree') {
     const isWood = plot.tree.classId === 'wood_tree';
-    // G583: the trunk's foot on the soil line (js/trants.js trantFootAnchorY), as street trees.
-    sprite.anchor.set(0.5, isWood ? 1 : trantFootAnchorY(plot.tree.classId, trantFrameStage(plot.tree.state?.maturity)));
+    // G583, R12: the trunk's foot on the soil line (js/sprite-feet.js), as street trees.
+    standOnFeet(sprite);
     const s = treeScale(tex, isWood);
     sprite._woodDirection = entity.direction;
     sprite.scale.set(entity.direction * s, s);

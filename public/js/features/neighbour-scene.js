@@ -8,9 +8,10 @@
  */
 
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=13f35acd';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 const DECO = 'assets/decos/groddle/';
 /** The widest view the parallax layers must cover (js/landscape-reach.js). */
@@ -139,7 +140,7 @@ function size(name) {
 function decoSprite(PIXI, name, scale, x, y, flip = false) {
   const [w, h] = size(name);
   const spr = new PIXI.Sprite(textureFromUrl(`${DECO}${name}.png`));
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'deco');
   spr.width = w * scale;
   spr.height = h * scale;
   if (flip) spr.scale.x *= -1;
@@ -279,7 +280,7 @@ export function buildNeighbourBackground(PIXI, neighbour) {
   // Its sharp copy at the screen's density where it has one (tools/deco-pipeline/sharp.py house_placements).
   const sharp = sharpRoomDeco(`${DECO}${h.path}.png`, h.scale);
   const house = new PIXI.Sprite(sharp ? textureFromUrl(sharp.url, sharp.opts) : textureFromUrl(`${DECO}${h.path}.png`));
-  house.anchor.set(0.5, 1);
+  anchorBottomCentre(house, 'deco');
   house.width = h.w * h.scale;
   house.height = h.h * h.scale;
   house.x = layout.houseX;

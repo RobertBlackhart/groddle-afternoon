@@ -39,8 +39,9 @@
  * the quest in with the source completion text.
  */
 
-import { onLoaded } from '../textures.js?v=8e0a8c38';
-import { sceneAnim } from '../deco-anim.js?v=f3ab0d19';
+import { onLoaded } from '../textures.js?v=1c44e7c3';
+import { sceneAnim } from '../deco-anim.js?v=41a70b24';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const QUEST = 'stale_but_necessary';
 /**
@@ -292,7 +293,7 @@ export const room = {
     ctx.data.bIdle = kit.sheetFrames(PIXI, B_IDLE, 10, 6, 57);
     ctx.data.bTalk = kit.sheetFrames(PIXI, B_TALK, 9, 3, 26);
     const watcher = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-    watcher.anchor.set(0.5, 1);
+    standOnFeet(watcher);
     watcher.scale.set(-0.8, 0.8);
     watcher.x = VEIL_X + 62;
     watcher.y = DAIS.y - 44;

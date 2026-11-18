@@ -17,8 +17,8 @@
  * Shady Bureaucrat sheets.
  */
 
-import * as kit from './kit.js?v=436636b4';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import * as kit from './kit.js?v=ec17ee93';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { BACK_ALLEY_FILES } from './back-alley-art.js?v=08af5d4f';
 
 const ART = 'assets/sprites/quest-rooms/back_alley/';

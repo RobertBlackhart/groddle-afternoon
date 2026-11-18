@@ -34,7 +34,7 @@
 import { isRebuiltRoomTsid, rebuiltRoomEcology } from '../rebuilt-rooms.js?v=8c2eaf24';
 import { isLouiseVillaTsid, louiseVillaEcology } from '../louise-pasture-villa.js?v=01066f39';
 import { isPracticeStreetTsid, practiceExitSign, practiceStreetEcology } from '../practice-streets.js?v=557238c1';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import {
   ICICLE_PILLAR_ASPECT,
   ICICLE_PILLAR_SPRITE,
@@ -46,6 +46,7 @@ import {
   stepIcicles,
 } from '../winter-icicles.js?v=04c0780f';
 import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=cbe116f2';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const REBUILT_ROOMS_FEATURE_ID = 'rebuilt-rooms';
 
@@ -94,7 +95,7 @@ function standIcicle(engine, i) {
   const h = Math.round(f.w * ICICLE_PILLAR_ASPECT);
   const foot = toScreen(f.x, f.top - 14 + h);
   const spr = new PIXI.Sprite(textureFromUrl(`assets/decos/groddle/${ICICLE_PILLAR_SPRITE}.png`));
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'deco');
   spr.x = foot.x;
   spr.y = foot.y;
   spr.width = f.w;
@@ -105,7 +106,7 @@ function standIcicle(engine, i) {
   // Snow heaped round its foot, as round the walk's pillars (snow_rubble_01c_al1).
   const heap = new PIXI.Sprite(textureFromUrl('assets/decos/groddle/snow_rubble_01c_al1.png'));
   const base = toScreen(f.x, WINTER_WALK_FLOOR_Y + 30);
-  heap.anchor.set(0.5, 1);
+  anchorBottomCentre(heap, 'deco');
   heap.x = base.x;
   heap.y = base.y;
   heap.width = Math.round(f.w * 1.15);

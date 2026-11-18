@@ -73,16 +73,16 @@ import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { gainMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 import { quoinDailyLimitFor } from '../quoins.js?v=6a2cac74';
 import { emblemCostFor } from '../shrines.js?v=15d03920';
-import { GROWN_TREE_LABELS, trantsformPlotTree } from '../patches.js?v=67d08c97';
-import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=0f107341';
+import { GROWN_TREE_LABELS, trantsformPlotTree } from '../patches.js?v=db04987b';
+import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=625c687d';
 import { isPoisoned } from '../tree-poison.js?v=646d1bc1';
 import { furnitureSize } from '../home-decor.js?v=06be9c65';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
-import { textureFromUrl, sourceFromUrl, frameTexture } from '../textures.js?v=8e0a8c38';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=01bf7687';
+import { textureFromUrl, sourceFromUrl, frameTexture } from '../textures.js?v=1c44e7c3';
 import { POTION_ART } from '../potion-art.js?v=9d731b38';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
-import { overlayOrStandIn } from '../overlay-stand-in.js?v=073931e7';
-import { playPoofIn, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { overlayOrStandIn } from '../overlay-stand-in.js?v=a500bed5';
+import { playPoofIn, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import {
   ANIMAL_BABIES,
   KEY_NAMES,
@@ -136,13 +136,14 @@ import {
   usePotion,
 } from '../potions.js?v=4f4c996d';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
-import { patchesFeature } from './patches-feature.js?v=d5f4344d';
-import { homesFeature } from './homes-feature.js?v=90b42c0d';
-import { streetTreeIndex } from './tree-death-feature.js?v=4c9cb63e';
-import { questRoomConverse } from './quest-instances-feature.js?v=45b5a665';
+import { patchesFeature } from './patches-feature.js?v=eff168b0';
+import { homesFeature } from './homes-feature.js?v=057ea614';
+import { streetTreeIndex } from './tree-death-feature.js?v=7ff63b03';
+import { questRoomConverse } from './quest-instances-feature.js?v=1c1ef8dc';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { copyTag, migrateClassTag, migrateClassValue, setCopyTag, toolCopies } from '../tools.js?v=4156bba8';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const POTIONS_FEATURE_ID = 'potions';
 const LOVE = 'feeling_called_love';
@@ -402,7 +403,7 @@ function bottleFx(engine, classTsid, target) {
   const layer = engine.fxLayer || engine.entityLayer;
   if (!PIXI?.Sprite || !layer) return null;
   const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${classTsid}.webp`));
-  spr.anchor.set(0.5, 1);
+  anchorBottomCentre(spr, 'held');
   spr.zIndex = 900;
   spr.scale.set(0.9);
   layer.addChild(spr);
@@ -876,7 +877,7 @@ function syncRugs(engine) {
     const { w, h } = furnitureSize(row.classTsid, row.upgradeId);
     // The Rug is drawn by the house (homes-feature); this is its click box (an upgraded rug's own size, G358).
     const spr = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'shape');
     spr.x = row.x;
     spr.y = row.y;
     spr._worldHitW = w;

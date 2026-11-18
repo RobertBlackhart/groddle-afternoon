@@ -27,39 +27,9 @@ export const ANIMAL_CLASS_IDS = Object.freeze([
   'npc_butterfly',
 ]);
 
-/**
- * Where each walking animal's sheet puts the animal in its cell (the x of its anchor, 0..1), so a
- * sprite turned round by scale.x -1 turns on the spot. In the original the item's x is the art's
- * registration point under the animal and the client mirrors the art about it. Tiny Speck's
- * Chicken sheets (npc_chicken__x1_walk, pecking_once, sit: 148 x 110 cells, the same for every
- * state) were cut with the bird about 27 px right of the cell's middle: its body spans 75-131 px,
- * 101 px across the walk frames on average. Anchored at the middle (0.5), each turn mirrored the
- * bird about a point 27 px behind it and it hopped 38 px at its drawn scale (lane CHICKWALK,
- * Austin 2026-11-01: "They move left and then snap back to the middle walking right"). The Piggy
- * walk (88 x 62), the Butterfly's fly-side (70 x 65) and the Batterfly's profile (111 x 96) sheets
- * are centred in their cells (within 1.5 px), so they keep 0.5.
- */
-export const ANIMAL_ANCHOR_X = Object.freeze({ npc_chicken: 101 / 148 });
-
-/** The anchor x a walking animal's sprite takes (ANIMAL_ANCHOR_X; 0.5 for the rest). */
-export function animalAnchorX(classId) {
-  return ANIMAL_ANCHOR_X[classId] ?? 0.5;
-}
-
-/**
- * G583: where each walking animal's feet are in its sheet's cell (the anchor y, 0..1). The original
- * drew an NPC with its art's registration point (its feet) at the item's y, the platform line. Tiny
- * Speck's Chicken cells (148 x 110, every state) keep 13 empty rows under the bird's feet (walk and
- * the idle1 stand: lowest solid row 96; pecking_once 97), so anchored on the cell's bottom it stood
- * 13 px x its 0.70 scale above the line (Guillermo Gamera Way's arch landing, 2026-11-08). The
- * Piggy's walk keeps 1 to 3 rows (the +2 every walker is set down by covers it), so the rest keep 1.
- */
-export const ANIMAL_ANCHOR_Y = Object.freeze({ npc_chicken: 97 / 110 });
-
-/** The anchor y a walking animal's sprite takes on the ground (ANIMAL_ANCHOR_Y; 1 for the rest). */
-export function animalAnchorY(classId) {
-  return ANIMAL_ANCHOR_Y[classId] ?? 1;
-}
+// Where a walking animal stands in its sheet's cell (the Chicken's bird 27 px right of the middle,
+// 13 blank rows under its feet: G515, G583) is measured from the art with every other sprite's
+// (tools/sprite-feet/build.mjs, js/sprite-feet.js standOnFeet).
 
 const FEED_CATALOG = Object.freeze({
   npc_piggy: Object.freeze({

@@ -46,10 +46,11 @@
  *   pack and &backalleymade=1 stands in for a Fuelmaker run.
  */
 
-import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { STATION_FLOOR, stationArrival, stationByTsid, stationScreen, surfaceStation } from '../subway.js?v=735bfbeb';
-import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=ece88bea';
+import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=77ed1ac9';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export { ALLEY, ALLEY_ART, ALLEY_SET, alleyPlatforms };
 
@@ -226,7 +227,7 @@ function enterAlley(ctx) {
   ctx.data.bIdle = kit.sheetFrames(PIXI, `${LEGALIZE}npc_bureaucrat_arms_01_glasses_none_hair_01_legs_01_necklace_none_tie_01_torso_01_x1_idle1_png_1354832995.webp`, 10, 6, 57);
   ctx.data.bTalk = kit.sheetFrames(PIXI, `${LEGALIZE}npc_bureaucrat_arms_01_glasses_none_hair_01_legs_01_necklace_none_tie_01_torso_01_x1_talk_png_1354832993.webp`, 9, 3, 26);
   const spr = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.scale.set(SHADY.scale);
   spr.x = SHADY.x;
   spr.y = SHADY.y;
@@ -273,7 +274,7 @@ function spawnBot(wctx, station) {
   b.happy = kit.sheetFrames(PIXI, `${ART}bot_attract.webp`, 12, 5, 57);
   b.moveTex = textureFromUrl(`${ART}bot_move.webp`);
   const spr = new PIXI.AnimatedSprite([b.moveTex]);
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = spot.x;
   spr.y = spot.y + 2;
   // Out of fuel: slumped and dull.

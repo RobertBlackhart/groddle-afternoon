@@ -39,7 +39,7 @@
  */
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { OVERLAY_USES, playWindowOverlay } from '../overlays.js?v=eda942a8';
+import { OVERLAY_USES, playWindowOverlay } from '../overlays.js?v=68c0a634';
 import { acceptOffer, ensureQuestOfferState, markOffered } from '../quest-offers.js?v=4debd26e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { parseQuestConversation } from '../quests.js?v=92c75858';
@@ -61,8 +61,8 @@ import {
   recognitionBranch,
   ticketDue,
 } from '../hell-tickets.js?v=d3c287af';
-import { hellFeature } from './hell-feature.js?v=dba6adad';
-import { doorsFeature } from './doors-feature.js?v=92df6537';
+import { hellFeature } from './hell-feature.js?v=a7e32435';
+import { doorsFeature } from './doors-feature.js?v=be577a69';
 
 export const HELL_TICKETS_FEATURE_ID = 'hell-tickets';
 

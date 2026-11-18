@@ -41,9 +41,10 @@
  * clue streets are the archived streets with their `juju_dig` boxes.
  */
 
-import { onLoaded, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { loseMood } from '../metabolics.js?v=48f784bf';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 const Q1 = 'help_juju_bandits';
 const Q2 = 'help_juju_bandits_2';
@@ -688,7 +689,7 @@ function buildBackground(ctx) {
   }
   const [chairFile] = JUJU_CAMP_FILES.juju_grandma_chair_01a_al1;
   const chair = new PIXI.Sprite(textureFromUrl(`${ART}${chairFile}`));
-  chair.anchor.set(0.5, 1);
+  standOnFeet(chair);
   chair.x = sx(GRANDMA_X) - 14;
   chair.y = floor + CHAIR_DY;
   chair.tint = 0xd8ccb8;

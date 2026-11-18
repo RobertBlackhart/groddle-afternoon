@@ -33,7 +33,8 @@
  * the reference recording (j9xJLETQzi4) shows quoins there.
  */
 
-import { onLoaded } from '../textures.js?v=8e0a8c38';
+import { onLoaded } from '../textures.js?v=1c44e7c3';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const STREET = 'GIFM4BD43383DKV';
 const BOUNDS = { l: -2000, t: -1000 };
@@ -256,7 +257,7 @@ export const room = {
       ctx.data.botIdle = kit.sheetFrames(PIXI, `${ART}bot_idle.webp`, 12, 2, 24);
       ctx.data.botTalk = kit.sheetFrames(PIXI, `${ART}bot_talk.webp`, 12, 6, 69);
       const bot = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
-      bot.anchor.set(0.5, 1);
+      standOnFeet(bot);
       bot.animationSpeed = 0.3;
       bot.x = sx(BOT.x);
       bot.y = sy(BOT.y) + 2;

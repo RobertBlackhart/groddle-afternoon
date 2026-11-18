@@ -14,8 +14,8 @@
  * one picture is tinted by the light it stands in, as the Snaps show the same piece in six colours.
  */
 
-import { DECO_DIR, deco } from './kit.js?v=436636b4';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { DECO_DIR, deco } from './kit.js?v=ec17ee93';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 
 /** Each piece's name and its size in world units (its 2x file is twice that in pixels). */
 export const RIG_ART = Object.freeze({

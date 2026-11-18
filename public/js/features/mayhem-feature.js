@@ -47,10 +47,11 @@ import {
 } from '../math-mayhem.js?v=7fe952aa';
 import { platformYNear } from '../location-navigation.js?v=9555ce80';
 import { hasRaceDispenser } from '../races.js?v=ab22a079';
-import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=eda942a8';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=68c0a634';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { saveStore } from '../save-store.js?v=cd053443';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 /** G738: whether this page may carry the Mayhem QA levers. */
 const QA_ALLOWED = qaHandlesAllowed();
@@ -161,7 +162,7 @@ function buildChrome(engine) {
 function spawnPig(engine, point) {
   const { PIXI } = engine;
   const sprite = new PIXI.Sprite(textureFromUrl(PIG_ART));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.scale.set(1 / 3);
   sprite.x = point.x;
   sprite.y = point.y + 2;

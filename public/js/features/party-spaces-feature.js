@@ -83,12 +83,13 @@ import {
   startParty,
   teleporterPhase,
 } from '../party-spaces.js?v=8e869964';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ac6c3387';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';
@@ -526,7 +527,7 @@ function spawnTeleporter(engine) {
   const { PIXI } = engine;
   portalFrames ||= sheetFrames(PIXI, `${ART}teleporter_visible_portal.webp`);
   const sprite = new PIXI.AnimatedSprite(portalFrames);
-  sprite.anchor.set(0.5, 0.94);
+  standOnFeet(sprite);
   sprite.scale.set(PORTAL_SCALE);
   sprite.animationSpeed = 0.3;
   sprite.x = tp.x;
@@ -555,7 +556,7 @@ function despawnTeleporter(engine, { vanish = false } = {}) {
     const { PIXI } = engine;
     disappearFrames ||= sheetFrames(PIXI, `${ART}teleporter_visible_disappear.webp`);
     const fx = new PIXI.AnimatedSprite(disappearFrames);
-    fx.anchor.set(0.5, 0.94);
+    standOnFeet(fx);
     fx.scale.set(PORTAL_SCALE);
     fx.x = sprite.x;
     fx.y = sprite.y;
@@ -767,7 +768,7 @@ function spawnAtm(engine, point) {
   const { PIXI } = engine;
   const sprite = new PIXI.Container();
   const art = new PIXI.Sprite(textureFromUrl(`${ART}party_atm.webp`));
-  art.anchor.set(0.5, 1);
+  standOnFeet(art);
   art.scale.set(0.9);
   const screen = new PIXI.Text({ text: '', style: { fontFamily: 'Courier New, monospace', fontSize: 13, fontWeight: '700', fill: 0x8dff8d } });
   screen.anchor.set(0.5, 0.5);
@@ -793,7 +794,7 @@ function spawnStack(engine, group, point) {
   const { PIXI } = engine;
   const sprite = new PIXI.Container();
   const icon = new PIXI.Sprite(textureFromUrl(itemIcon(group.classTsid)));
-  icon.anchor.set(0.5, 1);
+  standOnFeet(icon);
   icon.scale.set(0.85);
   const badge = new PIXI.Text({ text: '', style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '800', fill: 0xffffff, stroke: { color: 0x3b2410, width: 3 } } });
   badge.anchor.set(0, 1);
@@ -872,7 +873,7 @@ function spawnGuest(engine, guest, point, index) {
   npc.setMode('dance');
   engine.entityLayer.addChild(sprite);
   const name = new PIXI.Text({ text: guest.name, style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
-  name.anchor.set(0.5, 1);
+  anchorBottomCentre(name, 'text');
   name.zIndex = 31;
   engine.entityLayer.addChild(name);
   const target = engine.register({

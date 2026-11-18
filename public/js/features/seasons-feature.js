@@ -37,6 +37,7 @@ import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=d4e5
 import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=d4e55862';
 import { setSeasonalRecipeCheck } from '../making.js?v=af1c7d5b';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 /*
  * Each lit pumpkin's phrases are its own (pumpkin_lit_*.js this.phrases, 380-391, at most 3), kept
@@ -78,7 +79,7 @@ import { emblemCostFor } from '../shrines.js?v=15d03920';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=439d100b';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=5656bfba';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=ee2657b6';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
@@ -134,8 +135,8 @@ import {
   yetiMailDue,
   yetiQuote,
 } from '../seasons.js?v=887d886e';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
-import { playOverlay } from '../overlays.js?v=eda942a8';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { playOverlay } from '../overlays.js?v=68c0a634';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
@@ -497,7 +498,7 @@ function spawnLantern(engine, pt, index) {
   const face = ((index + String(engine.streetTsid).length) % 5) + 1;
   const y = groundAt(engine, pt.x, pt.y);
   const spr = new PIXI.AnimatedSprite(talkFrames(engine, face));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = pt.x;
   spr.y = y + 3;
   // pumpkin_lit_N is a normal item (NRM_ITEM): in front of the trants beside the path.
@@ -530,7 +531,7 @@ function spawnCandyCanes(engine) {
     const sx = post.x - l + (i % 2 ? 58 : -58);
     const sy = groundAt(engine, sx, post.y - t);
     const spr = new engine.PIXI.Sprite(textureFromUrl('assets/decos/groddle/bling_candycane_1.png'));
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'deco');
     spr.scale.set(0.3);
     if (i % 2) spr.scale.x = -0.3;
     spr.x = sx;
@@ -585,7 +586,7 @@ function spawnPlaced(engine, row) {
   const lit = isLitPumpkin(row.cls);
   const y = groundAt(engine, row.x, row.y);
   const spr = lit ? new PIXI.AnimatedSprite(talkFrames(engine, faceOf(row.cls))) : new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${row.cls}.webp`));
-  spr.anchor.set(0.5, 1);
+  standOnFeet(spr);
   spr.x = row.x;
   spr.y = y + 3;
   spr.zIndex = itemZ(row.cls, 1);

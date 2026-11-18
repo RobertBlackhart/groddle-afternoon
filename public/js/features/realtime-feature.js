@@ -70,8 +70,9 @@ import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { playOverlay } from '../overlays.js?v=eda942a8';
+import { playOverlay } from '../overlays.js?v=68c0a634';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
@@ -341,7 +342,7 @@ function createSession(engine) {
       fontWeight: '700',
       dropShadow: { alpha: 0.92, blur: 2, color: 0xffffff, distance: 0 },
     } });
-    name.anchor.set(0.5, 1);
+    anchorBottomCentre(name, 'text');
     name.y = PLATE_Y;
     const plate = new PIXI.Graphics();
     plate.roundRect(-Math.ceil(name.width / 2) - 7, name.y - name.height - 4, Math.ceil(name.width) + 14, Math.ceil(name.height) + 7, 7)

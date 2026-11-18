@@ -22,7 +22,7 @@
 
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { hellFeature } from './hell-feature.js?v=dba6adad';
+import { hellFeature } from './hell-feature.js?v=a7e32435';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import {
   RUBE_CLASS,
@@ -44,8 +44,9 @@ import {
   rubeTalk,
   streetCanHostRube,
 } from '../rube.js?v=0b98cc11';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const RUBE_FEATURE_ID = 'rube';
 const SONG = 'assets/audio/ambient/The_Rube_Song_1290596637.mp3';
@@ -182,7 +183,7 @@ function spawnRube(engine, { summoned = false, near = false } = {}) {
   const ground = landingY(engine.platforms, x, p.y - 60) ?? walkSurfaceY(engine.platforms, x, p.y, { up: 400, down: 400 }) ?? p.y;
   const spawnFrames = frames(engine, 'spawn_in');
   const spr = new PIXI.AnimatedSprite(spawnFrames);
-  spr.anchor.set(0.5, 0.97);
+  standOnFeet(spr);
   spr.x = x;
   spr.y = ground;
   spr.zIndex = itemZ(RUBE_CLASS, 0);

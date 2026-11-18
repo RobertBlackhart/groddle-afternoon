@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { gameFiles, gameText } from '../tools/build-economy.mjs';
-import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=9c507b8e';
+import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=cb266833';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
@@ -19,7 +19,7 @@ import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons
 import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
 import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=1ca05fa3';
 import { FUNPICKLE } from '../public/js/funpickle.js?v=95796317';
-import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=e29c99b9';
+import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=186f64d8';
 
 const root = join(import.meta.dirname, '..');
 const economy = () => JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));

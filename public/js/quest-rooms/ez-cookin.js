@@ -31,7 +31,7 @@ import {
   PRACTICE_START,
   practiceScreen,
 } from '../practice-streets.js?v=557238c1';
-import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=84d72b4d';
+import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=feee4fc6';
 
 export const QUEST = 'ezcooking_1';
 export const FLAG = 'finish_ezcooking';

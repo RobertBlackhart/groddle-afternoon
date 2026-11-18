@@ -19,7 +19,8 @@
 import { ANIMS, ANIM_FPS, EMOTIONS, EMOTION_MS, FALL_LOOP, IDLES_TO_RANDOM, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, SHEET_FRAMES, STAND_ANIM, frameRef } from './avatar-anims.js?v=fb921bf4';
 import { NPC_GLITCH_HIRES, NPC_GLITCH_SHEETS } from './npc-glitch-sheets.js?v=1163dc99';
 import { mulberry32, nameSeed, npcIdFor, npcIdleTiming } from './npc-glitch-looks.js?v=4971d6eb';
-import { forgetTexture, frameTexture, onLoaded, sourceFromUrl } from './textures.js?v=8e0a8c38';
+import { forgetTexture, frameTexture, onLoaded, sourceFromUrl } from './textures.js?v=1c44e7c3';
+import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
 
 /** Sheets loaded with the Glitch (walk/stand and the idle4 stand loop). */
 export const NPC_CORE_SHEETS = Object.freeze(['base', 'idle4']);
@@ -156,7 +157,7 @@ export function createNpcGlitchKit({ PIXI, ticker = null, stage = null, hires = 
     const timing = npcIdleTiming(name, salt, { waitMs: idleWaitMs });
     const rng = mulberry32((nameSeed(name) ^ Math.imul(salt + 7, 0x27d4eb2d)) >>> 0);
     const sprite = new PIXI.AnimatedSprite([st.sheets.base.frames[SHEET_FRAMES.base.indexOf(801)]]);
-    sprite.anchor.set(0.5, 1);
+    anchorBottomCentre(sprite, 'stage');
     sprite.updateAnchor = true;
     sprite.facesRight = true;
     sprite.loop = true;

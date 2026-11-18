@@ -23,7 +23,7 @@
  */
 
 import { KIDS_ROOM_FILES } from './kids-room-art.js?v=9f7a7a04';
-import { textureFromUrl } from './textures.js?v=8e0a8c38';
+import { textureFromUrl } from './textures.js?v=1c44e7c3';
 
 export const KIDS_ROOM_ID = 'kids_room';
 export const KIDS_ROOM_TEMPLATE = 'LIF149EVS2A22H1';

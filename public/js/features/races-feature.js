@@ -31,7 +31,7 @@
  */
 
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
-import { playCountdownArt } from '../overlays.js?v=eda942a8';
+import { playCountdownArt } from '../overlays.js?v=68c0a634';
 import {
   RACES,
   RACE_ACHIEVEMENTS,
@@ -83,15 +83,15 @@ import {
   drawFinishGate,
   raceLoadingColors,
   renderRaceCourse,
-} from '../race-render.js?v=34f80320';
+} from '../race-render.js?v=2f1bb81c';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
-import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=44a586ca';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=edb846e4';
-import { startHogHaulMp } from './hog-haul-mp-feature.js?v=cf68ec0c';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=49228b02';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=bf9c6a63';
+import { startHogHaulMp } from './hog-haul-mp-feature.js?v=3ea6a5e2';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
@@ -107,6 +107,7 @@ import {
   shardAmount,
   splitScores,
 } from '../races-mp.js?v=4531b30c';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 const RACE_ICON_DIR = 'assets/sprites/races/';
 /**
@@ -740,7 +741,7 @@ function spawnRaceEntities(engine) {
       fill: 0xffffff,
       stroke: { color: 0x2a1d14, width: 3 },
     } });
-    rivalLabel.anchor.set(0.5, 1);
+    anchorBottomCentre(rivalLabel, 'text');
     rivalLabel.zIndex = 47;
     engine.entityLayer.addChild(rivalLabel);
   }
@@ -1798,7 +1799,7 @@ function publish(engine) {
 function spawnDispenser(engine, point) {
   const { PIXI } = engine;
   const sprite = new PIXI.Sprite(textureFromUrl(`${RACE_ICON_DIR}race_ticket_dispenser.webp`));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.x = point.x;
   sprite.y = point.y + 2;
   sprite.zIndex = 19;

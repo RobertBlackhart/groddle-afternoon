@@ -36,9 +36,10 @@
  *  5. The crab, and the door.
  */
 
-import { COLORS, JUMP_RISE, lastCheckpoint, makeSwitch, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bbac1b53';
+import { COLORS, JUMP_RISE, lastCheckpoint, makeSwitch, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=b3adb50f';
 import { COLOR_UNBLOCKING_FILES } from '../color-unblocking-art.js?v=ea2b7e7f';
-import { textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 const W = 3700;
 const H = 1040;
@@ -265,7 +266,7 @@ export const room = {
     // The Snaps' purple door (arbito1.swf door_asset_purple), with no sign over it.
     const [doorFile] = COLOR_UNBLOCKING_FILES.door_asset_purple;
     const door = new PIXI.Sprite(textureFromUrl(`${ART}${doorFile}`));
-    door.anchor.set(0.5, 1);
+    anchorBottomCentre(door, 'deco');
     door.x = layout.door.x;
     door.y = layout.door.y + 2;
     world.addChild(door);
@@ -486,7 +487,7 @@ async function finale(ctx) {
   // As in the Snaps: the drawing fills the view from just under its top edge down to the
   // floor, a little right of centre; the room card steps aside while the page is up.
   const { scale, x, bottom } = finaleArtPlacement(cam.w, cam.h, floorTop, h);
-  art.anchor.set(0.5, 1);
+  anchorBottomCentre(art, 'deco');
   art.scale.set(scale);
   art.x = x;
   art.y = bottom;

@@ -89,8 +89,9 @@ import {
   stepTriggers,
 } from '../puzzle-triggers.js?v=221b67a9';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
-import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
+import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';
 export const LIGHT_BEAM_CLASS = 'light_beam';
@@ -304,7 +305,7 @@ function spawnArt(engine, def) {
   const { PIXI } = engine;
   for (const a of def.art || []) {
     const spr = new PIXI.Sprite(textureFromUrl(`${ART_BASE}${a.sprite}.webp`));
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'deco');
     spr.x = a.x;
     spr.y = a.y;
     // Size once the texture is real (a 1x1 placeholder would inflate the scale).

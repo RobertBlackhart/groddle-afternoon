@@ -60,11 +60,11 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=5bc894c8';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d8e87813';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { donationValueFor } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { TRANT_META, trantStatusLabel } from '../trants.js?v=4d6f5593';
+import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import {
   FOREHORSEMAN_LINES,
   ROOK_COLORS,
@@ -108,8 +108,8 @@ import {
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { forceMetabolic, gainMetabolic, loseEnergy, loseMood, topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=eda942a8';
+import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
 import {
   MP_ROOK,
   MP_ROOK_TEXT,
@@ -127,11 +127,12 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=84ee9305';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=01bf7687';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */
@@ -503,7 +504,7 @@ function addHalo(engine, row) {
   if (!loader?.ready(ROOK_SHEETS.halo) || row.halo) return;
   const { PIXI } = engine;
   const halo = new PIXI.AnimatedSprite(loader.frames(ROOK_SHEETS.halo));
-  halo.anchor.set(0.5, 1);
+  anchorBottomCentre(halo, 'held');
   halo.animationSpeed = pixiSpeed(ROOKED_HALO.fps);
   halo.loop = true;
   halo.play();
@@ -742,7 +743,7 @@ function buildHud(engine) {
   clock.anchor.set(0.5, 0);
   clock.y = 44;
   const phase = new PIXI.Text({ text: '', style: textStyle(11, { fill: 0xffe7a8, fontWeight: '800', letterSpacing: 1 }) });
-  phase.anchor.set(0.5, 1);
+  anchorBottomCentre(phase, 'text');
   // Above the stun stars (the arc's top star from STARS_Y), not over them.
   phase.y = STARS_Y - 2;
   const stamp = new PIXI.Text({ text: 'STUN!', style: textStyle(24, { fill: 0xffffff, stroke: { color: 0x2a1438, width: 5 } }) });
@@ -1283,7 +1284,7 @@ function spawnForehorseman(engine) {
   const x = Math.max(120, Math.min(engine.worldW - 120, p.x + (p.x > engine.worldW - 400 ? -230 : 230)));
   const y = nearestSurfaceY(engine.platforms, x, p.y) ?? p.y;
   const spr = new PIXI.AnimatedSprite(loader.frames(ROOK_SHEETS.fore));
-  spr.anchor.set(0.5, 0.96);
+  standOnFeet(spr);
   spr.animationSpeed = pixiSpeed(15);
   spr.loop = true;
   spr.play();
@@ -2051,7 +2052,7 @@ function updatePrimePrompt(engine) {
     hit.label = 'rook:click_to_prime';
     const tip = new PIXI.Container();
     const words = new PIXI.Text({ text: use.txt, style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '700', fill: 0x2a2a2a } });
-    words.anchor.set(0.5, 1);
+    anchorBottomCentre(words, 'text');
     const pad = 6;
     const box = new PIXI.Graphics().roundRect(-words.width / 2 - pad, -words.height - pad * 2, words.width + pad * 2, words.height + pad * 2, 5).fill({ color: 0xfffbe8, alpha: 0.96 }).stroke({ width: 1, color: 0x8c7b4f, alpha: 0.9 });
     words.y = -pad;

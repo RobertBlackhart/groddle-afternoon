@@ -53,7 +53,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } fr
 import { canUseTool, getToolCondition, setToolRemaining } from '../tools.js?v=4156bba8';
 import { MAKING_TOOL_SKILLS, listRecipes, recipeKnown, TOOL_CATALOG } from '../making.js?v=af1c7d5b';
 import { listDroppedStacks } from '../world-items.js?v=4057c421';
-import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=90b42c0d';
+import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=057ea614';
 import { cabinetTake, isCabinetClass } from '../home-storage.js?v=b0225465';
 import {
   CRAFTYBOT,
@@ -90,11 +90,12 @@ import {
   setLocked,
   setPaused,
 } from '../craftybot.js?v=77d8315d';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=98606052';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { countFromField, typedCount } from '../ui/count-chooser.js?v=5bc894c8';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const CRAFTYBOT_FEATURE_ID = 'craftybot';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -577,7 +578,7 @@ function clipFrames(engine, clip) {
 function spawnBox(engine) {
   const { PIXI } = engine;
   const spr = new PIXI.Sprite(textureFromUrl(BOX_ART_3X));
-  spr.anchor.set(0.5, 0.96);
+  standOnFeet(spr);
   spr.x = boxX(engine);
   spr.y = groundYAt(engine, spr.x, 'interior') + 2;
   spr.zIndex = itemZ(BOX, 7);
@@ -608,7 +609,7 @@ function spawnBot(engine) {
   box.y = groundYAt(engine, box.x) + 2;
   spr.y = 0;
   const tool = new PIXI.Sprite(PIXI.Texture.EMPTY);
-  tool.anchor.set(0.5, 1);
+  anchorBottomCentre(tool, 'held');
   tool.y = -58;
   tool.visible = false;
   box.addChild(tool);

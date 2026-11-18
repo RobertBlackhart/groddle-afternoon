@@ -33,7 +33,7 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { frameTexture, textureFromUrl } from '../textures.js?v=8e0a8c38';
+import { frameTexture, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ensureWoodTreeState, resetWoodTreeDay, woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   ENCHANTED_FORESTS,
@@ -47,6 +47,7 @@ import {
   petEnchantedSeedling,
   seedlingStatusLabel,
 } from '../enchanted-forests.js?v=17ac01e4';
+import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const ENCHANTED_FEATURE_ID = 'enchanted-forest';
 const SEEDLING_URL = 'assets/sprites/soil/patch-seedling@3x.webp';
@@ -136,7 +137,7 @@ function buildView(engine, entity) {
   }
   const state = ensureWoodTreeState(tree.state);
   const sprite = new PIXI.Sprite(treeTexture(engine, tree.variant, state.maturity));
-  sprite.anchor.set(0.5, 1);
+  standOnFeet(sprite);
   sprite.roundPixels = true;
   sprite._woodDirection = entity.index % 2 ? -1 : 1;
   sprite.scale.set(sprite._woodDirection, 1);
