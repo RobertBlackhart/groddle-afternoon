@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { buildHubMapView } from '../public/js/map-graph.js?v=78a605db';
 import { ecologyForStreet, populationForStreet, setStreetEcologyCatalog, shrineStreetsFor } from '../public/js/street-ecology.js?v=62ca408f';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=5806a615';
+import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -91,5 +92,25 @@ describe('#475 the map, the shrine finder and the street name one Giant', () => 
     const tool = read('tools/build-realtime-rook.mjs');
     assert.match(tool, /const official = population\.giantId \? \{ officialGiantId: population\.giantId \} : \{\};/);
     assert.match(tool, /giant: giantForStreet\(\{ \.\.\.data, \.\.\.official \}\)\.id/);
+  });
+
+  it('the server knows each built upgrade\'s shrine: its Giant, and a shrine an upgrade adds (rook.go spot)', { skip: skipWithoutServer }, () => {
+    const rook = JSON.parse(readFileSync(serverPath('data/rook.json'), 'utf8'));
+    let checked = 0;
+    for (const [tsid, row] of Object.entries(jobs.upgrades)) {
+      for (const option of row.options) {
+        const giant = upgradeEcologyEntry(ecologyForStreet(tsid), option).giantId;
+        const own = rook.streets[tsid];
+        // Listed where it differs from the street's own row; the same Giant at the same spot reads that row.
+        const now = rook.upgrades[tsid]?.[option.id] || own;
+        assert.ok(now, `${tsid} ${option.name}: no shrine on the server`);
+        assert.equal(now[3], giant, `${tsid} ${option.name}`);
+        checked += 1;
+      }
+    }
+    assert.equal(checked, 10);
+    // Nightshade Woods: no shrine until its upgrade.
+    assert.equal(rook.streets.GCR11JA67NJ15N3, undefined);
+    assert.ok(rook.upgrades.GCR11JA67NJ15N3);
   });
 });
