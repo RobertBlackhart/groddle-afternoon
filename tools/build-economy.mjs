@@ -116,6 +116,8 @@ import { DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID } from '../publi
 import { PHANTOM_QUEST_ID, REMEMBER_QUEST_ID } from '../public/js/ghost-quest.js?v=5f3cc133';
 import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
+// G979: Buy a Bag starts with the first skill learned, without its prerequisites (learn_first_skill.js 74-76).
+import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=d13ce526';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -140,7 +142,7 @@ export const BEST_REWARD_BUFF = 1.2;
 export const STARTS_WITHOUT_PREREQS = Object.freeze({
   FOUR_LETTER_QUEST_ID, LEGALIZE_QUEST_ID, GREEDY_STREET_SPIRIT_QUEST_ID, GREEDY_STREET_SPIRIT_REPEAT_ID, WINTER_WALK_QUEST_ID, WINTER_WALK_REPEAT_QUEST_ID,
   SUMMERS_DAY_QUEST_ID, SUMMERS_DAY_REPEAT_QUEST_ID, ROOK_QUEST_ID, ROOK_HALL_QUEST_ID, ROOK_HALL_START_QUEST_ID,
-  DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID, PHANTOM_QUEST_ID, REMEMBER_QUEST_ID, HOG_HAUL_QUEST_ID, ILMENSKIE_QUEST_ID,
+  DE_EMBIGGENIFY_QUEST_ID, DE_EMBIGGENIFY_PART2_QUEST_ID, PHANTOM_QUEST_ID, REMEMBER_QUEST_ID, HOG_HAUL_QUEST_ID, ILMENSKIE_QUEST_ID, FIRST_SKILL_QUEST_ID,
 });
 export const QUESTS_STARTED_WITHOUT_PREREQS = Object.freeze(Object.values(STARTS_WITHOUT_PREREQS).sort());
 /** inc_quests.js:844 / inc_achievements.js:331 (js/imagination-effects.js): Fit for a King and Overachiever I-V. */
