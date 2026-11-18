@@ -222,10 +222,10 @@ describe('the pack card chooser', () => {
   });
 
   it('eats the chosen count through the pack Eat, cut to the source caps', () => {
-    assert.match(game, /function usePackItem\(classTsid, count = 1\)/);
+    assert.match(game, /function usePackItem\(classTsid, count = 1, stock = null\)/); // G1009: or a feast bite's one-item stock
     assert.match(game, /if \(eatMany\.ticket\) eatPackedParadiseTicket\(classTsid, n\);\s*else usePackItem\(classTsid, n\);/);
-    assert.match(game, /consumeCountCap\(ordinaryInfo, pc, countItem\(inv, classTsid\), \{ energyMax: energyCap\(\) \}\)/);
-    assert.match(game, /eatCount > 1\s*\? useItemMany\(inv, pc, classTsid, eatCount\)/);
+    assert.match(game, /consumeCountCap\(ordinaryInfo, pc, countItem\(from, classTsid\), \{ energyMax: energyCap\(\) \}\)/);
+    assert.match(game, /eatCount > 1\s*\? useItemMany\(from, pc, classTsid, eatCount\)/);
     assert.match(game, /recordFoodEatMany\(foodState, classTsid, \{ \.\.\.eatOpts, count: eaten \}\)/);
     assert.match(game, /consumeAchievementCounters\(classTsid, \{ kind: ordinaryInfo\.kind, tags: meta\.tags, baseCost: meta\.baseCost, count: eaten \}\)/);
   });
@@ -381,7 +381,7 @@ describe('seasonal candy and pumpkin pie take a count (Austin 2026-10-29)', () =
     assert.match(note, /Five pies a day: \$\{many\.max\} more today, so \$\{rest\} in your pack\./);
     assert.match(note, /That makes eleven today: the last one brings a toothache\./);
     const use = game.slice(game.indexOf('function usePackItem('), game.indexOf('function openPackedCubimalBox('));
-    assert.match(use, /const limit = features\.query\('packEatLimit', classTsid, engine\);\s*const cap = limitCountCap\(consumeCountCap\(ordinaryInfo, pc, countItem\(inv, classTsid\), \{ energyMax: energyCap\(\) \}\), limit\);/);
+    assert.match(use, /const limit = features\.query\('packEatLimit', classTsid, engine\);\s*const cap = limitCountCap\(consumeCountCap\(ordinaryInfo, pc, countItem\(from, classTsid\), \{ energyMax: energyCap\(\) \}\), limit\);/);
     assert.match(use, /const capLine = eaten > 1 \? features\.query\('packEatLine', classTsid, engine\) : null;/);
     assert.match(use, /\$\{capLine \? ` \$\{capLine\}` : ''\}`/);
     // The gate still refuses the eat that would pass the limit.

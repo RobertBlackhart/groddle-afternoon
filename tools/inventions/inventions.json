@@ -4392,6 +4392,42 @@
    ]
   },
   {
+   "id": "feast-day-piles",
+   "title": "Thanksgiving Day's feast: on Thanksgiving Day (Ur's clock) the week's Harvest Table food lies in 20 eat-in-place piles right of the table in Groddle Forest Junction (source x 230 to 750), each one food with 3 bites drawn as its own put-down count art; Eat takes a bite (the first eater wins it online), 11 bites a player, an emptied spot refills 20 s later weighted by the week's per-class lays, Pot tops a thin week up to 20 dishes with his harvest dishes, the table's card says \"N servings left\", leftovers packed away at midnight; solo the same from the player's own table",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/feast-day.js",
+     "symbol": "FEAST_DAY_RULES"
+    },
+    {
+     "file": "public/js/feast-day.js",
+     "symbol": "settleFeastDay"
+    },
+    {
+     "file": "public/js/feast-day.js",
+     "symbol": "biteSolo"
+    },
+    {
+     "file": "public/js/features/feast-day-feature.js",
+     "symbol": "bite"
+    },
+    {
+     "file": "public/js/features/pot-luck-feast-feature.js",
+     "symbol": "tableSubtitle"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "stockEatGate eatFromStock"
+    }
+   ],
+   "why": "Austin 2026-11-18 (G1009, all recommendations): the week's table food spills over the street on the day, eaten in place like Hell One's grapes, never picked up. Ours to review: 20 piles and their spots, 3 bites a laid dish, 11 bites a player, the 20 s refill (Glitch's spawner habit, items/spawner.js), Pot's top-up to 20 with his five harvest dishes, the Eat verb's lines (\"Too slow! Somebody else ate that bite.\", the 11-bite line), the servings count on the table and pile cards, and the solo copy. The server owns it online (groddle-afternoon-server feast_day.go, -feast-day-file).",
+   "rows": [
+    "G1009"
+   ]
+  },
+  {
    "id": "pot-luck-quest",
    "title": "Pot's Empty Table: a Pot Luck Day quest offered by the Magic Rock (cook three of five harvest dishes, dress a Chicken, lay three harvest dishes on the Harvest Table) for Pot's Cornucopia, 25 Pot favor, 50 iMG and the Feast Bringer badge",
    "kind": "content",

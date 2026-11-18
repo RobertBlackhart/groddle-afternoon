@@ -194,14 +194,22 @@ export function layCheck(ctx = {}) {
 /* ------------------------------------------------------------ table state */
 
 /**
- * The table: { key, rows: [{ c, by, name }], total, daily: { <player>: <day> } }. `key` is the
- * season's year (seasons.js seasonYearKey): a table from another year is packed away.
+ * The table: { key, rows: [{ c, by, name }], total, counts: { <class>: <lays> }, daily: { <player>: <day> } }.
+ * `key` is the season's year (seasons.js seasonYearKey): a table from another year is packed away.
+ * `counts` is every lay of the season by class (Thanksgiving Day's feast draws from it, G1009; the
+ * server's harvest_table.go keeps the same); a save from before it counts its kept rows.
  */
 export function createTableState(seed = {}, key = '') {
   const s = seed && typeof seed === 'object' ? seed : {};
   const rows = Array.isArray(s.rows) ? s.rows.filter((r) => r && typeof r.c === 'string' && r.c).map((r) => ({ c: r.c, by: Number(r.by) || 0, name: typeof r.name === 'string' ? r.name.slice(0, 40) : '' })) : [];
   const daily = s.daily && typeof s.daily === 'object' && !Array.isArray(s.daily) ? { ...s.daily } : {};
-  const t = { key: typeof s.key === 'string' ? s.key : key, rows: rows.slice(-TABLE_RULES.keep), total: Math.max(rows.length, Math.floor(Number(s.total) || 0)), daily };
+  const counts = {};
+  if (s.counts && typeof s.counts === 'object' && !Array.isArray(s.counts)) {
+    for (const [c, n] of Object.entries(s.counts)) if (c && Math.floor(Number(n)) > 0) counts[c] = Math.floor(Number(n));
+  } else {
+    for (const r of rows.slice(-TABLE_RULES.keep)) counts[r.c] = (counts[r.c] || 0) + 1;
+  }
+  const t = { key: typeof s.key === 'string' ? s.key : key, rows: rows.slice(-TABLE_RULES.keep), total: Math.max(rows.length, Math.floor(Number(s.total) || 0)), counts, daily };
   if (key && t.key !== key) return packAway(t, key);
   return t;
 }
@@ -211,6 +219,7 @@ export function packAway(table, key = '') {
   table.key = key;
   table.rows = [];
   table.total = 0;
+  table.counts = {};
   table.daily = {};
   return table;
 }
@@ -224,6 +233,8 @@ export function layOffering(table, { c, by = 0, name = '', who = 'me', day = '' 
   table.rows.push(row);
   if (table.rows.length > TABLE_RULES.keep) table.rows.splice(0, table.rows.length - TABLE_RULES.keep);
   table.total += 1;
+  table.counts ||= {};
+  table.counts[row.c] = (table.counts[row.c] || 0) + 1;
   const first = table.daily[who] !== day;
   table.daily[who] = day;
   return { row, total: table.total, first };

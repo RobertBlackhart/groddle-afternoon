@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=786d99ec';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2ee654b5';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -6695,8 +6695,10 @@ function updateHud() {
  * cut to what the energy or mood still needs, with one toast and one
  * activity row.
  */
-function usePackItem(classTsid, count = 1) {
-  if (!state.started) return;
+function usePackItem(classTsid, count = 1, stock = null) {
+  if (!state.started) return false;
+  // G1009: eat from a one-item stock that never was in the pack (eatFromStock); else the pack.
+  const from = stock || inv;
   if (features.query('runPackUse', classTsid, engine) === true) return;
   if (cubimalPackageInfo(classTsid)) {
     openPackedCubimalBox(classTsid);
@@ -6745,7 +6747,7 @@ function usePackItem(classTsid, count = 1) {
   if (!buffInfo?.def && Math.floor(Number(count) || 1) > 1 && consumeTakesCount(classTsid, ordinaryInfo)) {
     // Candy and pie: cut to today's limit first, then the energy (packEatLimit).
     const limit = features.query('packEatLimit', classTsid, engine);
-    const cap = limitCountCap(consumeCountCap(ordinaryInfo, pc, countItem(inv, classTsid), { energyMax: energyCap() }), limit);
+    const cap = limitCountCap(consumeCountCap(ordinaryInfo, pc, countItem(from, classTsid), { energyMax: energyCap() }), limit);
     eatCount = Math.max(1, Math.min(Math.floor(Number(count)), cap.max));
   }
   // Drinks never count toward fullness or food history in the source.
@@ -6766,15 +6768,15 @@ function usePackItem(classTsid, count = 1) {
     const gate = canEatFood(foodState, pc, energyCap());
     if (!gate.ok) {
       toast(gate.reason);
-      renderPackPopover(classTsid);
-      return;
+      if (!stock) renderPackPopover(classTsid);
+      return false;
     }
   }
   const r = buffInfo?.def
-    ? activateBuffItem(buffState, inv, pc, classTsid, Date.now(), { study: studyBuffContext(), dead: playerIsDead() })
+    ? activateBuffItem(buffState, from, pc, classTsid, Date.now(), { study: studyBuffContext(), dead: playerIsDead() })
     : eatCount > 1
-      ? useItemMany(inv, pc, classTsid, eatCount)
-      : useItem(inv, pc, classTsid);
+      ? useItemMany(from, pc, classTsid, eatCount)
+      : useItem(from, pc, classTsid);
   if (!r.ok) {
     toast(r.msgs[0] || 'Cannot use that.');
     return;
@@ -6853,6 +6855,33 @@ function usePackItem(classTsid, count = 1) {
   if (app?.canvas && ordinaryInfo?.usable) app.canvas.dataset.packEaten = `${classTsid}:${eaten}:${r.effects?.energy || 0}:${r.effects?.mood || 0}:${r.effects?.xp || 0}`;
   updateHud();
   if (isVendorOpen()) renderVendorList();
+  return true;
+}
+
+/**
+ * G1009 (ours, inventions feast-day-piles): whether `classTsid` could be eaten now, asked before a
+ * Thanksgiving Day feast pile's bite goes to the server: the pack Eat's own refusals (a feature's
+ * gate, dead, Naraka, stuffed, full energy: include/food.js 14-18, 126-128). { ok, msg }.
+ */
+function stockEatGate(classTsid) {
+  const useGate = features.query('packUseGate', classTsid, engine);
+  if (useGate && useGate.ok === false) return { ok: false, msg: useGate.msg || 'Not right now.' };
+  const info = getItemUseInfo(classTsid);
+  if (!info?.usable || !info.effects?.energy || info.kind === 'drink') return { ok: false, msg: info?.reason || 'Cannot eat that.' };
+  if (playerIsDead()) return { ok: false, msg: DEAD_CONSUME_LINE };
+  const deadGate = features.metabolicGate('energy', 'gain', engine);
+  if (!deadGate.ok) return { ok: false, msg: deadGate.msg };
+  const gate = canEatFood(foodState, pc, energyCap());
+  return gate.ok ? { ok: true } : { ok: false, msg: gate.reason };
+}
+
+/**
+ * G1009: eat one `classTsid` that never enters the pack (a Thanksgiving Day feast pile's bite): the
+ * pack's Eat on a one-item stock, so energy, mood, fullness, variety iMG, buffs, quests and badge
+ * counters are the food's own and the pack is untouched. Returns true when it was eaten.
+ */
+function eatFromStock(classTsid) {
+  return usePackItem(classTsid, 1, { [classTsid]: 1 }) === true;
 }
 
 /**
@@ -13070,6 +13099,9 @@ const engine = {
   wornArticle: (type) => vectorPartName(type),
   /** The pack's Eat / Drink / Use, as if clicked (QA autoplay). */
   usePackItem: (classTsid) => usePackItem(classTsid),
+  /** G1009: a feast pile's bite: may it be eaten ({ ok, msg }), then eat it without the pack. */
+  eatGate: (classTsid) => stockEatGate(classTsid),
+  eatFromStock: (classTsid) => eatFromStock(classTsid),
   /** A target's verb menu, and starting one of its verbs as a menu click would (features/pack-tree-verbs-feature.js). */
   targetVerbs: (target) => menuVerbsFor(target),
   /**

@@ -37,6 +37,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=d4e55862';
 import { openListDialog } from '../ui/storage-windows.js?v=4992800f';
+import { servingsText } from '../feast-day.js?v=a2041032';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -72,7 +73,7 @@ import {
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=ffef5459';
+} from '../pot-luck-feast.js?v=89e24bce';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -255,7 +256,7 @@ function spawnTable(engine) {
     classId: TABLE_CLASS,
     featureId: POT_LUCK_FEAST_ID,
     label: TABLE_LINES.title,
-    subtitle: TABLE_LINES.subtitle(shownTable().total),
+    subtitle: tableSubtitle(engine, shownTable().total),
     sprite: root,
     artHeight: h + 30,
   });
@@ -277,6 +278,12 @@ function fitIcon(s, tex, box) {
   };
   fit();
   if (!isLoaded(tex)) onLoaded(tex, fit);
+}
+
+/** The table's card: its count, and on Thanksgiving Day the feast's servings left (G1009, feast-day-feature). */
+function tableSubtitle(engine, total) {
+  const left = engine.query?.('feastDayServings', engine);
+  return Number.isFinite(left) ? `${TABLE_LINES.subtitle(total)} · ${servingsText(left)}` : TABLE_LINES.subtitle(total);
 }
 
 /** The newest dishes on the table top, left to right, and the count on its front. */
@@ -311,7 +318,7 @@ function redraw(engine) {
   });
   if (list && !list.closed) list.update(listView(engine));
   view.label.text = t.total ? tableCountLabel(t.total) : '';
-  view.target.subtitle = TABLE_LINES.subtitle(t.total);
+  view.target.subtitle = tableSubtitle(engine, t.total);
   publish(engine);
 }
 
@@ -628,6 +635,18 @@ export const potLuckFeastFeature = {
   feastTakes(target, cls, engine) {
     if (!view || target !== view.target) return null;
     return Boolean(kindOf(cls)) && countItem(engine.inv, cls) > 0;
+  },
+
+  /** G1009: the solo table's lays this season by class, the feast's pool (feast-day-feature); null online. */
+  feastLayCounts(engine) {
+    return engine?.mode === 'multiplayer' ? null : { ...(table.counts || {}) };
+  },
+
+  /** G1009: the feast changed: the table's card says the servings left again. */
+  feastTableRedraw(engine) {
+    if (!view) return null;
+    view.target.subtitle = tableSubtitle(engine, shownTable().total);
+    return true;
   },
 
   /** The quest's card in the log while it runs, and after (the Done tab). */
