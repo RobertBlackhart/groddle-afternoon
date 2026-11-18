@@ -392,7 +392,8 @@ describe('reactions on a report message: the rules on a throwaway database', { s
 
   it('an administrator reacts on any message, named by their display name ("Administrator" when that is only their username)', () => {
     assert.deepEqual(r.admin.heart.body.reactions.find((x) => x.e === 'heart'), { e: 'heart', by: [{ id: 900, name: 'Zz Staffer', you: true }], mine: true });
-    assert.deepEqual(r.admin.helper.body.reactions[0].by.map((b) => b.name), ['Zz Staffer', 'Administrator', 'Ada']);
+    // Oldest first; reactions in the same second (created_at is whole seconds) tie by user id, so the set is what holds.
+    assert.deepEqual(r.admin.helper.body.reactions[0].by.map((b) => b.name).sort(), ['Ada', 'Administrator', 'Zz Staffer']);
     assert.equal(r.admin.beas.status, 200, 'any player\'s report');
     assert.deepEqual(r.admin.missingTicket, { status: 404, code: 'groddle_ticket_missing' });
     assert.deepEqual(r.admin.messageOfAnother, { status: 404, code: 'groddle_ticket_message_missing' });
