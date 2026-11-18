@@ -12,7 +12,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { saleVerbs } from '../public/js/home-street-mp.js?v=4969493a';
-import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=843abc0b';
+import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=ca197640';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -169,5 +169,42 @@ describe('names from neighbours-mp.js are imported wherever a feature calls them
         assert.ok(imported.has(n), `${f} calls ${n}() without importing it`);
       }
     }
+  });
+});
+
+describe('#511 (G1027): the display box lists every item it takes', () => {
+  it('no cap at 80: items late in the alphabet are offered', async () => {
+    const { depositChoices } = await import('../public/js/features/home-storage-feature.js?v=ca197640');
+    const { ITEM_CATALOG } = await import('../public/js/inventory.js?v=6414dbdc');
+    // 120 plain things in the pack (the catalog in node holds only the starter items).
+    const added = [];
+    for (let i = 0; i < 120; i += 1) {
+      const cls = `zz_r511_${String(i).padStart(3, '0')}`;
+      if (ITEM_CATALOG[cls]) continue;
+      ITEM_CATALOG[cls] = { label: `Thing ${String(i).padStart(3, '0')}`, icon: '' };
+      added.push(cls);
+    }
+    const inv = Object.fromEntries(added.map((cls) => [cls, 2]));
+    const engine = { inv, mode: 'solo' };
+    const row = { id: 'b1', classTsid: 'bag_furniture_sdb' };
+    let all;
+    try {
+      all = depositChoices(engine, row);
+    } finally {
+      for (const cls of added) delete ITEM_CATALOG[cls];
+    }
+    assert.equal(all.length, 120, `${all.length} choices`);
+    assert.equal(all.at(-1).label, 'Thing 119', 'the 120th by name is there');
+    const labels = all.map((c) => c.label);
+    assert.deepEqual(labels, [...labels].sort((a, b) => a.localeCompare(b)), 'by name');
+    assert.doesNotMatch(read('public/js/features/home-storage-feature.js'), /\.slice\(0, 80\)/);
+  });
+
+  it('a row\'s count never clips: the button is border-box and the name gives way', () => {
+    const css = read('public/js/ui/storage-windows.js');
+    assert.match(css, /\.hst-list button \{ box-sizing: border-box; width: 100%; min-width: 0;/);
+    assert.match(css, /\.hst-list \.hst-label \{ flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; \}/);
+    assert.match(css, /\.hst-list \.hst-n \{ margin-left: auto; flex: none;/);
+    assert.match(css, /el\('span', \{ class: 'hst-label' \}, it\.label\)/);
   });
 });

@@ -89,7 +89,7 @@ import {
   openPriceDialog,
   openStoreDialog,
   storageWindowKind,
-} from '../ui/storage-windows.js?v=4992800f';
+} from '../ui/storage-windows.js?v=87ddfa44';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -722,12 +722,15 @@ function forSale(engine, row) {
   return typeof verbs === 'string' && Boolean(verbs);
 }
 
-function depositChoices(engine, row) {
+/**
+ * deposit's valid_items (bag_furniture_sdb.js 672-710): every pack class the box takes, by name. #511
+ * (G1027): all of them; the list scrolls (the 80 kept here before left out the rest of the alphabet).
+ */
+export function depositChoices(engine, row) {
   return Object.entries(engine.inv)
     .filter(([cls, n]) => n > 0 && ITEM_CATALOG[cls] && !displayRefusal(row, cls, { tool: isTool(cls), bag: isBagClass(cls), blocked: metaOf(cls).blocked }))
     .map(([cls, n]) => ({ cls, label: labelOf(cls), icon: iconOf(cls), count: n }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .slice(0, 80);
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 function sdbOwnerVerbs(engine, row) {

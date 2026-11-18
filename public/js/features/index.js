@@ -171,7 +171,7 @@ import { swoonerfliesFeature } from './swoonerflies-feature.js?v=debe70e7'; FEAT
 import { homePoolMpFeature } from './home-pool-mp-feature.js?v=eda3419c'; FEATURES.push(homePoolMpFeature);
 import { yardVerbsMpFeature } from './yard-verbs-mp-feature.js?v=e1e138fa'; FEATURES.push(yardVerbsMpFeature);
 import { homeMachinesFeature } from './home-machines-feature.js?v=cdf95609'; FEATURES.push(homeMachinesFeature);
-import { homeStorageFeature } from './home-storage-feature.js?v=843abc0b'; FEATURES.push(homeStorageFeature);
+import { homeStorageFeature } from './home-storage-feature.js?v=ca197640'; FEATURES.push(homeStorageFeature);
 import { homeLiveFeature } from './home-live-feature.js?v=ed80100f'; FEATURES.push(homeLiveFeature);
 import { questVerbsFeature } from './quest-verbs-feature.js?v=f9471992'; FEATURES.push(questVerbsFeature);
 import { itemVerbsMoreFeature } from './item-verbs-more-feature.js?v=27b5d7e7'; FEATURES.push(itemVerbsMoreFeature);
@@ -205,7 +205,7 @@ import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1df09118';
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=053ead03'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=0d62ccbd'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=a585668b'; FEATURES.push(feastDayFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=a847db0b'; FEATURES.push(streetObjectsFeature);

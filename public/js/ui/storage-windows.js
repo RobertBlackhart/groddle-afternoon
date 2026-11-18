@@ -114,11 +114,13 @@ const CSS = `
 .hst-store .count-pop-step { justify-content: flex-start; margin: var(--sp-3) 0; }
 .hst-store .hst-buy { width: 100%; margin-top: var(--sp-3); }
 .hst-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); max-height: 50vh; overflow: auto; }
-.hst-list button { width: 100%; display: flex; align-items: center; gap: var(--sp-4); padding: 6px 10px; text-align: left; font: inherit; font-weight: 700;
+.hst-list button { box-sizing: border-box; width: 100%; min-width: 0; display: flex; align-items: center; gap: var(--sp-4); padding: 6px 10px; text-align: left; font: inherit; font-weight: 700;
   border: 0; border-radius: var(--radius-md); background: var(--surface-parchment); color: inherit; cursor: pointer; }
 .hst-list button:hover, .hst-list button:focus-visible { background: var(--surface-hover); }
-.hst-list img { width: 28px; height: 28px; object-fit: contain; }
-.hst-list .hst-n { margin-left: auto; color: var(--text-muted); }
+.hst-list img { width: 28px; height: 28px; object-fit: contain; flex: none; }
+/* #511: the name gives way (an ellipsis), the count never clips at the right edge. */
+.hst-list .hst-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hst-list .hst-n { margin-left: auto; flex: none; color: var(--text-muted); }
 .hst-listwin header { flex-wrap: wrap; row-gap: 0; }
 .hst-listwin header .hst-x { order: 1; }
 .hst-listwin header small { order: 2; flex-basis: 100%; }
@@ -646,7 +648,7 @@ export function openPickDialog({ title, items, onPick, onClose }) {
   for (const it of items) {
     const li = el('li');
     const b = el('button', { type: 'button', 'data-hst-item': it.cls });
-    b.append(el('img', { src: it.icon, alt: '' }), el('span', {}, it.label), el('span', { class: 'hst-n' }, `× ${it.count}`));
+    b.append(el('img', { src: it.icon, alt: '' }), el('span', { class: 'hst-label' }, it.label), el('span', { class: 'hst-n' }, `× ${it.count}`));
     b.addEventListener('click', () => {
       h.close();
       onPick(it.cls);
