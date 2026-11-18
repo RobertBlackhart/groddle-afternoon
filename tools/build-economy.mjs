@@ -90,7 +90,7 @@ import { fileURLToPath } from 'node:url';
 import { requireSite, sitePath } from './repos.mjs';
 import { tradeTable } from './build-realtime-trade.mjs';
 import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=84484e77';
-import { STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=d051373d';
+import { STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=f18b9ecf';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { obtainableItems } from './job-obtainable.mjs';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';

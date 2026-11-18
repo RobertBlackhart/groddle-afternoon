@@ -203,7 +203,7 @@ import { gameTeleporterFeature } from './game-teleporter-feature.js?v=32a5a7d2';
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=8f27e2a3'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=7cfc08e8'; FEATURES.push(potLuckFeastFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=143a7965'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=1640c837'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=efca3d67'; FEATURES.push(accountBackupFeature);

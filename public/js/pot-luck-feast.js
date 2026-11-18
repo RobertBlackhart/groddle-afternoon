@@ -127,6 +127,7 @@ export const TABLE_LINES = Object.freeze({
   already: 'Pot thanks you. Your first offering of the day was already counted.',
   packed: 'Pot Luck Day is over. The Harvest Table has been cleared and packed away until next year.',
   slow: 'Slow down a little.',
+  offline: 'The Harvest Table can’t be reached just now. Try again in a moment.',
   look0: 'A long table by the signpost, set for Pot Luck Day. Nobody has laid anything on it yet.',
   lookN: (n, names) => `A long table by the signpost, set for Pot Luck Day. ${countText(n)} laid so far${names ? `, newest first: ${names}` : ''}.`,
 });

@@ -65,7 +65,7 @@ import {
   questRows,
   shownRows,
   tableCountLabel,
-} from '../pot-luck-feast.js?v=d051373d';
+} from '../pot-luck-feast.js?v=f18b9ecf';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -84,6 +84,7 @@ let client = null;
 let offs = [];
 let online = null; // the server's table while online and on its street: { on, rows, total }
 let pending = null; // { cls, at }: a lay the server has not answered
+let syncAt = 0; // when the page last asked the server for the table (feast_sync)
 let last = '';
 let demoDone = false;
 let engineRef = null;
@@ -327,6 +328,8 @@ function lay(engine, cls) {
       return true;
     }
   }
+  // Online the table is the server's: with no connection nothing is laid (the pack keeps it).
+  if (engine.mode === 'multiplayer') return say(engine, TABLE_LINES.offline, false), false;
   removeItem(engine.inv, c, 1);
   const res = layOffering(table, { c, who: 'me', day: getGameDayKey(Date.now()), name: '' });
   laid(engine, c, res.first);
@@ -486,6 +489,8 @@ export const potLuckFeastFeature = {
   onStreetClear(engine) {
     clearTable(engine);
     pending = null;
+    online = null;
+    syncAt = 0;
   },
 
   onNewDay(now, engine) {
@@ -495,6 +500,11 @@ export const potLuckFeastFeature = {
   onTick(dtMs, now, engine) {
     addRecipe();
     watch(engine);
+    // A feast_state sent before this page listened (a reload, a quick join) is asked for again.
+    if (!online && now - syncAt > 5000 && shared(engine)) {
+      syncAt = now;
+      shared(engine).send('feast_sync', {});
+    }
     if (refreshSeason(engine) && engine.street) spawnTable(engine);
     if (!engine.started || !seasonOn()) return;
     if (quest.status === '' && now >= offerAt && engine.param?.('questoffer') !== 'off' && !engine.query?.('holdQuestOffers', engine) && !engine.questDialogueOpen?.()) {

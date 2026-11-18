@@ -35,7 +35,7 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=d051373d';
+} from '../public/js/pot-luck-feast.js?v=f18b9ecf';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=80957092';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=ca034a11';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
