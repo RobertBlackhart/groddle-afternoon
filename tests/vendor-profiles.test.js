@@ -10,12 +10,13 @@ import { fileURLToPath } from 'node:url';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import {
+  HASHED_VENDOR_KEYS,
   VENDOR_PROFILES,
   selectVendorProfile,
   vendorBuy,
   vendorSell,
   vendorSellValue,
-} from '../public/js/vendor.js?v=d88e1a67';
+} from '../public/js/vendor.js?v=3df46192';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -23,7 +24,7 @@ const publicDir = join(here, '../public');
 describe('official street vendor profiles', () => {
   it('ships every ordinary street-spirit store from catalog_stores.js', () => {
     const labels = Object.values(VENDOR_PROFILES).map((vendor) => vendor.label);
-    assert.equal(labels.length, 15);
+    assert.equal(labels.length, 16); // with Progress Way's Bag Vendor (store 24, #485)
     for (const label of [
       'Groceries Vendor', 'Gardening Goods Vendor', 'Produce Vendor', 'Toy Vendor',
       'Kitchen Tools Vendor', 'Alchemical Goods Vendor', 'Mining Vendor', "Helga's Liquor Store",
@@ -74,6 +75,52 @@ describe('official street vendor profiles', () => {
     assert.ok(seen.size >= 10, `only ${seen.size} vendor types across 100 streets`);
     const rocky = selectVendorProfile('rocky-street', '', { rocks: 4 }).key;
     assert.ok(['mining', 'hardware', 'tools'].includes(rocky), rocky);
+  });
+
+  it('Progress Way is the Bag Vendor, as the bag quest says (#485, buy_two_bags.js 2)', () => {
+    const index = JSON.parse(readFileSync(join(publicDir, 'assets/streets/index.json'), 'utf8'));
+    const row = index.streets.GA94UK1BH3D3FJL;
+    assert.equal(row.label, 'Progress Way');
+    assert.equal(row.store, 'bags');
+    const vendor = selectVendorProfile('GA94UK1BH3D3FJL', '', { store: row.store });
+    assert.equal(vendor.label, 'Bag Vendor');
+    assert.equal(vendor.storeId, 24);
+    assert.equal(vendor.offers.find((o) => o.classTsid === 'bag_generic')?.buyPrice, 500);
+    assert.equal(vendor.offers.find((o) => o.classTsid === 'bag_bigger')?.buyPrice, 1800);
+    // catalog_stores.js 1573-1601 buy_multiplier 0: it buys nothing back.
+    assert.equal(vendor.buyMultiplier, 0);
+    assert.equal(vendorSellValue('coffee', 1, { buyMultiplier: vendor.buyMultiplier }).unit, 0);
+    assert.equal(Object.values(index.streets).filter((s) => s.store === 'bags').length, 1);
+  });
+
+  it('every other street keeps the store the hash gave it before the Bag Vendor joined (G995)', () => {
+    // Austin 2026-11-18: Progress Way changes and nothing else. The hash reads the same 15 stores.
+    assert.equal(HASHED_VENDOR_KEYS.length, 15);
+    assert.equal(HASHED_VENDOR_KEYS.includes('bags'), false);
+    const pinned = {
+      GA5101HF7F429V5: 'animal',
+      GA510IHD1F426DS: 'tools',
+      GA512CSG4H42RKG: 'mining',
+      GA512SK50J52F8M: 'meals',
+      GA512T760J52JMS: 'gardening_tools',
+      GA512V480J52NMN: 'emporium',
+      GA5134PC0J52VC3: 'toys',
+      GA5137QE0J52UB8: 'kitchen',
+      GA5138OK0J526HB: 'sno_cone',
+      GA513A7M0J521F2: 'produce',
+      GA513JAO0J5220P: 'gardening',
+      GA513KEP0J52N21: 'liquor',
+      GA5147561J525G7: 'alchemical',
+      GA5148N71J5237C: 'hardware',
+      GA54AT4AK613NBL: 'groceries',
+    };
+    const index = JSON.parse(readFileSync(join(publicDir, 'assets/streets/index.json'), 'utf8'));
+    for (const [tsid, key] of Object.entries(pinned)) {
+      assert.equal(index.streets[tsid].store, undefined, tsid);
+      assert.equal(selectVendorProfile(tsid, '', { store: index.streets[tsid].store }).key, key, tsid);
+    }
+    const rocky = { GA5101HF7F429V5: 'hardware', GA510IHD1F426DS: 'tools', GA512SK50J52F8M: 'mining' };
+    for (const [tsid, key] of Object.entries(rocky)) assert.equal(selectVendorProfile(tsid, '', { rocks: 4 }).key, key, tsid);
   });
 
   it('restricts purchases to the active shop stock', () => {

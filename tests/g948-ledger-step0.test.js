@@ -19,7 +19,7 @@ import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons
 import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
 import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=4969493a';
 import { FUNPICKLE } from '../public/js/funpickle.js?v=95796317';
-import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=d9285ea6';
+import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=2260ff26';
 
 const root = join(import.meta.dirname, '..');
 const economy = () => JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=cabea74a';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1b254a4b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ed87da2d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -889,7 +889,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=d88e1a67';
+} from './js/vendor.js?v=3df46192';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -1062,7 +1062,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=03ac6512';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=4ce1c847';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=3f4fdf4a';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';

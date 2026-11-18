@@ -15,7 +15,7 @@ import {
 import { gardenVendorOffers } from './garden.js?v=d4e55862';
 import { miningVendorOffers } from './mining.js?v=afb2b145';
 
-import { STORE_CATALOG, ITEM_BASE_COSTS, NO_VENDOR_ITEMS } from './store-catalog.js?v=242d785b';
+import { STORE_CATALOG, ITEM_BASE_COSTS, NO_VENDOR_ITEMS } from './store-catalog.js?v=c6ebb2bd';
 
 /** @typedef {{ classTsid: string, label: string, buyPrice: number, sellPrice: number, stock?: number }} VendorOffer */
 
@@ -109,6 +109,14 @@ export const VENDOR_PROFILES = Object.freeze(
 
 const VENDOR_SEQUENCE = Object.values(VENDOR_PROFILES);
 const MINING_VENDOR_KEYS = ['mining', 'hardware', 'tools'];
+/**
+ * The remake's own: a street map_stores gives no store still gets a spirit with one, picked by a
+ * hash of its tsid (invention street-spirit-hashed-store). The hash reads the 15 stores it always
+ * has: the Bag Vendor (store 24) is Progress Way's alone (#485), and Austin ruled 2026-11-18
+ * (G995) that every other street keeps the store it had.
+ */
+export const HASHED_VENDOR_KEYS = Object.freeze(VENDOR_SEQUENCE.map((vendor) => vendor.key).filter((key) => key !== 'bags'));
+const HASHED_VENDORS = HASHED_VENDOR_KEYS.map((key) => VENDOR_PROFILES[key]);
 
 /** Register official stock in the shared pack catalog. */
 export function ensureVendorItems() {
@@ -129,8 +137,9 @@ export function ensureVendorItems() {
 /**
  * Pick a stable shop for a street, with a query-friendly profile override.
  * Hechey Track stays the familiar groceries stop seen in the footage; other
- * streets use their official store from map_stores, and streets without one
- * get a stable pick (rocky streets favour mining, hardware, and tools).
+ * streets use their official store from map_stores (Progress Way the Bag
+ * Vendor, #485), and streets without one get a stable pick (rocky streets
+ * favour mining, hardware, and tools).
  * @param {string} [streetTsid]
  * @param {string} [override]
  * @param {{ rocks?: number, store?: string }} [context]
@@ -146,7 +155,7 @@ export function selectVendorProfile(streetTsid = '', override = '', context = {}
   if ((context.rocks || 0) >= 3) {
     return VENDOR_PROFILES[MINING_VENDOR_KEYS[hash % MINING_VENDOR_KEYS.length]];
   }
-  return VENDOR_SEQUENCE[hash % VENDOR_SEQUENCE.length];
+  return HASHED_VENDORS[hash % HASHED_VENDORS.length];
 }
 
 ensureVendorItems();

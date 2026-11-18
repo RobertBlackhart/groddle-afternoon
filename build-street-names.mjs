@@ -75,7 +75,17 @@ const STORE_KEYS = {
   Meal: 'meals',
   Food: 'meals',
   Liquor: 'liquor',
+  Bags: 'bags',
 };
+
+/**
+ * Streets map_stores leaves out whose store the source names elsewhere. Progress
+ * Way (LA94UK1BH3D3FJL, the Gentle Island street) is the one the new-player
+ * quest sends you to: "The Street Spirit over on Progress Way is a bag vendor"
+ * (quests/buy_two_bags.js 2); map_stores lists "Bags" only for Old Progress Way
+ * (inc_data_mapextras_prod.js 1454, LIF8LHA3HT336O0).
+ */
+const SOURCE_STORES = { A94UK1BH3D3FJL: 'Bags' };
 
 async function evaluate(file, expose) {
   const sandbox = { config: {}, log: { info() {}, error() {} } };
@@ -149,7 +159,7 @@ for (const [tsid, meta] of Object.entries(index.streets || {})) {
       if (err?.code !== 'ENOENT') throw err;
     }
   }
-  const storeName = extras.stores?.[`L${key}`] || extras.stores?.[`G${key}`];
+  const storeName = extras.stores?.[`L${key}`] || extras.stores?.[`G${key}`] || SOURCE_STORES[key];
   const store = STORE_KEYS[storeName];
   if (store) {
     meta.store = store;

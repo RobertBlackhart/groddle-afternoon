@@ -37,7 +37,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireSite, sitePath } from './repos.mjs';
-import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=242d785b';
+import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const TRADE = join(root, 'public/assets/content/trade-items.json');

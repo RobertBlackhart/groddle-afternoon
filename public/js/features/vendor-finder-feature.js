@@ -12,7 +12,7 @@
  */
 import { getStreetEcologyCatalog } from '../street-ecology.js?v=62ca408f';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { VENDOR_FINDER_TEXT, sameStreet, vendorFinderRows, vendorKinds, vendorRowWhere } from '../vendor-finder.js?v=cbb76b62';
+import { VENDOR_FINDER_TEXT, sameStreet, vendorFinderRows, vendorKinds, vendorRowWhere } from '../vendor-finder.js?v=8b0273b0';
 
 export const VENDOR_FINDER_FEATURE_ID = 'vendor-finder';
 

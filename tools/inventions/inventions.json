@@ -4547,6 +4547,23 @@
    "rows": [
     "G1001"
    ]
+  },
+  {
+   "id": "street-spirit-hashed-store",
+   "title": "A street with no store in map_stores still gets a street spirit store, picked by a hash of its tsid",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/vendor.js",
+     "symbol": "selectVendorProfile / HASHED_VENDOR_KEYS"
+    }
+   ],
+   "why": "Glitch set each spirit's store_id by hand (street_spirit_*.js instanceProps store_id, 0 for none) and map_stores lists only the streets with one, so the rest had no shop to recover. The pick is stable per street over the same 15 stores it always read; rocky streets lean to the Mining Vendor, Hardware and Tool Vendor. Progress Way's Bag Vendor (store 24, #485) is never hashed.",
+   "ruling": "Austin 2026-11-18 (G995, calls P9iN1Q8WPs8rYTDVPGLfXp): fix Progress Way only; every other hashed street keeps the store it has (the wider change in held commit 4370520b2c1 not taken)",
+   "rows": [
+    "G995"
+   ]
   }
  ]
 }

@@ -1155,7 +1155,9 @@
     "remake-own: The panel's words (the remake's own).": "vendor-finder"
   },
   "public/js/vendor.js": {
-    "ours: 8), so their stores' lines are ours.": "ours-vendor"
+    "invented: * hash of its tsid (invention street-spirit-hashed-store). The hash reads the": "street-spirit-hashed-store",
+    "ours: 8), so their stores' lines are ours.": "ours-vendor",
+    "remake-own: * The remake's own: a street map_stores gives no store still gets a": "street-spirit-hashed-store"
   },
   "public/js/vicars-peak.js": {
     "no-source: the street, clear of its one signpost (x 766). No source x/y survives.": "ours-vicars-peak",

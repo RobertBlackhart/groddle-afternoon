@@ -2088,6 +2088,7 @@
 {"s":"people","id":"vendor-animal","n":"Animal Goods Vendor","g":"Vendors and stores","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/people/vendor-animal/"},
 {"s":"people","id":"vendor-mining","n":"Mining Vendor","g":"Vendors and stores","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/people/vendor-mining/"},
 {"s":"people","id":"vendor-toys","n":"Toy Vendor","g":"Vendors and stores","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/people/vendor-toys/"},
+{"s":"people","id":"vendor-bags","n":"Bag Vendor","g":"Vendors and stores","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/people/vendor-bags/"},
 {"s":"places","id":"vantalu","n":"Vantalu","g":"Regions","st":"source","ic":"assets/maps/art/thumbs/sm_vantalu.jpg","h":"encyclopedia/places/vantalu/"},
 {"s":"places","id":"aranna","n":"Aranna","g":"Regions","st":"source","ic":"assets/maps/art/thumbs/sm_aranna.jpg","h":"encyclopedia/places/aranna/"},
 {"s":"places","id":"ormonos","n":"Ormonos","g":"Regions","st":"source","ic":"assets/maps/art/thumbs/sm_ormonos.jpg","h":"encyclopedia/places/ormonos/"},
@@ -4761,4 +4762,5 @@
 {"s":"stores","id":"liquor","n":"Helga's Liquor Store","g":"Kept by a vendor of their own","st":"source","ic":"assets/sprites/encyclopedia/npc_jabba2.webp","h":"encyclopedia/stores/liquor/"},
 {"s":"stores","id":"meals","n":"Meal Vendor","g":"Kept by a vendor of their own","st":"source","ic":"assets/sprites/encyclopedia/npc_cooking_vendor.webp","h":"encyclopedia/stores/meals/"},
 {"s":"stores","id":"mining","n":"Mining Vendor","g":"Kept by Street Spirits","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/stores/mining/"},
-{"s":"stores","id":"toys","n":"Toy Vendor","g":"Kept by Street Spirits","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/stores/toys/"}]}
+{"s":"stores","id":"toys","n":"Toy Vendor","g":"Kept by Street Spirits","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/stores/toys/"},
+{"s":"stores","id":"bags","n":"Bag Vendor","g":"Kept by Street Spirits","st":"source","ic":"assets/sprites/icons/street_spirit.webp","h":"encyclopedia/stores/bags/"}]}

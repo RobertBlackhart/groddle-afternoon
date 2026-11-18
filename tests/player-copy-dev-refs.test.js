@@ -23,7 +23,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DENY, denied, gameModules, pageText, pagesUnder, pub, rel, scanModule, stripTags } from './player-copy-dev-refs.js';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
-import { ensureVendorItems, VENDOR_PROFILES } from '../public/js/vendor.js?v=d88e1a67';
+import { ensureVendorItems, VENDOR_PROFILES } from '../public/js/vendor.js?v=3df46192';
 import { ensureMakingItems } from '../public/js/making.js?v=80957092';
 import { ensureMiningItems } from '../public/js/mining.js?v=afb2b145';
 import { ensureGardenItems } from '../public/js/garden.js?v=d4e55862';
@@ -32,7 +32,7 @@ import { ensureSpinningWheelItems } from '../public/js/spinning-wheel.js?v=1ce3f
 import { ensureCubimalItems } from '../public/js/cubimals.js?v=07f59f2f';
 import { ensureHellItems } from '../public/js/hell.js?v=834960da';
 import { ensureFoxItems } from '../public/js/foxes.js?v=4497a984';
-import { STORE_CATALOG } from '../public/js/store-catalog.js?v=242d785b';
+import { STORE_CATALOG } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { IMAGINATION_UPGRADES } from '../public/js/imagination-data.js?v=4a85e7fe';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 import { HOTKEYS_FOOTER, HOTKEYS_TITLE, hotkeySections } from '../public/js/client-hotkeys.js?v=c8210235';

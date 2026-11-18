@@ -40,7 +40,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=7968c974';
-import { ITEM_BASE_COSTS } from '../store-catalog.js?v=242d785b';
+import { ITEM_BASE_COSTS } from '../store-catalog.js?v=c6ebb2bd';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
   LETTER_ROW,

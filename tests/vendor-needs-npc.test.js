@@ -17,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hotkeySections } from '../public/js/client-hotkeys.js?v=c8210235';
-import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=4ce1c847';
+import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=3f4fdf4a';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (p) => readFileSync(join(here, '../public', p), 'utf8');

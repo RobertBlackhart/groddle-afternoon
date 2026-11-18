@@ -42,7 +42,7 @@ import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetE
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=80957092';
 import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=280a4725';
-import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=242d785b';
+import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { TOOL_CONDITION_CATALOG } from '../public/js/tools.js?v=4156bba8';
 import { placementRequests } from './build-realtime-objects.mjs';
 import { streetIsRookable } from '../public/js/rook-attack.js?v=5e62a79f';

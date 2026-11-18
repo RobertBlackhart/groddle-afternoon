@@ -2,8 +2,9 @@
  * Generate js/store-catalog.js from Tiny Speck's catalog_stores.js (CC0).
  *
  * Keeps the street-spirit shops a player meets on ordinary streets, with their
- * exact stock, prices, and buy-back multipliers. Test, unused, bag-only,
- * furniture, ticket, and limited-quantity rarity stores are left out.
+ * exact stock, prices, and buy-back multipliers, and the Bag Vendor (store 24)
+ * of Progress Way. Test, unused, Bags Only (21), furniture, ticket, and
+ * limited-quantity rarity stores are left out.
  *
  * Also writes every item's base_cost and the no_vendor items, which set
  * what a store pays (inc_stores.js storeSell: round(base_cost * buy_multiplier)).
@@ -40,6 +41,8 @@ const KEEP = {
   16: { key: 'meals', id: 'street_spirit_meals', color: 0xe07b39 },
   18: { key: 'mining', id: 'street_spirit_mining', color: 0x8a6d4b },
   19: { key: 'toys', id: 'street_spirit_toys', color: 0x7653a6 },
+  // Progress Way's spirit (quests/buy_two_bags.js 2: "a bag vendor"; map_stores "Bags" for Old Progress Way).
+  24: { key: 'bags', id: 'street_spirit_bag_vendor', color: 0xc79a4a },
 };
 
 const SEASONAL = new Set(['glitchmas_cracker', 'glitchmas_card']);

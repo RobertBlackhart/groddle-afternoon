@@ -2049,6 +2049,52 @@ export const STORE_CATALOG = Object.freeze([
         "desc": "Swim, float & drift your way around this quoin-laden party space. And, remember … quoining is always more fun with friends!"
       }
     ]
+  },
+  {
+    "storeId": 24,
+    "key": "bags",
+    "id": "street_spirit_bag_vendor",
+    "color": 13081162,
+    "label": "Bag Vendor",
+    "buyMultiplier": 0,
+    "offers": [
+      {
+        "classTsid": "bag_generic",
+        "label": "Generic Bag",
+        "cost": 500,
+        "desc": "An honest, unpretentious burlap sack. You could probably put things in it, perhaps 10 things, and give it a name. Just a thought."
+      },
+      {
+        "classTsid": "bag_generic_blue",
+        "label": "Generic Blue Bag",
+        "cost": 500,
+        "desc": "An honest, unpretentious blue burlap sack. You could probably put things in it, perhaps 10 things, and give it a name. Just a thought."
+      },
+      {
+        "classTsid": "bag_generic_gray",
+        "label": "Generic Gray Bag",
+        "cost": 500,
+        "desc": "An honest, unpretentious gray burlap sack. You could probably put things in it, perhaps 10 things, and give it a name. Just a thought."
+      },
+      {
+        "classTsid": "bag_generic_green",
+        "label": "Generic Green Bag",
+        "cost": 500,
+        "desc": "An honest, unpretentious green burlap sack. You could probably put things in it, perhaps 10 things, and give it a name. Just a thought."
+      },
+      {
+        "classTsid": "bag_generic_pink",
+        "label": "Generic Pink Bag",
+        "cost": 500,
+        "desc": "An honest, unpretentious pink burlap sack. You could probably put things in it, perhaps 10 things, and give it a name. Just a thought."
+      },
+      {
+        "classTsid": "bag_bigger",
+        "label": "Bigger Bag",
+        "cost": 1800,
+        "desc": "A big, big bag for putting things in. Bigger than 15 slots, but not as big as 17."
+      }
+    ]
   }
 ]);
 

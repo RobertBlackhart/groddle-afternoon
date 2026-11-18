@@ -40,7 +40,7 @@ export async function addStores(d, { itemIcon, portrait }) {
       icon: (keeper && portrait(keeper)) || itemIcon('street_spirit'),
       desc: p.desc,
       shop: {
-        key: p.key, offers: p.offers.filter((o) => o.classTsid), keeper, keeperDesc: npc?.desc || '', buyTooltip: npc?.buyTooltip || '',
+        key: p.key, buyMultiplier: p.buyMultiplier, offers: p.offers.filter((o) => o.classTsid), keeper, keeperDesc: npc?.desc || '', buyTooltip: npc?.buyTooltip || '',
         streets, person: d.stores.get(p.key) || null,
       },
     });
@@ -64,7 +64,7 @@ export function storePage(e, P, { info, kit }) {
   return `${kit.entryHead(e, P, { subline: esc(s.keeper ? 'Store, kept by its vendor' : 'Store, kept by a Street Spirit') })}
   <main>
 ${band('about-h', 'About this store', `${original}<p>${esc(e.desc)}</p>${person ? sub('Who keeps it', person) : ''}`)}
-${band('sells-h', 'What it sells', P.tiles(sells, 'ency-shop'), { alt: true, lead: 'Prices in currants, as the remake sells them before Imagination upgrades. It buys back what you sell it too.' })}
+${band('sells-h', 'What it sells', P.tiles(sells, 'ency-shop'), { alt: true, lead: `Prices in currants, as the remake sells them before Imagination upgrades. ${s.buyMultiplier > 0 ? 'It buys back what you sell it too.' : 'It buys nothing back.'}` })}
 ${band('where-h', 'Where to find one', s.streets.length ? `<p class="ency-lead-small">On ${fmt(s.streets.length)} street${s.streets.length === 1 ? '' : 's'} in ${fmt(places.length)} region${places.length === 1 ? '' : 's'}.</p>\n        ${where}` : '<p class="cat-muted">No street in the remake has one.</p>')}
   </main>`;
 }

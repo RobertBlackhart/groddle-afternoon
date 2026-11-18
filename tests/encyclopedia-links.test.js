@@ -26,9 +26,9 @@ import {
   isEncyclopediaKey,
 } from '../public/js/encyclopedia-links.js?v=eebc2a5d';
 import { GIANTS } from '../public/js/shrines.js?v=280a4725';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=d88e1a67';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=3df46192';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=c8210235';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=4ce1c847';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=3f4fdf4a';
 import { questCardMenuRows } from '../public/js/ui/quest-sheet.js?v=db8d7891';
 import { ISLAND_CONFIRM, ISLAND_LINES } from '../public/js/newxp.js?v=02f902e6';
 
