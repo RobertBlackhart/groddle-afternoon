@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=917fb26d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=770943ac';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1070,6 +1070,7 @@ import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
+import { flyItemToPack } from './js/pack-flight.js?v=fb063fdc';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=98fff2d4';
@@ -8514,6 +8515,48 @@ function speechSlugRow(slugs, maxWidth = 256) {
   return row;
 }
 
+/**
+ * #498: where an item flying into the pack lands, in client pixels: the slot that shows it when
+ * that slot is in view (ItemstackAnimation.as dest_pt, the pack slot), else the middle of the pack bar.
+ */
+function packFlightTarget(classTsid) {
+  const centre = (el) => {
+    if (!el || el.offsetParent === null) return null;
+    const r = el.getBoundingClientRect();
+    return r.width && r.height ? { r, x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+  };
+  const slot = centre(findPackSlotElement(classTsid));
+  const view = document.getElementById('pack-scroll')?.getBoundingClientRect();
+  if (slot && (!view || (slot.x >= view.left && slot.x <= view.right))) return { x: slot.x, y: slot.y };
+  const bar = centre(document.getElementById('pack-items')) || centre(document.getElementById('pack-bar'));
+  return bar ? { x: bar.x, y: bar.y } : null;
+}
+
+/**
+ * #498: an item given from something in the street flies from it into the pack (js/pack-flight.js,
+ * the client's FLOOR_TO_PACK for pc.createItemFromSource). `source` is a Pixi display object in the
+ * street (from its anchor, where it stands) or a point in the player's space. Call it after the pack is redrawn.
+ */
+function flyToPackFrom(classTsid, count = 1, source = null) {
+  if (!classTsid || !source || !app?.canvas || !fxLayer || fxLayer.destroyed) return null;
+  let g = null;
+  try {
+    // orig_pt is the source stack's own point (its feet, as the street places it).
+    if (typeof source.toGlobal === 'function') g = source.toGlobal(new PIXI.Point(0, 0)); else if (Number.isFinite(source.x) && Number.isFinite(source.y)) {
+      g = fxLayer.toGlobal(new PIXI.Point(source.x, source.y));
+    }
+  } catch {
+    g = null;
+  }
+  const to = packFlightTarget(classTsid);
+  if (!g || !to) return null;
+  const c = app.canvas.getBoundingClientRect();
+  const from = { x: c.left + g.x * (c.width / VIEW_W), y: c.top + g.y * (c.height / VIEW_H) };
+  const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setCanvasData('packFlightLast', `${classTsid}:${count}`);
+  return flyItemToPack({ doc: document, from, to, iconUrl: itemIconUrl(classTsid), count, reduced });
+}
+
 /** The HUD point a slug's amount flies to, in client pixels (SlugAnimator.as 110-132). */
 function slugFlightTarget(type) {
   const id = SLUG_TARGETS[type];
@@ -13431,6 +13474,8 @@ const engine = {
     return street.features[featureId];
   },
   floatText: (x, y, text, color, opts) => floatText(x, y, text, color, opts),
+  /** #498: an item given from `source` (a street display object or a point) flies into its pack slot; after refreshPack. */
+  flyToPack: (classTsid, count, source) => flyToPackFrom(classTsid, count, source),
   /** A quoin's amount at the quoin (x, y), as Glitch drew it (quoinGotText). */
   quoinGotText: (x, y, text, color) => quoinGotText(x, y, text, color),
   /** NOTIFY zones: a banner's box in #game-root px (null releases it); notices, the Enter hint and speech keep off it. */

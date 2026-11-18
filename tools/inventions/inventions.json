@@ -4669,6 +4669,20 @@
    ],
    "why": "Glitch showed the mode only through which verb the Hoe offered (hoe.js 70-126), and a player lost track of why one plot took 4 wear (#503). Austin asked for the Hoe to show the mode (2026-11-18). The wear comes from gardenActionProfile, the rule clearing uses.",
    "rows": []
+  },
+  {
+   "id": "pack-flight-rise",
+   "title": "How high an item given from the street rises before it flies into the pack, and the colour of its +N",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pack-flight.js",
+     "symbol": "PACK_FLIGHT.risePx"
+    }
+   ],
+   "why": "#498: the flight itself is Glitch's FLOOR_TO_PACK (ItemstackAnimation.as 237-269: grow 1 s, sit 0.7 s, fly 0.5 s). Its float height came from the client's stylesheet (offsets.itemstack_animation_zenith) and the count's colour from its itemstack_animation_add class, neither of which survived; 60 px up and a white count with the source's dark glow fill them.",
+   "rows": []
   }
  ]
 }

@@ -909,6 +909,8 @@ function choose(engine, value) {
       onAccept: () => {
         addItem(engine.inv, FOX_BRUSH_ID, FOX_LICENSE.brush);
         engine.refreshPack();
+        // #498: from the Fox Ranger into the pack (npc_fox_ranger.js 319 pc.createItemFromSource).
+        engine.flyToPack?.(FOX_BRUSH_ID, FOX_LICENSE.brush, ranger?.sprite);
         engine.pushActivity({ base: 'The Fox Ranger gave you a Fox Brush', effects: { items: { 'Fox Brush': 1 } } });
         choose(engine, 'give-bait');
       },
@@ -923,6 +925,8 @@ function choose(engine, value) {
       onAccept: () => {
         addItem(engine.inv, FOX_BAIT_ID, FOX_LICENSE.bait);
         engine.refreshPack();
+        // #498: npc_fox_ranger.js 327.
+        engine.flyToPack?.(FOX_BAIT_ID, FOX_LICENSE.bait, ranger?.sprite);
         engine.pushActivity({ base: 'The Fox Ranger gave you Fox Bait', effects: { items: { 'Fox Bait': FOX_LICENSE.bait } } });
         engine.save();
         rangerDialog(engine, {

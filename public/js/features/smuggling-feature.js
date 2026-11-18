@@ -412,7 +412,7 @@ function startRun(engine, from) {
   return true;
 }
 
-function giveRewards(engine) {
+function giveRewards(engine, from = null) {
   const pc = engine.pc;
   // npc_smuggler.js 515: stats_add_xp(100, false) takes the mood bonus.
   const xp = grantMoodXp(pc, RECEIVE_REWARDS.xp);
@@ -425,6 +425,8 @@ function giveRewards(engine) {
   engine.playSound?.('QUOIN_CURRANTS', { volume: 0.5 });
   engine.refreshPack?.();
   engine.updateHud?.();
+  // #498: the item flies from the Smuggler into the pack (npc_smuggler.js 518 pc.createItemFromSource).
+  if (from?.sprite) engine.flyToPack?.(RECEIVE_REWARDS.item, RECEIVE_REWARDS.count, from.sprite);
 }
 
 function deliver(engine) {
@@ -700,7 +702,7 @@ async function runAction(engine, npc, action) {
     setClip(engine, npc, 'takeBox', () => npc.state !== 'gone' && setClip(engine, npc, 'talkWithBox'));
     npc.received = true;
   } else if (action === 'reward') {
-    giveRewards(engine);
+    giveRewards(engine, npc);
     npc.rewarded = true;
   } else if (action === 'complete') {
     npc.conversed = true;
@@ -774,7 +776,7 @@ async function talkReceiver(engine) {
     // receiveMsgHandler: a delivery that skipped the rewards still pays out.
     if (receiver?.received && !receiver.rewarded) {
       say(engine, receiver, "But I didn't get to the best part - the rewards! Sigh. Here you go.", 5000);
-      giveRewards(engine);
+      giveRewards(engine, receiver);
       receiver.rewarded = true;
     }
     if (receiver?.received && !receiver.conversed) {

@@ -787,6 +787,12 @@
     "invented: * stay Glitch's. tools/inventions/inventions.json entry": "remake-pace",
     "ours: * Ours (register G983, Austin 2026-11-17): players": "remake-pace"
   },
+  "public/js/pack-flight.js": {
+    "guess: /** Guessed float height (the client's CSS offset is lost):": "pack-flight-rise",
+    "guess: in the client source: PACK_FLIGHT.risePx is the guessed stand-in": "pack-flight-rise",
+    "invented: is the guessed stand-in (tools/inventions/inventions.json": "pack-flight-rise",
+    "stand-in: client source: PACK_FLIGHT.risePx is the guessed stand-in": "pack-flight-rise"
+  },
   "public/js/pack-slots.js": {
     "not-source: for the house too (js/home-trophies.js), made, not in the GSJS": "pot-luck-cornucopia",
     "ours: // Our own short words where the client only refused the": "ours-pack-slots",

@@ -233,10 +233,14 @@ function applyGrant(engine, result) {
     speakTo(engine, 3000);
     say(engine, result.bubble, 5000);
   }
-  for (const line of result.activity) engine.pushActivity(line);
   // The quest event behind hell_quest's buy_wotd flag (js/quest-offers.js COUNTER_ROUTES, G163).
   if (result.ok) engine.achievement('vendor_bought:wine_of_the_dead', 1);
+  // #498: the purchase line after the quest's own news from the same moment, so it is the newest
+  // notice and keeps its full time (js/notify.js lets a newer notice push the oldest after 1.5 s).
+  for (const line of result.activity) engine.pushActivity(line);
   engine.refreshPack();
+  // #498: the wine flies from the bartender into the pack (grantWine's pc.createItemFromSource, items/hell_bartender.js 342).
+  if (result.ok) engine.flyToPack?.(WINE, 1, bartender?.sprite);
   engine.save();
   engine.setData('hellBarLast', result.ok ? 'bought' : 'refused');
   publish(engine);

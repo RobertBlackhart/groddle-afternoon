@@ -353,6 +353,8 @@ function choose(engine, choice) {
       engine.playSound?.('TRADE_COMPLETED', { volume: 0.6 });
       engine.pushActivity?.(`You traded one ${label(res.receive)} to the Rube for ${meta?.article || 'a'} ${label(res.give)}.`);
       engine.refreshPack?.();
+      // #498: the Rube's item flies from him into the pack (npc_rube.js 436 pc.createItemFromSource).
+      engine.flyToPack?.(res.give, 1, rube.sprite);
     }
     last = res.text;
     engine.say?.(rube.target, res.text, 4000);
