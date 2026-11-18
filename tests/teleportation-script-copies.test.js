@@ -421,8 +421,9 @@ describe('between players', () => {
 
   it('the Give and Trade windows list each script by its street and take the one chosen', () => {
     const gifts = readFileSync(join(root, 'public/js/features/gifts-feature.js'), 'utf8');
-    assert.match(gifts, /copyTagKind\(c\) === 'script'/);
-    assert.match(gifts, /Number\.isInteger\(p\.copy\) \? p\.copy/);
+    // R18 (G974): every class with copies goes through js/copy-picks.js (tests/copy-picks.test.js).
+    assert.match(gifts, /copyPicks\(engine\.toolState, c\)/);
+    assert.match(gifts, /copyWire\(p\.c, p, item\.n\)/);
     const trade = readFileSync(join(root, 'public/js/features/trade-feature.js'), 'utf8');
     assert.match(trade, /addFromPack\(row\.classTsid, tag\)/);
     assert.match(trade, /chosenScriptsLast\(c, goods\)/);

@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { filterPickerItems, pickerGridMove, pickerTileText } from '../public/js/ui/item-picker.js?v=52288b20';
+import { filterPickerItems, pickerGridMove, pickerTileText } from '../public/js/ui/item-picker.js?v=a805ea2d';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');
@@ -49,8 +49,11 @@ describe('#141 the item picker\'s rules', () => {
   });
 
   it('a tile says the name and a count badge only for more than one', () => {
-    assert.deepEqual(pickerTileText({ label: 'Cherries', count: 12 }), { label: 'Cherries', badge: '12', title: 'Cherries ×12' });
-    assert.deepEqual(pickerTileText({ label: 'Hatchet', count: 1 }), { label: 'Hatchet', badge: '', title: 'Hatchet' });
+    assert.deepEqual(pickerTileText({ label: 'Cherries', count: 12 }), { label: 'Cherries', note: '', badge: '12', title: 'Cherries ×12' });
+    assert.deepEqual(pickerTileText({ label: 'Hatchet', count: 1 }), { label: 'Hatchet', note: '', badge: '', title: 'Hatchet' });
+    // R18 (G974): a copy of its own says what tells it apart, under its name and in its title.
+    assert.deepEqual(pickerTileText({ label: 'Pick', note: '45/100', count: 1 }), { label: 'Pick', note: '45/100', badge: '', title: 'Pick (45/100)' });
+    assert.equal(pickerTileText({ label: 'Teleportation Script', note: 'Hechey Track', title: 'Teleportation Script to Hechey Track', count: 1 }).title, 'Teleportation Script to Hechey Track');
   });
 });
 

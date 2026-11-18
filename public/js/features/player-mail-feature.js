@@ -39,6 +39,7 @@
 import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
+import { copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=11b1eb70';
 import { ITEM_BASE_COSTS } from '../store-catalog.js?v=74b56af3';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
@@ -108,8 +109,11 @@ function createSession(engine) {
     return (engine.mailMessages?.() || []).find((m) => m.id === id) || null;
   }
 
-  /** One settled move, once (the trade slice's applied list): true when applied now. */
-  function applyReceipt(raw, { quiet = false, r = null, t = null } = {}) {
+  /**
+   * One settled move, once (the trade slice's applied list): true when applied now. `pick`: the
+   * copies chosen to send (R18, js/copy-picks.js), the ones that leave.
+   */
+  function applyReceipt(raw, { quiet = false, r = null, t = null, pick = null } = {}) {
     const receipt = normalizeMailReceipt(raw);
     if (!receipt) return false;
     if (engine.query?.('ledgerReceipt', receipt.op, engine) !== true) return false;
@@ -119,7 +123,10 @@ function createSession(engine) {
       if (d > 0) {
         addItem(inv, c, d);
         if ((r != null || t != null) && TOOL_CONDITION_CATALOG[c] && engine.toolState) receiveToolCopy(engine.toolState, c, r, d, t);
-      } else removeItem(inv, c, Math.min(countItem(inv, c), -d));
+      } else {
+        if (pick?.c === c && engine.toolState) takeCopies(engine.toolState, c, pick, -d);
+        removeItem(inv, c, Math.min(countItem(inv, c), -d));
+      }
     }
     if (fx.currants) engine.pc.currants = Math.max(0, Math.floor(Number(engine.pc.currants) || 0) + fx.currants);
     if (receipt.kind === 'c') {
@@ -242,7 +249,13 @@ function createSession(engine) {
       bagHolds: stack ? bagHolds(stack.c, stack.n) : false,
     }, ITEM_BASE_COSTS);
     if (why) return { ok: false, text: why };
-    if (stack && TOOL_CONDITION_CATALOG[stack.c] && engine.toolState) {
+    // R18 (G974): the copy chosen in Attach (game.js, attachable below) carries its own wear and words.
+    const pick = stack && Array.isArray(item?.copies) ? { c: stack.c, copy: item.copy, copies: item.copies, r: item.r, t: item.t ?? null } : null;
+    const wire = pick && engine.toolState ? copyWire(stack.c, pick, stack.n) : null;
+    if (wire) {
+      stack.r = wire.r;
+      if (wire.t != null) stack.t = wire.t;
+    } else if (stack && TOOL_CONDITION_CATALOG[stack.c] && engine.toolState) {
       const r = leavingToolWear(engine.toolState, stack.c, stack.n);
       if (r != null) stack.r = r;
       // One copy's own words go with it (a Cubimal's name, a Draught's Giant ...).
@@ -259,7 +272,10 @@ function createSession(engine) {
       return { ok: false, text: String(data?.text || data?.message || err?.message || T.offline), why: data?.why || '' };
     }
     if (d?.status !== 'sent' || !d.letter) return { ok: false, text: T.offline };
-    applyReceipt(d.receipt);
+    if (wire) markLeaving(engine, stack.c, pick, stack.n);
+    applyReceipt(d.receipt, { pick: wire ? pick : null });
+    // The site's copy of the save already counts one fewer; which copy left only this save knows.
+    if (wire) persist();
     const row = sentRow(d.letter);
     if (row && !rowFor(row.id)) {
       engine.recordSentMail?.(row);
@@ -383,6 +399,14 @@ export const playerMailFeature = {
       rules: s.rules,
       cost: (form) => playerMailCost(form, ITEM_BASE_COSTS),
       placeholder: T.toPlaceholder,
+      /**
+       * R18 (G974): Attach one stack's choices: the pack's slots, a class whose copies differ as one
+       * choice per copy (js/copy-picks.js), `key` its value and `note` what tells it apart.
+       */
+      attachable: (slots) => packPicks(engine.toolState, (slots || []).map((sl) => ({ ...sl, c: sl.classTsid }))).map((it) => ({
+        ...it,
+        label: it.note ? `${it.label} (${it.note})` : it.label,
+      })),
     };
   },
 

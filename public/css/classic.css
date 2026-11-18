@@ -3415,6 +3415,10 @@
 :root[data-ui="classic"] .top-bar #sound-pop .hud-slider[data-other-music] { opacity: 0.5; }
 /* === end fix28 === */
 
+/* === copypick (lane) === */
+/* R18 (G974): a copy's note under its name in the item picker (js/copy-picks.js), the 2012 caption grey. */
+:root[data-ui="classic"] .item-picker-note { color: var(--c-classic-offline); font: 700 calc(var(--fs-classic-count) * var(--cu-n, 1))/var(--lh-tight) var(--font-classic-body); }
+/* === end copypick === */
 /* == TICKETS == Reports (js/ui/reports-sheet.js, online only) as a 2012 window: the Quest Log's frame
    (Dialog.as, WindowBorder.as, BigDialog.as) centred in the viewport, the white head with its 20 px
    title and the red cross, the grey well between two rules, the white footer with the minor buttons;

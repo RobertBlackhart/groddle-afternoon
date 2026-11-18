@@ -13993,6 +13993,9 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 .item-picker-badge { position: absolute; top: 2px; right: 3px; min-width: 1.1rem; padding: 0 var(--sp-1); border-radius: var(--radius-pill); background: var(--surface-raised); box-shadow: 0 0 0 1px var(--border); color: var(--text); font-size: var(--fs-xs); font-weight: var(--fw-heavy); line-height: 1.35; text-align: center; font-variant-numeric: tabular-nums; }
 .item-picker-badge[hidden] { display: none; }
 .item-picker-name { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* R18 (G974): a copy of its own says what tells it apart under its name (js/copy-picks.js copyNote). */
+.item-picker-note { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; }
+.item-picker-note[hidden] { display: none; }
 .item-picker-none { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); }
 .item-picker-chosen { display: grid; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-raised); }
 .item-picker-chosen-head { display: flex; align-items: center; gap: var(--sp-3); min-width: 0; }

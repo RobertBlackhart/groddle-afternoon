@@ -111,11 +111,12 @@ import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
+import { copyPicks, markLeaving, takeCopies } from '../copy-picks.js?v=11b1eb70';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
 import { getPlot, tickGarden } from '../garden.js?v=d4e55862';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=b6ed6990';
-import { butlerApi } from './butler-feature.js?v=e10f382f';
+import { butlerApi } from './butler-feature.js?v=6e6511dc';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=d4140290';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
@@ -886,7 +887,14 @@ function createSession(engine, client) {
       if (!cls || cls === GIFT_WRAPPED_CLASS || !butlerCarries(cls)) continue;
       if (!seen.has(cls)) seen.set(cls, countItem(engine.inv, cls));
     }
-    const out = [...seen].filter(([, n]) => n > 0).map(([c, n]) => ({ c, n }));
+    // R18 (G974): a class whose copies differ is one choice per copy (js/copy-picks.js), its note in the label.
+    const out = [];
+    for (const [c, n] of seen) {
+      if (n <= 0) continue;
+      const picks = engine.toolState ? copyPicks(engine.toolState, c) : null;
+      if (!picks) out.push({ c, n });
+      else for (const p of picks) out.push({ c, n: p.count, pick: { copy: p.copy, copies: p.copies, r: p.r, t: p.t }, note: p.note });
+    }
     // G332, bag_butler.js:1013 and 1059: a wrapped Gift Box goes though it is no_trade; each box is its own choice.
     for (const b of engine.query?.('giftBoxList', engine) || []) {
       if (countItem(engine.inv, GIFT_WRAPPED_CLASS) < 1) break;
@@ -913,11 +921,14 @@ function createSession(engine, client) {
   function leavePackage(drop = null) {
     if (!visit?.butler || vb?.busy) return;
     const all = giftableStacks();
-    const stacks = drop ? all.filter((st) => st.c === drop.cls) : all;
+    const ofClass = drop ? all.filter((st) => st.c === drop.cls) : all;
+    // A copy dragged (js/butler-drop.js passes its place among the class's copies) is that copy's choice.
+    const dragged = drop && Number.isInteger(drop.copy) ? ofClass.filter((st) => st.pick?.copies.includes(drop.copy)) : [];
+    const stacks = dragged.length ? dragged : ofClass;
     if (!stacks.length) return butlerSay(drop && all.length ? BT.packageTypeFail : BT.nothingToGive);
     if (drop && stacks.length === 1 && leaveMax(stacks[0]) === 1) {
       engine.setData?.('butlerLeaveFrom', 'drop');
-      return confirmPackage(stacks[0].c, 1, stacks[0].box || null);
+      return confirmPackage(stacks[0].c, 1, stacks[0].box || null, stacks[0].pick || null);
     }
     engine.setData?.('butlerLeaveFrom', drop ? 'drop' : 'menu');
     vb.busy = true;
@@ -929,8 +940,8 @@ function createSession(engine, client) {
       const count = el('input', { type: 'number', min: '1', max: String(leaveMax(pick)), value: String(first), 'data-butler-count': '', 'aria-label': BT.howMany });
       count.value = String(first);
       for (const st of stacks) {
-        const words = st.box ? boxLabel(st.box) : `${itemLabel(st.c, 1)} ×${st.n}`;
-        const b = el('button', { type: 'button', 'data-butler-stack': st.c, ...(st.box ? { 'data-butler-gift-box': st.box.id } : {}), 'aria-pressed': String(st === pick), title: st.box ? words : itemLabel(st.c, st.n) });
+        const words = st.box ? boxLabel(st.box) : `${itemLabel(st.c, 1)}${st.note ? ` (${st.note})` : ''} ×${st.n}`;
+        const b = el('button', { type: 'button', 'data-butler-stack': st.c, ...(st.box ? { 'data-butler-gift-box': st.box.id } : {}), ...(st.pick ? { 'data-butler-copy': String(st.pick.copy) } : {}), 'aria-pressed': String(st === pick), title: st.box ? words : `${itemLabel(st.c, st.n)}${st.note ? ` (${st.note})` : ''}` });
         const icon = ITEM_CATALOG[st.c]?.icon;
         if (icon) b.append(el('img', { src: icon, alt: '' }));
         b.append(document.createTextNode(words));
@@ -949,7 +960,7 @@ function createSession(engine, client) {
       ok.addEventListener('click', () => {
         const n = Math.max(1, Math.min(leaveMax(pick), Math.floor(Number(count.value) || 1)));
         closeBox(false);
-        confirmPackage(pick.c, n, pick.box || null);
+        confirmPackage(pick.c, n, pick.box || null, pick.pick || null);
       });
       actions.append(label, ok);
       panel.append(grid, actions);
@@ -962,7 +973,10 @@ function createSession(engine, client) {
     return box.from?.name ? `${itemLabel(GIFT_WRAPPED_CLASS, 1)} from ${box.from.name}` : itemLabel(GIFT_WRAPPED_CLASS, 1);
   }
 
-  function confirmPackage(c, n, box = null) {
+  /** The copies chosen for the package under way (R18): they leave when the Butler says it took it. */
+  let leaving = null;
+
+  function confirmPackage(c, n, box = null, chosen = null) {
     if (!visit) return;
     vb && (vb.busy = true);
     const { owner, name } = visit;
@@ -982,6 +996,7 @@ function createSession(engine, client) {
       }
       butlerSay(BT.packageSuccess(name));
       const item = box ? { c, n: 1, box: box.items, ref: box.id } : { c, n };
+      leaving = chosen ? { owner, c, pick: chosen } : null;
       messageBox(BT.packageSuccess(name), (msg) => send({ item, text: msg, owner }), { optional: true });
     };
     if (!engine.prompt) return go(true);
@@ -1495,7 +1510,12 @@ function createSession(engine, client) {
       if (receipt !== false && box) {
         // G332: the wrapped box leaves with what is inside (the site took the box and the stacks from the ledger).
         if (engine.query?.('giftBoxOut', String(msg.item.ref || ''), box, engine) !== true && countItem(engine.inv, item.c) > 0) removeItem(engine.inv, item.c, 1);
-      } else if (receipt !== false && countItem(engine.inv, item.c) > 0) removeItem(engine.inv, item.c, Math.min(item.n, countItem(engine.inv, item.c)));
+      } else if (receipt !== false && countItem(engine.inv, item.c) > 0) {
+        // The copies chosen are the ones that go (js/copy-picks.js).
+        if (leaving?.c === item.c && leaving.owner === visit.owner && engine.toolState && markLeaving(engine, item.c, leaving.pick, item.n)) takeCopies(engine.toolState, item.c, leaving.pick, item.n);
+        removeItem(engine.inv, item.c, Math.min(item.n, countItem(engine.inv, item.c)));
+      }
+      leaving = null;
       engine.refreshPack?.();
       // Report 128: each neighbour counts once from when the quest starts.
       const held = giftsCounted();

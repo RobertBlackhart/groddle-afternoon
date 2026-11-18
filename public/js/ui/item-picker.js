@@ -47,11 +47,17 @@ export function pickerGridMove(index, key, total, cols) {
   return next;
 }
 
-/** PURE: the words on a tile and under the grid: "Cherry" and "Cherries ×12". */
+/**
+ * PURE: the words on a tile and under the grid: "Cherry" and "Cherries ×12". A copy of its own
+ * (js/copy-picks.js, R18) adds its note under the name, so two Picks or two Cubimals tell apart:
+ * "Pick (45/100)", or the item's own `title` ("Teleportation Script to Hechey Track").
+ */
 export function pickerTileText(item) {
   const count = Math.max(0, Math.floor(Number(item?.count) || 0));
   const label = String(item?.label || '');
-  return { label, badge: count > 1 ? String(count) : '', title: count > 1 ? `${label} ×${count}` : label };
+  const note = String(item?.note || '');
+  const name = item?.title ? String(item.title) : note ? `${label} (${note})` : label;
+  return { label, note, badge: count > 1 ? String(count) : '', title: count > 1 ? `${name} ×${count}` : name };
 }
 
 function attrs(node, map) {
@@ -75,7 +81,8 @@ function attrs(node, map) {
  *   onCount?: (n, item) => void,
  *   onConfirm?: () => void,
  * }} opts
- * Items: { key, c, label, count, icon, max, disabled, reason, attrs }. `max` > 1 shows How many.
+ * Items: { key, c, label, count, icon, max, disabled, reason, attrs, note?, title? }. `max` > 1 shows How many.
+ * A class whose copies differ comes as one item per copy (js/copy-picks.js packPicks: `copy`, `note`).
  */
 export function createItemPicker(doc, opts) {
   const hook = String(opts.hook || 'item');
@@ -133,7 +140,9 @@ export function createItemPicker(doc, opts) {
       badge.className = 'item-picker-badge';
       const name = doc.createElement('span');
       name.className = 'item-picker-name';
-      b.append(img, badge, name);
+      const note = doc.createElement('span');
+      note.className = 'item-picker-note';
+      b.append(img, badge, name, note);
       b.addEventListener('click', () => {
         const it = items.find((x) => x.key === b.dataset.pickerKey);
         if (it) opts.onPick?.(it);
@@ -150,6 +159,8 @@ export function createItemPicker(doc, opts) {
     b.querySelector('.item-picker-badge').textContent = t.badge;
     b.querySelector('.item-picker-badge').hidden = !t.badge;
     b.querySelector('.item-picker-name').textContent = t.label;
+    b.querySelector('.item-picker-note').textContent = t.note;
+    b.querySelector('.item-picker-note').hidden = !t.note;
     b.title = item.reason || t.title;
     b.setAttribute('aria-label', item.reason ? `${t.title}: ${item.reason}` : t.title);
     b.setAttribute('aria-pressed', String(item.key === selected));

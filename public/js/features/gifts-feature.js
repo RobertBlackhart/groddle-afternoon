@@ -34,13 +34,14 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackSlots, removeItem } from '../inventory.js?v=6414dbdc';
-import { TOOL_CONDITION_CATALOG, copyTag, copyTagKind, copyTags, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
+import { TOOL_CONDITION_CATALOG, copyTag, copyTagKind, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
+import { copyPicks, copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=11b1eb70';
 import { unitRankAt } from '../pack-slots.js?v=4d446d78';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
-import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
+import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
 // The same key as features/index.js: one module instance holds the carried notes.
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=b81e64cc';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=e49f6cbd';
 import {
   BOX_KEEP,
   BOX_SLOTS,
@@ -155,7 +156,7 @@ function createSession(engine, client) {
   let tableLoading = null;
   /** The Give window: { to: { id, name } | null, pick: { kind, c, n, noteId?, boxId? } | null }. */
   let give = null;
-  /** The Wrap window: { picks: [{ c, n }] }. */
+  /** The Wrap window: { picks: [{ c, n, copy?, copies?, r?, t?, note? }] }. */
   let wrap = null;
   /** ref -> what the give took out of the pack, until gift_given. */
   const sending = new Map();
@@ -262,18 +263,22 @@ function createSession(engine, client) {
       const reason = table ? giveReason(c, table, ITEM_CATALOG[c]?.tags) : '';
       // Opened from one stack's menu, the give is that stack's: no more than it holds (main.js doVerb 3243-3246).
       const own = give?.from?.cls === c ? give.from.count : Infinity;
-      // Each Teleportation Script goes by its street and is given by itself: you choose which.
-      if (copyTagKind(c) === 'script' && engine.toolState && give?.from?.cls !== c) {
-        copyTags(engine.toolState, c).forEach((tag, copy) => {
-          const script = scriptFromTag(tag);
-          out.push({ kind: 'stack', c, n: 1, max: 1, copy, label: script ? scriptLabel(script) : itemLabel(c, 1), have: 1, reason });
-        });
+      // R18 (G974, G557 #125): each copy that differs (a Teleportation Script's street, a Cubimal's
+      // name, a Draught's Giant, a tool's wear) is its own choice, as each was its own itemstack
+      // (stackmax 1, main.js doVerb names the itemstack given); alike ones share one with their count.
+      const picks = engine.toolState ? copyPicks(engine.toolState, c) : null;
+      if (picks && give?.from?.cls !== c) {
+        for (const p of picks) {
+          out.push({ kind: 'stack', c, n: 1, max: Math.min(p.count, stackMax(c, table)), copy: p.copy, copies: p.copies, r: p.r, t: p.t, label: itemLabel(c, p.count), note: p.note, title: p.title || '', have: p.count, reason });
+        }
         continue;
       }
-      // Opened from that script's own menu: it goes by its street too.
-      const from = copyTagKind(c) === 'script' && give?.from?.cls === c && engine.toolState ? engine.query?.('packLayout', engine) : null;
-      const fromScript = from ? scriptFromTag(copyTag(engine.toolState, c, unitRankAt(from, c, give.from.container, give.from.index))) : null;
-      out.push({ kind: 'stack', c, n: 1, max: Math.min(have, stackMax(c, table), own), label: fromScript ? scriptLabel(fromScript) : itemLabel(c, have), have: fromScript ? 1 : have, reason });
+      // Opened from one copy's own menu: that copy, named as it is (a script by its street).
+      const from = picks && give?.from?.cls === c ? engine.query?.('packLayout', engine) : null;
+      const rank = from ? unitRankAt(from, c, give.from.container, give.from.index) : -1;
+      const mine = rank >= 0 ? picks.find((p) => p.copies.includes(rank)) : null;
+      const fromScript = mine && copyTagKind(c) === 'script' ? scriptFromTag(copyTag(engine.toolState, c, rank)) : null;
+      out.push({ kind: 'stack', c, n: 1, max: Math.min(have, stackMax(c, table), own), label: itemLabel(c, mine && own === 1 ? 1 : have), ...(mine ? { note: mine.note, title: fromScript ? scriptLabel(fromScript) : '' } : {}), have: fromScript ? 1 : have, reason });
     }
     slice.boxes.forEach((b) => {
       if (busyBoxes.has(b.id)) return;
@@ -315,17 +320,19 @@ function createSession(engine, client) {
         key: thingKey(t),
         c: t.c,
         label: t.label,
+        note: t.note || '',
+        title: t.title || '',
         count: t.kind === 'stack' ? t.have || 1 : 1,
         icon: iconFor(t.c),
         max: t.kind === 'stack' ? t.max || 1 : 1,
         reason: t.reason,
-        attrs: { 'data-gift-item': t.c, 'data-gift-note': t.noteId || null, 'data-gift-box': t.boxId || null },
+        attrs: { 'data-gift-item': t.c, 'data-gift-note': t.noteId || null, 'data-gift-box': t.boxId || null, 'data-gift-copy': Number.isInteger(t.copy) ? t.copy : null },
       })),
       selected: give.pick ? thingKey(give.pick) : null,
       count: give.pick?.n || 1,
     });
     const p = give.pick;
-    const what = p ? (p.kind === 'box' ? 'the Gift Box' : p.kind === 'note' ? 'the note' : formatStack(p.c, p.n, table, itemLabel)) : '';
+    const what = p ? (p.kind === 'box' ? 'the Gift Box' : p.kind === 'note' ? 'the note' : `${formatStack(p.c, p.n, table, itemLabel)}${p.note ? ` (${p.note})` : ''}`) : '';
     // The button names both: what goes and to whom (#141: never the wrong amount to the wrong player).
     goBtn.textContent = p && give.to ? `Give ${what} to ${give.to.name}` : !p ? 'Choose something to give' : 'Choose who to give it to';
     goBtn.disabled = !p || !give.to || give.waiting;
@@ -410,21 +417,31 @@ function createSession(engine, client) {
       if (item.n < 1) return say("You don't have enough of that item.", 'error');
       // Each tool wears on its own (js/tools.js): the one given from its own slot carries its own
       // wear (2026-11-04), else the given ones carry the most worn of theirs.
-      if (TOOL_CONDITION_CATALOG[p.c] && engine.toolState) {
+      // R18: the copies chosen in the picker carry their own wear and words (js/copy-picks.js).
+      const wire = engine.toolState ? copyWire(p.c, p, item.n) : null;
+      if (wire) {
+        item.r = wire.r;
+        if (wire.t != null) item.t = wire.t;
+        giveCopy = { c: p.c, pick: { copy: p.copy, copies: p.copies, r: p.r, t: p.t } };
+      } else if (TOOL_CONDITION_CATALOG[p.c] && engine.toolState) {
         const layout = p.kind === 'stack' && give.from?.cls === p.c && item.n === 1 ? engine.query?.('packLayout', engine) : null;
-        const rank = Number.isInteger(p.copy) ? p.copy : layout ? unitRankAt(layout, p.c, give.from.container, give.from.index) : -1;
+        const rank = layout ? unitRankAt(layout, p.c, give.from.container, give.from.index) : -1;
         if (rank >= 0) giveCopy = { c: p.c, copy: rank };
         item.r = rank >= 0 ? takeToolCopy(engine.toolState, p.c, { copy: rank, take: false }) : leavingToolWear(engine.toolState, p.c, item.n);
         // Its own words go with it (a Cubimal's name, a Draught's Giant, a Still's Hooch, a pumpkin's phrases).
         const t = leavingCopyTag(engine.toolState, p.c, item.n, rank >= 0 ? rank : null);
         if (t != null) item.t = t;
+      } else if (p.c === 'plop' && item.n === 1) {
+        // G605: one Plop given takes its seeds along, as one dropped does (drops-mp-feature).
+        const t = engine.query?.('plopSeedsOut', engine);
+        if (t) item.t = t;
       }
       frame = { to: to.id, ref, item };
     }
     if (!client.send('gift_give', frame)) return say("You're offline.", 'error');
     // The give leaves the pack when the server settles it: from the stack it was opened on.
     if (p.kind === 'stack' && give.from?.cls === p.c) engine.query?.('packTakeFrom', p.c, frame.item.n, engine, { place: give.from, wait: 60000 });
-    else if (p.kind === 'stack' && Number.isInteger(p.copy)) engine.query?.('packTakeUnit', p.c, p.copy, 1, engine, { wait: 60000 });
+    else if (p.kind === 'stack' && giveCopy?.pick) markLeaving(engine, p.c, giveCopy.pick, frame.item.n, 60000);
     sending.set(ref, { kind: p.kind, noteId: p.noteId || null, boxId: p.boxId || null, to, at: Date.now(), ...(giveCopy ? { tool: giveCopy } : {}) });
     give.waiting = true;
     say('Giving…');
@@ -451,7 +468,8 @@ function createSession(engine, client) {
     const blankNote = gift.side === 'gave' && gift.item?.c === GIFT_NOTE && !gift.note;
     for (const [c, d] of Object.entries(fx.pack)) {
       // The tool given from its own slot is the one that leaves (its copy moves last first).
-      if (d < 0 && tool?.c === c && engine.toolState && tool.copy < countItem(inv, c)) takeToolCopy(engine.toolState, c, { copy: tool.copy });
+      if (d < 0 && tool?.c === c && engine.toolState && tool.pick) takeCopies(engine.toolState, c, tool.pick, -d);
+      else if (d < 0 && tool?.c === c && engine.toolState && tool.copy < countItem(inv, c)) takeToolCopy(engine.toolState, c, { copy: tool.copy });
       if (d > 0) addItem(inv, c, d);
       else if (blankNote && c === GIFT_NOTE) {
         if (!takeBlankNote()) removeItem(inv, c, Math.min(countItem(inv, c), -d));
@@ -460,6 +478,9 @@ function createSession(engine, client) {
     if (fx.tool && TOOL_CONDITION_CATALOG[fx.tool.c] && engine.toolState && (fx.pack[fx.tool.c] || 0) > 0) {
       // As a trade does (trade-feature applyDone): the tools that came keep the giver's wear; yours keep their own.
       receiveToolCopy(engine.toolState, fx.tool.c, fx.tool.r, fx.pack[fx.tool.c], fx.tool.t ?? null);
+    } else if (fx.tool?.c === 'plop' && fx.tool.t && fx.pack.plop === 1) {
+      // G605: the Plop that came brings its seeds.
+      engine.query?.('plopSeedsIn', fx.tool.t, engine);
     }
     if (fx.removeNote) {
       const n = writtenCarriedNotes(engine).find((x) => x.title === fx.removeNote.title && x.body === fx.removeNote.body);
@@ -557,25 +578,26 @@ function createSession(engine, client) {
       const less = el('button', { type: 'button', 'aria-label': `One fewer ${itemLabel(it.c)}` }, '−');
       const more = el('button', { type: 'button', 'aria-label': `One more ${itemLabel(it.c)}` }, '+');
       const out = el('button', { type: 'button', 'aria-label': `Take the ${itemLabel(it.c, it.n)} out` }, '×');
-      more.disabled = it.n >= Math.min(stackMax(it.c, table), countItem(engine.inv, it.c));
+      // A copy chosen (R18) goes in by itself, or with the ones just like it.
+      more.disabled = it.n >= Math.min(stackMax(it.c, table), countItem(engine.inv, it.c), Array.isArray(it.copies) ? it.copies.length : Infinity);
       less.addEventListener('click', () => { if (it.n > 1) it.n -= 1; else wrap.picks.splice(i, 1); render(); });
       more.addEventListener('click', () => { it.n += 1; render(); });
       out.addEventListener('click', () => { wrap.picks.splice(i, 1); render(); });
       tools.append(less, more, out);
-      slot.append(icon(it.c), el('span', {}, `${it.n} ${itemLabel(it.c, it.n)}`), tools);
+      slot.append(icon(it.c), el('span', {}, `${it.n} ${itemLabel(it.c, it.n)}${it.note ? ` (${it.note})` : ''}`), tools);
       return slot;
     });
     for (let i = wrap.picks.length; i < BOX_SLOTS; i += 1) slots.push(el('div', { class: 'gift-slot is-empty' }, '+'));
     slotsBox.replaceChildren(...slots);
     const rows = listPackSlots(engine.inv || {}).filter((r) => countItem(engine.inv, r.classTsid) > 0 && r.classTsid !== GIFT_BOX);
+    // R18 (G974): a class whose copies differ offers each (js/copy-picks.js); one stack of each class goes in.
+    const items = packPicks(engine.toolState, rows.map((r) => {
+      const c = r.classTsid;
+      const have = countItem(engine.inv, c);
+      return { c, label: itemLabel(c, have), count: have, icon: iconFor(c), reason: table ? boxReason(c, table, ITEM_CATALOG[c]?.tags) : '', attrs: { 'data-gift-wrap-item': c } };
+    }));
     picker.update({
-      items: rows.map((r) => {
-        const c = r.classTsid;
-        const reason = table ? boxReason(c, table, ITEM_CATALOG[c]?.tags) : '';
-        const inBox = wrap.picks.some((p) => p.c === c);
-        const have = countItem(engine.inv, c);
-        return { key: c, c, label: itemLabel(c, have), count: have, icon: iconFor(c), max: 1, reason, disabled: inBox, attrs: { 'data-gift-wrap-item': c } };
-      }),
+      items: items.map((it) => ({ ...it, label: Number.isInteger(it.copy) ? itemLabel(it.c, it.count) : it.label, max: 1, disabled: wrap.picks.some((p) => p.c === it.c), attrs: { ...it.attrs, 'data-gift-copy': Number.isInteger(it.copy) ? it.copy : null } })),
       selected: null,
     });
     goBtn.textContent = GIFT_TEXT.wrap;
@@ -588,7 +610,8 @@ function createSession(engine, client) {
     if (it.reason) return say(it.reason, 'error');
     if (wrap.picks.some((p) => p.c === c)) return;
     if (wrap.picks.length >= BOX_SLOTS) return say(GIFT_TEXT.boxFull, 'error');
-    wrap.picks.push({ c, n: Math.min(countItem(engine.inv, c), stackMax(c, table)) });
+    const copy = Number.isInteger(it.copy) ? { copy: it.copy, copies: it.copies, r: it.r, t: it.t, note: it.note } : null;
+    wrap.picks.push({ c, n: Math.min(countItem(engine.inv, c), stackMax(c, table), copy ? it.copies.length : Infinity), ...copy });
     say('');
     render();
   }
@@ -607,7 +630,12 @@ function createSession(engine, client) {
     if (!wrap) return;
     const picks = wrap.picks.map((p) => {
       const it = { c: p.c, n: p.n };
-      if (TOOL_CONDITION_CATALOG[p.c] && engine.toolState) {
+      const wire = engine.toolState ? copyWire(p.c, p, p.n) : null;
+      if (wire) {
+        // R18: the copy chosen goes in with its own wear and words.
+        it.r = wire.r;
+        if (wire.t != null) it.t = wire.t;
+      } else if (TOOL_CONDITION_CATALOG[p.c] && engine.toolState) {
         it.r = leavingToolWear(engine.toolState, p.c, p.n);
         const t = leavingCopyTag(engine.toolState, p.c, p.n);
         if (t != null) it.t = t;
@@ -618,7 +646,12 @@ function createSession(engine, client) {
     if (!out.ok) return say(out.error, 'error');
     for (const [c, d] of Object.entries(out.pack)) {
       if (d > 0) addItem(engine.inv, c, d);
-      else removeItem(engine.inv, c, -d);
+      else {
+        // The chosen copies move last first, so they are the ones the count going down takes.
+        const p = wrap.picks.find((x) => x.c === c);
+        if (p && engine.toolState && markLeaving(engine, c, p, -d)) takeCopies(engine.toolState, c, p, -d);
+        removeItem(engine.inv, c, -d);
+      }
     }
     slice.boxes.push(out.box);
     slice.next = out.next;

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=faea267c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8f5ce3e5';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a3bc7538';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -24563,7 +24563,9 @@ function renderPlayerMailCompose(reader, online, recipient = '', replyTo = null)
   mailboxComposeReplyTo = replyTo || '__new_mail__';
   const reply = mailboxState.messages.find((message) => message.id === replyTo);
   const rules = online.rules || {};
-  const attachable = listPackItemSlots(inv).filter((slot) => slot.count > 0).slice(0, 80);
+  // R18 (G974): one choice per copy where a class's copies differ (player-mail-feature attachable).
+  const packSlots = listPackItemSlots(inv).filter((slot) => slot.count > 0).slice(0, 80);
+  const attachable = online.attachable ? online.attachable(packSlots) : packSlots;
   const buddies = (online.buddies || []).map((b) => b.name).filter(Boolean);
   reader.innerHTML = `
     <form id="mail-compose-form" class="mail-compose-form" data-player-mail-compose>
@@ -24578,7 +24580,7 @@ function renderPlayerMailCompose(reader, online, recipient = '', replyTo = null)
         <label>Attach one stack
           <select name="attachment">
             <option value="">Nothing</option>
-            ${attachable.map((slot) => `<option value="${escapeHtml(slot.classTsid)}" data-count="${slot.count}" data-icon="${escapeHtml(slot.icon || '')}">${escapeHtml(slot.label)}</option>`).join('')}
+            ${attachable.map((slot) => `<option value="${escapeHtml(slot.key || slot.classTsid)}" data-count="${slot.count}" data-icon="${escapeHtml(slot.icon || '')}">${escapeHtml(slot.label)}</option>`).join('')}
           </select>
         </label>
         <label>Qty
@@ -24606,11 +24608,15 @@ function renderPlayerMailCompose(reader, online, recipient = '', replyTo = null)
   createSuggestBox(form.querySelector('input[name="recipient"]'), { suggestions: buddies, label: 'Send to', className: 'combo-form', minListWidth: 220 });
   const read = () => {
     const data = new FormData(form);
-    const c = String(data.get('attachment') || '');
+    const key = String(data.get('attachment') || '');
+    const slot = attachable.find((s) => (s.key || s.classTsid) === key);
+    const c = slot?.classTsid || key;
+    const n = Math.max(1, Math.floor(Number(data.get('quantity')) || 1));
     return {
       to: String(data.get('recipient') || '').trim(),
       text: String(data.get('text') || ''),
-      item: c ? { c, n: Math.max(1, Math.floor(Number(data.get('quantity')) || 1)) } : null,
+      // A copy chosen goes by itself, or with the ones just like it (its count).
+      item: c ? { c, n: Array.isArray(slot?.copies) ? Math.min(n, slot.count) : n, ...(Array.isArray(slot?.copies) ? { copy: slot.copy, copies: slot.copies, r: slot.r, t: slot.t } : {}) } : null,
       currants: Math.max(0, Math.floor(Number(data.get('currants')) || 0)),
     };
   };

@@ -22,7 +22,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SIGN_FIRST_ARM_Y, SIGN_SCALE, addSignBoard, setSignpostHover, setSignpostKeys, signpostBoardAt } from '../public/js/street-render.js?v=6589dda5';
 import { SIGN_PROMPT_LIFT } from '../public/js/features/homes-feature.js?v=d4140290';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=eb533ef8';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=9d37b9b7';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, 'public', p), 'utf8');

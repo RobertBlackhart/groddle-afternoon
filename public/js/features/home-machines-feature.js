@@ -99,6 +99,7 @@ import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machi
 import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=ab7d71da';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
+import { markLeaving, takeCopies } from '../copy-picks.js?v=11b1eb70';
 import { RECIPE_CATALOG } from '../making.js?v=af1c7d5b';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=57afc9e2';
@@ -461,12 +462,18 @@ function createSession(engine, client) {
 
   // —— My own game: what I set down, picked up and made ——
 
+  /** The machine being set down online (R18): its copy, found again by its tank when the site answers. */
+  let placing = null;
+
   /** Set down: the machine leaves the pack once, its tank going with it (the copy that leaves). */
   function applyPlaced(id, classTsid) {
     if (slice.placed.includes(id)) return false;
     slice.placed.push(id);
     if (countItem(engine.inv, classTsid) > 0) {
-      if (engine.toolState) takeToolCopy(engine.toolState, classTsid);
+      // R18 (G974): the one chosen in the pack is the one set down (machine_base place took that itemstack).
+      const chosen = placing?.classTsid === classTsid ? placing.pick : null;
+      placing = null;
+      if (engine.toolState && !(chosen && markLeaving(engine, classTsid, chosen, 1) && takeCopies(engine.toolState, classTsid, chosen, 1).length)) takeToolCopy(engine.toolState, classTsid);
       removeItem(engine.inv, classTsid, 1);
       engine.refreshPack?.();
     }
@@ -633,16 +640,21 @@ function createSession(engine, client) {
     solo('refuel', m, { all });
   }
 
-  function placeFromPack(classTsid) {
+  /** Set a machine down from the pack: `copy`, the one its menu was about (its place among the class's copies). */
+  function placeFromPack(classTsid, copy = null) {
     const at = where();
     if (!at || at.kind === 'visit' || !home || home.kind !== at.kind) return say(T.placeHome, 2600);
     if (countItem(engine.inv, classTsid) < 1) return false;
     const rx = Math.round((engine.player?.x || 0) - home.x0);
     const check = placeCheck({ machines: [...machines.values()], rx, layout: home.layout, span: home.span, classTsid, fixed: home.fixed || [] });
     if (!check.ok) return say(check.msg, 2600);
-    const fuel = engine.toolState ? takeToolCopy(engine.toolState, classTsid, { take: false }) : null;
-    if (mp) return send('place', null, { class: classTsid, rx: check.rx, ...(Number.isFinite(fuel) ? { fuel: Math.max(0, Math.min(MAX_FUEL, Math.round(fuel))) } : {}) });
-    return solo('place', null, { classTsid, rx: check.rx });
+    const one = Number.isInteger(copy) && copy >= 0 && copy < countItem(engine.inv, classTsid) ? copy : null;
+    const fuel = engine.toolState ? takeToolCopy(engine.toolState, classTsid, { copy: one ?? undefined, take: false }) : null;
+    if (mp) {
+      placing = one != null && Number.isFinite(fuel) ? { classTsid, pick: { copy: one, copies: [one], r: fuel, t: null } } : null;
+      return send('place', null, { class: classTsid, rx: check.rx, ...(Number.isFinite(fuel) ? { fuel: Math.max(0, Math.min(MAX_FUEL, Math.round(fuel))) } : {}) });
+    }
+    return solo('place', null, { classTsid, rx: check.rx, copy: one });
   }
 
   // —— Solo: the rules on the slice ——
@@ -662,7 +674,8 @@ function createSession(engine, client) {
   function solo(verb, m, extra) {
     const t = Date.now();
     if (verb === 'place') {
-      const fuel = engine.toolState ? takeToolCopy(engine.toolState, extra.classTsid) : 50;
+      if (Number.isInteger(extra.copy)) engine.query?.('packTakeUnit', extra.classTsid, extra.copy, 1, engine);
+      const fuel = engine.toolState ? takeToolCopy(engine.toolState, extra.classTsid, Number.isInteger(extra.copy) ? { copy: extra.copy } : {}) : 50;
       removeItem(engine.inv, extra.classTsid, 1);
       engine.refreshPack?.();
       const row = { id: newId(), classTsid: extra.classTsid, owner: '', ownerName: '', place: home.place, rx: extra.rx, fuel: Math.max(0, Math.min(MAX_FUEL, Math.round(Number(fuel) || 0))), music: true, job: null, contents: {}, waiting: [] };
@@ -1146,9 +1159,9 @@ export const homeMachinesFeature = {
     return s ? s.packVerbs(classTsid) : [];
   },
 
-  runPackVerb(classTsid, verbId, engine) {
+  runPackVerb(classTsid, verbId, engine, opts = {}) {
     if (verbId !== 'machine_place' || !isHomeMachineClass(classTsid)) return false;
-    ensure(engine)?.placeFromPack(classTsid);
+    ensure(engine)?.placeFromPack(classTsid, opts?.copy ?? null);
     return true;
   },
 

@@ -47,7 +47,8 @@ import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { TOOL_CONDITION_CATALOG, copyTagKind, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
+import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
+import { copyPicks, copyWire, markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
 import {
   AUCTION_TEXT as T,
   DEFAULT_RULES,
@@ -167,7 +168,7 @@ function createSession(engine) {
   let open = false;
   const filters = { q: '', cat: '', c: '', seller: null, sort: 'new', page: 1 };
   let results = { auctions: [], total: 0, page: 1, per: 20 };
-  let pick = null; // the Post tab: { c, n, cost, touched }
+  let pick = null; // the Post tab: { c, n, cost, touched, copy?, copies?, r?, t?, note? } (R18: the copy chosen)
   let lowest = null; // { c, each } the lowest active price per one of pick.c
   let busy = false;
   let lastLine = '';
@@ -222,8 +223,8 @@ function createSession(engine) {
     return (engine.mailMessages?.() || []).find((m) => m.ledger === op) || null;
   }
 
-  /** One settled move, once (the trade slice's applied list): true when applied now. */
-  function applyReceipt(raw, { quiet = false, r = null, t = null } = {}) {
+  /** One settled move, once (the trade slice's applied list): true when applied now. `chosen`: the copies posted (R18). */
+  function applyReceipt(raw, { quiet = false, r = null, t = null, chosen = null } = {}) {
     const receipt = normalizeReceipt(raw);
     if (!receipt) return false;
     if (engine.query?.('ledgerReceipt', receipt.op, engine) !== true) {
@@ -238,7 +239,11 @@ function createSession(engine) {
         // The tools that came keep the listing's wear; yours keep their own (js/tools.js copies).
         // ... and their own words (one copy: a Cubimal's name ...).
         if ((r != null || t != null) && TOOL_CONDITION_CATALOG[c] && engine.toolState) receiveToolCopy(engine.toolState, c, r, d, t);
-      } else removeItem(inv, c, Math.min(countItem(inv, c), -d));
+      } else {
+        // The copies posted are the ones that leave (js/copy-picks.js), not the last of the class.
+        if (chosen?.c === c && engine.toolState) takeCopies(engine.toolState, c, chosen, -d);
+        removeItem(inv, c, Math.min(countItem(inv, c), -d));
+      }
     }
     if (fx.currants) engine.pc.currants = Math.max(0, Math.floor(Number(engine.pc.currants) || 0) + fx.currants);
     if (receipt.kind === 'd') claimMail(receipt.op);
@@ -648,8 +653,17 @@ function createSession(engine) {
     return out.filter((x) => x.have > 0);
   }
 
-  async function choose(c) {
-    const s = sellables().find((x) => x.c === c);
+  /** The stack a pick sells from: the class's, or (R18) only the copies chosen. */
+  function pickStack(s, p) {
+    return s && p && Array.isArray(p.copies) ? { ...s, have: Math.min(s.have, p.copies.length) } : s;
+  }
+
+  async function choose(c, chosen = null) {
+    // Opened on a class (window.groddleAuctions, show('post', { c })): its first copy when they differ.
+    const it = chosen || (engine.toolState ? copyPicks(engine.toolState, c)?.[0] : null) || null;
+    const s0 = sellables().find((x) => x.c === c);
+    const copy = s0 && it && Number.isInteger(it.copy) ? { copy: it.copy, copies: it.copies, r: it.r, t: it.t, note: it.note || '' } : null;
+    const s = pickStack(s0, copy);
     if (!s) {
       // #362: a tradeable class the pack holds but the site has not counted yet is not "forbidden".
       const pending = countItem(engine.inv, c) > 0 && (!table || !!table.items?.[c]);
@@ -657,7 +671,7 @@ function createSession(engine) {
       render();
       return;
     }
-    pick = { c, n: s.have, cost: suggestedPrice(s.have, s.v), touched: false };
+    pick = { c, n: s.have, cost: suggestedPrice(s.have, s.v), touched: false, ...copy };
     lowest = null;
     render();
     const r = await call(() => account.auctions({ c, sort: 'unit' }));
@@ -684,7 +698,7 @@ function createSession(engine) {
       countLabel: (it) => `How many ${label(it.c, 2)} do you want to sell?`,
       countVerb: 'Sell',
       countHooks: { num: 'data-auctions-count' },
-      onPick: (it) => choose(it.c),
+      onPick: (it) => choose(it.c, it),
       onCount: (n) => {
         if (!pick || !sellRefs) return;
         pick.n = n;
@@ -707,14 +721,16 @@ function createSession(engine) {
     }
     nodes.push(el('p', { class: 'auc-hint' }, 'Choose a stack from your pack.'));
     const pk = picker();
+    // R18 (G974): a class whose copies differ offers each (js/copy-picks.js), its note under its name.
+    const items = packPicks(engine.toolState, stacks.map((s) => ({ c: s.c, label: label(s.c, s.have), count: s.have, icon: iconFor(s.c), max: s.have, attrs: { 'data-auctions-pick': s.c } })));
     pk.update({
-      items: stacks.map((s) => ({ key: s.c, c: s.c, label: label(s.c, s.have), count: s.have, icon: iconFor(s.c), max: s.have, attrs: { 'data-auctions-pick': s.c } })),
-      selected: pick && !pick.forbidden ? pick.c : null,
+      items: items.map((it) => (Number.isInteger(it.copy) ? { ...it, label: label(it.c, it.count), attrs: { ...it.attrs, 'data-auctions-copy': it.copy } } : it)),
+      selected: pick && !pick.forbidden ? pickKey(pick.c, pick) : null,
       count: pick?.n || 1,
     });
     pk.el.setAttribute('data-auctions-pack', '');
     nodes.push(pk.el);
-    if (pick) nodes.push(sellBox(stacks.find((x) => x.c === pick.c)));
+    if (pick) nodes.push(sellBox(pickStack(stacks.find((x) => x.c === pick.c), pick)));
     nodes.push(status);
     body.replaceChildren(...nodes);
   }
@@ -776,7 +792,13 @@ function createSession(engine) {
     render();
     await persist();
     const listing = { id: newListingId(), c, n, cost };
-    if (TOOL_CONDITION_CATALOG[c] && engine.toolState) {
+    // R18: the copies chosen go with their own wear and words.
+    const chosen = Array.isArray(pick.copies) ? { c, copy: pick.copy, copies: pick.copies, r: pick.r, t: pick.t ?? null } : null;
+    const wire = chosen && engine.toolState ? copyWire(c, chosen, n) : null;
+    if (wire) {
+      listing.r = wire.r;
+      if (wire.t != null) listing.t = wire.t;
+    } else if (TOOL_CONDITION_CATALOG[c] && engine.toolState) {
       listing.r = leavingToolWear(engine.toolState, c, n);
       const t = leavingCopyTag(engine.toolState, c, n);
       if (t != null) listing.t = t;
@@ -788,7 +810,10 @@ function createSession(engine) {
       render();
       return;
     }
-    applyReceipt(r.data.receipt);
+    if (wire) markLeaving(engine, c, chosen, n);
+    applyReceipt(r.data.receipt, { chosen: wire ? chosen : null });
+    // The site's copy of the save already counts one fewer; which copy left only this save knows.
+    if (wire) persist();
     const line = T.listed(countName(c, n, table, label), cost);
     engine.pushActivity?.(line);
     engine.playSound?.('PACKAGE_SENT', { volume: 0.55 });

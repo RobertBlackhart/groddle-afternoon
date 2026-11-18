@@ -191,7 +191,7 @@ describe('a verb on the item you chose acts on that one (two Tinkertools, one in
     const gifts = read('js/features/gifts-feature.js');
     assert.match(gifts, /unitRankAt\(layout, p\.c, give\.from\.container, give\.from\.index\)/);
     const storage = read('js/features/home-storage-feature.js');
-    assert.match(storage, /engine\.query\?\.\('packTakeUnit', cls, copy, 1, engine\)/);
+    assert.match(storage, /engine\.query\?\.\('packTakeUnit', cls, chosen, 1, engine\)/);
   });
 });
 

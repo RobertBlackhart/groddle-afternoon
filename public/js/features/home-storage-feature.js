@@ -49,7 +49,7 @@ import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=4d446d78';
 import { ELEMENT_CLASSES, NO_BAG_CLASSES, NO_SLOT_CLASSES } from '../pack-slots-data.js?v=800f664c';
-import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
+import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { saveStore } from '../save-store.js?v=cd053443';
@@ -583,16 +583,26 @@ function cabinetPutFromPack(engine, cls, count, { slot = null, copy = null, bag 
     win.handle.note(T.full, true);
     return 0;
   }
-  // A tool takes its wear in with it (js/tools.js copies): the dragged copy first.
+  // A tool takes its wear in with it (js/tools.js copies): the dragged copy, then the last ones.
+  // R18 (G974): they move last together with their words (pickToolCopies), so the wear and words that
+  // go in are those of the copies that leave; before, a second one in took the first one's wear again.
   let points = null;
+  let tags = null;
   if (isTool(cls) && engine.toolState) {
     // The dragged tool's own slot is the one that empties (bags-feature packTakeUnit), not the first of its class.
-    if (Number.isInteger(copy)) engine.query?.('packTakeUnit', cls, copy, 1, engine);
-    points = [];
-    for (let i = 0; i < n; i += 1) points.push(takeToolCopy(engine.toolState, cls, i === 0 && Number.isInteger(copy) ? { copy } : {}));
+    const chosen = Number.isInteger(copy) && copy >= 0 && copy < have ? copy : null;
+    if (chosen != null) engine.query?.('packTakeUnit', cls, chosen, 1, engine);
+    const ranks = chosen != null ? [chosen] : [];
+    for (let i = have - 1; i >= 0 && ranks.length < n; i -= 1) if (!ranks.includes(i)) ranks.push(i);
+    if (ranks.length === 1) points = [takeToolCopy(engine.toolState, cls, { copy: ranks[0] })];
+    else {
+      const moved = pickToolCopies(engine.toolState, cls, ranks);
+      points = moved.slice();
+      tags = moved.tags || null;
+    }
   }
   // Its own words go in with it (the copies about to leave are the last ones now).
-  const tags = copyTagKind(cls) && engine.toolState ? copyTags(engine.toolState, cls).slice(-n) : null;
+  if (!tags) tags = copyTagKind(cls) && engine.toolState ? copyTags(engine.toolState, cls).slice(-n) : null;
   const put = cabinetPut(row.contents, cls, n, { slot: Number.isInteger(slot) ? slot : null, max: stackmax(cls), points, tags });
   removeItem(engine.inv, cls, put);
   engine.refreshPack?.();
@@ -1249,9 +1259,10 @@ export const homeStorageFeature = {
     return [{ id: 'cabinet_put', label: `Put in ${label}`, enabled: !why, reason: why || '', tooltip: T.moveHere, primary: true }];
   },
 
-  runPackVerb(classTsid, verbId, engine) {
+  runPackVerb(classTsid, verbId, engine, opts = {}) {
     if (verbId !== 'cabinet_put' || win?.kind !== 'cabinet') return false;
-    cabinetPutFromPack(engine, classTsid, Math.min(countItem(engine.inv, classTsid), Number.isFinite(stackmax(classTsid)) ? stackmax(classTsid) : countItem(engine.inv, classTsid)));
+    // R18: the copy the menu was about goes in (game.js passes it for a class with copies).
+    cabinetPutFromPack(engine, classTsid, Math.min(countItem(engine.inv, classTsid), Number.isFinite(stackmax(classTsid)) ? stackmax(classTsid) : countItem(engine.inv, classTsid)), { copy: Number.isInteger(opts?.copy) ? opts.copy : null });
     return true;
   },
 

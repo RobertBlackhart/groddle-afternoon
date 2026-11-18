@@ -141,10 +141,11 @@ import {
 } from '../butler.js?v=b6ed6990';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
-import { createItemPicker } from '../ui/item-picker.js?v=52288b20';
+import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
 import { registerOwnButlerDrop } from '../butler-drop.js?v=5aa14bf1';
 import { worldPoint } from './world-drop-feature.js?v=e2926cce';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
 
 export const BUTLER_FEATURE_ID = 'butler';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -1671,19 +1672,24 @@ function zombie(engine) {
 }
 
 /**
- * give: pick a pack stack and a count, confirm, then the old gift comes back. `pre` ({ cls, count })
+ * give: pick a pack stack and a count, confirm, then the old gift comes back. `pre` ({ cls, count, copy })
  * is a stack dropped on the Butler (G972, bag_butler.js give is_drop_target): it starts chosen.
+ * R18 (G974): a class whose copies differ offers each (js/copy-picks.js); the one chosen is the one
+ * that leaves (bag_butler.js give took the itemstack chosen).
  */
 function giveMenu(engine, pre = null) {
   const slots = listPackItemSlots(engine.inv).filter((s) => giftable(s.classTsid));
   if (!slots.length) return line(engine, 'give:none', BUTLER_STRINGS.visitorGiftNoPrevious.trim(), 'Oh, ok.');
-  const dropped = pre && slots.find((s) => s.classTsid === pre.cls);
-  let chosen = dropped ? dropped.classTsid : slots[0].classTsid;
-  let count = dropped ? Math.max(1, Math.min(countItem(engine.inv, chosen), Math.floor(Number(pre.count) || 1))) : 1;
+  const items = packPicks(engine.toolState, slots.map((s) => ({ c: s.classTsid, label: s.label, count: s.count, icon: s.icon || itemIcon(s.classTsid), max: Math.max(1, countItem(engine.inv, s.classTsid)), attrs: { 'data-butler-item': s.classTsid } })))
+    .map((it) => (Number.isInteger(it.copy) ? { ...it, attrs: { ...it.attrs, 'data-butler-copy': it.copy } } : it));
+  const droppedAt = pre ? items.filter((it) => it.c === pre.cls) : [];
+  const dropped = droppedAt.find((it) => Number.isInteger(pre?.copy) && it.copies?.includes(pre.copy)) || droppedAt[0];
+  let pick = dropped || items[0];
+  let chosen = pick.c;
+  let count = dropped ? Math.max(1, Math.min(dropped.max || 1, Math.floor(Number(pre.count) || 1))) : 1;
   // #141: the shared item picker (js/ui/item-picker.js), the one Give and the Auction House use: this
   // grid was its model; it adds a search and the count badge, How many stays right under it.
   const render = (el) => {
-    const items = slots.map((s) => ({ key: s.classTsid, c: s.classTsid, label: s.label, count: s.count, icon: s.icon || itemIcon(s.classTsid), max: Math.max(1, countItem(engine.inv, s.classTsid)), attrs: { 'data-butler-item': s.classTsid } }));
     const picker = createItemPicker(document, {
       hook: 'butler',
       label: 'Your pack',
@@ -1691,14 +1697,15 @@ function giveMenu(engine, pre = null) {
       countVerb: 'Give',
       countHooks: { num: 'data-butler-count' },
       onPick: (it) => {
+        pick = it;
         chosen = it.c;
         count = 1;
-        picker.update({ selected: chosen, count });
+        picker.update({ selected: it.key, count });
       },
       onCount: (n) => { count = n; },
       onConfirm: () => el.closest?.('#butler-dialog')?.querySelector('.bd-btn.primary')?.click(),
     });
-    picker.update({ items, selected: chosen, count });
+    picker.update({ items, selected: pick.key ?? pickKey(chosen), count });
     el.append(picker.el);
   };
   openDialog(engine, {
@@ -1709,7 +1716,7 @@ function giveMenu(engine, pre = null) {
     choices: [{ value: 'cancel', txt: 'Never mind.' }, { value: 'ok', txt: 'Give', primary: true }],
     onChoice: (v) => {
       if (v !== 'ok') return closeDialog(engine);
-      const n = Math.max(1, Math.min(countItem(engine.inv, chosen), count));
+      const n = Math.max(1, Math.min(countItem(engine.inv, chosen), pick.max || Infinity, count));
       const offer = giftOffer(st, { classTsid: chosen, count: n, names: itemName, stackMax: stackMax(chosen) });
       openDialog(engine, {
         key: 'give:confirm',
@@ -1719,7 +1726,8 @@ function giveMenu(engine, pre = null) {
           if (answer !== 'yes') return line(engine, 'give:no', BUTLER_STRINGS.visitorGiftNo, 'Bye');
           if (countItem(engine.inv, chosen) < n) return closeDialog(engine);
           // Ticket 112: in multiplayer the Butler's stock is the site's, so a visitor gets it while you are away.
-          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null);
+          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null, pick);
+          if (engine.toolState && markLeaving(engine, chosen, pick, n)) takeCopies(engine.toolState, chosen, pick, n);
           removeItem(engine.inv, chosen, n);
           const out = setGift(st, { classTsid: chosen, count: n, stackMax: stackMax(chosen) });
           if (out.returned) addItem(engine.inv, out.returned.classTsid, out.returned.count);
@@ -1738,7 +1746,7 @@ function giveMenu(engine, pre = null) {
  * sends back an old gift of another class (onLeaveVisitorGift, onReturnOldGift);
  * the pack changes once the site says so, once per give (the trade slice's receipt).
  */
-function giveThroughSite(engine, cls, n, keep) {
+function giveThroughSite(engine, cls, n, keep, pick = null) {
   closeDialog(engine);
   giftHook.give(engine, { c: cls, n, keep }).then((a) => {
     if (!a?.ok) {
@@ -1746,6 +1754,7 @@ function giveThroughSite(engine, cls, n, keep) {
       return;
     }
     if (a.applied) {
+      if (engine.toolState && markLeaving(engine, cls, pick, n)) takeCopies(engine.toolState, cls, pick, n);
       removeItem(engine.inv, cls, Math.min(n, countItem(engine.inv, cls)));
       if (a.got) addItem(engine.inv, a.got.c, a.got.n);
     }
@@ -2234,7 +2243,7 @@ function installOwnButlerDrop(engine) {
       return { target: view.butler.target, mine: true, give: true, busy: rt.mode === 'interacting' && !!dialog };
     },
     takes: giftable,
-    give: ({ cls, count }) => giveMenu(engine, { cls, count }),
+    give: ({ cls, count, copy }) => giveMenu(engine, { cls, count, copy }),
   });
 }
 
