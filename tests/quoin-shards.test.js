@@ -408,7 +408,8 @@ describe('the collector\'s burst on the page (features/quoin-shards-feature.js q
     assert.match(grab, /logGain\(`You collected \$\{/);
     assert.match(grab, /if \(result\.hitLimit\) announceQuoinLimit\(result\.dailyLimit\);/);
     assert.match(grab, /if \(result\.typeId === 'mystery'\) notify\.notice\(/);
-    assert.match(grab, /burst\(q\.x, q\.y, rewardDef\.color, result\.typeId === 'qurazy' \? 28 : 12\);/);
+    // G978: the extra coloured dots are gone; Glitch's own quoin burst is quoinGotText's (doQuoinGot 814-905).
+    assert.doesNotMatch(grab, /\bburst\(/);
     // The feature still leaves the grabber's own burst to the pickup.
     const feature = read('js/features/quoin-shards-feature.js');
     assert.match(feature, /if \(burst\.own\) continue;/);
