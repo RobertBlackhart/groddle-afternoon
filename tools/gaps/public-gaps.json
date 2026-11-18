@@ -2776,6 +2776,318 @@
       "commits": [
         "game:59eb30117ff"
       ]
+    },
+    {
+      "id": "G951",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "On the home street, the meadow and the soil stopped short of the screen edge past the house when the Social drawer was open.",
+      "commits": [
+        "game:925ab42a492"
+      ]
+    },
+    {
+      "id": "G953",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "A super harvest floated one number over the plot while the activity log said another.",
+      "commits": [
+        "game:21468cf4e75"
+      ]
+    },
+    {
+      "id": "G954",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "On phones, some home street styles drew trees, rocks and hills floating above the ground.",
+      "commits": [
+        "game:6913e343a3f"
+      ]
+    },
+    {
+      "id": "G955",
+      "area": "Speech",
+      "show": "fixing",
+      "text": "Some speech showed a code where a less-than sign belonged.",
+      "commits": [
+        "game:285005fdb63"
+      ]
+    },
+    {
+      "id": "G957",
+      "area": "Render",
+      "show": "fixing",
+      "text": "The second and third looks of mining rocks were blurry on high-density screens.",
+      "commits": [
+        "game:2ad9c31e0aa",
+        "game:b2f71b003c3"
+      ]
+    },
+    {
+      "id": "G958",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Dragging a big pile from the floor onto a Storage Display Box moved only part of it.",
+      "commits": [
+        "game:f60288fe3b7"
+      ]
+    },
+    {
+      "id": "G959",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "Coming home from a quest kept playing the last place's music.",
+      "commits": [
+        "game:15548515eb5"
+      ]
+    },
+    {
+      "id": "G960",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The map named the wrong Giant for some shrine streets, and the Rook missed a built upgrade's shrine.",
+      "commits": [
+        "game:f6da2795803",
+        "game:605ad96b3d3",
+        "server:3f64b1b",
+        "server:1c1bbdc"
+      ]
+    },
+    {
+      "id": "G961",
+      "area": "Render",
+      "show": "fixing",
+      "text": "The Scion of Purple was drawn blurry on computers.",
+      "commits": [
+        "game:2e494d32ff9"
+      ]
+    },
+    {
+      "id": "G963",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "Watering, hoeing and clearing could play their sound twice.",
+      "commits": [
+        "game:c9fffbe6ce3",
+        "game:8b0656f9d87"
+      ]
+    },
+    {
+      "id": "G965",
+      "area": "Hell",
+      "show": "fixing",
+      "text": "Instant Resurrection filled mood only to 100, not to your full tank.",
+      "commits": [
+        "game:d248bb34ad8"
+      ]
+    },
+    {
+      "id": "G967",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On touch screens, dragging a stack from the pack only reached some of the places a mouse could drop it.",
+      "commits": [
+        "game:4aac414560a"
+      ]
+    },
+    {
+      "id": "G968",
+      "area": "Feats",
+      "show": "fixing",
+      "text": "Feat progress could be lost when a report to the server failed.",
+      "commits": [
+        "game:21983317040",
+        "server:0105b1d"
+      ]
+    },
+    {
+      "id": "G969",
+      "area": "Getting around",
+      "show": "fixing",
+      "text": "Some routes and searches went through streets still under construction.",
+      "commits": [
+        "game:4fb3d151e68"
+      ]
+    },
+    {
+      "id": "G970",
+      "area": "Energy and mood",
+      "show": "fixing",
+      "text": "Some gains pushed a full energy or mood tank down, and some rewards stopped at 100 instead of your full tank.",
+      "commits": [
+        "game:2856c5c7712"
+      ]
+    },
+    {
+      "id": "G972",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "You couldn't leave a package by dropping a stack on a friend's Butler, as Glitch allowed.",
+      "commits": [
+        "game:a9952a5267f",
+        "game:385535e3657"
+      ]
+    },
+    {
+      "id": "G974",
+      "area": "Items",
+      "show": "fixing",
+      "text": "Gift wrap, mail, auctions, the Butler and other pickers sent any copy of an item, not the one you chose, so a named Cubimal or a less worn tool could be swapped.",
+      "commits": [
+        "game:bd95187388c",
+        "game:ef89eabffef",
+        "game:3c053c7abd6",
+        "server:3b8cb18",
+        "site:eb2d677"
+      ]
+    },
+    {
+      "id": "G975",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Animals, trees and set-down things stood a little into the ground or hopped when they turned.",
+      "commits": [
+        "game:e8bb99bc238",
+        "game:7d5c0fc8418",
+        "game:811c8212b0b",
+        "server:a55c0d8"
+      ]
+    },
+    {
+      "id": "G976",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On phones, a quoin's amount rose behind the notices that opened at the same moment.",
+      "commits": [
+        "game:7581b7cfd3b"
+      ]
+    },
+    {
+      "id": "G977",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "Words drawn in the world could switch to another font on phones.",
+      "commits": [
+        "game:713122538e0"
+      ]
+    },
+    {
+      "id": "G979",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "Buy a Bag started at level 2 instead of with your first skill, as in Glitch.",
+      "commits": [
+        "game:9befdac3493",
+        "game:5e6332600ef"
+      ]
+    },
+    {
+      "id": "G985",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose."
+    },
+    {
+      "id": "G986",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Online, a tree or animal could offer the same verb again for a moment after you used it."
+    },
+    {
+      "id": "G987",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers."
+    },
+    {
+      "id": "G988",
+      "area": "Camera",
+      "show": "fixing",
+      "text": "In Camera Mode you could click a far signpost and travel without walking there."
+    },
+    {
+      "id": "G989",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "On some streets, sky showed under the ground near the bottom of the screen."
+    },
+    {
+      "id": "G990",
+      "area": "Transit",
+      "show": "fixing",
+      "text": "The street map of a subway station showed only its wall and floor."
+    },
+    {
+      "id": "G991",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "Some quest completion cards showed their rewards as plain text without icons."
+    },
+    {
+      "id": "G992",
+      "area": "Phones",
+      "show": "fixing",
+      "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out."
+    },
+    {
+      "id": "G993",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "The loading card's list of what lives on a street disappeared before you could read it."
+    },
+    {
+      "id": "G994",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon."
+    },
+    {
+      "id": "G995",
+      "area": "Vendors",
+      "show": "fixing",
+      "text": "The Street Spirit on Progress Way had the wrong store name and goods; in Glitch it sold bags."
+    },
+    {
+      "id": "G996",
+      "area": "Musicblocks",
+      "show": "fixing",
+      "text": "Musicblocks could not be played in Hell, as they could in Glitch."
+    },
+    {
+      "id": "G997",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet."
+    },
+    {
+      "id": "G998",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "A few Mortar Barnacles sit off their spots on Vasko Shift."
+    },
+    {
+      "id": "G999",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights."
+    },
+    {
+      "id": "G1000",
+      "area": "Sounds",
+      "show": "fixing",
+      "text": "After stepping away, music and sounds can stop and not come back until you reload."
+    },
+    {
+      "id": "G1004",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer."
+    },
+    {
+      "id": "G1005",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb."
     }
   ]
 }

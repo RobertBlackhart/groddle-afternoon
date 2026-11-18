@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.47.1",
+  "release": "v0.48.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 1,
+    "fixing": 19,
     "known": 13,
     "unreleased": 0,
-    "fixed": 265,
+    "fixed": 286,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -51,6 +51,11 @@
     {
       "name": "Quest rooms",
       "items": [
+        {
+          "id": "G999",
+          "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights.",
+          "state": "fixing"
+        },
         {
           "id": "G10",
           "text": "Most of Glitch's private quest rooms and Jethimadh Tower rooms left no map behind. Each one is rebuilt by hand from players' recordings and snaps, and some may never come back.",
@@ -134,6 +139,21 @@
     {
       "name": "Quests",
       "items": [
+        {
+          "id": "G987",
+          "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers.",
+          "state": "fixing"
+        },
+        {
+          "id": "G991",
+          "text": "Some quest completion cards showed their rewards as plain text without icons.",
+          "state": "fixing"
+        },
+        {
+          "id": "G1004",
+          "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
+          "state": "fixing"
+        },
         {
           "id": "F11",
           "text": "Chasing Hubba Dubba Hugs is offered but cannot be finished, and Tend to Your Community never ticks its Herb Gardens step.",
@@ -235,12 +255,28 @@
           "text": "Quest cards and Pinned Quests showed only the first step of a quest with several.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G979",
+          "text": "Buy a Bag started at level 2 instead of with your first skill, as in Glitch.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
     {
       "name": "Streets",
       "items": [
+        {
+          "id": "G989",
+          "text": "On some streets, sky showed under the ground near the bottom of the screen.",
+          "state": "fixing"
+        },
+        {
+          "id": "G993",
+          "text": "The loading card's list of what lives on a street disappeared before you could read it.",
+          "state": "fixing"
+        },
         {
           "id": "G351",
           "text": "A few named streets, such as Celestial Strum and Coulcairn, have no map and no layout anywhere we have found.",
@@ -462,12 +498,23 @@
           "text": "Five World map cards showed a bare picture without their frame and name.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G960",
+          "text": "The map named the wrong Giant for some shrine streets, and the Rook missed a built upgrade's shrine.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
     {
       "name": "Sounds",
       "items": [
+        {
+          "id": "G1000",
+          "text": "After stepping away, music and sounds can stop and not come back until you reload.",
+          "state": "fixing"
+        },
         {
           "id": "G636",
           "text": "Short lines from animals and characters stay up for Glitch's own times, such as three seconds for a Yum!",
@@ -500,6 +547,18 @@
           "text": "After many Acts in a row, sound effects such as the pick stopped playing.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G959",
+          "text": "Coming home from a quest kept playing the last place's music.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G963",
+          "text": "Watering, hoeing and clearing could play their sound twice.",
+          "state": "fixed",
+          "version": "v0.48.0"
         },
         {
           "id": "G11",
@@ -583,6 +642,12 @@
           "version": "v0.45.0"
         },
         {
+          "id": "G974",
+          "text": "Gift wrap, mail, auctions, the Butler and other pickers sent any copy of an item, not the one you chose, so a named Cubimal or a less worn tool could be swapped.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
           "id": "G174",
           "text": "A few dozen items in the encyclopedia have no icon, because their art was never archived.",
           "state": "lost"
@@ -592,6 +657,16 @@
     {
       "name": "Homes",
       "items": [
+        {
+          "id": "G985",
+          "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose.",
+          "state": "fixing"
+        },
+        {
+          "id": "G997",
+          "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet.",
+          "state": "fixing"
+        },
         {
           "id": "G223",
           "text": "Some house styles are still to come, including more interior and back yard styles. The Coral Caves style waits for its art to turn up.",
@@ -678,6 +753,30 @@
           "text": "Visitors didn't see what a home's owner did until they came back.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G951",
+          "text": "On the home street, the meadow and the soil stopped short of the screen edge past the house when the Social drawer was open.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G954",
+          "text": "On phones, some home street styles drew trees, rocks and hills floating above the ground.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G958",
+          "text": "Dragging a big pile from the floor onto a Storage Display Box moved only part of it.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G972",
+          "text": "You couldn't leave a package by dropping a stack on a friend's Butler, as Glitch allowed.",
+          "state": "fixed",
+          "version": "v0.48.0"
         },
         {
           "id": "G48",
@@ -856,6 +955,21 @@
       "name": "Animals",
       "items": [
         {
+          "id": "G994",
+          "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon.",
+          "state": "fixing"
+        },
+        {
+          "id": "G998",
+          "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
+          "state": "fixing"
+        },
+        {
+          "id": "G1005",
+          "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb.",
+          "state": "fixing"
+        },
+        {
           "id": "G642",
           "text": "Chickens squawk and flutter off when you walk into them.",
           "state": "fixed",
@@ -952,6 +1066,12 @@
           "text": "Some Jellisacs stood on ledges while their street's holes sat empty.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G975",
+          "text": "Animals, trees and set-down things stood a little into the ground or hopped when they turned.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1091,6 +1211,11 @@
       "name": "Multiplayer",
       "items": [
         {
+          "id": "G986",
+          "text": "Online, a tree or animal could offer the same verb again for a moment after you used it.",
+          "state": "fixing"
+        },
+        {
           "id": "G641",
           "text": "A note left on the ground stays private to you. In Glitch anyone could read it.",
           "state": "known"
@@ -1154,6 +1279,11 @@
     {
       "name": "Phones",
       "items": [
+        {
+          "id": "G992",
+          "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out.",
+          "state": "fixing"
+        },
         {
           "id": "G663",
           "text": "On some phones, big streets can still use too much memory and close the game. A lighter mode for phones is planned.",
@@ -1517,6 +1647,24 @@
           "text": "On upright phones, signposts high on a street were hidden under the top bar.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G967",
+          "text": "On touch screens, dragging a stack from the pack only reached some of the places a mouse could drop it.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G976",
+          "text": "On phones, a quoin's amount rose behind the notices that opened at the same moment.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G977",
+          "text": "Words drawn in the world could switch to another font on phones.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1600,6 +1748,12 @@
           "report": 292,
           "state": "fixed",
           "version": "v0.37.0"
+        },
+        {
+          "id": "G965",
+          "text": "Instant Resurrection filled mood only to 100, not to your full tank.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1642,6 +1796,12 @@
           "report": 307,
           "state": "fixed",
           "version": "v0.38.0"
+        },
+        {
+          "id": "G969",
+          "text": "Some routes and searches went through streets still under construction.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1677,6 +1837,11 @@
     {
       "name": "Vendors",
       "items": [
+        {
+          "id": "G995",
+          "text": "The Street Spirit on Progress Way had the wrong store name and goods; in Glitch it sold bags.",
+          "state": "fixing"
+        },
         {
           "id": "F69",
           "text": "A vendor's shelf jumped back to the top after each sale.",
@@ -1720,6 +1885,12 @@
           "text": "Street gardens stood anywhere on the street, two beds at most, instead of where 2012 pictures show them.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G953",
+          "text": "A super harvest floated one number over the plot while the activity log said another.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1822,6 +1993,12 @@
           "text": "Today's Feat could miss quests you finished when their report didn't reach the server.",
           "state": "fixed",
           "version": "v0.43.1"
+        },
+        {
+          "id": "G968",
+          "text": "Feat progress could be lost when a report to the server failed.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1868,6 +2045,12 @@
           "report": 349,
           "state": "fixed",
           "version": "v0.42.0"
+        },
+        {
+          "id": "G955",
+          "text": "Some speech showed a code where a less-than sign belonged.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -1962,6 +2145,11 @@
       "name": "Transit",
       "items": [
         {
+          "id": "G990",
+          "text": "The street map of a subway station showed only its wall and floor.",
+          "state": "fixing"
+        },
+        {
           "id": "G835",
           "text": "The subway's stop question could take your typing while the report window was open and put you off the train.",
           "state": "fixed",
@@ -1984,6 +2172,11 @@
     {
       "name": "Camera",
       "items": [
+        {
+          "id": "G988",
+          "text": "In Camera Mode you could click a far signpost and travel without walking there.",
+          "state": "fixing"
+        },
         {
           "id": "G836",
           "text": "A narrow street could be drawn stretched to the window's width when the browser kept an older copy of the page's styles.",
@@ -2011,6 +2204,18 @@
           "text": "On some graphics cards the report picture came out black and the street map blank.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G957",
+          "text": "The second and third looks of mining rocks were blurry on high-density screens.",
+          "state": "fixed",
+          "version": "v0.48.0"
+        },
+        {
+          "id": "G961",
+          "text": "The Scion of Purple was drawn blurry on computers.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     },
@@ -2085,6 +2290,11 @@
       "name": "Musicblocks",
       "items": [
         {
+          "id": "G996",
+          "text": "Musicblocks could not be played in Hell, as they could in Glitch.",
+          "state": "fixing"
+        },
+        {
           "id": "G938",
           "text": "Every street held a Musicblock that each player picked up separately; Glitch's came from drop tables and a new player's first street.",
           "state": "fixed",
@@ -2100,6 +2310,17 @@
           "text": "Some earned things were taken back by the save checker: the Rube Shaped Potato, artifacts, Spinning Wheel prizes, a Craftybot's work, picked-up gnomes and icons, racing Cubimals, the Funpickle.",
           "state": "fixed",
           "version": "v0.47.1"
+        }
+      ]
+    },
+    {
+      "name": "Energy and mood",
+      "items": [
+        {
+          "id": "G970",
+          "text": "Some gains pushed a full energy or mood tank down, and some rewards stopped at 100 instead of your full tank.",
+          "state": "fixed",
+          "version": "v0.48.0"
         }
       ]
     }
