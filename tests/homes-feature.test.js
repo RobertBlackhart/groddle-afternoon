@@ -13,12 +13,15 @@ import {
   interiorLook,
   landscapeGeometry,
   liftOldStreetRows,
+  livePatchSlots,
   nodeKeyMap,
   rekeyNodes,
   rockClassFor,
   rockItems,
   soilKeyMap,
-} from '../public/js/features/homes-feature.js?v=181bf97d';
+  yardSoilInput,
+} from '../public/js/features/homes-feature.js?v=189f5c78';
+import { soilSpawnPlan } from '../public/js/features/patches-feature.js?v=cf35208a';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { canPlantBean } from '../public/js/patches.js?v=db04987b';
@@ -71,6 +74,25 @@ describe('homes feature helpers', () => {
     ]);
     assert.deepEqual([...soil.values()].flat(), ['patch:0', 'patch_dark:0', 'patch:1']);
     assert.equal(rockItems([{ protoClass: 'proto_metal_rock' }, { protoClass: 'proto_peat' }]).length, 1);
+  });
+
+  it('draws each live Patch with the plot key soilKeyMap gives it, past a worn-out one (#501)', () => {
+    const items = [
+      { id: 1, protoClass: 'proto_patch', endClass: 'patch', rx: 100 },
+      { id: 2, protoClass: 'proto_patch', endClass: 'patch', rx: 300, depleted: true },
+      { id: 3, protoClass: 'proto_patch', endClass: 'patch_dark', rx: 500 },
+      { id: 4, protoClass: 'proto_patch', endClass: 'patch', rx: 700 },
+    ];
+    const { soilCounts, soilPoints } = yardSoilInput(items, (item) => ({ x: item.rx, y: 0 }));
+    assert.deepEqual(soilCounts, { patch: 2, patch_dark: 1 }, 'the worn-out Patch is its proto, not a plot');
+    const drawn = new Map(soilSpawnPlan(soilCounts, (key) => soilPoints[key]).map((row) => [row.x, row.key]));
+    const keys = soilKeyMap(items);
+    for (const item of items.filter((row) => !row.depleted)) assert.equal(drawn.get(item.rx), keys.get(item.id)[0], `Patch ${item.id}`);
+    assert.equal(drawn.has(300), false, 'nothing drawn over the proto');
+    assert.deepEqual(livePatchSlots(items).map((row) => row.key), ['patch:0', 'patch_dark:0', 'patch:1']);
+    const src = readFileSync(join(root, 'js/features/homes-feature.js'), 'utf8');
+    const spawn = src.slice(src.indexOf('function spawnCultivations('), src.indexOf('function drawCultivationMarkers('));
+    assert.match(spawn, /yardSoilInput\(st\.items/, 'the yard drawing reads the same list');
   });
 
   it('sells store 23 at its exact prices with the 0.5 buy-back', () => {

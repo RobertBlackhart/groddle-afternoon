@@ -399,17 +399,42 @@ export function nodeKeyMap(items, now = Date.now()) {
   return out;
 }
 
-/** The patches-feature plot keys (`<patch|patch_dark>:<index>`) each Patch owns. */
-export function soilKeyMap(items) {
+/**
+ * The yard's live Patches in cultivation order, each with its patches-feature
+ * plot key (`<patch|patch_dark>:<index>`) and, when `spotOf` is given, its
+ * spot. A worn-out Patch is a proto and owns no plot. The one list the yard
+ * drawing (spawnCultivations), the rekey (withRekey) and the pour targets
+ * (soilKeyMap) read, so a tree is drawn on the Patch whose plot it is (#501).
+ */
+export function livePatchSlots(items, spotOf = null) {
   const counters = {};
-  const out = new Map();
+  const out = [];
   for (const item of items) {
     if (cultivationDef(item.protoClass)?.kind !== 'patch' || item.depleted) continue;
     const idx = counters[item.endClass] || 0;
     counters[item.endClass] = idx + 1;
-    out.set(item.id, [`${item.endClass}:${idx}`]);
+    out.push({ item, key: `${item.endClass}:${idx}`, spot: spotOf ? spotOf(item) : null });
   }
   return out;
+}
+
+/**
+ * The patches feature's input for a yard: soilCounts and the `soil:<class>`
+ * placement spots, in the order livePatchSlots keys them.
+ */
+export function yardSoilInput(items, spotOf) {
+  const soilCounts = {};
+  const soilPoints = {};
+  for (const { item, spot } of livePatchSlots(items, spotOf)) {
+    soilCounts[item.endClass] = (soilCounts[item.endClass] || 0) + 1;
+    (soilPoints[`soil:${item.endClass}`] ||= []).push(spot);
+  }
+  return { soilCounts, soilPoints };
+}
+
+/** The patches-feature plot keys (`<patch|patch_dark>:<index>`) each Patch owns. */
+export function soilKeyMap(items) {
+  return new Map(livePatchSlots(items).map(({ item, key }) => [item.id, [key]]));
 }
 
 /** Re-key saved node states after a cultivation is removed. */
@@ -2915,13 +2940,8 @@ function spawnCultivations(engine, st = activeCult()) {
     resourceNodesFeature.onStreetEnter({ tsid }, shimEngine(engine, population, points));
   }
   // Patches: the patches feature runs dig / tend / plant / seedling / tree.
-  const soilCounts = {};
-  const soilPoints = {};
-  for (const item of st.items) {
-    if (cultivationDef(item.protoClass).kind !== 'patch') continue;
-    soilCounts[item.endClass] = (soilCounts[item.endClass] || 0) + 1;
-    (soilPoints[`soil:${item.endClass}`] ||= []).push({ x: cultivationWorldX(item, st), y: groundY });
-  }
+  // Only live Patches: a worn-out one is drawn as its proto (spawnProtos), not as a plot (#501).
+  const { soilCounts, soilPoints } = yardSoilInput(st.items, (item) => ({ x: cultivationWorldX(item, st), y: groundY }));
   if (Object.keys(soilCounts).length) {
     patchesFeature.onStreetEnter({ tsid, soilCounts }, shimEngine(engine, engine.population, soilPoints));
   }
@@ -6902,8 +6922,7 @@ function demoSetup(engine) {
   const wotd = Math.floor(Number(engine.param('wotddemo')) || 0);
   const wotdTree = engine.param('wotdtree');
   if (wotd > 0 && wotdTree && GROWN_TREE_LABELS[wotdTree] && scene?.room === 'street' && !wotdTreeDone) {
-    const patch = cult.items.find((row) => !row.depleted && cultivationDef(row.protoClass)?.kind === 'patch');
-    const key = patch && soilKeyMap(cult.items).get(patch.id)?.[0];
+    const { item: patch, key } = livePatchSlots(cult.items)[0] || {};
     if (key) {
       wotdTreeDone = true;
       const slot = engine.streetSlot('patches', yardTsid(cult));
