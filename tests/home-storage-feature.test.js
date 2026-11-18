@@ -12,7 +12,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { saleVerbs } from '../public/js/home-street-mp.js?v=4969493a';
-import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=46e31e0b';
+import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=0fa48117';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -174,7 +174,7 @@ describe('names from neighbours-mp.js are imported wherever a feature calls them
 
 describe('#511 (G1027): the display box lists every item it takes', () => {
   it('no cap at 80: items late in the alphabet are offered', async () => {
-    const { depositChoices } = await import('../public/js/features/home-storage-feature.js?v=46e31e0b');
+    const { depositChoices } = await import('../public/js/features/home-storage-feature.js?v=0fa48117');
     const { ITEM_CATALOG } = await import('../public/js/inventory.js?v=6414dbdc');
     // 120 plain things in the pack (the catalog in node holds only the starter items).
     const added = [];
@@ -203,6 +203,8 @@ describe('#511 (G1027): the display box lists every item it takes', () => {
   it('a row\'s count never clips: the button is border-box and the name gives way', () => {
     const css = read('public/js/ui/storage-windows.js');
     assert.match(css, /\.hst-list button \{ box-sizing: border-box; width: 100%; min-width: 0;/);
+    // A long name's own width never widens the column (the browser check: scrollWidth was 412 in 354).
+    assert.match(css, /\.hst-list \{ list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax\(0, 1fr\);/);
     assert.match(css, /\.hst-list \.hst-label \{ flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; \}/);
     assert.match(css, /\.hst-list \.hst-n \{ margin-left: auto; flex: none;/);
     assert.match(css, /el\('span', \{ class: 'hst-label' \}, it\.label\)/);

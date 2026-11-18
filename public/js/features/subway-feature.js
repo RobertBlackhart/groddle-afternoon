@@ -88,11 +88,10 @@ import {
   stationById,
   stationByTsid,
   stationScreen,
-  gateBoxFace,
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=22e42b26';
+} from '../subway.js?v=af570a5d';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
@@ -668,9 +667,6 @@ function drawStation(engine, street, station) {
   button.eventMode = 'static';
   button._worldHitW = 150;
   button._worldHitH = 200;
-  // #509: a route's halo round the button stays on the gate box's face it is mounted on (map-routes glowTarget).
-  const face = gateBoxFace();
-  const glowClip = { l: face.l - b.l, r: face.r - b.l, t: face.t - b.t, b: face.b - b.t };
   targets.push(engine.register({
     classId: 'subway_gate',
     featureId: SUBWAY_FEATURE_ID,
@@ -678,7 +674,8 @@ function drawStation(engine, street, station) {
     subtitle: `${TEXT.gateTooltip} · ${FARE} currants`,
     sprite: button,
     subway: 'gate',
-    glowClip,
+    // #509: mounted at the gate box's edge, so a route's halo would spill onto the floor: none (map-routes glowTarget).
+    glowNone: true,
   }));
   // The Subway Map post where the station's snap shows it (subway.js STATION_SPOTS).
   const [mapX, mapY] = stationSpots(station).map;

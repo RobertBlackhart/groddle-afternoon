@@ -52,7 +52,7 @@
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=71fa73cd';
-import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=22e42b26';
+import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=af570a5d';
 import { hellFeature } from './hell-feature.js?v=6da8c49f';
 import { postReachY } from '../street-model.js?v=9f16f4ab';
 import {
@@ -307,7 +307,7 @@ function doorTargets(engine) {
  */
 function placeHighlight(engine, next) {
   const key = next ? `${engine.streetTsid}>${next}` : '';
-  if (highlight && highlight.key === key && highlight.glow && !highlight.glow.destroyed) return;
+  if (highlight && highlight.key === key && (highlight.glow ? !highlight.glow.destroyed : highlight.view && !highlight.view.destroyed)) return;
   clearHighlight();
   if (!next) return;
   // A way on that is neither post nor door (Shim Shiri's Light Beams: the posts there hang from the ceiling).
@@ -357,26 +357,20 @@ function glowTarget(engine, key, target, kind, verb) {
   const door = target.door || null;
   const w = Math.max(24, Number(door?.w) || Math.abs(Number(sprite.width)) || 60);
   const h = Math.max(40, Number(door?.h) || Math.abs(Number(sprite.height)) || 110);
+  // #509: a target mounted on another thing (A Red Button at the edge of the subway's gate box) is
+  // still where the GPS arrow walks you, with no halo: the halo spilled off the box onto the floor.
+  if (target.glowNone) {
+    highlight = { kind, view: sprite, glow: null, key, target, door, verb, x: sprite.x, y: sprite.y - h / 2, w, h };
+    engine.setData?.('routeGlowNone', String(target.classId || ''));
+    return true;
+  }
   const glow = doorEdgeGlow(PIXI, sprite, w, h);
   glow.x = sprite.x;
   glow.y = sprite.y;
   glow.zIndex = (Number(sprite.zIndex) || 3) - 0.5;
   const layer = sprite.parent === engine.entityLayer ? routeGlowLayer(engine) : null;
-  const into = layer || sprite.parent || engine.entityLayer;
-  into.addChild(glow);
+  (layer || sprite.parent || engine.entityLayer).addChild(glow);
   highlight = { kind, view: sprite, glow, key, target, door, verb, x: sprite.x, y: sprite.y - h / 2, w, h };
-  // #509: a target mounted on another thing (A Red Button on the subway's gate box, target.glowClip
-  // in its parent's space) keeps its halo inside that thing, not on the wall beside it.
-  const clip = target.glowClip;
-  if (clip && PIXI.Graphics && [clip.l, clip.t, clip.r, clip.b].every(Number.isFinite)) {
-    const mask = new PIXI.Graphics().rect(clip.l, clip.t, clip.r - clip.l, clip.b - clip.t).fill(0xffffff);
-    mask.label = 'route-glow-clip';
-    mask.eventMode = 'none';
-    into.addChild(mask);
-    glow.mask = mask;
-    highlight.glows = [glow, mask];
-    engine.setData?.('routeGlowClip', `${Math.round(clip.r - clip.l)}x${Math.round(clip.b - clip.t)}`);
-  }
   if (kind === 'door') syncDoorGlow(highlight);
   return true;
 }

@@ -113,7 +113,7 @@ const CSS = `
 .hst-store .hst-have { margin: 0 0 var(--sp-4); color: var(--text-muted); }
 .hst-store .count-pop-step { justify-content: flex-start; margin: var(--sp-3) 0; }
 .hst-store .hst-buy { width: 100%; margin-top: var(--sp-3); }
-.hst-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); max-height: 50vh; overflow: auto; }
+.hst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); max-height: 50vh; overflow: auto; }
 .hst-list button { box-sizing: border-box; width: 100%; min-width: 0; display: flex; align-items: center; gap: var(--sp-4); padding: 6px 10px; text-align: left; font: inherit; font-weight: 700;
   border: 0; border-radius: var(--radius-md); background: var(--surface-parchment); color: inherit; cursor: pointer; }
 .hst-list button:hover, .hst-list button:focus-visible { background: var(--surface-hover); }

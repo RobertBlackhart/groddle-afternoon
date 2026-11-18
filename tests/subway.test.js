@@ -55,13 +55,12 @@ import {
   rideTiming,
   signPiece,
   stationArt,
-  gateBoxFace,
   stationByTsid,
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=22e42b26';
-import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=e3f50ba9';
+} from '../public/js/subway.js?v=af570a5d';
+import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=bc638163';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -304,20 +303,10 @@ describe('G838 (#385): the station as the 2012 snaps show it', () => {
     const gate = stationArt(STATIONS[0]).find((row) => row.piece === 'subway_gate_static');
     // The box is the left 55% of subway_gate_static; the stone block the right.
     assert.ok(STATION_X.button < gate.x - gate.w * 0.1 && STATION_X.button > gate.x - gate.w / 2);
-    // #509: a route's halo is clipped to the box's face (the button is mounted on it), in every station.
-    for (const st of STATIONS) {
-      const g = stationArt(st).find((row) => row.piece === 'subway_gate_static');
-      assert.deepEqual([g.x, g.y, g.w, g.h], [gate.x, gate.y, gate.w, gate.h], st.name);
-    }
-    const face = gateBoxFace();
-    assert.deepEqual([face.l, face.b, face.t], [gate.x - gate.w / 2, gate.y, gate.y - gate.h]);
-    assert.ok(Math.abs(face.r - (gate.x - gate.w / 2 + gate.w * 0.55)) < 1e-9);
-    assert.ok(STATION_X.button - 27 / 2 > face.l && STATION_X.button + 27 / 2 < face.r, 'the button sits on the face');
-    assert.match(feature, /const face = gateBoxFace\(\);\s*const glowClip = \{ l: face\.l - b\.l, r: face\.r - b\.l, t: face\.t - b\.t, b: face\.b - b\.t \};/);
+    // #509: no route halo round a button mounted at the box's edge; the GPS still walks to it.
+    assert.match(feature, /subway: 'gate',\s*\/\/ #509[^\n]*\n\s*glowNone: true,/);
     const routes = readFileSync(new URL('../public/js/features/map-routes-feature.js', import.meta.url), 'utf8');
-    assert.match(routes, /const clip = target\.glowClip;[\s\S]{0,600}glow\.mask = mask;\s*highlight\.glows = \[glow, mask\];/);
-    // The button with the halo's reach (7 px pad, 6 px blur) would cross the box's left edge unclipped.
-    assert.ok(STATION_X.button - 27 / 2 - 7 - 6 * 2 < gate.x - gate.w / 2);
+    assert.match(routes, /if \(target\.glowNone\) \{\s*highlight = \{ kind, view: sprite, glow: null,/);
   });
   it('frames the platform as the client did, the feet low in the view', () => {
     assert.equal(STATION_Y_CAM_OFFSET, 216);
