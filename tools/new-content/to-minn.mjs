@@ -38,7 +38,9 @@ const band = (id, alt, title, inner) => group('section', `band${alt ? ' band-alt
 /** A small rounded label (.nc-chip), inside a paragraph. */
 const chip = (words, tone = '') => `<span class="nc-chip${tone ? ` nc-chip-${tone}` : ''}">${words}</span>`;
 /**
- * Each card wears a Tiny Speck icon (CC0, the game's public/assets/sprites/icons)
+ * Each card wears a Tiny Speck icon (CC0, the game's public/assets/sprites/icons),
+ * or for Pot Luck Day's badges and items the art made for them (public/assets/badges/pld_*,
+ * the item icons; listed in tools/provenance/made-sprites.json)
  * through its nc-icon-<name> class in the site's style.css, and a tone
  * (nc-tone-moss, -sky, -sun, -plum, -accent).
  */
@@ -54,17 +56,17 @@ export const RULES = [
 ];
 /** Pot Luck Day's badges. */
 export const BADGES = [
-  { name: 'Feast Bringer', icon: 'potians_feast', tone: 'sun', words: 'Finishing the festival’s quest, Pot’s Empty Table' },
-  { name: 'Plume Fluffer I, II and III', icon: 'chick', tone: 'plum', words: 'Dressing 5, 23 and 61 chickens in costume', tiers: [['I', 5], ['II', 23], ['III', 61]] },
-  { name: 'Good Neighbor', icon: 'pumpkin_pie', tone: 'moss', words: 'Laying 11 dishes or crops on the Harvest Table' },
+  { name: 'Feast Bringer', icon: 'pld_feast_bringer', tone: 'sun', words: 'Finishing the festival’s quest, Pot’s Empty Table' },
+  { name: 'Plume Fluffer I, II and III', icon: 'pld_plume_fluffer_1', tone: 'plum', words: 'Dressing 5, 23 and 61 chickens in costume', tiers: [['I', 5], ['II', 23], ['III', 61]] },
+  { name: 'Good Neighbor', icon: 'pld_good_neighbor', tone: 'moss', words: 'Laying 11 dishes or crops on the Harvest Table' },
 ];
 /** Pot Luck Day's new items, and what becomes of each after the season (its chip tone). */
 export const ITEMS = [
-  { name: 'Turkey Tailfan', icon: 'paper', words: 'A paper-plate costume for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
-  { name: 'Rooster Plume', icon: 'party_pack_double_rainbow', words: 'A tall comb and tail for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
-  { name: 'Fancy feather', icon: 'quill', words: 'Sometimes dropped by a dressed chicken when squeezed', after: 'Rots to compost', tone: 'plum' },
-  { name: 'Harvest Stuffing', icon: 'awesome_pot', words: 'A new dish for the Awesome Pot', after: 'Food', tone: 'sky' },
-  { name: 'Pot’s Cornucopia', icon: 'cornucopia_crops', words: 'A keepsake for your home, the quest’s reward, drawn from Tiny Speck’s Cornucopia of Crops', after: 'Stays', tone: 'moss' },
+  { name: 'Turkey Tailfan', icon: 'turkey_tailfan', words: 'A paper-plate costume for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
+  { name: 'Rooster Plume', icon: 'rooster_plume', words: 'A tall comb and tail for a chicken, from the Toy Vendor', after: 'Used up', tone: 'sun' },
+  { name: 'Fancy feather', icon: 'fancy_feather', words: 'Sometimes dropped by a dressed chicken when squeezed', after: 'Rots to loam', tone: 'plum' },
+  { name: 'Harvest Stuffing', icon: 'harvest_stuffing', words: 'A new dish for the Awesome Pot', after: 'Food', tone: 'sky' },
+  { name: 'Pot’s Cornucopia', icon: 'pots_cornucopia', words: 'A keepsake for your home, the quest’s reward, drawn from Tiny Speck’s Cornucopia of Crops', after: 'Stays', tone: 'moss' },
 ];
 /** Every Tiny Speck icon the page's cards wear (each needs its nc-icon-<name> rule in style.css). */
 export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
@@ -115,7 +117,7 @@ export function newContentContent() {
         h(3, 'Badges'),
         p('nc-part-lead', 'The event is built backward from its badges: each one names something to do, and everything else exists to make that possible.'),
         group('div', 'nc-badges', null, BADGES.map((b) => card('nc-badge', b.icon, b.tone, [
-          p('nc-medal', '<span>art coming</span>'),
+          p('nc-medal', ''),
           h(4, b.name, { cls: 'nc-badge-name' }),
           p('nc-badge-line', b.words),
           ...(b.tiers ? [p('nc-chips nc-tiers', b.tiers.map(([tier, n]) => chip(`${tier} · ${n}`)).join(' '))] : []),
