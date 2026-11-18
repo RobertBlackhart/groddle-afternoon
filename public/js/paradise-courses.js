@@ -400,7 +400,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The stick steers · land on clouds to bounce · hold Jump for more',
     touchControlsHint: 'Clouds bounce you upward. The stick steers; hold Jump as you land for a bigger bounce.',
     prompt: 'BOUNCE UP THE CLOUDS!',
-    palette: Object.freeze([0x5ea9d2, 0x86c4e0, 0xb2e0ee, 0xdcf3f8]),
     transitionColors: Object.freeze([0x5ea9d2, 0xdcf3f8]),
     rewards: [
       // recorded at 1x: +4 iMG, +4 currants, +4 mood, +20 iMG, +13 favor, +97 iMG last
@@ -438,7 +437,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The stick walks · Jump jumps · mind the clouds',
     touchControlsHint: 'The stick walks, Jump jumps. Try not to fall down into the clouds!',
     prompt: 'JUMP FROM CRAG TO CRAG!',
-    palette: Object.freeze([0x3d98cc, 0x74b7db, 0xadd5e6, 0xe2eef1]),
     transitionColors: Object.freeze([0x3d98cc, 0xe2eef1]),
     rewards: [
       // recorded: +120, +360, +100 energy, +120, +120, +100 energy ... +3000, exit +1098
@@ -519,7 +517,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The stick walks · Jump jumps',
     touchControlsHint: 'The stick walks, Jump jumps. Climb the branches to the nest, then drop down the far side.',
     prompt: 'CLIMB TO THE TALL!',
-    palette: Object.freeze([0x5aaee0, 0x2d5a3b, 0x1a3522, 0x0d1c10]),
     transitionColors: Object.freeze([0x1a3522, 0x5aaee0]),
     rewards: [
       // recorded: +100 mood, +100 energy, +100 currants, +100 mood, +120 ... nest +3000,
@@ -561,7 +558,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The stick steers · hold Jump to bounce higher',
     touchControlsHint: 'The cloud floor bounces you along. The stick steers; hold Jump as you land to bounce higher.',
     prompt: 'BOUNCE ALONG THE CLOUD!',
-    palette: Object.freeze([0x8b76b6, 0xb49ac4, 0xdcb4bb, 0xefcfb6]),
     transitionColors: Object.freeze([0x8b76b6, 0xefcfb6]),
     rewards: [
       // recorded: +100 mood, +120, +100 currants, +100 energy, +100 favor, +120 ... +600, +240, exit +858
@@ -590,7 +586,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     objective: 'Sail over the tree-tops and collect 22 quoins',
     completion: 'You tickled every tree-top. The way home is open!',
     prompt: 'PRESS SPACEBAR TO FLY!',
-    palette: Object.freeze([0x1b8cc7, 0x4dade0, 0x9ad0e8, 0xe6f3f6]),
     transitionColors: Object.freeze([0x1b8cc7, 0xe6f3f6]),
     skyStars: 40,
     rewards: [
@@ -632,7 +627,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The wind carries you · Jump rises · stick down dives · stick left or right speeds or slows',
     touchControlsHint: 'The wind carries you right. Hold Jump to ride upward, push the stick down to dive; left or right speeds up or holds back.',
     prompt: 'GLIDE RIGHT ON THE WIND!',
-    palette: Object.freeze([0x2b8bce, 0x60b0df, 0xa4d4ec, 0xdff1f8]),
     transitionColors: Object.freeze([0x2b8bce, 0xdff1f8]),
     rewards: [
       xp(), currants(), mood(), xp(), energy(), xp(360), favor(), xp(),
@@ -720,7 +714,6 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The draught lifts you · Jump rises faster · stick down sinks',
     touchControlsHint: 'Jump into the draught and it lifts you. Hold Jump to rise faster, push the stick down to sink, the stick steers.',
     prompt: 'JUMP INTO THE DRAUGHT!',
-    palette: Object.freeze([0x7a6cb0, 0xa394cd, 0xc8b8de, 0xe9ddef]),
     transitionColors: Object.freeze([0x7a6cb0, 0xe9ddef]),
     rewards: [
       xp(), mood(), xp(), currants(), energy(), xp(), favor(), xp(360),

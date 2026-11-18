@@ -24,7 +24,7 @@ import {
   resolveParadiseCourseAlias,
   stepParadiseBody,
   usesParadiseBody,
-} from '../public/js/paradise-courses.js?v=622dcd46';
+} from '../public/js/paradise-courses.js?v=d66031da';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -37,7 +37,7 @@ import {
   paradisePickupTouches,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=25705b31';
+} from '../public/js/paradise-flight.js?v=9ba007ae';
 import { QURAZY_REWARDS } from '../public/js/quoins.js?v=6a2cac74';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 
@@ -128,8 +128,10 @@ test('rewards line up one-to-one with pickups and keep recorded amounts', () => 
     for (const pick of course.pickups) {
       assert.ok(pick.x > 0 && pick.x < course.width && pick.y > 0 && pick.y < course.height, course.id);
     }
-    assert.equal(course.palette.length, 4);
+    // G978: only the colours sampled from Tiny Speck's pictures of a course stay; the rest paint Radial Heights' gradient.
+    if (course.palette) assert.equal(course.palette.length, 4);
   }
+  assert.deepEqual(Object.values(EXTRA_PARADISE_COURSES).filter((c) => c.palette).map((c) => c.id).sort(), ['abysmal_thrill', 'sky_plunge']);
   // Recorded endings: Mountain Scaling +1098, Abysmal / Arbor / Cloud Flight +954, Bippity Bop +858.
   assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.completionReward.amount, 1098);
   assert.equal(EXTRA_PARADISE_COURSES.abysmal_thrill.completionReward.amount, 954);

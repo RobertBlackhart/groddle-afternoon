@@ -1416,16 +1416,24 @@
    "id": "paradise-sky-palettes",
    "title": "Paradise skies painted in the remake's own palettes",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
      "file": "public/game.js",
-     "symbol": "paintParadiseSky"
+     "symbol": "paintParadiseSky",
+     "gone": true
+    },
+    {
+     "file": "public/js/paradise-courses.js",
+     "symbol": "palette",
+     "gone": true
     }
    ],
    "why": "Templates lost; Radial Heights' source gradient survives and could be used.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): use Radial Heights' surviving gradient (GHFQOLEIHN63P27 top/bottom 222E) instead of our palettes; Abysmal Thrill (G79 Snap) and Sky Plunge (card art) keep their sampled colours pending his word",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {

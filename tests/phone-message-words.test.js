@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { EXTRA_PARADISE_COURSES as PARADISE_COURSES, paradiseControls } from '../public/js/paradise-courses.js?v=622dcd46';
+import { EXTRA_PARADISE_COURSES as PARADISE_COURSES, paradiseControls } from '../public/js/paradise-courses.js?v=d66031da';
 import { BOARD_TEXT } from '../public/js/hi-signs-mp.js?v=70171967';
 import { HI_TEXT } from '../public/js/hi-signs.js?v=49b991c2';
 import { PHONE_TEXT } from '../public/js/phone/companion-data.js?v=56c2a362';

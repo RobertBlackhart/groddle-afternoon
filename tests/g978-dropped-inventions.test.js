@@ -137,3 +137,15 @@ describe('G978: no SHUT planks over a closed Paradise exit', () => {
     assert.match(fn(game, 'unlockParadiseExit'), /paradiseExit\.sprite\.alpha = 1;/);
   });
 });
+
+describe('G978: Paradise skies are Radial Heights\' gradient', () => {
+  it('top and bottom 222E (GHFQOLEIHN63P27.xml), no table of palettes; only colours sampled from Tiny Speck\'s pictures stay', () => {
+    dropped('paradise-sky-palettes');
+    assert.match(game, /const PARADISE_SKY_GRADIENT = Object\.freeze\(\{ top: 0x00222e, bottom: 0x00222e \}\);/);
+    const paint = fn(game, 'paintParadiseSky');
+    assert.doesNotMatch(paint, /const palettes|cloud_rings: \[/);
+    assert.match(paint, /const colors = course\.palette \|\| \[top, top, bottom, bottom\];/);
+    const street = JSON.parse(read('public/assets/streets/GHFQOLEIHN63P27.json'));
+    assert.deepEqual(street.gradient, { top: '00222E', bottom: '00222E' });
+  });
+});

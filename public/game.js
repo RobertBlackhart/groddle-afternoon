@@ -390,13 +390,13 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=25705b31';
-import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
+} from './js/paradise-flight.js?v=9ba007ae';
+import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=d66031da';
 import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=424d1317';
+} from './js/paradise-course-runtime.js?v=56b1e5e7';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=733b9665';
+} from './js/player-save.js?v=614937f8';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -22259,14 +22259,18 @@ const PARADISE_SKY_BELOW = 1200;
 /** Courses whose art ends in a floor run on in the floor's colour (js/paradise-course-runtime.js), not the sky's. */
 const PARADISE_FLOOR_BELOW = Object.freeze({ abysmal_thrill: 0x1d2522, arbor_hollow: 0x24331c, sky_plunge: 0xffffff });
 
+/**
+ * G978 (Austin 2026-11-17): a Paradise course's sky is the one location gradient that survives,
+ * Radial Heights' (GHFQOLEIHN63P27.xml gradient top and bottom "222E", 0x00222e), as the client
+ * painted a location's gradient (LocationRenderer), not palettes picked for the remake. A course whose
+ * colours were sampled from Tiny Speck's own pictures of it keeps them (course.palette: Abysmal
+ * Thrill's Snap, G79; Sky Plunge's card art and Snap).
+ */
+const PARADISE_SKY_GRADIENT = Object.freeze({ top: 0x00222e, bottom: 0x00222e });
+
 function paintParadiseSky(root, course) {
-  const palettes = {
-    cloud_rings: [0x789ed0, 0xe3a1a5, 0xf2d3aa, 0x889aba],
-    radial_heights: [0x071e31, 0x0d3a50, 0x286276, 0x567d89],
-    starlit_night: [0x170d3e, 0x382264, 0x65447d, 0x79678d],
-    slip_n_slide: [0x102f42, 0x17485b, 0x2a6170, 0x477b82],
-  };
-  const colors = palettes[course.id] || course.palette;
+  const { top, bottom } = PARADISE_SKY_GRADIENT;
+  const colors = course.palette || [top, top, bottom, bottom];
   const sky = new PIXI.Graphics();
   const bands = 28;
   for (let index = 0; index < bands; index += 1) {
