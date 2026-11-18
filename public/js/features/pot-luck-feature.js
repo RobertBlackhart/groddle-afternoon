@@ -190,7 +190,7 @@ function dress(engine, target, cls) {
   if (target.state) target.state.costume = cls;
   dressSprite(target.sprite, cls);
   engine.achievement?.(`${DRESS_COUNTER}:${cls}`, 1);
-  engine.say?.(target, cls === 'rooster_plume' ? 'Cock-a-doodle... doo?' : 'Gobble? Gobble.', 2600);
+  engine.say?.(target, cls === 'rooster_plume' ? 'A-doodle-doo?' : 'Gobble? Gobble.', 2600);
   engine.playSound?.('ITEM_PICKUP', { volume: 0.5 });
   say(engine, POT_LUCK_LINES.dressed[cls]);
   engine.save?.();

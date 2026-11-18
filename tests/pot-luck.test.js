@@ -29,7 +29,7 @@ import {
 } from '../public/js/pot-luck.js?v=84484e77';
 import { applyCreatureState } from '../public/js/street-creatures.js?v=adc9ef6a';
 import { dropFor } from '../public/js/world-drop.js?v=bc16d491';
-import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=2965a92f';
+import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=2835ca06';
 import { problems } from '../tools/pot-luck-art/build.mjs';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');

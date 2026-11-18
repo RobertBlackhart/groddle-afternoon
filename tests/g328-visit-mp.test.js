@@ -28,7 +28,7 @@ import {
 import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=db49f829';
 import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=1fd8db7d';
 import { homeStreetFor, readVisitScene, sharedHomeStreet, visitSceneTsid } from '../public/js/neighbours-mp.js?v=eeba8bcb';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=544cab7a';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=1a5e9996';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

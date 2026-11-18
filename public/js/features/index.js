@@ -201,8 +201,8 @@ import { skillBubblesFeature } from './skill-bubbles-feature.js?v=f31a0367'; FEA
 import { chickenScareFeature } from './chicken-scare-feature.js?v=f35308d0'; FEATURES.push(chickenScareFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=32a5a7d2'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
-import { streetObjectsFeature } from './street-objects-feature.js?v=544cab7a'; FEATURES.push(streetObjectsFeature);
+// G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
+import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);
+import { streetObjectsFeature } from './street-objects-feature.js?v=1a5e9996'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=1640c837'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=efca3d67'; FEATURES.push(accountBackupFeature);
-// G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
-import { potLuckFeature } from './pot-luck-feature.js?v=2965a92f'; FEATURES.push(potLuckFeature);

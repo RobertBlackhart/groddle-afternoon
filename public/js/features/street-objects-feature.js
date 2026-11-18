@@ -957,7 +957,9 @@ function answered(engine, msg, ok) {
   // G335 slice 5: food the ledger took for a Piggy or a Batterfly, or the egg a Chicken sits on,
   // leaves the pack with the verb below, once (the trade slice's applied list holds its op, so the
   // site counts it as applied).
-  if (grant.use?.spent && grant.use.n && (/^(feed|incubate|potluck:dress):/.test(String(p.verbId)) || p.verbId === 'capture')) engine.query?.('ledgerReceipt', String(grant.use.op || ''), engine);
+  if (grant.use?.spent && grant.use.n && (/^(feed|incubate):/.test(String(p.verbId)) || p.verbId === 'capture')) engine.query?.('ledgerReceipt', String(grant.use.op || ''), engine);
+  // G982: a Pot Luck Day costume the ledger took goes the same way.
+  else if (grant.use?.spent && grant.use.n && /^potluck:dress:/.test(String(p.verbId))) engine.query?.('ledgerReceipt', String(grant.use.op || ''), engine);
   try {
     engine.executeVerb?.(p.target, p.verbId, { animated: true });
   } finally {
