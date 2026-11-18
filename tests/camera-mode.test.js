@@ -82,7 +82,8 @@ describe('#271: Camera Mode on a phone, without a keyboard', () => {
     assert.equal(CAMERA_PHONE_COPY.done, 'Done');
     for (const v of Object.values(CAMERA_PHONE_COPY)) assert.doesNotMatch(v, /\u2014|Arrows|\bC to\b/);
     const game = readFileSync(join(here, '../public/game.js'), 'utf8');
-    assert.match(game, /TOUCH_PHONE && e\.pointerType === 'touch' && features\.query\('cameraModeActive', engine\) === true\) return;/);
+    // #500: no press on the street acts in Camera Mode, a finger's or a mouse's.
+    assert.match(game, /\n    if \(features\.query\('cameraModeActive', engine\) === true\) return;/);
     const css = readFileSync(join(here, '../public/style.css'), 'utf8');
     assert.match(css, /:root\.touch-phone\.camera-mode-on \.touch-controls \{ display: none; \}/);
   });

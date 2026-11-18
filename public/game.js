@@ -2908,6 +2908,13 @@ function endUserWalk(reason) {
     finishVerbWalk(w.verbWalk, reason);
     return;
   }
+  // #500: the arm clicked on a far post goes when the walk ends at that post (armWhenThere).
+  if (w.signArm) {
+    const there = reason === 'arrived' && postIsAtHand(signpostAtHand(), w.signArm.view);
+    setCanvasData('signArmWalk', there ? 'took' : `stopped:${reason}`);
+    if (there) w.signArm.take();
+    return;
+  }
   // TOUCH: at a tapped ladder, get on and climb to where it was tapped.
   if (w.ladderGoalY != null && (reason === 'arrived' || reason === 'wall')) climbTappedLadder(w.ladderGoalY);
   // AvatarController.endPath 156-165: beside the player you walked to, their menu opens.
@@ -25857,7 +25864,8 @@ function openSignpostArmsMenu(hit, at) {
     focusIndex: clicked < 0 ? null : clicked,
     onPick: (id) => {
       const row = rows.find((r) => r.id === id);
-      if (row) takeSignBoard({ view, board: row.board });
+      // #500: a far post's arm is taken at the post (armWhenThere).
+      if (row) armWhenThere({ view, board: row.board }, () => takeSignBoard({ view, board: row.board }));
     },
   });
 }
@@ -25992,7 +26000,8 @@ function openMinimapSignpostMenu({ id, x, y, at = null, anchor = null, keys = fa
     owner: `minimap-sign:${id}`,
     onPick: (rowId, { row }) => {
       if (rowId === 'walk') walk?.();
-      else if (row?.view && row.board) takeSignBoard({ view: row.view, board: row.board });
+      // #500: from the street map too, a far post's arm is taken at the post (armWhenThere).
+      else if (row?.view && row.board) armWhenThere({ view: row.view, board: row.board }, () => takeSignBoard({ view: row.view, board: row.board }));
     },
   });
 }
@@ -26009,6 +26018,33 @@ function signpostArmKey(key) {
   if (!hit) return false;
   if (app?.canvas) app.canvas.dataset.signpostArmKey = `${key}:${signBoardLabel(hit.board) || hit.board.connection?.label || ''}`;
   return takeSignBoard(hit);
+}
+
+/** Whether the post at hand (signpostAtHand) is the one this arm's view belongs to. */
+function postIsAtHand(at, view) {
+  if (!at || !view) return false;
+  return at.views.includes(view) || Boolean(view.signpost && at.signpost === view.signpost);
+}
+
+/**
+ * #500 (Glitch: LocationInputHandler.as 390-399, _moveAvatarToSpriteAndStartInteraction 873-905):
+ * an arm clicked on a post the avatar is not at walks the avatar there first (startUserInitiatedPath,
+ * the street map's walk: startUserWalk), and the arm is taken when the walk arrives at the post
+ * (stateModel.interaction_sign; AvatarController endPath acts only on a post the avatar touches).
+ * A post at hand goes at once, as before. `take` runs the arm. QA: canvas data signArmWalk.
+ */
+function armWhenThere(hit, take) {
+  if (!hit?.view) return false;
+  if (postIsAtHand(signpostAtHand(), hit.view)) {
+    take();
+    return true;
+  }
+  const post = hit.view.signpost;
+  if (!startUserWalk({ kind: 'sign', id: post?.id ?? '', x: hit.view.x, y: hit.view.y })) return false;
+  avatarWalk.signArm = { view: hit.view, take };
+  clearSignpostBoardHover();
+  setCanvasData('signArmWalk', `walk:${signBoardLabel(hit.board)}`);
+  return true;
 }
 
 /** Take one arm of the post at hand ({ view, board }): its road, or a scene arm's verb. */
@@ -33735,7 +33771,9 @@ async function main() {
     // RIGHTCLICK: a Mac's Ctrl+click is a right-click (the contextmenu below opens the menu); it never acts.
     if (e.pointerType === 'mouse' && e.ctrlKey && MAC_CTRL_CLICK) return;
     // #271: in a phone's Camera Mode a finger looks around (features/camera-mode-feature.js); a tap never walks or opens a menu.
-    if (TOUCH_PHONE && e.pointerType === 'touch' && features.query('cameraModeActive', engine) === true) return;
+    // #500: a mouse's click neither: Glitch's Camera Mode took the street's click listener away and left
+    // only the drag (LocationInputHandler.as stopListeningForControlEvts 114-126), so no far arm is taken.
+    if (features.query('cameraModeActive', engine) === true) return;
     // The press that closed a verb menu (VERBS) does nothing else, as the old shade's did; so does
     // the press that closed a signpost's arms menu (RIGHTCLICK R6).
     if (e.timeStamp === verbMenuClosedByPointerAt || e.timeStamp === worldCtxMenu?.closedByPressAt()) return;
@@ -33754,16 +33792,19 @@ async function main() {
       return;
     }
     if (signBoard) {
-      const conn = pickConnection(
-        { connects: [signBoard.connection] },
-        availableStreetTsids()
-      );
-      if (conn) {
-        travelTo(conn.tsid, { label: conn.label, arrive: conn.arrive, via: 'signpost' });
-        return;
-      }
-      openMap();
-      toast(ROAD_NOT_IN_GAME);
+      // #500: an arm on a post the avatar is not at walks there first (armWhenThere).
+      armWhenThere(signBoard, () => {
+        const conn = pickConnection(
+          { connects: [signBoard.connection] },
+          availableStreetTsids()
+        );
+        if (conn) {
+          travelTo(conn.tsid, { label: conn.label, arrive: conn.arrive, via: 'signpost' });
+          return;
+        }
+        openMap();
+        toast(ROAD_NOT_IN_GAME);
+      });
       return;
     }
 

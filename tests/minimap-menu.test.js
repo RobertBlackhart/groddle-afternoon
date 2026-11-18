@@ -86,7 +86,8 @@ describe('the wiring', () => {
   it('game.js: the post\'s rows are Walk here, then its arms (each takes its road as a click on it does)', () => {
     const fn = game.slice(game.indexOf('function openMinimapSignpostMenu('), game.indexOf('const ROAD_NOT_IN_GAME'));
     assert.match(fn, /const rows = \[\{ id: 'walk', label: 'Walk here', tip: 'Walk to this signpost\.' \}, \.\.\.arms\];/);
-    assert.match(fn, /if \(rowId === 'walk'\) walk\?\.\(\);\n\s+else if \(row\?\.view && row\.board\) takeSignBoard\(\{ view: row\.view, board: row\.board \}\);/);
+    // #500: an arm of a far post walks there first, then takes the road (armWhenThere).
+    assert.match(fn, /if \(rowId === 'walk'\) walk\?\.\(\);\n[^\n]*\n\s+else if \(row\?\.view && row\.board\) armWhenThere\(\{ view: row\.view, board: row\.board \}, \(\) => takeSignBoard\(\{ view: row\.view, board: row\.board \}\)\);/);
     assert.match(fn, /owner: `minimap-sign:\$\{id\}`/);
     assert.match(game, /openSignpostMenu: \(opts\) => openMinimapSignpostMenu\(opts\),/);
     const views = game.slice(game.indexOf('function minimapSignViews('), game.indexOf('function openMinimapSignpostMenu('));
