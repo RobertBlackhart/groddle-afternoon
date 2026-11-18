@@ -9,8 +9,10 @@ import { describe, it } from 'node:test';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { SKILL_PACKAGES, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=06d5ed6a';
-import { TIME_TABLES, cardsFor, learnedFor, tablesForCard, tablesForSkill, timeText } from '../tools/encyclopedia/skill-times.mjs';
+import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=885ff60a';
+import { miningProfile } from '../public/js/mining.js?v=afb2b145';
+import { pace, pacedSystemOf } from '../public/js/pace.js?v=8aca33bc';
+import { TIME_TABLES, cardsFor, learnedFor, paceNote, tablesForCard, tablesForSkill, timeText } from '../tools/encyclopedia/skill-times.mjs';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const page = (section, id) => readFileSync(join(pub, 'encyclopedia', section, id, 'index.html'), 'utf8');
@@ -30,10 +32,15 @@ describe('encyclopedia: how long timed skills take (G956)', () => {
           assert.equal(r.wear, base.tool_wear ?? null, `${id} ${r.skill}: tool wear`);
           r.cells.forEach((c, col) => {
             const d = skillPackageDetails(id, learnedFor(r.skill), cardsFor(t.cards, col));
-            assert.equal(c.duration, d.duration ?? null, `${id} ${r.skill} col ${col}: duration`);
-            assert.equal(c.max, d.duration_max ?? null, `${id} ${r.skill} col ${col}: duration_max`);
+            // The time the game takes: Glitch's, or at the remake's pace for a paced system (js/pace.js, G983).
+            const system = pacedSystemOf(id);
+            const game = (ms) => (system && ms ? pace(system, ms) : ms ?? null);
+            assert.equal(c.duration, game(d.duration), `${id} ${r.skill} col ${col}: duration`);
+            assert.equal(c.max, game(d.duration_max), `${id} ${r.skill} col ${col}: duration_max`);
+            // Mining's cells are the swing the game runs (js/mining.js miningProfile).
+            if (system === 'mining') assert.equal(c.duration, miningProfile(learnedFor(r.skill), id === 'mining' ? 'pick' : 'fancy_pick', cardsFor(t.cards, col)).durationMs, `${id} ${r.skill} col ${col}: the game's swing`);
             // Only the best card counts: owning just the column's card gives the same time.
-            if (col) assert.equal(skillPackageDetails(id, learnedFor(r.skill), [t.cards[col - 1].id]).duration ?? null, c.duration, `${id} ${r.skill}: best card only`);
+            if (col) assert.equal(game(skillPackageDetails(id, learnedFor(r.skill), [t.cards[col - 1].id]).duration), c.duration, `${id} ${r.skill}: best card only`);
             cells += 1;
           });
         }
@@ -55,17 +62,30 @@ describe('encyclopedia: how long timed skills take (G956)', () => {
     for (const id of ['bubbletuning', 'spicemilling', 'smelting', 'tinkering']) assert.ok(!want.includes(id), id);
   });
 
-  it('Mining I-IV take 20, 14, 10 and 8 s, cut by Manic Mining I-III, and a Pick and a Fancy Pick share the table', () => {
+  it('Mining I-IV take 6, 4.2, 3 and 2.4 s here (a third of Glitch, G983), cut by Manic Mining I-III, and a Pick and a Fancy Pick share the table', () => {
     const [t] = tablesForSkill('mining_1');
     assert.deepEqual(t.ids, ['mining', 'mining_fancypick']);
+    assert.equal(t.paced, 'mining');
     assert.deepEqual(t.rows.map((r) => r.cells.map(timeText)), [
-      ['20 s', '18 s', '15 s', '10 s'], ['14 s', '12.6 s', '10.5 s', '7 s'], ['10 s', '9 s', '7.5 s', '5 s'], ['8 s', '7.2 s', '6 s', '4 s'],
+      ['6 s', '5.4 s', '4.5 s', '3 s'], ['4.2 s', '3.78 s', '3.15 s', '2.1 s'], ['3 s', '2.7 s', '2.25 s', '1.5 s'], ['2.4 s', '2.16 s', '1.8 s', '1.2 s'],
     ]);
+    assert.deepEqual(t.rows.map((r) => r.glitch), [20000, 14000, 10000, 8000], "Glitch's own times, for the note");
     const html = band(page('skills', 'mining_3'));
     assert.match(html, /<h3>Mining a rock with a Pick or a Fancy Pick<\/h3>/);
     assert.match(html, /A Pick and a Fancy Pick take the same time, energy and wear\./);
-    assert.match(rowOf(html, 'Mining III'), /^<tr class="ency-time-here">[\s\S]*<td class="num-col">10 s<\/td><td class="num-col">9 s<\/td><td class="num-col">7\.5 s<\/td><td class="num-col">5 s<\/td><td class="num-col">8<\/td><td class="num-col">1<\/td><\/tr>$/);
+    assert.match(html, /These are the remake's times, about a third of Glitch's 20\/14\/10\/8 s/);
+    assert.match(html, /Where a note says so, the remake runs the time faster than Glitch did\./);
+    assert.match(rowOf(html, 'Mining III'), /^<tr class="ency-time-here">[\s\S]*<td class="num-col">3 s<\/td><td class="num-col">2\.7 s<\/td><td class="num-col">2\.25 s<\/td><td class="num-col">1\.5 s<\/td><td class="num-col">8<\/td><td class="num-col">1<\/td><\/tr>$/);
     assert.match(band(page('imagination', 'mining_time_2')), /<th scope="col" class="num-col ency-time-here"><span class="ency-time-with">with<\/span> <strong>Manic Mining II<\/strong>[\s\S]*It cuts the time by 25%\./);
+  });
+
+  it('only mining is paced: every other table keeps Glitch\'s times and has no pace note', () => {
+    for (const t of TIME_TABLES) {
+      if (t.ids.includes('mining')) continue;
+      assert.equal(t.paced, null, t.ids.join());
+      assert.equal(paceNote(t), '', t.ids.join());
+      for (const r of t.rows) if (r.glitch) assert.equal(r.cells[0].duration, r.glitch, `${t.ids[0]} ${r.skill}`);
+    }
   });
 
   it('draws each table on every skill page in it (its row marked) and every speed card page (its column marked)', () => {

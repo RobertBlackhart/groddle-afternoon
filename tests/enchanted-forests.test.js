@@ -41,9 +41,9 @@ import {
   quoteWoodTreeHarvest,
   woodTreeStatusLabel,
 } from '../public/js/woodcutting.js?v=9e9af511';
-import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=765f00ea';
+import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=0e25ba04';
 import { enchantedForestFeature, hollowTrees, treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=7348097d';
-import { FEATURES } from '../public/js/features/index.js?v=8101544b';
+import { FEATURES } from '../public/js/features/index.js?v=00fa5f4f';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

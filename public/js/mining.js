@@ -8,7 +8,8 @@
  * - catalog_recipes.js (alchemy tongs metals, metalmaker rod/bar)
  * - catalog_skill_packages.js mining / smelting / refining
  *
- * A swing takes the package's own time (20 s at Mining I, report #330); rock chunks 50 → deplete/respawn.
+ * A swing takes the package's own time at the remake's pace (js/pace.js, G983: 6 s at Mining I, a
+ * third of Glitch's 20 s); rock chunks 50 → deplete/respawn.
  */
 
 import {
@@ -20,7 +21,8 @@ import {
   ITEM_CATALOG,
 } from './inventory.js?v=6414dbdc';
 import { GRINDER_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
-import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
+import { SKILL_PACKAGES, skillPackageDetails } from './skill-packages.js?v=bfb87281';
+import { pace } from './pace.js?v=8aca33bc';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { GEM_ITEMS, MEGA_ROCK_CHUNKS, megaRockChance, miningExpertBonus, rollGemSmall, smeltingOverrides } from './imagination-effects.js?v=70169933';
@@ -159,7 +161,8 @@ export const MINING_COSTS = {
   energy: 12,
   xp: 2,
   toolWear: 2,
-  waitMs: 20000, // the swing (miningProfile has the rank's own)
+  // Mining I's swing at the remake's pace (G983: 6 s); miningProfile has each rank's own.
+  waitMs: pace('mining', SKILL_PACKAGES.mining.skills.mining_1.duration),
   skill: 'mining_1',
 };
 
@@ -221,9 +224,14 @@ export const PICK_TOOLS = {
 
 /**
  * Exact `mining` / `mining_fancypick` package row for the player's highest
- * Mining rank (1–4): swing time, energy, xp, and pick wear. The swing takes the package's own
- * duration, as in Glitch: 20, 14, 10 and 8 s for Mining I to IV (catalog_skill_packages.js
- * 1924-1953; report #330, G758: until v0.40 the remake ran it at 1.8 s x that). Without a learned
+ * Mining rank (1–4): swing time, energy, xp, and pick wear. Glitch's swing is the package's own
+ * duration, 20, 14, 10 and 8 s for Mining I to IV (catalog_skill_packages.js 1924-1953; report
+ * #330, G758: until v0.40 the remake ran it at 1.8 s x that, v0.41.0 gave it Glitch's). Ours since
+ * G983 (Austin 2026-11-17, after players pushed back on Glitch's pace): durationMs is that time at
+ * REMAKE_PACE.mining (js/pace.js, 0.3), so 6, 4.2, 3 and 2.4 s; Manic Mining's duration_multiplier
+ * applies first, through the package overlay, and sourceDurationMs keeps Glitch's time with it.
+ * Energy, xp, wear and the gem drop are Glitch's rows unchanged. Every timed mining swing (yours,
+ * the companions', help mine, the action-timing fallback) reads this one profile. Without a learned
  * list the Mining I row applies (legacy callers that skip the skill gate).
  * @param {string[]|undefined} learned
  * @param {'pick'|'fancy_pick'|string} [pick]
@@ -240,7 +248,7 @@ export function miningProfile(learned, pick = 'pick', upgrades = []) {
     skill: details.skill,
     rank: details.rank,
     sourceDurationMs: details.duration,
-    durationMs: Math.round(details.duration),
+    durationMs: pace('mining', details.duration),
     energy: details.energy_cost,
     xp: details.xp_bonus || 0,
     toolWear: details.tool_wear,

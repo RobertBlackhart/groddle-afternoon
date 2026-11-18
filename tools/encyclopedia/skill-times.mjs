@@ -8,7 +8,9 @@
  * the port of GSJS players/inc_skill_packages.js getSkillPackageDetails
  * 585-677) over public/js/skill-packages-data.js (GSJS
  * items/catalog_skill_packages.js): one call per rank and best card owned.
- * Nothing here is typed by hand except the words.
+ * Nothing here is typed by hand except the words. A package the remake runs
+ * at its own pace (public/js/pace.js, G983: mining at 0.3 of Glitch's time)
+ * shows the time the game takes, with Glitch's own in its note.
  *
  * Which packages: any with a time on at least one row, and either times that
  * differ between rows or a card with a duration_multiplier, leaving out the
@@ -18,8 +20,9 @@
  * same (a Pick and a Fancy Pick) share one table.
  */
 import { SKILL_PACKAGES, skillPackageDetails } from '../../public/js/skill-packages.js?v=bfb87281';
-import { GSJS_SKILL_PACKAGES } from '../../public/js/skill-bubbles.js?v=06d5ed6a';
+import { GSJS_SKILL_PACKAGES } from '../../public/js/skill-bubbles.js?v=885ff60a';
 import { IMAGINATION_UPGRADES } from '../../public/js/imagination.js?v=1bdfd77c';
+import { pace, paceFor, pacedSystemOf } from '../../public/js/pace.js?v=8aca33bc';
 import { cardName } from './imagination.mjs';
 import { esc, fmt, orList, andList } from './parts.mjs';
 
@@ -84,18 +87,33 @@ export function isTimed(pkg, id = '') {
   return times.size > 1 || speedCards(pkg).length > 0;
 }
 
+/** A time at the package's pace in the remake (Glitch's own unless pace.js names its system). */
+const paced = (system, ms) => (system && ms ? pace(system, ms) : ms ?? null);
+
 function tableOf(id) {
   const pkg = SKILL_PACKAGES[id];
   const cards = speedCards(pkg);
+  const system = pacedSystemOf(id);
   const rows = skillRows(pkg).map((skill) => {
     const base = skillPackageDetails(id, learnedFor(skill));
     const cells = [0, ...cards.map((_, i) => i + 1)].map((col) => {
       const d = skillPackageDetails(id, learnedFor(skill), cardsFor(cards, col));
-      return { duration: d.duration ?? null, max: d.duration_max ?? null };
+      return { duration: paced(system, d.duration), max: paced(system, d.duration_max) };
     });
-    return { skill, cells, energy: base.energy_cost ?? null, wear: base.tool_wear ?? null };
+    return { skill, cells, glitch: base.duration ?? null, energy: base.energy_cost ?? null, wear: base.tool_wear ?? null };
   });
-  return { ids: [id], cards, rows, energy: rows.some((r) => r.energy !== null), wear: rows.some((r) => r.wear !== null) };
+  return { ids: [id], cards, rows, paced: system, energy: rows.some((r) => r.energy !== null), wear: rows.some((r) => r.wear !== null) };
+}
+
+const SHARE = { 2: 'half', 3: 'a third', 4: 'a quarter', 5: 'a fifth' };
+/** A paced table's note: the remake's pace in words, and Glitch's own times ("a third of Glitch's 20/14/10/8 s"). */
+export function paceNote(t) {
+  if (!t.paced) return '';
+  const p = paceFor(t.paced);
+  const n = Math.round(1 / p);
+  const share = Math.abs(1 / p - n) < 1e-9 ? SHARE[n] : SHARE[n] ? `about ${SHARE[n]}` : `${fmt(Math.round(p * 100))}%`;
+  const glitch = t.rows.filter((r) => r.glitch).map((r) => fmt(Math.round(r.glitch) / 1000));
+  return `These are the remake's times, ${share} of Glitch's ${glitch.join('/')} s (players found Glitch's pace too slow).`;
 }
 
 /** Every timed package's table, packages with the same numbers sharing one. */
@@ -179,6 +197,7 @@ export function timeTableHtml(t, P, info, { skill = '', card = '' } = {}) {
     t.rows.some((r) => r.cells.some((c) => c.max)) ? 'Where a time is a range, each go takes a random time inside it.' : '',
     t.rows.some((r) => r.cells.some((c) => !c.duration && !c.max)) ? 'Instant means no wait at all.' : '',
     ...t.ids.map((id) => NOTES[id] || ''),
+    paceNote(t),
   ].filter(Boolean).filter((x, i, a) => a.indexOf(x) === i);
   return `<div class="ency-time" id="time-${esc(t.ids[0])}">
         <h3>${esc(title)}</h3>
@@ -197,5 +216,6 @@ export function timeLead(tables) {
   const cards = tables.some((t) => t.cards.length);
   const kinds = [tables.some((t) => t.energy) ? 'energy' : '', tables.some((t) => t.wear) ? 'tool wear' : ''].filter(Boolean);
   const costs = kinds.length ? `, and the ${andList(kinds)} it costs` : '';
-  return `How long one go takes at each rank${costs}. The numbers are Tiny Speck’s game data, which the remake reads too.${cards ? ' With speed cards, only the best one you own counts.' : ''}`;
+  const faster = tables.some((t) => t.paced) ? ' Where a note says so, the remake runs the time faster than Glitch did.' : '';
+  return `How long one go takes at each rank${costs}. The numbers are Tiny Speck’s game data, which the remake reads too.${faster}${cards ? ' With speed cards, only the best one you own counts.' : ''}`;
 }

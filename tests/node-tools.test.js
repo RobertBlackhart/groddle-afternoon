@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { MINE_STAND_X, NODE_TOOLS, NODE_TOOL_DELTAS, mineStandX, nodeToolOverlay, nodeToolSheet } from '../public/js/node-tools.js?v=47a93d54';
-import { miningProfile } from '../public/js/mining.js?v=c13f0259';
+import { miningProfile } from '../public/js/mining.js?v=afb2b145';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedFrameAt } from '../public/js/packed-sheets.js?v=06079f1e';
 import { RESOURCE_NODE_CATALOG } from '../public/js/resource-nodes.js?v=cf9aae18';
@@ -138,14 +138,15 @@ describe('the feature', () => {
 });
 
 describe('mining as Glitch ran it (report #330, G758)', () => {
-  it('a swing takes the package time: 20, 14, 10 and 8 s for Mining I to IV, either pick', () => {
+  it('a swing takes the package time at the remake pace: 6, 4.2, 3 and 2.4 s for Mining I to IV, either pick (G983)', () => {
     const ranks = ['mining_1', 'mining_2', 'mining_3', 'mining_4'];
     for (const pick of ['pick', 'fancy_pick']) {
-      const times = ranks.map((_, i) => miningProfile(ranks.slice(0, i + 1), pick).durationMs);
-      assert.deepEqual(times, [20000, 14000, 10000, 8000], pick);
+      const profiles = ranks.map((_, i) => miningProfile(ranks.slice(0, i + 1), pick));
+      assert.deepEqual(profiles.map((p) => p.durationMs), [6000, 4200, 3000, 2400], pick);
+      assert.deepEqual(profiles.map((p) => p.sourceDurationMs), [20000, 14000, 10000, 8000], `${pick}: Glitch's own`);
     }
     // Manic Mining (mining_time_3) still halves it through the package overlay.
-    assert.equal(miningProfile(['mining_1'], 'pick', ['mining_time_3']).durationMs, 10000);
+    assert.equal(miningProfile(['mining_1'], 'pick', ['mining_time_3']).durationMs, 3000);
   });
 
   it('the pick plays on the rock with the default deltas, mirrored for a rock on your left', () => {

@@ -707,6 +707,9 @@
     "ours: Ours: a round with no answer at the target ends with": "ours-math-mayhem",
     "ours: Ours: players who share a start stand this far apart": "ours-math-mayhem"
   },
+  "public/js/mining.js": {
+    "ours: it at 1.8 s x that, v0.41.0 gave it Glitch's). Ours": "remake-pace"
+  },
   "public/js/musicblocks.js": {
     "no-source: * uncollected street\" had no source and is gone. Blocks come": "musicblock-street-blocks",
     "remake-own: * block waiting on every street: the remake's own \"one unowned block on": "musicblock-street-blocks"
@@ -754,6 +757,10 @@
     "stand-in: frame (a feature's onTick) to move or end the stand-in.": "overlay-stand-in-cards",
     "stand-in: from Tiny Speck's glitch-overlays with a plain stand-in": "overlay-stand-in-cards",
     "stand-in: label?: string }} opts `label` is what the stand-in shows": "overlay-stand-in-cards"
+  },
+  "public/js/pace.js": {
+    "invented: * stay Glitch's. tools/inventions/inventions.json entry": "remake-pace",
+    "ours: * Ours (register G983, Austin 2026-11-17): players": "remake-pace"
   },
   "public/js/pack-slots.js": {
     "ours: // Our own short words where the client only refused the": "ours-pack-slots",

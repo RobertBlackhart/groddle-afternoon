@@ -36,8 +36,8 @@ import {
   routeQuestEvent,
   turnInQuest,
 } from '../public/js/quest-offers.js?v=4debd26e';
-import { createMineRock } from '../public/js/mining.js?v=c13f0259';
-import { rockId } from '../public/js/street-objects.js?v=512ae3bf';
+import { createMineRock } from '../public/js/mining.js?v=afb2b145';
+import { rockId } from '../public/js/street-objects.js?v=8dafbd78';
 import { createQuestState } from '../public/js/quests.js?v=92c75858';
 
 const here = import.meta.dirname;
@@ -293,7 +293,9 @@ describe('features/help-mine-feature.js', () => {
       s.start();
       // Amp's swing lands while you mine: its top roll (9) plus 1 for you on its stack.
       const left = s.rock.chunksRemaining;
-      s.feature.onTick(16, now + COMPANION_MINE_RULES.lookMs + 40 + 20000, s.engine); // Mining I's 20 s swing (#330)
+      s.feature.onTick(16, now + COMPANION_MINE_RULES.lookMs + 40 + 5900, s.engine);
+      assert.equal(s.rock.chunksRemaining, left, 'still swinging just before Mining I at the remake pace');
+      s.feature.onTick(16, now + COMPANION_MINE_RULES.lookMs + 40 + 6000, s.engine); // Mining I at 0.3 of Glitch's 20 s (G983)
       assert.equal(s.data.helpMineCompanion, 'Amp:10');
       assert.equal(s.rock.chunksRemaining, left - 10);
       s.land(5);

@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLAYER_COMMANDS, REMAKE_COMMANDS, SLASH_TEXT, STUCK_COOLDOWN_MS, STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=7bd43ce0';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=568490d2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

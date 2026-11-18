@@ -46,8 +46,8 @@
  *     data-help-mine-companion (the last companion swing: name:chunks).
  */
 
-import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=c13f0259';
-import { rockId } from '../street-objects.js?v=512ae3bf';
+import { MINING_COSTS, ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=afb2b145';
+import { rockId } from '../street-objects.js?v=8dafbd78';
 import { addItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
@@ -121,8 +121,8 @@ function playerCanMine(engine) {
 }
 
 function swingMs() {
-  // The companions swing at Mining I: the package's 20 s, as yours does (mining.js miningProfile).
-  return miningProfile(['mining_1'], 'pick')?.durationMs || 20000;
+  // The companions swing at Mining I at the remake's pace (G983: 6 s), as yours does (mining.js miningProfile).
+  return miningProfile(['mining_1'], 'pick')?.durationMs || MINING_COSTS.waitMs;
 }
 
 function rockRows(engine) {

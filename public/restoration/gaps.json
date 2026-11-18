@@ -44,7 +44,7 @@
     "unreleased": 0,
     "fixed": 265,
     "lost": 5,
-    "purpose": 15,
+    "purpose": 16,
     "idea": 11
   },
   "areas": [
@@ -2114,6 +2114,11 @@
       "id": "G639",
       "text": "Crops and herbs grow about ten times faster than in Glitch, and mining and rock regrowth are sped up to match.",
       "area": "Trees and gardens"
+    },
+    {
+      "id": "G983",
+      "text": "Mining swings take about a third of Glitch's time: 6, 4.2, 3 and 2.4 seconds for Mining I to IV, where Glitch took 20, 14, 10 and 8. Players found Glitch's pace too slow. Manic Mining still cuts the time, and energy, pick wear, xp and chunks per swing are Glitch's.",
+      "area": "Skills"
     },
     {
       "id": "G667",

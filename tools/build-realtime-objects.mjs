@@ -89,7 +89,7 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
 } from '../public/js/street-ecology.js?v=62ca408f';
-import { ROCK_CATALOG } from '../public/js/mining.js?v=c13f0259';
+import { ROCK_CATALOG } from '../public/js/mining.js?v=afb2b145';
 import { MEGA_ROCK_CHANCE, MEGA_ROCK_CHUNKS } from '../public/js/imagination-effects.js?v=70169933';
 import { RESOURCE_NODE_CATALOG, RESOURCE_SKILL_PACKAGES } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { ARBOROLOGY_HARVEST, TRANT_META } from '../public/js/trants.js?v=b9147016';
@@ -98,14 +98,14 @@ import { WOOD_TREE_MATURITY_MAP } from '../public/js/woodcutting.js?v=9e9af511';
 import { ANIMAL_KINSHIP_PACKAGES } from '../public/js/animal-kinship.js?v=75d3cb34';
 import { locationIsDepressing } from '../public/js/animal-mood.js?v=a49495fc';
 import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=de659247';
-import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=d1438c2c';
+import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=7b6234b7';
 import { KITTY_GROUP, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=7508308f';
 import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=162c575f';
 import { hasRaceDispenser } from '../public/js/races.js?v=ab22a079';
 import { setWildlifeCatalog, wildlifeFor } from '../public/js/wildlife.js?v=670c3a7f';
 import { boardSpotRow, furnitureFor, furniturePlacementGroups, stoneSpotRow } from '../public/js/street-furniture.js?v=868360eb';
 import { INCUBATION } from '../public/js/animal-husbandry.js?v=cdeb38db';
-import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=512ae3bf';
+import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=8dafbd78';
 import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=adc9ef6a';
 import { CRAB_PLACEMENT_KEY, CRAB_WALK, crabPlacementGroups } from '../public/js/crabs.js?v=f1c48c4d';
 import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';

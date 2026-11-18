@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 import { ITEM_CATALOG, addItem, isToolItem, removeItem } from '../public/js/inventory.js?v=6414dbdc';
 import { PACK_CAPACITY, layoutPack, moveStack, normalizePrefs, roomFor, stackMaxOf } from '../public/js/pack-slots.js?v=4d446d78';
-import { vendorBuy } from '../public/js/vendor.js?v=3025c322';
+import { vendorBuy } from '../public/js/vendor.js?v=62184f98';
 import { bagsFeature } from '../public/js/features/bags-feature.js?v=2100afbc';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

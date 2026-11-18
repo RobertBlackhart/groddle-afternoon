@@ -3,6 +3,8 @@
  * Pure state helpers keep timing deterministic for tests and the Pixi ticker.
  */
 
+import { MINING_COSTS } from './mining.js?v=afb2b145';
+
 const INSTANT_VERBS = new Set(['browse', 'talk_to', 'inspect', 'open', 'buy', 'sell']);
 
 export const ACTION_DURATION_MS = Object.freeze({
@@ -21,8 +23,8 @@ export const ACTION_DURATION_MS = Object.freeze({
   plant: 1100,
   clear: 1050,
   fertilize: 2000,
-  // Mining I (catalog_skill_packages.js mining_1); a mine verb carries its own rank's time.
-  mine: 20000,
+  // Mining I at the remake's pace (js/mining.js MINING_COSTS, G983: 6 s); a mine verb carries its own rank's time.
+  mine: MINING_COSTS.waitMs,
 });
 
 const ACTION_GERUNDS = Object.freeze({

@@ -938,7 +938,8 @@
     "G63",
     "G82",
     "G152",
-    "G28"
+    "G28",
+    "G983"
    ],
    "members": [
     "G45",
@@ -955,7 +956,8 @@
     "G63",
     "G82",
     "G152",
-    "G28"
+    "G28",
+    "G983"
    ]
   },
   {
@@ -4182,6 +4184,32 @@
    "why": "G982 plan item. Ours: the chance, the daily cap and the rot (Glitch's carved pumpkins rotted after Zilloween; Glitch had no compost, so the feather rots into Tiny Speck's Lump of Loam).",
    "rows": [
     "G982"
+   ]
+  },
+  {
+   "id": "remake-pace",
+   "title": "Mining swings at 0.3 of Glitch's time (6, 4.2, 3 and 2.4 s for Mining I to IV)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/pace.js",
+     "symbol": "REMAKE_PACE"
+    },
+    {
+     "file": "public/js/mining.js",
+     "symbol": "miningProfile"
+    },
+    {
+     "file": "tools/encyclopedia/skill-times.mjs",
+     "symbol": "paceNote"
+    }
+   ],
+   "why": "Players pushed back on Glitch's 20/14/10/8 s swings once v0.41.0 restored them (G758, #330). A compromise at about a third, ranks keeping Glitch's proportions; Manic Mining still applies on top, and energy, wear, xp and yield per swing stay Glitch's (catalog_skill_packages.js mining, mining_fancypick). One shared factor so other timed systems can take it later.",
+   "ruling": "Austin 2026-11-17 (G983): keep, mining at 0.3; the same pace for other timed systems is under consideration",
+   "rows": [
+    "G983",
+    "G758"
    ]
   }
  ]

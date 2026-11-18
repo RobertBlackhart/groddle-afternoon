@@ -11,7 +11,7 @@
 
 import { countItem } from '../inventory.js?v=6414dbdc';
 import { getToolCondition } from '../tools.js?v=4156bba8';
-import { ROCK_CATALOG, knowsMining } from '../mining.js?v=c13f0259';
+import { ROCK_CATALOG, knowsMining } from '../mining.js?v=afb2b145';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import {
   findCloseTarget,
