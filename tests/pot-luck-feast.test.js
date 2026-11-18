@@ -47,6 +47,8 @@ import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
 import { dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
 import { setContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
+import { harvestTableData } from '../tools/build-realtime-harvest-table.mjs';
+import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');
@@ -69,6 +71,20 @@ describe('the Harvest Table (pot-luck-feast.js)', () => {
     assert.equal(layableKind('pick', crops, dishes), null);
     assert.equal(layableKind('cherry', crops, dishes), null, 'a fruit is food, not a crop');
     assert.equal(layableKind('bean_bean', crops, dishes), null, 'a seasoner output is no dish');
+  });
+
+  it('gives the server the same dishes and crops (G1015b, R4: the server took any food)', { skip: skipWithoutServer }, () => {
+    const want = `${JSON.stringify(harvestTableData())}\n`;
+    assert.equal(readFileSync(serverPath('data', 'harvest-table.json'), 'utf8'), want, 'run node tools/build-realtime-harvest-table.mjs');
+    const d = harvestTableData();
+    const recipes = readJson('public/assets/content/recipes.json');
+    const taken = new Set([...d.dishes, ...d.crops]);
+    const dishes = dishClasses(recipes);
+    const crops = cropClasses(SEED_CATALOG);
+    for (const c of taken) assert.ok(layableKind(c, crops, dishes), c);
+    for (const c of [...dishes, ...crops]) assert.ok(taken.has(c), c);
+    assert.ok(taken.has('pumpkin') && taken.has('pumpkin_pie') && taken.has(STUFFING));
+    assert.equal(taken.has('cherry'), false);
   });
 
   it('takes every crop Glitch had: is_crop = 1 in GSJS, Pumpkin and the herbs too (the tag check missed 8)', () => {
