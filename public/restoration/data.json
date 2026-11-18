@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2638,
+  "commits": 2655,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Paradise skies are Radial Heights' own gradient instead of colours we picked"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "A dead end's EXIT hangs on the wall as the source's arrow sign, with no post"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A named Cubimal or worn tool left with a friend's Butler arrives as it was"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The site's ledger knows Buy a Bag starts without its prerequisites (G979)"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2916,29 +2936,9 @@
     "date": "2026-11-17",
     "kind": "improve",
     "text": "Every word drawn in the world is in Nunito, so phones stop falling back to another font"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "new",
-    "text": "One register of everything the remake invented, and a test that catches a new one"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Every item picker hands over the copy you chose, not just its type"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "new",
-    "text": "A New content page for what Groddle adds beyond Glitch, starting with Pot Luck Day"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Piggies, Chickens and set-down things stand on the line instead of 2 px into it"
    }
   ]
  },
- "tests": 1129,
+ "tests": 1131,
  "generatedAt": "2026-11-17"
 }
