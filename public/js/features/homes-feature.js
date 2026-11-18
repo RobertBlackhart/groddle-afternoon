@@ -292,6 +292,7 @@ import {
 } from '../home-floors.js?v=fbae0b05';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const HOMES_FEATURE_ID = 'homes';
@@ -4456,7 +4457,8 @@ function runFurnUpAutoplay(engine, how) {
       : [...document.querySelectorAll('.furn-upgrade .fu-tile')].find((b) => !b.classList.contains('paid') && !b.classList.contains('on')));
     if (option) chooseUpgrade(option.getAttribute('data-upgrade'));
     publish(engine);
-    say(`furnup:${how}:chosen`);
+    // G971: "chosen" only when a tile was there to choose.
+    say(option ? `furnup:${how}:chosen` : `no-option:furnup:${how}`);
     if (how === 'buy' || how === 'short') {
       setTimeout(() => {
         const before = Number(engine.pc.currants) || 0;
@@ -7040,16 +7042,23 @@ function demoSetup(engine) {
   }
 }
 
+/**
+ * Run QA steps [label, fn, wait]: each fn returns whether the game took it (its
+ * result's ok), and the run ends on 'done' only if every step was taken
+ * (G971, js/autoplay-log.js; else hollow:done, homeAutoplaySteps says which).
+ */
 function step(steps, engine) {
   let i = 0;
+  const log = autoplayLog(steps.map(([label]) => label));
   const next = () => {
+    engine.setData('homeAutoplaySteps', log.summary());
     if (i >= steps.length) {
-      engine.setData('homeAutoplay', 'done');
+      engine.setData('homeAutoplay', log.finish('done'));
       return;
     }
     const [label, fn, wait = 700] = steps[i++];
     try {
-      fn();
+      log.step(label, fn() === true);
       engine.setData('homeAutoplay', label);
     } catch (err) {
       engine.setData('homeAutoplay', `error:${label}:${err.message}`);
@@ -7067,32 +7076,36 @@ function runDecorateAutoplay(engine) {
       beginPlacing(engine, 'furniture_armchair');
       const r = placeAtPointer(engine, { x: 760, y: GROUND_Y });
       armchair = r?.item?.id;
+      return Boolean(r?.ok !== false && armchair);
     }],
     ['move', () => {
+      if (!armchair) return false;
       beginMove(engine, armchair);
-      placeAtPointer(engine, { x: 700, y: GROUND_Y });
+      return placeAtPointer(engine, { x: 700, y: GROUND_Y })?.ok === true;
     }],
     ['flip', () => {
+      if (!armchair) return false;
       selected = { kind: 'furniture', id: armchair };
-      runFurnitureAction(engine, 'flip');
+      return runFurnitureAction(engine, 'flip')?.ok === true;
     }],
-    ['wallpaper', () => applySwatch(engine, 'wall', 'brown_molding')],
-    ['segment', () => applySwatch(engine, 'wall', 'red_brick', { segment: 3 })],
-    ['floor', () => applySwatch(engine, 'floor', 'woodpanel_3_floor')],
-    ['ceiling', () => applySwatch(engine, 'ceiling', 'wood')],
+    ['wallpaper', () => applySwatch(engine, 'wall', 'brown_molding')?.ok === true],
+    ['segment', () => applySwatch(engine, 'wall', 'red_brick', { segment: 3 })?.ok === true],
+    ['floor', () => applySwatch(engine, 'floor', 'woodpanel_3_floor')?.ok === true],
+    ['ceiling', () => applySwatch(engine, 'ceiling', 'wood')?.ok === true],
     ['display', () => {
       const box = decor.placed.find((row) => row.classTsid === 'bag_furniture_sdb');
-      if (!box) return;
+      if (!box) return false;
       selected = { kind: 'furniture', id: box.id };
-      runFurnitureAction(engine, 'deposit', 'musicblock_d_blue_05');
+      return runFurnitureAction(engine, 'deposit', 'musicblock_d_blue_05')?.ok === true;
     }],
     ['pickup', () => {
+      if (!armchair) return false;
       selected = { kind: 'furniture', id: armchair };
-      runFurnitureAction(engine, 'pickup');
+      return runFurnitureAction(engine, 'pickup')?.ok === true;
     }],
     ['expand', () => {
       tab = 'house';
-      expandHouse(engine);
+      return expandHouse(engine)?.ok === true;
     }, 1400],
   ], engine);
 }
@@ -7104,27 +7117,29 @@ function runCultivateAutoplay(engine) {
     const layout = homeStreetLayout(st);
     const tries = isBackYard(st) ? [-1050, -1250, -900, -1400] : [-420, -260, 1500, 640, 900];
     const rx = tries.find((x) => placementCheck(st, 'proto_dirt_pile', x).ok) ?? (isBackYard(st) ? nearestFreeRx(st, 'proto_dirt_pile', tries[0]) : null) ?? 600;
-    placeAtPointer(engine, { x: layout.houseX + rx, y: yardGroundY(st) });
+    const before = st.items.length;
+    const r = placeAtPointer(engine, { x: layout.houseX + rx, y: yardGroundY(st) });
+    return r?.ok !== false && activeCult().items.length === before + 1;
   }, 1500];
   const removeStep = ['remove', () => {
     const st = activeCult();
     const last = st.items[st.items.length - 1];
-    if (!last) return;
+    if (!last) return false;
     selected = { kind: 'cultivation', id: last.id };
-    removeSelected(engine);
+    return removeSelected(engine)?.ok === true;
   }, 1500];
   // The demo back yard is full: expand it first, then cultivate the new ground.
   if (isBackYard(activeCult())) {
-    step([['expand', () => growYard(engine, 'left'), 1500], cultivateStep, removeStep], engine);
+    step([['expand', () => growYard(engine, 'left')?.ok === true, 1500], cultivateStep, removeStep], engine);
     return;
   }
-  step([cultivateStep, ['expand', () => growYard(engine, 'right'), 1500], removeStep], engine);
+  step([cultivateStep, ['expand', () => growYard(engine, 'right')?.ok === true, 1500], removeStep], engine);
 }
 
 /** QA &homeyarddemo=cultivate&homeautoplay=max: buy every back-yard expansion left, one a step. */
 function runYardMaxAutoplay(engine) {
   const left = Math.max(0, quoteYardExpansion(backCult, engine.pc).count || 0);
-  step(Array.from({ length: left }, (_, i) => [`expand:${i + 1}`, () => growYard(engine, 'left'), 900]), engine);
+  step(Array.from({ length: left }, (_, i) => [`expand:${i + 1}`, () => growYard(engine, 'left')?.ok === true, 900]), engine);
 }
 
 /**

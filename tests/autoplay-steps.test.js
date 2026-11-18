@@ -8,6 +8,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AUTOPLAY_FAILURE, autoplayLog, playRoomAutoplay, runOutcome } from '../public/js/autoplay-log.js?v=55bb4823';
@@ -112,3 +113,118 @@ describe('every quest-room autoplay declares and logs its steps', () => {
   });
 });
 
+/**
+ * G971 ratchet: feature and scene autoplays (a ...autoplay URL param) that still
+ * publish their own final word without js/autoplay-log.js. Only shrinks: put an
+ * autoplay on the log (declared steps, each logged with a state check, the word
+ * from log.finish) and take its file off this list; a new autoplay file starts on
+ * the log.
+ */
+const UNLOGGED = Object.freeze([
+  'game.js',
+  'js/features/animal-husbandry-feature.js',
+  'js/features/artifacts-feature.js',
+  'js/features/buff-triggers-feature.js',
+  'js/features/bureaucratic-halls-feature.js',
+  'js/features/conversations-feature.js',
+  'js/features/crabs-feature.js',
+  'js/features/craftybot-feature.js',
+  'js/features/crowns-feature.js',
+  'js/features/cubimal-battle-feature.js',
+  'js/features/cubimal-race-feature.js',
+  'js/features/dead-ends-feature.js',
+  'js/features/drops-feature.js',
+  'js/features/elemental-pouch-feature.js',
+  'js/features/fire-dragon-feature.js',
+  'js/features/foxes-feature.js',
+  'js/features/funpickle-feature.js',
+  'js/features/game-teleporter-feature.js',
+  'js/features/giant-icons-feature.js',
+  'js/features/heli-kitties-feature.js',
+  'js/features/hell-bar-feature.js',
+  'js/features/hell-feature.js',
+  'js/features/hell-tickets-feature.js',
+  'js/features/help-mine-feature.js',
+  'js/features/hi-signs-feature.js',
+  'js/features/home-tower-feature.js',
+  'js/features/interrogation-room-feature.js',
+  'js/features/item-verbs-feature.js',
+  'js/features/item-verbs-more-feature.js',
+  'js/features/juju-bandits-feature.js',
+  'js/features/location-events-feature.js',
+  'js/features/machine-art-feature.js',
+  'js/features/machine-rooms-feature.js',
+  'js/features/mail-courier-feature.js',
+  'js/features/map-routes-feature.js',
+  'js/features/master-garden-feature.js',
+  'js/features/meditation-feature.js',
+  'js/features/newxp-feature.js',
+  'js/features/pack-tree-verbs-feature.js',
+  'js/features/party-spaces-feature.js',
+  'js/features/patches-feature.js',
+  'js/features/potions-feature.js',
+  'js/features/powders-feature.js',
+  'js/features/purple-journey-feature.js',
+  'js/features/puzzle-scenes-feature.js',
+  'js/features/puzzles-feature.js',
+  'js/features/quest-offers-feature.js',
+  'js/features/quest-verbs-feature.js',
+  'js/features/quoin-shards-feature.js',
+  'js/features/races-feature.js',
+  'js/features/resource-nodes-feature.js',
+  'js/features/rook-attack-feature.js',
+  'js/features/rube-feature.js',
+  'js/features/seasons-feature.js',
+  'js/features/secret-spots-feature.js',
+  'js/features/shrine-hint-feature.js',
+  'js/features/small-items-feature.js',
+  'js/features/smuggling-feature.js',
+  'js/features/sno-cones-feature.js',
+  'js/features/solo-feats-feature.js',
+  'js/features/spirit-loneliness-feature.js',
+  'js/features/street-furniture-feature.js',
+  'js/features/street-jobs-feature.js',
+  'js/features/street-spirits-feature.js',
+  'js/features/subway-feature.js',
+  'js/features/supply-feature.js',
+  'js/features/swf-feature.js',
+  'js/features/teleportation-feature.js',
+  'js/features/tree-death-feature.js',
+  'js/features/unlearning-feature.js',
+  'js/features/vendor-npcs-feature.js',
+]);
+
+describe('feature and scene autoplays: on the step log, or on the shrinking list', () => {
+  const tracked = execFileSync('git', ['ls-files', 'public/js', 'public/game.js'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .filter((f) => f.endsWith('.js') && !f.startsWith('public/js/quest-rooms/') && f !== 'public/js/autoplay-log.js');
+  const players = tracked.filter((f) => /['"][a-z0-9]+autoplay[a-z0-9]*['"]/.test(read(f))).map((f) => f.slice('public/'.length));
+
+  it('finds them (the scan is not empty)', () => {
+    assert.ok(players.length >= 50, `${players.length} autoplay files`);
+  });
+
+  it('every autoplay file outside the list plays through the log', () => {
+    const off = players.filter((f) => !UNLOGGED.includes(f) && !read(`public/${f}`).includes('autoplay-log.js'));
+    assert.deepEqual(off, [], 'new autoplays declare their steps with js/autoplay-log.js');
+  });
+
+  it('the list only shrinks: a listed file on the log, or gone, comes off it', () => {
+    const stale = UNLOGGED.filter((f) => !players.includes(f) || read(`public/${f}`).includes('autoplay-log.js'));
+    assert.deepEqual(stale, []);
+  });
+
+  it('the converted feature autoplays end on log.finish, not a bare done', () => {
+    for (const f of ['butler-feature.js', 'door-drink-feature.js', 'doors-feature.js', 'homes-feature.js', 'imagination-feature.js']) {
+      const src = read(`public/js/features/${f}`);
+      assert.match(src, /autoplayLog\(/, f);
+      assert.match(src, /\.finish\(/, f);
+    }
+    const butler = read('public/js/features/butler-feature.js');
+    assert.doesNotMatch(butler, /return done\('(received|named|gift|joke|hint|tower|mailbox|visitors|dancing)'\);/, 'each Butler mode passes its state check to done');
+    assert.doesNotMatch(read('public/js/features/homes-feature.js'), /engine\.setData\('homeAutoplay', 'done'\)/);
+    assert.doesNotMatch(read('public/js/features/imagination-feature.js'), /engine\.setData\('imgAutoplay', 'done'\)/);
+    assert.doesNotMatch(read('public/js/features/door-drink-feature.js'), /engine\.setData\?\.\('doorDrinkAutoplay', 'done'\)/);
+    assert.doesNotMatch(read('public/js/features/doors-feature.js'), /engine\.setData\('doorDemo', 'entered'\)/);
+  });
+});

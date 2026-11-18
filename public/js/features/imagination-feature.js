@@ -60,6 +60,7 @@ import { rescaleStudiesForLearningModifier } from '../skills.js?v=4542bdf9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
 import { hellFeature } from './hell-feature.js?v=61b1a4f0';
 import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=0386b354';
+import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 const ART = 'assets/imagination/cards/';
@@ -939,17 +940,22 @@ function cheapestAffordableSlot(engine) {
 }
 
 function runAutoplay(engine, mode) {
+  // G971: a buy or a redeal counts only when the game took it (buySlot and freeRedeal can refuse).
+  const log = autoplayLog(mode === 'card' ? ['flip', 'buy'] : ['flip', 'buy', 'redeal', 'buy']);
+  const finish = () => {
+    autoplayDone = true;
+    engine.setData('imgAutoplay', log.finish('done'));
+    engine.setData('imgAutoplaySteps', log.summary());
+    publish(engine);
+  };
   if (mode === 'card') {
     setTimeout(() => {
       flipped = 0;
       render();
+      log.step('flip', flipped === 0);
     }, 700);
-    setTimeout(() => buySlot(0, engine), 1600);
-    setTimeout(() => {
-      autoplayDone = true;
-      engine.setData('imgAutoplay', 'done');
-      publish(engine);
-    }, 2400);
+    setTimeout(() => log.step('buy', buySlot(0, engine)?.ok === true), 1600);
+    setTimeout(finish, 2400);
     return;
   }
   const steps = [
@@ -959,18 +965,19 @@ function runAutoplay(engine, mode) {
         flipped = slot;
         render();
       }
+      log.step('flip', slot >= 0 && flipped === slot);
     },
     () => {
       const slot = flipped >= 0 ? flipped : cheapestAffordableSlot(engine);
-      if (slot >= 0) buySlot(slot, engine);
+      log.step('buy', slot >= 0 && buySlot(slot, engine)?.ok === true);
     },
     () => {
       closeReveal({ quiet: true });
-      freeRedeal(engine);
+      log.step('redeal', freeRedeal(engine)?.ok === true);
     },
     () => {
       const slot = cheapestAffordableSlot(engine);
-      if (slot >= 0) buySlot(slot, engine);
+      log.step('buy', slot >= 0 && buySlot(slot, engine)?.ok === true);
     },
     () => {
       if (mode === 'owned') {
@@ -978,9 +985,7 @@ function runAutoplay(engine, mode) {
         view = 'owned';
         render();
       }
-      autoplayDone = true;
-      engine.setData('imgAutoplay', 'done');
-      publish(engine);
+      finish();
     },
   ];
   steps.forEach((fn, i) => setTimeout(fn, 900 + i * 1500));

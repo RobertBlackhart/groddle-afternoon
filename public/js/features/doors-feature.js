@@ -49,6 +49,7 @@ import {
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { doorLockArt } from '../door-lock-art.js?v=e656851c';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
+import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
@@ -353,9 +354,18 @@ function demoStep(engine, now) {
     if (engine.busy()) return;
     const door = demoDoor(engine);
     const view = views.find((v) => v.door === door);
-    demo = { stage: 'done', at: 0 };
-    engine.setData('doorDemo', 'entered');
+    demo = { stage: 'check', at: now + 4000, from: engine.streetTsid };
+    engine.setData('doorDemo', 'entering');
     if (view?.target) enterDoor(engine, view.target);
+    return;
+  }
+  if (demo.stage === 'check') {
+    // G971: 'entered' only once the door took you somewhere (a locked or missing door refuses).
+    if (engine.busy() && now < demo.at + 6000) return;
+    const log = autoplayLog(['enter']);
+    log.step('enter', engine.streetTsid !== demo.from);
+    demo = { stage: 'done', at: 0 };
+    engine.setData('doorDemo', log.finish('entered'));
   }
 }
 

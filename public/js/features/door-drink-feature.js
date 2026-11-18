@@ -40,6 +40,7 @@ import {
   prunePortals,
   useDoorDrink,
 } from '../door-drink.js?v=15add3b8';
+import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const DOOR_DRINK_FEATURE_ID = 'door-drink';
@@ -276,38 +277,56 @@ function demoSetup(engine) {
   if ((Number(engine.inv[DOOR_DRINK]) || 0) < 2) engine.inv[DOOR_DRINK] = 2;
   engine.refreshPack?.();
   const mode = engine.param('doordrinkautoplay');
-  if (mode) auto = { step: mode === 'pair' ? 'pour1' : 'pour', at: Date.now() + 1500 };
+  if (!mode) return;
+  // G971: each pour logged once its door stands, the trip once you are away, the entry once it took you home.
+  const steps = mode !== 'pair' ? ['pour'] : engine.param('doordrinkhold') ? ['pour', 'travel', 'pour'] : ['pour', 'travel', 'pour', 'enter'];
+  auto = { step: mode === 'pair' ? 'pour1' : 'pour', at: Date.now() + 1500, log: autoplayLog(steps), doors: 0 };
 }
+
+const doorCount = () => Object.keys(group.portals || {}).length;
 
 function autoplay(engine, now) {
   if (!auto || now < auto.at || engine.busy?.({ ignoreHome: true }) && auto.step !== 'wait-away') return;
   const step = auto.step;
-  const set = (s, ms) => {
-    auto = { step: s, at: now + ms };
+  const { log } = auto;
+  const set = (s, ms, extra = {}) => {
+    auto = { ...auto, ...extra, step: s, at: now + ms };
     engine.setData?.('doorDrinkAutoplay', step);
+    engine.setData?.('doorDrinkAutoplaySteps', log.summary());
   };
-  if (step === 'pour' || step === 'pour1') {
+  // A pour is done once its door stands (startPour and completePour can both refuse).
+  const poured = () => log.step('pour', doorCount() === auto.doors + 1);
+  if (step === 'pour' || step === 'pour1' || step === 'pour2') {
+    const doors = doorCount();
     startPour(engine);
-    return set(step === 'pour' ? 'done' : 'travel', POUR_MS + 900);
+    const next = step === 'pour' ? 'check-done' : step === 'pour1' ? 'check-travel' : engine.param('doordrinkhold') ? 'check-done' : 'check-enter';
+    return set(next, POUR_MS + (step === 'pour2' ? 1200 : 900), { doors });
+  }
+  if (step === 'check-travel' || step === 'check-enter' || step === 'check-done') {
+    poured();
+    return set(step.slice(6), 0);
   }
   if (step === 'travel') {
     engine.enter(DEMO_AWAY_STREET);
-    return set('wait-away', 3500);
+    return set('wait-away', 3500, { waits: 0 });
   }
   if (step === 'wait-away') {
-    if (engine.streetTsid !== DEMO_AWAY_STREET) return set('wait-away', 500);
+    if (engine.streetTsid !== DEMO_AWAY_STREET && (auto.waits || 0) < 40) return set('wait-away', 500, { waits: (auto.waits || 0) + 1 });
+    log.step('travel', engine.streetTsid === DEMO_AWAY_STREET);
     return set('pour2', 800);
   }
-  if (step === 'pour2') {
-    startPour(engine);
-    return set(engine.param('doordrinkhold') ? 'done' : 'enter', POUR_MS + 1200);
-  }
   if (step === 'enter') {
+    const away = engine.streetTsid;
     if (group.active) enterDoor(engine, group.active);
+    return set('check-entered', 4000, { away });
+  }
+  if (step === 'check-entered') {
+    log.step('enter', engine.streetTsid !== auto.away);
     return set('done', 0);
   }
   auto = null;
-  engine.setData?.('doorDrinkAutoplay', 'done');
+  engine.setData?.('doorDrinkAutoplay', log.finish('done'));
+  engine.setData?.('doorDrinkAutoplaySteps', log.summary());
 }
 
 /* ----------------------------------------------------------- feature */

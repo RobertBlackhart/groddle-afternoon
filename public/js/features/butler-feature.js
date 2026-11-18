@@ -69,7 +69,7 @@
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { homeStreetLayout, towerItem } from '../home-cultivation.js?v=57afc9e2';
-import { homesFeature } from './homes-feature.js?v=29723a2c';
+import { homesFeature } from './homes-feature.js?v=85da4187';
 import { towerApi } from './home-tower-feature.js?v=0c374abf';
 import { levelInfoForXp } from '../progression.js?v=05ff0260';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
@@ -143,6 +143,7 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
 import { registerOwnButlerDrop } from '../butler-drop.js?v=5aa14bf1';
+import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { worldPoint } from './world-drop-feature.js?v=e2926cce';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 import { markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
@@ -2016,7 +2017,7 @@ function demoSetup(engine) {
   rt.x = postX();
   engine.save?.();
   const auto = engine.param('butlerautoplay');
-  if (auto) autoplay = { mode: String(auto).toLowerCase(), phase: 'start', at: performance.now() + 2500 };
+  if (auto) autoplay = { mode: String(auto).toLowerCase(), phase: 'start', at: performance.now() + 2500, msg0: lastMsg };
 }
 
 function clickChoice(value) {
@@ -2031,10 +2032,14 @@ function autoplayStep(engine) {
   const later = (ms) => {
     autoplay.at = performance.now() + ms;
   };
-  const done = (s = 'done') => {
-    say2(s);
+  // G971: the mode is one step, logged only when the Butler's state shows it (ok); else hollow:<word>.
+  const done = (s = 'done', ok = true) => {
+    const log = autoplayLog([autoplay.mode]);
+    log.step(autoplay.mode, ok);
+    say2(log.finish(s));
     autoplay = null;
   };
+  const said = () => lastMsg !== autoplay.msg0;
   const m = autoplay.mode;
   if (autoplay.phase === 'start') {
     if (!view) return later(300);
@@ -2070,7 +2075,7 @@ function autoplayStep(engine) {
   if (autoplay.phase !== 'go') return;
   switch (m) {
     case 'greet':
-      return done('greeted');
+      return done('greeted', Boolean(rt.greetedAt));
     case 'parcel':
     case 'parceldone':
       if (!autoplay.opened) {
@@ -2079,15 +2084,17 @@ function autoplayStep(engine) {
         return later(900);
       }
       if (dialogOpen() && dialog.dataset.step === 'retrieve') {
+        // The "nothing for you" line opens a 'none' step instead: no parcel was handed over.
+        autoplay.retrieved = true;
         clickChoice('ok');
         return later(m === 'parcel' ? 600 : 900);
       }
-      if (m === 'parcel') return done('holding');
+      if (m === 'parcel') return done('holding', autoplay.retrieved === true);
       if (dialogOpen()) {
         clickChoice('ok');
         return later(700);
       }
-      return done('received');
+      return done('received', autoplay.retrieved === true);
     case 'rename':
       if (!autoplay.opened) {
         autoplay.opened = true;
@@ -2097,10 +2104,12 @@ function autoplayStep(engine) {
       if (dialog?.dataset.step === 'name') {
         const input = dialog.querySelector('[data-bd-input]');
         input.value = engine.param('butlername') || 'Jeeves';
+        autoplay.name = input.value;
         clickChoice('ok');
         return later(600);
       }
-      return done('named');
+      // renameButler can refuse the name (the dialog then just closes).
+      return done('named', Boolean(autoplay.name) && butlerName(st) === autoplay.name);
     case 'offer':
     case 'offeraccept':
       // Join the Club from the Butler: lift the QA save to the inc_stats threshold, wait for doQuests.
@@ -2132,28 +2141,29 @@ function autoplayStep(engine) {
         dialog?.querySelector(`[data-butler-step="${autoplay.steps.shift()}"]`)?.click();
         return later(350);
       }
-      if (m === 'customize') return done('customize');
+      if (m === 'customize') return done('customize', dialogOpen());
       if (m === 'discard') {
         closeDialog(engine, 'close');
-        return done('discard');
+        return done('discard', lastMsg === 'customize:discarded');
       }
       clickChoice('save');
-      return done('look');
+      return done('look', String(lastMsg).startsWith('customize:'));
     case 'talk':
       talkTo(engine);
-      return done('service');
+      return done('service', said() || dialogOpen());
     case 'joke':
       joke(engine, 1);
-      return done('joke');
+      // A joke opens its own dialogue (openDialog joke:<i>:0), no spoken line.
+      return done('joke', dialogOpen() || said());
     case 'dance':
       dance(engine);
-      return done('dancing');
+      return done('dancing', lastMsg === 'dance');
     case 'hint':
       maybeHint(engine, true);
-      return done('hint');
+      return done('hint', said());
     case 'tower':
       maybeChatter(engine, { force: true, towerLevel: true });
-      return done('tower');
+      return done('tower', said());
     case 'turn': {
       // lookAtPlayer with its back to you: turnBack (held), facePlayer 1.5 s later: turnFront.
       const p = engine.player;
@@ -2178,7 +2188,10 @@ function autoplayStep(engine) {
         say2('walking');
         return later(400);
       }
-      if (rt.mode === 'walk') return later(250);
+      if (rt.mode === 'walk') {
+        autoplay.walked = (autoplay.walked || 0) + 1;
+        return later(250);
+      }
       if (autoplay.back != null) {
         const x = autoplay.back;
         autoplay.back = null;
@@ -2186,17 +2199,18 @@ function autoplayStep(engine) {
         startWalk(engine, x);
         return later(400);
       }
-      return done('walked');
+      return done('walked', autoplay.walked > 1);
     case 'visitors':
       whoVisited(engine);
-      return done('visitors');
+      return done('visitors', said() || dialogOpen());
     case 'mailbox':
       accessMailbox(engine);
-      return done('mailbox');
+      return done('mailbox', lastMsg === 'mailbox');
     case 'gift':
       if (!autoplay.opened) {
         autoplay.opened = true;
         addItem(engine.inv, 'cherry', 3);
+        autoplay.cherries = countItem(engine.inv, 'cherry');
         giveMenu(engine);
         return later(800);
       }
@@ -2214,7 +2228,7 @@ function autoplayStep(engine) {
         clickChoice('yes');
         return later(1800);
       }
-      return done('gift');
+      return done('gift', countItem(engine.inv, 'cherry') === autoplay.cherries - 3);
     default:
       return done('unknown');
   }
