@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { gameFiles, gameText } from '../tools/build-economy.mjs';
-import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=c7a20aac';
+import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=355a59f9';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
 import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';

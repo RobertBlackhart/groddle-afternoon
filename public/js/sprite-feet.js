@@ -17,7 +17,7 @@
  *   with the reason (BOTTOM_CENTRE). tests/sprite-feet.test.js fails on a hand-written
  *   `anchor.set(0.5, 1)` (or a hand-guessed 0.9x foot) anywhere in the game.
  */
-import { SPRITE_FEET } from './sprite-feet-data.js?v=2177563a';
+import { SPRITE_FEET } from './sprite-feet-data.js?v=ff9c5119';
 import { askedUrl } from './textures.js?v=1c44e7c3';
 
 /** Why a thing keeps its plain bottom centre (anchorBottomCentre's `why`). */

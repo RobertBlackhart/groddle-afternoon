@@ -35,7 +35,7 @@ import { ITEM_CATALOG, isToolItem } from '../inventory.js?v=6414dbdc';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { playPoofIn } from '../overlay-art.js?v=7a63d78f';
 import { KIDS_ROOM_FLOOR, KIDS_ROOM_H, KIDS_ROOM_W, buildKidsRoomScene } from '../kids-room-scene.js?v=83bd0547';
-import { standOnFeet } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 const W = KIDS_ROOM_W;
 const H = KIDS_ROOM_H;

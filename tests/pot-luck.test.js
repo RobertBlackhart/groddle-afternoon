@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { imageSize } from '../tools/image-size.mjs';
 import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
-import { HIRES_ICONS } from '../public/js/icon-hires.js?v=5292072f';
+import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=8b81947e';
 import {

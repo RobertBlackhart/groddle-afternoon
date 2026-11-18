@@ -44,7 +44,7 @@
 import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { loseMood } from '../metabolics.js?v=48f784bf';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
-import { standOnFeet } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 const Q1 = 'help_juju_bandits';
 const Q2 = 'help_juju_bandits_2';

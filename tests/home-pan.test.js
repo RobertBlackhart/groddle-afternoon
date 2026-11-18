@@ -16,11 +16,11 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 
-import { HOME_LAYOUT_LIMITS, HOME_STREET_LIMITS, HOME_STREET_VERSION, buildHomeLayout, homeLayoutJson, homeLayoutKeyOf } from '../public/js/home-layout.js?v=d2bb3bd8';
-import { walkHomeScene } from '../public/js/home-layout-scene.js?v=d8512d28';
+import { HOME_LAYOUT_LIMITS, HOME_STREET_LIMITS, HOME_STREET_VERSION, buildHomeLayout, homeLayoutJson, homeLayoutKeyOf } from '../public/js/home-layout.js?v=dcb08d74';
+import { walkHomeScene } from '../public/js/home-layout-scene.js?v=11fb8550';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { HOUSE_LOT_W, YARD_SEGMENT_W } from '../public/js/home-cultivation.js?v=57afc9e2';
-import { CAMERA_RANGE } from '../public/js/features/camera-mode-feature.js?v=5f9c4449';
+import { CAMERA_RANGE } from '../public/js/features/camera-mode-feature.js?v=d32a5196';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

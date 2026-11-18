@@ -97,15 +97,17 @@
       ],
       "prompt": "Draw the centre picture for a new achievement badge called \"Feast Bringer\" in the video game Glitch, for a harvest festival called Pot Luck Day. Attachment 1 gives the canvas and size, attachment 2 shows six of Tiny Speck's own badges for the style, attachments 3 and 4 are Tiny Speck's own harvest art to follow.\n\nWhat it is: a horn of plenty (a cornucopia) lying on its side, the woven wicker horn curling up and back to the left like the one in attachment 3, with a generous harvest spilling out of its open mouth to the right: a whole golden pumpkin pie with a lattice or crimped crust and one slice cut, an ear of yellow corn, a small orange pumpkin, two or three potatoes and a few green leaves. It should feel warm, plentiful and celebratory, the feast you bring to share. Seen from the side and slightly above, like attachment 3.\n\nColour: warm autumn tones: tan and honey wicker, golden pie crust with an orange filling, yellow corn, orange pumpkin, earthy potatoes, fresh green leaves. Bright and cheerful like the foods in attachment 4, not muddy.\n\nStyle: the centre picture of a Tiny Speck \"Glitch\" (2011-2012) achievement badge, the same family as the six badges in attachment 2: a chunky, friendly, slightly cartoonish object drawn as flat vector game art with soft painted shading, rounded shapes, a clear range from light to dark, a thin slightly darker edge on each shape, and a thick clean white sticker outline around the whole picture (about 14-18 px at this size, like the white edge around the chick and the pumpkins in attachment 2) with a very soft small shadow under the sticker. No thick black outlines, no photo texture, no 3D render look, no gradients that look airbrushed.\n\nOutput: one PNG, 800 x 800, the picture alone on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with nothing else on it). Fit the picture, white sticker edge included, inside the box in attachment 1 (720 x 600, centred, a little low) and keep the top 120 px empty. Draw ONLY the centre picture: no round badge, no coloured disc, no rim, no number, no laurels, no stars, no text, no frame, no watermark. The game adds all of those itself.\n\nThe pictures from the original game are a guide to the look only: draw the picture fresh, as its own object.\n",
       "inputs": [
-        "sprite:cornucopia_crops and cornucopia_herbs (Tiny Speck glitch-items SWFs, CC0) rendered at 4x as references",
-        "sprite:pumpkin_pie, corn, pumpkin, potato icons (Tiny Speck, CC0) as references",
-        "Tiny Speck's own badge art (CC0) as a style sheet"
+        "own:the canvas card with the picture's box, drawn for the brief (attach 1-measurements.png)",
+        "sprite:achievements (Tiny Speck glitch-items badge art, CC0): six of Tiny Speck's own badges as the style sheet (attach 2-style-tiny-speck-badges.png)",
+        "sprite:misc/cornucopia_crops/cornucopia_crops.swf (Tiny Speck glitch-items, CC0), Cornucopia of Crops rendered at 4x (attach 3-cornucopia-tiny-speck.png)",
+        "sprite:pumpkin_pie, corn, pumpkin, potato, hot_potatoes and wavy_gravy icons (Tiny Speck, CC0), the harvest foods (attach 4-harvest-foods-tiny-speck.png)"
       ],
       "source": {
         "sheet_sha256": "511b66dcfcce87d03e10ff77f98c84b5045860245edc339bd2367edf5f04123d",
         "attempt": 1,
         "model": "A-feast-bringer.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare, Nano Banana 2.1 unticked), Transparent background on, 1:1 Standard 1K, single image (no variations option), came back 1024x1024 RGBA; attachments 1-4 and whole prompt.txt, one try, 2026-11-17",
-        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs"
+        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs",
+        "pack": "research/art-briefs/pot-luck-badges-2026-11-17/A-feast-bringer (outside git): prompt.txt, attach/, drop/model.txt"
       }
     },
     "pld_badge_plume_fluffer": {
@@ -121,14 +123,17 @@
       ],
       "prompt": "Draw the centre picture for a new achievement badge called \"Plume Fluffer\" in the video game Glitch, for a harvest festival called Pot Luck Day: it is earned by dressing chickens in costumes. Attachment 1 gives the canvas and size, attachment 2 shows six of Tiny Speck's own badges for the style, attachment 3 is the chicken in the costume as the game draws it, attachment 4 is Tiny Speck's original chicken.\n\nWhat it is: Tiny Speck's white Glitch chicken (attachment 4: round white body, short brown-black tail feathers, a red comb, a small red wattle, an orange beak and orange legs), proudly wearing a homemade turkey costume: a big fan of paper-plate tail feathers tied on behind its own tail, in stripes of orange, red, gold, brown and cream with pale tips, like attachment 3, so it looks like a chicken dressed up as a turkey for a party. Make it a bit more pleased with itself than attachment 3: chest puffed out, head held high, the fan spread wide behind it, standing or strutting, facing right, seen from the side. The chicken itself must stay recognisably the same white Glitch chicken; only the paper fan is the costume.\n\nColour: the chicken white with soft grey shading, its own red comb and wattle and orange legs; the costume fan orange, red, gold, brown and cream.\n\nStyle: the centre picture of a Tiny Speck \"Glitch\" (2011-2012) achievement badge, the same family as the six badges in attachment 2: a chunky, friendly, slightly cartoonish object drawn as flat vector game art with soft painted shading, rounded shapes, a clear range from light to dark, a thin slightly darker edge on each shape, and a thick clean white sticker outline around the whole picture (about 14-18 px at this size, like the white edge around the chick and the pumpkins in attachment 2) with a very soft small shadow under the sticker. No thick black outlines, no photo texture, no 3D render look, no gradients that look airbrushed.\n\nOutput: one PNG, 800 x 800, the picture alone on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with nothing else on it). Fit the picture, white sticker edge included, inside the box in attachment 1 (720 x 600, centred, a little low) and keep the top 120 px empty. Draw ONLY the centre picture: no round badge, no coloured disc, no rim, no number, no laurels, no stars, no text, no frame, no watermark. The game adds all of those itself.\n\nThe pictures from the original game are a guide to the look only: draw the picture fresh, as its own object.\n",
       "inputs": [
-        "sprite:npc_chicken (Tiny Speck's chicken FLA, CC0) and the October costume prototype rendered from it",
-        "Tiny Speck's own badge art (CC0) as a style sheet"
+        "own:the canvas card with the picture's box, drawn for the brief (attach 1-measurements.png)",
+        "sprite:achievements (Tiny Speck glitch-items badge art, CC0): six of Tiny Speck's own badges as the style sheet (attach 2-style-tiny-speck-badges.png)",
+        "made:the October 2026 costume prototype, a parts edit of Tiny Speck's inhabitants/chicken/npc_chicken.fla (CC0) rendered by us (attach 3-chicken-in-costume.png)",
+        "sprite:inhabitants/chicken/npc_chicken.fla (Tiny Speck glitch-items, CC0), the Chicken rendered from its own file (attach 4-chicken-tiny-speck.png)"
       ],
       "source": {
         "sheet_sha256": "58c11271d21b2f5dba42f3106383c83b95a2c46ceb37af575ddb0423893e4aa2",
         "attempt": 1,
         "model": "B-plume-fluffer.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare, Nano Banana 2.1 unticked), Transparent background on, 1:1 Standard 1K, single image (no variations option), came back 1024x1024 RGBA; attachments 1-4 and whole prompt.txt, one try, 2026-11-17",
-        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs"
+        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs",
+        "pack": "research/art-briefs/pot-luck-badges-2026-11-17/B-plume-fluffer (outside git): prompt.txt, attach/, drop/model.txt"
       }
     },
     "pld_badge_good_neighbor": {
@@ -144,19 +149,22 @@
       ],
       "prompt": "Draw the centre picture for a new achievement badge called \"Good Neighbor\" in the video game Glitch, for a harvest festival called Pot Luck Day: it is earned by bringing dishes and crops to share at the street's harvest table. Attachment 1 gives the canvas and size, attachment 2 shows six of Tiny Speck's own badges for the style, attachments 3 and 4 are Tiny Speck's own food and gift art to follow.\n\nWhat it is: a round, deep covered dish ready to share: a warm orange-brown ceramic casserole dish with two little handles and a matching domed lid, sitting on a folded red-and-cream checked cloth, with a small curl of steam rising from under the lid. Tied to one handle with a loop of green string is a little cream paper tag with a small red heart drawn on it (no words). Seen from the side and slightly above. It should feel homely, kind and generous, the dish you carry next door.\n\nColour: warm terracotta or orange-brown dish and lid with a cream rim, red-and-cream checked cloth, cream tag with a red heart, green string, white steam.\n\nStyle: the centre picture of a Tiny Speck \"Glitch\" (2011-2012) achievement badge, the same family as the six badges in attachment 2: a chunky, friendly, slightly cartoonish object drawn as flat vector game art with soft painted shading, rounded shapes, a clear range from light to dark, a thin slightly darker edge on each shape, and a thick clean white sticker outline around the whole picture (about 14-18 px at this size, like the white edge around the chick and the pumpkins in attachment 2) with a very soft small shadow under the sticker. No thick black outlines, no photo texture, no 3D render look, no gradients that look airbrushed.\n\nOutput: one PNG, 800 x 800, the picture alone on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with nothing else on it). Fit the picture, white sticker edge included, inside the box in attachment 1 (720 x 600, centred, a little low) and keep the top 120 px empty. Draw ONLY the centre picture: no round badge, no coloured disc, no rim, no number, no laurels, no stars, no text, no frame, no watermark. The game adds all of those itself.\n\nThe pictures from the original game are a guide to the look only: draw the picture fresh, as its own object.\n",
       "inputs": [
-        "sprite:Tiny Speck's dish and food icons (CC0) as references",
-        "Tiny Speck's own badge art (CC0) as a style sheet"
+        "own:the canvas card with the picture's box, drawn for the brief (attach 1-measurements.png)",
+        "sprite:achievements (Tiny Speck glitch-items badge art, CC0): six of Tiny Speck's own badges as the style sheet (attach 2-style-tiny-speck-badges.png)",
+        "sprite:Tiny Speck's dish and gift item icons (CC0) (attach 3-dishes-and-gift-tiny-speck.png)",
+        "sprite:pumpkin_pie, corn, pumpkin, potato, hot_potatoes and wavy_gravy icons (Tiny Speck, CC0), the harvest foods (attach 4-harvest-foods-tiny-speck.png)"
       ],
       "source": {
         "sheet_sha256": "4498b2dba8eb112953ac8bfaf4e24ca649bc1a8de5f2a80cdaf9b6cb9de8eaf8",
         "attempt": 1,
         "model": "C-good-neighbour.png: T3 Chat GPT Image 2.6 Sunburst (Flare and Nano Banana 2.1 unticked), transparency on, 1:1 Standard 1K, attachments 1-4, full prompt.txt, single image (no variations offered); came back 1024 x 1024 RGBA; one try, 2026-11-17.",
-        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs"
+        "cut": "trimmed to the picture by its alpha, resized to fit 396 px, WebP q92 alpha 100; the medallion (rim, disc, count, laurels) is drawn by tools/badge-art/generate-badges.mjs",
+        "pack": "research/art-briefs/pot-luck-badges-2026-11-17/C-good-neighbour (outside git): prompt.txt, attach/, drop/model.txt"
       }
     },
     "harvest_stuffing": {
       "file": "public/assets/sprites/icons/harvest_stuffing@3x.webp",
-      "sha256": "7c63fbf84f59ff028c3a30b5dad868da82d4145f7b03eb77f1228f9cba0e0bef",
+      "sha256": "bfdba1271485232076d3780c21c1b3eb98dfaf320b74b82fdab1e5d5feda7ed3",
       "file1": "public/assets/sprites/icons/harvest_stuffing.webp",
       "sha256_1": "73f043c80a430d04c33b3fe129062b280f978a05f19122d65f2c0c20af449fc8",
       "licence": "ai-generated",
@@ -169,14 +177,16 @@
       ],
       "prompt": "Draw one item icon for a new food called \"Harvest Stuffing\" in the video game Glitch, for a harvest festival called Pot Luck Day. Attachment 1 gives the canvas and size, attachment 2 shows six of Tiny Speck's own Glitch food icons for the style, attachment 3 shows the ingredients as Tiny Speck drew them (a bun, a mushroom, an onion and a sprig of herbs).\n\nWhat it is: a generous helping of golden bread stuffing heaped in a shallow, round, warm-brown baking dish, seen from the side and a little above like the dishes in attachment 2. The stuffing is chunky toasted bread cubes, browned and crisp on top, with little pieces of mushroom and onion and flecks and sprigs of green herbs mixed through, and one small herb sprig on top. It should look homely, warm and tasty, the dish you bring to a shared feast.\n\nColour: golden and toasty browns for the bread, a warm brown or terracotta dish with a lighter rim, small creamy mushroom and onion pieces, fresh green herbs. Bright and appetising like the foods in attachment 2, not muddy.\n\nStyle: a Tiny Speck \"Glitch\" (2011-2012) item icon, the same family as the six foods in attachment 2: flat vector game art with soft painted shading, rounded chunky shapes, a clear range from light to dark, a thin slightly darker edge on each shape, no thick black outlines, no photo texture, no 3D render look.\n\nOutput: one PNG, 800 x 800, the dish alone on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with nothing else on it). Fit it inside the box in attachment 1 (640 x 480, centred), wider than tall. No white sticker edge, no shadow on the ground, no table, no text, no frame, no watermark.\n\nThe pictures from the original game are a guide to the look only: draw the dish fresh, as its own object.\n",
       "inputs": [
-        "sprite:bun, mushroom, onion and saffron icons (Tiny Speck, CC0) as references",
-        "sprite:six of Tiny Speck's food icons (CC0) as a style sheet"
+        "own:the canvas card with the icon's box, drawn for the brief (attach 1-measurements.png)",
+        "sprite:six of Tiny Speck's food icons (CC0) as the style sheet (attach 2-style-tiny-speck-food-icons.png)",
+        "sprite:bun, mushroom, onion and saffron icons (Tiny Speck, CC0), the ingredients (attach 3-ingredients-tiny-speck.png)"
       ],
       "source": {
         "sheet_sha256": "77a57fa8653b5cb01f5329c6c90be8c2af3a5261b67955e0baa1b490783d2897",
         "attempt": 1,
         "model": "D-harvest-stuffing.png: GPT Image 2.6 Sunburst (T3 Chat canvas), Flare and Nano Banana 2.1 off, transparency on, 1:1 Standard 1K, refs 1-3 + full prompt.txt, one try, no re-ask; 1024x1024 RGBA (dish ~917x505) [2026-11-17 9:5x PM ET]",
-        "cut": "trimmed to the dish by its alpha (917 x 505 of 1024), resized to 138 px wide at 3x (Hot Potatoes' width) and 46 px at 1x, lossless WebP"
+        "cut": "trimmed to the dish by its alpha (917 x 505 of 1024), resized to 138 px wide at 3x (Hot Potatoes' width), set on a 138 x 78 canvas (three times the 46 x 26 1x), and 46 px at 1x, lossless WebP",
+        "pack": "research/art-briefs/pot-luck-items-2026-11-17/D-harvest-stuffing (outside git): prompt.txt, attach/, drop/model.txt"
       }
     }
   }

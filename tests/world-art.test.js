@@ -12,8 +12,8 @@ import { describe, it } from 'node:test';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { WORLD_ART } from '../public/js/world-art-list.js?v=2d47f296';
-import { FALLBACK_MAX, artIdOf, worldArtFor, worldStateFor } from '../public/js/world-art.js?v=0729bf92';
+import { WORLD_ART } from '../public/js/world-art-list.js?v=4653ee21';
+import { FALLBACK_MAX, artIdOf, worldArtFor, worldStateFor } from '../public/js/world-art.js?v=2b3cf8d5';
 import { surfaceHeight, stackSurfaceAt, createHomeDecorState } from '../public/js/home-decor.js?v=e246e3ca';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 
@@ -92,7 +92,9 @@ describe('world art (tools/world-art/render.py)', () => {
       const parts = swf.split('/');
       // Its own name, or (lane refsart) the one SWF in the folder of its name: OTHER_NAMES below.
       const own = parts.at(-1) === `${id}.swf` || (parts.at(-2) === id && OTHER_NAMES[id] === swf);
-      if (parts[0] === 'achievements' || !own) wrong.push(`${id}: ${swf || 'no swf'}`);
+      // G982: a made id (render.py MADE) is drawn from the item its `of` names: Pot's Cornucopia from cornucopia_crops.
+      const made = Boolean(row.of) && parts.at(-1) === `${row.of}.swf`;
+      if (parts[0] === 'achievements' || !(own || made)) wrong.push(`${id}: ${swf || 'no swf'}`);
     }
     assert.deepEqual(wrong, []);
     assert.equal(art.card_carrying_qualification.swf, 'misc/card_carrying_qualification/card_carrying_qualification.swf');

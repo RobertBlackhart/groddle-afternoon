@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=62ca408f';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { signArmWidth } from '../street-render.js?v=ea462138';
+import { signArmWidth } from '../street-render.js?v=29df0f35';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=15d03920';
@@ -161,7 +161,7 @@ import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine }
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=04ea0019';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';

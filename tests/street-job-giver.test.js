@@ -14,8 +14,8 @@ import { after, before, describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=686d7c20';
-import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=06f0f1cb';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=542b25e2';
+import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=59ed8c14';
 import { soloNeed } from '../public/js/street-jobs.js?v=5806a615';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import {

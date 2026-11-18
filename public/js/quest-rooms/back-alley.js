@@ -51,7 +51,7 @@ import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { STATION_FLOOR, stationArrival, stationByTsid, stationScreen, surfaceStation } from '../subway.js?v=735bfbeb';
 import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=6d8dec7f';
-import { standOnFeet } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 export { ALLEY, ALLEY_ART, ALLEY_SET, alleyPlatforms };
 

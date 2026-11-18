@@ -4315,6 +4315,10 @@
      "symbol": "OTHER_TROPHIES pld_feast_bringer"
     },
     {
+     "file": "tools/world-art/render.py",
+     "symbol": "MADE"
+    },
+    {
      "file": "public/js/pack-slots.js",
      "symbol": "takesNoSlot"
     },

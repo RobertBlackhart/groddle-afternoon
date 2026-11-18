@@ -1370,6 +1370,9 @@
   },
   "tools/streetmusic/build-data.mjs": {
     "stand-in: * theme that is no place (the Musicblocks set, a stand-in, a single": "ours-tools-streetmusic"
+  },
+  "tools/world-art/render.py": {
+    "ours: G982 (ours): the keepsake Pot's Cornucopia, Tiny Speck's": "pot-luck-cornucopia"
   }
 }
 }

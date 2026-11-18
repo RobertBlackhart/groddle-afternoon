@@ -27,7 +27,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inv
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { openNoteView, openNotePicker } from '../note-view.js?v=eca7de52';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=2afcca3d';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=6d5d7d5b';
 import {
   BALL,
   BALL_HIT,
@@ -51,7 +51,7 @@ import {
   reconcileFortunes,
 } from '../small-items.js?v=78d0056a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { standOnFeet } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 export const SMALL_ITEMS_FEATURE_ID = 'small-items';
 const BALL_GROUP = 'smallItemsBall';

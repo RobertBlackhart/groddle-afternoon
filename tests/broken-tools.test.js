@@ -16,7 +16,7 @@ import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { createMineRock, findWorkingPick, miningToolWear } from '../public/js/mining.js?v=afb2b145';
 import { clearPlot, createGarden, gardenActionProfile, getPlot, waterPlot } from '../public/js/garden.js?v=d4e55862';
 import { BROKEN_TOOL_ICONS, TOOL_CONDITION_CATALOG, brokenToolIcon, createToolConditionState, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
-import { HIRES_ICONS } from '../public/js/icon-hires.js?v=5292072f';
+import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
 
 const root = join(import.meta.dirname, '..');
 const icons = join(root, 'public/assets/sprites/icons');

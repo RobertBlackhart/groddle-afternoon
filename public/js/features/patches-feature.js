@@ -51,7 +51,7 @@ import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=62ca408f';
 import { trantStatusLabel } from '../trants.js?v=b9147016';
-import { standOnFeet } from '../sprite-feet.js?v=254ce925';
+import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   GROWN_TREE_LABELS,

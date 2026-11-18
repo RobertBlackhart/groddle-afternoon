@@ -20,7 +20,7 @@
  * same (a Pick and a Fancy Pick) share one table.
  */
 import { SKILL_PACKAGES, skillPackageDetails } from '../../public/js/skill-packages.js?v=bfb87281';
-import { GSJS_SKILL_PACKAGES } from '../../public/js/skill-bubbles.js?v=885ff60a';
+import { GSJS_SKILL_PACKAGES } from '../../public/js/skill-bubbles.js?v=1573f61d';
 import { IMAGINATION_UPGRADES } from '../../public/js/imagination.js?v=1bdfd77c';
 import { pace, paceFor, pacedSystemOf } from '../../public/js/pace.js?v=8aca33bc';
 import { cardName } from './imagination.mjs';

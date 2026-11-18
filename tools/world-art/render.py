@@ -26,6 +26,10 @@ state's 1x size and where the art sits against the stage's bottom centre
 the SWF's hash and its path in glitch-items (`swf`); unchanged ids are skipped unless --force.
 Only the item folders count: glitch-items/achievements is badge art (NOT_ITEMS). Ids that can't be
 put down are left out, and their old renders removed.
+
+MADE lists ids the remake added that lie in a place drawn from another item's SWF at a zoom of their
+own (G982: Pot's Cornucopia is Tiny Speck's cornucopia_crops at zoom 5, about 1.7x): rendered,
+listed and kept like the rest, with `of` and `zoom` recorded in art.json.
 """
 import glob, hashlib, json, os, shutil, subprocess, sys, tempfile
 
@@ -47,6 +51,8 @@ ZOOM = 3
 BATCH = 60
 # The client's count states run 1, 2, 3 ... (apple 1-4, plank 1-5); more than this is never drawn apart.
 MAX_STATES = 12
+# G982 (ours): the keepsake Pot's Cornucopia, Tiny Speck's Cornucopia of Crops drawn larger (158 x 135 at 1x).
+MADE = {'pots_cornucopia': {'of': 'cornucopia_crops', 'zoom': 5}}
 
 
 def sha(path):
@@ -109,7 +115,7 @@ def droppable(key):
 
 def prune(art):
     """Drop ids that can't be put down, and any render folder art.json doesn't list."""
-    for key in [k for k in art if not droppable(k)]:
+    for key in [k for k in art if not droppable(k) and k not in MADE]:
         art.pop(key)
     if os.path.isdir(OUT):
         for name in os.listdir(OUT):
@@ -176,7 +182,19 @@ def main(args):
         except Exception as e:  # noqa: BLE001
             print('  unreadable', key, e)
             continue
-        todo.append((key, src, digest, info, states_of(info)))
+        todo.append((key, src, digest, info, states_of(info), ZOOM))
+    for key, made in MADE.items():
+        if only and key not in only:
+            continue
+        src = idx.get(made['of'])
+        if not src:
+            continue
+        digest = sha(src)
+        if not force and art.get(key, {}).get('sha') == digest and art[key].get('zoom') == made['zoom'] and all(
+            os.path.exists(os.path.join(OUT, key, f'{n}@{ZOOM}x.webp')) for n in art[key]['states']
+        ):
+            continue
+        todo.append((key, src, digest, swfinfo.read(src), states_of(swfinfo.read(src)), made['zoom']))
     work = work or tempfile.mkdtemp(prefix='worldart-')
     os.makedirs(work, exist_ok=True)
     print(f'{len(todo)} to render in {work}')
@@ -184,28 +202,28 @@ def main(args):
     groups = {}
     for row in todo:
         frames = ','.join(str(f) for _, f in row[4])
-        groups.setdefault(frames, []).append(row)
+        groups.setdefault((frames, row[5]), []).append(row)
     done = 0
-    for frames, rows in sorted(groups.items(), key=lambda kv: -len(kv[1])):
+    for (frames, zoom), rows in sorted(groups.items(), key=lambda kv: -len(kv[1])):
         for b in range(0, len(rows), BATCH):
             while guard() > 40:
                 print('load above 40, waiting')
                 subprocess.run(['sleep', '60'])
             batch = rows[b:b + BATCH]
-            tag = f'{abs(hash(frames)) % 10**8}-{b}'
+            tag = f'{abs(hash(frames)) % 10**8}-{zoom}-{b}'
             src_dir = os.path.join(work, f'src{tag}')
             out_dir = os.path.join(work, f'out{tag}')
             os.makedirs(src_dir, exist_ok=True)
             for key, src, *_ in batch:
                 swfinfo.rewrite(src, os.path.join(src_dir, f'{key}.swf'), pad=1.0)
-            subprocess.run([JAVA, '-Djava.awt.headless=true', '-jar', FFDEC, '-zoom', str(ZOOM), '-ignorebackground',
+            subprocess.run([JAVA, '-Djava.awt.headless=true', '-jar', FFDEC, '-zoom', str(zoom), '-ignorebackground',
                             '-select', frames, '-format', 'frame:png', '-export', 'frame', out_dir, src_dir],
                            capture_output=True, text=True)
-            for key, src, digest, info, states in batch:
+            for key, src, digest, info, states, _ in batch:
                 x0, x1, y0, y1 = info['rect']
                 # The padded stage starts one stage size left of and above the authored one.
-                foot_x = (x1 - x0) * 1.5 * ZOOM
-                foot_y = (y1 - y0) * 2 * ZOOM
+                foot_x = (x1 - x0) * 1.5 * zoom
+                foot_y = (y1 - y0) * 2 * zoom
                 out = {}
                 for name, frame in states:
                     png = os.path.join(out_dir, f'{key}.swf', f'{frame}.png')
@@ -230,6 +248,8 @@ def main(args):
                     }
                 if out:
                     art[key] = {'sha': digest, 'swf': os.path.relpath(src, ITEMS), 'states': out}
+                    if key in MADE:
+                        art[key].update(MADE[key])
                 else:
                     print('  no render', key)
                     art.pop(key, None)

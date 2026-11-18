@@ -33,9 +33,9 @@ import { filterTiles, furniturePane, trayFilters } from '../public/js/ui/home-bu
 import { hasUpgrades, upgradeVerb } from '../public/js/furniture-upgrades.js?v=a3788c0d';
 import { NO_SLOT_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { layoutPack, takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
-import { WORLD_ART } from '../public/js/world-art-list.js?v=2d47f296';
-import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=fa2839ba';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=02679996';
+import { WORLD_ART } from '../public/js/world-art-list.js?v=4653ee21';
+import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=08fd4c20';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=6ac5e73e';
 import { planStreetTrophies } from '../public/js/street-jobs.js?v=5806a615';
 import { planEggTrophy } from '../public/js/seasons.js?v=8b81947e';
 import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=98a4aa71';

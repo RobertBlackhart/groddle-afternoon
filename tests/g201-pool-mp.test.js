@@ -133,7 +133,7 @@ describe('the game shows the site\'s pool (home-pool-mp)', () => {
   });
 
   it('the rock hands over the site\'s amount in multiplayer, after the site marked the day', async () => {
-    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=02679996');
+    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=6ac5e73e');
     homesFeature.restore({ decor: {}, cult: {}, magicRock: { cultivate: 'cultivate_complete', changestyle: 'howto_shown', expand: 'howto_shown' } });
     const beats = [];
     const data = {};
@@ -182,7 +182,11 @@ describe('G332: street Piggies eat food dropped for everyone, and the drop promp
     assert.equal(t.items.cherry.food, true);
     assert.equal(t.items.pick.food, undefined);
     const foods = Object.entries(t.items).filter(([, v]) => v.food).map(([k]) => k);
-    for (const c of foods) assert.match(readFileSync(join(GS, 'items', `${c}.js`), 'utf8'), /^\/\/#include .*include\/food\.js/m, c);
+    // G982: a food the remake made (no GSJS file: Harvest Stuffing) is a made item, its icon in the made-art ledger.
+    const made = JSON.parse(readFileSync(join(root, 'tools/provenance/made-sprites.json'), 'utf8')).sprites;
+    const ours = foods.filter((c) => !existsSync(join(GS, 'items', `${c}.js`)));
+    for (const c of ours) assert.ok(made[c], `${c}: no GSJS file and no made-art row`);
+    for (const c of foods.filter((f) => !ours.includes(f))) assert.match(readFileSync(join(GS, 'items', `${c}.js`), 'utf8'), /^\/\/#include .*include\/food\.js/m, c);
     assert.ok(foods.length > 150);
     const client = JSON.parse(readFileSync(join(root, 'public/assets/content/trade-items.json'), 'utf8'));
     assert.equal(client.items.apple.food, true, 'the client\'s copy is the same file');
