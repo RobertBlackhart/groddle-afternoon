@@ -3059,7 +3059,11 @@
       "id": "G993",
       "area": "Streets",
       "show": "fixing",
-      "text": "The loading card's list of what lives on a street disappeared before you could read it."
+      "text": "The loading card's list of what lives on a street disappeared before you could read it.",
+      "commits": [
+        "game:d5953a9e5b8",
+        "game:b3e347ae6d3"
+      ]
     },
     {
       "id": "G994",
@@ -3074,7 +3078,10 @@
       "id": "G995",
       "area": "Vendors",
       "show": "fixing",
-      "text": "The Street Spirit on Progress Way had the wrong store name and goods; in Glitch it sold bags."
+      "text": "The Street Spirit on Progress Way had the wrong store name and goods; in Glitch it sold bags.",
+      "commits": [
+        "game:7cdb25f835d"
+      ]
     },
     {
       "id": "G996",
@@ -3120,6 +3127,24 @@
       "area": "Animals",
       "show": "fixing",
       "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb."
+    },
+    {
+      "id": "G1002",
+      "area": "Getting around",
+      "show": "fixing",
+      "text": "Routes walked a long way round instead of taking the subway once any road was open.",
+      "commits": [
+        "game:fe546411df0"
+      ]
+    },
+    {
+      "id": "G1003",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "Rooms where Glitch made you find your own way out showed a Go back button once solved.",
+      "commits": [
+        "game:fe24b8aef06"
+      ]
     }
   ]
 }
