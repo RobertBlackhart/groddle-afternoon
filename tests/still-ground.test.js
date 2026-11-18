@@ -17,7 +17,7 @@ import { STILL, STILL_TEXT, createStillState, distillInStill, stillCollectCheck,
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=1d6610ef';
 import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=66601f23';
 import { shareReason } from '../public/js/drops-mp.js?v=ad34ae0a';
-import { dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
+import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { STILL_ART, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../public/js/still-art.js?v=2eeb65ff';
 
 const root = join(import.meta.dirname, '..');

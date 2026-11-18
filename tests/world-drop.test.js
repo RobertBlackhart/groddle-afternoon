@@ -4,8 +4,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=0b4f1e4d';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=6ea69d5c';
+import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=a8956ae5';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=6dbfb36c';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');
@@ -22,6 +22,7 @@ describe('the drop-target table', () => {
       apply_antidote: 'trant_bean.js', poison: 'trant_bean.js', mine_metal: 'rock_metal_1.js', mine: 'rock_beryl_1.js', dig: 'patch.js', tend: 'patch.js',
       dig_dirt: 'dirt_pile.js', scrape: 'mortar_barnacle.js', scrape_ice: 'ice_knob.js',
       peat: 'peat_1.js', brush: 'npc_fox.js', add_note: 'bag_notice_board.js', donate: 'npc_shrine_cosma.js', distill: 'still.js',
+      deposit: 'piggy_feeder.js',
     };
     // G982: the Pot Luck Day rules are ours (no drop_tip in GSJS), in our own words: the costumes and the Harvest Table.
     for (const rule of WORLD_DROP_RULES.filter((r) => r.ours)) assert.ok((/^dress_/.test(rule.id) && rule.tip === 'Dress this Chicken up for Pot Luck Day') || (rule.id === 'lay_feast' && rule.tip === 'Lay {$stack_name} on the {$item_name}'), rule.id);
@@ -98,6 +99,24 @@ describe('the feature', () => {
     return { engine, calls };
   };
   const canvas = { getBoundingClientRect: () => ({ left: 0, top: 0, width: 960, height: 540 }) };
+  it('G1005: a Piggy Feeder takes food dragged onto it, the foods its Deposit offers, and asks how many', () => {
+    assert.deepEqual(dropRulesFor('piggy_feeder').map((r) => r.id), ['deposit']);
+    const feeder = { classId: 'piggy_feeder', label: 'Piggy Feeder' };
+    const { engine, calls } = fakeEngine(feeder, [{ id: 'deposit', enabled: true, picker: 'deposit' }], { cherry: 12, pick: 1 });
+    const o = overAt(engine, canvas, 480, 300, 'cherry');
+    assert.equal(o.drop.rule.id, 'deposit');
+    assert.equal(o.ok, true);
+    assert.match(o.tip, /^Add cherr(y|ies) to the Piggy Feeder$/i);
+    assert.equal(overAt(engine, canvas, 480, 300, 'pick'), null, 'not food (drop_ok_code is_food)');
+    runDrop(engine, o, 'cherry');
+    assert.deepEqual(calls.filter((c) => c[0] === 'picker'), [['picker', 'deposit', 'cherry']]);
+    // Full, or without Remote Herdkeeping: the drop answers with the verb's reason.
+    const full = fakeEngine(feeder, [{ id: 'deposit', enabled: false, reason: "It's full!" }], { cherry: 1 });
+    const f = overAt(full.engine, canvas, 480, 300, 'cherry');
+    assert.equal(f.ok, false);
+    assert.equal(f.tip, "It's full!");
+  });
+
 
   it('over a thing that takes the stack: its tip; elsewhere nothing', () => {
     const dust = { classId: 'newxp_dustbunny', label: 'Dustbunny' };

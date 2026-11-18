@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { bindToolInventory, createToolConditionState, setToolRemaining, toolCopies } from '../public/js/tools.js?v=4156bba8';
-import { WORLD_DROP_RULES, dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
+import { WORLD_DROP_RULES, dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { CHOICE_MS, chooseTool, clearToolChoice, peekToolChoice, takeToolChoice } from '../public/js/tool-choice.js?v=e0dcb60e';
 import { PACK_TOOL_TEXT, nodesFor, packToolButtons, packToolCondition, planPackToolVerb } from '../public/js/pack-tool-verbs.js?v=479afbd9';
 import { packToolOrder } from '../public/js/features/resource-nodes-feature.js?v=f7eaae5e';

@@ -37,6 +37,13 @@ export const WORLD_DROP_RULES = Object.freeze([
     src: 'npc_piggy.js verbs.feed (drop_ok_code isFood); npc_batterfly.js verbs.feed',
   },
   {
+    // G1005 (R9): a Piggy Feeder took food dragged onto it (is_drop_target, drop_many: how many follows);
+    // the same foods its Deposit offers (animals.js listAnimalFeedOptions('piggy_feeder'): any food).
+    id: 'deposit', classes: (c) => c === 'piggy_feeder', verbs: ['deposit'], use: 'pick',
+    accepts: (s, ctx) => Boolean(ctx?.feedable?.(s)), tip: 'Add {$stack_name} to the {$item_name}',
+    src: 'piggy_feeder.js verbs.deposit 93-140 (drop_ok_code is_food)',
+  },
+  {
     id: 'apply_balm', classes: (c) => ANIMAL(c) || TREE(c), verbs: ['rook_apply_balm', 'apply_balm'], use: 'verb',
     accepts: (s) => s === 'potion_rook_balm', tip: 'Apply Rook Balm', src: 'npc_piggy.js, trant_*.js verbs.apply_balm',
   },

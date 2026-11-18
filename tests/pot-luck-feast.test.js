@@ -44,7 +44,7 @@ import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=80957092';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
-import { dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
+import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
 import { setContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { harvestTableData } from '../tools/build-realtime-harvest-table.mjs';
