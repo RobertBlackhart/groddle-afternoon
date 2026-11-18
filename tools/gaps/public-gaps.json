@@ -3096,19 +3096,29 @@
       "id": "G997",
       "area": "Homes",
       "show": "fixing",
-      "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet."
+      "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet.",
+      "commits": [
+        "game:df07096880e"
+      ]
     },
     {
       "id": "G998",
       "area": "Animals",
       "show": "fixing",
-      "text": "A few Mortar Barnacles sit off their spots on Vasko Shift."
+      "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
+      "commits": [
+        "game:8fc78982b8c",
+        "server:1e9c944"
+      ]
     },
     {
       "id": "G999",
       "area": "Quest rooms",
       "show": "fixing",
-      "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights."
+      "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights.",
+      "commits": [
+        "game:9d1f0ef1c07"
+      ]
     },
     {
       "id": "G1000",
@@ -3144,6 +3154,87 @@
       "text": "Rooms where Glitch made you find your own way out showed a Go back button once solved.",
       "commits": [
         "game:fe24b8aef06"
+      ]
+    },
+    {
+      "id": "G1006",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "A refused Group Hall claim went back to the question without saying why.",
+      "commits": [
+        "game:570264ab81a",
+        "server:4967ecb"
+      ]
+    },
+    {
+      "id": "G1007",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Some Peat Bogs, Dirt Piles, salmon and ice were planted behind huts and rocks where nobody could see them.",
+      "commits": [
+        "game:762df840ab7",
+        "game:b95a179aa64",
+        "server:940e5e1"
+      ]
+    },
+    {
+      "id": "G1008",
+      "area": "Vendors",
+      "show": "fixing",
+      "text": "A walking vendor could float above the floor after the page opened part way through its walk.",
+      "commits": [
+        "game:63162732919"
+      ]
+    },
+    {
+      "id": "G1011",
+      "area": "Reports",
+      "show": "fixing",
+      "text": "A report picture could show a scrolled list from the top and other text than the screen did.",
+      "commits": [
+        "game:f0afe580357"
+      ]
+    },
+    {
+      "id": "G1012",
+      "area": "Animals",
+      "show": "fixing",
+      "text": "Online, a Piggy or Chicken could walk inside the ground after its path jumped.",
+      "commits": [
+        "game:921c0b1a9d6",
+        "game:4bb1ba8e8e6"
+      ]
+    },
+    {
+      "id": "G1013",
+      "area": "Hell",
+      "show": "fixing",
+      "text": "Buying Wine of the Dead put it in your pack silently; in Glitch it flew from the bartender.",
+      "commits": [
+        "game:47d47f09bd7"
+      ]
+    },
+    {
+      "id": "G1014",
+      "area": "Tools",
+      "show": "fixing",
+      "text": "A Hoe never said when aggressive hoeing was on, or what a cleared plot would wear.",
+      "commits": [
+        "game:ef2a344eb59"
+      ]
+    },
+    {
+      "id": "G947",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Mining or digging together at a friend's home rocks and piles didn't count as helping, or for I Me Mine and It Takes Two.",
+      "commits": [
+        "game:f43d805dd83",
+        "game:9bc2eb582d9",
+        "server:b157a0b",
+        "server:1a56af8",
+        "site:83152b4",
+        "site:df9865b"
       ]
     }
   ]

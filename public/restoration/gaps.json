@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.48.2",
+  "release": "v0.49.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 7,
+    "fixing": 4,
     "known": 13,
     "unreleased": 0,
-    "fixed": 300,
+    "fixed": 311,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -51,11 +51,6 @@
     {
       "name": "Quest rooms",
       "items": [
-        {
-          "id": "G999",
-          "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights.",
-          "state": "fixing"
-        },
         {
           "id": "G10",
           "text": "Most of Glitch's private quest rooms and Jethimadh Tower rooms left no map behind. Each one is rebuilt by hand from players' recordings and snaps, and some may never come back.",
@@ -135,10 +130,16 @@
           "version": "v0.43.0"
         },
         {
+          "id": "G999",
+          "text": "On phones, the background trees in some rebuilt quest rooms sit at the wrong heights.",
+          "state": "fixed",
+          "version": "v0.49.0"
+        },
+        {
           "id": "G1003",
           "text": "Rooms where Glitch made you find your own way out showed a Go back button once solved.",
           "state": "fixed",
-          "version": "v0.48.2"
+          "version": "v0.49.0"
         }
       ]
     },
@@ -418,7 +419,13 @@
           "id": "G993",
           "text": "The loading card's list of what lives on a street disappeared before you could read it.",
           "state": "fixed",
-          "version": "v0.48.2"
+          "version": "v0.49.0"
+        },
+        {
+          "id": "G1007",
+          "text": "Some Peat Bogs, Dirt Piles, salmon and ice were planted behind huts and rocks where nobody could see them.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -668,11 +675,6 @@
       "name": "Homes",
       "items": [
         {
-          "id": "G997",
-          "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet.",
-          "state": "fixing"
-        },
-        {
           "id": "G223",
           "text": "Some house styles are still to come, including more interior and back yard styles. The Coral Caves style waits for its art to turn up.",
           "state": "known"
@@ -788,6 +790,12 @@
           "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G997",
+          "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet.",
+          "state": "fixed",
+          "version": "v0.49.0"
         },
         {
           "id": "G48",
@@ -966,11 +974,6 @@
       "name": "Animals",
       "items": [
         {
-          "id": "G998",
-          "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
-          "state": "fixing"
-        },
-        {
           "id": "G1005",
           "text": "Food can't be dragged onto a Piggy Feeder; use its Deposit verb.",
           "state": "fixing"
@@ -1084,6 +1087,18 @@
           "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G998",
+          "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
+          "state": "fixed",
+          "version": "v0.49.0"
+        },
+        {
+          "id": "G1012",
+          "text": "Online, a Piggy or Chicken could walk inside the ground after its path jumped.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -1286,6 +1301,18 @@
           "text": "Online, a tree or animal could offer the same verb again for a moment after you used it.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G1006",
+          "text": "A refused Group Hall claim went back to the question without saying why.",
+          "state": "fixed",
+          "version": "v0.49.0"
+        },
+        {
+          "id": "G947",
+          "text": "Mining or digging together at a friend's home rocks and piles didn't count as helping, or for I Me Mine and It Takes Two.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -1768,6 +1795,12 @@
           "text": "Instant Resurrection filled mood only to 100, not to your full tank.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G1013",
+          "text": "Buying Wine of the Dead put it in your pack silently; in Glitch it flew from the bartender.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -1821,7 +1854,7 @@
           "id": "G1002",
           "text": "Routes walked a long way round instead of taking the subway once any road was open.",
           "state": "fixed",
-          "version": "v0.48.2"
+          "version": "v0.49.0"
         }
       ]
     },
@@ -1875,7 +1908,13 @@
           "id": "G995",
           "text": "The Street Spirit on Progress Way had the wrong store name and goods; in Glitch it sold bags.",
           "state": "fixed",
-          "version": "v0.48.2"
+          "version": "v0.49.0"
+        },
+        {
+          "id": "G1008",
+          "text": "A walking vendor could float above the floor after the page opened part way through its walk.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -2054,6 +2093,12 @@
           "text": "Dropping a tool onto a Tinkertool did not repair it, as it did in Glitch.",
           "state": "fixed",
           "version": "v0.42.0"
+        },
+        {
+          "id": "G1014",
+          "text": "A Hoe never said when aggressive hoeing was on, or what a cleared plot would wear.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
@@ -2091,6 +2136,12 @@
           "report": 372,
           "state": "fixed",
           "version": "v0.42.0"
+        },
+        {
+          "id": "G1011",
+          "text": "A report picture could show a scrolled list from the top and other text than the screen did.",
+          "state": "fixed",
+          "version": "v0.49.0"
         }
       ]
     },
