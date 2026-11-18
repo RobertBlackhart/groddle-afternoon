@@ -2814,13 +2814,23 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2606,
+  "commits": 2609,
   "since": "2026-10-19",
   "recent": [
    {
     "date": "2026-11-17",
+    "kind": "new",
+    "text": "One register of everything the remake invented, and a test that catches a new one"
+   },
+   {
+    "date": "2026-11-17",
     "kind": "improve",
     "text": "Every item picker hands over the copy you chose, not just its type"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "new",
+    "text": "A New content page for what Groddle adds beyond Glitch, starting with Pot Luck Day"
    },
    {
     "date": "2026-11-17",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Butterflies say \"<333\", not \"&lt;333\": Glitch's text reaches the game as characters"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A Super Harvest says its bonus on its own line, so the float and the log add up"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Encyclopedia skill and speed card pages show how long each go takes"
    }
   ]
  },
- "tests": 1121,
+ "tests": 1122,
  "generatedAt": "2026-11-17"
 }
