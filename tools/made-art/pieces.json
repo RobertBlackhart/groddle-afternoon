@@ -2,6 +2,98 @@
   "note": "The words players read in the Made for Groddle section of /restoration/ (tools/made-art/build-data.mjs): one piece per entry of tools/provenance/made-sprites.json, and the curated pieces from repainted-maps.json (map:<hub>, maps:<hub>,<hub>), subway-map-paper.json (subway:paper), world-map-2x.json (world:2x) and made-decos.json (decos:<group>[:<view>]). image.file and original.file under public/assets/made-art/ are pictures composed by tools/made-art/compose.py (tools/made-art/showcase.json). In facts and labels, {tool} is the provenance's model or tool, {overlap} the outline overlap its cut records, {w} and {h} the original's size in pixels, {regions} how many region maps were painted again. A gallery (maps:<hub>,<hub>) has parts: the words for each region's thumbnail and painting in the page's compare popup, where {name} is the region and {w} and {h} its thumbnail's size.",
   "pieces": [
     {
+      "id": "pld_badge_feast_bringer",
+      "name": "Feast Bringer badge picture",
+      "caption": "The picture in the middle of the Feast Bringer badge, for Pot Luck Day. Glitch never had a harvest feast, so there was no Tiny Speck badge to bring back: the medallion around it is drawn the way Tiny Speck drew theirs.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "A cornucopia spilling a pumpkin pie, corn, a small pumpkin and potatoes, with a thick white edge like a sticker."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Feast Bringer badge, earned by finishing the quest Pot’s Empty Table."
+        }
+      ]
+    },
+    {
+      "id": "pld_badge_plume_fluffer",
+      "name": "Plume Fluffer badge picture",
+      "caption": "The picture in the middle of the three Plume Fluffer badges, for Pot Luck Day: Tiny Speck’s white Chicken in its paper turkey tail. The three badges share it, as Tiny Speck’s own badge ladders share one picture.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "The white Glitch Chicken with a red comb, wearing a striped paper fan of turkey feathers behind it."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Plume Fluffer I, II and III badges, for dressing 5, 23 and 61 Chickens."
+        }
+      ]
+    },
+    {
+      "id": "pld_badge_good_neighbor",
+      "name": "Good Neighbor badge picture",
+      "caption": "The picture in the middle of the Good Neighbor badge, for Pot Luck Day: a dish brought to share.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "A covered terracotta casserole dish on a red checked cloth, a heart-shaped tag on its handle."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Good Neighbor badge, for laying 11 dishes or crops on the Harvest Table."
+        }
+      ]
+    },
+    {
+      "id": "harvest_stuffing",
+      "name": "Harvest Stuffing",
+      "caption": "A new dish for Pot Luck Day, cooked in the Awesome Pot from a Bun, Mushrooms, Onions and Saffron. Glitch had no stuffing, so its icon was drawn new, in the style of Tiny Speck’s food icons.",
+      "display": {
+        "w": 138,
+        "h": 77
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "Golden bread stuffing heaped in a round brown baking dish, with mushroom and onion pieces and green herbs."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model ({tool}) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Harvest Stuffing item, cooked only during Pot Luck Day."
+        }
+      ]
+    },
+    {
       "id": "quest_book_award",
       "name": "Quest book",
       "caption": "The open book on the card you see when you finish a quest. Tiny Speck drew it only {w} by {h} pixels, which turned soft and blurry when the card showed it large, so it was redrawn bigger to match the original as closely as possible.",

@@ -13,10 +13,14 @@
  * row with `replaces`, while its conditions are still exactly the ones that row names
  * (so a source that changes is noticed, not overwritten). A row's `text` rewords the
  * badge's own words (statusText, desc) where they still say what the row replaces.
+ *
+ * DESIGNED_ACHIEVEMENTS are badges with no GSJS file at all (G982: Pot Luck Day's five, ours): the
+ * whole row is added to the catalog, so a content rebuild keeps them.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FEAST_BADGES } from '../public/js/pot-luck-feast.js?v=e5f12825';
 
 /**
  * #441 (G914, Austin 2026-11-17: every hub Completist needs every street of its hub,
@@ -94,6 +98,9 @@ export const ACHIEVEMENT_CONDITION_OVERRIDES = Object.freeze({
   }),
 });
 
+/** Badges the remake designed (no GSJS file), whole achievements.json rows. */
+export const DESIGNED_ACHIEVEMENTS = Object.freeze({ ...FEAST_BADGES });
+
 /** Whether a row applies over a badge's own conditions: none, or exactly the ones it replaces. */
 function overrideApplies(row, conditions = []) {
   if (!conditions.length) return true;
@@ -117,6 +124,7 @@ export function applyAchievementOverrides(catalog) {
     if (!overrideApplies(row, def.conditions || [])) continue;
     def.conditions = row.conditions.map((c) => ({ ...c }));
   }
+  for (const [id, row] of Object.entries(DESIGNED_ACHIEVEMENTS)) catalog[id] = JSON.parse(JSON.stringify(row));
   return catalog;
 }
 

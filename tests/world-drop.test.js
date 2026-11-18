@@ -4,8 +4,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=bc16d491';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=1c2b3754';
+import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=0b4f1e4d';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=8db93ce5';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');
@@ -23,8 +23,8 @@ describe('the drop-target table', () => {
       dig_dirt: 'dirt_pile.js', scrape: 'mortar_barnacle.js', scrape_ice: 'ice_knob.js',
       peat: 'peat_1.js', brush: 'npc_fox.js', add_note: 'bag_notice_board.js', donate: 'npc_shrine_cosma.js', distill: 'still.js',
     };
-    // G982: the Pot Luck Day costumes' rules are ours (no drop_tip in GSJS), in our own words.
-    for (const rule of WORLD_DROP_RULES.filter((r) => r.ours)) assert.ok(/^dress_/.test(rule.id) && rule.tip === 'Dress this Chicken up for Pot Luck Day', rule.id);
+    // G982: the Pot Luck Day rules are ours (no drop_tip in GSJS), in our own words: the costumes and the Harvest Table.
+    for (const rule of WORLD_DROP_RULES.filter((r) => r.ours)) assert.ok((/^dress_/.test(rule.id) && rule.tip === 'Dress this Chicken up for Pot Luck Day') || (rule.id === 'lay_feast' && rule.tip === 'Lay {$stack_name} on the {$item_name}'), rule.id);
     for (const rule of WORLD_DROP_RULES.filter((r) => !r.ours)) {
       const src = gsjs(files[rule.id]);
       assert.ok(src, rule.id);

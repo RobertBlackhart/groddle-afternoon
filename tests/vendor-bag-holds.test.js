@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { layoutPack, saleBags } from '../public/js/pack-slots.js?v=4d446d78';
+import { layoutPack, saleBags } from '../public/js/pack-slots.js?v=2c09907f';
 import { VENDOR_BAG_HOLDS, createVendorSellQuote, vendorSell } from '../public/js/vendor.js?v=62184f98';
 
 const root = join(import.meta.dirname, '..');

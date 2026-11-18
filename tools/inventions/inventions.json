@@ -801,7 +801,7 @@
   },
   {
    "id": "made-sprites",
-   "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes)",
+   "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes, its badge pictures and Harvest Stuffing's icon)",
    "kind": "visual",
    "status": "proposed",
    "family": "made-sprites",
@@ -822,7 +822,11 @@
    "members": [
     "chicken_rooster_plume",
     "chicken_turkey_tailfan",
+    "harvest_stuffing",
     "npc_fire_dragon_walk",
+    "pld_badge_feast_bringer",
+    "pld_badge_good_neighbor",
+    "pld_badge_plume_fluffer",
     "quest_book_award"
    ]
   },
@@ -4210,6 +4214,145 @@
    "rows": [
     "G983",
     "G758"
+   ]
+  },
+  {
+   "id": "pot-luck-table",
+   "title": "Pot Luck Day's Harvest Table: one shared table by the Groddle Forest Junction signpost (Tiny Speck's deco_table_wooden_ghtest twice, end to end); dishes and crops laid by anyone stay on it, the newest ten drawn with their icons, a count on its front; each player's first offering of a game day gives 10 mood and 10 favor with Pot; packed away when the season ends",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "TABLE_AT"
+    },
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "layOffering"
+    },
+    {
+     "file": "public/js/features/pot-luck-feast-feature.js",
+     "symbol": "spawnTable"
+    },
+    {
+     "file": "public/js/world-drop.js",
+     "symbol": "WORLD_DROP_RULES lay_feast"
+    },
+    {
+     "file": "public/js/features/world-drop-feature.js",
+     "symbol": "ctxFor feastTakes"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): one shared Harvest Table by the Groddle Forest Junction signpost (the Croppaday precedent), on Tiny Speck's own rustic table deco; laid items stay for everyone, the table fills over the week, a little mood and Pot favor for the day's first offering, everything packed away at the season's end. Ours to review: the spot (250 px right of the hub signpost), two tables side by side, ten icons shown, the 999+ count, 10 mood and 10 favor, any food the server's trade data calls food (a dish or a crop) accepted. The server holds it online (groddle-afternoon-server harvest_table.go).",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
+   "id": "pot-luck-quest",
+   "title": "Pot's Empty Table: a Pot Luck Day quest offered by the Magic Rock (cook three of five harvest dishes, dress a Chicken, lay three harvest dishes on the Harvest Table) for Pot's Cornucopia, 25 Pot favor, 50 iMG and the Feast Bringer badge",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "QUEST"
+    },
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "questEvent"
+    },
+    {
+     "file": "public/js/features/pot-luck-feast-feature.js",
+     "symbol": "offerQuest"
+    },
+    {
+     "file": "public/js/features/pot-luck-feast-feature.js",
+     "symbol": "questLogCards"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): the quest's four steps and reward. Ours to review: the giver (the Magic Rock, as Glitch's one seasonal quest, A Holiday Thing, was offered), its words, 25 favor and 50 iMG, and that the quest is the season's own (not a catalog quest: its card is drawn in the log by the feature).",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
+   "id": "pot-luck-stuffing",
+   "title": "Harvest Stuffing: an Awesome Pot recipe (2 Buns, 3 Mushrooms, 2 Onions, 1 Saffron; Master Chef I, 9 energy, 18 iMG) that cooks only during Pot Luck Day; food worth 72 (72 energy), with a Grok Bot icon",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "STUFFING_RECIPE"
+    },
+    {
+     "file": "public/js/making.js",
+     "symbol": "SEASON_RECIPE_LINES"
+    },
+    {
+     "file": "tools/build-realtime-trade.mjs",
+     "symbol": "tradeTable"
+    },
+    {
+     "file": "tools/build-economy.mjs",
+     "symbol": "unitValue"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): a new Awesome Pot dish of existing ingredients (bun, mushroom, onion and a herb). Ours to review: Saffron as the herb (the sprig in the icon brief), the amounts, the numbers beside Hot Potatoes and Potcorn, and the season gate (like Pi on Pi Day). Icon: made art (tools/provenance/made-sprites.json harvest_stuffing).",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
+   "id": "pot-luck-cornucopia",
+   "title": "Pot's Cornucopia: the quest's keepsake, a trophy for the house (waits with the furniture, shown through Decorate), Tiny Speck's cornucopia_crops art rendered at 158 x 135",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-trophies.js",
+     "symbol": "OTHER_TROPHIES pld_feast_bringer"
+    },
+    {
+     "file": "public/js/pack-slots.js",
+     "symbol": "takesNoSlot"
+    },
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "KEEPSAKE_ITEM"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): Pot's Cornucopia keepsake, home decor that stays, art from Tiny Speck's cornucopia_crops SWF rendered larger. Ours to review: it is given with the Feast Bringer badge and behaves as a trophy (no pack slot, untradeable), its words and its size (about 1.7x the pack item's world art).",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
+   "id": "pot-luck-badges",
+   "title": "Pot Luck Day's five badges: Feast Bringer, Plume Fluffer I, II and III (5, 23, 61 chickens dressed) and Good Neighbor (11 offerings), seasonal, with made centre pictures in generated medallions",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "FEAST_BADGES"
+    },
+    {
+     "file": "tools/achievement-overrides.mjs",
+     "symbol": "DESIGNED_ACHIEVEMENTS"
+    },
+    {
+     "file": "tools/badge-art/generate-badges.mjs",
+     "symbol": "iconMarkup picture"
+    },
+    {
+     "file": "tools/badge-art/badge-specs.json"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): the five badges and their counts; art approved the same day (research/art-briefs/pot-luck-badges-2026-11-17/lineup-1x.png), centre pictures by Grok Bot (made art). Ours to review: their words and rewards (50 to 200 iMG, 5 to 20 Pot favor, beside Zilloween's Tricksy-Treater ladder).",
+   "rows": [
+    "G982"
    ]
   }
  ]

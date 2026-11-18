@@ -119,6 +119,12 @@ export const WORLD_DROP_RULES = Object.freeze([
     accepts: (s, ctx) => Boolean(ctx?.distillable?.(s)), tip: 'Distill {$stack_name} into Hooch.', src: 'still.js verbs.distill (drop_ok_code distillables, room)',
   },
   {
+    // G982 (ours, Pot Luck Day): a dish or a crop dragged onto the Harvest Table lays it there, as a
+    // stack dropped on a Still on the ground distills (features/pot-luck-feast-feature.js feastTakes).
+    id: 'lay_feast', ours: true, classes: (c) => c === 'pot_luck_harvest_table', verbs: ['lay'], use: 'pick',
+    accepts: (s, ctx) => Boolean(ctx?.feastTakes?.(s)), tip: 'Lay {$stack_name} on the {$item_name}', src: 'ours (G982): js/pot-luck-feast.js',
+  },
+  {
     // npc_shrine_*.js donate_to drop_ok_code: no bags, emblems or machines (a primed shrine takes its own emblem).
     id: 'donate', classes: (c) => /^npc_shrine_/.test(c), verbs: ['donate_to'], use: 'donate',
     accepts: (s, ctx) => !ctx?.isBag?.(s) && !ctx?.hasTag?.(s, 'emblem') && !ctx?.hasTag?.(s, 'machine') && !/^emblem_/.test(s),

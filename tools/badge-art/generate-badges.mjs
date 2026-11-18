@@ -4,6 +4,13 @@
 //   node tools/badge-art/generate-badges.mjs            # write missing badges + manifest
 //   node tools/badge-art/generate-badges.mjs --preview shots/badge-preview [--only a,b]
 //       render designs for any rows (official or not) into a scratch dir for QA
+//   node tools/badge-art/generate-badges.mjs --only a,b  re-render only those (the manifest keeps the rest)
+//   node tools/badge-art/generate-badges.mjs --check     exit 1 when a row without official art has no
+//       generated file (180 x 180 WebP) or the manifest's row differs from its design
+//
+// A design's centre is an item icon, a vector glyph, or (badge-specs.json `picture`, a repo path)
+// a made picture with its own box (`box`: { x, y, w, h } in the 180 px badge), as Pot Luck Day's
+// badges (G982: Grok Bot drew the centre pictures, the medallions are drawn here).
 //
 // Every design is deterministic: a medallion in the official layout (textured rim,
 // glossy category-coloured disc, embossed count, laurel or star flourishes) around
@@ -29,6 +36,7 @@ const flag = (name) => {
   return i >= 0 ? args[i + 1] : null;
 };
 const previewDir = flag('--preview');
+const checkOnly = args.includes('--check');
 const only = (flag('--only') || '').split(',').filter(Boolean);
 
 export const DISCS = {
@@ -161,6 +169,15 @@ const GLYPHS = {
 };
 
 function iconMarkup(spec, box) {
+  if (spec.picture) {
+    const file = readFileSync(join(here, '../..', spec.picture));
+    const [w, h] = imageDims(file);
+    const scale = Math.min(box.w / w, box.h / h);
+    const dw = w * scale;
+    const dh = h * scale;
+    const type = /\.png$/i.test(spec.picture) ? 'png' : 'webp';
+    return `<image href="data:image/${type};base64,${file.toString('base64')}" x="${(box.x - dw / 2).toFixed(2)}" y="${(box.y + box.h / 2 - dh).toFixed(2)}" width="${dw.toFixed(2)}" height="${dh.toFixed(2)}" filter="url(#iconShadow)"/>`;
+  }
   if (spec.glyph) {
     const g = GLYPHS[spec.glyph];
     if (!g) throw new Error(`unknown glyph ${spec.glyph}`);
@@ -220,8 +237,10 @@ export function designFor(id) {
     tier,
     number: override.number ?? (firstCond ? String(firstCond.num) : ''),
     deco: override.deco || (tier >= 3 ? 'stars' : 'laurel'),
-    icon: override.glyph ? null : override.icon || autoIcon,
-    glyph: override.glyph || (autoIcon ? null : 'padlock'),
+    icon: override.glyph || override.picture ? null : override.icon || autoIcon,
+    glyph: override.picture ? null : override.glyph || (autoIcon ? null : 'padlock'),
+    picture: override.picture || null,
+    box: override.box || null,
     accentStar: Boolean(override.accentStar),
     emblem: override.emblem || null,
     topStar: Boolean(override.topStar),
@@ -235,7 +254,7 @@ export function badgeSvg(d) {
   const num = String(d.number || '');
   const fontSize = num.length <= 2 ? 40 : num.length === 3 ? 37 : num.length === 4 ? 33 : 28;
   const hasNum = num.length > 0;
-  const iconBox = hasNum ? { x: 90, y: 112, w: 96, h: 72 } : { x: 90, y: 94, w: 104, h: 92 };
+  const iconBox = d.box || (hasNum ? { x: 90, y: 112, w: 96, h: 72 } : { x: 90, y: 94, w: 104, h: 92 });
   const decoY = 48;
   const halfText = (fontSize * 0.56 * Math.max(num.length, 1)) / 2;
   const decoX = Math.max(halfText + 22, 40);
@@ -325,23 +344,40 @@ const ids = only.length
     : Object.keys(catalog).filter((id) => !official[id]);
 const designs = ids.map(designFor);
 
-if (previewDir) {
+const subjectOf = (d) => d.subject || (d.picture ? `picture:${d.picture}` : d.icon ? `icon:${d.icon}` : `glyph:${d.glyph}`);
+const manifestPath = join(root, 'assets/content/badge-icons-generated.json');
+const manifestRow = (d) => ({ path: `assets/badges/${d.id}.webp`, generated: true, subject: subjectOf(d) });
+
+if (checkOnly) {
+  const have = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const problems = [];
+  for (const id of Object.keys(catalog).filter((x) => !official[x])) {
+    const want = manifestRow(designFor(id));
+    const row = have[id];
+    if (!row || row.path !== want.path || row.generated !== true || row.subject !== want.subject) problems.push(`${id}: manifest row ${JSON.stringify(row)} is not ${JSON.stringify(want)}`);
+    const file = join(root, want.path);
+    if (!existsSync(file)) problems.push(`${id}: no ${want.path}`);
+    else {
+      const [w, h] = imageDims(readFileSync(file));
+      if (w !== 180 || h !== 180) problems.push(`${id}: ${want.path} is ${w}x${h}, not 180x180`);
+    }
+  }
+  for (const id of Object.keys(have)) if (!catalog[id] || official[id]) problems.push(`${id}: in the manifest but not a generated row`);
+  if (problems.length) {
+    console.error(problems.join('\n'));
+    process.exit(1);
+  }
+  console.log(`badge art current: ${Object.keys(have).length} generated, ${Object.keys(official).length} official`);
+} else if (previewDir) {
   await render(designs, previewDir);
   console.log(`preview: ${designs.length} badges -> ${previewDir}`);
 } else {
   const targets = designs.filter((d) => !official[d.id]);
   await render(targets, join(root, 'assets/badges'), { webp: true });
-  const manifest = {};
-  for (const d of targets) {
-    manifest[d.id] = {
-      path: `assets/badges/${d.id}.webp`,
-      generated: true,
-      subject: d.subject || (d.icon ? `icon:${d.icon}` : `glyph:${d.glyph}`),
-    };
-  }
-  writeFileSync(
-    join(root, 'assets/content/badge-icons-generated.json'),
-    JSON.stringify(manifest, null, 1) + '\n'
-  );
+  // --only re-renders some: the manifest keeps every other row.
+  const manifest = only.length && existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
+  for (const d of targets) manifest[d.id] = manifestRow(d);
+  const sorted = Object.fromEntries(Object.keys(catalog).filter((id) => manifest[id]).map((id) => [id, manifest[id]]));
+  writeFileSync(manifestPath, JSON.stringify(sorted, null, 1) + '\n');
   console.log(`generated: ${targets.length} reimagined badges (official kept: ${Object.keys(official).length})`);
 }

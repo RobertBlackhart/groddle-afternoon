@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=065b5d8a';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=00fa5f4f';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=532fd972';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -498,9 +498,9 @@ import {
   removeItem,
   isToolItem,
 } from './js/inventory.js?v=6414dbdc';
-import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=2020b29b';
+import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=ca034a11';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=3760d603';
-import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=4d446d78';
+import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=2c09907f';
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
@@ -519,7 +519,7 @@ import {
   pickupDroppedStack,
   placeDroppedBag,
   takeDroppedRecord,
-} from './js/world-items.js?v=4057c421';
+} from './js/world-items.js?v=66601f23';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -630,11 +630,11 @@ import {
   recipeTaskLimit,
   recipeToolInUse,
   pluralizeItem,
-} from './js/making.js?v=af1c7d5b';
+} from './js/making.js?v=80957092';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=7455eb35';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=bc3917d8';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=8a388807';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=8f617c14';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=a5301d82';
 import {
@@ -9196,8 +9196,8 @@ function pickMax(target, classTsid) {
   return features.query('pickerMax', target, feedPickerVerb, classTsid, engine) ?? pickerMaxCount(target?.classId, classTsid, inv);
 }
 
-const FEED_PICKER_TITLES = { feed: 'Feed what?', incubate: 'Incubate what?', deposit: 'Deposit what?', plant: PLANT_PICK_TITLE, distill: 'Distill what?' };
-const FEED_PICKER_VERB_LABELS = { feed: 'Feed', incubate: 'Incubate', deposit: 'Deposit', plant: 'Plant', distill: 'Distill' };
+const FEED_PICKER_TITLES = { feed: 'Feed what?', incubate: 'Incubate what?', deposit: 'Deposit what?', plant: PLANT_PICK_TITLE, distill: 'Distill what?', lay: 'Lay what?' };
+const FEED_PICKER_VERB_LABELS = { feed: 'Feed', incubate: 'Incubate', deposit: 'Deposit', plant: 'Plant', distill: 'Distill', lay: 'Lay' };
 /** GardenView.as onPlotClick 500-509: a clean plot clicked with no seeds. */
 const PLANT_NO_SEEDS_LINE = "You don't have any seeds to plant!";
 

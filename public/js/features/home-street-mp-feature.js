@@ -53,8 +53,8 @@
 
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=6414dbdc';
-import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=af1c7d5b';
-import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=06be9c65';
+import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=80957092';
+import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=e246e3ca';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
@@ -65,12 +65,12 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=ea462138';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=d4f39b35';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=02679996';
 import { BENCH_ART, towerApi } from './home-tower-feature.js?v=44eaa5e8';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=77d57cda';
-import { projectApi } from './street-jobs-feature.js?v=cc8a7679';
+import { projectApi } from './street-jobs-feature.js?v=686d7c20';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=7cc25b4d';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=470de985';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,

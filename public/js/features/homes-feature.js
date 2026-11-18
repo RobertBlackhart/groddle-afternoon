@@ -100,9 +100,9 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { pickupCountTitle } from '../world-items.js?v=4057c421';
+import { pickupCountTitle } from '../world-items.js?v=66601f23';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
-import { isBagClass } from '../pack-slots.js?v=4d446d78';
+import { isBagClass } from '../pack-slots.js?v=2c09907f';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
@@ -148,8 +148,8 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=06be9c65';
-import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=2020b29b';
+} from '../home-decor.js?v=e246e3ca';
+import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=ca034a11';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=dfdf98f7';
 import { DOCK_GAP, DOCK_W, chooseUpgrade, closeUpgradePicker, openUpgradePicker, placeUpgradePicker, saveUpgrade, upgradePickerOpen, upgradePickerState } from '../furniture-upgrade-picker.js?v=3a637ec8';
@@ -171,7 +171,7 @@ import {
   swatchFilters,
   trayFilters,
 } from '../ui/home-builder.js?v=378178ac';
-import { RECIPE_CATALOG } from '../making.js?v=af1c7d5b';
+import { RECIPE_CATALOG } from '../making.js?v=80957092';
 import {
   createBackYardState,
   fixtureObstacles,
@@ -213,7 +213,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=7a63d78f';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { fadeInNewNear } from '../poof-fade.js?v=b9b5246d';
-import { projectApi } from './street-jobs-feature.js?v=cc8a7679';
+import { projectApi } from './street-jobs-feature.js?v=686d7c20';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=77d57cda';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=44eaa5e8';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=f1969400';
@@ -289,7 +289,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=fbae0b05';
+} from '../home-floors.js?v=204704fe';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=254ce925';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';

@@ -37,6 +37,76 @@
    "rim": "white",
    "deco": "laurel",
    "number": "0"
+  },
+  "pld_feast_bringer": {
+   "subject": "picture: Pot's Cornucopia spilling a harvest feast (made art, G982)",
+   "picture": "public/assets/sprites/made/pot-luck/badge-feast-bringer.webp",
+   "box": {
+    "x": 90,
+    "y": 92,
+    "w": 132,
+    "h": 112
+   },
+   "disc": "yellow",
+   "rim": "wood",
+   "number": "",
+   "deco": "laurel"
+  },
+  "pld_plume_fluffer_1": {
+   "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)",
+   "picture": "public/assets/sprites/made/pot-luck/badge-plume-fluffer.webp",
+   "box": {
+    "x": 90,
+    "y": 110,
+    "w": 122,
+    "h": 88
+   },
+   "disc": "orange",
+   "rim": "white",
+   "number": "5",
+   "deco": "laurel"
+  },
+  "pld_plume_fluffer_2": {
+   "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)",
+   "picture": "public/assets/sprites/made/pot-luck/badge-plume-fluffer.webp",
+   "box": {
+    "x": 90,
+    "y": 110,
+    "w": 122,
+    "h": 88
+   },
+   "disc": "red",
+   "rim": "sage",
+   "number": "23",
+   "deco": "laurel"
+  },
+  "pld_plume_fluffer_3": {
+   "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)",
+   "picture": "public/assets/sprites/made/pot-luck/badge-plume-fluffer.webp",
+   "box": {
+    "x": 90,
+    "y": 110,
+    "w": 122,
+    "h": 88
+   },
+   "disc": "purple",
+   "rim": "slate",
+   "number": "61",
+   "deco": "laurel"
+  },
+  "pld_good_neighbor": {
+   "subject": "picture: a covered dish on a checked cloth (made art, G982)",
+   "picture": "public/assets/sprites/made/pot-luck/badge-good-neighbor.webp",
+   "box": {
+    "x": 90,
+    "y": 110,
+    "w": 122,
+    "h": 88
+   },
+   "disc": "green",
+   "rim": "wood",
+   "number": "11",
+   "deco": "laurel"
   }
  }
 }

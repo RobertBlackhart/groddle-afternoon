@@ -2,6 +2,138 @@
   "note": "Written by tools/made-art/build-data.mjs from the provenance lists in tools/provenance/, tools/made-art/showcase.json and tools/made-art/pieces.json. Edit those, never this file.",
   "pieces": [
     {
+      "id": "pld_badge_feast_bringer",
+      "anchor": "made-feast-bringer-badge-picture",
+      "name": "Feast Bringer badge picture",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "The picture in the middle of the Feast Bringer badge, for Pot Luck Day. Glitch never had a harvest feast, so there was no Tiny Speck badge to bring back: the medallion around it is drawn the way Tiny Speck drew theirs.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "src": "/assets/sprites/made/pot-luck/badge-feast-bringer.webp",
+        "w": 396,
+        "h": 387,
+        "label": "Made for Groddle",
+        "alt": "A cornucopia spilling a pumpkin pie, corn, a small pumpkin and potatoes, with a thick white edge like a sticker."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Feast Bringer badge, earned by finishing the quest Pot’s Empty Table."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
+      "id": "pld_badge_plume_fluffer",
+      "anchor": "made-plume-fluffer-badge-picture",
+      "name": "Plume Fluffer badge picture",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "The picture in the middle of the three Plume Fluffer badges, for Pot Luck Day: Tiny Speck’s white Chicken in its paper turkey tail. The three badges share it, as Tiny Speck’s own badge ladders share one picture.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "src": "/assets/sprites/made/pot-luck/badge-plume-fluffer.webp",
+        "w": 393,
+        "h": 396,
+        "label": "Made for Groddle",
+        "alt": "The white Glitch Chicken with a red comb, wearing a striped paper fan of turkey feathers behind it."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Plume Fluffer I, II and III badges, for dressing 5, 23 and 61 Chickens."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
+      "id": "pld_badge_good_neighbor",
+      "anchor": "made-good-neighbor-badge-picture",
+      "name": "Good Neighbor badge picture",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "The picture in the middle of the Good Neighbor badge, for Pot Luck Day: a dish brought to share.",
+      "display": {
+        "w": 198,
+        "h": 198
+      },
+      "image": {
+        "src": "/assets/sprites/made/pot-luck/badge-good-neighbor.webp",
+        "w": 396,
+        "h": 379,
+        "label": "Made for Groddle",
+        "alt": "A covered terracotta casserole dish on a red checked cloth, a heart-shaped tag on its handle."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Good Neighbor badge, for laying 11 dishes or crops on the Harvest Table."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
+      "id": "harvest_stuffing",
+      "anchor": "made-harvest-stuffing",
+      "name": "Harvest Stuffing",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "A new dish for Pot Luck Day, cooked in the Awesome Pot from a Bun, Mushrooms, Onions and Saffron. Glitch had no stuffing, so its icon was drawn new, in the style of Tiny Speck’s food icons.",
+      "display": {
+        "w": 138,
+        "h": 77
+      },
+      "image": {
+        "src": "/assets/sprites/icons/harvest_stuffing@3x.webp",
+        "w": 138,
+        "h": 77,
+        "label": "Made for Groddle",
+        "alt": "Golden bread stuffing heaped in a round brown baking dish, with mushroom and onion pieces and green herbs."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) under Austin's direction, with Tiny Speck's own art as the guide to its look."
+        },
+        {
+          "label": "In the game",
+          "text": "The Harvest Stuffing item, cooked only during Pot Luck Day."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
       "id": "decos:vv",
       "anchor": "made-le-voyage-violet-s-stump-and-spiral-stone",
       "name": "Le Voyage Violet's stump and spiral stone",

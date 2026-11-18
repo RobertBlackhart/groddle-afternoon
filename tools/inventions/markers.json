@@ -420,6 +420,10 @@
   "public/js/features/player-verbs-mp-feature.js": {
     "guess: // G373 catalog_buffs.js 412-419: nobody guessed, show_rainbow('charades_gameover') at the": "not-an-invention"
   },
+  "public/js/features/pot-luck-feast-feature.js": {
+    "glitch-had-none: * (all ours: Glitch never ran a Thanksgiving event); this module puts them": "pot-luck-table",
+    "ours: * (all ours: Glitch never ran a Thanksgiving event); this": "pot-luck-table"
+  },
   "public/js/features/pot-luck-feature.js": {
     "glitch-had-none: pot-luck-costumes, pot-luck-fancy-feather): Glitch never": "pot-luck-costumes",
     "invented: * Ours, all of it (inventions register pot-luck-costumes,": "pot-luck-costumes",
@@ -630,6 +634,8 @@
   },
   "public/js/home-trophies.js": {
     "ours: * What the line giving a trophy adds (ours; a player's report 2026-11-08 could not find one": "ours-home-trophies",
+    "ours: // G982 (ours): Pot's Cornucopia, Tiny Speck's": "pot-luck-cornucopia",
+    "ours: // G982 (ours): finishing Pot's Empty Table gives the Feast": "pot-luck-cornucopia",
     "ours: window's line on a badge whose trophy is earned (ours: the original's window said nothing).": "ours-home-trophies"
   },
   "public/js/imagination.js": {
@@ -688,6 +694,7 @@
     "remake-own: * The Make window is the remake's own (Glitch made things from each tool's own menu),": "make-window"
   },
   "public/js/making.js": {
+    "ours: Pi's line is inc_making.js's; Pot Luck Day's is ours (G982).": "pot-luck-stuffing",
     "stand-in: The recipe tool whose recipes a stand-in makes (grand_ol_grinder -> ore_grinder).": "not-an-invention",
     "stand-in: class a recipe actually wears: the first owned stand-in that": "not-an-invention"
   },
@@ -763,6 +770,7 @@
     "ours: * Ours (register G983, Austin 2026-11-17): players": "remake-pace"
   },
   "public/js/pack-slots.js": {
+    "not-source: for the house too (js/home-trophies.js), made, not in the GSJS": "pot-luck-cornucopia",
     "ours: // Our own short words where the client only refused the": "ours-pack-slots",
     "ours: by v0.20.0-v0.23.0 goes straight into a pouch. Our own": "remake-copy"
   },
@@ -817,6 +825,15 @@
     "ours: 'There is nobody here to do that to.', // ours": "remake-copy",
     "ours: => `${name} guessed your secret word!`, // ours: the drinker's RAINBOW_YOUDIDIT came with no": "remake-copy",
     "ours: wait: 'Wait a moment.', // ours: one act at a": "remake-copy"
+  },
+  "public/js/pot-luck-feast.js": {
+    "glitch-had-none: * All of it is ours: Glitch never ran a Thanksgiving event (inventions register:": "pot-luck-table",
+    "invented: is ours: Glitch never ran a Thanksgiving event (inventions register:": "pot-luck-table",
+    "ours: * All of it is ours: Glitch never ran a Thanksgiving event": "pot-luck-table",
+    "ours: * Pot's Empty Table (ours, in Glitch's voice). Step 1 is the Magic Rock's": "pot-luck-quest",
+    "ours: * The season's five badges (ours, Austin 2026-11-17; art approved the same day,": "pot-luck-badges",
+    "ours: an Awesome Pot dish of existing ingredients (ours). Its numbers sit": "pot-luck-stuffing",
+    "ours: first offering: mood, and favor with Pot (both ours).": "pot-luck-table"
   },
   "public/js/pot-luck.js": {
     "glitch-had-none: * All of it is ours: Glitch never ran a Thanksgiving event and never dressed an": "pot-luck-costumes",
@@ -1168,6 +1185,7 @@
   },
   "public/js/world-drop.js": {
     "ours: // G982 (ours): a Pot Luck Day costume dropped on a street": "pot-luck-costumes",
+    "ours: // G982 (ours, Pot Luck Day): a dish or a crop dragged onto": "pot-luck-table",
     "ours: and {$item_name}), `src` (file and lines), `ours` (a rule the": "pot-luck-costumes"
   },
   "public/js/world-items.js": {
@@ -1190,6 +1208,7 @@
     "remake-own: * remake's own popup column. Strip and feed share each": "ours-style-css"
   },
   "tools/achievement-overrides.mjs": {
+    "ours: no GSJS file at all (G982: Pot Luck Day's five, ours):": "pot-luck-badges",
     "remake-adds: * Badge conditions the remake adds where Tiny Speck's own file has none,": "ours-tools-achievement-overrides"
   },
   "tools/avatar-compositor/build.mjs": {
@@ -1252,6 +1271,9 @@
   },
   "tools/build-realtime-subway.mjs": {
     "remake-own: * - the remake's own ride times (subway.js rideTiming): 20 s between": "ours-tools-build-realtime-subway"
+  },
+  "tools/build-realtime-trade.mjs": {
+    "ours: // G982: Harvest Stuffing (ours, no GSJS file) is food like any dish; Pot's": "pot-luck-stuffing"
   },
   "tools/build-signpost-graph.mjs": {
     "no-source: 12 had no source). tools/job-obtainable.mjs is the remake's own": "ours-tools-build-signpost-graph",

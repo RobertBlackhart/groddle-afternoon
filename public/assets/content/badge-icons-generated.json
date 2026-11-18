@@ -8,5 +8,30 @@
   "path": "assets/badges/impossible_achievement.webp",
   "generated": true,
   "subject": "glyph:padlock (cannot be earned)"
+ },
+ "pld_feast_bringer": {
+  "path": "assets/badges/pld_feast_bringer.webp",
+  "generated": true,
+  "subject": "picture: Pot's Cornucopia spilling a harvest feast (made art, G982)"
+ },
+ "pld_plume_fluffer_1": {
+  "path": "assets/badges/pld_plume_fluffer_1.webp",
+  "generated": true,
+  "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)"
+ },
+ "pld_plume_fluffer_2": {
+  "path": "assets/badges/pld_plume_fluffer_2.webp",
+  "generated": true,
+  "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)"
+ },
+ "pld_plume_fluffer_3": {
+  "path": "assets/badges/pld_plume_fluffer_3.webp",
+  "generated": true,
+  "subject": "picture: a Chicken in its Turkey Tailfan costume (made art, G982)"
+ },
+ "pld_good_neighbor": {
+  "path": "assets/badges/pld_good_neighbor.webp",
+  "generated": true,
+  "subject": "picture: a covered dish on a checked cloth (made art, G982)"
  }
 }

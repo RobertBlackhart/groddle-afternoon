@@ -1,0 +1,560 @@
+/**
+ * Pot Luck Day, part B (G982): the Harvest Table by the Groddle Forest Junction signpost, the quest
+ * Pot's Empty Table, Harvest Stuffing and Pot's Cornucopia. The rules are js/pot-luck-feast.js
+ * (all ours: Glitch never ran a Thanksgiving event); this module puts them in the world.
+ *
+ *  - The table: Tiny Speck's deco_table_wooden_ghtest twice, end to end, by the street's hub
+ *    signpost, only while the season is on. Lay a dish or a crop on it (its Lay a dish verb, a
+ *    picker of what the pack holds, or a stack dropped on it: js/world-drop.js lay_feast); the
+ *    newest dishes stand on it, drawn with their own Tiny Speck icons, and its card counts them all.
+ *    Online the table is the server's (harvest_table.go: everyone's offerings, broadcast, held
+ *    across restarts, packed away at the season's end); solo keeps its own in the save.
+ *  - Each player's first offering of a game day gives a little mood and favor with Pot (the
+ *    server decides "first" online), through metabolics.js and the player's addGiantFavor.
+ *  - The quest: the Magic Rock offers it once the season is on. Its three counted steps show in
+ *    the quest log (questLogCards): harvest dishes cooked (making_recipe:<dish>), a Chicken dressed
+ *    (lane A's chicken_dressed:<costume>) and harvest dishes laid on the table. Done, it gives Pot's
+ *    Cornucopia (a trophy for the house), favor with Pot and the Feast Bringer badge.
+ *  - Harvest Stuffing: an Awesome Pot recipe that cooks only during the season (making.js
+ *    recipe.season).
+ *
+ * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the
+ * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name).
+ * Canvas data: feastTable (on|off), feastCount, feastShown (classes drawn), feastQuest
+ * (status:dishes/dressed/laid), feastLast.
+ */
+
+import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
+import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
+import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=80957092';
+import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8b81947e';
+import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
+import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+import {
+  DISHES_NEEDED,
+  FEAST_BADGE,
+  FEAST_SEASON,
+  HARVEST_DISHES,
+  KEEPSAKE,
+  KEEPSAKE_ITEM,
+  LAID_COUNTER,
+  QUEST,
+  QUEST_COUNTER,
+  STUFFING,
+  STUFFING_ITEM,
+  STUFFING_RECIPE,
+  TABLE_AT,
+  TABLE_CLASS,
+  TABLE_DECO,
+  TABLE_LINES,
+  TABLE_RULES,
+  TABLE_STREET,
+  createQuestState,
+  createTableState,
+  dishClasses,
+  layCheck,
+  layOffering,
+  layableKind,
+  packAway,
+  questComplete,
+  questEvent,
+  questRows,
+  shownRows,
+  tableCountLabel,
+} from '../pot-luck-feast.js?v=e5f12825';
+
+export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
+const OFFER_DELAY_MS = 20_000;
+
+let season = { ids: [], via: 'none' };
+let seasonCheckAt = 0;
+let table = createTableState(); // solo: the save's; online: the server's last word
+let quest = createQuestState();
+let laidTotal = 0; // this player's offerings, all time (Good Neighbor counts them too)
+let view = null; // { target, root, icons, label }
+let recipeAdded = false;
+let dishes = null;
+let offerAt = 0;
+let offerOpen = false;
+let client = null;
+let offs = [];
+let online = null; // the server's table while online and on its street: { on, rows, total }
+let pending = null; // { cls, at }: a lay the server has not answered
+let last = '';
+let demoDone = false;
+let engineRef = null;
+
+const nowForCalendar = (engine) => parseSeasonDate(engine?.param?.('seasondate')) ?? Date.now();
+const seasonOn = () => season.ids.includes(FEAST_SEASON);
+const yearKey = (engine) => seasonYearKey(FEAST_SEASON, nowForCalendar(engine));
+const label = (cls) => ITEM_CATALOG[cls]?.label || cls;
+const onTableStreet = (engine) => String(engine?.streetTsid || '') === TABLE_STREET;
+
+function refreshSeason(engine, force = false) {
+  const now = Date.now();
+  if (!force && now - seasonCheckAt < 2000) return false;
+  seasonCheckAt = now;
+  const was = seasonOn();
+  season = activeSeasons(nowForCalendar(engine), { override: engine.param?.('season') || '', dametime: dametimeParts(now) });
+  const key = seasonOn() ? yearKey(engine) : '';
+  // Solo: a table from a season that is over, or another year's, is packed away.
+  if (table.key !== key) {
+    const had = table.total > 0;
+    packAway(table, key);
+    if (had && !key && engine.started) say(engine, TABLE_LINES.packed);
+  }
+  if (seasonOn()) quest = createQuestState(quest, key);
+  return was !== seasonOn();
+}
+
+function publish(engine) {
+  if (!engine?.setData) return;
+  const t = shownTable();
+  engine.setData('feastTable', view ? 'on' : 'off');
+  engine.setData('feastCount', String(t.total || 0));
+  engine.setData('feastShown', shownRows(t).map((r) => r.c).join(',') || 'none');
+  engine.setData('feastQuest', `${quest.status || 'none'}:${quest.dishes}/${quest.dressed}/${quest.laid}`);
+  engine.setData('feastLast', last || 'none');
+}
+
+function say(engine, msg, ok = true, effects = null) {
+  last = String(msg || '').trim();
+  if (effects && Object.keys(effects).length) engine.pushActivity?.({ base: last.replace(/\.$/, ''), effects });
+  else engine.pushActivity?.(last);
+  engine.toast?.(last, ok ? 3200 : 2600);
+  publish(engine);
+}
+
+/** The table drawn now: the server's online, the save's solo. */
+function shownTable() {
+  return online || table;
+}
+
+/* --------------------------------------------------------------- online */
+
+function liveClient(engine) {
+  return engine.mode === 'multiplayer' ? engine.query?.('realtimeClient') || null : null;
+}
+
+/** Online and on the table's street with the server: the table is everyone's. */
+function shared(engine) {
+  const c = liveClient(engine);
+  return c && c.state === 'online' && onTableStreet(engine) ? c : null;
+}
+
+function watch(engine) {
+  const c = liveClient(engine);
+  if (c === client) return;
+  for (const off of offs) off?.();
+  offs = [];
+  client = c;
+  online = null;
+  if (!c?.on) return;
+  offs.push(c.on('msg:feast_state', (msg) => {
+    online = { on: msg.on === true, rows: Array.isArray(msg.rows) ? msg.rows : [], total: Number(msg.total) || 0 };
+    if (!online.on && view) say(engine, TABLE_LINES.packed);
+    redraw(engine);
+  }));
+  offs.push(c.on('msg:feast_laid', (msg) => {
+    if (!msg?.row?.c) return;
+    online ||= { on: true, rows: [], total: 0 };
+    online.rows = [...online.rows, msg.row].slice(-TABLE_RULES.keep);
+    online.total = Number(msg.total) || online.total + 1;
+    if (msg.mine) {
+      pending = null;
+      const use = msg.use && typeof msg.use === 'object' ? msg.use : null;
+      // The ledger took the item: it leaves the pack once (the trade slice's applied list holds the op).
+      const take = !use || engine.query?.('ledgerReceipt', String(use.op || ''), engine) !== false;
+      if (take) removeItem(engine.inv, msg.row.c, 1);
+      laid(engine, msg.row.c, msg.first === true);
+    } else {
+      engine.pushActivity?.(TABLE_LINES.laidOther(msg.row.name || 'Someone', label(msg.row.c)));
+    }
+    redraw(engine);
+  }));
+  offs.push(c.on('msg:feast_no', (msg) => {
+    pending = null;
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    say(engine, String(msg?.message || TABLE_LINES.notDish), false);
+  }));
+}
+
+/* ---------------------------------------------------------------- table */
+
+function groundAt(engine, x, refY) {
+  return landingY(engine.platforms, x, (refY ?? engine.groundY) - 60)
+    ?? nearestSurfaceY(engine.platforms, x, refY ?? engine.groundY)
+    ?? engine.groundY;
+}
+
+function clearTable(engine) {
+  if (!view) return;
+  engine.unregister?.(view.target);
+  view = null;
+  publish(engine);
+}
+
+/** The table, when the season is on and this is its street (online: while the server says it is on). */
+function spawnTable(engine) {
+  clearTable(engine);
+  if (!seasonOn() || !onTableStreet(engine) || engine.inScene?.()) return;
+  if (online && !online.on) return;
+  const { PIXI } = engine;
+  const l = engine.street?.bounds?.l || 0;
+  const t = engine.street?.bounds?.t || 0;
+  const x = TABLE_AT.x - l;
+  const y = groundAt(engine, x, TABLE_AT.y - t);
+  const root = new PIXI.Container();
+  root.x = x;
+  root.y = y + 2;
+  // deco_table_wooden_ghtest is 492 x 188 in its 2x file: two of them at the drawn 186 x 71.
+  const tex = textureFromUrl(`assets/decos/groddle/${TABLE_DECO}.webp`);
+  const { w, h } = TABLE_AT.piece;
+  const step = w - TABLE_AT.overlap;
+  for (const side of [-1, 1]) {
+    const piece = new PIXI.Sprite(tex);
+    piece.anchor?.set?.(0.5, 1);
+    piece.width = w;
+    piece.height = h;
+    piece.x = (side * step) / 2;
+    root.addChild(piece);
+  }
+  const icons = new PIXI.Container();
+  root.addChild(icons);
+  const label = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0xfff3d6, stroke: { color: 0x4a2c14, width: 3 } } });
+  label.anchor?.set?.(0.5, 0);
+  label.y = -h + 28;
+  root.addChild(label);
+  root.zIndex = 2;
+  root._worldHitW = step + w;
+  root._worldHitH = h + 40;
+  engine.entityLayer.addChild(root);
+  const target = engine.register({
+    classId: TABLE_CLASS,
+    featureId: POT_LUCK_FEAST_ID,
+    label: TABLE_LINES.title,
+    subtitle: TABLE_LINES.subtitle(shownTable().total),
+    sprite: root,
+    artHeight: h + 30,
+  });
+  view = { target, root, icons, label, w, h, step };
+  redraw(engine);
+}
+
+/** The newest dishes on the table top, left to right, and the count on its front. */
+function redraw(engine) {
+  if (!view || view.root.destroyed) {
+    if (seasonOn() && onTableStreet(engine) && (!online || online.on) && engine.street) spawnTable(engine);
+    publish(engine);
+    return;
+  }
+  if (online && !online.on) {
+    clearTable(engine);
+    return;
+  }
+  const { PIXI } = engine;
+  const t = shownTable();
+  view.icons.removeChildren().forEach((c) => c.destroy());
+  const rows = shownRows(t);
+  const span = view.step + view.w - 60;
+  const slot = rows.length > 1 ? span / Math.max(rows.length, 6) : 0;
+  const box = 34;
+  rows.forEach((row, i) => {
+    const s = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${row.c}.webp`));
+    s.anchor?.set?.(0.5, 1);
+    const fit = () => {
+      const tw = s.texture?.width || box;
+      const th = s.texture?.height || box;
+      const k = Math.min(box / tw, box / th, 1);
+      s.scale.set(k);
+    };
+    fit();
+    s.texture?.once?.('update', fit);
+    // Newest at the left, then older to the right, with a little stagger front and back.
+    s.x = -span / 2 + 20 + i * slot;
+    s.y = -view.h + 16 + (i % 2) * 5;
+    view.icons.addChild(s);
+  });
+  view.label.text = t.total ? tableCountLabel(t.total) : '';
+  view.target.subtitle = TABLE_LINES.subtitle(t.total);
+  publish(engine);
+}
+
+/* ------------------------------------------------------------- the lay */
+
+function dishSet() {
+  if (!dishes || dishes.size < 10) dishes = dishClasses(RECIPE_CATALOG);
+  return dishes;
+}
+
+function kindOf(cls) {
+  return layableKind(cls, ITEM_CATALOG[cls], dishSet());
+}
+
+/** The pack's dishes and crops, for the picker. */
+function choices(engine) {
+  const out = [];
+  for (const [cls, n] of Object.entries(engine.inv || {})) {
+    if (!(Number(n) > 0) || !kindOf(cls)) continue;
+    out.push({ classTsid: cls, label: label(cls), have: Number(n) });
+  }
+  return out.sort((a, b) => (HARVEST_DISHES.includes(b.classTsid) - HARVEST_DISHES.includes(a.classTsid)) || a.label.localeCompare(b.label));
+}
+
+/** Lay one `cls` on the table: the checks, then the server's word online, else the save's table. */
+function lay(engine, cls) {
+  const c = String(cls || '');
+  const check = layCheck({ season: seasonOn() && (!online || online.on), kind: kindOf(c), have: countItem(engine.inv, c), label: label(c) });
+  if (!check.ok) {
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    say(engine, check.msg, false);
+    return false;
+  }
+  const live = shared(engine);
+  if (live) {
+    if (pending && Date.now() - pending.at < 8000) return say(engine, TABLE_LINES.slow, false), false;
+    if (live.send('feast_lay', { c })) {
+      pending = { cls: c, at: Date.now() };
+      return true;
+    }
+  }
+  removeItem(engine.inv, c, 1);
+  const res = layOffering(table, { c, who: 'me', day: getGameDayKey(Date.now()), name: '' });
+  laid(engine, c, res.first);
+  redraw(engine);
+  return true;
+}
+
+/** An offering of this player's on the table: the day's reward, the badge counter, the quest. */
+function laid(engine, cls, first) {
+  laidTotal += 1;
+  engine.playSound?.('ITEM_DROP', { volume: 0.5 });
+  let effects = null;
+  if (first) {
+    const mood = engine.pc ? Math.round(shiftMetabolic(engine.pc, 'mood', TABLE_RULES.mood)) : 0;
+    // stats_add_favor_points: favor up to the emblem target and no further (shrines.js addGiantFavor).
+    const rows = typeof engine.pc?.addGiantFavor === 'function' ? engine.pc.addGiantFavor(TABLE_RULES.giant, TABLE_RULES.favor) : [];
+    const favor = Array.isArray(rows) ? rows.reduce((a, r) => a + (Number(r?.change) || 0), 0) : 0;
+    effects = {};
+    if (mood) effects.mood = mood;
+    if (favor) effects.favor = favor;
+    engine.updateHud?.();
+  }
+  say(engine, `${TABLE_LINES.laid(label(cls))}${first ? ` ${TABLE_LINES.first}` : ''}`, true, effects);
+  engine.achievement?.(LAID_COUNTER, 1);
+  questStep(engine, 'harvest_table:laid', { cls });
+  engine.refreshPack?.();
+  engine.save?.();
+}
+
+/* ---------------------------------------------------------------- quest */
+
+function offerQuest(engine) {
+  if (!seasonOn() || quest.status || offerOpen || !engine.offerQuestDialogue) return false;
+  offerOpen = true;
+  engine.offerQuestDialogue({
+    title: QUEST.title,
+    kicker: QUEST.kicker,
+    beats: QUEST.offer.map((b) => ({ ...b })),
+    acceptLabel: QUEST.offer[QUEST.offer.length - 1].response,
+    declinable: false,
+    onAccept: () => {
+      offerOpen = false;
+      quest.status = 'active';
+      quest.key = yearKey(engine);
+      say(engine, QUEST.accepted);
+      engine.save?.();
+      engine.updateHud?.();
+    },
+  });
+  return true;
+}
+
+function questStep(engine, event, detail = {}) {
+  if (quest.status !== 'active') return;
+  const res = questEvent(quest, event, detail);
+  if (res.step) say(engine, QUEST.stepDone[res.step]);
+  if (res.done) completeQuest(engine);
+  else if (res.step) engine.save?.();
+  engine.updateHud?.();
+  publish(engine);
+}
+
+function completeQuest(engine) {
+  if (quest.status !== 'active' || !questComplete(quest)) return false;
+  quest.status = 'done';
+  const r = QUEST.rewards;
+  if (typeof engine.pc?.addGiantFavor === 'function') engine.pc.addGiantFavor(r.favor.giant, r.favor.points);
+  if (engine.pc && r.xp) {
+    engine.pc.xp = (engine.pc.xp || 0) + r.xp;
+    engine.pc.imagination = (engine.pc.imagination || 0) + r.xp;
+  }
+  // The keepsake waits with the furniture, as a trophy does (home-trophies.js).
+  addItem(engine.inv, KEEPSAKE, 1);
+  engine.playSound?.('QUEST_COMPLETE', { volume: 0.6 });
+  engine.scriptedDialogue?.({ title: QUEST.title, kicker: 'Quest complete', beats: [{ text: QUEST.completion, response: 'OK' }] });
+  engine.achievement?.(QUEST_COUNTER, 1);
+  say(engine, `${QUEST.title} complete. You got ${KEEPSAKE_ITEM.label}: display it from the Furniture tab when you Decorate your house.`, true, { favor: r.favor.points, xp: r.xp });
+  engine.updateHud?.();
+  engine.save?.();
+  return true;
+}
+
+function questCard() {
+  if (typeof document === 'undefined' || !quest.status || quest.status === 'offered') return [];
+  const done = quest.status === 'done';
+  const card = document.createElement('div');
+  card.className = `q-card${done ? ' done' : ''}`;
+  if (!done) card.dataset.quest = QUEST.id;
+  card.dataset.feastQuest = QUEST.id;
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = `${QUEST.title}${done ? ' ✓' : ''}`;
+  card.appendChild(title);
+  for (const r of questRows(quest)) {
+    const row = document.createElement('div');
+    row.className = 'q-req';
+    row.textContent = `${r.desc}: ${r.current}/${r.num}`;
+    card.appendChild(row);
+  }
+  return [card];
+}
+
+/* ----------------------------------------------------------------- items */
+
+function addRecipe() {
+  if (recipeAdded || !isRecipeCatalogReady()) return;
+  recipeAdded = true;
+  dishes = null;
+  if (!RECIPE_CATALOG[STUFFING]) setRecipeCatalog({ ...RECIPE_CATALOG, [STUFFING]: { ...STUFFING_RECIPE, inputs: STUFFING_RECIPE.inputs.map((i) => ({ ...i })), outputs: STUFFING_RECIPE.outputs.map((o) => ({ ...o })), skills: [...STUFFING_RECIPE.skills], achievements: [] } });
+}
+
+function demoSetup(engine) {
+  if (demoDone || !engine.param?.('feastdemo')) return;
+  demoDone = true;
+  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 12], ['pinch_of_salt', 4], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 1]];
+  for (const [cls, n] of kit) if (countItem(engine.inv, cls) < n) addItem(engine.inv, cls, n - countItem(engine.inv, cls));
+  engine.refreshPack?.();
+}
+
+/* --------------------------------------------------------------- feature */
+
+export const potLuckFeastFeature = {
+  id: POT_LUCK_FEAST_ID,
+
+  init(engine) {
+    engineRef = engine;
+    ensureItem(STUFFING, { ...STUFFING_ITEM, tags: [...STUFFING_ITEM.tags] });
+    registerItemUse(STUFFING, { kind: 'food', verb: 'Eat', energy: STUFFING_ITEM.baseCost, source: 'ours (G982): base cost 72 x energy_factor 1, as include/food.js food_eat' }, { label: STUFFING_ITEM.label });
+    ensureItem(KEEPSAKE, { label: KEEPSAKE_ITEM.label, namePlural: KEEPSAKE_ITEM.namePlural, desc: KEEPSAKE_ITEM.desc, baseCost: 0, stackMax: 1, tags: ['no_trade'] });
+    refreshSeason(engine, true);
+    offerAt = Date.now() + OFFER_DELAY_MS;
+    exposeQA('groddleFeast', {
+      lay: (cls) => lay(engine, cls),
+      state: () => ({ season: seasonOn(), online: Boolean(online), table: shownTable(), quest: { ...quest }, laidTotal, view: Boolean(view) }),
+      quest: () => questRows(quest),
+      offer: () => offerQuest(engine),
+      event: (name, detail) => questStep(engine, name, detail),
+      choices: () => choices(engine),
+    });
+    publish(engine);
+  },
+
+  onStreetEnter(street, engine) {
+    refreshSeason(engine, true);
+    demoSetup(engine);
+    watch(engine);
+    spawnTable(engine);
+  },
+
+  onStreetClear(engine) {
+    clearTable(engine);
+    pending = null;
+  },
+
+  onNewDay(now, engine) {
+    publish(engine);
+  },
+
+  onTick(dtMs, now, engine) {
+    addRecipe();
+    watch(engine);
+    if (refreshSeason(engine) && engine.street) spawnTable(engine);
+    if (!engine.started || !seasonOn()) return;
+    if (quest.status === '' && now >= offerAt && engine.param?.('questoffer') !== 'off' && !engine.query?.('holdQuestOffers', engine) && !engine.questDialogueOpen?.()) {
+      offerAt = now + 10 * 60_000;
+      offerQuest(engine);
+    }
+    if (offerOpen && !engine.questDialogueOpen?.()) offerOpen = false;
+  },
+
+  onEvent(counter, amount, engine) {
+    const c = String(counter || '');
+    if (/^making_recipe:/.test(c) || /^chicken_dressed(?::|$)/.test(c)) {
+      for (let i = 0; i < Math.max(1, Math.floor(Number(amount) || 1)); i += 1) questStep(engine, c);
+    }
+  },
+
+  verbsFor(target, engine) {
+    if (!view || target !== view.target) return null;
+    const ok = seasonOn() && (!online || online.on);
+    const has = choices(engine).length > 0;
+    return [
+      { id: 'lay', label: TABLE_LINES.verb, sort: 50, picker: 'lay', emptyMsg: TABLE_LINES.none, tooltip: TABLE_LINES.verbTip, enabled: ok && has, reason: ok ? TABLE_LINES.none : TABLE_LINES.noSeason, energy: 0, durationMs: 0 },
+      { id: 'look', label: TABLE_LINES.look, sort: 60, enabled: true, tooltip: 'See what is on the table', energy: 0, durationMs: 0 },
+    ];
+  },
+
+  runVerb(target, verbId, engine) {
+    if (!view || target !== view.target) return false;
+    const [verb, cls] = String(verbId || '').split(':');
+    if (verb === 'lay' && cls) return lay(engine, cls), true;
+    if (verb === 'lay') return engine.openPicker?.(target, { id: 'lay', picker: 'lay', emptyMsg: TABLE_LINES.none }), true;
+    if (verb === 'look') {
+      const t = shownTable();
+      const names = shownRows(t, 5).map((r) => label(r.c)).join(', ');
+      say(engine, t.total ? TABLE_LINES.lookN(t.total, names) : TABLE_LINES.look0);
+      return true;
+    }
+    return false;
+  },
+
+  /** The Lay a dish picker: the pack's dishes and crops (still.js verbs.distill's target-item step). */
+  pickerChoices(target, verbId, engine) {
+    if (verbId !== 'lay' || !view || target !== view.target) return null;
+    return choices(engine);
+  },
+
+  pickerTakesCount(target, verbId) {
+    return verbId === 'lay' && view && target === view.target ? false : null;
+  },
+
+  /** js/world-drop.js lay_feast: a dish or crop dragged onto the table. */
+  feastTakes(target, cls, engine) {
+    if (!view || target !== view.target) return null;
+    return Boolean(kindOf(cls)) && countItem(engine.inv, cls) > 0;
+  },
+
+  /** The quest's card in the log while it runs, and after (the Done tab). */
+  questLogCards() {
+    return questCard();
+  },
+
+  save() {
+    return { table: engineRef?.mode === 'multiplayer' ? undefined : table, quest, laidTotal };
+  },
+
+  restore(slice, engine) {
+    const s = slice && typeof slice === 'object' ? slice : {};
+    table = createTableState(s.table || {});
+    quest = createQuestState(s.quest || {});
+    laidTotal = Math.max(0, Math.floor(Number(s.laidTotal) || 0));
+    if (engine) {
+      refreshSeason(engine, true);
+      publish(engine);
+    }
+  },
+};

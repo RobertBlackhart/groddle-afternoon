@@ -37,11 +37,11 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackSlots, 
 import { TOOL_CONDITION_CATALOG, copyTag, copyTagKind, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { copyPicks, copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=11b1eb70';
-import { unitRankAt } from '../pack-slots.js?v=4d446d78';
+import { unitRankAt } from '../pack-slots.js?v=2c09907f';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
 // The same key as features/index.js: one module instance holds the carried notes.
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=7cc25b4d';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=470de985';
 import {
   BOX_KEEP,
   BOX_SLOTS,

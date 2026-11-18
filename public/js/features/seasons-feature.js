@@ -37,7 +37,7 @@ import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATAL
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
 import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=d4e55862';
 import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=d4e55862';
-import { setSeasonalRecipeCheck } from '../making.js?v=af1c7d5b';
+import { setSeasonalRecipeCheck } from '../making.js?v=80957092';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 
@@ -142,7 +142,7 @@ import { playOverlay } from '../overlays.js?v=68c0a634';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=a3e833ba';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
-import { trophyGotText } from '../home-trophies.js?v=2020b29b';
+import { trophyGotText } from '../home-trophies.js?v=ca034a11';
 
 export const SEASONS_FEATURE_ID = 'seasons';
 const LANTERN_GROUP = 'seasons:lantern';

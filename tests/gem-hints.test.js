@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { getVerbsFor, runVerb } from '../public/content.js?v=065b5d8a';
+import { getVerbsFor, runVerb } from '../public/content.js?v=090c4054';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { createMineRock, miningProfile } from '../public/js/mining.js?v=afb2b145';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';

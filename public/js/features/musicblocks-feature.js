@@ -30,7 +30,7 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { listDroppedStacks } from '../world-items.js?v=4057c421';
+import { listDroppedStacks } from '../world-items.js?v=66601f23';
 import {
   MUSICBLOCK_CATALOG,
   MUSICBLOCK_ENDGAME_GIFT,

@@ -949,6 +949,12 @@ export function recipeToolInUse(inv, toolId, toolState = null, wear = 1) {
 export const SEASONAL_RECIPES = Object.freeze({ 288: 'pi_day' });
 let seasonalRecipeCheck = () => true;
 
+/** Why a holiday recipe will not cook today: Pi's line is inc_making.js's; Pot Luck Day's is ours (G982). */
+export const SEASON_RECIPE_LINES = Object.freeze({
+  pi_day: 'You can only make this item on Pi Day, observed on March 14.',
+  pot_luck_day: 'You can only make this during Pot Luck Day, the week of the harvest feast.',
+});
+
 /** @param {(season: string) => boolean} fn */
 export function setSeasonalRecipeCheck(fn) {
   seasonalRecipeCheck = typeof fn === 'function' ? fn : () => true;
@@ -1065,9 +1071,10 @@ export const FULL_JAR_LINE = 'You need a full Firefly Jar.';
 
 export function canCraft(inv, recipe, opts = {}) {
   if (!recipe) return { ok: false, reason: 'unknown' };
-  const season = SEASONAL_RECIPES[String(recipe.id ?? '')];
+  // G982: a recipe the remake designed for a season names it (recipe.season: Harvest Stuffing, Pot Luck Day).
+  const season = recipe.season || SEASONAL_RECIPES[String(recipe.id ?? '')];
   if (season && seasonalRecipeCheck(season) === false) {
-    return { ok: false, reason: 'season', season, msg: 'You can only make this item on Pi Day, observed on March 14.' };
+    return { ok: false, reason: 'season', season, msg: SEASON_RECIPE_LINES[season] || SEASON_RECIPE_LINES.pi_day };
   }
 
   const requireTool = opts.requireTool !== false;

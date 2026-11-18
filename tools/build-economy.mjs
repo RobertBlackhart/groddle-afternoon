@@ -90,6 +90,7 @@ import { fileURLToPath } from 'node:url';
 import { requireSite, sitePath } from './repos.mjs';
 import { tradeTable } from './build-realtime-trade.mjs';
 import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=84484e77';
+import { STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=e5f12825';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { obtainableItems } from './job-obtainable.mjs';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
@@ -97,7 +98,7 @@ import { CUBIMAL_PACKAGE_IDS, CUBIMAL_SERIES } from '../public/js/cubimals.js?v=
 import { ARTIFACT_MAP, ARTIFACT_NECKLACES } from '../public/js/artifacts.js?v=fc419ecf';
 import { XP_FOR_LEVEL, currantRewardForLevel } from '../public/js/progression.js?v=05ff0260';
 import { IMAGINATION_UPGRADES } from '../public/js/imagination-data.js?v=4a85e7fe';
-import { SPINDLE_TOOLS } from '../public/js/making.js?v=af1c7d5b';
+import { SPINDLE_TOOLS } from '../public/js/making.js?v=80957092';
 import { MACHINE_IDS } from '../public/js/machines.js?v=ab7d71da';
 import { GARDEN_SKILL_PACKAGES, SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { SKILL_PACKAGES } from '../public/js/skill-packages-data.js?v=cb4e9ab3';
@@ -170,8 +171,8 @@ const CATALOGS = new Set([
 ]);
 
 export function unitValue(classTsid) {
-  // G982: a designed item (no GSJS file) has its base cost in its own table (js/pot-luck.js).
-  const base = Number(ITEM_BASE_COSTS[classTsid] ?? POT_LUCK_ITEMS[classTsid]?.baseCost) || 0;
+  // G982: a designed item (no GSJS file) has its base cost in its own table (js/pot-luck.js, js/pot-luck-feast.js).
+  const base = Number(ITEM_BASE_COSTS[classTsid] ?? POT_LUCK_ITEMS[classTsid]?.baseCost ?? (classTsid === STUFFING ? STUFFING_ITEM.baseCost : 0)) || 0;
   return base > 0 ? Math.max(1, Math.round(base * BEST_HAGGLE)) : FALLBACK_VALUE;
 }
 

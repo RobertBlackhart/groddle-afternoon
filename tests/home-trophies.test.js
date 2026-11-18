@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TROPHY_DECOR, TROPHY_FIND_TEXT, TROPHY_WHERE_TEXT, trophyGotText, isTrophyDecor, placedTrophies, trophyOfBadge } from '../public/js/home-trophies.js?v=2020b29b';
+import { TROPHY_DECOR, TROPHY_FIND_TEXT, TROPHY_WHERE_TEXT, trophyGotText, isTrophyDecor, placedTrophies, trophyOfBadge } from '../public/js/home-trophies.js?v=ca034a11';
 import {
   createHomeDecorState,
   displayDeposit,
@@ -26,19 +26,19 @@ import {
   renderOrder,
   stackSurfaceAt,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=06be9c65';
+} from '../public/js/home-decor.js?v=e246e3ca';
 import { cabinetRefusal } from '../public/js/home-storage.js?v=b0225465';
 import { canSellClass } from '../public/js/home-street-mp.js?v=1ca05fa3';
 import { filterTiles, furniturePane, trayFilters } from '../public/js/ui/home-builder.js?v=378178ac';
 import { hasUpgrades, upgradeVerb } from '../public/js/furniture-upgrades.js?v=a3788c0d';
 import { NO_SLOT_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
-import { layoutPack, takesNoSlot } from '../public/js/pack-slots.js?v=4d446d78';
+import { layoutPack, takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
 import { WORLD_ART } from '../public/js/world-art-list.js?v=2d47f296';
-import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=0c9a37be';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=d4f39b35';
+import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=fa2839ba';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=02679996';
 import { planStreetTrophies } from '../public/js/street-jobs.js?v=5806a615';
 import { planEggTrophy } from '../public/js/seasons.js?v=8b81947e';
-import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=d841e939';
+import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=98a4aa71';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=c3e8be23';
 
@@ -50,10 +50,13 @@ const GEM = 'trophy_gem';
 const reload = (decor) => normalizeHomeDecorState(JSON.parse(JSON.stringify(decor)));
 const copies = (decor, inv, cls) => (inv[cls] || 0) + (decor.storage[cls] || 0) + decor.placed.filter((r) => r.classTsid === cls).length;
 
+// G982: Pot's Cornucopia (ours, the Feast Bringer keepsake) shows the same way; tests/pot-luck-feast.test.js checks it.
+const SOURCE_TROPHIES = Object.fromEntries(Object.entries(TROPHY_DECOR).filter(([cls]) => cls !== 'pots_cornucopia'));
+
 describe('the eighteen trophies', () => {
   it('are the original\'s classes, names and words', { skip: !hasGsjs }, () => {
     const classes = readdirSync(join(GS, 'items')).filter((f) => /^trophy_.*\.js$/.test(f) && !/_piece\d|^trophy_base/.test(f)).map((f) => f.replace('.js', ''));
-    assert.deepEqual(Object.keys(TROPHY_DECOR).sort(), classes.sort());
+    assert.deepEqual(Object.keys(SOURCE_TROPHIES).sort(), classes.sort());
     for (const cls of classes) {
       const src = readFileSync(join(GS, 'items', `${cls}.js`), 'utf8');
       assert.equal(TROPHY_DECOR[cls].label, /var name_single = "([^"]*)"/.exec(src)[1], cls);
@@ -62,8 +65,8 @@ describe('the eighteen trophies', () => {
   });
 
   it('each has its own CC0 world frame and tray icon, at the frame\'s size', () => {
-    assert.equal(Object.keys(TROPHY_DECOR).length, 18);
-    for (const [cls, def] of Object.entries(TROPHY_DECOR)) {
+    assert.equal(Object.keys(SOURCE_TROPHIES).length, 18);
+    for (const [cls, def] of Object.entries(SOURCE_TROPHIES)) {
       assert.deepEqual([def.art.w, def.art.h], WORLD_ART[cls]['1'], cls);
       assert.ok(existsSync(join(here, '../public', def.art.path)), def.art.path);
       assert.ok(existsSync(join(here, '../public/assets/sprites/icons', `${cls}.webp`)), cls);
@@ -87,7 +90,7 @@ describe('the eighteen trophies', () => {
   });
 
   it('still takes no pack slot: the Decorate tray is where it shows', () => {
-    for (const cls of Object.keys(TROPHY_DECOR)) assert.ok(NO_SLOT_CLASSES.has(cls) && takesNoSlot(cls), cls);
+    for (const cls of Object.keys(SOURCE_TROPHIES)) assert.ok(NO_SLOT_CLASSES.has(cls) && takesNoSlot(cls), cls);
     const layout = layoutPack({ [GEM]: 1 }, null, {});
     assert.equal(JSON.stringify(layout).includes(GEM), false);
     assert.equal(furniturePane(GEM), 'trophies');

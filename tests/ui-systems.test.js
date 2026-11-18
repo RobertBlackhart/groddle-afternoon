@@ -20,7 +20,7 @@ import {
   isToolItem,
   getItemUseInfo,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=af1c7d5b';
+import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=80957092';
 import {
   createQuestState,
   assignQuest,

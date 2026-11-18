@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DESIGNED_ACHIEVEMENTS } from '../tools/achievement-overrides.mjs';
 import {
   loadContentCatalogsFromDir,
   getQuestCatalog,
@@ -70,7 +71,8 @@ describe('mined catalogs from GSJS', () => {
     const meta = getContentMeta();
     assert.ok(meta?.counts);
     assert.equal(Object.keys(getQuestCatalog()).length, meta.counts.quests.output);
-    assert.equal(Object.keys(getAchievementCatalog()).length, meta.counts.achievements.output);
+    // The badges the remake designed (tools/achievement-overrides.mjs DESIGNED_ACHIEVEMENTS, G982) are no GSJS output.
+    assert.equal(Object.keys(getAchievementCatalog()).filter((id) => !DESIGNED_ACHIEVEMENTS[id]).length, meta.counts.achievements.output);
     // Better Learning I to V are added to the mined skills (better-learning.js, G62).
     assert.equal(Object.values(getSkillCatalog()).filter((s) => !s.remake).length, meta.counts.skills.output);
     assert.equal(Object.keys(getBuffCatalog()).length, meta.counts.buffs.output);
@@ -196,7 +198,7 @@ describe('achievement runner on mined catalog', () => {
     assert.ok(state.unlocked.includes('first_spriggan_emblem'));
   });
 
-  it('browses all 663 badges by status, category, and human-readable search', () => {
+  it('browses all 668 badges by status, category, and human-readable search', () => {
     const state = createAchievementState();
     state.unlocked.push('able_chopper');
     state.progress.collection_musicblocks_dg = {

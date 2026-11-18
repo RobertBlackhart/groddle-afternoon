@@ -58,11 +58,11 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.ok(!made.pieces.some((p) => p.id.startsWith('npc_fire_dragon')), 'the Fire Dragon experiment is not on the page');
     const dates = made.pieces.map((p) => p.made);
     assert.deepEqual(dates, [...dates].sort().reverse());
-    // 2026-11-17 leads: The Outer Mind, re-laid with its made pictures (G922). Then 2026-11-16: Winter Walk's tree arch and plants and the walk (G912), Winter Haven's snowy trees (G922), the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare).
+    // 2026-11-17 leads: Pot Luck Day's badge pictures and Harvest Stuffing's icon (G982), then The Outer Mind, re-laid with its made pictures (G922). Then 2026-11-16: Winter Walk's tree arch and plants and the walk (G912), Winter Haven's snowy trees (G922), the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare).
     // Then 2026-11-13 in the curated order: the Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World
     // map at 2x; then the quest book (2026-11-12).
-    // G982 (2026-11-17, after them in the curated order): Pot Luck Day's two chicken costumes, a parts edit of Tiny Speck's Chicken.
-    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
+    // G982: Pot Luck Day's badge pictures and Harvest Stuffing's icon lead the curated list; (2026-11-17, after them in the curated order): Pot Luck Day's two chicken costumes, a parts edit of Tiny Speck's Chicken.
+    assert.deepEqual(made.pieces.map((p) => p.id), ['pld_badge_feast_bringer', 'pld_badge_plume_fluffer', 'pld_badge_good_neighbor', 'harvest_stuffing', 'decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);

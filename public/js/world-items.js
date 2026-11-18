@@ -8,7 +8,7 @@
  */
 import { addItem, ITEM_CATALOG, removeItem } from './inventory.js?v=6414dbdc';
 import { canRenameBag, cleanBagName } from './bag-names.js?v=bba085e1';
-import { bagKeep } from './pack-slots.js?v=4d446d78';
+import { bagKeep } from './pack-slots.js?v=2c09907f';
 import { ITEM_PLURALS } from './item-plurals-data.js?v=62e96051';
 
 export const WORLD_ITEM_STATE_VERSION = 1;

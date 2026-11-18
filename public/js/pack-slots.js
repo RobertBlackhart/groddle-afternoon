@@ -258,7 +258,8 @@ function isToolClass(cls, opts) {
 
 /** A class the pack never slots (furniture and trophies live in hidden bags in the source). */
 export function takesNoSlot(cls) {
-  return NO_SLOT_CLASSES.has(cls);
+  // G982: Pot's Cornucopia is a trophy for the house too (js/home-trophies.js), made, not in the GSJS list.
+  return NO_SLOT_CLASSES.has(cls) || cls === 'pots_cornucopia';
 }
 
 /** element_base: an element (element_red.js and its three siblings). */

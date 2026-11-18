@@ -36,6 +36,8 @@ const SIZES = Object.freeze({
   trophy_street_creator_earth: [69, 67],
   trophy_street_creator_rock: [69, 65],
   trophy_street_creator_wood: [69, 68],
+  // G982 (ours): Pot's Cornucopia, Tiny Speck's cornucopia_crops rendered larger (95 x 81 in a pack's world art).
+  pots_cornucopia: [158, 135],
 });
 
 /** Badge -> the trophy it gives, for the five COLLECTION_TROPHIES does not settle (js/seasons.js, js/street-jobs.js). */
@@ -44,6 +46,8 @@ const OTHER_TROPHIES = Object.freeze({
   collection_street_creator_dirt: { trophy: 'trophy_street_creator_dirt', label: 'Street Creator Dirt Trophy', desc: 'This Trophy, artfully depicting a master of dirt, marks a street-building career so great that the holder collected\u2026 well, all five parts of this trophy.' },
   collection_street_creator_earth: { trophy: 'trophy_street_creator_earth', label: 'Street Creator Earth Trophy', desc: 'This stunning bauble marks a remarkable amount of street-building by the holder. Enough to collect all five parts of this fine Earth Trophy, at least.' },
   collection_street_creator_rock: { trophy: 'trophy_street_creator_rock', label: 'Street Creator Rock Trophy', desc: 'The holder of this tchotchke has earned their reputation as a rock of the street-creation community. They also earned a patched-up trophy.' },
+  // G982 (ours): finishing Pot's Empty Table gives the Feast Bringer badge and Pot's Cornucopia (js/pot-luck-feast.js).
+  pld_feast_bringer: { trophy: 'pots_cornucopia', label: 'Pot’s Cornucopia', desc: 'A horn of plenty Pot filled for you after the Pot Luck Day feast, spilling with every crop imaginable. It never empties and it never spoils.' },
   collection_street_creator_wood: { trophy: 'trophy_street_creator_wood', label: 'Street Creator Wood Trophy', desc: "The holder of this trophy hard-earned each of its five fragments through assiduous street-creation activity. Hopefully it won't give splinters." },
 });
 
@@ -62,7 +66,7 @@ export const TROPHY_DECOR = Object.freeze(Object.fromEntries(Object.values(BY_BA
     tabletop: true,
     canFlip: false,
     art: Object.freeze({ path: `assets/sprites/world/${trophy}/1@3x.webp`, w, h }),
-    source: `items/${trophy}.js`,
+    source: trophy === 'pots_cornucopia' ? 'ours (G982): Tiny Speck\'s items/cornucopia_crops.js art' : `items/${trophy}.js`,
   })];
 })));
 

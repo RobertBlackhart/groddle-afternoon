@@ -22,8 +22,8 @@
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { listAnimalFeedOptions } from '../animals.js?v=d8e13374';
-import { isBagClass } from '../pack-slots.js?v=4d446d78';
-import { dropFor, dropTip } from '../world-drop.js?v=bc16d491';
+import { isBagClass } from '../pack-slots.js?v=2c09907f';
+import { dropFor, dropTip } from '../world-drop.js?v=0b4f1e4d';
 import { canUseTool } from '../tools.js?v=4156bba8';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
@@ -75,6 +75,8 @@ function ctxFor(engine, target, copy = null) {
     hasTag: (cls, tag) => (ITEM_CATALOG[cls]?.tags || []).includes(tag),
     // #285: a Still on the ground takes what its hopper has room for (features/supply-feature.js).
     distillable: (cls) => engine.query?.('stillTakes', target, cls, engine) === true,
+    // G982: a dish or a crop the Harvest Table takes (features/pot-luck-feast-feature.js).
+    feastTakes: (cls) => engine.query?.('feastTakes', target, cls, engine) === true,
   };
 }
 
