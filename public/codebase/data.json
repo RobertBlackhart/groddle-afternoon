@@ -6,25 +6,25 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.49.0",
-   "commit": "fd9a063d",
+   "ref": "v0.49.1",
+   "commit": "dde3d05a",
    "licence": "MIT",
    "history": {
-    "commits": 2717,
+    "commits": 2728,
     "first": "2026-10-19",
     "latest": "2026-11-18"
    },
    "code": {
-    "files": 4935,
-    "lines": 1013816,
-    "bytes": 61537586
+    "files": 4940,
+    "lines": 1014410,
+    "bytes": 61568767
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2214,
-     "lines": 675376
+     "files": 2219,
+     "lines": 675960
     },
     {
      "id": "html",
@@ -36,7 +36,7 @@
      "id": "css",
      "label": "CSS",
      "files": 10,
-     "lines": 21727
+     "lines": 21737
     },
     {
      "id": "python",
@@ -63,35 +63,35 @@
      "label": "Pages and styles",
      "path": "public/ (pages, stylesheets, page scripts)",
      "files": 2660,
-     "lines": 324745
+     "lines": 324755
     },
     {
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1190,
-     "lines": 238642
+     "files": 1192,
+     "lines": 238985
     },
     {
      "id": "core",
      "label": "Game core",
      "path": "public/game.js, public/content.js, public/js/",
-     "files": 538,
-     "lines": 223241
+     "files": 540,
+     "lines": 223423
     },
     {
      "id": "features",
      "label": "Feature modules",
      "path": "public/js/features/",
      "files": 167,
-     "lines": 125815
+     "lines": 125816
     },
     {
      "id": "tools",
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
-     "files": 345,
-     "lines": 80416
+     "files": 346,
+     "lines": 80474
     },
     {
      "id": "rooms",
@@ -104,11 +104,11 @@
    "largest": [
     {
      "path": "public/game.js",
-     "lines": 35055
+     "lines": 35035
     },
     {
      "path": "public/style.css",
-     "lines": 15152
+     "lines": 15156
     },
     {
      "path": "public/js/features/homes-feature.js",
@@ -120,7 +120,7 @@
     },
     {
      "path": "public/css/classic.css",
-     "lines": 4132
+     "lines": 4138
     }
    ],
    "notCode": [
@@ -134,7 +134,7 @@
      "id": "data",
      "label": "Data (JSON)",
      "files": 3183,
-     "bytes": 214410722
+     "bytes": 214437791
     },
     {
      "id": "generated",
@@ -163,10 +163,10 @@
      "bytes": 8288803
     }
    ],
-   "totalFiles": 31468,
+   "totalFiles": 31473,
    "tests": {
-    "files": 1152,
-    "cases": 13331,
+    "files": 1154,
+    "cases": 13351,
     "runner": "node --test"
    }
   },
@@ -174,25 +174,25 @@
    "id": "server",
    "name": "groddle-afternoon-server",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon-server",
-   "ref": "v0.34.1",
-   "commit": "107ccbeb",
+   "ref": "v0.34.2",
+   "commit": "e0ac96e4",
    "licence": "MIT",
    "history": {
-    "commits": 240,
+    "commits": 242,
     "first": "2026-10-25",
     "latest": "2026-11-18"
    },
    "code": {
     "files": 225,
-    "lines": 87716,
-    "bytes": 3084815
+    "lines": 87794,
+    "bytes": 3087673
    },
    "languages": [
     {
      "id": "go",
      "label": "Go",
      "files": 222,
-     "lines": 87646
+     "lines": 87724
     },
     {
      "id": "shell",
@@ -207,14 +207,14 @@
      "label": "Shared-world modules",
      "path": "*.go that register a module",
      "files": 54,
-     "lines": 36803
+     "lines": 36832
     },
     {
      "id": "tests",
      "label": "Tests",
      "path": "*_test.go",
      "files": 118,
-     "lines": 36735
+     "lines": 36784
     },
     {
      "id": "core",
@@ -257,8 +257,8 @@
     {
      "id": "data",
      "label": "Data (JSON)",
-     "files": 25,
-     "bytes": 1611181
+     "files": 26,
+     "bytes": 1614114
     },
     {
      "id": "docs",
@@ -273,10 +273,10 @@
      "bytes": 4709
     }
    ],
-   "totalFiles": 258,
+   "totalFiles": 259,
    "tests": {
     "files": 118,
-    "cases": 842,
+    "cases": 843,
     "runner": "go test"
    }
   },

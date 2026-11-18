@@ -2810,13 +2810,53 @@
   ]
  },
  "release": {
-  "game": "0.49.0",
+  "game": "0.49.1",
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2717,
+  "commits": 2728,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The new-quest notice's bar lift sits beside the HUB layer block, which names only the popover lift and the notices"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "\"New Quest Added!\" shows over the minimap and the Social drawer instead of under them"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Food dragged from the pack onto a Piggy Feeder stocks it, as in Glitch"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Music and sounds come back after AFK, another tab or a call, on Safari too"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A short looped street track (the subway stations, the Rook, Sky Plunge, Party, meditation) plays as one copy, never two layered"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "An item the Fox Ranger or the Smuggler hands over flies into the pack without a second \"+1\" float over the avatar"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The online Harvest Table takes only dishes and crops, the same food the game's table takes"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "improve",
+    "text": "Thanksgiving Day's feast piles sit either side of the street tree's trunk and end clear of the shrine"
+   },
    {
     "date": "2026-11-18",
     "kind": "fix",
@@ -2896,46 +2936,6 @@
     "date": "2026-11-18",
     "kind": "new",
     "text": "The Harvest Table's Look opens a list of everything on it, newest first, with who laid each"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "improve",
-    "text": "The Harvest Table is three boards long and shows its newest twelve dishes in one row, none over another"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Dishes laid on the Harvest Table stay drawn instead of vanishing until a reload"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Quest room hills and trees stand on the floor on an upright phone and in tall windows"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Vasko Shift's third Mortar Barnacle hangs on its beehive hut, and no snapped street plans one on the floor"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The soil under home streets meets at every join instead of stepping down"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The loading card counts its Home to: list's words from the text, not the HTML"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Map routes ride the subway when it saves more than about 5 streets of walking"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Firefly Whistle and the Tower quest rooms show no Go back once solved"
    }
   ]
  },
