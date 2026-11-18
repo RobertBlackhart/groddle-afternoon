@@ -75,6 +75,37 @@ export const COPY = Object.freeze({
 });
 
 /**
+ * #476 (R3): the shared objects with a verb still waiting on the server's answer (`pending`: the
+ * feature's requests, { id, silent }). A silent word (a Piggy ate food only this player saw) waits
+ * on nothing the player chose.
+ */
+export function waitingIds(pending) {
+  const out = new Set();
+  for (const p of pending || []) {
+    if (p && !p.silent && p.id) out.add(String(p.id));
+  }
+  return out;
+}
+
+/**
+ * #476 (R3): the verb menu of an object waiting on the server's answer. Its rows the server decides
+ * (`isShared(row)`) show greyed with the busy line until the answer lands, so a tree just watered
+ * never offers Water again from a mark the answer has not set yet (Glitch built each menu on the
+ * server: trant_fruit.js verbs.water conditions read the tree's own waterings). A new list, or null
+ * when no row changed.
+ */
+export function greyWaitingVerbs(verbs, isShared) {
+  if (!Array.isArray(verbs) || typeof isShared !== 'function') return null;
+  let changed = false;
+  const out = verbs.map((v) => {
+    if (!v || v.enabled === false || !isShared(v)) return v;
+    changed = true;
+    return { ...v, enabled: false, reason: COPY.busy };
+  });
+  return changed ? out : null;
+}
+
+/**
  * How far from a rock, tree or resource node the realtime server still takes
  * a verb on it (objects.go objReachX / objReachY: about a screen, measured
  * from the player's feet to the object's spot). The server checks when the

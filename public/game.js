@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=823f43fe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0ba0236a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=39a8b7b8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -8817,6 +8817,25 @@ function openVerbMenu(target) {
 }
 
 /**
+ * #476 (R3): the world verb menu open on this target (at its verbs, not a picker) is drawn again
+ * from its state now, the focus on the same verb (features/street-objects-feature.js: a shared
+ * object's answer landed). Returns whether it was drawn.
+ */
+function refreshVerbMenu(target) {
+  const menu = document.getElementById('verb-menu');
+  if (!target || menuTarget !== target || !menu || menu.hidden || menu.dataset.vmLevel) return false;
+  const focused = menu.contains(document.activeElement) ? document.activeElement?.dataset?.verb || '' : null;
+  renderVerbMenu(target, menuVerbsFor(target));
+  placeWorldVerbMenu(target);
+  if (focused != null) {
+    const at = [...menu.querySelectorAll('.vm-row')].findIndex((r) => r.dataset.verb === focused);
+    focusVerbRow(menu, at < 0 ? null : at);
+  }
+  setCanvasData('verbMenuRefreshed', `${target.classId || ''}:${Date.now()}`);
+  return true;
+}
+
+/**
  * VERBS (js/ui/verb-menu.js): the menu's rows, one line each with a 1-9 key cap and the energy
  * cost; the tooltip or the reason a verb can't be done shows in the footer line. A verb that
  * picks from the pack (Feed, Incubate, Deposit) opens a second level of the stacks it takes, as
@@ -13158,6 +13177,8 @@ const engine = {
   actingOn: (target) => Boolean(target) && (currentAction?.target === target || menuTarget === target),
   /** What the player is at now: the target of the verb in progress, else of the open verb menu. */
   interactionTarget: () => currentAction?.target || menuTarget || null,
+  /** #476: the verb menu open on this target, drawn again from its state now (a shared object's answer landed). */
+  refreshVerbMenu: (target) => refreshVerbMenu(target),
   questDialogueOpen: () => isQuestDialogueOpen(),
   /** Ticket 39: an offer with this title is waiting to show (held behind a screen, a menu or the start card). */
   questOfferHeld: (title) => heldScriptedDialogs.some((held) => held?.offer && held.title === title),

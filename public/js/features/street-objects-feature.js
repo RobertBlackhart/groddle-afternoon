@@ -126,6 +126,7 @@ import {
   applyTreeState,
   applyWoodState,
   createStreetCopy,
+  greyWaitingVerbs,
   guanoPiles,
   nodeId,
   nodePerks,
@@ -148,7 +149,8 @@ import {
   treeId,
   treeReady,
   treeSkill,
-} from '../street-objects.js?v=21ebda1e';
+  waitingIds,
+} from '../street-objects.js?v=0411d467';
 import { ROCK_CATALOG } from '../mining.js?v=afb2b145';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
@@ -246,8 +248,10 @@ function bind(engine) {
     if (state === 'online') return;
     reset();
     if (pending.size && !LOCAL_STATES.has(state)) engine.toast?.(COPY.timeout, 2400);
+    const waited = [...pending.values()];
     pending.clear();
     publish(engine);
+    for (const p of waited) menuAgain(engine, p.target);
   });
   c.on('roster', ({ street }) => {
     if (!street) {
@@ -655,7 +659,26 @@ function redraw(engine, obj, before = null) {
   if ((obj.kind === 'tree' || obj.kind === 'wood') && obj.state?.sharedDead && obj.target) {
     engine.query?.('sharedTreeDied', obj.target, { by: obj.state.sharedDeadBy || 0 }, engine);
   }
+  // #476: its menu, if open, shows the new state (another player's water, or this player's answer).
+  menuAgain(engine, obj.target);
 }
+
+/** #476 (R3): the verb menu open on this target is drawn again from its state now (game.js refreshVerbMenu). */
+function menuAgain(engine, target) {
+  if (target) engine.refreshVerbMenu?.(target);
+}
+
+/** #476 (R3): the shared object on this target while a verb on it waits on the server's answer, or null. */
+function waitingObject(engine, target) {
+  if (engine?.mode !== 'multiplayer' || !target || target.yardVisit || !pending.size) return null;
+  const ids = waitingIds(pending.values());
+  if (!ids.size) return null;
+  const obj = localObjects(engine).find((row) => row.target === target);
+  return obj && ids.has(obj.id) ? obj : null;
+}
+
+/** Street animals whose pack pickers (Feed, Incubate) pick a verb the server decides. */
+const PICKER_KINDS = new Set(['pig', 'chicken', 'batterfly']);
 
 function shared(engine) {
   return Boolean(client) && client.state === 'online' && copy.snap && !copy.none && copy.street === engine.streetTsid;
@@ -872,6 +895,16 @@ function applyKnown(obj, s) {
 }
 
 function answered(engine, msg, ok) {
+  const p = pending.get(msg?.req);
+  try {
+    landAnswer(engine, msg, ok);
+  } finally {
+    // #476 (R3): a menu opened on it while it waited shows its verbs again (greyed while waiting).
+    menuAgain(engine, p?.target);
+  }
+}
+
+function landAnswer(engine, msg, ok) {
   const p = pending.get(msg.req);
   if (p) pending.delete(msg.req);
   if (msg.obj) {
@@ -1013,6 +1046,7 @@ function ask(engine, target, verbId) {
     return true;
   }
   pending.set(reqSeq, { id: verb.id, target, verbId, at: Date.now() });
+  menuAgain(engine, target);
   return true;
 }
 
@@ -1158,6 +1192,7 @@ export const streetObjectsFeature = {
       if (wall - p.at < REQUEST_TIMEOUT_MS) continue;
       pending.delete(req);
       if (!p.silent) engine.toast?.(COPY.timeout, 2400);
+      menuAgain(engine, p.target);
     }
     waitAtCreature(engine, c, wall);
     if (reapplyAt && wall >= reapplyAt) {
@@ -1180,6 +1215,19 @@ export const streetObjectsFeature = {
     if (engine?.mode !== 'multiplayer') return;
     dirtyAll = true;
     reapplyAt = Date.now() + 3000;
+  },
+
+  /**
+   * #476 (R3): an object with a verb still waiting on the server's answer shows the verbs the
+   * server decides greyed with the busy line (its local marks are not the answer yet); the menu is
+   * drawn again when the answer lands (menuAgain). Every shared kind: trees, Wood Trees, rocks,
+   * resource nodes, Piggies, Chickens, Butterflies, Batterflies.
+   */
+  decorateVerbs(target, verbs, engine) {
+    const obj = waitingObject(engine, target);
+    if (!obj) return null;
+    return greyWaitingVerbs(verbs, (v) => Boolean(sharedVerbOn(engine, target, v.id))
+      || (PICKER_KINDS.has(obj.kind) && (v.id === 'feed' || v.id === 'incubate' || Boolean(v.picker))));
   },
 
   /** game.js beginVerbAction: a verb on an object still waiting on the server, or now refused, does not swing (#214). */
