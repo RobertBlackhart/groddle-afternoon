@@ -642,7 +642,6 @@
    "title": "Remake-only sound keys (UI_PANEL_OPEN, QUOIN_XP, JUMP, GAME_GO and the rest)",
    "kind": "content",
    "status": "kept",
-   "family": "remake-sound-keys",
    "where": [
     {
      "file": "build-sound-keys.mjs",
@@ -657,6 +656,7 @@
    "rows": [
     "G11"
    ],
+   "family": "remake-sound-keys",
    "members": [
     "BADGE_FANFARE",
     "CHOP_HIT",
@@ -731,7 +731,6 @@
    "title": "Seasonal events with source 'designed' (Pot Luck Day)",
    "kind": "content",
    "status": "proposed",
-   "family": "designed-seasons",
    "where": [
     {
      "file": "public/js/seasons.js",
@@ -743,6 +742,7 @@
     "G344",
     "G982"
    ],
+   "family": "designed-seasons",
    "members": [
     "pot_luck_day"
    ]
@@ -752,7 +752,6 @@
    "title": "Made decos for rebuilt streets and quest rooms (AI-generated or own work, CC0)",
    "kind": "visual",
    "status": "kept",
-   "family": "made-decos",
    "where": [
     {
      "file": "tools/provenance/made-decos.json"
@@ -768,6 +767,7 @@
     "G922",
     "G964"
    ],
+   "family": "made-decos",
    "members": [
     "gz_ai_ezc_glass_counter",
     "gz_ai_ezc_hanging_lamp",
@@ -804,7 +804,6 @@
    "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes, its badge pictures and Harvest Stuffing's icon)",
    "kind": "visual",
    "status": "proposed",
-   "family": "made-sprites",
    "where": [
     {
      "file": "tools/provenance/made-sprites.json"
@@ -819,6 +818,7 @@
    ],
    "why": "New content: the rules and words are ours and the art is AI-generated, CC0.",
    "rows": [],
+   "family": "made-sprites",
    "members": [
     "chicken_rooster_plume",
     "chicken_turkey_tailfan",
@@ -835,7 +835,6 @@
    "title": "Map paintings made for the remake (subway paper map, 2x world map, any repainted region)",
    "kind": "visual",
    "status": "kept",
-   "family": "made-maps",
    "where": [
     {
      "file": "tools/provenance/subway-map-paper.json"
@@ -854,6 +853,7 @@
     "G522",
     "G569"
    ],
+   "family": "made-maps",
    "members": [
     "subway-map-paper",
     "world-map-2x"
@@ -864,7 +864,6 @@
    "title": "Restoration checklist items marked Reimagined (rooms from pictures, Interrogation room, mystery quoins, neighbours, Better Learning)",
    "kind": "behaviour",
    "status": "kept",
-   "family": "checklist-reimagined",
    "where": [
     {
      "file": "tools/restoration/checklist.mjs",
@@ -874,6 +873,7 @@
    "why": "Nothing about them survives, so they are designed fresh.",
    "ruling": "Shown on /restoration/ as Reimagined (public)",
    "rows": [],
+   "family": "checklist-reimagined",
    "members": [
     "picture-rooms",
     "interrogation",
@@ -887,7 +887,6 @@
    "title": "Inventory rows overridden to reimagined (places, Better Learning skills, furniture-making cards, a wardrobe item, the mail dispatcher)",
    "kind": "data",
    "status": "kept",
-   "family": "inventory-reimagined",
    "where": [
     {
      "file": "tools/inventory/overrides.json"
@@ -896,6 +895,7 @@
    "why": "Built fresh where the source left only a name.",
    "ruling": "Each override's reason in tools/inventory/overrides.json",
    "rows": [],
+   "family": "inventory-reimagined",
    "members": [
     "location:LA9RLGSQ05F3Q69",
     "location:LA9S2N3F15F3JD3",
@@ -925,7 +925,6 @@
    "title": "Rules changed from Glitch on purpose (faster crops, project amounts, no starving piggies, ...)",
    "kind": "behaviour",
    "status": "kept",
-   "family": "differences-on-purpose",
    "where": [
     {
      "file": "tools/gaps/public-gaps.json"
@@ -945,6 +944,7 @@
     "G28",
     "G983"
    ],
+   "family": "differences-on-purpose",
    "members": [
     "G45",
     "G639",
@@ -1468,7 +1468,7 @@
    "id": "overlay-stand-in-cards",
    "title": "Rounded word cards drawn where an overlay animation has no art yet (dice, Alphabet Sauce letters)",
    "kind": "visual",
-   "status": "under-review",
+   "status": "kept",
    "where": [
     {
      "file": "public/js/overlay-stand-in.js",
@@ -1482,13 +1482,16 @@
     }
    ],
    "why": "A placeholder so the verb shows something until the overlay renders.",
-   "rows": []
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): keep until the art exists",
+   "rows": [
+    "G978"
+   ]
   },
   {
    "id": "drawn-door-stand-ins",
    "title": "Plain drawn doors (arch or panel in a tone from the name) for door decos with no recovered art",
    "kind": "visual",
-   "status": "under-review",
+   "status": "kept",
    "where": [
     {
      "file": "public/js/doors.js",
@@ -1496,7 +1499,10 @@
     }
    ],
    "why": "A door must show something.",
-   "rows": []
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): keep until the art exists",
+   "rows": [
+    "G978"
+   ]
   },
   {
    "id": "flyer-hover-bob",
