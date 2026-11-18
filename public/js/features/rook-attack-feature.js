@@ -262,7 +262,6 @@ let mp = null;
 let ui = null; // screen layer
 let fore = null; // { sprite, target, flipAt, speakAt, dir }
 let silhouettes = [];
-let feathers = [];
 let artOverlays = []; // playSheetOverlay handles (G251)
 let overlays = [];
 let shakeUntil = 0;
@@ -952,16 +951,6 @@ function releaseBadgeZone(engine) {
   engine?.setData?.('rookBadgeZone', '');
 }
 
-function drawStar(g, x, y, r, fill, line) {
-  const pts = [];
-  for (let i = 0; i < 10; i += 1) {
-    const rad = i % 2 ? r * 0.45 : r;
-    const ang = -Math.PI / 2 + (i * Math.PI) / 5;
-    pts.push(x + Math.cos(ang) * rad, y + Math.sin(ang) * rad);
-  }
-  g.poly(pts).fill({ color: fill, alpha: 1 }).stroke({ width: 1, color: line, alpha: 1 });
-}
-
 function fmtClock(s) {
   const m = Math.floor(s / 60);
   const r = s % 60;
@@ -1036,8 +1025,6 @@ function ensureRook(engine) {
   });
   ui.rookLayer.addChild(rook);
   ui.rook = rook;
-  ui.rookStars = new PIXI.Graphics();
-  ui.rookLayer.addChild(ui.rookStars);
   return rook;
 }
 
@@ -1048,11 +1035,7 @@ function rookScreenPos() {
 
 function removeRook() {
   if (ui?.rook && !ui.rook.destroyed) ui.rook.destroy();
-  if (ui?.rookStars && !ui.rookStars.destroyed) ui.rookStars.destroy();
-  if (ui) {
-    ui.rook = null;
-    ui.rookStars = null;
-  }
+  if (ui) ui.rook = null;
 }
 
 function updateRook(engine, a, dtMs) {
@@ -1098,16 +1081,6 @@ function updateRook(engine, a, dtMs) {
   rook.rotation = stunned ? Math.sin(t / 420) * 0.09 : 0;
   rook.animationSpeed = pixiSpeed(stunned ? 6 : 15);
   rook.tint = stunned ? 0xd8c8f0 : 0xffffff;
-  const g = ui.rookStars;
-  g.clear();
-  if (stunned) {
-    const hx = rook.x;
-    const hy = rook.y - 60 * rook.scale.y;
-    for (let i = 0; i < 5; i += 1) {
-      const ang = t / 380 + (i * Math.PI * 2) / 5;
-      drawStar(g, hx + Math.cos(ang) * 46, hy + Math.sin(ang) * 12, 7, 0xffe14a, 0x9a6b00);
-    }
-  }
 }
 
 function spawnSilhouettes(engine, n = 4) {
@@ -1145,26 +1118,6 @@ function updateSilhouettes(dtMs) {
   });
 }
 
-function spawnFeathers(engine, x, y, n = 9) {
-  if (!ensureUi(engine)) return;
-  const { PIXI } = engine;
-  for (let i = 0; i < n; i += 1) {
-    const f = new PIXI.Graphics();
-    const len = 9 + Math.random() * 8;
-    f.ellipse(0, 0, len * 0.32, len).fill({ color: i % 3 ? 0x2a1d36 : 0x4b3a60, alpha: 0.95 });
-    f.moveTo(0, -len).lineTo(0, len + 3).stroke({ width: 1, color: 0x9b8bb0, alpha: 0.8 });
-    f.x = x + (Math.random() - 0.5) * 120;
-    f.y = y + (Math.random() - 0.5) * 40;
-    f._vy = 0.03 + Math.random() * 0.04;
-    f._sway = Math.random() * 6;
-    f._life = 3000;
-    f._delay = 250 + i * 60;
-    f.alpha = 0;
-    ui.fxLayer.addChild(f);
-    feathers.push(f);
-  }
-}
-
 /**
  * G377: Tiny Speck's rook_feathers_falling, a location_overlay for 3 s after 1 s, at the
  * attacker's x and 220 px above (a stun, inc_rook.js 746-755) or 200 px above the shrine (a
@@ -1181,27 +1134,6 @@ function featherFall(engine, from, dy = OVERLAY_USES.rook_feathers_falling.dy) {
     durationMs: use.durationMs,
     delayMs: use.delayMs,
     loop: false,
-  });
-}
-
-function updateFeathers(dtMs) {
-  feathers = feathers.filter((f) => {
-    if (f.destroyed) return false;
-    if (f._delay > 0) {
-      f._delay -= dtMs;
-      return true;
-    }
-    f._life -= dtMs;
-    f._sway += dtMs / 300;
-    f.y += f._vy * dtMs;
-    f.x += Math.sin(f._sway) * 0.9;
-    f.rotation = Math.sin(f._sway) * 0.7;
-    f.alpha = Math.min(1, f._life / 600);
-    if (f._life <= 0) {
-      f.destroy();
-      return false;
-    }
-    return true;
   });
 }
 
@@ -1392,7 +1324,6 @@ function onAttackStart(engine) {
 function onWingBeat(engine, a) {
   swoop = { at: now(), ms: 1700 };
   shakeUntil = now() + 1100;
-  spawnFeathers(engine, VIEW_W / 2, 210, 14);
   const armor = armored();
   const energy = soloCost(ROOK_SOURCE.wingBeatEnergy, { armor });
   const mood = soloCost(ROOK_SOURCE.wingBeatMood, { armor, armorRule: 'none' });
@@ -1410,7 +1341,6 @@ function onDefeat(engine, a) {
   setHeadClip('killShot', { once: true, lockMs: 1300 });
   const r = ui?.rook;
   if (r && !r.destroyed) departing = { at: now(), ms: 2600, x: r.x, y: r.y, scale: r.scale.x };
-  spawnFeathers(engine, rookScreenPos().x, rookScreenPos().y, 22);
   const xp = grant(engine, { xp: defeatXpFor(a) });
   engine.pushActivity({ base: a.damageDealt > 0 ? ROOK_TEXT.defeatHelp(xp) : ROOK_TEXT.defeatWitness(xp), effects: { xp } });
   youDidItRainbow(engine);
@@ -2507,7 +2437,6 @@ function mpEvent(engine, a, ev) {
 function mpWingBeatFx(engine, a, hit) {
   swoop = { at: now(), ms: 1700 };
   shakeUntil = now() + 1100;
-  spawnFeathers(engine, VIEW_W / 2, 210, 14);
   const entries = rookableTargets(engine);
   const hits = new Set(hit);
   // items/include/trants.js onRooked: fruit gone, health -2, on this player's copy of the tree.
@@ -2556,7 +2485,6 @@ function mpStrikeFx(engine, ev) {
     shrineLaser(engine, spr, Number(ev.beam) || 1);
     engine.floatText(spr.x, spr.y - 170, `-${damage}`, 0xff5a6e);
   }
-  spawnFeathers(engine, rookScreenPos().x, rookScreenPos().y);
   setHeadClip('stunnedHit', { once: true, lockMs: 1100 });
   if (ev.text) setFeed(String(ev.text));
   lastAction = `strike:${damage}:${ev.health}`;
@@ -2568,7 +2496,6 @@ function mpDefeatFx(engine) {
   setHeadClip('killShot', { once: true, lockMs: 1300 });
   const r = ui?.rook;
   if (r && !r.destroyed) departing = { at: now(), ms: 2600, x: r.x, y: r.y, scale: r.scale.x };
-  spawnFeathers(engine, rookScreenPos().x, rookScreenPos().y, 22);
   youDidItRainbow(engine);
   engine.playSound('RAINBOW_YOUDIDIT', { volume: 0.7 });
   for (const by of [...mp.arts.keys()]) mpDropArt(by);
@@ -3250,7 +3177,6 @@ export const rookAttackFeature = {
       ui.sky.alpha += (target - ui.sky.alpha) * Math.min(1, dtMs / 900);
       updateRook(engine, mine, dtMs);
       updateSilhouettes(dtMs);
-      updateFeathers(dtMs);
       updateOverlays(engine);
       drawHud(engine, mine);
       if (mine && rookPresent(mine) && mine.phase !== 'dead' && Math.random() < dtMs / 9000) spawnSilhouettes(engine, 1);

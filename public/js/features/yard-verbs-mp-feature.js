@@ -71,7 +71,7 @@ import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation
 import { readVisitScene } from '../neighbours-mp.js?v=81fe8611';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=d607004b';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=bab446d4';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=1a0334f4';
 import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=7c1ded52';
 import {
   YARD_STREET,

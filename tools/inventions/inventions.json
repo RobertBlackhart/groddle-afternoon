@@ -1322,17 +1322,25 @@
    "id": "rook-stun-ring",
    "title": "A stun ring and extra feather ellipses during Rook attacks",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
      "file": "public/js/features/rook-attack-feature.js",
-     "symbol": "spawnFeathers"
+     "symbol": "updateRook",
+     "gone": true
+    },
+    {
+     "file": "public/js/features/rook-attack-feature.js",
+     "symbol": "spawnFeathers",
+     "gone": true
     }
    ],
    "why": "Feedback on a stun; the client shows rook_feathers_falling only.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop the star ring round the stunned Rook and the drawn feather ellipses; Tiny Speck's rook_feathers_falling and the badge's stun stars stay",
    "rows": [
     "G892",
-    "G377"
+    "G377",
+    "G978"
    ]
   },
   {

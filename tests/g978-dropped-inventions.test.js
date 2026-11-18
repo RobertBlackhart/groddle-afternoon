@@ -80,3 +80,12 @@ describe('G978: the party booster is an invisible box', () => {
     for (const s of Object.values(PARTY_SPACES)) assert.ok(!('ambience' in s) && !('palette' in s), s.id);
   });
 });
+
+describe('G978: the Rook has no stun ring or drawn feathers', () => {
+  it('only Tiny Speck\'s rook_feathers_falling and the badge stars (the client shows rook_feathers_falling only)', () => {
+    dropped('rook-stun-ring');
+    const rook = read('public/js/features/rook-attack-feature.js');
+    assert.doesNotMatch(rook, /spawnFeathers|updateFeathers|ui\.rookStars|drawStar|\.ellipse\(/);
+    assert.match(rook, /playOverlay\(engine\.PIXI, 'rook_feathers_falling'/);
+  });
+});
