@@ -2382,10 +2382,9 @@
   "hasCanOffer": false,
   "offerTriggers": [
    {
-    "type": "inferred",
-    "inferred": true,
-    "level": 2,
-    "why": "early pack-space quest (source: emergency, newxp era)"
+    "type": "event",
+    "event": "first_skill",
+    "start": true
    }
   ],
   "solo": true

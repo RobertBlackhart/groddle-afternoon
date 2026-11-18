@@ -311,6 +311,26 @@ export function questStatus(questState, classTsid) {
   return 'none';
 }
 
+/**
+ * G979 (Austin 2026-11-17): Buy a Bag ("Enlarge Yer Slots") starts with the player's first skill,
+ * not at level 2. In GSJS learn_first_skill's onComplete_custom starts it, already accepted
+ * (learn_first_skill.js 74-76: startQuest('buy_bag', false, true)); that quest's one requirement is
+ * the learn_skill flag, set when a skill starts training (inc_skills.js 893), or at once when one
+ * is learning or learned (onAccepted 68-71). The remake has no learn_first_skill, so the first
+ * skill started or learned is the moment (a save already past it: on load). `facts`: { skills:
+ * skills learned beyond a solo demo kit, learning: a study under way }. True once per save when
+ * it should start now; a player who already had it (offered, declined, active or done) is left as
+ * is. Either way the moment is recorded (story.gates.firstSkill) so it never starts twice.
+ */
+export const FIRST_SKILL_QUEST_ID = 'buy_bag';
+export function claimFirstSkillQuest(questState, { skills = 0, learning = false } = {}) {
+  if (!questState || !(Number(skills) > 0 || learning)) return false;
+  questState.story ||= {};
+  if (questState.story.gates?.firstSkill) return false;
+  questState.story.gates = { ...(questState.story.gates || {}), firstSkill: true };
+  return questStatus(questState, FIRST_SKILL_QUEST_ID) === 'none';
+}
+
 function questDone(questState, classTsid, ctx) {
   if ((questState.completed || []).includes(classTsid)) return true;
   const proxy = getQuestCatalog()[classTsid]?.prereqProxy;
@@ -403,7 +423,8 @@ export function triggerMet(trigger, def, questState, pc = null, ctx = {}) {
       // G329: a fact features/quests-mp-feature.js keeps; never in solo (no ctx.multiplayer).
       return ctx.multiplayer === true && Boolean(ctx.mpFacts?.[t.fact]);
     case 'event':
-      if (t.adminOnly) return false;
+      // G979: a start the game makes itself (Buy a Bag with the first skill), never an offer.
+      if (t.adminOnly || t.start) return false;
       if (t.event === 'streets_visited') return (Number(ctx.streetsVisited) || 0) >= Number(t.count || 0);
       if (t.event === 'emblems') return (Number(ctx.emblemsMax) || 0) >= Number(t.count || 0);
       if (t.afterQuest && !questDone(questState, t.afterQuest, ctx)) return false;

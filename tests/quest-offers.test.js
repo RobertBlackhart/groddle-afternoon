@@ -53,7 +53,7 @@ import {
   tickQuestTimers,
   restartTimedQuest,
   questTimerStatus,
-} from '../public/js/quest-offers.js?v=4debd26e';
+} from '../public/js/quest-offers.js?v=d13ce526';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
 
 const CONTENT = join(dirname(fileURLToPath(import.meta.url)), '../public/assets/content');
@@ -229,9 +229,11 @@ describe('pendingQuestOffers triggers', () => {
   it('puts emergency quests first', () => {
     const state = createQuestState();
     const pending = pendingQuestOffers(state, freshPc(), { level: 6, skills: ['blending_1'] });
-    assert.deepEqual(ids(pending.slice(0, 3)).sort(), ['buy_bag', 'send_mail', 'ultimate_smoothie_1']);
-    assert.ok(pending.slice(0, 3).every((row) => row.emergency));
-    assert.ok(pending.slice(3).length > 0 && pending.slice(3).every((row) => !row.emergency));
+    // G979: buy_bag is no longer offered; the first skill starts it (claimFirstSkillQuest).
+    assert.deepEqual(ids(pending.slice(0, 2)).sort(), ['send_mail', 'ultimate_smoothie_1']);
+    assert.ok(pending.slice(0, 2).every((row) => row.emergency));
+    assert.ok(pending.slice(2).length > 0 && pending.slice(2).every((row) => !row.emergency));
+    assert.ok(!ids(pending).includes('buy_bag'));
   });
 });
 
@@ -239,18 +241,18 @@ describe('familiar delivery, decline and accept', () => {
   it('spaces offers five minutes apart; emergencies skip the wait', () => {
     const state = createQuestState();
     const pc = freshPc();
-    // Level 2 + Alchemy: buy_bag is the only emergency (send_mail needs level 3).
-    const ctx = { level: 2, skills: ['alchemy_1'], now: 1_000_000 };
+    // Level 3 + Alchemy: send_mail is the only emergency (G979: buy_bag starts with the first skill).
+    const ctx = { level: 3, skills: ['alchemy_1'], now: 1_000_000 };
     const first = nextQuestOffer(state, pc, ctx);
-    assert.equal(first.classTsid, 'buy_bag');
+    assert.equal(first.classTsid, 'send_mail');
     assert.ok(first.beats.length > 0);
     markOffered(state, first.classTsid, ctx.now);
     // G225: an offer made waits in the log; only the 5-minute spacing holds the next (quests_offer).
     const held = nextQuestOffer(state, pc, ctx);
-    assert.ok(held.waiting > 0 && held.classTsid !== 'buy_bag', 'the next offer waits out the spacing');
-    assert.deepEqual(waitingOffers(state).map((row) => [row.classTsid, row.emergency]), [['buy_bag', true]]);
-    assert.equal(questOfferCard('buy_bag').title, first.title);
-    acceptOffer(state, 'buy_bag', { now: ctx.now });
+    assert.ok(held.waiting > 0 && held.classTsid !== 'send_mail', 'the next offer waits out the spacing');
+    assert.deepEqual(waitingOffers(state).map((row) => [row.classTsid, row.emergency]), [['send_mail', true]]);
+    assert.equal(questOfferCard('send_mail').title, first.title);
+    acceptOffer(state, 'send_mail', { now: ctx.now });
     assert.deepEqual(waitingOffers(state), []);
     const waiting = nextQuestOffer(state, pc, { ...ctx, now: ctx.now + 1000 });
     assert.ok(waiting.waiting > 0 && waiting.waiting <= OFFER_INTERVAL_MS);

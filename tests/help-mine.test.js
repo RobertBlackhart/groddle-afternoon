@@ -35,7 +35,7 @@ import {
   requirementRoute,
   routeQuestEvent,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=4debd26e';
+} from '../public/js/quest-offers.js?v=d13ce526';
 import { createMineRock } from '../public/js/mining.js?v=afb2b145';
 import { rockId } from '../public/js/street-objects.js?v=8dafbd78';
 import { createQuestState } from '../public/js/quests.js?v=92c75858';

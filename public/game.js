@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6dc15d06';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f80264f6';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -37,8 +37,8 @@ import {
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=a091bb4d';
-import { dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=4debd26e';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=563d4523';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=d13ce526';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=b30980c4';
+} from './js/player-save.js?v=25e218b9';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -28374,6 +28374,8 @@ function runSkillStudyAction(classTsid, action, confirmed = false) {
     toast(`Started studying ${name} · ${formatStudyTime(result.durationSeconds)}`);
     // inc_skills.js 857 and the 914 learning note.
     pushActivity(`You started learning ${name}. Skill learning will continue while you do other things. It even goes on when you're not playing the game.`);
+    // G979: the first skill started starts Buy a Bag (inc_skills.js 893 sets learn_skill).
+    startFirstSkillQuest();
   } else if (result.ok) {
     const verb = action === 'pause' ? 'Paused' : 'Resumed';
     toast(`${verb} ${name}.`);
@@ -28450,6 +28452,22 @@ function skillStudyContext() {
   };
 }
 
+/**
+ * G979: Buy a Bag starts, already accepted, once the first skill is started or learned
+ * (learn_first_skill.js 74-76; js/quest-offers.js claimFirstSkillQuest). The solo demo kit's
+ * skills do not count (G306): the first one the player studies does.
+ */
+function startFirstSkillQuest() {
+  const learning = Boolean(getActiveStudy(skillState, Date.now()));
+  if (!claimFirstSkillQuest(questState, { skills: skillsLearnedCount(), learning })) return;
+  const result = assignQuest(questState, FIRST_SKILL_QUEST_ID, { ignorePrereq: true });
+  if (!result.ok) return;
+  if (app?.canvas) app.canvas.dataset.firstSkillQuest = FIRST_SKILL_QUEST_ID;
+  // One notice (pushActivity shows it): the accept path's extra toast would say it twice.
+  pushActivity(`New quest: ${result.def.title}. ${cleanQuestMarkup(result.def.desc)}`);
+  updateHud();
+}
+
 function handleSkillCompletions(completed, { offline = false } = {}) {
   for (const row of completed || []) {
     const name = row.def?.name || row.classTsid;
@@ -28462,6 +28480,8 @@ function handleSkillCompletions(completed, { offline = false } = {}) {
   // inc_skills.js:1513 (on learning) and player.js:217 (on login): eleven skills known.
   // Solo counts only the ones learned beyond the demo kit (G306); saves that hold it keep it.
   if (skillsLearnedCount() >= 11) engine.grantAchievement('first_eleven_skills');
+  // G979: a first skill learned (on load too: boot runs this for every save) starts Buy a Bag.
+  startFirstSkillQuest();
 }
 
 function updateSkillChrome(now = Date.now()) {

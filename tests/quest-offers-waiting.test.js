@@ -13,8 +13,8 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=92c75858';
-import { questStatus, waitingOffers } from '../public/js/quest-offers.js?v=4debd26e';
-import { questCountToast, questOffersFeature, showWaitingOffer } from '../public/js/features/quest-offers-feature.js?v=23f081e1';
+import { questStatus, waitingOffers } from '../public/js/quest-offers.js?v=d13ce526';
+import { questCountToast, questOffersFeature, showWaitingOffer } from '../public/js/features/quest-offers-feature.js?v=0b747f6e';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
@@ -76,25 +76,25 @@ describe('G225 waiting quest offers', () => {
   });
 
   it('pops an emergency offer on the street with no close, and an ordinary one waits', () => {
-    // Level 2 + Alchemy: buy_bag (an emergency) first, then ordinary offers.
-    const engine = offerEngine({ level: 2, skills: ['alchemy_1'] });
+    // Level 3 + Alchemy: send_mail (an emergency) first, then ordinary offers (G979: buy_bag is never offered).
+    const engine = offerEngine({ level: 3, skills: ['alchemy_1'] });
     questOffersFeature.init(engine);
     const t0 = Date.now();
     questOffersFeature.onTick(16, t0 + 12_500, engine);
     assert.equal(engine.dialogs.length, 1, 'the emergency pops');
     assert.equal(engine.dialogs[0].urgent, true);
     assert.equal(engine.dialogs[0].inLog, false);
-    assert.equal(engine.data.questOfferCard, 'buy_bag:street');
+    assert.equal(engine.data.questOfferCard, 'send_mail:street');
     // Closed by force without an answer: it shows again on the next check (onEmergencyTick).
     engine.dialogOpen = false;
     questOffersFeature.onTick(16, t0 + 12_600, engine);
-    assert.equal(questStatus(engine.questState, 'buy_bag'), 'offered');
+    assert.equal(questStatus(engine.questState, 'send_mail'), 'offered');
     questOffersFeature.onTick(16, t0 + 43_000, engine);
     assert.equal(engine.dialogs.length, 2);
     assert.equal(engine.dialogs[1].title, engine.dialogs[0].title);
     engine.dialogs[1].onAccept();
     engine.dialogOpen = false;
-    assert.equal(questStatus(engine.questState, 'buy_bag'), 'active');
+    assert.equal(questStatus(engine.questState, 'send_mail'), 'active');
   });
 
   it('puts an ordinary offer in the log with a count, opens it from "Show me", and keeps it on close', () => {

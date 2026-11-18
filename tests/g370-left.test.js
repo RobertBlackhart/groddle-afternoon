@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=92c75858';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=4debd26e';
+import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=d13ce526';
 import { applyBuff, createBuffState } from '../public/js/buffs.js?v=57e5d8e0';
 import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=a3093922';
 import { FEAT_BY_ID, UNWIRED_FEATS, WIRED_FEATS, featsInEpic } from '../public/js/solo-feats.js?v=3bc9b43c';

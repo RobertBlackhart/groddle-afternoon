@@ -44,6 +44,9 @@ export const SPECIAL_TRIGGERS = Object.freeze({
   zero_mood: { source: 'players/inc_metabolics.js 216', triggers: [{ type: 'event', event: 'mood_zero', adminOnly: true }] },
   smuggling_basic: { source: 'items/npc_smuggler.js 376', triggers: [{ type: 'npc', npc: 'npc_smuggler' }] },
   high_jump: { source: 'quests/de_embiggenify_part2.js 79', triggers: [{ type: 'quest', quest: 'de_embiggenify_part2', delaySec: 60 }] },
+  // G979: started, accepted, by the first skill (GATE_DEVIATIONS buy_bag); the familiar never offers it
+  // (no 'first_skill' event reaches the offer checks: game.js startFirstSkillQuest starts it itself).
+  buy_bag: { source: 'quests/learn_first_skill.js 74-76', triggers: [{ type: 'event', event: 'first_skill', start: true }] },
 });
 
 const NO_GIVER = 'no quests_offer, startQuest, setAvailableQuests or skill-map line names it; only the admin /testquest (main.js 2359-2372) offers it';
@@ -57,11 +60,6 @@ export const STAND_INS = Object.freeze({
   master_milker: { gate: { quests: ['animalkinship_milk_butterflies'] }, row: 'R18', gsjs: NO_GIVER, why: 'milking quest after the Animal Kinship milking quest' },
   rannacramble: { gate: { quests: ['master_milker'], region: 'Aranna' }, row: 'G277', gsjs: NO_GIVER, why: '"Take a hike through Aranna"' },
   doody_inspector: { gate: { quests: ['animalkinship_pet_piggies'] }, row: 'R18', gsjs: NO_GIVER, why: 'piggy plops follow piggy care' },
-  buy_bag: {
-    gate: { level: 2 }, row: 'G460', seenOnlyIn: ['quests/learn_first_skill.js'],
-    gsjs: 'started only by learn_first_skill onComplete_custom (learn_first_skill.js 74-76), the 2011 tutorial that nothing in the 2012 source starts (EXCLUDE removed_feature); the original gate was "once your first skill is under way"',
-    why: 'early pack-space quest (source: emergency, newxp era)',
-  },
   spice_must_flow: { gate: { npc: 'street_spirit_groddle' }, row: 'R18', gsjs: `${NO_GIVER}; end_npcs street_spirit_groddle, and its offer is a street spirit speaking`, why: 'end_npcs: street_spirit_groddle' },
   // Meet the Merchants (G121): part 1's offer is the pet rock talking ("I'm your pet rock"), so the
   // Magic Rock gives it; its end NPC, the Gardening Tools Vendor, then offers parts 2-4 (their offer text
@@ -100,7 +98,7 @@ export const GATE_DEVIATIONS = Object.freeze({
   // Quest rooms (public/js/quest-rooms/catalog.js OFFER_OVERRIDES, each with its own why).
   help_juju_bandits: { kind: ['giver'], row: 'G70', ruling: null, why: 'npc_juju_bandit stands in for the Savanna dust trap (inc_special_locations.js 294)' },
   join_club: { kind: ['giver', 'conditions'], row: 'G80', ruling: null, why: 'the Butler offers it at 30128 iMG (inc_stats.js 313-322); the Magic Rock when there is no Butler (no_butler)' },
-  join_club_reminisce: { kind: ['canOffer'], row: 'R18', ruling: null, why: 'canOffer is admins only (pc.is_god); opened to players through the Play Cube an hour after Join the Club' },
+  join_club_reminisce: { kind: ['canOffer'], row: 'R18', ruling: 'Austin 2026-11-17 G979: keep', why: 'canOffer is admins only (pc.is_god); opened to players through the Play Cube an hour after Join the Club' },
   an_autumn_day: { kind: ['giver'], row: 'G562', ruling: null, why: 'a Zutto street spirit offered it (street_spirit_zutto.js 441-449); the remake offers it once A Summer\'s Day is done' },
   le_miserable: {
     kind: ['giver', 'conditions'], row: 'G107', ruling: 'Austin 2026-10-24: one real day after Firefly Whistle (source: ten days)',
@@ -116,7 +114,14 @@ export const GATE_DEVIATIONS = Object.freeze({
   firefly_whistle: { kind: ['giver'], row: 'R18', ruling: null, why: 'npc_firefly.js 437 offers it by its overlay (done_payload quest_name); the familiar delivers it' },
   // Home Tower (js/features/home-tower-feature.js): the Magic Rock's list names it (magic_rock.js
   // 778-780) but canOffer returns false (build_a_tower.js 67-69), so the 2012 game never offered it.
-  build_a_tower: { kind: ['canOffer'], row: 'R18', ruling: null, why: 'canOffer false in the source; the remake offers it at level 18 without a Tower' },
+  build_a_tower: { kind: ['canOffer'], row: 'R18', ruling: 'Austin 2026-11-17 G979: keep', why: 'canOffer false in the source; the remake offers it at level 18 without a Tower' },
+  // Buy a Bag: learn_first_skill's onComplete_custom started it, accepted (learn_first_skill.js 74-76), but
+  // nothing in the 2012 source starts learn_first_skill (build-quests.mjs EXCLUDE removed_feature). It was a
+  // level 2 offer (G460) until G979: SPECIAL_TRIGGERS names the moment; game.js starts it.
+  buy_bag: {
+    kind: ['giver'], row: 'G979', ruling: 'Austin 2026-11-17 G979: Buy a Bag starts when the first skill is learned',
+    why: 'started, accepted, with the first skill started or learned (js/quest-offers.js claimFirstSkillQuest; learn_skill flag, inc_skills.js 893); a save past that point gets it once on load',
+  },
   // Tutorial practice quests: a later quest's prereq is met by the skill and its tool (G484, ticket 28).
   animalkinship_1: { kind: ['conditions'], row: 'G484', ruling: null, why: 'PREREQ_PROXY: the skill stands for the newxp practice quest' },
   ezcooking_1: { kind: ['conditions'], row: 'G484', ruling: null, why: 'PREREQ_PROXY: the skill and Knife & Board' },

@@ -30,9 +30,9 @@ import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJob
 import { routeGraph } from '../public/js/map-routes.js?v=84356b3e';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
-import { placeIndex, questHold, questStoryNeeds } from '../public/js/quest-reach.js?v=c1916698';
+import { placeIndex, questHold, questStoryNeeds } from '../public/js/quest-reach.js?v=4e7be50a';
 import { reachableStreets, streetGraph } from '../public/js/street-graph.js?v=114647c2';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=542b25e2';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=1c79dc91';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');
