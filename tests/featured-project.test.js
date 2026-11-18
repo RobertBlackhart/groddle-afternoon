@@ -11,9 +11,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../public/js/featured-project.js?v=4210bead';
-import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=46bffa44';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=d705c6b7';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=1180ebbd';
+import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=6bd977a8';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=ac5ef51e';
 import { jobIndicatorView } from '../public/js/job-indicator.js?v=cc74c26a';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=71fa73cd';
 import { rowFromServer } from '../public/js/street-jobs-mp.js?v=9de15a33';
@@ -125,6 +125,29 @@ describe('the featured project message (js/featured-project.js)', () => {
     for (const text of [FEATURED_TEXT.heading, FEATURED_TEXT.copy, FEATURED_TEXT.toast('X'), PROJECTS_TEXT.featuredCopy, featuredWhere(f), featuredStatus(f, NOW)]) {
       assert.ok(!/[–—]/.test(text), `no dashes: ${text}`);
     }
+  });
+
+  it('G1023: a board street resting after a build says when it opens, in the line words and its countdown', () => {
+    const f = featuredFromServer({ ...MSG, phase: 0, ready: NOW + 1000 + 12 * 60_000, rest: true }, 1000);
+    assert.equal(f.resting, true);
+    assert.equal(f.readyAt, NOW + 12 * 60_000, 'in this page clock');
+    assert.equal(featuredStatus(f, NOW), 'Opens in 12 min', 'not "the next phase": nothing has opened yet');
+    assert.equal(featuredPillText(f, NOW), 'Featured: Tumble Rd 1 · opens in 12 min');
+    assert.equal(featuredWaitMins(f, NOW + 11 * 60_000 + 1), 1);
+    assert.equal(featuredPillText(f, NOW + 12 * 60_000), 'Featured: Tumble Rd 1 · 37%', 'the progress again once it opens');
+    assert.equal(featuredStatus(f, NOW + 12 * 60_000), 'Phase 1 of 4 · 37% built');
+    assert.equal(featuredFromServer({ ...MSG, ready: NOW + 60_000 }).resting, false, 'a phase wait is not the rest');
+    assert.equal(featuredFromServer({ ...MSG, rest: true }).resting, false, 'no rest without its end');
+    const doc = fakeDoc();
+    const plate = doc.createElement('div');
+    plate.id = 'street-nameplate';
+    doc.body.append(plate);
+    const line = renderFeaturedLine(doc, f, { now: NOW });
+    assert.equal(line.dataset.tip, 'Featured: Tumble Rd 1 · opens in 12 min');
+    assert.match(line.getAttribute('aria-label'), /Opens in 12 min\.$/);
+    const src = read('public/js/features/street-jobs-feature.js');
+    assert.match(src, /featuredTick = setTimeout\(\(\) => drawFeatured\(engine\)/, 'the minutes count down');
+    assert.ok(!/[–—]/.test(FEATURED_TEXT.waiting(3)));
   });
 });
 

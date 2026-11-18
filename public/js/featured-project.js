@@ -22,7 +22,8 @@ export const FEATURED_TEXT = Object.freeze({
   copy: 'One street project at a time, for everyone to build together. It stays featured until it is built.',
   open: 'See the project',
   toast: (label) => `New featured street project: ${label}.`,
-  waiting: 'Opens soon',
+  // G1023: a street in its 30-minute post-build rest shows no board (Glitch inc_jobs.js 463-467).
+  waiting: (mins) => `Opens in ${mins} min`,
   needs: 'Needs',
 });
 
@@ -32,8 +33,9 @@ const words = (v, n = 80) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').tr
 
 /**
  * project_featured into { jobId, kind, street, board, label, hub, boardLabel, phase, phases, perc,
- * percent, since, by, readyAt, row } in this page's clock, or null when nothing is featured.
- * `row` is the server's row as it came (street-jobs-mp.js rowFromServer reads it).
+ * percent, since, by, readyAt, resting, row } in this page's clock, or null when nothing is featured.
+ * `row` is the server's row as it came (street-jobs-mp.js rowFromServer reads it). `resting`: readyAt
+ * is the board street's post-build rest ending (G1023), not the next phase opening.
  * @param {object} msg
  * @param {number} offset server ms minus this page's ms
  */
@@ -57,6 +59,7 @@ export function featuredFromServer(msg, offset = 0) {
     since: local(msg.since),
     by: msg.by === 'admin' ? 'admin' : 'auto',
     readyAt: local(msg.ready),
+    resting: msg.rest === true && whole(msg.ready) > 0,
     row: msg.row && typeof msg.row === 'object' ? msg.row : null,
   };
 }
@@ -66,18 +69,28 @@ export function featuredChanged(prev, next) {
   return (prev?.jobId || '') !== (next?.jobId || '');
 }
 
-/** The bubble line's tooltip (and the phone Menu row): "Featured: Lowland Slough · 25%". */
-export function featuredPillText(f) {
-  if (!f) return '';
-  return `${FEATURED_TEXT.tag}: ${f.label} · ${f.percent}%`;
+/** Whole minutes until it opens (at least 1), or 0 when it is open. */
+export function featuredWaitMins(f, now = Date.now()) {
+  return f?.readyAt > now ? Math.max(1, Math.ceil((f.readyAt - now) / 60000)) : 0;
 }
 
-/** How it stands: "Phase 2 of 3 · 40% built", or "Phase 2 of 3 opens in 12 min". */
+/**
+ * The bubble line's tooltip (and the phone Menu row): "Featured: Lowland Slough · 25%", or while its
+ * board street rests after a build (G1023) "Featured: Lowland Slough · opens in 12 min".
+ */
+export function featuredPillText(f, now = Date.now()) {
+  if (!f) return '';
+  const mins = f.resting ? featuredWaitMins(f, now) : 0;
+  return `${FEATURED_TEXT.tag}: ${f.label} · ${mins ? FEATURED_TEXT.waiting(mins).toLowerCase() : `${f.percent}%`}`;
+}
+
+/** How it stands: "Phase 2 of 3 · 40% built", "Phase 2 of 3 opens in 12 min", or (resting) "Opens in 12 min". */
 export function featuredStatus(f, now = Date.now()) {
   if (!f) return '';
   const phase = f.phases > 1 ? `Phase ${f.phase + 1} of ${f.phases}` : '';
-  if (f.readyAt > now) {
-    const mins = Math.max(1, Math.ceil((f.readyAt - now) / 60000));
+  const mins = featuredWaitMins(f, now);
+  if (mins && f.resting) return FEATURED_TEXT.waiting(mins);
+  if (mins) {
     return `${phase || 'The next phase'} opens in ${mins} min`;
   }
   return [phase, `${f.percent}% built`].filter(Boolean).join(' · ');

@@ -17,7 +17,7 @@
  * #featured-project-row [data-featured-job].
  */
 
-import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=4210bead';
+import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=1180ebbd';
 
 /** The line in the street name bubble; it keeps the old pill's id so routes and QA still find it. */
 export const FEATURED_PILL_ID = 'featured-project-pill';
@@ -152,7 +152,7 @@ export function renderFeaturedLine(doc, f, o = {}) {
   line.style.setProperty('--p', `${pct(f.percent)}%`);
   line.dataset.featuredJob = f.jobId;
   line.dataset.percent = String(pct(f.percent));
-  line.dataset.tip = featuredPillText(f);
+  line.dataset.tip = featuredPillText(f, o.now);
   if (o.needs) line.dataset.sub = o.needs;
   else delete line.dataset.sub;
   line.setAttribute('aria-label', `${featuredLabel(f, o.now)}${o.needs ? ` ${o.needs}.` : ''}`);
@@ -194,10 +194,11 @@ export function renderFeaturedMenuRow(doc, f, o = {}) {
     row.dataset.featuredJob = '';
     return row;
   }
-  const sig = `${f.jobId}|${f.label}|${f.percent}`;
+  const text = featuredPillText(f, o.now);
+  const sig = `${f.jobId}|${text}|${f.percent}`;
   if (row.dataset.sig !== sig) {
     row.dataset.sig = sig;
-    row.replaceChildren(starIcon(doc), span(doc, 'fp-text', featuredPillText(f)), bar(doc, f.percent));
+    row.replaceChildren(starIcon(doc), span(doc, 'fp-text', text), bar(doc, f.percent));
   }
   row.dataset.featuredJob = f.jobId;
   row.setAttribute('aria-label', `${featuredLabel(f, o.now)}${o.needs ? ` ${o.needs}.` : ''}`);

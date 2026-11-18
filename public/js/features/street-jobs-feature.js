@@ -157,11 +157,11 @@ import { SIGN_ARMS } from '../map-routes.js?v=3cadc716';
 import { TELEPORTERS } from '../hidden-floors.js?v=014b5377';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=fe5054b5';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=d705c6b7';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ac5ef51e';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine } from '../featured-project.js?v=4210bead';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=46bffa44';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=1180ebbd';
+import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=6bd977a8';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
@@ -2658,6 +2658,7 @@ function publish(engine) {
 const mineRows = new Map();
 /** G656: the featured street project (js/featured-project.js featuredFromServer), online only; null in solo. */
 let featured = null;
+let featuredTick = 0;
 const pj = { panel: null, btn: null, dot: null, open: false, sessionSeen: 0, sig: '', badge: -1, asked: 0, answered: false, openNeeds: new Set(), last: '', pack: '', packAt: 0 };
 
 /** The rows the panel reads: the save's in solo; online the server's list, then this page's live board rows. */
@@ -2741,8 +2742,15 @@ function drawFeatured(engine) {
   const onOpen = () => openFeatured(engine);
   // Ticket 240: the row (and the line's tip) say what is left, from the Projects panel's own entry.
   const needs = f && engine ? featuredNeedsLine(featuredEntry(engine, Number(state.trackerSeen) || 0)) : '';
-  renderFeaturedLine(document, f, { onOpen, now: Date.now(), needs });
-  renderFeaturedRow(document, f, { onOpen, now: Date.now(), needs });
+  const now = Date.now();
+  renderFeaturedLine(document, f, { onOpen, now, needs });
+  renderFeaturedRow(document, f, { onOpen, now, needs });
+  // G1023: "opens in N min" counts down a minute at a time and gives way to the progress when it opens.
+  clearTimeout(featuredTick);
+  featuredTick = 0;
+  const wait = featuredWaitMins(f, now);
+  if (wait) featuredTick = setTimeout(() => drawFeatured(engine), ((f.readyAt - now) % 60_000 || 60_000) + 50);
+  engine?.setData?.('featuredWait', wait ? String(wait) : '');
   engine?.setData?.('featuredNeeds', needs);
   engine?.setData?.('featuredJob', f?.jobId || '');
   engine?.setData?.('featuredPercent', f ? String(f.percent) : '');
