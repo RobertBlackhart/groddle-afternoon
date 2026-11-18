@@ -54,6 +54,7 @@ describe('#497 a walking animal stays on its line', () => {
 
   it('game.js walkers (Piggies, Chickens) go through it', () => {
     const g = readFileSync(join(root, 'public/game.js'), 'utf8');
-    assert.match(g, /function followWalkFloor\(spr, dt = 1\) \{\n  spr\.y = walkerFloorY\(streetPlatforms, spr\.x, spr\.y, dt\);\n\}/);
+    // #494 follows the floor from where it stood; #497 is its fallback when that loses the line.
+    assert.match(g, /function followWalkFloor\(spr, dt = 1\) \{[\s\S]*?if \(!Number\.isFinite\(y\)\) \{\n    spr\.y = walkerFloorY\(streetPlatforms, spr\.x, spr\.y, dt\);/);
   });
 });
