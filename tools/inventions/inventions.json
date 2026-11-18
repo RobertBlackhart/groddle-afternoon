@@ -1276,16 +1276,19 @@
    "id": "winter-walk-snow",
    "title": "Falling snow drawn over Winter Walk",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
      "file": "public/game.js",
-     "symbol": "spawnWinterSnow"
+     "symbol": "spawnWinterSnow",
+     "gone": true
     }
    ],
    "why": "Atmosphere; Glitch had no weather system in the client or GSJS.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop the falling snow and its veil; the white blizzard bank at the portal stays",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {

@@ -89,3 +89,11 @@ describe('G978: the Rook has no stun ring or drawn feathers', () => {
     assert.match(rook, /playOverlay\(engine\.PIXI, 'rook_feathers_falling'/);
   });
 });
+
+describe('G978: no falling snow on the Winter Walk', () => {
+  it('the snow and its veil are gone; the blizzard bank at the portal stays (Glitch had no weather)', () => {
+    dropped('winter-walk-snow');
+    assert.doesNotMatch(game, /winterSnow|_winterFlake|_winterVeil/);
+    assert.match(game, /function spawnWinterPortal\(/);
+  });
+});

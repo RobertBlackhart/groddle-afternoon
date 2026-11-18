@@ -220,12 +220,6 @@ describe('player and item overlays draw over the street\'s front layers', () => 
     assert.match(game, /world\.addChild\(bgLayer, entityLayer, streetFrontLayer, atmosphere, fxLayer\);/);
   });
 
-  it('the Winter Walk snow falls over the front layers, under the bubbles and chip', () => {
-    const snow = game.slice(game.indexOf('function spawnWinterSnow()'), game.indexOf('function updateWinterSnow('));
-    assert.match(snow, /fxLayer\.addChildAt\(snow, 0\);/);
-    assert.doesNotMatch(snow, /entityLayer\.addChild/);
-  });
-
   for (const [what, file, pattern] of [
     ['the Wine of the Dead pour', 'public/js/features/homes-feature.js', /const layer = engine\.fxLayer \|\| engine\.entityLayer;\s*if \(!frames\.length[\s\S]{0,400}layer\.addChild\(clip\);/],
     ['a potion bottle', 'public/js/potion-bottle-fx.js', /const layer = engine\?\.fxLayer \|\| engine\?\.entityLayer;[\s\S]{0,1600}playItemOverlay\(engine\.PIXI, def, \{\s+layer,/],

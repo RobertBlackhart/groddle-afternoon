@@ -2758,7 +2758,6 @@ let winterWalkState = null;
 let winterWalkSourceLocation = null;
 let winterWalkMotes = [];
 let winterWalkPortal = null;
-let winterSnow = null;
 let winterWalkStartPromise = null;
 let winterWalkTransitionBusy = false;
 let winterWalkAutoNextAt = 0;
@@ -19368,70 +19367,6 @@ function winterRoutePoints(stage, count) {
 function clearWinterAtmosphere() {
   if (winterWalkFaded && player) player.alpha = 1;
   winterWalkFaded = false;
-  if (winterSnow?.parent) winterSnow.parent.removeChild(winterSnow);
-  if (winterSnow && !winterSnow.destroyed) winterSnow.destroy({ children: true });
-  winterSnow = null;
-}
-
-function spawnWinterSnow() {
-  clearWinterAtmosphere();
-  if (!fxLayer) return null;
-  // Weather over the whole view: in the overlay holder, over the street's front layers (the Winter
-  // Walk's front ground and drifts) as well as the avatars; under the speech bubbles and hint chip.
-  const snow = new PIXI.Container();
-  snow.label = 'winter-snow';
-  snow.eventMode = 'none';
-
-  const veil = new PIXI.Graphics();
-  // A unit square stretched to the view each frame (updateWinterSnow): the view follows the window.
-  veil.rect(0, 0, 1, 1).fill({ color: winterWalkState?.stage === 'haven' ? 0x18345f : 0xc9efff, alpha: 0.055 });
-  veil._winterVeil = true;
-  snow.addChild(veil);
-
-  const count = winterWalkState?.stage === 'haven' ? 64 : 92;
-  for (let i = 0; i < count; i += 1) {
-    const flake = new PIXI.Sprite(PIXI.Texture.WHITE);
-    const size = 1.4 + ((i * 17) % 31) / 10;
-    flake.width = size;
-    flake.height = size;
-    flake.tint = i % 7 === 0 ? 0xc8eaff : 0xffffff;
-    flake.alpha = 0.34 + ((i * 13) % 54) / 100;
-    flake.x = (i * 149 + 31) % VIEW_W;
-    flake.y = (i * 83 + 17) % VIEW_H;
-    flake._winterFlake = true;
-    flake._vx = -0.18 - ((i * 7) % 13) / 28;
-    flake._vy = 0.42 + ((i * 11) % 17) / 18;
-    flake._phase = i * 0.91;
-    snow.addChild(flake);
-  }
-  fxLayer.addChildAt(snow, 0);
-  winterSnow = snow;
-  return snow;
-}
-
-function updateWinterSnow(dt) {
-  if (!winterSnow || winterSnow.destroyed) return;
-  const left = Number.isFinite(camTarget) ? camTarget : 0;
-  const top = Number.isFinite(camY) ? camY : 0;
-  const veil = winterSnow.children.find((child) => child._winterVeil);
-  if (veil) {
-    veil.position.set(left, top);
-    veil.width = VIEW_W;
-    veil.height = VIEW_H;
-  }
-  for (const flake of winterSnow.children) {
-    if (!flake._winterFlake) continue;
-    flake._phase += 0.018 * dt;
-    flake.x += (flake._vx + Math.sin(flake._phase) * 0.12) * dt;
-    flake.y += flake._vy * dt;
-    if (flake.x < left - 18) flake.x = left + VIEW_W + 18;
-    if (flake.x > left + VIEW_W + 18) flake.x = left - 18;
-    if (flake.y > top + VIEW_H + 18) {
-      flake.y = top - 18;
-      flake.x = left + ((flake._phase * 173) % VIEW_W);
-    }
-    if (flake.y < top - 24) flake.y = top + VIEW_H + 18;
-  }
 }
 
 function spawnWinterMotes(stage) {
@@ -19596,7 +19531,6 @@ function setupWinterWalkStage(stage) {
   clearWorldEntities();
   for (const sign of bgLayer?.signViews || []) sign.visible = false;
   if (currentStreet) currentStreet.signposts = [];
-  spawnWinterSnow();
   spawnWinterMotes(stage);
   spawnWinterPortal(stage);
   const route = winterRouteCandidates(stage);
@@ -19861,7 +19795,6 @@ function confirmLeaveWinterWalk() {
 function updateWinterWalk(dt) {
   if (!winterWalkIsInstanced() || winterWalkTransitionBusy) return;
   const now = Date.now();
-  updateWinterSnow(dt);
   if (winterWalkRemainingMs(winterWalkState, now) <= 0) {
     expireWinterWalk(winterWalkState, now);
     pushActivity('The five-minute Winter Walk timer ran out.');

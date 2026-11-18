@@ -81,7 +81,7 @@ test('five-minute expiry is exact and blocks late route progress', () => {
   assert.equal(state.status, 'expired');
 });
 
-test('client ships clean recovered exit art, three-phase routing, snow, and autoplay QA', () => {
+test('client ships clean recovered exit art, three-phase routing and autoplay QA, and no falling snow', () => {
   const game = fs.readFileSync(path.join(publicDir, 'game.js'), 'utf8');
   const html = fs.readFileSync(path.join(publicDir, 'play/index.html'), 'utf8');
   const css = fs.readFileSync(path.join(publicDir, 'style.css'), 'utf8');
@@ -94,7 +94,8 @@ test('client ships clean recovered exit art, three-phase routing, snow, and auto
     fs.existsSync(path.join(publicDir, 'assets', 'decos', 'groddle', 'ladder_interior_4steps.webp')),
     true
   );
-  assert.match(game, /spawnWinterSnow/);
+  assert.doesNotMatch(game, /spawnWinterSnow|winterSnow/); // G978: no falling snow; the blizzard bank at the portal stays
+  assert.match(game, /spawnWinterPortal/);
   assert.match(game, /enterWinterHavenStage/);
   assert.match(game, /reenterWinterWalkStage/);
   assert.match(game, /surface>haven>return/);
