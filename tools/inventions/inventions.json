@@ -4686,6 +4686,20 @@
    "rows": [
     "G1016"
    ]
+  },
+  {
+   "id": "classic-quest-notice-backing",
+   "title": "Classic skin: the \"New Quest Added!\" notice left of the Quests button has a page-colour background so its words don't cross the iMG count (G1004).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/css/classic.css",
+     "symbol": "fixi block, quest added notice"
+    }
+   ],
+   "why": "Glitch's client drew the notice in the same spot with no backing; in the remake's Classic layout its words crossed the iMG count and couldn't be read (lane fixi, 2026-11-18).",
+   "rows": []
   }
  ]
 }
