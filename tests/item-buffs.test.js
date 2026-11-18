@@ -200,7 +200,7 @@ describe('buff save and client wiring', () => {
     assert.match(html, /style\.css\?v=[0-9a-f]{8}/);
     assert.match(css, /\.buff-chip/);
     assert.match(css, /body\.buff-purple-pulse::after/);
-    assert.match(game, /!state\.muted && audio\.ctx\?\.state === 'suspended'/);
+    assert.match(game, /!state\.muted && contextNeedsResume\(audio\.ctx\?\.state\)/); // G1000: suspended or interrupted
   });
 });
 

@@ -71,7 +71,9 @@ describe('G918 street music only when it is wanted', () => {
   });
 
   it('a tap that ends (touchend, iPhone) still unlocks Web Audio and the music', () => {
-    assert.match(game, /for \(const type of \['pointerdown', 'keydown', 'touchend'\]\) window\.addEventListener\(type, resumeAudioOnGesture, \{ capture: true \}\);/);
+    // G1000: the one resume path (js/audio-resume.js) listens for touchend with the other gestures.
+    assert.match(game, /createAudioResumer\(\{/);
+    assert.match(readFileSync(join(root, 'public/js/audio-resume.js'), 'utf8'), /'pointerdown', 'keydown', 'touchend'/);
     // #504: the autoplay retry lives with the voice (js/music-voice.js).
     const voice = readFileSync(join(root, 'public/js/music-voice.js'), 'utf8');
     assert.match(voice, /for \(const type of \['pointerdown', 'keydown', 'touchend'\]\) win\?\.addEventListener\?\.\(type, retry, \{ once: true, capture: true \}\);/);

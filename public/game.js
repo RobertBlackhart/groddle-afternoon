@@ -1072,6 +1072,7 @@ import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
 import { flyItemToPack, noteFlown, unflownItems } from './js/pack-flight.js?v=8da4ab78';
 import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
+import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=98fff2d4';
@@ -34042,7 +34043,7 @@ async function main() {
         if (app?.canvas) app.canvas.dataset.groundDemo = rows.join(',');
       }, 1500);
     }
-    if (!state.muted && audio.ctx?.state === 'suspended') {
+    if (!state.muted && contextNeedsResume(audio.ctx?.state)) {
       try { await audio.ctx.resume(); } catch (_) { /* */ }
     }
     startMusic();
@@ -34180,19 +34181,23 @@ async function main() {
   document.getElementById('mute-btn')?.addEventListener('click', async () => {
     state.muted = !state.muted;
     saveMutedPreference(state.muted);
-    if (!state.muted && audio.ctx?.state === 'suspended') {
+    if (!state.muted && contextNeedsResume(audio.ctx?.state)) {
       try { await audio.ctx.resume(); } catch (_) { /* audio remains opt-in */ }
     }
     applyMute();
     playSound('UI_TOGGLE', { volume: 0.5 });
   });
-  // Browsers hold audio until the first click or key press; start it then, unless muted.
-  const resumeAudioOnGesture = async () => {
-    if (state.muted || audio.ctx?.state !== 'suspended') return;
-    try { await audio.ctx.resume(); } catch (_) { /* tries again on the next gesture */ }
-  };
-  // G918: an iPhone tap unlocks audio when it ends (touchend), so that counts too.
-  for (const type of ['pointerdown', 'keydown', 'touchend']) window.addEventListener(type, resumeAudioOnGesture, { capture: true });
+  // G1000 (root R25): one path brings audio back, unless muted: browsers hold it until the first
+  // click or key press (G918: an iPhone tap counts when it ends, touchend), and after AFK, another
+  // tab or Safari's "interrupted" (a call, Siri) the page coming back (visibilitychange, focus,
+  // pageshow) resumes the AudioContext and plays a street music element the system paused (never
+  // one whose short loop runs from its buffer, #504). js/audio-resume.js.
+  createAudioResumer({
+    getCtx: () => audio.ctx,
+    getVoice: () => audio.music,
+    isMuted: () => state.muted,
+    onResume: (reason, plan) => setCanvasData('audioResume', `${reason}:${plan.ctx ? 'ctx' : ''}${plan.el ? '+el' : ''}`),
+  });
   // Panel open/close and dialog button clicks (client CLICK_SUCCESS/FAILURE).
   watchPanelSounds(document, playSound, soundForPanel);
   watchButtonClicks(document, playSound);
@@ -34658,7 +34663,7 @@ async function main() {
   if (new URLSearchParams(location.search).has('soundtest')) {
     import('./js/sound-test.js?v=e83bbfe7').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
       state.muted = false;
-      if (audio.ctx?.state === 'suspended') {
+      if (contextNeedsResume(audio.ctx?.state)) {
         try { await audio.ctx.resume(); } catch (_) { /* opt-in */ }
       }
       applyMute();
