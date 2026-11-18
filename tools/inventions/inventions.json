@@ -4763,6 +4763,20 @@
    ],
    "why": "Glitch's chat had no threads; the remake's threads refused a reply to an older line and lost the typed words. Austin chose the button (offered, one tap, never sent by itself) on 2026-11-18 (lane next).",
    "rows": []
+  },
+  {
+   "id": "tower-floor-tile-zero-main",
+   "title": "Tower floors draw their first floor tile with the floor's main piece, not its left piece, so no hairline shows at x 150 (#508, G1028).",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-wallpaper.js",
+     "symbol": "towerPieces floorPiece"
+    }
+   ],
+   "why": "homes_get_floor_sprite gives index 0 the left piece; its last pixel column is part transparent (57% at 2x, 31% at 3x) and showed a hairline beside the elevator. Austin asked for the smallest local fix (lane next, 2026-11-18); the art-edge fix for every room (R27) is separate.",
+   "rows": []
   }
  ]
 }

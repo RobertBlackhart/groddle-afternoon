@@ -283,7 +283,11 @@ function towerPieces(state, W, construction) {
     const floorHash = textureHash('floor', state.floor);
     const ceilHash = textureHash('ceiling', state.ceiling);
     for (let i = 0; i < T.wallSegments + 2; i += 1) {
-      add(out, 'base', split(floorSprite(i, floorHash)).piece, SEG * i, floorBottom, SEG, 108, { target: 'floor' });
+      // #508 (G1028), ours: the tower's tile 0 is the floor's main piece, not its left one. The left
+      // pieces' last pixel column is part transparent (woodpanel_1_floor_left 57% at 2x), a hairline at
+      // x 150 the elevator does not hide; the elevator stands over that end, so the left edge never shows.
+      const floorPiece = i === 0 ? floorHash[multiSeg(floorHash, 'main', 0)] : floorSprite(i, floorHash);
+      add(out, 'base', split(floorPiece).piece, SEG * i, floorBottom, SEG, 108, { target: 'floor' });
       add(out, 'base', split(ceilingSprite(i, ceilHash)).piece, SEG * i, ceilBottom, SEG, 63, { target: 'ceiling' });
     }
     add(out, 'base', 'ceiling_shadow_left', width + 17 - 300, ceilBottom, 300, 50, { flip: true });

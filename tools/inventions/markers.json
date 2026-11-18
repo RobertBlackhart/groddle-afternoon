@@ -660,6 +660,9 @@
     "ours: // G982 (ours): finishing Pot's Empty Table gives the Feast": "pot-luck-cornucopia",
     "ours: window's line on a badge whose trophy is earned (ours: the original's window said nothing).": "ours-home-trophies"
   },
+  "public/js/home-wallpaper.js": {
+    "ours: // #508 (G1028), ours: the tower's tile 0 is the floor's main piece,": "tower-floor-tile-zero-main"
+  },
   "public/js/imagination.js": {
     "remake-own: * Remake choices (documented in the skill doc): the tutorial is": "ours-imagination"
   },

@@ -18,7 +18,7 @@ import {
   swatchPiece,
   towerWallField,
   wallTargetAt,
-} from '../public/js/home-wallpaper.js?v=f1969400';
+} from '../public/js/home-wallpaper.js?v=cbff4813';
 import {
   INTERIOR,
   TOWER_ROOM,
@@ -129,6 +129,14 @@ describe('room composition (inc_homes.js homes_rebuild_floor)', () => {
     const t = roomPieces({ layout: 'tower', walls, floor: 'woodpanel', ceiling: 'wood' });
     assert.equal(t.width, TOWER_GEO.width);
     assert.equal(t.pieces.filter((p) => p.target === 'floor').length, 8);
+    // #508: tile 0 is the main piece (the left piece's part transparent last column left a hairline at
+    // x 150 under the elevator); a house keeps its left piece.
+    const floorTiles = t.pieces.filter((p) => p.target === 'floor');
+    assert.equal(floorTiles[0].x, 0);
+    assert.equal(floorTiles[0].piece, WALLPAPER_MAPS.floors.woodpanel.main);
+    assert.notEqual(floorTiles[0].piece, WALLPAPER_MAPS.floors.woodpanel.left);
+    const house = roomPieces({ layout: 'house', walls: Array(6).fill('creamy_stripes'), floor: 'woodpanel', ceiling: 'wood' });
+    assert.equal(house.pieces.find((p) => p.target === 'floor').piece, WALLPAPER_MAPS.floors.woodpanel.left);
     assert.equal(t.walls.length, 7);
     assert.equal(t.walls[0].x, 145);
     assert.equal(towerWallField(walls, 6), 'right');
