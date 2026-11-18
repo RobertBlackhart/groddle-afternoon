@@ -43,9 +43,9 @@ import { parseQuestConversation } from '../quests.js?v=4a3fb1da';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { isStandable, worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { landingY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { hellFeature } from './hell-feature.js?v=6da8c49f';
-import { questRoomConverse } from './quest-instances-feature.js?v=1f0920ec';
+import { questRoomConverse } from './quest-instances-feature.js?v=85696646';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,

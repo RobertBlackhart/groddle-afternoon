@@ -44,8 +44,8 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { cleanQuestMarkup } from '../quests.js?v=4a3fb1da';
-import { followPath } from '../street-creatures.js?v=cd0cc0bd';
-import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { followPath } from '../street-creatures.js?v=13b5329f';
+import { followFloorY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
 import {
   CRAB_CLASS,
@@ -266,9 +266,11 @@ function walkShared(engine, crab, p, dtMs) {
   crab.target.sharedHold = crab.mode === 'busy' || talk?.crab === crab;
   if (crab.target.sharedHold) return;
   const dt = Math.max(1, dtMs / (1000 / 60));
+  const fromX = spr.x;
   spr.x = followPath(spr.x, p.x, dt, 1.4);
   const feet = spr.y - FEET_PAD * CRAB_SCALE;
-  const y = walkSurfaceY(engine.platforms, spr.x, Number.isFinite(feet) ? feet : p.y0, { up: 24, down: 40 });
+  // #494: along its floor from where it stood, so a snap of the path (followPath SNAP_PX) lands on the line.
+  const y = followFloorY(engine.platforms, fromX, Number.isFinite(feet) ? feet : p.y0, spr.x, { up: 24, down: 40 });
   if (y != null) spr.y = y + FEET_PAD * CRAB_SCALE;
   const walking = p.pose === 'walk' && !p.held;
   crab.mode = walking ? 'walk' : 'idle';

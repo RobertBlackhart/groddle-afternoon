@@ -28,7 +28,7 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=0d502ab1';
+import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=c399a2f8';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=7b7be8e6';

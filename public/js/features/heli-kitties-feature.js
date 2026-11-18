@@ -39,8 +39,8 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
-import { followPath } from '../street-creatures.js?v=cd0cc0bd';
-import { landingY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { followPath } from '../street-creatures.js?v=13b5329f';
+import { followFloorY, landingY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
   KITTY_ID,
@@ -252,8 +252,9 @@ const HOP_PX = 60;
  * planner and the shared path snapped it far along, up Marylpole Mount's slope or off a ledge), the
  * nearest floor at x, as the solo kitty is placed (setupDemo), instead of keeping a height under the grass.
  */
-export function sharedKittyFloorY(platforms, x, y) {
-  return walkSurfaceY(platforms, x, y, { up: 40, down: 70 }) ?? nearestSurfaceY(platforms, x, y);
+export function sharedKittyFloorY(platforms, x, y, fromX = x) {
+  // #494: followed along its floor from where it stood first (followFloorY), so a snap lands on its own line.
+  return followFloorY(platforms, fromX, y, x, { up: 40, down: 70 }) ?? nearestSurfaceY(platforms, x, y);
 }
 
 /**
@@ -266,8 +267,9 @@ function stepShared(engine, entity, p, dtMs) {
   const { kitty } = entity;
   const at = Date.now();
   const dt = Math.max(1, dtMs / (1000 / 60));
+  const fromX = kitty.x;
   kitty.x = followPath(kitty.x, p.x, dt, 1.4);
-  const y = sharedKittyFloorY(engine.platforms, kitty.x, Number.isFinite(kitty.y) ? kitty.y : p.y0);
+  const y = sharedKittyFloorY(engine.platforms, kitty.x, Number.isFinite(kitty.y) ? kitty.y : p.y0, Number.isFinite(fromX) ? fromX : kitty.x);
   if (y != null) kitty.y = y;
   kitty.dir = p.dir < 0 ? 'left' : 'right';
   kitty.flying = false;

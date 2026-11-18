@@ -65,9 +65,9 @@ import {
   vendorStrip,
 } from '../vendor-npcs.js?v=90b0c123';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { chickenSeed, walkerSpan } from '../street-creatures.js?v=cd0cc0bd';
+import { chickenSeed, walkerSpan } from '../street-creatures.js?v=13b5329f';
 import { measuredGardenVendor } from '../garden-beds.js?v=831b1d97';
-import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { followFloorY, landingY } from '../walk-surface.js?v=c399a2f8';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import {
   VENDOR_POSES,
@@ -81,7 +81,7 @@ import {
   vendorHeld,
   vendorPlan,
   vendorWalkAt,
-} from '../vendor-walk.js?v=031118bc';
+} from '../vendor-walk.js?v=6fa86e9a';
 
 export const VENDOR_NPCS_FEATURE_ID = 'vendor-npcs';
 const ATTRACT_RADIUS = 200; // npc_gardening_vendor.js onPathing: players within 200px
@@ -187,6 +187,8 @@ function spawn(engine, classTsid, point) {
     plan,
     x0: point.x,
     feetY: point.y,
+    // #494: where feetY was last found on its floor (followFloorY follows the line from there).
+    floorX: point.x,
     // QA: &vendorwalkfrom starts the round that far in (the clock runs from the epoch otherwise).
     hold: { lag: from && plan ? (((Date.now() - GAME_EPOCH_MS) % plan.ms) - (from % plan.ms) + plan.ms) % plan.ms : 0, since: 0, until: 0 },
     facing: VENDOR_POSES[classTsid]?.rest || 1,
@@ -237,9 +239,13 @@ function stepNpc(engine, npc, now) {
     if (p && (talking === npc || engine.actingOn?.(npc.target) || (shopOpened && shopNpc === npc))) dir = faceToward(spr.x, p.x, npc.facing);
     pose = now < npc.attractUntil ? 'attract' : talking === npc ? 'talk' : 'idle';
   }
-  // npc_can_fall is false: it keeps to its floor's line.
-  const y = walkSurfaceY(engine.platforms, spr.x, npc.feetY, VENDOR_REACH);
-  if (y != null) npc.feetY = y;
+  // npc_can_fall is false: it keeps to its floor's line. #494: followed along that line from where it
+  // last stood, so a jump along its round (the page's first frame lands far into it) is on the floor too.
+  const y = followFloorY(engine.platforms, npc.floorX, npc.feetY, spr.x, VENDOR_REACH);
+  if (y != null) {
+    npc.feetY = y;
+    npc.floorX = spr.x;
+  }
   spr.y = npc.feetY + 2;
   npc.facing = dir;
   let clip = vendorClip(npc.classTsid, pose, dir);

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=982c1cd0';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f7c455a0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=15584576';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -835,7 +835,7 @@ import {
 } from './js/travel.js?v=7fd6e363';
 import { facingScaleX, facingFromVelocity } from './js/avatar.js?v=c4da73ea';
 import { AFK_TIMEOUT_MS, ANIMS, ANIM_FPS, CORE_FRAMES, EMOTIONS, EMOTION_MS, IDLE_SHEETS, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, animForState, avatarAnimState, createIdleClock, crowdScaleX, idleSheetFor } from './js/avatar-anims.js?v=fb921bf4';
-import { landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=0d502ab1';
+import { followFloorY, landingY, stackRestY, walkSurfaceY } from './js/walk-surface.js?v=c399a2f8';
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
 import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=a6f5a99b';
 import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from './js/user-path.js?v=68e6892c';
@@ -1033,7 +1033,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=7b7be8e6';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=cd0cc0bd';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=13b5329f';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';
@@ -16195,13 +16195,16 @@ function soloChickenPause(c, dt) {
   return true;
 }
 
+// #494: along its floor from where it last stood, so a shared path's snap (followPath SNAP_PX) lands on the line.
 function followWalkFloor(spr, dt = 1) {
-  const y = walkSurfaceY(streetPlatforms, spr.x, spr.y, { up: 24, down: 24 });
+  const from = Number.isFinite(spr._floorX) ? spr._floorX : spr.x;
+  spr._floorX = spr.x;
+  const y = followFloorY(streetPlatforms, from, spr.y, spr.x, { up: 24, down: 24 });
   if (!Number.isFinite(y)) return;
-  // A step where two lines meet is taken over a few frames, not in one hop.
+  // A step where two lines meet is taken over a few frames, not in one hop; a jump lands.
   const d = y - spr.y;
   const most = 1.5 * Math.max(1, dt);
-  spr.y += Math.abs(d) <= most ? d : Math.sign(d) * most;
+  spr.y += Math.abs(d) <= most || Math.abs(spr.x - from) > 24 ? d : Math.sign(d) * most;
 }
 
 /** The street's height (bounds b - t) for stepAvatar's top and bottom (report #194), 0 for none. */

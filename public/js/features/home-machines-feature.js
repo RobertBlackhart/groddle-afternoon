@@ -108,10 +108,10 @@ import { readVisitScene } from '../neighbours-mp.js?v=81fe8611';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { createSheetLoader } from '../sprite-sheets.js?v=11d9014e';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=ed246c1e';
-import { payAltarBonus } from './machine-rooms-feature.js?v=dce530f8';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=cb1631eb';
+import { payAltarBonus } from './machine-rooms-feature.js?v=67fae3eb';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { nearestSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 export { HOME_MACHINES_ID };

@@ -53,7 +53,7 @@ import { getToolCondition } from '../tools.js?v=4156bba8';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
-import { nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { followFloorY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
   FIBER_ID,
@@ -88,7 +88,7 @@ import {
   stepFox,
 } from '../foxes.js?v=4497a984';
 import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=0a1438dc';
-import { clockOffset } from '../street-creatures.js?v=cd0cc0bd';
+import { clockOffset } from '../street-creatures.js?v=13b5329f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
@@ -529,12 +529,14 @@ function onServerLeg(engine, entity) {
   if (!at) return false;
   const fox = entity.fox;
   const dx = at.x - fox.x;
+  const fromX = fox.x;
   // On its leg; a fresh leg from where this page drew it eases in rather than jumping.
   fox.x = Math.abs(dx) > 400 ? at.x : fox.x + dx * (Math.abs(dx) > 30 ? 0.35 : 1);
   if (at.dir) fox.dir = at.dir < 0 ? 'left' : 'right';
   if (at.state === 'brushed') entity.flashUntil = Math.max(entity.flashUntil, Date.now() + 120);
   else fox.state = at.state;
-  const y = walkSurfaceY(engine.platforms, fox.x, fox.y, { up: 60, down: 90 });
+  // #494: along its floor from where it stood, so a jump onto a far leg lands on the line.
+  const y = followFloorY(engine.platforms, fromX, fox.y, fox.x, { up: 60, down: 90 });
   if (y != null) fox.y = y;
   return true;
 }

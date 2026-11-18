@@ -19,8 +19,8 @@
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { followPath } from '../street-creatures.js?v=cd0cc0bd';
-import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { followPath } from '../street-creatures.js?v=13b5329f';
+import { followFloorY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import {
   FIRE_DRAGON_CLASS,
   FIRE_DRAGON_COPY,
@@ -149,9 +149,11 @@ function spawn(engine, key, point) {
 function walkShared(engine, dragon, p, dtMs) {
   const spr = dragon.sprite;
   const dt = Math.max(1, dtMs / (1000 / 60));
+  const fromX = spr.x;
   spr.x = followPath(spr.x, p.x, dt, 1.6);
   const feet = spr.y - FIRE_DRAGON_SHEET.feetPad;
-  const y = walkSurfaceY(engine.platforms, spr.x, Number.isFinite(feet) ? feet : p.y0, { up: 24, down: 40 });
+  // #494: along its floor from where it stood, so a snap of the path (followPath SNAP_PX) lands on the line.
+  const y = followFloorY(engine.platforms, fromX, Number.isFinite(feet) ? feet : p.y0, spr.x, { up: 24, down: 40 });
   if (y != null) spr.y = y + FIRE_DRAGON_SHEET.feetPad;
   const walking = p.pose === 'walk' && !p.held && now() >= (dragon.faceUntil || 0);
   if (now() >= (dragon.faceUntil || 0)) face(dragon, p.dir < 0 ? 'left' : 'right');

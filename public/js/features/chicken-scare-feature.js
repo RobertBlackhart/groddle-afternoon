@@ -27,10 +27,10 @@
  */
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
-import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
+import { landingY, walkSurfaceY } from '../walk-surface.js?v=c399a2f8';
 import { ANIMAL_PATROL } from '../street-ecology.js?v=7b7be8e6';
 import { forcedRoll } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdSad } from './animal-mood-feature.js?v=b03b1d04';
+import { animalCrowdSad } from './animal-mood-feature.js?v=8fe1b6f6';
 import {
   CHICKEN_CLASS,
   CHICKEN_HOP,

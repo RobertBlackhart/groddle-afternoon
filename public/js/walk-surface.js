@@ -24,6 +24,32 @@ export function walkSurfaceY(platforms, x, y, { up = 40, down = 70 } = {}, solid
   return best;
 }
 
+/** How far a walker's floor is followed in one step (px), as street-creatures.js walkerSpan walks it. */
+export const FOLLOW_STEP_PX = 2;
+
+/**
+ * #494: the floor a walker stands on at toX, followed along its own line from where it stood
+ * (fromX, feet at fromY) by its walk's small step (walkSurfaceY's up and down), as
+ * street-creatures.js walkerSpan finds the run of floor it may walk. A walk set by a clock, or
+ * a shared path that snaps, can move a walker far in one frame (a page's first frame, a clock
+ * offset arriving); the plain lookup from its old height then finds no floor within reach and
+ * the walker stays at that height in the air (the Meal Vendor on Level 2 East). Null when the
+ * line breaks before toX (a gap: the walker's own rule decides).
+ */
+export function followFloorY(platforms, fromX, fromY, toX, { up = 40, down = 70, step = FOLLOW_STEP_PX } = {}, solid = isItemSolid) {
+  const reach = { up, down };
+  let y = walkSurfaceY(platforms, fromX, fromY, reach, solid);
+  if (y == null || !Number.isFinite(toX)) return y;
+  const sign = toX >= fromX ? 1 : -1;
+  const s = Math.max(0.5, Number(step) || FOLLOW_STEP_PX);
+  for (let x = fromX + sign * s; (toX - x) * sign > 0; x += sign * s) {
+    const ny = walkSurfaceY(platforms, x, y, reach, solid);
+    if (ny == null) return null;
+    y = ny;
+  }
+  return walkSurfaceY(platforms, toX, y, reach, solid);
+}
+
 /** First surface at or below y (where something dropped at y lands), or null. */
 export function landingY(platforms, x, y, solid = isItemSolid) {
   let best = null;
