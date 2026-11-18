@@ -1287,7 +1287,7 @@
       "id": "G758",
       "area": "Skills",
       "show": "fixing",
-      "text": "Mining took a fraction of Glitch's time, and the pick swung beside you instead of on the rock.",
+      "text": "The pick swung beside you instead of on the rock, and a swing took about a tenth of Glitch's time. The pick now swings on the rock; the swing's length is now a third of Glitch's on purpose (see the mining pace below).",
       "report": 330,
       "commits": [
         "game:5941629826"
