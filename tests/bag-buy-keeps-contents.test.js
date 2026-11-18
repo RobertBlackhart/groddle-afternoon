@@ -32,7 +32,7 @@ import { fileURLToPath } from 'node:url';
 import { ITEM_CATALOG, addItem, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
 import { BAG_DEFS, PACK_CAPACITY, PACK_COPY, arrangeIntoBags, bagAccepts, layoutPack, moveStack, roomFor } from '../public/js/pack-slots.js?v=2c09907f';
 import { TOOL_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
-import { vendorBuy } from '../public/js/vendor.js?v=62184f98';
+import { vendorBuy } from '../public/js/vendor.js?v=d88e1a67';
 import { applyStarter, bagsFeature } from '../public/js/features/bags-feature.js?v=25097a18';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

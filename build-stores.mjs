@@ -23,23 +23,23 @@ const root = dirname(fileURLToPath(import.meta.url));
 const gsjs = process.env.GSJS_ROOT || decodeURIComponent(new URL('../glitch-GameServerJS', import.meta.url).pathname);
 const outPath = join(root, 'public/js/store-catalog.js');
 
-/** Street-spirit store ids kept, with the remake's world badge and colour. */
+/** Street-spirit store ids kept, with the colour of the store's panel. */
 const KEEP = {
-  3: { key: 'produce', id: 'street_spirit_produce', badge: 'P', color: 0xc74f47 },
-  4: { key: 'hardware', id: 'street_spirit_hardware', badge: 'H', color: 0x6b7280 },
-  5: { key: 'sno_cone', id: 'street_spirit_sno_cone', badge: 'SC', color: 0x5aa7d6 },
-  6: { key: 'gardening', id: 'street_spirit_gardening', badge: 'GG', color: 0x6f9e3b },
-  7: { key: 'kitchen', id: 'street_spirit_kitchen_tools', badge: 'K', color: 0xb5651d },
-  8: { key: 'groceries', id: 'street_spirit_groceries', badge: 'G', color: 0xd87439 },
-  9: { key: 'alchemical', id: 'street_spirit_alchemical_goods', badge: 'A', color: 0x7a4fb5 },
-  10: { key: 'animal', id: 'street_spirit_animal_goods', badge: 'AG', color: 0xc9a227 },
-  11: { key: 'tools', id: 'street_spirit_tool_vendor', badge: 'T', color: 0x3f6f8f },
-  12: { key: 'gardening_tools', id: 'street_spirit_gardening_tools', badge: 'GT', color: 0x4f8a3b },
-  13: { key: 'emporium', id: 'street_spirit_uncle_friendly', badge: 'UF', color: 0xd4a017 },
-  15: { key: 'liquor', id: 'street_spirit_helgas_liquor', badge: 'HL', color: 0x9b2d30 },
-  16: { key: 'meals', id: 'street_spirit_meals', badge: 'M', color: 0xe07b39 },
-  18: { key: 'mining', id: 'street_spirit_mining', badge: 'Mi', color: 0x8a6d4b },
-  19: { key: 'toys', id: 'street_spirit_toys', badge: 'Ty', color: 0x7653a6 },
+  3: { key: 'produce', id: 'street_spirit_produce', color: 0xc74f47 },
+  4: { key: 'hardware', id: 'street_spirit_hardware', color: 0x6b7280 },
+  5: { key: 'sno_cone', id: 'street_spirit_sno_cone', color: 0x5aa7d6 },
+  6: { key: 'gardening', id: 'street_spirit_gardening', color: 0x6f9e3b },
+  7: { key: 'kitchen', id: 'street_spirit_kitchen_tools', color: 0xb5651d },
+  8: { key: 'groceries', id: 'street_spirit_groceries', color: 0xd87439 },
+  9: { key: 'alchemical', id: 'street_spirit_alchemical_goods', color: 0x7a4fb5 },
+  10: { key: 'animal', id: 'street_spirit_animal_goods', color: 0xc9a227 },
+  11: { key: 'tools', id: 'street_spirit_tool_vendor', color: 0x3f6f8f },
+  12: { key: 'gardening_tools', id: 'street_spirit_gardening_tools', color: 0x4f8a3b },
+  13: { key: 'emporium', id: 'street_spirit_uncle_friendly', color: 0xd4a017 },
+  15: { key: 'liquor', id: 'street_spirit_helgas_liquor', color: 0x9b2d30 },
+  16: { key: 'meals', id: 'street_spirit_meals', color: 0xe07b39 },
+  18: { key: 'mining', id: 'street_spirit_mining', color: 0x8a6d4b },
+  19: { key: 'toys', id: 'street_spirit_toys', color: 0x7653a6 },
 };
 
 const SEASONAL = new Set(['glitchmas_cracker', 'glitchmas_card']);

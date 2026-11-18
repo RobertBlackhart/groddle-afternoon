@@ -35,7 +35,7 @@
  */
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { ITEM_BASE_COSTS } from '../store-catalog.js?v=74b56af3';
+import { ITEM_BASE_COSTS } from '../store-catalog.js?v=242d785b';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';

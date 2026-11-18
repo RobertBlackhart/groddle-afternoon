@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=33e2cc17';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5d65ed01';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -889,7 +889,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=62184f98';
+} from './js/vendor.js?v=d88e1a67';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -1062,7 +1062,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=03ac6512';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=76d66324';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=4ce1c847';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -31266,19 +31266,6 @@ function spawnVendorNpc(placement = null) {
   anchorBottomCentre(body, 'deco');
   body.scale.set(0.25);
   g.addChild(body);
-  const crest = new PIXI.Graphics();
-  crest.circle(35, -84, 13).fill({ color: activeVendor.color, alpha: 0.96 }).stroke({ width: 2, color: 0xfff4cf, alpha: 1 });
-  g.addChild(crest);
-  const badge = new PIXI.Text({ text: activeVendor.badge, style: {
-    fontFamily: WORLD_FONT_FAMILY,
-    fontSize: activeVendor.badge.length > 1 ? 9 : 12,
-    fill: 0xffffff,
-    fontWeight: '800',
-  } });
-  badge.anchor.set(0.5, 0.5);
-  badge.x = 35;
-  badge.y = -84;
-  g.addChild(badge);
   const label = new PIXI.Text({ text: activeVendor.label, style: worldLabelStyle(12) });
   anchorBottomCentre(label, 'text');
   label.y = -124;

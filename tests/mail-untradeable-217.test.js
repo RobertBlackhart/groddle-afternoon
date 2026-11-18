@@ -19,7 +19,7 @@ import { join } from 'node:path';
 
 import { MAIL_FULL_BAGS, MAIL_RESTRICTED, NO_MAIL, mailJson, mailTable } from '../tools/build-mail.mjs';
 import { playerMailCost } from '../public/js/player-mail.js?v=36973be4';
-import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
+import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=242d785b';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

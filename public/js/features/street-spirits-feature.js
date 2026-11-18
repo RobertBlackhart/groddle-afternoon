@@ -335,11 +335,11 @@ function setClip(s, clip) {
   s.sprite.gotoAndPlay(0);
 }
 
-/** Hide the stand-in body and put the region's spirit in its place, moving the badge and name above it. */
+/** Hide the stand-in body and put the region's spirit in its place, moving the name above it. */
 function dress(engine, target, variant, look) {
   const { PIXI } = engine;
   const g = target.sprite;
-  const [body, crest, badge, label] = g.children;
+  const [body, label] = g.children;
   const box = spiritCell(variant, look);
   const anchor = spiritAnchor(variant, look);
   const spr = new PIXI.AnimatedSprite([PIXI.Texture.EMPTY]);
@@ -348,11 +348,7 @@ function dress(engine, target, variant, look) {
   if (body) body.visible = false;
   g.addChildAt(spr, 0);
   const h = box.crop.h;
-  // The store badge sits on the spirit's shoulder, the name above its head.
-  const cx = Math.max(Math.round(box.crop.w * 0.42), 30);
-  const cy = -Math.round(h * 0.55);
-  if (crest) crest.position.set(cx - 35, cy + 84);
-  if (badge) badge.position.set(cx, cy);
+  // The name above its head.
   if (label) label.y = -h - 8;
   // Speech bubbles sit over the art (game.js positionSpeechBubble), not the
   // container's bounds with the name label, nor the 170 px cap for unknown

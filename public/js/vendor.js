@@ -15,7 +15,7 @@ import {
 import { gardenVendorOffers } from './garden.js?v=d4e55862';
 import { miningVendorOffers } from './mining.js?v=afb2b145';
 
-import { STORE_CATALOG, ITEM_BASE_COSTS, NO_VENDOR_ITEMS } from './store-catalog.js?v=74b56af3';
+import { STORE_CATALOG, ITEM_BASE_COSTS, NO_VENDOR_ITEMS } from './store-catalog.js?v=242d785b';
 
 /** @typedef {{ classTsid: string, label: string, buyPrice: number, sellPrice: number, stock?: number }} VendorOffer */
 
@@ -96,7 +96,6 @@ export const VENDOR_PROFILES = Object.freeze(
         id: store.id,
         storeId: store.storeId,
         label: store.label,
-        badge: store.badge,
         color: store.color,
         desc: VENDOR_DESCRIPTIONS[store.key] || `Official stock from the ${store.label}.`,
         buyMultiplier: store.buyMultiplier,

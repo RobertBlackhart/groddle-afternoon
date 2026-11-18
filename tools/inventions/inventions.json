@@ -1224,19 +1224,28 @@
    "id": "vendor-crest",
    "title": "A coloured disc with the store letter on every Street Spirit's shoulder",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
      "file": "public/game.js",
-     "symbol": "spawnVendorNpc"
+     "symbol": "spawnVendorNpc",
+     "gone": true
     },
     {
-     "file": "build-stores.mjs"
+     "file": "build-stores.mjs",
+     "gone": true
+    },
+    {
+     "file": "public/js/features/street-spirits-feature.js",
+     "symbol": "dress",
+     "gone": true
     }
    ],
    "why": "Tells stores apart at a glance (\"the remake's world badge\"); GSJS spirits have only store_id. The audit calls it the most visible invented marker.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop; the Street Spirit stands as itself, the store's colour stays only on its panel",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {
