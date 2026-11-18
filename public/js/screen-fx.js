@@ -935,7 +935,7 @@ async function streetTransition(el, opts) {
     // QA only (js/loading-card-qa.js): &loadcardhold=<ms> keeps the card up for screenshots.
     const qaHold = Number(new URLSearchParams(globalThis.location?.search || '').get('loadcardhold')) || 0;
     // #478: a Home to: list in view holds the card its reading time (loadCardHoldMs).
-    const listText = home && !home.hidden ? String(home.innerHTML || '').replace(/&nbsp;/g, ' ') : '';
+    const listText = home && !home.hidden ? String(home.textContent || '').replace(/\u00a0/g, ' ') : '';
     const hold = qaHold || loadCardHoldMs(listText, opts.holdMs ?? LOAD_HOLD_MS);
     el.dataset.stHoldMs = String(hold);
     const steps = 6;

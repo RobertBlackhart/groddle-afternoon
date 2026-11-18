@@ -22,7 +22,7 @@
  * while moving (PromptView.refresh 420). Hovering the card holds it, as above.
  */
 
-import { cardPausedTimeout } from './screen-fx.js?v=3af58308';
+import { cardPausedTimeout } from './screen-fx.js?v=a0ed42e9';
 
 /** PromptView.as onRollOut 118-122: waiting prompts go 2 s after the pointer leaves. */
 export const PROMPT_ROLL_OUT_MS = 2000;

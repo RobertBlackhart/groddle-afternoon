@@ -44,7 +44,7 @@
  * the remake's centre card (game.js engine.prompt with modal: true).
  */
 
-import { armPromptTimeout, promptTimeoutMs } from './prompt-timeout.js?v=94584b18';
+import { armPromptTimeout, promptTimeoutMs } from './prompt-timeout.js?v=0a9a61df';
 
 export const PROMPT_WIDTH = 300; // PromptView.as 39 overall_w
 export const PROMPT_PAD = 7; // PromptView.as 38 padd
