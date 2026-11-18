@@ -54,6 +54,19 @@ const STATUSES = new Set(['active', 'solved', 'expired', 'left']);
 
 const cleanId = (value) => String(value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
+/**
+ * The room bar's button (#486, G1003): Leave while the room runs, the room's doneLabel (Go back)
+ * once solved, and none once solved in a room the source made with {no_auto_return: true}
+ * (room.noAutoReturn): players/inc_instances.js instances_left 145 sends you back only without it,
+ * Glitch's client had no such button, and those rooms' objective is to find your own way back
+ * (firefly_whistle.js 60; tower_quest.js 40, tower_quest_part2.js 39, tower_quest_part3.js 64,
+ * tower_quest_part3repeat.js 48). Leave before the room is solved stays.
+ */
+export function roomLeaveButton(room, status) {
+  const solved = status === 'solved';
+  return { label: solved ? room?.doneLabel || 'Go back' : 'Leave', hidden: solved && Boolean(room?.noAutoReturn) };
+}
+
 /** Scene TSID for one stage of a room: QI_<ROOM>_<STAGE>. */
 export function questSceneTsid(roomId, stage = 'main') {
   return `${QUEST_SCENE_PREFIX}${cleanId(roomId).toUpperCase()}_${cleanId(stage).toUpperCase() || 'MAIN'}`;

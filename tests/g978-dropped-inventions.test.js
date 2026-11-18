@@ -102,7 +102,7 @@ describe('G978: the dead-end exit is a wall sign', () => {
   it('no post: the arrow hangs as the practice streets\' EXIT, the source\'s wall sign', async () => {
     dropped('dead-end-standing-sign');
     assert.equal(entry('dead-end-exit-sign').status, 'kept');
-    const { DEAD_END_EXIT } = await import('../public/js/dead-ends.js?v=1e4c13e2');
+    const { DEAD_END_EXIT } = await import('../public/js/dead-ends.js?v=68cb4469');
     assert.equal('post' in DEAD_END_EXIT, false);
     assert.equal(DEAD_END_EXIT.hang, 62);
     const view = fn(read('public/js/features/dead-ends-feature.js'), 'buildView');

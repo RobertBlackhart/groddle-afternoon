@@ -67,6 +67,8 @@
  *     verbs(ctx, target) -> verbs, runVerb(ctx, target, verbId) -> true,
  *     objective(ctx) -> { text, stats: [[label, value]] },
  *     physics(ctx), onLeave(ctx, outcome) -> { keepQuest }, onExpire(ctx),
+ *     noAutoReturn (the GSJS instance was made with {no_auto_return: true}: once solved, the bar
+ *       shows no Go back and the room's own way out is the way home; doneTravelText then says so),
  *     autoplay(ctx, mode) -> Promise<word>, autoplaySteps(ctx, mode) -> step names
  *       the autoplay logs with ctx.step(name, ok) (js/autoplay-log.js, G971),
  *     world: { onStreetEnter(wctx, street), onTick(wctx, dt, now),
@@ -110,6 +112,7 @@ import {
   questSceneTsid,
   reloadTarget,
   resumeQuestInstance,
+  roomLeaveButton,
   runFromHeld,
   runFlag,
   scheduleStuckPrompt,
@@ -120,7 +123,7 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=13b8ee09';
+} from '../quest-instance.js?v=b6e0fbd2';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=36df38e1';
@@ -221,13 +224,13 @@ const ROOM_MODULES = {
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=3fa9effc'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=11faf087'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=7bc93213'),
-  gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=c5b015d9'),
+  gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=8749e349'),
   mental_block: () => import('../quest-rooms/mental-block.js?v=8b600486'),
   penalty: () => import('../quest-rooms/penalty.js?v=f6f2830b'),
   esquibeth: () => import('../quest-rooms/esquibeth.js?v=44d919e5'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=2d931218'),
   soil_appreciation: () => import('../quest-rooms/soil-appreciation.js?v=62f17778'),
-  firefly_whistle: () => import('../quest-rooms/firefly-whistle.js?v=e8e0d934'),
+  firefly_whistle: () => import('../quest-rooms/firefly-whistle.js?v=2de4cb76'),
 };
 
 function loadRoom(roomId) {
@@ -483,7 +486,7 @@ const DIALOG_STYLE = `
 .qi-hud-heading span{margin-top:1px;color:var(--c-slate-60);font-size:var(--fs-xs);font-weight:800;text-transform:uppercase}
 .qi-hud-heading time{min-width:54px;padding:var(--sp-2) var(--sp-4);font-size:var(--fs-base);font-weight:900;text-align:center;border-radius:var(--radius-pill);color:var(--text-inverse);background:var(--c-blue-56b);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c-white) 24%, transparent)}
 .qi-hud-heading time.is-low{background:var(--c-red-55);animation:qi-pulse 1s ease-in-out infinite}
-.qi-hud-heading time[hidden]{display:none}
+.qi-hud-heading time[hidden],.qi-hud-heading button[hidden]{display:none}
 .qi-hud-heading button{padding:5px 11px;font:inherit;font-size:var(--fs-sm);font-weight:800;color:var(--c-navy-40);border:1px solid color-mix(in srgb, var(--c-slate-63) 45%, transparent);border-radius:var(--radius-pill);background:var(--surface-bright);cursor:pointer;pointer-events:auto}
 .qi-hud>p{margin:7px 0 var(--sp-3);color:var(--text-hud);font-size:var(--fs-md);font-style:italic;text-align:center}
 .qi-hud-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--sp-3) 22px;color:var(--c-slate-61);font-size:var(--fs-xs);font-weight:800;text-transform:uppercase}
@@ -1181,6 +1184,7 @@ function cancelStuckPrompt() {
 
 function confirmLeave(engine) {
   if (!run) return;
+  if (roomLeaveButton(room, run.status).hidden) return; // #486: no Go back (renderHud)
   if (run.status === 'solved' || room?.leaveWithoutConfirm) {
     leaveInstance(engine);
     return;
@@ -1550,7 +1554,10 @@ function renderHud(engine, force = false) {
   hud.timer.hidden = !Number.isFinite(remaining);
   hud.timer.textContent = formatInstanceClock(remaining);
   hud.timer.classList.toggle('is-low', Number.isFinite(remaining) && remaining <= (room.lowMs ?? LOW_TIME_MS) && remaining > 0 && run.status === 'active');
-  hud.leave.textContent = run.status === 'solved' ? (room.doneLabel || 'Go back') : 'Leave';
+  // #486 (G1003): no Go back once solved in a no_auto_return room (quest-instance.js roomLeaveButton).
+  const leave = roomLeaveButton(room, run.status);
+  hud.leave.textContent = leave.label;
+  hud.leave.hidden = leave.hidden;
   const obj = room.objective?.(ctx) || {};
   hud.objective.textContent = obj.text || '';
   const stats = (obj.stats || []).map(([lab, value]) => `<span><b>${value}</b> ${lab}</span>`).join('');
@@ -1876,6 +1883,7 @@ export const questInstancesFeature = {
   travelGate(tsid, engine, meta = {}) {
     // A teleport may leave (features/teleportation-feature.js land runs questRoomLeave with `to`).
     if (!run || heldNow() || meta?.bypass || meta?.leavesQuestRoom) return null;
+    if (run.status === 'solved' && room?.noAutoReturn) return { ok: false, msg: room.doneTravelText || room.travelText || 'You must find your own way back.' };
     return { ok: false, msg: room?.travelText || "You can't travel from here. Use Leave to go back." };
   },
 

@@ -1718,7 +1718,11 @@ export const room = {
   icon: `${ART}gwendolyn_icon.webp`,
   hubName: 'Tower Quest',
   durationMs: 0, // exit_delay is the "Are you stuck?" prompt, not a clock
-  doneLabel: 'Go back',
+  // #486: every Tower quest makes its rooms with {no_auto_return: true} (tower_quest.js 40,
+  // tower_quest_part2.js 39, tower_quest_part3.js 64, tower_quest_part3repeat.js 48): once
+  // solved you walk back out of the chamber (leaveChamber), no Go back.
+  noAutoReturn: true,
+  doneTravelText: 'Go back the way you came in.',
   leaveText: 'Leave the vision quest? Gwendolyn’s Task will start over from Area 42.',
   travelText: 'There is no way out of your own head from here. Use Leave to go back.',
   get theme() {

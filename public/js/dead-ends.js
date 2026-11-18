@@ -28,7 +28,7 @@
  * or a save); G978 (Austin 2026-11-17): a wall sign as the source's, no post.
  */
 
-import { STRAY_FALLBACK_TSID, streetsReachingUr } from './quest-instance.js?v=13b8ee09';
+import { STRAY_FALLBACK_TSID, streetsReachingUr } from './quest-instance.js?v=b6e0fbd2';
 
 /** The exit's art and words (the arrow and its word as js/practice-streets.js EZ_EXIT_SIGN). */
 export const DEAD_END_EXIT = Object.freeze({

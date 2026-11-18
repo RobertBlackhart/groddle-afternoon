@@ -490,6 +490,9 @@ const lab = {
   // exit_delay 3 * 60 is the "Are you stuck?" prompt, not a clock (see tick).
   durationMs: 0,
   leaveText: 'Leave the lab without the whistle? You will have to start over.',
+  // #486: firefly_whistle.js 60 makes the lab with {no_auto_return: true}: once solved the
+  // teleporter is the way home ("You must find your own way back"), no Go back.
+  noAutoReturn: true,
   travelText: 'You must find your own way back.',
 
   build(ctx) {
