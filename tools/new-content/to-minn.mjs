@@ -106,7 +106,7 @@ export function newContentContent() {
             ['Glitchmas 2011', '6', '0', '1'],
             ['Egg Hunt', '6', '0', '1'],
             ['Pi Day', '1', '0', '0'],
-            ['<strong>Pot Luck Day (planned)</strong>', '<strong>5</strong>', '<strong>1</strong>', '<strong>4</strong>'],
+            ['<strong>Pot Luck Day (planned)</strong>', '<strong>5</strong>', '<strong>1</strong>', '<strong>5</strong>'],
           ], { cls: 'nc-size', numCols: [1, 2, 3] }),
         ]),
       ]),
@@ -156,7 +156,7 @@ export function newContentContent() {
         group('div', 'nc-lasts', null, [
           group('div', 'nc-last nc-tone-moss', null, [
             h(4, 'Stays', { cls: 'nc-last-title' }),
-            list(['The four badges, which count toward your totals.', 'The Cornucopia keepsake.']),
+            list(['The five badges, which count toward your totals.', 'The Cornucopia keepsake.']),
           ]),
           group('div', 'nc-last nc-tone-sun', null, [
             h(4, 'Ends on its own', { cls: 'nc-last-title' }),
