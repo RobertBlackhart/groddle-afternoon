@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2600,
+  "commits": 2603,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Piggies, Chickens and set-down things stand on the line instead of 2 px into it"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Animals, trees, NPCs and set-down things stand on their own feet and turn about their middle"
+   },
    {
     "date": "2026-11-17",
     "kind": "new",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "The home street's meadow and soil reach the screen's edge past the house with the Social drawer open"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Ivalo Trims' left Mortar Barnacle sits on the trunk instead of half over its edge"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Edge barnacles on round trunks face outward whichever art variant they are"
    }
   ]
  },
- "tests": 1119,
+ "tests": 1120,
  "generatedAt": "2026-11-17"
 }
