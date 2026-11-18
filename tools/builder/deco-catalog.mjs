@@ -64,6 +64,8 @@ export function buildCatalog(root = ROOT) {
     for (const layer of street.layers || []) {
       const role = layerRole(layer, street);
       for (const deco of layer.decos || []) {
+        // A deco naming its own file (src: the subway's subway1.swf art, js/subway.js, #482) is not the library's.
+        if (deco.src) continue;
         const art = library.has(deco.sprite) ? deco.sprite : DECO_TWINS[deco.sprite];
         if (!art || !library.has(art)) continue;
         let u = use.get(art);

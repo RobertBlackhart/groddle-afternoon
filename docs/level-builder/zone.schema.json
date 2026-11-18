@@ -338,7 +338,13 @@
         "r": { "type": "number", "minimum": -360, "maximum": 360 },
         "flip": { "type": "boolean" },
         "hidden": { "type": "boolean" },
-        "animated": { "type": "boolean" }
+        "animated": { "type": "boolean" },
+        "src": {
+          "description": "#482: the deco's own file, outside the deco library: the subway's stations and car (js/subway.js stationDecos / carDecos), drawn as it is (street-render.js). Only the shipped subway1.swf art; the builder never writes one.",
+          "type": "string",
+          "pattern": "^assets/sprites/subway/[a-z0-9_]+@[0-9.]+x\\.webp$"
+        },
+        "frame": { "description": "A crop of the src file: x, y, w, h in the art's px (street-render.js frameTexture).", "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 4, "maxItems": 4 }
       }
     },
     "filters": {

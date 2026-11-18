@@ -178,7 +178,7 @@ export function sty004(draftStreet) {
 /**
  * STY-005 (info) Unusual layer for this deco: a library deco placed on a layer role where the
  * catalog shows Tiny Speck never placed it. One finding per sprite per layer (data.ids lists them).
- * New art (gz_) and decos the catalog has never seen placed are skipped.
+ * New art (gz_), decos naming their own file (src) and decos the catalog has never seen placed are skipped.
  */
 export function sty005(draftStreet, ctx = {}) {
   const { street, key } = parts(draftStreet);
@@ -189,6 +189,8 @@ export function sty005(draftStreet, ctx = {}) {
     const role = layerRole(layer, street);
     const seen = new Map();
     for (const d of layer.decos || []) {
+      // A deco naming its own file (src: the subway's art, js/subway.js, #482) is not a library deco.
+      if (d.src) continue;
       const row = catalog.get(d.sprite);
       if (!row || !row.placements || (row.layers?.[role] || 0) > 0) continue;
       if (!seen.has(d.sprite)) seen.set(d.sprite, []);

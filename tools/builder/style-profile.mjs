@@ -113,7 +113,8 @@ export function buildProfiles(root = ROOT) {
     const b0 = street.bounds || {};
     const sw = (b0.r ?? 0) - (b0.l ?? 0);
     const sh = (b0.b ?? 0) - (b0.t ?? 0);
-    const layers = street.layers || [];
+    // Nor is a layer that holds only those (a subway station's front layer, #482).
+    const layers = (street.layers || []).filter((l) => l.id === 'middleground' || !(l.decos?.length && l.decos.every((d) => d.src)));
     for (const b of buckets) {
       b.streets += 1;
       b.w.push(sw);
@@ -136,7 +137,8 @@ export function buildProfiles(root = ROOT) {
       const middle = layer.id === 'middleground';
       const lw = middle ? sw : Number(layer.w) > 0 ? layer.w : sw;
       const lh = middle ? sh : Number(layer.h) > 0 ? layer.h : sh;
-      const decos = layer.decos || [];
+      // A deco naming its own file (src: the subway's subway1.swf art, js/subway.js, #482) is not a library placement the profile measures.
+      const decos = (layer.decos || []).filter((d) => !d.src);
       for (const b of buckets) {
         const r = roleBucket(b, role);
         r.streets.add(street.tsid);

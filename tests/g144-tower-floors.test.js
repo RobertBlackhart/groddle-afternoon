@@ -13,7 +13,7 @@ import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { populationForStreet } from '../public/js/street-ecology.js?v=62ca408f';
 import { pickAwayConnection, pickConnection, planSignpostTravel, resolveLoadedTsid } from '../public/js/travel.js?v=7fd6e363';
-import { validateShippedStreet } from '../public/js/builder/validate.js?v=c594587c';
+import { validateShippedStreet } from '../public/js/builder/validate.js?v=fa5959e4';
 import {
   HAUKI_FLOOR_1,
   HAUKI_FLOOR_2,
