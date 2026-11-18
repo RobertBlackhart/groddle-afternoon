@@ -19,7 +19,8 @@
  *    recipe.season).
  *
  * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the
- * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name).
+ * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name),
+ * seasonDate('2026-11-26') (online, where ?seasondate= cannot reach the page).
  * Canvas data: feastTable (on|off), feastCount, feastShown (classes drawn), feastQuest
  * (status:dishes/dressed/laid), feastLast.
  */
@@ -87,7 +88,8 @@ let last = '';
 let demoDone = false;
 let engineRef = null;
 
-const nowForCalendar = (engine) => parseSeasonDate(engine?.param?.('seasondate')) ?? Date.now();
+let qaDate = null; // groddleFeast.seasonDate(): the online page takes no ?seasondate= (QA, local hosts only)
+const nowForCalendar = (engine) => qaDate ?? parseSeasonDate(engine?.param?.('seasondate')) ?? Date.now();
 const seasonOn = () => season.ids.includes(FEAST_SEASON);
 const yearKey = (engine) => seasonYearKey(FEAST_SEASON, nowForCalendar(engine));
 const label = (cls) => ITEM_CATALOG[cls]?.label || cls;
@@ -463,6 +465,13 @@ export const potLuckFeastFeature = {
       offer: () => offerQuest(engine),
       event: (name, detail) => questStep(engine, name, detail),
       choices: () => choices(engine),
+      /** ?seasondate= for a page that cannot take it (/play/online/ strips its params): 'YYYY-MM-DD' or ''. */
+      seasonDate: (text) => {
+        qaDate = parseSeasonDate(text);
+        refreshSeason(engine, true);
+        if (engine.street) spawnTable(engine);
+        return seasonOn();
+      },
     });
     publish(engine);
   },
