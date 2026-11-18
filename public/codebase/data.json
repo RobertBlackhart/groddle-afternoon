@@ -284,18 +284,18 @@
    "id": "site",
    "name": "groddle-afternoon-site",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon-site",
-   "ref": "v0.37.3",
-   "commit": "eb2d6779",
+   "ref": "v0.37.4",
+   "commit": "a08591ca",
    "licence": "MIT",
    "history": {
-    "commits": 299,
+    "commits": 300,
     "first": "2026-10-24",
-    "latest": "2026-11-17"
+    "latest": "2026-11-18"
    },
    "code": {
     "files": 166,
-    "lines": 52563,
-    "bytes": 2780093
+    "lines": 52574,
+    "bytes": 2781166
    },
    "languages": [
     {
@@ -314,7 +314,7 @@
      "id": "css",
      "label": "CSS",
      "files": 6,
-     "lines": 2062
+     "lines": 2073
     },
     {
      "id": "html",
@@ -350,7 +350,7 @@
      "label": "Styles",
      "path": "style.css",
      "files": 6,
-     "lines": 2062
+     "lines": 2073
     },
     {
      "id": "templates",
