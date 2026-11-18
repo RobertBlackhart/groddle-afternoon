@@ -333,6 +333,18 @@ describe('source copy and data', () => {
     assert.match(room, /npc_crab_idle0\.webp`, 6, 5, \{ scale: 0\.62/);
   });
 
+  it('holds a Flatter or Hug reaction until it walks on, as every crab state loops (#499)', () => {
+    const feature = readFileSync(join(PUBLIC, 'js/features/crabs-feature.js'), 'utf8');
+    const looping = feature.match(/const LOOPING = new Set\(\[([^\]]*)\]\)/)[1];
+    for (const s of ['idle1', 'idle2', 'walk', 'listen', 'like_on', 'like_off', 'dislike_on', 'dislike_off']) {
+      assert.match(looping, new RegExp(`'${s}'`), s);
+    }
+    // No one-shot fallback back to the idle pose: the next state (startMoving's walk) replaces it.
+    assert.doesNotMatch(feature, /onComplete = LOOPING/);
+    // A verb stops the Crab for its menu wait (onWaitEnd: startMoving after 1.5 s) with the reaction on.
+    assert.equal(CRAB_WALK.menuWaitMs, 1500);
+  });
+
   it('has the art, icons, buff, badge and feature registration', () => {
     for (const s of ['idle1', 'idle2', 'walk', 'listen', 'like_on', 'like_off', 'dislike_on', 'dislike_off']) {
       assert.ok(existsSync(join(PUBLIC, `assets/sprites/crabs/npc_crab_${s}.webp`)), s);

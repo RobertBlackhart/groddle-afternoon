@@ -92,7 +92,12 @@ const SHEETS = Object.freeze({
   dislike_on: { path: `${ART}npc_crab_dislike_on.webp`, fw: 131, fh: 129, cols: 6, frames: 22 },
   dislike_off: { path: `${ART}npc_crab_dislike_off.webp`, fw: 131, fh: 129, cols: 6, frames: 22 },
 });
-const LOOPING = new Set(['idle1', 'idle2', 'walk', 'listen', 'like_on', 'dislike_on']);
+/**
+ * #499: every state loops until the next is set, the reactions too. npc_crab.js sets like_off /
+ * dislike_off (hug 226, or 245/258 when it fails; flatter 305; pinch 352; a tune's reply 522) and
+ * the Crab holds it until startMoving sets walk (onWaitEnd 839-841: 1.5 s; after a tune 552: 3 s).
+ */
+const LOOPING = new Set(['idle1', 'idle2', 'walk', 'listen', 'like_on', 'like_off', 'dislike_on', 'dislike_off']);
 /**
  * #301 (G702): a street crab is drawn at Glitch's size. npc_crab.js 14 sets adjusted_scale 1, and
  * these sheets are the x1 cells (the @3x files are the same art for dense screens), so 1. It was
@@ -150,14 +155,7 @@ function setClip(crab, state) {
   crab.sprite.textures = frames;
   crab.sprite.loop = LOOPING.has(state);
   crab.sprite.animationSpeed = pixiSpeed(30);
-  crab.sprite.onComplete = LOOPING.has(state)
-    ? null
-    : () => {
-        // A one-shot reaction (like_off / dislike_off) settles back to its pose.
-        crab.reactUntil = 0;
-        if (crab.sprite.destroyed || holdClips) return;
-        setClip(crab, crab.mode === 'walk' ? 'walk' : crab.idleClip);
-      };
+  crab.sprite.onComplete = null;
   crab.sprite.gotoAndPlay(0);
 }
 
@@ -740,8 +738,9 @@ export const crabsFeature = {
   walkerVerbSeen(target, verb) {
     const crab = crabs.find((c) => c.target === target);
     if (!crab) return null;
+    // npc_crab.js: flatter 305 and hug 226 like_off, pinch 352 dislike_off; insult (364-404) sets no state.
     if (verb === 'flatter' || verb === 'hug') setClip(crab, 'like_off');
-    else if (verb === 'insult' || verb === 'pinch') setClip(crab, 'dislike_off');
+    else if (verb === 'pinch') setClip(crab, 'dislike_off');
     crab.reactUntil = now() + CRAB_WALK.menuWaitMs;
     last = `${verb}:seen`;
     return true;
