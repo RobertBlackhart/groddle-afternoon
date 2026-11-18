@@ -32,6 +32,12 @@
  * counts helped_dig for It Takes Two. Solo has no dig crews (the source's
  * helpers were other players; the companions only mine).
  *
+ * On a home street (G947, M3, #464) the same queries are answered by home-crew-mp-feature, whose
+ * crews the server's home_crew.go keeps, for the owner and every visitor: a visitor's landed swing
+ * or dig brings its help with yard-verbs-mp-feature's grant (the site took and credited it); the
+ * owner's own swing or dig ran on the owner's own rock or pile, so its help is the server's answer
+ * to the landing (homeCrewLand), applied when it comes, and a rock's bonus comes off that rock.
+ *
  * Companions are opt-in (?companions=1, game.js localCompanionsEnabled).
  * Hooks from game.js: engine.query('verbStarted', target, verb, engine) as a
  * timed verb begins, engine.query('rockMined', target, result, engine) after
@@ -48,7 +54,7 @@
 
 import { MINING_COSTS, ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=afb2b145';
 import { rockId } from '../street-objects.js?v=387e6ff5';
-import { addItem } from '../inventory.js?v=6414dbdc';
+import { addItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { frameTexture, loadTexture } from '../textures.js?v=1c44e7c3';
@@ -374,6 +380,14 @@ function hearServerAnswers(engine) {
     playerAt.helping = msg.helping;
     engine.setData?.('helpMineHelping', msg.helping ? 'server:yes' : 'server:no');
   });
+  // G947 (M3): on a home street the crew is home_crew.go's, and its answer names the rock by the
+  // site's id (features/home-crew-mp-feature.js homeCrewId).
+  client.on('msg:home_crew_ok', (msg) => {
+    if (!playerAt?.shared || typeof msg?.helping !== 'boolean' || !String(msg.id || '').startsWith('rock:')) return;
+    if (msg.id !== engine.query?.('homeCrewId', playerAt.target, engine)) return;
+    playerAt.helping = msg.helping;
+    engine.setData?.('helpMineHelping', msg.helping ? 'server:yes' : 'server:no');
+  });
 }
 
 /** Your swing at a shared rock begins: the server adds you to its crew. */
@@ -387,16 +401,12 @@ function sharedStarts(target, crew, engine) {
 /** Your shared swing lands: the bonus is the server's (mining.js 327-383), from everyone who helped. */
 function sharedMined(target, result, engine) {
   const rock = result?.rock || target.state.rock;
-  const help = engine.query('sharedVerbGrant', target, 'mine')?.help;
-  const bonus = Math.max(0, Math.floor(Number(help?.bonus) || 0));
-  if (bonus > 0) {
-    addItem(engine.inv, rock.chunkId, bonus);
-    const names = Array.isArray(help.by) ? help.by.map(String) : [];
-    engine.pushActivity(helpBonusMessage(rock.rockType, bonus, names));
-    engine.floatText?.(target.sprite.x, target.sprite.y - 120, `+${bonus}`, 0xfff4d6);
-    engine.setData('helpMineLast', `bonus:${bonus}:${names.join(',')}`);
-    engine.refreshPack?.();
-  }
+  const grant = engine.query('sharedVerbGrant', target, 'mine');
+  // G947 (M3): your own swing at a rock on your own home street ran here, on your own rock: the
+  // crew's bonus is the server's answer to the landing (home_crew.go), and it comes off this rock.
+  const own = grant ? null : engine.query('homeCrewLand', target, engine);
+  const bonus = own && typeof own.then === 'function' ? 0 : mineBonus(target, rock, grant?.help, engine);
+  if (bonus === 0 && own?.then) own.then((help) => mineBonus(target, rock, help, engine, { ownRock: true }));
   const helping = playerAt?.target === target && playerAt.helping;
   playerAt = null;
   if (helping) {
@@ -405,6 +415,35 @@ function sharedMined(target, result, engine) {
     if (bonus <= 0) engine.setData('helpMineLast', 'helped');
     engine.achievement(HELP_MINE_COUNTER, 1);
     publishQuest(engine);
+  }
+}
+
+/** A landed swing's help bonus into the pack, with the source's line; ownRock: it comes off the rock here too. */
+function mineBonus(target, rock, help, engine, { ownRock = false } = {}) {
+  const bonus = Math.max(0, Math.floor(Number(help?.bonus) || 0));
+  if (bonus <= 0 || !rock) return 0;
+  addItem(engine.inv, rock.chunkId, bonus);
+  const names = Array.isArray(help.by) ? help.by.map(String) : [];
+  engine.pushActivity(helpBonusMessage(rock.rockType, bonus, names));
+  engine.floatText?.(target.sprite.x, target.sprite.y - 120, `+${bonus}`, 0xfff4d6);
+  engine.setData('helpMineLast', `bonus:${bonus}:${names.join(',')}`);
+  if (ownRock) {
+    takeFromRock(rock, bonus, engine);
+    engine.refreshMineRock?.(target);
+  }
+  engine.refreshPack?.();
+  return bonus;
+}
+
+/** mining.js 383-419: the bonus comes off the rock too, and a rock it empties crumbles (as js/mining.js mineRock clears one). */
+function takeFromRock(rock, bonus, engine) {
+  rock.chunksRemaining -= bonus;
+  if (rock.chunksRemaining <= 0 && !rock.depleted) {
+    rock.chunksRemaining = 0;
+    rock.depleted = true;
+    rock.respawnAt = Date.now() + RESPAWN_MS;
+    rock.respawnChunks = Math.random() < megaRockChance(rock.rockType, engine.pc?.imaginationUpgrades || []) ? MEGA_ROCK_CHUNKS : 0;
+    engine.pushActivity('The rock crumbles away. It will reform soon.');
   }
 }
 
@@ -447,8 +486,25 @@ function sharedDigCrew(engine, target) {
 
 /** Your dig landed (resource-nodes-feature resourceNodeUsed): the crew's bonus, from the server. */
 function sharedDug(target, result, engine) {
-  const help = digHelpFrom(engine.query('sharedVerbGrant', target, 'dig', engine)?.help);
+  const grant = engine.query('sharedVerbGrant', target, 'dig', engine);
   playerDig = null;
+  // G947 (M3): your own dig at a Dirt Pile on your own home street ran here: the crew's help is the
+  // server's answer to the landing (home_crew.go), and its Loam turns the dig's Earth to Loam too
+  // (dirt_pile.js 380-389, as resource-nodes-feature's loamBonus does with a grant).
+  const own = grant ? null : engine.query('homeCrewLand', target, engine);
+  if (own && typeof own.then === 'function') {
+    own.then((raw) => {
+      const help = digHelpFrom(raw);
+      const earth = help?.loam ? (result?.outputs || []).filter((o) => o?.classTsid === 'earth').reduce((n, o) => n + (Number(o.qty) || 0), 0) : 0;
+      if (earth > 0 && removeItem(engine.inv, 'earth', earth) !== false) addItem(engine.inv, 'loam', earth);
+      digBonus(target, help, engine);
+    });
+    return;
+  }
+  digBonus(target, digHelpFrom(grant?.help), engine);
+}
+
+function digBonus(target, help, engine) {
   if (!help) {
     engine.setData('helpDigLast', 'alone');
     return;
@@ -523,20 +579,12 @@ function playerMined(target, result, engine) {
   const bonus = helpMineBonus(n);
   if (bonus > 0) {
     addItem(engine.inv, rock.chunkId, bonus);
-    // mining.js 383: the rock gives up the bonus too.
-    rock.chunksRemaining -= bonus;
     const msg = helpBonusMessage(rock.rockType, bonus, helperIds(crew, PLAYER_MINER));
     engine.pushActivity(msg);
     engine.floatText?.(target.sprite.x, target.sprite.y - 120, `+${bonus}`, 0xfff4d6);
     engine.setData('helpMineLast', `bonus:${bonus}:${helperIds(crew, PLAYER_MINER).join(',')}`);
-    if (rock.chunksRemaining <= 0 && !rock.depleted) {
-      // mining.js 387-419 as js/mining.js mineRock clears a rock (game.js then emits rocks_depleted).
-      rock.chunksRemaining = 0;
-      rock.depleted = true;
-      rock.respawnAt = Date.now() + RESPAWN_MS;
-      rock.respawnChunks = Math.random() < megaRockChance(rock.rockType, engine.pc?.imaginationUpgrades || []) ? MEGA_ROCK_CHUNKS : 0;
-      engine.pushActivity('The rock crumbles away. It will reform soon.');
-    }
+    // mining.js 383: the rock gives up the bonus too.
+    takeFromRock(rock, bonus, engine);
     engine.refreshPack?.();
   }
   removeMiner(crew, PLAYER_MINER, false);

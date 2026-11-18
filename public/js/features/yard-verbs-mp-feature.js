@@ -579,7 +579,13 @@ function createSession(engine, client) {
     const flies = ask.kind === 'node' && String(ask.id).startsWith('node:npc_firefly:')
       ? [...visit.nodes.values()].filter((e) => e.id !== ask.id && e.node && !e.node.depleted)
       : [];
-    grant = { target: t, verbId: ask.verbId, chunks: ask.kind === 'rock' && took > 0 ? took : undefined };
+    // G947 (M3): a home crew's help (the server's home_crew.go, which the site took and credited with
+    // the act): the swing's own chunks are the take less the bonus (help-mine-feature adds the bonus
+    // and names the helpers from grant.help); a dig's bonus items and Loam are help-mine-feature's
+    // and resource-nodes-feature's, as on a public street.
+    const help = msg.help && typeof msg.help === 'object' ? msg.help : null;
+    const own = Math.max(0, took - (ask.kind === 'rock' ? Math.max(0, Math.floor(Number(act.help) || 0)) : 0));
+    grant = { target: t, verbId: ask.verbId, chunks: ask.kind === 'rock' && own > 0 ? own : undefined, help };
     try {
       engine.executeVerb?.(t, ask.verbId, { animated: true });
     } finally {
@@ -1094,7 +1100,7 @@ function createSession(engine, client) {
     get visit() { return visit; },
     askStock,
     grantFor(target, verbId) {
-      return grant && grant.target === target && grant.verbId === verbId ? { chunks: grant.chunks } : null;
+      return grant && grant.target === target && grant.verbId === verbId ? { chunks: grant.chunks, help: grant.help || undefined } : null;
     },
     get applied() { return applied; },
     verbsFor,
