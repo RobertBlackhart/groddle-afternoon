@@ -6,25 +6,25 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.48.0",
-   "commit": "47fedb24",
+   "ref": "v0.48.1",
+   "commit": "fe5add77",
    "licence": "MIT",
    "history": {
-    "commits": 2658,
+    "commits": 2675,
     "first": "2026-10-19",
     "latest": "2026-11-18"
    },
    "code": {
-    "files": 4908,
-    "lines": 1008390,
-    "bytes": 61257000
+    "files": 4913,
+    "lines": 1009367,
+    "bytes": 61309899
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2188,
-     "lines": 670061
+     "files": 2193,
+     "lines": 671023
     },
     {
      "id": "html",
@@ -36,13 +36,13 @@
      "id": "css",
      "label": "CSS",
      "files": 10,
-     "lines": 21713
+     "lines": 21723
     },
     {
      "id": "python",
      "label": "Python",
      "files": 41,
-     "lines": 12825
+     "lines": 12830
     },
     {
      "id": "php",
@@ -63,35 +63,35 @@
      "label": "Pages and styles",
      "path": "public/ (pages, stylesheets, page scripts)",
      "files": 2659,
-     "lines": 324639
+     "lines": 324649
     },
     {
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1169,
-     "lines": 235649
+     "files": 1174,
+     "lines": 236277
     },
     {
      "id": "core",
      "label": "Game core",
      "path": "public/game.js, public/content.js, public/js/",
      "files": 535,
-     "lines": 222112
+     "lines": 222329
     },
     {
      "id": "features",
      "label": "Feature modules",
      "path": "public/js/features/",
      "files": 165,
-     "lines": 124719
+     "lines": 124832
     },
     {
      "id": "tools",
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
      "files": 345,
-     "lines": 80358
+     "lines": 80367
     },
     {
      "id": "rooms",
@@ -104,15 +104,15 @@
    "largest": [
     {
      "path": "public/game.js",
-     "lines": 34887
+     "lines": 34964
     },
     {
      "path": "public/style.css",
-     "lines": 15138
+     "lines": 15148
     },
     {
      "path": "public/js/features/homes-feature.js",
-     "lines": 8235
+     "lines": 8254
     },
     {
      "path": "public/js/features/newxp-feature.js",
@@ -134,14 +134,14 @@
      "id": "data",
      "label": "Data (JSON)",
      "files": 3183,
-     "bytes": 214338158
+     "bytes": 214377408
     },
     {
      "id": "generated",
      "label": "Generated modules and built pages",
      "files": 2268,
-     "bytes": 25863307,
-     "lines": 293472
+     "bytes": 25863360,
+     "lines": 293473
     },
     {
      "id": "vendored",
@@ -163,10 +163,10 @@
      "bytes": 8288803
     }
    ],
-   "totalFiles": 31440,
+   "totalFiles": 31445,
    "tests": {
-    "files": 1131,
-    "cases": 13179,
+    "files": 1136,
+    "cases": 13211,
     "runner": "node --test"
    }
   },

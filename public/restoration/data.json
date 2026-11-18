@@ -2810,13 +2810,73 @@
   ]
  },
  "release": {
-  "game": "0.48.0",
+  "game": "0.48.1",
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2658,
+  "commits": 2675,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "The street schema and the builder's style tools know the subway's own-file decos"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A flattered or hugged Crab holds its reaction until it walks on"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A subway station's street map shows the station, not a bare wall and floor"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Musicblocks play in Hell, as in Glitch"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Trees and pours stay on their own Patch after a Patch in the yard wears out"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Make menu icons keep their shape and the way back to a tool stays inside its pill"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A quest with a recipe or item reward keeps the iMG, currants and favor icons on its complete card"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Sky no longer shows between the ground and the bottom rock strip with the camera low on a street"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "improve",
+    "text": "An open verb menu is drawn again only when what it shows changed"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "Smuggling runs only send you where you can walk, and their route never takes the subway"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A click on a far signpost walks there first, and Camera Mode clicks no longer act"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "A shared tree's menu no longer offers Water or Pet again while the street is still answering"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2876,66 +2936,6 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "A dish dropped on the Harvest Table goes on the table, not to the Piggy standing in front of it (G982)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A reloaded page online sees the whole Harvest Table, and an offline lay keeps the dish (G982)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "The Harvest Table's two tables meet as one long board, its count off the seam (G982)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "new",
-    "text": "Pot Luck Day's Harvest Table, the quest Pot's Empty Table, Harvest Stuffing, Pot's Cornucopia and five badges (G982)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Mining swings take a third of Glitch's time (6, 4.2, 3 and 2.4 s for Mining I to IV)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Pot Luck Day keeps the word filter, the feature order and the ledger receipt line as the tests expect"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "new",
-    "text": "Pot Luck Day: Chickens dress up as turkeys and roosters, for everyone"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Feature autoplays that said done when the game refused them (G971)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Every quest-room autoplay checks the steps it plays, not just its last word (G971)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Mental Block's autoplay really drops the blocks and climbs out (G971)"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The New content page counts Pot Luck Day's five badges"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "New content page in the site's card look"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Every word drawn in the world is in Nunito, so phones stop falling back to another font"
    }
   ]
  },
