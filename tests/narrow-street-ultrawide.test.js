@@ -20,7 +20,7 @@ import {
   parallaxLayerOffset,
   parallaxRestX,
   parallaxRestY,
-} from '../public/js/street-render.js?v=e6a5d5a1';
+} from '../public/js/street-render.js?v=c05c4045';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const grimssea = JSON.parse(readFileSync(join(here, '../public/assets/streets/GDODG1KQLOS2GNO.json'), 'utf8'));
@@ -93,11 +93,13 @@ describe('report #209: the sliding case is unchanged', () => {
             const camX = (sw - vpW) * f + 0.25;
             const camY = (sh - vpH) * f + 0.125;
             const layer = { w: lw, h: lh };
-            assert.deepEqual(
-              parallaxLayerOffset(layer, camX, camY, vpW, vpH, sw, sh),
-              before(layer, camX, camY, vpW, vpH, sw, sh),
-              `${sw}x${sh} view ${vpW}x${vpH} layer ${lw}x${lh} f ${f}`
-            );
+            const at = parallaxLayerOffset(layer, camX, camY, vpW, vpH, sw, sh);
+            const old = before(layer, camX, camY, vpW, vpH, sw, sh);
+            const label = `${sw}x${sh} view ${vpW}x${vpH} layer ${lw}x${lh} f ${f}`;
+            assert.equal(at.x, old.x, label);
+            // #483: past the street's bottom a layer holds still with its bottom on the street's.
+            if (camY > sh - vpH) assert.equal(at.y, sh - lh, label);
+            else assert.equal(at.y, old.y, label);
           }
         }
       }

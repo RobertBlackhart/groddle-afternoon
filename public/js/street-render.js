@@ -1356,11 +1356,16 @@ function gradientTexture(PIXI, top, bottom) {
  * recomputeParallax): the layer slides from its left/top edge to its
  * right/bottom edge as the camera crosses the street.
  *
- * The client's camera never left the street, so it could clamp. The remake's
- * camera runs past the declared bottom to frame low platforms above the pack
- * (cameraWorldHeightForGround), so the slide continues on the same line: a
- * clamp froze same-size layers such as Hechey Track's `middleplus` dirt while
- * the ground kept moving, opening gaps of sky under the grass.
+ * The client's camera never left the street (CameraMan.as 451-453 bounds it at the location's
+ * bottom). The remake's camera runs past the declared bottom (and above the top, topSlack) to
+ * frame low platforms above the pack (cameraWorldHeightForGround). Past either edge every layer
+ * holds still against the ground, where the slide left it at the edge: the slide is taken at the
+ * camera clamped to the street (0..maxY) and the layer stays put in world space. A same-size
+ * layer (Hechey Track's `middleplus` dirt) is at 0 either way. #483: carrying the slide on along
+ * the same line slid Sylvan Grove's 850 px front dirt (on a 1000 px street) down off the grass
+ * and showed sky between the ground and the bottom rock strip; a layer taller than its street
+ * rose off the bottom the same way. The ground skirt (skirtGroundOffset) draws each layer at
+ * H - h, where this leaves it.
  *
  * The client floored each layer's slide to a whole pixel on its own. At the remake's Retina
  * densities that is a 2-2.5 device px step on a different frame for every layer, so the layers
@@ -1372,8 +1377,14 @@ export function parallaxLayerOffset(layer, camX, camY, vpW, vpH, streetW, street
   const maxY = streetH - vpH;
   return {
     x: maxX > 0 ? camX + (camX / maxX) * (vpW - layer.w) : parallaxRestX(layer.w, streetW),
-    y: maxY > 0 ? camY + (camY / maxY) * (vpH - layer.h) : parallaxRestY(layer.h, streetH),
+    y: maxY > 0 ? parallaxSlideY(camY, maxY, vpH, layer.h) : parallaxRestY(layer.h, streetH),
   };
+}
+
+/** The slide down a street taller than the view (maxY > 0), held at the street's top and bottom (#483). */
+function parallaxSlideY(camY, maxY, vpH, layerH) {
+  const at = Math.min(maxY, Math.max(0, camY));
+  return at + (at / maxY) * (vpH - layerH);
 }
 
 /**
@@ -3042,7 +3053,10 @@ export function buildStreetView(street, PIXI, opts = {}) {
       const layer = lc.parallaxLayer;
       const at = parallaxLayerOffset(layer, camX, camY, vpW, vpH, W, sourceH);
       const x = drawnLayerOffset(at.x, camX, snap?.x || 0, slidesX ? layerScreenDir(snap?.dx, vpW, layer.w) : 0, lc.screenX);
-      const y = drawnLayerOffset(at.y, camY, snap?.y || 0, slidesY ? layerScreenDir(snap?.dy, vpH, layer.h) : 0, lc.screenY);
+      // Held past the street's top or bottom (#483), it moves on screen with the ground.
+      const heldY = camY < 0 || camY > sourceH - vpH;
+      const dirY = !slidesY ? 0 : heldY ? -Math.sign(snap?.dy || 0) : layerScreenDir(snap?.dy, vpH, layer.h);
+      const y = drawnLayerOffset(at.y, camY, snap?.y || 0, dirY, lc.screenY);
       if (lc.x !== x || lc.y !== y) lastCull = null;
       lc.x = x;
       lc.y = y;
