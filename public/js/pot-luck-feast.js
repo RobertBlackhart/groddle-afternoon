@@ -120,6 +120,10 @@ export const TABLE_LINES = Object.freeze({
   verb: 'Lay a dish',
   verbTip: 'Lay a dish or a crop on the table for everyone',
   look: 'Look',
+  lookTip: 'See everything on the table',
+  listTitle: 'On the Harvest Table',
+  listBy: (name, mine) => (mine ? 'laid by you' : `laid by ${name || 'someone'}`),
+  listMore: (n) => `and ${n} more laid earlier`,
   pickTitle: 'Lay what?',
   noSeason: 'The Harvest Table is packed away until Pot Luck Day.',
   notDish: 'Only a dish or a crop belongs on the Harvest Table.',
@@ -133,7 +137,6 @@ export const TABLE_LINES = Object.freeze({
   slow: 'Slow down a little.',
   offline: 'The Harvest Table can’t be reached just now. Try again in a moment.',
   look0: 'A long table by the signpost, set for Pot Luck Day. Nobody has laid anything on it yet.',
-  lookN: (n, names) => `A long table by the signpost, set for Pot Luck Day. ${countText(n)} laid so far${names ? `, newest first: ${names}` : ''}.`,
 });
 
 const countText = (n) => {
@@ -231,6 +234,15 @@ export function dishSpots(n = TABLE_RULES.shown, at = TABLE_AT) {
   const out = [];
   for (let i = 0; i < Math.min(n, TABLE_RULES.shown); i += 1) out.push({ x: Math.round(-reach + i * slot), y: -at.piece.h + 14 });
   return out;
+}
+
+/**
+ * The table's whole list (its Look, 2026-11-18: what the table cannot draw goes in a list): every
+ * offering it keeps, newest first, and how many older ones were laid but are no longer kept.
+ */
+export function tableList(table) {
+  const rows = [...(table?.rows || [])].reverse();
+  return { rows, older: Math.max(0, (Math.floor(Number(table?.total)) || 0) - rows.length) };
 }
 
 /** The dishes drawn on the table, newest first. */

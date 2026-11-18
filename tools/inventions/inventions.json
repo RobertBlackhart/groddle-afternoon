@@ -4353,7 +4353,7 @@
   },
   {
    "id": "pot-luck-table",
-   "title": "Pot Luck Day's Harvest Table: one shared table by the Groddle Forest Junction signpost (Tiny Speck's deco_table_wooden_ghtest three times, end to end); dishes and crops laid by anyone stay on it, the newest twelve drawn with their icons in one row, a count on its front; each player's first offering of a game day gives 10 mood and 10 favor with Pot; packed away when the season ends",
+   "title": "Pot Luck Day's Harvest Table: one shared table by the Groddle Forest Junction signpost (Tiny Speck's deco_table_wooden_ghtest three times, end to end); dishes and crops laid by anyone stay on it, the newest twelve drawn with their icons in one row, a count on its front, its Look a list of every offering it keeps (newest first, who laid each, how many older ones it no longer keeps); each player's first offering of a game day gives 10 mood and 10 favor with Pot; packed away when the season ends",
    "kind": "content",
    "status": "proposed",
    "where": [
@@ -4376,6 +4376,14 @@
     {
      "file": "public/js/features/world-drop-feature.js",
      "symbol": "ctxFor feastTakes"
+    },
+    {
+     "file": "public/js/pot-luck-feast.js",
+     "symbol": "tableList"
+    },
+    {
+     "file": "public/js/features/pot-luck-feast-feature.js",
+     "symbol": "openList"
     }
    ],
    "why": "Austin 2026-11-17 (G982): one shared Harvest Table by the Groddle Forest Junction signpost (the Croppaday precedent), on Tiny Speck's own rustic table deco; laid items stay for everyone, the table fills over the week, a little mood and Pot favor for the day's first offering, everything packed away at the season's end. Ours to review: the spot (250 px right of the hub signpost), two tables side by side, ten icons shown, the 999+ count, 10 mood and 10 favor, any food the server's trade data calls food (a dish or a crop) accepted. The server holds it online (groddle-afternoon-server harvest_table.go).",

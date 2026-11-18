@@ -17,6 +17,9 @@
  *   "Quantity: N", Set price), its store (StoreBuyUI.as: the item, "N for
  *   sale", "Price N", "You have N of these.", the count and "Buy: N for X"),
  *   and the count and item choosers its remove and deposit ask with.
+ * - A list to read (openListDialog; the Harvest Table's Look, G982): one row a thing, its icon,
+ *   name and a note, scrolled past what the window holds as the cabinet scrolls rows past
+ *   rows_display, a last line under the rows, and Done.
  *
  * Modern is the default skin; Classic (:root[data-ui="classic"]) wears the
  * original's dark blocker colour (CabinetDialog blocker 0x213036).
@@ -116,6 +119,24 @@ const CSS = `
 .hst-list button:hover, .hst-list button:focus-visible { background: var(--surface-hover); }
 .hst-list img { width: 28px; height: 28px; object-fit: contain; }
 .hst-list .hst-n { margin-left: auto; color: var(--text-muted); }
+.hst-listwin header { flex-wrap: wrap; row-gap: 0; }
+.hst-listwin header .hst-x { order: 1; }
+.hst-listwin header small { order: 2; flex-basis: 100%; }
+.hst-listwin .hst-body { display: flex; flex-direction: column; align-items: stretch; min-height: 0; padding: var(--sp-4) var(--sp-5); }
+.hst-read { max-height: min(60vh, 26rem); flex: 0 1 auto; min-height: 0; overscroll-behavior: contain; padding-right: 2px; }
+.hst-read li { display: flex; align-items: center; gap: var(--sp-4); padding: 5px 10px; border-radius: var(--radius-md); background: var(--surface-parchment); font-weight: 700; min-width: 0; }
+.hst-read .hst-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hst-read .hst-who { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-muted); font-size: var(--fs-sm); }
+.hst-read li.hst-last { justify-content: center; background: transparent; color: var(--text-muted); font-size: var(--fs-sm); }
+.hst-listwin .hst-foot { justify-content: flex-end; }
+/* A short window (a phone held sideways): the count beside the title, a slimmer foot, more rows in view. */
+@media (max-height: 520px) {
+  .hst-listwin header { flex-wrap: nowrap; padding-top: var(--sp-3); padding-bottom: var(--sp-3); }
+  .hst-listwin { width: min(32rem, calc(100vw - 24px)); }
+  .hst-listwin header h2 { flex: 0 0 auto; white-space: nowrap; }
+  .hst-listwin header small { order: 0; flex: 1 1 auto; flex-basis: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  .hst-listwin .hst-foot { padding-top: var(--sp-2); padding-bottom: var(--sp-3); }
+}
 :root[data-ui="classic"] .hst-win { background: var(--c-navy-30); color: var(--c-grey-94); border-color: var(--c-navy-20); border-radius: 20px; }
 :root[data-ui="classic"] .hst-win header { background: var(--c-navy-34b); border-bottom-color: var(--c-navy-20); }
 :root[data-ui="classic"] .hst-win header small, :root[data-ui="classic"] .hst-foot .hst-note, :root[data-ui="classic"] .hst-dialog .hst-sub,
@@ -123,6 +144,9 @@ const CSS = `
 :root[data-ui="classic"] .hst-slot { background: var(--c-navy-34b); }
 :root[data-ui="classic"] .hst-slot.is-full { background: color-mix(in srgb, var(--c-navy-34b) 80%, var(--c-grey-94)); }
 :root[data-ui="classic"] .hst-pick, :root[data-ui="classic"] .hst-list button { background: var(--c-navy-34b); color: var(--c-grey-94); }
+:root[data-ui="classic"] .hst-read li { background: var(--c-navy-34b); color: var(--c-grey-94); }
+:root[data-ui="classic"] .hst-read .hst-who, :root[data-ui="classic"] .hst-read li.hst-last { color: var(--c-grey-87); }
+:root[data-ui="classic"] .hst-read li.hst-last { background: transparent; }
 :root[data-ui="classic"] .hst-btn { background: var(--c-grey-94); color: var(--c-navy-30); border-color: var(--c-grey-87); }
 :root[data-ui="classic"] .hst-btn.btn-glitch-primary { background: var(--c-lime-80); color: var(--text-inverse); border-color: var(--c-lime-64); }
 :root[data-ui="classic"] .hst-dialog .hst-price-row input { background: var(--c-grey-94); color: var(--c-navy-30); }
@@ -147,7 +171,7 @@ function ensureCss() {
 
 let open = null; // the one storage window open now: { kind, root, close }
 
-/** The storage window open now ('cabinet' | 'price' | 'store' | 'count' | 'pick'), or ''. */
+/** The storage window open now ('cabinet' | 'price' | 'store' | 'count' | 'pick' | 'list'), or ''. */
 export function storageWindowKind() {
   return open?.kind || '';
 }
@@ -633,5 +657,42 @@ export function openPickDialog({ title, items, onPick, onClose }) {
   body.append(ul);
   h.root.append(body);
   setTimeout(() => ul.querySelector('button')?.focus({ preventScroll: true }), 0);
+  return h;
+}
+
+/**
+ * A list to read (G982, the Harvest Table's Look): `rows` [{ key, icon, name, note }] in the order
+ * given, scrolled inside the window, then `last` (a closing line, if any) and Done. The handle's
+ * update({ sub, rows, last }) redraws it in place (its scroll kept), for a list that grows while open.
+ */
+export function openListDialog({ title, sub = '', rows = [], last = '', onClose }) {
+  const h = frame('list', title, sub, { onClose });
+  h.root.classList.add('hst-listwin');
+  const small = () => h.root.querySelector('small');
+  const body = el('div', { class: 'hst-body' });
+  const ul = el('ul', { class: 'hst-list hst-read', 'data-hst-rows': '', tabindex: '0', 'aria-label': title });
+  body.append(ul);
+  const foot = el('div', { class: 'hst-foot' });
+  const done = el('button', { type: 'button', class: 'hst-btn btn-glitch-primary', 'data-hst-done': '' }, 'Done');
+  done.addEventListener('click', () => h.close());
+  foot.append(done);
+  h.root.append(body, foot);
+  const render = (next) => {
+    const top = ul.scrollTop;
+    ul.replaceChildren();
+    for (const r of next.rows || []) {
+      const li = el('li', { 'data-hst-row': r.key || '' });
+      li.append(el('img', { src: r.icon, alt: '', width: 28, height: 28 }), el('span', { class: 'hst-name' }, r.name), el('span', { class: 'hst-who' }, r.note || ''));
+      ul.append(li);
+    }
+    if (next.last) ul.append(el('li', { class: 'hst-last', 'data-hst-last': '' }, next.last));
+    if (next.sub != null && small()) small().textContent = next.sub;
+    ul.scrollTop = top;
+  };
+  render({ rows, last });
+  h.update = (next = {}) => {
+    if (!h.closed) render(next);
+  };
+  setTimeout(() => done.focus({ preventScroll: true }), 0);
   return h;
 }

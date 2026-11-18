@@ -171,7 +171,7 @@ import { swoonerfliesFeature } from './swoonerflies-feature.js?v=debe70e7'; FEAT
 import { homePoolMpFeature } from './home-pool-mp-feature.js?v=eda3419c'; FEATURES.push(homePoolMpFeature);
 import { yardVerbsMpFeature } from './yard-verbs-mp-feature.js?v=a576d5dd'; FEATURES.push(yardVerbsMpFeature);
 import { homeMachinesFeature } from './home-machines-feature.js?v=d219b566'; FEATURES.push(homeMachinesFeature);
-import { homeStorageFeature } from './home-storage-feature.js?v=0baa93e2'; FEATURES.push(homeStorageFeature);
+import { homeStorageFeature } from './home-storage-feature.js?v=dd9ccc95'; FEATURES.push(homeStorageFeature);
 import { homeLiveFeature } from './home-live-feature.js?v=ed80100f'; FEATURES.push(homeLiveFeature);
 import { questVerbsFeature } from './quest-verbs-feature.js?v=f9471992'; FEATURES.push(questVerbsFeature);
 import { itemVerbsMoreFeature } from './item-verbs-more-feature.js?v=6d22497e'; FEATURES.push(itemVerbsMoreFeature);
@@ -203,7 +203,7 @@ import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1df09118';
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=1b68c769'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=8cea67bd'; FEATURES.push(potLuckFeastFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=3d591c33'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=f6a532fd'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=1b10b444'; FEATURES.push(accountBackupFeature);

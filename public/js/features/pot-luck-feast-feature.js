@@ -6,7 +6,8 @@
  *  - The table: Tiny Speck's deco_table_wooden_ghtest three times, end to end, by the street's hub
  *    signpost, only while the season is on. Lay a dish or a crop on it (its Lay a dish verb, a
  *    picker of what the pack holds, or a stack dropped on it: js/world-drop.js lay_feast); the
- *    newest dishes stand on it, drawn with their own Tiny Speck icons, and its card counts them all.
+ *    newest dishes stand on it, drawn with their own Tiny Speck icons, and its card counts them all;
+ *    its Look opens the list of every offering it keeps, newest first, with who laid each.
  *    Online the table is the server's (harvest_table.go: everyone's offerings, broadcast, held
  *    across restarts, packed away at the season's end); solo keeps its own in the save.
  *  - Each player's first offering of a game day gives a little mood and favor with Pot (the
@@ -19,13 +20,13 @@
  *    recipe.season).
  *
  * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the
- * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name),
+ * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name), look(), list(),
  * seasonDate('2026-11-26') (online, where ?seasondate= cannot reach the page).
  * Canvas data: feastTable (on|off), feastCount, feastShown (classes drawn), feastQuest
- * (status:dishes/dressed/laid), feastLast.
+ * (status:dishes/dressed/laid), feastLast, feastList (the Look list's row count, or closed).
  */
 
-import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
+import { addItem, countItem, ensureItem, itemIcon, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
 import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=80957092';
 import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8b81947e';
@@ -34,6 +35,7 @@ import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+import { openListDialog } from '../ui/storage-windows.js?v=4992800f';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -67,7 +69,8 @@ import {
   questRows,
   shownRows,
   tableCountLabel,
-} from '../pot-luck-feast.js?v=5ecf8e53';
+  tableList,
+} from '../pot-luck-feast.js?v=96726383';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -90,6 +93,7 @@ let syncAt = 0; // when the page last asked the server for the table (feast_sync
 let last = '';
 let demoDone = false;
 let engineRef = null;
+let list = null; // the Look list's window while open (ui/storage-windows.js openListDialog)
 
 let qaDate = null; // groddleFeast.seasonDate(): the online page takes no ?seasondate= (QA, local hosts only)
 const nowForCalendar = (engine) => qaDate ?? parseSeasonDate(engine?.param?.('seasondate')) ?? Date.now();
@@ -123,6 +127,7 @@ function publish(engine) {
   engine.setData('feastShown', shownRows(t).map((r) => r.c).join(',') || 'none');
   engine.setData('feastQuest', `${quest.status || 'none'}:${quest.dishes}/${quest.dressed}/${quest.laid}`);
   engine.setData('feastLast', last || 'none');
+  engine.setData('feastList', list && !list.closed ? String(listView(engine).rows.length) : 'closed');
 }
 
 function say(engine, msg, ok = true, effects = null) {
@@ -196,6 +201,7 @@ function groundAt(engine, x, refY) {
 }
 
 function clearTable(engine) {
+  closeList();
   if (!view) return;
   engine.unregister?.(view.target);
   view = null;
@@ -300,9 +306,45 @@ function redraw(engine) {
     s.x = spots[i].x;
     s.y = spots[i].y;
   });
+  if (list && !list.closed) list.update(listView(engine));
   view.label.text = t.total ? tableCountLabel(t.total) : '';
   view.target.subtitle = TABLE_LINES.subtitle(t.total);
   publish(engine);
+}
+
+/* -------------------------------------------------------- the Look list */
+
+/** What the Look list shows: every kept offering, newest first, its icon, name and who laid it. */
+function listView(engine) {
+  const t = shownTable();
+  const { rows, older } = tableList(t);
+  const me = Number(liveClient(engine)?.me?.id) || 0;
+  return {
+    sub: TABLE_LINES.subtitle(t.total),
+    rows: rows.map((r, i) => ({
+      key: `${r.c}:${i}`,
+      icon: ITEM_CATALOG[r.c]?.icon || itemIcon(r.c),
+      name: label(r.c),
+      // Solo rows carry no name: the player laid them all. Online, by is the layer's player id.
+      note: TABLE_LINES.listBy(r.name, !r.name || (me && Number(r.by) === me)),
+    })),
+    last: older ? TABLE_LINES.listMore(older) : '',
+  };
+}
+
+/** The table's Look: the list of everything on it (a bare table says so). */
+function openList(engine) {
+  const t = shownTable();
+  if (!t.total) return say(engine, TABLE_LINES.look0);
+  if (typeof document === 'undefined') return;
+  list?.close?.();
+  list = openListDialog({ title: TABLE_LINES.listTitle, ...listView(engine), onClose: () => { list = null; publish(engine); } });
+  publish(engine);
+}
+
+function closeList() {
+  list?.close?.();
+  list = null;
 }
 
 /* ------------------------------------------------------------- the lay */
@@ -483,6 +525,9 @@ export const potLuckFeastFeature = {
       offer: () => offerQuest(engine),
       event: (name, detail) => questStep(engine, name, detail),
       choices: () => choices(engine),
+      /** The Look list as it shows: { open, sub, rows: [{ name, note }], last }. look() opens it. */
+      list: () => ({ open: Boolean(list && !list.closed), ...listView(engine), rows: listView(engine).rows.map(({ name, note }) => ({ name, note })) }),
+      look: () => openList(engine),
       /** ?seasondate= for a page that cannot take it (/play/online/ strips its params): 'YYYY-MM-DD' or ''. */
       seasonDate: (text) => {
         qaDate = parseSeasonDate(text);
@@ -542,7 +587,7 @@ export const potLuckFeastFeature = {
     const has = choices(engine).length > 0;
     return [
       { id: 'lay', label: TABLE_LINES.verb, sort: 50, picker: 'lay', emptyMsg: TABLE_LINES.none, tooltip: TABLE_LINES.verbTip, enabled: ok && has, reason: ok ? TABLE_LINES.none : TABLE_LINES.noSeason, energy: 0, durationMs: 0 },
-      { id: 'look', label: TABLE_LINES.look, sort: 60, enabled: true, tooltip: 'See what is on the table', energy: 0, durationMs: 0 },
+      { id: 'look', label: TABLE_LINES.look, sort: 60, enabled: true, tooltip: TABLE_LINES.lookTip, energy: 0, durationMs: 0 },
     ];
   },
 
@@ -551,12 +596,7 @@ export const potLuckFeastFeature = {
     const [verb, cls] = String(verbId || '').split(':');
     if (verb === 'lay' && cls) return lay(engine, cls), true;
     if (verb === 'lay') return engine.openPicker?.(target, { id: 'lay', picker: 'lay', emptyMsg: TABLE_LINES.none }), true;
-    if (verb === 'look') {
-      const t = shownTable();
-      const names = shownRows(t, 5).map((r) => label(r.c)).join(', ');
-      say(engine, t.total ? TABLE_LINES.lookN(t.total, names) : TABLE_LINES.look0);
-      return true;
-    }
+    if (verb === 'look') return openList(engine), true;
     return false;
   },
 
