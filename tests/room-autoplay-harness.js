@@ -71,8 +71,16 @@ export function fakeRoomCtx(room, { clock, params = {}, stage = null, tickMs = 1
     setData: (k, v) => { log.data[k] = v; },
     near: (x, y, r = 60) => Math.hypot(ctx.player.x - x, ctx.player.y - y) <= r,
     progress: (flag) => log.progress.push(flag),
-    solve: () => { log.solved += 1; },
-    leave: () => { log.left += 1; },
+    // The run as js/quest-instance.js moves it: solved, then left with its outcome.
+    run: { status: 'active' },
+    solve: () => { log.solved += 1; if (ctx.run.status === 'active') ctx.run.status = 'solved'; },
+    leave: () => {
+      log.left += 1;
+      if (ctx.run.status === 'left') return;
+      ctx.run.outcome = ctx.run.status === 'solved' ? 'complete' : 'abandoned';
+      ctx.run.status = 'left';
+    },
+    step: (name, ok = true) => Boolean(ok),
     fx: () => null,
     stuckPromptMs: (ms) => ms,
   };

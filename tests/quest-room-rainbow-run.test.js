@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=83690109';
-import { COINS_NEEDED, RUN_MS, SPAWN_X, rainbowCoins, rainbowPlatforms, room } from '../public/js/quest-rooms/rainbow-run.js?v=fa6dca1e';
+import { COINS_NEEDED, RUN_MS, SPAWN_X, rainbowCoins, rainbowPlatforms, room } from '../public/js/quest-rooms/rainbow-run.js?v=635ffe8c';
 import { COLUMNS, FLOOR, ISLANDS, PLANET, W } from '../public/js/quest-rooms/rainbow-run-scene.js?v=261e9006';
 import { RAINBOW_RUN_FILES } from '../public/js/quest-rooms/rainbow-run-art.js?v=bf073094';
 

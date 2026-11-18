@@ -83,6 +83,7 @@
  *    on its marks as the song is played.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
@@ -1581,7 +1582,34 @@ export const room = {
     }
   },
 
+  /**
+   * G971: at each grotto left to play, its notes found, the ghost's song heard
+   * and played back, and on through the passage; then the Hollow: Grendaline,
+   * the reveal, the Conch (the main quest), then out.
+   */
+  autoplaySteps(ctx, mode) {
+    const out = [];
+    for (const stage of STAGES.slice(0, 3)) {
+      if (STAGES.indexOf(ctx.stage) > STAGES.indexOf(stage)) continue;
+      out.push(`notes:${stage}`);
+      if (mode === 'notes') return out;
+      out.push(`ghost:${stage}`);
+      if (mode === 'ghost') return out;
+      out.push(`song:${stage}`);
+      if (mode === stage) return out;
+      out.push(`passage:${stage}`);
+    }
+    out.push('arrive');
+    if (mode === 'arrive') return out;
+    out.push('giant');
+    if (mode === 'giant') return out;
+    out.push('reveal');
+    if (ctx.questId === MAIN) out.push('conch');
+    return mode === 'pedestal' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const d = ctx.data;
     const skipVog = async () => {
       for (let i = 0; i < 240; i++) {
@@ -1600,9 +1628,11 @@ export const room = {
         ctx.place(note.x, note.y - 4);
         for (let i = 0; i < 30 && !d.found.includes(note.n); i++) await ctx.wait(100);
       }
+      ctx.step(`notes:${stage}`, L.notes.every((note) => d.found.includes(note.n)));
       if (mode === 'notes') return 'notes';
       ctx.place(L.glyph.x + 60, L.glyph.y - 4);
       for (let i = 0; i < 120 && (d.phase !== 'song' || d.ghostPlaying || !d.songHeard); i++) await ctx.wait(250);
+      ctx.step(`ghost:${stage}`, Boolean(d.songHeard));
       if (mode === 'ghost') return 'ghost';
       if (mode === 'wrong') playNote(ctx, SONGS[stage][1]);
       for (const n of SONGS[stage]) {
@@ -1610,26 +1640,32 @@ export const room = {
         await ctx.wait(350);
       }
       for (let i = 0; i < 80 && !d.exitOpen; i++) await ctx.wait(150);
+      if (!ctx.step(`song:${stage}`, Boolean(d.exitOpen))) return `stuck:${stage}`;
       await skipVog();
       if (mode === stage) return stage;
       ctx.place(L.exit.x, L.exit.y - 4);
       for (let i = 0; i < 80 && ctx.stage === stage; i++) await ctx.wait(250);
+      ctx.step(`passage:${stage}`, ctx.stage !== stage);
     }
     for (let i = 0; i < 80 && ctx.stage !== 'waterfall_04_wider'; i++) await ctx.wait(250);
+    if (!ctx.step('arrive', ctx.stage === 'waterfall_04_wider')) return 'stuck:arrive';
     if (mode === 'arrive') return 'arrive';
     for (let i = 0; i < 160 && d.phase !== 'seek'; i++) {
       if (d.vogNext) d.vogNext();
       await ctx.wait(250);
     }
+    ctx.step('giant', d.phase === 'seek');
     if (mode === 'giant') return 'giant';
     ctx.place(HOLLOW.revealX + 80, HOLLOW.floor[3][1] - 4);
     for (let i = 0; i < 40 && !d.revealed; i++) await ctx.wait(150);
+    ctx.step('reveal', Boolean(d.revealed));
     await ctx.wait(1400);
     if (ctx.questId === MAIN) {
       ctx.place(HOLLOW.pedestal.x - 30, HOLLOW.pedestal.floor - 4);
       await ctx.wait(400);
       pickUpConch(ctx);
       await ctx.wait(800);
+      ctx.step('conch', Boolean(d.conchTaken));
       await skipVog();
     } else {
       ctx.place(HOLLOW.pedestal.x, HOLLOW.pedestal.floor - 4);
@@ -1638,7 +1674,7 @@ export const room = {
     if (mode === 'pedestal') return 'pedestal';
     ctx.place(HOLLOW.exit.x1 + 120, HOLLOW.exit.y - 4);
     for (let i = 0; i < 60 && ctx.run; i++) await ctx.wait(250);
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 
   /** The Conch in the pack (quest-instances itemVerbs): Play, and Blow once after part 1. */

@@ -49,6 +49,7 @@
  */
 
 import { AN_AUTUMN_DAY_FILES } from '../an-autumn-day-art.js?v=d6b2601b';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { sceneAnim } from '../deco-anim.js?v=41a70b24';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
@@ -1144,7 +1145,20 @@ export const room = {
    * (or words / sentence / room to stop early). Places the avatar; the
    * real-input route is in tests' QA notes.
    */
+  /** G971: every floating word remembered, the sentence put back, the feeling room, its quoin, then out. */
+  autoplaySteps(ctx, mode) {
+    const out = mainWords().map((w) => `word:${w.id}`);
+    if (mode === 'words') return out;
+    out.push('sentence');
+    if (mode === 'sentence') return out;
+    out.push('room');
+    if (mode === 'room') return out;
+    out.push('quoin');
+    return mode === 'quoin' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const feeling = FEELINGS.includes(mode) ? mode : 'wonder';
     const settle = async (pred, ms = 8000) => {
       const end = Date.now() + ms;
@@ -1154,7 +1168,7 @@ export const room = {
     await ctx.wait(900);
     for (const w of mainWords()) {
       ctx.place(w.x, w.y - 4);
-      if (!(await settle(() => ctx.data.remembered[w.id], 3000))) return `stuck:${w.id}`;
+      if (!ctx.step(`word:${w.id}`, await settle(() => ctx.data.remembered[w.id], 3000))) return `stuck:${w.id}`;
       await ctx.wait(150);
     }
     if (mode === 'words') return 'words';
@@ -1167,10 +1181,12 @@ export const room = {
         await ctx.wait(120);
       }
     }
+    const said = Array.from({ length: SLOT_COUNT }, (_, i) => (i === SENTENCE.length ? `${feeling}.` : SENTENCE[i]));
+    if (!ctx.step('sentence', said.every((w, i) => ctx.data.sentence[i] === w))) return 'stuck:sentence';
     if (mode === 'sentence') return 'sentence';
     await settle(() => Math.abs(ctx.data.birdPos.x - CLEARING.land.x) < 12, 8000);
     ctx.place(CLEARING.land.x + 30, MAIN.FLOOR);
-    if (!(await settle(() => ctx.stage === feeling, 9000))) return 'no-room';
+    if (!ctx.step('room', await settle(() => ctx.stage === feeling, 9000))) return 'stuck:room';
     if (mode === 'room') return 'room';
     await ctx.wait(600);
     if (!ctx.memory('qurazy')[qurazyKey(feeling)]) {
@@ -1182,10 +1198,12 @@ export const room = {
         await settle(() => q.taken, 3000);
       }
     }
+    // Taken now, or on an earlier visit (the Qurazy quoin is once per feeling).
+    ctx.step('quoin', Boolean(ctx.data.quoin?.taken || ctx.memory('qurazy')[qurazyKey(feeling)]));
     if (mode === 'quoin') return 'quoin';
     await ctx.wait(800);
     ctx.place(feelingLayout(feeling).exit.x + 20, ROOM.FLOOR);
     await settle(() => !ctx.run, 8000);
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

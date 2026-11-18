@@ -41,6 +41,7 @@
  * LIFFFRAHB4A3JHJ, reference only).
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { BODY_H, JUMP_GAP, JUMP_RISE, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bf24e9bf';
 import { bulbSprite, dishSprite, knobSprite, ledgeStrip, mixHex, spotlightBeamX, spotlightSprite } from './light-rig-art.js?v=1a07aeb3';
 
@@ -754,24 +755,46 @@ export const room = {
     ctx.setData('rgPhase', ctx.data.phase || '');
   },
 
-  async autoplay(ctx, mode) {
+  /** G971: the three lamps' orbs and their lit discs, the mixer's presses and green discs, the totem's, then the EXIT. */
+  autoplaySteps(ctx, mode = 'exit') {
+    const out = ['orb:yellow', ...Array(3).fill('on:lamps'), 'orb:blue', ...Array(3).fill('on:lamps'), 'orb:red', ...Array(3).fill('on:lamps')];
+    if (mode === 'lamps') return out;
+    out.push('press:mixer_a_red', 'press:mixer_a_red', 'press:mixer_a_yellow', 'press:mixer_b_blue', ...Array(6).fill('on:mixer'));
+    if (mode === 'mixer') return out;
+    out.push('press:totem_a_blue', ...Array(4).fill('on:totem'), 'press:totem_b_red');
+    if (mode === 'totem') return out;
+    out.push(...Array(2).fill('on:totem'), 'door');
+    return mode === 'top' ? out : [...out, 'exit'];
+  },
+
+  async autoplay(ctx, mode = 'exit') {
+    const run = ctx.run;
     const layout = ctx.data.layout;
     const plat = (tier, color, i) => layout.platforms.filter((p) => p.tier === tier && p.colors.includes(color))[i];
     const go = async (x, y, ms = 420) => {
       ctx.place(x, y);
       await ctx.wait(ms);
     };
-    const on = async (p, dx = 0) => go(p.cx + dx, p.y);
+    // Still standing on the disc after the wait: its light made it solid.
+    const on = async (p, dx = 0) => {
+      await go(p.cx + dx, p.y);
+      ctx.step(`on:${p.tier}`, Math.abs(ctx.player.y - p.y) < 8);
+    };
     const press = async (id) => {
       const b = ctx.data.bulbs.find((x) => x.id === id);
+      const before = ctx.data.presses.length;
       room.runVerb(ctx, b.target, 'press');
+      ctx.step(`press:${id}`, ctx.data.presses.length === before + 1);
       await ctx.wait(450);
     };
     const climb = async (l) => go(l.x, l.yTop, 500);
     await ctx.wait(500);
     // 1. Yellow orb on the floor, blue over the last yellow disc, red over the last blue.
     // Orbs are touched outright: a slow renderer can miss the tick at a placed point.
-    const orb = (color) => touchOrb(ctx, layout.orbs.find((o) => o.color === color));
+    const orb = (color) => {
+      touchOrb(ctx, layout.orbs.find((o) => o.color === color));
+      ctx.step(`orb:${color}`, ctx.data.light.lampUntil[color] > Date.now());
+    };
     await go(layout.orbs[0].x, FLOORS.lamps);
     orb('yellow');
     for (let i = 0; i < 3; i++) await on(plat('lamps', 'yellow', i));
@@ -802,9 +825,11 @@ export const room = {
     // 4. Over the rainbow, then the EXIT.
     for (const q of layout.quoins.slice(-3)) await go(q.x, rainbowY(q.x), 350);
     await go(layout.door.x + 10, FLOORS.glare);
+    ctx.step('door', ctx.near(layout.door.x, layout.door.y, 120));
     if (mode === 'top') return 'top';
     room.runVerb(ctx, ctx.data.door, 'enter');
-    return 'exited';
+    for (let i = 0; i < 60 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };
 

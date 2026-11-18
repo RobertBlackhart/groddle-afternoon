@@ -33,6 +33,7 @@
  */
 
 import { BODY_H, JUMP_GAP, JUMP_RISE, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bf24e9bf';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 
 const ART = 'assets/sprites/quest-rooms/tile_puzzle/';
@@ -680,7 +681,16 @@ export const room = {
     ctx.setData('tpTrap', ctx.data.trapOpen ? '1' : '0');
   },
 
+  /** G971: the speaker's intro, every button of the solution, the maze open, the end box, then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'intro') return ['intro'];
+    const out = ['intro', ...SOLUTION.map((id) => `press:${id}`), 'solved'];
+    if (mode === 'solved') return out;
+    return mode === 'end' ? [...out, 'end'] : [...out, 'end', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const go = async (x, y = FLOOR, ms = 350) => {
       ctx.place(x, y);
       await ctx.wait(ms);
@@ -689,16 +699,20 @@ export const room = {
       ctx.advanceDialog();
       await ctx.wait(150);
     }
+    ctx.step('intro', ctx.data.phase !== 'intro');
     if (mode === 'intro') return 'intro';
     const pressAt = async (id) => {
       const t = tileById(id);
       const s = buttonSpot(t);
       await go(s.x - 30, s.y);
+      const before = ctx.data.presses.length;
       room.runVerb(ctx, ctx.data.buttons[id].target, 'press');
+      ctx.step(`press:${id}`, ctx.data.presses.length === before + 1);
       await ctx.wait(300);
     };
     for (const id of SOLUTION) await pressAt(id);
-    if (mode === 'solved') return mazeSolved(ctx.data.rots) ? 'solved' : 'stuck';
+    if (!ctx.step('solved', mazeSolved(ctx.data.rots))) return 'stuck';
+    if (mode === 'solved') return 'solved';
     // Walk the way through on the maze nodes: col 0 up through the tiles, row 0 across col 1, col 2 up and out.
     await go(tileRect(tileById('t0_1')).x1 + 70);
     await go(tileRect(tileById('t0_0')).x2 - 60, LINE);
@@ -710,11 +724,13 @@ export const room = {
       ctx.advanceDialog();
       await ctx.wait(150);
     }
+    if (!ctx.step('end', ctx.data.phase === 'drop')) return 'stuck:end';
     if (mode === 'end') return 'end';
     for (const q of ctx.data.quoins.filter((x) => x.id.startsWith('nc'))) await go(q.x, q.y + 52, 250);
     await go(DOOR.x - 30);
     room.runVerb(ctx, ctx.data.door, 'enter');
-    return 'exited';
+    for (let i = 0; i < 60 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };
 

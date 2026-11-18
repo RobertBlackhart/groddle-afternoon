@@ -28,6 +28,7 @@
  * fallX, fallNumber (the last number passed), fallLabel, fallMaxVy.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { ARRIVAL, FLOOR, FLOOR_Y, H, TELEPORTER, VY_MAX, W, buildFall, fallPlatforms, numberAt, sx, sy } from './falling-room-scene.js?v=17acf8eb';
 
 export const STAGE = 'falling';
@@ -137,23 +138,32 @@ export const falling = {
     ctx.setData('fallMaxVy', String(Math.round((d.maxVy || 0) * 100) / 100));
   },
 
+  /** G971: the fall (landed or beamed), then out by the hidden teleporter. */
+  autoplaySteps() {
+    return ['fall', 'exit'];
+  },
+
   /** QA: walk off the tongue (if on it), then wait out the fall and the teleporter. */
   async autoplay(ctx) {
+    const run = ctx.run;
     const d = () => ctx.data.fall || {};
     const until = async (fn, ms) => {
       const end = Date.now() + ms;
       while (!fn() && Date.now() < end && ctx.run) await ctx.wait(150);
       return fn();
     };
-    await until(() => d().state === 'tongue' || d().state === 'falling', 4000);
+    // G971: the drop from the arrival point onto the tongue reads as 'falling' too; wait
+    // until you stand on the tongue (or have walked off it), else the walk off never ran.
+    await until(() => d().state === 'tongue' || (d().state === 'falling' && srcY(ctx.player) > -9800), 6000);
     if (d().state === 'tongue' && ctx.player) {
       // Off the bubble end, as the player in the video does.
       ctx.place(sx(700), ctx.player.y - 40);
     }
     await until(() => d().state === 'landed' || d().beamed, 60000);
+    ctx.step('fall', d().state === 'landed' || d().beamed);
     if (!d().beamed && ctx.player) ctx.place(teleporterBox().x, FLOOR);
     await until(() => !ctx.run, 8000);
-    return ctx.run ? 'stuck' : 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };
 
@@ -194,6 +204,11 @@ export function withFallingRoom(lab) {
   out.physics = (ctx) => {
     live = ctx;
     return ctx?.stage === STAGE ? falling.physics(ctx) : lab.physics?.(ctx) ?? null;
+  };
+  out.autoplaySteps = (ctx, mode) => {
+    if (ctx.stage === STAGE || mode === 'fall') return falling.autoplaySteps();
+    const steps = lab.autoplaySteps?.(ctx, mode) || [];
+    return steps.includes('teleport') ? [...steps, ...falling.autoplaySteps()] : steps;
   };
   out.autoplay = async (ctx, mode) => {
     live = ctx;

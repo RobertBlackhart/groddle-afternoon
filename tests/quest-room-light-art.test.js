@@ -55,6 +55,7 @@ describe('the light rig\'s made art and its provenance', () => {
 const textures = await import('../public/js/textures.js?v=1c44e7c3');
 const kit = await import('../public/js/quest-rooms/kit.js?v=83690109');
 const { Display, FakeEl, fakePixi } = await import('./fake-scene.js');
+const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=55bb4823');
 
 class FakeSource { constructor() { this.destroyed = false; } emit() {} on() {} once() {} resize() { return true; } update() {} }
 class FakeTexture { constructor(o = {}) { this.source = o.source; this.destroyed = false; } static from() { return new FakeTexture({ source: new FakeSource() }); } }
@@ -98,7 +99,11 @@ function fakeCtx() {
     solve: () => { log.solved += 1; },
     leave: () => { log.left += 1; },
     fx: () => null,
+    run: { status: 'active' },
+    step: (name, ok = true) => Boolean(ok),
   };
+  ctx.solve = () => { log.solved += 1; ctx.run.status = 'solved'; };
+  ctx.leave = () => { log.left += 1; ctx.run.outcome = ctx.run.status === 'solved' ? 'complete' : 'abandoned'; ctx.run.status = 'left'; };
   return ctx;
 }
 
@@ -107,7 +112,7 @@ const madeAsked = () => new Set([...asked].map((u) => /assets\/decos\/groddle\/(
 
 describe('Walk Toward the Light draws the made art', () => {
   it('builds with every lp piece, the bulbs and the knobs, and no vector dish, pole or rock left', async () => {
-    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=5bb8128f');
+    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=1e157859');
     asked.clear();
     const ctx = fakeCtx();
     const built = room.build(ctx);
@@ -121,12 +126,15 @@ describe('Walk Toward the Light draws the made art', () => {
   });
 
   it('still solves: the intended run lights the way, and the exit door sets solved_puzzle', async () => {
-    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=5bb8128f');
+    const { room } = await import('../public/js/quest-rooms/light-perspective.js?v=1e157859');
     const ctx = fakeCtx();
     room.build(ctx);
     room.enter(ctx);
     for (let i = 0; i < 3; i++) room.tick(ctx);
-    assert.equal(await room.autoplay(ctx, 'exit'), 'exited');
+    const played = await playRoomAutoplay(room, ctx, 'exit');
+    assert.equal(played.word, 'exited', played.summary);
+    assert.deepEqual(played.missing, [], 'G971: every orb, bulb and lit surface of the solution, the door and the exit');
+    assert.ok(played.done.filter((d) => d.startsWith('bulb:')).length >= 5);
     assert.deepEqual(ctx.log.progress, ['solved_puzzle']);
     assert.equal(ctx.log.solved, 1);
     // The panel bulbs swap to their lit picture when picked.
@@ -137,7 +145,7 @@ describe('Walk Toward the Light draws the made art', () => {
 
 describe('Radiant Glare draws the made art', () => {
   it('builds with the spotlights, dishes, ledges, bulbs and knobs', async () => {
-    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=6c0ea40e');
+    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=fdaf5483');
     asked.clear();
     const ctx = fakeCtx();
     const built = room.build(ctx);
@@ -152,13 +160,15 @@ describe('Radiant Glare draws the made art', () => {
   });
 
   it('still solves: lamps, the green mix, the totem\'s purple, then the EXIT sets solved_puzzle', async () => {
-    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=6c0ea40e');
+    const { room } = await import('../public/js/quest-rooms/radiant-glare.js?v=fdaf5483');
     const ctx = fakeCtx();
     room.build(ctx);
     room.enter(ctx);
     ctx.place(150, 3240);
     room.tick(ctx);
-    assert.equal(await room.autoplay(ctx, 'exit'), 'exited');
+    const played = await playRoomAutoplay(room, ctx, 'exit');
+    assert.equal(played.word, 'exited', played.summary);
+    assert.deepEqual(played.missing, [], 'G971: the lamps, the mixes, the discs, the EXIT');
     assert.deepEqual(ctx.log.progress, ['solved_puzzle']);
     room.tick(ctx);
     // The mix lamps show the mixes in their lit picture.

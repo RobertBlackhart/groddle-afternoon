@@ -25,6 +25,7 @@
  * returns. The avatar stays put while looking.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
@@ -387,20 +388,29 @@ export const room = {
     ctx.setData('visionStreet', ctx.engine.streetTsid || '');
   },
 
+  /** G971: the frog's introduction, the object seen in Camera Mode, a wrong answer (wrong), the right one, then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'camera') return ['intro', 'seen'];
+    return mode === 'wrong' ? ['intro', 'seen', 'wrong', 'answer', 'exit'] : ['intro', 'seen', 'answer', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     // Walk into the frog for the introduction.
     for (let i = 0; i < 40 && !ctx.data.frog; i++) await ctx.wait(150);
     ctx.place(ctx.data.frog.x + 40, ctx.data.frog.y);
     for (let i = 0; i < 40 && !ctx.dialogOpen(); i++) await ctx.wait(150);
-    while (ctx.dialogOpen()) {
+    for (let i = 0; i < 60 && ctx.dialogOpen(); i++) {
       ctx.advanceDialog();
       await ctx.wait(300);
     }
+    ctx.step('intro', ctx.data.introDone === true);
     // Camera Mode: look all the way left.
     toggleCamera(ctx, true);
     keys.add('arrowleft');
     for (let i = 0; i < 80 && !ctx.data.seen; i++) await ctx.wait(150);
     keys.delete('arrowleft');
+    if (!ctx.step('seen', ctx.data.seen === true)) return 'stuck:seen';
     if (mode === 'camera') return 'camera';
     await ctx.wait(400);
     toggleCamera(ctx, false);
@@ -413,18 +423,21 @@ export const room = {
       await ctx.wait(500);
       ctx.advanceDialog();
       await ctx.wait(500);
+      ctx.step('wrong', ctx.data.guesses === 1 && !ctx.data.leaving);
     }
     askForHelp(ctx);
     for (let i = 0; i < 20 && !ctx.dialogOpen(); i++) await ctx.wait(100);
     clickChoice(ctx.data.object);
     await ctx.wait(500);
     ctx.advanceDialog();
+    for (let i = 0; i < 10 && !ctx.data.leaving; i++) await ctx.wait(200);
+    ctx.step('answer', Boolean(ctx.data.leaving));
     // Close the completion award pages as they appear (the room leaves after).
     for (let i = 0; i < 100 && ctx.run; i++) {
       ctx.advanceAward();
       await ctx.wait(300);
     }
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };
 

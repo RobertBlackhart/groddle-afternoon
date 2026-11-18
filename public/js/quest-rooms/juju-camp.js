@@ -837,7 +837,15 @@ export const room = {
    * with the trowel. 'full': then dig all three clues on their streets and
    * return the Paperweight (Part II). 'scene': wait for the first kid scene.
    */
+  /** G971: Grandma's talk, her note, out of the camp, then each clue dug to the Paperweight and the turn-in. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'qa' || mode === 'scene') return [mode];
+    const out = ['grandma', 'note', 'camp-exit'];
+    return mode === 'items' ? out : [...out, ...Array(CLUES).fill('dig'), 'turn-in'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     await ctx.wait(800);
     if (mode === 'qa' && typeof window !== 'undefined') {
       // Real-input QA (tests drive keys and clicks): only travel is scripted.
@@ -847,21 +855,25 @@ export const room = {
         box: () => digBox(engine.street),
         street: () => engine.streetTsid,
       };
+      ctx.step('qa', Boolean(window.jujuQA));
       return 'qa';
     }
     if (mode === 'scene') {
       ctx.place(sx(-1900), sy(FLOOR_Y) - 10);
       for (let t = 0; t < 200 && !(ctx.data.scenes > 0); t++) await ctx.wait(100);
+      ctx.step('scene', ctx.data.scenes > 0);
       return `scene:${ctx.data.scenes || 0}`;
     }
     const engine = ctx.engine;
     ctx.place(sx(GRANDMA_X) + 60, sy(FLOOR_Y) - 10);
     for (let t = 0; t < 40 && !ctx.dialogOpen(); t++) await ctx.wait(100);
+    ctx.step('grandma', ctx.dialogOpen());
     for (let t = 0; t < 30 && ctx.dialogOpen(); t++) {
       ctx.advanceDialog();
       await ctx.wait(250);
     }
     for (let t = 0; t < 40 && !noteOpen(); t++) await ctx.wait(100);
+    ctx.step('note', noteOpen());
     await ctx.wait(600);
     noteMod?.closeNoteView();
     // offerCampExit's OK, in the prompt stack.
@@ -869,10 +881,12 @@ export const room = {
       .find((el) => el.textContent.includes(TEXT.exitPrompt))?.querySelector('[data-prompt-choice]');
     for (let t = 0; t < 30 && !campOk(); t++) await ctx.wait(100);
     campOk()?.click();
+    for (let t = 0; t < 30 && run?.status !== 'left'; t++) await ctx.wait(100);
+    ctx.step('camp-exit', run?.status === 'left');
     if (mode === 'items') return 'items';
     for (let t = 0; t < 60 && engine.inScene?.(); t++) await ctx.wait(100);
     await ctx.wait(1500);
-    const out = await huntAutoplay(engine);
+    const out = await huntAutoplay(engine, ctx.step);
     return out;
   },
 
@@ -1001,7 +1015,7 @@ function celebrate(w) {
 }
 
 /** QA: walk the three clue streets as a player would (travel, step in the box, dig). */
-async function huntAutoplay(engine) {
+async function huntAutoplay(engine, step = (name, ok = true) => ok) {
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   for (let t = 0; t < 50 && !lastWorld; t++) await wait(100);
   const w = lastWorld;
@@ -1018,9 +1032,11 @@ async function huntAutoplay(engine) {
     w.place(box.x, box.y - 40);
     for (let t = 0; t < 40 && !w.data.juju?.armed; t++) await wait(100);
     if (!w.data.juju?.armed) return `not-armed:${h.location}`;
+    const hintBefore = h.hint;
     const run = doDig(w);
     if (i < CLUES - 1) {
       await run;
+      step('dig', h.hint === hintBefore + 1);
       await wait(OPEN_HINT_MS + 600);
       noteMod?.closeNoteView();
     } else {
@@ -1035,8 +1051,10 @@ async function huntAutoplay(engine) {
         await wait(250);
       }
       await run;
+      step('dig', Boolean(h.found) && w.count('juju_paperweight') > 0);
     }
   }
+  step('turn-in', Boolean(engine.questState?.completed?.includes(Q1)));
   engine.setData('jujuHuntLog', log.join(','));
   return `hunted:${log.join(',')}`;
 }

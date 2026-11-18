@@ -46,6 +46,7 @@
  *   pack and &backalleymade=1 stands in for a Fuelmaker run.
  */
 
+import { autoplayLog, runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { STATION_FLOOR, stationArrival, stationByTsid, stationScreen, surfaceStation } from '../subway.js?v=735bfbeb';
@@ -380,6 +381,12 @@ function publishBot(wctx) {
 /** &backalleyautoplay: the closest station's subway door, then into the bot, refuel, turn in. */
 async function runAutoplay(wctx, mode) {
   const engine = wctx.engine;
+  // G971: each step logged once the bot or the quest shows it; baAutoplaySteps says which.
+  const steps = ['station', 'collide'];
+  if (mode !== 'collide') steps.push('refuel');
+  if (mode !== 'collide' && mode !== 'refuel') steps.push('turn-in');
+  const log = autoplayLog(steps);
+  auto.log = log;
   const dialogs = async () => {
     for (let i = 0; i < 40 && !wctx.dialogOpen(); i++) await wctx.wait(150);
     while (wctx.dialogOpen()) {
@@ -395,18 +402,21 @@ async function runAutoplay(wctx, mode) {
     await engine.enter(station.streetTsid, { spawnX: door.x, spawnY: door.y });
   }
   for (let i = 0; i < 60 && !bot; i++) await wctx.wait(150);
-  if (!bot) return 'no-bot';
+  if (!bot) return log.finish('no-bot');
+  log.step('station', Boolean(stationByTsid(engine.streetTsid)));
   auto.stage = 'collide';
   wctx.place(bot.spr.x - 60, bot.spr.y - 2);
   await dialogs();
-  if (mode === 'collide') return 'collide';
+  log.step('collide', Boolean(bot?.collided));
+  if (mode === 'collide') return log.finish('collide');
   if (wctx.count('fuel_cell') < 1) wctx.give('fuel_cell', 1);
   if (mode !== 'refuel') wctx.progressQuest(QUEST, 'made_fuel_cell');
   auto.stage = 'refuel';
   refuel(wctx);
   for (let i = 0; i < 20 && !wctx.dialogOpen(); i++) await wctx.wait(150);
   await dialogs();
-  if (mode === 'refuel') return 'refueled';
+  log.step('refuel', Boolean(bot?.revived) && (refueled(wctx) || !wctx.questActive(QUEST)));
+  if (mode === 'refuel') return log.finish('refueled');
   for (let i = 0; i < 60 && wctx.questActive(QUEST); i++) {
     wctx.advanceAward();
     await wctx.wait(300);
@@ -415,7 +425,8 @@ async function runAutoplay(wctx, mode) {
     wctx.advanceAward();
     await wctx.wait(300);
   }
-  return 'complete';
+  log.step('turn-in', Boolean(engine.questState?.completed?.includes(QUEST)));
+  return log.finish('complete');
 }
 
 /* ------------------------------------------------------------------ */
@@ -503,20 +514,30 @@ export const room = {
     ctx.setData('baNearest', ctx.data.nearest?.street || '');
   },
 
+  /** G971: leave (abandoned), or into the box, the Bureaucrat's talk, his flag, then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'leave') return ['left'];
+    return mode === 'talk' ? ['talk'] : ['talk', 'talked', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     for (let i = 0; i < 40 && !ctx.data.bureaucrat; i++) await ctx.wait(150);
     if (mode === 'leave') {
       ctx.leave({ transition: false });
-      return 'left';
+      return ctx.step('left', runOutcome(run) === 'abandoned') ? 'left' : 'stuck';
     }
     ctx.place(ALLEY.triggerX - 40, ALLEY.FLOOR);
     for (let i = 0; i < 40 && !ctx.dialogOpen(); i++) await ctx.wait(150);
+    ctx.step('talk', ctx.dialogOpen());
     if (mode === 'talk') return 'talk';
-    while (ctx.dialogOpen()) {
+    for (let i = 0; i < 60 && ctx.dialogOpen(); i++) {
       ctx.advanceDialog();
       await ctx.wait(300);
     }
-    return 'talked';
+    ctx.step('talked', ctx.data.talked === true);
+    for (let i = 0; i < 20 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'talked' : 'stuck';
   },
 
   /* World hooks: the Fuel Cell, and the bot on every station while the job is open. */
@@ -529,7 +550,10 @@ export const room = {
         auto = { stage: 'start' };
         runAutoplay(wctx, mode).then((out) => { auto.stage = out; wctx.setData('baAutoplay', out); }, (err) => wctx.setData('baAutoplay', `error:${err?.message || err}`));
       }
-      if (auto) wctx.setData('baAutoplay', auto.stage);
+      if (auto) {
+        wctx.setData('baAutoplay', auto.stage);
+        if (auto.log) wctx.setData('baAutoplaySteps', auto.log.summary());
+      }
       if (!bot || !p) return;
       const spr = bot.spr;
       const busy = wctx.dialogOpen() || wctx.engine.acting();

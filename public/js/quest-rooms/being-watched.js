@@ -39,6 +39,7 @@
  * the quest in with the source completion text.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { onLoaded } from '../textures.js?v=1c44e7c3';
 import { sceneAnim } from '../deco-anim.js?v=41a70b24';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
@@ -383,26 +384,38 @@ export const room = {
     ctx.setData('bwWatching', String(ctx.data.watching ?? ''));
   },
 
+  /** G971: leave (abandoned), or up on the dais, the veil talk, the peek flag, then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'leave') return ['left'];
+    if (mode === 'veil') return ['dais'];
+    if (mode === 'talk') return ['dais', 'talk'];
+    return ['dais', 'talk', 'peeked', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     for (let i = 0; i < 40 && !ctx.data.veilTarget; i++) await ctx.wait(150);
     if (mode === 'leave') {
       ctx.leave({ transition: false });
-      return 'left';
+      return ctx.step('left', runOutcome(run) === 'abandoned') ? 'left' : 'stuck';
     }
     ctx.place(VEIL_X - 60, DAIS.y);
     await ctx.wait(600);
+    ctx.step('dais', ctx.near(VEIL_X - 60, DAIS.y, 40));
     if (mode === 'veil') return 'veil';
     peek(ctx);
     for (let i = 0; i < 40 && !ctx.dialogOpen(); i++) await ctx.wait(150);
+    ctx.step('talk', ctx.dialogOpen());
     if (mode === 'talk') return 'talk';
-    while (ctx.dialogOpen()) {
+    for (let i = 0; i < 60 && ctx.dialogOpen(); i++) {
       ctx.advanceDialog();
       await ctx.wait(300);
     }
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 40 && runOutcome(run) !== 'complete'; i++) {
       ctx.advanceAward();
       await ctx.wait(300);
     }
-    return 'complete';
+    ctx.step('peeked', ctx.data.peeked === true);
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

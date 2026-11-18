@@ -23,6 +23,7 @@
  * flared root base, and the place's own name.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { packSlotFor } from '../pack-slot-qa.js?v=1d74bf2d';
 
@@ -332,7 +333,15 @@ export const room = {
     ctx.setData('treeQuoins', String((ctx.data.quoins || []).filter((q) => q.taken).length));
   },
 
+  /** G971: the Spinach eaten, every branch, the top, the crown quoins and award, then the jump off. */
+  autoplaySteps(ctx, mode) {
+    const order = ['spinach', 'branch', 'top', 'quoins', 'award', 'exit'];
+    const stop = { spinach: 1, branch: 2, top: 3, award: 5 }[mode] ?? order.length;
+    return order.slice(0, stop);
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     await ctx.wait(500);
     while (ctx.dialogOpen()) {
       ctx.advanceDialog();
@@ -346,21 +355,26 @@ export const room = {
     const slot = typeof document !== 'undefined' && packSlotFor(ctx.engine, 'spinach');
     if (slot) slot.dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }));
     for (let i = 0; i < 20 && !ctx.data.spinachActivated; i++) await ctx.wait(100);
+    if (!ctx.step('spinach', ctx.data.spinachActivated)) return 'stuck:spinach';
     if (mode === 'spinach') return 'spinach';
     // Climb branch by branch (placed: headless frames are too slow to steer jumps).
     for (const b of treeBranches()) {
       ctx.place((b.x1 + b.x2) / 2, b.y - 4);
       await ctx.wait(350);
     }
+    const last = treeBranches().at(-1);
+    ctx.step('branch', Boolean(last) && ctx.data.highest <= last.y + 4);
     if (mode === 'branch') return 'branch';
     ctx.place(TRUNK_X - 40, CROWN_Y - 6);
     for (let i = 0; i < 40 && !ctx.data.topped; i++) await ctx.wait(100);
+    if (!ctx.step('top', ctx.data.topped === true)) return 'stuck:top';
     if (mode === 'top') return 'top';
     // Sweep the crown quoins, then the award and the jump-off prompt.
     for (const q of ctx.data.quoins) {
       ctx.place(q.x, q.y + 30);
       for (let i = 0; i < 10 && !q.taken; i++) await ctx.wait(100);
     }
+    ctx.step('quoins', ctx.data.quoins.every((q) => q.taken));
     for (let i = 0; i < 60 && !ctx.data.jumpOff; i++) {
       if (!ctx.dialogOpen()) {
         const next = typeof document !== 'undefined' && document.querySelector('#award-screen [data-award-next]');
@@ -368,6 +382,7 @@ export const room = {
       }
       await ctx.wait(250);
     }
+    ctx.step('award', ctx.data.jumpOff === true);
     if (mode === 'award') return 'award';
     while (ctx.dialogOpen()) {
       ctx.advanceDialog();
@@ -375,6 +390,6 @@ export const room = {
     }
     ctx.place(TRUNK_X + 380, GROUND - 40);
     for (let i = 0; i < 40 && ctx.run; i++) await ctx.wait(150);
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

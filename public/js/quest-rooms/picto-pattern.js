@@ -35,7 +35,8 @@
  * meomi2 feltgrass tile, recoloured from the Snaps): tools/room-art picto_pattern.
  */
 
-import { pushOutOfSolids, spawnQuoins, takeQuoins, JUMP_RISE, JUMP_GAP } from './puzzle-kit.js?v=bf24e9bf';
+import { JUMP_GAP, JUMP_RISE, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bf24e9bf';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { PICTO_PATTERN_FILES } from '../picto-pattern-art.js?v=72120af4';
 
@@ -488,7 +489,17 @@ export const room = {
     ctx.setData('ppFlag', ctx.hasProgress('solved_puzzle') ? '1' : '0');
   },
 
+  /** G971: every section solved (solve1: the first), the door reached, then out; wrong and reset check section 1. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'wrong') return ['wrong'];
+    if (mode === 'reset') return ['filled', 'reset'];
+    const solves = (ctx.data.layout?.sections || []).map((s) => `solve:${s.i}`);
+    if (mode === 'solve1') return solves.slice(0, 1);
+    return mode === 'door' ? [...solves, 'door'] : [...solves, 'door', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const layout = ctx.data.layout;
     const go = async (x, y = FLOOR, ms = 350) => {
       ctx.place(x, y);
@@ -506,30 +517,36 @@ export const room = {
     await ctx.wait(600);
     for (const s of layout.sections) {
       if (mode === 'wrong' && s.i === 0) {
+        const before = ctx.data.wrong;
         for (const op of [1, 1, 1]) await pressOp(s, op);
         await ctx.wait(200);
         const shown = ctx.data.state[0].status;
         await settle(0);
+        ctx.step('wrong', ctx.data.wrong === before + 1 && !ctx.data.solved[0]);
         ctx.setData('ppAutoplay', `wrong:${shown}`);
         return 'wrong';
       }
       if (mode === 'reset' && s.i === 0) {
         await pressOp(s, -2);
+        ctx.step('filled', ctx.data.state[0].filled.length === 1);
         await pressOp(s, 'reset');
-        return ctx.data.state[0].filled.length === 0 ? 'reset' : 'reset-failed';
+        return ctx.step('reset', ctx.data.state[0].filled.length === 0) ? 'reset' : 'reset-failed';
       }
       const [answer] = solutionsFor(s.puzzle);
       for (const op of answer) await pressOp(s, op);
       await settle(s.i);
+      if (!ctx.step(`solve:${s.i}`, ctx.data.solved[s.i] === true)) return `stuck:solve${s.i}`;
       // Walk the lit chain for its quoins.
       for (const c of s.chain) await go(c.x, c.surf, 260);
       await go(s.chain[s.chain.length - 1].x + 120);
       if (mode === 'solve1') return ctx.data.solved[0] ? 'solve1' : 'solve1-failed';
     }
     await go(layout.door.x - 10, layout.door.surf, 500);
+    ctx.step('door', ctx.near(layout.door.x, layout.door.surf, 60));
     if (mode === 'door') return 'door';
     room.runVerb(ctx, ctx.data.door, 'enter');
-    return 'exited';
+    for (let i = 0; i < 60 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };
 

@@ -32,6 +32,7 @@ import {
   practiceScreen,
 } from '../practice-streets.js?v=557238c1';
 import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=56508a73';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 
 export const QUEST = 'ezcooking_1';
 export const FLAG = 'finish_ezcooking';
@@ -96,19 +97,31 @@ export const room = {
     ctx.setData('ezcKnife', taken(ctx, EZ_KNIFE_AND_BOARD.id) ? '1' : '0');
   },
 
+  /** G971: the flamingo's hello, every pickup, then the EXIT box. */
+  autoplaySteps(ctx, mode) {
+    const out = ['hello'];
+    if (mode === 'hello') return out;
+    out.push(...[EZ_KNIFE_AND_BOARD, ...EZ_FOOD].map((r) => `take:${r.id}`));
+    return mode === 'food' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     for (let i = 0; i < 60 && ctx.data.flamingoStep !== 'talk'; i++) await ctx.wait(150);
     await clearDialogs(ctx);
+    ctx.step('hello', ctx.data.flamingoStep !== 'wait' && !ctx.dialogOpen());
     if (mode === 'hello') return 'hello';
-    takePickup(ctx, EZ_KNIFE_AND_BOARD.id);
-    for (const food of EZ_FOOD) takePickup(ctx, food.id);
+    for (const row of [EZ_KNIFE_AND_BOARD, ...EZ_FOOD]) {
+      takePickup(ctx, row.id);
+      ctx.step(`take:${row.id}`, taken(ctx, row.id));
+    }
     if (mode === 'food') return 'food';
     const at = practiceScreen(EZ_COOKIN_TSID, EZ_FINISH_BOX.x, EZ_COOKIN_FLOOR_Y - 20);
     ctx.place(at.x, at.y);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 40 && runOutcome(run) !== 'complete'; i++) {
       ctx.advanceAward();
       await ctx.wait(300);
     }
-    return 'complete';
+    return ctx.step('exit', ctx.data.exiting && runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

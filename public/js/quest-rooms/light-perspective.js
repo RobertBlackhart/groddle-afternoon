@@ -50,6 +50,7 @@
  * EXIT sign; the sign texts already matched.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { BODY_H, JUMP_GAP, JUMP_RISE, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bf24e9bf';
 import { bulbSprite as rigBulb, dishSprite, knobSprite, ledgeStrip, mixHex, poleSprite, shadeSprite } from './light-rig-art.js?v=1a07aeb3';
 
@@ -801,7 +802,25 @@ export const room = {
     if (p) ctx.setData('ltPlayer', `${Math.round(p.x)},${Math.round(p.y)}`);
   },
 
-  async autoplay(ctx, mode) {
+  /**
+   * G971: every orb touched, bulb switched and lit surface stood on in the
+   * SOLUTION order up to the mode's stop, then the door and out.
+   */
+  autoplaySteps(ctx, mode = 'exit') {
+    const out = [];
+    for (const [k, step] of SOLUTION.entries()) {
+      if (step.orb) out.push(`orb:${step.orb}`);
+      else if (step.bulb) out.push(`bulb:${step.bulb.join(':')}`);
+      else if (step.to) out.push(`on:${step.to}`);
+      if (mode.startsWith('step') && k + 1 >= Number(mode.slice(4))) return out;
+      if ((mode === 'mix' && step.bulb?.[0] === 'pb') || (mode === 'final' && step.to === 'f')) return out;
+    }
+    if (mode === 'champ') return out;
+    return mode === 'door' ? [...out, 'door'] : [...out, 'door', 'exit'];
+  },
+
+  async autoplay(ctx, mode = 'exit') {
+    const run = ctx.run;
     const go = async (x, y) => {
       ctx.place(x, y);
       await ctx.wait(350);
@@ -811,7 +830,9 @@ export const room = {
       if (step.orb) {
         const o = ctx.data.layout.orbs.find((it) => it.id === step.orb);
         await go(o.x, Math.min(o.y + 100, LOW));
+        const before = ctx.data.touches.length;
         touch(ctx, o.id);
+        ctx.step(`orb:${o.id}`, ctx.data.touches.length === before + 1);
       } else if (step.bulb) {
         const [panel, color] = step.bulb;
         const def = ctx.data.layout.panels.find((p) => p.id === panel);
@@ -819,9 +840,12 @@ export const room = {
         await go(bx - 60, def.surface);
         const b = ctx.data.bulbs.find((it) => it.panel === panel && it.color === color);
         room.runVerb(ctx, b.target, 'switch');
+        ctx.step(`bulb:${panel}:${color}`, ctx.data.state.picks[panel] === color);
       } else if (step.to) {
         const s = surfaceById(ctx.data.layout, step.to);
         await go(step.x, s.y);
+        // Still standing on it after the wait: the light made it solid.
+        ctx.step(`on:${step.to}`, Math.abs(ctx.player.y - s.y) < 8);
       } else if (step.fall) {
         await go(step.x, LOW);
       } else if (step.ladder) {
@@ -845,9 +869,11 @@ export const room = {
     for (const qx of [6960, 7020, 7080]) await go(qx, 700);
     if (mode === 'champ') return 'champ';
     await go(ctx.data.layout.door.x - 30, LOW);
+    ctx.step('door', ctx.near(ctx.data.layout.door.x, ctx.data.layout.door.y, 140));
     if (mode === 'door') return 'door';
     room.runVerb(ctx, ctx.data.door, 'enter');
-    return 'exited';
+    for (let i = 0; i < 60 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };
 

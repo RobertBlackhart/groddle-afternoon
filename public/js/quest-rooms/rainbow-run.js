@@ -16,6 +16,7 @@
  * with more up the slide and in the planet.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=261e9006';
 import { touchesQuoin } from './kit.js?v=83690109';
 
@@ -137,7 +138,14 @@ export const room = {
     ctx.setData('rainbowCoinSpots', String(ctx.data.coins?.length || 0));
   },
 
+  /** G971: Ready and the countdown, the coins (30+, or short in fail), the card, then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'ready') return ['ready'];
+    return mode === 'fail' ? ['ready', 'short', 'failed'] : ['ready', 'coins', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     // Click ready, then sweep the coins by placing the avatar on each in turn.
     await ctx.wait(600);
     while (ctx.cardOpen() || ctx.data.phase === 'ready') {
@@ -146,6 +154,7 @@ export const room = {
       if (ctx.data.phase !== 'ready') break;
     }
     while (ctx.data.phase === 'countdown') await ctx.wait(200);
+    if (!ctx.step('ready', ctx.data.phase === 'running')) return 'stuck:ready';
     if (mode === 'ready') return 'ready';
     const order = [...ctx.data.coins].sort((a, b) => a.x - b.x);
     for (const c of order) {
@@ -154,14 +163,17 @@ export const room = {
       for (let t = 0; t < 12 && !c.taken; t++) await ctx.wait(100);
     }
     if (mode === 'fail') ctx.data.endsAt = Date.now();
+    ctx.step(mode === 'fail' ? 'short' : 'coins', mode === 'fail' ? ctx.data.got < COINS_NEEDED : ctx.data.got >= COINS_NEEDED);
     while (ctx.data.phase === 'running') {
       ctx.data.endsAt = Math.min(ctx.data.endsAt, Date.now() + 300);
       await ctx.wait(200);
     }
-    while (!ctx.cardOpen()) await ctx.wait(150);
+    for (let i = 0; i < 80 && !ctx.cardOpen(); i++) await ctx.wait(150);
     await ctx.wait(500);
     ctx.clickCard();
-    return mode === 'fail' ? 'failed' : 'complete';
+    for (let i = 0; i < 20 && run?.status !== 'left'; i++) await ctx.wait(200);
+    if (mode === 'fail') return ctx.step('failed', runOutcome(run) === 'abandoned') ? 'failed' : 'stuck';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };
 

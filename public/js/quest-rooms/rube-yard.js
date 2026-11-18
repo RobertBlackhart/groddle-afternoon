@@ -22,6 +22,7 @@
  * recovered talk and offer_accept sheets (108x154 cells, facing left).
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { YARD_FRONT, YARD_H, YARD_W, buildRubeYardBackground, yardDeco } from '../rube-yard-scene.js?v=ebec740b';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
@@ -258,14 +259,23 @@ export const room = {
     ctx.setData('rubeYardArt', 'snap-junk-garden');
   },
 
+  /** G971: five Wrizzards (half) or all ten, then out with the quest turned in. */
+  autoplaySteps(ctx, mode) {
+    const out = Array(mode === 'half' ? 5 : WRIZZARDS_NEEDED).fill('wrizzard');
+    return mode === 'half' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     await ctx.wait(1200);
     const stop = mode === 'half' ? 5 : WRIZZARDS_NEEDED;
     for (const spot of HIDING_SPOTS) {
       if ((ctx.data.found?.length || 0) >= stop) break;
       ctx.place(spot.wx, FLOOR);
       await ctx.wait(500);
+      const before = ctx.data.found?.length || 0;
       catchWrizzard(ctx, spot.id);
+      ctx.step('wrizzard', (ctx.data.found?.length || 0) === before + 1);
       await ctx.wait(700);
     }
     if (mode === 'half') return 'half';
@@ -275,7 +285,7 @@ export const room = {
       }
       await ctx.wait(400);
     }
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };
 

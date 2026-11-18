@@ -35,7 +35,7 @@ import {
   codeMatches,
   hintFor,
   room,
-} from '../public/js/quest-rooms/firefly-whistle.js?v=13e017f3';
+} from '../public/js/quest-rooms/firefly-whistle.js?v=74f35881';
 import { DRESSING, ENTRY, FLOOR, FLOOR_Y, LAB, W, entryPath, labPlatforms, seamsToDraw, sx, sy } from '../public/js/quest-rooms/firefly-whistle-scene.js?v=3e5e9235';
 import { FIREFLY_LAB_FILES } from '../public/js/quest-rooms/firefly-lab-art.js?v=481a55f9';
 import * as kit from '../public/js/quest-rooms/kit.js?v=83690109';

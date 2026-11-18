@@ -41,7 +41,7 @@ import {
   solidRects,
   solvingPlans,
   staticPlatforms,
-} from '../public/js/quest-rooms/mental-block.js?v=12c84592';
+} from '../public/js/quest-rooms/mental-block.js?v=983a2d88';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -264,7 +264,7 @@ describe('Mental Block autoplay plays the puzzle (G971)', () => {
   /** Build, enter and play a level on the fake clock; the room ticks while the autoplay waits. */
   async function play(stage, mode, params = {}) {
     const { fakeClock, fakeRoomCtx } = await import('./room-autoplay-harness.js');
-    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=7f650b66');
+    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=55bb4823');
     const clock = fakeClock().install();
     try {
       const ctx = fakeRoomCtx(room, { clock, stage, params });
@@ -319,7 +319,7 @@ describe('Mental Block autoplay plays the puzzle (G971)', () => {
 
   it('a press refused as too far is not a drop: the run reports stuck, never exited', async () => {
     const { fakeClock, fakeRoomCtx } = await import('./room-autoplay-harness.js');
-    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=7f650b66');
+    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=55bb4823');
     const clock = fakeClock().install();
     try {
       const ctx = fakeRoomCtx(room, { clock, stage: 'mb1' });

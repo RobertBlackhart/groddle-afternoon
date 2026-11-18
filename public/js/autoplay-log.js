@@ -12,11 +12,11 @@
  *   engine.setData('xAutoplay', log.finish('exited'));
  *
  * A name listed twice must be logged twice. Words that already say the run
- * failed (stuck, error, fail, ...) pass through untouched.
+ * failed (stuck, error, none, ...) pass through untouched.
  */
 
 /** Final words that already report a failed or refused run. */
-export const AUTOPLAY_FAILURE = /^(stuck|error|fail|none|hollow|undeclared|timeout|refused|blocked|no-)/;
+export const AUTOPLAY_FAILURE = /^(stuck|error|none|hollow|undeclared|timeout|no-)/;
 
 /** Count names into a Map (a name listed n times must be logged n times). */
 function tally(names) {
@@ -91,4 +91,14 @@ export async function playRoomAutoplay(room, ctx, mode) {
   } finally {
     ctx.step = prev;
   }
+}
+
+/**
+ * How a quest-room run ended, read from the run object an autoplay kept from
+ * its start (ctx.run is null once the room is left): 'complete' once it was
+ * solved and left, else 'abandoned', 'expired', 'active', 'solved' or 'none'.
+ */
+export function runOutcome(run) {
+  if (!run) return 'none';
+  return run.status === 'left' ? run.outcome || 'left' : run.status || 'none';
 }

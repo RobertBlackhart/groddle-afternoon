@@ -60,7 +60,7 @@
 import { advanceVpOverlay, vpOverlay, vpSequence } from './vp-overlay.js?v=a468ad38';
 import { ENTRY, FLOOR, H, W, buildFront, buildLab, labPlatforms, sx, sy } from './firefly-whistle-scene.js?v=3e5e9235';
 import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { goToFallingLevel, withFallingRoom } from './falling-room.js?v=7ce99765';
+import { goToFallingLevel, withFallingRoom } from './falling-room.js?v=0d2d7f5b';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 export const QUEST = 'firefly_whistle';
@@ -626,6 +626,18 @@ const lab = {
    * wrong code and one hint before FFW) and leaves by the teleporter. `look`
    * only stands you by the guarded whistle (the restoration picture).
    */
+  /** G971: the lab's steps per mode (full carries on through the fall: falling-room.js adds its own). */
+  autoplaySteps(ctx, mode = 'full') {
+    if (mode === 'look') return ['look'];
+    const d = ctx.data;
+    const out = d.standPushed ? ['stand'] : ['midpoint', 'stand'];
+    if (mode === 'stand') return out;
+    if (!d.opts?.whistle_taken) out.push(mode === 'swallow' ? 'swallow' : 'whistle');
+    if (mode === 'swallow') return out;
+    out.push('bounce', 'code');
+    return mode === 'beam' ? out : [...out, 'teleport'];
+  },
+
   async autoplay(ctx, mode = 'full') {
     const d = ctx.data;
     const until = async (fn, ms = 12000) => {
@@ -648,12 +660,14 @@ const lab = {
       ctx.place(P(LAYOUT.stand) - 230, FLOOR);
       // The first-visit lines stay off the picture.
       d.opts.forcefield_button_activated = true;
+      ctx.step('look', ctx.near(P(LAYOUT.stand) - 230, FLOOR, 40));
       return 'look';
     }
     if (!d.standPushed) {
       // The midpoint walks you back while the stand is on.
       ctx.place(P(LAYOUT.midpoint) + 6, FLOOR);
       await until(() => d.pushes > 0 && !d.push, 4000);
+      ctx.step('midpoint', d.pushes > 0);
       advanceVpOverlay();
       // The stand's hit box and its two lines.
       ctx.place(P(LAYOUT.stand) - 120, FLOOR);
@@ -668,26 +682,29 @@ const lab = {
       await ctx.wait(400);
       ctx.advanceDialog();
       await until(() => d.standPushed, 3000);
-    }
+      if (!ctx.step('stand', d.standPushed)) return 'stuck:stand';
+    } else ctx.step('stand', true);
     if (mode === 'stand') return 'stand';
     if (!d.opts.whistle_taken) {
       await ctx.wait(600);
       room.runVerb(ctx, d.whistleTarget, 'take');
       if (mode === 'swallow') {
         await until(() => d.step === 'swallowed', 4000);
-        return 'swallow';
+        return ctx.step('swallow', d.step === 'swallowed') ? 'swallow' : 'stuck:swallow';
       }
       await until(() => d.step === 'flag' || d.step === 'done', 9000);
       await until(() => ctx.cardOpen?.() || ctx.advanceAward() || d.done, 6000);
       await clickThrough(8000);
       await until(() => d.done, 6000);
       await clickThrough(4000);
+      if (!ctx.step('whistle', d.opts.whistle_taken && d.done)) return 'stuck:whistle';
     }
     // Before the code: the pad puts you back.
     ctx.place(P(LAYOUT.pad) - 140, FLOOR);
     await ctx.wait(300);
     ctx.place(P(LAYOUT.pad), FLOOR);
     await until(() => d.bounces > 0, 2000);
+    ctx.step('bounce', d.bounces > 0);
     // The control unit: its first-visit lines, a wrong code, one hint, then FFW.
     ctx.place(P(LAYOUT.control) - 60, FLOOR);
     await until(() => d.opts.teleporter_button_activated, 2000);
@@ -705,6 +722,7 @@ const lab = {
     await until(() => d.codeBox, 3000);
     d.codeBox?.submit(' ffw ');
     await until(() => ctx.dialogOpen(), 3000);
+    if (!ctx.step('code', d.opts.teleporter_activated)) return 'stuck:code';
     if (mode === 'beam') {
       await ctx.wait(700);
       ctx.advanceDialog();
@@ -716,7 +734,9 @@ const lab = {
     ctx.place(P(LAYOUT.pad) - 90, FLOOR);
     await ctx.wait(300);
     ctx.place(P(LAYOUT.pad), FLOOR);
-    await until(() => !ctx.run, 6000);
+    await until(() => !ctx.run || ctx.stage === 'falling', 6000);
+    // The pad hands the run to the falling room (its own autoplay carries on).
+    ctx.step('teleport', !ctx.run || ctx.stage === 'falling');
     return ctx.run ? 'stuck' : 'complete';
   },
 };

@@ -38,6 +38,7 @@ import {
 } from '../practice-streets.js?v=557238c1';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=56508a73';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 
 export const QUEST = 'soilappreciation_1';
 export const FLAG = 'finish_soilappreciation';
@@ -183,22 +184,40 @@ export const room = {
     ctx.setData('soilDug', ctx.data.dug ? '1' : '0');
   },
 
+  /** G971: the flamingo's hello, both tools, tend and dig the Patch, dig the Pile, then the EXIT box. */
+  autoplaySteps(ctx, mode) {
+    const out = ['hello'];
+    if (mode === 'hello') return out;
+    out.push(...SOIL_TOOLS.map((t) => `take:${t.id}`));
+    if (mode === 'tools') return out;
+    out.push('tend', 'dig-patch', 'dig-pile');
+    return mode === 'dug' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     for (let i = 0; i < 60 && ctx.data.flamingoStep !== 'talk'; i++) await ctx.wait(150);
     await clearDialogs(ctx);
+    ctx.step('hello', ctx.data.flamingoStep !== 'wait' && !ctx.dialogOpen());
     if (mode === 'hello') return 'hello';
-    for (const tool of SOIL_TOOLS) takePickup(ctx, tool.id);
+    for (const tool of SOIL_TOOLS) {
+      takePickup(ctx, tool.id);
+      ctx.step(`take:${tool.id}`, taken(ctx, tool.id));
+    }
     if (mode === 'tools') return 'tools';
     tend(ctx);
+    if (!ctx.step('tend', ctx.data.patch === 'tended')) return 'stuck:tend';
     digPatch(ctx);
+    ctx.step('dig-patch', ctx.data.patch === 'dug');
     digPile(ctx);
+    ctx.step('dig-pile', ctx.data.dug === true);
     if (mode === 'dug') return 'dug';
     const at = practiceScreen(SOIL_TSID, SOIL_FINISH_BOX.x, SOIL_FLOOR_Y - 20);
     ctx.place(at.x, at.y);
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 40 && runOutcome(run) !== 'complete'; i++) {
       ctx.advanceAward();
       await ctx.wait(300);
     }
-    return 'complete';
+    return ctx.step('exit', ctx.data.exiting && runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

@@ -33,6 +33,7 @@
 
 import { createPlot, performPlotVerb, plotArtPath, plotVerbs, soilResponse } from '../patches.js?v=db04987b';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
@@ -526,7 +527,14 @@ export const room = {
     ctx.setData('penaltyVendorX', String(Math.round(ctx.data.vendor?.x || 0)));
   },
 
+  /** G971: the Smuggler's talk (part 2 given), the dig (part 3), then the crawl out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'talk') return ['talk'];
+    return mode === 'dig' ? ['talk', 'dig'] : ['talk', 'dig', 'free'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const drain = async (until, max = 60) => {
       for (let i = 0; i < max && !until(); i++) {
         if (!ctx.advanceAward()) ctx.advanceDialog();
@@ -540,15 +548,17 @@ export const room = {
     talk(ctx);
     await drain(() => ctx.quest(PART_2).active());
     await drain(() => !ctx.dialogOpen(), 10);
+    if (!ctx.step('talk', ctx.quest(PART_2).active() || ctx.quest(PART_3).active())) return 'stuck:talk';
     if (mode === 'talk') return 'talked';
     ctx.place(PATCH_X + 60, FLOOR);
     await ctx.wait(300);
     dig(ctx);
     await drain(() => ctx.quest(PART_3).active());
     await drain(() => !ctx.dialogOpen(), 10);
+    if (!ctx.step('dig', ctx.quest(PART_3).active())) return 'stuck:dig';
     if (mode === 'dig') return 'dug';
     crawl(ctx);
     await drain(() => !ctx.run, 120);
-    return 'free';
+    return ctx.step('free', runOutcome(run) === 'complete') ? 'free' : 'stuck';
   },
 };

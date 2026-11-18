@@ -55,6 +55,7 @@
  * signpost are drawn here.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { butlerApi } from '../features/butler-feature.js?v=c7e72b21';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
@@ -1208,14 +1209,24 @@ export const room = {
     ctx.setData('clubQurazy', String(ctx.data.qurazy || 0));
   },
 
+  /** G971: the intro, the frames set and ENTER (wrong: ENTER refused), into the painting, then out by its signpost. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'intro') return ['intro'];
+    if (mode === 'wrong') return ['intro', 'wrong'];
+    if (mode === 'puzzle') return ['intro', 'solved'];
+    return mode === 'prosa' ? ['intro', 'solved', 'painting'] : ['intro', 'solved', 'painting', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const wait = (ms) => ctx.wait(ms);
     for (let i = 0; i < 20 && !ctx.data.overlayNext; i++) await wait(150);
     while (ctx.data.overlayNext) {
       ctx.data.overlayNext();
       await wait(350);
     }
-    while (ctx.data.phase === 'intro') await wait(150);
+    for (let i = 0; i < 200 && ctx.data.phase === 'intro'; i++) await wait(150);
+    ctx.step('intro', ctx.data.phase !== 'intro');
     if (mode === 'intro') return 'intro';
     const cy = DECKS.club.y;
     const pressBtn = async (id, times = 1) => {
@@ -1228,13 +1239,15 @@ export const room = {
       }
     };
     if (mode === 'wrong') {
+      const before = ctx.data.wrong || 0;
       await pressBtn('enter');
+      ctx.step('wrong', !ctx.data.solved && (ctx.data.wrong || 0) === before + 1);
       return ctx.data.solved ? 'unexpected' : 'wrong';
     }
     const need = pressesToSolve(ctx.data.choices);
     for (const [i, n] of need.entries()) if (n) await pressBtn(FRAMES[i].id, n);
     await pressBtn('enter');
-    if (!ctx.data.solved) return 'unsolved';
+    if (!ctx.step('solved', ctx.data.solved === true)) return 'stuck:unsolved';
     await wait(500);
     ctx.place(CLUBHOUSE.door.x2 + 40, cy);
     await wait(300);
@@ -1248,6 +1261,7 @@ export const room = {
     room.runVerb(ctx, ctx.data.picture, 'jump_in');
     for (let i = 0; i < 60 && ctx.stage !== 'pintura'; i++) await wait(150);
     for (let i = 0; i < 30 && !ctx.data.signpost; i++) await wait(150);
+    if (!ctx.step('painting', ctx.stage === 'pintura' && Boolean(ctx.data.signpost))) return 'stuck:painting';
     if (mode === 'prosa') return 'prosa';
     for (const q of [...ctx.data.quoins].sort((a, b) => a.x - b.x)) {
       const pad = PADS.find((pp) => Math.abs(pp.x - q.x) <= pp.half);
@@ -1257,6 +1271,7 @@ export const room = {
     ctx.place(SIGNPOST.x - 30, SIGNPOST.y);
     await wait(400);
     room.runVerb(ctx, ctx.data.signpost, 'exit');
-    return 'exited';
+    for (let i = 0; i < 40 && runOutcome(run) !== 'complete'; i++) await wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };

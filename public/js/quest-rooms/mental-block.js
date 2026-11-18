@@ -934,8 +934,7 @@ export const room = {
       useExit(ctx);
     }
     for (let i = 0; i < 60 && ctx.data.phase !== 'done'; i++) await ctx.wait(100);
-    if (!ctx.step('exit', ctx.data.phase === 'done')) return 'stuck';
-    return 'exited';
+    return ctx.step('exit', ctx.data.phase === 'done') ? 'exited' : 'stuck';
   },
 };
 

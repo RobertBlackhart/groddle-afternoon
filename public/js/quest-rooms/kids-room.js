@@ -29,6 +29,7 @@
  * friend Bear is its teddy and friend Thing the pink tall guy at the tea table.
  */
 
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { applyRewards } from '../quests.js?v=92c75858';
 import { ITEM_CATALOG, isToolItem } from '../inventory.js?v=6414dbdc';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
@@ -550,7 +551,28 @@ export const room = {
     ctx.setData('kidsBlocks', (ctx.data.blocks || []).map((b) => b.letter).join(''));
   },
 
+  /**
+   * G971: the tea party and Mr. Block's talk; Child's Play then gives an item
+   * (none: the no-item line sends you out), Word Up spells words to the
+   * mode's count and gets its tier; then out.
+   */
+  autoplaySteps(ctx, mode) {
+    const out = ['tea', 'talk'];
+    if (ctx.questId === 'letter_block_1') {
+      if (mode === 'talk') return out;
+      // none: no item to give is played too (the no-item line sends you out).
+      if (mode === 'none' && !giftable(ctx.engine.inv, ctx.data.letter).length) return [...out, 'left'];
+      return mode === 'award' ? [...out, 'gift'] : [...out, 'gift', 'exit'];
+    }
+    out.push('ready');
+    if (mode === 'blocks') return out;
+    out.push('words');
+    if (mode === 'fail') return [...out, 'fail'];
+    return mode === 'award' ? [...out, 'tier'] : [...out, 'tier', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const settle = async (pred, ms = 15_000) => {
       const end = Date.now() + ms;
       while (!pred() && Date.now() < end) await ctx.wait(120);
@@ -579,6 +601,8 @@ export const room = {
     await ctx.wait(1200);
     ctx.place(MR_BLOCK.x - 60, FLOOR);
     await settle(() => ctx.dialogOpen());
+    ctx.step('tea', ctx.data.teaDone === true);
+    ctx.step('talk', ctx.dialogOpen());
     if (ctx.questId === 'letter_block_1') {
       await pressThrough();
       if (mode === 'talk') return 'talked';
@@ -587,13 +611,16 @@ export const room = {
       const giving = giveItem(ctx, item?.id);
       await ctx.wait(400);
       await pressThrough();
+      if (item) ctx.step('gift', ctx.data.gave === item.id);
       if (mode === 'award') return 'award';
       await dismissAward();
       await giving;
-      return 'complete';
+      if (!item) return ctx.step('left', !ctx.data.gave && runOutcome(run) !== 'complete' && !ctx.run) ? 'left' : 'stuck';
+      return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
     }
     await pressThrough(0); // Yes, I'm ready.
     await settle(() => ctx.data.spelling);
+    if (!ctx.step('ready', ctx.data.spelling === true)) return 'stuck:ready';
     if (mode === 'blocks') return 'spelling';
     const target = mode === 'fail' ? 2 : mode === 'some' ? 5 : 21;
     const words = [...WORD_UP_WORDS];
@@ -601,22 +628,26 @@ export const room = {
       const word = words.shift();
       for (let i = 0; i < 3; i++) {
         let guard = 0;
-        while (ctx.data.blocks[i].letter !== word[i] && guard++ < 6) spinBlock(ctx, i);
+        // G971: a spin can spell a word on the way; stop at the target (fail must stay under 3).
+        while (ctx.data.blocks[i].letter !== word[i] && guard++ < 6 && ctx.data.spelled.length < target) spinBlock(ctx, i);
       }
       await ctx.wait(60);
     }
     await ctx.wait(1500);
+    ctx.step('words', mode === 'fail' ? ctx.data.spelled.length < 3 : ctx.data.spelled.length >= target);
     ctx.data.spellEndsAt = Date.now();
     await settle(() => ctx.dialogOpen());
     await ctx.wait(400);
     if (mode === 'fail') {
       await pressThrough(1);
-      return 'failed';
+      return ctx.step('fail', ctx.data.tier === 'fail') ? 'failed' : 'stuck';
     }
     await pressThrough();
+    ctx.step('tier', Boolean(ctx.data.tier) && ctx.data.tier !== 'fail');
     if (mode === 'award') return 'award';
     await ctx.wait(800);
     await dismissAward();
-    return 'complete';
+    for (let i = 0; i < 20 && run?.status !== 'left'; i++) await ctx.wait(200);
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 };

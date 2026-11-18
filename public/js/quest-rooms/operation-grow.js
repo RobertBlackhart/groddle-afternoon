@@ -33,6 +33,7 @@
  */
 
 import { JUMP_GAP, JUMP_RISE } from './puzzle-kit.js?v=bf24e9bf';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { buildGrowBackground, makeStalk } from '../operation-grow-scene.js?v=eb2744d3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
@@ -308,7 +309,16 @@ export const room = {
     ctx.setData('ogHint', ctx.data.readHint ? '1' : '0');
   },
 
+  /** G971: Mab's note, a tend per patch of the order (the hint's solves the field), then out. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'hint') return ['hint'];
+    const tends = Array((mode === 'wrong' ? [1, 2] : HINT_PATCHES).length).fill('tend');
+    if (mode === 'wrong') return ['hint', ...tends];
+    return mode === 'solved' ? ['hint', ...tends, 'bloom'] : ['hint', ...tends, 'bloom', 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const go = async (x, y = FLOOR) => {
       ctx.place(x, y);
       await ctx.wait(350);
@@ -317,19 +327,25 @@ export const room = {
     await go(HINT.x - 30, HINT.y);
     room.runVerb(ctx, ctx.data.hint, 'read');
     await ctx.wait(400);
+    ctx.step('hint', ctx.data.readHint === true);
     ctx.advanceDialog();
     if (mode === 'hint') return 'hint';
     const order = mode === 'wrong' ? [1, 2] : HINT_PATCHES;
     for (const i of order) {
       await go(patchX(i) - 40);
+      const before = ctx.data.tends.length;
       room.runVerb(ctx, ctx.data.patches[i].target, 'tend');
+      ctx.step('tend', ctx.data.tends.length === before + 1);
       await ctx.wait(400);
     }
-    if (mode === 'wrong' || mode === 'solved') return ctx.data.phase;
+    if (mode === 'wrong') return ctx.data.phase;
+    if (!ctx.step('bloom', ctx.data.phase === 'solved')) return 'stuck:bloom';
+    if (mode === 'solved') return ctx.data.phase;
     await ctx.wait(900);
     await go(EXIT.x - 20, TUNNEL);
     room.runVerb(ctx, ctx.data.exit, 'leave');
-    return 'left';
+    for (let i = 0; i < 20 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'left' : 'stuck';
   },
 };
 

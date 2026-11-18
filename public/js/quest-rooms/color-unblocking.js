@@ -38,6 +38,7 @@
 
 import { COLORS, JUMP_RISE, lastCheckpoint, makeSwitch, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=bf24e9bf';
 import { COLOR_UNBLOCKING_FILES } from '../color-unblocking-art.js?v=ea2b7e7f';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
@@ -375,7 +376,15 @@ export const room = {
     ctx.setData('cuReached', String(Math.round(ctx.data.reached || 0)));
   },
 
+  /** G971: each switch of the mode's order pressed, then (full) out by the door. */
+  autoplaySteps(ctx, mode) {
+    if (mode === 'wrong') return ['press:red', 'press:green_a'];
+    const presses = ['red', 'blue', 'green_b', mode === 'bridge' ? 'orange' : 'purple'].map((id) => `press:${id}`);
+    return mode === 'bridge' || mode === 'door' ? presses : [...presses, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const layout = ctx.data.layout;
     const go = async (x, y = FLOOR) => {
       ctx.place(x, y);
@@ -385,7 +394,9 @@ export const room = {
       const sw = layout.switches.find((s) => s.id === id);
       await go(sw.x - 30, sw.y);
       const t = ctx.data.switches.find((s) => s.id === id)?.target;
-      ctx.engine.interactables.includes(t) && room.runVerb(ctx, t, 'press');
+      const before = ctx.data.presses.length;
+      if (ctx.engine.interactables.includes(t)) room.runVerb(ctx, t, 'press');
+      ctx.step(`press:${id}`, ctx.data.presses.length === before + 1 && ctx.data.presses.at(-1) === id);
       await ctx.wait(500);
     };
     await ctx.wait(500);
@@ -415,7 +426,8 @@ export const room = {
     if (mode === 'door') return 'door';
     await go(layout.door.x - 20);
     room.runVerb(ctx, ctx.data.door, 'enter');
-    return 'exited';
+    for (let i = 0; i < 60 && runOutcome(run) !== 'complete'; i++) await ctx.wait(200);
+    return ctx.step('exit', ctx.data.phase === 'done' && runOutcome(run) === 'complete') ? 'exited' : 'stuck';
   },
 };
 

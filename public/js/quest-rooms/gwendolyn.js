@@ -68,6 +68,7 @@
 import { ensureQuestOfferState } from '../quest-offers.js?v=4debd26e';
 import { MEDITATION_MUSIC, ORB_TOOL_SHEET } from '../meditation.js?v=96f23682';
 import { gainMetabolic, loseMood } from '../metabolics.js?v=48f784bf';
+import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
 import { GWENDOLYN_INNER_FILES } from './gwendolyn-inner-art.js?v=06b4d5d6';
@@ -1892,7 +1893,19 @@ export const room = {
     ctx.setData('gwenPlayer', ctx.player ? `${Math.round(ctx.player.x)},${Math.round(ctx.player.y)}` : '');
   },
 
+  /** G971: the steps from the stage the quest starts on: the desert's script; the Outer Mind's vog, mind and squid; the Inner Mind's drink; Gwendolyn; then out. */
+  autoplaySteps(ctx, mode) {
+    const stage = ctx.stage;
+    if (stage === 'desert') return mode === 'desert' ? ['desert'] : ['desert', 'exit'];
+    if (stage === 'outer_mind') return mode === 'outer' ? ['vog', 'mind', 'outer'] : ['vog', 'mind', 'outer', 'exit'];
+    const out = stage === 'inner_mind' ? ['drink', 'inner'] : [];
+    if (mode === 'inner') return out;
+    out.push('gwendolyn');
+    return mode === 'chamber' ? out : [...out, 'exit'];
+  },
+
   async autoplay(ctx, mode) {
+    const run = ctx.run;
     const drive = async (until, ms = 90_000) => {
       const end = Date.now() + ms;
       while (Date.now() < end && ctx.run && ctx.run.status !== 'left') {
@@ -1917,16 +1930,18 @@ export const room = {
         }
         return ctx.stage !== 'desert';
       }, 120_000);
+      if (!ctx.step('desert', ctx.stage !== 'desert' && runOutcome(run) !== 'abandoned' && runOutcome(run) !== 'expired')) return 'stuck:desert';
       if (mode === 'desert') return 'desert';
     }
     if (ctx.stage === 'outer_mind') {
       const L = ctx.data.outer;
       ctx.place(L.vogX + 20, L.FLOOR - 8);
-      await drive(() => ctx.data.vogShown && !ctx.data.vogOpen);
+      ctx.step('vog', await drive(() => ctx.data.vogShown && !ctx.data.vogOpen));
       ctx.place(700, L.appear.yMax - 40);
-      await drive(() => ctx.data.mindState === 3);
+      ctx.step('mind', await drive(() => ctx.data.mindState === 3));
       ctx.place(L.squid.x + 60, L.appear.yMax - 40);
       await drive(() => ctx.stage !== 'outer_mind');
+      if (!ctx.step('outer', ctx.stage !== 'outer_mind' && runOutcome(run) !== 'abandoned' && runOutcome(run) !== 'expired')) return 'stuck:outer';
       if (mode === 'outer') return 'outer';
     }
     if (ctx.stage === 'inner_mind') {
@@ -1936,20 +1951,21 @@ export const room = {
         await ctx.wait(220);
       }
       ctx.place(L.drink.x, L.drink.y - 6);
-      await drive(() => ctx.data.drinkTaken, 4000);
+      ctx.step('drink', await drive(() => ctx.data.drinkTaken, 4000));
       ctx.place(L.exit.x, L.FLOOR - 8);
       await drive(() => ctx.stage !== 'inner_mind');
+      if (!ctx.step('inner', ctx.stage === 'chamber')) return 'stuck:inner';
       if (mode === 'inner') return 'inner';
     }
     if (ctx.stage === 'chamber') {
       const L = ctx.data.chamber;
       ctx.place(L.gwen.x - 140, L.FLOOR - 8);
-      await drive(() => ctx.run?.status === 'solved');
+      ctx.step('gwendolyn', await drive(() => ctx.run?.status === 'solved'));
       if (mode === 'chamber') return 'chamber';
       ctx.place(L.exit.x + 10, L.FLOOR - 8);
       await drive(() => !ctx.run || ctx.run.status === 'left', 8000);
     }
-    return 'complete';
+    return ctx.step('exit', runOutcome(run) === 'complete') ? 'complete' : 'stuck';
   },
 
   world: {
