@@ -153,3 +153,18 @@ describe('G225 waiting quest offers', () => {
     assert.match(css, /\.quest-dialogue\[data-look="familiar"\]\[data-in-log="true"\] \.quest-dialogue-card \{[^}]*left: var\(--fam-log-x, 10px\)/);
   });
 });
+
+describe('G1004 "New Quest Added!" is seen where it shows', () => {
+  it('Modern: while it shows, the bar lifts over the minimap and the Social drawer, as for a popover', () => {
+    const css = read('style.css');
+    assert.match(css, /#wrap > header\.top-bar:has\(\.quest-added-notice\.is-shown\) \{ z-index: var\(--z-hud-pop\); \}/);
+    // The lift is the popovers' layer: over the drawer (--z-hud + 14) and the side sheets (--z-panel), under menus and windows.
+    assert.match(css, /--z-hud-pop: calc\(var\(--z-panel\) \+ 12\)/);
+  });
+
+  it('Classic: left of the Quests button as in Glitch, on the page colour so it does not cross the iMG count', () => {
+    const classic = read('css/classic.css');
+    assert.match(classic, /:root\[data-ui="classic"\] \.top-bar \.quest-added-notice \{[^}]*background: var\(--c-classic-page\)/);
+    assert.ok(classic.indexOf('/* === fixi (lane) === */') < classic.indexOf('/* == TICKETS =='));
+  });
+});
