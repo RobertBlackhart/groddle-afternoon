@@ -329,10 +329,11 @@ describe('the feature', () => {
     assert.equal(chickenScareFeature.debug().flights, 1);
     // Up it goes, and down again; then it is game.js's to walk once more.
     for (let i = 0; i < 60; i += 1) w.tick();
-    assert.ok(spr.y < 502 - 150, `1 s up: y ${spr.y}`);
+    assert.ok(spr.y < 500 - 150, `1 s up: y ${spr.y}`);
     for (let i = 0; i < 60 * 5; i += 1) w.tick();
     assert.equal(spr._scareFlight, undefined);
-    assert.equal(spr.y, 502);
+    // R12: the measured foot stands on the line; the old +2 made up for the cell's blank rows.
+    assert.equal(spr.y, 500);
     assert.equal(spr.baseX, spr.x);
     assert.equal(spr.range, 100);
     assert.equal(chickenScareFeature.debug().flights, 0);

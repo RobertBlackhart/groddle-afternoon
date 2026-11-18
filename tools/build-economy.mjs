@@ -164,6 +164,8 @@ const CATALOGS = new Set([
   'public/js/item-plurals-data.js',
   // The classes a shrine refuses (GSJS no_donate tags, js/shrines.js isNoDonate): a tag list, not a grant.
   'public/js/shrine-no-donate-data.js',
+  // R12 G490: the measured foot of every sprite cut (tools/sprite-feet/build.mjs): art, not a grant.
+  'public/js/sprite-feet-data.js',
 ]);
 
 export function unitValue(classTsid) {
