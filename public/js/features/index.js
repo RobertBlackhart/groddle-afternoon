@@ -198,9 +198,9 @@ import { cubimalBattleFeature } from './cubimal-battle-feature.js?v=8db11cf7'; F
 import { chatPurgeFeature } from './chat-purge-feature.js?v=cb6c250d'; FEATURES.push(chatPurgeFeature);
 import { streetFixesFeature } from './street-fixes-feature.js?v=06e9f5a2'; FEATURES.push(streetFixesFeature);
 import { skillBubblesFeature } from './skill-bubbles-feature.js?v=cd2df262'; FEATURES.push(skillBubblesFeature);
-import { chickenScareFeature } from './chicken-scare-feature.js?v=5b862602'; FEATURES.push(chickenScareFeature);
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=78ded3fe'; FEATURES.push(homeCrewMpFeature);
+import { chickenScareFeature } from './chicken-scare-feature.js?v=5b862602'; FEATURES.push(chickenScareFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1df09118'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
