@@ -16,7 +16,7 @@ import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine
 import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=d705c6b7';
 import { jobIndicatorView } from '../public/js/job-indicator.js?v=cc74c26a';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=71fa73cd';
-import { rowFromServer } from '../public/js/street-jobs-mp.js?v=45ec5aca';
+import { rowFromServer } from '../public/js/street-jobs-mp.js?v=9de15a33';
 import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=fe5054b5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

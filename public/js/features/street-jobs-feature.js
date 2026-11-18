@@ -126,7 +126,9 @@ import {
   applyWorld,
   contributedKey as mpContributedKey,
   giveAfterSave,
+  hallClaimNote,
   hallClock,
+  hallRefusalText,
   isSharedJob,
   mergeHalls,
   listsFrom,
@@ -136,12 +138,13 @@ import {
   phaseShare,
   remember,
   rewardParts,
+  refusalFor,
   rewardPlan,
   rowFromServer,
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=45ec5aca';
+} from '../street-jobs-mp.js?v=9de15a33';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -1522,6 +1525,7 @@ const PANEL_CSS = `
 .sj-qty input{width:4.2em;font:inherit;font-size:var(--fs-sm);padding:.2rem .25rem;border-radius:var(--radius-sm);border:1px solid var(--c-sand-83);background:var(--surface-bright);color:inherit;text-align:center}
 .sj-req .sj-qty button[data-sj-qty-step]{padding:.15rem .4rem;min-width:1.7em}
 .sj-req small.sj-but{color:var(--c-umber-45)}
+.sj-note{margin:var(--sp-3) 0 0;font-size:var(--fs-sm);font-weight:700;color:var(--c-umber-45)}
 .sj-rewards{margin:var(--sp-4) 0 0;font-size:var(--fs-sm);color:var(--c-sand-39)}
 .sj-rewards b{color:var(--c-sand-33)}
 .sj-board{margin:var(--sp-4) 0 0;font-size:var(--fs-sm);color:var(--c-sand-39)}
@@ -1552,6 +1556,7 @@ function ensurePanel() {
     <div class="sj-hall" data-sj-hall hidden></div>
     <div class="sj-phase"><span data-sj-phase></span><div class="sj-bar"><i data-sj-bar></i></div><small class="sj-perc" data-sj-perc></small></div>
     <ul class="sj-reqs" data-sj-reqs></ul>
+    <p class="sj-note" data-sj-note role="alert" hidden></p>
     <p class="sj-rewards" data-sj-rewards hidden></p>
     <div class="sj-board" data-sj-board hidden></div>
     <p class="sj-status" data-sj-status></p>
@@ -1821,6 +1826,12 @@ function renderPanel(engine) {
 
   renderRewardsAndBoard(engine, jobId, job, def, row, status);
 
+  // #502: a give's refusal stays under the asks (it was a 3.2 s toast only).
+  const giveNote = q('[data-sj-note]');
+  const gn = mp?.note?.kind === 'give' && mp.note.job === jobId ? mp.note.text : '';
+  giveNote.textContent = gn;
+  giveNote.hidden = !gn;
+
   const statusLine = q('[data-sj-status]');
   const mins = (t) => Math.max(1, Math.ceil((t - Date.now()) / 60000));
   statusLine.textContent = {
@@ -1876,10 +1887,17 @@ function renderHall(engine, box, jobId, job, hall, status) {
     if (clock) box.append(el('p', { dataset: { sjHallClock: '' } }, clock));
     return;
   }
+  // #502: your own claim says it is waiting, and a refusal or the street's silence is said here, not only in a toast.
+  const note = hallClaimNote({ jobId, claiming: mp?.claiming, note: mp?.note });
+  if (note?.kind === 'pending') {
+    box.append(el('p', { dataset: { sjHallNote: 'pending' } }, note.text));
+    return;
+  }
   if (hall?.claiming) {
     box.append(el('p', {}, HALL_TEXT.claiming));
     return;
   }
+  if (note) box.append(el('p', { class: 'sj-note', role: 'alert', dataset: { sjHallNote: 'refused' } }, note.text));
   box.append(el('p', {}, `${HALL_TEXT.need} ${claim.toLocaleString()} currants.`));
   const groups = hallGroups.list;
   if (!groups) {
@@ -1920,6 +1938,7 @@ function renderHall(engine, box, jobId, job, hall, status) {
     b.disabled = (engine.pc.currants || 0) < claim || Boolean(mp?.claiming);
     b.addEventListener('click', () => {
       hallConfirm = jobId;
+      if (mp?.note?.job === jobId) mp.note = null;
       renderPanel(engine);
     });
     rowEl.append(el('span', {}, HALL_TEXT.pickGroup), pick, b);
@@ -2154,6 +2173,9 @@ function createMp(engine, client) {
   });
   client.on('error', ({ code, message } = {}) => {
     if (code !== 'project' || !message) return;
+    // #502: the refusal is kept for the ask it answers and drawn in the panel (the hall box, or under the asks).
+    const owner = refusalFor(s);
+    s.note = owner ? { ...owner, text: owner.kind === 'claim' ? hallRefusalText(message) : message } : null;
     s.giving = null;
     s.claiming = null;
     s.lastError = message;
@@ -2190,6 +2212,7 @@ function createMp(engine, client) {
     if (msg.claim === true) {
       // A group hall's claim (G331): the currants are spent, not contributed.
       s.claiming = null;
+      s.note = null;
       engine.pushActivity(HALL_TEXT.paid(n0(msg.currants)));
     } else {
       // quest.js 1434: a restoration (type 5) adds no job_contributions.
@@ -2284,10 +2307,13 @@ function createMp(engine, client) {
   s.roadOpen = (tsid) => !roadClosure(state, catalog, tsid, [tsid], opts());
   s.tick = (now) => {
     if (s.giving && now - s.giving.at > GIVE_WAIT_MS) {
+      s.note = { kind: 'give', job: s.giving.job, text: MP_TEXT.noAnswer };
       s.giving = null;
       renderPanel(engine);
     }
-    if (s.claiming && now - s.claiming.at > GIVE_WAIT_MS) {
+    // #502: while the server's row says the hall is being claimed, the claim is yours (claim refuses a second) and still asked.
+    if (s.claiming && now - s.claiming.at > GIVE_WAIT_MS && !state.jobs[s.claiming.job]?.hall?.claiming) {
+      s.note = { kind: 'claim', job: s.claiming.job, text: HALL_TEXT.noAnswer };
       s.claiming = null;
       renderPanel(engine);
     }
@@ -2320,6 +2346,7 @@ function mpGive(engine, jobId, what) {
   // #105: the save lands first, so the ledger has what was made with the window open.
   const giving = { job: jobId, req: req.id, at: Date.now() };
   s.giving = giving;
+  s.note = null;
   renderPanel(engine);
   publish(engine);
   giveAfterSave({ persist: () => persist(engine), send: () => s.client.send('project_give', payload), still: () => s.giving === giving }).then((sent) => {
@@ -2341,6 +2368,7 @@ function mpClaim(engine, jobId, group) {
   // The claim's currants come out of the ledger too (#105): the save lands first.
   const claiming = { job: jobId, at: Date.now() };
   s.claiming = claiming;
+  s.note = null;
   renderPanel(engine);
   publish(engine);
   giveAfterSave({ persist: () => persist(engine), send: () => s.client.send('project_claim', { job: jobId, group: n0(group) }), still: () => s.claiming === claiming }).then((sent) => {

@@ -25,6 +25,8 @@ export const MP_TEXT = Object.freeze({
   offline: 'You are not connected right now, so the project cannot take that.',
   offlineWork: 'You are not connected right now, so your work on the project stopped.',
   counting: 'Counting your contribution...',
+  // #502: a give with no answer before the wait ran out (ours).
+  noAnswer: "The street didn't answer that contribution yet. If it counts, it leaves your pack.",
   lostWork: 'The project stopped hearing your work.',
   note: 'Amounts are 1/50 of the original totals, shared by everyone on this street.',
   winner: 'As one of the top contributors you also earned the performance rewards.',
@@ -90,7 +92,67 @@ export const HALL_TEXT = Object.freeze({
   owned: (group) => `Finished. ${group} owns this group hall.`, // ours (quest.js:1849-1861)
   noStreet: 'Only its members may enter, once there is a street to enter: the hall\'s own street is not in the public archive, and the original never made one.', // ours (quest.js:1844)
   built: (group) => `${group} owns a new group hall!`, // ours
+  // #502: your own claim while the street asks the site (ours; JobDialog.as closes on "Yes, I can!" and waits).
+  yourClaim: 'Claiming this hall for your group... the street is checking with the ledger.',
+  // #502: no answer before the wait ran out (ours).
+  noAnswer: "The street didn't answer your claim. Try again in a moment.",
 });
+
+/*
+ * #502: every refusal a hall claim can meet, in the hall box's words. The
+ * server sends text, not a code (group_halls.go claim 173-235 refuses
+ * itself; claimed 291-309 words the site's `why` from LedgerHall.php
+ * claim: member, owns, currants, anything else "Could not claim"). The
+ * keys are the server's projectText* strings as sent; tests/
+ * street-jobs-claim-refusal.test.js checks them against the server.
+ */
+export const HALL_REFUSALS = Object.freeze({
+  // LedgerHall.php owns(): a group with a built hall (group.hasPol, quest.js:1325).
+  'That group already owns a group hall.': 'Your group already has a hall. A group can own only one.',
+  // LedgerHall.php: not a member of the group named.
+  "You're not in that group": "You're not in that group, so you can't claim the hall for it. Pick one of your own groups.",
+  // LedgerHall.php: the ledger does not hold the claim's currants.
+  "You don't have enough currants to claim this project.": "You don't have enough currants to claim this hall. Nothing was taken.",
+  'Could not claim': 'The claim did not go through. Try again in a moment.',
+  'Someone has already claimed this project.': 'Another group claimed this hall first.',
+  'Someone is claiming this project right now.': 'Someone else is claiming this hall right now. Look again in a moment.',
+  'This project is finished.': 'This hall is already built.',
+  'Your last contribution is still being counted.': 'Your last claim is still being counted. Wait a moment, then look again.',
+  'Street projects are not set up on this server.': 'Group halls are not set up on this server.',
+  'The project could not take that just now. Try again in a moment.': 'The street could not take your claim just now. Try again in a moment.',
+  'You need to be at the project board to do that.': 'Stand at the project board to claim this hall.',
+  'There is no such project here.': 'This street has no hall to claim.',
+  'This project is not one you can claim.': 'This project is not one you can claim.',
+});
+
+/** #502: a claim refusal from the server, in plain words for the hall box (an unknown one as it came). */
+export function hallRefusalText(message) {
+  const m = String(message || '').replace(/<[^>]*>/g, '').trim();
+  return HALL_REFUSALS[m] || m || HALL_REFUSALS['Could not claim'];
+}
+
+/**
+ * #502: which pending ask a project refusal answers. The server's error
+ * frame names no job (projects.go refuse), so it goes to what is waiting:
+ * a give when one is (its refusals are the give's), else a claim.
+ * Returns { kind: 'give' | 'claim', job } or null when nothing waits.
+ */
+export function refusalFor({ giving = null, claiming = null } = {}) {
+  if (giving?.job) return { kind: 'give', job: giving.job };
+  if (claiming?.job) return { kind: 'claim', job: claiming.job };
+  return null;
+}
+
+/**
+ * #502: what the hall box says about your own claim: pending while it is
+ * yours and waiting, else the last note for this job (a refusal or the
+ * street's silence), else nothing.
+ */
+export function hallClaimNote({ jobId, claiming = null, note = null } = {}) {
+  if (claiming?.job === jobId) return { kind: 'pending', text: HALL_TEXT.yourClaim };
+  if (note?.job === jobId && note.kind === 'claim' && note.text) return { kind: 'refused', text: note.text };
+  return null;
+}
 
 /** "3 hours", "90 minutes" (StringUtil.formatTime of duration*60). */
 export function hoursText(minutes) {

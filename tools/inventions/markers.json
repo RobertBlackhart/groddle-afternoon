@@ -1069,13 +1069,16 @@
   "public/js/street-jobs-mp.js": {
     "ours: 'Opens once a group claims this project.', // ours": "remake-copy",
     "ours: (group) => `${group} owns a new group hall!`, // ours": "remake-copy",
+    "ours: // #502: no answer before the wait ran out (ours).": "project-refusal-words",
     "ours: `Finished. ${group} owns this group hall.`, // ours": "remake-copy",
+    "ours: a give with no answer before the wait ran out (ours).": "project-refusal-words",
     "ours: a group: make or join one in Menu, Groups.', // ours (JobIntroUI.as:410-413 needs": "remake-copy",
     "ours: archive, and the original never made one.', // ours": "remake-copy",
     "ours: currants to claim the project.`, // ours": "remake-copy",
     "ours: is claiming this project right now.', // ours (the server's": "remake-copy",
     "ours: pickGroup: 'For which group?', // ours": "remake-copy",
-    "ours: the client's where it has them (file:line), else ours.": "ours-street-jobs"
+    "ours: the client's where it has them (file:line), else ours.": "ours-street-jobs",
+    "ours: your own claim while the street asks the site (ours; JobDialog.as closes on \"Yes, I can!\" and": "project-refusal-words"
   },
   "public/js/street-jobs-solo.js": {
     "glitch-had-none: * exactly as it is). Glitch had no solo form: every project was sized for a whole": "ours-street-jobs"

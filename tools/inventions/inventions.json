@@ -4589,6 +4589,32 @@
    "rows": [
     "G1002"
    ]
+  },
+  {
+   "id": "project-refusal-words",
+   "title": "Street projects online: a hall claim says it is waiting, its refusals are drawn in plain words in the hall box, and a give or claim with no answer says the street did not answer (#502).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-jobs-mp.js",
+     "symbol": "HALL_REFUSALS"
+    },
+    {
+     "file": "public/js/street-jobs-mp.js",
+     "symbol": "HALL_TEXT.yourClaim"
+    },
+    {
+     "file": "public/js/street-jobs-mp.js",
+     "symbol": "MP_TEXT.noAnswer"
+    },
+    {
+     "file": "public/js/features/street-jobs-feature.js",
+     "symbol": "renderHall"
+    }
+   ],
+   "why": "JobDialog.as closes on \"Yes, I can!\" and the original answered a refused claim with its own dialog; online the refusal came as a 3.2 s toast and the box went back to the question (#502). The sentences reword the server's refusals (group_halls.go projectText*) and are ours.",
+   "rows": []
   }
  ]
 }
