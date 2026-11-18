@@ -1071,6 +1071,7 @@ import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
 import { flyItemToPack, noteFlown, unflownItems } from './js/pack-flight.js?v=8da4ab78';
+import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=98fff2d4';
@@ -7299,33 +7300,9 @@ function streetMusicVoice(url, loop) {
     try { gain.disconnect(); } catch { /* */ }
     return null;
   }
-  const voice = {
-    url,
-    el,
-    gain,
-    stopped: false,
-    play() {
-      const started = el.play();
-      // Autoplay refused before the first click or key: start on the next one.
-      started?.catch?.(() => {
-        const retry = () => {
-          if (audio.music === voice && !voice.stopped && el.paused && !voice.looper) el.play().catch(() => {});
-        };
-        // A tap on an iPhone is a gesture when it ends (touchend), not when it starts.
-        for (const type of ['pointerdown', 'keydown', 'touchend']) window.addEventListener(type, retry, { once: true, capture: true });
-      });
-    },
-    stop(afterSec = 0) {
-      voice.stopped = true;
-      setTimeout(() => {
-        el.pause();
-        el.removeAttribute('src');
-        el.load();
-        try { voice.looper?.stop(); } catch { /* ended */ }
-        try { node.disconnect(); gain.disconnect(); } catch { /* */ }
-      }, Math.max(0, afterSec) * 1000);
-    },
-  };
+  // #504: the voice keeps one copy playing (js/music-voice.js): a short loop's hand-over to its
+  // buffer takes the element out for good, and a handed-over voice never plays the element again.
+  const voice = createMusicVoice({ url, el, node, gain, ctx: audio.ctx, win: window });
   if (loop) {
     // A media element's loop leaves a gap at the seam; a short loop (Sky Plunge's 9 s a cappella,
     // the Rook cues) hands over to a decoded buffer, which loops without one, at the same point.
@@ -7335,14 +7312,8 @@ function streetMusicVoice(url, loop) {
       Promise.resolve(audio.buffers[key] || fetch(url).then((r) => r.arrayBuffer()).then((b) => audio.ctx.decodeAudioData(b)))
         .then((buffer) => {
           audio.buffers[key] = buffer;
-          if (audio.music !== voice || voice.stopped) return;
-          const src = audio.ctx.createBufferSource();
-          src.buffer = buffer;
-          src.loop = true;
-          src.connect(gain);
-          src.start(0, (el.currentTime || 0) % buffer.duration);
-          el.pause();
-          voice.looper = src;
+          if (audio.music !== voice) return;
+          voice.handOver(buffer);
         })
         .catch(() => { /* the element keeps looping */ });
     }, { once: true });
@@ -7433,7 +7404,7 @@ function syncStreetMusic() {
   const voice = audio.music;
   if (!streetMusicAllowed()) {
     if (!voice) return;
-    if (!voice.stopped) audio.musicResume = { url: voice.url, time: voice.el.currentTime || 0 };
+    if (!voice.stopped) audio.musicResume = { url: voice.url, time: voice.time() };
     voice.stop(0);
     audio.music = null;
     audio.trackGain = null;
@@ -34563,10 +34534,10 @@ async function main() {
         theme: ambientThemeId,
         track: ambientTrackUrl,
         // What the street music element is really doing (G-soundzip QA): its source, clock and index.
-        trackSrc: audio.music?.el?.currentSrc || null,
+        trackSrc: audio.music?.looper ? audio.music.url : audio.music?.el?.currentSrc || null,
         trackPlaying: Boolean(audio.music && !audio.music.stopped && (audio.music.looper || !audio.music.el.paused)),
         trackBuffered: Boolean(audio.music?.looper),
-        trackTime: audio.music?.el ? Math.round(audio.music.el.currentTime * 10) / 10 : null,
+        trackTime: audio.music ? Math.round(audio.music.time() * 10) / 10 : null,
         trackLoops: audio.music?.el?.loop ?? null,
         playlist: ambientPlaylistState ? { theme: ambientPlaylistState.theme, index: ambientPlaylistState.index, of: ambientPlaylistState.tracks.length } : null,
         master: audio.master?.gain.value ?? null,
