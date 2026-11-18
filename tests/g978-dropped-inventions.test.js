@@ -128,3 +128,12 @@ describe('G978: no Stoot memorial on unnnn', () => {
     assert.match(game, /data\.hubName = 'Jethimadh Tower: Mid'/);
   });
 });
+
+describe('G978: no SHUT planks over a closed Paradise exit', () => {
+  it('the closed exit is only dimmed until the goal is met', () => {
+    dropped('paradise-exit-shut-sign');
+    assert.doesNotMatch(game, /paradiseExitShutSign|text: 'SHUT'|paradiseExit\.shut/);
+    assert.match(fn(game, 'spawnParadiseExit'), /root\.alpha = 0\.82;/);
+    assert.match(fn(game, 'unlockParadiseExit'), /paradiseExit\.sprite\.alpha = 1;/);
+  });
+});

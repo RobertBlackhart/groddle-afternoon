@@ -390,7 +390,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=51d1e05f';
+} from './js/paradise-flight.js?v=25705b31';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=622dcd46';
 import {
   buildParadiseCourseArt,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=25e218b9';
+} from './js/player-save.js?v=733b9665';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -22821,13 +22821,11 @@ function spawnParadiseExit(course) {
     door.label = 'paradise-exit-door';
     root.addChild(door);
   }
-  // Report 131: shut until the course's goal is met: planks nailed across it and the word, not only faded.
-  // On a door the boards cross the door itself.
-  const shut = paradiseExitShutSign(art?.kind === 'door' ? { w: art.w + 8, top: -art.h + 12, bottom: -14 } : undefined);
-  root.addChild(shut);
+  // Report 131: shut until the course's goal is met, and dimmed till then (G978: the planks and their
+  // sign are gone); walking into it says why (paradiseExitClosedLine).
   root.alpha = 0.82;
   entityLayer.addChild(root);
-  paradiseExit = { sprite: root, active: false, shut, arrow, lineAt: 0 };
+  paradiseExit = { sprite: root, active: false, arrow, lineAt: 0 };
   return paradiseExit;
 }
 
@@ -22865,35 +22863,6 @@ function paradiseExitArch(course, root) {
   root.addChild(label);
   arrow.visible = false;
   return arrow;
-}
-
-/** The closed way home's boards (over the arch, in its own px, or over `box`) and its SHUT sign. */
-function paradiseExitShutSign({ w = 92, top = -108, bottom = -22 } = {}) {
-  const root = new PIXI.Container();
-  const planks = new PIXI.Graphics();
-  const half = w / 2;
-  for (const [from, to] of [[[-half, top], [half, bottom]], [[half, top], [-half, bottom]]]) {
-    const dx = to[0] - from[0];
-    const dy = to[1] - from[1];
-    const len = Math.hypot(dx, dy);
-    const nx = (-dy / len) * 8;
-    const ny = (dx / len) * 8;
-    planks.poly([from[0] + nx, from[1] + ny, to[0] + nx, to[1] + ny, to[0] - nx, to[1] - ny, from[0] - nx, from[1] - ny])
-      .fill(0x8a5a33).stroke({ width: 2, color: 0x4b2d17 });
-  }
-  planks.circle(0, (top + bottom) / 2, 5).fill(0x4b2d17);
-  root.addChild(planks);
-  const sign = new PIXI.Text({ text: 'SHUT', style: {
-    fontFamily: WORLD_FONT_FAMILY,
-    fontSize: 15,
-    fontWeight: '900',
-    fill: 0xffffff,
-    stroke: { color: 0x8c1f1f, width: 5 },
-  } });
-  sign.anchor.set(0.5);
-  sign.position.set(0, top - 14);
-  root.addChild(sign);
-  return root;
 }
 
 function announceParadiseFlight(course) {
@@ -23344,7 +23313,6 @@ function passParadiseRingEntry(entry) {
 function unlockParadiseExit() {
   if (!paradiseExit || paradiseExit.active) return;
   paradiseExit.active = true;
-  paradiseExit.shut.visible = false;
   if (paradiseExit.arrow) paradiseExit.arrow.visible = true;
   paradiseExit.sprite.alpha = 1;
   paradiseExit.sprite.scale.set(1.05);

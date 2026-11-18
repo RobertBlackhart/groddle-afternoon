@@ -786,7 +786,6 @@
   },
   "public/js/paradise-flight.js": {
     "no-source: * has no source street; its stars use the same decos. Collisions": "ours-paradise-flight",
-    "no-source: drawn arch. The SHUT boards (report 131) have no source and stay over it until the goal is": "ours-paradise-flight",
     "stand-in: * G892 (stand-ins audit A6): the star pickups are Tiny Speck's own": "ours-paradise-flight",
     "stand-in: * G892 (stand-ins audit A7): each recovered course's way out as": "ours-paradise-flight",
     "stand-in: * G892 (stand-ins audit A8): Starlit Night's cloud floor is the": "ours-paradise-flight"

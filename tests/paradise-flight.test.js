@@ -37,7 +37,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from '../public/js/paradise-flight.js?v=51d1e05f';
+} from '../public/js/paradise-flight.js?v=25705b31';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, '..', 'public');
@@ -342,6 +342,6 @@ test('report 131: the sky runs on below every course and the closed exit shows i
   const below = Number(/const PARADISE_SKY_BELOW = (\d+);/.exec(game)[1]);
   // The camera shows at most the pack allowance plus the pack strip past the course: 132 + 132 px at most.
   assert.ok(below >= 600, 'more than any window shows');
-  assert.match(game, /paradiseExit\.shut\.visible = false;/);
+  assert.doesNotMatch(game, /paradiseExit\.shut/); // G978: no SHUT boards; the closed exit is dimmed
   assert.match(game, /paradiseExitClosedLine\(paradiseRun\)/);
 });

@@ -71,7 +71,7 @@ export function paradiseStarArt(point = {}) {
 
 /**
  * G892 (stand-ins audit A7): each recovered course's way out as its source street has it, in place of
- * the drawn arch. The SHUT boards (report 131) have no source and stay over it until the goal is met.
+ * the drawn arch, dimmed until the goal is met (report 131; G978: the planks over it are gone).
  * - Radial Heights: the street's signpost (signpost_1339609697365 at -499, -371, so 501, 1629 here;
  *   the exit stands at 500, 1645) drawn as a street signpost (street-render oneArmSignpost), and over
  *   it the deco sign groddle_sign_blank_1340666150608 whose sign_txt the client printed

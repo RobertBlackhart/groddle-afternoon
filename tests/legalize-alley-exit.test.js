@@ -21,7 +21,7 @@ import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/c
 import { assignQuest, createQuestState } from '../public/js/quests.js?v=92c75858';
 import { createAchievementState } from '../public/js/achievements.js?v=c3e8be23';
 import { countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
-import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=25e218b9';
+import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=733b9665';
 import { STATION_X, stationScreen, surfaceStation } from '../public/js/subway.js?v=735bfbeb';
 import {
   LEGALIZE_BACK_ALLEY_TSID,

@@ -1397,16 +1397,19 @@
    "id": "paradise-exit-shut-sign",
    "title": "Planks and a SHUT sign over a closed Paradise exit",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
      "file": "public/game.js",
-     "symbol": "paradiseExitShutSign"
+     "symbol": "paradiseExitShutSign",
+     "gone": true
     }
    ],
    "why": "Shows the way home is closed; no source.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): remove the planks and SHUT sign; the closed way home stays dimmed and says why when touched",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {

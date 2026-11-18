@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=02f902e6';
-import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=51d1e05f';
+import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=25705b31';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
 import { ROOK_WOODS_BIRDS } from '../public/js/rook-woods.js?v=0aab151e';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
@@ -140,7 +140,7 @@ describe('Starlit Night cloud floor and way out (A7, A8)', () => {
     assert.deepEqual({ ...PARADISE_COURSES.starlit_night.exit }, { x: 1380, y: 700 });
     const spawn = fnBody(game(), 'spawnParadiseExit');
     assert.match(spawn, /art\?\.kind === 'door'/);
-    assert.match(spawn, /paradiseExitShutSign\(art\?\.kind === 'door'/);
+    assert.doesNotMatch(game(), /paradiseExitShutSign|text: 'SHUT'/); // G978
   });
 });
 
