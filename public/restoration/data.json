@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2611,
+  "commits": 2618,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Feature autoplays that said done when the game refused them (G971)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Every quest-room autoplay checks the steps it plays, not just its last word (G971)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Mental Block's autoplay really drops the blocks and climbs out (G971)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "The New content page counts Pot Luck Day's five badges"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "New content page in the site's card look"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2911,34 +2936,9 @@
     "date": "2026-11-17",
     "kind": "new",
     "text": "The Scion of Purple is drawn sharp on computers, only while it is on screen"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The map and Find the closest Shrine name the Giant whose shrine the street really stands"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Coming home always plays your home's own music, not the last place's"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "A whole stack dragged from the floor onto a Storage Display Box goes in"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "The second and third rock shapes are sharp on high-density screens"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Home street trees, hills and cliffs stand on ground, on the street and in the Change Style tiles"
    }
   ]
  },
- "tests": 1123,
+ "tests": 1124,
  "generatedAt": "2026-11-17"
 }
