@@ -16,7 +16,7 @@
  *
  * Styles: style.css `.item-picker` (every skin + Modern), css/classic.css (Classic restyles in place).
  */
-import { packSearchMatch } from './pack-row.js?v=78787920';
+import { packSearchMatch } from './pack-row.js?v=62e891eb';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from './count-chooser.js?v=5bc894c8';
 
 /**

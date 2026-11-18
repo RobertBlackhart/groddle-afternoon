@@ -3,8 +3,8 @@
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=00ca771c';
-import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=134c03ad';
+import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=786d99ec';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -504,7 +504,7 @@ import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from '
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
-import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
+import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=62e891eb';
 import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=ad115245';
 import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=ad115245';
 import {
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=60598f4b';
+} from './js/player-save.js?v=290b8765';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -4080,6 +4080,7 @@ function packTipFor(el) {
     label: el.dataset.packName || ITEM_CATALOG[cls]?.label || cls.replace(/_/g, ' '),
     count: Number(el.dataset.packCount) || countItem(inv, cls),
     tool: isTool,
+    note: features.query('packKindNote', cls, engine) || '',
     quickVerb: use?.usable ? use.verb : '',
     inBag: el.dataset.packInBag || '',
   });
@@ -4922,7 +4923,10 @@ function renderPackPopover(classTsid, anchor = null) {
   const foodMemory = useInfo.food
     ? `<span class="pack-food-memory${useInfo.food.quote.img > 0 ? ' has-bonus' : ''}">${Math.round(useInfo.food.fullness.percent)}% full today</span>`
     : '';
-  const kindNote = [conditionNote, foodMemory, bearState ? escapeHtml(bearState) : ''].filter(Boolean).join(' · ');
+  // A feature's own line about the item (#503: a Hoe's aggressive hoeing mode and its wear a plot).
+  const featureKind = features.query('packKindNote', classTsid, engine);
+  const featureNote = featureKind ? `<span class="pack-tool-mode">${escapeHtml(featureKind)}</span>` : '';
+  const kindNote = [conditionNote, featureNote, foodMemory, bearState ? escapeHtml(bearState) : ''].filter(Boolean).join(' · ');
   const buffNote = useInfo.buff?.effectHint || '';
   const recipeNote = slot.isTool
     ? `${toolRecipes.length} ${toolRecipes.length === 1 ? 'recipe' : 'recipes'} with this tool`

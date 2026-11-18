@@ -232,13 +232,15 @@ export function packCountText({ used = 0, capacity = 16, bagFree = 0, bags = 0 }
 }
 
 /** The tooltip for a slot: its name and count, and what a click does. */
-export function packSlotTip({ label = '', count = 1, tool = false, bag = null, quickVerb = '', inBag = '' } = {}) {
+export function packSlotTip({ label = '', count = 1, tool = false, bag = null, quickVerb = '', inBag = '', note = '' } = {}) {
   if (bag) {
     return { title: bag.label || label, sub: `${bag.used} of ${bag.capacity} slots · Click to ${bag.open ? 'close' : 'open'}` };
   }
   const title = `${label}${count > 1 ? ` x${count}` : ''}`;
   const parts = [];
   if (inBag) parts.push(`In ${inBag}`);
+  // A feature's line about the item (#503: a Hoe's aggressive hoeing mode).
+  if (note) parts.push(note);
   parts.push(quickVerb && !tool ? `Click for actions · Shift-click to ${quickVerb.toLowerCase()}` : 'Click for actions');
   return { title, sub: parts.join(' · ') };
 }

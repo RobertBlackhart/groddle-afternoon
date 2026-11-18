@@ -24,9 +24,9 @@ import {
   strayLetterCommand,
 } from '../public/js/slash-commands.js?v=fb3a8442';
 import { chatCommandsSection, createHotkeysSheet } from '../public/js/client-hotkeys.js?v=c8210235';
-import { HINT_DELAY_MS, showLocalLines, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=cddbedee';
-import { FEATURES } from '../public/js/features/index.js?v=134c03ad';
-import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
+import { HINT_DELAY_MS, showLocalLines, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=a7547c8e';
+import { FEATURES } from '../public/js/features/index.js?v=786d99ec';
+import { createFeatureHost } from '../public/js/feature-host.js?v=9fe319e4';
 import { CHANNEL_WELCOME, tabCommand } from '../public/js/groups.js?v=c9635d96';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

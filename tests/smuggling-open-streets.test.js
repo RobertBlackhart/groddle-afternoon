@@ -24,7 +24,7 @@ import {
 } from '../public/js/smuggling.js?v=2fde7da3';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=90517e2f';
 import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=613d314e';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=279f7d36';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=72e44daa';
 import { createInventory, addItem } from '../public/js/inventory.js?v=6414dbdc';
 
 const PUB = join(import.meta.dirname, '..', 'public');

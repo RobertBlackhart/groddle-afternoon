@@ -142,7 +142,7 @@ import {
 } from '../butler.js?v=465f8d14';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
-import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
+import { createItemPicker } from '../ui/item-picker.js?v=144fa420';
 import { registerOwnButlerDrop } from '../butler-drop.js?v=5cfc7388';
 import { worldPoint } from './world-drop-feature.js?v=6ea69d5c';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';

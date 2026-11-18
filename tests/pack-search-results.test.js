@@ -19,7 +19,7 @@ import {
   createPackRow,
   packSearchMarks,
   packSearchResults,
-} from '../public/js/ui/pack-row.js?v=78787920';
+} from '../public/js/ui/pack-row.js?v=62e891eb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

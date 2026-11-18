@@ -34,6 +34,7 @@
  *                                         //    opts.copy: which of the class's copies the menu is
  *                                         //    about (js/tools.js, its place in pack order), or null
  *   runPackVerb(classTsid, verbId, engine, opts) // -> true when handled (opts as packVerbs)
+ *   packKindNote(classTsid, engine)       // -> a short line on the item's pack card and slot tooltip (#503)
  *   packOwnDrop(classTsid, engine)        // -> true when the class's packVerbs carry its own drop:
  *                                         //    the popover's general Drop row is left out (engine.query)
  *   packDrop(classTsid, at, engine)       // -> { ok, msg } when the feature puts that class down itself

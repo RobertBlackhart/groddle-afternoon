@@ -70,7 +70,7 @@ import { BENCH_ART, towerApi } from './home-tower-feature.js?v=6b94072f';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=77d57cda';
 import { projectApi } from './street-jobs-feature.js?v=613d314e';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=8d53399e';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=06a326a3';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,

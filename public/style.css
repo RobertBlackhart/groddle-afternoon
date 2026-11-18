@@ -3228,6 +3228,10 @@ button.play-context-head:focus-visible {
   color: var(--c-sand-44);
   font-size: var(--fs-sm);
 }
+/* #503: a tool's mode line (a Hoe's aggressive hoeing), set beside its condition. */
+.pack-tool-mode {
+  font-weight: 700;
+}
 .pack-tool-condition {
   margin: 0.55rem 0 0.45rem;
   padding: 0.45rem 0.55rem;

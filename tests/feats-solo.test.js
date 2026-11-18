@@ -44,8 +44,8 @@ import {
 } from '../public/js/solo-feats.js?v=3bc9b43c';
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
 import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=60c977bd';
-import { FEATURES } from '../public/js/features/index.js?v=134c03ad';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=60598f4b';
+import { FEATURES } from '../public/js/features/index.js?v=786d99ec';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=290b8765';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -525,7 +525,7 @@ describe('G178 Feat follow-ups', () => {
   });
 
   it('hands the detail to every onEvent through the feature host', async () => {
-    const { createFeatureHost } = await import('../public/js/feature-host.js?v=b620c6f2');
+    const { createFeatureHost } = await import('../public/js/feature-host.js?v=9fe319e4');
     const seen = [];
     const host = createFeatureHost([{ id: 't', onEvent: (...args) => seen.push(args) }]);
     host.event('npc_batterfly:feed', 1, 'E', { animal: 'x' });

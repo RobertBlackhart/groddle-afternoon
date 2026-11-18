@@ -14,11 +14,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=465f8d14';
-import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=595f4e96';
+import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=28a60cbd';
 import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=63d32182';
 import { homeTowerFeature, towerApi } from '../public/js/features/home-tower-feature.js?v=6b94072f';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=cddbedee';
-import { createFeatureHost } from '../public/js/feature-host.js?v=b620c6f2';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=a7547c8e';
+import { createFeatureHost } from '../public/js/feature-host.js?v=9fe319e4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');
