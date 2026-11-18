@@ -3254,6 +3254,85 @@
       "commits": [
         "game:b31721557e1"
       ]
+    },
+    {
+      "id": "G1021",
+      "area": "Encyclopedia",
+      "show": "fixing",
+      "text": "Some Encyclopedia item pages, like Wine of the Dead, said only which remake file held them instead of how to get the item.",
+      "commits": [
+        "game:dc237c3d7ca"
+      ]
+    },
+    {
+      "id": "G1023",
+      "area": "Street projects",
+      "show": "fixing",
+      "text": "The featured street project could send players to a street resting after a build, where no project board shows.",
+      "commits": [
+        "game:5b6576f8e88",
+        "server:bd82849"
+      ]
+    },
+    {
+      "id": "G1024",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "Planting or tending a shared garden could say the garden did not answer when saving the game first was slow, and a late answer was redrawn without a word.",
+      "commits": [
+        "game:5b8bcd72413",
+        "server:1a9abb8"
+      ]
+    },
+    {
+      "id": "G1025",
+      "area": "Chat",
+      "show": "fixing",
+      "text": "A reply to an older chat line could be refused after a server restart, and the typed words were lost.",
+      "commits": [
+        "game:be32f676fb5",
+        "server:ddb6535",
+        "site:45399f1"
+      ]
+    },
+    {
+      "id": "G1026",
+      "area": "Making",
+      "show": "fixing",
+      "text": "Spinning, smelting and crushing stopped at 99 at a time, so Spin Doctor could not be earned; Glitch let you use as much as you carried.",
+      "commits": [
+        "game:402b9dd85f6"
+      ]
+    },
+    {
+      "id": "G1027",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "A display box's list of items to add stopped after 80, so items late in the alphabet could not be added.",
+      "commits": [
+        "game:abe83e09a33",
+        "game:b54da83ecca"
+      ]
+    },
+    {
+      "id": "G1028",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Some house and tower floors, walls and ceilings showed a thin line where two pieces meet.",
+      "commits": [
+        "game:0ed7c76202d",
+        "game:9dedf3aac3d"
+      ]
+    },
+    {
+      "id": "G1029",
+      "area": "Subway",
+      "show": "fixing",
+      "text": "A subway station's red button sat a few pixels off and glowed past the gate it is mounted on.",
+      "commits": [
+        "game:67e6ef55602",
+        "game:b54da83ecca"
+      ]
     }
   ]
 }

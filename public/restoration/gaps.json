@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.49.1",
+  "release": "v0.50.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 1,
     "known": 13,
     "unreleased": 0,
-    "fixed": 315,
+    "fixed": 323,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -806,6 +806,18 @@
           "version": "v0.49.0"
         },
         {
+          "id": "G1027",
+          "text": "A display box's list of items to add stopped after 80, so items late in the alphabet could not be added.",
+          "state": "fixed",
+          "version": "v0.50.0"
+        },
+        {
+          "id": "G1028",
+          "text": "Some house and tower floors, walls and ceilings showed a thin line where two pieces meet.",
+          "state": "fixed",
+          "version": "v0.50.0"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -918,6 +930,12 @@
           "report": 366,
           "state": "fixed",
           "version": "v0.41.2"
+        },
+        {
+          "id": "G1023",
+          "text": "The featured street project could send players to a street resting after a build, where no project board shows.",
+          "state": "fixed",
+          "version": "v0.50.0"
         }
       ]
     },
@@ -1960,6 +1978,12 @@
           "text": "A super harvest floated one number over the plot while the activity log said another.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G1024",
+          "text": "Planting or tending a shared garden could say the garden did not answer when saving the game first was slow, and a late answer was redrawn without a word.",
+          "state": "fixed",
+          "version": "v0.50.0"
         }
       ]
     },
@@ -2366,6 +2390,12 @@
           "text": "Making said 2 Currys instead of the item's own plural.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G1026",
+          "text": "Spinning, smelting and crushing stopped at 99 at a time, so Spin Doctor could not be earned; Glitch let you use as much as you carried.",
+          "state": "fixed",
+          "version": "v0.50.0"
         }
       ]
     },
@@ -2405,6 +2435,39 @@
           "text": "Some gains pushed a full energy or mood tank down, and some rewards stopped at 100 instead of your full tank.",
           "state": "fixed",
           "version": "v0.48.0"
+        }
+      ]
+    },
+    {
+      "name": "Encyclopedia",
+      "items": [
+        {
+          "id": "G1021",
+          "text": "Some Encyclopedia item pages, like Wine of the Dead, said only which remake file held them instead of how to get the item.",
+          "state": "fixed",
+          "version": "v0.50.0"
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "items": [
+        {
+          "id": "G1025",
+          "text": "A reply to an older chat line could be refused after a server restart, and the typed words were lost.",
+          "state": "fixed",
+          "version": "v0.50.0"
+        }
+      ]
+    },
+    {
+      "name": "Subway",
+      "items": [
+        {
+          "id": "G1029",
+          "text": "A subway station's red button sat a few pixels off and glowed past the gate it is mounted on.",
+          "state": "fixed",
+          "version": "v0.50.0"
         }
       ]
     }
