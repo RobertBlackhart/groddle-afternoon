@@ -493,6 +493,15 @@ export function rectsOverlap(a, b, margin = 0) {
 }
 
 /**
+ * G976: whether any of the world's words (Pixi bounds { x, y, width, height }) lie over a notice box
+ * ({ left, top, right, bottom }, the same space). The canvas draws under every notice, so where
+ * they meet the notices fade (notify-view setUnderSpeech), as they do under speech (G269).
+ */
+export function wordsOverNotices(words = [], boxes = []) {
+  return words.some((b) => b && boxes.some((z) => rectsOverlap({ left: b.x, top: b.y, right: b.x + b.width, bottom: b.y + b.height }, z)));
+}
+
+/**
  * Moves `rect` down (only down) until it clears every rect in `obstacles`
  * (with `margin`), as long as its bottom stays at or above `maxBottom`.
  * Returns { dy, wait }: wait is true when no spot fits.

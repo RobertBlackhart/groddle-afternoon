@@ -28,8 +28,8 @@ import {
   splitChat,
   withTimeLines,
   writeChoice,
-} from '../public/js/ui/social-drawer.js?v=2a28cf63';
-import { createNotifier } from '../public/js/notify.js?v=2dde9014';
+} from '../public/js/ui/social-drawer.js?v=98fff2d4';
+import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { resolveTokens } from './css-tokens.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

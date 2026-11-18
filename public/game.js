@@ -1070,10 +1070,10 @@ import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { denseSprite } from './js/sprite-dense.js?v=2a0ce07a';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
-import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText } from './js/notify.js?v=2dde9014';
+import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
-import { mountNotifyView } from './js/notify-view.js?v=44acf575';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=2a28cf63';
+import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=98fff2d4';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=db8d7891';
@@ -1115,7 +1115,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=d69d66b4';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=f5285804';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=11b1eb70';
 
@@ -8589,7 +8589,8 @@ function updateSpeechBubbles(dt) {
   if (app?.canvas) app.canvas.dataset.speechBubbles = String(speechBubbles.length);
   // G269: where no spot clears the feed column (phone widths), the column fades under the bubble.
   const over = speechBubbles.some((b) => b._speechFx?.overHud);
-  notifyView?.setUnderSpeech(speechBubbles.some((b) => b._speechFx?.overNotices));
+  // G976: a quoin's amount rising into the notices (a phone's notices sit over the avatar) fades them too.
+  notifyView?.setUnderSpeech(speechBubbles.some((b) => b._speechFx?.overNotices) || quoinGotOverNotices());
   for (const id of ['buff-strip']) {
     const el = document.getElementById(id);
     if (el && el.hasAttribute('data-under-speech') !== over) el.toggleAttribute('data-under-speech', over);
@@ -8671,10 +8672,26 @@ function quoinGotText(x, y, text, color = 0xffffff) {
   const words = wholeStatAmounts(text);
   const drawn = features.query('quoinGotFx', { x, y, label: words }, engine);
   if (!drawn?.node) return floatText(x, y - 20, text, color);
+  quoinGotNodes.push(drawn.node);
   const now = performance.now();
   while (recentFloats.length && now - recentFloats[0].t > 1500) recentFloats.shift();
   recentFloats.push({ x: drawn.x, y: drawn.y, t: now, key: floatKey(words), sprite: drawn.node });
   return drawn.node;
+}
+
+/**
+ * G976: the quoin amounts still up (quoinGotText). The canvas draws under the notices, which on a
+ * phone sit over the avatar, so a toast opened with the quoin hid its number: while one overlaps
+ * them the notices fade under it (updateSpeechBubbles), as they do under speech.
+ */
+const quoinGotNodes = [];
+function quoinGotOverNotices() {
+  for (let i = quoinGotNodes.length - 1; i >= 0; i -= 1) {
+    const n = quoinGotNodes[i];
+    if (!n || n.destroyed || !n.parent) quoinGotNodes.splice(i, 1);
+  }
+  if (!quoinGotNodes.length) return false;
+  return wordsOverNotices(quoinGotNodes.map((n) => n.getBounds()), notifyZoneGlobalBoxes());
 }
 
 const RESULT_FLOAT_RISE = 50;

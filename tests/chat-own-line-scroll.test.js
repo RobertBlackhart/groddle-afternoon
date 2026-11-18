@@ -10,8 +10,8 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { page, memoryStore } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=2a28cf63';
-import { createNotifier } from '../public/js/notify.js?v=2dde9014';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=98fff2d4';
+import { createNotifier } from '../public/js/notify.js?v=4226f585';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 

@@ -388,7 +388,8 @@ describe('bubbles keep clear of the activity feed column (G269)', () => {
     // The notices' stack and a banner (js/notify-view.js zoneBoxes): moved clear, or the notices fade under it.
     assert.match(game, /const clearZone = !outOfView && zone && clearSpeechOfBox\(\{/);
     assert.match(game, /meta\.overNotices = clearZone\?\.how === 'over';/);
-    assert.match(game, /notifyView\?\.setUnderSpeech\(speechBubbles\.some\(\(b\) => b\._speechFx\?\.overNotices\)\);/);
+    // G976: a quoin's amount over the notices fades them too.
+    assert.match(game, /notifyView\?\.setUnderSpeech\(speechBubbles\.some\(\(b\) => b\._speechFx\?\.overNotices\) \|\| quoinGotOverNotices\(\)\);/);
     const css = readFileSync(join(ROOT, 'public/style.css'), 'utf8');
     assert.match(css, /\.buff-strip\[data-under-speech\] \{ opacity: 0\.18; \}/);
     assert.match(css, /\.notify-notices\[data-under-speech\] \{ opacity: 0\.18; \}/);

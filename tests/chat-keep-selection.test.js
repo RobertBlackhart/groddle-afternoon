@@ -11,8 +11,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createNodeCache, pressLeavesKeys, reconcileChildren, uniqueKeys } from '../public/js/ui/keyed-nodes.js?v=9ab4de5c';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=2a28cf63';
-import { createNotifier } from '../public/js/notify.js?v=2dde9014';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=98fff2d4';
+import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

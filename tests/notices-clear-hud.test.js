@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { placeBelow } from '../public/js/notify.js?v=2dde9014';
+import { placeBelow } from '../public/js/notify.js?v=4226f585';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const view = readFileSync(join(root, 'public/js/notify-view.js'), 'utf8');
