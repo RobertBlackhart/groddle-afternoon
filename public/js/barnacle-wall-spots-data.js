@@ -53,3 +53,16 @@ export const BARNACLE_WALL_SPOTS = Object.freeze({
   GIFNH08K9OU1SAB: Object.freeze([[4262, 667, 1, 1], [4484, 685, 2, 1]]),
   GIFNIC9JFOU1B2S: Object.freeze([[1702, 661, 1, 1], [1792, 672, 2, 1], [1858, 626, 1, 1, 1]]),
 });
+
+/**
+ * G998 (#489): the barnacles a snapped street's file names past those its snaps show (barnacle-spots.json),
+ * on its walls by the same rule (or tier 0, read on a picture of it: barnacle-picture-spots.json cites it).
+ * street-ecology.js MEASURED_NODE_SPOTS puts them after the measured spots, so those keep their keys.
+ */
+export const BARNACLE_LEFTOVER_SPOTS = Object.freeze({
+  GTJ12PGU9KV1MGI: Object.freeze([[4141.5, 774, 2, 0]]),
+  GTJ168OVQRV1TQA: Object.freeze([[4100, 504, 1, 1, 1]]),
+  GTJ16T2SURV19NT: Object.freeze([[3664, 379, 1, 1]]),
+  GTJ1FR102AV17DP: Object.freeze([[1552, 435, 1, 1]]),
+  GTJOCVQUMHV1K83: Object.freeze([[2560, 413, 1, 1]]),
+});

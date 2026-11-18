@@ -41,7 +41,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=62ca408f';
+} from '../public/js/street-ecology.js?v=37f2fca6';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';

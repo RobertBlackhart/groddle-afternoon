@@ -29,7 +29,7 @@
       "assets/content/achievements.json": "3fab14cc",
       "assets/content/ambient-music.json": "fd84e46f",
       "assets/content/badge-icons-generated.json": "486b5773",
-      "assets/content/barnacle-picture-spots.json": "a384faa9",
+      "assets/content/barnacle-picture-spots.json": "9639e117",
       "assets/content/barnacle-spots.json": "ea6c5ca0",
       "assets/content/deco-catalog.json": "8220e1a2",
       "assets/content/garden-spots.json": "d1ec3e98",

@@ -12,11 +12,11 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=62ca408f';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=df06b58f';
+import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=37f2fca6';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=868799b8';
 import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=f6598c43';
 import { fixedPictureBoxes } from '../tools/build-barnacle-wall-spots.mjs';
-import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=e9f16559';
+import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=8ba1ff7d';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
@@ -107,7 +107,9 @@ describe('#446 barnacles off the floor where no snap shows them', () => {
   it('picture spots cite their pictures (no player names, no pixels)', () => {
     assert.match(pictures.source, /reference only/i);
     for (const [tsid, row] of Object.entries(pictures.streets)) {
-      assert.ok(fallback.some((f) => f.tsid === tsid), tsid);
+      // G998 (#489): or a snapped street whose snaps show one its matcher missed (Vasko Shift's third).
+      const leftover = snapped[tsid]?.length && Number(ecology.streets[tsid]?.counts?.mortar_barnacle) > snapped[tsid].length;
+      assert.ok(fallback.some((f) => f.tsid === tsid) || leftover, tsid);
       assert.ok(row.from?.length, `${tsid} cites its pictures`);
       assert.ok(row.spots.length >= 1);
     }

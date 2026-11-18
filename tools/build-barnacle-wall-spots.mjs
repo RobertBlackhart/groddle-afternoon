@@ -10,6 +10,11 @@
  * file names is drawn wall-mounted, keyed mortar_barnacle:<i> left to right.
  *
  *
+ * G998 (#489): a street the snaps cover but whose file names more barnacles than they showed (5
+ * streets, one each) had the rest planned on a floor. Those leftovers go on its walls by the same
+ * rule now (after any spot read on a picture of it), written as BARNACLE_LEFTOVER_SPOTS: the
+ * measured spots keep mortar_barnacle:0..n-1 and the leftovers follow, left to right.
+ *
  * G936: the rule reads the art's masks (tools/barnacle-wall-masks.json: each wall and ground deco these
  * streets draw, its alpha on a grid of at most MASK_MAX cells a side, measured from
  * public/assets/decos/groddle/<art>.webp with ImageMagick by --measure), so a spot sits on a wall's
@@ -25,6 +30,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BARNACLE_VARIANT_FACES, barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=f6598c43';
 import { DECO_TWINS } from '../public/js/street-render.js?v=2d5a9737';
+import { nudgedBarnacleSpots } from '../public/js/barnacle-nudges.js?v=159f11bf';
 import {
   ecologyForStreet,
   populationForStreet,
@@ -33,7 +39,7 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=62ca408f';
+} from '../public/js/street-ecology.js?v=37f2fca6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';
@@ -51,6 +57,14 @@ function builderStreets(ecology, snapped, index) {
     .filter(([tsid, want]) => want && !snapped[tsid]?.length && index[tsid]);
 }
 
+/** G998: the snapped streets whose file names more barnacles than the snaps showed: [tsid, wanted count]. */
+function leftoverStreets(ecology, snapped, index) {
+  return Object.entries(ecology)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([tsid, row]) => [tsid, Number(row?.counts?.mortar_barnacle) || 0])
+    .filter(([tsid, want]) => snapped[tsid]?.length && want > snapped[tsid].length && index[tsid]);
+}
+
 /**
  * G936: measure the alpha mask of every wall and ground deco the builder's streets draw (the art
  * street-render.js draws for the name: DECO_TWINS when the manifest lacks it; null when there is no art).
@@ -62,7 +76,9 @@ export function measureMasks() {
   const index = read('public/assets/streets/index.json').streets;
   const available = new Set(read('public/assets/decos/manifest.json'));
   const names = new Set();
-  for (const [tsid] of builderStreets(ecology, snapped, index)) for (const n of barnacleMaskSprites(read(`public/${index[tsid].file}`))) names.add(n);
+  for (const [tsid] of [...builderStreets(ecology, snapped, index), ...leftoverStreets(ecology, snapped, index)]) {
+    for (const n of barnacleMaskSprites(read(`public/${index[tsid].file}`))) names.add(n);
+  }
   const out = {};
   for (const name of [...names].sort()) {
     const art = available.has(name) ? name : DECO_TWINS[name];
@@ -114,16 +130,20 @@ export function buildBarnacleWallSpots({ masks = read(MASKS).masks } = {}) {
   const short = [];
   const unmeasured = new Set();
   const tally = { picture: 0, rule: 0, streets: 0, pictured: 0, tiers: {}, mirrored: 0 };
-  for (const [tsid, want] of builderStreets(ecology, snapped, index)) {
+  const measuredSpots = nudgedBarnacleSpots(snapped);
+  const leftovers = {};
+  /** The rows for `want` barnacles on a street past the `measured` ones its snaps show. */
+  const place = (tsid, want, measured = []) => {
     const street = read(`public/${index[tsid].file}`);
     for (const n of barnacleMaskSprites(street)) if (!Object.prototype.hasOwnProperty.call(masks, n)) unmeasured.add(n);
-    const seen = (pictures[tsid]?.spots || []).slice(0, want).map(([x, y, v]) => [x, y, v, 0]);
+    const seen = (pictures[tsid]?.spots || []).slice(0, want - measured.length).map(([x, y, v]) => [x, y, v, 0]);
     // The street's keep-clear spots, less the barnacles' own covers (which this file feeds).
     const reserved = [
       ...streetReservedSpots(street).filter((r) => !String(r.key || '').startsWith('node:mortar_barnacle:')),
       ...fixedPictureBoxes(populationForStreet(tsid, ecologyForStreet(tsid))),
     ];
-    const rule = barnacleWallSpots(street, want - seen.length, { reserved, keep: seen.map(([x, y]) => ({ x, y })), masks });
+    const keep = [...measured, ...seen].map(([x, y]) => ({ x, y }));
+    const rule = barnacleWallSpots(street, want - measured.length - seen.length, { reserved, keep, masks });
     // A spot that should face one way is mirrored when its variant's art faces the other (G936).
     const ruleRows = rule.map((s, i) => {
       const v = RULE_VARIANTS[i % RULE_VARIANTS.length];
@@ -132,16 +152,21 @@ export function buildBarnacleWallSpots({ masks = read(MASKS).masks } = {}) {
     });
     const rows = [...seen, ...ruleRows]
       .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    if (rows.length < want) short.push(`${index[tsid].label} (${tsid}): ${rows.length} of ${want}`);
-    spots[tsid] = rows;
+    if (measured.length + rows.length < want) short.push(`${index[tsid].label} (${tsid}): ${measured.length + rows.length} of ${want}`);
     tally.streets += 1;
     if (seen.length) tally.pictured += 1;
     tally.picture += seen.length;
     tally.rule += rule.length;
     for (const s of rule) tally.tiers[s.tier] = (tally.tiers[s.tier] || 0) + 1;
     tally.mirrored += ruleRows.filter((r) => r[4] === 1).length;
-  }
-  const lines = Object.entries(spots).map(([tsid, list]) => `  ${tsid}: Object.freeze([${list.map((r) => `[${r.join(', ')}]`).join(', ')}]),`);
+    return rows;
+  };
+  for (const [tsid, want] of builderStreets(ecology, snapped, index)) spots[tsid] = place(tsid, want);
+  // G998: a snapped street's leftovers on its walls too, after the spots its snaps measured.
+  for (const [tsid, want] of leftoverStreets(ecology, snapped, index)) leftovers[tsid] = place(tsid, want, measuredSpots[tsid]);
+  const row = ([tsid, list]) => `  ${tsid}: Object.freeze([${list.map((r) => `[${r.join(', ')}]`).join(', ')}]),`;
+  const lines = Object.entries(spots).map(row);
+  const leftoverLines = Object.entries(leftovers).map(row);
   const text = `// Generated by tools/build-barnacle-wall-spots.mjs: never edit by hand.
 /**
  * G916 (#446): Mortar Barnacle spots for the streets no full-street snap covers, left to right
@@ -155,8 +180,17 @@ export function buildBarnacleWallSpots({ masks = read(MASKS).masks } = {}) {
 export const BARNACLE_WALL_SPOTS = Object.freeze({
 ${lines.join('\n')}
 });
+
+/**
+ * G998 (#489): the barnacles a snapped street's file names past those its snaps show (barnacle-spots.json),
+ * on its walls by the same rule (or tier 0, read on a picture of it: barnacle-picture-spots.json cites it).
+ * street-ecology.js MEASURED_NODE_SPOTS puts them after the measured spots, so those keep their keys.
+ */
+export const BARNACLE_LEFTOVER_SPOTS = Object.freeze({
+${leftoverLines.join('\n')}
+});
 `;
-  return { text, spots, short, tally, unmeasured: [...unmeasured].sort() };
+  return { text, spots, leftovers, short, tally, unmeasured: [...unmeasured].sort() };
 }
 
 function main() {

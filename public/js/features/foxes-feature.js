@@ -88,7 +88,7 @@ import {
   stepFox,
 } from '../foxes.js?v=4497a984';
 import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=0a1438dc';
-import { clockOffset } from '../street-creatures.js?v=0285bae5';
+import { clockOffset } from '../street-creatures.js?v=5849f0c5';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 

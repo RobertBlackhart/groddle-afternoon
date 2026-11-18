@@ -9,7 +9,7 @@ import { MAILBOX_SHEETS, measuredMailboxes, measuredStones } from './street-furn
 import { QUOIN_SPOTS } from './quoin-spots-data.js?v=7c343cbc';
 import { nudgedBarnacleSpots } from './barnacle-nudges.js?v=159f11bf';
 import { BARNACLE_SPOTS } from './barnacle-spots-data.js?v=cea3daec';
-import { BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=e9f16559';
+import { BARNACLE_LEFTOVER_SPOTS, BARNACLE_WALL_SPOTS } from './barnacle-wall-spots-data.js?v=8ba1ff7d';
 import {
   JELLISAC_SPOTS,
   PAPER_TREE_SPOTS,
@@ -159,7 +159,9 @@ export const RESOURCE_NODE_CAPS = Object.freeze({
  * PLANNED_NODE_CAPS: a floor is never where the original had them, so an invented row of 13 along
  * the ground is worse than a few. G916 (#446): a street with no snap has every barnacle its file
  * names on a wall instead (js/barnacle-wall-spots-data.js: measured on its other pictures, else by
- * js/barnacle-walls.js's rule), so the cap no longer applies there.
+ * js/barnacle-walls.js's rule), so the cap no longer applies there. G998 (#489): a snapped street whose
+ * file names more than its snaps show has the rest on its walls by that rule too (BARNACLE_LEFTOVER_SPOTS,
+ * after the measured ones), so no barnacle is planned on a floor any more.
  *
  * Player reports #249 and #250: Jellisacs and Peat Bogs were set by hand too (jellisac.js and
  * peat_base.js obey_physics false). Every Jellisac on Vuoksi Vale sat in a dark hole in the rock
@@ -181,12 +183,20 @@ export const PLANNED_NODE_CAPS = Object.freeze({
   peat_1: 3,
 });
 
+/** G998: each street's measured rows with its leftover rows after them ({ [tsid]: rows }, a new object). */
+function withLeftovers(measured, leftovers) {
+  const out = { ...measured };
+  for (const [tsid, rows] of Object.entries(leftovers)) if (out[tsid]) out[tsid] = [...out[tsid], ...rows];
+  return out;
+}
+
 /** Measured spots per class: { [class]: { [G tsid]: [[x, y, variant number], ...] } } (street px). */
 export const MEASURED_NODE_SPOTS = Object.freeze({
   // G916 (#446): a street no full-street snap covers takes the spots measured on its other pictures
   // and the rest on its walls by rule (tools/build-barnacle-wall-spots.mjs, js/barnacle-walls.js).
   // G936: a rule row's fifth field 1 draws the barnacle mirrored (it faces outward on a round wall's right part).
-  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', mirrorField: 4, streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...nudgedBarnacleSpots(BARNACLE_SPOTS) }) }),
+  // G998: a snapped street's leftovers follow its measured spots, which keep mortar_barnacle:0..n-1.
+  mortar_barnacle: Object.freeze({ variantPrefix: 'blister', mirrorField: 4, streets: Object.freeze({ ...BARNACLE_WALL_SPOTS, ...withLeftovers(nudgedBarnacleSpots(BARNACLE_SPOTS), BARNACLE_LEFTOVER_SPOTS) }) }),
   // G933 (#453): a Jellisac the snaps never measured sits in its street's empty hole first
   // (tools/build-jellisac-hole-spots.mjs); only those left over are planned on a floor.
   jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: Object.freeze({ ...JELLISAC_SPOTS, ...JELLISAC_HOLE_SPOTS }) }),
