@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2620,
+  "commits": 2624,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "Mining swings take a third of Glitch's time (6, 4.2, 3 and 2.4 s for Mining I to IV)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "Pot Luck Day keeps the word filter, the feature order and the ledger receipt line as the tests expect"
+   },
    {
     "date": "2026-11-17",
     "kind": "new",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-17",
     "kind": "improve",
     "text": "Mental Block's tube, blocks and end door are Tiny Speck's own art, as players' Snaps show"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Watering, hoeing and clearing play the tool's sound once, not again when they finish"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "fix",
-    "text": "Instant Resurrection fills mood to the full tank, not 100"
    }
   ]
  },
- "tests": 1125,
+ "tests": 1126,
  "generatedAt": "2026-11-17"
 }
