@@ -15,6 +15,7 @@
  */
 
 import { TOWER_FLOOR_BOUNDS, TOWER_LIFT, TOWER_LIFT_PLATE, towerFloorEcology, towerFloorFor, towerFloorLayout } from '../tower-floors.js?v=3d1ad8b7';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const TOWER_FLOORS_FEATURE_ID = 'tower-floors';
 
@@ -37,7 +38,7 @@ function drawPlate(engine, floor, street) {
   const t = new PIXI.Text({
     text: String(floor.n),
     style: {
-      fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 26,
       fontWeight: '800',
       fill: 0xe9cf86,

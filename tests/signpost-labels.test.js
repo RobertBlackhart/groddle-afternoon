@@ -11,7 +11,8 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
-import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont, loadSignpostTextures, signLabel } from '../public/js/street-render.js?v=6589dda5';
+import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont, loadSignpostTextures, signLabel } from '../public/js/street-render.js?v=40bd79f2';
+import { WORLD_FONT_FACES } from '../public/js/world-text.js?v=2dd95179';
 
 const root = join(import.meta.dirname, '..');
 const python = '/opt/homebrew/bin/python3.11';
@@ -74,10 +75,12 @@ describe('signpost words', () => {
     globalThis.document = { fonts: { load: (font) => { asked.push(font); return Promise.resolve([{ family: 'Nunito' }]); } } };
     try {
       assert.equal(await loadSignFont(), true);
-      assert.deepEqual(asked, ['700 14px Nunito']);
+      // R17: the world font's faces (js/world-text.js), the arms' bold among them.
+      assert.deepEqual(asked, [...WORLD_FONT_FACES]);
+      assert.ok(asked.includes('700 16px Nunito'));
       // Loaded once: later streets do not ask again.
       assert.equal(await loadSignFont(), true);
-      assert.equal(asked.length, 1);
+      assert.equal(asked.length, WORLD_FONT_FACES.length);
       assert.match(read('public/js/street-render.js'), /await Promise\.all\(\[\n    loadSignFont\(\),/);
       assert.equal(typeof loadSignpostTextures, 'function');
     } finally {

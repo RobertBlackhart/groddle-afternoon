@@ -21,11 +21,12 @@ import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody }
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const DECO_ROOT = 'assets/decos/groddle';
 const decoUrl = (name) => `${DECO_ROOT}/${name}.png`;
 
-const FONT = 'Trebuchet MS, sans-serif';
+const FONT = WORLD_FONT_FAMILY;
 
 /** Deco PNGs each course paints with (preloaded before the scene is built). */
 export const PARADISE_COURSE_DECOS = Object.freeze({

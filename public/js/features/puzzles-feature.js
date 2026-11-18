@@ -92,6 +92,7 @@ import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';
 export const LIGHT_BEAM_CLASS = 'light_beam';
@@ -379,7 +380,7 @@ function spawnSigns(engine, street, def) {
     const label = new PIXI.Text({
       text: String(text).replace(/\s*<br>\s*/g, '\n'),
       style: {
-        fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+        fontFamily: WORLD_FONT_FAMILY,
         fontWeight: '700',
         fontSize: 15,
         fill: 0xffffff,

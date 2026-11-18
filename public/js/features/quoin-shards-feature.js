@@ -53,6 +53,7 @@ import {
   quoinTypeShards,
   stackQuoinText,
 } from '../quoin-shards.js?v=121156a0';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 let fxRoot = null;
 const fxItems = [];
@@ -130,7 +131,7 @@ function burstText(engine, value, stat, small, words = '') {
   const color = small ? fx.shardColor : fx.plainColor;
   const label = words || (value < 0 ? `-${Math.abs(value)}${stat ? ` ${stat}` : ''}` : `${small ? '' : '+'}${Math.abs(value)}${stat ? ` ${stat}` : ''}`);
   const text = new engine.PIXI.Text({ text: label, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: small ? fx.smallText : fx.text,
     fontWeight: '700',
     fill: color,

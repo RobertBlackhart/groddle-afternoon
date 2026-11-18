@@ -41,7 +41,7 @@ import { unitRankAt } from '../pack-slots.js?v=4d446d78';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
 // The same key as features/index.js: one module instance holds the carried notes.
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=e49f6cbd';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=bda480bd';
 import {
   BOX_KEEP,
   BOX_SLOTS,

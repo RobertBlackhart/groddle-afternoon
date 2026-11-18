@@ -12,6 +12,7 @@
 import { textureFromUrl } from './textures.js?v=1c44e7c3';
 import { playSheetOverlay } from './overlay-art.js?v=7a63d78f';
 import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const DECO_DIR = 'assets/decos/groddle/';
 
@@ -1032,7 +1033,7 @@ function drawWinnerArc(PIXI) {
   });
   c.addChild(g);
   const text = new PIXI.Text({ text: 'Winner', style: {
-    fontFamily: 'Arial',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 26,
     fontWeight: '900',
     fill: 0xffffff,

@@ -56,7 +56,7 @@
  */
 
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { butlerApi } from '../features/butler-feature.js?v=6e6511dc';
+import { butlerApi } from '../features/butler-feature.js?v=c7e72b21';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
 
 // source: questInstanceLocation(..., 5*60) -> instances_schedule_exit_prompt (a prompt, not a clock).
@@ -642,7 +642,7 @@ function buildClub(ctx) {
     world.addChild(p);
   }
   // ENTER plaque.
-  world.addChild(kit.label(PIXI, 'ENTER', CLUBHOUSE.enterX, cy - 128, { size: 15, fill: 0xf1e2c4, stroke: { color: 0x4a321c, width: 5 },  font: 'Georgia, serif' }));
+  world.addChild(kit.label(PIXI, 'ENTER', CLUBHOUSE.enterX, cy - 128, { size: 15, fill: 0xf1e2c4, stroke: { color: 0x4a321c, width: 5 } }));
 
   return {
     label: 'The Society of Keen-Eyed Noticers',
@@ -998,7 +998,7 @@ function enterProsa(ctx) {
   g.roundRect(-34, -150, 68, 30, 5).fill(0x7c5a3a);
   g.roundRect(-34, -150, 68, 30, 5).stroke({ width: 2, color: 0x4b3424, alpha: 1 });
   c.addChild(g);
-  c.addChild(kit.label(PIXI, 'Exit', 0, -135, { size: 17, fill: 0xf6ead2, font: 'Georgia, serif' }));
+  c.addChild(kit.label(PIXI, 'Exit', 0, -135, { size: 17, fill: 0xf6ead2 }));
   c.x = SIGNPOST.x;
   c.y = SIGNPOST.y;
   ctx.data.signpost = ctx.register({ classId: 'clubhouse_signpost', label: 'Signpost', subtitle: 'The way back', sprite: c });

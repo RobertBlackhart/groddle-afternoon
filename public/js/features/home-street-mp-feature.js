@@ -62,15 +62,15 @@ import { signpostX as fixtureSignpostX } from '../home-street-fixtures.js?v=bad8
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note-pole-art.js?v=fbda2f8a';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=6589dda5';
+import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=40bd79f2';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=d4140290';
-import { BENCH_ART, towerApi } from './home-tower-feature.js?v=5c0694a5';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=29723a2c';
+import { BENCH_ART, towerApi } from './home-tower-feature.js?v=0c374abf';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=77d57cda';
-import { projectApi } from './street-jobs-feature.js?v=191aeb84';
+import { projectApi } from './street-jobs-feature.js?v=63eaed93';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=e49f6cbd';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=bda480bd';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -108,6 +108,7 @@ import {
   signpostCandidates,
 } from '../home-street-mp.js?v=1ca05fa3';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export { HOME_STREET_MP_ID };
 
@@ -442,7 +443,7 @@ function createSession(engine, client) {
   function priceTag(price) {
     const { PIXI } = engine;
     const tag = new PIXI.Container();
-    const text = new PIXI.Text({ text: `${Math.max(0, Math.floor(price)).toLocaleString('en-US')}c`, style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 13, fontWeight: '700', fill: 0x3a2a12, padding: 2 } });
+    const text = new PIXI.Text({ text: `${Math.max(0, Math.floor(price)).toLocaleString('en-US')}c`, style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0x3a2a12, padding: 2 } });
     text.resolution = 3;
     text.anchor.set(0.5);
     const w = Math.ceil(text.width) + 14;

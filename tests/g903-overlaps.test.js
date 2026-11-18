@@ -64,11 +64,12 @@ describe('G903: speech bubbles keep off the street map', () => {
 });
 
 describe('G903: the construction tag uses the signposts\' font', () => {
-  it('street-jobs draws "N roads under construction" in SIGN_FONT_FAMILY (Nunito), not Arial', () => {
+  it('street-jobs draws "N roads under construction" in the world font (Nunito, R17), not Arial', () => {
     const src = read('public/js/features/street-jobs-feature.js');
     const tag = src.slice(src.indexOf('roads under construction'), src.indexOf('tag.anchor.set'));
-    assert.match(tag, /fontFamily: SIGN_FONT_FAMILY/);
+    assert.match(tag, /fontFamily: WORLD_FONT_FAMILY/);
     assert.doesNotMatch(tag, /Arial/);
-    assert.match(read('public/js/street-render.js'), /export const SIGN_FONT_FAMILY = 'Nunito/);
+    assert.match(read('public/js/world-text.js'), /export const WORLD_FONT_FAMILY = 'Nunito, /);
+    assert.match(read('public/js/street-render.js'), /export const SIGN_FONT_FAMILY = WORLD_FONT_FAMILY;/);
   });
 });

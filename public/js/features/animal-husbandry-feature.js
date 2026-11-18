@@ -115,7 +115,7 @@ import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=addd6f5c';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=38a8a5bf';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=00e587d6';
@@ -123,6 +123,7 @@ import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=6421
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
 import { createPackedLoader } from '../packed-sheets.js?v=be3cff3a';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';
 export const BATTERFLY_GROUP = 'batterfly';
@@ -265,7 +266,7 @@ function addCountBadge(engine, spr, count) {
     return;
   }
   const t = new PIXI.Text({ text: count > 1 ? String(count) : '', style: {
-    fontFamily: 'system-ui, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 11,
     fontWeight: '800',
     fill: 0xffffff,

@@ -68,6 +68,7 @@ import { wintryPortalTeleportersOn } from '../wintry-portal.js?v=1437deda';
 import { cavePitTeleportersOn } from '../cave-pit.js?v=81e62950';
 import { seamTeleportersOn } from '../seam-teleporters.js?v=09d11340';
 import { WIRED_TELEPORTERS, collisionTeleportersOn } from '../collision-teleporters.js?v=b1214a65';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const HIDDEN_FLOORS_FEATURE_ID = 'hidden-floors';
 const CHECK_MS = 60;
@@ -125,7 +126,7 @@ function drawSign(engine, row) {
   const t = new engine.PIXI.Text({
     text: row.text,
     style: {
-      fontFamily: '"Trebuchet MS", sans-serif',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 30,
       fontWeight: '700',
       fill: 0xf4ead6,

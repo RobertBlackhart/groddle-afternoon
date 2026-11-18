@@ -146,7 +146,7 @@ import { assignQuest, completeQuest } from '../quests.js?v=92c75858';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=4debd26e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
-import * as kit from '../quest-rooms/kit.js?v=ec17ee93';
+import * as kit from '../quest-rooms/kit.js?v=83690109';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=1c44e7c3';
 import { upgradeSource } from '../sprite-hires.js?v=24aa024c';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
@@ -173,6 +173,7 @@ import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const NEWXP_FEATURE_ID = 'newxp';
 /** newxp_training1.js 705-706 slothRemove: deleteWithPoof, then hideTree 0.5 s later. */
@@ -3320,7 +3321,7 @@ function islandSigns(engine, table = ISLAND_SIGNS, { follow = false } = {}) {
       const label = new engine.PIXI.Text({
         text: sign.text.replace(/<br>\s*/g, '\n'),
         style: {
-          fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+          fontFamily: WORLD_FONT_FAMILY,
           fontWeight: '800',
           fontSize: sign.plaque ? 20 : 22,
           fill: 0xffffff,

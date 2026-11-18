@@ -47,6 +47,7 @@ import {
 } from '../winter-icicles.js?v=04c0780f';
 import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=cbe116f2';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const REBUILT_ROOMS_FEATURE_ID = 'rebuilt-rooms';
 
@@ -166,7 +167,7 @@ function drawExitWord(engine, street) {
   const layer = engine.entityLayer;
   if (!PIXI || !layer || !sign) return;
   const t = new PIXI.Text({ text: sign.text, style: {
-    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: sign.size,
     fontWeight: '900',
     fill: 0xf6e7b8,
@@ -203,7 +204,7 @@ function drawCaption(engine) {
   if (!PIXI || !layer) return;
   const c = WINTER_WALK_CAPTION;
   const t = new PIXI.Text({ text: c.lines.join('\n'), style: {
-    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 17,
     fontWeight: '800',
     fill: c.fill,

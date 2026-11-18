@@ -12,6 +12,7 @@
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { quoinTouches } from '../quoins.js?v=6a2cac74';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const DECO_DIR = 'assets/decos/groddle/';
 export const ICON_DIR = 'assets/sprites/icons/';
@@ -284,7 +285,7 @@ export function drawLadder(g, l, opts = {}) {
 /** A soft, rounded text label (signs, room names). */
 export function label(PIXI, text, x, y, opts = {}) {
   const t = new PIXI.Text({ text: text, style: {
-    fontFamily: opts.font || 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: opts.size || 18,
     fontWeight: opts.weight || '800',
     fill: opts.fill ?? 0x3d3d3d,

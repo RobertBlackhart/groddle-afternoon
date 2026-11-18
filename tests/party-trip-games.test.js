@@ -12,9 +12,9 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { racesFeature } from '../public/js/features/races-feature.js?v=adfbccde';
-import { crownsFeature } from '../public/js/features/crowns-feature.js?v=d277fec9';
-import { mayhemFeature } from '../public/js/features/mayhem-feature.js?v=c0b86512';
+import { racesFeature } from '../public/js/features/races-feature.js?v=48d480b1';
+import { crownsFeature } from '../public/js/features/crowns-feature.js?v=6aae73c9';
+import { mayhemFeature } from '../public/js/features/mayhem-feature.js?v=decd84b1';
 import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=e51c4b0c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

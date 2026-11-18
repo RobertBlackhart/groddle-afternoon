@@ -14,8 +14,8 @@ import { after, before, describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=191aeb84';
-import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=d1d91e24';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=63eaed93';
+import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=0773de48';
 import { soloNeed } from '../public/js/street-jobs.js?v=5806a615';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import {
@@ -24,7 +24,7 @@ import {
   formatTime,
   jobIndicatorView,
   jobPerc,
-} from '../public/js/job-indicator.js?v=05498227';
+} from '../public/js/job-indicator.js?v=d56189e1';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

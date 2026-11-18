@@ -46,6 +46,7 @@ import { ROOM_15_TSID } from '../tower-rooms.js?v=4f1f6af7';
 import { anyTowerRoomByTsid as baseRoomByTsid } from '../tower-challenge-rooms.js?v=01f1c620';
 import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=908fef6e';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 const anyTowerRoomByTsid = (tsid) => baseRoomByTsid(tsid) || midTowerRoomByTsid(tsid);
 
@@ -89,7 +90,7 @@ function drawSigns(engine, street) {
   for (const d of mg?.decos || []) {
     if (!d.signText) continue;
     const t = new PIXI.Text({ text: d.signText, style: {
-      fontFamily: '"Trebuchet MS", sans-serif',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: d.signText.length > 10 ? 15 : 19,
       fontWeight: '700',
       fill: 0xf3e2b8,
@@ -112,7 +113,7 @@ function drawSigns(engine, street) {
 /** Sign text in the plaques' style, centred at (x, y) in street-screen space. */
 function signLabel(engine, text, x, y, z, fill = 0xf3e2b8, stroke = 0x2b1a0e) {
   const t = new engine.PIXI.Text({ text, style: {
-    fontFamily: '"Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: text.length > 10 ? 15 : 19,
     fontWeight: '700',
     fill,

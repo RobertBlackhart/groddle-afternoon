@@ -25,6 +25,7 @@
  * the GlitchAddict video (research/video/frames/PUzIKuL2tPo t0012, t0030): a bold teal line, the
  * second line smaller and lighter.
  */
+import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 export const JOB_INDICATOR_TEXT = Object.freeze({
   available: 'Project available',
@@ -208,7 +209,7 @@ export function createJobIndicator(PIXI, { onClick, textureFor } = {}) {
     into.addChild(s);
     return s;
   };
-  const font = 'Nunito, "Arial Rounded MT Bold", "Trebuchet MS", sans-serif';
+  const font = WORLD_FONT_FAMILY;
   // Fixed line heights: the pill's height must not wait on the web font's metrics.
   const style = (size, color, weight = '800') => ({ fontFamily: font, fontSize: size, fontWeight: weight, fill: color, lineHeight: size + 2 });
   let view = null;

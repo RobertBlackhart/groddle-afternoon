@@ -18,6 +18,7 @@ import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } f
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
 import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
+import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**
@@ -62,10 +63,10 @@ export const SIGN_TEXT_FILL_UNBUILT = 0xd9ccb6;
 /**
  * The words' font (G898, #429). The client's `signpost` CSS class is lost; the remake asked for
  * 'Trebuchet MS, Georgia, serif', and a phone without Trebuchet MS (Android) drew a bold serif.
- * Now the UI's own self-hosted Nunito (style.css @font-face, assets/fonts/nunito), loaded before
- * any arm is drawn (loadSignFont), then a plain sans-serif.
+ * Now the world's one font (R17, js/world-text.js): the UI's self-hosted Nunito, loaded before any
+ * arm is drawn (loadSignFont), then a plain sans-serif.
  */
-export const SIGN_FONT_FAMILY = 'Nunito, "Trebuchet MS", "Helvetica Neue", Arial, sans-serif';
+export const SIGN_FONT_FAMILY = WORLD_FONT_FAMILY;
 const SIGN_LABEL_STYLE = Object.freeze({
   fontFamily: SIGN_FONT_FAMILY,
   fontSize: SIGN_FONT_SIZE,
@@ -162,29 +163,14 @@ let decoManifest = null;
 /** @type {Record<string, import('pixi.js').Texture>|null} */
 let signTextures = null;
 
-let signFont = null;
-/** How long a street waits for the font before it draws the arms with the fallback. */
-const SIGN_FONT_WAIT_MS = 3000;
-
 /**
- * G898: loads the signposts' Nunito (bold, at the words' size) before any arm is measured or
- * drawn: canvas text never redraws when a font arrives later. Resolves true once loaded, false
- * without document.fonts, on an error or after the wait (that street keeps the fallback; the next
- * asks again).
+ * G898: the signposts' Nunito is in before any arm is measured or drawn: canvas text never redraws
+ * when a font arrives later. The world font's own loader (R17, js/world-text.js loadWorldFont):
+ * true once loaded, false without document.fonts, on an error or after its wait (that street keeps
+ * the fallback; the next asks again).
  */
-export function loadSignFont(wait = SIGN_FONT_WAIT_MS) {
-  if (signFont) return signFont;
-  const fonts = typeof document !== 'undefined' ? document.fonts : null;
-  if (!fonts || typeof fonts.load !== 'function') return Promise.resolve(false);
-  const asking = Promise.race([
-    fonts.load(`700 ${SIGN_FONT_SIZE}px Nunito`).then((faces) => Array.isArray(faces) && faces.length > 0, () => false),
-    new Promise((resolve) => setTimeout(() => resolve(false), wait)),
-  ]);
-  signFont = asking.then((ok) => {
-    if (!ok) signFont = null;
-    return ok;
-  });
-  return signFont;
+export function loadSignFont(wait) {
+  return loadWorldFont(wait);
 }
 
 /**

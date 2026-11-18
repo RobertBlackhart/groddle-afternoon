@@ -60,7 +60,7 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=c0b86512';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=decd84b1';
 import { wallsScreen } from '../street-model.js?v=9f16f4ab';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
@@ -81,6 +81,7 @@ import {
   normalizeCrownsState,
 } from '../crowns-mp.js?v=ab077bca';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 const ICON = 'assets/sprites/races/';
 const CROWN_DIR = 'assets/sprites/races/crowns/';
@@ -227,7 +228,7 @@ function setupArena(street, engine) {
       sprite.zIndex = 46;
       sprite.eventMode = 'none';
       engine.entityLayer.addChild(sprite);
-      label = new PIXI.Text({ text: r.name, style: { fontFamily: 'Arial', fontSize: 13, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
+      label = new PIXI.Text({ text: r.name, style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
       anchorBottomCentre(label, 'text');
       label.zIndex = 47;
       engine.entityLayer.addChild(label);

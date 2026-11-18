@@ -21,7 +21,7 @@ import {
 import { applyIndexHub, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { TOWER_ROOMS, VENT } from '../public/js/tower-rooms.js?v=4f1f6af7';
 import { ALL_TOWER_ROOMS } from '../public/js/tower-challenge-rooms.js?v=01f1c620';
-import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=56d86911';
+import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=6742d94c';
 import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=0583777c';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

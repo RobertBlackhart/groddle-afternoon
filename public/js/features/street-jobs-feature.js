@@ -54,7 +54,8 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=62ca408f';
 import { worldToScreen } from '../street-model.js?v=9f16f4ab';
-import { SIGN_FONT_FAMILY, signArmWidth } from '../street-render.js?v=6589dda5';
+import { signArmWidth } from '../street-render.js?v=40bd79f2';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -145,7 +146,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=05498227';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=d56189e1';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -810,8 +811,8 @@ function drawBarricades(engine) {
       wrap.addChild(art);
     });
     const tag = new PIXI.Text({ text: closed.length === 1 ? `${closed[0].label}: under construction` : `${closed.length} roads under construction`, style: {
-      // G903: the signposts' own Nunito, as the arms (street-render.js SIGN_FONT_FAMILY).
-      fontFamily: SIGN_FONT_FAMILY,
+      // G903: the signposts' own Nunito, as the arms (R17: the world font, js/world-text.js).
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 11,
       fontWeight: '700',
       fill: 0xfff6dc,

@@ -31,6 +31,7 @@ import { strayWayOut } from '../quest-instance.js?v=13b8ee09';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const DEAD_ENDS_FEATURE_ID = 'dead-ends';
 export const DEAD_END_EXIT_CLASS = 'dead_end_exit';
@@ -168,7 +169,7 @@ function buildView(engine, spot) {
   if (!isLoaded(tex.source)) onLoaded(tex.source, () => !board.destroyed && size());
   root.addChild(board);
   const word = new PIXI.Text({ text: e.word, style: {
-    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: e.wordSize,
     fontWeight: '900',
     fill: 0xf6e7b8,

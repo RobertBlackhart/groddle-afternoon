@@ -349,7 +349,7 @@ describe('the collector\'s burst on the page (features/quoin-shards-feature.js q
   }
 
   async function setup() {
-    const { quoinShardsFeature } = await import('../public/js/features/quoin-shards-feature.js?v=4553ad56');
+    const { quoinShardsFeature } = await import('../public/js/features/quoin-shards-feature.js?v=a7130ee0');
     const PIXI = fakePixi();
     const data = {};
     const engine = { PIXI, fxLayer: new PIXI.Container(), setData: (k, v) => { data[k] = v; }, param: () => null };

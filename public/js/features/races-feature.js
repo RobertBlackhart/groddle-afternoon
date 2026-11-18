@@ -83,13 +83,13 @@ import {
   drawFinishGate,
   raceLoadingColors,
   renderRaceCourse,
-} from '../race-render.js?v=2f1bb81c';
+} from '../race-render.js?v=0b468c34';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=49228b02';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=d277fec9';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=6aae73c9';
 import { startHogHaulMp } from './hog-haul-mp-feature.js?v=e51c4b0c';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
@@ -108,6 +108,7 @@ import {
   splitScores,
 } from '../races-mp.js?v=4531b30c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 const RACE_ICON_DIR = 'assets/sprites/races/';
 /**
@@ -735,7 +736,7 @@ function spawnRaceEntities(engine) {
     rivalSprite.eventMode = 'none';
     engine.entityLayer.addChild(rivalSprite);
     rivalLabel = new PIXI.Text({ text: run.rivalName, style: {
-      fontFamily: 'Arial',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 13,
       fontWeight: '700',
       fill: 0xffffff,

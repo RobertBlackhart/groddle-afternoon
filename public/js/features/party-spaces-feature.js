@@ -90,6 +90,7 @@ import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ac6c3387';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';
@@ -770,7 +771,7 @@ function spawnAtm(engine, point) {
   const art = new PIXI.Sprite(textureFromUrl(`${ART}party_atm.webp`));
   standOnFeet(art);
   art.scale.set(0.9);
-  const screen = new PIXI.Text({ text: '', style: { fontFamily: 'Courier New, monospace', fontSize: 13, fontWeight: '700', fill: 0x8dff8d } });
+  const screen = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 13, fontWeight: '700', fill: 0x8dff8d } });
   screen.anchor.set(0.5, 0.5);
   screen.y = -112;
   sprite.addChild(art, screen);
@@ -796,7 +797,7 @@ function spawnStack(engine, group, point) {
   const icon = new PIXI.Sprite(textureFromUrl(itemIcon(group.classTsid)));
   standOnFeet(icon);
   icon.scale.set(0.85);
-  const badge = new PIXI.Text({ text: '', style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '800', fill: 0xffffff, stroke: { color: 0x3b2410, width: 3 } } });
+  const badge = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 12, fontWeight: '800', fill: 0xffffff, stroke: { color: 0x3b2410, width: 3 } } });
   badge.anchor.set(0, 1);
   badge.x = 12;
   badge.y = -2;
@@ -872,7 +873,7 @@ function spawnGuest(engine, guest, point, index) {
   sprite.cursor = 'pointer';
   npc.setMode('dance');
   engine.entityLayer.addChild(sprite);
-  const name = new PIXI.Text({ text: guest.name, style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
+  const name = new PIXI.Text({ text: guest.name, style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 12, fontWeight: '700', fill: 0xffffff, stroke: { color: 0x2a1d14, width: 3 } } });
   anchorBottomCentre(name, 'text');
   name.zIndex = 31;
   engine.entityLayer.addChild(name);

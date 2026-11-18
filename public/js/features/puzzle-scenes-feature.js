@@ -54,6 +54,7 @@ import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from 
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
 const TICKET = 'paradise_ticket_beam_me_down';
@@ -302,7 +303,7 @@ function buildBeamMeDown(engine) {
   // The snap's ledge is about 110 deep and flat on top: the pieces squashed to 0.7.
   root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x0 + 60, scene.startCloud.y + 135, 560, { squash: 0.7 }));
   root.addChild(cloudPiece(PIXI, 1, scene.startCloud.x1 - 40, scene.startCloud.y + 120, 430, { flip: true, squash: 0.7 }));
-  const sign = new PIXI.Text({ text: scene.sign.replace(' here!', '\nhere!'), style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 22, fontWeight: '700', fill: 0xffffff, align: 'center' } });
+  const sign = new PIXI.Text({ text: scene.sign.replace(' here!', '\nhere!'), style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 22, fontWeight: '700', fill: 0xffffff, align: 'center' } });
   anchorBottomCentre(sign, 'text');
   sign.x = (scene.startCloud.x0 + scene.startCloud.x1) / 2;
   sign.y = scene.startCloud.y - 110;
@@ -310,7 +311,7 @@ function buildBeamMeDown(engine) {
   root.addChild(sign);
   beamLanding(PIXI, root, scene);
   const bravo = new PIXI.Text({ text: scene.completion.replace('! ', '!\n').replace('You made', 'You\nmade'), style: {
-    fontFamily: 'Trebuchet MS, sans-serif', fontSize: 46, fontWeight: '800', fill: 0xe8d23a, align: 'center', lineHeight: 50,
+    fontFamily: WORLD_FONT_FAMILY, fontSize: 46, fontWeight: '800', fill: 0xe8d23a, align: 'center', lineHeight: 50,
   } });
   anchorBottomCentre(bravo, 'text');
   bravo.x = scene.width / 2;
@@ -338,7 +339,7 @@ function exitDoor(engine, scene) {
     board.scale.set(62 / 481);
     plank.addChild(board);
     // The snaps' plank is paler than this CC0 one, so the word is cream over a dark edge to read.
-    const word = new PIXI.Text({ text: 'EXIT', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 14, fontWeight: '800', fill: 0xf6ead0, stroke: { color: 0x2b2216, width: 3 } } });
+    const word = new PIXI.Text({ text: 'EXIT', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 14, fontWeight: '800', fill: 0xf6ead0, stroke: { color: 0x2b2216, width: 3 } } });
     word.anchor.set(0.5, 0.5);
     plank.addChild(word);
     door.addChild(plank);
@@ -347,7 +348,7 @@ function exitDoor(engine, scene) {
     g.roundRect(-34, -108, 68, 108, 26).fill(0x2b2230);
     g.roundRect(-26, -96, 52, 20, 4).fill(0xe2c34a);
     door.addChild(g);
-    const label = new PIXI.Text({ text: 'EXIT', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 15, fontWeight: '800', fill: 0x2b2230 } });
+    const label = new PIXI.Text({ text: 'EXIT', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 15, fontWeight: '800', fill: 0x2b2230 } });
     label.anchor.set(0.5, 0.5);
     label.y = -86;
     door.addChild(label);

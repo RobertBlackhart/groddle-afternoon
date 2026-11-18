@@ -39,6 +39,7 @@
 
 import { createMinnAccount } from '../minn-account.js?v=153fc423';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+import { worldCanvasFont } from '../world-text.js?v=2dd95179';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import {
@@ -247,7 +248,7 @@ function drawVintageText(spec) {
   const ctx = c.getContext('2d');
   ctx.setTransform(spec.scaleX, 0, 0, spec.scaleY, 0, 0);
   ctx.fillStyle = spec.color;
-  ctx.font = '11px sans-serif';
+  ctx.font = worldCanvasFont(11);
   ctx.textBaseline = 'top';
   ctx.fillText(spec.text, 6, 2);
   return ctx.getImageData(0, 0, spec.width, spec.height);

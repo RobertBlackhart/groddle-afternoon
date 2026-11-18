@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=faea267c';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a3bc7538';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a703d7ae';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=08820e49';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=77ed1ac9';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=6d8dec7f';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -396,7 +396,8 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=c65b021a';
+} from './js/paradise-course-runtime.js?v=5b153e9e';
+import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=2dd95179';
 import {
   createAchievementState,
   applyAchievementProgress as applyAchievementProgressRaw,
@@ -691,7 +692,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=5f4182e2';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=ec2d4616';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -722,7 +723,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=6589dda5';
+} from './js/street-render.js?v=40bd79f2';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -7616,8 +7617,8 @@ function makePromptChip() {
   const chip = new PIXI.Container();
   const bg = new PIXI.Graphics();
   const cap = new PIXI.Graphics();
-  const keyText = new PIXI.Text({ text: '', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 11, fontWeight: '700', fill: 0x2b2418 } });
-  const labelText = new PIXI.Text({ text: '', style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 12, fontWeight: '700', fill: 0xfffaf0 } });
+  const keyText = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 11, fontWeight: '700', fill: 0x2b2418 } });
+  const labelText = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 12, fontWeight: '700', fill: 0xfffaf0 } });
   chip.addChild(bg, cap, keyText, labelText);
   chip.promptKey = '';
   chip.promptLabel = '';
@@ -8361,7 +8362,7 @@ function showSpeechBubble(target, speech) {
   // Austin 10-28: 15 px read too large; 13 px matches the original's bubbles in players' snaps
   // (the client's stylesheet that set it was never recovered, G292).
   const body = new PIXI.Text({ text: text, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 13,
     fill: 0x453b34,
     lineHeight: 17,
@@ -8373,7 +8374,7 @@ function showSpeechBubble(target, speech) {
   // G357: only a player's bubble names its speaker; the tail already shows who an NPC is.
   const named = target.classId === 'pc_player' || target.classId === 'pc_remote';
   const speaker = new PIXI.Text({ text: named ? String(speech.speaker || target.label || '') : '', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 12,
     fill: 0x7f6c55,
     fontWeight: '700',
@@ -8451,7 +8452,7 @@ function speechSlugRow(slugs, maxWidth = 256) {
     const style = SLUG_STYLES[slug.type];
     // Slug.as 205: a 1 px white drop shadow straight down (white1px90Degrees_DropShadowA).
     const textStyle = {
-      fontFamily: 'Trebuchet MS, sans-serif', fontSize: L.fontSize, fontWeight: '700',
+      fontFamily: WORLD_FONT_FAMILY, fontSize: L.fontSize, fontWeight: '700',
       fill: neg ? style.textNeg : style.text,
       dropShadow: { color: 0xffffff, alpha: 0.9, blur: 0, distance: 1, angle: Math.PI / 2 },
     };
@@ -8534,8 +8535,9 @@ function animateSpeechSlugs(row) {
       el.setAttribute('aria-hidden', 'true');
       Object.assign(el.style, {
         position: 'fixed', left: '0', top: '0', zIndex: '9000', pointerEvents: 'none',
-        // Set at the 3x peak size and scaled down from it, so the grown amount stays sharp.
-        font: `700 ${SLUG_LAYOUT.fontSize * A.growScale}px "Trebuchet MS", sans-serif`,
+        // Set at the 3x peak size and scaled down from it, so the grown amount stays sharp. The
+        // pill's own world font (R17), so the amount does not change face as it leaves the bubble.
+        font: worldCanvasFont(SLUG_LAYOUT.fontSize * A.growScale, '700'),
         color: hex(slug.amount < 0 ? style.textNeg : style.text),
         textShadow: '0 0 3px #fff, 0 0 6px #fff, 0 0 9px rgba(255, 255, 255, 0.8)',
         whiteSpace: 'nowrap',
@@ -8626,7 +8628,7 @@ function floatText(x, y, text, color = 0xfff4d6, opts = {}) {
   }
   const placed = stackFloat(recentFloats.filter((f) => f.sprite && !f.sprite.destroyed), x, y, now);
   const t = new PIXI.Text({ text: words, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 15,
     fill: color,
     fontWeight: '700',
@@ -10858,7 +10860,7 @@ function makeBackground() {
 
   const locLabel = worldSession?.location?.label || 'Street';
   const label = new PIXI.Text({ text: locLabel, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 13,
     fill: theme === 'house' ? 0x3a2a18 : 0x2b3a20,
     fontWeight: '600',
@@ -11036,7 +11038,7 @@ function spawnStootMemorial() {
   portrait.scale.set(1.55);
   portrait.y = -150;
   const title = new PIXI.Text({ text: 'STOOT', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 24,
     fill: 0xffefc2,
     fontWeight: '900',
@@ -11046,7 +11048,7 @@ function spawnStootMemorial() {
   title.anchor.set(0.5);
   title.y = -205;
   const inscription = new PIXI.Text({ text: 'An old friend, still making Ur brighter.', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 12,
     fill: 0xf5ead0,
     fontStyle: 'italic',
@@ -11321,13 +11323,7 @@ function makeLocalCompanion(profile) {
   body.scale.set(companionScaleX(body), body.baseScale);
   body.animState = 'idle';
 
-  const name = new PIXI.Text({ text: profile.name, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
-    fontSize: 12,
-    fill: 0x4e4943,
-    fontWeight: '700',
-    dropShadow: { alpha: 0.92, blur: 2, color: 0xffffff, distance: 0 },
-  } });
+  const name = new PIXI.Text({ text: profile.name, style: NAMEPLATE_STYLE });
   anchorBottomCentre(name, 'text');
   name.y = npc ? -Math.round((npc.look.entry.sheets.base.fh || 140) + 6) : -104;
   const plate = new PIXI.Graphics();
@@ -14707,7 +14703,7 @@ function spawnDroppedItemStack(stack) {
     const ring = new PIXI.Graphics();
     ring.circle(0, 0, 9).fill({ color: 0x3b352d, alpha: 0.9 }).stroke({ width: 1, color: 0xfff7e6, alpha: 0.9 });
     const count = new PIXI.Text({ text: String(stack.count), style: {
-      fontFamily: 'Trebuchet MS, sans-serif',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 11,
       fontWeight: '800',
       fill: 0xffffff,
@@ -18892,7 +18888,7 @@ function greedyButtonSprite(actIndex, x, y) {
   button.zIndex = 1;
   root.addChild(button);
   const label = new PIXI.Text({ text: `ACT ${['I', 'II', 'III', 'IV', 'V'][actIndex]}`, style: {
-    fontFamily: 'Fredoka, Arial, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 17,
     fontWeight: '800',
     fill: 0xfff6c8,
@@ -18919,7 +18915,7 @@ function createGreedyExitSprite(x, y) {
   sign.roundRect(-82, -43, 164, 38, 14).fill({ color: 0x5c3d72, alpha: 0.94 }).stroke({ width: 3, color: 0xfff1ae, alpha: 0.94 });
   root.addChild(sign);
   const label = new PIXI.Text({ text: 'RETURN TO UR →', style: {
-    fontFamily: 'Fredoka, Arial, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 15,
     fontWeight: '800',
     fill: 0xfff9dd,
@@ -21253,7 +21249,7 @@ function addRookMuseumDeco(root, name, x, y, w, h, { z = -900, r = 0, tint, alph
 /** Plaque and sign lettering in the tower rooms' style (features/tower-rooms-feature.js drawSigns). */
 function addRookMuseumSignText(root, text, x, y, z) {
   const label = new PIXI.Text({ text, style: {
-    fontFamily: '"Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: text.length > 10 ? 15 : 19,
     fontWeight: '700',
     fill: 0xf3e2b8,
@@ -22593,7 +22589,7 @@ function buildRadialBackground(root, course) {
   // G892: the source's exit sign, its sign_txt printed in its deco's box (DecoRenderer.as 287-322).
   const sign = PARADISE_EXIT_ART.radial_heights.sign;
   const words = new PIXI.Text({ text: sign.text, style: {
-    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontWeight: '800',
     fontSize: 26,
     fill: 0xffffff,
@@ -23067,7 +23063,7 @@ function paradiseExitArch(course, root) {
   glow.roundRect(-33, -110, 66, 101, 31).fill().stroke({ width: 2, color: 0x7dadd1, alpha: 0.88 });
   root.addChild(glow);
   const arrow = new PIXI.Text({ text: '↓', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 27,
     fontWeight: '900',
     fill: 0xffffff,
@@ -23078,7 +23074,7 @@ function paradiseExitArch(course, root) {
   root.addChild(arrow);
   const label = new PIXI.Text(
     { text: course.exitLabel ?? 'WAY HOME', style: {
-      fontFamily: 'Trebuchet MS, sans-serif',
+      fontFamily: WORLD_FONT_FAMILY,
       fontSize: 12,
       fontWeight: '900',
       fill: 0xffffff,
@@ -23109,7 +23105,7 @@ function paradiseExitShutSign({ w = 92, top = -108, bottom = -22 } = {}) {
   planks.circle(0, (top + bottom) / 2, 5).fill(0x4b2d17);
   root.addChild(planks);
   const sign = new PIXI.Text({ text: 'SHUT', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 15,
     fontWeight: '900',
     fill: 0xffffff,
@@ -23124,7 +23120,7 @@ function paradiseExitShutSign({ w = 92, top = -108, bottom = -22 } = {}) {
 function announceParadiseFlight(course) {
   const promptText = new PIXI.Text(
     { text: course.prompt || (course.movement === 'slide' ? 'BUILD SPEED · SPACEBAR JUMPS!' : 'PRESS SPACEBAR TO FLY!'), style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 26,
     fontWeight: '900',
     fill: 0xffffff,
@@ -24906,7 +24902,7 @@ function makeHomeReturnSprite() {
   pole.roundRect(-64, -145, 128, 46, 14).fill(0xf2d76d);
   marker.addChild(pole);
   const label = new PIXI.Text({ text: 'Return to Ur', style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 15,
     fontWeight: '700',
     fill: 0x563f59,
@@ -31224,7 +31220,7 @@ function spawnVendorNpc(placement = null) {
   crest.circle(35, -84, 13).fill({ color: activeVendor.color, alpha: 0.96 }).stroke({ width: 2, color: 0xfff4cf, alpha: 1 });
   g.addChild(crest);
   const badge = new PIXI.Text({ text: activeVendor.badge, style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: activeVendor.badge.length > 1 ? 9 : 12,
     fill: 0xffffff,
     fontWeight: '800',
@@ -31233,7 +31229,7 @@ function spawnVendorNpc(placement = null) {
   badge.x = 35;
   badge.y = -84;
   g.addChild(badge);
-  const label = new PIXI.Text({ text: activeVendor.label, style: WORLD_LABEL_STYLE(12) });
+  const label = new PIXI.Text({ text: activeVendor.label, style: worldLabelStyle(12) });
   anchorBottomCentre(label, 'text');
   label.y = -124;
   g.addChild(label);
@@ -31249,21 +31245,6 @@ function spawnVendorNpc(placement = null) {
     sprite: g,
     state: { vendorKey: activeVendor.key, vendorLabel: activeVendor.label },
   });
-}
-
-/**
- * Name labels drawn in the world (vendors, garden beds): light text with a dark
- * outline and a soft shadow, so they read over dark forests and pale skies alike.
- */
-function WORLD_LABEL_STYLE(fontSize) {
-  return {
-    fontFamily: 'Trebuchet MS, sans-serif',
-    fontSize,
-    fontWeight: '700',
-    fill: 0xfffaf0,
-    stroke: { color: 0x2b2418, width: 3, join: 'round' },
-    dropShadow: { color: 0x000000, alpha: 0.35, blur: 2, distance: 1, angle: Math.PI / 2 },
-  };
 }
 
 /**
@@ -31372,7 +31353,7 @@ function spawnGarden(opts = {}) {
   root.gardenLayout = layout;
 
   const tag = new PIXI.Text(
-    { text: opts.label || (gardenType === 'herb' ? 'Herbs' : 'Garden'), style: WORLD_LABEL_STYLE(11) }
+    { text: opts.label || (gardenType === 'herb' ? 'Herbs' : 'Garden'), style: worldLabelStyle(11) }
   );
   anchorBottomCentre(tag, 'text');
   // Above the back row's grown plants (the tallest crop reaches 66 px over its plot).
@@ -32040,6 +32021,10 @@ async function main() {
   // 'inherit' makes FilterSystem use the renderer's resolution.
   PIXI.Filter.defaultOptions.resolution = 'inherit';
   installPixiFixes(PIXI);
+  // R17: every in-world text in the one self-hosted Nunito (js/world-text.js), asked for now and
+  // awaited with the signposts before the first street draws (street-render.js loadSignFont).
+  installWorldText(PIXI);
+  loadWorldFont();
   // 3x pack icons in Pixi sprites and <img>s, at their original sizes.
   installHiresIcons(textureUrls);
   // 3x animal sheets from the vector SWFs (js/sprite-hires.js), same frame rects.

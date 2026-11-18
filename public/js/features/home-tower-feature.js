@@ -122,6 +122,7 @@ import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=5bc894c8';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 /** 3x tower pieces where the screen has more than 2.25 backing pixels per world pixel. */
 function hires(engine) {
@@ -268,7 +269,7 @@ function nameSign(PIXI, name, style, facingRight) {
   scaffold.scale.x = at.flipped ? -1 : 1;
   playOverlay(PIXI, TOWER_SIGN_KEY, { layer: scaffold, at: () => ({ x: 0, y: 0 }), wh: 0, durationMs: 0, loop: false, zIndex: 0 });
   const text = new PIXI.Text({ text: name.toUpperCase(), style: {
-    fontFamily: 'Trebuchet MS, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 15,
     fontWeight: '700',
     fill: 0xfff4d6,
@@ -348,7 +349,7 @@ export function drawTowerElevator(engine, { floor, groundY }) {
   engine.entityLayer.addChild(lift);
   const bound = groundY + 43 + 28;
   const mark = new PIXI.Text({ text: elevatorMark(floor), style: {
-    fontFamily: 'Georgia, "Times New Roman", serif', fontSize: Math.round(ELEVATOR_MARK.capH / 0.7), fill: 0x2f2f2f,
+    fontFamily: WORLD_FONT_FAMILY, fontSize: Math.round(ELEVATOR_MARK.capH / 0.7), fill: 0x2f2f2f,
   } });
   mark.anchor.set(0.5, 0);
   mark.x = ELEVATOR_MARK.x;
@@ -479,7 +480,7 @@ function spawnFloor(engine, { width, groundY, doorX }) {
   // The floor's mark painted on the column above the call buttons (L, 1, 2, ...; the cutaways).
   const bound = groundY + 43 + 28;
   const mark = new PIXI.Text({ text: elevatorMark(floor), style: {
-    fontFamily: 'Georgia, "Times New Roman", serif', fontSize: Math.round(ELEVATOR_MARK.capH / 0.7), fill: 0x2f2f2f,
+    fontFamily: WORLD_FONT_FAMILY, fontSize: Math.round(ELEVATOR_MARK.capH / 0.7), fill: 0x2f2f2f,
   } });
   mark.anchor.set(0.5, 0);
   mark.x = ELEVATOR_MARK.x;

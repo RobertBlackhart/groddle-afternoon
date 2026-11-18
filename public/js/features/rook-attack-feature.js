@@ -133,6 +133,7 @@ import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */
@@ -687,7 +688,7 @@ function frontLayer(engine) {
 
 function textStyle(size, extra = {}) {
   return {
-    fontFamily: 'Trebuchet MS, Verdana, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: size,
     fontWeight: '900',
     fill: 0xffffff,
@@ -756,7 +757,7 @@ function buildHud(engine) {
   armor.y = -20;
   const feedBox = new PIXI.Graphics();
   const feed = new PIXI.Text({ text: '', style: {
-    fontFamily: 'Trebuchet MS, Verdana, sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: 12,
     fill: 0x4a4a52,
     align: 'center',
@@ -2051,7 +2052,7 @@ function updatePrimePrompt(engine) {
     hit.zIndex = 100001;
     hit.label = 'rook:click_to_prime';
     const tip = new PIXI.Container();
-    const words = new PIXI.Text({ text: use.txt, style: { fontFamily: 'Arial', fontSize: 12, fontWeight: '700', fill: 0x2a2a2a } });
+    const words = new PIXI.Text({ text: use.txt, style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 12, fontWeight: '700', fill: 0x2a2a2a } });
     anchorBottomCentre(words, 'text');
     const pad = 6;
     const box = new PIXI.Graphics().roundRect(-words.width / 2 - pad, -words.height - pad * 2, words.width + pad * 2, words.height + pad * 2, 5).fill({ color: 0xfffbe8, alpha: 0.96 }).stroke({ width: 1, color: 0x8c7b4f, alpha: 0.9 });

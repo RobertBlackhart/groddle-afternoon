@@ -73,6 +73,7 @@ import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { playOverlay } from '../overlays.js?v=68c0a634';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { NAMEPLATE_STYLE } from '../world-text.js?v=2dd95179';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */
@@ -335,13 +336,7 @@ function createSession(engine) {
     body.animationSpeed = ANIM_FPS / 60;
     body.autoUpdate = true;
     body.gotoAndStop(0);
-    const name = new PIXI.Text({ text: p.name, style: {
-      fontFamily: 'Trebuchet MS, sans-serif',
-      fontSize: 12,
-      fill: 0x4e4943,
-      fontWeight: '700',
-      dropShadow: { alpha: 0.92, blur: 2, color: 0xffffff, distance: 0 },
-    } });
+    const name = new PIXI.Text({ text: p.name, style: NAMEPLATE_STYLE });
     anchorBottomCentre(name, 'text');
     name.y = PLATE_Y;
     const plate = new PIXI.Graphics();

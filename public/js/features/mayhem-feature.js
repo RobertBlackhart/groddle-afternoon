@@ -52,6 +52,7 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 /** G738: whether this page may carry the Mayhem QA levers. */
 const QA_ALLOWED = qaHandlesAllowed();
@@ -699,7 +700,7 @@ function render(engine, force = false) {
       if (!d) {
         const g = new PIXI.Graphics();
         g.zIndex = 61;
-        const t = new PIXI.Text({ text: '', style: { fontFamily: 'Arial', fontSize: 22, fontWeight: '700', fill: 0xffffff } });
+        const t = new PIXI.Text({ text: '', style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 22, fontWeight: '700', fill: 0xffffff } });
         t.anchor.set(0.5);
         t.zIndex = 62;
         engine.entityLayer.addChild(g, t);

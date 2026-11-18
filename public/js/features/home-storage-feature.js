@@ -53,7 +53,7 @@ import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveT
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=eeba8bcb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { homesFeature } from './homes-feature.js?v=d4140290';
+import { homesFeature } from './homes-feature.js?v=29723a2c';
 import {
   SDB_PRICE_MAX,
   STORAGE_TEXT as T,
@@ -91,6 +91,7 @@ import {
   storageWindowKind,
 } from '../ui/storage-windows.js?v=2cab2235';
 import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const HOME_STORAGE_ID = 'home-storage';
 export const CLASS_STORAGE = 'home_storage';
@@ -183,7 +184,7 @@ function rowsHere(engine) {
 function priceTag(engine, price) {
   const { PIXI } = engine;
   const tag = new PIXI.Container();
-  const text = new PIXI.Text({ text: `${Math.max(0, Math.floor(price)).toLocaleString('en-US')}c`, style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: 12, fontWeight: '700', fill: 0x24461e, padding: 2 } });
+  const text = new PIXI.Text({ text: `${Math.max(0, Math.floor(price)).toLocaleString('en-US')}c`, style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 12, fontWeight: '700', fill: 0x24461e, padding: 2 } });
   text.resolution = 3;
   text.anchor.set(0.5);
   const w = Math.ceil(text.width) + 12;

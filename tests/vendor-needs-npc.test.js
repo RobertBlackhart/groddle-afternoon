@@ -71,7 +71,7 @@ describe('a store opens only from its vendor', () => {
     assert.match(read('content.js'), /classId\.startsWith\('street_spirit_'\) && verbId === 'browse'\) \{[\s\S]{0,160}openVendor: true/);
     assert.match(game, /if \(result\.openVendor\) openVendor\(\);/);
     // The sprite is a target like any other: the canvas click opens its verb menu (requestVerb walks over).
-    const spawn = game.slice(game.indexOf('function spawnVendorNpc('), game.indexOf('function WORLD_LABEL_STYLE('));
+    const spawn = game.slice(game.indexOf('function spawnVendorNpc('), game.indexOf('function gardenPiece('));
     assert.ok(spawn.length > 100);
     assert.doesNotMatch(spawn, /openVendor/);
     assert.doesNotMatch(spawn, /\.on\('pointer/);

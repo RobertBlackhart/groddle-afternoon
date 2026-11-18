@@ -51,6 +51,7 @@
 import { AN_AUTUMN_DAY_FILES } from '../an-autumn-day-art.js?v=d6b2601b';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { sceneAnim } from '../deco-anim.js?v=41a70b24';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const ROOM_ID = 'an_autumn_day';
 export const QUEST_ID = 'an_autumn_day';
@@ -297,7 +298,7 @@ export const FEELING_BUSHES = Object.freeze([[420, 0.45, false], [880, 0.55, tru
 
 function wordText(PIXI, text, opts = {}) {
   const t = new PIXI.Text({ text: text, style: {
-    fontFamily: 'Nunito, "Trebuchet MS", sans-serif',
+    fontFamily: WORLD_FONT_FAMILY,
     fontSize: opts.size || WORD_SIZE,
     fontWeight: opts.weight || '900',
     fill: opts.fill ?? 0xffffff,

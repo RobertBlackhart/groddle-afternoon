@@ -15,6 +15,7 @@
 
 import { playSheetOverlay } from './overlay-art.js?v=7a63d78f';
 import { playOverlay } from './overlays.js?v=68c0a634';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const STYLE = Object.freeze({ fill: 0xfffaf0, line: 0x6b5a48, text: 0x3b3128 });
 
@@ -26,7 +27,7 @@ function drawCard(PIXI, wh, label) {
   const h = wh;
   g.roundRect(-w / 2, -h, w, h, Math.max(6, wh / 6)).fill({ color: STYLE.fill, alpha: 0.95 }).stroke({ color: STYLE.line, width: 2 });
   box.addChild(g);
-  const text = new PIXI.Text({ text: String(label ?? ''), style: { fontFamily: 'Trebuchet MS, sans-serif', fontSize: Math.round(wh * 0.42), fontWeight: '700', fill: STYLE.text, align: 'center' } });
+  const text = new PIXI.Text({ text: String(label ?? ''), style: { fontFamily: WORLD_FONT_FAMILY, fontSize: Math.round(wh * 0.42), fontWeight: '700', fill: STYLE.text, align: 'center' } });
   text.anchor.set(0.5, 0.5);
   text.y = -h / 2;
   box.addChild(text);
