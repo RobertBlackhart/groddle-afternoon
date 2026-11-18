@@ -54,7 +54,7 @@
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=6414dbdc';
 import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=80957092';
-import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=e246e3ca';
+import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=128531cf';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
@@ -65,12 +65,12 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=2d5a9737';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=81fe8611';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=40ed319d';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=1fa9f3c1';
 import { BENCH_ART, towerApi } from './home-tower-feature.js?v=6b94072f';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=77d57cda';
-import { projectApi } from './street-jobs-feature.js?v=260f5aee';
+import { projectApi } from './street-jobs-feature.js?v=15733410';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=b9d01e73';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=8abdcb0b';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,

@@ -8,7 +8,9 @@
  *   jellisacs, peat), the soil (musicblocks_brown), the Spinning Wheel, quests, Gentle Island and
  *   the ground. This feature watches the pack once a second and emits `in_inventory:<block>` the
  *   first time a block shows up, so a series badge unlocks the moment its fifth tune lands.
- *   Counting an already-owned block again is harmless (each condition needs 1).
+ *   Counting an already-owned block again is harmless (each condition needs 1). A block that
+ *   leaves the pack stays counted: the remake's own rule (Glitch wanted all five held at once),
+ *   kept by Austin 2026-11-18 (G1001; invention collection-count-on-arrival).
  * - The start street's block (G938, locations/location.js 646-667): a player who owns no block
  *   and has none lying on a start street finds one of
  *   the twenty D and X blocks there a second after arriving (createItemStackDelayed(..., 1)),

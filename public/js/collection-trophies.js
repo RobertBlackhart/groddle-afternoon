@@ -21,7 +21,8 @@ export const HELD_AT_ONCE_TEXT = 'Carry one of each in your pack at the same tim
  * Cubimal figures reach the pack by trade, gift and mail too, not only from a box (game.js), so
  * each is counted when it first shows up. These counters, and the Musicblocks' (game.js,
  * features/musicblocks-feature.js), were never taken back when a figure or block left the pack:
- * kept so, which is kinder than the original's held at once.
+ * kept so, which is kinder than the original's held at once (inc_achievements.js 520-544). The
+ * remake's own rule, kept by Austin 2026-11-18 (G1001, #487; invention collection-count-on-arrival).
  */
 export const COUNTED_ON_ARRIVAL = Object.freeze(['collection_cubimals', 'collection_cubimals_2']);
 

@@ -16,7 +16,7 @@ import { PRACTICE_TOOLS, TRAINING2_DRINKS, TRAINING2_FOOD } from '../public/js/n
 import { EZ_FOOD, EZ_KNIFE_AND_BOARD, SOIL_TOOLS } from '../public/js/practice-streets.js?v=557238c1';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
 import { MUSICBLOCK_ENDGAME_GIFT, START_STREET_MUSICBLOCKS } from '../public/js/musicblocks.js?v=97129d87';
-import { musicblocksFeature } from '../public/js/features/musicblocks-feature.js?v=efbde82c';
+import { musicblocksFeature } from '../public/js/features/musicblocks-feature.js?v=0fade116';
 
 const hasPhp = spawnSync('php', ['-v']).status === 0;
 const skip = skipWithoutSite || !hasPhp;

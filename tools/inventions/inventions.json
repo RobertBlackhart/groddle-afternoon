@@ -4524,6 +4524,29 @@
    "rows": [
     "G993"
    ]
+  },
+  {
+   "id": "collection-count-on-arrival",
+   "title": "Musicblock and Cubimal collection badges count each item when it first arrives and never take it back",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/collection-trophies.js",
+     "symbol": "COUNTED_ON_ARRIVAL"
+    },
+    {
+     "file": "public/js/features/musicblocks-feature.js"
+    },
+    {
+     "file": "public/js/features/collection-trophies-feature.js"
+    }
+   ],
+   "why": "#487: Glitch checked a collection badge against what the pack held at once (players/inc_items.js items_added 593-597, inc_achievements.js 520-544). The remake counts each Musicblock (the five collection_musicblocks_* series) and each Cubimal (collection_cubimals, collection_cubimals_2) the first time it reaches the pack, by any route, and keeps the count when it leaves, which is kinder than the original.",
+   "ruling": "Austin 2026-11-18 (G1001, calls P9iN1Q8WPs8rYTDVPGLfXp): keep counting on arrival; register it",
+   "rows": [
+    "G1001"
+   ]
   }
  ]
 }

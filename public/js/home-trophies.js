@@ -15,7 +15,7 @@
  * picked up. Art: the class's own world frame, tools/world-art/render.py from tinyspeck/glitch-items
  * (CC0), logical size at 1x (textures.js reads @3x from the file name).
  */
-import { COLLECTION_TROPHIES } from './collection-trophies.js?v=3760d603';
+import { COLLECTION_TROPHIES } from './collection-trophies.js?v=e45565a7';
 
 const SIZES = Object.freeze({
   trophy_bubble: [47, 50],
