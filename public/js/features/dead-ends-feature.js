@@ -25,7 +25,7 @@
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=c488dc3a';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=1e4c13e2';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=90517e2f';
 import { strayWayOut } from '../quest-instance.js?v=13b8ee09';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
@@ -139,7 +139,7 @@ function clearExit(engine) {
   exit = null;
 }
 
-/** The arrow on its post at `spot` (screen space, its foot on the floor), the word on the board. */
+/** The arrow hung on the wall over `spot` (screen space, a spot on the floor), the word on the board. */
 function buildView(engine, spot) {
   const { PIXI } = engine;
   const e = DEAD_END_EXIT;
@@ -147,18 +147,11 @@ function buildView(engine, spot) {
   root.x = spot.x;
   root.y = spot.y;
   root.zIndex = EXIT_Z;
-  // The post (ours: the arrow is a wall sign in the source; this stands it on the floor), in the
-  // board's own browns.
-  const post = new PIXI.Graphics();
-  post.roundRect(-5, -e.post - 6, 10, e.post + 6, 3).fill(0x6b4a2a);
-  post.roundRect(-5, -e.post - 6, 3, e.post + 6, 2).fill(0x8a6a44);
-  post.ellipse(0, 0, 13, 4).fill({ color: 0x000000, alpha: 0.18 });
-  root.addChild(post);
   const tex = textureFromUrl(e.art);
   const board = new PIXI.Sprite(tex);
   anchorBottomCentre(board, 'held');
   board.x = 0;
-  board.y = -e.post + 8;
+  board.y = -e.hang;
   const size = () => {
     board.width = e.w;
     board.height = e.h;
@@ -183,7 +176,7 @@ function buildView(engine, spot) {
   word.eventMode = 'none';
   root.addChild(word);
   const hitW = e.w;
-  const hitH = e.h + e.post;
+  const hitH = e.h + e.hang;
   root._worldHitW = hitW;
   root._worldHitH = hitH;
   root.hitArea = new PIXI.Rectangle(-hitW / 2, -hitH, hitW, hitH);

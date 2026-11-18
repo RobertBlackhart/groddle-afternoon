@@ -1501,17 +1501,41 @@
    "id": "dead-end-standing-sign",
    "title": "A standing sign post on dead-end instance copies (the source arrow is a wall sign)",
    "kind": "placement",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
-     "file": "public/js/dead-ends.js"
-    },
-    {
-     "file": "public/js/features/dead-ends-feature.js"
+     "file": "public/js/features/dead-ends-feature.js",
+     "symbol": "buildView",
+     "gone": true
     }
    ],
    "why": "The remake keeps instance copies as plain streets anyone can reach, so it needs a way out.",
-   "rows": []
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop the post; the exit hangs as a wall sign, as the source's arrow (dead-end-exit-sign)",
+   "rows": [
+    "G978"
+   ]
+  },
+  {
+   "id": "dead-end-exit-sign",
+   "title": "An EXIT wall sign near the arrival on a dead end with nothing running there",
+   "kind": "placement",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/dead-ends.js",
+     "symbol": "DEAD_END_EXIT"
+    },
+    {
+     "file": "public/js/features/dead-ends-feature.js",
+     "symbol": "buildView"
+    }
+   ],
+   "why": "The remake keeps instance copies as plain streets anyone can reach by a link or a save; Glitch never left anyone on one (instances_exit). The art is Tiny Speck's sign_arrow_1, hung as the practice streets' EXIT; its spot is ours.",
+   "ruling": "Austin 2026-11-16 (G888): a visible exit back to a normal street when no quest runs there; 2026-11-17 (G978): a wall sign as the source's, no post",
+   "rows": [
+    "G888",
+    "G978"
+   ]
   },
   {
    "id": "chicken-hop-online",

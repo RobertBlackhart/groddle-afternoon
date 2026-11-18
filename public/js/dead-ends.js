@@ -16,15 +16,16 @@
  *   answers its own `deadEndRun(engine)` through the feature host (features/dead-ends-feature.js
  *   deadEndActive).
  * - A dead end with nothing active shows the exit: Tiny Speck's CC0 wooden arrow (sign_arrow_1,
- *   as the practice streets' EXIT, js/practice-streets.js) with the word EXIT on it, on a post,
- *   standing near where you arrived. It works as a door: its Enter verb (not walking into it, so no
+ *   as the practice streets' EXIT, js/practice-streets.js) with the word EXIT on it, a wall sign
+ *   hung near where you arrived. It works as a door: its Enter verb (not walking into it, so no
  *   one exploring leaves by accident) takes you to your last ordinary street (quest-instances-feature safeWayOut, js/quest-instance.js strayWayOut).
  *
  * Source: Glitch never left anyone on one of these. Instances were entered through their quest
  * and left by their exit (players/inc_instances.js instances_exit / instances_get_exit), and the
  * practice streets' EXIT teleporter took you back whatever the quest
- * (locations/inc_skillquest.js onTeleporterCollision 27-40). The standing sign is the remake's own
- * (the remake keeps these instance copies as plain streets anyone can reach by a link or a save).
+ * (locations/inc_skillquest.js onTeleporterCollision 27-40). The sign on every dead end is the
+ * remake's own (the remake keeps these instance copies as plain streets anyone can reach by a link
+ * or a save); G978 (Austin 2026-11-17): a wall sign as the source's, no post.
  */
 
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from './quest-instance.js?v=13b8ee09';
@@ -33,10 +34,11 @@ import { STRAY_FALLBACK_TSID, streetsReachingUr } from './quest-instance.js?v=13
 export const DEAD_END_EXIT = Object.freeze({
   sprite: 'sign_arrow_1',
   art: 'assets/decos/groddle/sign_arrow_1.webp',
-  // The arrow board at 0.85 of its 140 x 93, on a post (ours) so it stands on the floor.
+  // The arrow board at 0.85 of its 140 x 93, hung on the wall as the practice streets' EXIT hangs
+  // (EZ_EXIT_SIGN's foot at y -165 over the floor at -92: 73 px, 62 at 0.85).
   w: 119,
   h: 79,
-  post: 64,
+  hang: 62,
   word: 'EXIT',
   wordSize: 19,
   // The word sits on the shaft, left of the board's centre (practice-streets.js practiceExitSign: -8 at full size).

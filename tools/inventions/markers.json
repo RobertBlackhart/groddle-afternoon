@@ -259,9 +259,8 @@
     "ours: * shows it, with a glint, while you search. Ours: on the tabletop inside the archived": "ours-de-embiggenify"
   },
   "public/js/dead-ends.js": {
-    "glitch-had-none: * Source: Glitch never left anyone on one of these. Instances were": "dead-end-standing-sign",
-    "ours: arrow board at 0.85 of its 140 x 93, on a post (ours) so it stands on the": "dead-end-standing-sign",
-    "remake-own: 27-40). The standing sign is the remake's own": "dead-end-standing-sign"
+    "glitch-had-none: * Source: Glitch never left anyone on one of these. Instances were": "dead-end-exit-sign",
+    "remake-own: * remake's own (the remake keeps these instance copies as plain": "dead-end-exit-sign"
   },
   "public/js/door-key-spawns.js": {
     "ours: words name. Where the words give no spot (`at: 'ours'`) the key lies near the door or": "door-key-spots"
@@ -334,9 +333,6 @@
   },
   "public/js/features/cubimal-race-feature.js": {
     "no-source: or a reload keeps it. Not here: sloth taunts (no source:": "ours-cubimal-race"
-  },
-  "public/js/features/dead-ends-feature.js": {
-    "ours: // The post (ours: the arrow is a wall sign in the source; this": "dead-end-standing-sign"
   },
   "public/js/features/doors-feature.js": {
     "remake-own: key icon floats over a locked door any more (a remake addition;": "key-icon-over-doors"
