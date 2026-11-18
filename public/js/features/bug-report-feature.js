@@ -41,6 +41,10 @@
  * with the words blanked (REPORT_MASK), since they hold other players' names
  * and words. The same size and JPEG budget as before. The report's context
  * names the windows that were open (openPanels: "donate:mab", "make:gassifier").
+ * #496 (a phone's copy wrapped its words in another font and showed a scrolled list at its top):
+ * the copy waits for the page's fonts and carries the loaded faces inline (fontFaceCss), every
+ * engine draws it again after its fonts apply (redrawCount), and scrolled boxes keep their place
+ * (markScrolls, restoreScrolls: sticky parts too, which the library's own restoreScrollPosition moved away).
  *
  * Ticket 73 (Safari 26.5: "Drawing the picture..." and no typing until it
  * loaded): the canvas is read once as the form opens (captureFrame), the world
@@ -412,6 +416,184 @@ export function standardStyleNames(win = globalThis) {
 
 /** WebKit draws the page's copy again while its pictures decode (the library's fixSvgXmlDecode): a few passes, not one per picture. */
 const REDRAWS = 4;
+/**
+ * #496: every engine draws the copy at least this many more times. The library redraws only in
+ * WebKit and Firefox, so Chrome kept its first pass, taken before the copy's own fonts are applied.
+ */
+export const MIN_REDRAWS = 2;
+/** #496: how long the picture waits for the page's fonts to finish loading before it is drawn anyway. */
+export const FONT_WAIT_MS = 1500;
+
+/** A unicode-range as numbers ("U+0000-00FF, U+0131" and "U+0-FF, U+131" read the same): a face's key. */
+export function unicodeRangeKey(range) {
+  const out = [];
+  for (const m of String(range || '').matchAll(/U\+([0-9a-f?]+)(?:-([0-9a-f]+))?/gi)) {
+    const lo = parseInt(m[1].replace(/\?/g, '0'), 16);
+    const hi = m[2] ? parseInt(m[2], 16) : m[1].includes('?') ? parseInt(m[1].replace(/\?/g, 'f'), 16) : lo;
+    out.push(`${lo}-${hi}`);
+  }
+  return out.join(',') || '0-1114111';
+}
+
+const unquote = (s) => String(s || '').trim().replace(/^["']|["']$/g, '').toLowerCase();
+const faceKey = (family, style, range) => `${unquote(family)}|${String(style || 'normal').trim().toLowerCase()}|${unicodeRangeKey(range)}`;
+
+/**
+ * #496: the page's @font-face rules for the faces it has loaded (document.fonts), with each one's
+ * file address resolved against its stylesheet: [{ cssText, urls: [[raw, absolute]] }]. These are
+ * the fonts the screen is drawn in; the copy carries them as its own, so its words measure and wrap
+ * as on screen. Empty when the page has loaded none (the library then finds them itself).
+ */
+export function loadedFontFaces(doc = globalThis.document) {
+  const loaded = new Set();
+  try {
+    for (const f of doc?.fonts || []) if (f.status === 'loaded') loaded.add(faceKey(f.family, f.style, f.unicodeRange));
+  } catch { /* no font list */ }
+  if (!loaded.size) return [];
+  const out = [];
+  const walk = (rules, base) => {
+    for (const rule of rules || []) {
+      if (rule.cssRules && rule.type !== 5) { walk(rule.cssRules, base); continue; }
+      if (rule.type !== 5 && !/FontFace/.test(rule.constructor?.name || '')) continue;
+      const s = rule.style;
+      const key = faceKey(s.getPropertyValue('font-family'), s.getPropertyValue('font-style'), s.getPropertyValue('unicode-range'));
+      if (!loaded.has(key)) continue;
+      const urls = [];
+      for (const m of rule.cssText.matchAll(/url\(\s*(["']?)([^"')]+)\1\s*\)/g)) {
+        if (m[2].startsWith('data:')) continue;
+        let abs = m[2];
+        try { abs = new URL(m[2], base || doc.baseURI).href; } catch { /* left as written */ }
+        urls.push([m[2], abs]);
+      }
+      out.push({ cssText: rule.cssText, urls });
+    }
+  };
+  for (const sheet of doc?.styleSheets || []) {
+    let rules = null;
+    try { rules = sheet.cssRules; } catch { rules = null; }
+    walk(rules, sheet.href);
+  }
+  return out;
+}
+
+/** Font files already read as data URLs, by address: read once, every later picture reuses them. */
+const fontData = new Map();
+async function fontDataUrl(url, fetchFn = globalThis.fetch) {
+  if (!fontData.has(url)) {
+    const p = Promise.resolve().then(() => fetchFn(url)).then((r) => {
+      if (!r?.ok) throw new Error(`font ${r?.status}`);
+      return r.blob();
+    }).then((blob) => new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result));
+      fr.onerror = () => reject(fr.error);
+      fr.readAsDataURL(blob);
+    }));
+    p.catch(() => fontData.delete(url));
+    fontData.set(url, p);
+  }
+  return fontData.get(url);
+}
+
+/**
+ * #496: the CSS the copy carries for its fonts: the loaded faces' rules with every file inlined
+ * as a data URL. '' when there is none to carry or a file cannot be read (the library then embeds
+ * the fonts its own way). `read` turns an address into a data URL (tests pass their own).
+ */
+export async function fontFaceCss(doc = globalThis.document, read = fontDataUrl) {
+  const faces = loadedFontFaces(doc);
+  if (!faces.length) return '';
+  try {
+    const parts = await Promise.all(faces.map(async ({ cssText, urls }) => {
+      let css = cssText;
+      for (const [raw, abs] of urls) {
+        const data = await read(abs);
+        css = css.split(raw).join(data);
+      }
+      return css;
+    }));
+    return parts.join('\n');
+  } catch {
+    return '';
+  }
+}
+
+/** #496: waits for the page's fonts (document.fonts.ready), at most `ms`. */
+export async function fontsSettled(doc = globalThis.document, ms = FONT_WAIT_MS) {
+  const ready = doc?.fonts?.ready;
+  if (!ready) return false;
+  let timer = null;
+  const late = new Promise((resolve) => { timer = setTimeout(() => resolve(false), ms); });
+  try {
+    return await Promise.race([Promise.resolve(ready).then(() => true, () => false), late]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * #496: marks the boxes under `root` the player has scrolled (data-shot-scroll="left,top") and the
+ * sticky parts inside them (data-shot-sticky="dx,dy": how far sticking moved each one from where
+ * it would sit, measured with it held relative for a moment, before any paint). The copy is never
+ * scrolled, so restoreScrolls moves it to match. Returns the function that removes the marks.
+ */
+export function markScrolls(root, win = globalThis) {
+  const marked = [];
+  const mark = (node, name, value) => { node.setAttribute(name, value); marked.push([node, name]); };
+  let nodes = [];
+  try { nodes = [root, ...(root?.querySelectorAll?.('*') || [])]; } catch { nodes = []; }
+  for (const box of nodes) {
+    const x = Math.round(box?.scrollLeft || 0);
+    const y = Math.round(box?.scrollTop || 0);
+    if (!x && !y) continue;
+    mark(box, 'data-shot-scroll', `${x},${y}`);
+    for (const part of box.querySelectorAll?.('*') || []) {
+      let pos = '';
+      try { pos = win.getComputedStyle?.(part)?.position || ''; } catch { pos = ''; }
+      if (pos !== 'sticky') continue;
+      const at = part.getBoundingClientRect();
+      const was = part.style.position;
+      part.style.position = 'relative';
+      const home = part.getBoundingClientRect();
+      part.style.position = was;
+      const dx = Math.round(at.left - home.left);
+      const dy = Math.round(at.top - home.top);
+      if (dx || dy) mark(part, 'data-shot-sticky', `${dx},${dy}`);
+    }
+  }
+  return () => { for (const [node, name] of marked) node.removeAttribute(name); };
+}
+
+/**
+ * #496: in the page's copy, each marked box's children moved up by its scroll (so the copy shows
+ * the part the player had scrolled to), and each marked sticky part held where it showed on screen.
+ * Returns how many boxes it moved.
+ */
+export function restoreScrolls(clone) {
+  let n = 0;
+  const boxes = [...(clone?.matches?.('[data-shot-scroll]') ? [clone] : []), ...(clone?.querySelectorAll?.('[data-shot-scroll]') || [])];
+  for (const box of boxes) {
+    const [x, y] = String(box.getAttribute('data-shot-scroll')).split(',').map(Number);
+    for (const child of box.children || []) {
+      const own = child.style.transform;
+      child.style.transform = `translate(${-x}px, ${-y}px)${own && own !== 'none' ? ` ${own}` : ''}`;
+    }
+    n += 1;
+  }
+  for (const part of clone?.querySelectorAll?.('[data-shot-sticky]') || []) {
+    const [dx, dy] = String(part.getAttribute('data-shot-sticky')).split(',').map(Number);
+    Object.assign(part.style, { position: 'relative', top: `${dy}px`, left: `${dx}px`, bottom: 'auto', right: 'auto' });
+  }
+  return n;
+}
+
+/**
+ * #496: how many more times the library draws the copy: what WebKit counted for its pictures
+ * (at most REDRAWS), never fewer than MIN_REDRAWS in any engine.
+ */
+export function redrawCount(counted) {
+  return Math.max(MIN_REDRAWS, Math.min(Number(counted) || 0, REDRAWS));
+}
 
 /**
  * The whole game window as a report's picture: the page with its HUD and open windows over
@@ -457,8 +639,13 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
   const own = Object.prototype.hasOwnProperty.call(canvas, 'toDataURL');
   canvas.toDataURL = () => worldUrl;
   let drawn = null;
+  let unmark = null;
   try {
     const bg = globalThis.getComputedStyle?.(doc.body)?.backgroundColor || '#ffffff';
+    // #496: the copy is drawn in the page's own fonts (loaded first, carried inline), not a fallback.
+    await fontsSettled(doc);
+    const fontCss = await fontFaceCss(doc);
+    unmark = markScrolls(root);
     let context = null;
     // The library waits for every <img> under the root first; a short wait there (closed windows hold
     // lazy images that never load), the full one for the pictures it copies.
@@ -469,8 +656,10 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
       drawImageInterval: 60,
       filter: (node) => !leftOut(node),
       includeStyleProperties: standardStyleNames(),
-      onCloneNode: (clone) => { maskClone(clone); },
-      onEmbedNode: () => { if (context) context.drawImageCount = Math.min(context.drawImageCount, REDRAWS); },
+      ...(fontCss ? { font: { cssText: fontCss } } : {}),
+      // #496: a scrolled list (Skills, a vendor) is copied where the player scrolled it, not at its top.
+      onCloneNode: (clone) => { maskClone(clone); restoreScrolls(clone); },
+      onEmbedNode: () => { if (context) context.drawImageCount = redrawCount(context.drawImageCount); },
     });
     context.timeout = 8000;
     try {
@@ -482,6 +671,7 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
     drawn = null;
   } finally {
     if (!own) delete canvas.toDataURL;
+    unmark?.();
   }
   if (!drawn || blankPicture(drawn, doc)) return null;
   const out = encodePicture(drawn, doc, limits);

@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { mountReportsSheet, PICTURE_WAIT_MS } from '../public/js/ui/reports-sheet.js?v=0b11fcad';
-import { blankPicture, leftOut } from '../public/js/features/bug-report-feature.js?v=6cba14a5';
+import { blankPicture, leftOut } from '../public/js/features/bug-report-feature.js?v=c6c73417';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -133,7 +133,9 @@ describe('the picture with the UI is quick and never blank (tickets 30, 32)', ()
     const fn = f.slice(f.indexOf('export async function capturePictureWithUi('), f.indexOf('const STYLE = `'));
     assert.match(fn, /world\.toDataURL\('image\/jpeg', 0\.92\)/);
     assert.match(fn, /filter: \(node\) => !leftOut\(node\)/);
-    assert.match(fn, /context\.drawImageCount = Math\.min\(context\.drawImageCount, REDRAWS\)/);
+    // #496: redrawCount keeps WebKit's cap (REDRAWS) and draws at least MIN_REDRAWS more in every engine.
+    assert.match(fn, /context\.drawImageCount = redrawCount\(context\.drawImageCount\)/);
+    assert.match(f, /Math\.max\(MIN_REDRAWS, Math\.min\(Number\(counted\) \|\| 0, REDRAWS\)\)/);
     assert.match(fn, /timeout: 1500,[\s\S]*context\.timeout = 8000;/);
     assert.match(fn, /if \(!drawn \|\| blankPicture\(drawn, doc\)\) return null;/);
   });
