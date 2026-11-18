@@ -61,9 +61,6 @@ export const SHARED_VERBS = Object.freeze({
 /** tree-death-feature's pour verbs, and the word the server knows each by (objects.go pour). */
 export const POUR_VERBS = Object.freeze({ 'treepoison:poison': 'poison', 'treepoison:antidote': 'antidote' });
 
-/** No answer from the server in this long: give up on the request. */
-export const REQUEST_TIMEOUT_MS = 6000;
-
 /** Plain copy for the moments the source has no line for. */
 export const COPY = Object.freeze({
   // The server's refusal when the player stands too far from the object (objects.go handleAct).

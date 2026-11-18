@@ -38,9 +38,9 @@ import {
   takeObjs,
   treeReady,
   treeSkill,
-} from '../public/js/street-objects.js?v=bf4c9c7b';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=0a26ac34';
-import { FEATURES } from '../public/js/features/index.js?v=7865d1a8';
+} from '../public/js/street-objects.js?v=0bbf1b1a';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=a847db0b';
+import { FEATURES } from '../public/js/features/index.js?v=dc26b0e2';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=afb2b145';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=b9147016';
@@ -48,6 +48,7 @@ import { placementRequests, ruleTables, streetObjectLayout } from '../tools/buil
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=90517e2f';
 import { PLANNED_NODE_CAPS, measuredNodeSpots, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=87ed5120';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
+import { ANSWER_WAIT_FALLBACK_MS } from '../public/js/online-request.js?v=2a5117ff';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -377,19 +378,27 @@ describe('street objects: the feature', () => {
     assert.doesNotMatch(src.slice(src.indexOf('function fertilize(')), /^[^\n]*sharedFertilize/m, 'fertilize no longer tells the server');
   });
 
-  it('times out a request the server never answers', () => {
+  it('times out a request the server never answers, at the server\'s worst case, and a late refusal is still said (R26)', () => {
     const r = rig();
     r.client.emit('msg:objs', { t: 'objs', street: 'GSTREET', snap: true, objs: [] });
     streetObjectsFeature.runVerbOverride(r.rockT, 'mine', r.engine);
+    const req = r.sent.at(-1).req;
     const realNow = Date.now;
-    Date.now = () => realNow() + 7000;
-    try {
-      streetObjectsFeature.onTick(16, 0, r.engine);
-    } finally {
-      Date.now = realNow;
-    }
+    const tickAt = (ms) => {
+      Date.now = () => realNow() + ms;
+      try {
+        streetObjectsFeature.onTick(16, 0, r.engine);
+      } finally {
+        Date.now = realNow;
+      }
+    };
+    tickAt(7000);
+    assert.deepEqual(r.engine.toasts, [], 'the old 6 s wait is gone: the ledger may still be asking');
+    tickAt(ANSWER_WAIT_FALLBACK_MS + 1000);
     assert.deepEqual(r.engine.toasts, [COPY.timeout]);
     assert.equal(streetObjectsFeature._state().pending, 0);
+    r.client.emit('msg:obj_no', { t: 'obj_no', req, id: 'rock:0', verb: 'mine', code: 'no', message: 'Late refusal.' });
+    assert.deepEqual(r.engine.toasts, [COPY.timeout, 'Late refusal.'], 'the late answer found its request');
   });
 
   it('leaves local verbs and local-only sites alone', () => {

@@ -118,7 +118,6 @@
 import { dressVerbCostume } from '../pot-luck.js?v=84484e77';
 import {
   COPY,
-  REQUEST_TIMEOUT_MS,
   SHARED_NODE_CLASSES,
   actMessage,
   applyNodeState,
@@ -150,7 +149,8 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=bf4c9c7b';
+} from '../street-objects.js?v=0bbf1b1a';
+import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=afb2b145';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
@@ -200,7 +200,8 @@ let copy = createStreetCopy();
 let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
-const pending = new Map();
+/** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
 let grant = null;
 let dirtyAll = false;
 const dirty = new Set();
@@ -894,6 +895,12 @@ function applyKnown(obj, s) {
   } else applyTreeState(obj.state, s, now);
 }
 
+/** R26: one request out through js/online-request.js; false when the socket could not take it. */
+function sendOut(req, rec, transmit) {
+  pending.open(req, rec);
+  return pending.send(req, transmit) === 'sent';
+}
+
 function answered(engine, msg, ok) {
   const p = pending.get(msg?.req);
   try {
@@ -904,14 +911,21 @@ function answered(engine, msg, ok) {
   }
 }
 
+function refuseLine(engine, msg) {
+  const line = String(msg?.message || 'Not now.');
+  engine.toast?.(line, 2600);
+  engine.pushActivity?.(line);
+  engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
+}
+
 function landAnswer(engine, msg, ok) {
-  const p = pending.get(msg.req);
-  if (p) pending.delete(msg.req);
+  // R26: a late answer (past the wait) still finds its request and lands.
+  const p = pending.take(msg.req);
   if (msg.obj) {
     takeObj(copy, msg.obj, Date.now());
     dirty.add(String(msg.id || ''));
   }
-  lastAnswer = `${msg.id}:${msg.verb}:${ok ? 'ok' : msg.code || 'no'}`;
+  lastAnswer = `${msg.id}:${msg.verb}:${ok ? 'ok' : msg.code || 'no'}${p?.late ? ':late' : ''}`;
   publish(engine);
   // #307/#308: a rock, tree, node or dust target refused as too far, which never moves: an older page
   // may draw it where the server no longer has it, so a waiting Update ready says so again.
@@ -920,16 +934,15 @@ function landAnswer(engine, msg, ok) {
   // it, so it goes into the pack once, even when the answer comes late or the player has walked on.
   if (msg.verb === 'pickup') {
     if (ok) engine.query?.('sharedGuanoPicked', Math.max(0, Math.floor(Number(msg.take) || 0)), engine);
-    else if (p) {
-      const line = String(msg.message || 'Not now.');
-      engine.toast?.(line, 2600);
-      engine.pushActivity?.(line);
-      engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
-    }
+    else if (p) refuseLine(engine, msg);
     if (shared(engine)) reconcileAll(engine);
     return;
   }
-  if (!p || copy.street !== engine.streetTsid) return;
+  if (!p || p.gone || copy.street !== engine.streetTsid) {
+    // The player walked on before the answer: a verb's refusal is still said.
+    if (p && !ok && !p.silent) refuseLine(engine, msg);
+    return;
+  }
   // G605: a Potion of Animal Youth poured on a street Piggy (sharedPigYouth): the bottle and the
   // poof are potions-feature's on the go-ahead; the Piglet comes as a shared ground stack.
   if (p.youth) {
@@ -974,10 +987,7 @@ function landAnswer(engine, msg, ok) {
     return;
   }
   if (!ok) {
-    const line = String(msg.message || 'Not now.');
-    engine.toast?.(line, 2600);
-    engine.pushActivity?.(line);
-    engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
+    refuseLine(engine, msg);
     reconcileAll(engine);
     return;
   }
@@ -1041,11 +1051,10 @@ function ask(engine, target, verbId) {
     }
   }
   reqSeq += 1;
-  if (!c.send('obj_act', actMessage({ req: reqSeq, id: verb.id, verb: verb.wire || verbId, perks: verb.perks, skill: verb.skill, c: verb.c, n: verb.n }))) {
+  if (!sendOut(reqSeq, { id: verb.id, target, verbId }, () => c.send('obj_act', actMessage({ req: reqSeq, id: verb.id, verb: verb.wire || verbId, perks: verb.perks, skill: verb.skill, c: verb.c, n: verb.n })))) {
     engine.toast?.(COPY.connecting, 2400);
     return true;
   }
-  pending.set(reqSeq, { id: verb.id, target, verbId, at: Date.now() });
   menuAgain(engine, target);
   return true;
 }
@@ -1134,11 +1143,10 @@ function askName(engine, target, value) {
   reqSeq += 1;
   // canName 6: the client says Animal Kinship V, as "ak6" for a nibble.
   const perks = (engine.learnedSkills || []).includes('animalkinship_5') ? ['ak5'] : [];
-  if (!c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'name', perks, name: value }))) {
+  if (!sendOut(reqSeq, { id, target, verbId: 'name', naming: true }, () => c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'name', perks, name: value })))) {
     engine.toast?.(COPY.connecting, 2400);
     return true;
   }
-  pending.set(reqSeq, { id, target, verbId: 'name', naming: true, at: Date.now() });
   return true;
 }
 
@@ -1188,12 +1196,9 @@ export const streetObjectsFeature = {
       syncAskedAt = wall;
       c.send('obj_sync');
     }
-    for (const [req, p] of pending) {
-      if (wall - p.at < REQUEST_TIMEOUT_MS) continue;
-      pending.delete(req);
-      if (!p.silent) engine.toast?.(COPY.timeout, 2400);
-      menuAgain(engine, p.target);
-    }
+    const late = pending.expire();
+    if (late.some((p) => !p.silent)) engine.toast?.(COPY.timeout, 2400);
+    for (const p of late) menuAgain(engine, p.target);
     waitAtCreature(engine, c, wall);
     if (reapplyAt && wall >= reapplyAt) {
       reapplyAt = 0;
@@ -1205,7 +1210,7 @@ export const streetObjectsFeature = {
   },
 
   onStreetClear() {
-    pending.clear();
+    pending.leave();
     grant = null;
     clearPaths();
   },
@@ -1278,11 +1283,10 @@ export const streetObjectsFeature = {
       }
     }
     reqSeq += 1;
-    if (!c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'youth', k: Number.isInteger(k) && k >= 0 ? k : null }))) {
+    if (!sendOut(reqSeq, { id, target, verbId: 'youth', youth: true }, () => c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'youth', k: Number.isInteger(k) && k >= 0 ? k : null })))) {
       engine.toast?.(COPY.connecting, 2400);
       return true;
     }
-    pending.set(reqSeq, { id, target, verbId: 'youth', youth: true, at: Date.now() });
     return true;
   },
 
@@ -1325,11 +1329,10 @@ export const streetObjectsFeature = {
       }
     }
     reqSeq += 1;
-    if (!client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: 'pickup' }))) {
+    if (!sendOut(reqSeq, { id: a.id, target, verbId: 'pickup' }, () => client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: 'pickup' })))) {
       engine.toast?.(COPY.connecting, 2400);
       return true;
     }
-    pending.set(reqSeq, { id: a.id, target, verbId: 'pickup', at: Date.now() });
     return true;
   },
 
@@ -1381,8 +1384,7 @@ export const streetObjectsFeature = {
     const a = creatureOf(target);
     if (!a || (a.kind !== 'kitty' && a.kind !== 'crab' && a.kind !== 'dragon') || !shared(engine) || !copy.animals.has(a.id)) return null;
     reqSeq += 1;
-    if (!client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: String(verb || '') }))) return null;
-    pending.set(reqSeq, { id: a.id, target, verbId: String(verb || ''), at: Date.now(), silent: true });
+    if (!sendOut(reqSeq, { id: a.id, target, verbId: String(verb || ''), silent: true }, () => client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: String(verb || '') })))) return null;
     return true;
   },
 
@@ -1394,8 +1396,7 @@ export const streetObjectsFeature = {
     const c = bind(engine);
     const on = treeId(onTarget.treeIndex);
     reqSeq += 1;
-    if (!c.send('obj_act', actMessage({ req: reqSeq, id: pigId(streetPigIndex(target, engine.streetTsid)), verb: 'eat', on }))) return null;
-    pending.set(reqSeq, { id: pigId(streetPigIndex(target, engine.streetTsid)), target, verbId: 'eat', at: Date.now(), silent: true });
+    if (!sendOut(reqSeq, { id: pigId(streetPigIndex(target, engine.streetTsid)), target, verbId: 'eat', silent: true }, () => c.send('obj_act', actMessage({ req: reqSeq, id: pigId(streetPigIndex(target, engine.streetTsid)), verb: 'eat', on })))) return null;
     return true;
   },
 
@@ -1430,8 +1431,7 @@ export const streetObjectsFeature = {
     if (lite) msg.id = trees.length ? treeId(trees[0].treeIndex) : String(patchTrees[0].sharedPatch);
     // The jar used (its place among the class's jars in pack order): the ledger uses that one's charge.
     if (Number.isInteger(copy) && copy >= 0) msg.k = copy;
-    if (!c?.send('obj_dust', msg)) return null;
-    pending.set(reqSeq, { id: msg.id || 'dust', target: null, verbId: 'dust', classTsid, copy: Number.isInteger(copy) ? copy : null, at: Date.now() });
+    if (!sendOut(reqSeq, { id: msg.id || 'dust', target: null, verbId: 'dust', classTsid, copy: Number.isInteger(copy) ? copy : null }, () => c?.send('obj_dust', msg))) return null;
     return true;
   },
 

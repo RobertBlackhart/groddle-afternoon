@@ -13,8 +13,8 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, serverPath, skipWithoutSite, skipWithoutServer, HAS_SITE } from '../tools/repos.mjs';
 import { ADMIN_TEXT, ADMIN_TEXT_MAX, adminGiveGoods, adminMessageText, applyAdminGive, applyAdminRefill, bootedLine, showAdminMessage, showBooted } from '../public/js/admin-console-mp.js?v=709b25cd';
-import { CLOSE_BANNED, CLOSE_BOOTED, createRealtimeClient } from '../public/js/realtime-client.js?v=73e1ae86';
-import { statusText } from '../public/js/features/realtime-feature.js?v=f6a532fd';
+import { CLOSE_BANNED, CLOSE_BOOTED, createRealtimeClient } from '../public/js/realtime-client.js?v=09683d6b';
+import { statusText } from '../public/js/features/realtime-feature.js?v=412edfed';
 import { GATE_COPY, suspendedNow } from '../public/js/online-boot.js?v=d3834f20';
 
 const root = join(import.meta.dirname, '..');

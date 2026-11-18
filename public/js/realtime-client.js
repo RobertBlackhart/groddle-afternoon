@@ -175,6 +175,8 @@ export function createRealtimeClient({
   let state = 'idle';
   let ws = null;
   let me = null;
+  /** R26: hello's wait (ms) for a shared act's answer, the server's worst case; 0 when it did not say. */
+  let answerWait = 0;
   let attempt = 0;
   let ticketRetries = 0;
   let retryTimer = null;
@@ -356,6 +358,7 @@ export function createRealtimeClient({
         // off: the account's "Appear offline" (groddle-afternoon-server presence.go), as the ticket said.
         // cone: the chat cone of silence (hub.go, G480), as the ticket or the player's groups list said.
         me = { id: Number(msg.you?.id), name: String(msg.you?.name || ''), off: msg.off === true, cone: msg.cone === true };
+        answerWait = Number(msg.wait) > 0 ? Number(msg.wait) : 0;
         attempt = 0;
         ticketRetries = 0;
         setState('online');
@@ -462,6 +465,8 @@ export function createRealtimeClient({
   return {
     get state() { return state; },
     get me() { return me; },
+    /** R26: how long the server says a shared act's answer can take (js/online-request.js answerWaitMs). */
+    get answerWaitMs() { return answerWait; },
     get street() { return street; },
     get players() { return [...players.values()]; },
     /** How many are on this street counting you (0 when not on one). */

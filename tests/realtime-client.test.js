@@ -31,10 +31,10 @@ import {
   pushSample,
   sampleTrack,
   socketUrl,
-} from '../public/js/realtime-client.js?v=73e1ae86';
+} from '../public/js/realtime-client.js?v=09683d6b';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
-import { emoteCommand, lookOf, poseOf, realtimeFeature, sharedStreet, statusText } from '../public/js/features/realtime-feature.js?v=f6a532fd';
-import { FEATURES } from '../public/js/features/index.js?v=7865d1a8';
+import { emoteCommand, lookOf, poseOf, realtimeFeature, sharedStreet, statusText } from '../public/js/features/realtime-feature.js?v=412edfed';
+import { FEATURES } from '../public/js/features/index.js?v=dc26b0e2';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

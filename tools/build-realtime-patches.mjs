@@ -68,7 +68,7 @@ import {
 import { ARBOROLOGY_HARVEST, TRANT_META } from '../public/js/trants.js?v=b9147016';
 import { TRANT_CARE_PACKAGES } from '../public/js/trant-care.js?v=9fba26b5';
 import { WOOD_TREE_HARVEST } from '../public/js/woodcutting.js?v=9e9af511';
-import { soilCountsForStreet, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=35f63b2d';
+import { soilCountsForStreet, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=a335a7c4';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { creatureRequests, setCreatureEcology } from './build-realtime-objects.mjs';
 

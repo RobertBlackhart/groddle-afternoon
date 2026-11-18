@@ -4723,6 +4723,24 @@
    ],
    "why": "Glitch's client drew the notice in the same spot with no backing; in the remake's Classic layout its words crossed the iMG count and couldn't be read (lane fixi, 2026-11-18).",
    "rows": []
+  },
+  {
+   "id": "online-request-save-first-line",
+   "title": "Shared gardens and Patches online: when the save a plant or a pour waits on before asking the server fails or runs out, a line says the game did not save and nothing was asked (R26, #506).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/shared-gardens-feature.js",
+     "symbol": "COPY.saveFailed"
+    },
+    {
+     "file": "public/js/shared-patches.js",
+     "symbol": "COPY.saveFailed"
+    }
+   ],
+   "why": "Glitch's server held the player's items itself, so there was no save to write before an act; the remake's site ledger learns of a seed bought a moment ago through the save write, and a slow save used to drop the plant unsent behind a misleading \"did not answer\" (lane next, 2026-11-18).",
+   "rows": []
   }
  ]
 }

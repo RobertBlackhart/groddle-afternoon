@@ -71,6 +71,7 @@ import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=64
 import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
+import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { saveStore } from '../save-store.js?v=cd053443';
 import {
   LOCK_LINE,
@@ -86,7 +87,6 @@ import {
 } from '../shared-gardens.js?v=464472e5';
 
 export const SHARED_GARDENS_FEATURE_ID = 'shared-gardens';
-const REQUEST_TIMEOUT_MS = 8000;
 const SYNC_RETRY_MS = 3000;
 const APPLIED_KEEP = 100;
 /**
@@ -100,6 +100,8 @@ const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', '
 const COPY = Object.freeze({
   connecting: 'The street is still connecting. Try again in a moment.',
   timeout: 'The garden did not answer. Try again.',
+  // R26, ours: the save a plant or a pour waits on first (the ledger hears of a seed bought a moment ago) failed.
+  saveFailed: 'Your game did not save, so the garden was not asked. Try again.',
   busy: 'Hold on, still asking the garden.',
 });
 const VERBS = new Set(['plant', 'water', 'harvest', 'clear', 'fertilize']);
@@ -111,7 +113,8 @@ let copy = freshCopy();
 let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
-const pending = new Map();
+/** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
 let grant = null;
 let lastAnswer = '';
 let applied = [];
@@ -560,40 +563,45 @@ function ask(engine, target, verbId) {
   }
   reqSeq += 1;
   const req = reqSeq;
-  pending.set(req, { id, target, verbId, rolls: plan.rolls, at: Date.now() });
-  const send = () => {
-    if (!pending.has(req)) return;
-    pending.get(req).at = Date.now();
-    if (!c.send('garden_act', { req, verb: base, ...plan.send })) {
-      pending.delete(req);
-      engine.toast?.(COPY.connecting, 2400);
-    }
-  };
-  if (plan.flush) {
-    // The plan's catch 1: the ledger learns of a seed (or Guano) bought a moment ago from the save write.
-    persist(engine).finally(send);
-  } else send();
+  pending.open(req, { id, target, verbId, rolls: plan.rolls });
+  // The plan's catch 1: the ledger learns of a seed (or Guano) bought a moment ago from the save write.
+  pending.send(req, () => c.send('garden_act', { req, verb: base, ...plan.send }), {
+    save: plan.flush ? () => persist(engine) : null,
+    done: (out) => unsent(engine, out),
+  });
   return true;
 }
 
+/** R26: a request that never went out says why. */
+function unsent(engine, out) {
+  if (out === 'unsent') engine.toast?.(COPY.connecting, 2400);
+  else if (out === 'save-failed') engine.toast?.(COPY.saveFailed, 2600);
+}
+
+function refuseLine(engine, msg) {
+  const line = String(msg?.message || 'Not now.');
+  engine.toast?.(line, 2600);
+  engine.pushActivity?.(line);
+  engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
+}
+
 function answered(engine, msg, ok) {
-  const p = pending.get(msg?.req);
-  if (p) pending.delete(msg.req);
+  // R26: a late answer (past the wait) still finds its request and lands.
+  const p = pending.take(msg?.req);
   const now = Date.now();
   if (Number.isFinite(msg?.now)) copy.offset = msg.now - now;
-  lastAnswer = `${msg?.id || msg?.bed || ''}:${msg?.verb || ''}:${ok ? 'ok' : msg?.code || 'no'}`;
-  if (!p || copy.street !== engine.streetTsid) {
+  lastAnswer = `${msg?.id || msg?.bed || ''}:${msg?.verb || ''}:${ok ? 'ok' : msg?.code || 'no'}${p?.late ? ':late' : ''}`;
+  if (!p || p.gone || copy.street !== engine.streetTsid) {
     if (msg?.plots) takePlots(engine, msg.plots, now);
     redraw(engine);
+    // The player walked on before the answer: a refusal is still said.
+    if (p && !ok) refuseLine(engine, msg);
     return;
   }
   if (!ok) {
     if (msg.plots) takePlots(engine, msg.plots, now);
     redraw(engine);
-    const line = String(msg.message || 'Not now.');
-    engine.toast?.(line, 2600);
-    engine.pushActivity?.(line);
-    engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
+    refuseLine(engine, msg);
     return;
   }
   // The local rules run on the plots as the server had them, with the page's own draws.
@@ -724,7 +732,7 @@ export const sharedGardensFeature = {
   },
 
   onStreetClear() {
-    pending.clear();
+    pending.leave();
     grant = null;
     copy.beds = new Map();
     for (const id of [...overlays.keys()]) dropOverlay(id);
@@ -749,11 +757,7 @@ export const sharedGardensFeature = {
       syncAskedAt = wall;
       c.send('garden_sync');
     }
-    for (const [req, p] of pending) {
-      if (wall - p.at < REQUEST_TIMEOUT_MS) continue;
-      pending.delete(req);
-      engine.toast?.(COPY.timeout, 2400);
-    }
+    if (pending.expire().length) engine.toast?.(COPY.timeout, 2400);
     if (overlays.size) tickOverlays(engine);
   },
 
@@ -803,16 +807,9 @@ export const sharedGardensFeature = {
     if (Number.isInteger(pour.k) && pour.k >= 0) msg.k = pour.k;
     if (pour.seedId) msg.seed = pour.seedId;
     if (Number.isFinite(pour.mod)) msg.mod = pour.mod;
-    pending.set(req, { id, target, verbId: 'potion', pour, at: Date.now() });
+    pending.open(req, { id, target, verbId: 'potion', pour });
     // The ledger learns of a bottle or seeds bought a moment ago from the save write (the plan's catch 1).
-    persist(engine).finally(() => {
-      if (!pending.has(req)) return;
-      pending.get(req).at = Date.now();
-      if (!c.send('garden_potion', msg)) {
-        pending.delete(req);
-        engine.toast?.(COPY.connecting, 2400);
-      }
-    });
+    pending.send(req, () => c.send('garden_potion', msg), { save: () => persist(engine), done: (out) => unsent(engine, out) });
     return true;
   },
 

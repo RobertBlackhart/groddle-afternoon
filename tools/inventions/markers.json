@@ -497,6 +497,9 @@
     "ours: // G982 (ours):": "pot-luck-costumes",
     "remake-own: || '').trim().slice(0, 300)); // the remake's own word filter": "word-filter"
   },
+  "public/js/features/shared-gardens-feature.js": {
+    "ours: // R26, ours: the save a plant or a pour waits on first (the": "online-request-save-first-line"
+  },
   "public/js/features/shared-patches-feature.js": {
     "ours: as a clear the server refused does (Ours, slice": "ours-shared-patches"
   },
@@ -1009,7 +1012,8 @@
     "remake-own: 'GLI2V0UN7RD1T2J', // Hechey Track (the remake's own beds, kept: Austin": "starter-street-extras"
   },
   "public/js/shared-patches.js": {
-    "ours: * Ours (G564 slice 3): a clear that lands after another": "ours-shared-patches"
+    "ours: * Ours (G564 slice 3): a clear that lands after another": "ours-shared-patches",
+    "ours: // R26, ours: the save a plant waits on first (the ledger": "online-request-save-first-line"
   },
   "public/js/shrines.js": {
     "ours: The player's words use the Giant's name as ours spells": "ours-shrines"

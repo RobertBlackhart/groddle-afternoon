@@ -12,12 +12,13 @@ import { describe, it } from 'node:test';
 
 import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=d4e55862';
 import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=da9c5310';
-import { FEATURES } from '../public/js/features/index.js?v=7865d1a8';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=c60182de';
+import { FEATURES } from '../public/js/features/index.js?v=dc26b0e2';
 import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=43a08008';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
+import { ANSWER_WAIT_FALLBACK_MS } from '../public/js/online-request.js?v=2a5117ff';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const COMMUNITY = 'GCR101NQ4BU1SKS';
@@ -186,6 +187,29 @@ describe('the feature', () => {
     r.client.emit('msg:garden_no', { req: late.req, id: 'default:4-1', verb: 'harvest', code: 'nothing', message: 'Oops. There is nothing there to pick.', now: Date.now(), plots: { 'default:4-1': { state: 'dirty' } } });
     assert.equal(r.engine.toasts.at(-1), 'Oops. There is nothing there to pick.');
     assert.equal(r.bed.plots['4-1'].state, 'dirty');
+  });
+
+  it('R26 (#506): the wait is the server\'s worst case, and a plant answered after it still lands', async (t) => {
+    t.mock.method(Math, 'random', () => 0.01);
+    const r = rig({});
+    r.client.emit('msg:gardens', { t: 'gardens', street: COMMUNITY, snap: true, now: Date.now(), plots: {} });
+    assert.equal(sharedGardensFeature.runVerbOverride(r.plot('1-1'), 'plant', r.engine), true);
+    await new Promise((res) => setTimeout(res, 0));
+    const ask = r.sent.at(-1);
+    assert.equal(ask.t, 'garden_act');
+    const start = Date.now();
+    const tickAt = (ms) => {
+      t.mock.method(Date, 'now', () => start + ms);
+      sharedGardensFeature.onTick(16, 0, r.engine);
+      Date.now.mock.restore();
+    };
+    tickAt(9000);
+    assert.deepEqual(r.engine.toasts, [], 'the old 8 s wait is gone: the ledger may take 16 s');
+    tickAt(ANSWER_WAIT_FALLBACK_MS + 1000);
+    assert.equal(r.engine.toasts.at(-1), 'The garden did not answer. Try again.');
+    r.client.emit('msg:garden_ok', { req: ask.req, id: 'default:1-1', verb: 'plant', now: Date.now(), before: { 'default:1-1': { state: 'clean' } }, plots: { 'default:1-1': { state: 'seeds', seed: 'seed_spinach', stageAt: Date.now() } }, use: { op: 'use-00000000000000c1', c: 'seed_spinach', n: 1, spent: true } });
+    assert.equal(r.engine.inv.seed_spinach, 1, 'the late go-ahead planted, taking the seed');
+    assert.equal(r.bed.plots['1-1'].state, 'seeds');
   });
 
   it('Water All is one message naming the plots the page\'s own rolls watered', (t) => {

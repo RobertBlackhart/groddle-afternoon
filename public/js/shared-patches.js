@@ -48,7 +48,7 @@ import { DEAD_TRANT_CLASSES, GROWN_TREE_LABELS, SEASONED_BEANS, SOIL_CLASSES, re
 import { TRANT_META, fruitCapacityAt } from './trants.js?v=b9147016';
 import { ensureWoodTreeState, quoteWoodTreeHarvest } from './woodcutting.js?v=9e9af511';
 import { POISON_DURATION_MS } from './tree-poison.js?v=646d1bc1';
-import { treeReady, treeSkill } from './street-objects.js?v=bf4c9c7b';
+import { treeReady, treeSkill } from './street-objects.js?v=0bbf1b1a';
 import { highestLightGreenThumbRank, quoteTrantCare } from './trant-care.js?v=9fba26b5';
 
 /** The release switch: on since game v0.24.0 (G564; false = dark, shared Patches off for everyone but the QA flag below). */
@@ -374,6 +374,8 @@ export const COPY = Object.freeze({
   connecting: 'The street is still connecting. Try again in a moment.',
   timeout: 'The patch did not answer. Try again.',
   waiting: 'Hold on, still asking the patch.',
+  // R26, ours: the save a plant waits on first (the ledger hears of a bean bought a moment ago) failed.
+  saveFailed: 'Your game did not save, so the patch was not asked. Try again.',
 });
 
 /** Each refusal code's line (wire: patch_no), used when the server's own message is missing. */

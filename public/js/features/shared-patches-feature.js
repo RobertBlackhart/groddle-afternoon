@@ -72,8 +72,9 @@
 
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { patchesFeature } from './patches-feature.js?v=35f63b2d';
+import { patchesFeature } from './patches-feature.js?v=a335a7c4';
 import {
   COPY,
   GRANT_CLASSES,
@@ -98,10 +99,9 @@ import {
   sharedTreeReady,
   sharedTreeSkill,
   TRANTSFORM_VERB,
-} from '../shared-patches.js?v=7fd73f7f';
+} from '../shared-patches.js?v=70b27083';
 
 export const SHARED_PATCHES_FEATURE_ID = 'shared-patches';
-const REQUEST_TIMEOUT_MS = 8000;
 const SYNC_RETRY_MS = 3000;
 const APPLIED_KEEP = 100;
 /** The tend lock the server holds (patch.js 408-409), when a start's answer doesn't say. */
@@ -125,7 +125,8 @@ let copy = freshCopy('');
 let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
-const pending = new Map();
+/** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
 /** Streets the server said it doesn't share, this connection (no flash of shared soil next time). */
 const noneStreets = new Set();
 /** The server has no Patches module (bad_frame) on this connection. */
@@ -318,7 +319,7 @@ function bind(engine) {
   // A server without patches.go answers patch_sync with bad_frame: the save's own plots, as before.
   c.on('error', ({ code }) => {
     if (code !== 'bad_frame' || !enabled || copy.snap || !syncedStreet || !mayAskStreet(syncedStreet)) return;
-    if (Date.now() - syncAskedAt > REQUEST_TIMEOUT_MS) return;
+    if (Date.now() - syncAskedAt > answerWaitMs(c)) return;
     serverOff = true;
     backToLocal(engine);
   });
@@ -442,19 +443,16 @@ function ask(engine, target, verbId) {
     flush = true;
   }
   const { req, send } = sendReq(engine, payload);
-  pending.set(req, { req, key, verb, verbId, phase: 'land', rolls, at: Date.now() });
-  const go = () => {
-    if (!pending.has(req)) return;
-    pending.get(req).at = Date.now();
-    if (!send()) {
-      pending.delete(req);
-      engine.toast?.(COPY.connecting, 2400);
-    }
-  };
+  pending.open(req, { req, key, verb, verbId, phase: 'land', rolls });
   // The ledger learns of a bean bought a moment ago from the save write (the plan's catch 1).
-  if (flush) persist(engine).finally(go);
-  else go();
+  pending.send(req, send, { save: flush ? () => persist(engine) : null, done: (out) => unsent(engine, out) });
   return true;
+}
+
+/** R26: a request that never went out says why. */
+function unsent(engine, out) {
+  if (out === 'unsent') engine.toast?.(COPY.connecting, 2400);
+  else if (out === 'save-failed') engine.toast?.(COPY.saveFailed, 2600);
 }
 
 /**
@@ -489,11 +487,8 @@ function askTree(engine, target, verbId, { pour = false, k = null } = {}) {
   if (wire === 'poison' && qaPoisonMs > 0) payload.ms = qaPoisonMs;
   if (wire === 'trantsform' && Number.isInteger(k) && k >= 0) payload.k = k;
   const { req, send } = sendReq(engine, payload);
-  pending.set(req, { req, key, verb: wire, verbId, phase: 'land', tree: true, classId: target.classId, at: Date.now() });
-  if (!send()) {
-    pending.delete(req);
-    engine.toast?.(COPY.connecting, 2400);
-  }
+  pending.open(req, { req, key, verb: wire, verbId, phase: 'land', tree: true, classId: target.classId });
+  pending.send(req, send, { done: (out) => unsent(engine, out) });
   return true;
 }
 
@@ -546,16 +541,16 @@ function startBar(engine, target, verb) {
   if (!key || !BAR_VERBS.has(verb) || !shared(engine)) return;
   startRefused.delete(key);
   const { req, send } = sendReq(engine, { id: key, verb, do: 'start' });
-  pending.set(req, { req, key, verb, verbId: verb, phase: 'start', at: Date.now() });
-  if (!send()) pending.delete(req);
+  pending.open(req, { req, key, verb, verbId: verb, phase: 'start' });
+  pending.send(req, send);
 }
 
 function stopBar(key, verb) {
   if (!client || !BAR_VERBS.has(verb)) return;
-  for (const [req, p] of pending) if (p.key === key && p.phase === 'start') pending.delete(req);
+  pending.deleteWhere((p) => p.key === key && p.phase === 'start');
   const { req, send } = sendReq(null, { id: key, verb, do: 'stop' });
-  pending.set(req, { req, key, verb, verbId: verb, phase: 'stop', at: Date.now() });
-  if (!send()) pending.delete(req);
+  pending.open(req, { req, key, verb, verbId: verb, phase: 'stop' });
+  pending.send(req, send);
 }
 
 function refuse(engine, line) {
@@ -566,16 +561,18 @@ function refuse(engine, line) {
 
 function answered(engine, msg, ok) {
   if (!enabled) return;
-  const p = pending.get(msg?.req);
-  if (p) pending.delete(msg.req);
+  // R26: a late answer (past the wait) still finds its request and lands.
+  const p = pending.take(msg?.req);
   setOffset(msg);
   const key = String(msg?.id || p?.key || '');
   const here = copy.street === engine.streetTsid && copy.snap && !copy.none;
-  lastAnswer = `${key}:${msg?.verb || p?.verb || ''}${msg?.do ? `:${msg.do}` : ''}:${ok ? 'ok' : msg?.code || 'no'}`;
-  if (!p || !here) {
+  lastAnswer = `${key}:${msg?.verb || p?.verb || ''}${msg?.do ? `:${msg.do}` : ''}:${ok ? 'ok' : msg?.code || 'no'}${p?.late ? ':late' : ''}`;
+  if (!p || p.gone || !here) {
     if (here && msg?.plot) takeOne(key, msg.plot);
     if (here) notify(engine);
     else publish(engine);
+    // The player walked on before the answer: a verb's refusal is still said.
+    if (p && !ok && p.phase === 'land') refuse(engine, refusalLine(msg.code, msg.message, p.verb));
     return;
   }
   if (p.phase !== 'land') {
@@ -732,7 +729,7 @@ export const sharedPatchesFeature = {
   },
 
   onStreetClear() {
-    for (const [req, p] of pending) if (p.phase === 'land') pending.delete(req);
+    pending.leave((p) => p.phase === 'land');
   },
 
   /** Dametime midnight: this player's harvests of the shared Patch trees start over (the server's count does too). */
@@ -752,11 +749,7 @@ export const sharedPatchesFeature = {
     if (c.state === 'online' && !serverOff && mayAskStreet(syncedStreet) && c.street === syncedStreet && !copy.snap && wall - syncAskedAt >= SYNC_RETRY_MS) {
       askSync(c, syncedStreet);
     }
-    for (const [req, p] of pending) {
-      if (wall - p.at < REQUEST_TIMEOUT_MS) continue;
-      pending.delete(req);
-      if (p.phase === 'land') engine.toast?.(COPY.timeout, 2400);
-    }
+    if (pending.expire().some((p) => p.phase === 'land')) engine.toast?.(COPY.timeout, 2400);
   },
 
   /** game.js executeVerb: a shared soil verb, or a shared Patch tree's pet, water or harvest, asks the server before it lands. */
