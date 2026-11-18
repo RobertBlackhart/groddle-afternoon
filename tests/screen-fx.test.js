@@ -334,7 +334,8 @@ describe('#478 the loading card holds its Home to: list (G993, invention loading
     globalThis.document = { documentElement: Object.assign(new EventTarget(), { dataset: {} }) };
     globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 0);
     const card = () => {
-      const home = { innerHTML: '', hidden: true };
+      // A page's textContent: the list's words without its tags (the card reads textContent, G955).
+      const home = { innerHTML: '', hidden: true, get textContent() { return this.innerHTML.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); } };
       const el = {
         dataset: {},
         style: {},
