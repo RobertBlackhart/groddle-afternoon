@@ -2322,9 +2322,9 @@
   ]
  },
  "badges": {
-  "total": 663,
+  "total": 668,
   "officialArt": 661,
-  "reimaginedArt": 2
+  "reimaginedArt": 7
  },
  "skills": {
   "total": 110,
@@ -2360,8 +2360,8 @@
   "skipped": 19
  },
  "icons": {
-  "items": 1081,
-  "sharp": 1078
+  "items": 1083,
+  "sharp": 1080
  },
  "imagination": {
   "total": 275,
@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2624,
+  "commits": 2630,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A dish dropped on the Harvest Table goes on the table, not to the Piggy standing in front of it (G982)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "fix",
+    "text": "A reloaded page online sees the whole Harvest Table, and an offline lay keeps the dish (G982)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "improve",
+    "text": "The Harvest Table's two tables meet as one long board, its count off the seam (G982)"
+   },
+   {
+    "date": "2026-11-17",
+    "kind": "new",
+    "text": "Pot Luck Day's Harvest Table, the quest Pot's Empty Table, Harvest Stuffing, Pot's Cornucopia and five badges (G982)"
+   },
    {
     "date": "2026-11-17",
     "kind": "improve",
@@ -2916,29 +2936,9 @@
     "date": "2026-11-17",
     "kind": "improve",
     "text": "Le Voyage Violet's floor is Tiny Speck's Uralia mushrooms, ghost and owl, with a drippy stump and a spiral stone made for Groddle"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Esquibeth's grottos and Waterfall Climb are Tiny Speck's Alakol rock washed lavender, as players' Snaps show"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Beam Me Down lands on Tiny Speck's clouds by a dark wooden EXIT, under soft tractor beams"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Winter Walk's passage is Tiny Speck's wintry portal past the tall pillar, and the way home walks into the blizzard"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "improve",
-    "text": "Mental Block's tube, blocks and end door are Tiny Speck's own art, as players' Snaps show"
    }
   ]
  },
- "tests": 1126,
+ "tests": 1127,
  "generatedAt": "2026-11-17"
 }
