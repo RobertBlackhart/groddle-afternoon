@@ -8831,8 +8831,11 @@ function openVerbMenu(target) {
 function refreshVerbMenu(target) {
   const menu = document.getElementById('verb-menu');
   if (!target || menuTarget !== target || !menu || menu.hidden || menu.dataset.vmLevel) return false;
+  const verbs = menuVerbsFor(target);
+  // Only when a row or the subtitle changed (a walking animal's state lands often).
+  if (menu._vmSig === verbMenuSig(target, verbs)) return false;
   const focused = menu.contains(document.activeElement) ? document.activeElement?.dataset?.verb || '' : null;
-  renderVerbMenu(target, menuVerbsFor(target));
+  renderVerbMenu(target, verbs);
   placeWorldVerbMenu(target);
   if (focused != null) {
     const at = [...menu.querySelectorAll('.vm-row')].findIndex((r) => r.dataset.verb === focused);
@@ -8840,6 +8843,12 @@ function refreshVerbMenu(target) {
   }
   setCanvasData('verbMenuRefreshed', `${target.classId || ''}:${Date.now()}`);
   return true;
+}
+
+/** What a verb menu shows of a target's verbs (refreshVerbMenu draws again only when it changes). */
+function verbMenuSig(target, verbs) {
+  const rows = (verbs || []).map((v) => [v.id, v.label, v.enabled !== false, v.reason || '', v.energy ?? '', v.tooltip || '']);
+  return JSON.stringify([target?.label || '', target?.subtitle || '', rows]);
 }
 
 /**
@@ -8864,6 +8873,7 @@ function renderVerbMenu(target, verbs, level = null) {
     if (iconUrl && icon.getAttribute('src') !== iconUrl) icon.src = iconUrl;
   }
   menu.dataset.vmLevel = level ? level.verbId : '';
+  menu._vmSig = level ? '' : verbMenuSig(target, verbs);
   setCanvasData('stackPickCount', '');
   delete menu.dataset.vmPicks;
   menu.style.removeProperty('--vm-pick-cols');

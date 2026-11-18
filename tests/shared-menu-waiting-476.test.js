@@ -151,7 +151,10 @@ describe('#476 a shared tree waiting on the street', () => {
     const fn = game.slice(game.indexOf('function refreshVerbMenu('), game.indexOf('function renderVerbMenu('));
     assert.match(fn, /menuTarget !== target/);
     assert.match(fn, /menu\.dataset\.vmLevel/, 'a picker level is left alone');
-    assert.match(fn, /renderVerbMenu\(target, menuVerbsFor\(target\)\)/);
+    assert.match(fn, /const verbs = menuVerbsFor\(target\);/);
+    assert.match(fn, /if \(menu\._vmSig === verbMenuSig\(target, verbs\)\) return false;/, 'drawn again only when it changed');
+    assert.match(fn, /renderVerbMenu\(target, verbs\);/);
+    assert.match(game, /menu\._vmSig = level \? '' : verbMenuSig\(target, verbs\);/);
     assert.match(game, /refreshVerbMenu: \(target\) => refreshVerbMenu\(target\)/);
   });
 });
