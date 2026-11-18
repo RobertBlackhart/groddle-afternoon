@@ -2033,8 +2033,9 @@ function autoplayStep(engine) {
     autoplay.at = performance.now() + ms;
   };
   // G971: the mode is one step, logged only when the Butler's state shows it (ok); else hollow:<word>.
+  // A mode with steps of its own (gift) keeps its log on autoplay.log; the mode's name is its last step.
   const done = (s = 'done', ok = true) => {
-    const log = autoplayLog([autoplay.mode]);
+    const log = autoplay.log || autoplayLog([autoplay.mode]);
     log.step(autoplay.mode, ok);
     say2(log.finish(s));
     autoplay = null;
@@ -2207,28 +2208,39 @@ function autoplayStep(engine) {
       accessMailbox(engine);
       return done('mailbox', lastMsg === 'mailbox');
     case 'gift':
+      // G971: pick 3 Cherries, confirm, then the Butler holds them. A closed dialog keeps its last
+      // step's name, so each step also needs the dialog open (it used to click a hidden Yes forever).
       if (!autoplay.opened) {
         autoplay.opened = true;
+        autoplay.log = autoplayLog(['pick', 'confirm', 'gift']);
+        autoplay.tries = 0;
         addItem(engine.inv, 'cherry', 3);
         autoplay.cherries = countItem(engine.inv, 'cherry');
         giveMenu(engine);
         return later(800);
       }
-      if (dialog?.dataset.step === 'give') {
+      if (dialogOpen() && (dialog.dataset.step === 'give' || dialog.dataset.step === 'give:confirm')) {
+        autoplay.tries += 1;
+        if (autoplay.tries > 6) return done(`stuck:${dialog.dataset.step}`);
+      }
+      if (dialogOpen() && dialog.dataset.step === 'give') {
         dialog.querySelector('[data-butler-item="cherry"]')?.click();
+        const tile = dialog.querySelector('[data-butler-item="cherry"]');
         const input = dialog.querySelector('[data-butler-count]');
         if (input) {
           input.value = '3';
           input.dispatchEvent(new Event('change'));
         }
+        autoplay.log.step('pick', tile?.getAttribute('aria-pressed') === 'true' && input?.value === '3');
         clickChoice('ok');
         return later(700);
       }
-      if (dialog?.dataset.step === 'give:confirm') {
+      if (dialogOpen() && dialog.dataset.step === 'give:confirm') {
+        autoplay.log.step('confirm', true);
         clickChoice('yes');
         return later(1800);
       }
-      return done('gift', countItem(engine.inv, 'cherry') === autoplay.cherries - 3);
+      return done('gift', countItem(engine.inv, 'cherry') === autoplay.cherries - 3 && st.gift?.classTsid === 'cherry' && st.gift.count >= 3);
     default:
       return done('unknown');
   }

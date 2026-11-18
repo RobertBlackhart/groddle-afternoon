@@ -222,6 +222,13 @@ describe('feature and scene autoplays: on the step log, or on the shrinking list
     }
     const butler = read('public/js/features/butler-feature.js');
     assert.doesNotMatch(butler, /return done\('(received|named|gift|joke|hint|tower|mailbox|visitors|dancing)'\);/, 'each Butler mode passes its state check to done');
+    // The gift mode declares pick, confirm, gift; each step needs the dialog open (a closed dialog
+    // keeps its last step's name, and the old gift autoplay clicked a hidden Yes and never reported).
+    assert.match(butler, /autoplay\.log = autoplayLog\(\['pick', 'confirm', 'gift'\]\)/);
+    assert.match(butler, /const log = autoplay\.log \|\| autoplayLog\(\[autoplay\.mode\]\)/);
+    assert.match(butler, /dialogOpen\(\) && dialog\.dataset\.step === 'give'\)/);
+    assert.match(butler, /dialogOpen\(\) && dialog\.dataset\.step === 'give:confirm'\)/);
+    assert.match(butler, /return done\(`stuck:\$\{dialog\.dataset\.step\}`\)/);
     assert.doesNotMatch(read('public/js/features/homes-feature.js'), /engine\.setData\('homeAutoplay', 'done'\)/);
     assert.doesNotMatch(read('public/js/features/imagination-feature.js'), /engine\.setData\('imgAutoplay', 'done'\)/);
     assert.doesNotMatch(read('public/js/features/door-drink-feature.js'), /engine\.setData\?\.\('doorDrinkAutoplay', 'done'\)/);
