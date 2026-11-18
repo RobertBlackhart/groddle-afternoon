@@ -39,7 +39,7 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
-import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=adc9ef6a';
+import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=d7a9a5d4';
 
 /** Speeds (px/s), pauses and windows per class. */
 export const YARD_WANDER = Object.freeze({
@@ -47,8 +47,9 @@ export const YARD_WANDER = Object.freeze({
   npc_piggy: Object.freeze({ speed: Object.freeze([30, 55]), pauses: Object.freeze([[0.3, 5000], [1, 3000]]) }),
   // npc_chicken.js 1016 walks 45 px/s; the remake's Chickens walk 30 (js/street-creatures.js CREATURE_PATHS).
   npc_chicken: Object.freeze({ speed: Object.freeze([30, 45]), pauses: 'chicken' }),
-  // npc_butterfly.js flyAround: flies on at random; the remake's flyers drift 39 px/s and hover a moment.
-  npc_butterfly: Object.freeze({ speed: Object.freeze([30, 50]), pauses: Object.freeze([[1, 900, 2400]]), lift: Object.freeze([70, 120]), bob: 14 }),
+  // npc_butterfly.js flyAround 886-969: flies on at random over the floor, never stopping in the air
+  // (G978: the remake's hover and 14 px bob are gone); each one at its own height.
+  npc_butterfly: Object.freeze({ speed: Object.freeze([30, 50]), lift: Object.freeze([70, 120]) }),
 });
 
 /** The remake's own window without a stick (animal-husbandry-feature stepExtra: 110 px each way of its spot). */
@@ -154,7 +155,7 @@ function pauseRoll(classId, rng) {
   if (spec.pauses === 'chicken') return chickenPauseRoll(rng).holdMs;
   const roll = rng();
   const row = spec.pauses.find((p) => roll < p[0]) || spec.pauses[spec.pauses.length - 1];
-  return row.length > 2 ? Math.round(row[1] + rng() * (row[2] - row[1])) : row[1];
+  return row[1];
 }
 
 const planCache = new Map();
@@ -162,7 +163,7 @@ const planCache = new Map();
 /**
  * One animal's walk inside [left, right], as a round that repeats: YARD_LEGS legs, each to a random
  * place at least YARD_MIN_STEP on in its heading (turning round where there is no room) and a
- * pause, then back to where it began. Returns { ms, speed, offset, lift, phase, segs } with segs
+ * pause (a flyer has none: it flies on), then back to where it began. Returns { ms, speed, offset, lift, segs } with segs
  * { at, ms, x, tx, pose: 'walk'|'stand' } (a Chicken's stand also has idle: its state) and speed in px/ms.
  */
 export function yardPlan({ id = '', classId = 'npc_piggy', left = 0, right = 220 } = {}) {
@@ -177,7 +178,6 @@ export function yardPlan({ id = '', classId = 'npc_piggy', left = 0, right = 220
   const x0 = lo + rng() * (hi - lo);
   let dir = rng() < 0.5 ? -1 : 1;
   const lift = spec.lift ? spec.lift[0] + rng() * (spec.lift[1] - spec.lift[0]) : 0;
-  const phase = rng() * Math.PI * 2;
   const segs = [];
   let at = 0;
   let x = x0;
@@ -192,12 +192,14 @@ export function yardPlan({ id = '', classId = 'npc_piggy', left = 0, right = 220
     segs.push({ at, ms: walk, x, tx: nx, pose: 'walk' });
     at += walk;
     x = nx;
-    // A Chicken's pause keeps the state the same roll picked (npc_chicken.js pause_state_choices,
-    // js/chicken-idles.js); the numbers drawn, and so the walk, are what they were.
-    const roll = spec.pauses === 'chicken' ? chickenPauseRoll(rng) : null;
-    const hold = roll ? roll.holdMs : pauseRoll(classId, rng);
-    segs.push(roll ? { at, ms: hold, x, tx: x, pose: 'stand', idle: roll.pose } : { at, ms: hold, x, tx: x, pose: 'stand' });
-    at += hold;
+    if (spec.pauses) {
+      // A Chicken's pause keeps the state the same roll picked (npc_chicken.js pause_state_choices,
+      // js/chicken-idles.js); the numbers drawn, and so the walk, are what they were.
+      const roll = spec.pauses === 'chicken' ? chickenPauseRoll(rng) : null;
+      const hold = roll ? roll.holdMs : pauseRoll(classId, rng);
+      segs.push(roll ? { at, ms: hold, x, tx: x, pose: 'stand', idle: roll.pose } : { at, ms: hold, x, tx: x, pose: 'stand' });
+      at += hold;
+    }
     // onPathing 1687-1692: at its place it turns round and sets off again.
     dir = -dir;
   }
@@ -205,7 +207,7 @@ export function yardPlan({ id = '', classId = 'npc_piggy', left = 0, right = 220
   segs.push({ at, ms: back, x, tx: x0, pose: 'walk' });
   at += back;
   const offset = Math.floor(rng() * at);
-  const plan = Object.freeze({ ms: at, speed, offset, lift, phase, segs: Object.freeze(segs) });
+  const plan = Object.freeze({ ms: at, speed, offset, lift, segs: Object.freeze(segs) });
   if (planCache.size > 512) planCache.clear();
   planCache.set(key, plan);
   return plan;
@@ -217,13 +219,12 @@ export function yardPathTime(nowMs = Date.now()) {
 }
 
 /**
- * Where an animal is on its walk at path time t: { x, dir, pose, lift, bob } (lift and bob for a
- * Butterfly: px over the floor, and its bob now). `animal` is { id, classId, homeX, stick, worldW }.
+ * Where an animal is on its walk at path time t: { x, dir, pose, lift } (lift for a Butterfly: px
+ * over the floor). `animal` is { id, classId, homeX, stick, worldW }.
  */
 export function yardWanderAt(animal, t) {
   const win = yardWindow(animal);
   const plan = yardPlan({ id: animal.id, classId: animal.classId, left: win.left, right: win.right });
-  const spec = YARD_WANDER[animal.classId] || {};
   const tc = mod((Number(t) || 0) + plan.offset, plan.ms || 1);
   let seg = plan.segs[0];
   for (const g of plan.segs) {
@@ -236,8 +237,7 @@ export function yardWanderAt(animal, t) {
   const i = plan.segs.indexOf(seg);
   const walkSeg = seg.pose === 'walk' ? seg : plan.segs[i - 1] || seg;
   const dir = walkSeg.tx >= walkSeg.x ? 1 : -1;
-  const bob = spec.bob ? Math.sin(((Number(t) || 0) / 1000) * 1.3 + plan.phase) * spec.bob : 0;
-  const at = { x, dir, pose: seg.pose, lift: plan.lift, bob, speed: plan.speed };
+  const at = { x, dir, pose: seg.pose, lift: plan.lift, speed: plan.speed };
   // A Chicken standing: which of the original's states, and how far into it.
   if (seg.idle) {
     at.idle = seg.idle;
@@ -302,7 +302,7 @@ export function followYardPath(spr, drive, { animal, nowMs = Date.now(), dtMs = 
   const floor = groundAt(x, curY);
   let y;
   if (fly) {
-    const want = floor - at.lift + at.bob;
+    const want = floor - at.lift;
     // Eased, so a new height (a hold let go, a step in the floor) is flown to, not jumped to.
     y = Number.isFinite(Number(spr.y)) ? curY + (want - curY) * Math.min(1, 0.08 * (dtMs / 16.67)) : want;
   } else {

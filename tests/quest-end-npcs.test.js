@@ -21,7 +21,7 @@ import { getQuestCatalog, loadContentCatalogsFromDir } from '../public/js/conten
 import { classifyQuests, heldForNpcTurnIn } from '../public/js/quest-offers.js?v=d13ce526';
 import { vendorStreetsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
 import { findRoute, routeGraph, ROUTE_SOURCES } from '../public/js/map-routes.js?v=84356b3e';
-import { MERCHANT_ROUTE_SOURCE, routeHeldQuests } from '../public/js/features/vendor-npcs-feature.js?v=45280fd7';
+import { MERCHANT_ROUTE_SOURCE, routeHeldQuests } from '../public/js/features/vendor-npcs-feature.js?v=f1af44aa';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const json = (p) => JSON.parse(readFileSync(join(PUBLIC, p), 'utf8'));

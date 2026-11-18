@@ -34,7 +34,7 @@ import {
   floorUnder,
   flyerAt,
   flyerLift,
-} from '../public/js/street-creatures.js?v=adc9ef6a';
+} from '../public/js/street-creatures.js?v=d7a9a5d4';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=62ca408f';
@@ -79,13 +79,12 @@ function lowPoints(flier, floor, worldW) {
   if (flier.kind === 'butterfly') {
     const f = CREATURE_PATHS.fly;
     const lift = flyerLift(flier.j);
-    const home = { x0: flier.x, baseY: flier.y - lift, worldW, phase0: flier.j, floor, lift };
+    const home = { x0: flier.x, baseY: flier.y - lift, worldW, floor, lift };
     const lapMs = ((worldW + 2 * f.margin) / f.speed) * 1000;
-    // Every 4 px of the lap; the bob is at its lowest somewhere over each spot on some lap.
+    // Every 4 px of the lap: it flies level at its lift (G978: no bob).
     for (let t = 0; t < lapMs; t += (4 / f.speed) * 1000) {
       const p = flyerAt(home, t);
-      const bob = Math.sin(flier.j + (t / 1000) * f.bob) * f.amp;
-      out.push({ x: p.x, y: p.y - bob + f.amp });
+      out.push({ x: p.x, y: p.y });
     }
     return out;
   }
@@ -132,7 +131,6 @@ describe('fliers keep above the floor under them', () => {
     assert.match(husbandry, /spr\.anchor\.set\(0\.5, 0\.62\);\n\s+spr\.scale\.set\(0\.82\);/);
     assert.match(husbandry, /baseY: ground - 150,/);
     assert.match(husbandry, /const dy = Math\.sin\(entity\.phase \* 0\.9\) \* 26 \+ Math\.cos\(entity\.phase \* 0\.21\) \* 34;/);
-    assert.equal(FLIER_LIFT.butterfly.amp, CREATURE_PATHS.fly.amp);
     assert.equal(FLIER_LIFT.batterfly.dx, CREATURE_PATHS.batterfly.dx);
     // The smoothing keeps a flier's whole width over the floor (FLIGHT_FLOOR).
     for (const kind of Object.values(FLIER_LIFT)) assert.ok(kind.halfW <= FLIGHT_FLOOR.ease && FLIGHT_FLOOR.ease <= FLIGHT_FLOOR.reach, JSON.stringify(kind));
@@ -190,7 +188,7 @@ describe('fliers keep above the floor under them', () => {
     const floor = flightFloor(platforms, worldW);
     for (const x of [100, 1000, 2000, 3253, 5000, 5900]) {
       const y = flyerAt({ x0: x, baseY: 0, worldW, floor, lift: flyerLift(0) }, 0).y;
-      assert.ok(y + FLIER_LIFT.butterfly.amp + FLIER_LIFT.butterfly.below <= floorUnder(platforms, x), `${x}: ${y}`);
+      assert.ok(y + FLIER_LIFT.butterfly.below <= floorUnder(platforms, x), `${x}: ${y}`);
       // and stays in the original's 200 px band over the floor
       assert.ok(floorUnder(platforms, x) - y < FLIGHT_FLOOR.band, `${x}: ${y}`);
     }

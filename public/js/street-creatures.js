@@ -72,7 +72,8 @@ export const CREATURE_PATHS = Object.freeze({
   // game.js spawnPiggies: 0.45 px a frame, ANIMAL_PATROL.piggies 90 px each way.
   pig: Object.freeze({ speed: 27, range: 90 }),
   rest: Object.freeze({ bob: 2.4, amp: 2 }),
-  fly: Object.freeze({ speed: 39, bob: 3.6, amp: 14, margin: 40 }),
+  // G978: flies on level at its lift (npc_butterfly.js flyAround); the remake's 14 px bob is gone.
+  fly: Object.freeze({ speed: 39, margin: 40 }),
   batterfly: Object.freeze({ dx: 170 }),
 });
 
@@ -741,14 +742,14 @@ export const FLIGHT_FLOOR = Object.freeze({ band: 200, join: 6, ground: 24, reac
  * How high each planned flier flies over that floor, and how far its art reaches below its point
  * (the sprite's anchor to its bottom edge, at its drawn scale), for tests/flier-floor.test.js:
  *   - a street Butterfly (game.js spawnButterflies): 90 px up, 22 more for every second and third
- *     one (j % 3), bobbing 14 px; the fly-side sheet is 70x65 at ENTITY_SCALE.butterflyFly
+ *     one (j % 3), level (G978: no bob); the fly-side sheet is 70x65 at ENTITY_SCALE.butterflyFly
  *     (1.35 x 0.52), anchored at its centre;
  *   - a Batterfly (animal-husbandry-feature buildBatterfly): 150 px up, looping 170 px each way and
  *     up to 60 px up and down (stepBatterfly); the profile sheet is 111x96 at 0.82, anchored at
  *     0.62 of its height.
  */
 export const FLIER_LIFT = Object.freeze({
-  butterfly: Object.freeze({ lift: 90, perRow: 22, amp: 14, halfW: 70 * 0.702 / 2, below: 65 * 0.702 / 2 }),
+  butterfly: Object.freeze({ lift: 90, perRow: 22, halfW: 70 * 0.702 / 2, below: 65 * 0.702 / 2 }),
   batterfly: Object.freeze({ lift: 150, dx: 170, amp: 60, halfW: 111 * 0.82 / 2, below: 96 * 0.82 * 0.38 }),
 });
 
@@ -881,13 +882,13 @@ export function flightFloorAt(floor, x) {
  * A flying Butterfly at path time t: across the street and back in from the far side, `lift` px
  * over the floor under it (flightFloor) when the street has one, else at baseY.
  */
-export function flyerAt({ x0, baseY, worldW, phase0 = 0, floor = null, lift = FLIER_LIFT.butterfly.lift }, t) {
+export function flyerAt({ x0, baseY, worldW, floor = null, lift = FLIER_LIFT.butterfly.lift }, t) {
   const f = CREATURE_PATHS.fly;
   const span = Math.max(1, worldW + 2 * f.margin);
   const x = mod(x0 + f.margin + (t / 1000) * f.speed, span) - f.margin;
   const under = flightFloorAt(floor, x);
   const mid = under == null ? baseY : under - lift;
-  return { x, y: mid + Math.sin(phase0 + (t / 1000) * f.bob) * f.amp, dir: 1 };
+  return { x, y: mid, dir: 1 };
 }
 
 /** A resting Butterfly's y at path time t (it bobs where it sits). */

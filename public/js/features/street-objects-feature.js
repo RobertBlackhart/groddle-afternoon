@@ -148,7 +148,7 @@ import {
   treeId,
   treeReady,
   treeSkill,
-} from '../street-objects.js?v=8dafbd78';
+} from '../street-objects.js?v=21ebda1e';
 import { ROCK_CATALOG } from '../mining.js?v=afb2b145';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
@@ -184,7 +184,7 @@ import {
   dragonWalkAt,
   kittyWalkAt,
   walkerSpan,
-} from '../street-creatures.js?v=adc9ef6a';
+} from '../street-creatures.js?v=d7a9a5d4';
 
 export const STREET_OBJECTS_FEATURE_ID = 'street-objects';
 const RECONCILE_MS = 250;
@@ -468,7 +468,6 @@ function setPath(engine, obj) {
       x0: spot.x,
       baseY: (Number.isFinite(spot.y) ? spot.y : spr.y + 90) - flyerLift(j),
       worldW,
-      phase0: j,
       floor: flightFloorFor(engine.platforms, worldW),
       lift: flyerLift(j),
     };

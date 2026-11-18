@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9721f0f4';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c5925839';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1033,7 +1033,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=62ca408f';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=adc9ef6a';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=d7a9a5d4';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';
@@ -14428,7 +14428,6 @@ function spawnButterflies(xs, flyingSpots) {
     const under = flightFloorAt(b._flightFloor, b.x);
     if (under != null) b.y = under - b.lift;
     b.vx = 0.65;
-    b.phase = i;
     b.zIndex = itemZ('npc_butterfly', 5);
     b.play();
     b._ambient = true;
@@ -16440,12 +16439,11 @@ function physics(dt) {
     if (b._path?.(dt)) continue;
     if (b._ambient) {
       b.x += b.vx * dt;
-      b.phase += 0.06 * dt;
       if (b.x > WORLD_W + 40) b.x = -40;
-      // Over the floor under it (spawnButterflies); back from a net, the Rook or a sulk, it eases in.
+      // Level over the floor under it (spawnButterflies; G978: no bob); back from a net, the Rook or a sulk, it eases in.
       const under = flightFloorAt(b._flightFloor, b.x);
       const mid = under == null ? b.baseY : under - (b.lift ?? 90);
-      b.y = easeToward(b.y, mid + Math.sin(b.phase) * 14, dt);
+      b.y = easeToward(b.y, mid, dt);
       const bs = b.baseScale ?? ENTITY_SCALE.butterflyFly;
       b.scale.x = (b.vx >= 0 ? 1 : -1) * bs;
       b.scale.y = Math.abs(bs);

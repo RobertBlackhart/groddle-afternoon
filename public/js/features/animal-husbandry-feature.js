@@ -111,14 +111,14 @@ import {
   stepHogtie,
   stickPlaceState,
 } from '../animal-husbandry.js?v=cdeb38db';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=adc9ef6a';
+import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=d7a9a5d4';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
 import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=9bc8ce9f';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=167fb8aa';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=347e657a';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';

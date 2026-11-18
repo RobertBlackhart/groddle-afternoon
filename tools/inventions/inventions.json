@@ -1453,14 +1453,29 @@
    "id": "flyer-hover-bob",
    "title": "Yard and street flyers hover a moment and bob 14 px",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
-     "file": "public/js/yard-wander.js"
+     "file": "public/js/yard-wander.js",
+     "symbol": "YARD_WANDER",
+     "gone": true
+    },
+    {
+     "file": "public/js/street-creatures.js",
+     "symbol": "CREATURE_PATHS.fly",
+     "gone": true
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "updateButterflies",
+     "gone": true
     }
    ],
    "why": "npc_butterfly.js flyAround only flies on at random; the hover and bob are ours, like the Musicblock hover dropped in G297.",
-   "rows": []
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop; yard and street Butterflies fly on level at their own height, as npc_butterfly.js flyAround",
+   "rows": [
+    "G978"
+   ]
   },
   {
    "id": "dead-end-standing-sign",

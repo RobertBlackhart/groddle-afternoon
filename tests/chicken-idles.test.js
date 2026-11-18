@@ -23,8 +23,8 @@ import {
 } from '../public/js/chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedDurationMs, packedFrameAt, packedRect } from '../public/js/packed-sheets.js?v=06079f1e';
-import { CHICKEN_PAUSE, chickenPlan, chickenSeed, chickenWalkAt } from '../public/js/street-creatures.js?v=adc9ef6a';
-import { yardPlan, yardWanderAt, followYardPath } from '../public/js/yard-wander.js?v=167fb8aa';
+import { CHICKEN_PAUSE, chickenPlan, chickenSeed, chickenWalkAt } from '../public/js/street-creatures.js?v=d7a9a5d4';
+import { yardPlan, yardWanderAt, followYardPath } from '../public/js/yard-wander.js?v=347e657a';
 import { imageSize } from '../tools/image-size.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

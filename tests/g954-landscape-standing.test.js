@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { after, before, describe, it } from 'node:test';
 
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeGeometry, layerGround, stylePreviewLayout } from '../public/js/features/homes-feature.js?v=bf700a43';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeGeometry, layerGround, stylePreviewLayout } from '../public/js/features/homes-feature.js?v=d607004b';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 /** A fake Graphics that keeps its rectangles' boxes. */

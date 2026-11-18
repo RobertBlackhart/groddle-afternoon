@@ -27,7 +27,7 @@ import {
   dressVerbs,
   featherDrop,
 } from '../public/js/pot-luck.js?v=84484e77';
-import { applyCreatureState } from '../public/js/street-creatures.js?v=adc9ef6a';
+import { applyCreatureState } from '../public/js/street-creatures.js?v=d7a9a5d4';
 import { dropFor } from '../public/js/world-drop.js?v=0b4f1e4d';
 import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=2835ca06';
 import { problems } from '../tools/pot-luck-art/build.mjs';

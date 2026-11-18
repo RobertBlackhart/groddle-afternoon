@@ -22,9 +22,9 @@ import {
   yardPlan,
   yardWanderAt,
   yardWindow,
-} from '../public/js/yard-wander.js?v=167fb8aa';
-import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=338c2233';
-import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=48145d4b';
+} from '../public/js/yard-wander.js?v=347e657a';
+import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=b610642c';
+import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=bab446d4';
 import { MAGIC_STICKS, STICK_DISTANCE } from '../public/js/animal-husbandry.js?v=cdeb38db';
 import { GAME_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
@@ -50,7 +50,7 @@ function track(animals, minutes = 10, t0 = 5_000_000_000) {
 function together(a, b, px = 12, lift = false) {
   let n = 0;
   for (let i = 0; i < a.length; i += 1) {
-    const near = Math.abs(a[i].x - b[i].x) < px && (!lift || Math.abs((a[i].lift - a[i].bob) - (b[i].lift - b[i].bob)) < px);
+    const near = Math.abs(a[i].x - b[i].x) < px && (!lift || Math.abs(a[i].lift - b[i].lift) < px);
     if (near) n += 1;
   }
   return n / a.length;

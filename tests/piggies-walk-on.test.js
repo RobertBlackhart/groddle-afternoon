@@ -36,7 +36,7 @@ import {
   streetReservedSpots,
   walkInScenery,
 } from '../public/js/street-ecology.js?v=62ca408f';
-import { walkerAt } from '../public/js/street-creatures.js?v=adc9ef6a';
+import { walkerAt } from '../public/js/street-creatures.js?v=d7a9a5d4';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 
