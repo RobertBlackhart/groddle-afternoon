@@ -51,9 +51,9 @@ const {
   servingsLeft,
   settleFeastDay,
   thanksgivingDay,
-} = await import('../public/js/feast-day.js?v=a2041032');
+} = await import('../public/js/feast-day.js?v=3302a66f');
 const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=89e24bce');
-const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=402265e3');
+const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=92a3937f');
 
 const at = (y, m, d, h = 12) => Date.UTC(y, m - 1, d, h + 8); // Pacific standard time
 const fixed = (v) => () => v;
@@ -123,6 +123,17 @@ describe('the pool', () => {
     assert.equal(full.code, 'full');
     assert.equal(full.msg, FEAST_DAY_LINES.full);
     assert.equal(s.piles[15].b, 3, "a refused bite is not taken");
+  });
+
+  it('a lay on the day gives an empty spot something again, 20 s later', () => {
+    const s = createFeastDayState();
+    settleFeastDay(s, 'feast_day:2026', {}, fixed(0)); // Pot's 20, all out
+    for (let i = 0; i < 3; i += 1) biteSolo(s, 0, s.piles[0].n, {}, 1000);
+    assert.equal(s.refill[0], undefined, 'nothing left to lay');
+    assert.deepEqual(refillDue(s, {}, 50_000), []);
+    assert.deepEqual(refillDue(s, { corn: 1 }, 60_000, fixed(0)), [], 'armed, not yet laid');
+    assert.deepEqual(refillDue(s, { corn: 1 }, 80_000, fixed(0)), [0]);
+    assert.equal(s.piles[0].c, 'corn');
   });
 
   it('the leftovers are packed away on any other day', () => {

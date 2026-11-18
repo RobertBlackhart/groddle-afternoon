@@ -207,6 +207,10 @@ export function biteSolo(state, s, n, counts = {}, now = Date.now()) {
 /** Lay every spot whose refill is due (solo). Returns the spots laid. */
 export function refillDue(state, counts = {}, now = Date.now(), roll = Math.random) {
   const out = [];
+  // A spot the pool had left empty waits 20 s again once a new lay gives it something (feast_day.go laid).
+  if (Object.keys(remaining(state, counts)).length) {
+    for (const p of state?.piles || []) if (!(p.b > 0) && state.refill[p.s] == null) state.refill[p.s] = now + FEAST_DAY_RULES.refillMs;
+  }
   for (const [k, at] of Object.entries(state?.refill || {})) {
     if (now < at) continue;
     const s = Number(k);

@@ -41,7 +41,7 @@ import {
   refillDue,
   servingsLeft,
   settleFeastDay,
-} from '../feast-day.js?v=a2041032';
+} from '../feast-day.js?v=3302a66f';
 
 export const FEAST_DAY_FEATURE_ID = 'feast-day';
 
@@ -222,6 +222,10 @@ function watch(engine) {
   }));
   offs.push(c.on('msg:feastday_pile', (msg) => {
     put(msg?.pile, msg?.left);
+    redraw(engine);
+  }));
+  offs.push(c.on('msg:feastday_left', (msg) => {
+    if (online && Number.isFinite(Number(msg?.left))) online.left = Number(msg.left);
     redraw(engine);
   }));
   offs.push(c.on('msg:feastday_ate', (msg) => {
