@@ -1563,17 +1563,36 @@ export function frontCoverShare(spot, w, h, fronts) {
  * could not be seen. G939: a planned Jellisac too (its widest cell, jellySack4): Quinmchary's stood
  * behind the foreground curtain and one on Clam Calumny inside the foreground's root pipe.
  */
-export const FRONT_BOXES = Object.freeze({ shrine: [118, 147], vendor: [105, 127], 'resource:jellisac': [47, 52] });
+export const FRONT_BOXES = Object.freeze({
+  shrine: [118, 147],
+  vendor: [105, 127],
+  'resource:jellisac': [47, 52],
+  // #490 (R2): every node the planner seats has its art's box, so none is planned behind front art:
+  // a Peat Bog stood behind a front hut on Raudan Rasp (GIFNIC9JFOU1B2S, bottletree_burb_wndw_2).
+  // The boxes are the art as drawn (PLACEMENT_FOOTPRINTS and UNDER_CANOPY_HEIGHTS above): the barnacle's
+  // blister 39 x 47, the Ice Nubbin's widest knob 67 x 71, the Peat Bog's mound 180 x 104, the Dirt
+  // Pile's 179 x 120, the Dust Trap's idle trap 39 x 103, a Paper Tree with its canopy 230 x 230 and
+  // a Salmon's swim frame (its 64 x 44 hit box). Spots measured on the snaps are never planned.
+  'resource:mortar_barnacle': [39, 47],
+  'resource:ice_knob': [67, 71],
+  'resource:peat_1': [180, 104],
+  'resource:dirt_pile': [179, 120],
+  'resource:dust_trap': [39, 103],
+  'resource:paper_tree': [230, 230],
+  'resource:npc_salmon': [64, 44],
+});
+/** The FRONT_BOXES things a player has to find and click (FRONT_FIND_SHARE); the other nodes keep FRONT_HIDE_SHARE. */
+export const FRONT_FIND_KEYS = Object.freeze(['shrine', 'vendor', 'resource:jellisac']);
 
 /**
  * PURE: whether a thing of `key` at `spot` is behind the front decos (frontDecoCovers): one big
  * deco over `bar` of its box, or (for things that stand still) the decos together over that share.
- * The bar is FRONT_HIDE_SHARE (mostly hidden) for trees, rocks and Piggies, FRONT_FIND_SHARE for a
+ * The bar is FRONT_HIDE_SHARE (mostly hidden) for trees, rocks, Piggies and nodes (#490), FRONT_FIND_SHARE for a
  * shrine or vendor. A walking animal (ANIMAL_PATROL) keeps the one-deco rule on the street's own
  * layers: it walks out from behind a fill or a sliding layer's deco, and the planner would otherwise
  * put it inside a rock or a tree rather than behind one (GIFBSQJTGME2KRH, tests/piggies-walk-on.test.js).
  */
-export function hiddenBehindFront(spot, key, fronts, bar = FRONT_BOXES[key] ? FRONT_FIND_SHARE : FRONT_HIDE_SHARE) {
+export function hiddenBehindFront(spot, key, fronts, bar = FRONT_FIND_KEYS.includes(key) ? FRONT_FIND_SHARE : FRONT_HIDE_SHARE) {
   const size = REACH_BOXES[key] || FRONT_BOXES[key];
   if (!size || !fronts?.length) return false;
   const [w, h] = size;

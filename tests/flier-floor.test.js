@@ -34,10 +34,10 @@ import {
   floorUnder,
   flyerAt,
   flyerLift,
-} from '../public/js/street-creatures.js?v=5849f0c5';
+} from '../public/js/street-creatures.js?v=cd0cc0bd';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=37f2fca6';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=7b7be8e6';
 import { platformsScreen, streetWidth, isItemSolid } from '../public/js/street-model.js?v=9f16f4ab';
 import { nearestSurfaceY } from '../public/js/walk-surface.js?v=0d502ab1';
 

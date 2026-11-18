@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { CHEAP_BAG_PRICE, cheapBagPrice } from '../public/js/newxp.js?v=02f902e6';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=2dbabdd1';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=0858a04c';
 import { vendorBuy, vendorSell, vendorSellValue } from '../public/js/vendor.js?v=3df46192';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
 
