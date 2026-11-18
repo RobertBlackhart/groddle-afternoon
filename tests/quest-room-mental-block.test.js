@@ -41,7 +41,7 @@ import {
   solidRects,
   solvingPlans,
   staticPlatforms,
-} from '../public/js/quest-rooms/mental-block.js?v=a9df42bf';
+} from '../public/js/quest-rooms/mental-block.js?v=12c84592';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -257,5 +257,80 @@ describe('Mental Block art (G962)', () => {
     assert.match(rec.scene, /Mental Block/);
     const manifest = JSON.parse(readFileSync(join(root, 'public/assets/decos/manifest.json'), 'utf8'));
     assert.ok(manifest.includes(END_DOOR));
+  });
+});
+
+describe('Mental Block autoplay plays the puzzle (G971)', () => {
+  /** Build, enter and play a level on the fake clock; the room ticks while the autoplay waits. */
+  async function play(stage, mode, params = {}) {
+    const { fakeClock, fakeRoomCtx } = await import('./room-autoplay-harness.js');
+    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=7f650b66');
+    const clock = fakeClock().install();
+    try {
+      const ctx = fakeRoomCtx(room, { clock, stage, params });
+      const built = room.build(ctx, stage);
+      ctx.place(built.spawn.x, built.spawn.y);
+      room.enter(ctx);
+      return { ctx, result: await playRoomAutoplay(room, ctx, mode) };
+    } finally {
+      clock.restore();
+    }
+  }
+
+  for (const stage of ['mb1', 'mb2']) {
+    it(`${stage}: drops every block of the plan from the corridor, climbs each ledge, then exits`, async () => {
+      const { ctx, result } = await play(stage, 'solve');
+      const geo = levelGeometry(stage);
+      assert.equal(result.word, 'exited', result.summary);
+      assert.deepEqual(result.missing, []);
+      assert.deepEqual(result.refused, []);
+      const drops = geo.sections.reduce((n, s) => n + s.plan.length, 0);
+      assert.equal(result.done.filter((d) => d.startsWith('drop:')).length, drops);
+      // The room's own state: every station's blocks used and laid as the plan lays them, every ledge cleared.
+      geo.sections.forEach((s, i) => {
+        const st = ctx.data.state[i];
+        assert.equal(st.next, s.plan.length, `station ${i + 1} blocks dropped`);
+        assert.deepEqual(st.cols, columnsAfter(s, s.plan), `station ${i + 1} columns`);
+        assert.equal(st.cleared, true, `station ${i + 1} ledge`);
+      });
+      assert.ok(!/:far$/.test(ctx.log.data.mbLastPress || ''), 'no press refused as too far');
+      assert.ok(!ctx.log.toasts.includes('Climb down to the buttons first.'));
+      assert.deepEqual(ctx.log.progress, ['solved_puzzle']);
+      assert.equal(ctx.data.phase, 'done');
+    });
+  }
+
+  it('one: plays station 1 only; wrong: reverses its order and reports it, no ledge', async () => {
+    const one = await play('mb1', 'one');
+    assert.equal(one.result.word, 'one', one.result.summary);
+    assert.deepEqual(one.ctx.data.state.map((s) => s.cleared), [true, false, false]);
+    const wrong = await play('mb1', 'wrong');
+    assert.equal(wrong.result.word, 'wrong', wrong.result.summary);
+    assert.equal(wrong.ctx.data.state[0].cleared, false);
+    assert.match(wrong.ctx.log.data.mbAutoplay, /^wrong-(climbable|stuck)$/);
+  });
+
+  it('&mbstation=3 starts at station 3 and declares only the stations left', async () => {
+    const { ctx, result } = await play('mb2', 'solve', { mbstation: '3' });
+    assert.equal(result.word, 'exited', result.summary);
+    assert.ok(result.done.every((d) => !/^(drop|ledge):[01]$/.test(d)));
+    assert.equal(ctx.data.state[2].next, levelGeometry('mb2').sections[2].plan.length);
+  });
+
+  it('a press refused as too far is not a drop: the run reports stuck, never exited', async () => {
+    const { fakeClock, fakeRoomCtx } = await import('./room-autoplay-harness.js');
+    const { playRoomAutoplay } = await import('../public/js/autoplay-log.js?v=7f650b66');
+    const clock = fakeClock().install();
+    try {
+      const ctx = fakeRoomCtx(room, { clock, stage: 'mb1' });
+      room.build(ctx, 'mb1');
+      room.enter(ctx);
+      ctx.near = () => false; // every button out of reach, as the shelf snap left it
+      const result = await playRoomAutoplay(room, ctx, 'solve');
+      assert.match(result.word, /^stuck/);
+      assert.equal(ctx.data.state[0].next, 0);
+    } finally {
+      clock.restore();
+    }
   });
 });

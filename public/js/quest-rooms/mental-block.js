@@ -843,38 +843,90 @@ export const room = {
     ctx.setData('mbQuoins', String((ctx.data.quoins || []).filter((q) => q.taken).length));
   },
 
+  /**
+   * G971: the steps each autoplay mode must play. solve: every station's
+   * moves and drops in the designer's order, its ledge reached, the drop
+   * quoins (teleporter levels) and the exit; one: station 1 only; wrong:
+   * station 1's blocks in reverse, no ledge.
+   */
+  autoplaySteps(ctx, mode = 'solve') {
+    const geo = ctx.data.geo;
+    if (!geo) return [];
+    const first = Math.max(0, qaStart(ctx, geo));
+    const sections = geo.sections.slice(first, mode === 'one' || mode === 'wrong' ? first + 1 : undefined);
+    const out = [];
+    for (const s of sections) {
+      for (let k = 0; k < s.plan.length; k++) out.push(`drop:${s.i}`);
+      if (mode !== 'wrong') out.push(`ledge:${s.i}`);
+    }
+    if (mode !== 'one' && mode !== 'wrong') {
+      for (let k = 0; k < (geo.end.quoins || []).length; k++) out.push('quoin');
+      out.push('exit');
+    }
+    return out;
+  },
+
   async autoplay(ctx, mode = 'solve') {
     const geo = ctx.data.geo;
     await ctx.wait(500);
+    const p = () => ctx.player;
     const go = async (x, y, ms = 350) => {
       ctx.place(x, y);
       await ctx.wait(ms);
     };
+    // G971: the corridor is reached down its ladder, never by a jump into
+    // it (the shelf's tunnel catch put the avatar back on the shelf, so
+    // every press was refused as too far), and back up the same way.
+    const down = async (s) => {
+      await go(s.x0, SHELF_Y - 4, 160);
+      await go(s.x0, CORR_Y, 200);
+    };
+    const up = async (s) => {
+      await go(s.x0, CORR_Y, 120);
+      await go(s.x0, SHELF_Y - 4, 200);
+      await go(s.x0 + 30, SHELF_Y, 160);
+    };
+    const press = async (s, kind) => {
+      await go(s.buttons[kind].x, CORR_Y, 120);
+      return pressButton(ctx, { section: s.i, kind });
+    };
     for (const s of geo.sections) {
       const st = ctx.data.state[s.i];
-      const plan = mode === 'wrong' && s.i === 0 ? [...s.plan].reverse() : s.plan;
-      await go(s.buttons.move.x, CORR_Y, 300);
+      if (st.cleared) continue;
+      const plan = mode === 'wrong' ? [...s.plan].reverse() : s.plan;
+      await down(s);
       for (let k = 0; k < plan.length; k++) {
         const moves = movesBetween(st.tube, plan[k], s.positions.length);
         for (let m = 0; m < moves; m++) {
-          await go(s.buttons.move.x, CORR_Y, 120);
-          pressButton(ctx, { section: s.i, kind: 'move' });
+          if (!(await press(s, 'move'))) return 'stuck:far';
         }
-        await go(s.buttons.drop.x, CORR_Y, 120);
-        pressButton(ctx, { section: s.i, kind: 'drop' });
-        while (st.busy) await ctx.wait(80);
+        if (st.tube !== plan[k]) return 'stuck:tube';
+        const before = st.next;
+        if (!(await press(s, 'drop'))) return 'stuck:far';
+        for (let i = 0; st.busy && i < 100; i++) await ctx.wait(80);
+        // Logged only when the block left the tube and landed where the plan puts it.
+        const want = columnsAfter(s, plan, k + 1).map((c) => c.join(''));
+        if (!ctx.step(`drop:${s.i}`, st.next === before + 1 && !st.busy && st.cols.every((c, j) => c.join('') === want[j]))) return `stuck:drop${s.i}`;
       }
-      if (mode === 'wrong' && s.i === 0) {
+      if (mode === 'wrong') {
         ctx.setData('mbAutoplay', canClimb(s, st.cols) ? 'wrong-climbable' : 'wrong-stuck');
         return 'wrong';
       }
-      // Climb the steps: every column top left to right, then the ledge.
-      const tops = st.cols.map((c, p) => ({ x: s.positions[p], y: c.length ? columnTop(s, p, c) : null })).filter((t) => t.y != null);
+      if (!canClimb(s, st.cols)) return `stuck:climb${s.i}`;
+      // Climb the steps the blocks made: every column top left to right, then the ledge.
+      await up(s);
+      const tops = st.cols.map((c, j) => ({ x: s.positions[j], y: c.length ? columnTop(s, j, c) : null })).filter((t) => t.y != null);
       for (const t of tops) await go(t.x, t.y, 260);
       await go(s.cliff.x + 60, s.cliff.top, 700);
+      if (!ctx.step(`ledge:${s.i}`, st.cleared && Math.abs(p().y - s.cliff.top) < 6)) return `stuck:ledge${s.i}`;
       if (mode === 'one') return 'one';
     }
-    for (const q of ctx.data.quoins) if (!q.taken && q.type === 'xp' && geo.end.quoins?.some((e) => e.x === q.x && e.y === q.y)) await go(q.x, q.y + 30, 200);
+    // Walk off the last ledge through the drop quoins.
+    const ends = (ctx.data.quoins || []).filter((q) => geo.end.quoins?.some((e) => e.x === q.x && e.y === q.y));
+    for (const q of ends) {
+      if (!q.taken) await go(q.x, q.y + 30, 200);
+      ctx.step('quoin', q.taken);
+    }
     if (geo.end.kind === 'teleporter') {
       await go(geo.end.padX, SHELF_Y, 600);
     } else {
@@ -882,7 +934,8 @@ export const room = {
       useExit(ctx);
     }
     for (let i = 0; i < 60 && ctx.data.phase !== 'done'; i++) await ctx.wait(100);
-    return ctx.data.phase === 'done' ? 'exited' : 'stuck';
+    if (!ctx.step('exit', ctx.data.phase === 'done')) return 'stuck';
+    return 'exited';
   },
 };
 
@@ -997,37 +1050,38 @@ function flashButton(ctx, section, kind) {
   }, 260);
 }
 
+/** Press a station button; false when refused (too far, busy, no blocks, blocked). */
 function pressButton(ctx, { section, kind }) {
   const s = ctx.data.geo.sections[section];
   const st = ctx.data.state[section];
-  if (!s || !st) return;
+  if (!s || !st) return false;
   const at = s.buttons[kind];
   if (kind !== 'reset' && !ctx.near(at.x, at.y, 110)) {
     ctx.setData('mbLastPress', `${section}:${kind}:far`);
     ctx.toast('Climb down to the buttons first.', 1800);
-    return;
+    return false;
   }
   ctx.setData('mbLastPress', `${section}:${kind}`);
   flashButton(ctx, section, kind);
   if (kind === 'reset') {
     resetStation(ctx, section);
-    return;
+    return true;
   }
   if (kind === 'move') {
     st.tube = (st.tube + 1) % s.positions.length;
     ctx.sound('BUTTON_2', { volume: 0.5 });
     redrawStation(ctx, section);
-    return;
+    return true;
   }
   // Drop (one block in the air at a time; the tube may move meanwhile).
   if (st.busy) {
     ctx.sound('CLICK_FAILURE', { volume: 0.3 });
-    return;
+    return false;
   }
   if (st.next >= s.queue.length) {
     ctx.sound('CLICK_FAILURE', { volume: 0.4 });
     ctx.floatText(at.x, at.y - 80, 'No blocks left', '#ffd7a0');
-    return;
+    return false;
   }
   const color = s.queue[st.next];
   const p = st.tube;
@@ -1035,7 +1089,7 @@ function pressButton(ctx, { section, kind }) {
   if (s.bases[p] - stack.length * CELL < yAt(MAX_STACK)) {
     ctx.sound('CLICK_FAILURE', { volume: 0.4 });
     ctx.floatText(at.x, at.y - 80, 'The tube is blocked', '#ffd7a0');
-    return;
+    return false;
   }
   st.next += 1;
   st.drops += 1;
@@ -1044,6 +1098,7 @@ function pressButton(ctx, { section, kind }) {
   ctx.sound('BUTTON_2', { volume: 0.5 });
   startFall(ctx, section, p, color, stack, crushed);
   redrawStation(ctx, section, { keepColumn: p });
+  return true;
 }
 
 function resetStation(ctx, section) {

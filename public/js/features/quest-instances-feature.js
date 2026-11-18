@@ -67,7 +67,8 @@
  *     verbs(ctx, target) -> verbs, runVerb(ctx, target, verbId) -> true,
  *     objective(ctx) -> { text, stats: [[label, value]] },
  *     physics(ctx), onLeave(ctx, outcome) -> { keepQuest }, onExpire(ctx),
- *     autoplay(ctx, mode) -> Promise,
+ *     autoplay(ctx, mode) -> Promise<word>, autoplaySteps(ctx, mode) -> step names
+ *       the autoplay logs with ctx.step(name, ok) (js/autoplay-log.js, G971),
  *     world: { onStreetEnter(wctx, street), onTick(wctx, dt, now),
  *              verbs(wctx, target), runVerb(wctx, target, verb),
  *              packVerbs(wctx, cls), runPackVerb(wctx, cls, verb),
@@ -82,7 +83,8 @@
  * room (the path a Magic Rock offer takes); &stuckpromptms=<ms> shortens the
  * "Are you stuck?" waits (first and again) to see the prompt. Canvas data:
  * qiQuest, qiRoom, qiStage, qiStatus, qiRemaining, qiObjective, qiOutcome,
- * qiTurnedIn, qiRetry, qiRetryGiver, qiAutoplay, qiStuckIn (seconds to the
+ * qiTurnedIn, qiRetry, qiRetryGiver, qiAutoplay (hollow:<word> when declared steps are
+ * missing, G971), qiAutoplaySteps (done/declared, missing, refused), qiStuckIn (seconds to the
  * prompt), qiStuck (1 while it asks), qiStray (G886: the room you stand in with no run open,
  * 'left' once moved out), plus each room's own keys.
  */
@@ -144,6 +146,7 @@ import { sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { FIRST_SKILLS } from '../newxp.js?v=02f902e6';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
 import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=a6f5a99b';
+import { playRoomAutoplay } from '../autoplay-log.js?v=7f650b66';
 
 let quoinFrames = null;
 function quoinTexture(PIXI, type) {
@@ -219,7 +222,7 @@ const ROOM_MODULES = {
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=ea424447'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=1cea7a95'),
   gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=aca9b77c'),
-  mental_block: () => import('../quest-rooms/mental-block.js?v=a9df42bf'),
+  mental_block: () => import('../quest-rooms/mental-block.js?v=12c84592'),
   penalty: () => import('../quest-rooms/penalty.js?v=cb266833'),
   esquibeth: () => import('../quest-rooms/esquibeth.js?v=3451a159'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=65b2eda2'),
@@ -956,6 +959,8 @@ function makeContext(engine) {
     },
     memory: (key) => (save.memory[`room:${room?.id}:${key}`] ||= {}),
     wait: (ms) => new Promise((r) => setTimeout(r, ms)),
+    /** An autoplay step, logged when ok (playRoomAutoplay wires the log; G971). */
+    step: (name, ok = true) => Boolean(ok),
   };
   return c;
 }
@@ -1580,10 +1585,12 @@ async function runAutoplay(engine, mode) {
     return;
   }
   engine.setData('qiAutoplay', `running:${mode}`);
+  engine.setData('qiAutoplaySteps', '');
   try {
-    // Close the room's opening conversation, if any, before driving.
-    const result = await room.autoplay(ctx, mode);
-    engine.setData('qiAutoplay', result || 'done');
+    // G971: the room's declared steps are checked against its final word.
+    const result = await playRoomAutoplay(room, ctx, mode);
+    engine.setData('qiAutoplay', result.word);
+    engine.setData('qiAutoplaySteps', result.summary);
   } catch (err) {
     console.warn('quest autoplay', err);
     engine.setData('qiAutoplay', `error:${err?.message || err}`);
@@ -1634,8 +1641,10 @@ async function worldDemo(engine, def, questId, mode) {
   if (mode && def.world?.autoplay) {
     engine.setData('qiAutoplay', `running:${mode}`);
     try {
-      const out = await def.world.autoplay(worldContext(engine), questId, mode);
-      engine.setData('qiAutoplay', out || 'done');
+      const w = def.world;
+      const out = await playRoomAutoplay({ autoplay: (c, m) => w.autoplay(c, questId, m), autoplaySteps: (c, m) => w.autoplaySteps?.(c, questId, m) }, worldContext(engine), mode);
+      engine.setData('qiAutoplay', out.word);
+      engine.setData('qiAutoplaySteps', out.summary);
     } catch (err) {
       engine.setData('qiAutoplay', `error:${err?.message || err}`);
     }
