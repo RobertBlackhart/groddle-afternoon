@@ -27,7 +27,7 @@ import {
   targetSide,
   underTheInfluence,
 } from '../public/js/player-verbs-mp.js?v=4d0315f5';
-import { playerVerbsMpFeature } from '../public/js/features/player-verbs-mp-feature.js?v=beb0883f';
+import { playerVerbsMpFeature } from '../public/js/features/player-verbs-mp-feature.js?v=04be7474';
 import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import { pendingQuestOffers, acceptOffer } from '../public/js/quest-offers.js?v=8b51ffce';

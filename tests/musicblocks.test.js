@@ -31,11 +31,11 @@ import {
   START_STREET_MUSICBLOCKS,
   startStreetMusicblockDue,
   starterMusicblocks,
-} from '../public/js/musicblocks.js?v=650ecd58';
+} from '../public/js/musicblocks.js?v=97129d87';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
-import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=db04987b';
-import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=13336464';
+import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=85d156bc';
+import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=1ce3f385';
 import { ISLAND_MUSICBLOCKS } from '../public/js/newxp.js?v=02f902e6';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
 import {
@@ -44,7 +44,7 @@ import {
   countItem,
   createInventory,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { getVerbsFor } from '../public/content.js?v=823f43fe';
+import { getVerbsFor } from '../public/content.js?v=ee236723';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');
@@ -215,15 +215,14 @@ describe('Musicblock play rewards', () => {
     assert.equal(second.effects.xp, 5);
   });
 
-  it('requires 2 energy and leaves state untouched when too tired', () => {
+  it('plays on its last energy and spends what is left (musicblock play has no energy check)', () => {
     const state = createMusicblockState();
     const player = pc({ energy: 1 });
-    const before = structuredClone(player);
     const result = playMusicblock(state, player, 'musicblock_d_green_02', 1000);
-    assert.equal(result.ok, false);
-    assert.equal(result.reason, 'energy');
-    assert.deepEqual(player, before);
-    assert.deepEqual(state.heardAt, {});
+    assert.equal(result.ok, true);
+    assert.equal(player.energy, 0, 'Property.apiDec stops at the bottom');
+    assert.equal(result.effects.energy, -1);
+    assert.ok(state.heardAt.musicblock_d_green_02);
   });
 });
 
@@ -255,7 +254,7 @@ function fakeEngine({ streetTsid, inv, stacks = [] } = {}) {
 }
 
 async function freshFeature() {
-  const mod = await import('../public/js/features/musicblocks-feature.js?v=bfd18406');
+  const mod = await import('../public/js/features/musicblocks-feature.js?v=efbde82c');
   mod.musicblocksFeature._reset();
   return mod;
 }
@@ -492,7 +491,7 @@ describe('Musicblock game integration', () => {
 
 describe('Musicblock collection badges from any source', () => {
   it('emits in_inventory the first time a block reaches the pack', async () => {
-    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=bfd18406');
+    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=efbde82c');
     assert.deepEqual(newlyOwnedMusicblocks(new Set(['musicblock_d_blue_01']), {
       musicblock_d_blue_01: 2, musicblock_d_blue_02: 1, apple: 3, musicblock_trumpets: 1,
     }), ['musicblock_d_blue_02']);

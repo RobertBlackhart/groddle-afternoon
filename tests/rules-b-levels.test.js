@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=6a2cac74';
 import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=05ff0260';
 import { loseMood, setMetabolicGainGate, setMoodLossNotice } from '../public/js/metabolics.js?v=48f784bf';
-import { gameDayIndex } from '../public/js/musicblocks.js?v=650ecd58';
+import { gameDayIndex } from '../public/js/musicblocks.js?v=97129d87';
 import { GAME_EPOCH_MS, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
 import { levelUpStreetLine } from '../public/js/features/level-up-mp-feature.js?v=22659e6d';
 

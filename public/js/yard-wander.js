@@ -39,7 +39,7 @@
  */
 
 import { GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
-import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=d7a9a5d4';
+import { chickenPauseRoll, seededRandom } from './street-creatures.js?v=133512c9';
 
 /** Speeds (px/s), pauses and windows per class. */
 export const YARD_WANDER = Object.freeze({

@@ -11,18 +11,18 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { setMetabolicGainGate } from '../public/js/metabolics.js?v=48f784bf';
+import { setMetabolicGainGate, setMetabolicLossGate } from '../public/js/metabolics.js?v=48f784bf';
 import { createInventory, useItem } from '../public/js/inventory.js?v=6414dbdc';
-import { createShrineState, donateToShrine } from '../public/js/shrines.js?v=15d03920';
+import { createShrineState, donateToShrine } from '../public/js/shrines.js?v=280a4725';
 import { createToolConditionState, repairToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
-import { HERDKEEPING, capturePiggy, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=cdeb38db';
+import { HERDKEEPING, capturePiggy, normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=a790b415';
 import { KITTY_PET, createKitty, petKitty } from '../public/js/heli-kitties.js?v=e4af4096';
-import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=650ecd58';
+import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=97129d87';
 import { runTransform } from '../public/js/item-transforms.js?v=3a1b5812';
 import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=646d1bc1';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=db04987b';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=85d156bc';
 import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=13f35acd';
-import { runVerb } from '../public/content.js?v=823f43fe';
+import { runVerb } from '../public/content.js?v=ee236723';
 import { applySetFree } from '../public/js/animal-set-free.js?v=6fcd8355';
 import { RESOURCE_SKILL_PACKAGES, createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { room as topOfTree } from '../public/js/quest-rooms/top-of-tree.js?v=b90472a9';
@@ -151,6 +151,21 @@ describe('module gain sites', () => {
     assert.equal(pc.energy, 18);
     assert.equal(pc.mood, 50);
     assert.equal(r.effects.mood, 0);
+  });
+
+  it('a musicblock plays in Hell on an empty tank, as the source has no energy check', () => {
+    refuse('mood');
+    setMetabolicLossGate((stat) => (stat === 'energy' ? { ok: false, msg: "You would have lost energy, but you're dead!" } : null));
+    try {
+      const pc = { energy: 0, mood: 0, xp: 0, imagination: 0 };
+      const r = playMusicblock(createMusicblockState(), pc, 'musicblock_d_green_02', 1000);
+      assert.equal(r.ok, true);
+      assert.equal(pc.energy, 0);
+      assert.equal(r.effects.energy, -0);
+    } finally {
+      setMetabolicLossGate(null);
+    }
+    assert.doesNotMatch(gs('items/musicblock_d_blue_01.js').slice(gs('items/musicblock_d_blue_01.js').indexOf('verbs.play = ')), /metabolics_get_energy|energy\s*</);
   });
 
   it('unbundling grain while dead gives the grain, not the 10 mood', () => {

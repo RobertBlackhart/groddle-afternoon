@@ -39,7 +39,7 @@ import {
   chooseStartStreetMusicblock,
   endgameGiftDue,
   startStreetMusicblockDue,
-} from '../musicblocks.js?v=650ecd58';
+} from '../musicblocks.js?v=97129d87';
 
 const SYNC_MS = 1_000;
 const BLOCK_IDS = Object.keys(MUSICBLOCK_CATALOG);

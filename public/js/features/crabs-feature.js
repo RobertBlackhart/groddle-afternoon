@@ -38,13 +38,13 @@
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=6414dbdc';
-import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=650ecd58';
+import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=97129d87';
 import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { cleanQuestMarkup } from '../quests.js?v=4a3fb1da';
-import { followPath } from '../street-creatures.js?v=d7a9a5d4';
+import { followPath } from '../street-creatures.js?v=133512c9';
 import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
 import {
@@ -77,7 +77,7 @@ import {
   musicblocksInPack,
   normalizeCrabMemory,
   playToday,
-} from '../crabs.js?v=f1c48c4d';
+} from '../crabs.js?v=6d30a16a';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 const ART = 'assets/sprites/crabs/';

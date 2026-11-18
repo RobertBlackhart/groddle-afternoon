@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { SKILL_PACKAGES, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=1573f61d';
+import { GSJS_SKILL_PACKAGES } from '../public/js/skill-bubbles.js?v=5f6609bd';
 import { miningProfile } from '../public/js/mining.js?v=afb2b145';
 import { pace, pacedSystemOf } from '../public/js/pace.js?v=8aca33bc';
 import { TIME_TABLES, cardsFor, learnedFor, paceNote, tablesForCard, tablesForSkill, timeText } from '../tools/encyclopedia/skill-times.mjs';

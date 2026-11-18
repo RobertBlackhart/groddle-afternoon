@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=823f43fe';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ee236723';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f1e6b824';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0a6d3b13';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -505,8 +505,8 @@ import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchL
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=78787920';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=d8e13374';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=d8e13374';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=6cb3cd4a';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=6cb3cd4a';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=0e129801';
+} from './js/player-save.js?v=60598f4b';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -803,7 +803,7 @@ import {
   maturityLabel,
   trantStatusLabel,
 } from './js/trants.js?v=b9147016';
-import { growStreetTrant } from './js/patches.js?v=db04987b';
+import { growStreetTrant } from './js/patches.js?v=85d156bc';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -877,7 +877,7 @@ import {
   musicblockPlaySeconds,
   playMusicblock,
   starterMusicblocks,
-} from './js/musicblocks.js?v=650ecd58';
+} from './js/musicblocks.js?v=97129d87';
 import {
   VENDOR_PROFILES,
   selectVendorProfile,
@@ -894,7 +894,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=d8e13374';
+} from './js/animals.js?v=6cb3cd4a';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -935,7 +935,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=15d03920';
+} from './js/shrines.js?v=280a4725';
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
@@ -951,7 +951,7 @@ import {
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=13336464';
+} from './js/spinning-wheel.js?v=1ce3f385';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -1033,7 +1033,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=62ca408f';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=d7a9a5d4';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=133512c9';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';

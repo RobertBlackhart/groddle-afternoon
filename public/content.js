@@ -58,14 +58,14 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=d8e13374';
+} from './js/animals.js?v=6cb3cd4a';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
   performAnimalKinship,
   highestAnimalKinshipRank,
 } from './js/animal-kinship.js?v=75d3cb34';
-import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=650ecd58';
+import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=97129d87';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
   ensureWoodTreeState,
@@ -83,7 +83,7 @@ import {
   namingVerbs,
   queuePlops,
   startIncubation,
-} from './js/animal-husbandry.js?v=cdeb38db';
+} from './js/animal-husbandry.js?v=a790b415';
 import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=48f784bf';
 import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=6fcd8355';
 import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=3374cf3a';

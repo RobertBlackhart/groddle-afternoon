@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=0b4f1e4d';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=79dcaafd';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=b5aebfc2';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');

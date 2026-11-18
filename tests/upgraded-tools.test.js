@@ -46,7 +46,7 @@ import { MAKE_TOOL_SHEETS } from '../public/js/make-tool-sheets.js?v=6f758e09';
 import { clearPlot, createGarden, getPlot, hasHoe, hasWateringCan, plantPlot, waterPlot } from '../public/js/garden.js?v=d4e55862';
 import { performTrantCare, quoteTrantCare } from '../public/js/trant-care.js?v=9fba26b5';
 import { createTrantState, setTrantTables } from '../public/js/trants.js?v=b9147016';
-import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=db04987b';
+import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=85d156bc';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

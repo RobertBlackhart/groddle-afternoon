@@ -12,7 +12,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { saleVerbs } from '../public/js/home-street-mp.js?v=4969493a';
-import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=7f2a0843';
+import { homeStorageFeature } from '../public/js/features/home-storage-feature.js?v=3ea917e2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

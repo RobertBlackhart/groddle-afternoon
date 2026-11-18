@@ -305,9 +305,9 @@ export function playMusicblock(state, pc, classTsid, now = Date.now()) {
   const def = getMusicblock(classTsid);
   if (!def) return { ok: false, reason: 'unknown' };
   if (!state || !pc) return { ok: false, reason: 'state' };
-  if ((pc.energy || 0) < 2) {
-    return { ok: false, reason: 'energy', msg: 'You need 2 energy to play that tune.' };
-  }
+  // musicblock_d_blue_01.js play (253-389) has no energy check: it costs 2 through
+  // metabolics_lose_energy (379), which the dead pass free (inc_metabolics.js 117-122),
+  // so a block plays in Hell too.
 
   const at = Number.isFinite(Number(now)) ? Number(now) : Date.now();
   const previous = state.heardAt[classTsid];
@@ -341,7 +341,7 @@ export function playMusicblock(state, pc, classTsid, now = Date.now()) {
   // the +2 mood and -2 energy.
   if (xp) xp = grantMoodXp(pc, xp);
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
-  loseEnergy(pc, 2);
+  const lost = loseEnergy(pc, 2);
   // musicblock_*.js 370: metabolics_add_mood(2), nothing while dead (inc_metabolics.js 79-86).
   const mood = gainMetabolic(pc, 'mood', 2);
   state.heardAt[classTsid] = at;
@@ -354,6 +354,6 @@ export function playMusicblock(state, pc, classTsid, now = Date.now()) {
     def,
     freshness,
     msg,
-    effects: { energy: -2, mood, xp },
+    effects: { energy: -lost, mood, xp },
   };
 }

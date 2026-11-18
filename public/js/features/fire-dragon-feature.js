@@ -19,7 +19,7 @@
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { followPath } from '../street-creatures.js?v=d7a9a5d4';
+import { followPath } from '../street-creatures.js?v=133512c9';
 import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import {
   FIRE_DRAGON_CLASS,
