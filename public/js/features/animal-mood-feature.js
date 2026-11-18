@@ -111,12 +111,12 @@ import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overla
 import { isInHell } from '../hell.js?v=834960da';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
-import { animalStatusLabel } from '../animals.js?v=ad115245';
+import { animalStatusLabel } from '../animals.js?v=644c48cf';
 import { LOCAL_STATES } from '../shared-quoins.js?v=89d7b201';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { quoteAnimalKinship } from '../animal-kinship.js?v=75d3cb34';
 import { VERB_RESPONSE_POOLS } from '../verb-responses-data.js?v=0777b59b';
-import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=fc4fb6ca';
+import { captureVerbState, isFoodItem, itemLabel } from '../animal-husbandry.js?v=dd2ea682';
 import { ROOK_SHEETS, rookAttackFeature } from './rook-attack-feature.js?v=865e1401';
 import { ANIMAL_BODY, ANIMAL_PATROL, TREE_FOOTPRINT } from '../street-ecology.js?v=87ed5120';
 import {

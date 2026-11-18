@@ -52,7 +52,7 @@
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=71fa73cd';
-import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=247cf59b';
+import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=22e42b26';
 import { hellFeature } from './hell-feature.js?v=6da8c49f';
 import { postReachY } from '../street-model.js?v=9f16f4ab';
 import {
@@ -362,8 +362,21 @@ function glowTarget(engine, key, target, kind, verb) {
   glow.y = sprite.y;
   glow.zIndex = (Number(sprite.zIndex) || 3) - 0.5;
   const layer = sprite.parent === engine.entityLayer ? routeGlowLayer(engine) : null;
-  (layer || sprite.parent || engine.entityLayer).addChild(glow);
+  const into = layer || sprite.parent || engine.entityLayer;
+  into.addChild(glow);
   highlight = { kind, view: sprite, glow, key, target, door, verb, x: sprite.x, y: sprite.y - h / 2, w, h };
+  // #509: a target mounted on another thing (A Red Button on the subway's gate box, target.glowClip
+  // in its parent's space) keeps its halo inside that thing, not on the wall beside it.
+  const clip = target.glowClip;
+  if (clip && PIXI.Graphics && [clip.l, clip.t, clip.r, clip.b].every(Number.isFinite)) {
+    const mask = new PIXI.Graphics().rect(clip.l, clip.t, clip.r - clip.l, clip.b - clip.t).fill(0xffffff);
+    mask.label = 'route-glow-clip';
+    mask.eventMode = 'none';
+    into.addChild(mask);
+    glow.mask = mask;
+    highlight.glows = [glow, mask];
+    engine.setData?.('routeGlowClip', `${Math.round(clip.r - clip.l)}x${Math.round(clip.b - clip.t)}`);
+  }
   if (kind === 'door') syncDoorGlow(highlight);
   return true;
 }

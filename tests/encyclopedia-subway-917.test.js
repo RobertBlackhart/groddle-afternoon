@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, posix } from 'node:path';
-import { STATIONS } from '../public/js/subway.js?v=247cf59b';
-import { renderSubwayMapSvg } from '../public/js/map-views.js?v=4f7889df';
+import { STATIONS } from '../public/js/subway.js?v=22e42b26';
+import { renderSubwayMapSvg } from '../public/js/map-views.js?v=b1e4558b';
 import { SUBWAY_PATH, SUBWAY_TEXT, stationAnchor } from '../tools/encyclopedia/subway.mjs';
 
 const pub = join(import.meta.dirname, '..', 'public');

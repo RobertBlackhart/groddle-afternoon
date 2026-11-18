@@ -88,10 +88,11 @@ import {
   stationById,
   stationByTsid,
   stationScreen,
+  gateBoxFace,
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=247cf59b';
+} from '../subway.js?v=22e42b26';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 
@@ -662,10 +663,14 @@ function drawStation(engine, street, station) {
   // The station's art is the street's own (subway.js stationDecos, #482); the two things it clicks stay here.
   // A Red Button on the green gate box's face, under the grille, as the 2012 snaps show it (G838, #385);
   // it stood on the stone block beside the box before.
-  const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 26, h: 45, z: 4 }, b);
+  // #509: 27 x 47 at x 433, as the snaps show it (it was 26 x 45 at 437).
+  const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 27, h: 47, z: 4 }, b);
   button.eventMode = 'static';
   button._worldHitW = 150;
   button._worldHitH = 200;
+  // #509: a route's halo round the button stays on the gate box's face it is mounted on (map-routes glowTarget).
+  const face = gateBoxFace();
+  const glowClip = { l: face.l - b.l, r: face.r - b.l, t: face.t - b.t, b: face.b - b.t };
   targets.push(engine.register({
     classId: 'subway_gate',
     featureId: SUBWAY_FEATURE_ID,
@@ -673,6 +678,7 @@ function drawStation(engine, street, station) {
     subtitle: `${TEXT.gateTooltip} · ${FARE} currants`,
     sprite: button,
     subway: 'gate',
+    glowClip,
   }));
   // The Subway Map post where the station's snap shows it (subway.js STATION_SPOTS).
   const [mapX, mapY] = stationSpots(station).map;

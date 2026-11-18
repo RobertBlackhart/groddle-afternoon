@@ -378,10 +378,15 @@ export const lineText = Object.freeze({
  * Snap px map to world as x - 750, y - 719 (the avatar's feet in the GFJ snap at y 583).
  */
 export const STATION_FLOOR = -136;
+/** #509: the green gate box is the left 55% of subway_gate_static (its stone block the rest). */
+export const GATE_BOX_SHARE = 0.55;
+/** #509: where subway_gate_static stands (stationArt's row: x centre, y bottom), the same in every station. */
+export const GATE_STATIC_BOTTOM = STATION_FLOOR + 40;
 export const STATION_BOUNDS = Object.freeze({ l: -750, r: 750, t: -640, b: -50 });
 // The stairs' flat back stands flush with the station's left end (l -750 + 132 / 2), as in the snaps.
 // `train` is the nose's left edge; `sign` and `map` are GFJ's (STATION_SPOTS has each station's).
-export const STATION_X = Object.freeze({ stairs: -684, crack: -627, sign: -447, column: -212, map: 0, arrive: 0, crack2: 24, train: 155, post: 377, gate: 478, button: 437, floorCrack: -544 });
+// #509: A Red Button's centre at x 433 (snap x 1183 in every 2012 station snap), 27 x 47 px.
+export const STATION_X = Object.freeze({ stairs: -684, crack: -627, sign: -447, column: -212, map: 0, arrive: 0, crack2: 24, train: 155, post: 377, gate: 478, button: 433, floorCrack: -544 });
 
 /**
  * Each station's sign (centre x, centre y) and Subway Map post (centre x, foot y), world px, read off
@@ -417,6 +422,16 @@ const art = (piece, x, y, z, extra = {}) => {
   return Object.freeze({ piece, x, y, w: extra.w ?? w, h: extra.h ?? h, z, ...(extra.flip ? { flip: true } : {}), ...(extra.alpha ? { alpha: extra.alpha } : {}), ...(extra.frame ? { frame: Object.freeze([...extra.frame]) } : {}) });
 };
 
+/**
+ * #509: the green gate box's face (world px: l, r, t, b), where A Red Button is mounted: the left
+ * GATE_BOX_SHARE of subway_gate_static. A route's halo round the button stays inside it.
+ */
+export function gateBoxFace() {
+  const [, w, h] = SUBWAY_ART.subway_gate_static || [null, 0, 0];
+  const l = STATION_X.gate - w / 2;
+  return Object.freeze({ l, r: l + w * GATE_BOX_SHARE, t: GATE_STATIC_BOTTOM - h, b: GATE_STATIC_BOTTOM });
+}
+
 /** Art rows: x centre, y bottom (world), z under the avatar (negative) or over it. */
 export function stationArt(station) {
   const F = STATION_FLOOR;
@@ -444,7 +459,7 @@ export function stationArt(station) {
   // The column's foot stands nearer than the walking line, so it draws over the avatar (zIndex 50, game.js makePlayer; Austin, 2026-10-29).
   rows.push(art('column_1', X.column, F + 36, 60));
   rows.push(art('ticket_post_back', X.post, F - 63, -24));
-  rows.push(art('subway_gate_static', X.gate, F + 40, -22));
+  rows.push(art('subway_gate_static', X.gate, GATE_STATIC_BOTTOM, -22));
   rows.push(art('door_asset_stairs', X.stairs, F - 2, -40));
   return rows;
 }
