@@ -34,7 +34,8 @@ const V7 = [
   [/PIXI\.Assets\b|\bcacheAsBitmap\b/, 'Assets/cacheAsBitmap: use js/textures.js / cacheAsTexture()'],
   [/\bapp\.view\b/, 'app.view: use app.canvas'],
   [/(?:Texture|Sprite)\.from\(\s*['"`]/, 'Texture.from(url) never loads in v8: use textureFromUrl(url)'],
-  [/\.once\(\s*['"]loaded['"]|\.valid\b/, 'texture loaded state: use isLoaded/onLoaded from js/textures.js'],
+  // G982: a once('update') left on a shared cached texture outlives its sprite; when the image came the dead sprite's handler threw and stopped the rest.
+  [/\.once\??\.?\(\s*['"](?:loaded|update)['"]|\.valid\b/, 'texture loaded state: use isLoaded/onLoaded from js/textures.js'],
   [/new (?:[\w.]+\.)?PIXI\.Application\(\s*\{/, 'Application: new PIXI.Application() then await app.init({...})'],
 ];
 

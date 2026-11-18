@@ -31,7 +31,7 @@ import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../makin
 import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8b81947e';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
-import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import {
@@ -251,6 +251,22 @@ function spawnTable(engine) {
   redraw(engine);
 }
 
+/**
+ * A dish icon scaled into its box, now and again when the icon arrives. It waits on the load
+ * (textures.js onLoaded), never on a listener left on the shared cached texture: a sprite rebuilt
+ * on the next lay left its once('update') behind, the dead sprite's fit threw when the icon came
+ * and stopped the texture's other listeners, so new dishes stayed invisible until a reload.
+ */
+function fitIcon(s, tex, box) {
+  const fit = () => {
+    if (s.destroyed || s.texture !== tex) return;
+    const k = Math.min(box / (tex.width || box), box / (tex.height || box), 1);
+    s.scale.set(k);
+  };
+  fit();
+  if (!isLoaded(tex)) onLoaded(tex, fit);
+}
+
 /** The newest dishes on the table top, left to right, and the count on its front. */
 function redraw(engine) {
   if (!view || view.root.destroyed) {
@@ -264,26 +280,25 @@ function redraw(engine) {
   }
   const { PIXI } = engine;
   const t = shownTable();
-  view.icons.removeChildren().forEach((c) => c.destroy());
   const rows = shownRows(t);
   const span = view.step * 2 - 24;
   const slot = rows.length > 1 ? span / Math.max(rows.length, 6) : 0;
   const box = 34;
+  // One sprite a slot, kept from lay to lay: a slot whose dish changed only takes the new icon.
+  const kids = view.icons.children;
+  while (kids.length > rows.length) view.icons.removeChildAt(kids.length - 1).destroy();
   rows.forEach((row, i) => {
-    const s = new PIXI.Sprite(textureFromUrl(`assets/sprites/icons/${row.c}.webp`));
-    s.anchor?.set?.(0.5, 1);
-    const fit = () => {
-      const tw = s.texture?.width || box;
-      const th = s.texture?.height || box;
-      const k = Math.min(box / tw, box / th, 1);
-      s.scale.set(k);
-    };
-    fit();
-    s.texture?.once?.('update', fit);
+    const tex = textureFromUrl(`assets/sprites/icons/${row.c}.webp`);
+    let s = kids[i];
+    if (!s) {
+      s = new PIXI.Sprite(tex);
+      s.anchor?.set?.(0.5, 1);
+      view.icons.addChild(s);
+    } else if (s.texture !== tex) s.texture = tex;
+    fitIcon(s, tex, box);
     // Newest at the left, then older to the right, with a little stagger front and back.
     s.x = -span / 2 + 16 + i * slot;
     s.y = -view.h + 14 + (i % 2) * 3;
-    view.icons.addChild(s);
   });
   view.label.text = t.total ? tableCountLabel(t.total) : '';
   view.target.subtitle = TABLE_LINES.subtitle(t.total);
