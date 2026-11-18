@@ -68,3 +68,15 @@ describe('G978: flyers fly on (npc_butterfly.js flyAround)', () => {
     assert.doesNotMatch(game, /b\.phase/);
   });
 });
+
+describe('G978: the party booster is an invisible box', () => {
+  it('no pad, bulbs or confetti in a party space (players/inc_physics.js physics_event_run: a Collision-triggered Event Box)', async () => {
+    dropped('party-booster-pad');
+    const feature = read('public/js/features/party-spaces-feature.js');
+    assert.doesNotMatch(feature, /Overlay|bulbs|confetti/);
+    assert.match(fn(feature, 'spawnBooster'), /booster = \{ x: point\.x, y: point\.y, w: 70, h: 40, cooldownUntil: 0 \};/);
+    assert.doesNotMatch(fn(feature, 'spawnBooster'), /PIXI|Graphics/);
+    const { PARTY_SPACES } = await import('../public/js/party-spaces.js?v=4e8d4471');
+    for (const s of Object.values(PARTY_SPACES)) assert.ok(!('ambience' in s) && !('palette' in s), s.id);
+  });
+});

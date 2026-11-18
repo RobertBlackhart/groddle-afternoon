@@ -8,7 +8,7 @@
  *   portal for 2 minutes). Walk into it, or click it, to enter.
  * - Inside: the template's imported street with its physics block, its
  *   archived goods on respawning spawners, tools, rocks and quoins, the Party
- *   ATM (extend the clock), party music, confetti and lights, and a few
+ *   ATM (extend the clock), party music and a few
  *   friends dancing (remake ambience: parties were multiplayer).
  * - signpost_1 is the instance exit: it points back to the street you came
  *   from and lands on the saved spot. Map travel is frozen inside; a reload
@@ -29,7 +29,7 @@
  * another demo opened: G904).
  * Canvas data: partyStatus, partyTemplate, partyRemaining, partyInside,
  * partyReturn, partyStacks, partyAtm, partyGuests, partyPhysics, partyBoost,
- * partyAmbience, partyMusic, partyLast, partyDemo, partyTeleporter,
+ * partyMusic, partyLast, partyDemo, partyTeleporter,
  * partyMp (multiplayer: the space's hub street, creator id and members' ids).
  *
  * Multiplayer (G334; engine.mode and engine.query('realtimeClient')): the
@@ -82,13 +82,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=8e869964';
+} from '../party-spaces.js?v=4e8d4471';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { readVisitScene } from '../neighbours-mp.js?v=81fe8611';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ac6c3387';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=68488a4d';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
@@ -128,9 +128,8 @@ let disappearFrames = null;
 let stacks = []; // { group, target, sprite, badge, takenAt: [] }
 let atm = null; // { target, sprite, screen }
 let guests = []; // { target, sprite, label, baseY, t, nextLine }
-let booster = null; // { sprite, x, y, w, h, cooldownUntil }
+let booster = null; // { x, y, w, h, cooldownUntil }: the Event Box, invisible as in the source
 let boostUntil = 0;
-let overlay = null; // { root, bits, bulbs, kind, palette, t }
 let teleporter = null; // { target, sprite, phase, gone }
 let hud = null;
 let modal = null;
@@ -702,7 +701,7 @@ function tickClock(engine, now) {
 }
 
 /* ------------------------------------------------------------------ */
-/* The space: stacks, ATM, guests, booster, ambience                   */
+/* The space: stacks, ATM, guests, booster                             */
 /* ------------------------------------------------------------------ */
 
 function setupSpace(street, engine) {
@@ -732,12 +731,11 @@ function setupSpace(street, engine) {
   const guestPoints = [near(340) || take(), near(420) || take(), near(500) || take()];
   if (s.event) {
     const far = points.length > 3 ? points.splice(Math.floor(points.length / 3), 1)[0] : take();
-    spawnBooster(engine, far);
+    spawnBooster(far);
   }
   for (const group of partyStackGroups(p.template)) spawnStack(engine, group, take());
   // Multiplayer: the party is the real players, so no stand-in dancers.
   if (!p.mp) PARTY_GUESTS.forEach((g, i) => spawnGuest(engine, g, guestPoints[i], i));
-  buildOverlay(engine, s);
   engine.playSound('LONELINESS_FIREWORKS', { volume: 0.45 });
   engine.pushActivity(`Welcome to ${s.label}! ${s.desc}`);
   const expireParam = Number(engine.param('partyexpire'));
@@ -908,30 +906,18 @@ function tickGuests(engine, dtMs, now) {
   }
 }
 
-function spawnBooster(engine, point) {
+/**
+ * The space's one Collision-triggered Event Box (players/inc_physics.js physics_event_run): a box
+ * the player walks into, drawn by nothing, as in the source (G978: the remake's pulsing pad is gone).
+ */
+function spawnBooster(point) {
   if (!point) return;
-  const { PIXI } = engine;
-  const pad = new PIXI.Graphics();
-  const s = space();
-  const color = s.palette[0];
-  pad.roundRect(-34, -8, 68, 10, 5).fill({ color: 0x2b2b44, alpha: 0.85 });
-  pad.roundRect(-28, -12, 56, 6, 3).fill({ color: color, alpha: 1 });
-  for (let i = -1; i <= 1; i += 1) {
-    pad.poly([i * 16 - 6, -16, i * 16 + 6, -16, i * 16, -26]).fill({ color: 0xffffff, alpha: 0.85 });
-  }
-  pad.x = point.x;
-  pad.y = point.y + 2;
-  pad.zIndex = 17;
-  pad.eventMode = 'none';
-  engine.entityLayer.addChild(pad);
-  booster = { sprite: pad, x: point.x, y: point.y, w: 70, h: 40, cooldownUntil: 0 };
+  booster = { x: point.x, y: point.y, w: 70, h: 40, cooldownUntil: 0 };
 }
 
 function tickBooster(engine) {
   if (!booster || !engine.player) return;
   const p = engine.player;
-  const pulse = 0.75 + Math.sin(simMs / 160) * 0.25;
-  booster.sprite.alpha = simMs < boostUntil ? 1 : pulse;
   if (simMs < booster.cooldownUntil) return;
   if (Math.abs(p.x - booster.x) <= booster.w / 2 && p.y <= booster.y + 6 && p.y >= booster.y - booster.h) {
     fireBooster(engine);
@@ -946,89 +932,6 @@ function fireBooster(engine) {
   engine.playSound('SPINACHJUMP', { volume: 0.55 });
   note(engine, `event:${ev.id}`);
   engine.achievement(`party_space_event:${ev.id}`, 1);
-}
-
-/* Screen-space festive layer: confetti, bubbles, snow or sparkles + lights. */
-function buildOverlay(engine, s) {
-  const stage = engine.stage;
-  if (!stage) return;
-  const { PIXI } = engine;
-  const root = new PIXI.Container();
-  root.eventMode = 'none';
-  const cam = engine.camera;
-  const W = cam.w;
-  const H = cam.h;
-  const kind = s.ambience || 'confetti';
-  const bits = [];
-  const n = kind === 'snow' ? 70 : kind === 'sparkles' ? 46 : kind === 'bubbles' ? 38 : 64;
-  for (let i = 0; i < n; i += 1) {
-    const g = new PIXI.Graphics();
-    const color = s.palette[i % s.palette.length];
-    if (kind === 'bubbles') g.circle(0, 0, 3 + (i % 5) * 1.6).fill({ color: color, alpha: 0.18 }).stroke({ width: 1.5, color: 0xffffff, alpha: 0.75 });
-    else if (kind === 'snow') g.circle(0, 0, 1.4 + (i % 4) * 0.8).fill({ color: 0xffffff, alpha: 0.9 });
-    else if (kind === 'sparkles') g.poly([0, -5, 1.4, -1.4, 5, 0, 1.4, 1.4, 0, 5, -1.4, 1.4, -5, 0, -1.4, -1.4]).fill({ color: color, alpha: 1 });
-    else g.rect(-3, -1.6, 6, 3.2).fill({ color: color, alpha: 1 });
-    g.x = Math.random() * W;
-    g.y = Math.random() * H;
-    root.addChild(g);
-    bits.push({ g, vx: (Math.random() - 0.5) * 0.6, vy: kind === 'bubbles' ? -(0.4 + Math.random() * 0.8) : kind === 'sparkles' ? 0 : 0.5 + Math.random() * 1.1, spin: (Math.random() - 0.5) * 0.2, phase: Math.random() * 6.28 });
-  }
-  const bulbs = [];
-  if (kind !== 'bubbles') {
-    const wire = new PIXI.Graphics();
-    const sag = 22;
-    wire.moveTo(0, 4);
-    for (let x = 0; x <= W; x += 24) wire.lineTo(x, 4 + sag * Math.sin((x / W) * Math.PI));
-    wire.stroke({ width: 2, color: 0x2a1d14, alpha: 0.7 });
-    root.addChild(wire);
-    for (let i = 0; i < 18; i += 1) {
-      const x = (i + 0.5) * (W / 18);
-      const b = new PIXI.Graphics();
-      b.ellipse(0, 0, 4, 6).fill({ color: 0xffffff, alpha: 1 });
-      b.x = x;
-      b.y = 10 + sag * Math.sin((x / W) * Math.PI);
-      root.addChild(b);
-      bulbs.push(b);
-    }
-  }
-  stage.addChild(root);
-  overlay = { root, bits, bulbs, kind, palette: s.palette, t: 0, W, H };
-  engine.setData('partyAmbience', kind);
-}
-
-function tickOverlay(dtMs) {
-  if (!overlay || overlay.root.destroyed) return;
-  const f = Math.min(3, dtMs / 16.67);
-  overlay.t += dtMs / 1000;
-  const { W, H } = overlay;
-  for (const b of overlay.bits) {
-    const g = b.g;
-    if (overlay.kind === 'sparkles') {
-      g.alpha = 0.25 + 0.75 * Math.abs(Math.sin(overlay.t * 1.7 + b.phase));
-      g.rotation += b.spin * f;
-      continue;
-    }
-    g.x += (b.vx + Math.sin(overlay.t * 1.3 + b.phase) * 0.35) * f;
-    g.y += b.vy * f;
-    g.rotation += b.spin * f;
-    if (g.y > H + 8) { g.y = -8; g.x = Math.random() * W; }
-    if (g.y < -10) { g.y = H + 6; g.x = Math.random() * W; }
-    if (g.x < -8) g.x = W + 6;
-    if (g.x > W + 8) g.x = -6;
-  }
-  overlay.bulbs.forEach((bulb, i) => {
-    const step = Math.floor(overlay.t * 2.5) + i;
-    bulb.tint = overlay.palette[step % overlay.palette.length];
-    bulb.alpha = 0.7 + 0.3 * Math.sin(overlay.t * 3 + i);
-  });
-}
-
-function destroyOverlay() {
-  if (overlay?.root && !overlay.root.destroyed) {
-    overlay.root.parent?.removeChild(overlay.root);
-    overlay.root.destroy({ children: true });
-  }
-  overlay = null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1575,7 +1478,6 @@ export const partySpacesFeature = {
     guests = [];
     booster = null;
     teleporter = null;
-    destroyOverlay();
     closeModal(engine || engineRef);
   },
 
@@ -1617,7 +1519,6 @@ export const partySpacesFeature = {
       if (atm) atm.screen.text = formatPartyClock(partyRemainingMs(party(), now));
       tickGuests(engine, dtMs, now);
       tickBooster(engine);
-      tickOverlay(dtMs);
     }
     stepDemo(engine, now);
     renderHud(engine);

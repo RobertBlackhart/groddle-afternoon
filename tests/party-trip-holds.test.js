@@ -26,8 +26,8 @@ import {
   stepQuestInstance,
   stuckPromptDue,
 } from '../public/js/quest-instance.js?v=13b8ee09';
-import { normalizePartyRecord } from '../public/js/party-spaces.js?v=8e869964';
-import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=f7f5502e';
+import { normalizePartyRecord } from '../public/js/party-spaces.js?v=4e8d4471';
+import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=95709fb3';
 import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=370c8d41';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

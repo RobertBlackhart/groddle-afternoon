@@ -1252,15 +1252,24 @@
    "id": "party-booster-pad",
    "title": "A pulsing party booster pad, bulbs and confetti in party spaces",
    "kind": "visual",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
-     "file": "public/js/features/party-spaces-feature.js"
+     "file": "public/js/features/party-spaces-feature.js",
+     "symbol": "spawnBooster",
+     "gone": true
+    },
+    {
+     "file": "public/js/party-spaces.js",
+     "symbol": "PARTY_SPACES",
+     "gone": true
     }
    ],
    "why": "Shows where the boost is; the source booster is an invisible event box.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): drop the pulsing pad, its bulbs and the confetti, bubbles, snow and sparkles; the booster is the source's invisible Event Box",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {
