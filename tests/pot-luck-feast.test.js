@@ -6,7 +6,7 @@
 import { describe, it, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -33,12 +33,14 @@ import {
   layCheck,
   layOffering,
   layableKind,
+  cropClasses,
   packAway,
   questComplete,
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=96726383';
+} from '../public/js/pot-luck-feast.js?v=ffef5459';
+import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=80957092';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
@@ -59,12 +61,30 @@ describe('the Harvest Table (pot-luck-feast.js)', () => {
     assert.equal(street.label, 'Groddle Forest Junction');
     const recipes = readJson('public/assets/content/recipes.json');
     const dishes = dishClasses(recipes);
-    for (const d of HARVEST_DISHES) assert.equal(layableKind(d, null, dishes), 'dish', d);
-    assert.equal(layableKind(STUFFING, null, dishes), 'dish');
-    assert.equal(layableKind('simple_slaw', null, dishes), 'dish', 'a Knife & Board dish');
-    assert.equal(layableKind('onion', { tags: ['crop'] }, dishes), 'crop');
-    assert.equal(layableKind('pick', { tags: ['tool'] }, dishes), null);
-    assert.equal(layableKind('bean_bean', null, dishes), null, 'a seasoner output is no dish');
+    const crops = cropClasses(SEED_CATALOG);
+    for (const d of HARVEST_DISHES) assert.equal(layableKind(d, crops, dishes), 'dish', d);
+    assert.equal(layableKind(STUFFING, crops, dishes), 'dish');
+    assert.equal(layableKind('simple_slaw', crops, dishes), 'dish', 'a Knife & Board dish');
+    assert.equal(layableKind('onion', crops, dishes), 'crop');
+    assert.equal(layableKind('pick', crops, dishes), null);
+    assert.equal(layableKind('cherry', crops, dishes), null, 'a fruit is food, not a crop');
+    assert.equal(layableKind('bean_bean', crops, dishes), null, 'a seasoner output is no dish');
+  });
+
+  it('takes every crop Glitch had: is_crop = 1 in GSJS, Pumpkin and the herbs too (the tag check missed 8)', () => {
+    const gs = join(root, '../glitch-GameServerJS/items'); // beside the game, as other tests read it
+    const crops = cropClasses(SEED_CATALOG);
+    if (existsSync(gs)) {
+      const gsjs = readdirSync(gs).filter((f) => f.endsWith('.js') && /this\.is_crop = 1;/.test(readFileSync(join(gs, f), 'utf8'))).map((f) => f.slice(0, -3)).sort();
+      assert.deepEqual([...crops].sort(), gsjs, 'what a garden seed grows is what GSJS calls a crop');
+    }
+    assert.equal(crops.size, 20);
+    const missed = ['pumpkin', 'purple_flower', 'rubeweed', 'rookswort', 'hairball_flower', 'silvertongue', 'gandlevery', 'yellow_crumb_flower'];
+    const items = readJson('public/assets/content/making-items.json');
+    for (const c of missed) {
+      assert.ok(!(items[c]?.tags || []).includes('crop'), `${c} has no crop tag`);
+      assert.equal(layableKind(c, crops, new Set()), 'crop', c);
+    }
   });
 
   it('refuses in the order the server does: season, dish, pack', () => {

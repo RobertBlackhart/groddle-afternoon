@@ -35,6 +35,7 @@ import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
+import { SEED_CATALOG } from '../garden.js?v=d4e55862';
 import { openListDialog } from '../ui/storage-windows.js?v=4992800f';
 import {
   DISHES_NEEDED,
@@ -58,6 +59,7 @@ import {
   TABLE_STREET,
   createQuestState,
   createTableState,
+  cropClasses,
   dishClasses,
   dishSpots,
   layCheck,
@@ -70,7 +72,7 @@ import {
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=96726383';
+} from '../pot-luck-feast.js?v=ffef5459';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -83,6 +85,7 @@ let laidTotal = 0; // this player's offerings, all time (Good Neighbor counts th
 let view = null; // { target, root, icons, label }
 let recipeAdded = false;
 let dishes = null;
+const crops = cropClasses(SEED_CATALOG); // what a garden seed grows: Glitch's crops (is_crop)
 let offerAt = 0;
 let offerOpen = false;
 let client = null;
@@ -355,7 +358,7 @@ function dishSet() {
 }
 
 function kindOf(cls) {
-  return layableKind(cls, ITEM_CATALOG[cls], dishSet());
+  return layableKind(cls, crops, dishSet());
 }
 
 /** The pack's dishes and crops, for the picker. */

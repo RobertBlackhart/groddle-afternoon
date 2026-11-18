@@ -151,16 +151,23 @@ export function tableCountLabel(n) {
 }
 
 /**
- * What a class is on the table: 'dish' (a food a cooking recipe makes), 'crop' (tag crop) or null.
- * meta: the item's catalog row ({ tags }); dishes: a Set of the classes a cooking tool makes.
+ * What a class is on the table: 'dish' (a food a cooking recipe makes), 'crop' or null. A crop is
+ * what Glitch called one (items/<crop>.js is_crop = 1, parent crop_base, produced_by_class a
+ * seed_*: what a garden seed grows), from cropClasses(SEED_CATALOG), not the item's tags: Pumpkin
+ * (pumpkin.js 18, 24, 407) and the seven herbs carry no 'crop' tag. dishes: a Set of the classes a
+ * cooking tool makes; crops: a Set of crop classes.
  */
-export function layableKind(cls, meta = null, dishes = null) {
+export function layableKind(cls, crops = null, dishes = null) {
   const c = String(cls || '');
   if (!c) return null;
   if (c === STUFFING || HARVEST_DISHES.includes(c) || dishes?.has?.(c)) return 'dish';
-  const tags = Array.isArray(meta?.tags) ? meta.tags : [];
-  if (tags.includes('crop')) return 'crop';
+  if (crops?.has?.(c)) return 'crop';
   return null;
+}
+
+/** The classes a garden seed grows (js/garden.js SEED_CATALOG: { seed: { cropId } }). */
+export function cropClasses(seeds = {}) {
+  return new Set(Object.values(seeds || {}).map((s) => s?.cropId).filter(Boolean));
 }
 
 /** The classes a cooking tool makes, from a recipe catalog ({ key: { tool, outputs } }). */
