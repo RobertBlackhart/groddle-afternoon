@@ -25,7 +25,7 @@
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { YARD_FRONT, YARD_H, YARD_W, buildRubeYardBackground, yardDeco } from '../rube-yard-scene.js?v=ebec740b';
-import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 
 const W = YARD_W;
 const H = YARD_H;

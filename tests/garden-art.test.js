@@ -15,7 +15,7 @@ import { bedPieces, GARDEN_SCALE, gardenHalfWidth, gardenLayout, gardenMetrics, 
 import { createCultivationState, cultivateDemoYard, cultivationDef, dispatcherRx, footprint, groundFixtures, homeStreetLayout, normalizeCultivationState, placementCheck, SIGNPOST_POST_HALF } from '../public/js/home-cultivation.js?v=57afc9e2';
 import { DISPATCHER_HALF } from '../public/js/home-street-fixtures.js?v=bad831a1';
 import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
-import { HIRES_SPRITES, FIRST_DRAW_SPRITES } from '../public/js/sprite-hires.js?v=24aa024c';
+import { HIRES_SPRITES, FIRST_DRAW_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');

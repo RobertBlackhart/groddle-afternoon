@@ -33,6 +33,7 @@
 
 import { SEASON_DATA } from './seasons-data.js?v=b5174bc9';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
+import { FANCY_FEATHER, FEATHER_ROTS_TO, POT_LUCK_STOCK } from './pot-luck.js?v=84484e77';
 
 const DAY_MS = 86_400_000;
 
@@ -71,6 +72,16 @@ export const SEASONS = Object.freeze({
     source: 'source',
     window: 'March 14, wherever it is still March 14',
     blurb: 'Anyone with a Frying Pan can cook Pi today, and a Pi in your pack can Estimate Pi for favor with Tii.',
+  }),
+  // G982 (Austin 2026-11-17): ours, an event Glitch never ran (inventions register designed-seasons).
+  pot_luck_day: Object.freeze({
+    id: 'pot_luck_day',
+    label: 'Pot Luck Day',
+    giant: 'pot',
+    icon: 'turkey_tailfan',
+    source: 'designed',
+    window: 'The Sunday before US Thanksgiving to the Sunday after (November 22 to 29 in 2026)',
+    blurb: 'Chickens dress for the feast. The Toy Vendor sells Turkey Tailfans and Rooster Plumes: drop one on a Chicken to dress it up, and a dressed Chicken now and then lets go of a Fancy Feather when squeezed.',
   }),
 });
 
@@ -141,11 +152,30 @@ export function isDametimeZilloween(parts) {
   return Boolean(parts && parts.month === 'Remember' && Number(parts.monthDay) >= 25);
 }
 
+/**
+ * Pot Luck Day's window in year `y` (G982, Austin 2026-11-17): US Thanksgiving is the fourth
+ * Thursday of November; the event runs from the Sunday before it to the Sunday after, both whole
+ * days on Ur's clock, and only in November (no Pot Twoday repeat). { from: [11, d], to: [11, d] }.
+ */
+export function potLuckWindow(y) {
+  const firstDow = new Date(Date.UTC(y, 10, 1)).getUTCDay(); // 0 Sunday .. 6 Saturday
+  const thanksgiving = 1 + ((4 - firstDow + 7) % 7) + 21;
+  return { from: [11, thanksgiving - 4], to: [11, thanksgiving + 3] };
+}
+
+/** Whether Ur's calendar date `now` falls in that year's Pot Luck Day. */
+export function isPotLuckDay(now = Date.now()) {
+  const t = urDate(now);
+  const w = potLuckWindow(t.y);
+  return inWindow(t, w.from, w.to);
+}
+
 /** Which real-world windows contain `now`, in priority order. */
 export function calendarSeasons(now = Date.now()) {
   const t = urDate(now);
   const out = [];
   if (isPiDay(now)) out.push('pi_day');
+  if (isPotLuckDay(now)) out.push('pot_luck_day');
   if (inWindow(t, REAL_WINDOWS.zilloween.from, REAL_WINDOWS.zilloween.to)) out.push('zilloween');
   if (inWindow(t, REAL_WINDOWS.glitchmas.from, REAL_WINDOWS.glitchmas.to)) out.push('glitchmas');
   return out;
@@ -477,6 +507,8 @@ export const SEASONAL_STOCK = Object.freeze({
       Object.freeze({ classTsid: 'glitchmas_card', label: 'Glitchmas Card', cost: 220 }),
     ]),
   }),
+  // G982: ours, the chicken costumes (js/pot-luck.js).
+  pot_luck_day: POT_LUCK_STOCK,
 });
 export const SEASONAL_ITEMS = Object.freeze(
   Object.fromEntries(Object.entries(SEASONAL_STOCK).flatMap(([season, stores]) =>
@@ -579,6 +611,7 @@ export function daysLeft(id, now = Date.now()) {
   if (id === 'zilloween') end = dayIndex(t.y, 11, 1);
   else if (id === 'glitchmas') end = t.m === 1 ? dayIndex(t.y, 1, 3) : dayIndex(t.y + 1, 1, 3);
   else if (id === 'pi_day') end = today;
+  else if (id === 'pot_luck_day') end = dayIndex(t.y, 11, potLuckWindow(t.y).to[1]);
   if (end == null) return null;
   const left = end - today;
   return left >= 0 && left < 60 ? left : null;
@@ -602,6 +635,8 @@ export function seasonalConversions() {
     { inputs: ['glitchmas_cracker'], tool: null, outputs: ['glitchmas_cracker_joke', 'glitchmas_cracker_factoid'], source: 'season:glitchmas_cracker' },
     // All five eggs complete collection_egg_hunter, which trades them for the trophy.
     { inputs: [...EGG_CLASSES], tool: null, outputs: [EGG_HUNT.trophy], source: `collection:${EGG_HUNT.badge}` },
+    // G982: Fancy Feathers rot into loam when Pot Luck Day ends (js/pot-luck.js).
+    { inputs: [FANCY_FEATHER], tool: null, outputs: [FEATHER_ROTS_TO], source: 'season:pot_luck_rot' },
   ];
 }
 
@@ -610,6 +645,8 @@ export function seasonalSources() {
     ...CANDY_CLASSES.map((id) => [id, 'season:zilloween_lantern_treat']),
     ...Object.values(SEASONAL_STOCK).flatMap((stores) => Object.values(stores).flat().map((o) => [o.classTsid, 'season:vendor'])),
     ['glitchmas_present', 'season:glitchmas_quest'],
+    // G982: a dressed Chicken's squeeze (js/pot-luck.js featherDrop).
+    [FANCY_FEATHER, 'season:pot_luck_squeeze'],
     // Not seasonal: petting an Egg Plant rolls egg_plant_pet all year.
     ...EGG_CLASSES.map((id) => [id, `drop:${EGG_HUNT.pet.table}`]),
   ];

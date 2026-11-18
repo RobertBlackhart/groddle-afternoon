@@ -66,7 +66,7 @@
 import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
 import { isItemFloor, platformYAt } from '../street-model.js?v=9f16f4ab';
-import { hiresSpriteUrl } from '../sprite-hires.js?v=24aa024c';
+import { hiresSpriteUrl } from '../sprite-hires.js?v=e5d8f9ec';
 import { rollResourceNodeDrop } from './drops-feature.js?v=439d100b';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
@@ -108,14 +108,14 @@ import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureF
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=4debd26e';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=7a63d78f';
-import { playItemOverlay } from '../item-overlay.js?v=f7119b49';
+import { playItemOverlay } from '../item-overlay.js?v=347b1b9e';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=a468ad38';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=7f6269a0';
+import { salmonSwimAt } from '../street-creatures.js?v=adc9ef6a';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
 export const RESOURCE_GROUP_PREFIX = 'resource:';

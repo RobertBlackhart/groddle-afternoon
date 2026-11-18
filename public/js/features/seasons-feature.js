@@ -20,6 +20,8 @@
  * collection_egg_hunter as it lands in the pack, however it got there, and
  * then trades one of each for the Egg Hunter Trophy, once (planEggTrophy).
  * Pi Day (source): Pi's Estimate verb.
+ * Pot Luck Day (designed, G982): the Toy Vendor's chicken costumes (SEASONAL_STOCK); the
+ * costumes, the dressing and the Fancy Feather live in features/pot-luck-feature.js.
  *
  * QA: ?autostart=1&fresh=1&resetgame=1&questoffer=off&season=zilloween
  *     (glitchmas | pi_day | none), &seasondate=2026-12-24 previews a
@@ -37,7 +39,7 @@ import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=d4e5
 import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=d4e55862';
 import { setSeasonalRecipeCheck } from '../making.js?v=af1c7d5b';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 
 /*
  * Each lit pumpkin's phrases are its own (pumpkin_lit_*.js this.phrases, 380-391, at most 3), kept
@@ -79,7 +81,7 @@ import { emblemCostFor } from '../shrines.js?v=15d03920';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=439d100b';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=f5f9b55d';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=de659247';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
@@ -134,7 +136,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../seasons.js?v=887d886e';
+} from '../seasons.js?v=8b81947e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { playOverlay } from '../overlays.js?v=68c0a634';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -427,6 +429,15 @@ function seasonTodo(id) {
     ];
   }
   if (id === 'pi_day') return ['Cook Pi with a Frying Pan.', 'Estimate Pi from your pack: the year\'s first estimate pays favor with Tii.'];
+  if (id === 'pot_luck_day') {
+    // G982 (ours): features/pot-luck-feature.js.
+    return [
+      'The Toy Vendor sells Turkey Tailfans and Rooster Plumes.',
+      'Drop one on a Chicken, or Dress it up from its menu: everyone on the street sees the costume.',
+      'Squeeze a dressed Chicken: now and then it lets go of a Fancy Feather (five a day at most).',
+      'When Pot Luck Day ends the costumes fall off and Fancy Feathers rot into loam.',
+    ];
+  }
   return [];
 }
 
@@ -1182,6 +1193,8 @@ function demoSetup(engine) {
     need('egg_plain', 2);
   }
   if (isOn('pi_day')) need('pi', 1);
+  // G982: enough currants to buy both Pot Luck Day costumes from the Toy Vendor (QA, ?seasondemo=1).
+  if (isOn('pot_luck_day') && pc && (Number(pc.currants) || 0) < 400) pc.currants = 400;
   engine.refreshPack?.();
   if (engine.param?.('seasonautoplay')) autoplayAt = Date.now() + 1800;
   publish(engine);
@@ -1340,6 +1353,17 @@ export const seasonsFeature = {
     const groups = [];
     if (isOn('zilloween')) groups.push({ key: LANTERN_GROUP, count: lanternCount({ worldW: (street.bounds?.r || 0) - (street.bounds?.l || 0) || 2000 }), clearance: 110 });
     return groups;
+  },
+
+  /** Whether season `id` is on now (features/pot-luck-feature.js, G982). */
+  seasonOn(id, engine) {
+    if (engine) refreshSeason(engine);
+    return isOn(id);
+  },
+
+  /** Whether a QA param (?season=, ?seasondate=) shows the seasons now: a preview never rots anything (G342). */
+  seasonPreview(engine) {
+    return isPreview(engine, season);
   },
 
   /** Seasonal stock in and out of the Toy Vendor. */

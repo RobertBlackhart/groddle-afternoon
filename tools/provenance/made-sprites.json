@@ -43,6 +43,46 @@
         "sheet_sha256": "4c11185e4b4367975ba4361ee9c1c043825a896e30df51144e3e8247923c59ff",
         "cut": "cropped to the book and made fully opaque by Grok Bot (2064x1392); resized to 516x348 (6x), WebP q92 alpha 100; outline overlaps the original 96% at 86x58"
       }
+    },
+    "chicken_turkey_tailfan": {
+      "file": "public/assets/sprites/seasons/pot-luck/chicken_turkey_tailfan_stand@3x.webp",
+      "sha256": "1d0651a434c24655de9ce7d6d56314585e82c52db5f1aec689be1ae6e9b08517",
+      "licence": "own-work-CC0",
+      "author": "Austin Ginder (directed), Claude (drew the parts as code)",
+      "tool": "Claude, editing Tiny Speck's own chicken drawing part by part",
+      "made": "2026-11-17",
+      "uses": [
+        "Pot Luck Day (G982): a street Chicken dressed in the Turkey Tailfan, every clip it plays (js/features/pot-luck-feature.js), and the Turkey Tailfan's pack icon"
+      ],
+      "inputs": [
+        "sprite:inhabitants/chicken/npc_chicken.fla (Tiny Speck, glitch-items, CC0): its rig, parts and timeline, edited in memory"
+      ],
+      "source": {
+        "tool": "tools/pot-luck-art/build.mjs (variants.mjs makeVariant)",
+        "files": "26 sheets (13 clips at 1x and 3x) and 2 icons, each hashed in tools/pot-luck-art/built.json",
+        "cut": "the plain chicken drawn by the same pipeline matches Tiny Speck's own sheets at 0.965 or better on every frame"
+      },
+      "prompt": "Austin 2026-11-17 (G982): Turkey Tailfan, a paper-plate turkey tail fan tied on behind the Chicken (the prototype's costume variant, research/seasonal/pot-luck-day), the wattle a little fuller; flat fills, no strokes, the chicken's own palette; every clip the game's Chicken plays."
+    },
+    "chicken_rooster_plume": {
+      "file": "public/assets/sprites/seasons/pot-luck/chicken_rooster_plume_stand@3x.webp",
+      "sha256": "a300e61aa0d2880442698f660b37dfef34887fccadf3eabe52c783c8d02b2cc8",
+      "licence": "own-work-CC0",
+      "author": "Austin Ginder (directed), Claude (drew the parts as code)",
+      "tool": "Claude, editing Tiny Speck's own chicken drawing part by part",
+      "made": "2026-11-17",
+      "uses": [
+        "Pot Luck Day (G982): a street Chicken dressed in the Rooster Plume, every clip it plays (js/features/pot-luck-feature.js), and the Rooster Plume's pack icon"
+      ],
+      "inputs": [
+        "sprite:inhabitants/chicken/npc_chicken.fla (Tiny Speck, glitch-items, CC0): its rig, parts and timeline, edited in memory"
+      ],
+      "source": {
+        "tool": "tools/pot-luck-art/build.mjs (variants.mjs makeVariant)",
+        "files": "26 sheets (13 clips at 1x and 3x) and 2 icons, each hashed in tools/pot-luck-art/built.json",
+        "cut": "the plain chicken drawn by the same pipeline matches Tiny Speck's own sheets at 0.965 or better on every frame"
+      },
+      "prompt": "Austin 2026-11-17 (G982): Rooster Plume, a taller red comb and a tall sweeping tail plume, a parts edit of the same chicken FLA; flat fills, no strokes, the chicken's own palette and darker steps of it; every clip the game's Chicken plays."
     }
   }
 }

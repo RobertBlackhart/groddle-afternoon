@@ -36,7 +36,7 @@
  * Canvas: crabs, crabLast, crabClip, crabOutcome, crabMemory, crabTalk.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=6414dbdc';
 import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=650ecd58';
 import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f784bf';
@@ -44,7 +44,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { cleanQuestMarkup } from '../quests.js?v=92c75858';
-import { followPath } from '../street-creatures.js?v=7f6269a0';
+import { followPath } from '../street-creatures.js?v=adc9ef6a';
 import { walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { isStandable } from '../street-model.js?v=9f16f4ab';
 import {
@@ -78,7 +78,7 @@ import {
   normalizeCrabMemory,
   playToday,
 } from '../crabs.js?v=f1c48c4d';
-import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 
 const ART = 'assets/sprites/crabs/';
 /** OGA npc_crab sheets: 131x129 cells, 6 columns; populated counts measured. */

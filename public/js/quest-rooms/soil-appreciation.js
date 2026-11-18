@@ -37,7 +37,7 @@ import {
   practiceScreen,
 } from '../practice-streets.js?v=557238c1';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=56508a73';
+import { addFlamingo, addPickup, clearDialogs, pickupVerbs, takePickup, taken, tickExit, tickFlamingo } from './practice-kit.js?v=3b071120';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 
 export const QUEST = 'soilappreciation_1';

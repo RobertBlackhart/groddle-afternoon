@@ -40,8 +40,8 @@ import {
   prunePortals,
   useDoorDrink,
 } from '../door-drink.js?v=15add3b8';
+import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
-import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
 
 export const DOOR_DRINK_FEATURE_ID = 'door-drink';
 const NARAKA_HUB_ID = '40';

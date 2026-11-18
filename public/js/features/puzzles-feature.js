@@ -91,7 +91,7 @@ import {
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
-import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';

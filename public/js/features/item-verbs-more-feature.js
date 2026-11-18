@@ -50,7 +50,7 @@ import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=4156bba8';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=cdeb38db';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=1c44e7c3';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { overlayOrStandIn } from '../overlay-stand-in.js?v=78a5b018';
@@ -119,7 +119,7 @@ import {
 } from '../item-verbs-more.js?v=377f760a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 
 export const ITEM_VERBS_MORE_FEATURE_ID = 'item-verbs-more';
 

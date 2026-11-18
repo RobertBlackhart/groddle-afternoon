@@ -47,7 +47,7 @@
  */
 
 import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=c13f0259';
-import { rockId } from '../street-objects.js?v=f4b93e45';
+import { rockId } from '../street-objects.js?v=512ae3bf';
 import { addItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';

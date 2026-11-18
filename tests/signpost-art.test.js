@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=24aa024c';
+import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const art = join(root, 'tools/signpost-art');

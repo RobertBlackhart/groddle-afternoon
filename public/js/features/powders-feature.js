@@ -116,11 +116,11 @@ import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
 import { DEAD_TRANT_CLASSES } from '../patches.js?v=db04987b';
-import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=99cbfc34';
-import { hellFeature } from './hell-feature.js?v=61b1a4f0';
+import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=d9786692';
+import { hellFeature } from './hell-feature.js?v=86039d8a';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
-import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=f7119b49';
+import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=347b1b9e';
 import { POWDER_SHAKE, powderShakerSheet } from '../powder-shakers.js?v=fcd18855';
 import { OVERLAY_USES, playOverlay, playWindowOverlay, windowOverlayFit } from '../overlays.js?v=68c0a634';
 import {

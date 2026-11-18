@@ -19,7 +19,7 @@ import { stationByTsid } from '../public/js/subway.js?v=735bfbeb';
 import { reachRoutes, reachStreet } from '../public/js/builder/reach-graph.js?v=33f40cb6';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=73d86611';
 import { streetGraph } from '../public/js/street-graph.js?v=114647c2';
-import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=40bd79f2';
+import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=ea462138';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 
 const root = join(import.meta.dirname, '..');

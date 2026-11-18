@@ -20,7 +20,7 @@ import { heldDirection } from './held-keys.js?v=a28eb293';
 import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=622dcd46';
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
-import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from './sprite-feet.js?v=254ce925';
 import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const DECO_ROOT = 'assets/decos/groddle';

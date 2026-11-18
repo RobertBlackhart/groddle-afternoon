@@ -60,7 +60,7 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=5bc894c8';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { donationValueFor } from '../shrines.js?v=15d03920';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -127,12 +127,12 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=01bf7687';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=03be2dc5';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const ROOK_FEATURE_ID = 'rook-attack';

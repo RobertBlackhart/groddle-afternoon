@@ -728,7 +728,7 @@
   },
   {
    "id": "designed-seasons",
-   "title": "Seasonal events with source 'designed' (none today)",
+   "title": "Seasonal events with source 'designed' (Pot Luck Day)",
    "kind": "content",
    "status": "proposed",
    "family": "designed-seasons",
@@ -740,9 +740,12 @@
    ],
    "why": "An event Glitch never ran, written in its voice. Every entry here needs Austin's ruling (the grass eggs were one).",
    "rows": [
-    "G344"
+    "G344",
+    "G982"
    ],
-   "members": []
+   "members": [
+    "pot_luck_day"
+   ]
   },
   {
    "id": "made-decos",
@@ -798,7 +801,7 @@
   },
   {
    "id": "made-sprites",
-   "title": "Made sprites (the Fire Dragon walk, the quest book award)",
+   "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes)",
    "kind": "visual",
    "status": "proposed",
    "family": "made-sprites",
@@ -808,11 +811,17 @@
     },
     {
      "file": "public/js/fire-dragon.js"
+    },
+    {
+     "file": "tools/pot-luck-art/variants.mjs",
+     "symbol": "makeVariant"
     }
    ],
    "why": "New content: the rules and words are ours and the art is AI-generated, CC0.",
    "rows": [],
    "members": [
+    "chicken_rooster_plume",
+    "chicken_turkey_tailfan",
     "npc_fire_dragon_walk",
     "quest_book_award"
    ]
@@ -4122,6 +4131,58 @@
    ],
    "why": "Marked as the remake's own in public/js/builder/zone.js (1 mark); the comment says why. No ruling recorded in the register yet.",
    "rows": []
+  },
+  {
+   "id": "pot-luck-costumes",
+   "title": "Pot Luck Day chicken costumes: the Turkey Tailfan and the Rooster Plume, put on a street Chicken by a drop or a Dress verb, seen by everyone online, off when the season ends",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck.js",
+     "symbol": "dressCheck"
+    },
+    {
+     "file": "public/js/features/pot-luck-feature.js",
+     "symbol": "potLuckFeature"
+    },
+    {
+     "file": "public/js/world-drop.js",
+     "symbol": "WORLD_DROP_RULES dress_*"
+    },
+    {
+     "file": "public/js/seasons.js",
+     "symbol": "SEASONAL_STOCK.pot_luck_day"
+    },
+    {
+     "file": "tools/pot-luck-art/variants.mjs",
+     "symbol": "makeVariant"
+    }
+   ],
+   "why": "Austin 2026-11-17 (G982): both costumes, synced online. Glitch never dressed an animal; the drop-on and verb follow its Rook Balm habit. Ours: the items, their Toy Vendor price (150 currants), the rule that a dressed Chicken keeps its costume until the season ends, the chicken_dressed counter and the costume art (a parts edit of Tiny Speck's chicken FLA; the Rooster Plume is new and needs Austin's art review).",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
+   "id": "pot-luck-fancy-feather",
+   "title": "Fancy Feather: a dressed Chicken's squeeze drops one, 1 in 4, five a game day; it rots into a Lump of Loam when Pot Luck Day ends",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pot-luck.js",
+     "symbol": "featherDrop"
+    },
+    {
+     "file": "public/js/features/pot-luck-feature.js",
+     "symbol": "onEvent"
+    }
+   ],
+   "why": "G982 plan item. Ours: the chance, the daily cap and the rot (Glitch's carved pumpkins rotted after Zilloween; Glitch had no compost, so the feather rots into Tiny Speck's Lump of Loam).",
+   "rows": [
+    "G982"
+   ]
   }
  ]
 }

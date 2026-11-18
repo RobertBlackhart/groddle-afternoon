@@ -115,6 +115,7 @@
  * t1730000000000 chicken:0@2986,868#512,640).
  */
 
+import { dressVerbCostume } from '../pot-luck.js?v=84484e77';
 import {
   COPY,
   REQUEST_TIMEOUT_MS,
@@ -147,7 +148,7 @@ import {
   treeId,
   treeReady,
   treeSkill,
-} from '../street-objects.js?v=f4b93e45';
+} from '../street-objects.js?v=512ae3bf';
 import { ROCK_CATALOG } from '../mining.js?v=c13f0259';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
@@ -183,7 +184,7 @@ import {
   dragonWalkAt,
   kittyWalkAt,
   walkerSpan,
-} from '../street-creatures.js?v=7f6269a0';
+} from '../street-creatures.js?v=adc9ef6a';
 
 export const STREET_OBJECTS_FEATURE_ID = 'street-objects';
 const RECONCILE_MS = 250;
@@ -753,6 +754,17 @@ function sharedVerbOn(engine, target, verbId) {
         n: 1,
       };
     }
+    // G982: a Pot Luck Day costume on a street Chicken; the server holds it for everyone and the ledger takes the costume (objects_creatures.go askDress).
+    if (animal.kind === 'chicken' && dressVerbCostume(verbId)) {
+      const c = dressVerbCostume(verbId);
+      return {
+        id: animal.id,
+        wire: 'dress',
+        ready: () => (Number(engine.inv?.[c]) || 0) > 0 && !target.state?.costume && engine.query?.('seasonOn', 'pot_luck_day', engine) === true,
+        c,
+        n: 1,
+      };
+    }
     if (animal.kind === 'batterfly' && base === 'feed' && cls) {
       const n = Math.max(1, Math.floor(Number(countText) || 1));
       return {
@@ -945,7 +957,7 @@ function answered(engine, msg, ok) {
   // G335 slice 5: food the ledger took for a Piggy or a Batterfly, or the egg a Chicken sits on,
   // leaves the pack with the verb below, once (the trade slice's applied list holds its op, so the
   // site counts it as applied).
-  if (grant.use?.spent && grant.use.n && (/^(feed|incubate):/.test(String(p.verbId)) || p.verbId === 'capture')) engine.query?.('ledgerReceipt', String(grant.use.op || ''), engine);
+  if (grant.use?.spent && grant.use.n && (/^(feed|incubate|potluck:dress):/.test(String(p.verbId)) || p.verbId === 'capture')) engine.query?.('ledgerReceipt', String(grant.use.op || ''), engine);
   try {
     engine.executeVerb?.(p.target, p.verbId, { animated: true });
   } finally {

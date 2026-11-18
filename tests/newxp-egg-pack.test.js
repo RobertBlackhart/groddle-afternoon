@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { LINES } from '../public/js/newxp.js?v=02f902e6';
-import { newxpFeature, EGG_GIVE_REACH } from '../public/js/features/newxp-feature.js?v=23a0eab4';
+import { newxpFeature, EGG_GIVE_REACH } from '../public/js/features/newxp-feature.js?v=209c9db5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(join(root, 'public/js/features/newxp-feature.js'), 'utf8');

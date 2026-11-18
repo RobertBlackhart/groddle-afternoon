@@ -22,7 +22,7 @@ import {
   gameTeleporterFeature,
   payForCrowns,
   teleporterPoint,
-} from '../public/js/features/game-teleporter-feature.js?v=decb8085';
+} from '../public/js/features/game-teleporter-feature.js?v=32a5a7d2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');
@@ -258,7 +258,7 @@ describe('Regional shrines wear their own art (33 classes, OGA CC0)', () => {
     const results = JSON.parse(readFileSync(join(root, 'tools/vector-sprites/results.json'), 'utf8'));
     assert.equal(manifest.jobs.length, 33);
     assert.equal(manifest.firstDraw, true);
-    const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=24aa024c');
+    const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=e5d8f9ec');
     for (const row of variantFiles()) {
       const job = manifest.jobs.find((j) => j.sheets.some((sh) => sh.path === row.out));
       assert.ok(job, row.out);

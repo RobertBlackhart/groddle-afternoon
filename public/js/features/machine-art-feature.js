@@ -21,7 +21,7 @@
 import { addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { ensureToolCondition } from '../tools.js?v=4156bba8';
 import { MACHINE_SKILLS } from '../machine-rooms.js?v=727c3cc3';
-import { freezeMachineState, isMachineArt } from '../machine-art.js?v=26ed750c';
+import { freezeMachineState, isMachineArt } from '../machine-art.js?v=a5301d82';
 import { packSlotFor } from '../pack-slot-qa.js?v=1d74bf2d';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 

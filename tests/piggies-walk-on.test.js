@@ -21,7 +21,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createAnimalState } from '../public/js/animals.js?v=d8e13374';
-import { PIGGY_ROOTING, animalMoodFeature, piggyRootDelayMs } from '../public/js/features/animal-mood-feature.js?v=38a8a5bf';
+import { PIGGY_ROOTING, animalMoodFeature, piggyRootDelayMs } from '../public/js/features/animal-mood-feature.js?v=4a443269';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
 import {
   ANIMAL_BODY,
@@ -36,7 +36,7 @@ import {
   streetReservedSpots,
   walkInScenery,
 } from '../public/js/street-ecology.js?v=62ca408f';
-import { walkerAt } from '../public/js/street-creatures.js?v=7f6269a0';
+import { walkerAt } from '../public/js/street-creatures.js?v=adc9ef6a';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 

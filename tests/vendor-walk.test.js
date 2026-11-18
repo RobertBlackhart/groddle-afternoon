@@ -23,7 +23,7 @@ import {
   vendorHeld,
   vendorPlan,
   vendorWalkAt,
-} from '../public/js/vendor-walk.js?v=f91b1fec';
+} from '../public/js/vendor-walk.js?v=e3d1dc79';
 import {
   VENDOR_NPC_ART,
   VENDOR_NPC_CLASSES,
@@ -33,7 +33,7 @@ import {
   vendorStates,
   vendorStrip,
 } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { walkerSpan } from '../public/js/street-creatures.js?v=7f6269a0';
+import { walkerSpan } from '../public/js/street-creatures.js?v=adc9ef6a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
@@ -272,7 +272,7 @@ describe('the walk strips at 3x (lane vendors3x)', () => {
   });
 
   it('swaps every matched strip to a 3x render on first draw: same cells, frame count, run and feet', async () => {
-    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=24aa024c');
+    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=e5d8f9ec');
     for (const [cls, state, path] of motionPaths()) {
       const r = results[path];
       const strip = vendorStrip(cls, state);
@@ -316,7 +316,7 @@ describe('the walk strips at 3x (lane vendors3x)', () => {
 
   it('a sharp desktop swaps vendor strips to 3x on first draw; a phone (render cap 1) keeps the 1x strips', async () => {
     const { resolutionCap } = await import('../public/js/render-density.js?v=74c6f5f9');
-    const { installHiresSprites, installHiresFirstDraw, hiresSpriteUrl } = await import('../public/js/sprite-hires.js?v=24aa024c');
+    const { installHiresSprites, installHiresFirstDraw, hiresSpriteUrl } = await import('../public/js/sprite-hires.js?v=e5d8f9ec');
     const textures = { addUrlRoute() {} };
     const renderer = () => ({ texture: { _initSource() { return {}; } } });
     // game.js artDpr(): min(devicePixelRatio, the device's render cap).

@@ -61,7 +61,8 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     // 2026-11-17 leads: The Outer Mind, re-laid with its made pictures (G922). Then 2026-11-16: Winter Walk's tree arch and plants and the walk (G912), Winter Haven's snowy trees (G922), the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare).
     // Then 2026-11-13 in the curated order: the Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World
     // map at 2x; then the quest book (2026-11-12).
-    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:vv', 'decos:om', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
+    // G982 (2026-11-17, after them in the curated order): Pot Luck Day's two chicken costumes, a parts edit of Tiny Speck's Chicken.
+    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);

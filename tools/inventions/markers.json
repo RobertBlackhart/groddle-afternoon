@@ -420,6 +420,11 @@
   "public/js/features/player-verbs-mp-feature.js": {
     "guess: // G373 catalog_buffs.js 412-419: nobody guessed, show_rainbow('charades_gameover') at the": "not-an-invention"
   },
+  "public/js/features/pot-luck-feature.js": {
+    "glitch-had-none: pot-luck-costumes, pot-luck-fancy-feather): Glitch never": "pot-luck-costumes",
+    "invented: * Ours, all of it (inventions register pot-luck-costumes,": "pot-luck-costumes",
+    "ours: * Ours, all of it (inventions register": "pot-luck-costumes"
+  },
   "public/js/features/potions-feature.js": {
     "stand-in: * puddle and letters are stand-ins until the art is rendered": "overlay-stand-in-cards",
     "stand-in: * through js/overlay-stand-in.js; the puddle is a plain shape:": "overlay-stand-in-cards",
@@ -467,6 +472,7 @@
     "ours: the dark letters readable where a trunk passes (ours: the snaps": "ours-rebuilt-rooms"
   },
   "public/js/features/seasons-feature.js": {
+    "ours: // G982 (ours):": "pot-luck-costumes",
     "remake-own: || '').trim().slice(0, 300)); // the remake's own word filter": "word-filter"
   },
   "public/js/features/shared-patches-feature.js": {
@@ -805,6 +811,12 @@
     "ours: => `${name} guessed your secret word!`, // ours: the drinker's RAINBOW_YOUDIDIT came with no": "remake-copy",
     "ours: wait: 'Wait a moment.', // ours: one act at a": "remake-copy"
   },
+  "public/js/pot-luck.js": {
+    "glitch-had-none: * All of it is ours: Glitch never ran a Thanksgiving event and never dressed an": "pot-luck-costumes",
+    "invented: * (inventions register: designed-seasons, pot-luck-costumes,": "pot-luck-costumes",
+    "ours: * All of it is ours: Glitch never ran a Thanksgiving event and never": "pot-luck-costumes",
+    "ours: * Rules (ours):": "pot-luck-costumes"
+  },
   "public/js/potion-bottle-fx.js": {
     "stand-in: * own stand-in).": "ours-potion-bottle-fx"
   },
@@ -930,7 +942,11 @@
     "ours: their mirror images. Where exactly you land is OUR OWN reading of the footage (a": "ours-seam-teleporters"
   },
   "public/js/seasons.js": {
+    "glitch-had-none: // G982 (Austin 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
+    "invented: 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
     "no-source: * 'designed' = no source event, written for the remake in Glitch's": "designed-seasons",
+    "ours: // G982 (Austin 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
+    "ours: // G982: ours, the chicken costumes": "designed-seasons",
     "remake-own: || '').trim().slice(0, 150)); // the remake's own word filter": "word-filter",
     "stand-in: Who can be given candy (solo stand-ins for the source's other players).": "solo-stand-ins"
   },
@@ -1143,6 +1159,10 @@
   "public/js/world-context-menu.js": {
     "ours: went the same way (TSFrontController.as 3686). Ours: a click or": "right-click-menus"
   },
+  "public/js/world-drop.js": {
+    "ours: // G982 (ours): a Pot Luck Day costume dropped on a street": "pot-luck-costumes",
+    "ours: and {$item_name}), `src` (file and lines), `ours` (a rule the": "pot-luck-costumes"
+  },
   "public/js/world-items.js": {
     "ours: * Ours: a bag with contents or a name comes back whole": "ours-world-items"
   },
@@ -1275,6 +1295,16 @@
   },
   "tools/overlay-art/build.mjs": {
     "stand-in: // G251: the hand-drawn stand-ins swapped for the real": "hand-drawn-overlays"
+  },
+  "tools/pot-luck-art/build.mjs": {
+    "not-source: * Feather. Made for Groddle, not Tiny Speck's: a parts edit of Tiny Speck's chicken FLA": "pot-luck-costumes",
+    "ours: writes from the @3x files on disk) with ours in it.": "pot-luck-costumes"
+  },
+  "tools/pot-luck-art/variants.mjs": {
+    "not-source: Ours, not Tiny Speck's: a parts edit of the chicken rig, drawn as": "pot-luck-costumes",
+    "ours: Ours, not Tiny Speck's: a parts edit of the chicken": "pot-luck-costumes",
+    "ours: every keyframe, keeping its timing; keep: draw ours behind its own art.": "pot-luck-costumes",
+    "ours: timeline holding `els` (to draw a part, or our own shapes, alone).": "pot-luck-costumes"
   },
   "tools/quest-gates/table.mjs": {
     "remake-own: them outside `seenOnlyIn`), so any gate is the remake's own: each row says why, what": "ours-tools-quest-gates",

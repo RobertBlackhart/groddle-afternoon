@@ -43,6 +43,7 @@ export const OUT = join(GAME_DIR, 'public/restoration/made.json');
 /** What each provenance licence means for players. */
 const LICENCES = {
   'ai-generated': 'Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from.',
+  'own-work-CC0': 'Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it is made from.',
 };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

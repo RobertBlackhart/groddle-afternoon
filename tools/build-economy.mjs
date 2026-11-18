@@ -89,6 +89,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireSite, sitePath } from './repos.mjs';
 import { tradeTable } from './build-realtime-trade.mjs';
+import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=84484e77';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=74b56af3';
 import { obtainableItems } from './job-obtainable.mjs';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
@@ -169,7 +170,8 @@ const CATALOGS = new Set([
 ]);
 
 export function unitValue(classTsid) {
-  const base = Number(ITEM_BASE_COSTS[classTsid]) || 0;
+  // G982: a designed item (no GSJS file) has its base cost in its own table (js/pot-luck.js).
+  const base = Number(ITEM_BASE_COSTS[classTsid] ?? POT_LUCK_ITEMS[classTsid]?.baseCost) || 0;
   return base > 0 ? Math.max(1, Math.round(base * BEST_HAGGLE)) : FALLBACK_VALUE;
 }
 

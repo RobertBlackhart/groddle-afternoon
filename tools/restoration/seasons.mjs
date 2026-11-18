@@ -32,7 +32,7 @@ import {
   SEASONAL_STOCK,
   SEASONS,
   SEASON_IDS,
-} from '../../public/js/seasons.js?v=887d886e';
+} from '../../public/js/seasons.js?v=8b81947e';
 import { SEASON_DATA } from '../../public/js/seasons-data.js?v=b5174bc9';
 import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=50c112eb';
 import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=d4e55862';
@@ -180,7 +180,8 @@ function badges(id, achievements) {
 /** The `seasons` block of public/restoration/data.json. */
 export function seasonsData() {
   const achievements = json('assets/content/achievements.json');
-  const seasons = [...SEASON_IDS.map((id) => SEASONS[id]), EGG_HUNT].map((s) => {
+  // Restored events only: a designed one (Pot Luck Day, G982) is ours, so it is not a restoration (the New content page tells it).
+  const seasons = [...SEASON_IDS.map((id) => SEASONS[id]).filter((s) => s.source !== 'designed'), EGG_HUNT].map((s) => {
     const { id } = s;
     const status = SEASON_STATUS[s.source];
     if (!status) throw new Error(`seasons: no status for ${id} (${s.source})`);

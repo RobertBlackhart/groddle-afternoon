@@ -35,7 +35,7 @@
  * vendorNpcLast, vendorNpcWalk (class:pose:facing:x:held). &vendorwalkfrom=<ms> starts each vendor that far into its round (screenshots).
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=77b5924d';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
 import { VENDOR_PROFILES } from '../vendor.js?v=3025c322';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
@@ -65,7 +65,7 @@ import {
   vendorStrip,
 } from '../vendor-npcs.js?v=90b0c123';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { chickenSeed, walkerSpan } from '../street-creatures.js?v=7f6269a0';
+import { chickenSeed, walkerSpan } from '../street-creatures.js?v=adc9ef6a';
 import { measuredGardenVendor } from '../garden-beds.js?v=831b1d97';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
@@ -81,7 +81,7 @@ import {
   vendorHeld,
   vendorPlan,
   vendorWalkAt,
-} from '../vendor-walk.js?v=f91b1fec';
+} from '../vendor-walk.js?v=e3d1dc79';
 
 export const VENDOR_NPCS_FEATURE_ID = 'vendor-npcs';
 const ATTRACT_RADIUS = 200; // npc_gardening_vendor.js onPathing: players within 200px

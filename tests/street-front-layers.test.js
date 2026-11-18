@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildStreetView, layerDrawsInFront, layerIsDrawn } from '../public/js/street-render.js?v=40bd79f2';
+import { buildStreetView, layerDrawsInFront, layerIsDrawn } from '../public/js/street-render.js?v=ea462138';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');

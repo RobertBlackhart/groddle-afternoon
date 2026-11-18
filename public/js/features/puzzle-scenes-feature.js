@@ -53,7 +53,7 @@ import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { partySpaceForStreet } from '../party-spaces.js?v=8e869964';
-import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';

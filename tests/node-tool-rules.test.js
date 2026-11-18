@@ -13,12 +13,12 @@ import assert from 'node:assert/strict';
 
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { bindToolInventory, createToolConditionState, setToolRemaining, toolCopies } from '../public/js/tools.js?v=4156bba8';
-import { WORLD_DROP_RULES, dropFor } from '../public/js/world-drop.js?v=d152b2bb';
+import { WORLD_DROP_RULES, dropFor } from '../public/js/world-drop.js?v=bc16d491';
 import { CHOICE_MS, chooseTool, clearToolChoice, peekToolChoice, takeToolChoice } from '../public/js/tool-choice.js?v=e0dcb60e';
 import { PACK_TOOL_TEXT, nodesFor, packToolButtons, packToolCondition, planPackToolVerb } from '../public/js/pack-tool-verbs.js?v=479afbd9';
-import { packToolOrder } from '../public/js/features/resource-nodes-feature.js?v=f5f9b55d';
+import { packToolOrder } from '../public/js/features/resource-nodes-feature.js?v=de659247';
 import { CREW_NODES, CREW_VERBS, HELP_SCRAPE_LABEL, helpScrapeMessage } from '../public/js/help-dig.js?v=ca0cc848';
-import { nodePerks } from '../public/js/street-objects.js?v=f4b93e45';
+import { nodePerks } from '../public/js/street-objects.js?v=512ae3bf';
 
 const NOW = 1_700_000_000_000;
 const ctx = (extra = {}) => ({ now: NOW, dayKey: 'd1', rng: () => 0.5, ...extra });

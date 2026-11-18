@@ -17,7 +17,7 @@ import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
 import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=41a70b24';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
-import { anchorBottomCentre } from './sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from './sprite-feet.js?v=254ce925';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
 
 const DECO_BASE = 'assets/decos/groddle/';

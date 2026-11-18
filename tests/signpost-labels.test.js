@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
-import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont, loadSignpostTextures, signLabel } from '../public/js/street-render.js?v=40bd79f2';
+import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont, loadSignpostTextures, signLabel } from '../public/js/street-render.js?v=ea462138';
 import { WORLD_FONT_FACES } from '../public/js/world-text.js?v=2dd95179';
 
 const root = join(import.meta.dirname, '..');

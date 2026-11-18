@@ -52,6 +52,7 @@
  * the server keeps its own count of them too and refuses past the limit.
  */
 
+import { isCostume } from './pot-luck.js?v=84484e77';
 import { GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
 import { INCUBATION } from './animal-husbandry.js?v=cdeb38db';
 import { isStandable } from './street-model.js?v=9f16f4ab';
@@ -997,6 +998,9 @@ export function applyCreatureState(classId, state, s, { me = 0, now = Date.now()
   if (classId === 'npc_chicken' || classId === 'npc_butterfly' || classId === 'npc_batterfly') applyAnimalName(state, s, now, me);
   if (classId === 'npc_chicken') {
     state.sharedSqueezes = count(s?.sq);
+    // G982: its Pot Luck Day costume, everyone's (objects_creatures.go "cos"; features/pot-luck-feature.js draws it).
+    if (isCostume(s?.cos)) state.costume = s.cos;
+    else delete state.costume;
     const inc = s?.inc && typeof s.inc === 'object' ? s.inc : null;
     if (inc && INCUBATION.hatches[inc.egg]) {
       const left = Math.max(0, Math.min(INCUBATION.completeMs, Number(inc.in) || 0));

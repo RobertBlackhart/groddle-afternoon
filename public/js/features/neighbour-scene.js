@@ -11,7 +11,7 @@ import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=13f
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange } from '../landscape-reach.js?v=e73f224b';
-import { anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 
 const DECO = 'assets/decos/groddle/';
 /** The widest view the parallax layers must cover (js/landscape-reach.js). */

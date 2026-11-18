@@ -13,7 +13,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { EGG_HUNT, SEASONS, SEASON_IDS, calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=887d886e';
+import { EGG_HUNT, SEASONS, SEASON_IDS, calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=8b81947e';
 import { dametimeParts } from '../public/js/game-day.js?v=50c112eb';
 import { seasonsData } from '../tools/restoration/seasons.mjs';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
@@ -57,7 +57,9 @@ describe('restoration Seasons section (tools/restoration/seasons.mjs, Seasons.ph
   });
 
   it('has a card for every dated season in js/seasons.js, then the all-year Egg Hunt, each with its own name, window and blurb', () => {
-    assert.deepEqual(data.seasons.map((s) => s.id), [...SEASON_IDS, 'egg_hunt']);
+    // A designed event (G982 Pot Luck Day) is ours, not a restoration: it has no card here.
+    assert.deepEqual(data.seasons.map((s) => s.id), [...SEASON_IDS.filter((id) => SEASONS[id].source !== 'designed'), 'egg_hunt']);
+    assert.ok(!data.seasons.some((s) => s.id === 'pot_luck_day'));
     for (const s of data.seasons) {
       const src = SEASONS[s.id] || EGG_HUNT;
       assert.equal(s.label, src.label);
@@ -142,7 +144,8 @@ describe('restoration Seasons section (tools/restoration/seasons.mjs, Seasons.ph
     const moments = [...NOONS, ...piEdges];
     const got = runPhp('$out = []; foreach ($in["t"] as $ms) { $ids = []; foreach ($in["seasons"] as $s) if (Groddle\\Minn\\Seasons::onNow($s["when"], (int) $ms, new DateTimeZone("UTC"))) $ids[] = $s["id"]; $out[] = $ids; } echo json_encode($out);', { t: moments, seasons: data.seasons });
     moments.forEach((ms, i) => {
-      assert.deepEqual([...got[i]].sort(), [...calendarSeasons(ms)].sort(), new Date(ms).toISOString());
+      // A designed season has no card (G982 Pot Luck Day), so the page never marks it.
+      assert.deepEqual([...got[i]].sort(), [...calendarSeasons(ms)].filter((id) => SEASONS[id].source !== 'designed').sort(), new Date(ms).toISOString());
     });
   });
 

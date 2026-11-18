@@ -9,7 +9,8 @@
  *
  * Each rule: `classes` (a target classId test), `verbs` (the remake's verb ids for it, first one
  * the target offers wins), `accepts(classTsid, ctx)` (drop_ok_code), `tip` (drop_tip, with the
- * client's {$count}, {$stack_name} and {$item_name}), `src` (file and lines), and `use`:
+ * client's {$count}, {$stack_name} and {$item_name}), `src` (file and lines), `ours` (a rule the remake
+ * added: no GSJS drop_tip to quote), and `use`:
  *   'verb'   run the target's verb (a tool the verb finds in the pack itself: a Watering Can);
  *            with `tool: true` the dragged stack is the tool the verb uses and wears (a Pick, a
  *            Shovel, a Scraper: GSJS msg.target_itemstack_tsid; js/tool-choice.js);
@@ -39,6 +40,12 @@ export const WORLD_DROP_RULES = Object.freeze([
     id: 'apply_balm', classes: (c) => ANIMAL(c) || TREE(c), verbs: ['rook_apply_balm', 'apply_balm'], use: 'verb',
     accepts: (s) => s === 'potion_rook_balm', tip: 'Apply Rook Balm', src: 'npc_piggy.js, trant_*.js verbs.apply_balm',
   },
+  // G982 (ours): a Pot Luck Day costume dropped on a street Chicken dresses it (js/pot-luck.js; the
+  // plain potluck:dress row, when offered, says why not). The source's drop-on habit: apply_balm above.
+  ...['turkey_tailfan', 'rooster_plume'].map((cls) => ({
+    id: `dress_${cls}`, ours: true, classes: (c) => c === 'npc_chicken', verbs: [`potluck:dress:${cls}`, 'potluck:dress'], use: 'verb',
+    accepts: (s) => s === cls, tip: 'Dress this Chicken up for Pot Luck Day', src: 'ours (G982); the drop-on habit of npc_chicken.js verbs.apply_balm',
+  })),
   {
     id: 'water', classes: TREE, verbs: ['water'], use: 'verb',
     accepts: (s) => s === 'watering_can' || s === 'irrigator_9000', tip: 'Water this {$item_name}', src: 'trant_*.js, wood_tree.js verbs.water',

@@ -505,6 +505,72 @@
           "text": "The World view of the Map on a Retina screen or a phone, and on any screen once the map is shown larger than {w} by {h}. The region frames, cards and your star sit where they always did."
         }
       ]
+    },
+    {
+      "id": "chicken_turkey_tailfan",
+      "name": "Chicken in a Turkey Tailfan",
+      "caption": "A Pot Luck Day costume for the street Chickens: a paper-plate turkey tail fan tied on behind, its card feathers orange, red, yellow and brown, and its wattle a little fuller. Glitch never dressed its animals, so this is new: Tiny Speck's own Chicken, with the costume drawn into the same rig so it walks, pecks, flaps and sits in it.",
+      "display": {
+        "w": 296,
+        "h": 220
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "A white Chicken standing with a paper-plate fan of orange, red, yellow and brown card feathers tied on behind its own dark tail."
+      },
+      "original": {
+        "file": "public/assets/sprites/animals/npc_chicken_stand@3x.webp",
+        "kind": "original",
+        "label": "Tiny Speck's Chicken, the drawing it is made from",
+        "alt": "Tiny Speck's white Chicken standing, with its small red comb and short dark tail."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Made by {tool}, under Austin's direction: the costume is new flat shapes in the Chicken's own colours, placed inside its rig, so every pose of the original carries it."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The plain Chicken drawn the same way matches Tiny Speck's own pictures frame by frame, so the costume sits exactly where the bird does."
+        },
+        {
+          "label": "In the game",
+          "text": "Sold by the Toy Vendor during Pot Luck Day. Drop it on a Chicken and everyone on the street sees it, until the season ends."
+        }
+      ]
+    },
+    {
+      "id": "chicken_rooster_plume",
+      "name": "Chicken in a Rooster Plume",
+      "caption": "A Pot Luck Day costume for the street Chickens: a taller red comb and a tall sweeping plume of long dark and copper sickle feathers over its tail. Glitch never dressed its animals, so this is new: Tiny Speck's own Chicken, with the costume drawn into the same rig so it walks, pecks, flaps and sits in it.",
+      "display": {
+        "w": 296,
+        "h": 220
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "A white Chicken standing with a tall red comb and a sweeping plume of long dark brown and copper feathers arching over its tail."
+      },
+      "original": {
+        "file": "public/assets/sprites/animals/npc_chicken_stand@3x.webp",
+        "kind": "original",
+        "label": "Tiny Speck's Chicken, the drawing it is made from",
+        "alt": "Tiny Speck's white Chicken standing, with its small red comb and short dark tail."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Made by {tool}, under Austin's direction: the costume is new flat shapes in the Chicken's own colours, placed inside its rig, so every pose of the original carries it."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The plain Chicken drawn the same way matches Tiny Speck's own pictures frame by frame, so the costume sits exactly where the bird does."
+        },
+        {
+          "label": "In the game",
+          "text": "Sold by the Toy Vendor during Pot Luck Day. Drop it on a Chicken and everyone on the street sees it, until the season ends."
+        }
+      ]
     }
   ]
 }

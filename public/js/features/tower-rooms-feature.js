@@ -45,7 +45,7 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ROOM_15_TSID } from '../tower-rooms.js?v=4f1f6af7';
 import { anyTowerRoomByTsid as baseRoomByTsid } from '../tower-challenge-rooms.js?v=01f1c620';
 import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=908fef6e';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=254ce925';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
 
 const anyTowerRoomByTsid = (tsid) => baseRoomByTsid(tsid) || midTowerRoomByTsid(tsid);

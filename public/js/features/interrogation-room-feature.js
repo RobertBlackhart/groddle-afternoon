@@ -34,7 +34,7 @@ import {
   wayBackFrom,
 } from '../interrogation-room.js?v=c6a73859';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { standOnFeet } from '../sprite-feet.js?v=7363f23d';
+import { standOnFeet } from '../sprite-feet.js?v=254ce925';
 
 export const INTERROGATION_FEATURE_ID = 'interrogation-room';
 export const INTERROGATION_DOOR_CLASS = 'interrogation_door';
