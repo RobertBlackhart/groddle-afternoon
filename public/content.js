@@ -580,19 +580,6 @@ export function getVerbsFor(target, ctx) {
     });
   }
 
-  if (classId === 'greedy_story_exit') {
-    const story = s.storyState;
-    add('leave_storyland', 'return to Ur', {
-      sort: 5,
-      enabled: story?.status === 'ready',
-      reason: story?.status === 'ready'
-        ? ''
-        : "You've missed some of the story! It's much more rewarding if you read it all the way through.",
-      tooltip: story?.repeat
-        ? 'Finish reminiscing and return to Ur'
-        : 'Return to the Piggy and wrap up the story',
-    });
-  }
 
   if (classId === 'npc_chicken') {
     const squeeze = quoteAnimalKinship(s, classId, 'squeeze', {

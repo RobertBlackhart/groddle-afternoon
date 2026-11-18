@@ -72,7 +72,6 @@ describe('world items and NPCs draw under the player', () => {
     ['the museum speakers (rook_hall_speaker)', 'function makeRookMuseumSpeaker(exhibit)'],
     ['Greeterbot Sentry G-42', 'function spawnRookMuseumGreeter()'],
     ["Storyland's wall buttons (wall_button)", "root.name = `greedy-story-act-${actIndex + 1}`;", 'root'],
-    ["Storyland's exit sign", "root.label = 'greedy-story-exit';", 'root'],
   ]) {
     it(what, () => assert.ok(zAfter(game, marker, name) < 49, `${what} z ${zAfter(game, marker, name)}`));
   }

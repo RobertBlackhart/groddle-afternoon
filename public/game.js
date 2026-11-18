@@ -2,7 +2,7 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=090c4054';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=823f43fe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
 import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2e676753';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
@@ -2978,7 +2978,6 @@ let greedyStreetState = null;
 let greedyStreetSourceLocation = null;
 let greedyStreetSceneManifest = null;
 let greedyStreetButtons = [];
-let greedyStreetExit = null;
 let greedyStreetStartPromise = null;
 let greedyStreetTransitionBusy = false;
 let greedyStreetAutoNextAt = 0;
@@ -9925,7 +9924,7 @@ function runVerbFinish(target, verbId) {
   ) {
     if (handleHomeTarget(target, verbId)) return;
   }
-  if (target?.classId === 'greedy_story_button' || target?.classId === 'greedy_story_exit') {
+  if (target?.classId === 'greedy_story_button') {
     handleGreedyStreetTarget(target, verbId);
     return;
   }
@@ -18888,29 +18887,6 @@ function greedyButtonSprite(actIndex, x, y) {
   return root;
 }
 
-function createGreedyExitSprite(x, y) {
-  const root = new PIXI.Container();
-  root.label = 'greedy-story-exit';
-  const sign = new PIXI.Graphics();
-  sign.roundRect(-82, -43, 164, 38, 14).fill({ color: 0x5c3d72, alpha: 0.94 }).stroke({ width: 3, color: 0xfff1ae, alpha: 0.94 });
-  root.addChild(sign);
-  const label = new PIXI.Text({ text: 'RETURN TO UR →', style: {
-    fontFamily: WORLD_FONT_FAMILY,
-    fontSize: 15,
-    fontWeight: '800',
-    fill: 0xfff9dd,
-  } });
-  label.anchor.set(0.5);
-  label.y = -24;
-  root.addChild(label);
-  root.x = x;
-  root.y = y;
-  // A sign standing in the room: under the avatars, like the signposts (MiddleGroundRenderer GEO).
-  root.zIndex = 44;
-  entityLayer.addChild(root);
-  return root;
-}
-
 function renderGreedyStreetHud() {
   const hud = document.getElementById('greedy-street-hud');
   const visible = greedyStreetIsInstanced();
@@ -18943,9 +18919,6 @@ function renderGreedyStreetHud() {
       greedyStreetState.actsRead.includes(Number(dot.dataset.greedyAct))
     );
   });
-  if (greedyStreetExit?.sprite) {
-    greedyStreetExit.sprite.alpha = greedyStreetState.status === 'ready' ? 1 : 0.38;
-  }
   if (app?.canvas) {
     app.canvas.dataset.greedyStoryStatus = greedyStreetState.status;
     app.canvas.dataset.greedyStoryRepeat = greedyStreetState.repeat ? '1' : '0';
@@ -18991,14 +18964,6 @@ function setupGreedyStreetInstance() {
         totalSteps: act.lines.length,
       },
     });
-  });
-  const exitSprite = createGreedyExitSprite(WORLD_W - 120, groundY);
-  greedyStreetExit = register({
-    classId: 'greedy_story_exit',
-    label: 'Storyland exit',
-    subtitle: 'Return to Ur after reading all five acts',
-    sprite: exitSprite,
-    state: { storyState: greedyStreetState },
   });
   if (player) {
     player.x = 365;
@@ -19127,13 +19092,7 @@ function pressGreedyStoryButton(target) {
 }
 
 function handleGreedyStreetTarget(target, verbId) {
-  if (target?.classId === 'greedy_story_button' && verbId === 'press') {
-    pressGreedyStoryButton(target);
-    return;
-  }
-  if (target?.classId === 'greedy_story_exit' && verbId === 'leave_storyland') {
-    returnFromGreedyStreetSpirit();
-  }
+  if (target?.classId === 'greedy_story_button' && verbId === 'press') pressGreedyStoryButton(target);
 }
 
 function finishGreedyRepeat() {
@@ -19187,7 +19146,6 @@ async function returnFromGreedyStreetSpirit({ abandon = false, expired = false }
   greedyStreetSourceLocation = null;
   greedyStreetSceneManifest = null;
   greedyStreetButtons = [];
-  greedyStreetExit = null;
   const hud = document.getElementById('greedy-street-hud');
   if (hud) hud.hidden = true;
   try {

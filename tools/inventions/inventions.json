@@ -1310,15 +1310,24 @@
    "id": "storyland-exit-sign",
    "title": "An exit sign in the Greedy Storyland theatre",
    "kind": "placement",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
-     "file": "public/game.js"
+     "file": "public/game.js",
+     "symbol": "createGreedyExitSprite",
+     "gone": true
+    },
+    {
+     "file": "public/content.js",
+     "symbol": "greedy_story_exit",
+     "gone": true
     }
    ],
    "why": "A way out; the theatre GNVD57N9ERF3TNH has no signpost.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): remove; the theatre has no signpost, and the HUD's Leave (Return to Ur once read) and the clock are the ways out",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {

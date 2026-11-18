@@ -110,3 +110,12 @@ describe('G978: the dead-end exit is a wall sign', () => {
     assert.match(view, /board\.y = -e\.hang;/);
   });
 });
+
+describe('G978: no exit sign in Storyland', () => {
+  it('the theatre GNVD57N9ERF3TNH has no signpost; the HUD Leave returns you', () => {
+    dropped('storyland-exit-sign');
+    assert.doesNotMatch(game, /greedy_story_exit|greedyStreetExit|createGreedyExitSprite|RETURN TO UR/);
+    assert.doesNotMatch(read('public/content.js'), /leave_storyland/);
+    assert.match(game, /getElementById\('greedy-street-leave-btn'\)\?\.addEventListener\('click', confirmLeaveGreedyStreetSpirit\)/);
+  });
+});
