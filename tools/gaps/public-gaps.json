@@ -2985,49 +2985,75 @@
       "id": "G985",
       "area": "Homes",
       "show": "fixing",
-      "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose."
+      "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose.",
+      "commits": [
+        "game:95757cb8f9c"
+      ]
     },
     {
       "id": "G986",
       "area": "Multiplayer",
       "show": "fixing",
-      "text": "Online, a tree or animal could offer the same verb again for a moment after you used it."
+      "text": "Online, a tree or animal could offer the same verb again for a moment after you used it.",
+      "commits": [
+        "game:723ef1733fb",
+        "game:c74f01d61e5"
+      ]
     },
     {
       "id": "G987",
       "area": "Quests",
       "show": "fixing",
-      "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers."
+      "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers.",
+      "commits": [
+        "game:4d14439c9c1"
+      ]
     },
     {
       "id": "G988",
       "area": "Camera",
       "show": "fixing",
-      "text": "In Camera Mode you could click a far signpost and travel without walking there."
+      "text": "In Camera Mode you could click a far signpost and travel without walking there.",
+      "commits": [
+        "game:bb7716bd99a"
+      ]
     },
     {
       "id": "G989",
       "area": "Streets",
       "show": "fixing",
-      "text": "On some streets, sky showed under the ground near the bottom of the screen."
+      "text": "On some streets, sky showed under the ground near the bottom of the screen.",
+      "commits": [
+        "game:4cb41be5ede"
+      ]
     },
     {
       "id": "G990",
       "area": "Transit",
       "show": "fixing",
-      "text": "The street map of a subway station showed only its wall and floor."
+      "text": "The street map of a subway station showed only its wall and floor.",
+      "commits": [
+        "game:5a302c826e0",
+        "game:73adc642e6d"
+      ]
     },
     {
       "id": "G991",
       "area": "Quests",
       "show": "fixing",
-      "text": "Some quest completion cards showed their rewards as plain text without icons."
+      "text": "Some quest completion cards showed their rewards as plain text without icons.",
+      "commits": [
+        "game:f0d6a582dcc"
+      ]
     },
     {
       "id": "G992",
       "area": "Phones",
       "show": "fixing",
-      "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out."
+      "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out.",
+      "commits": [
+        "game:298725d4aa1"
+      ]
     },
     {
       "id": "G993",
@@ -3039,7 +3065,10 @@
       "id": "G994",
       "area": "Animals",
       "show": "fixing",
-      "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon."
+      "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon.",
+      "commits": [
+        "game:12aff8acf1d"
+      ]
     },
     {
       "id": "G995",
@@ -3051,7 +3080,10 @@
       "id": "G996",
       "area": "Musicblocks",
       "show": "fixing",
-      "text": "Musicblocks could not be played in Hell, as they could in Glitch."
+      "text": "Musicblocks could not be played in Hell, as they could in Glitch.",
+      "commits": [
+        "game:66379b30e02"
+      ]
     },
     {
       "id": "G997",

@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.48.0",
+  "release": "v0.48.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 19,
+    "fixing": 9,
     "known": 13,
     "unreleased": 0,
-    "fixed": 286,
+    "fixed": 296,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -139,16 +139,6 @@
     {
       "name": "Quests",
       "items": [
-        {
-          "id": "G987",
-          "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers.",
-          "state": "fixing"
-        },
-        {
-          "id": "G991",
-          "text": "Some quest completion cards showed their rewards as plain text without icons.",
-          "state": "fixing"
-        },
         {
           "id": "G1004",
           "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
@@ -261,17 +251,24 @@
           "text": "Buy a Bag started at level 2 instead of with your first skill, as in Glitch.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G987",
+          "text": "A smuggling run could send you somewhere only the subway reaches, and the subway refuses smugglers.",
+          "state": "fixed",
+          "version": "v0.48.1"
+        },
+        {
+          "id": "G991",
+          "text": "Some quest completion cards showed their rewards as plain text without icons.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
     {
       "name": "Streets",
       "items": [
-        {
-          "id": "G989",
-          "text": "On some streets, sky showed under the ground near the bottom of the screen.",
-          "state": "fixing"
-        },
         {
           "id": "G993",
           "text": "The loading card's list of what lives on a street disappeared before you could read it.",
@@ -409,6 +406,12 @@
           "text": "Every street had four loose Apples that Glitch never had.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G989",
+          "text": "On some streets, sky showed under the ground near the bottom of the screen.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
@@ -658,11 +661,6 @@
       "name": "Homes",
       "items": [
         {
-          "id": "G985",
-          "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose.",
-          "state": "fixing"
-        },
-        {
           "id": "G997",
           "text": "On some home street styles, the soil strip under the street steps up and down where its pieces meet.",
           "state": "fixing"
@@ -777,6 +775,12 @@
           "text": "You couldn't leave a package by dropping a stack on a friend's Butler, as Glitch allowed.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G985",
+          "text": "In a back yard, trees could be drawn one patch over, so Wine of the Dead or a restore hit a different patch than the one you chose.",
+          "state": "fixed",
+          "version": "v0.48.1"
         },
         {
           "id": "G48",
@@ -955,11 +959,6 @@
       "name": "Animals",
       "items": [
         {
-          "id": "G994",
-          "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon.",
-          "state": "fixing"
-        },
-        {
           "id": "G998",
           "text": "A few Mortar Barnacles sit off their spots on Vasko Shift.",
           "state": "fixing"
@@ -1072,6 +1071,12 @@
           "text": "Animals, trees and set-down things stood a little into the ground or hopped when they turned.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G994",
+          "text": "A crab's happy or grumpy reaction to Flatter and Hug ended too soon.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
@@ -1211,11 +1216,6 @@
       "name": "Multiplayer",
       "items": [
         {
-          "id": "G986",
-          "text": "Online, a tree or animal could offer the same verb again for a moment after you used it.",
-          "state": "fixing"
-        },
-        {
           "id": "G641",
           "text": "A note left on the ground stays private to you. In Glitch anyone could read it.",
           "state": "known"
@@ -1273,17 +1273,18 @@
           "text": "Places Glitch kept to one player, like Gentle Island and the colour levels, were shared online.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G986",
+          "text": "Online, a tree or animal could offer the same verb again for a moment after you used it.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
     {
       "name": "Phones",
       "items": [
-        {
-          "id": "G992",
-          "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out.",
-          "state": "fixing"
-        },
         {
           "id": "G663",
           "text": "On some phones, big streets can still use too much memory and close the game. A lighter mode for phones is planned.",
@@ -1665,6 +1666,12 @@
           "text": "Words drawn in the world could switch to another font on phones.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G992",
+          "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
@@ -2145,11 +2152,6 @@
       "name": "Transit",
       "items": [
         {
-          "id": "G990",
-          "text": "The street map of a subway station showed only its wall and floor.",
-          "state": "fixing"
-        },
-        {
           "id": "G835",
           "text": "The subway's stop question could take your typing while the report window was open and put you off the train.",
           "state": "fixed",
@@ -2166,6 +2168,12 @@
           "text": "Esc did not close the subway map at a station.",
           "state": "fixed",
           "version": "v0.42.3"
+        },
+        {
+          "id": "G990",
+          "text": "The street map of a subway station showed only its wall and floor.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
@@ -2173,15 +2181,16 @@
       "name": "Camera",
       "items": [
         {
-          "id": "G988",
-          "text": "In Camera Mode you could click a far signpost and travel without walking there.",
-          "state": "fixing"
-        },
-        {
           "id": "G836",
           "text": "A narrow street could be drawn stretched to the window's width when the browser kept an older copy of the page's styles.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G988",
+          "text": "In Camera Mode you could click a far signpost and travel without walking there.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
@@ -2290,15 +2299,16 @@
       "name": "Musicblocks",
       "items": [
         {
-          "id": "G996",
-          "text": "Musicblocks could not be played in Hell, as they could in Glitch.",
-          "state": "fixing"
-        },
-        {
           "id": "G938",
           "text": "Every street held a Musicblock that each player picked up separately; Glitch's came from drop tables and a new player's first street.",
           "state": "fixed",
           "version": "v0.47.1"
+        },
+        {
+          "id": "G996",
+          "text": "Musicblocks could not be played in Hell, as they could in Glitch.",
+          "state": "fixed",
+          "version": "v0.48.1"
         }
       ]
     },
