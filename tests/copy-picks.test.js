@@ -23,10 +23,10 @@ import {
   setToolRemaining,
   toolCopies,
 } from '../public/js/tools.js?v=4156bba8';
-import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=11b1eb70';
+import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=7968c974';
 import { scriptTag } from '../public/js/teleportation.js?v=e95cf7cb';
 import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=6ec01afb';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=6248b586';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=6efc3b51';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');

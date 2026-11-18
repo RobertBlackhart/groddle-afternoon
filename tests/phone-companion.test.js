@@ -17,7 +17,7 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import vm from 'node:vm';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { createMinnAccount } from '../public/js/minn-account.js?v=153fc423';
+import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 import { REPORT_PICTURE } from '../public/js/reports.js?v=aa93fc78';
 import {
   DEVICE_KEY,

@@ -107,17 +107,17 @@
  * multiplayer.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=153fc423';
+import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { runStreetTransition } from '../screen-fx.js?v=f227c6d1';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
-import { copyPicks, markLeaving, takeCopies } from '../copy-picks.js?v=11b1eb70';
+import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=7968c974';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
 import { getPlot, tickGarden } from '../garden.js?v=d4e55862';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
-import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=b6ed6990';
-import { butlerApi } from './butler-feature.js?v=ce1e90b9';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=479b8545';
+import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=465f8d14';
+import { butlerApi } from './butler-feature.js?v=fc2a1fd3';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=bf700a43';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
 import {
@@ -169,9 +169,9 @@ import {
   TENDED_KEEP,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=eeba8bcb';
+} from '../neighbours-mp.js?v=81fe8611';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=5e318c96';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e4253872';
 import { worldPoint } from './world-drop-feature.js?v=79dcaafd';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=77d57cda';
 
@@ -995,7 +995,8 @@ function createSession(engine, client) {
         return butlerSay(BT.packageNo);
       }
       butlerSay(BT.packageSuccess(name));
-      const item = box ? { c, n: 1, box: box.items, ref: box.id } : { c, n };
+      // G974: the copy goes with its own wear and words (a named Cubimal arrives named).
+      const item = box ? { c, n: 1, box: box.items, ref: box.id } : { c, n, ...leavingWire(engine.toolState, c, chosen, n) };
       leaving = chosen ? { owner, c, pick: chosen } : null;
       messageBox(BT.packageSuccess(name), (msg) => send({ item, text: msg, owner }), { optional: true });
     };
@@ -1148,13 +1149,13 @@ function createSession(engine, client) {
 
   butlerApi.setGiftHook?.({
     /** onLeaveVisitorGift through the site: the stack leaves my ledger into the Butler's stock (once per give). */
-    async give(eng, { c, n, keep }) {
+    async give(eng, { c, n, keep, r = null, t = null }) {
       if (stockReady) await stockReady.catch(() => {});
       // Ours: a gift from before that the site could not take in yet stays until it can, so nothing is lost.
       if (legacyWaiting) return { ok: false, text: BT.giftWaiting };
       let a;
       try {
-        a = normalizeGiftAnswer(await account.butlerGive({ op: butlerGiftOp(), c, n, keep }));
+        a = normalizeGiftAnswer(await account.butlerGive({ op: butlerGiftOp(), c, n, keep, r, t }));
       } catch (err) {
         a = normalizeGiftAnswer(err?.data);
         if (!a) return { ok: false, text: err?.message || T.failed };
@@ -1540,6 +1541,7 @@ function createSession(engine, client) {
     if (!isButlerVisitOp(op) || !/^[a-z0-9_]{1,64}$/.test(c) || !n) return;
     if (engine.query?.('ledgerReceipt', op, engine) === false) return;
     addItem(engine.inv, c, n);
+    receiveWire(engine.toolState, c, msg.item, n); // G974: the owner's own copy, its wear and words
     engine.refreshPack?.();
     engine.save?.();
     giftsGot += n;

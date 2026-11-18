@@ -37,14 +37,14 @@ import {
   tendAct,
   tendCounters,
   tendedText,
-} from '../public/js/neighbours-mp.js?v=eeba8bcb';
-import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=b6ed6990';
+} from '../public/js/neighbours-mp.js?v=81fe8611';
+import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=465f8d14';
 import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=d4e55862';
-import { butlerApi } from '../public/js/features/butler-feature.js?v=ce1e90b9';
+import { butlerApi } from '../public/js/features/butler-feature.js?v=fc2a1fd3';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=d13ce526';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=d074f802';
-import { createMinnAccount } from '../public/js/minn-account.js?v=153fc423';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=f4e52389';
+import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -364,9 +364,9 @@ describe('ticket 112: the owner\'s gift for visitors and who visited, kept by th
       $noLegacy = ButlerGifts::legacyGift(json_decode('{"systems":{"features":{"butler":{"owned":true,"gift":null}}}}'));
       echo json_encode([$first, $again, $last, $none, $merge, $swap, $over, $fresh, $legacy, $noLegacy, ButlerGifts::visitId('bvisit-0123456789abcdef'), ButlerGifts::giftId('bvisit-0123456789abcdef')]);`);
     assert.deepEqual(out, [
-      { give: 'chicken_egg', after: { c: 'chicken_egg', n: 1 }, clear: false },
+      { give: 'chicken_egg', item: { c: 'chicken_egg', n: 1 }, after: { c: 'chicken_egg', n: 1 }, clear: false },
       { give: null, after: { c: 'chicken_egg', n: 1 }, clear: false },
-      { give: 'chicken_egg', after: null, clear: true },
+      { give: 'chicken_egg', item: { c: 'chicken_egg', n: 1 }, after: null, clear: true },
       { give: null, after: null, clear: false },
       { after: { c: 'chicken_egg', n: 5 }, back: null, clear: false },
       { after: { c: 'apple', n: 4 }, back: { c: 'chicken_egg', n: 2 }, clear: true },

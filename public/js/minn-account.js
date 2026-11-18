@@ -222,8 +222,12 @@ export function createMinnAccount(opts = {}) {
       return buddyCall('Asking your Butler', 'butler/stock');
     },
 
-    async butlerGive({ op, c, n, keep }) {
-      return buddyCall('Giving the Butler a gift', 'butler/stock', { method: 'POST', body: { op: String(op), c: String(c), n: Math.floor(Number(n) || 0), keep: keep === true } });
+    async butlerGive({ op, c, n, keep, r = null, t = null }) {
+      // G974: the copy's own wear (r) and words (t) go with it (ButlerGifts::give).
+      const body = { op: String(op), c: String(c), n: Math.floor(Number(n) || 0), keep: keep === true };
+      if (r != null) body.r = r;
+      if (t != null) body.t = t;
+      return buddyCall('Giving the Butler a gift', 'butler/stock', { method: 'POST', body });
     },
 
     async butlerAdopt() {

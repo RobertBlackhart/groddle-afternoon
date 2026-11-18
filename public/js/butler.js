@@ -437,10 +437,36 @@ export function createButlerState() {
   return normalizeButlerState({});
 }
 
+/**
+ * G974 (R18): a stack's own copy as the Butler keeps it: wear `r` (a whole number of points) and
+ * words `t` (a Cubimal's name ..., on one copy only; the receiving game checks them again with
+ * js/copy-tags.js). bag_butler.js leave_package and giveGift moved the itemstack itself, its
+ * instance props with it. {} for a stack with none.
+ */
+export function stackCopy(row, count = row?.count ?? row?.n) {
+  const out = {};
+  const r = Number(row?.r);
+  if (row?.r != null && Number.isInteger(r) && r >= 0 && r <= 1_000_000) out.r = r;
+  if (row?.t != null && Math.floor(Number(count)) === 1) {
+    try {
+      const json = JSON.stringify(row.t);
+      if (json && json.length <= 2048) out.t = JSON.parse(json);
+    } catch {
+      // Not words that travel: the copy goes without them.
+    }
+  }
+  return out;
+}
+
+/** Copies that merge in one Butler stack: the same wear, no words of their own on either. */
+function alikeCopies(a, b) {
+  return (a?.r ?? null) === (b?.r ?? null) && a?.t == null && b?.t == null;
+}
+
 function normalizeStack(row) {
   const classTsid = cleanId(row?.classTsid);
   const count = whole(row?.count, 9999);
-  return classTsid && count > 0 ? { classTsid, count } : null;
+  return classTsid && count > 0 ? { classTsid, count, ...stackCopy(row, count) } : null;
 }
 
 /**
@@ -454,10 +480,7 @@ export function normalizeParcelBox(raw) {
     const c = String(it?.c || '');
     const n = Math.floor(Number(it?.n) || 0);
     if (!/^[a-z0-9_]{1,64}$/.test(c) || n < 1 || n > 9999 || out.some((x) => x.c === c)) return null;
-    const row = { c, n };
-    const r = Number(it?.r);
-    if (it?.r != null && Number.isInteger(r) && r >= 0 && r <= 1_000_000) row.r = r;
-    out.push(row);
+    out.push({ c, n, ...stackCopy(it, n) });
   }
   return out;
 }
@@ -817,7 +840,7 @@ export function nextHandover(state, { now = Date.now(), itemName = (cls, n) => `
   } else {
     text += butlerText('packageNoMessage', { param: ago(pkg.time, now) });
   }
-  return { kind: 'package', text, from: pkg.fromName, give: { classTsid: pkg.classTsid, count: pkg.count, ...(pkg.box ? { box: pkg.box, fromId: pkg.from } : {}) }, id: pkg.id };
+  return { kind: 'package', text, from: pkg.fromName, give: { classTsid: pkg.classTsid, count: pkg.count, ...stackCopy(pkg), ...(pkg.box ? { box: pkg.box, fromId: pkg.from } : {}) }, id: pkg.id };
 }
 
 /**
@@ -849,14 +872,15 @@ export function retrieveVerbs(state) {
 
 /**
  * give (a gift for visitors): what the Butler says before taking `count` of
- * a stack, and whether the old gift comes back. stackMax limits merging.
+ * a stack, and whether the old gift comes back. stackMax limits merging; so
+ * does the copy (`r`, `t`: only alike copies merge, G974).
  */
-export function giftOffer(state, { classTsid, count, names, stackMax = 999 }) {
+export function giftOffer(state, { classTsid, count, names, stackMax = 999, r = null, t = null }) {
   const n = whole(count);
   const name = names(classTsid, n);
   let prefix;
   let returns = null;
-  if (state.gift && (state.gift.classTsid !== classTsid || state.gift.count + n > stackMax)) {
+  if (state.gift && (state.gift.classTsid !== classTsid || state.gift.count + n > stackMax || !alikeCopies(state.gift, { r, t }))) {
     prefix = butlerText('visitorGiftPrevious', { param: names(state.gift.classTsid, state.gift.count) });
     returns = { ...state.gift };
   } else if (state.gift) {
@@ -868,17 +892,20 @@ export function giftOffer(state, { classTsid, count, names, stackMax = 999 }) {
   return { text: prefix + ask, returns };
 }
 
-/** onLeaveVisitorGift: take the stack (merging a same-class gift), hand back the old one. */
-export function setGift(state, { classTsid, count, stackMax = 999 }) {
+/**
+ * onLeaveVisitorGift: take the stack (merging a same-class gift of alike copies), hand back the
+ * old one with its own copy. `r`, `t`: the copy's wear and words (G974).
+ */
+export function setGift(state, { classTsid, count, stackMax = 999, r = null, t = null }) {
   const n = whole(count);
   const cls = cleanId(classTsid);
   if (!cls || n < 1) return { ok: false };
   let returned = null;
-  if (state.gift && state.gift.classTsid === cls && state.gift.count + n <= stackMax) {
-    state.gift = { classTsid: cls, count: state.gift.count + n };
+  if (state.gift && state.gift.classTsid === cls && state.gift.count + n <= stackMax && alikeCopies(state.gift, { r, t })) {
+    state.gift = { classTsid: cls, count: state.gift.count + n, ...stackCopy({ r }, 2) };
   } else {
     if (state.gift) returned = { ...state.gift };
-    state.gift = { classTsid: cls, count: n };
+    state.gift = { classTsid: cls, count: n, ...stackCopy({ r, t }, n) };
     state.gifts = {};
   }
   const text = state.gift.count > 1 ? BUTLER_STRINGS.visitorGiftAcceptPlural : BUTLER_STRINGS.visitorGiftAccept;
@@ -889,7 +916,7 @@ export function setGift(state, { classTsid, count, stackMax = 999 }) {
 export function giveGiftTo(state, visitorId) {
   const id = cleanId(visitorId);
   if (!state.gift || !id || state.gifts[id] === state.gift.classTsid || state.gift.count <= 0) return null;
-  const given = { classTsid: state.gift.classTsid, count: 1 };
+  const given = { classTsid: state.gift.classTsid, count: 1, ...stackCopy(state.gift) };
   state.gifts[id] = state.gift.classTsid;
   state.gift.count -= 1;
   if (state.gift.count <= 0) {

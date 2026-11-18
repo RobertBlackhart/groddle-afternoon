@@ -69,7 +69,7 @@
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { homeStreetLayout, towerItem } from '../home-cultivation.js?v=57afc9e2';
-import { homesFeature } from './homes-feature.js?v=479b8545';
+import { homesFeature } from './homes-feature.js?v=bf700a43';
 import { towerApi } from './home-tower-feature.js?v=1e515ffe';
 import { levelInfoForXp } from '../progression.js?v=05ff0260';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
@@ -134,19 +134,20 @@ import {
   serializeButlerState,
   setButlerParts,
   setGift,
+  stackCopy,
   stepButlerPart,
   takeVisitorDelivery,
   teachButler,
   visitorsReport,
-} from '../butler.js?v=b6ed6990';
+} from '../butler.js?v=465f8d14';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=5e318c96';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=e4253872';
 import { worldPoint } from './world-drop-feature.js?v=79dcaafd';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
-import { markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
+import { leavingWire, markLeaving, packPicks, pickKey, receiveWire, takeCopies } from '../copy-picks.js?v=7968c974';
 
 export const BUTLER_FEATURE_ID = 'butler';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -1436,6 +1437,7 @@ function handOver(engine) {
     if (!boxed) {
       ensureItem(g.classTsid, NEIGHBOUR_ITEMS[g.classTsid] || {});
       addItem(engine.inv, g.classTsid, g.count);
+      receiveWire(engine.toolState, g.classTsid, g, g.count); // G974: the visitor's own copy, its wear and words
     }
     engine.refreshPack?.();
     if (float) engine.floatText?.(engine.player?.x ?? rt.x, (engine.player?.y ?? engine.groundY) - 90, `+${itemName(g.classTsid, g.count)}`, 0xf2c879);
@@ -1718,7 +1720,8 @@ function giveMenu(engine, pre = null) {
     onChoice: (v) => {
       if (v !== 'ok') return closeDialog(engine);
       const n = Math.max(1, Math.min(countItem(engine.inv, chosen), pick.max || Infinity, count));
-      const offer = giftOffer(st, { classTsid: chosen, count: n, names: itemName, stackMax: stackMax(chosen) });
+      // G974: the copy's own wear and words go with it, and only alike copies merge with the old gift.
+      const offer = giftOffer(st, { classTsid: chosen, count: n, names: itemName, stackMax: stackMax(chosen), ...leavingWire(engine.toolState, chosen, pick, n) });
       openDialog(engine, {
         key: 'give:confirm',
         text: offer.text,
@@ -1726,12 +1729,16 @@ function giveMenu(engine, pre = null) {
         onChoice: (answer) => {
           if (answer !== 'yes') return line(engine, 'give:no', BUTLER_STRINGS.visitorGiftNo, 'Bye');
           if (countItem(engine.inv, chosen) < n) return closeDialog(engine);
+          const wire = leavingWire(engine.toolState, chosen, pick, n);
           // Ticket 112: in multiplayer the Butler's stock is the site's, so a visitor gets it while you are away.
-          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null, pick);
+          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null, pick, wire);
           if (engine.toolState && markLeaving(engine, chosen, pick, n)) takeCopies(engine.toolState, chosen, pick, n);
           removeItem(engine.inv, chosen, n);
-          const out = setGift(st, { classTsid: chosen, count: n, stackMax: stackMax(chosen) });
-          if (out.returned) addItem(engine.inv, out.returned.classTsid, out.returned.count);
+          const out = setGift(st, { classTsid: chosen, count: n, stackMax: stackMax(chosen), ...wire });
+          if (out.returned) {
+            addItem(engine.inv, out.returned.classTsid, out.returned.count);
+            receiveWire(engine.toolState, out.returned.classTsid, out.returned, out.returned.count);
+          }
           engine.refreshPack?.();
           engine.save?.();
           closeDialog(engine);
@@ -1747,9 +1754,9 @@ function giveMenu(engine, pre = null) {
  * sends back an old gift of another class (onLeaveVisitorGift, onReturnOldGift);
  * the pack changes once the site says so, once per give (the trade slice's receipt).
  */
-function giveThroughSite(engine, cls, n, keep, pick = null) {
+function giveThroughSite(engine, cls, n, keep, pick = null, wire = {}) {
   closeDialog(engine);
-  giftHook.give(engine, { c: cls, n, keep }).then((a) => {
+  giftHook.give(engine, { c: cls, n, keep, ...wire }).then((a) => {
     if (!a?.ok) {
       say(engine, a?.text || BUTLER_STRINGS.visitorGiftNo, 3000);
       return;
@@ -1757,9 +1764,12 @@ function giveThroughSite(engine, cls, n, keep, pick = null) {
     if (a.applied) {
       if (engine.toolState && markLeaving(engine, cls, pick, n)) takeCopies(engine.toolState, cls, pick, n);
       removeItem(engine.inv, cls, Math.min(n, countItem(engine.inv, cls)));
-      if (a.got) addItem(engine.inv, a.got.c, a.got.n);
+      if (a.got) {
+        addItem(engine.inv, a.got.c, a.got.n);
+        receiveWire(engine.toolState, a.got.c, a.got, a.got.n); // G974: the old gift comes back as it went
+      }
     }
-    st.gift = a.gift ? { classTsid: a.gift.c, count: a.gift.n } : null;
+    st.gift = a.gift ? { classTsid: a.gift.c, count: a.gift.n, ...stackCopy(a.gift, a.gift.n) } : null;
     st.gifts = {};
     engine.refreshPack?.();
     engine.save?.();

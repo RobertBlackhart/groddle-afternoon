@@ -16,9 +16,9 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { mergeParcels, normalizeParcels } from '../public/js/neighbours-mp.js?v=eeba8bcb';
-import { nextHandover, normalizeButlerState, normalizeParcelBox } from '../public/js/butler.js?v=b6ed6990';
-import { giftsFeature } from '../public/js/features/gifts-feature.js?v=bb37521c';
+import { mergeParcels, normalizeParcels } from '../public/js/neighbours-mp.js?v=81fe8611';
+import { nextHandover, normalizeButlerState, normalizeParcelBox } from '../public/js/butler.js?v=465f8d14';
+import { giftsFeature } from '../public/js/features/gifts-feature.js?v=df573cd4';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -120,7 +120,7 @@ describe('G332: a wrapped Gift Box left with a Butler (bag_butler.js:1013)', () 
   it('keeps the box with the parcel row and credits the box and the stacks', { skip: skipSite }, () => {
     const src = readFileSync(join(SITE_DIR, 'src/ButlerParcels.php'), 'utf8');
     assert.match(src, /\$counts = self::countsOf\(\$item\);/);
-    assert.match(src, /INSERT INTO \{\$parcels\} \(id, owner_id, from_id, class_tsid, count, message, box, at_ms, created_at\)/);
+    assert.match(src, /INSERT INTO \{\$parcels\} \(id, owner_id, from_id, class_tsid, count, r, tag, message, box, at_ms, created_at\)/);
     const ledger = readFileSync(join(SITE_DIR, 'src/Ledger.php'), 'utf8');
     assert.match(ledger, /ButlerParcels::isParcel\(\$p\['trade'\]\) => ButlerParcels::catchUp/);
     const minn = JSON.parse(readFileSync(join(SITE_DIR, 'minn.json'), 'utf8'));

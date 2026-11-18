@@ -23,7 +23,7 @@
  * Plops are not told apart: what a Plop holds is not known until it is examined (plop.js 219-240),
  * so the picker never shows it; Give still sends the Plop's seeds along as a drop does (G605).
  */
-import { TOOL_CONDITION_CATALOG, cleanCopyTag, copyTags, pickToolCopies, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
+import { TOOL_CONDITION_CATALOG, cleanCopyTag, copyTags, leavingCopyTag, leavingToolWear, pickToolCopies, receiveToolCopy, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from './teleportation.js?v=e95cf7cb';
 import { favorGiantName } from './potions.js?v=4f4c996d';
 
@@ -176,6 +176,27 @@ export function copyWire(classTsid, pick, n = 1) {
     if (t != null) out.t = t;
   }
   return out;
+}
+
+/**
+ * G974: what `n` copies leaving carry on the wire, as { r?, t? } ({} for a class without copies):
+ * the chosen pick's (copyWire), else the ones the count going down takes (leavingToolWear,
+ * leavingCopyTag). Read it before they leave.
+ */
+export function leavingWire(state, classTsid, pick, n = 1) {
+  if (!state || !TOOL_CONDITION_CATALOG[classTsid]) return {};
+  const w = copyWire(classTsid, pick, n) || { r: leavingToolWear(state, classTsid, n), t: leavingCopyTag(state, classTsid, n) };
+  return { ...(w.r != null ? { r: w.r } : {}), ...(w.t != null ? { t: w.t } : {}) };
+}
+
+/**
+ * G974: `n` copies that just came (the count already went up) take the wear and words they came
+ * with (`it.r`, `it.t`); false when they came with none, as before.
+ */
+export function receiveWire(state, classTsid, it, n = 1) {
+  if (!state || !it || (it.r == null && it.t == null) || !TOOL_CONDITION_CATALOG[classTsid]) return false;
+  receiveToolCopy(state, classTsid, it.r ?? null, n, it.t ?? null);
+  return true;
 }
 
 /**

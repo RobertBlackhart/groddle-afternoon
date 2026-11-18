@@ -80,7 +80,7 @@ import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
 import { rainbowSound, showRainbow } from '../overlays.js?v=68c0a634';
 import { moodScaledXp } from '../mood-xp.js?v=e311b45c';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { createMinnAccount } from '../minn-account.js?v=153fc423';
+import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { getSkillPackageOverride } from '../skill-packages.js?v=bfb87281';
 import {
   RADIANCE_TEXT,

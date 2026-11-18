@@ -25,7 +25,7 @@
  */
 
 import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=d4e55862';
-import { normalizeParcelBox } from './butler.js?v=b6ed6990';
+import { normalizeParcelBox, stackCopy } from './butler.js?v=465f8d14';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
 
 /** The realtime server's street for a player's home street (homes.go). */
@@ -390,7 +390,8 @@ export function normalizeParcels(answer) {
     if (!isSiteParcel(id) || !from) continue;
     const c = String(p?.item?.c || '');
     const n = Math.floor(Number(p?.item?.n) || 0);
-    let item = /^[a-z0-9_]{1,64}$/.test(c) && n > 0 ? { c, n: Math.min(9999, n) } : null;
+    // G974: a stack carries its copy's own wear and words (ButlerParcels::itemOf r, t).
+    let item = /^[a-z0-9_]{1,64}$/.test(c) && n > 0 ? { c, n: Math.min(9999, n), ...stackCopy(p.item, n) } : null;
     // G332: a wrapped Gift Box carries what is inside (ButlerParcels::itemOf).
     if (item && c === 'bag_gift_box_wrapped' && p?.item?.box != null) {
       const box = normalizeParcelBox(p.item.box);
@@ -417,7 +418,7 @@ export function mergeParcels(state, parcels) {
   for (const p of parcels) {
     if (held.has(p.id) || held.has(`${p.id}:m`)) continue;
     const from = `p${p.from.id}`;
-    if (p.item) state.packages.push({ id: p.id, from, fromName: p.from.name, classTsid: p.item.c, count: p.item.n, ...(p.item.box ? { box: p.item.box } : {}), time: p.at });
+    if (p.item) state.packages.push({ id: p.id, from, fromName: p.from.name, classTsid: p.item.c, count: p.item.n, ...stackCopy(p.item, p.item.n), ...(p.item.box ? { box: p.item.box } : {}), time: p.at });
     if (p.text) state.messages.push({ id: p.item ? `${p.id}:m` : p.id, from, fromName: p.from.name, text: p.text, time: p.at, withPackage: p.item ? p.id : null });
     added += 1;
   }
@@ -438,13 +439,14 @@ export function isButlerVisitOp(id) {
   return /^bvisit-[0-9a-f]{16}$/.test(String(id || ''));
 }
 
+/** A stack from the site, with its copy's own wear and words (G974: ButlerGifts::stack r, t). */
 function siteStack(value) {
   const c = String(value?.c || '');
   const n = Math.floor(Number(value?.n) || 0);
-  return /^[a-z0-9_]{1,64}$/.test(c) && n > 0 ? { c, n: Math.min(9999, n) } : null;
+  return /^[a-z0-9_]{1,64}$/.test(c) && n > 0 ? { c, n: Math.min(9999, n), ...stackCopy(value, n) } : null;
 }
 
-/** groddle/v1/butler/stock, checked: { gift: { c, n } | null, legacy, visits: [{ id, name, at }] }. */
+/** groddle/v1/butler/stock, checked: { gift: { c, n, r?, t? } | null, legacy, visits: [{ id, name, at }] }. */
 export function normalizeButlerStock(answer) {
   const visits = [];
   for (const v of Array.isArray(answer?.visits) ? answer.visits : []) {
@@ -474,7 +476,7 @@ export function normalizeGiftAnswer(answer) {
  */
 export function applyButlerStock(state, stock, { keepGift = false } = {}) {
   if (!state || !stock) return 0;
-  if (!keepGift) state.gift = stock.gift ? { classTsid: stock.gift.c, count: stock.gift.n } : null;
+  if (!keepGift) state.gift = stock.gift ? { classTsid: stock.gift.c, count: stock.gift.n, ...stackCopy(stock.gift, stock.gift.n) } : null;
   if (!state.visitors || typeof state.visitors !== 'object') state.visitors = {};
   if (!state.visitorNames || typeof state.visitorNames !== 'object') state.visitorNames = {};
   let added = 0;

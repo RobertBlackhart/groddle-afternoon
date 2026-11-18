@@ -45,10 +45,10 @@
 import { ITEM_CATALOG, addItem, countItem, itemIcon, listPackSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { TOOL_CONDITION_CATALOG, copyTagKind, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=4156bba8';
-import { createMinnAccount } from '../minn-account.js?v=153fc423';
+import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { createItemPicker } from '../ui/item-picker.js?v=a805ea2d';
-import { copyPicks, copyWire, markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=11b1eb70';
+import { copyPicks, copyWire, markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=7968c974';
 import {
   AUCTION_TEXT as T,
   DEFAULT_RULES,

@@ -22,7 +22,7 @@ import {
 } from '../public/js/chat-threads.js?v=f1b1fbcc';
 import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=98fff2d4';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=0ef5d343';
+import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=66d8b228';
 import { ACTIVE_EVERY_MS, activeDue, presenceMpFeature } from '../public/js/features/presence-mp-feature.js?v=21272297';
 import { channelOpts, normalLine } from '../public/js/player-im.js?v=da51888c';
 import { SETTINGS_COPY, mountPresenceSetting } from '../public/js/account-forms.js?v=6729bb05';
