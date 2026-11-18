@@ -187,11 +187,11 @@ function groundY(platforms) {
  *   trees [i, class, x, y, maturity, health] game.js spawnTrees (the trants, and the Wood Tree at
  *                                          maturity 6, health 0: ensureWoodTreeState's fresh tree)
  *   nodes [key, class, x, y]               resource-nodes-feature resourceSpawnPlan (`<class>:<n>`)
- *   pigs  [i, x, y, range]                 game.js spawnPiggies (index i in placement('piggies'); y + 2;
+ *   pigs  [i, x, y, range]                 game.js spawnPiggies (index i in placement('piggies'); y on the line;
  *                                          range: its walk each way, animalPatrolRange)
  *   trunks [x]                             every planned tree's x (a Piggy never roots by a trunk)
  *   sad   true                             locationIsDepressing for the street (its Piggies are sad)
- *   chickens    [i, x, y]                  game.js spawnChickens (index i in placement('chickens'); y + 2)
+ *   chickens    [i, x, y]                  game.js spawnChickens (index i in placement('chickens'); y on the line)
  *   butterflies [i, x, y, fly]             game.js spawnButterflies: resting i < n (fly 0), then the
  *                                          flyers at n + j (fly 1, the planner point's y)
  *   batterflies [i, x, y]                  animal-husbandry-feature spawnStreet (batterfly:<i>)
@@ -240,7 +240,8 @@ export function streetObjectLayout(data, { starter = false, ecology = ecologyFor
   // Each Piggy's walk (game.js enterStreet: animalPatrolRange at its spot's room), so the server knows
   // where its shared path has it (groddle-afternoon-server pigpath.go) and every page walks it from
   // the same numbers (the snapshot's "homes").
-  const pigs = placement('piggies').map((p, i) => [i, r1(p.x), r1((p.y ?? ground) + 2), animalPatrolRange('piggies', p.room)]);
+  // G975: on the line, as game.js enterStreet now stands them (R12 sprite feet removed the + 2 that made up for blank rows).
+  const pigs = placement('piggies').map((p, i) => [i, r1(p.x), r1(p.y ?? ground), animalPatrolRange('piggies', p.room)]);
   // The trunks a Piggy never roots by (features/street-objects-feature.js: every planned tree).
   const trunks = pigs.length ? placement('trees').map((p) => r1(p.x)).filter(Number.isFinite) : [];
   const meta = STREET_INDEX.streets?.[data.tsid] || {};
@@ -252,8 +253,8 @@ export function streetObjectLayout(data, { starter = false, ecology = ecologyFor
     label: data.label || meta.label || '',
   });
 
-  const chickens = placement('chickens').map((p, i) => [i, r1(p.x), r1((p.y ?? ground) + 2)]);
-  const rest = placement('butterflies').map((p, i) => [i, r1(p.x), r1((p.y ?? ground) + 2), 0]);
+  const chickens = placement('chickens').map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
+  const rest = placement('butterflies').map((p, i) => [i, r1(p.x), r1(p.y ?? ground), 0]);
   const butterflies = [...rest, ...placement('flyingButterflies').map((p, j) => [rest.length + j, r1(p.x), r1(p.y ?? ground), 1])];
   // The Batterflies' group comes after the feature groups (creatureRequests): its own planner pass.
   // Heli Kitties (heli-kitties-feature) and Crabs (crabs-feature, after it) are planned in that pass

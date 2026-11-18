@@ -139,8 +139,9 @@ describe('the page lays out each street where the realtime server checks reach',
       };
       rows('rocks', 'rocks', 0);
       rows('trees', 'trees');
-      rows('pigs', 'piggies');
-      rows('chickens', 'chickens');
+      // G975: walkers stand on the line, as game.js enterStreet (R12 sprite feet); trees keep their + 2.
+      rows('pigs', 'piggies', 0);
+      rows('chickens', 'chickens', 0);
       // Same counts too: an animal the server lacks is one the page asks about by an id it does not know.
       if ((want.pigs || []).length !== placement('piggies').length) bad.push(`pigs: page ${placement('piggies').length} server ${(want.pigs || []).length}`);
       if ((want.chickens || []).length !== placement('chickens').length) bad.push(`chickens: page ${placement('chickens').length} server ${(want.chickens || []).length}`);
@@ -148,7 +149,7 @@ describe('the page lays out each street where the realtime server checks reach',
       const fly = placement('flyingButterflies');
       for (const [i, x, y, flying] of want.butterflies || []) {
         const p = flying ? fly[i - rest.length] : rest[i];
-        if (differs(p, x, y, flying ? 0 : 2)) bad.push(`butterfly:${i} page ${at(p)} server ${x},${y}`);
+        if (differs(p, x, y, 0)) bad.push(`butterfly:${i} page ${at(p)} server ${x},${y}`);
       }
       const byKey = new Map(nodes.map((n) => [n.key, n]));
       for (const [key, , x, y] of want.nodes || []) {

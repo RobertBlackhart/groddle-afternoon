@@ -254,10 +254,10 @@ describe('every shared street', () => {
     for (const [tsid, row] of Object.entries(data.streets)) {
       const reserved = streetReservedSpots(await loaded(tsid));
       if (!reserved.some((s) => s.doorway)) continue;
-      // Rows hold the feet (spot y + 2).
+      // Tree rows hold the feet (spot y + 2); Piggies stand on the spot (G975).
       for (const [, , x, y] of row.trees || []) assert.equal(blockingFixture({ x, y: y - 2 }, reserved, { footprint: 180, height: 210 }), null, `${tsid} tree ${x},${y}`);
       for (const [, , x, y] of row.rocks || []) assert.equal(blockingFixture({ x, y }, reserved, { footprint: 100, height: 110 }), null, `${tsid} rock ${x},${y}`);
-      for (const [, x, y] of row.pigs || []) assert.equal(blockingFixture({ x, y: y - 2 }, reserved), null, `${tsid} pig ${x},${y}`);
+      for (const [, x, y] of row.pigs || []) assert.equal(blockingFixture({ x, y }, reserved), null, `${tsid} pig ${x},${y}`);
       checked += 1;
     }
     assert.ok(checked >= 50, String(checked)); // 59 on 2026-10-31
