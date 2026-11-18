@@ -73,7 +73,7 @@ import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { playOverlay } from '../overlays.js?v=68c0a634';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { NAMEPLATE_STYLE } from '../world-text.js?v=2dd95179';
+import { NAMEPLATE_STYLE } from '../world-text.js?v=6b49f88c';
 
 export const REALTIME_FEATURE_ID = 'realtime';
 /** Lines kept in the chat log. */

@@ -92,7 +92,7 @@ import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { partySpaceForStreet } from '../party-spaces.js?v=4e8d4471';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';
 export const LIGHT_BEAM_CLASS = 'light_beam';

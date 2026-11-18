@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=823f43fe';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=b620c6f2';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2e676753';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=98199734';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=08820e49';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=735bfbeb';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=6d8dec7f';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=5529dc91';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -396,8 +396,8 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=21c555d9';
-import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=2dd95179';
+} from './js/paradise-course-runtime.js?v=424d1317';
+import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
   applyAchievementProgress as applyAchievementProgressRaw,
@@ -692,7 +692,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=22fd7d80';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=ac13d56a';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -723,7 +723,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=29df0f35';
+} from './js/street-render.js?v=e6a5d5a1';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -1068,7 +1068,6 @@ import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
 import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=e5d8f9ec';
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
-import { denseSprite } from './js/sprite-dense.js?v=2a0ce07a';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
@@ -2840,8 +2839,6 @@ let shrineFavorSpent = false;
 let spinningWheelTarget = null;
 let spinningWheelLastPhase = '';
 let spinningWheelPrompted = false;
-/** Interactive clean Stoot doll installed beside the memorial plaque. */
-let stootDollTarget = null;
 /** Non-persistent quote rotation metadata for the doll while it is in the pack. */
 const packedStootDollState = createStootDollState();
 /** Transient local companions used to make the recorded three-player Feat playable solo. */
@@ -10992,87 +10989,6 @@ function spawnSpinningWheel({ now = Date.now(), ticket = null } = {}) {
     app.canvas.dataset.spinningWheelReward = '';
   }
   return spinningWheelTarget;
-}
-
-/**
- * The Stoot Barfield Pullstring Doll's art (59 px, drawn at 1.18 on the ground and 1.55 in the
- * memorial): its 5x render (js/sprite-dense.js, rare_items/stoot_barfield_pullstring_doll.swf, CC0;
- * js/textures.js reads resolution 5 from the name, so the drawn size is unchanged) on dense screens.
- */
-const STOOT_DOLL_ART = 'assets/sprites/spinning-wheel/stoot-doll.webp';
-function stootDollTexture() {
-  const dense = denseSprite(STOOT_DOLL_ART, 1.18 * (app?.renderer?.resolution || window.devicePixelRatio || 1));
-  return textureFromUrl(dense?.parts.length === 1 ? dense.parts[0][0] : STOOT_DOLL_ART);
-}
-
-function spawnStootMemorial() {
-  if (
-    !entityLayer ||
-    !currentStreet ||
-    currentStreetTsid !== STOOT_MEMORIAL_STREET_ID ||
-    stootDollTarget
-  ) return null;
-  const ground = resolveGround(WORLD_W * 0.5, GROUND_Y);
-  const memorial = new PIXI.Container();
-  memorial.x = WORLD_W * 0.5;
-  memorial.y = ground - 14;
-  memorial.zIndex = 7;
-  memorial.eventMode = 'none';
-
-  const shadow = new PIXI.Graphics();
-  shadow.ellipse(0, -77, 174, 166).fill({ color: 0x111523, alpha: 0.82 });
-  const frame = new PIXI.Graphics();
-  frame.roundRect(-116, -232, 232, 170, 14).fill({ color: 0x201d2b, alpha: 0.98 }).stroke({ width: 8, color: 0x584028, alpha: 1 });
-  frame.roundRect(-104, -220, 208, 146, 10).stroke({ width: 2, color: 0xe5cc82, alpha: 0.72 });
-  const glow = new PIXI.Graphics();
-  glow.ellipse(0, -145, 150, 94).fill({ color: 0xffe6a0, alpha: 0.12 });
-  const portrait = new PIXI.Sprite(stootDollTexture());
-  portrait.anchor.set(0.5);
-  portrait.scale.set(1.55);
-  portrait.y = -150;
-  const title = new PIXI.Text({ text: 'STOOT', style: {
-    fontFamily: WORLD_FONT_FAMILY,
-    fontSize: 24,
-    fill: 0xffefc2,
-    fontWeight: '900',
-    letterSpacing: 3,
-    stroke: { color: 0x251b17, width: 4 },
-  } });
-  title.anchor.set(0.5);
-  title.y = -205;
-  const inscription = new PIXI.Text({ text: 'An old friend, still making Ur brighter.', style: {
-    fontFamily: WORLD_FONT_FAMILY,
-    fontSize: 12,
-    fill: 0xf5ead0,
-    fontStyle: 'italic',
-  } });
-  inscription.anchor.set(0.5);
-  inscription.y = -91;
-  memorial.addChild(shadow, frame, glow, portrait, title, inscription);
-  entityLayer.addChild(memorial);
-
-  const doll = new PIXI.Sprite(stootDollTexture());
-  standOnFeet(doll);
-  doll.scale.set(1.18);
-  doll.x = memorial.x - 132;
-  doll.y = ground;
-  doll.zIndex = itemZ(STOOT_DOLL_ID, 12);
-  doll._worldHitW = 68;
-  doll._worldHitH = 76;
-  entityLayer.addChild(doll);
-  stootDollTarget = register({
-    classId: STOOT_DOLL_ID,
-    label: STOOT_DOLL_LABEL,
-    subtitle: 'Pull string',
-    sprite: doll,
-    state: createStootDollState(),
-  });
-  if (app?.canvas) {
-    app.canvas.dataset.stootMemorial = 'clean-cc0';
-    app.canvas.dataset.stootDollActive = '1';
-    app.canvas.dataset.stootDollAudio = 'recovered-c2';
-  }
-  return memorial;
 }
 
 function handleStootDollTarget(target, verbId, { context = 'world', animate = true } = {}) {
@@ -25237,7 +25153,6 @@ function clearWorldEntities({ keepWindows = false } = {}) {
   spinningWheelTarget = null;
   spinningWheelLastPhase = '';
   spinningWheelPrompted = false;
-  stootDollTarget = null;
   stopPhantomHeartbeat();
   phantomTarget = null;
   if (hogHaulCarrySprite?.parent) hogHaulCarrySprite.parent.removeChild(hogHaulCarrySprite);
@@ -25580,7 +25495,6 @@ async function enterStreet(tsid, opts = {}) {
       );
     }
   }
-  if (data.tsid === STOOT_MEMORIAL_STREET_ID) spawnStootMemorial();
   if (currentStreetPopulation.companions !== false) {
     spawnLocalCompanions();
     countCompanionFollowStreet(data.tsid);
@@ -34078,11 +33992,6 @@ async function main() {
         );
         if (droppedDoll) pickupDroppedWorldItem(droppedDoll);
       }, 1_250);
-    }
-    if (params.has('stootdemo') && params.get('stootdollautoplay') === '1') {
-      setTimeout(() => {
-        if (stootDollTarget) handleStootDollTarget(stootDollTarget, 'pull_string');
-      }, 350);
     }
     if (params.has('stootdemo') && (wheelAutoplay === '1' || wheelAutoplay === 'ready')) {
       setTimeout(() => {

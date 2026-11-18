@@ -21,7 +21,7 @@ import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody }
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 const DECO_ROOT = 'assets/decos/groddle';
 const decoUrl = (name) => `${DECO_ROOT}/${name}.png`;

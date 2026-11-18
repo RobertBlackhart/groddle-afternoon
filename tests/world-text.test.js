@@ -15,7 +15,7 @@ import {
   worldCanvasFont,
   worldLabelStyle,
   worldTextStyle,
-} from '../public/js/world-text.js?v=2dd95179';
+} from '../public/js/world-text.js?v=6b49f88c';
 
 const root = join(import.meta.dirname, '..');
 const pub = join(root, 'public');
@@ -55,8 +55,9 @@ describe('the world font (R17)', () => {
     // The face style.css serves from assets/fonts/nunito (tests/nunito-font.test.js), never Google.
     assert.match(read('public/style.css'), /font-family: Nunito;[\s\S]*?src: url\("assets\/fonts\/nunito\/nunito-roman-latin\.woff2"\)/);
     assert.ok(WORLD_FONT_FACES.every((face) => / Nunito$/.test(face)));
-    // The STOOT memorial's inscription is the one italic world text (game.js makeStootMemorial).
-    assert.ok(WORLD_FONT_FACES.some((face) => face.startsWith('italic ')));
+    // G978: the STOOT memorial's inscription was the one italic world text; with it gone the world loads no italic.
+    assert.ok(!WORLD_FONT_FACES.some((face) => face.startsWith('italic ')));
+    assert.doesNotMatch(read('public/game.js'), /fontStyle: 'italic'/);
   });
 
   it('builds styles and canvas fonts that keep their sizes and colours', () => {

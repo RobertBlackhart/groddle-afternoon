@@ -122,7 +122,7 @@ import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=5bc894c8';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 /** 3x tower pieces where the screen has more than 2.25 backing pixels per world pixel. */
 function hires(engine) {

@@ -31,7 +31,7 @@ import { strayWayOut } from '../quest-instance.js?v=13b8ee09';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=114647c2';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const DEAD_ENDS_FEATURE_ID = 'dead-ends';
 export const DEAD_END_EXIT_CLASS = 'dead_end_exit';

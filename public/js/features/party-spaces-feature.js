@@ -90,7 +90,7 @@ import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=68488a4d';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const PARTY_FEATURE_ID = 'party-spaces';
 const HOLD = 'party';

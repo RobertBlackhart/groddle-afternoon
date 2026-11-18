@@ -29,7 +29,7 @@
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { loadDecoManifest } from '../street-render.js?v=29df0f35';
+import { loadDecoManifest } from '../street-render.js?v=e6a5d5a1';
 import {
   DOOR_KEYS,
   DOOR_KEY_BASE_COST,
@@ -51,7 +51,7 @@ import { doorLockArt } from '../door-lock-art.js?v=e656851c';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const DOORS_FEATURE_ID = 'doors';
 const DECO_BASE = 'assets/decos/groddle/';

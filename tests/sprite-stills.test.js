@@ -65,15 +65,12 @@ describe('sharp world still items', () => {
     }
   });
 
-  it('the Stoot doll draws its 5x render where it is shown at 1.18 and 1.55', () => {
+  it('the Stoot doll keeps its 5x render, picked at 1.18 on a dense screen', () => {
     const path = 'assets/sprites/spinning-wheel/stoot-doll.webp';
     assert.equal(dense[path]?.status, 'ok', dense[path]?.reason);
     assert.equal(DENSE_SPRITES.get(path).density, 5);
     assert.equal(denseSprite(path, 1.18), null);
     assert.ok(denseSprite(path, 1.18 * 2));
-    const game = readFileSync(join(pub, 'game.js'), 'utf8');
-    assert.match(game, /from '\.\/js\/sprite-dense\.js\?v=[0-9a-f]{8}'/);
-    assert.equal((game.match(/new PIXI\.Sprite\(stootDollTexture\(\)\)/g) || []).length, 2);
-    assert.doesNotMatch(game, /textureFromUrl\('assets\/sprites\/spinning-wheel\/stoot-doll\.webp'\)/);
+    // G978: the memorial that drew it at 1.18 and 1.55 is gone; the render stays for the doll's art.
   });
 });

@@ -1295,15 +1295,24 @@
    "id": "stoot-memorial-plaque",
    "title": "A Stoot memorial plaque and doll on a developer street",
    "kind": "content",
-   "status": "under-review",
+   "status": "dropped",
    "where": [
     {
-     "file": "public/game.js"
+     "file": "public/game.js",
+     "symbol": "spawnStootMemorial",
+     "gone": true
+    },
+    {
+     "file": "public/js/world-text.js",
+     "symbol": "WORLD_FONT_FACES",
+     "gone": true
     }
    ],
    "why": "A tribute; GIFPV9EMLT72DP4 is a dev street (\"unnnn\") with no such plaque.",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): remove the plaque and the doll installed beside it; the doll stays an item (pack, ground), unnnn keeps its source hub name",
    "rows": [
-    "G892"
+    "G892",
+    "G978"
    ]
   },
   {

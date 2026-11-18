@@ -23,8 +23,8 @@
 /** Nunito first, then a plain sans-serif every phone has. */
 export const WORLD_FONT_FAMILY = 'Nunito, "Helvetica Neue", Arial, sans-serif';
 
-/** The faces the world draws: Nunito is one variable file per style (weights 200-1000). */
-export const WORLD_FONT_FACES = Object.freeze(['700 16px Nunito', 'italic 400 16px Nunito']);
+/** The faces the world draws: Nunito is one variable file per style (weights 200-1000); the world has no italic. */
+export const WORLD_FONT_FACES = Object.freeze(['700 16px Nunito']);
 
 /** How long a street waits for the font before it draws with the fallback. */
 const WORLD_FONT_WAIT_MS = 3000;

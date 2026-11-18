@@ -53,7 +53,7 @@ import {
   quoinTypeShards,
   stackQuoinText,
 } from '../quoin-shards.js?v=121156a0';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 let fxRoot = null;
 const fxItems = [];

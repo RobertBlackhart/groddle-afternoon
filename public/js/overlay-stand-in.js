@@ -15,7 +15,7 @@
 
 import { playSheetOverlay } from './overlay-art.js?v=7a63d78f';
 import { playOverlay } from './overlays.js?v=68c0a634';
-import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 const STYLE = Object.freeze({ fill: 0xfffaf0, line: 0x6b5a48, text: 0x3b3128 });
 

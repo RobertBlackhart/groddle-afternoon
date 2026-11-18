@@ -32,7 +32,7 @@ import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=0d502ab1';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import {
   DISHES_NEEDED,

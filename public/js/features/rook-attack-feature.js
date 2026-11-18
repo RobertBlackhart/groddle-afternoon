@@ -133,7 +133,7 @@ import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
-import { WORLD_FONT_FAMILY } from '../world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const ROOK_FEATURE_ID = 'rook-attack';
 /** The view the fight's screen art was laid out on; syncFront centres it in a wider one (g458). */

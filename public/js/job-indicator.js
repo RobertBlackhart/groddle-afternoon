@@ -25,7 +25,7 @@
  * the GlitchAddict video (research/video/frames/PUzIKuL2tPo t0012, t0030): a bold teal line, the
  * second line smaller and lighter.
  */
-import { WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
+import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 export const JOB_INDICATOR_TEXT = Object.freeze({
   available: 'Project available',

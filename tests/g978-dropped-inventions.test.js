@@ -119,3 +119,12 @@ describe('G978: no exit sign in Storyland', () => {
     assert.match(game, /getElementById\('greedy-street-leave-btn'\)\?\.addEventListener\('click', confirmLeaveGreedyStreetSpirit\)/);
   });
 });
+
+describe('G978: no Stoot memorial on unnnn', () => {
+  it('no plaque or installed doll on GIFPV9EMLT72DP4 (a dev street with no such plaque); the doll is still an item', () => {
+    dropped('stoot-memorial-plaque');
+    assert.doesNotMatch(game, /spawnStootMemorial|stootDollTarget|An old friend, still making Ur brighter/);
+    assert.match(game, /function pullPackedStootDoll\(/);
+    assert.match(game, /data\.hubName = 'Jethimadh Tower: Mid'/);
+  });
+});

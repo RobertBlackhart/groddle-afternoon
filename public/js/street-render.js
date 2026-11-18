@@ -18,7 +18,7 @@ import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } f
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
 import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
-import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=2dd95179';
+import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**
