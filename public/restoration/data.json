@@ -2360,8 +2360,8 @@
   "skipped": 19
  },
  "icons": {
-  "items": 1078,
-  "sharp": 1075
+  "items": 1081,
+  "sharp": 1078
  },
  "imagination": {
   "total": 275,
@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-17"
  },
  "git": {
-  "commits": 2618,
+  "commits": 2620,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-17",
+    "kind": "new",
+    "text": "Pot Luck Day: Chickens dress up as turkeys and roosters, for everyone"
+   },
    {
     "date": "2026-11-17",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-17",
     "kind": "fix",
     "text": "Instant Resurrection fills mood to the full tank, not 100"
-   },
-   {
-    "date": "2026-11-17",
-    "kind": "new",
-    "text": "The Scion of Purple is drawn sharp on computers, only while it is on screen"
    }
   ]
  },
- "tests": 1124,
+ "tests": 1125,
  "generatedAt": "2026-11-17"
 }
