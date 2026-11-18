@@ -18,7 +18,7 @@ import { join } from 'node:path';
 import { getVerbsFor } from '../public/content.js?v=cabea74a';
 import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=2d5a9737';
 import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=b9d9d085';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=6a00cf97';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=c009d6b6';
 import {
   SIGNPOST_POST_HALF,
   createCultivationState,

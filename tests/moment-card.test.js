@@ -19,7 +19,7 @@ import {
   rewardChips,
   rewardIcon,
 } from '../public/js/ui/moment-card.js?v=3850c51c';
-import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=3af58308';
+import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=a0ed42e9';
 import { questRewardSummary } from '../public/js/quests.js?v=4a3fb1da';
 import { questAwardPayload } from '../public/js/quest-offers.js?v=8b51ffce';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
