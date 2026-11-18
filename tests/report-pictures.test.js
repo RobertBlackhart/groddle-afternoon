@@ -12,9 +12,9 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, fileName, filesOf, mayBePicture, pictureAttempts, pictureError, refusalWords, roomFor, takeForRoom } from '../public/js/report-pictures.js?v=d98e235d';
-import { REPORT_PICTURE, REPORT_TEXT as T, createReportsApi, messagePictures, pictureSrc, picturesBody } from '../public/js/reports.js?v=aa93fc78';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=0b11fcad';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, fileName, filesOf, mayBePicture, pictureAttempts, pictureError, refusalWords, roomFor, takeForRoom } from '../public/js/report-pictures.js?v=7a6f29e0';
+import { REPORT_PICTURE, REPORT_TEXT as T, createReportsApi, messagePictures, pictureSrc, picturesBody } from '../public/js/reports.js?v=813fec3c';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=a0afae81';
 import { LIGHTBOX_TEXT, galleryStep, openLightbox } from '../public/js/ui/picture-lightbox.js?v=b2cba91b';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 

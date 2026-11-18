@@ -72,6 +72,11 @@ test('cleanup: the statements never name users 1 or 54 and guard the users DELET
   for (const s of sql) for (const id of idsIn(unguarded(s))) assert.ok(id === 61 || id === 62, `${s} names ${id}`);
   // Ticket messages go before their tickets; every keyed table is covered; the users DELETE carries its guards.
   assert.match(sql[0], /^DELETE m FROM wp_groddle_ticket_messages m JOIN wp_groddle_tickets/);
+  // Reactions on their reports' messages go by the ticket (an administrator's too, Austin 2026-11-18), before the tickets.
+  assert.equal(sql[1], 'DELETE r FROM wp_groddle_ticket_message_reactions r JOIN wp_groddle_tickets t ON t.id = r.ticket_id WHERE t.player_user_id IN (61,62);');
+  assert.ok(sql.indexOf(sql[1]) < sql.indexOf('DELETE FROM wp_groddle_tickets WHERE player_user_id IN (61,62);'));
+  // The throwaway's own reactions anywhere are found by their user_id column.
+  assert.ok(new RegExp(ID_COLUMN_REGEXP).test('user_id'));
   for (const [t, c] of COLS) assert.ok(sql.includes(`DELETE FROM ${t} WHERE ${c} IN (61,62);`), `${t}.${c}`);
   const users = sql.find((s) => s.startsWith('DELETE FROM wp_users'));
   assert.equal(users, "DELETE FROM wp_users WHERE ID IN (61,62) AND ID > 54 AND ID NOT IN (1,54) AND user_email LIKE 'zz-smoke-123456-%@groddle.localhost';");

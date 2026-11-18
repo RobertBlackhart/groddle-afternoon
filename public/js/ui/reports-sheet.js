@@ -91,10 +91,21 @@
  * long press, or Shift+F10 or the Menu key on a focused row; Open, Add a message (Reopen when
  * closed), Close report, Mark as read or unread, Copy link. Up and Down (Home, End) move between
  * the rows, Enter opens one. A redrawn list keeps the focused row focused.
+ *
+ * Reactions (Austin 2026-11-18, the remake's own as the chat's are): under each message of a thread
+ * the chat's chips and its add button, drawn by the chat's own js/ui/reaction-strip.js (the same
+ * look, keys and picker, the picker inside this window so it stays over it): a chip puts yours on or
+ * takes it off, its tip says who ("Heart: You and Austin"), the add button opens the set. The site
+ * answers the message's reactions (api.react, src/TicketReactions.php); no email, the report's
+ * status and news stay as they were. A site from before reactions sends none, and no button shows.
+ * QA hooks: [data-reports-msg-react=<message id>] (each message's row), with the strip's own
+ * [data-react-add], [data-react-chip], [data-react-picker], [data-react-pick]; canvas data reportReact.
  */
 
-import { REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=aa93fc78';
-import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=d98e235d';
+import { REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=813fec3c';
+import { createReactionUI } from './reaction-strip.js?v=3de815f3';
+import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../report-reactions.js?v=69462240';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=7a6f29e0';
 import { focusBack } from './focus-return.js?v=da190597';
 import { lightboxLink } from './picture-lightbox.js?v=b2cba91b';
 import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=65e8e8ba';
@@ -167,6 +178,18 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   // Pictures being read (js/report-pictures.js convertPicture), and the work Send waits for.
   let reading = 0;
   let readingJob = Promise.resolve();
+
+  // Reactions on the thread's messages: each message's list as the chips read it, by reaction key, and you among them.
+  const reacted = new Map();
+  let reactor = 0;
+  const reactUI = createReactionUI({
+    doc,
+    win: doc.defaultView || globalThis,
+    reactions: (rk) => reacted.get(rk) || [],
+    me: () => reactor,
+    host: () => panel,
+    send: (rk, key, on) => sendReaction(rk, key, on),
+  });
 
   const e = (tag, attrs, text) => el(doc, tag, attrs, text);
   const panel = e('div', { id: 'bug-report-panel', class: 'reports-panel ui-sheet ui-sheet-center', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'bug-report-title', hidden: true, 'data-bug-report': '', 'data-reports-view': 'list' });
@@ -399,6 +422,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
 
   function drawThread() {
     if (!ticket) return;
+    reactUI.closePicker();
+    reactor = reactorOf(messages) || reactor;
     title.textContent = ticket.subject || T.sheet;
     chip(threadChip, ticket.status);
     threadWhen.textContent = numberedLine(ticket, now());
@@ -432,6 +457,14 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
           row.append(a);
         });
         li.append(row);
+      }
+      // The chat's reactions under it (a site from before them sends none: no button).
+      const rk = Array.isArray(m.reactions) ? reportReactionKey(ticket.id, m.id) : '';
+      if (rk) {
+        reacted.set(rk, reportReactions(m.reactions));
+        const react = e('div', { class: 'reports-msg-react', 'data-reports-msg-react': String(m.id) });
+        li.append(react);
+        reactUI.decorate(react, { rk, mine: m.author !== 'admin', name: m.author === 'admin' ? T.admin : T.you });
       }
       return li;
     }));
@@ -657,8 +690,31 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     });
   }
 
+  /**
+   * A chip or a pick: the site puts the reaction on (or takes it off) and answers the message's
+   * reactions, drawn in place. True when it went (the strip's send).
+   */
+  function sendReaction(rk, key, on) {
+    const at = parseReportReactionKey(rk);
+    if (!at || !ticket || at.ticket !== ticket.id || typeof api.react !== 'function') return false;
+    setData('reportReact', `${key}:${on ? 'on' : 'off'}:sending`);
+    api.react(at.ticket, at.message, key, on).then((r) => {
+      const m = messages.find((x) => x.id === at.message);
+      if (m && ticket?.id === at.ticket) m.reactions = Array.isArray(r?.reactions) ? r.reactions : [];
+      reactor = reactorOf([{ reactions: r?.reactions }]) || reactor;
+      reacted.set(rk, reportReactions(r?.reactions));
+      reactUI.update(rk);
+      setData('reportReact', `${key}:${on ? 'on' : 'off'}:done`);
+    }).catch((err) => {
+      say(refusalWords(err, T.reactFailed), true);
+      setData('reportReact', `${key}:${on ? 'on' : 'off'}:failed`);
+    });
+    return true;
+  }
+
   function show(next) {
     if (next !== 'list') rowMenu.close();
+    reactUI.closePicker();
     view = next;
     listView.hidden = view !== 'list';
     threadView.hidden = view !== 'thread';
@@ -910,6 +966,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   function close() {
     if (state === 'sending') return;
     rowMenu.close();
+    reactUI.closePicker();
     closePicture();
     stopIdle();
     state = 'closed';

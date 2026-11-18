@@ -6,7 +6,8 @@
  * read every statement.
  *
  * What goes, for each throwaway: every message in their report tickets (the administrators'
- * replies too) and the tickets, every wp_groddle_* row keyed to them (any column ending in
+ * replies too), every reaction on those messages (an administrator's too, by the ticket:
+ * groddle_ticket_message_reactions, whose own user_id finds the throwaway's anywhere) and the tickets, every wp_groddle_* row keyed to them (any column ending in
  * user_id, a_id/b_id, from_id/to_id, owner_id, holder_id, visitor_id, dropper_id/taker_id,
  * buyer_id/seller_id, buddy_id/ignored_id, neighbor_id, claimer_id, actor_id, poster_id/author_id/reporter_id
  * (notice board notes and reports): saves, characters,
@@ -107,7 +108,7 @@ export function parseColumns(text) {
 
 export const COLUMNS_SQL = `SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name LIKE 'wp\\_groddle\\_%' AND column_name REGEXP '${ID_COLUMN_REGEXP}' ORDER BY table_name, column_name`;
 
-/** The DELETEs for these throwaways, in order (ticket messages before their tickets). */
+/** The DELETEs for these throwaways, in order (ticket messages and their reactions before their tickets). */
 export function cleanupStatements({ ids, emails, cols, like, minId }) {
   if (!like || !/^zz-smoke-/.test(like)) throw new Error('cleanupStatements needs the throwaway LIKE pattern');
   const out = [];
@@ -116,6 +117,7 @@ export function cleanupStatements({ ids, emails, cols, like, minId }) {
     if (!Number.isInteger(minId) || minId < 1) throw new Error('cleanupStatements needs minId');
     const list = ids.join(',');
     out.push(`DELETE m FROM wp_groddle_ticket_messages m JOIN wp_groddle_tickets t ON t.id = m.ticket_id WHERE t.player_user_id IN (${list});`);
+    out.push(`DELETE r FROM wp_groddle_ticket_message_reactions r JOIN wp_groddle_tickets t ON t.id = r.ticket_id WHERE t.player_user_id IN (${list});`);
     for (const [t, c] of cols) out.push(`DELETE FROM ${t} WHERE ${c} IN (${list});`);
     if (emails.length) out.push(`DELETE FROM wp_groddle_mail_sends WHERE email_hash IN (${emails.map((e) => sqlString(emailHash(e))).join(',')});`);
     out.push(`DELETE FROM wp_postmeta WHERE post_id IN (SELECT ID FROM (SELECT ID FROM wp_posts WHERE post_author IN (${list})) p);`);

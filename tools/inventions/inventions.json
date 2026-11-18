@@ -235,6 +235,28 @@
    "rows": []
   },
   {
+   "id": "report-reactions",
+   "title": "Emoji reactions on bug report messages, in the game's Reports and the console",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/reports-sheet.js",
+     "symbol": "sendReaction"
+    },
+    {
+     "file": "public/js/report-reactions.js",
+     "symbol": "reportReactions"
+    },
+    {
+     "file": "public/js/features/bug-report-feature.js",
+     "symbol": "STYLE"
+    }
+   ],
+   "why": "Austin 2026-11-18: \"In bug reports can we add a similar emoji response, like we have in live chat? Both for users and on console.\" Glitch's bug form (BootError.as 280-290) had no thread to react in; the set is the chat's own (chat-reactions), drawn by its reaction strip. Site: src/TicketReactions.php, console/console.js.",
+   "rows": []
+  },
+  {
    "id": "chat-threads",
    "title": "Threaded replies on chat lines",
    "kind": "UI",

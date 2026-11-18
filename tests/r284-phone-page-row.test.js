@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MENU_ROWS, PHONE_PAGE_LABEL, menuRowFor, phonePageHref } from '../public/js/ui/topbar.js?v=3f4fdf4a';
-import { fullGameHref } from '../public/js/phone/companion-data.js?v=56c2a362';
+import { fullGameHref } from '../public/js/phone/companion-data.js?v=876a3d8c';
 
 const root = join(import.meta.dirname, '..');
 const topbar = readFileSync(join(root, 'public/js/ui/topbar.js'), 'utf8');

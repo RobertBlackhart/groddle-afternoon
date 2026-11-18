@@ -36,6 +36,8 @@
  * carries up to four (js/report-pictures.js: any picture the browser opens,
  * dropped, pasted, picked or taken, made into the same JPEG), sent as
  * "pictures"; each message lists its own (/report-pictures/<report>/<message>/<n>).
+ *
+ * Reactions on a report's messages (Austin 2026-11-18): api.react; the rules are js/report-reactions.js.
  */
 
 import { minnUrls } from './minn-account-core.js?v=bd210eb9';
@@ -125,6 +127,8 @@ export const REPORT_TEXT = Object.freeze({
   // Several pictures a message (Austin 2026-11-15).
   trayLabel: 'Pictures going with your message',
   reportPictureAlt: 'A picture you sent with this report',
+  // Reactions on a message (Austin 2026-11-18).
+  reactFailed: 'That reaction didn\'t go. Try again in a moment.',
 });
 
 /**
@@ -426,6 +430,8 @@ export function createReportsApi({ baseUri, fetch: fetchFn = globalThis.fetch?.b
     close: (id) => call(`tickets/${Number(id)}/close`, { method: 'POST' }),
     /** { ticket, messages, editable }: new words for the report's first message, until an administrator reads it. */
     edit: (id, message) => call(`tickets/${Number(id)}/edit`, { method: 'POST', body: { message } }),
+    /** { message, reactions }: one of the chat's reactions on (or off) a message of your report (Austin 2026-11-18). */
+    react: (id, message, e, on) => call(`tickets/${Number(id)}/messages/${Number(message)}/reactions`, { method: 'POST', body: { e, on: Boolean(on) } }),
     /** { ticket, unread }: the new reply dot back on a report an administrator wrote in last (the list's menu, js/ui/report-row-menu.js). */
     markUnread: (id) => call(`tickets/${Number(id)}/unread`, { method: 'POST' }),
   };

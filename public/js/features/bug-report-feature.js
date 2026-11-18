@@ -82,9 +82,9 @@
  * window.groddleBugReport.open('list'|'new'), .openTicket(id), .refresh() in multiplayer.
  */
 
-import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=aa93fc78';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=0b11fcad';
-import { PICTURE_TEXT } from '../report-pictures.js?v=d98e235d';
+import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=813fec3c';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=a0afae81';
+import { PICTURE_TEXT } from '../report-pictures.js?v=7a6f29e0';
 import { canvasTransparent } from '../render-probe.js?v=d2c7b0e0';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
@@ -755,6 +755,12 @@ const STYLE = `
 [data-ui="modern"] #bug-report-panel .reports-msg-who { margin: 0 0 2px; font-size: var(--fs-s); }
 [data-ui="modern"] #bug-report-panel .reports-msg-who time { color: var(--text-muted); }
 [data-ui="modern"] #bug-report-panel .reports-msg-body { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: var(--lh-body); }
+/* Reactions on a message (Austin 2026-11-18; js/ui/reaction-strip.js, the chat's chips in each skin): under its words, the
+   chips then the add button, which stays in sight here (a thread has few messages) and is full strength on hover or focus. */
+#bug-report-panel .reports-msg-react { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); margin-top: var(--space-1); }
+#bug-report-panel .reports-msg-react > .react-strip { margin-top: 0; }
+#bug-report-panel .reports-msg-react > .react-add { order: 1; margin-left: 0; opacity: 0.6; }
+#bug-report-panel .reports-msg:is(:hover, :focus-within) .reports-msg-react > .react-add, #bug-report-panel .reports-msg-react > .react-add[aria-expanded="true"] { opacity: 1; }
 /* Ticket 49: Edit on your report until it is read, and its words in a box in place. */
 [data-ui="modern"] #bug-report-panel .reports-edit { margin: 0 0 0 var(--space-2); padding: 1px var(--space-2); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); background: var(--surface-raised); color: var(--text); font: var(--fw-bold) var(--fs-xs)/var(--lh-tight) var(--font-ui); cursor: pointer; }
 [data-ui="modern"] #bug-report-panel .reports-edit:hover { background: var(--surface-hover); }

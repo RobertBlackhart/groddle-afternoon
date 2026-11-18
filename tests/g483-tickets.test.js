@@ -16,9 +16,9 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=aa93fc78';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=0b11fcad';
-import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=c6c73417';
+import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=813fec3c';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=a0afae81';
+import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=13337887';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -540,7 +540,7 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
   it('a player reaches only their own tickets: every route that names one reads it through mine()', () => {
     const php = src('src/Tickets.php');
     const routes = [...php.matchAll(/#\[Route\(Method::(\w+), '([^']+)', policy: new Policy\(Access::(\w+)\)\)\]\s*public function (\w+)\(([^)]*)\): Response\s*\{([\s\S]*?)\n    \}/g)];
-    assert.deepEqual(routes.map((r) => `${r[1]} ${r[2]}`), ['Get /groddle/v1/tickets', 'Get /groddle/v1/tickets/unread', 'Get /groddle/v1/tickets/{id:\\d+}', 'Post /groddle/v1/tickets', 'Post /groddle/v1/tickets/{id:\\d+}/messages', 'Post /groddle/v1/tickets/{id:\\d+}/close', 'Post /groddle/v1/tickets/{id:\\d+}/edit', 'Post /groddle/v1/tickets/{id:\\d+}/unread']);
+    assert.deepEqual(routes.map((r) => `${r[1]} ${r[2]}`), ['Get /groddle/v1/tickets', 'Get /groddle/v1/tickets/unread', 'Get /groddle/v1/tickets/{id:\\d+}', 'Post /groddle/v1/tickets', 'Post /groddle/v1/tickets/{id:\\d+}/messages', 'Post /groddle/v1/tickets/{id:\\d+}/close', 'Post /groddle/v1/tickets/{id:\\d+}/edit', 'Post /groddle/v1/tickets/{id:\\d+}/unread', 'Post /groddle/v1/tickets/{id:\\d+}/messages/{message:\\d+}/reactions']);
     for (const r of routes) {
       assert.equal(r[3], 'SignedIn', r[2]);
       if (r[2].includes('{id')) assert.match(r[6], /\$row = \$this->mine\(\$me, \(int\) \$id\);/, `${r[2]} goes through mine()`);
@@ -576,7 +576,8 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
   it('the console\'s routes are manage_options only, and each action is logged', () => {
     const php = src('src/AdminTickets.php');
     const routes = [...php.matchAll(/#\[Route\(Method::(\w+), '([^']+)', policy: new Policy\(([^)]*)\)\)\]/g)];
-    assert.equal(routes.length, 7);
+    // Reactions on a message (Austin 2026-11-18) are the eighth: no activity line, they are not a reply.
+    assert.equal(routes.length, 8);
     for (const r of routes) assert.equal(r[3], 'Access::Cap, self::ADMIN', r[2]);
     assert.match(php, /private const ADMIN = 'manage_options';/);
     for (const kind of ['reply', 'close', 'reopen', 'working', 'migrate']) assert.match(php, new RegExp(`AdminConsole::recordAction\\(\\$this->minn->db, \\$admin->id, [^,]+, '${kind}'`), kind);
@@ -626,7 +627,7 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
   it('the console has a Reports tab: list, thread, reply, close and reopen, and the old reports\' button', async () => {
     const page = src('src/AdminConsolePage.php');
     for (const hook of ['data-console-tab="reports"', 'data-console-tickets', 'data-console-thread', 'data-console-reply', 'data-console-thread-close', 'data-console-thread-reopen', 'data-console-migrate', 'data-console-ticket-filter']) assert.ok(page.includes(hook), hook);
-    assert.match(page, /ASSET_KEY = 'skin-8'/);
+    assert.match(page, /ASSET_KEY = 'skin-9'/);
     const js = src('console/console.js');
     for (const route of ["admin/tickets?status=", "admin/tickets/${id}", "admin/tickets/${tickets.open}/reply", "admin/tickets/${tickets.open}/${kind}", "admin/tickets/migrate"]) assert.ok(js.includes(route), route);
     assert.match(js, /el\('p', \{ class: 'console-msg-body', text: m\.body \}\)/, 'messages set as text');
@@ -1028,13 +1029,13 @@ describe('Working on it and Edit until read (ticket 49)', () => {
       assert.ok(/INSERT INTO ' \. \$this->db->table\(self::REVISIONS\) \. ' \(message_id, ticket_id, player_user_id, body, written_at, replaced_at\)/.test(write), 'the old text is stored');
       assert.ok(write.indexOf('self::REVISIONS') < write.indexOf('SET body = ?, edited_at = ?'), 'before it is replaced, in the same locked write');
       assert.match(src('src/AdminTickets.php'), /TicketStore::messagesOut\(\$store->messages\(\$id\), \$store->revisions\(\$id\), \$store->messagePictures\(\$id\)\)/);
-      assert.match(src('src/Tickets.php'), /'messages' => TicketStore::messagesOut\(\$store->messages\(\$id\), null, \$store->messagePictures\(\$id\)\),/, 'the player gets no history');
+      assert.match(src('src/Tickets.php'), /'messages' => \(new TicketReactions\(\$this->minn->db\)\)->attach\(\$id, TicketStore::messagesOut\(\$store->messages\(\$id\), null, \$store->messagePictures\(\$id\)\), \$player\),/, 'the player gets no history');
       const table = JSON.parse(src('minn.json')).tables.groddle_ticket_message_revisions;
       assert.ok(table && table.includes('player_user_id bigint(20) unsigned NOT NULL'), 'a *user_id column: the throwaway cleanup finds its rows');
       const mod = await import(pathToFileURL(sitePath('console/console.js')).href);
       assert.equal(mod.messageHistory({ revisions: [] }, () => ''), null);
       assert.equal(mod.messageHistory({}, () => ''), null);
-      assert.match(src('console/console.js'), /messageHistory\(m, when\)\)\)\);/);
+      assert.match(src('console/console.js'), /messageHistory\(m, when\),\n\s*reactionRow\(t\.id, m\)\)\)\);/);
     });
   });
 });

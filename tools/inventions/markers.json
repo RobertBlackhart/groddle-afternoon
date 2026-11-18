@@ -957,6 +957,9 @@
     "remake-own: * front of its door. Remake choice: Doonboggle Trail's 2012-11-05": "ours-rebuilt-rooms",
     "remake-own: back to Doonboggle Trail in front of its door. Remake choice: Doonboggle Trail\\'s 2012-11-05 sources do not": "ours-rebuilt-rooms"
   },
+  "public/js/report-reactions.js": {
+    "remake-own: live chat? Both for users and on console.\"; the remake's own, as": "report-reactions"
+  },
   "public/js/resource-nodes.js": {
     "not-source: * OUR DESIGN, not Tiny Speck's: after a Dust Trap's own drop, a separate 1 in": "dust-trap-rare-keys",
     "not-source: // OUR DESIGN, not Tiny Speck's (Austin, 2026-11-06): Door Keys 7-10 and 12 were": "dust-trap-rare-keys",
@@ -1172,6 +1175,9 @@
   },
   "public/js/ui/recipe-outputs.js": {
     "remake-own: have 4\"), [{ classTsid, name, have, text }]. The remake's own line: the Flash client said \"You have": "remake-copy"
+  },
+  "public/js/ui/reports-sheet.js": {
+    "remake-own: * Reactions (Austin 2026-11-18, the remake's own as the chat's are): under each message of a": "report-reactions"
   },
   "public/js/ui/street-minimap.js": {
     "ours: // RIGHTCLICK: the map is ours; only a player's dot and a signpost open a": "right-click-menus",
