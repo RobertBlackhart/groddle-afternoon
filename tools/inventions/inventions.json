@@ -1,0 +1,4127 @@
+{
+ "format": "groddle-inventions/1",
+ "about": "Everything the remake invented that Glitch did not have, in one place for review (root issue R16, Austin 2026-11-17). kind: behaviour | visual | data | placement | UI | content. status: kept (Austin ruled to keep; ruling says when and where) | proposed (a lane made it, no ruling yet) | under-review (flagged for Austin: looks like inventions he has dropped) | dropped (ruled out and gone; kept as precedent). where: file and symbol. rows: coverage register rows. family: the data family whose members must equal `members` (tools/inventions/scan.mjs FAMILIES). Entries named ours-<system> were seeded from the code's own \"ours\" marks, one per system; split or retitle them as they are reviewed. tools/inventions/markers.json says which entry claims each marker in the code; tests/inventions-register.test.js fails on a new unclaimed one.",
+ "entries": [
+  {
+   "id": "pumpkin-glow-rings",
+   "title": "Five stacked rings of drawn glow around lit Jack-O-Lanterns",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/seasons.js",
+     "gone": true
+    }
+   ],
+   "why": "A marker to make lit pumpkins read at night. Tiny Speck's pumpkin_lit_N art has no aura; its face glows from inside.",
+   "ruling": "Austin playtest 2026-10-25 (G248): drop; done 1ed1ac3e",
+   "rows": [
+    "G248"
+   ]
+  },
+  {
+   "id": "funpickle-glow",
+   "title": "A soft drawn glow under the Funpickle on the street",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/funpickle.js",
+     "gone": true
+    }
+   ],
+   "why": "A ground marker so the rare drop is seen.",
+   "ruling": "Austin 2026-10-25 (desk FUNTUNE, G265): drop the drawn glow; done dc9802b1",
+   "rows": [
+    "G265"
+   ]
+  },
+  {
+   "id": "musicblock-drop-glows",
+   "title": "Coloured drawn glows under Musicblock street drops",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/musicblocks.js",
+     "gone": true
+    }
+   ],
+   "why": "The same ground marker as the pumpkins and the Funpickle.",
+   "ruling": "Lead 2026-10-25 after Austin's G248/FUNTUNE calls (G286); done f49f1a87",
+   "rows": [
+    "G286"
+   ]
+  },
+  {
+   "id": "musicblock-drop-hover",
+   "title": "Musicblock drops hovering 120 px up with a bob and a 5.5% size pulse",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/musicblocks.js",
+     "gone": true
+    }
+   ],
+   "why": "Made the drops look collectable; Glitch items sat on the ground.",
+   "ruling": "Austin 2026-10-26 (desk DROPHOVER=ground, G297); done 1ab715a8",
+   "rows": [
+    "G297"
+   ]
+  },
+  {
+   "id": "musicblock-street-blocks",
+   "title": "One unowned Musicblock waiting on every uncollected street",
+   "kind": "placement",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/musicblocks.js"
+    }
+   ],
+   "why": "Made the collection findable without the drop tables.",
+   "ruling": "Austin 2026-11-17 (G938): follow Glitch; blocks come from drop tables; done 81193e2c892",
+   "rows": [
+    "G938"
+   ]
+  },
+  {
+   "id": "grass-eggs",
+   "title": "Eggs hidden in the grass for a dated Easter egg hunt",
+   "kind": "content",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/seasons.js",
+     "gone": true
+    }
+   ],
+   "why": "A seasonal event in the remake's voice; the source hunt is petting Egg Plants all year.",
+   "ruling": "Austin 2026-10-26 option 2 (G344): Egg Hunt from source only; done 4f6f6282 (left: unused egg 4 world sprite)",
+   "rows": [
+    "G344"
+   ]
+  },
+  {
+   "id": "guessed-street-animals",
+   "title": "Street animals and scenery from a spawner guess or a fallback set",
+   "kind": "placement",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/street-ecology.js",
+     "symbol": "populationForStreet"
+    },
+    {
+     "file": "build-street-ecology.mjs"
+    },
+    {
+     "file": "public/js/animal-husbandry.js"
+    }
+   ],
+   "why": "Streets with no archived row got invented piggies, butterflies and nodes so they were not empty.",
+   "ruling": "Austin 2026-10-30: a street with no row gets nothing; G44b census replaced the guesses (2026-10-31); G44 keeps the outdoor fallback (Austin 10-22) for 10 coin-only streets",
+   "rows": [
+    "G44",
+    "G44b"
+   ]
+  },
+  {
+   "id": "key-icon-over-doors",
+   "title": "A key icon floating over every locked door",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/features/doors-feature.js"
+    }
+   ],
+   "why": "Told players a door needs a key.",
+   "ruling": "Austin 2026-11-01: no key icon over locked doors",
+   "rows": []
+  },
+  {
+   "id": "invented-board-notices",
+   "title": "Invented notices pinned on street notice boards",
+   "kind": "content",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/street-furniture.js",
+     "symbol": "RETIRED_BOARD_PIN_TEXTS"
+    }
+   ],
+   "why": "Boards looked empty without them.",
+   "ruling": "Retired 2026-10-31: boards carry the Tribute Blog's notices (BOARD_PINS); old saves keep the retired texts labelled as remake text",
+   "rows": []
+  },
+  {
+   "id": "invented-prompt-kickers",
+   "title": "\"Naraka\" and \"Energy\" kickers and titles on Hell and Pooped prompts",
+   "kind": "UI",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/features/hell-feature.js"
+    },
+    {
+     "file": "public/js/features/hell-tickets-feature.js"
+    }
+   ],
+   "why": "Headings for prompts the client showed bare.",
+   "ruling": "Dropped with G192/G230 (lead, client showed none)",
+   "rows": [
+    "G192",
+    "G230"
+   ]
+  },
+  {
+   "id": "home-style-copy",
+   "title": "Invented home style descriptions (\"a very optimistic fence\")",
+   "kind": "content",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/homes.js",
+     "gone": true
+    }
+   ],
+   "why": "The owned Home panel had empty descriptions.",
+   "ruling": "Austin 2026-10-25 (desk STYLECOPY, G288): drop; done b99c90ee",
+   "rows": [
+    "G288"
+   ]
+  },
+  {
+   "id": "word-filter",
+   "title": "A swear filter on everything players write (grawlix for bad words, refused names)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/word-filter.js",
+     "symbol": "filterText"
+    },
+    {
+     "file": "public/js/word-filter-list.js"
+    },
+    {
+     "file": "tools/build-word-filter.mjs"
+    }
+   ],
+   "why": "Glitch had no swear filter; players now share chat, names, notes and snaps.",
+   "ruling": "Austin 2026-11-02",
+   "rows": []
+  },
+  {
+   "id": "chat-reactions",
+   "title": "Emoji reactions on chat lines",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/chat-reactions.js"
+    },
+    {
+     "file": "public/js/ui/reaction-strip.js"
+    },
+    {
+     "file": "public/css/classic.css"
+    }
+   ],
+   "why": "Player request; Glitch turned a typed smiley into an icon and had nothing more.",
+   "ruling": "Austin 2026-11-04 (\"can we add emoji responses?\")",
+   "rows": []
+  },
+  {
+   "id": "chat-threads",
+   "title": "Threaded replies on chat lines",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/chat-threads.js"
+    },
+    {
+     "file": "public/css/classic.css"
+    }
+   ],
+   "why": "Player request for threads.",
+   "ruling": "Austin 2026-11-04",
+   "rows": []
+  },
+  {
+   "id": "chat-moderation",
+   "title": "Administrators delete chat lines and purge a spammer's lines from open windows",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/chat-delete.js"
+    },
+    {
+     "file": "public/js/chat-purge.js"
+    },
+    {
+     "file": "public/js/features/chat-purge-feature.js"
+    }
+   ],
+   "why": "Moderation for a live game; Glitch's channels had no deletion.",
+   "ruling": "Austin 2026-11-07 (G567) and 2026-11-09 (purge)",
+   "rows": [
+    "G567"
+   ]
+  },
+  {
+   "id": "stuck-command",
+   "title": "/stuck and the I'm stuck menu row: back to where you arrived, once every 5 minutes",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/slash-commands.js",
+     "symbol": "REMAKE_COMMANDS"
+    },
+    {
+     "file": "public/js/features/slash-commands-feature.js"
+    }
+   ],
+   "why": "A way out of spots the rebuilt streets can trap you in.",
+   "ruling": "Austin 2026-11-01",
+   "rows": [
+    "G528"
+   ]
+  },
+  {
+   "id": "dust-trap-rare-keys",
+   "title": "Dust Traps' 1-in-40 roll for Door Keys 7-10 and 12",
+   "kind": "data",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/resource-nodes.js",
+     "symbol": "dust_trap_rare_keys"
+    },
+    {
+     "file": "public/js/doors.js"
+    },
+    {
+     "file": "tools/build-signpost-graph.mjs"
+    }
+   ],
+   "why": "Those keys were in no drop table, so their doors stayed shut.",
+   "ruling": "Austin 2026-11-06 (G531): OUR DESIGN",
+   "rows": [
+    "G531"
+   ]
+  },
+  {
+   "id": "door-key-spots",
+   "title": "Door keys lying on chosen spots, back 5 minutes after a pickup (some spots by the door, ours)",
+   "kind": "placement",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/door-key-spawns.js"
+    }
+   ],
+   "why": "The spawner settings were lost; spots come from the wiki and forums, six by-the-door spots are ours.",
+   "ruling": "Austin 2026-11-09 (G610): one key at a time, back 5 minutes after a pickup",
+   "rows": [
+    "G610"
+   ]
+  },
+  {
+   "id": "funpickle-tuning",
+   "title": "Funpickle odds: from level 30, one street in 40",
+   "kind": "data",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/funpickle.js",
+     "symbol": "FIND_MIN_LEVEL"
+    }
+   ],
+   "why": "The beta testers' toy had no surviving drop rule.",
+   "ruling": "Austin 2026-10-25 (desk FUNTUNE, G265): keep level 30 and one street in 40",
+   "rows": [
+    "G209",
+    "G265"
+   ]
+  },
+  {
+   "id": "musicblock-set-colours",
+   "title": "Musicblock set colours as the Musicblocks page accents",
+   "kind": "visual",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/musicblocks.js"
+    }
+   ],
+   "why": "Accents for the collection page; nothing on the street.",
+   "ruling": "Austin 2026-10-26 (G297)",
+   "rows": [
+    "G297"
+   ]
+  },
+  {
+   "id": "quoin-shard-size",
+   "title": "Quoin shards drawn at 20",
+   "kind": "visual",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/quoin-shards.js"
+    }
+   ],
+   "why": "The source size read too big.",
+   "ruling": "Austin 2026-11-11",
+   "rows": []
+  },
+  {
+   "id": "gem-hints",
+   "title": "A line telling players how gems are found, under a project's gem ask",
+   "kind": "content",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/gem-hints.js"
+    },
+    {
+     "file": "public/js/features/street-jobs-feature.js"
+    },
+    {
+     "file": "public/content.js"
+    }
+   ],
+   "why": "Moonstones held up street projects.",
+   "ruling": "Austin 2026-11-10 (G617): the gem hint, no balance change",
+   "rows": [
+    "G617"
+   ]
+  },
+  {
+   "id": "puzzle-map-card",
+   "title": "The Map card's way back to Ur on a puzzle street with no road out",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/puzzle-triggers.js"
+    },
+    {
+     "file": "public/js/features/puzzles-feature.js"
+    }
+   ],
+   "why": "Players were stuck on streets with no way out.",
+   "ruling": "Austin 2026-11-16 (G887)",
+   "rows": [
+    "G887"
+   ]
+  },
+  {
+   "id": "buddy-list-extras",
+   "title": "What the Buddies tab adds to Glitch's buddy list",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/buddy-list.js"
+    },
+    {
+     "file": "public/js/features/buddies-feature.js"
+    }
+   ],
+   "why": "Report #178.",
+   "ruling": "Austin 2026-11-10 (#178)",
+   "rows": []
+  },
+  {
+   "id": "bag-sort",
+   "title": "One sort for the pack (fewer sort options)",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/features/bags-feature.js"
+    }
+   ],
+   "why": "Too many sort options on the options menu.",
+   "ruling": "Austin 2026-11-03",
+   "rows": []
+  },
+  {
+   "id": "map-route-line",
+   "title": "The Map's route line and its \"under construction\" note",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/map-routes.js"
+    },
+    {
+     "file": "public/js/features/map-routes-feature.js"
+    }
+   ],
+   "why": "GpsUI showed only To and Next (#104).",
+   "ruling": "Austin 2026-11-15 (closed-road note); #104",
+   "rows": []
+  },
+  {
+   "id": "teleporter-stand-ins",
+   "title": "Stand-in teleporters for lost ones (Level 3 West pit, ladder-top and buried signposts)",
+   "kind": "placement",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/cave-pit.js"
+    },
+    {
+     "file": "public/js/collision-teleporters.js"
+    },
+    {
+     "file": "public/js/ladder-top-signposts.js"
+    },
+    {
+     "file": "public/js/features/hidden-floors-feature.js"
+    }
+   ],
+   "why": "Pits and climbs no plain jump leaves, where the archived teleporter is lost.",
+   "ruling": "Austin 2026-11-05 (G527): build a stand-in teleporter",
+   "rows": [
+    "G527"
+   ]
+  },
+  {
+   "id": "barnacle-facing-out",
+   "title": "Edge barnacles mirrored to face outward",
+   "kind": "visual",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/barnacle-walls.js",
+     "symbol": "BARNACLE_VARIANT_FACES"
+    }
+   ],
+   "why": "Glitch never mirrored a barnacle; facing in looked wrong on edges.",
+   "ruling": "Austin 2026-11-17 (G936)",
+   "rows": [
+    "G936"
+   ]
+  },
+  {
+   "id": "starter-street-extras",
+   "title": "Hechey Track's starter rocks, onboarding trees and garden beds",
+   "kind": "placement",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/street-ecology.js"
+    },
+    {
+     "file": "public/js/shared-gardens.js"
+    }
+   ],
+   "why": "Onboarding needs things to mine, harvest and plant on the first street; its archived row names none.",
+   "ruling": "Austin 2026-11-07 (beds kept); G852 #394 rocks set on fixed floor spots",
+   "rows": [
+    "G852"
+   ]
+  },
+  {
+   "id": "avatar-reimagined-wardrobe",
+   "title": "Greyscale-master wardrobe items shipped with borrowed sibling colourways, marked reimagined",
+   "kind": "visual",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/avatar-reimagined.js"
+    },
+    {
+     "file": "tools/avatar-compositor/build.mjs"
+    },
+    {
+     "file": "tools/avatar-compositor/showcase.mjs"
+    }
+   ],
+   "why": "17 SWF-only items had no colours.",
+   "ruling": "Austin 2026-10-23 (G52): ship with borrowed sibling colourways, marked reimagined",
+   "rows": [
+    "G52"
+   ]
+  },
+  {
+   "id": "teleportation-summons",
+   "title": "Teleportation V gives two summons a day, no tokens",
+   "kind": "data",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/teleportation.js"
+    },
+    {
+     "file": "public/js/features/teleportation-feature.js"
+    }
+   ],
+   "why": "Glitch sold tokens for money; nothing is for sale here.",
+   "ruling": "Known gaps \"On purpose\" (G667)",
+   "rows": [
+    "G667"
+   ]
+  },
+  {
+   "id": "solo-stand-ins",
+   "title": "Solo stand-ins for other players: rival Glitches, companions, helpers, a hired hand",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/local-companions.js"
+    },
+    {
+     "file": "public/js/npc-glitch-looks.js"
+    },
+    {
+     "file": "public/js/features/crowns-feature.js"
+    },
+    {
+     "file": "public/js/game-of-crowns.js"
+    },
+    {
+     "file": "public/js/features/races-feature.js"
+    },
+    {
+     "file": "public/js/features/help-mine-feature.js"
+    },
+    {
+     "file": "public/js/hell-tickets.js"
+    },
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "Solo play has nobody else to race, help or watch.",
+   "ruling": "Known gaps \"On purpose\" P3 (solo play stands in for other players); G320 online uses real players",
+   "rows": [
+    "G320"
+   ]
+  },
+  {
+   "id": "synth-stand-in-sounds",
+   "title": "Synth stand-ins and borrowed tracks for sounds and music with no surviving file",
+   "kind": "content",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ambient-music.js"
+    },
+    {
+     "file": "public/js/sound-moments.js"
+    },
+    {
+     "file": "public/js/features/location-events-feature.js"
+    },
+    {
+     "file": "public/js/features/mail-courier-feature.js"
+    },
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "About 45 keys and much music never came back (G11).",
+   "ruling": "Known gaps \"On purpose\" G28: a few sounds keep a stand-in",
+   "rows": [
+    "G11",
+    "G28"
+   ]
+  },
+  {
+   "id": "remake-sound-keys",
+   "title": "Remake-only sound keys (UI_PANEL_OPEN, QUOIN_XP, JUMP, GAME_GO and the rest)",
+   "kind": "content",
+   "status": "kept",
+   "family": "remake-sound-keys",
+   "where": [
+    {
+     "file": "build-sound-keys.mjs",
+     "symbol": "REMAKE"
+    },
+    {
+     "file": "public/assets/content/sound-keys.json"
+    }
+   ],
+   "why": "Moments the remake has that never had a key of their own; most now play an original Tiny Speck take.",
+   "ruling": "Austin 2026-10-28 (use all of the original sound; g312-provenance.md); each key's take in tools/sound/archiveorg-sfx-map.json",
+   "rows": [
+    "G11"
+   ],
+   "members": [
+    "BADGE_FANFARE",
+    "CHOP_HIT",
+    "CRAFT_DONE",
+    "CRAFT_TICK",
+    "DOOR_CREAK",
+    "FOOTSTEP",
+    "FOX_YIP",
+    "GAME_GO",
+    "GARDEN_CLEAR",
+    "GARDEN_PLANT",
+    "JUMP",
+    "KITTY_MEW",
+    "MINE_HIT",
+    "NEIGHBOUR_WAVE",
+    "QUEST_ACCEPT",
+    "QUEST_OFFER",
+    "QUOIN_CURRANTS",
+    "QUOIN_ENERGY",
+    "QUOIN_FAVOR",
+    "QUOIN_MOOD",
+    "QUOIN_MYSTERY",
+    "QUOIN_TIME",
+    "QUOIN_XP",
+    "RAIN",
+    "ROOK_CAW",
+    "SHRINE_EMBLEM",
+    "SIGNPOST_TRAVEL",
+    "TELEPORT_ARRIVE",
+    "UI_PANEL_CLOSE",
+    "UI_PANEL_OPEN",
+    "UI_TOGGLE",
+    "VENDOR_SELL",
+    "VERB_MENU_OPEN"
+   ]
+  },
+  {
+   "id": "jump-no-energy",
+   "title": "Jumping costs no energy; no idle top-up",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "Follows Glitch: onPeriodicEnergyLoss is the only drift.",
+   "ruling": "Austin 2026-10-25 (desk IDLEENERGY, G258): do what Glitch did",
+   "rows": [
+    "G258"
+   ]
+  },
+  {
+   "id": "remake-copy",
+   "title": "Words written for the remake where the source had none (lines marked \"ours\")",
+   "kind": "content",
+   "status": "kept",
+   "where": [
+    {
+     "file": "CONTRIBUTING.md"
+    }
+   ],
+   "why": "Messages, buttons and help text for things the client said nothing about, or that the remake adds.",
+   "ruling": "House rule (CONTRIBUTING.md Words): item and game text from Tiny Speck's files, everything else in our own plain words; G310 copy provenance",
+   "rows": [
+    "G310",
+    "G318"
+   ]
+  },
+  {
+   "id": "designed-seasons",
+   "title": "Seasonal events with source 'designed' (none today)",
+   "kind": "content",
+   "status": "proposed",
+   "family": "designed-seasons",
+   "where": [
+    {
+     "file": "public/js/seasons.js",
+     "symbol": "SEASONS"
+    }
+   ],
+   "why": "An event Glitch never ran, written in its voice. Every entry here needs Austin's ruling (the grass eggs were one).",
+   "rows": [
+    "G344"
+   ],
+   "members": []
+  },
+  {
+   "id": "made-decos",
+   "title": "Made decos for rebuilt streets and quest rooms (AI-generated or own work, CC0)",
+   "kind": "visual",
+   "status": "kept",
+   "family": "made-decos",
+   "where": [
+    {
+     "file": "tools/provenance/made-decos.json"
+    },
+    {
+     "file": "public/js/deco-new-list.js"
+    }
+   ],
+   "why": "Rooms and streets whose art was never archived.",
+   "ruling": "Austin 2026-10-31 (level builder P6) and 2026-11-16 (snaps may be attached to prompts; output ships CC0 with provenance)",
+   "rows": [
+    "G316",
+    "G922",
+    "G964"
+   ],
+   "members": [
+    "gz_ai_ezc_glass_counter",
+    "gz_ai_ezc_hanging_lamp",
+    "gz_ai_ezc_round_table",
+    "gz_ai_lp_dish",
+    "gz_ai_lp_shade",
+    "gz_ai_lp_pole",
+    "gz_ai_lp_pole_cap",
+    "gz_ai_lp_ledge_left",
+    "gz_ai_lp_ledge_mid",
+    "gz_ai_lp_ledge_right",
+    "gz_ai_rg_spotlight",
+    "gz_ai_rg_bulb_off",
+    "gz_ai_rg_bulb_lit",
+    "gz_ai_rg_knob",
+    "gz_ai_ww_tree_arch",
+    "gz_ai_ww_curl_tall",
+    "gz_ai_ww_curl_low",
+    "gz_ai_wh_tree_bare_3",
+    "gz_ai_wh_tree_bare_2",
+    "gz_ai_wh_tree_bare_4",
+    "gz_ai_om_head",
+    "gz_ai_om_eye",
+    "gz_ai_om_eye_socket",
+    "gz_ai_om_tube",
+    "gz_ai_om_foot",
+    "gz_ai_om_floor",
+    "gz_ai_vv_stump",
+    "gz_ai_vv_spiral_stone"
+   ]
+  },
+  {
+   "id": "made-sprites",
+   "title": "Made sprites (the Fire Dragon walk, the quest book award)",
+   "kind": "visual",
+   "status": "proposed",
+   "family": "made-sprites",
+   "where": [
+    {
+     "file": "tools/provenance/made-sprites.json"
+    },
+    {
+     "file": "public/js/fire-dragon.js"
+    }
+   ],
+   "why": "New content: the rules and words are ours and the art is AI-generated, CC0.",
+   "rows": [],
+   "members": [
+    "npc_fire_dragon_walk",
+    "quest_book_award"
+   ]
+  },
+  {
+   "id": "made-maps",
+   "title": "Map paintings made for the remake (subway paper map, 2x world map, any repainted region)",
+   "kind": "visual",
+   "status": "kept",
+   "family": "made-maps",
+   "where": [
+    {
+     "file": "tools/provenance/subway-map-paper.json"
+    },
+    {
+     "file": "tools/provenance/world-map-2x.json"
+    },
+    {
+     "file": "tools/provenance/repainted-maps.json"
+    }
+   ],
+   "why": "Sharper maps than the surviving thumbnails; all 51 regions now show Tiny Speck's own 2012 paintings.",
+   "ruling": "Austin 2026-11-14 (originals for the before images; lanes maps15-18)",
+   "rows": [
+    "G471",
+    "G522",
+    "G569"
+   ],
+   "members": [
+    "subway-map-paper",
+    "world-map-2x"
+   ]
+  },
+  {
+   "id": "checklist-reimagined",
+   "title": "Restoration checklist items marked Reimagined (rooms from pictures, Interrogation room, mystery quoins, neighbours, Better Learning)",
+   "kind": "behaviour",
+   "status": "kept",
+   "family": "checklist-reimagined",
+   "where": [
+    {
+     "file": "tools/restoration/checklist.mjs",
+     "symbol": "CHECKLIST"
+    }
+   ],
+   "why": "Nothing about them survives, so they are designed fresh.",
+   "ruling": "Shown on /restoration/ as Reimagined (public)",
+   "rows": [],
+   "members": [
+    "picture-rooms",
+    "interrogation",
+    "mystery-quoins",
+    "neighbours",
+    "better-learning"
+   ]
+  },
+  {
+   "id": "inventory-reimagined",
+   "title": "Inventory rows overridden to reimagined (places, Better Learning skills, furniture-making cards, a wardrobe item, the mail dispatcher)",
+   "kind": "data",
+   "status": "kept",
+   "family": "inventory-reimagined",
+   "where": [
+    {
+     "file": "tools/inventory/overrides.json"
+    }
+   ],
+   "why": "Built fresh where the source left only a name.",
+   "ruling": "Each override's reason in tools/inventory/overrides.json",
+   "rows": [],
+   "members": [
+    "location:LA9RLGSQ05F3Q69",
+    "location:LA9S2N3F15F3JD3",
+    "location:LCR14T7ECHM18G8",
+    "location:LA9EKMN138D3QK2",
+    "location:LIFH2AKJ5I735SV",
+    "location:LIFNNTRK1073PQ6",
+    "location:LIFNBTGUQJ739MC",
+    "location:LIFNEN3QHC73UO9",
+    "location:LIFHAO6QB4A34MO",
+    "wardrobe:skirt/glitchfashionShirt",
+    "npc:npc_mail_dispatcher",
+    "skill:betterlearning_1",
+    "skill:betterlearning_2",
+    "skill:betterlearning_3",
+    "skill:betterlearning_4",
+    "skill:betterlearning_5",
+    "imagination:furnituremaking_bonus_upgrade_1",
+    "imagination:furnituremaking_bonus_upgrade_2",
+    "imagination:furnituremaking_bonus_upgrade_3",
+    "location:LIFLFPPBUUT11SP",
+    "location:LCRDGMREPJ02ORK"
+   ]
+  },
+  {
+   "id": "differences-on-purpose",
+   "title": "Rules changed from Glitch on purpose (faster crops, project amounts, no starving piggies, ...)",
+   "kind": "behaviour",
+   "status": "kept",
+   "family": "differences-on-purpose",
+   "where": [
+    {
+     "file": "tools/gaps/public-gaps.json"
+    }
+   ],
+   "why": "Solo pace and a game with no shop; each row says why on the Known gaps page.",
+   "ruling": "Public Known gaps page, shown as On purpose",
+   "rows": [
+    "G45",
+    "G639",
+    "G667",
+    "G35",
+    "G151",
+    "G63",
+    "G82",
+    "G152",
+    "G28"
+   ],
+   "members": [
+    "G45",
+    "G639",
+    "G667",
+    "P1",
+    "P2",
+    "P3",
+    "G35",
+    "G151",
+    "P4",
+    "P5",
+    "P6",
+    "G63",
+    "G82",
+    "G152",
+    "G28"
+   ]
+  },
+  {
+   "id": "pot-luck-day",
+   "title": "Pot Luck Day (Nov 22-29): badges, the Harvest Table, a quest, chicken costumes, five items",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/new-content/to-minn.mjs"
+    }
+   ],
+   "why": "The first New content plan: things Glitch never had, made in its spirit.",
+   "rows": []
+  },
+  {
+   "id": "teleport-beam-sparkles",
+   "title": "A lavender beam with rising sparkles on teleport, and a star float on arrival",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/features/teleportation-feature.js",
+     "symbol": "playWarpHit"
+    }
+   ],
+   "why": "Made a teleport look magical; Glitch played the avatar's hit1 for a second.",
+   "ruling": "Stand-ins audit 2026-11-16 (G892 A1, Austin asked for the real thing): replaced by hit1",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "drawn-garden-plots",
+   "title": "Drawn plot dishes, a wooden bed and a root-frame seedling for gardens",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "tools/garden-art/build.mjs"
+    }
+   ],
+   "why": "Stand-ins before the garden art was rendered.",
+   "ruling": "Retired for Tiny Speck art (G316)",
+   "rows": [
+    "G316"
+   ]
+  },
+  {
+   "id": "hand-drawn-overlays",
+   "title": "Hand-drawn stand-ins for overlay animations",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "tools/overlay-art/build.mjs"
+    }
+   ],
+   "why": "Placeholders until the glitch-overlays FLAs were rendered.",
+   "ruling": "Swapped for the real art (G251)",
+   "rows": [
+    "G251"
+   ]
+  },
+  {
+   "id": "made-up-map-hills",
+   "title": "Made-up hills on placeholder region maps",
+   "kind": "visual",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/map-graph.js"
+    }
+   ],
+   "why": "Filled empty map art.",
+   "ruling": "G569: the original's placeholder map from its surviving grey",
+   "rows": [
+    "G569"
+   ]
+  },
+  {
+   "id": "old-movement-for-rooms",
+   "title": "The remake's old movement (gravity 0.42, launch -9.6, no air friction) kept inside rebuilt quest rooms",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/avatar-step.js",
+     "symbol": "REMAKE_ROOM_PHYSICS"
+    },
+    {
+     "file": "public/js/features/quest-instances-feature.js"
+    }
+   ],
+   "why": "The rooms were laid out in it; the open world moved to the client's rules on 2026-11-03.",
+   "rows": []
+  },
+  {
+   "id": "right-click-menus",
+   "title": "One small right-click menu on the world, cards, the Map and HUD (Glitch had no right-click)",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ui/context-menu.js"
+    },
+    {
+     "file": "public/js/ui/context-guard.js"
+    },
+    {
+     "file": "public/js/world-context-menu.js"
+    },
+    {
+     "file": "public/js/ui/quest-sheet.js"
+    },
+    {
+     "file": "public/js/map-graph.js"
+    },
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "Desktop players expect it; Glitch opened its menus on a click.",
+   "ruling": "Austin 2026-11-03 (RIGHTCLICK, right-click audit R1, R5-R8)",
+   "rows": []
+  },
+  {
+   "id": "featured-project",
+   "title": "One featured street project at a time, with a star on its bubble",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/featured-project.js"
+    },
+    {
+     "file": "public/js/ui/featured-project.js"
+    },
+    {
+     "file": "public/js/job-indicator.js"
+    }
+   ],
+   "why": "Tiny Speck chose which streets opened; solo and online players need one to gather round.",
+   "ruling": "Austin 2026-11-11 (G656)",
+   "rows": [
+    "G656"
+   ]
+  },
+  {
+   "id": "map-zoom",
+   "title": "Zoom and pan on the Map",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/map-zoom.js"
+    }
+   ],
+   "why": "Glitch's map was a fixed 760 x 460; a player asked (ticket 76).",
+   "ruling": "Austin 2026-11-04 (MAPZOOM, G521)",
+   "rows": [
+    "G521"
+   ]
+  },
+  {
+   "id": "vendor-finder",
+   "title": "The vendor finder panel from the currants counter",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/vendor-finder.js"
+    }
+   ],
+   "why": "Report #351; Glitch's currants opened nothing.",
+   "ruling": "Austin 2026-11-15 (G774): build next",
+   "rows": [
+    "G774"
+   ]
+  },
+  {
+   "id": "make-window",
+   "title": "One Make window for every tool and machine",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/make-tools.js"
+    }
+   ],
+   "why": "Glitch made things from each tool's own menu.",
+   "ruling": "Austin 2026-11-10 (which screen Make opens on)",
+   "rows": []
+  },
+  {
+   "id": "hotkeys-of-ours",
+   "title": "Keys the client did not have: F to eat, the chat commands on the hold-? sheet",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/client-hotkeys.js"
+    },
+    {
+     "file": "public/js/eat-pick.js"
+    }
+   ],
+   "why": "Ticket 62 and the hotkey sheet.",
+   "ruling": "Ticket 62; Austin 2026-11-03 (CMDHELP)",
+   "rows": []
+  },
+  {
+   "id": "mystery-quoins",
+   "title": "Mystery quoins: what one turns into",
+   "kind": "data",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/quoins.js"
+    },
+    {
+     "file": "tools/build-realtime-quoins.mjs"
+    }
+   ],
+   "why": "The source never defined what a mystery quoin gives.",
+   "ruling": "Austin 2026-10-29 (reimagined)",
+   "rows": []
+  },
+  {
+   "id": "animal-respawn",
+   "title": "Animals that leave a crowded street come back the next game day",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/animal-crowding.js"
+    }
+   ],
+   "why": "In Glitch they were gone for good, and solo streets would empty.",
+   "ruling": "Austin 2026-10-23 (G82); Known gaps On purpose",
+   "rows": [
+    "G82"
+   ]
+  },
+  {
+   "id": "offline-ims",
+   "title": "An IM to an offline player waits for them on the server",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/player-im.js"
+    }
+   ],
+   "why": "Glitch dropped them.",
+   "ruling": "Austin 2026-11-02",
+   "rows": []
+  },
+  {
+   "id": "vendor-crest",
+   "title": "A coloured disc with the store letter on every Street Spirit's shoulder",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "spawnVendorNpc"
+    },
+    {
+     "file": "build-stores.mjs"
+    }
+   ],
+   "why": "Tells stores apart at a glance (\"the remake's world badge\"); GSJS spirits have only store_id. The audit calls it the most visible invented marker.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "party-booster-pad",
+   "title": "A pulsing party booster pad, bulbs and confetti in party spaces",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/features/party-spaces-feature.js"
+    }
+   ],
+   "why": "Shows where the boost is; the source booster is an invisible event box.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "winter-walk-snow",
+   "title": "Falling snow drawn over Winter Walk",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "spawnWinterSnow"
+    }
+   ],
+   "why": "Atmosphere; Glitch had no weather system in the client or GSJS.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "stoot-memorial-plaque",
+   "title": "A Stoot memorial plaque and doll on a developer street",
+   "kind": "content",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "A tribute; GIFPV9EMLT72DP4 is a dev street (\"unnnn\") with no such plaque.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "storyland-exit-sign",
+   "title": "An exit sign in the Greedy Storyland theatre",
+   "kind": "placement",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "A way out; the theatre GNVD57N9ERF3TNH has no signpost.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "rook-stun-ring",
+   "title": "A stun ring and extra feather ellipses during Rook attacks",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/features/rook-attack-feature.js",
+     "symbol": "spawnFeathers"
+    }
+   ],
+   "why": "Feedback on a stun; the client shows rook_feathers_falling only.",
+   "rows": [
+    "G892",
+    "G377"
+   ]
+  },
+  {
+   "id": "burst-dots",
+   "title": "Coloured dot bursts round the avatar after actions",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "burst"
+    }
+   ],
+   "why": "Feedback that something happened; no client counterpart.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "paradise-exit-shut-sign",
+   "title": "Planks and a SHUT sign over a closed Paradise exit",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "paradiseExitShutSign"
+    }
+   ],
+   "why": "Shows the way home is closed; no source.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "paradise-sky-palettes",
+   "title": "Paradise skies painted in the remake's own palettes",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "paintParadiseSky"
+    }
+   ],
+   "why": "Templates lost; Radial Heights' source gradient survives and could be used.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "code-drawn-scenery",
+   "title": "Code-drawn scenery where the art is lost (Paradise courses, Rooks' Woods, A Summer's Day annex, Le Voyage Violet, puzzle scenes, Rube yard, Winter portal lights, home fills)",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/paradise-course-runtime.js"
+    },
+    {
+     "file": "public/js/purple-journey-scene.js"
+    },
+    {
+     "file": "public/js/features/puzzle-scenes-feature.js"
+    },
+    {
+     "file": "public/js/rube-yard-scene.js"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "spawnWinterPortal"
+    }
+   ],
+   "why": "Nine Paradise templates and several rooms were never archived; stand-ins audit class C, made-art or re-lay candidates.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "overlay-stand-in-cards",
+   "title": "Rounded word cards drawn where an overlay animation has no art yet (dice, Alphabet Sauce letters)",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/overlay-stand-in.js",
+     "symbol": "overlayOrStandIn"
+    },
+    {
+     "file": "public/js/features/item-verbs-more-feature.js"
+    },
+    {
+     "file": "public/js/features/potions-feature.js"
+    }
+   ],
+   "why": "A placeholder so the verb shows something until the overlay renders.",
+   "rows": []
+  },
+  {
+   "id": "drawn-door-stand-ins",
+   "title": "Plain drawn doors (arch or panel in a tone from the name) for door decos with no recovered art",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/doors.js",
+     "symbol": "drawnDoorStyle"
+    }
+   ],
+   "why": "A door must show something.",
+   "rows": []
+  },
+  {
+   "id": "flyer-hover-bob",
+   "title": "Yard and street flyers hover a moment and bob 14 px",
+   "kind": "visual",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/yard-wander.js"
+    }
+   ],
+   "why": "npc_butterfly.js flyAround only flies on at random; the hover and bob are ours, like the Musicblock hover dropped in G297.",
+   "rows": []
+  },
+  {
+   "id": "dead-end-standing-sign",
+   "title": "A standing sign post on dead-end instance copies (the source arrow is a wall sign)",
+   "kind": "placement",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/dead-ends.js"
+    },
+    {
+     "file": "public/js/features/dead-ends-feature.js"
+    }
+   ],
+   "why": "The remake keeps instance copies as plain streets anyone can reach, so it needs a way out.",
+   "rows": []
+  },
+  {
+   "id": "chicken-hop-online",
+   "title": "Online, a scared Chicken hops in place instead of flying off",
+   "kind": "behaviour",
+   "status": "under-review",
+   "where": [
+    {
+     "file": "public/js/chicken-scare.js",
+     "symbol": "CHICKEN_HOP"
+    }
+   ],
+   "why": "Shared chicken paths online cannot let one leave.",
+   "rows": []
+  },
+  {
+   "id": "ball-hit-arc",
+   "title": "The hit ball's peak, flight length and easing",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/small-items.js",
+     "symbol": "planBallHit"
+    }
+   ],
+   "why": "Reimagined around apiHitTheBall's arguments; the curve did not survive.",
+   "rows": []
+  },
+  {
+   "id": "speech-bubble-moves",
+   "title": "Speech bubbles moved off avatars and hung under their speaker",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/speech-placement.js"
+    }
+   ],
+   "why": "Bubbles covered each other and the avatars; Glitch never moved a bubble.",
+   "rows": []
+  },
+  {
+   "id": "badge-art-reimagined",
+   "title": "Reimagined (generated) badge art for badges whose archived art was lost",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/game.js"
+    },
+    {
+     "file": "tools/badge-art"
+    }
+   ],
+   "why": "Rows the archive lost; marked \"Reimagined badge art\" in the badge window.",
+   "rows": []
+  },
+  {
+   "id": "ours-account-forms",
+   "title": "account-forms: What a new email's link answered: 'changed', or 'failed' with the site's own words (or ours when it didn't answer).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/account-forms.js",
+     "symbol": "emailLinkOutcome"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/account-forms.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin, 2026-10-26 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-ambient-music",
+   "title": "ambient-music: plays the next and wraps). A street's music_file and every stand-in theme loop",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ambient-music.js",
+     "symbol": "ambientPlaylist"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/ambient-music.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-animal-mood",
+   "title": "animal-mood: 1600 px) and checks reach from where it keeps them; a walk of our own across the street left",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/animal-mood-feature.js",
+     "symbol": "animalMoodFeature"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/animal-mood-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-auctions",
+   "title": "auctions: Ours: the create page picked a stack from your pack; the pack popover goes straight there.",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/auctions.js",
+     "symbol": "AUCTION_TEXT"
+    },
+    {
+     "file": "public/js/auctions.js",
+     "symbol": "mailSubject"
+    },
+    {
+     "file": "public/js/features/auctions-feature.js"
+    },
+    {
+     "file": "public/js/features/auctions-feature.js",
+     "symbol": "b"
+    },
+    {
+     "file": "public/js/features/auctions-feature.js",
+     "symbol": "auctionsFeature"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (9 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G570"
+   ]
+  },
+  {
+   "id": "ours-avatar-tiles",
+   "title": "avatar-tiles: and Reimagined hooks the name chips had), its label as title and",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/avatar-tiles.js",
+     "symbol": "renderPartTiles"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/avatar-tiles.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-12 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-bag-names",
+   "title": "bag-names: this.user_name (an empty one keeps the old name). Ours departs here on",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/bag-names.js"
+    },
+    {
+     "file": "public/js/bag-names.js",
+     "symbol": "cleanBagName"
+    },
+    {
+     "file": "public/js/bag-names.js",
+     "symbol": "renamedTo"
+    },
+    {
+     "file": "public/js/bag-names.js",
+     "symbol": "BAG_RENAME_HINT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/bag-names.js (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-better-learning",
+   "title": "better-learning: Reimagined (nothing survives, or Austin's call):",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/better-learning.js",
+     "symbol": "BETTER_LEARNING_SKILL_IDS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/better-learning.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-27 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-boards",
+   "title": "boards: Ours: the opening notices are the remake's own (BOARD_PINS), pinned online",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/boards-mp.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/boards-mp.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-buffs",
+   "title": "buffs: and buffs_remove is the server's. It is the remake's own, for the effects",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/buffs.js",
+     "symbol": "buffEndableByHand"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/buffs.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-bug-report",
+   "title": "bug-report: The words: the source's where it had them, short plain ones of ours where it did not (js/reports.js has the sheet's).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/bug-report-feature.js",
+     "symbol": "BUG_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/bug-report-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-30 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-bureaucratic-hall",
+   "title": "bureaucratic-hall: The room (ours, from Tiny Speck's art): the hall's location XML is not in",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/bureaucratic-hall.js",
+     "symbol": "BUREAUCRAT_CLASS"
+    },
+    {
+     "file": "public/js/bureaucratic-hall.js",
+     "symbol": "HALL_LAYOUT"
+    },
+    {
+     "file": "public/js/bureaucratic-hall.js",
+     "symbol": "clerkYAt"
+    },
+    {
+     "file": "public/js/bureaucratic-hall.js",
+     "symbol": "promised"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/bureaucratic-hall.js (11 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-bureaucratic-halls",
+   "title": "bureaucratic-halls: is ours (the halls' geometry is lost): in the desk room by the partition,",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/bureaucratic-halls-feature.js"
+    },
+    {
+     "file": "public/js/features/bureaucratic-halls-feature.js",
+     "symbol": "COOLER_X"
+    },
+    {
+     "file": "public/js/features/bureaucratic-halls-feature.js",
+     "symbol": "placeCounter"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/bureaucratic-halls-feature.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-butler-drop",
+   "title": "butler-drop: furniture, a bag, or no_trade (a wrapped Gift Box goes, bag_butler.js 1013); ours also keeps quest",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/butler-drop.js",
+     "symbol": "butlerCarries"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/butler-drop.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-butler-im",
+   "title": "butler-im: Ours: the IM window is a chat tab named after the Butler in the Social drawer",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/butler-im.js",
+     "symbol": "BUTLER_IM_TEXT"
+    },
+    {
+     "file": "public/js/butler-im.js",
+     "symbol": "tell"
+    },
+    {
+     "file": "public/js/features/butler-im-feature.js",
+     "symbol": "butlerIm"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-camera-mode",
+   "title": "camera-mode: keyboard only (C, TSFrontController.as maybeStartCameraManUserMode); the touch way in is ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/camera-mode-feature.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/camera-mode-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-chat-input",
+   "title": "chat-input: start and \"…\". OUR OWN number, not the original's.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/chat-input.js",
+     "symbol": "CHAT_BUBBLE_CHARS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/ui/chat-input.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-04 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-classic-css",
+   "title": "classic.css: The count, the pager and search as small page-colour controls; the help line has no original.",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/css/classic.css"
+    }
+   ],
+   "why": "Marked as the remake's own in public/css/classic.css (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-content",
+   "title": "content: nibble. Ours: npc_butterfly.js had milk sort_on 59 (703) before massage 60 (761).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/content.js",
+     "symbol": "kinshipState"
+    }
+   ],
+   "why": "Marked as the remake's own in public/content.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-conversations",
+   "title": "conversations: `heard` is the remake's own: when the player first opened each",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/conversations.js"
+    },
+    {
+     "file": "public/js/conversations.js",
+     "symbol": "setCurrentState"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/conversations.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-craftybot",
+   "title": "craftybot: Ours: Glitch gave no words where the bot could not be dropped (canDrop 729-735 hid the verb).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/craftybot.js",
+     "symbol": "CRAFTYBOT_COPY"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/craftybot.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-crowns",
+   "title": "crowns: The remake's own crown-time line (no source) goes to the activity log, not the splash.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/crowns-feature.js",
+     "symbol": "xp"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/crowns-feature.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-cubimal-battle",
+   "title": "cubimal-battle: The remake's stand-in for apiFindPath reachability: the two stand on ground this close in height.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/cubimal-battle.js",
+     "symbol": "CUBIMAL_BATTLE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/cubimal-battle.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-cubimal-race",
+   "title": "cubimal-race: a race, a rename or a reload keeps it. Not here: sloth taunts (no source:",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/cubimal-race-feature.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/cubimal-race-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-de-embiggenify",
+   "title": "de-embiggenify: items. Ours, source x, y: on the floor just right of the ornate chair's front leg and",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/de-embiggenify.js",
+     "symbol": "EESTI_HAIRBALL_SPOT"
+    },
+    {
+     "file": "public/js/de-embiggenify.js",
+     "symbol": "EESTI_SHINY_SPOT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/de-embiggenify.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-drops",
+   "title": "drops: for what the owner sets on furniture inside the house or Tower). Ours there:",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/drops-mp.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/drops-mp.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-10 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-familiar-dialog",
+   "title": "familiar-dialog: How often a panel held by a screen looks again (ours: the client shows it as the screen's tween ends).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/familiar-dialog-feature.js",
+     "symbol": "FAMILIAR_SCREEN_POLL_MS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/familiar-dialog-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-feat-owed",
+   "title": "feat-owed: Glitch had no such queue: the client and the game server were one process",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/feat-owed.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/feat-owed.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-feats",
+   "title": "feats: GOALS. Goals are not in GSJS (groups/feat.js doCreate took them from the",
+   "kind": "data",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/feats-mp.js"
+    },
+    {
+     "file": "public/js/feats-mp.js",
+     "symbol": "MP_PACE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/feats-mp.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-foxes",
+   "title": "foxes: Ours: how long a leaving fox still counts on the server (the source counts it",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/foxes-mp.js",
+     "symbol": "FOX_LEAVE_MS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/foxes-mp.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-furniture-upgrades",
+   "title": "furniture-upgrades: reimagined: the source sold credits for money and never priced a style in",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/furniture-upgrades.js",
+     "symbol": "CURRANTS_PER_CREDIT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/furniture-upgrades.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-game-js-questsheet",
+   "title": "game.js questSheet: draws no pins (Glitch had none), so its cards have no Pin button, no menu row and no pinned-first",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "questSheet"
+    }
+   ],
+   "why": "Marked as the remake's own in public/game.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-game-js-startwaiters",
+   "title": "game.js startWaiters: beginGame runs. The card is the remake's own (no client equivalent).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "startWaiters"
+    }
+   ],
+   "why": "Marked as the remake's own in public/game.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-game-js-walkinput",
+   "title": "game.js walkInput: (TSMainView.as: V is only a god build's Q+V render switch, 1916-1921), so this one is ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/game.js",
+     "symbol": "walkInput"
+    }
+   ],
+   "why": "Marked as the remake's own in public/game.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-garden",
+   "title": "garden: G940 (report #469): a solo save's beds a street no longer has (the made-up herb bed on the 2012",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/garden.js",
+     "symbol": "harvestLostBeds"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/garden.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G940"
+   ]
+  },
+  {
+   "id": "ours-garden-gnome",
+   "title": "garden-gnome: it hops and talks for the visitor who bumps it. Ours: each player's game runs its own copy,",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/garden-gnome.js",
+     "symbol": "GNOME_CLASS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/garden-gnome.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-ghost-quest",
+   "title": "ghost-quest: to be built): reachable stand-ins from the haunts' own regions (opts.info, see",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ghost-quest.js",
+     "symbol": "choosePhantomHaunts"
+    },
+    {
+     "file": "public/js/ghost-quest.js",
+     "symbol": "ensureGhostQuestState"
+    },
+    {
+     "file": "public/js/ghost-quest.js",
+     "symbol": "isPhantomHauntStreet"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/ghost-quest.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-giant-icons",
+   "title": "giant-icons: ours: a placed Icon is kept in your own save, so online others would never see or take it.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/giant-icons-feature.js",
+     "symbol": "PLACE_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/giant-icons-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-gifts",
+   "title": "gifts: Can a Gift Box hold this class (canContain)? Notes stay out (ours: a note's writing is given on its own).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/gifts.js",
+     "symbol": "boxReason"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/gifts.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-gwendolyn-room-23",
+   "title": "gwendolyn-room-23: no disabled reason of our own (G318).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/gwendolyn-room-23-feature.js",
+     "symbol": "gwendolynRoom23Feature"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/gwendolyn-room-23-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G318"
+   ]
+  },
+  {
+   "id": "ours-halls",
+   "title": "halls: players meet there. Ours: a line when every bureaucrat is busy (the source",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/halls-mp.js",
+     "symbol": "HALL_TURN_MS"
+    },
+    {
+     "file": "public/js/halls-mp.js",
+     "symbol": "HALL_MP_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/halls-mp.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-heli-kitties",
+   "title": "heli-kitties: export const KITTY_GRAVITY = 380; // px/s²: a soft, rotor-assisted arc (the server's physics constant is not in GSJS)",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/heli-kitties.js",
+     "symbol": "KITTY_GRAVITY"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/heli-kitties.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-help-mine",
+   "title": "help-mine: nobody else there and counted no one; it stays the first guess until the answer lands.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/help-mine-feature.js",
+     "symbol": "answersFrom"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/help-mine-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-hi-signs",
+   "title": "hi-signs: Ours, when the server asks for a little patience.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/hi-signs-mp.js",
+     "symbol": "POWDER_MP_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/hi-signs-mp.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-hidden-floors",
+   "title": "hidden-floors: Inferred, not in source: every teleporter's box and landing point (the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/hidden-floors.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/hidden-floors.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-home-floors",
+   "title": "home-floors: wall cannot be added while building) are short and ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-floors.js"
+    },
+    {
+     "file": "public/js/home-floors.js",
+     "symbol": "DOOR_TEXT"
+    },
+    {
+     "file": "public/js/home-floors.js",
+     "symbol": "EXPAND_NOTE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-floors.js (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-home-layout",
+   "title": "home-layout: New art (gz_ decos, made animals) is not Tiny Speck's: it never goes on a profile.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-layout.js",
+     "symbol": "NOT_TINY_SPECK"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-layout.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-02 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-home-machines",
+   "title": "home-machines: - only its owner picks it up (ours: in the source isInCraftingAltar hides",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-machines.js"
+    },
+    {
+     "file": "public/js/home-machines.js",
+     "symbol": "HOME_MACHINES_MAX"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-machines.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-01 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-home-storage",
+   "title": "home-storage: The source's words (file:line in each), and ours where marked.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-storage.js",
+     "symbol": "STORAGE_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-storage.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-home-street",
+   "title": "home-street: takeable pickup (note_pole.js canPickup: at home). The posted note comes back to the pack (ours: a pack item keeps no note).",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/home-street-mp-feature.js",
+     "symbol": "pickUpPole"
+    },
+    {
+     "file": "public/js/home-street-mp.js",
+     "symbol": "POLES_MAX"
+    },
+    {
+     "file": "public/js/home-street-mp.js",
+     "symbol": "HOME_STREET_TEXT"
+    },
+    {
+     "file": "public/js/home-street-mp.js",
+     "symbol": "RESTORE_RETRY_MS"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G795"
+   ]
+  },
+  {
+   "id": "ours-home-street-fixtures",
+   "title": "home-street-fixtures: moved it. Reimagined: it stands just outside the signpost, past its left arms (the same spot solo and online, whether or not the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-street-fixtures.js",
+     "symbol": "DISPATCHER_HALF"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-street-fixtures.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-31 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-home-trophies",
+   "title": "home-trophies: The Badges window's line on a badge whose trophy is earned (ours: the original's window said nothing).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-trophies.js",
+     "symbol": "TROPHY_FIND_TEXT"
+    },
+    {
+     "file": "public/js/home-trophies.js",
+     "symbol": "TROPHY_WHERE_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/home-trophies.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-homes",
+   "title": "homes: Moving the Mail Dispatcher (lane HOMEMAIL: \"can I move my mail dispatcher?\"). Reimagined: the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/homes-feature.js",
+     "symbol": "dimmedFixture"
+    },
+    {
+     "file": "public/js/features/homes-feature.js",
+     "symbol": "moved"
+    },
+    {
+     "file": "public/js/features/homes-feature.js",
+     "symbol": "model"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/homes-feature.js (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-imagination",
+   "title": "imagination: Where a card jump under x1 counts as x1: the remake's own layouts, built for the classic",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/imagination-feature.js",
+     "symbol": "classicJumpPlace"
+    },
+    {
+     "file": "public/js/imagination.js"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-04 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-interrogation-room",
+   "title": "interrogation-room: past the booth; ours stops short of it (EDGE_ALPHA) so a visitor still sees themselves at the door.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/interrogation-room-feature.js",
+     "symbol": "INTERROGATION_DARK_STOPS"
+    },
+    {
+     "file": "public/js/interrogation-room.js",
+     "symbol": "INTERROGATION_TSID"
+    },
+    {
+     "file": "public/js/interrogation-room.js",
+     "symbol": "INTERROGATION_DOOR"
+    },
+    {
+     "file": "public/js/interrogation-room.js",
+     "symbol": "layers"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-08 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-item-transforms",
+   "title": "item-transforms: #140: replaceWith('cheese_stinky', pc) (cheese_very_stinky.js 333) said nothing; our own line,",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/item-transforms.js",
+     "symbol": "ITEM_TRANSFORMS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/item-transforms.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-item-verbs",
+   "title": "item-verbs: Winter Haven memories, picto_pattern). The remake's own room ids for those (QI_<ROOM>_<STAGE>",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/item-verbs.js",
+     "symbol": "SPINACH_UNFAIR_ROOMS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/item-verbs.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-koulato-jars",
+   "title": "koulato-jars: Ours: the arrivals counted are this player's own arrivals plus other players' arrivals seen on the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/koulato-jars.js",
+     "symbol": "KOULATO_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/koulato-jars.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-legalize-it",
+   "title": "legalize-it: connect target LIF101O8CDQ1AMU, a real location). Glitch had no private copy: the quest",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/legalize-it.js",
+     "symbol": "LEGALIZE_HALL_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/legalize-it.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-location-view",
+   "title": "location-view: Remake choices: the smallest view is the remake's old fixed 408 px (a 540 px",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/location-view.js",
+     "symbol": "MIN_VP_H"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/location-view.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-26 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-louise-pasture-villa",
+   "title": "louise-pasture-villa: flat stretch east of the dirt mounds (remake choice: no position",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/louise-pasture-villa.js",
+     "symbol": "LOUISE_VILLA_TSID"
+    },
+    {
+     "file": "public/js/louise-pasture-villa.js",
+     "symbol": "doors"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/louise-pasture-villa.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-mail-courier",
+   "title": "mail-courier: arms, clear of every fixture there (reimagined placement; homes-feature",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/mail-courier-feature.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/mail-courier-feature.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-mailbox",
+   "title": "mailbox: G570: a letter's title in the reader. The game's own letters carry a subject (ours: the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/mailbox.js",
+     "symbol": "MAIL_SUBJECT_LIMIT"
+    },
+    {
+     "file": "public/js/mailbox.js",
+     "symbol": "MAIL_SUBJECTS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/mailbox.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G570"
+   ]
+  },
+  {
+   "id": "ours-math-mayhem",
+   "title": "math-mayhem: Ours: a round with no answer at the target ends with no winner.",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/math-mayhem.js",
+     "symbol": "MAYHEM_ROUND_MS"
+    },
+    {
+     "file": "public/js/math-mayhem.js",
+     "symbol": "MAYHEM_SPREAD"
+    },
+    {
+     "file": "public/js/math-mayhem.js",
+     "symbol": "MAYHEM_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/math-mayhem.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-name-prompt",
+   "title": "name-prompt: optional small line under the input (ours; the bag Rename's blank rule, #263).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/name-prompt.js",
+     "symbol": "open"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/ui/name-prompt.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-neighbours",
+   "title": "neighbours: give_bag_butler (reimagined: GSJS never counts them),",
+   "kind": "data",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/neighbours-mp-feature.js"
+    },
+    {
+     "file": "public/js/features/neighbours-mp-feature.js",
+     "symbol": "loadStock"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "NEIGHBOURS_TEXT"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "VISITOR_BUTLER_TEXT"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "tendedText"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "NEIGHBOUR_COUNTERS"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "tendCounters"
+    },
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "noteGift"
+    },
+    {
+     "file": "public/js/neighbours.js"
+    },
+    {
+     "file": "public/js/neighbours.js",
+     "symbol": "CHORES"
+    },
+    {
+     "file": "public/js/neighbours.js",
+     "symbol": "energy"
+    },
+    {
+     "file": "public/js/neighbours.js",
+     "symbol": "mood"
+    }
+   ],
+   "why": "Marked as the remake's own in 3 files (19 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G795"
+   ]
+  },
+  {
+   "id": "ours-newxp",
+   "title": "newxp: hubName: 'Tutorial', // remake label (G310: no source names the newxp levels' region)",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/newxp-feature.js",
+     "symbol": "enterNewxpScene"
+    },
+    {
+     "file": "public/js/newxp.js"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G310"
+   ]
+  },
+  {
+   "id": "ours-operation-grow",
+   "title": "operation-grow: The remake's own reading: there is no known way between the tiers in the Snaps, so a Firebog ladder",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/operation-grow-scene.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/operation-grow-scene.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-pack-slots",
+   "title": "pack-slots: Our own short words where the client only refused the drop without a line.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pack-slots.js",
+     "symbol": "PACK_COPY"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/pack-slots.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-pack-tool-verbs",
+   "title": "pack-tool-verbs: The node's verb state comes from the remake's own menu for it (engine.targetVerbs), so the pack",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pack-tool-verbs.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/pack-tool-verbs.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-pack-tree-verbs",
+   "title": "pack-tree-verbs: - A tree's verb state comes from the remake's own verb menu for that tree",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/pack-tree-verbs.js",
+     "symbol": "PACK_TREE_SOURCE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/pack-tree-verbs.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-paradise-courses",
+   "title": "paradise-courses: No source says what \"Back to Top\" did; doors in Glitch locations were",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/paradise-courses.js",
+     "symbol": "SKY_PLUNGE_LANDING_Y"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/paradise-courses.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-paradise-flight",
+   "title": "paradise-flight: G892 (stand-ins audit A6): the star pickups are Tiny Speck's own star decos, star_asset_01 for the",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/paradise-flight.js",
+     "symbol": "PARADISE_STAR_SIDE"
+    },
+    {
+     "file": "public/js/paradise-flight.js",
+     "symbol": "PARADISE_EXIT_ART"
+    },
+    {
+     "file": "public/js/paradise-flight.js",
+     "symbol": "STARLIT_NIGHT_CLOUDS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/paradise-flight.js (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "ours-party-spaces",
+   "title": "party-spaces: inc_party.js 505 pointed at the Party Chat pane's join; ours is the Map's Join party card.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/party-spaces.js",
+     "symbol": "PARTY_TEXT"
+    },
+    {
+     "file": "public/js/party-spaces.js",
+     "symbol": "PARTY_GUESTS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/party-spaces.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-patches",
+   "title": "patches: Grey-brown dust where a tree has just died (no source overlay for die()).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/patches-feature.js",
+     "symbol": "deathPuff"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/patches-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-penumbra",
+   "title": "penumbra: Mechanics seen in the video and rebuilt here (no source for any of them):",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/penumbra.js",
+     "symbol": "PENUMBRA_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/penumbra.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-player-im",
+   "title": "player-im: The source's reasons, said as \"<Name> is <reason>.\" (RightSideManager.as:600); ours after them.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/player-im.js",
+     "symbol": "IM_REFUSALS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/player-im.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-02 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-player-mail",
+   "title": "player-mail: returnedSubject: 'Your letter came back', // G570 (ours)",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/player-mail.js",
+     "symbol": "PLAYER_MAIL_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/player-mail.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G570"
+   ]
+  },
+  {
+   "id": "ours-player-names",
+   "title": "player-names: LedgerBoard.php). Our own copy never says the game's name (Austin's rule),",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/player-names.js",
+     "symbol": "UNNAMED_PLAYER"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/player-names.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-potion-bottle-fx",
+   "title": "potion-bottle-fx: own stand-in).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/potion-bottle-fx.js",
+     "symbol": "playPotionBottle"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/potion-bottle-fx.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-potions",
+   "title": "potions: (is_puzzle, and these instance ids); the remake's own room ids for them.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/potions.js",
+     "symbol": "RAINBOW_REFUSED_ROOMS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/potions.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-practice",
+   "title": "practice: They replace the stand-ins store_counter and k04_table_01 (the store_lamp_01",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/practice-streets.js",
+     "symbol": "PRACTICE_HUB"
+    },
+    {
+     "file": "public/js/practice-streets.js",
+     "symbol": "SOIL_TOOLS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/practice-streets.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-presence",
+   "title": "presence: blocks). The remake's own: Glitch had only the buddy list and the street's own players.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/presence-mp-feature.js",
+     "symbol": "PRESENCE_MP_FEATURE_ID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/presence-mp-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-04 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-quest-room-an-autumn-day",
+   "title": "quest room an-autumn-day: left end of the bench, so she sits there; where the leaves fall is ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/an-autumn-day.js"
+    },
+    {
+     "file": "public/js/quest-rooms/an-autumn-day.js",
+     "symbol": "SCRAMBLE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/an-autumn-day.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-26 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-quest-room-being-watched",
+   "title": "quest room being-watched: observation booth; their short exchange (marked below, no source text",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/being-watched.js"
+    },
+    {
+     "file": "public/js/quest-rooms/being-watched.js",
+     "symbol": "VEIL_TALK"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/being-watched.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G318"
+   ]
+  },
+  {
+   "id": "ours-quest-room-esquibeth",
+   "title": "quest room esquibeth: the narration is the remake's own (G310): only the beats (when a line",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/esquibeth.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/esquibeth.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G310"
+   ]
+  },
+  {
+   "id": "ours-quest-room-falling-room",
+   "title": "quest room falling-room: The loading card into the fall, read off video 2Z76dO4DlJ4 t120 (not in GSJS; Austin 2026-10-24).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/falling-room.js",
+     "symbol": "LOADING_LABEL"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/falling-room.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-24 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-quest-room-gwendolyn",
+   "title": "quest room gwendolyn: G318: remake objective lines, ours: the chain's quests have no requirements to word",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/gwendolyn.js",
+     "symbol": "text"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/gwendolyn.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G318"
+   ]
+  },
+  {
+   "id": "ours-quest-room-soil-appreciation",
+   "title": "quest room soil-appreciation: tools' spots (ours, near the start).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-rooms/soil-appreciation.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-rooms/soil-appreciation.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-quest-instance",
+   "title": "quest-instance: its \"Are you stuck?\" wait stop while you are away (the remake's choice: Glitch's ran on, as",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-instance.js",
+     "symbol": "holdQuestInstance"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-instance.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-quest-instances",
+   "title": "quest-instances: (the tower chain, location.js 443-456). Three have no source fail that",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/quest-instances-feature.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/quest-instances-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-quest-offers",
+   "title": "quest-offers: #83: the offer's line when accepting moves you (ours: the source's offer text was the only hint).",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quest-offers.js",
+     "symbol": "QUEST_MOVES_NOTE"
+    },
+    {
+     "file": "public/js/quest-offers.js",
+     "symbol": "COUNTER_ROUTES"
+    },
+    {
+     "file": "public/js/quest-offers.js",
+     "symbol": "readyOfferText"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quest-offers.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G571"
+   ]
+  },
+  {
+   "id": "ours-quests",
+   "title": "quests: inferred the remake's stand-in for a quest with no giver and no conditions",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "build-quests.mjs"
+    },
+    {
+     "file": "build-quests.mjs",
+     "symbol": "CUSTOM"
+    },
+    {
+     "file": "build-quests.mjs",
+     "symbol": "EXCLUDE"
+    },
+    {
+     "file": "build-quests.mjs",
+     "symbol": "list"
+    },
+    {
+     "file": "public/js/features/quests-mp-feature.js",
+     "symbol": "failRace"
+    },
+    {
+     "file": "public/js/quests-mp.js"
+    },
+    {
+     "file": "public/js/quests-mp.js",
+     "symbol": "MP_RACE_QUESTS"
+    },
+    {
+     "file": "public/js/quests-mp.js",
+     "symbol": "MP_FACTS"
+    },
+    {
+     "file": "public/js/quests-mp.js",
+     "symbol": "MULTIPLAYER_QUESTS"
+    }
+   ],
+   "why": "Marked as the remake's own in 3 files (13 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G330"
+   ]
+  },
+  {
+   "id": "ours-quoins",
+   "title": "quoins: GSJS stats are whole numbers; ours drift by fractions, so report the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/quoins.js",
+     "symbol": "amount"
+    },
+    {
+     "file": "public/js/quoins.js",
+     "symbol": "resolvedType"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/quoins.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-29 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-qurazy",
+   "title": "qurazy: right on the remake's own chrome. Size, timing, fades and x stay the source's.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/qurazy-feature.js",
+     "symbol": "qurazyBannerTopY"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/qurazy-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-race-render",
+   "title": "race-render: other. The race streets are lost, so the spacing is ours, read off the bar: its ends are 60 px apart",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/race-render.js",
+     "symbol": "FINISH_GATE"
+    },
+    {
+     "file": "public/js/race-render.js",
+     "symbol": "h"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/race-render.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G309"
+   ]
+  },
+  {
+   "id": "ours-races",
+   "title": "races: The remake's own cap (js/races.js RACE_TICKET_STACK): the pack itself has room for more.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/races-feature.js",
+     "symbol": "raceId"
+    },
+    {
+     "file": "public/js/features/races-feature.js",
+     "symbol": "time"
+    },
+    {
+     "file": "public/js/races.js",
+     "symbol": "RACE_RIVALS"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-realtime",
+   "title": "realtime: source's width), standing over the name plate (ours: the source's delta_y -130",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/realtime-feature.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/realtime-feature.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-rebuilt-rooms",
+   "title": "rebuilt-rooms: snow-coloured edge keeps the dark letters readable where a trunk passes (ours: the snaps show",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/rebuilt-rooms-feature.js",
+     "symbol": "layer"
+    },
+    {
+     "file": "public/js/rebuilt-rooms.js",
+     "symbol": "REBUILT_ROOMS_SOURCE"
+    },
+    {
+     "file": "public/js/rebuilt-rooms.js",
+     "symbol": "doors"
+    },
+    {
+     "file": "public/js/rebuilt-rooms.js",
+     "symbol": "GROWING_STUFF_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-retired-quests",
+   "title": "retired-quests: The line a player reads when one leaves the log (ours).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/retired-quests.js",
+     "symbol": "retiredQuestLine"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/retired-quests.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-rook-museum",
+   "title": "rook-museum: floor at y 500). The ends are ours: the left wall just past the arrival",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/rook-museum.js",
+     "symbol": "ROOK_MUSEUM_WORLD"
+    },
+    {
+     "file": "public/js/rook-museum.js",
+     "symbol": "ROOK_MUSEUM_HALL"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/rook-museum.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-rook-woods",
+   "title": "rook-woods: route, the Crusher spots and the nest's spot are ours.",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/rook-woods.js"
+    },
+    {
+     "file": "public/js/rook-woods.js",
+     "symbol": "ROOK_NEST"
+    },
+    {
+     "file": "public/js/rook-woods.js",
+     "symbol": "ROOK_WOODS_BIRDS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/rook-woods.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G892"
+   ]
+  },
+  {
+   "id": "ours-screen-queue",
+   "title": "screen-queue: The remake's own gates, after the client's (UI audit 2026-10-29, NOTIFY: a big",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/screen-queue.js",
+     "symbol": "REMAKE_SCREEN_GATES"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/screen-queue.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-seam-teleporters",
+   "title": "seam-teleporters: two are their mirror images. Where exactly you land is OUR OWN reading of the footage (a few",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/seam-teleporters.js",
+     "symbol": "OPPIDAN_AVENUE_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/seam-teleporters.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-shared-patches",
+   "title": "shared-patches: quietly) reads CLEARED_FIRST_LINE, as a clear the server refused does (Ours, slice 3).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/shared-patches-feature.js",
+     "symbol": "sharedPatchesFeature"
+    },
+    {
+     "file": "public/js/shared-patches.js",
+     "symbol": "CLEARED_FIRST_LINE"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G564"
+   ]
+  },
+  {
+   "id": "ours-shrines",
+   "title": "shrines: limit is not weighed at level 60 (256). The player's words use the Giant's name as ours spells it.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/shrines.js",
+     "symbol": "donationLimitWarning"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/shrines.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-skills",
+   "title": "skills: ring, a locked one is faded. Ours: one column per family (the photo sometimes stacks two short",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/classic/classic-skills.js",
+     "symbol": "skillTable"
+    },
+    {
+     "file": "public/js/classic/classic-skills.js",
+     "symbol": "more"
+    },
+    {
+     "file": "public/js/classic/classic-skills.js",
+     "symbol": "art"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/classic/classic-skills.js (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-slope-walk",
+   "title": "slope-walk: The remake adds gravity every frame and puts the feet back on a floor only",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/slope-walk.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/slope-walk.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-solo-feats",
+   "title": "solo-feats: Feats (title, vog_text, url, epic_id, game_day). Goals are not in GSJS:",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/solo-feats.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/solo-feats.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-10-25 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-spirit-loneliness",
+   "title": "spirit-loneliness: Stage 2, type A (107-130). The source joins the two sentences with no space; the remake adds one.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/spirit-loneliness.js",
+     "symbol": "LONELY_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/spirit-loneliness.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-start-backdrop",
+   "title": "start-backdrop: The card is the remake's own (no client equivalent). At boot the street is built while the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/start-backdrop.js",
+     "symbol": "BACKDROP_CAP_MS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/start-backdrop.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-street-arrival",
+   "title": "street-arrival: Glitch never set anyone down on a street at a made-up spot: a signpost or door landed you on its",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-arrival.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/street-arrival.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-street-ecology",
+   "title": "street-ecology: - INTERIOR_STREETS: the few interiors no source field marks, each with why.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-ecology.js",
+     "symbol": "INTERIOR_DOOR_ART"
+    },
+    {
+     "file": "public/js/street-ecology.js",
+     "symbol": "gardenBoxes"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/street-ecology.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G938"
+   ]
+  },
+  {
+   "id": "ours-street-furniture",
+   "title": "street-furniture: Neutral notices for the boards, plainly ours (G175). The words players",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-furniture.js",
+     "symbol": "PIN"
+    },
+    {
+     "file": "public/js/street-furniture.js",
+     "symbol": "BOARD_PINS"
+    },
+    {
+     "file": "public/js/street-furniture.js",
+     "symbol": "RETIRED_PIN_REWORDS"
+    },
+    {
+     "file": "public/js/street-furniture.js",
+     "symbol": "REMAKE_NOTE_TEXTS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/street-furniture.js (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G175"
+   ]
+  },
+  {
+   "id": "ours-street-jobs",
+   "title": "street-jobs: Gap 3: the spirit is the street's (game.js clears it); only its bubble is ours.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/street-jobs-feature.js",
+     "symbol": "streetJobsFeature"
+    },
+    {
+     "file": "public/js/street-jobs-mp.js",
+     "symbol": "HALL_TEXT"
+    },
+    {
+     "file": "public/js/street-jobs-solo.js"
+    }
+   ],
+   "why": "Marked as the remake's own in 3 files (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-street-minimap",
+   "title": "street-minimap: at all got a fogged stand-in until the snap (MiniMapView.show 873-886).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/street-minimap.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/ui/street-minimap.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-street-model",
+   "title": "street-model: the avatar and its stand-ins, isItemSolid for a creature that is an item",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-model.js",
+     "symbol": "groundBeneath"
+    },
+    {
+     "file": "public/js/street-model.js",
+     "symbol": "isItemFloor"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/street-model.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-street-objects",
+   "title": "street-objects: When the marks clear is the server's; a stand-in keeps js/woodcutting.js from reading them as an old save's.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-objects.js",
+     "symbol": "whole"
+    },
+    {
+     "file": "public/js/street-objects.js",
+     "symbol": "createStreetCopy"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/street-objects.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-style-css",
+   "title": "style.css: .avatar-tile .avatar-reimagined-tag {",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/style.css",
+     "symbol": ".avatar-tile .avatar-reimagined-tag "
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".avatar-reimagined-tag "
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".skill-study-bar .skill-study-arrows "
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".badge-reimagined "
+    }
+   ],
+   "why": "Marked as the remake's own in public/style.css (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-subway",
+   "title": "subway: Ours: no seat (the platform changed under the ticket): transit_refund_fare gives the fare back.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/subway-feature.js",
+     "symbol": "client"
+    },
+    {
+     "file": "public/js/subway-mp.js",
+     "symbol": "BOARD_ANSWER_MS"
+    },
+    {
+     "file": "public/js/subway.js",
+     "symbol": "lineView"
+    },
+    {
+     "file": "public/js/subway.js",
+     "symbol": "STATION_FLOOR"
+    },
+    {
+     "file": "public/js/subway.js",
+     "symbol": "CAR_MUSIC"
+    }
+   ],
+   "why": "Marked as the remake's own in 3 files (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-summon",
+   "title": "summon: here are ours, on the source's own \"summon you to <place>\" and \"is on",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/summon-mp.js",
+     "symbol": "SUMMON_VERB"
+    },
+    {
+     "file": "public/js/summon-mp.js",
+     "symbol": "SUMMON_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/summon-mp.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-synth-sfx",
+   "title": "synth-sfx: recoverable audio. Each recipe here is a short, soft, whimsical stand-in",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/synth-sfx.js",
+     "symbol": "noiseCache"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/synth-sfx.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-teleportation",
+   "title": "teleportation: Ours: a script is handed to others, and RH_HOME_EXT is each reader's own home, so none is written at home.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/teleportation-feature.js",
+     "symbol": "unsavable"
+    },
+    {
+     "file": "public/js/features/teleportation-feature.js",
+     "symbol": "playWarpHit"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/features/teleportation-feature.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-achievement-overrides",
+   "title": "tools achievement-overrides: Badge conditions the remake adds where Tiny Speck's own file has none, each",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/achievement-overrides.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/achievement-overrides.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-17 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-tools-build-economy",
+   "title": "tools build-economy: takes FALLBACK_VALUE (ours): rare, and never free to conjure.",
+   "kind": "data",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-economy.mjs"
+    },
+    {
+     "file": "tools/build-economy.mjs",
+     "symbol": "FALLBACK_VALUE"
+    },
+    {
+     "file": "tools/build-economy.mjs",
+     "symbol": "RARE_VALUE"
+    },
+    {
+     "file": "tools/build-economy.mjs",
+     "symbol": "CAPPED_ROLLS"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-economy.mjs (5 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G905"
+   ]
+  },
+  {
+   "id": "ours-tools-build-realtime-halls",
+   "title": "tools build-realtime-halls: where each starts behind the counter (ours, HALL_LAYOUT.clerkHomes);",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-realtime-halls.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-realtime-halls.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-build-realtime-mayhem",
+   "title": "tools build-realtime-mayhem: sum, the 4 s countdown, the round's clock (ours), the two teams and",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-realtime-mayhem.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-realtime-mayhem.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-build-realtime-races",
+   "title": "tools build-realtime-races: does, slot 1 where solo's stand-in rival does);",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-realtime-races.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-realtime-races.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-build-realtime-rook",
+   "title": "tools build-realtime-rook: population's row, the location file's \"Shrine to X\"); without it giantForStreet guessed by hub.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-realtime-rook.mjs",
+     "symbol": "official"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-realtime-rook.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-build-realtime-subway",
+   "title": "tools build-realtime-subway: - the remake's own ride times (subway.js rideTiming): 20 s between stops",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-realtime-subway.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-realtime-subway.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-build-signpost-graph",
+   "title": "tools build-signpost-graph: 12 had no source). tools/job-obtainable.mjs is the remake's own list of what a player can get, so",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/build-signpost-graph.mjs",
+     "symbol": "graph"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/build-signpost-graph.mjs (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-builder",
+   "title": "tools builder: plain flat-tone stand-in at the piece's file size and shape, by kind: a ground band to the bottom",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/builder/art-placeholders.mjs"
+    },
+    {
+     "file": "tools/builder/art-placeholders.mjs",
+     "symbol": "tones"
+    },
+    {
+     "file": "tools/builder/cli.mjs",
+     "symbol": "HELP"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (3 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-deco-pipeline",
+   "title": "tools deco-pipeline: stand-in, js/street-render.js) is skipped: whatever sat behind it shows through (G427: the sky",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/deco-pipeline/recover.py"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/deco-pipeline/recover.py (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G427"
+   ]
+  },
+  {
+   "id": "ours-tools-ecology",
+   "title": "tools ecology: the item list, not the places), so ours have to be reachable too. Level 3 East",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/ecology/build-unreached-floors.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/ecology/build-unreached-floors.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-item-art",
+   "title": "tools item-art: Render reimagined item icons (tools/item-art/*.svg) to the pack icon",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/item-art/render.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/item-art/render.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-quest-gates",
+   "title": "tools quest-gates: names them outside `seenOnlyIn`), so any gate is the remake's own: each row says why, what GSJS",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/quest-gates/table.mjs",
+     "symbol": "SPECIAL_TRIGGERS"
+    },
+    {
+     "file": "tools/quest-gates/table.mjs",
+     "symbol": "STAND_INS"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/quest-gates/table.mjs (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-17 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-tools-snap-placements",
+   "title": "tools snap-placements: street px on a 6,000 px street). Lane pins2 found each by matching our own CC0 shrine art (the",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/snap-placements/shrine-pictures.mjs"
+    },
+    {
+     "file": "tools/snap-placements/stone-spots.mjs"
+    }
+   ],
+   "why": "Marked as the remake's own in 2 files (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools-streetmusic",
+   "title": "tools streetmusic: theme that is no place (the Musicblocks set, a stand-in, a single loop).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "tools/streetmusic/build-data.mjs",
+     "symbol": "PLACES"
+    }
+   ],
+   "why": "Marked as the remake's own in tools/streetmusic/build-data.mjs (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tools",
+   "title": "tools: Ours: a whole Tinkertool dropped onto a broken one repairs it too; Glitch's drop_ok_code read the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/tools.js",
+     "symbol": "dropRepair"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/tools.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tower-challenge-rooms",
+   "title": "tower-challenge-rooms: size: 'Remake: 2600 wide, 2100 above y 0 (no source bounds survive); the archived arrival y -1701 puts the way out high in the room, so the ",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/tower-challenge-rooms.js",
+     "symbol": "art"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/tower-challenge-rooms.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-tower-rooms",
+   "title": "tower-rooms: floor platforms follow this edge; so do ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/tower-rooms.js",
+     "symbol": "STEPS_PROFILE"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/tower-rooms.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-trade",
+   "title": "trade: Copy players read, from the source (file:line) or ours where it had none.",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/trade.js",
+     "symbol": "TRADE_TEXT"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/trade.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-validate",
+   "title": "validate: PURE: stand-in arrivals for a street nothing leads to yet: the floor at each signpost.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/builder/validate.js",
+     "symbol": "fallbackArrivals"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/builder/validate.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-vendor",
+   "title": "vendor: in the source (street_spirit*.js 8), so their stores' lines are ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/vendor.js",
+     "symbol": "VENDOR_DESCRIPTIONS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/vendor.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": [],
+   "rulingHints": [
+    "Austin 2026-11-11 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-vicars-peak",
+   "title": "vicars-peak: Where the top door lands in Mossystep (world): the low left of the street, clear of its one signpost (x 766). No source x/y survives.",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/vicars-peak.js",
+     "symbol": "MOSSYSTEP_ARRIVE"
+    },
+    {
+     "file": "public/js/vicars-peak.js",
+     "symbol": "doors"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/vicars-peak.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-water-cooler",
+   "title": "water-cooler: lost, so where the cooler stands inside is ours.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/water-cooler.js",
+     "symbol": "WATER_COOLER_CLASS"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/water-cooler.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-window-stack",
+   "title": "window-stack: up: over the windows and the screens, whatever opened after it. The remake's own card (the client",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/window-stack.js",
+     "symbol": "START_CARD_SELECTOR"
+    },
+    {
+     "file": "public/js/window-stack.js",
+     "symbol": "REPORT_WINDOW_SELECTOR"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/window-stack.js (2 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-winter-icicles",
+   "title": "winter-icicles: Ours: the trigger box's size (the recording shows one fall), how tall a fallen icicle stands",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/winter-icicles.js",
+     "symbol": "ICICLE_TRIGGER_HALF"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/winter-icicles.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-winter-walk",
+   "title": "winter-walk: (gz_ai_wh_*, WINTER_HAVEN_TREES), reimagined from Tiny Speck's own trees.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/winter-walk-streets.js",
+     "symbol": "WINTER_STREETS_SOURCE"
+    },
+    {
+     "file": "public/js/winter-walk-streets.js",
+     "symbol": "layers"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/winter-walk-streets.js (4 marks); the comment says why. No ruling recorded in the register yet.",
+   "rows": [
+    "G922"
+   ],
+   "rulingHints": [
+    "Austin 2026-10-31 (in a code comment)",
+    "Austin 2026-11-16 (in a code comment)"
+   ]
+  },
+  {
+   "id": "ours-wintry-portal",
+   "title": "wintry-portal: Inferred, not in source: the box is the cage, met by the avatar's body (the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/wintry-portal.js",
+     "symbol": "NORTHWEST_PASSAGE_TSID"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/wintry-portal.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-world-items",
+   "title": "world-items: Ours: a bag with contents or a name comes back whole (pickupDroppedBag). A stack shared with the",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/world-items.js",
+     "symbol": "pickupCountToAsk"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/world-items.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-yard-fixtures",
+   "title": "yard-fixtures: Ours: a visitor only looks. In the source a key-holder could collect from the owner's collector",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/yard-fixtures-mp.js",
+     "symbol": "DIR"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/yard-fixtures-mp.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-yard-stock",
+   "title": "yard-stock: Remake choices:",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/yard-stock-mp.js"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/yard-stock-mp.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  },
+  {
+   "id": "ours-zone",
+   "title": "zone: A published zone's arms on the shipped street (spec 11) are that zone's, not Tiny Speck's: a fork leaves them.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/builder/zone.js",
+     "symbol": "from"
+    }
+   ],
+   "why": "Marked as the remake's own in public/js/builder/zone.js (1 mark); the comment says why. No ruling recorded in the register yet.",
+   "rows": []
+  }
+ ]
+}

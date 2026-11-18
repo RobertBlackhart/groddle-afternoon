@@ -1,0 +1,1316 @@
+{
+"about": "Which inventions.json entry claims each invention marker in the code (tools/inventions/scan.mjs). Key: the marker and the words around it. Written by node tools/inventions/scan.mjs --claim <id> and --prune; not-an-invention marks a hit that only uses the word.",
+"claims": {
+  "build-quests.mjs": {
+    "remake-own: the file has no conditions; the stand-in is the remake's own": "ours-quests",
+    "stand-in: 'hogtie_piggy', // hog-haul.js (solo rival stand-in)": "ours-quests",
+    "stand-in: * inferred the remake's stand-in for a quest with no giver and no": "ours-quests",
+    "stand-in: // needs real other players (no local-companion stand-in": "ours-quests",
+    "stand-in: is lost and the file has no conditions; the stand-in is the remake's": "ours-quests"
+  },
+  "build-sound-keys.mjs": {
+    "remake-only: from overlay sources, ${counts.remake} remake-only),": "remake-sound-keys",
+    "remake-only: —— Remake-only keys (moments the remake has that never had": "remake-sound-keys",
+    "stand-in: // NEWDAY's old stand-in, new_day_fanfare.mp3, was the client's licensed": "remake-sound-keys",
+    "stand-in: BADGE_FANFARE: 'Badge overlay (synth stand-in for": "synth-stand-in-sounds"
+  },
+  "build-street-ecology.mjs": {
+    "invented: // These streets used to get no row, and so the invented fallback": "guessed-street-animals"
+  },
+  "build-street-navigation.mjs": {
+    "no-source: * zone adds to a shipped street has no source in the XML, so the rebuild": "not-an-invention"
+  },
+  "public/content.js": {
+    "ours: // nibble. Ours: npc_butterfly.js had milk sort_on 59 (703)": "ours-content",
+    "remake-own: no Truly Outrageous card how gems are found (the remake's own": "gem-hints"
+  },
+  "public/css/classic.css": {
+    "no-original: as small page-colour controls; the help line has no original.": "ours-classic-css",
+    "reimagined: #avatar-panel .avatar-reimagined-tag { background: var(--c-classic-tip); color:": "ours-classic-css",
+    "reimagined: #avatar-panel .avatar-tile .avatar-reimagined-tag { border-radius: 0 0 3px 3px;": "ours-classic-css",
+    "remake-own: Reactions (js/ui/reaction-strip.js; the remake's own, the client had none): in the chat": "chat-reactions",
+    "remake-own: Threads (js/chat-threads.js; the remake's own): the reply button dressed as the add-reaction": "chat-threads"
+  },
+  "public/game.js": {
+    "glitch-had-none: // draws no pins (Glitch had none), so its cards have no Pin button, no menu row": "ours-game-js-questsheet",
+    "guess: // without turning the hidden-object beat into guesswork.": "not-an-invention",
+    "no-source: // G258: jumping costs no energy (no source; players/player.js onPeriodicEnergyLoss is the": "jump-no-energy",
+    "no-source: 16973-16978, 679); the old hub label had no source.": "not-an-invention",
+    "ours: // Only ours (important): Pixi's own inline size stays, under": "not-an-invention",
+    "ours: // menu of ours ([data-ctx]) or a plain HUD button; text fields,": "right-click-menus",
+    "ours: Q+V render switch, 1916-1921), so this one is ours.": "ours-game-js-walkinput",
+    "ours: hint for a line you already said in the chain (ours; Glitch said nothing), once a session.": "featured-project",
+    "ours: in the back alley (npc_bureaucrat.js 897), not ours.": "not-an-invention",
+    "reimagined: Official archived art first, then the reimagined generator output.": "badge-art-reimagined",
+    "reimagined: icon.dataset.source = art.generated ? 'reimagined' :": "badge-art-reimagined",
+    "reimagined: note.className = 'badge-reimagined';": "badge-art-reimagined",
+    "reimagined: note.textContent = 'Reimagined badge": "badge-art-reimagined",
+    "reimagined: string, generated: true, subject?: string }>} reimagined art for rows the archive lost": "badge-art-reimagined",
+    "remake-own: * beginGame runs. The card is the remake's own (no client": "ours-game-js-startwaiters",
+    "remake-own: // The word filter (the remake's own addition, js/word-filter.js): the line is shown": "word-filter",
+    "remake-own: } from './js/word-filter.js'; // the remake's own word": "word-filter",
+    "stand-in: * (ok: a live texture; held: a stand-in for a jump, climb or emotion, which your own": "not-an-invention",
+    "stand-in: * The named stand-in Glitches (Amp, Bumbishfish, Lily Linguistic) are": "solo-stand-ins",
+    "stand-in: * the stand-in themes loop one": "synth-stand-in-sounds",
+    "stand-in: // G320: the stand-ins fill a chain only in solo; online, three real": "solo-stand-ins",
+    "stand-in: // Keep standing stand-ins current while input is blocked (dialogs freeze": "not-an-invention",
+    "stand-in: // Same theme (and, for a looped stand-in, the same track) already playing: leave": "synth-stand-in-sounds",
+    "stand-in: // The default sheets failed to load: a blank stand-in, never": "not-an-invention",
+    "stand-in: // The stand-in doing the work (dullite.js:124-133): a Grand Ol'": "solo-stand-ins",
+    "stand-in: A frame on a sheet that is not in yet shows its stand-in": "not-an-invention",
+    "stand-in: in its batch (a freed idle frame swapped for its stand-in": "not-an-invention"
+  },
+  "public/js/account-forms.js": {
+    "ours: or 'failed' with the site's own words (or ours when it didn't answer).": "ours-account-forms",
+    "remake-own: * name.\" (the word filter, the remake's own addition: names are refused,": "word-filter"
+  },
+  "public/js/ambient-music.js": {
+    "stand-in: * one track (announce_music loop_count 999; the stand-ins pick theirs by": "ours-ambient-music",
+    "stand-in: // its own notes); a key with recovered stand-ins uses them; any other": "synth-stand-in-sounds",
+    "stand-in: keys map to a theme of recovered stand-ins": "synth-stand-in-sounds",
+    "stand-in: next and wraps). A street's music_file and every stand-in theme": "ours-ambient-music"
+  },
+  "public/js/animal-crowding.js": {
+    "no-source: * Respawn (G82, Austin's call 2026-10-23, no source equivalent): the": "animal-respawn",
+    "ours: Ours: the most rows of an owner's saved animals read": "animal-respawn",
+    "ours: and caterpillar; anything else): YARD_CAP_OURS, ours.": "animal-respawn"
+  },
+  "public/js/animal-husbandry.js": {
+    "guess: * guess; they now come from the live street pages": "guessed-street-animals",
+    "remake-own: // The word filter (the remake's own addition, js/word-filter.js): a bad word is kept": "word-filter"
+  },
+  "public/js/auctions.js": {
+    "ours: // Ours (#362): tradeable, but the site has not counted": "ours-auctions",
+    "ours: // Ours (#84): Your auctions splits what ended; the 2012": "ours-auctions",
+    "ours: // Ours: the create page picked a stack from your pack;": "ours-auctions",
+    "ours: G570: a delivery's subject in the mailbox (ours: the original's letters had none).": "ours-auctions"
+  },
+  "public/js/avatar-pack.js": {
+    "stand-in: * nothing is ever missing. The stand-ins are the original client's, which loaded an": "not-an-invention",
+    "stand-in: a sprite playing `anim` from this pack shows a stand-in: `tex` is not a frame": "not-an-invention",
+    "stand-in: idle sheet, a late sheet) shows the animation's stand-in: its base-sheet frame, or": "not-an-invention",
+    "stand-in: in its batch (a freed idle frame swapped for its stand-in from the base": "not-an-invention",
+    "stand-in: is in, every frame that belongs to it shows a stand-in (fillPackAnims),": "not-an-invention",
+    "stand-in: stand (swf frame 801, in the base sheet): the stand-in when an animation names no other.": "not-an-invention"
+  },
+  "public/js/avatar-reimagined.js": {
+    "ours: // Our own additions are mutations too; decorateWardrobe is": "avatar-reimagined-wardrobe",
+    "reimagined: * Reimagined wardrobe articles (row G52). Nineteen of Tiny": "avatar-reimagined-wardrobe",
+    "reimagined: * Tag the reimagined style chips under root (buttons": "avatar-reimagined-wardrobe",
+    "reimagined: * module tags them after the fact: a small \"Reimagined\" tag with a": "avatar-reimagined-wardrobe",
+    "reimagined: * says so: catalog items carry `reimagined`, `borrowedColours`": "avatar-reimagined-wardrobe",
+    "reimagined: The tooltip and explainer for a reimagined item (null for any other).": "avatar-reimagined-wardrobe",
+    "reimagined: chip.dataset.reimagined =": "avatar-reimagined-wardrobe",
+    "reimagined: const REIMAGINED_TAG = 'Reimagined';": "avatar-reimagined-wardrobe",
+    "reimagined: const isReimagined = (item) => Boolean(item?.reimagined);": "avatar-reimagined-wardrobe",
+    "reimagined: if (!chip.dataset.reimagined)": "avatar-reimagined-wardrobe",
+    "reimagined: p.className = 'avatar-note avatar-reimagined-note';": "avatar-reimagined-wardrobe",
+    "reimagined: return `Reimagined: ${why}, so its colours were designed for the": "avatar-reimagined-wardrobe",
+    "reimagined: tag.className = 'avatar-reimagined-tag';": "avatar-reimagined-wardrobe",
+    "reimagined: w.nextElementSibling?.classList?.contains('avatar-reimagined-note'))": "avatar-reimagined-wardrobe",
+    "reimagined: || item.borrowedColours) return `Reimagined: ${why}, so its colours are borrowed from": "avatar-reimagined-wardrobe"
+  },
+  "public/js/avatar-step.js": {
+    "remake-own: * The remake's own movement before 2026-11-03 (gravity 0.42, launch": "old-movement-for-rooms"
+  },
+  "public/js/avatar-tiles.js": {
+    "reimagined: * and Reimagined hooks the name chips had), its label as title": "ours-avatar-tiles"
+  },
+  "public/js/bag-names.js": {
+    "ours: \"another player dropped it\" case never comes up. Ours: an answer of only spaces counts as empty": "ours-bag-names",
+    "ours: (an empty one keeps the old name). Ours departs here": "ours-bag-names",
+    "ours: The Name Me! box's hint line under the input (ours; the source's box had none).": "ours-bag-names",
+    "ours: the player's name (the source kept the old name; ours": "ours-bag-names",
+    "ours: then letters, digits and spaces only (ours: the ends trimmed).": "ours-bag-names",
+    "remake-own: * the word filter (the remake's own addition, js/word-filter.js), so a": "word-filter"
+  },
+  "public/js/barnacle-walls.js": {
+    "glitch-had-none: * Glitch never mirrored a barnacle (itemstacks are not": "barnacle-facing-out",
+    "remake-own: are not flipped); facing outward is the remake's polish.": "barnacle-facing-out"
+  },
+  "public/js/better-learning.js": {
+    "reimagined: * Reimagined (nothing survives, or Austin's": "ours-better-learning"
+  },
+  "public/js/boards-mp.js": {
+    "ours: 'Wait a moment, that note is on its way.', // ours": "remake-copy",
+    "ours: * Ours: the opening notices are the remake's own": "ours-boards",
+    "ours: is still being read. Try again in a moment.', // ours": "remake-copy",
+    "remake-own: * Ours: the opening notices are the remake's own (BOARD_PINS), pinned": "ours-boards",
+    "remake-own: * normalizeNote shape): the remake's own words as initial text with remakeText (so the": "remake-copy"
+  },
+  "public/js/buddy-list.js": {
+    "remake-own: * Report #178 (the remake's own, Austin 2026-11-10): what the buddies list adds": "buddy-list-extras"
+  },
+  "public/js/buff-triggers.js": {
+    "stand-in: * table, so the stand-in is there from the first": "not-an-invention"
+  },
+  "public/js/buffs.js": {
+    "remake-own: * and buffs_remove is the server's. It is the remake's own, for the": "ours-buffs",
+    "stand-in: // stand-in icon at once (buff-triggers BUFF_ICONS), not a": "not-an-invention"
+  },
+  "public/js/builder/ground.js": {
+    "stand-in: * per gap, stretched, for a stand-in picture that does not": "not-an-invention",
+    "stand-in: // A stand-in that does not tile (an object picture) goes in": "not-an-invention"
+  },
+  "public/js/builder/validate.js": {
+    "guess: a rule whose data is missing is skipped, never guessed):": "not-an-invention",
+    "stand-in: PURE: stand-in arrivals for a street nothing leads to yet: the": "ours-validate"
+  },
+  "public/js/builder/zone.js": {
+    "not-source: on the shipped street (spec 11) are that zone's, not Tiny Speck's: a fork leaves": "ours-zone"
+  },
+  "public/js/bureaucratic-hall.js": {
+    "ours: * 700 - 128 = 572. The two hitboxes are lost: ours are the desk room": "ours-bureaucratic-hall",
+    "ours: * The room (ours, from Tiny Speck's art): the hall's location XML": "ours-bureaucratic-hall",
+    "ours: * Where the signs hang is ours too (no placement": "ours-bureaucratic-hall",
+    "ours: /** The counter's left end (ours, just right of the helpers' limit).": "ours-bureaucratic-hall",
+    "ours: /** bureaucratic_hall_entered (ours): the desk room, left of the partition at x 625.": "ours-bureaucratic-hall",
+    "ours: /** waiting_area (ours): the floor in front of the chairs (backdrop x": "ours-bureaucratic-hall",
+    "ours: The glass doors on the desk room's side wall (ours).": "ours-bureaucratic-hall",
+    "ours: promised next and never reached is let go (ours).": "ours-bureaucratic-hall",
+    "ours: the back line; out on the floor, at the floor (ours).": "ours-bureaucratic-hall",
+    "ours: the bureaucrats stand a little further back (ours).": "ours-bureaucratic-hall",
+    "ours: the four bureaucrats start, behind the counter (ours, inside the stroll).": "ours-bureaucratic-hall"
+  },
+  "public/js/butler-drop.js": {
+    "ours: (a wrapped Gift Box goes, bag_butler.js 1013); ours also keeps": "ours-butler-drop"
+  },
+  "public/js/butler-im.js": {
+    "ours: * Ours: the IM window is a chat tab named after the": "ours-butler-im",
+    "ours: // Ours: a tell or an announce with its message is done": "ours-butler-im"
+  },
+  "public/js/butler.js": {
+    "remake-own: BUTLER.INFO_MAX)); // the remake's own word filter": "word-filter",
+    "remake-own: BUTLER.NAME_MAX)); // the remake's own word filter": "word-filter",
+    "remake-own: line = filterText(cleanLine(txt, 140)); // the remake's own word filter": "word-filter"
+  },
+  "public/js/cave-pit.js": {
+    "our-design: * OUR OWN DESIGN, not the original's: two boxes where the source": "teleporter-stand-ins",
+    "ours: * OUR OWN DESIGN, not the original's: two boxes where the": "teleporter-stand-ins",
+    "stand-in: Level 3 West's stand-in teleporters on a street (either TSID prefix).": "teleporter-stand-ins",
+    "stand-in: why: 'Our own stand-in for the lost teleporter: the left end of the pit": "teleporter-stand-ins",
+    "stand-in: why: 'Our own stand-in for the lost teleporter: the right end of the": "teleporter-stand-ins"
+  },
+  "public/js/character-builder.js": {
+    "reimagined: The builder's wardrobe chips (game.js) get a \"Reimagined\" tag on": "avatar-reimagined-wardrobe",
+    "reimagined: greyscale masters the remake coloured (js/avatar-reimagined.js, row": "avatar-reimagined-wardrobe",
+    "reimagined: { installReimaginedTags } from './avatar-reimagined.js';": "avatar-reimagined-wardrobe",
+    "remake-own: * groups: the remake's own looks, Tiny Speck's four new-player": "avatar-reimagined-wardrobe"
+  },
+  "public/js/chat-delete.js": {
+    "remake-own: * remake's own: Glitch's channels had no": "chat-moderation"
+  },
+  "public/js/chat-links.js": {
+    "ours: home, and anything that is not a chat link of ours, the browser": "not-an-invention"
+  },
+  "public/js/chat-purge.js": {
+    "glitch-had-none: * own: Glitch had nothing like it. Pure rules;": "chat-moderation"
+  },
+  "public/js/chat-reactions.js": {
+    "glitch-had-none: * can we add emoji responses?\"). Glitch had none: its client turned a smiley typed in Local chat": "chat-reactions",
+    "remake-own: * Reactions on chat lines (the remake's own addition, Austin 2026-11-04: \"Another": "chat-reactions"
+  },
+  "public/js/chat-threads.js": {
+    "remake-own: * Threads on chat lines (the remake's own addition, Austin 2026-11-04: \"Is it possible to": "chat-threads"
+  },
+  "public/js/chicken-scare.js": {
+    "not-source: * Not in the source (Tiny Speck's engine is not": "chicken-hop-online",
+    "not-source: /** px/s2, from footage (see the header): not in the source.": "chicken-hop-online",
+    "remake-own: * The remake's own stand-in, not the source's": "chicken-hop-online",
+    "stand-in: * The remake's own stand-in, not the source's": "chicken-hop-online"
+  },
+  "public/js/classic/classic-skills.js": {
+    "ours: * ring, a locked one is faded. Ours: one column per family (the photo sometimes": "ours-skills",
+    "ours: // OURS: with no cards the client showed nothing; the": "ours-skills",
+    "stand-in: alone where there is none (art_brain is the stand-in).": "ours-skills"
+  },
+  "public/js/client-hotkeys.js": {
+    "remake-own: * client's sheet had none (hotkeys.png): the remake's own.": "hotkeys-of-ours",
+    "remake-own: // Ticket 62: F is the remake's own eat key (the client had none); it opens Eat": "hotkeys-of-ours"
+  },
+  "public/js/collision-teleporters.js": {
+    "stand-in: 'The Great Hole to Ix', 1, 'stand-in', 'the hole between its one-way walls (x -2752,": "teleporter-stand-ins",
+    "stand-in: * - 'stand-in': a signpost the source left beside it carries": "teleporter-stand-ins",
+    "stand-in: 3 West', 1, 'wired', 'js/cave-pit.js: our own stand-in, each end of the pit back up": "teleporter-stand-ins",
+    "stand-in: row('GM4115NJ46G8M', 'Groddle Ladder', 2, 'stand-in', 'js/ladder-top-signposts.js: the spine": "teleporter-stand-ins",
+    "stand-in: row('GUV174V0QUB3JT4', 'Ambu Jal', 1, 'stand-in', 'the buried Indri Slope post (y 75,": "teleporter-stand-ins"
+  },
+  "public/js/conversations.js": {
+    "remake-own: * `heard` is the remake's own: when the player first opened": "ours-conversations",
+    "stand-in: * street and position (the remake's stand-in for its itemstack tsid;": "ours-conversations"
+  },
+  "public/js/craftybot.js": {
+    "ours: // Ours: Glitch gave no words where the bot could not be": "ours-craftybot"
+  },
+  "public/js/crowns-mp.js": {
+    "stand-in: which keeps the solo game with its stand-ins": "solo-stand-ins"
+  },
+  "public/js/cubimal-battle.js": {
+    "stand-in: /** The remake's stand-in for apiFindPath reachability: the two stand on": "ours-cubimal-battle"
+  },
+  "public/js/cubimals.js": {
+    "remake-own: = filterText(sanitizeCubimalName(value)); // the remake's own word filter": "word-filter"
+  },
+  "public/js/data-versions.js": {
+    "stand-in: \"assets/made-art/ezc-room-stand-ins.webp\":": "not-an-invention"
+  },
+  "public/js/de-embiggenify.js": {
+    "ours: * items. Ours, source x, y: on the floor just right of the": "ours-de-embiggenify",
+    "ours: * shows it, with a glint, while you search. Ours: on the tabletop inside the archived": "ours-de-embiggenify"
+  },
+  "public/js/dead-ends.js": {
+    "glitch-had-none: * Source: Glitch never left anyone on one of these. Instances were": "dead-end-standing-sign",
+    "ours: arrow board at 0.85 of its 140 x 93, on a post (ours) so it stands on the": "dead-end-standing-sign",
+    "remake-own: 27-40). The standing sign is the remake's own": "dead-end-standing-sign"
+  },
+  "public/js/door-key-spawns.js": {
+    "ours: words name. Where the words give no spot (`at: 'ours'`) the key lies near the door or": "door-key-spots"
+  },
+  "public/js/doors.js": {
+    "our-design: * 7-10 and 12 by our own design (js/resource-nodes.js dust_trap_rare_keys,": "dust-trap-rare-keys",
+    "ours: * 7-10 and 12 by our own design (js/resource-nodes.js": "dust-trap-rare-keys",
+    "stand-in: A plain drawn stand-in for a door deco with no recovered art: tone from": "drawn-door-stand-ins"
+  },
+  "public/js/drops-mp.js": {
+    "ours: ${label}, so it came back to your pack.`, // ours": "remake-copy",
+    "ours: * Ours: a class the ledger does not carry (the trade": "ours-drops",
+    "ours: by: (name) => `Dropped by ${name}`, // ours": "remake-copy",
+    "ours: sets on furniture inside the house or Tower). Ours": "ours-drops"
+  },
+  "public/js/eat-pick.js": {
+    "remake-own: * list none); F was the remake's own and ate an apple. Now F opens the": "hotkeys-of-ours"
+  },
+  "public/js/feat-owed.js": {
+    "glitch-had-none: * Glitch had no such queue: the client and the game server were": "ours-feat-owed"
+  },
+  "public/js/feats-mp.js": {
+    "not-source: * GOALS. Goals are not in GSJS (groups/feat.js doCreate took them from": "ours-feats",
+    "ours: // bag_butler.js 3802-3805: +2 a package; ours: one every 6 s, the Butler's own pace": "ours-feats",
+    "ours: burst). The source's pace where it has one, else ours": "ours-feats"
+  },
+  "public/js/featured-project.js": {
+    "glitch-had-none: * project at a time. Glitch had no featured-project screen (Tiny Speck chose which": "featured-project",
+    "ours: * so the screen and its words are ours.": "featured-project"
+  },
+  "public/js/features/animal-mood-feature.js": {
+    "ours: checks reach from where it keeps them; a walk of our own across the street": "ours-animal-mood"
+  },
+  "public/js/features/auctions-feature.js": {
+    "ours: (GetInfoDialog.as:189) and Sell at auction (ours).": "ours-auctions",
+    "ours: * ours (reimagined: the pages themselves were never": "ours-auctions",
+    "ours: Two clicks: Buy, then the price to confirm it (ours; the web page had its own purchase": "ours-auctions",
+    "ours: the item's auctions page), and Sell at auction (ours: the create": "ours-auctions",
+    "reimagined: * ours (reimagined: the pages themselves were never": "ours-auctions"
+  },
+  "public/js/features/bags-feature.js": {
+    "remake-own: * Remake choice (Austin 2026-11-03, \"too many sort options on": "bag-sort"
+  },
+  "public/js/features/buddies-feature.js": {
+    "remake-own: * - Report #178 (the remake's own, Austin 2026-11-10): the Buddies tab shows each": "buddy-list-extras"
+  },
+  "public/js/features/bug-report-feature.js": {
+    "ours: source's where it had them, short plain ones of ours where it did not (js/reports.js has the": "ours-bug-report"
+  },
+  "public/js/features/bureaucratic-halls-feature.js": {
+    "ours: * is ours (the halls' geometry is lost): in the desk room": "ours-bureaucratic-halls",
+    "ours: Ours: in the desk room, between the desk (x 254-548)": "ours-bureaucratic-halls",
+    "ours: opening, its left end at the helpers' limit (ours):": "ours-bureaucratic-halls"
+  },
+  "public/js/features/butler-feature.js": {
+    "stand-in: // A stand-in shorter than the clip holds for the clip's own": "not-an-invention",
+    "stand-in: Start loading the rig; respawn the stand-in Butler on the rig when it arrives.": "not-an-invention"
+  },
+  "public/js/features/butler-im-feature.js": {
+    "ours: * sendIM: the Butler's IM, 0.5 to 1 s later (ours: never before an earlier one). Each timer": "ours-butler-im",
+    "remake-own: own line shows through the word filter (the remake's own addition); the server filters what the Butler": "word-filter"
+  },
+  "public/js/features/camera-mode-feature.js": {
+    "ours: the touch way in is ours.": "ours-camera-mode"
+  },
+  "public/js/features/crowns-feature.js": {
+    "no-source: // The remake's own crown-time line (no source) goes to the activity log, not the": "ours-crowns",
+    "remake-own: // The remake's own crown-time line (no source) goes to the activity": "ours-crowns",
+    "stand-in: * runs three stand-in players with a platform/ladder navigation graph:": "solo-stand-ins"
+  },
+  "public/js/features/cubimal-race-feature.js": {
+    "no-source: or a reload keeps it. Not here: sloth taunts (no source:": "ours-cubimal-race"
+  },
+  "public/js/features/dead-ends-feature.js": {
+    "ours: // The post (ours: the arrow is a wall sign in the source; this": "dead-end-standing-sign"
+  },
+  "public/js/features/doors-feature.js": {
+    "remake-own: key icon floats over a locked door any more (a remake addition;": "key-icon-over-doors"
+  },
+  "public/js/features/familiar-dialog-feature.js": {
+    "ours: How often a panel held by a screen looks again (ours: the client shows it as the screen's tween": "ours-familiar-dialog"
+  },
+  "public/js/features/giant-icons-feature.js": {
+    "ours: // ours: a placed Icon is kept in your own save, so": "ours-giant-icons"
+  },
+  "public/js/features/groups-feature.js": {
+    "remake-own: thread reply is chat-threads-feature's. The remake's own:": "chat-threads"
+  },
+  "public/js/features/gwendolyn-room-23-feature.js": {
+    "ours: * no disabled reason of our own": "ours-gwendolyn-room-23"
+  },
+  "public/js/features/hell-feature.js": {
+    "invented: // invented \"Naraka\" / \"Energy\" kickers and a title": "invented-prompt-kickers"
+  },
+  "public/js/features/hell-tickets-feature.js": {
+    "invented: (prompts_add with txt and choices, no title); no invented \"Naraka\"": "invented-prompt-kickers"
+  },
+  "public/js/features/help-mine-feature.js": {
+    "guess: there and counted no one; it stays the first guess until the answer": "ours-help-mine",
+    "stand-in: * Companions stay solo stand-ins.": "solo-stand-ins"
+  },
+  "public/js/features/hidden-floors-feature.js": {
+    "ours: * West's pit (js/cave-pit.js, G527): our own stand-in for its lost": "teleporter-stand-ins",
+    "stand-in: * West's pit (js/cave-pit.js, G527): our own stand-in for its lost": "teleporter-stand-ins"
+  },
+  "public/js/features/home-street-mp-feature.js": {
+    "ours: home). The posted note comes back to the pack (ours: a pack item keeps no note).": "ours-home-street"
+  },
+  "public/js/features/homes-feature.js": {
+    "ours: // Report 153: the Mail Dispatcher (our own addition to the street) can be put": "ours-homes",
+    "reimagined: // (reimagined); this reaches them from the": "ours-homes",
+    "reimagined: HOMEMAIL: \"can I move my mail dispatcher?\"). Reimagined:": "ours-homes",
+    "reimagined: Move Magic Rock; cult.mailboxRx / cult.rockRx), reimagined as well:": "ours-homes"
+  },
+  "public/js/features/imagination-feature.js": {
+    "remake-own: * Where a card jump under x1 counts as x1: the remake's own layouts, built for the": "ours-imagination"
+  },
+  "public/js/features/interrogation-room-feature.js": {
+    "ours: * past the booth; ours stops short of it (EDGE_ALPHA) so a visitor": "ours-interrogation-room"
+  },
+  "public/js/features/item-verbs-more-feature.js": {
+    "stand-in: * Stand-in art (swap when the art lands): the dice overlays": "overlay-stand-in-cards",
+    "stand-in: * twelve_sided_die) through js/overlay-stand-in.js, which plays the": "overlay-stand-in-cards",
+    "stand-in: { overlayOrStandIn } from '../overlay-stand-in.js';": "overlay-stand-in-cards"
+  },
+  "public/js/features/juju-bandits-feature.js": {
+    "stand-in: // A body-sized stand-in so bubbles sit on the Juju, not its 254 px": "not-an-invention"
+  },
+  "public/js/features/location-events-feature.js": {
+    "stand-in: sound-key catalog plays recovered files or synth stand-ins;": "synth-stand-in-sounds"
+  },
+  "public/js/features/mail-courier-feature.js": {
+    "reimagined: * arms, clear of every fixture there (reimagined placement;": "ours-mail-courier",
+    "reimagined: * item letter sent from the station (reimagined trigger, source": "ours-mail-courier",
+    "stand-in: * them 999 times; their stand-ins are synth ribbits); one-shot": "synth-stand-in-sounds"
+  },
+  "public/js/features/map-routes-feature.js": {
+    "ours: x (clamped to the street), to know it is still ours.": "map-route-line"
+  },
+  "public/js/features/neighbours-mp-feature.js": {
+    "ours: // Ours: a gift from before that the site could not take": "ours-neighbours",
+    "reimagined: * give_bag_butler (reimagined: GSJS never counts": "ours-neighbours"
+  },
+  "public/js/features/newxp-feature.js": {
+    "no-source: hubName: 'Tutorial', // remake label (G310: no source names the newxp levels'": "ours-newxp",
+    "remake-own: '').trim().slice(0, TUTORIAL_NAME_MAX)); // the remake's own word filter": "word-filter"
+  },
+  "public/js/features/party-spaces-feature.js": {
+    "stand-in: player is sent home and out of the party. No stand-in dancers:": "solo-stand-ins",
+    "stand-in: the party is the real players, so no stand-in": "solo-stand-ins"
+  },
+  "public/js/features/patches-feature.js": {
+    "no-source: Grey-brown dust where a tree has just died (no source overlay for die()).": "ours-patches",
+    "stand-in: patch within reach (GSJS config.verb_radius stand-in).": "not-an-invention"
+  },
+  "public/js/features/player-verbs-mp-feature.js": {
+    "guess: // G373 catalog_buffs.js 412-419: nobody guessed, show_rainbow('charades_gameover') at the": "not-an-invention"
+  },
+  "public/js/features/potions-feature.js": {
+    "stand-in: * puddle and letters are stand-ins until the art is rendered": "overlay-stand-in-cards",
+    "stand-in: * through js/overlay-stand-in.js; the puddle is a plain shape:": "overlay-stand-in-cards",
+    "stand-in: { overlayOrStandIn } from '../overlay-stand-in.js';": "overlay-stand-in-cards"
+  },
+  "public/js/features/presence-mp-feature.js": {
+    "remake-own: * blocks). The remake's own: Glitch had only the buddy list and the street's": "ours-presence"
+  },
+  "public/js/features/puzzles-feature.js": {
+    "no-source: // The remake's own words (no source: the original had no Map": "puzzle-map-card",
+    "remake-own: // The remake's own words (no source: the original had no Map": "puzzle-map-card",
+    "remake-own: out the card is the Map's way back to Ur (the remake's own": "puzzle-map-card",
+    "stand-in: // moveAvatar stand-in: ease the avatar onto the beam while it": "not-an-invention",
+    "stand-in: // moveAvatar stand-in: ease the avatar to the trigger's centre (a": "not-an-invention"
+  },
+  "public/js/features/quest-instances-feature.js": {
+    "no-source: tower chain, location.js 443-456). Three have no source fail": "ours-quest-instances"
+  },
+  "public/js/features/quest-plate-feature.js": {
+    "ours: An owner that rewrites its card's classes drops ours: put them": "not-an-invention"
+  },
+  "public/js/features/quests-mp-feature.js": {
+    "ours: // Ours (GSJS never sets it): 10 other players": "ours-quests",
+    "ours: // Player verbs: Super Soaker's offer (ours): a Watering Can and another player here": "ours-quests"
+  },
+  "public/js/features/quoin-shards-feature.js": {
+    "ours: // Ours: a long line is drawn no wider than": "quoin-shard-size"
+  },
+  "public/js/features/qurazy-feature.js": {
+    "remake-own: * right on the remake's own chrome. Size, timing, fades and x stay the": "ours-qurazy"
+  },
+  "public/js/features/races-feature.js": {
+    "no-source: // The remake's own time line (no source) goes to the activity log, not the": "ours-races",
+    "remake-own: // The remake's own cap (js/races.js RACE_TICKET_STACK): the pack": "ours-races",
+    "remake-own: // The remake's own time line (no source) goes to the activity log,": "ours-races",
+    "stand-in: * stand-in does (groddle-afternoon-server/data/races.json": "solo-stand-ins",
+    "stand-in: other instead of the stand-in. Everything below is unused in": "solo-stand-ins",
+    "stand-in: race QA params stay solo's (a real opponent, no stand-in).": "solo-stand-ins",
+    "stand-in: the ready card, READY/3/2/1/GO countdown, the stand-in": "solo-stand-ins"
+  },
+  "public/js/features/realtime-feature.js": {
+    "ours: source's width), standing over the name plate (ours: the source's delta_y": "ours-realtime"
+  },
+  "public/js/features/rebuilt-rooms-feature.js": {
+    "ours: the dark letters readable where a trunk passes (ours: the snaps": "ours-rebuilt-rooms"
+  },
+  "public/js/features/seasons-feature.js": {
+    "remake-own: || '').trim().slice(0, 300)); // the remake's own word filter": "word-filter"
+  },
+  "public/js/features/shared-patches-feature.js": {
+    "ours: as a clear the server refused does (Ours, slice": "ours-shared-patches"
+  },
+  "public/js/features/skill-bubbles-feature.js": {
+    "ours: 'overlay' event); other overlay words are not ours.": "not-an-invention"
+  },
+  "public/js/features/slash-commands-feature.js": {
+    "remake-own: * - /stuck (the remake's own; js/slash-commands.js STUCK_TEXT,": "stuck-command"
+  },
+  "public/js/features/small-items-feature.js": {
+    "reimagined: * away from you with a bounce (reimagined motion, see": "ball-hit-arc"
+  },
+  "public/js/features/spirit-loneliness-feature.js": {
+    "stand-in: // The stand-in goes with the street too": "not-an-invention"
+  },
+  "public/js/features/street-jobs-feature.js": {
+    "no-source: a gem ask still open (the remake's own line; no source).": "gem-hints",
+    "ours: street's (game.js clears it); only its bubble is ours.": "ours-street-jobs",
+    "remake-own: gems are found, under a gem ask still open (the remake's own line; no": "gem-hints"
+  },
+  "public/js/features/street-spirits-feature.js": {
+    "stand-in: // Keep the stand-in if the art did not": "not-an-invention",
+    "stand-in: Hide the stand-in body and put the region's spirit in its place,": "not-an-invention"
+  },
+  "public/js/features/subway-feature.js": {
+    "ours: // Ours: no seat (the platform changed under the": "ours-subway"
+  },
+  "public/js/features/swf-feature.js": {
+    "stand-in: // the play_glitch overlay sprite (or the icon stand-in)": "not-an-invention"
+  },
+  "public/js/features/teleportation-feature.js": {
+    "glitch-had-none: * arrival, which Glitch never": "ours-teleportation",
+    "ours: // Ours: a script is handed to others, and RH_HOME_EXT": "ours-teleportation"
+  },
+  "public/js/features/tree-death-feature.js": {
+    "stand-in: pours by itself: the drawn drops were its stand-in.": "not-an-invention"
+  },
+  "public/js/fire-dragon.js": {
+    "ours: * Tiny Speck's game: the rules and words are ours, and the art is AI-generated": "made-sprites"
+  },
+  "public/js/foxes-mp.js": {
+    "ours: * Ours: how long a leaving fox still counts on the": "ours-foxes"
+  },
+  "public/js/funpickle.js": {
+    "remake-own: * The remake's own rule (desk FUNPICKLE): from level": "funpickle-tuning"
+  },
+  "public/js/furniture-upgrades.js": {
+    "reimagined: * reimagined: the source sold credits for money and never": "ours-furniture-upgrades"
+  },
+  "public/js/game-of-crowns.js": {
+    "stand-in: Navigation graph for the stand-in players": "solo-stand-ins",
+    "stand-in: The stand-ins' own reach model (not the avatar's stepper,": "solo-stand-ins"
+  },
+  "public/js/game-splash.js": {
+    "stand-in: += ' is-standin'; // the art failed: the CSS stand-in": "not-an-invention"
+  },
+  "public/js/garden-gnome.js": {
+    "ours: it hops and talks for the visitor who bumps it. Ours: each player's game runs its own": "ours-garden-gnome",
+    "ours: theirs: (name) => `That belongs to ${name}.`, // ours: a visitor's click on a gnome with no verbs for": "remake-copy"
+  },
+  "public/js/garden.js": {
+    "made-up: a solo save's beds a street no longer has (the made-up herb bed on the": "ours-garden"
+  },
+  "public/js/gem-hints.js": {
+    "remake-own: * These words are the remake's own (the original had no such hint). They hold for": "gem-hints"
+  },
+  "public/js/ghost-quest.js": {
+    "stand-in: (OFFICIAL_PHANTOM_HAUNTS), plus the stand-ins": "ours-ghost-quest",
+    "stand-in: * already chosen, else a reachable stand-in (opts.info); with none left it stays (the": "ours-ghost-quest",
+    "stand-in: * to be built): reachable stand-ins from the haunts' own regions (opts.info,": "ours-ghost-quest"
+  },
+  "public/js/gifts.js": {
+    "ours: \"That can't be given to another player.\", // ours: the ledger does not carry": "remake-copy",
+    "ours: 'Give it to someone, or unwrap it first.', // ours: the box's contents live with the": "remake-copy",
+    "ours: 'Put something in the Gift Box first.', // ours": "remake-copy",
+    "ours: 'There is nobody here to give it to.', // ours": "remake-copy",
+    "ours: boxFull: 'A Gift Box holds three stacks.', // ours (capacity": "remake-copy",
+    "ours: hold this class (canContain)? Notes stay out (ours: a note's writing is given on its own).": "ours-gifts"
+  },
+  "public/js/groups.js": {
+    "remake-own: (features/groups-feature.js channel_joined), the remake's own": "remake-copy",
+    "remake-own: // The word filter (the remake's own addition): a name with a bad word is refused, as": "word-filter"
+  },
+  "public/js/halls-mp.js": {
+    "ours: * players meet there. Ours: a line when every bureaucrat is busy (the": "ours-halls",
+    "ours: // Ours: the source had no line (nobody came when every": "ours-halls"
+  },
+  "public/js/heli-kitties.js": {
+    "not-source: arc (the server's physics constant is not in GSJS)": "ours-heli-kitties",
+    "remake-own: 'A Heli Kitty Named X' (the name through the remake's own word filter, js/word-filter.js).": "word-filter"
+  },
+  "public/js/hell-tickets.js": {
+    "stand-in: * was the live population walking past. The solo stand-ins": "solo-stand-ins",
+    "stand-in: The solo stand-ins who walk past graves.": "solo-stand-ins"
+  },
+  "public/js/help-mine.js": {
+    "remake-own: * remake's own gentle cadence for them": "solo-stand-ins"
+  },
+  "public/js/hi-signs-mp.js": {
+    "ours: /** Ours, when the server asks for a little patience.": "ours-hi-signs"
+  },
+  "public/js/hidden-floors.js": {
+    "not-source: * Inferred, not in source: every teleporter's box and landing point": "ours-hidden-floors"
+  },
+  "public/js/home-floors.js": {
+    "ours: (building), 'up', 'down', or null (not one of ours).": "not-an-invention",
+    "ours: // Ours (houses_extend": "ours-home-floors",
+    "ours: // Ours (the client's ghost simply would not drop": "ours-home-floors",
+    "ours: cannot be added while building) are short and ours.": "ours-home-floors",
+    "ours: up your floor project first!\" (:584). `made` is ours: the": "ours-home-floors"
+  },
+  "public/js/home-layout.js": {
+    "not-source: New art (gz_ decos, made animals) is not Tiny Speck's: it never goes on a profile.": "ours-home-layout"
+  },
+  "public/js/home-machines.js": {
+    "ours: 'Collect what is in the machine first.', // ours (use is hidden while yours waits,": "remake-copy",
+    "ours: 'You have a lot of machines out already.', // ours": "remake-copy",
+    "ours: (label) => `You picked up the ${label}.`, // ours": "remake-copy",
+    "ours: * - only its owner picks it up (ours: in the source isInCraftingAltar": "ours-home-machines",
+    "ours: => `You put your ${label} down here.`, // ours": "remake-copy",
+    "ours: Ours: machines one home street keeps (the site keeps": "ours-home-machines",
+    "ours: `${name} made something at your ${label}.`, // ours": "remake-copy",
+    "ours: your Tower) or in a Community Machine Room.', // ours": "remake-copy"
+  },
+  "public/js/home-storage.js": {
+    "ours: ${total === 1 ? 'currant' : 'currants'}.`, // ours": "remake-copy",
+    "ours: 'That did not work. Try again in a moment.', // ours": "remake-copy",
+    "ours: // buildVerbMessage 'stopped selling', ours in": "ours-home-storage",
+    "ours: === 1 ? 'currant' : 'currants'} each.`, // ours": "remake-copy",
+    "ours: Box shows off one kind of thing at a time.', // ours (drop_ok_code": "remake-copy",
+    "ours: The source's words (file:line in each), and ours where marked.": "ours-home-storage",
+    "ours: can move tools in and out of a cabinet.', // ours (the ledger moves": "remake-copy",
+    "ours: cantGoIn: \"That can't go in there.\", // ours: the source's drop just": "remake-copy",
+    "ours: not connected to the game server right now.', // ours": "remake-copy",
+    "ours: of 1 currant or more. 0 stops the selling.', // ours": "remake-copy",
+    "ours: owner and their key-holders can open this.', // ours: the source shows no": "remake-copy",
+    "ours: what you sell here when you play online.', // ours": "remake-copy",
+    "ours: with things in it in or out of a cabinet.', // ours (#108: the ledger moves": "remake-copy"
+  },
+  "public/js/home-street-fixtures.js": {
+    "ours: * is our own addition to the home street, and the Mailbox": "ours-home-street-fixtures",
+    "ours: // Report 153: put it away, put it out again (our own": "remake-copy",
+    "reimagined: * moved it. Reimagined: it stands just outside the signpost, past its": "ours-home-street-fixtures"
+  },
+  "public/js/home-street-mp.js": {
+    "ours: // G795 (ours): the Workbench while the floor's shared project": "ours-home-street",
+    "ours: // Ours: the verbs and the dialog's plain": "ours-home-street",
+    "ours: Ours: poles one home keeps (the site reads at most": "ours-home-street",
+    "ours: a missing restoration asks the site again (ours).": "ours-home-street"
+  },
+  "public/js/home-tower.js": {
+    "remake-own: * then the remake's own word filter (js/word-filter.js). The regex has": "word-filter"
+  },
+  "public/js/home-trophies.js": {
+    "ours: * What the line giving a trophy adds (ours; a player's report 2026-11-08 could not find one": "ours-home-trophies",
+    "ours: window's line on a badge whose trophy is earned (ours: the original's window said nothing).": "ours-home-trophies"
+  },
+  "public/js/imagination.js": {
+    "remake-own: * Remake choices (documented in the skill doc): the tutorial is": "ours-imagination"
+  },
+  "public/js/interrogation-room.js": {
+    "ours: * Ours": "ours-interrogation-room",
+    "ours: // Ours: the hall's plaster (bureaucratic_hall_bg's wall": "ours-interrogation-room",
+    "ours: The door out (ours): the hall's interior door, at the left past the": "ours-interrogation-room"
+  },
+  "public/js/item-transforms.js": {
+    "ours: pc) (cheese_very_stinky.js 333) said nothing; our own": "ours-item-transforms"
+  },
+  "public/js/item-verbs.js": {
+    "remake-own: * Winter Haven memories, picto_pattern). The remake's own room ids for those": "ours-item-verbs"
+  },
+  "public/js/job-indicator.js": {
+    "glitch-had-none: * `featured` (G656, ours: Glitch had no featured project) puts a small star on the": "featured-project",
+    "ours: * `featured` (G656, ours: Glitch had no featured project) puts a small": "featured-project",
+    "ours: // G656 (ours): the featured project's star, gold with a dark": "featured-project"
+  },
+  "public/js/koulato-jars.js": {
+    "ours: * Ours: the arrivals counted are this player's own": "ours-koulato-jars"
+  },
+  "public/js/ladder-top-signposts.js": {
+    "stand-in: // Buried under the floor is the other stand-in (street-model.js": "teleporter-stand-ins",
+    "stand-in: isBuriedSignpost) is the other teleporter stand-in.": "teleporter-stand-ins"
+  },
+  "public/js/legalize-it.js": {
+    "glitch-had-none: target LIF101O8CDQ1AMU, a real location). Glitch had no private copy: the": "ours-legalize-it"
+  },
+  "public/js/local-companions.js": {
+    "stand-in: * the named solo stand-ins shared by Collaborative Feats and Emotional": "solo-stand-ins"
+  },
+  "public/js/location-view.js": {
+    "remake-own: * Remake choices: the smallest view is the remake's old fixed 408": "ours-location-view"
+  },
+  "public/js/location-xml.js": {
+    "guess: * target is a guess, and on a border street that is the neighbour's": "not-an-invention"
+  },
+  "public/js/louise-pasture-villa.js": {
+    "ours: // Ours: the hall art covers the whole view; a sky in": "ours-louise-pasture-villa",
+    "remake-own: * flat stretch east of the dirt mounds (remake choice: no": "ours-louise-pasture-villa",
+    "remake-own: wayIn: 'Remake choice: a door and apartment sign on Louise Pasture, as": "ours-louise-pasture-villa"
+  },
+  "public/js/machine-art.js": {
+    "ours: (browsers rewrite url('') quotes, so compare our own": "not-an-invention"
+  },
+  "public/js/mailbox.js": {
+    "ours: G570: the subjects of the game's own letters (ours; plain and short).": "ours-mailbox",
+    "ours: reader. The game's own letters carry a subject (ours:": "ours-mailbox",
+    "remake-own: const body = filterText(cleanText(text)); // the remake's own word filter": "word-filter"
+  },
+  "public/js/make-tools.js": {
+    "ours: * groups are ours. They follow what the tools make, close to the": "make-window",
+    "remake-own: * The Make window is the remake's own (Glitch made things from each tool's own menu),": "make-window"
+  },
+  "public/js/making.js": {
+    "stand-in: The recipe tool whose recipes a stand-in makes (grand_ol_grinder -> ore_grinder).": "not-an-invention",
+    "stand-in: class a recipe actually wears: the first owned stand-in that": "not-an-invention"
+  },
+  "public/js/map-graph.js": {
+    "made-up: map, drawn from its surviving grey (no made-up": "made-up-map-hills",
+    "ours: // RIGHTCLICK: a street has a menu of ours (game.js openMapStreetMenu), never the": "right-click-menus"
+  },
+  "public/js/map-routes.js": {
+    "remake-own: * PURE (#104, a remake addition: GpsUI.as showed only To and Next): the Map's": "map-route-line",
+    "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line"
+  },
+  "public/js/map-zoom.js": {
+    "remake-own: MAP_W / MAP_ACTUAL_W): this is the remake's own.": "map-zoom"
+  },
+  "public/js/math-mayhem.js": {
+    "ours: // Ours (the rules card the colour game's title picture": "ours-math-mayhem",
+    "ours: Ours: a round with no answer at the target ends with": "ours-math-mayhem",
+    "ours: Ours: players who share a start stand this far apart": "ours-math-mayhem"
+  },
+  "public/js/musicblocks.js": {
+    "no-source: * uncollected street\" had no source and is gone. Blocks come": "musicblock-street-blocks",
+    "remake-own: * block waiting on every street: the remake's own \"one unowned block on": "musicblock-street-blocks"
+  },
+  "public/js/neighbours-mp.js": {
+    "ours: // Ours, plain words: the door, the way back, being": "ours-neighbours",
+    "ours: // Ours: no friends to give a key to, nothing": "ours-neighbours",
+    "ours: // Ours: the owner hears at once (the source's Butler": "ours-neighbours",
+    "ours: // Ours: the picker, the box, nothing to": "ours-neighbours",
+    "ours: // Ours: the save's gift from before waits until the": "ours-neighbours",
+    "ours: // Ours: the source sent the keyring's update": "ours-neighbours",
+    "ours: owner reads when a friend tended their gardens (ours).": "ours-neighbours",
+    "ours: project is still on its way from the site (ours).": "ours-neighbours",
+    "reimagined: * (neighbors_resources_tended, reimagined: \"Tend 11 Resources\"),": "ours-neighbours",
+    "reimagined: * give_bag_butler, reimagined (\"Leave 5 gifts of at least one item to": "ours-neighbours",
+    "reimagined: water_garden_for_others): reimagined,": "ours-neighbours",
+    "reimagined: watered once a visit (water_garden_for_others, reimagined: \"Water": "ours-neighbours"
+  },
+  "public/js/neighbours.js": {
+    "no-source: small job per home; rewards are remake design (no source equivalent).": "ours-neighbours",
+    "remake-own: * Every reward and line here is remake design: the source had no": "ours-neighbours",
+    "remake-own: // Chores are remake design; their cost spends through the loss door like": "ours-neighbours",
+    "remake-own: // The chores are remake design; their mood goes through the same door": "ours-neighbours",
+    "remake-own: One small job per home; rewards are remake design (no source equivalent).": "ours-neighbours"
+  },
+  "public/js/newxp.js": {
+    "remake-own: * remake's own (G310,": "ours-newxp"
+  },
+  "public/js/npc-glitch-looks.js": {
+    "no-source: * No source records what these stand-ins wore (they are": "solo-stand-ins",
+    "reimagined: only, like randomVectorFields: SWF-only and reimagined": "solo-stand-ins",
+    "stand-in: * No source records what these stand-ins wore (they are remake actors": "solo-stand-ins"
+  },
+  "public/js/npc-glitch.js": {
+    "stand-in: // Glitches showing the stand-in frame for this sheet switch to the real": "solo-stand-ins"
+  },
+  "public/js/operation-grow-scene.js": {
+    "remake-own: * The remake's own reading: there is no known way between the tiers": "ours-operation-grow"
+  },
+  "public/js/overlay-stand-in.js": {
+    "stand-in: * The stand-in is a rounded card with a word or letter on it,": "overlay-stand-in-cards",
+    "stand-in: * stand-in is never drawn: nothing else": "overlay-stand-in-cards",
+    "stand-in: /** Move the stand-in; ends it after durationMs. Returns false once": "overlay-stand-in-cards",
+    "stand-in: // No sheet for this key in either manifest: the stand-in takes its place for what is": "overlay-stand-in-cards",
+    "stand-in: frame (a feature's onTick) to move or end the stand-in.": "overlay-stand-in-cards",
+    "stand-in: from Tiny Speck's glitch-overlays with a plain stand-in": "overlay-stand-in-cards",
+    "stand-in: label?: string }} opts `label` is what the stand-in shows": "overlay-stand-in-cards"
+  },
+  "public/js/pack-slots.js": {
+    "ours: // Our own short words where the client only refused the": "ours-pack-slots",
+    "ours: by v0.20.0-v0.23.0 goes straight into a pouch. Our own": "remake-copy"
+  },
+  "public/js/pack-tool-verbs.js": {
+    "remake-own: * The node's verb state comes from the remake's own menu for it (engine.targetVerbs), so the": "ours-pack-tool-verbs"
+  },
+  "public/js/pack-tree-verbs.js": {
+    "remake-own: * - A tree's verb state comes from the remake's own verb menu for that": "ours-pack-tree-verbs"
+  },
+  "public/js/paradise-course-runtime.js": {
+    "stand-in: The nest and its egg on top of the trunk. G892 (stand-ins audit A12): they stay drawn.": "code-drawn-scenery"
+  },
+  "public/js/paradise-courses.js": {
+    "no-source: (LDOQBF6DEO138FJ, inc_data_maps_prod.js:18592). No source binds a key": "ours-paradise-courses",
+    "no-source: No source says what \"Back to Top\" did; doors in Glitch": "ours-paradise-courses",
+    "remake-own: Remake choices: the 26-quoin layout, the Qurazy as one of the": "ours-paradise-courses"
+  },
+  "public/js/paradise-flight.js": {
+    "no-source: * has no source street; its stars use the same decos. Collisions": "ours-paradise-flight",
+    "no-source: drawn arch. The SHUT boards (report 131) have no source and stay over it until the goal is": "ours-paradise-flight",
+    "stand-in: * G892 (stand-ins audit A6): the star pickups are Tiny Speck's own": "ours-paradise-flight",
+    "stand-in: * G892 (stand-ins audit A7): each recovered course's way out as": "ours-paradise-flight",
+    "stand-in: * G892 (stand-ins audit A8): Starlit Night's cloud floor is the": "ours-paradise-flight"
+  },
+  "public/js/party-spaces.js": {
+    "not-source: friends who came to the party (remake ambience, not in the source).": "ours-party-spaces",
+    "ours: 505 pointed at the Party Chat pane's join; ours is the Map's Join party": "ours-party-spaces"
+  },
+  "public/js/peat-quest.js": {
+    "ours: 'You need to be online to try this.', // ours": "remake-copy",
+    "ours: quest log here. It waits for you online.', // ours": "remake-copy"
+  },
+  "public/js/penumbra.js": {
+    "no-source: * Mechanics seen in the video and rebuilt here (no source for any of": "ours-penumbra"
+  },
+  "public/js/player-im.js": {
+    "ours: \"<Name> is <reason>.\" (RightSideManager.as:600); ours after them.": "ours-player-im",
+    "ours: * Ours (Austin 2026-11-02): an IM to a player who is": "offline-ims"
+  },
+  "public/js/player-mail.js": {
+    "ours: 'Your letter came back', // G570 (ours)": "ours-player-mail",
+    "ours: // HOMES2 (ours): things in a letter are collected at a": "ours-player-mail"
+  },
+  "public/js/player-names.js": {
+    "ours: * LedgerBoard.php). Our own copy never says the game's name (Austin's": "ours-player-names"
+  },
+  "public/js/player-save.js": {
+    "no-source: collectedStreets (the street drop that had no source) is left": "musicblock-street-blocks"
+  },
+  "public/js/player-verbs-mp.js": {
+    "ours: 'Choose a word of at least 4 characters.', // ours (input_min_chars": "remake-copy",
+    "ours: 'There is nobody here to do that to.', // ours": "remake-copy",
+    "ours: => `${name} guessed your secret word!`, // ours: the drinker's RAINBOW_YOUDIDIT came with no": "remake-copy",
+    "ours: wait: 'Wait a moment.', // ours: one act at a": "remake-copy"
+  },
+  "public/js/potion-bottle-fx.js": {
+    "stand-in: * own stand-in).": "ours-potion-bottle-fx"
+  },
+  "public/js/potions.js": {
+    "remake-own: * (is_puzzle, and these instance ids); the remake's own room ids for": "ours-potions",
+    "remake-own: Sauce spelling ${filterText(word)}`; // the remake's own word": "word-filter"
+  },
+  "public/js/practice-streets.js": {
+    "ours: * Ours: the Hoe and Shovel's spots (they were street": "ours-practice",
+    "ours: Ours: the tools' spots (street items; no snap shows": "ours-practice",
+    "stand-in: * They replace the stand-ins store_counter and k04_table_01 (the": "ours-practice"
+  },
+  "public/js/purple-journey.js": {
+    "invented: there through a crack under the floor. I have invented them myself. After all, there was nothing else I": "not-an-invention"
+  },
+  "public/js/puzzle-triggers.js": {
+    "remake-own: * The card and its words are the remake's own (the original had no Map": "puzzle-map-card",
+    "remake-own: way off a puzzle street with no road out (the remake's own words).": "puzzle-map-card"
+  },
+  "public/js/qa-gate.js": {
+    "ours: try { delete scope[name]; } catch { /* not ours to remove */": "not-an-invention"
+  },
+  "public/js/quest-instance.js": {
+    "remake-own: you stuck?\" wait stop while you are away (the remake's choice: Glitch's ran on,": "ours-quest-instance"
+  },
+  "public/js/quest-offers.js": {
+    "ours: #83: the offer's line when accepting moves you (ours: the source's offer text was the only hint).": "ours-quest-offers",
+    "ours: G571: the nudge for a ready offered quest (ours).": "ours-quest-offers",
+    "stand-in: // social stand-ins (emotional-bear.js with local companions;": "ours-quest-offers"
+  },
+  "public/js/quest-rooms/an-autumn-day.js": {
+    "ours: so she sits there; where the leaves fall is ours.": "ours-quest-room-an-autumn-day",
+    "remake-own: The row starts scrambled (a remake choice): two jumps per fixed word, one more for wonder.": "ours-quest-room-an-autumn-day"
+  },
+  "public/js/quest-rooms/being-watched.js": {
+    "no-source: * Behind the veil. Remake copy (G318: no source text for this moment):": "ours-quest-room-being-watched",
+    "no-source: booth; their short exchange (marked below, no source": "ours-quest-room-being-watched"
+  },
+  "public/js/quest-rooms/esquibeth.js": {
+    "remake-own: * the narration is the remake's own (G310): only the beats (when a": "ours-quest-room-esquibeth"
+  },
+  "public/js/quest-rooms/falling-room.js": {
+    "not-source: into the fall, read off video 2Z76dO4DlJ4 t120 (not in GSJS; Austin 2026-10-24).": "ours-quest-room-falling-room"
+  },
+  "public/js/quest-rooms/firefly-whistle.js": {
+    "guess: * \"Oops, you swallowed the whistle! I guess that still counts?\"; 2 s": "not-an-invention"
+  },
+  "public/js/quest-rooms/gwendolyn.js": {
+    "ours: // G318: remake objective lines, ours: the chain's quests have no requirements to": "ours-quest-room-gwendolyn"
+  },
+  "public/js/quest-rooms/rube-yard.js": {
+    "ours: * points the way in our own words; \"Help a Rube out, will ya?\" stays his": "remake-copy"
+  },
+  "public/js/quest-rooms/soil-appreciation.js": {
+    "ours: * tools' spots (ours, near the": "ours-quest-room-soil-appreciation"
+  },
+  "public/js/quest-text.js": {
+    "no-source: other tag is dropped with its text kept, and no source string": "not-an-invention"
+  },
+  "public/js/quests-mp.js": {
+    "ours: * Offered by a trigger of ours (nothing in GSJS offers them: no file": "ours-quests",
+    "ours: * Offered by a trigger of ours once the player verbs work (nothing": "ours-quests",
+    "ours: * quests.json offerTriggers), 'ours' (offerTriggers here), 'challenge'": "ours-quests",
+    "ours: * the count is ours: a meditation during which 10 other players": "ours-quests",
+    "ours: Facts the ours-triggers test (features/quests-mp-feature.js": "ours-quests",
+    "ours: player on the street (Super Soaker's offer, ours).": "ours-quests"
+  },
+  "public/js/quoin-shards.js": {
+    "ours: // Ours: the remake's longer lines (\"Mood already full\")": "quoin-shard-size",
+    "ours: // too big, so ours is 20 (Austin": "quoin-shard-size",
+    "ours: go so they are not drawn on words still showing (ours: the": "quoin-shard-size"
+  },
+  "public/js/quoins.js": {
+    "guess: * then given Eleven Giants' guess of a 60 x 60 box over the quoin's": "not-an-invention",
+    "ours: // GSJS stats are whole numbers; ours drift by fractions, so report": "ours-quoins",
+    "reimagined: * Mystery quoins, reimagined (Austin 2026-10-29). The source never": "mystery-quoins",
+    "reimagined: // Reimagined (Austin 2026-10-29): items/quoin.js has no": "ours-quoins"
+  },
+  "public/js/race-render.js": {
+    "ours: The race streets are lost, so the spacing is ours, read off the bar: its ends are 60 px": "ours-race-render",
+    "stand-in: cancels it (G309, cancelAllOverlaysWeCan): no stand-in arc then": "ours-race-render"
+  },
+  "public/js/races.js": {
+    "stand-in: Solo stand-in rivals (js/local-companions.js) with their": "ours-races"
+  },
+  "public/js/realtime-client.js": {
+    "ours: Our own close for a socket that went quiet (no frame for": "not-an-invention"
+  },
+  "public/js/rebuilt-rooms.js": {
+    "remake-own: * - Remake choices: the half the Snap does not show mirrors the": "ours-rebuilt-rooms",
+    "remake-own: * front of its door. Remake choice: Doonboggle Trail's 2012-11-05": "ours-rebuilt-rooms",
+    "remake-own: back to Doonboggle Trail in front of its door. Remake choice: Doonboggle Trail\\'s 2012-11-05 sources do not": "ours-rebuilt-rooms"
+  },
+  "public/js/resource-nodes.js": {
+    "not-source: * OUR DESIGN, not Tiny Speck's: after a Dust Trap's own drop, a separate 1 in": "dust-trap-rare-keys",
+    "not-source: // OUR DESIGN, not Tiny Speck's (Austin, 2026-11-06): Door Keys 7-10 and 12 were": "dust-trap-rare-keys",
+    "our-design: * OUR DESIGN, not Tiny Speck's: after a Dust Trap's own drop,": "dust-trap-rare-keys",
+    "our-design: // OUR DESIGN, not Tiny Speck's (Austin, 2026-11-06): Door": "dust-trap-rare-keys"
+  },
+  "public/js/retired-quests.js": {
+    "ours: The line a player reads when one leaves the log (ours).": "ours-retired-quests"
+  },
+  "public/js/rook-mp.js": {
+    "no-source: arrive, and the Rook grows stronger.', // ours (no source line); never \"Glitch\" in our": "remake-copy",
+    "ours: arrive, and the Rook grows stronger.', // ours (no source line); never \"Glitch\" in our": "remake-copy"
+  },
+  "public/js/rook-museum.js": {
+    "ours: * floor at y 500). The ends are ours: the left wall just past the": "ours-rook-museum",
+    "ours: come through rookMuseumWorldPoint; the rest is ours,": "ours-rook-museum"
+  },
+  "public/js/rook-woods.js": {
+    "ours: * (spawnRookEgg); the size is ours.": "ours-rook-woods",
+    "ours: route, the Crusher spots and the nest's spot are ours.": "ours-rook-woods",
+    "stand-in: * G892 (stand-ins audit A10): the birds over the wood are rooks,": "ours-rook-woods"
+  },
+  "public/js/save-store.js": {
+    "stand-in: /** The opt-in stand-in Glitches (?companions=1|0, remembered): a solo": "solo-stand-ins"
+  },
+  "public/js/screen-queue.js": {
+    "remake-own: * The remake's own gates, after the client's (UI audit 2026-10-29,": "ours-screen-queue"
+  },
+  "public/js/seam-teleporters.js": {
+    "ours: their mirror images. Where exactly you land is OUR OWN reading of the footage (a": "ours-seam-teleporters"
+  },
+  "public/js/seasons.js": {
+    "no-source: * 'designed' = no source event, written for the remake in Glitch's": "designed-seasons",
+    "remake-own: || '').trim().slice(0, 150)); // the remake's own word filter": "word-filter",
+    "stand-in: Who can be given candy (solo stand-ins for the source's other players).": "solo-stand-ins"
+  },
+  "public/js/shared-gardens.js": {
+    "remake-own: 'GLI2V0UN7RD1T2J', // Hechey Track (the remake's own beds, kept: Austin": "starter-street-extras"
+  },
+  "public/js/shared-patches.js": {
+    "ours: * Ours (G564 slice 3): a clear that lands after another": "ours-shared-patches"
+  },
+  "public/js/shrines.js": {
+    "ours: The player's words use the Giant's name as ours spells": "ours-shrines"
+  },
+  "public/js/slash-commands.js": {
+    "no-source: /stuck's words (the remake's own, no source line).": "stuck-command",
+    "ours: doChatCommand 1842-1934 has neither): both are ours.": "stuck-command",
+    "remake-own: * /stuck is the remake's own (Austin 2026-11-01; the source had no": "stuck-command",
+    "remake-own: * what it does. The remake's own, like": "stuck-command",
+    "remake-own: /stuck's words (the remake's own, no source line).": "stuck-command",
+    "remake-own: The remake's own commands, with what they do: the slash-command": "stuck-command"
+  },
+  "public/js/slope-walk.js": {
+    "remake-adds: * The remake adds gravity every frame and puts the feet back on a": "ours-slope-walk"
+  },
+  "public/js/small-items.js": {
+    "reimagined: * REIMAGINED (decision desk BALL, 2026-10-25): only the three": "ball-hit-arc",
+    "reimagined: * height. Reimagined around the apiHitTheBall arguments (header): the": "ball-hit-arc",
+    "reimagined: // source; the meanings given them below are reimagined": "ball-hit-arc",
+    "remake-own: the 4 x riseFrames length and the easing are the remake's own.": "ball-hit-arc"
+  },
+  "public/js/snaps.js": {
+    "remake-own: CAPTION_MAX).join('')); // the remake's own word filter (the site's Snaps::caption": "word-filter"
+  },
+  "public/js/solo-feats.js": {
+    "not-source: vog_text, url, epic_id, game_day). Goals are not in GSJS:": "ours-solo-feats",
+    "remake-own: * solo adaptation. A game week is the remake's own calendar": "ours-solo-feats"
+  },
+  "public/js/sound-keys.js": {
+    "remake-only: from GSJS/client, 3 from overlay sources, 33 remake-only),": "remake-sound-keys"
+  },
+  "public/js/sound-moments.js": {
+    "ours: * their own, so they keep ours": "remake-sound-keys",
+    "remake-only: the tool's own class name while working, ...); remake-only": "remake-sound-keys"
+  },
+  "public/js/speech-placement.js": {
+    "glitch-had-none: * fell, faster than the 180 ms reverse hold. Glitch never moved a bubble off avatars at": "speech-bubble-moves",
+    "remake-own: * this is the remake's own rule, the same kind as keeping clear of": "speech-bubble-moves",
+    "remake-own: moved a bubble under its speaker at all, so the remake's own moves (hung": "speech-bubble-moves"
+  },
+  "public/js/speech-slugs.js": {
+    "ours: fill except mood and energy); text colours are ours.": "remake-copy"
+  },
+  "public/js/spirit-loneliness.js": {
+    "remake-adds: joins the two sentences with no space; the remake adds one.": "ours-spirit-loneliness"
+  },
+  "public/js/sprite-feet.js": {
+    "guess: * `anchor.set(0.5, 1)` (or a hand-guessed 0.9x foot) anywhere in the": "not-an-invention"
+  },
+  "public/js/start-backdrop.js": {
+    "remake-own: * The card is the remake's own (no client equivalent). At boot the street is": "ours-start-backdrop"
+  },
+  "public/js/street-arrival.js": {
+    "glitch-had-none: * Glitch never set anyone down on a street at a made-up spot: a": "ours-street-arrival",
+    "made-up: * Glitch never set anyone down on a street at a made-up spot: a signpost or door landed you on": "ours-street-arrival"
+  },
+  "public/js/street-ecology.js": {
+    "invented: // invented scenery, no kept apple or Musicblock spots, and": "guessed-street-animals",
+    "invented: is never where the original had them, so an invented row of 13": "guessed-street-animals",
+    "invented: with no row gets nothing (Austin 2026-10-30): no invented": "guessed-street-animals",
+    "no-source: * - INTERIOR_STREETS: the few interiors no source field marks, each with": "ours-street-ecology",
+    "no-source: the street drop that drew a block here is gone (no source); the planner keeps the": "ours-street-ecology",
+    "remake-own: #394: Hechey Track's five starter rocks are the remake's own (its archived row names": "starter-street-extras",
+    "remake-own: // The starter's onboarding trees are the remake's own: they are": "starter-street-extras"
+  },
+  "public/js/street-furniture.js": {
+    "invented: * The invented notices the boards carried before 2026-10-31. A": "invented-board-notices",
+    "invented: * invented notices, untouched (see": "invented-board-notices",
+    "no-source: // Gregarious Towers (no source: three, as": "ours-street-furniture",
+    "no-source: // Meadow Community Machine Room (no source: three, as": "ours-street-furniture",
+    "ours: * Neutral notices for the boards, plainly ours (G175). The words": "ours-street-furniture",
+    "ours: carried from before a rewording still counts as ours; the": "ours-street-furniture",
+    "ours: reworded since (old text -> the text shown now): our own": "ours-street-furniture",
+    "remake-own: // The word filter (the remake's own addition, js/word-filter.js): written with a bad": "word-filter"
+  },
+  "public/js/street-jobs-mp.js": {
+    "ours: 'Opens once a group claims this project.', // ours": "remake-copy",
+    "ours: (group) => `${group} owns a new group hall!`, // ours": "remake-copy",
+    "ours: `Finished. ${group} owns this group hall.`, // ours": "remake-copy",
+    "ours: a group: make or join one in Menu, Groups.', // ours (JobIntroUI.as:410-413 needs": "remake-copy",
+    "ours: archive, and the original never made one.', // ours": "remake-copy",
+    "ours: currants to claim the project.`, // ours": "remake-copy",
+    "ours: is claiming this project right now.', // ours (the server's": "remake-copy",
+    "ours: pickGroup: 'For which group?', // ours": "remake-copy",
+    "ours: the client's where it has them (file:line), else ours.": "ours-street-jobs"
+  },
+  "public/js/street-jobs-solo.js": {
+    "glitch-had-none: * exactly as it is). Glitch had no solo form: every project was sized for a whole": "ours-street-jobs"
+  },
+  "public/js/street-model.js": {
+    "stand-in: * remake's stand-in placements need a line that both holds items": "ours-street-model",
+    "stand-in: * the avatar and its stand-ins, isItemSolid for a creature that is an": "ours-street-model"
+  },
+  "public/js/street-objects.js": {
+    "ours: // offset: the server's clock minus ours, from the least delayed of the recent objs": "ours-street-objects",
+    "stand-in: // When the marks clear is the server's; a stand-in keeps js/woodcutting.js from reading them as an": "ours-street-objects"
+  },
+  "public/js/subway-mp.js": {
+    "ours: * Ours: a lone rider (nobody else on the platform)": "ours-subway"
+  },
+  "public/js/subway.js": {
+    "ours: reference only), each piece found by matching our own CC0 subway1.swf": "ours-subway",
+    "remake-adds: * current_tsid / next_tsid / is_moving). The remake adds the stops in order and the stop": "ours-subway",
+    "stand-in: * is lost, and the subway stand-in theme played under the recovered": "ours-subway"
+  },
+  "public/js/summon-mp.js": {
+    "ours: * here are ours, on the source's own \"summon you to <place>\" and": "ours-summon",
+    "ours: // Ours (inc_teleportation.js 663-665 dropped the friend": "ours-summon"
+  },
+  "public/js/synth-sfx.js": {
+    "stand-in: * return null: a synthesized stand-in for a song or a person would": "synth-stand-in-sounds",
+    "stand-in: Each recipe here is a short, soft, whimsical stand-in": "ours-synth-sfx"
+  },
+  "public/js/tools.js": {
+    "ours: * Ours: a whole Tinkertool dropped onto a broken one": "ours-tools"
+  },
+  "public/js/tower-challenge-rooms.js": {
+    "no-source: size: 'Remake: 2600 wide, 2100 above y 0 (no source bounds survive); the archived arrival y -1701": "ours-tower-challenge-rooms"
+  },
+  "public/js/tower-rooms.js": {
+    "ours: * floor platforms follow this edge; so do ours.": "ours-tower-rooms"
+  },
+  "public/js/trade.js": {
+    "ours: // Ours.": "ours-trade",
+    "ours: players read, from the source (file:line) or ours where it had none.": "ours-trade",
+    "ours: settling: 'Finishing the trade...', // ours (G335: the site's ledger is moving both": "remake-copy"
+  },
+  "public/js/ui/chat-input.js": {
+    "ours: * start and \"…\". OUR OWN number, not the": "ours-chat-input"
+  },
+  "public/js/ui/context-guard.js": {
+    "ours: (a button, a tab, a switch) has no menu of ours: a right-click on it": "right-click-menus",
+    "ours: * PURE: what a contextmenu on `target` does: 'ours' (a menu of the game's opens: the browser's": "right-click-menus",
+    "ours: An element with a menu of ours (a right-click, Shift+F10 or the Menu key opens": "right-click-menus",
+    "ours: QA: canvas data browserMenu (the last decision: ours | none |": "right-click-menus"
+  },
+  "public/js/ui/context-menu.js": {
+    "glitch-had-none: * Glitch had no right-click (glitch-client BootStrap.as 38-55);": "right-click-menus",
+    "ours: * not ours); `open(thing, { at, keys, swallowClick, event": "right-click-menus"
+  },
+  "public/js/ui/encyclopedia-sheet.js": {
+    "ours: with location.replace and a Back list of our own, so nothing": "not-an-invention"
+  },
+  "public/js/ui/featured-project.js": {
+    "glitch-had-none: * Glitch had no such line (Tiny Speck chose which streets": "featured-project",
+    "ours: (Tiny Speck chose which streets opened); it is ours.": "featured-project"
+  },
+  "public/js/ui/map-icon-tips.js": {
+    "ours: for a key, or -1 when the key is not one of ours": "not-an-invention"
+  },
+  "public/js/ui/name-prompt.js": {
+    "ours: * optional small line under the input (ours; the bag Rename's blank rule,": "ours-name-prompt"
+  },
+  "public/js/ui/quest-sheet.js": {
+    "ours: // RIGHTCLICK: the card has a menu of ours (js/ui/context-guard.js stops the browser's over": "right-click-menus"
+  },
+  "public/js/ui/recipe-outputs.js": {
+    "remake-own: have 4\"), [{ classTsid, name, have, text }]. The remake's own line: the Flash client said \"You have": "remake-copy"
+  },
+  "public/js/ui/street-minimap.js": {
+    "ours: // RIGHTCLICK: the map is ours; only a player's dot and a signpost open a": "right-click-menus",
+    "stand-in: * at all got a fogged stand-in until the snap (MiniMapView.show": "ours-street-minimap"
+  },
+  "public/js/vendor-finder.js": {
+    "remake-own: * The remake's own: Glitch's currants opened nothing (glitch-client": "vendor-finder",
+    "remake-own: The panel's words (the remake's own).": "vendor-finder"
+  },
+  "public/js/vendor.js": {
+    "ours: 8), so their stores' lines are ours.": "ours-vendor"
+  },
+  "public/js/vicars-peak.js": {
+    "no-source: the street, clear of its one signpost (x 766). No source x/y survives.": "ours-vicars-peak",
+    "remake-own: of the minimap where Thornfad's door lands. Remake choice: Thornfad's sources (2012-10-16) do not list": "ours-vicars-peak"
+  },
+  "public/js/water-cooler.js": {
+    "ours: * lost, so where the cooler stands inside is ours.": "ours-water-cooler"
+  },
+  "public/js/window-stack.js": {
+    "remake-own: and the screens, whatever opened after it. The remake's own card (the": "ours-window-stack",
+    "remake-own: copy of the bug icon is on top of them). The remake's own window: the client had no such": "ours-window-stack"
+  },
+  "public/js/winter-icicles.js": {
+    "ours: * Ours: the trigger box's size (the recording shows one": "ours-winter-icicles"
+  },
+  "public/js/winter-walk-streets.js": {
+    "no-source: bounds: 'No source size: 2600 x 1300, room for the boardwalk, the": "ours-winter-walk",
+    "reimagined: * (gz_ai_wh_*, WINTER_HAVEN_TREES), reimagined from Tiny Speck's own": "ours-winter-walk",
+    "reimagined: 1.0 (tools/provenance/made-decos.json). They are reimagined, not exact edits of the CC0": "ours-winter-walk",
+    "stand-in: * and stand-ins were not wanted (Austin": "ours-winter-walk"
+  },
+  "public/js/wintry-portal.js": {
+    "not-source: * Inferred, not in source: the box is the cage, met by the avatar's body": "ours-wintry-portal"
+  },
+  "public/js/word-filter-list.js": {
+    "glitch-had-none: * renames\"). The original Glitch had no swear filter in its server or": "word-filter",
+    "remake-own: * The word filter's one list (the remake's own addition, Austin": "word-filter"
+  },
+  "public/js/word-filter.js": {
+    "glitch-had-none: * Glitch had no swear filter in its server or client code). A": "word-filter",
+    "remake-own: * The word filter (the remake's own addition, Austin 2026-11-02; the": "word-filter"
+  },
+  "public/js/world-context-menu.js": {
+    "ours: went the same way (TSFrontController.as 3686). Ours: a click or": "right-click-menus"
+  },
+  "public/js/world-items.js": {
+    "ours: * Ours: a bag with contents or a name comes back whole": "ours-world-items"
+  },
+  "public/js/yard-fixtures-mp.js": {
+    "ours: * Ours: a visitor only looks. In the source a": "ours-yard-fixtures"
+  },
+  "public/js/yard-stock-mp.js": {
+    "remake-own: * Remake choices:": "ours-yard-stock"
+  },
+  "public/js/yard-wander.js": {
+    "ours: only that the act landed, not how long it plays: ours, a pet's": "flyer-hover-bob",
+    "remake-own: The remake's own window without a stick (animal-husbandry-feature": "flyer-hover-bob"
+  },
+  "public/style.css": {
+    "reimagined: .avatar-reimagined-tag": "ours-style-css",
+    "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
+    "reimagined: .badge-reimagined": "ours-style-css",
+    "remake-own: * remake's own popup column. Strip and feed share each": "ours-style-css"
+  },
+  "tools/achievement-overrides.mjs": {
+    "remake-adds: * Badge conditions the remake adds where Tiny Speck's own file has none,": "ours-tools-achievement-overrides"
+  },
+  "tools/avatar-compositor/build.mjs": {
+    "invented: // designed ones (`colourways`). Row G52: invented pairings, so": "avatar-reimagined-wardrobe",
+    "ours: else labels.mjs (friendly names, source vs ours), else words from the class": "avatar-reimagined-wardrobe",
+    "reimagined: * Colourways for a reimagined greyscale master (manifest entry": "avatar-reimagined-wardrobe",
+    "reimagined: // A reimagined article names its colour source in the builder's": "avatar-reimagined-wardrobe",
+    "reimagined: // Greyscale masters (manifest `reimagined`): SWFs GSJS never": "avatar-reimagined-wardrobe",
+    "reimagined: // catalog marks them reimagined and the builder says": "avatar-reimagined-wardrobe",
+    "reimagined: Error(`${type}/${name}: ${own ? 'ownColours' : 'reimagined'}, but GSJS lists": "avatar-reimagined-wardrobe",
+    "reimagined: const reim = typeof e === 'object' && e.reimagined;": "avatar-reimagined-wardrobe",
+    "reimagined: fields: variants ({ from: gsjs id, colors }), reimagined,": "avatar-reimagined-wardrobe",
+    "reimagined: return { reimagined: true, borrowedColours: e.borrowedColours,": "avatar-reimagined-wardrobe",
+    "reimagined: return { reimagined: true, designedColours: true, variants:": "avatar-reimagined-wardrobe",
+    "reimagined: throw new Error(`${type}/${name}: ownColours and reimagined`);": "avatar-reimagined-wardrobe"
+  },
+  "tools/avatar-compositor/labels.mjs": {
+    "ours: 'type/name' -> { label, origin: 'source' | 'ours' }.": "avatar-reimagined-wardrobe",
+    "ours: * O ours: a short plain description written for the": "avatar-reimagined-wardrobe"
+  },
+  "tools/avatar-compositor/showcase.mjs": {
+    "reimagined: * Before/after sheet for the reimagined wardrobe (row G52): every": "avatar-reimagined-wardrobe",
+    "reimagined: * article marked `reimagined` drawn on the default Glitch look at the": "avatar-reimagined-wardrobe",
+    "reimagined: * filters) and once per reimagined colourway (up to --max, default": "avatar-reimagined-wardrobe",
+    "reimagined: 2, title: DIAG ? 'G52 slot map' : 'Restored, and reimagined', sub: subtitle": "avatar-reimagined-wardrobe",
+    "reimagined: caption: it.variants.length > 1 ? `Reimagined ${i + 1}` : 'Reimagined', look: lookWith(type,": "avatar-reimagined-wardrobe",
+    "reimagined: ctx.fillText(window.__title || 'Restored, and reimagined', gap, gap + 13 *": "avatar-reimagined-wardrobe",
+    "reimagined: if (!it.reimagined || (NAMES && !NAMES.includes(it.name)))": "avatar-reimagined-wardrobe",
+    "reimagined: if (!list.length) throw new Error('no reimagined articles in the": "avatar-reimagined-wardrobe",
+    "reimagined: is the original file, -1.. the reimagined": "avatar-reimagined-wardrobe"
+  },
+  "tools/badge-art/generate-badges.mjs": {
+    "reimagined: Reimagined achievement badge art for catalog rows with no": "badge-art-reimagined",
+    "reimagined: console.log(`generated: ${targets.length} reimagined badges (official kept:": "badge-art-reimagined"
+  },
+  "tools/build-economy.mjs": {
+    "ours: * CAPPED_ROLLS a day (ours) times the most one roll of any table": "ours-tools-build-economy",
+    "ours: * takes FALLBACK_VALUE (ours): rare, and never free to": "ours-tools-build-economy",
+    "ours: Ours (G905): the least unit value of a rare find that": "ours-tools-build-economy",
+    "ours: Ours: the rolls a day a capped class's cap allows": "ours-tools-build-economy",
+    "ours: Ours: the unit value of a tradeable class with no": "ours-tools-build-economy"
+  },
+  "tools/build-realtime-boards.mjs": {
+    "remake-own: * the remake's own words, marked as such), pinned online": "remake-copy"
+  },
+  "tools/build-realtime-halls.mjs": {
+    "ours: * where each starts behind the counter (ours,": "ours-tools-build-realtime-halls"
+  },
+  "tools/build-realtime-mayhem.mjs": {
+    "ours: * sum, the 4 s countdown, the round's clock (ours), the two teams": "ours-tools-build-realtime-mayhem"
+  },
+  "tools/build-realtime-quoins.mjs": {
+    "reimagined: * What a mystery quoin turns into (reimagined,": "mystery-quoins"
+  },
+  "tools/build-realtime-races.mjs": {
+    "stand-in: * does, slot 1 where solo's stand-in rival": "ours-tools-build-realtime-races"
+  },
+  "tools/build-realtime-rook.mjs": {
+    "guess: file's \"Shrine to X\"); without it giantForStreet guessed by": "ours-tools-build-realtime-rook"
+  },
+  "tools/build-realtime-subway.mjs": {
+    "remake-own: * - the remake's own ride times (subway.js rideTiming): 20 s between": "ours-tools-build-realtime-subway"
+  },
+  "tools/build-signpost-graph.mjs": {
+    "no-source: 12 had no source). tools/job-obtainable.mjs is the remake's own": "ours-tools-build-signpost-graph",
+    "our-design: too (js/resource-nodes.js dust_trap_rare_keys, our design).": "dust-trap-rare-keys",
+    "remake-own: had no source). tools/job-obtainable.mjs is the remake's own list of what a player can get,": "ours-tools-build-signpost-graph"
+  },
+  "tools/build-word-filter.mjs": {
+    "glitch-had-none: * own addition, Austin 2026-11-02; the original Glitch had no swear": "word-filter"
+  },
+  "tools/builder/apply-zone-edits.mjs": {
+    "no-source: keeps such an arm but drops its `arrive` (it has no source for": "not-an-invention"
+  },
+  "tools/builder/art-bible.mjs": {
+    "guess: * guess. Pieces the brief names that the zone lacks are": "not-an-invention"
+  },
+  "tools/builder/art-image.mjs": {
+    "guess: way that packs smallest (the usual sum-of-bytes guess).": "not-an-invention"
+  },
+  "tools/builder/art-placeholders.mjs": {
+    "stand-in: * plain flat-tone stand-in at the piece's file size and shape, by kind: a": "ours-tools-builder",
+    "stand-in: * saturated light colour, for streams). Grey stand-ins when the palette is": "ours-tools-builder"
+  },
+  "tools/builder/cli.mjs": {
+    "stand-in: per gap, for a stand-in picture that does not": "ours-tools-builder"
+  },
+  "tools/builder/zones.mjs": {
+    "no-source: * the `arrive` of an arm it has no source for) puts the edits back last.": "not-an-invention"
+  },
+  "tools/deco-pipeline/recover.py": {
+    "no-source: print('no source:', ', '.join(r['name'] for r in": "not-an-invention",
+    "ours: places them (the placement is ours).": "ours-tools-deco-pipeline",
+    "stand-in: stand-in, js/street-render.js) is skipped: whatever sat": "ours-tools-deco-pipeline"
+  },
+  "tools/ecology/build-unreached-floors.mjs": {
+    "ours: * the item list, not the places), so ours have to be reachable too. Level 3": "ours-tools-ecology"
+  },
+  "tools/garden-art/build.mjs": {
+    "stand-in: the drawn plot dishes and wooden bed (G316 stand-ins) and the root-frame": "drawn-garden-plots"
+  },
+  "tools/item-art/render.mjs": {
+    "reimagined: Render reimagined item icons (tools/item-art/*.svg) to the pack": "ours-tools-item-art"
+  },
+  "tools/made-art/compose.py": {
+    "ours: earch/art-briefs/ez-cookin/attach/01-measurements-ours.svg),": "made-maps",
+    "stand-in: \"Breezy, EZ Cookin' with Tiny Speck's stand-ins: store_counter, store_lamp_01, k04_table_01": "made-maps",
+    "stand-in: name = 'ezc-room-stand-ins' if which == 'before' else": "made-maps",
+    "stand-in: x 1640, with the street JSON of 51a268aa9d^ (the stand-ins)": "made-maps"
+  },
+  "tools/overlay-art/build.mjs": {
+    "stand-in: // G251: the hand-drawn stand-ins swapped for the real": "hand-drawn-overlays"
+  },
+  "tools/quest-gates/table.mjs": {
+    "remake-own: them outside `seenOnlyIn`), so any gate is the remake's own: each row says why, what": "ours-tools-quest-gates",
+    "stand-in: no conditions in the quest file: the remake's stand-in gate. `seenOnlyIn` lists": "ours-tools-quest-gates"
+  },
+  "tools/signpost-art/grain.mjs": {
+    "guess: 1x pixel across, so it is measured instead of guessed:": "not-an-invention"
+  },
+  "tools/snap-placements/shrine-pictures.mjs": {
+    "ours: px street). Lane pins2 found each by matching our own CC0 shrine art": "ours-tools-snap-placements"
+  },
+  "tools/snap-placements/stone-spots.mjs": {
+    "ours: * The spawn audit (2026-11-16) matched our own CC0 stone art against the snaps of the 105 stone": "ours-tools-snap-placements"
+  },
+  "tools/sound/compare-report.mjs": {
+    "no-original: || (row.category === 'remake' ? 'no original (a remake-only moment)' : 'no surviving file and": "remake-sound-keys",
+    "remake-only: || (row.category === 'remake' ? 'no original (a remake-only moment)' : 'no surviving file and no known": "remake-sound-keys",
+    "stand-in: .st-original{background:#d9f2dc;color:#145c1e}.st-stand-in{background:#fdf0c9;color:#6b4d00}.st-mixed{backgr": "remake-sound-keys",
+    "stand-in: what the remake plays now (the same original, a stand-in, a synth recipe": "synth-stand-in-sounds"
+  },
+  "tools/sound/install-sounds-zip.mjs": {
+    "no-source: * differs from the map (no source": "remake-sound-keys"
+  },
+  "tools/sound/sound-model.mjs": {
+    "no-original: powder: 'Powders', remake: 'Remake-only (no original)', recovered: 'Recovered c2 files without a": "remake-sound-keys",
+    "remake-only: quoin: 'Quoins', powder: 'Powders', remake: 'Remake-only (no original)', recovered: 'Recovered c2 files": "remake-sound-keys",
+    "stand-in: (every track the theme's own keys), mixed, stand-in or silent.": "remake-sound-keys",
+    "stand-in: What plays for a key now: status original | stand-in | synth | silent | missing | absent, a label and": "synth-stand-in-sounds",
+    "stand-in: if (r.file) return { status: 'stand-in', label: `stand-in: ${r.via === key ?": "remake-sound-keys",
+    "stand-in: original (it loops the key's own recording), stand-in or silent.": "remake-sound-keys",
+    "stand-in: return { ...s, status: 'stand-in', label: `stand-in: ${s.label}`": "remake-sound-keys",
+    "stand-in: tracks.length ? 'original' : own ? 'mixed' : 'stand-in';": "remake-sound-keys",
+    "stand-in: what the remake plays now (the same original, a stand-in, a": "synth-stand-in-sounds"
+  },
+  "tools/streetmusic/build-data.mjs": {
+    "stand-in: * theme that is no place (the Musicblocks set, a stand-in, a single": "ours-tools-streetmusic"
+  }
+}
+}

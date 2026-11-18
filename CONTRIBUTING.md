@@ -41,6 +41,7 @@ A test that needs a checkout you do not have skips and says what to clone.
 - **Solo play does not change for multiplayer work.** Multiplayer sits beside the solo game, never inside it.
 - **Rules cite their source**: the GameServerJS file and line a number or a line of dialogue came from, in a code comment.
 - **Words**: item and game text come from Tiny Speck's files; everything else is in our own words, plain, with no em-dashes.
+- **Inventions are registered.** Anything Glitch did not have (a drawn glow, a hover, a guessed placement, a rule or line of our own) gets an entry in `tools/inventions/inventions.json` when you make it, status `proposed` until it is ruled on, and its marks in the code are claimed with `node tools/inventions/scan.mjs --claim <id> <file>`. `tests/inventions-register.test.js` fails on an unregistered one.
 - **Generated files** say so in their header. Change the builder in `tools/` (or the root `build-*.mjs`) and run it, rather than editing the output.
 - **Cache keys come from content.** Every `?v=` on a module, script or style sheet URL (imports, `game.js`, `style.css`) is written by `node tools/module-keys/build.mjs`: run it after changing any of them (after `tools/data-versions/build.mjs`, before `tools/play-online/build.mjs`) and never edit a `?v=` by hand. `tests/module-keys.test.js` fails until the keys are current.
 
