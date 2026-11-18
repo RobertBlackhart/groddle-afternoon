@@ -115,7 +115,7 @@ import {
   workCheck,
 } from '../home-tower.js?v=77d57cda';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { denseSprite } from '../sprite-dense.js?v=2a0ce07a';
+import { denseSprite } from '../sprite-dense.js?v=67101472';
 import { pieceUrl } from '../home-wallpaper.js?v=f1969400';
 import { wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';

@@ -2,9 +2,8 @@
  * Sharp world still items (lane SPRITES, 2026-10-29): the Visiting Stone,
  * notes, gift boxes, notice boards, the left mailbox, the home furniture base
  * pieces, the sign stake, the Party ATM and the Rook Hall speaker at 3x
- * (tools/vector-sprites/stills.json, js/sprite-hires.js first-draw swap) and
- * the Stoot doll at 5x (dense-stills.json, js/sprite-dense.js), each from its
- * own CC0 SWF in glitch-items.
+ * (tools/vector-sprites/stills.json, js/sprite-hires.js first-draw swap), each
+ * from its own CC0 SWF in glitch-items.
  * Run: node --test tests/sprite-stills.test.js
  */
 import { describe, it } from 'node:test';
@@ -14,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
-import { DENSE_SPRITES, denseSprite } from '../public/js/sprite-dense.js?v=2a0ce07a';
+import { DENSE_SPRITES, denseSprite } from '../public/js/sprite-dense.js?v=67101472';
 import { MAILBOX_SHEETS, STONE_ART, NOTE_ART, BOARD_ART } from '../public/js/street-furniture.js?v=868360eb';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=10ac34b6';
 
@@ -65,12 +64,10 @@ describe('sharp world still items', () => {
     }
   });
 
-  it('the Stoot doll keeps its 5x render, picked at 1.18 on a dense screen', () => {
+  it('the Stoot doll has no 5x render: nothing draws it bigger than its icon since the memorial went (G978)', () => {
     const path = 'assets/sprites/spinning-wheel/stoot-doll.webp';
-    assert.equal(dense[path]?.status, 'ok', dense[path]?.reason);
-    assert.equal(DENSE_SPRITES.get(path).density, 5);
-    assert.equal(denseSprite(path, 1.18), null);
-    assert.ok(denseSprite(path, 1.18 * 2));
-    // G978: the memorial that drew it at 1.18 and 1.55 is gone; the render stays for the doll's art.
+    assert.equal(dense[path], undefined);
+    assert.equal(DENSE_SPRITES.has(path), false);
+    assert.equal(denseSprite(path, 1.18 * 3), null);
   });
 });
