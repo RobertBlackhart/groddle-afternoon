@@ -1567,7 +1567,8 @@ export const FRONT_BOXES = Object.freeze({
   shrine: [118, 147],
   vendor: [105, 127],
   'resource:jellisac': [47, 52],
-  // #490 (R2): every node the planner seats has its art's box, so none is planned behind front art:
+  // #490 (R2): every node the planner seats has its art's box, and one planned behind front art moves
+  // (planStreetPlacements reseatHiddenNodes, NODE_FRONT_KEYS):
   // a Peat Bog stood behind a front hut on Raudan Rasp (GIFNIC9JFOU1B2S, bottletree_burb_wndw_2).
   // The boxes are the art as drawn (PLACEMENT_FOOTPRINTS and UNDER_CANOPY_HEIGHTS above): the barnacle's
   // blister 39 x 47, the Ice Nubbin's widest knob 67 x 71, the Peat Bog's mound 180 x 104, the Dirt
@@ -1583,6 +1584,8 @@ export const FRONT_BOXES = Object.freeze({
 });
 /** The FRONT_BOXES things a player has to find and click (FRONT_FIND_SHARE); the other nodes keep FRONT_HIDE_SHARE. */
 export const FRONT_FIND_KEYS = Object.freeze(['shrine', 'vendor', 'resource:jellisac']);
+/** #490: the nodes moved after the plan when the front art covers them (planStreetPlacements reseatHiddenNodes). */
+export const NODE_FRONT_KEYS = Object.freeze(Object.keys(FRONT_BOXES).filter((k) => !FRONT_FIND_KEYS.includes(k)));
 
 /**
  * PURE: whether a thing of `key` at `spot` is behind the front decos (frontDecoCovers): one big
@@ -1907,7 +1910,7 @@ function scaledDistance(a, b, verticalScale = 1.75) {
 export function planStreetPlacements(
   platforms,
   requests,
-  { worldW = 2500, seed = '', reserved = [], tsid = seed, unreached = unreachedFloorsFor(tsid) } = {}
+  { worldW = 2500, seed = '', reserved = [], tsid = seed, unreached = unreachedFloorsFor(tsid), reseat = true } = {}
 ) {
   const candidates = buildPlatformCandidates(platforms, { worldW, seed, unreached });
   // Front decos (frontDecoCovers) keep nothing clear; they only rank the spots they hide.
@@ -1953,6 +1956,7 @@ export function planStreetPlacements(
   const branch = [];
   const hiddenCache = new Map();
   const edgeCache = new Map();
+  const fits = new Map();
 
   for (const request of requests || []) {
     const count = whole(request?.count, 0, 40);
@@ -2003,6 +2007,12 @@ export function planStreetPlacements(
           || (underCanopy ? blockingFixture(candidate, canopies, { footprint, height: underCanopy }) : null);
         if (fixture) covers.set(candidate.id, fixture);
       }
+    }
+    // #490: what a covered node may move to after the plan (reseatHiddenNodes): a free spot this group takes.
+    if (NODE_FRONT_KEYS.includes(request.key)) {
+      fits.set(request.key, (c) => !used.has(c.id) && c.item !== false && steadyAt(c) && (c.room || 0) >= footprint
+        && !covers.has(c.id) && !(branchFree && onBranch.has(c.id)) && !(maxSlope != null && (c.slope || 0) > maxSlope)
+        && !zoneMiss(c) && !footAtWalkway(c, footprint, walkways));
     }
     for (let index = groups[request.key].length; index < count; index += 1) {
       if (fixedAt?.has(index)) {
@@ -2073,7 +2083,8 @@ export function planStreetPlacements(
         const scenery = walker ? walkInScenery(candidate, request.key, occupied) : 0;
         // Ticket 64 follow-up: a tree, rock or Piggy behind a floor from beside it only when no other spot is left.
         let hidden = 0;
-        if (REACH_BOXES[request.key] || FRONT_BOXES[request.key]) {
+        // #490: the other nodes' boxes (NODE_FRONT_KEYS) are not ranked here; reseatHiddenNodes moves only the covered ones.
+        if (REACH_BOXES[request.key] || FRONT_FIND_KEYS.includes(request.key)) {
           const k = `${request.key}:${candidate.id}`;
           if (!hiddenCache.has(k)) hiddenCache.set(k, (REACH_BOXES[request.key] && hiddenBehindFloor(platforms, candidate, request.key)) || hiddenBehindFront(candidate, request.key, fronts));
           hidden = hiddenCache.get(k) ? 32 : 0;
@@ -2108,7 +2119,47 @@ export function planStreetPlacements(
     }
   }
 
-  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch };
+  // `reseat: false` (tests only): the plan as it was before #490, to show what reseatHiddenNodes moved.
+  const moved = reseat ? reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) : [];
+  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch, moved };
+}
+
+/**
+ * #490 (R2): a planned node mostly behind the front art (hiddenBehindFront, NODE_FRONT_KEYS) moves to
+ * the nearest free spot its group would take that the front art leaves clear (keeping every other
+ * thing's clearance where it can, half of it at least); every other spot stays as planned, so a street's layout moves only where
+ * something was hidden. With no such spot it stays (the front art covers every floor left). The
+ * point is moved in place (groups and occupied share it), so its index and key stay its own.
+ */
+function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) {
+  const moved = [];
+  if (!fronts.length) return moved;
+  for (const [key, fit] of fits) {
+    for (const [index, point] of (groups[key] || []).entries()) {
+      if (point.fixed || !hiddenBehindFront(point, key, fronts)) continue;
+      // The nearest spot clear of every other thing's clearance, else the nearest at half of it (the
+      // planner too seats a node in a crowded spot when no clear one is left).
+      let best = null;
+      let bestRank = [Infinity, Infinity];
+      for (const c of candidates) {
+        const d = Math.abs(c.x - point.x) + Math.abs(c.y - point.y);
+        if (d >= bestRank[1] && bestRank[0] === 0) continue;
+        if (!fit(c) || hiddenBehindFront(c, key, fronts)) continue;
+        let near = Infinity;
+        for (const o of occupied) if (o !== point) near = Math.min(near, scaledDistance(c, o) / Math.max(1, point.clearance + o.clearance));
+        const tier = near >= 1 ? 0 : near >= 0.5 ? 1 : 2;
+        if (tier === 2 || tier > bestRank[0] || (tier === bestRank[0] && d >= bestRank[1])) continue;
+        best = c;
+        bestRank = [tier, d];
+      }
+      if (!best) continue;
+      used.delete(point.id);
+      used.add(best.id);
+      moved.push({ key, index, from: { x: point.x, y: point.y } });
+      Object.assign(point, { x: best.x, y: best.y, id: best.id, room: best.room || 0 });
+    }
+  }
+  return moved;
 }
 
 /**

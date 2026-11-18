@@ -20,7 +20,7 @@ import {
   recordFoodEatMany,
 } from '../public/js/eat-many.js?v=1a681dc1';
 import { CANDY_CLASSES, CANDY_DAILY_MAX, PIE_DAILY_MAX, SOURCE_LINES, dailyEatLimit, pieEatGate } from '../public/js/seasons.js?v=8b81947e';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=7dd0df8c';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=f0c551a2';
 import { getGameDayKey } from '../public/js/game-day.js?v=50c112eb';
 import { createInventory, getItemUseInfo, registerItemUse, useItem, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { FOOD_VARIETY_UPGRADE, createFoodState, recordFoodEat } from '../public/js/food.js?v=328b3274';

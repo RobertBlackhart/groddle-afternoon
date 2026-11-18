@@ -24,8 +24,8 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=7b7be8e6';
-import { UNPLANNED_RESOURCE_CLASSES, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=da1c9711';
+} from '../public/js/street-ecology.js?v=87ed5120';
+import { UNPLANNED_RESOURCE_CLASSES, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=86f52701';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
 
@@ -41,9 +41,14 @@ const RAUDAN_RASP = 'GIFNIC9JFOU1B2S';
 // Fireflies wander a fly box over their spot (resource-nodes-feature placeFirefly); Sloths are never planned.
 const FLYING = ['npc_firefly'];
 
+function planOf(data, reseat = true) {
+  const pop = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === index.default });
+  return planStreetPlacements(platformsScreen(data), placementRequests(pop), { worldW: streetWidth(data), seed: data.tsid, reserved: streetReservedSpots(data), reseat });
+}
+
 function nodesOf(data) {
   const pop = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === index.default });
-  const plan = planStreetPlacements(platformsScreen(data), placementRequests(pop), { worldW: streetWidth(data), seed: data.tsid, reserved: streetReservedSpots(data) });
+  const plan = planOf(data);
   return resourceSpawnPlan(pop, (key) => plan.groups[key] || []);
 }
 
@@ -70,6 +75,33 @@ describe('#490 planned nodes stay out from behind the front art', () => {
     for (const r of peat) assert.ok(share(r, fronts) < FRONT_HIDE_SHARE, `${r.key} ${Math.round(r.x)},${Math.round(r.y)}`);
   });
 
+  it('only the covered nodes move: every other planned thing keeps its spot (a stable layout)', async () => {
+    let moved = 0;
+    for (const tsid of Object.keys(index.streets).filter((t) => !/^GZ/.test(t)).sort()) {
+      let data;
+      try { data = await loadStreetDataFromFs(tsid, streetsDir); } catch { continue; }
+      const fronts = frontDecoCovers(data);
+      const after = planOf(data);
+      const before = planOf(data, false);
+      const movedKeys = new Set(after.moved.map((m) => `${m.key}:${m.index}`));
+      for (const [key, points] of Object.entries(before.groups)) {
+        points.forEach((p, i) => {
+          const q = after.groups[key][i];
+          if (!movedKeys.has(`${key}:${i}`)) {
+            assert.deepEqual([q.x, q.y], [p.x, p.y], `${tsid} ${key}:${i} moved without being covered`);
+            return;
+          }
+          assert.equal(hiddenBehindFront(p, key, fronts), true, `${tsid} ${key}:${i} was covered`);
+          assert.equal(hiddenBehindFront(q, key, fronts), false, `${tsid} ${key}:${i} is clear now`);
+          moved += 1;
+        });
+      }
+    }
+    // Census (2026-11-18): only the covered planned nodes move (344 rows of the server data/objects.json;
+    // the rest are solo-only Dust Traps); the rest of every layout stays.
+    assert.ok(moved >= 340, `${moved} moved`);
+  });
+
   it('no planned node on any street is mostly behind front art while the street has room for it', async () => {
     const hidden = {};
     let planned = 0;
@@ -87,11 +119,11 @@ describe('#490 planned nodes stay out from behind the front art', () => {
     }
     assert.ok(planned > 900, `${planned} planned nodes`);
     // Census (2026-11-18): before, 385 planned nodes 60% or more behind the front art (Peat Bogs 19,
-    // Dirt Piles 18, Paper Trees 2, Barnacles 3, Ice Nubbins 154, Salmon 189). After, only where
-    // the front art covers every floor left: Hellinum Dum's sliding foreground snow skirts lie over
+    // Dirt Piles 18, Paper Trees 2, Barnacles 3, Ice Nubbins 154, Salmon 189). After, 34, where the
+    // front art covers every free floor left: Hellinum Dum's sliding foreground snow skirts lie over
     // all its floors, and the Samudra sea streets' dark foreground rock over their sea beds.
-    const LEFT = new Set(['GHV7VE7O4MA35H6', 'GUV2LJJO5UC30B2', 'GUV2M85OU8A39GS', 'GUVCHLO06EA3VBC', 'GUVUMTSQ2FC34ES', 'GUVVSU5NCBA3KOS']);
+    const LEFT = new Set(['GHV7VE7O4MA35H6', 'GUVCHLO06EA3VBC', 'GUV2LJJO5UC30B2', 'GUVUMTSQ2FC34ES', 'GA9QTSIOV4F31QH', 'GUVVSU5NCBA3KOS', 'GUVV0NRR2FC3D3D', 'GUV2M85OU8A39GS']);
     assert.deepEqual(Object.keys(hidden).filter((t) => !LEFT.has(t)), []);
-    assert.ok(Object.values(hidden).reduce((a, b) => a + b, 0) <= 24, JSON.stringify(hidden));
+    assert.ok(Object.values(hidden).reduce((a, b) => a + b, 0) <= 34, JSON.stringify(hidden));
   });
 });
