@@ -50,6 +50,7 @@ import { STICK_ANIMAL } from './yard-wander.js?v=e9068e95';
 import { normalizeYardMachines } from './yard-fixtures-mp.js?v=dd022fe8';
 import { capYardAnimals, yardClassCap } from './animal-crowding.js?v=1966bc21';
 import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=57afc9e2';
+import { forceMetabolic } from './metabolics.js?v=48f784bf';
 import { HOME_LIMITS } from './homes-catalog.js?v=10ac34b6';
 
 export const YARD_VERBS_MP_ID = 'yard-verbs-mp';
@@ -343,9 +344,13 @@ export function undoVisitorReward(inv, pc, delta, { remove } = {}) {
     else inv[c] -= n;
     taken[c] = n;
   }
-  for (const [k, d] of Object.entries(delta.stats || {})) {
-    if (!VISITOR_REWARD_STATS.includes(k) || !pc) continue;
-    pc[k] = Math.max(0, (Number(pc[k]) || 0) - d);
+  const back = (k) => Math.max(0, (Number(pc?.[k]) || 0) - (Number(delta.stats?.[k]) || 0));
+  if (pc) {
+    // G970: energy and mood through the stat API; a correction past both doors (the verb's own change taken back).
+    if (delta.stats?.energy) forceMetabolic(pc, 'energy', back('energy'));
+    if (delta.stats?.mood) forceMetabolic(pc, 'mood', back('mood'));
+    if (delta.stats?.imagination) pc.imagination = back('imagination');
+    if (delta.stats?.xp) pc.xp = back('xp');
   }
   return taken;
 }
