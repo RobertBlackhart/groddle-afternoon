@@ -236,7 +236,7 @@ function noteLine(parent) {
  * CabinetDialog: the grid. `slots` are null or { classTsid, count, points? };
  * callbacks answer what each gesture does (each may return a promise):
  *   accepts(cls) -> null | words why not      a pack stack may go in here
- *   put({ cls, count, copy, slot })            a pack stack dropped on a slot
+ *   put({ cls, count, copy, slot, stack })     a pack stack dropped on a slot (stack: the drag's own, js/drag-stack.js)
  *   take(slot, n)                              a slot's stack (n of it) to the pack
  *   move(from, to)                             a stack dragged to another slot
  *   item(cls, slot) -> { label, plural, icon, wear(points) } (slot: the stack it is for, when there is one: a script goes by its street)
@@ -377,7 +377,8 @@ export function openCabinetWindow(opts) {
     const why = accepts(stack.cls);
     if (why) return note(why, true);
     if (!slotTakes(i, stack.cls)) return undefined;
-    return put({ cls: stack.cls, count: stack.count, copy: stack.copy ?? null, bag: stack.bag || '', slot: i });
+    // #515: the drag's own stack goes too (its slot), so that stack is the one that goes in (CabinetDialog.as 434 moved the dragged itemstack).
+    return put({ cls: stack.cls, count: stack.count, copy: stack.copy ?? null, bag: stack.bag || '', slot: i, stack });
   }
 
   const slotAt = (at) => {

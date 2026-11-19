@@ -350,7 +350,7 @@ describe('#108: a bag goes into a cabinet whole and comes back whole (CabinetDia
 
   it('the feature takes the chosen bag out with what it holds and gives it back the same (bags-feature packTakeBag, packGiveBag)', () => {
     const feature = readFileSync(join(import.meta.dirname, '../public/js/features/home-storage-feature.js'), 'utf8');
-    assert.match(feature, /put: \(\{ cls, count, copy, slot, bag \}\) => cabinetPutFromPack\(engine, cls, count, \{ slot, copy, bag \}\)/);
+    assert.match(feature, /put: \(\{ cls, count, copy, slot, bag, stack \}\) => cabinetPutFromPack\(engine, cls, count, \{ slot, copy, bag, stack \}\)/);
     assert.match(feature, /const res = engine\.query\?\.\('packTakeBag', bag\.key, engine\);/);
     assert.match(feature, /const res = engine\.query\('packGiveBag', cls, contents, engine, out\.name \|\| '', \{ sort: out\.sort, sortNamed: out\.sortNamed \}\);/);
     // An empty bag: the one chosen leaves, not another of its class.

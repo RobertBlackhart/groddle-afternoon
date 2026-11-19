@@ -67,11 +67,14 @@ describe('a touch drag from the pack onto a cabinet (#407)', () => {
 
   it('let go on an empty slot: the whole stack goes in, by touch as by the mouse', async () => {
     await touchDrop(drops, lift(fakeSlot('apple', 2, { packBag: 'bag_generic_1' })), slot(1));
-    assert.deepEqual(puts, [{ cls: 'apple', count: 2, copy: null, bag: 'bag_generic_1', slot: 1 }]);
+    // #515: the drag's own stack (its pack slot) goes along, so that stack is the one that goes in.
+    const bare = (p) => { const { stack, ...rest } = p; return rest; };
+    assert.deepEqual(puts.map(bare), [{ cls: 'apple', count: 2, copy: null, bag: 'bag_generic_1', slot: 1 }]);
+    assert.deepEqual([puts[0].stack.container, puts[0].stack.index], ['pack', 0]);
     puts.length = 0;
     const { drop } = mouseDrop(drops, fakeSlot('apple', 2), slot(3));
     assert.equal(drop.defaultPrevented, true, 'taken');
-    assert.deepEqual(puts, [{ cls: 'apple', count: 2, copy: null, bag: '', slot: 3 }]);
+    assert.deepEqual(puts.map(bare), [{ cls: 'apple', count: 2, copy: null, bag: '', slot: 3 }]);
   });
 
   it('a full slot of another class, a refused class, or somewhere outside the window takes nothing', async () => {

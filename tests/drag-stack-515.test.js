@@ -206,6 +206,17 @@ describe('every drop target hands on the dragged stack (#515)', () => {
     assert.match(g, /const at = from\?\.cls === classTsid \? from : engine\.query\?\.\('packFocused', classTsid, engine\);/);
   });
 
+  it('a cabinet and a trade take the dragged stack (CabinetDialog.as 434, TradeDialog.as 1088)', () => {
+    assert.match(read('js/ui/storage-windows.js'), /put\(\{ cls: stack\.cls, count: stack\.count, copy: stack\.copy \?\? null, bag: stack\.bag \|\| '', slot: i, stack \}\)/);
+    const hs = read('js/features/home-storage-feature.js');
+    assert.ok(hs.indexOf('takeDragged(engine, draggedStack(engine, stack), n)') < hs.indexOf('removeItem(engine.inv, cls, put)'));
+    const tr = read('js/features/trade-feature.js');
+    assert.match(tr, /addFromPack\(d\.stack\.cls, undefined, \{ ds: draggedStack\(engine, d\.stack\) \}\)/);
+    assert.match(tr, /Math\.min\(left, slotMax\(c, table\), ds \? draggedCount\(engine, ds\) : Infinity\)/, 'its own count');
+    const hold = part(tr, 'function growHold(', 'const moreCur');
+    assert.ok(hold.indexOf('takeDragged(engine, ds,') < hold.indexOf('toolPointsOut(c, more)'), 'before its wear goes into the hold');
+  });
+
   it('the garden stays a class drop, as in Glitch (handleDrop(dragged_itemstack.class_tsid))', () => {
     assert.doesNotMatch(read('js/features/garden-guano-feature.js'), /draggedStack|takeDragged|markDragged/);
   });

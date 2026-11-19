@@ -50,6 +50,7 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=2c09907f';
 import { ELEMENT_CLASSES, NO_BAG_CLASSES, NO_SLOT_CLASSES } from '../pack-slots-data.js?v=800f664c';
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
+import { draggedStack, takeDragged } from '../drag-stack.js?v=5ff6ce35';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
 import { saveStore } from '../save-store.js?v=cd053443';
@@ -90,7 +91,7 @@ import {
   openPriceDialog,
   openStoreDialog,
   storageWindowKind,
-} from '../ui/storage-windows.js?v=070dea98';
+} from '../ui/storage-windows.js?v=50a74a18';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -470,7 +471,7 @@ function openCabinet(engine, uid, { owner = 0 } = {}) {
     stackmax,
     accepts,
     moveHere: T.moveHere,
-    put: ({ cls, count, copy, slot, bag }) => cabinetPutFromPack(engine, cls, count, { slot, copy, bag }),
+    put: ({ cls, count, copy, slot, bag, stack }) => cabinetPutFromPack(engine, cls, count, { slot, copy, bag, stack }),
     take: (slot, n) => cabinetTakeToPack(engine, slot, n),
     move: (from, to) => cabinetMoveSlot(engine, from, to),
     onClose: () => {
@@ -539,7 +540,7 @@ function cabinetPutBag(engine, row, cls, bag, slot) {
 }
 
 /** A pack stack into the cabinet (the slot named, else where it fits). Returns how many went in. */
-function cabinetPutFromPack(engine, cls, count, { slot = null, copy = null, bag = '' } = {}) {
+function cabinetPutFromPack(engine, cls, count, { slot = null, copy = null, bag = '', stack = null } = {}) {
   if (!win || win.kind !== 'cabinet') return 0;
   const why = accepts(cls);
   if (why) {
@@ -595,6 +596,8 @@ function cabinetPutFromPack(engine, cls, count, { slot = null, copy = null, bag 
   }
   // Its own words go in with it (the copies about to leave are the last ones now).
   if (!tags) tags = copyTagKind(cls) && engine.toolState ? copyTags(engine.toolState, cls).slice(-n) : null;
+  // #515: any other stack dragged here is the one that goes in, not the first of its class.
+  if (!isTool(cls) && stack) takeDragged(engine, draggedStack(engine, stack), n);
   const put = cabinetPut(row.contents, cls, n, { slot: Number.isInteger(slot) ? slot : null, max: stackmax(cls), points, tags });
   removeItem(engine.inv, cls, put);
   engine.refreshPack?.();

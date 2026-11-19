@@ -72,6 +72,7 @@ import {
 } from '../trade.js?v=d38b9202';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { beginDrag, registerDropTarget } from '../drop-targets.js?v=59e6edb4';
+import { draggedCount, draggedStack, takeDragged } from '../drag-stack.js?v=5ff6ce35';
 
 export const TRADE_FEATURE_ID = 'trade';
 export const TRADE_VERB = 'trade_start';
@@ -181,6 +182,8 @@ function createSession(engine, client) {
   /** The open trade, or null. */
   let open = null;
   let sendTimer = null;
+  /** #515: per class, the pack stack dragged into the offer (js/drag-stack.js); it gives those units to the hold. */
+  const dragFrom = new Map();
   let lastLine = '';
 
   // —— Trade table (tools/build-realtime-trade.mjs) ——
@@ -248,7 +251,9 @@ function createSession(engine, client) {
     end() { delete mineCol.dataset.drop; },
     drop(d) {
       delete mineCol.dataset.drop;
-      addFromPack(d.stack.cls);
+      // #515: the stack dragged goes in, its own count (TradeDialog.as 1088: clientAddItem(dragged
+      // itemstack's tsid, min(its count, MAX_COUNT))); a slot of this window's own list, the class.
+      addFromPack(d.stack.cls, undefined, { ds: draggedStack(engine, d.stack) });
     },
   });
 
@@ -532,6 +537,10 @@ function createSession(engine, client) {
       const more = n - (have.items[c] || 0);
       if (more > 0) {
         chosenScriptsLast(c, goods);
+        // #515: the stack dragged in gives them (its slot, its copy's wear and words).
+        const ds = dragFrom.get(c);
+        if (ds) takeDragged(engine, ds, Math.min(more, ds.count));
+        dragFrom.delete(c);
         const out = toolPointsOut(c, more);
         const words = toolTagsOut(c, more);
         removeItem(engine.inv, c, more);
@@ -628,7 +637,7 @@ function createSession(engine, client) {
     }, SEND_DEBOUNCE_MS);
   }
 
-  function addFromPack(c, tag = undefined) {
+  function addFromPack(c, tag = undefined, { ds = null } = {}) {
     if (!open || open.sealed || open.mine.accepted) return;
     if (!table) {
       loadTable();
@@ -644,15 +653,21 @@ function createSession(engine, client) {
       line(TRADE_TEXT.notEnough, 'error');
       return;
     }
-    // Each tool wears on its own (js/tools.js): the offered ones carry their own wear (the most worn of them).
-    const tracked = TOOL_CONDITION_CATALOG[c] ? leavingToolWear(engine.toolState, c, Math.min(left, slotMax(c, table))) : null;
-    const { goods, added, reason: why } = addToGoods(open.draft, c, Math.min(left, slotMax(c, table)), table, { tool: tracked });
+    const n = Math.min(left, slotMax(c, table), ds ? draggedCount(engine, ds) : Infinity);
+    // A dragged script is that script (its words ride on its slot, chosenTags).
+    if (tag === undefined && ds?.pick && copyTagKind(c) === 'script') tag = ds.pick.t;
+    // Each tool wears on its own (js/tools.js): the offered ones carry their own wear (the most worn of
+    // them), a dragged one its own.
+    const tracked = TOOL_CONDITION_CATALOG[c] ? (ds?.pick && n === 1 ? ds.pick.r : leavingToolWear(engine.toolState, c, n)) : null;
+    const { goods, added, reason: why } = addToGoods(open.draft, c, n, table, { tool: tracked });
     if (!added) {
       line(why, 'error');
       return;
     }
     // A chosen script's words ride on its slot until the hold has it (chosenTags).
     if (tag != null) goods.items[goods.items.length - 1].t = tag;
+    if (ds) dragFrom.set(c, ds);
+    else dragFrom.delete(c);
     editDraft(goods);
   }
 
@@ -747,6 +762,7 @@ function createSession(engine, client) {
   function close() {
     if (sendTimer) clearTimeout(sendTimer);
     sendTimer = null;
+    dragFrom.clear();
     tradingBubble?.stop();
     tradingBubble = null;
     open = null;
