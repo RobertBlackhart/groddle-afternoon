@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AIR_FRICTION, GRAVITY, JUMP_SPEED, MAX_TICK_FRAMES, NORMAL_BUFF, REMAKE_ROOM_PHYSICS, TERMINAL_VY, flatJump, frameSteps, jumpApex, stepAvatar, avatarGround } from '../public/js/avatar-step.js?v=0d75eb35';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=04351b4d';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=0312ad85';
 import { buffPhysics } from '../public/js/buffs.js?v=57e5d8e0';
 import { physicsMultipliers } from '../public/js/location-events.js?v=7fd40f71';
 import { NEWXP_DEFAULT_PHYSICS, NEWXP_UPGRADES, reachFor } from '../public/js/newxp.js?v=8e9130b1';

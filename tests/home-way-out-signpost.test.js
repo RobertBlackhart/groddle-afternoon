@@ -16,9 +16,9 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { getVerbsFor } from '../public/content.js?v=ca4eaa0f';
-import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=7072a4c7';
-import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=8e673215';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=694a36fb';
+import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=04647f8c';
+import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=a24aa727';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=e9b4bfa6';
 import {
   SIGNPOST_POST_HALF,
   createCultivationState,
@@ -30,7 +30,7 @@ import {
   placementCheck,
 } from '../public/js/home-cultivation.js?v=39041813';
 import { DISPATCHER_TEXT, SIGNPOST, dispatcherDefaultRx, dispatcherFits, signpostX, streetFixtures } from '../public/js/home-street-fixtures.js?v=bad831a1';
-import { sceneSignMarks } from '../public/js/ui/street-minimap.js?v=0f291608';
+import { sceneSignMarks } from '../public/js/ui/street-minimap.js?v=5f876a67';
 import { HUB_TILES, hubTileBackground, hubTileForKey, hubTileState } from '../public/js/ui/imagination-hub.js?v=6928c5b7';
 import { HUB_CLOUDS, placeClouds } from '../public/js/classic/classic-hub.js?v=27182c61';
 

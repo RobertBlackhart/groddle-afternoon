@@ -4366,7 +4366,9 @@ button.play-context-head:focus-visible {
   to { opacity: 0.72; transform: scale(1.02); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .make-progress .mp-tool,
+  /* #529: the wobble, sparkles and result pulse stop; a tool's own sprite sheet keeps playing, as
+     the machines, the Tinkertool sprite and the street do (it is the art moving, not the panel). */
+  .make-progress .mp-tool:not(.mp-tool-sheet),
   .make-progress .mp-spark,
   .make-progress .mp-output { animation: none; }
 }
@@ -4413,6 +4415,8 @@ button.play-context-head:focus-visible {
   font-weight: 800;
   border: 1px solid var(--border);
   background: var(--surface-bright);
+  /* #529: "-16 energy" stays one pill on one line (the report picture's copy broke it in two). */
+  white-space: nowrap;
 }
 .make-result .mr-delta.loss { color: var(--c-red-54); border-color: var(--c-red-84); background: var(--surface-card); }
 .make-result .mr-delta.gain { color: var(--c-green-52); border-color: var(--c-lime-87); background: var(--surface-card); }
@@ -4435,6 +4439,7 @@ button.play-context-head:focus-visible {
   gap: var(--sp-1);
   font-size: var(--fs-sm);
   font-weight: 700;
+  white-space: nowrap;
 }
 .make-result .mr-used-item img {
   width: 36px;

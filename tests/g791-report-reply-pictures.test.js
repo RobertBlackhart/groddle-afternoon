@@ -17,7 +17,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=a0afae81';
 import { REPORT_TEXT as T, createReportsApi, isPictureKey, pictureSrc } from '../public/js/reports.js?v=813fec3c';
-import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=bf436021';
+import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=37c7f88c';
 import { hotkeySections } from '../public/js/client-hotkeys.js?v=c8210235';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 

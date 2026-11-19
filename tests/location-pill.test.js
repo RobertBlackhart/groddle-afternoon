@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LOCATION_LINK, locationLinkLabel } from '../public/js/ui/topbar.js?v=530e88f3';
+import { LOCATION_LINK, locationLinkLabel } from '../public/js/ui/topbar.js?v=5d75c045';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (f) => readFileSync(join(root, f), 'utf8');

@@ -120,9 +120,11 @@ export function probeRenderTexture(PIXI, renderer) {
 /**
  * PURE: a probe as one short line for a report's context, with the renderer's resolution and the
  * context's restores as they are when the report is written, e.g.
- * "rt ok (plain ok) · res 3 · tex 16384 · rb 16384 · restores 0 · webgl2 · ANGLE (NVIDIA ...)".
+ * "rt ok (plain ok) · res 3 · tex 16384 · rb 16384 · restores 0 · motion reduce · webgl2 · ANGLE (NVIDIA ...)".
+ * `motion` is 'reduce' when the device asks for less motion (#529: a phone's "Remove animations"
+ * stops the Make panel's flourishes, so the digest says so); otherwise it is left out.
  */
-export function renderProbeLine(probe, { resolution, restores = 0 } = {}) {
+export function renderProbeLine(probe, { resolution, restores = 0, motion = '' } = {}) {
   if (!probe) return '';
   const word = (v) => (v === true ? 'ok' : v === false ? 'failed' : 'untried');
   const res = Number(resolution ?? probe.resolution) || 0;
@@ -132,6 +134,7 @@ export function renderProbeLine(probe, { resolution, restores = 0 } = {}) {
     probe.maxTexture ? `tex ${probe.maxTexture}` : '',
     probe.maxRenderbuffer ? `rb ${probe.maxRenderbuffer}` : '',
     `restores ${Number(restores) || 0}`,
+    motion ? `motion ${String(motion).slice(0, 12)}` : '',
     probe.api || '',
     probe.gl || '',
   ].filter(Boolean).join(' · ').slice(0, 200);

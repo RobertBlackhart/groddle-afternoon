@@ -85,7 +85,7 @@
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=813fec3c';
 import { mountReportsSheet } from '../ui/reports-sheet.js?v=a0afae81';
 import { PICTURE_TEXT } from '../report-pictures.js?v=7a6f29e0';
-import { canvasTransparent } from '../render-probe.js?v=c4646998';
+import { canvasTransparent } from '../render-probe.js?v=476b7fdf';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -588,6 +588,45 @@ export function restoreScrolls(clone) {
 }
 
 /**
+ * #529: the page's copy keeps attributes, not what the player changed since: a ticked box drawn
+ * from its `checked` attribute (Make's "Only show what I can make" starts ticked in the markup),
+ * a list showing its first option. Marks every checkbox and radio under `root` with its live state
+ * (data-shot-checked="1|0") and every option of a select with whether it is chosen
+ * (data-shot-selected="1|0"). Returns the function that removes the marks.
+ */
+export function markFormState(root) {
+  const marked = [];
+  const mark = (node, name, on) => { node.setAttribute(name, on ? '1' : '0'); marked.push([node, name]); };
+  let boxes = [];
+  let lists = [];
+  try {
+    boxes = [...(root?.querySelectorAll?.('input[type="checkbox"], input[type="radio"]') || [])];
+    lists = [...(root?.querySelectorAll?.('select') || [])];
+  } catch { boxes = []; lists = []; }
+  for (const box of boxes) mark(box, 'data-shot-checked', Boolean(box.checked));
+  for (const list of lists) for (const option of list.options || []) mark(option, 'data-shot-selected', Boolean(option.selected));
+  return () => { for (const [node, name] of marked) node.removeAttribute(name); };
+}
+
+/**
+ * #529: in the page's copy, each marked box and option drawn as it is on screen: the `checked` and
+ * `selected` attributes set or taken off to match, and the marks removed. Returns how many it set.
+ */
+export function restoreFormState(clone) {
+  let n = 0;
+  const all = (sel) => [...(clone?.matches?.(sel) ? [clone] : []), ...(clone?.querySelectorAll?.(sel) || [])];
+  for (const [sel, mark, attr] of [['[data-shot-checked]', 'data-shot-checked', 'checked'], ['[data-shot-selected]', 'data-shot-selected', 'selected']]) {
+    for (const node of all(sel)) {
+      if (node.getAttribute(mark) === '1') node.setAttribute(attr, '');
+      else node.removeAttribute(attr);
+      node.removeAttribute(mark);
+      n += 1;
+    }
+  }
+  return n;
+}
+
+/**
  * #496: how many more times the library draws the copy: what WebKit counted for its pictures
  * (at most REDRAWS), never fewer than MIN_REDRAWS in any engine.
  */
@@ -645,7 +684,9 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
     // #496: the copy is drawn in the page's own fonts (loaded first, carried inline), not a fallback.
     await fontsSettled(doc);
     const fontCss = await fontFaceCss(doc);
-    unmark = markScrolls(root);
+    const unmarkScrolls = markScrolls(root);
+    const unmarkForms = markFormState(root);
+    unmark = () => { unmarkScrolls(); unmarkForms(); };
     let context = null;
     // The library waits for every <img> under the root first; a short wait there (closed windows hold
     // lazy images that never load), the full one for the pictures it copies.
@@ -658,7 +699,8 @@ export async function capturePictureWithUi(engine, doc = globalThis.document, li
       includeStyleProperties: standardStyleNames(),
       ...(fontCss ? { font: { cssText: fontCss } } : {}),
       // #496: a scrolled list (Skills, a vendor) is copied where the player scrolled it, not at its top.
-      onCloneNode: (clone) => { maskClone(clone); restoreScrolls(clone); },
+      // #529: ticked boxes and chosen options drawn as the player left them, not as the markup has them.
+      onCloneNode: (clone) => { maskClone(clone); restoreScrolls(clone); restoreFormState(clone); },
       onEmbedNode: () => { if (context) context.drawImageCount = redrawCount(context.drawImageCount); },
     });
     context.timeout = 8000;

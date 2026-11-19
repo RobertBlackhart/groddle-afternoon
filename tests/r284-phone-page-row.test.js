@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { MENU_ROWS, PHONE_PAGE_LABEL, menuRowFor, phonePageHref } from '../public/js/ui/topbar.js?v=530e88f3';
+import { MENU_ROWS, PHONE_PAGE_LABEL, menuRowFor, phonePageHref } from '../public/js/ui/topbar.js?v=5d75c045';
 import { fullGameHref } from '../public/js/phone/companion-data.js?v=876a3d8c';
 
 const root = join(import.meta.dirname, '..');

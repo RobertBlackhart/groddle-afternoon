@@ -16,7 +16,7 @@ import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDe
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
 import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=41a70b24';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
-import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=c4646998';
+import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=476b7fdf';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';

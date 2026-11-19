@@ -6,8 +6,8 @@
 import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { STUCK_MENU, STUCK_TEXT } from '../public/js/slash-commands.js?v=fb3a8442';
-import { placeStuckRow, runStuckFromMenu, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=1b14bdd2';
-import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=530e88f3';
+import { placeStuckRow, runStuckFromMenu, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=9a78e459';
+import { MENU_ROWS, menuRowFor } from '../public/js/ui/topbar.js?v=5d75c045';
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 const AWAY = { owned: true, inHome: false, room: 'street' };

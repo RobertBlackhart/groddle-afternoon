@@ -157,9 +157,10 @@ describe('G188 Make panel tool animations', () => {
     assert.doesNotMatch(css, /mp-tool-grand-ol-grinder|mp-tool-fruit-machine/);
     // A per-tool icon wobble (.mp-tool[data-tool=...], more specific) would replace the sheet's animation.
     assert.doesNotMatch(css, /\.mp-tool\[data-tool=/);
-    // prefers-reduced-motion still stops it (the sheet is also an .mp-tool).
-    assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{\s*\.make-progress \.mp-tool,/);
-    assert.ok(css.indexOf('.make-progress .mp-tool-sheet {') < css.indexOf('@media (prefers-reduced-motion: reduce) {\n  .make-progress .mp-tool,'));
+    // #529: prefers-reduced-motion stops the icon wobble, sparkles and pulse, not the sheet (the art
+    // moving, like the machines and the Tinkertool sprite); the sheet is also an .mp-tool.
+    assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[^}]*?\.make-progress \.mp-tool:not\(\.mp-tool-sheet\),\s*\.make-progress \.mp-spark,\s*\.make-progress \.mp-output \{ animation: none; \}/);
+    assert.doesNotMatch(css, /\.make-progress \.mp-tool,\s*\.make-progress \.mp-spark/);
   });
 
   it('G191: the sharp sheets are the scored FFDec renders, and the Fruit Changing Machine plays all 90 frames', () => {

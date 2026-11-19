@@ -11,10 +11,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=c4646998';
-import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=0f291608';
-import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=7072a4c7';
-import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=bf436021';
+import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=476b7fdf';
+import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=5f876a67';
+import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=04647f8c';
+import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=37c7f88c';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
@@ -105,7 +105,7 @@ describe('G844 the boot probe', () => {
     assert.match(game, /runRenderProbe\(\);\n    \}\);\n  \}\);\n  runRenderProbe\(\);/);
     assert.match(game, /renderProbe = probeRenderTexture\(PIXI, app\?\.renderer\);/);
     assert.match(game, /app\.canvas\.dataset\.renderProbe = renderProbeLine\(/);
-    assert.match(game, /renderProbeLine: \(\) => renderProbeLine\(renderProbe, \{ resolution: app\?\.renderer\?\.resolution, restores: contextRestores \}\),/);
+    assert.match(game, /renderProbeLine: \(\) => renderProbeLine\(renderProbe, \{ resolution: app\?\.renderer\?\.resolution, restores: contextRestores, motion: motionPreference\(\) \}\),/);
   });
 });
 
