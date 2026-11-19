@@ -17,6 +17,7 @@ import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
 import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=41a70b24';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=c4646998';
+import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
@@ -1460,27 +1461,19 @@ export const SKIRT_FADE_DEPTH = 140;
 export const SKIRT_DEEP_SHADE = 0.55;
 
 /**
- * FLICKER (Austin 2026-11-19, Switchback at the right end: "a bottom light brown background on
- * the right side ... it flickers"): the widest piece of the skirt drawn as one quad, in world px.
- * The skirt's fills and fades ran the whole street as one quad (6,900 px on Switchback, 20,010
- * device px at a 1.6x screen's 2.9 resolution), a long thin pair of triangles. On the GPU
- * (Intel through ANGLE/Vulkan here, the MacBook's too) such a triangle wider than about 16,400
- * device px is sometimes not drawn at all: in a raw WebGL copy of the draw, the deep fill's
- * lower-right half went missing at 21% of camera positions, never at 5,660 px or less. With
- * the camera moving, the half came and went frame to frame, and the lighter mirrored band
- * under it flashed as a wedge in the bottom-right corner. Pieces of at most 2,048 px stay under
- * 8,192 device px at the top resolution (render-density MAX_RENDER_RESOLUTION 4).
+ * FLICKER (js/wide-quads.js): `texture` as frame views no longer than a quad as thick as it may
+ * run (quadSpans): [{ texture, dx }], dx the piece's x in `texture`. One street-wide band copy
+ * or fill lost half its quad on the GPU (the bottom-right wedge on Switchback). New views go on
+ * `views`, freed with the strip.
  */
-export const SKIRT_SPAN = 2048;
-
-/** PURE: [x, x + width) cut into consecutive pieces of at most `max` px: [{ x, w }]. */
-export function skirtSpans(x, width, max = SKIRT_SPAN) {
-  const start = Number(x) || 0;
-  const total = Math.max(0, Number(width) || 0);
-  const step = Math.max(1, Number(max) || SKIRT_SPAN);
-  const out = [];
-  for (let at = 0; at < total; at += step) out.push({ x: start + at, w: Math.min(step, total - at) });
-  return out;
+function quadPieceViews(PIXI, texture, views) {
+  const spans = quadSpans(0, texture.width, texture.height);
+  if (spans.length <= 1) return [{ texture, dx: 0 }];
+  return spans.map((s) => {
+    const view = new PIXI.Texture({ source: texture.source, frame: new PIXI.Rectangle(texture.frame.x + s.x, texture.frame.y, s.w, texture.height) });
+    views.push(view);
+    return { texture: view, dx: s.x };
+  });
 }
 
 /** PURE: how many world px above the street's bottom are mirrored below it (SKIRT_BAND, never more than the skirt or the street). */
@@ -1746,7 +1739,7 @@ const SKIRT_BYTES = 24 * 1024 * 1024;
  * Fill the strip under a street's bottom edge (street art ends at bounds.b; the camera can show
  * up to MIN_GROUND_CLEARANCE below it, and the canvas runs on under the overlaid pack). The
  * ground layers' bottom band (skirtBandOffset) is rendered once into one texture per chunk
- * (SKIRT_SPAN px, fewer on a small GPU), laid down the skirt (skirtTiles), shaded at the seam and faded
+ * (QUAD_SPAN px, fewer on a small GPU), laid down the skirt (skirtTiles), shaded at the seam and faded
  * into skirtFadeColour, then that colour runs on to the skirt's foot. The strip sits over the
  * middleground with the middleground's solid art below bounds.b copied back on top (its
  * see-through art there is covered), and the front layers' art below bounds.b (The Great Hole to
@@ -1776,14 +1769,15 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     strip.zIndex = main.inFront ? -1 : main.zIndex + 1;
     strip.label = 'ground-skirt';
     const textures = [];
+    // Frame views of those textures (quadPieceViews, the edge mirror's flips): freed first.
+    const views = [];
     const maxTex = maxTextureSizeOf(renderer) || 4096;
     // How far the middleground's art runs below the edge (in view: the skirt's depth at most).
     const mainBox = main.getLocalBounds();
     const below = Math.max(0, Math.min(depth, Math.ceil(mainBox.maxY - sourceH)));
     let res = Math.min(2, streetBakeResolution(renderer, root.bakeResolutionCap));
     while (res > 0.5 && W * (band + below) * res * res * 4 > SKIRT_BYTES) res /= 1.25;
-    // FLICKER: SKIRT_SPAN wide at most, each chunk's band copies drawn as one quad apiece.
-    const chunkW = Math.max(256, Math.min(SKIRT_SPAN, Math.floor(maxTex / res)));
+    const chunkW = Math.max(256, Math.min(QUAD_SPAN, Math.floor(maxTex / res)));
     // Pixi 8 drops the filters of the container it renders (and makes it a render group), so
     // the layers render inside a throwaway parent: their colour filters apply as on screen.
     // Each goes back to its parent at its index, at its own position.
@@ -1825,9 +1819,10 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
         const rt = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: w, height: band, resolution: res }));
         renderer.render({ container: shell, target: rt, transform: new PIXI.Matrix(1, 0, 0, 1, -x0, -top), clear: true });
         textures.push(rt);
-        for (const tile of skirtTiles(depth, band)) {
-          const spr = new PIXI.Sprite(rt);
-          spr.x = x0;
+        const pieces = quadPieceViews(PIXI, rt, views);
+        for (const tile of skirtTiles(depth, band)) for (const piece of pieces) {
+          const spr = new PIXI.Sprite(piece.texture);
+          spr.x = x0 + piece.dx;
           if (tile.flip) {
             // Upside down: the band's bottom row (the art right at the edge) meets the copy above.
             spr.scale.y = -1;
@@ -1857,10 +1852,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
         holder.destroy({ children: true });
         raw.destroy(true);
         textures.push(solid);
-        const spr = new PIXI.Sprite(solid);
-        spr.x = x0;
-        spr.y = sourceH - SOLID_OVERLAP;
-        solids.push(spr);
+        solids.push({ texture: solid, x: x0 });
       }
       // The band's average colour from an eighth-size copy (one small read per chunk). R29 (#517):
       // through the one readback (js/render-probe.js readbackPixels), which copies it from the
@@ -1896,10 +1888,11 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       const rt = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: padW, height: band, resolution: res }));
       renderer.render({ container: shell, target: rt, transform: new PIXI.Matrix(1, 0, 0, 1, -(W - padW), -top), clear: true });
       textures.push(rt);
-      for (const tile of skirtTiles(depth, band)) {
-        const spr = new PIXI.Sprite(rt);
+      const pieces = quadPieceViews(PIXI, rt, views);
+      for (const tile of skirtTiles(depth, band)) for (const piece of pieces) {
+        const spr = new PIXI.Sprite(piece.texture);
         spr.scale.x = -1;
-        spr.x = W + padW;
+        spr.x = W + padW - piece.dx;
         if (tile.flip) {
           spr.scale.y = -1;
           spr.y = sourceH + tile.y + band;
@@ -1920,17 +1913,15 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     const colour = skirtFadeColour(average, gradientBottom, fallback);
     // Under the mirror: its clear pixels show the ground's colour, not the layers behind.
     const fadeDepth = Math.min(depth, SKIRT_FADE_DEPTH);
-    // FLICKER: every fill and fade in pieces of SKIRT_SPAN (one street-wide quad is sometimes
-    // not drawn by the GPU).
-    const spans = skirtSpans(0, fullW);
-    const base = new PIXI.Graphics();
-    for (const s of spans) base.rect(s.x, sourceH, s.w, depth).fill(average ?? colour);
+    // FLICKER (js/wide-quads.js): every fill, fade and copy in pieces no thinner than the GPU
+    // always draws (one street-wide quad lost half of itself: the bottom-right wedge on Switchback).
+    const base = wideRect(new PIXI.Graphics(), 0, sourceH, fullW, depth, average ?? colour);
     strip.addChild(base);
     for (const spr of mirrors) strip.addChild(spr);
     const stops = skirtFadeStops();
     const fadeTexture = rampTexture(PIXI, colour, stops.fade);
     const shadeTexture = rampTexture(PIXI, 0x000000, stops.shade);
-    const ramps = (texture) => spans.map((s) => {
+    const ramps = (texture) => quadSpans(0, fullW, fadeDepth).map((s) => {
       const spr = new PIXI.Sprite(texture);
       spr.x = s.x;
       spr.y = sourceH;
@@ -1938,11 +1929,19 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       spr.height = fadeDepth;
       return spr;
     });
-    const deep = new PIXI.Graphics();
     // Down past the last copy's foot (it can run up to a band past the skirt's depth).
-    for (const s of spans) deep.rect(s.x, sourceH + fadeDepth, s.w, Math.max(0, depth + band - fadeDepth)).fill(colour);
+    const deep = wideRect(new PIXI.Graphics(), 0, sourceH + fadeDepth, fullW, Math.max(0, depth + band - fadeDepth), colour);
     strip.addChild(...ramps(fadeTexture), ...ramps(shadeTexture), deep);
-    for (const spr of solids) strip.addChild(spr);
+    // The middleground's solid copy, chunk by chunk, each in pieces.
+    const placePieces = (texture, x, y, into) => {
+      for (const piece of quadPieceViews(PIXI, texture, views)) {
+        const spr = new PIXI.Sprite(piece.texture);
+        spr.x = x + piece.dx;
+        spr.y = y;
+        into.addChild(spr);
+      }
+    };
+    for (const chunk of solids) placePieces(chunk.texture, chunk.x, sourceH - SOLID_OVERLAP, strip);
     textures.push(fadeTexture, shadeTexture);
     // The art below the edge darkens into the colour as it goes down (skirtArtFadeStops).
     const artRamp = rampTexture(PIXI, colour, skirtArtFadeStops());
@@ -1950,34 +1949,36 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     let fadeBytes = 0;
     // A cover is a smooth darkening whose edge follows the art to a world px: one texel per px.
     const coverRes = Math.min(1, res);
-    for (const spr of solids) {
-      const w = spr.texture.width;
-      const h = spr.texture.height;
-      const over = edgeFadeTexture(PIXI, renderer, spr.texture, w, h, SOLID_OVERLAP + fadeStart, colour, artRamp, coverRes);
+    for (const chunk of solids) {
+      const w = chunk.texture.width;
+      const h = chunk.texture.height;
+      const over = edgeFadeTexture(PIXI, renderer, chunk.texture, w, h, SOLID_OVERLAP + fadeStart, colour, artRamp, coverRes);
       textures.push(over);
       fadeBytes += w * h * coverRes * coverRes * 4;
-      const cover = new PIXI.Sprite(over);
-      cover.x = spr.x;
-      cover.y = spr.y;
-      strip.addChild(cover);
-      spr.edgeCover = cover;
+      placePieces(over, chunk.x, sourceH - SOLID_OVERLAP, strip);
+      chunk.cover = over;
     }
+    // Pieces of the last `take` px of `texture` (`w` wide), flipped about x = `end` (the layer's
+    // end): the edge mirror's flips.
+    const flipPieces = (texture, w, take, end, y, into) => {
+      const view = new PIXI.Texture({ source: texture.source, frame: new PIXI.Rectangle(w - take, 0, take, texture.height) });
+      views.push(view);
+      for (const piece of quadPieceViews(PIXI, view, views)) {
+        const flip = new PIXI.Sprite(piece.texture);
+        flip.scale.x = -1;
+        flip.x = end + take - piece.dx;
+        flip.y = y;
+        into.addChild(flip);
+      }
+    };
     // EDGE MIRROR (G582): past the right end, the middleground's art below the edge and its fade
     // mirrored too (the last chunk's last `pad` px, flipped about the end), so under the edge the
     // dirt meets its reflection instead of stopping at the end over the skirt's flat colour.
-    const views = [];
     const lastSolid = solids[solids.length - 1];
     if (pad > 0 && lastSolid && lastSolid.x + lastSolid.texture.width >= W - 1) {
-      for (const src of [lastSolid, lastSolid.edgeCover].filter(Boolean)) {
-        const tw = src.texture.width;
-        const take = Math.min(pad, tw);
-        const view = new PIXI.Texture({ source: src.texture.source, frame: new PIXI.Rectangle(tw - take, 0, take, src.texture.height) });
-        views.push(view);
-        const flip = new PIXI.Sprite(view);
-        flip.scale.x = -1;
-        flip.x = src.x + tw + take;
-        flip.y = src.y;
-        strip.addChild(flip);
+      for (const texture of [lastSolid.texture, lastSolid.cover].filter(Boolean)) {
+        const tw = texture.width;
+        flipPieces(texture, tw, Math.min(pad, tw), lastSolid.x + tw, sourceH - SOLID_OVERLAP, strip);
       }
     }
     // Each front layer's art below its bottom (in its own coordinates, where its bottom meets the
@@ -1995,7 +1996,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       }
       let lres = 1;
       while (lres > 0.5 && lw * deepest * lres * lres * 4 > SKIRT_BYTES) lres /= 1.25;
-      const lchunk = Math.max(256, Math.min(SKIRT_SPAN, Math.floor(maxTex / lres)));
+      const lchunk = Math.max(256, Math.min(QUAD_SPAN, Math.floor(maxTex / lres)));
       const home = { parent: lc.parent, index: lc.parent.getChildIndex(lc), x: lc.x, y: lc.y };
       const alone = new PIXI.Container();
       alone.addChild(lc);
@@ -2012,22 +2013,10 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
         art.destroy(true);
         textures.push(over);
         fadeBytes += w * deepest * lres * lres * 4;
-        const spr = new PIXI.Sprite(over);
-        spr.x = x0;
-        spr.y = refY;
-        cover.addChild(spr);
+        placePieces(over, x0, refY, cover);
         // EDGE MIRROR (G582): the last chunk's fade flipped past the layer's end, over its art's
         // reflection there (street-render attachEdgeMirrors).
-        if (pad > 0 && x0 + w >= lw) {
-          const take = Math.min(pad, w);
-          const view = new PIXI.Texture({ source: over.source, frame: new PIXI.Rectangle(w - take, 0, take, deepest) });
-          views.push(view);
-          const flip = new PIXI.Sprite(view);
-          flip.scale.x = -1;
-          flip.x = x0 + w + take;
-          flip.y = refY;
-          cover.addChild(flip);
-        }
+        if (pad > 0 && x0 + w >= lw) flipPieces(over, w, Math.min(pad, w), x0 + w, refY, cover);
       }
       lc.x = home.x;
       lc.y = home.y;
@@ -2721,9 +2710,10 @@ export function buildStreetView(street, PIXI, opts = {}) {
   const themeBot = 0x6b8f3c;
   // EDGE MIRROR: past the ends too, behind the mirrored strips.
   const skyPad = opts.edgeMirror ? 2048 : 0;
-  sky.rect(-skyPad, 0, W + skyPad * 2, sourceH * 0.45).fill(themeTop);
-  sky.rect(-skyPad, sourceH * 0.4, W + skyPad * 2, sourceH * 0.35).fill(themeMid);
-  sky.rect(-skyPad, sourceH * 0.7, W + skyPad * 2, Math.max(sourceH * 0.35, H - sourceH * 0.7)).fill(themeBot);
+  // FLICKER (js/wide-quads.js): in pieces, as the ground skirt (a street-wide quad can lose half of itself).
+  wideRect(sky, -skyPad, 0, W + skyPad * 2, sourceH * 0.45, themeTop);
+  wideRect(sky, -skyPad, sourceH * 0.4, W + skyPad * 2, sourceH * 0.35, themeMid);
+  wideRect(sky, -skyPad, sourceH * 0.7, W + skyPad * 2, Math.max(sourceH * 0.35, H - sourceH * 0.7), themeBot);
   sky.zIndex = -1000;
   if (!skyView) root.addChild(sky);
 

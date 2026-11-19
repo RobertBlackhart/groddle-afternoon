@@ -26,6 +26,8 @@
 
 import { RUBE_YARD_FILES } from './rube-yard-art.js?v=0a67d3e6';
 import { textureFromUrl } from './textures.js?v=1c44e7c3';
+// FLICKER: long thin strips in pieces the GPU always draws (js/wide-quads.js).
+import { wideRect } from './wide-quads.js?v=f34556e6';
 
 export const YARD_W = 1900;
 export const YARD_H = 760;
@@ -119,10 +121,10 @@ function hash(i) {
 
 /** A dirt bank from yTop to yBot with darker strata and grey pebbles. */
 function bank(g, yTop, yBot, fill, strata, seed) {
-  g.rect(-200, yTop, YARD_W + 400, yBot - yTop).fill(fill);
+  wideRect(g, -200, yTop, YARD_W + 400, yBot - yTop, fill);
   for (let i = 0; i < 3; i++) {
     const y = yTop + ((i + 1) * (yBot - yTop)) / 4;
-    g.rect(-200, y, YARD_W + 400, 3).fill({ color: strata, alpha: 0.7 });
+    wideRect(g, -200, y, YARD_W + 400, 3, { color: strata, alpha: 0.7 });
   }
   for (let i = 0; i < 46; i++) {
     const x = hash(seed + i) * YARD_W;
@@ -134,8 +136,8 @@ function bank(g, yTop, yBot, fill, strata, seed) {
 
 /** A grass ledge strip with a lighter lip. */
 function ledge(g, y, fill, lip) {
-  g.rect(-200, y - 8, YARD_W + 400, 16).fill(fill);
-  g.rect(-200, y - 8, YARD_W + 400, 4).fill(lip);
+  wideRect(g, -200, y - 8, YARD_W + 400, 16, fill);
+  wideRect(g, -200, y - 8, YARD_W + 400, 4, lip);
 }
 
 /** A picket fence standing on y from x0 to x1. */
@@ -219,9 +221,9 @@ export function buildRubeYardBackground(PIXI, kit) {
   fence(g, 975, 1420, TIER2, 34);
   bank(g, TIER2, LAWN_TOP, 0x6e4125, 0x58331c, 57);
   ledge(g, TIER2, 0x748a2c, 0x93a83c);
-  g.rect(-200, LAWN_TOP, YARD_W + 400, YARD_H - LAWN_TOP + 200).fill(0x39741c);
-  g.rect(-200, LAWN_TOP, YARD_W + 400, 6).fill(0x5c9a2a);
-  g.rect(-200, F - 30, YARD_W + 400, YARD_H - F + 230).fill(0x44891f);
+  wideRect(g, -200, LAWN_TOP, YARD_W + 400, YARD_H - LAWN_TOP + 200, 0x39741c);
+  wideRect(g, -200, LAWN_TOP, YARD_W + 400, 6, 0x5c9a2a);
+  wideRect(g, -200, F - 30, YARD_W + 400, YARD_H - F + 230, 0x44891f);
   for (let i = 0; i < 26; i++) g.ellipse(hash(i + 300) * YARD_W, F + 18 + hash(i + 301) * 120, 40 + hash(i + 302) * 50, 9);
   g.fill({ color: 0x3f8420, alpha: 0.8 });
   yard.addChild(g);

@@ -32,6 +32,8 @@
 
 import { OPERATION_GROW_FILES } from './operation-grow-art.js?v=3cbe7663';
 import { textureFromUrl } from './textures.js?v=1c44e7c3';
+// FLICKER: long thin strips in pieces the GPU always draws (js/wide-quads.js).
+import { wideRect } from './wide-quads.js?v=f34556e6';
 
 export const GROW_ART_DIR = 'assets/sprites/quest-rooms/operation_grow/';
 
@@ -160,9 +162,9 @@ export function buildGrowBackground(PIXI, kit, geo) {
   // Below the surface: earth everywhere, the slab, then the tunnel cut into it.
   field.addChild(earth(PIXI, -200, FLOOR, W + 200, H + 200, 0xffffff));
   const slab = new PIXI.Graphics();
-  slab.rect(-200, FLOOR, W + 400, CEILING - FLOOR).fill(C.slab);
-  slab.rect(-200, FLOOR - 2, W + 400, 10).fill(C.slabTop);
-  slab.rect(-200, CEILING - 16, W + 400, 16).fill(C.slabLow);
+  wideRect(slab, -200, FLOOR, W + 400, CEILING - FLOOR, C.slab);
+  wideRect(slab, -200, FLOOR - 2, W + 400, 10, C.slabTop);
+  wideRect(slab, -200, CEILING - 16, W + 400, 16, C.slabLow);
   field.addChild(slab);
   for (let i = 0; i < 14; i++) {
     field.addChild(kit.deco(PIXI, i % 2 ? 'ground_spots_dark_2' : 'ground_spots_dark_1', 80 + i * 180 + hash(i + 20) * 70,

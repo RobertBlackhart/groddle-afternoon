@@ -17,7 +17,7 @@ import {
 } from '../public/js/travel.js?v=7fd6e363';
 import { STREET_INDEX, availableStreetTsids } from '../public/js/street-loader.js?v=25d965fa';
 import { pickConnection as modelPick, signpostNear, worldToScreen } from '../public/js/street-model.js?v=dd20cc44';
-import { setSignpostHover, signpostBoardAt } from '../public/js/street-render.js?v=6e20290d';
+import { setSignpostHover, signpostBoardAt } from '../public/js/street-render.js?v=7072a4c7';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const streetsDir = join(__dirname, '../public/assets/streets');

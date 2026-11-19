@@ -13,8 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { RUBE_YARD_FILES } from '../public/js/rube-yard-art.js?v=0a67d3e6';
 import {
   YARD_ART_DIR, YARD_FLOOR, YARD_FRONT, YARD_PIECES, YARD_W, TIER1, TIER2, LAWN_TOP,
-} from '../public/js/rube-yard-scene.js?v=ebec740b';
-import * as room from '../public/js/quest-rooms/rube-yard.js?v=16730dcc';
+} from '../public/js/rube-yard-scene.js?v=cca3c376';
+import * as room from '../public/js/quest-rooms/rube-yard.js?v=d8a90fb0';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(here, '..');

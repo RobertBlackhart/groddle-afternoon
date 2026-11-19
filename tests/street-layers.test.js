@@ -19,15 +19,12 @@ import {
   skirtBandOffset,
   skirtGroundOffset,
   skirtSolidAlpha,
-  skirtSpans,
   skirtTiles,
   SKIRT_BAND,
-  SKIRT_SPAN,
   SKIRT_FADE_DEPTH,
   SKIRT_SLIDE_MAX,
-} from '../public/js/street-render.js?v=6e20290d';
+} from '../public/js/street-render.js?v=7072a4c7';
 import { streetHeight, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
-import { MAX_RENDER_RESOLUTION } from '../public/js/render-density.js?v=74c6f5f9';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const street = (tsid) =>
@@ -69,17 +66,17 @@ describe('street layer data', () => {
     assert.match(body, /spr\.y = sourceH \+ tile\.y;/);
     assert.ok(!/ROWS - 1, w, 1/.test(body), 'no stretched one-row frame');
     // Nothing above bounds.b: the fills and overlays start at the edge or below it.
-    const rects = [...body.matchAll(/\.rect\(s\.x, ([^,]+),/g)];
+    const rects = [...body.matchAll(/wideRect\(new PIXI\.Graphics\(\), 0, ([^,]+),/g)];
     assert.equal(rects.length, 2, 'the base and the deep fill');
     for (const m of rects) assert.match(m[1], /^sourceH( \+ fadeDepth)?$/, m[0]);
-    assert.match(body, /const ramps = \(texture\) => spans\.map\(\(s\) => \{[^}]*spr\.y = sourceH;/);
+    assert.match(body, /const ramps = \(texture\) => quadSpans\(0, fullW, fadeDepth\)\.map\(\(s\) => \{[^}]*spr\.y = sourceH;/);
     // Over the middleground (under the avatars), with the middleground's solid art below the edge
     // copied back on top; the front layers still draw over the strip.
     assert.match(body, /strip\.zIndex = main\.inFront \? -1 : main\.zIndex \+ 1;/);
-    assert.match(body, /spr\.y = sourceH - SOLID_OVERLAP;/);
-    assert.match(body, /for \(const spr of solids\) strip\.addChild\(spr\);/);
+    const copy = 'for (const chunk of solids) placePieces(chunk.texture, chunk.x, sourceH - SOLID_OVERLAP, strip);';
+    assert.ok(body.includes(copy));
     const fades = body.indexOf('strip.addChild(...ramps(fadeTexture), ...ramps(shadeTexture), deep)');
-    assert.ok(fades > 0 && fades < body.indexOf('for (const spr of solids) strip.addChild(spr)'), 'the copy goes over the fade');
+    assert.ok(fades > 0 && fades < body.indexOf(copy), 'the copy goes over the fade');
     // One texture per chunk, freed with the view.
     // The edge mirror's texture views go first (their sources go with the textures they frame).
     assert.match(body, /root\.once\('destroyed', \(\) => \{\s*(?:\/\/[^\n]*\n\s*)?for \(const v of views\) v\.destroy\(false\);\s*for \(const t of textures\) t\.destroy\(true\);/);
@@ -164,25 +161,28 @@ describe('ground skirt (the strip under a street in the Modern UI)', () => {
     assert.equal(skirtBandHeight(172, 30), 30, 'a short room mirrors only what it has');
   });
 
-  it('draws the skirt in pieces a GPU always draws, never one street-wide quad (flicker, Switchback)', () => {
-    // A thin quad wider than about 16,400 device px lost its lower-right triangle on some frames
-    // (Intel via ANGLE/Vulkan, the MacBook too): the deep fill's half went missing as the camera
-    // moved and the lighter band under it flashed in the bottom-right corner.
-    assert.ok(SKIRT_SPAN * MAX_RENDER_RESOLUTION <= 8192, 'a piece stays well under the limit at the top resolution');
-    const spans = skirtSpans(0, 6900);
-    assert.deepEqual(spans, [{ x: 0, w: 2048 }, { x: 2048, w: 2048 }, { x: 4096, w: 2048 }, { x: 6144, w: 756 }]);
-    // Edge to edge: each piece starts where the last ended, no gap and no overlap to double a fade.
-    for (let i = 1; i < spans.length; i += 1) assert.equal(spans[i].x, spans[i - 1].x + spans[i - 1].w);
-    assert.deepEqual(skirtSpans(100, 2048), [{ x: 100, w: 2048 }]);
-    assert.deepEqual(skirtSpans(0, 0), []);
-    assert.deepEqual(skirtSpans(0, 10.5, 4), [{ x: 0, w: 4 }, { x: 4, w: 4 }, { x: 8, w: 2.5 }]);
+  it('draws the skirt and the painted sky in pieces a GPU always draws (flicker, Switchback)', () => {
+    // One street-wide quad (the deep fill, 6,900 x 88) lost its lower-right triangle on some
+    // frames on Intel and the MacBook: the lighter band under it flashed in the bottom-right
+    // corner as the camera moved (js/wide-quads.js has the measurements).
     const src = readFileSync(join(here, '../public/js/street-render.js'), 'utf8');
-    const body = src.slice(src.indexOf('function buildGroundSkirt('), src.indexOf('function addLadderTiles('));
-    // The fills, the fades and the textures laid down the skirt: nothing as wide as the street.
-    assert.ok(!/fullW,/.test(body.replace('skirtSpans(0, fullW)', '')), 'no rect or sprite sized fullW');
+    const body = src.slice(src.indexOf('function buildGroundSkirt('), src.indexOf('/** EDGE MIRROR (G582): px a mirrored strip runs on'));
+    assert.ok(body.length > 1000);
+    // Fills and fades: through wideRect / quadSpans, nothing sized to the whole street.
+    assert.ok(!/\.rect\(/.test(body), 'no plain rect in the skirt');
     assert.ok(!/\.width = fullW/.test(body));
-    assert.match(body, /const chunkW = Math\.max\(256, Math\.min\(SKIRT_SPAN, /);
-    assert.match(body, /const lchunk = Math\.max\(256, Math\.min\(SKIRT_SPAN, /);
+    assert.match(body, /const deep = wideRect\(new PIXI\.Graphics\(\), 0, sourceH \+ fadeDepth, fullW, /);
+    // Band copies, the solid copy, its covers, the front layers' fades and every edge-mirror flip:
+    // sprites only from pieces (quadPieceViews), never from a whole chunk texture.
+    assert.ok(!/new PIXI\.Sprite\((rt|solid|over|view|art)\)/.test(body), 'no sprite of a whole chunk');
+    assert.equal((body.match(/quadPieceViews\(PIXI, /g) || []).length, 4, 'band copies, pad copies, placePieces, flipPieces');
+    assert.match(body, /placePieces\(over, x0, refY, cover\);/);
+    assert.match(body, /flipPieces\(over, w, Math\.min\(pad, w\), x0 \+ w, refY, cover\)/);
+    assert.match(body, /const chunkW = Math\.max\(256, Math\.min\(QUAD_SPAN, /);
+    assert.match(body, /const lchunk = Math\.max\(256, Math\.min\(QUAD_SPAN, /);
+    // The meadow sky the 11 streets without an archived gradient paint.
+    assert.ok(!/sky\.rect\(/.test(src));
+    assert.equal((src.match(/wideRect\(sky, -skyPad, /g) || []).length, 3);
   });
 
   it('lays the band down the skirt mirrored, then the right way up, so its rows always meet', () => {
@@ -378,7 +378,7 @@ describe('ground skirt (the strip under a street in the Modern UI)', () => {
     assert.match(helper, /const mask = new PIXI\.Sprite\(white\);/);
     assert.match(src, /lc\.edgeFade\.x = x;\s*lc\.edgeFade\.y = y;/);
     const body = src.slice(src.indexOf('function buildGroundSkirt('), src.indexOf('function addLadderTiles('));
-    assert.match(body, /edgeFadeTexture\(PIXI, renderer, spr\.texture, w, h, SOLID_OVERLAP \+ fadeStart, colour, artRamp, coverRes\)/);
+    assert.match(body, /edgeFadeTexture\(PIXI, renderer, chunk\.texture, w, h, SOLID_OVERLAP \+ fadeStart, colour, artRamp, coverRes\)/);
     assert.match(body, /cover\.zIndex = lc\.zIndex \+ 5;/);
     assert.ok(body.indexOf('for (const child of culled) child.culled = true;') > body.indexOf('for (const lc of fronts)'), 'culled decos are in the front layers\' covers too');
     // The street map snapshots the street down to its edge with each layer stretched to fit: the
