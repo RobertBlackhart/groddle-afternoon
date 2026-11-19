@@ -14304,6 +14304,9 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   filter: drop-shadow(0 0 1px var(--minimap-sign-halo)) drop-shadow(0 0 1px var(--minimap-sign-halo));
 }
 .street-minimap .smm-sign img { display: block; width: 100%; height: 100%; }
+/* #463: a subway entrance, the hub map's subway icon (the remake's own: Glitch's minimap showed only signposts). */
+.street-minimap .smm-sign.smm-station { width: calc(12px * var(--mm-u)); height: calc(12px * var(--mm-u)); }
+.street-minimap .smm-sign.smm-station img { object-fit: contain; }
 .street-minimap .smm-sign:hover,
 .street-minimap .smm-sign:focus-visible { outline: none; filter: drop-shadow(0 0 1px var(--minimap-sign-hover)) drop-shadow(0 0 1px var(--minimap-sign-hover)) drop-shadow(0 0 1px var(--minimap-sign-hover)); }
 /* A dot: the circle and its 2 px ring (Flash strokes straddle the edge: the fill shows r - 1). */
@@ -14468,6 +14471,7 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   font: inherit; font-size: var(--fs-base); text-align: left; cursor: pointer;
 }
 .smm-sheet-sign img { flex: none; width: 14px; height: 21px; }
+.smm-sheet-sign[data-kind="station"] img { object-fit: contain; }
 .smm-sheet-sign span { flex: 1 1 auto; min-width: 0; }
 .smm-sheet-sign[data-side="left"]::before { content: "←" / ""; color: var(--text-muted); }
 .smm-sheet-sign[data-side="right"]::after { content: "→" / ""; color: var(--text-muted); }

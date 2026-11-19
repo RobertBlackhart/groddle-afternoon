@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=c4646998';
-import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=fb5e7850';
+import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=0f291608';
 import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=8571136f';
 import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=bf436021';
 

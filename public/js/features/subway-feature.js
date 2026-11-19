@@ -1143,12 +1143,18 @@ export const subwayFeature = {
     };
   },
 
-  /** Surface entrances: their archived doors name the station tsids; point them at the rebuilt stations. */
+  /**
+   * Surface entrances: their archived doors name the station tsids; point them at the rebuilt stations.
+   * Each entrance also carries its station's name (`subwayStation`): the street map shows it (#463,
+   * js/ui/street-minimap.js stationMarks).
+   */
   prepareStreet(street) {
     let linked = 0;
     for (const door of street?.doors || []) {
-      const station = door?.connect && !door.connect.street ? stationByTsid(door.connect.tsid) : null;
+      const station = door?.connect ? stationByTsid(door.connect.tsid) : null;
       if (!station) continue;
+      door.subwayStation = station.label;
+      if (door.connect.street) continue;
       door.connect.street = station.streetTsid;
       door.connect.arrive = stationArrival(door.connect.x);
       linked += 1;

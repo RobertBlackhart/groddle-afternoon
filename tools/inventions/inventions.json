@@ -4893,6 +4893,31 @@
    "rows": [
     "G1034"
    ]
+  },
+  {
+   "id": "minimap-subway-stations",
+   "title": "Subway entrances on the street map like signposts (the hub map's subway icon), each with a walk-to row under the phone street map beside the signposts' (#463).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ui/street-minimap.js",
+     "symbol": "stationMarks STATION_MARK"
+    },
+    {
+     "file": "public/js/features/street-minimap-feature.js",
+     "symbol": "phoneSignRows phoneOpen"
+    },
+    {
+     "file": "public/js/features/subway-feature.js",
+     "symbol": "prepareStreet door.subwayStation"
+    }
+   ],
+   "why": "Glitch's minimap showed only signposts (MiniMapView.as maybeAddSignpost); a player asked to find the subway from the map (#463).",
+   "ruling": "Austin 2026-11-19: approved the player's request (#463) for lane smallk",
+   "rows": [
+    "G1031"
+   ]
   }
  ]
 }

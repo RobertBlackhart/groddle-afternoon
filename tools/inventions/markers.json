@@ -523,6 +523,9 @@
     "ours: street's (game.js clears it); only its bubble is ours.": "ours-street-jobs",
     "remake-own: gems are found, under a gem ask still open (the remake's own line; no": "gem-hints"
   },
+  "public/js/features/street-minimap-feature.js": {
+    "remake-own: * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's": "minimap-subway-stations"
+  },
   "public/js/features/street-spirits-feature.js": {
     "stand-in: // Keep the stand-in if the art did not": "not-an-invention",
     "stand-in: Hide the stand-in body and put the region's spirit in its place,": "not-an-invention"
@@ -1205,6 +1208,8 @@
   },
   "public/js/ui/street-minimap.js": {
     "ours: // RIGHTCLICK: the map is ours; only a player's dot and a signpost open a": "right-click-menus",
+    "remake-own: * PURE (#463, the remake's own: Glitch's minimap showed only signposts,": "minimap-subway-stations",
+    "remake-own: the subway entrances beside the signposts (the remake's own).": "minimap-subway-stations",
     "stand-in: * at all got a fogged stand-in until the snap (MiniMapView.show": "ours-street-minimap"
   },
   "public/js/vendor-finder.js": {
@@ -1272,7 +1277,8 @@
     "reimagined: .avatar-reimagined-tag": "ours-style-css",
     "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
     "reimagined: .badge-reimagined": "ours-style-css",
-    "remake-own: * remake's own popup column. Strip and feed share each": "ours-style-css"
+    "remake-own: * remake's own popup column. Strip and feed share each": "ours-style-css",
+    "remake-own: subway entrance, the hub map's subway icon (the remake's own: Glitch's minimap showed only signposts).": "minimap-subway-stations"
   },
   "tools/achievement-overrides.mjs": {
     "ours: no GSJS file at all (G982: Pot Luck Day's five, ours):": "pot-luck-badges",

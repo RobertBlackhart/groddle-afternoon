@@ -56,6 +56,9 @@
  *   a destination walks there (MAPWALK) and closes it; so do the X, a tap outside and Esc. It costs
  *   nothing while closed: the view, its picture canvas and its one snapshot are made on open and freed
  *   on close (view.destroy zeroes the canvases), and nothing runs per tick but a street check.
+ * - SUBWAY (#463, a player's request Austin approved 2026-11-19): a street's subway entrance shows on
+ *   the map like a signpost (js/ui/street-minimap.js stationMarks, the hub map's subway icon), and the
+ *   phone sheet lists it with the signposts, a tap walks there.
  *
  * Canvas data: streetMap (shown|off|no-map|hidden|phone), streetMapFog, streetMapExpanded,
  * streetMapDots, streetMapDotIds, streetMapSigns, streetMapPicture (lines|snapshot),
@@ -66,7 +69,7 @@
  * refused). QA: &streetmapexpand=1 expands it on each street.
  */
 
-import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, streetMapOn } from '../ui/street-minimap.js?v=fb5e7850';
+import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=0f291608';
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=610e021b';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
@@ -516,8 +519,9 @@ export function phoneMapWidth(street, availW, availH) {
 }
 
 /**
- * PURE: the signposts' rows under the phone map, left to right: { id, x, y, text, side } where side
- * says which way it stands from you ('left', 'right' or 'here', within 60 world px).
+ * PURE: the signposts' rows under the phone map, left to right: { id, kind, x, y, text, side } where
+ * side says which way it stands from you ('left', 'right' or 'here', within 60 world px). A subway
+ * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's name.
  */
 export function phoneSignRows(marks = [], youX = null) {
   return [...marks]
@@ -526,8 +530,9 @@ export function phoneSignRows(marks = [], youX = null) {
     .map((m) => {
       const dx = Number.isFinite(youX) ? m.x - youX : 0;
       const side = !Number.isFinite(youX) || Math.abs(dx) <= 60 ? 'here' : dx < 0 ? 'left' : 'right';
-      const text = String(m.tip || '').split('\n').filter(Boolean).join(', ') || 'Signpost';
-      return { id: m.id, x: m.x, y: m.y, text, side };
+      const kind = m.kind === 'station' ? 'station' : 'sign';
+      const text = String(m.tip || '').split('\n').filter(Boolean).join(', ') || (kind === 'station' ? 'Subway station' : 'Signpost');
+      return { id: m.id, kind, x: m.x, y: m.y, text, side };
     });
 }
 
@@ -581,7 +586,7 @@ function phoneOpen(engine) {
   sync(engine, true);
   view.expand(true);
   // The signposts' destinations, a tap away.
-  const marks = [...signpostMarks(engine.street), ...(isLiveScene(engine.streetView) ? sceneSignMarks(engine.interactables || []) : [])];
+  const marks = [...signpostMarks(engine.street), ...(isLiveScene(engine.streetView) ? sceneSignMarks(engine.interactables || []) : []), ...stationMarks(engine.street)];
   const rows = phoneSignRows(marks, engine.player?.x);
   if (rows.length) {
     const list = doc.createElement('ul');
@@ -592,11 +597,12 @@ function phoneOpen(engine) {
       b.className = 'smm-sheet-sign';
       b.dataset.side = row.side;
       b.dataset.signId = row.id;
-      b.innerHTML = `<img alt="" src="${classicArtUrl('teensy_signpost')}" /><span></span>`;
+      b.dataset.kind = row.kind;
+      b.innerHTML = `<img alt="" src="${classicArtUrl(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost')}" /><span></span>`;
       b.querySelector('span').textContent = row.text;
-      b.setAttribute('aria-label', `Walk to the signpost to ${row.text}`);
+      b.setAttribute('aria-label', row.kind === 'station' ? `Walk to ${row.text}` : `Walk to the signpost to ${row.text}`);
       b.addEventListener('click', () => {
-        if (walkFromMap(engine, { kind: 'sign', id: row.id, x: row.x, y: row.y }, { keyboard: true })) phoneClose(engine, { walked: true });
+        if (walkFromMap(engine, { kind: row.kind, id: row.id, x: row.x, y: row.y }, { keyboard: true })) phoneClose(engine, { walked: true });
       });
       li.append(b);
       list.append(li);

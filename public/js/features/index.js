@@ -37,7 +37,7 @@ import { partySpacesFeature } from './party-spaces-feature.js?v=6fa1b061';
 import { seasonsFeature } from './seasons-feature.js?v=b905225e';
 import { cameraModeFeature } from './camera-mode-feature.js?v=d32a5196';
 import { newxpFeature } from './newxp-feature.js?v=f9dcb91c';
-import { streetMinimapFeature } from './street-minimap-feature.js?v=db9b3a2d';
+import { streetMinimapFeature } from './street-minimap-feature.js?v=265068b4';
 
 export { questFlagsFeature };
 
@@ -107,7 +107,7 @@ import { rebuiltRoomsFeature } from './rebuilt-rooms-feature.js?v=9d7146dc'; FEA
 import { deadEndsFeature } from './dead-ends-feature.js?v=cab98a1e'; FEATURES.push(deadEndsFeature);
 import { interrogationRoomFeature } from './interrogation-room-feature.js?v=c8c878b3'; FEATURES.push(interrogationRoomFeature);
 import { towerFloorsFeature } from './tower-floors-feature.js?v=01b23324'; FEATURES.push(towerFloorsFeature);
-import { subwayFeature } from './subway-feature.js?v=6821d91e'; FEATURES.push(subwayFeature);
+import { subwayFeature } from './subway-feature.js?v=b69338db'; FEATURES.push(subwayFeature);
 import { vendorNpcsFeature } from './vendor-npcs-feature.js?v=cea0389d'; FEATURES.push(vendorNpcsFeature);
 import { powdersFeature } from './powders-feature.js?v=c2b402bb'; FEATURES.push(powdersFeature);
 import { itemVerbsFeature } from './item-verbs-feature.js?v=7300096f'; FEATURES.push(itemVerbsFeature);

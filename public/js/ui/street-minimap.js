@@ -109,6 +109,8 @@ export const YOU_DOT = Object.freeze({ r: 4, ring: 2, fill: '#000000', stroke: '
 export const OTHER_DOT = Object.freeze({ r: 5, ring: 2, fill: '#ffffff', stroke: '#000000' });
 export const ITEM_DOT = Object.freeze({ r: 5, ring: 2, fill: '#f8992a', stroke: '#000000' });
 export const SIGNPOST_MARK = Object.freeze({ w: 10, h: 15 });
+/** #463: a subway entrance's mark, the hub map's subway icon (map_icon_subway, 24 x 23) at half size. */
+export const STATION_MARK = Object.freeze({ w: 12, h: 12 });
 /** The walk's goal ring (the remake's; the client drew none): its size in map units. */
 export const DEST_MARK = Object.freeze({ d: 8 });
 
@@ -211,6 +213,24 @@ export function signpostMarks(street) {
   return out;
 }
 
+/**
+ * PURE (#463, the remake's own: Glitch's minimap showed only signposts, MiniMapView.as
+ * maybeAddSignpost): the street's subway entrances, as marks like the signposts'. Doors are in
+ * street space already (bottom-centre); the subway feature names each entrance's station
+ * (features/subway-feature.js prepareStreet: door.subwayStation).
+ */
+export function stationMarks(street) {
+  const out = [];
+  for (const door of street?.doors || []) {
+    if (!door || door.hidden || !door.subwayStation) continue;
+    const x = Number(door.x);
+    const y = Number(door.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    out.push({ kind: 'station', id: `station:${door.id || out.length}`, x, y, tip: String(door.subwayStation) });
+  }
+  return out;
+}
+
 /** PURE: ColorUtil.getDotColor: a '#rrggbb' group colour, anything else black. */
 export function dotColor(colorGroup) {
   const s = String(colorGroup || '');
@@ -243,7 +263,7 @@ export function markHasMenu(mark) {
 /** PURE: a mark's tip (getTip 923-970): a post's places one per line, a player's or item's label, none for you. */
 export function tipFor(mark) {
   if (!mark || mark.kind === 'you') return null;
-  if (mark.kind === 'sign') return mark.tip || null;
+  if (mark.kind === 'sign' || mark.kind === 'station') return mark.tip || null;
   const label = String(mark.label || '').trim();
   return label || null;
 }
@@ -757,7 +777,10 @@ export function createStreetMinimap(doc, host, opts = {}) {
     refreshScroll();
     const sw = SIGNPOST_MARK.w * geom.u;
     const sh = SIGNPOST_MARK.h * geom.u;
-    for (const s of signs.values()) placeEl(s.el, s.mark.x, s.mark.y, sw, sh);
+    for (const s of signs.values()) {
+      if (s.mark.kind === 'station') placeEl(s.el, s.mark.x, s.mark.y, STATION_MARK.w * geom.u, STATION_MARK.h * geom.u);
+      else placeEl(s.el, s.mark.x, s.mark.y, sw, sh);
+    }
     for (const d of dots.values()) {
       const size = dotLook(d.mark).size * geom.u;
       placeEl(d.el, d.mark.x, d.mark.y, size, size);
@@ -941,19 +964,24 @@ export function createStreetMinimap(doc, host, opts = {}) {
   });
 
   function addSign(mark) {
-    const el = markButton('sign', mark.id);
-    el.setAttribute('aria-label', mark.tip ? `Signpost to ${mark.tip.split('\n').join(', ')}` : 'Signpost');
+    const station = mark.kind === 'station';
+    const el = markButton(station ? 'station' : 'sign', mark.id);
+    el.setAttribute('aria-label', station ? mark.tip || 'Subway station' : mark.tip ? `Signpost to ${mark.tip.split('\n').join(', ')}` : 'Signpost');
     signsEl.append(el);
     signs.set(mark.id, { mark, el });
   }
 
+  /** The signposts among the marks (a subway entrance is not one). */
+  const signCount = () => [...signs.values()].filter((s) => s.mark.kind !== 'station').length;
+
   function markButton(kind, id) {
     const el = doc.createElement('button');
     el.type = 'button';
-    el.className = kind === 'sign' ? 'smm-sign' : `smm-dot smm-${kind}`;
+    el.className = kind === 'sign' ? 'smm-sign' : kind === 'station' ? 'smm-sign smm-station' : `smm-dot smm-${kind}`;
     el.dataset.mark = id;
     el.dataset.kind = kind;
     if (kind === 'sign') el.innerHTML = `<img alt="" src="${esc(artUrl('teensy_signpost'))}" />`;
+    if (kind === 'station') el.innerHTML = `<img alt="" src="${esc(artUrl('map_icon_subway'))}" />`;
     return el;
   }
 
@@ -1015,7 +1043,11 @@ export function createStreetMinimap(doc, host, opts = {}) {
       root.dataset.fog = fogged ? 'true' : 'false';
       for (const mark of signpostMarks(street)) addSign(mark);
       for (const mark of sceneMarks) addSign(mark);
-      root.dataset.signs = String(signs.size);
+      // #463: the subway entrances beside the signposts (the remake's own).
+      const stations = stationMarks(street);
+      for (const mark of stations) addSign(mark);
+      root.dataset.signs = String(signCount());
+      root.dataset.stations = String(stations.length);
       layout();
     },
     /**
@@ -1032,7 +1064,7 @@ export function createStreetMinimap(doc, host, opts = {}) {
       }
       sceneMarks = (marks || []).filter((mark) => mark && String(mark.id || '').startsWith('scene:'));
       for (const mark of sceneMarks) addSign(mark);
-      root.dataset.signs = String(signs.size);
+      root.dataset.signs = String(signCount());
       placeAll();
     },
     /** The size of the picture canvas in device px (the snapshot's target). */
