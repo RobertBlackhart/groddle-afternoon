@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2807,
+  "commits": 2808,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "The loading card shows a street's Home to: list as it appears, up 4 s at most, and a click or key skips it"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "Trades, mail, auctions, boards, drops and home sales go through while the game is saving"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Race Tickets and teleports work inside a Party Space, as in Glitch"
    }
   ]
  },
