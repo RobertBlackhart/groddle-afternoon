@@ -14,8 +14,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { gpsText, legStep, planRoute, rideLine, routeGraph, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=71fa73cd';
-import { CAR_TSID, STATIONS, SUBWAY_LINE, findStation } from '../public/js/subway.js?v=151bd7de';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=5d3c1660';
+import { CAR_TSID, STATIONS, SUBWAY_LINE, findStation, stationByTsid } from '../public/js/subway.js?v=151bd7de';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=09577795';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=25d965fa';
 
@@ -109,8 +109,11 @@ describe('#538 the route feature walks a route through the subway', () => {
       homeContext: () => ({ inHome: false }),
       transientInstance: () => false,
       questState: { active: {} },
-      // subway-feature mapStreet: in the train, the stop it last stood at.
-      query: (hook) => (hook === 'mapStreet' && stop ? { tsid: stop.surfaceStreetTsid, hubId: stop.surfaceHubId } : null),
+      // subway-feature mapStreet: a station's own street, in the train the stop it last stood at.
+      query: (hook) => {
+        const at = stationByTsid(engine.streetTsid) || (engine.streetTsid === CAR_TSID ? stop : null);
+        return hook === 'mapStreet' && at ? { tsid: at.surfaceStreetTsid, hubId: at.surfaceHubId } : null;
+      },
     };
     createFeatureHost([mapRoutesFeature]);
   });
@@ -135,6 +138,15 @@ describe('#538 the route feature walks a route through the subway', () => {
     assert.deepEqual(go(GFJ.streetTsid), ['on', 'Groddle Forest Junction'], 'off at the stop: up the steps');
     assert.deepEqual(go(surface(GFJ)), ['on', 'Adanac']);
     assert.deepEqual(go(GFJ.streetTsid), ['on', 'Groddle Forest Junction'], 'back down: the steps still');
+  });
+
+  it('a route set on a platform starts from the station\'s street', () => {
+    mapRoutesFeature.mapRoute('clear', {}, engine);
+    go(JUTUAN.streetTsid);
+    const res = mapRoutesFeature.mapRoute('set', { to: BLUE_MOUNTAIN_BORE }, engine);
+    assert.equal(res.route.path[0], surface(JUTUAN));
+    assert.equal(engine.data.routeNext, 'Subway Red Line');
+    assert.equal(mapRoutesFeature.mapRoute('find', { to: BLUE_MOUNTAIN_BORE }, engine).hops, 3);
   });
 
   it('off at a stop the route does not use: a new route from that station\'s street', () => {

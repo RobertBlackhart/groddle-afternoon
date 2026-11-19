@@ -267,7 +267,8 @@ function questActive(engine, quest) {
 /* ------------------------------------------------------------ set / clear */
 
 function setRoute(engine, opts = {}) {
-  const from = opts.from || (offWorld(engine) ? '' : engine.streetTsid);
+  // #538: underground the route starts from the station's street (the train's last stop's), as legStep reads it.
+  const from = opts.from || (offWorld(engine) ? '' : routeStreet(engine));
   const res = planRoute(state, roads(engine) || {}, {
     from,
     to: opts.to,
@@ -296,7 +297,7 @@ function findNearest(engine, opts = {}) {
     return { unknown: true };
   }
   if (offWorld(engine) || engine.homeContext?.().inHome) return { unknown: true };
-  const path = findRoute(graph, engine.streetTsid, opts.to, { rides, oneWay, startCut: cutHere(engine) });
+  const path = findRoute(graph, routeStreet(engine), opts.to, { rides, oneWay, startCut: cutHere(engine) });
   return path ? { destination: path[path.length - 1], hops: path.length - 1 } : null;
 }
 
