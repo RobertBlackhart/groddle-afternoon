@@ -475,17 +475,6 @@ describe('report 185: every gravity pad of Purplysa fires where the avatar stand
       const floor = linesAt(t.x, -1).filter((y) => y <= d.y + oy).pop();
       floors[t.id] = Math.round(floor);
       assert.ok(d.y + oy - floor >= 29 && d.y + oy - floor <= 42, `${t.id}: art bottom ${d.y + oy}, floor ${floor}`);
-      if (t.id === 'pad_floor_7464') {
-        // Known dead, left so on purpose: its box is under the block (y 454-492, the floor is 439). The block
-        // lies under the crystals (icicles_8, 97 px above), which sent the avatar back in most tries in the
-        // game, pad on or off, so a moved box could not be seen working (the note in the data has the rest).
-        assert.equal(triggerHit(t, t.x, floor), false, 'pad 7464 is still off: move it with the avatar height');
-        const crystals = data[TSID].triggers.find((c) => c.id === 'icicles_8');
-        assert.ok(Math.abs(crystals.x - t.x) <= 2 && crystals.w / 2 > t.w / 2, 'the crystals hang over the whole pad');
-        assert.equal(floor - (crystals.y + 4), 97);
-        assert.match(raw.streets[TSID].triggers.find((c) => c.id === t.id).why, /Known wrong, left as first measured/);
-        continue;
-      }
       for (const dy of [-2, 0, 2]) assert.equal(triggerHit(t, t.x, floor + dy), true, `${t.id} at its floor ${floor}${dy ? ` ${dy}` : ''}`);
       for (const dx of [-20, 20]) assert.equal(triggerHit(t, t.x + dx, floor), true, `${t.id} ${dx} px off centre`);
       assert.equal(t.y, Math.round(floor) + 4, `${t.id}: the box sits on its floor (the measure of the other pads)`);
@@ -494,7 +483,18 @@ describe('report 185: every gravity pad of Purplysa fires where the avatar stand
     // Report #185's pad was measured to the underside of its block (pc_perm 1, y 456), not its top (424).
     assert.equal(floors.pad_floor_7465, 424);
     assert.deepEqual(linesAt(4687, 1).filter((y) => y > 424 && y < 500), [456]);
+    // Report #185's second pad was measured to its block's underside too (pc_perm 1, y 484), not its top (439).
+    assert.equal(floors.pad_floor_7464, 439);
     assert.deepEqual(linesAt(3376, 1).filter((y) => y > 439 && y < 500), [484]);
+    // Its block lies under the crystals (icicles_8): the float up goes past them only by stepping right,
+    // where the block runs on beyond their right end.
+    const crystals = data[TSID].triggers.find((c) => c.id === 'icicles_8');
+    const pad7464 = pads.find((t) => t.id === 'pad_floor_7464');
+    assert.ok(Math.abs(crystals.x - pad7464.x) <= 2, 'the crystals hang over the pad');
+    assert.equal(439 - (crystals.y + 4), 97, 'with 97 px between the block and the crystals');
+    const block = st.platforms.find((p) => p.id === 'plat_1337125697387');
+    assert.ok(Math.max(block.x1, block.x2) + ox > crystals.x + crystals.w / 2, 'the block runs on past the crystals');
+    assert.doesNotMatch(raw.streets[TSID].triggers.find((c) => c.id === 'pad_floor_7464').why, /Known wrong/);
     // Nothing hangs over it: the way up from the U-shaped block is clear to the ceiling.
     const over = data[TSID].triggers.filter((c) => c.respawn && Math.abs(c.x - 4687) <= c.w / 2 + 28 && c.y < 424);
     assert.deepEqual(over.map((c) => c.id), []);

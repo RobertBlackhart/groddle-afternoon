@@ -718,13 +718,13 @@
     {
      "id": "pad_floor_7464",
      "x": 3376,
-     "y": 488,
+     "y": 443,
      "w": 56,
      "h": 34,
      "onEnter": [
       "part2_gravity_off"
      ],
-     "why": "Floor pad hover_platform_1340320557464 (middleground, screen x=3376, sprite bottom y=474). Known wrong, left as first measured: the box is at the underside of its block (plat_1337125697389, y=484, pc_perm 1: a ceiling), not at the floor the pad stands on (plat_1337125697387, x 3304-3463, y=439), so this pad never fires. Not moved with pad 7465 (report #185): the block lies under the crystal cluster icicles_8, 97 px above its floor over its whole width, and is reached only through that gap. In the game on 2026-11-10 an avatar set on the block was sent back by those crystals in most tries, pad on or off, so a moved box could not be seen working. Body boxes take the avatar's height from its drawn bounds (51 px measured under a ceiling, more at other moments), not the 34 px these levels were built for. Move the box to y 443 when that height is settled. Part 2 pad set (show2_* events): touching it turns gravity to x-0.1, the float up in video 2j0v9FgQPig 0:05-0:20."
+     "why": "Floor pad hover_platform_1340320557464 (middleground, screen x=3376, sprite bottom y=474); it stands on the small block under crystal cluster icicles_8, plat_1337125697387 (x 3304-3463, y=439, solid from above), so the box is that floor. The first measure took the block's underside (plat_1337125697389, y=484, pc_perm 1: a ceiling), 15 px under the feet: the pad did nothing (report #185). The crystals hang 97 px over the block: the float up clears them by stepping right, where the block runs on past them (walked in the game: holding right from the pad floats up beside the crystals into ceiling pad 7476; standing still floats into the crystals and back to the last safe spot). Part 2 pad set (show2_* events): touching it turns gravity to x-0.1, the float up in video 2j0v9FgQPig 0:05-0:20."
     },
     {
      "id": "pad_floor_7463",
