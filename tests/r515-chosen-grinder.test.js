@@ -20,7 +20,7 @@ import {
   recipeToolChosen,
   setRecipeCatalog,
   verbBatchWornLine,
-} from '../public/js/making.js?v=bf8b857b';
+} from '../public/js/making.js?v=d28b2a24';
 import { createToolConditionState, getToolCondition, setToolRemaining } from '../public/js/tools.js?v=4156bba8';
 
 const root = join(import.meta.dirname, '..');

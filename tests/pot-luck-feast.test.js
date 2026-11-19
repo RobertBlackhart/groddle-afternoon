@@ -41,7 +41,7 @@ import {
   tableCountLabel,
 } from '../public/js/pot-luck-feast.js?v=8856930d';
 import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
-import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=bf8b857b';
+import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=d28b2a24';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';

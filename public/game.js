@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=6d578ad4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e9544bf9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=cb358c24';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -621,6 +621,8 @@ import {
   recipeKnownHere,
   makeCountLine,
   recipeMissingLine,
+  toolSkillLine,
+  toolSkillMissing,
   ensureMakingItems,
   loadRecipeCatalog,
   RECIPE_CATALOG,
@@ -633,11 +635,11 @@ import {
   verbBatchWornLine,
   recipeToolChosen,
   pluralizeItem,
-} from './js/making.js?v=bf8b857b';
+} from './js/making.js?v=d28b2a24';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=9cadec38';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=cba2a479';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=75208dce';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=0b4144eb';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=49cc5031';
 import {
@@ -29900,10 +29902,16 @@ function renderMakePanel() {
     const energyOk = pc.energy > recipeEnergyCost(recipe, skillState.learned, pc.imaginationUpgrades);
     const canMake = check.ok && energyOk;
     const blockedLine = canMake ? '' : makeBlockedLine(recipe, check);
-    // #305: a recipe you know but can't make says on its tile what it is missing.
-    const missingLine = canMake || !knowsRecipe.get(recipe)
+    // #305: a recipe you know but can't make says on its tile what it is missing. #541: a tool you
+    // lack the skill for says so on every tile, known or not (making_can_use, inc_making.js 94-97).
+    const toolSkill = canMake ? null : toolSkillMissing(recipe, recipeOpts(recipe));
+    const missingLine = canMake
       ? ''
-      : recipeMissingLine(inv, recipe, check, blockedLine, (i) => recipeInputLabel(recipe, i), recipeOpts(recipe).toolState);
+      : toolSkill
+        ? toolSkillLine(makeSkillName(toolSkill))
+        : !knowsRecipe.get(recipe)
+          ? ''
+          : recipeMissingLine(inv, recipe, check, blockedLine, (i) => recipeInputLabel(recipe, i), recipeOpts(recipe).toolState);
     const outRows = recipeOutputRows(recipe);
     const outId = outRows[0]?.classTsid;
     const tile = document.createElement('button');

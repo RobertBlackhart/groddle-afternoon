@@ -1870,6 +1870,23 @@ export function recipeMissingLine(inv, recipe, check, blockedLine, label, toolSt
   return short.length ? `Missing ${short.join(', ')}` : blockedLine || '';
 }
 
+/**
+ * #541: the skill the recipe's tool itself needs, when the player lacks it (making_can_use,
+ * inc_making.js 94-97), or null. Every recipe of the tool is out of reach until it is learned, so
+ * the tiles say so, known recipe or not.
+ * @param {{ learned?: string[], requireSkill?: boolean }} [opts] canCraft's options
+ */
+export function toolSkillMissing(recipe, opts = {}) {
+  if (!recipe || recipe.toolSkillFree || !Array.isArray(opts.learned) || opts.requireSkill === false) return null;
+  const skill = makingRequiredSkill(recipe.tool);
+  return skill && !opts.learned.includes(skill) ? skill : null;
+}
+
+/** The tool's refusal in Glitch's words (inc_making.js 96): "You need to know Botany to use this." */
+export function toolSkillLine(skillName) {
+  return `You need to know ${skillName} to use this.`;
+}
+
 export function canCraftAgain(inv, pc, recipeKey, opts = {}) {
   const recipe = RECIPE_CATALOG[recipeKey];
   if (!recipe) return false;
