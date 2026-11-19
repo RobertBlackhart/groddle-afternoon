@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2808,
+  "commits": 2812,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Long thin ground strips, the painted sky and the yard and Operation Grow strips are drawn in pieces so no half of them drops out"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The ground under a street no longer flickers lighter in the bottom-right corner while walking"
+   },
    {
     "date": "2026-11-19",
     "kind": "improve",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "a stack dragged onto a Butler is the one left as a package or given to visitors"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "a stack dragged onto Decorate, a display box, a pour or a thing on the street is the one that goes"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Trades, mail, auctions, boards, drops and home sales go through while the game is saving"
    }
   ]
  },
- "tests": 1177,
+ "tests": 1178,
  "generatedAt": "2026-11-19"
 }
