@@ -4781,6 +4781,43 @@
    ],
    "why": "homes_get_floor_sprite gives index 0 the left piece; its last pixel column is part transparent (57% at 2x, 31% at 3x) and showed a hairline beside the elevator. Austin asked for the smallest local fix (lane next, 2026-11-18); the art-edge fix for every room (R27) is separate.",
    "rows": []
+  },
+  {
+   "id": "street-spirit-rest-countdown",
+   "title": "Online, a resting street's Street Spirit shows \"Opens in N min\" until its next project, then asks the server again (#520).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/features/street-jobs-feature.js",
+     "symbol": "tickRest indicatorView"
+    },
+    {
+     "file": "public/js/job-indicator.js",
+     "symbol": "jobIndicatorView"
+    }
+   ],
+   "why": "Glitch showed no bubble while a just-built street rested (jobs_get_available skips cooldown, inc_jobs.js 463-467); players read the empty spirit as broken (#520).",
+   "ruling": "Austin 2026-11-19 (after #520): the Street Spirit counts down",
+   "rows": []
+  },
+  {
+   "id": "visit-pass-renewal",
+   "title": "A visitor's home pass is fetched again from the site before it runs out and whenever the realtime server refuses it; after a few refusals the visitor reads \"Their home street can't be reached right now.\" (R31, #522).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/neighbours-mp.js",
+     "symbol": "createVisitPassKeeper NEIGHBOURS_TEXT.passLost"
+    },
+    {
+     "file": "public/js/features/neighbours-mp-feature.js",
+     "symbol": "passes rejoin"
+    }
+   ],
+   "why": "Glitch had no pass (pols_canEnter read the owner's location); the remake's site-signed pass lasts 30 minutes, and an expired one left visitors off the street the game showed, so every yard verb was refused (#522).",
+   "rows": []
   }
  ]
 }

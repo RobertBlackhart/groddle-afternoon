@@ -518,6 +518,8 @@
   },
   "public/js/features/street-jobs-feature.js": {
     "no-source: a gem ask still open (the remake's own line; no source).": "gem-hints",
+    "ours: * Ours (Austin 2026-11-19, after #520): online, a": "street-spirit-rest-countdown",
+    "ours: `resting`: the spirit's rest countdown (ours).": "street-spirit-rest-countdown",
     "ours: street's (game.js clears it); only its bubble is ours.": "ours-street-jobs",
     "remake-own: gems are found, under a gem ask still open (the remake's own line; no": "gem-hints"
   },
@@ -679,6 +681,7 @@
   },
   "public/js/job-indicator.js": {
     "glitch-had-none: * `featured` (G656, ours: Glitch had no featured project) puts a small star on the": "featured-project",
+    "ours: * (ours, Austin 2026-11-19: the Street Spirit's) \"Opens": "street-spirit-rest-countdown",
     "ours: * `featured` (G656, ours: Glitch had no featured project) puts a small": "featured-project",
     "ours: // G656 (ours): the featured project's star, gold with a dark": "featured-project"
   },
@@ -720,6 +723,7 @@
   },
   "public/js/making.js": {
     "ours: Pi's line is inc_making.js's; Pot Luck Day's is ours (G982).": "pot-luck-stuffing",
+    "stand-in: * grand_ol_grinder.js 530); else the first owned stand-in that can take `wear`": "not-an-invention",
     "stand-in: The recipe tool whose recipes a stand-in makes (grand_ol_grinder -> ore_grinder).": "not-an-invention",
     "stand-in: class a recipe actually wears: the first owned stand-in that": "not-an-invention"
   },
@@ -747,6 +751,8 @@
     "remake-own: * block waiting on every street: the remake's own \"one unowned block on": "musicblock-street-blocks"
   },
   "public/js/neighbours-mp.js": {
+    "glitch-had-none: * on their home street to do that.\" Ours (Glitch had no pass: pols_canEnter read the": "visit-pass-renewal",
+    "ours: * on their home street to do that.\" Ours (Glitch had no pass: pols_canEnter read the": "visit-pass-renewal",
     "ours: // Ours, plain words: the door, the way back, being": "ours-neighbours",
     "ours: // Ours: no friends to give a key to, nothing": "ours-neighbours",
     "ours: // Ours: the owner hears at once (the source's Butler": "ours-neighbours",
@@ -755,6 +761,7 @@
     "ours: // Ours: the source sent the keyring's update": "ours-neighbours",
     "ours: owner reads when a friend tended their gardens (ours).": "ours-neighbours",
     "ours: project is still on its way from the site (ours).": "ours-neighbours",
+    "ours: visit pass, or the server kept refusing it (ours).": "visit-pass-renewal",
     "reimagined: * (neighbors_resources_tended, reimagined: \"Tend 11 Resources\"),": "ours-neighbours",
     "reimagined: * give_bag_butler, reimagined (\"Leave 5 gifts of at least one item to": "ours-neighbours",
     "reimagined: water_garden_for_others): reimagined,": "ours-neighbours",
