@@ -40,7 +40,7 @@
 
 import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
-import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=6a2cac74';
+import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=b342e1d9';
 import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { createOnscreenSharp, ktx2Loader, maxTextureSizeOf, rendererCompressedFormats, sharpAllowed, textureBytes } from '../onscreen-sharp.js?v=75b8a30d';
 import { playPoofIn } from '../overlay-art.js?v=7a63d78f';
@@ -66,7 +66,7 @@ import {
   purpleTimeline,
   scionWords,
 } from '../purple-journey.js?v=5e078ed8';
-import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=66d7a47e';
+import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=6947e03e';
 import { homesFeature } from './homes-feature.js?v=a9bc8e4b';
 
 export const PURPLE_FEATURE_ID = 'purple-journey';
@@ -593,8 +593,11 @@ function tickQuoins(engine) {
       // quoin.js onPlayerCollision: the daily limit holds here (not a game or Paradise). Ticket 94: at
       // the limit the quoin stays, as on a street, and the line shows at most every 5 s (game.js grabWorldQuoin).
       const res = collectQuoin(engine.quoinState, q.type, engine.pc, { amount: q.amount });
-      // At the limit a quoin says nothing (quoin.js 159).
-      if (res.reason === 'daily_limit') continue;
+      // At the limit a quoin gives nothing (quoin.js 159); #202: a line says why, once a minute.
+      if (res.reason === 'daily_limit') {
+        engine.quoinLimitTouched?.();
+        continue;
+      }
       if (res.hitLimit) engine.announceQuoinLimit?.(res.dailyLimit);
       quoins = quoins.filter((x) => x !== q);
       q.sprite.parent?.removeChild(q.sprite);

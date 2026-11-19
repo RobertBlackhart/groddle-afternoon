@@ -14,8 +14,11 @@ import {
   qrazyRewardForLevel,
   quoinDailyLimitFor,
   quoinLimitPrompt,
+  QUOIN_LIMIT_NOTICE,
+  QUOIN_LIMIT_NOTICE_MS,
+  quoinLimitNoticeDue,
   resetQuoinDay,
-} from '../public/js/quoins.js?v=6a2cac74';
+} from '../public/js/quoins.js?v=b342e1d9';
 
 const publicRoot = join(import.meta.dirname, '..', 'public');
 
@@ -168,7 +171,7 @@ describe('ticket 94: quest rooms keep the daily quoin limit as a street does', (
   });
 
   it('at the limit a room quoin stays where it is and nothing is taken', async () => {
-    const { takeQuoins } = await import('../public/js/quest-rooms/puzzle-kit.js?v=9aec9cb9');
+    const { takeQuoins } = await import('../public/js/quest-rooms/puzzle-kit.js?v=4c6b445b');
     const q = { id: 'q0', type: 'xp', x: 100, y: 500, taken: false, spr: { visible: true, destroyed: false, scale: { y: 1 } } };
     let refuse = true;
     const ctx = { player: { x: 100, y: 540 }, bodyScale: () => 1, collectQuoin: () => (refuse ? { ok: false, reason: 'daily_limit', dailyLimit: 100 } : { ok: true }) };
@@ -194,8 +197,8 @@ describe('ticket 94: quest rooms keep the daily quoin limit as a street does', (
   });
 });
 
-describe('touching a quoin at the limit says nothing', () => {
-  it('the source returns silently (quoin.js 159), and only the prompt is left', () => {
+describe('touching a quoin at the limit', () => {
+  it('the source returns silently (quoin.js 159); the source prompt stays the one Wowza line', () => {
     const gs = join(publicRoot, '../../glitch-GameServerJS/items/quoin.js');
     if (existsSync(gs)) {
       const line = readFileSync(gs, 'utf8').split('\n')[158];
@@ -205,6 +208,37 @@ describe('touching a quoin at the limit says nothing', () => {
       assert.doesNotMatch(readFileSync(join(publicRoot, f), 'utf8'), /Wowza/, f);
     }
     assert.match(quoinLimitPrompt().text, /^Wowza! You've reached your limit on quoins for this game day\.$/);
+  });
+});
+
+describe('#202: a quoin touched at the limit says why, at most once a minute', () => {
+  it('the line is short and plain, and comes again only after a minute', () => {
+    assert.equal(QUOIN_LIMIT_NOTICE, 'Daily quoin limit reached. More next game day.');
+    assert.equal(QUOIN_LIMIT_NOTICE_MS, 60_000);
+    assert.equal(quoinLimitNoticeDue(0, 1_000), true);
+    assert.equal(quoinLimitNoticeDue(1_000, 1_000 + 59_999), false);
+    assert.equal(quoinLimitNoticeDue(1_000, 1_000 + 60_000), true);
+  });
+
+  it('only a daily_limit refusal shows it: Qurazy quoins and skipLimit places (games, races, Rainbow Run, Paradise) never refuse', () => {
+    const state = createQuoinState({ collectedToday: 100, dailyLimit: 100 });
+    const pc = { imagination: 0, xp: 0, level: 5 };
+    assert.equal(collectQuoin(state, 'xp', pc).reason, 'daily_limit');
+    assert.equal(collectQuoin(state, 'xp', pc, { skipLimit: true, uncounted: true }).ok, true);
+    assert.equal(collectQuoin(state, 'qurazy', pc).ok, true);
+  });
+
+  it('street quoins (solo and online), quest rooms, puzzles and the Purple Journey send it; Paradise and the limit prompt hold it', () => {
+    const game = readFileSync(join(publicRoot, 'game.js'), 'utf8');
+    assert.match(game, /if \(result\.reason === 'daily_limit'\) quoinLimitTouched\(\);\n    return false;/);
+    assert.match(game, /function quoinLimitTouched\(now = Date\.now\(\)\) \{\n  if \(paradiseRun \|\| !quoinLimitNoticeDue\(quoinLimitNoticeAt, now\)\) return false;/);
+    assert.match(game, /function announceQuoinLimit\(dailyLimit\) \{\n  if \(paradiseRun\) return;\n  engine\.prompt\(quoinLimitPrompt\(\)\);\n[^\n]*\n  quoinLimitNoticeAt = Date\.now\(\);/);
+    assert.match(game, /quoinLimitTouched: \(\) => quoinLimitTouched\(\),/);
+    for (const f of ['features/quest-instances-feature.js', 'features/puzzles-feature.js', 'features/purple-journey-feature.js']) {
+      assert.match(readFileSync(join(publicRoot, 'js', f), 'utf8'), /engine\.quoinLimitTouched\?\.\(\);/, f);
+    }
+    // Online, a quoin at the limit is left to game.js's solo path (grabWorldQuoin), which says it.
+    assert.match(readFileSync(join(publicRoot, 'js/features/shared-quoins-feature.js'), 'utf8'), /qs\.collectedToday >= qs\.dailyLimit\) return null;/);
   });
 });
 

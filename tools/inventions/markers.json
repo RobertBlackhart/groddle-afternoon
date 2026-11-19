@@ -954,10 +954,12 @@
     "ours: go so they are not drawn on words still showing (ours: the": "quoin-shard-size"
   },
   "public/js/quoins.js": {
+    "glitch-had-none: * once a minute (Glitch had no line here, only the prompt when the limit is": "quoin-limit-touch-notice",
     "guess: * then given Eleven Giants' guess of a 60 x 60 box over the quoin's": "not-an-invention",
     "ours: // GSJS stats are whole numbers; ours drift by fractions, so report": "ours-quoins",
     "reimagined: * Mystery quoins, reimagined (Austin 2026-10-29). The source never": "mystery-quoins",
-    "reimagined: // Reimagined (Austin 2026-10-29): items/quoin.js has no": "ours-quoins"
+    "reimagined: // Reimagined (Austin 2026-10-29): items/quoin.js has no": "ours-quoins",
+    "remake-own: and players took the quiet for a bug. The remake's own line says why, at": "quoin-limit-touch-notice"
   },
   "public/js/race-render.js": {
     "ours: The race streets are lost, so the spacing is ours, read off the bar: its ends are 60 px": "ours-race-render",

@@ -4860,6 +4860,39 @@
    "rows": [
     "G1033"
    ]
+  },
+  {
+   "id": "quoin-limit-touch-notice",
+   "title": "A quoin touched past the daily limit shows \"Daily quoin limit reached. More next game day.\", at most once a minute (#202).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/quoins.js",
+     "symbol": "QUOIN_LIMIT_NOTICE quoinLimitNoticeDue"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "quoinLimitTouched grabWorldQuoin announceQuoinLimit"
+    },
+    {
+     "file": "public/js/features/quest-instances-feature.js",
+     "symbol": "collectQuoin"
+    },
+    {
+     "file": "public/js/features/puzzles-feature.js",
+     "symbol": "takeQuoins"
+    },
+    {
+     "file": "public/js/features/purple-journey-feature.js",
+     "symbol": "tickQuoins"
+    }
+   ],
+   "why": "items/quoin.js 159 returns silently at the limit, and only the quoin that reaches it prompts (inc_stats.js 687-693), so later touches gave nothing and said nothing; players read it as a bug (#202). Only a daily_limit refusal shows it, never in Paradise, games, races, Rainbow Run or for Qurazy quoins, which skip the limit; the limit prompt starts the minute.",
+   "ruling": "Austin 2026-11-19 (lane hintk): approved the help line",
+   "rows": [
+    "G1034"
+   ]
   }
  ]
 }

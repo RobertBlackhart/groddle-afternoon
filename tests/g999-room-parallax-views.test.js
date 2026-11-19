@@ -20,7 +20,7 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=3eb9956c';
+import * as kit from '../public/js/quest-rooms/kit.js?v=b14f1d8f';
 import { stageFor } from '../public/js/location-view.js?v=ac404fcb';
 import { cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
 import { FakeEl, fakePixi } from './fake-scene.js';
@@ -129,7 +129,7 @@ describe('room parallax layers stand on the floor in every view (G999, #495)', (
   });
 
   it("a layer that is the sky keeps to the view's top (the Purple Journey's gradient at 0.05)", async () => {
-    const { buildVoyageScene } = await import('../public/js/purple-journey-scene.js?v=66d7a47e');
+    const { buildVoyageScene } = await import('../public/js/purple-journey-scene.js?v=6947e03e');
     const built = buildVoyageScene(fakePixi);
     const root = built.background || built;
     const sky = root.children.find((c) => c.factor === 0.05);

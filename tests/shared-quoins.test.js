@@ -24,7 +24,7 @@ import {
   shardFor,
   statusOf,
 } from '../public/js/shared-quoins.js?v=89d7b201';
-import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=022bfd0e';
+import { sharedQuoinsFeature } from '../public/js/features/shared-quoins-feature.js?v=8c8b1d5c';
 import {
   QUOIN_SHARD_FLOOR,
   QUOIN_SHARD_NEAR,
@@ -34,7 +34,7 @@ import {
 } from '../public/js/quoin-shards.js?v=121156a0';
 import { placementRequests, streetQuoinLayout, classTable, mysteryTable } from '../tools/build-realtime-quoins.mjs';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=87ed5120';
-import { QUOIN_CLASSES } from '../public/js/quoins.js?v=6a2cac74';
+import { QUOIN_CLASSES } from '../public/js/quoins.js?v=b342e1d9';
 import { HAS_SERVER, serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

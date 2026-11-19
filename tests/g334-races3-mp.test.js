@@ -170,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=3c65dd1e');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=f6f77d96');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {

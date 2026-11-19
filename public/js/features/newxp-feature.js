@@ -137,7 +137,7 @@ import {
 } from '../newxp.js?v=02f902e6';
 import { countWords } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=6a2cac74';
+import { QUOIN_SHEET, QUOIN_TYPES, qrazyRewardForLevel } from '../quoins.js?v=b342e1d9';
 import { loadRoadsFor, reachableStreets } from '../street-graph.js?v=dcc5cae4';
 import { soundForQuoin } from '../sound-moments.js?v=3e66996f';
 import { IMAGINATION_UPGRADES } from '../imagination.js?v=1bdfd77c';
@@ -146,7 +146,7 @@ import { assignQuest, completeQuest } from '../quests.js?v=4a3fb1da';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=8b51ffce';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
-import * as kit from '../quest-rooms/kit.js?v=3eb9956c';
+import * as kit from '../quest-rooms/kit.js?v=b14f1d8f';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=1c44e7c3';
 import { upgradeSource } from '../sprite-hires.js?v=e5d8f9ec';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';

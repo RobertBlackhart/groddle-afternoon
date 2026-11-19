@@ -49,7 +49,7 @@ import {
   planStreetQuoins,
   streetQuoinClass,
   streetQuoinPoints,
-} from '../public/js/quoins.js?v=6a2cac74';
+} from '../public/js/quoins.js?v=b342e1d9';
 import { isPartyStreet, partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=a748a93f';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 

@@ -14,7 +14,7 @@ import {
   moodXpMultiplierFor,
   setMoodXpEnv,
 } from '../public/js/mood-xp.js?v=e311b45c';
-import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=6a2cac74';
+import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=b342e1d9';
 import { applyVerbReward, getVerbReward } from '../public/js/verb-rewards.js?v=42171963';
 import { applyDropResult } from '../public/js/drop-tables.js?v=1ed0b596';
 import { quoteShrineDonation } from '../public/js/shrines.js?v=1b7760ec';

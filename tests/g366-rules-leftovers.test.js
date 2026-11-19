@@ -30,8 +30,8 @@ import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=8b5
 import { applyBuff, createBuffState } from '../public/js/buffs.js?v=57e5d8e0';
 import { BUFF_ICONS, QUEST_TIMER_BUFFS } from '../public/js/buff-triggers.js?v=a3093922';
 import { EMERGENCY_RETRY_MS } from '../public/js/features/quest-offers-feature.js?v=e76f6d7a';
-import { QUOIN_CLASSES, quoinClassAmount, quoinRespawnMs } from '../public/js/quoins.js?v=6a2cac74';
-import { COIN_BACK_MS, COIN_CLASS, COIN_TYPE, room as rainbowRoom } from '../public/js/quest-rooms/rainbow-run.js?v=4b776039';
+import { QUOIN_CLASSES, quoinClassAmount, quoinRespawnMs } from '../public/js/quoins.js?v=b342e1d9';
+import { COIN_BACK_MS, COIN_CLASS, COIN_TYPE, room as rainbowRoom } from '../public/js/quest-rooms/rainbow-run.js?v=2dd2277a';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');

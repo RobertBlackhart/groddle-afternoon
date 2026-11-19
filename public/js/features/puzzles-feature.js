@@ -67,7 +67,7 @@
 
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
+import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=b342e1d9';
 import {
   CARD_RETURN_TEXT,
   COLOUR_LEVEL_STREETS,
@@ -269,7 +269,9 @@ function takeQuoins(engine) {
     const opts = q.amount ? { amount: q.amount } : {};
     const result = collectQuoin(engine.quoinState, q.type, engine.pc, opts);
     if (result.reason === 'daily_limit') {
-      // Ticket 94: as on a street (items/quoin.js 159 keeps the limit here), the quoin stays, silently.
+      // Ticket 94: as on a street (items/quoin.js 159 keeps the limit here), the quoin stays;
+      // #202: a line says why, once a minute (game.js quoinLimitTouched).
+      engine.quoinLimitTouched?.();
       continue;
     }
     if (result.hitLimit) engine.announceQuoinLimit?.(result.dailyLimit);

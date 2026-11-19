@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { describe, it, afterEach } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=6a2cac74';
+import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=b342e1d9';
 import { MAX_XP, XP_FOR_LEVEL, reconcilePlayerProgression } from '../public/js/progression.js?v=05ff0260';
 import { loseMood, setMetabolicGainGate, setMoodLossNotice } from '../public/js/metabolics.js?v=48f784bf';
 import { gameDayIndex } from '../public/js/musicblocks.js?v=97129d87';

@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CHAIN_HINT_MS, CHAIN_HIT, chainArrowAlpha } from '../public/js/features/newxp-feature.js?v=fca853b2';
+import { CHAIN_HINT_MS, CHAIN_HIT, chainArrowAlpha } from '../public/js/features/newxp-feature.js?v=f9dcb91c';
 import { LINES, TOUCH_LINES, cloudsLayout, instructionFor } from '../public/js/newxp.js?v=02f902e6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

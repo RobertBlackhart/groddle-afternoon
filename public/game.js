@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b88c9884';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f87123fe';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a2df961d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=a5016c3a';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=af570a5d';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=6666d689';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=80101f13';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -390,7 +390,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=9ba007ae';
+} from './js/paradise-flight.js?v=aa2cb3a1';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=d66031da';
 import {
   buildParadiseCourseArt,
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=5120ba4d';
+} from './js/player-save.js?v=8fcdf179';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -978,6 +978,8 @@ import {
   quoinTouches,
   collectQuoin,
   quoinLimitPrompt,
+  QUOIN_LIMIT_NOTICE,
+  quoinLimitNoticeDue,
   resetQuoinDay,
   streetQuoinClass,
   partyQuoinType,
@@ -989,7 +991,7 @@ import {
   creditQuoinStat,
   creditMetabolicReward,
   streetQuoinPoints,
-} from './js/quoins.js?v=6a2cac74';
+} from './js/quoins.js?v=b342e1d9';
 import { isPartyStreet } from './js/party-spaces.js?v=a748a93f'; // G869: a Party Space's quoins are the party classes
 import {
   buildHubMapView,
@@ -13606,6 +13608,8 @@ const engine = {
   hideGameSplash: () => gameSplash?.hide(),
   /** The quoin that reached the day's limit, from a feature's own quoins (announceQuoinLimit). */
   announceQuoinLimit: (dailyLimit) => announceQuoinLimit(dailyLimit),
+  /** #202: a feature's own quoin touched at the day's limit (a 'daily_limit' refusal). */
+  quoinLimitTouched: () => quoinLimitTouched(),
   /** prompts_remove (inc_prompts.js 97-108): take a stacked prompt away unanswered. */
   removePrompt: (uid) => promptStackUi().remove(uid),
   /** The prompts in the stack (QA and features): { shown: [{ uid, text }], queued }. */
@@ -15272,8 +15276,11 @@ function grabWorldQuoin(q, shared = null) {
     addFavor: (id, n) => creditGiantFavor(id, n),
     accelerateStudy: (seconds) => accelerateActiveStudy(skillState, seconds, Date.now()),
   });
-  // At the limit a quoin says nothing (quoin.js 159); the prompt came when the limit was reached.
-  if (!result.ok) return false;
+  // At the limit a quoin gives nothing (quoin.js 159); #202: a line says why, once a minute.
+  if (!result.ok) {
+    if (result.reason === 'daily_limit') quoinLimitTouched();
+    return false;
+  }
   // Multiplayer street quoins: the server keeps who took them and brings them back.
   if (Number.isInteger(q.naturalQuoinIndex) && !shared) {
     collectNaturalQuoin(q.naturalQuoinIndex);
@@ -15345,7 +15352,22 @@ function grabWorldQuoin(q, shared = null) {
 function announceQuoinLimit(dailyLimit) {
   if (paradiseRun) return;
   engine.prompt(quoinLimitPrompt());
+  // The prompt says it this time; the at-the-limit line (quoinLimitTouched) waits its minute from here.
+  quoinLimitNoticeAt = Date.now();
   playerRainbow(dailyLimit === 150 ? 'rainbow_150coinstoday' : 'rainbow_100coinstoday');
+}
+
+/**
+ * #202: a quoin touched at the day's limit (a 'daily_limit' refusal, so never where the limit is
+ * skipped: games, races, Rainbow Run, Paradise, Qurazy) says why, at most once a minute.
+ */
+let quoinLimitNoticeAt = 0;
+function quoinLimitTouched(now = Date.now()) {
+  if (paradiseRun || !quoinLimitNoticeDue(quoinLimitNoticeAt, now)) return false;
+  quoinLimitNoticeAt = now;
+  toast(QUOIN_LIMIT_NOTICE, 3000);
+  app.canvas.dataset.quoinLimitNotice = String(now);
+  return true;
 }
 
 function quoinResultCopy(result) {

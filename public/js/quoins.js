@@ -199,6 +199,22 @@ export function streetQuoinPoints(streetTsid, planned = [], { count = null, coin
   return out;
 }
 
+/**
+ * #202 (Austin 2026-11-19): touching a quoin past the day's limit gives nothing (items/quoin.js 159
+ * returns silently), and players took the quiet for a bug. The remake's own line says why, at most
+ * once a minute (Glitch had no line here, only the prompt when the limit is reached). Only a
+ * 'daily_limit' refusal shows it, so games, races, Rainbow Run, Paradise and Qurazy quoins, which
+ * skip the limit, never do.
+ */
+export const QUOIN_LIMIT_NOTICE = 'Daily quoin limit reached. More next game day.';
+export const QUOIN_LIMIT_NOTICE_MS = 60 * 1000;
+
+/** PURE: is the at-the-limit notice due, given when it (or the limit prompt) last showed. */
+export function quoinLimitNoticeDue(lastAt, now = Date.now()) {
+  const last = Number(lastAt);
+  return !Number.isFinite(last) || last <= 0 || now - last >= QUOIN_LIMIT_NOTICE_MS || now < last;
+}
+
 /** The prompt when the day's limit is reached (inc_stats.js stats_add_quoins_today 687-693). */
 export function quoinLimitPrompt() {
   return {

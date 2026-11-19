@@ -10,7 +10,7 @@
  */
 
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { quoinTouches } from '../quoins.js?v=6a2cac74';
+import { quoinTouches } from '../quoins.js?v=b342e1d9';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { VIEW_FLOOR_H } from '../location-view.js?v=ac404fcb';

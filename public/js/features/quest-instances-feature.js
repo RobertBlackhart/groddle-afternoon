@@ -126,7 +126,7 @@ import {
 } from '../quest-instance.js?v=7365a572';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
-import * as kit from '../quest-rooms/kit.js?v=3eb9956c';
+import * as kit from '../quest-rooms/kit.js?v=b14f1d8f';
 import { locationEventsApi } from './location-events-feature.js?v=0843b12e';
 import {
   acceptOffer,
@@ -144,7 +144,7 @@ import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
 import { armPromptTimeout, promptTimeoutMs } from '../prompt-timeout.js?v=0a9a61df';
 import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
-import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=6a2cac74';
+import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=b342e1d9';
 import { sourceFromUrl } from '../textures.js?v=1c44e7c3';
 import { FIRST_SKILLS } from '../newxp.js?v=02f902e6';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
@@ -207,25 +207,25 @@ let urLoading = null;
  * BUILT_ROOMS: a new room gets a line here.
  */
 const ROOM_MODULES = {
-  rainbow_run: () => import('../quest-rooms/rainbow-run.js?v=4b776039'),
+  rainbow_run: () => import('../quest-rooms/rainbow-run.js?v=2dd2277a'),
   top_of_tree: () => import('../quest-rooms/top-of-tree.js?v=b90472a9'),
-  color_unblocking: () => import('../quest-rooms/color-unblocking.js?v=45a9c0c1'),
+  color_unblocking: () => import('../quest-rooms/color-unblocking.js?v=691cf8e5'),
   vision_quest: () => import('../quest-rooms/vision-quest.js?v=1860bc9d'),
   kids_room: () => import('../quest-rooms/kids-room.js?v=92f000f7'),
   rube_yard: () => import('../quest-rooms/rube-yard.js?v=16730dcc'),
   le_miserable: () => import('../quest-rooms/le-miserable.js?v=64ff6dce'),
   juju_camp: () => import('../quest-rooms/juju-camp.js?v=480bffba'),
-  picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=60cd45bc'),
-  radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=bba65da8'),
+  picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=a782d8b5'),
+  radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=094ecb5d'),
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=d1f91878'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=63a88d27'),
-  back_alley: () => import('../quest-rooms/back-alley.js?v=b98826f0'),
+  back_alley: () => import('../quest-rooms/back-alley.js?v=0b37614f'),
   clubhouse: () => import('../quest-rooms/clubhouse.js?v=bb3d1d1c'),
-  light_perspective: () => import('../quest-rooms/light-perspective.js?v=36d1eb84'),
-  tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=2a62dd21'),
-  operation_grow: () => import('../quest-rooms/operation-grow.js?v=6f16fca1'),
+  light_perspective: () => import('../quest-rooms/light-perspective.js?v=543cfc56'),
+  tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=eeee8686'),
+  operation_grow: () => import('../quest-rooms/operation-grow.js?v=603c5ed3'),
   gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=8749e349'),
-  mental_block: () => import('../quest-rooms/mental-block.js?v=c784399b'),
+  mental_block: () => import('../quest-rooms/mental-block.js?v=af3963d0'),
   penalty: () => import('../quest-rooms/penalty.js?v=f6f2830b'),
   esquibeth: () => import('../quest-rooms/esquibeth.js?v=44d919e5'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=2d931218'),
@@ -932,7 +932,8 @@ function makeContext(engine) {
         // Ticket 94: a quest room keeps the limit as a street does (items/quoin.js 159: only games,
         // races, rainbow_run, Paradise, ignore_quoin_limit places and Qurazy quoins skip it), and
         // as on a street the quoin stays where it is (the rooms take it only when this is ok),
-        // silently (the same line returns with no message).
+        // silently in Glitch; #202: the remake's line says why, once a minute (game.js quoinLimitTouched).
+        engine.quoinLimitTouched?.();
         return result;
       }
       engine.updateHud();
