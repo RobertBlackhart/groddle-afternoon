@@ -23,7 +23,7 @@
 
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { parseSeasonDate } from '../seasons.js?v=8b81947e';
-import { landingY, nearestSurfaceY } from '../walk-surface.js?v=e8de6d53';
+import { landingY, nearestSurfaceY } from '../walk-surface.js?v=bacb60c6';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';

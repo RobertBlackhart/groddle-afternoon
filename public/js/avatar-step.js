@@ -8,7 +8,7 @@
  * Units are px per frame at 60 fps (spec 2.3). A body is { x, y, vx, vy, onGround } with the feet
  * at x, y in screen space (the street's top-left origin, y down).
  */
-import { avatarHeadReach, barriersScreen, blockBarrierCrossing, buriedSignpostUnder, headCeiling, isStandable, lineEndWalled, platformYAt, resolveGround, worldToScreen } from './street-model.js?v=9f16f4ab';
+import { avatarHeadReach, barriersScreen, blockBarrierCrossing, buriedSignpostUnder, headCeiling, isStandable, lineEndWalled, platformYAt, resolveGround, worldToScreen } from './street-model.js?v=dd20cc44';
 import { stickToSlope } from './slope-walk.js?v=9af1e505';
 
 /*
@@ -270,7 +270,10 @@ export function stepAvatar(body, { dt = 1, buff = NORMAL_BUFF, platforms, barrie
   // A rising head stops under an underside or ceiling (platform pc_perm 1 or null)
   // at the client's head circle, 111 px over the feet at scale 1 (avatarHeadReach).
   const head = avatarHeadReach(bodyScale);
-  const headY = platforms?.length && ceilings ? headCeiling(platforms, prevX, prevY, body.x, body.y, head) : null;
+  // #296: the head is tested where the walls let the avatar be this frame, not past a wall it is
+  // pressed into (there the ceiling ran out and the head went up past it, then over the wall).
+  const headX = barriers.length ? blockBarrierCrossing(barriers, prevX, body.x, body.y, bodyH) : body.x;
+  const headY = platforms?.length && ceilings ? headCeiling(platforms, prevX, prevY, headX, body.y, head, 2, barriers) : null;
   if (headY != null) {
     body.y = headY;
     if (body.vy < 0) body.vy = 0;

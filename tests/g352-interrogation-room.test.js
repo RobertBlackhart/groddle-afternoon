@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
+import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=dd20cc44';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import {
   INTERROGATION_ARRIVE,

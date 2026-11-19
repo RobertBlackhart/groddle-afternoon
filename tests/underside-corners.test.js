@@ -18,7 +18,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=a6f5a99b';
+import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=0d75eb35';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -33,7 +33,7 @@ import {
   isStandable,
   platformYAt,
   worldToScreen,
-} from '../public/js/street-model.js?v=9f16f4ab';
+} from '../public/js/street-model.js?v=dd20cc44';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const streetsDir = join(__dirname, '../public/assets/streets');
@@ -261,7 +261,8 @@ describe('game.js runs these rules', () => {
     assert.match(src, /barriers: barriersScreen\(currentStreet\)/);
     assert.match(src, /platforms: streetPlatforms/);
     assert.match(step, /blockBarrierCrossing\(barriers, prevX, body\.x, body\.y, bodyH\)/);
-    assert.match(step, /headCeiling\(platforms, prevX, prevY, body\.x, body\.y, head\)/);
+    assert.match(step, /const headX = barriers\.length \? blockBarrierCrossing\(barriers, prevX, body\.x, body\.y, bodyH\) : body\.x;/);
+    assert.match(step, /headCeiling\(platforms, prevX, prevY, headX, body\.y, head, 2, barriers\)/);
     assert.match(src, /bodyScale: features\.query\('avatarBodyScale', engine\)/);
     assert.match(step, /const head = avatarHeadReach\(bodyScale\)/);
     assert.match(step, /if \(!isStandable\(p\)\) continue;/);

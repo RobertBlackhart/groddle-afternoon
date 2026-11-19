@@ -20,7 +20,7 @@
  * Pure data rules (world space, as in the street JSON); no DOM or Pixi.
  */
 
-import { isStandable } from './street-model.js?v=9f16f4ab';
+import { isStandable } from './street-model.js?v=dd20cc44';
 
 /** How far beside the post a floor still counts as standing at it. */
 const DECK_REACH_X = 30;

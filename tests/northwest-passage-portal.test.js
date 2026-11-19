@@ -21,12 +21,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
-import { barriersScreen, platformsScreen, worldToScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
-import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.js?v=a6f5a99b';
+import { barriersScreen, platformsScreen, worldToScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
+import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.js?v=0d75eb35';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f4be1a05';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
-import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=014b5377';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=2f612826';
+import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=bc4196a1';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=9a2535d4';
 import {
   NORTHWEST_PASSAGE_TSID,
   WINTRY_CAGE,

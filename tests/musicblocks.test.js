@@ -36,7 +36,7 @@ import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b2071
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
 import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=85d156bc';
 import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=1ce3f385';
-import { ISLAND_MUSICBLOCKS } from '../public/js/newxp.js?v=02f902e6';
+import { ISLAND_MUSICBLOCKS } from '../public/js/newxp.js?v=8e9130b1';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
 import {
   ITEM_CATALOG,
@@ -44,7 +44,7 @@ import {
   countItem,
   createInventory,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { getVerbsFor } from '../public/content.js?v=b88c9884';
+import { getVerbsFor } from '../public/content.js?v=ca4eaa0f';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');
@@ -254,7 +254,7 @@ function fakeEngine({ streetTsid, inv, stacks = [] } = {}) {
 }
 
 async function freshFeature() {
-  const mod = await import('../public/js/features/musicblocks-feature.js?v=0fade116');
+  const mod = await import('../public/js/features/musicblocks-feature.js?v=2a68e814');
   mod.musicblocksFeature._reset();
   return mod;
 }
@@ -491,7 +491,7 @@ describe('Musicblock game integration', () => {
 
 describe('Musicblock collection badges from any source', () => {
   it('emits in_inventory the first time a block reaches the pack', async () => {
-    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=0fade116');
+    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=2a68e814');
     assert.deepEqual(newlyOwnedMusicblocks(new Set(['musicblock_d_blue_01']), {
       musicblock_d_blue_01: 2, musicblock_d_blue_02: 1, apple: 3, musicblock_trumpets: 1,
     }), ['musicblock_d_blue_02']);

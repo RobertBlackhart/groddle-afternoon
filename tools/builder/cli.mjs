@@ -28,14 +28,14 @@ import { signKey, parseKey, parseEnv, configDir, canonicalQuery } from './sign.m
 import { catalog, searchDecos, styleProfile, styleProfiles } from './catalog.mjs';
 import { builderGuide } from './guide.mjs';
 import { applyOps, applyOp, nextDecoId, nextGeometryId, findGeometry, findDeco, GEOMETRY, OpError, OP_NAMES } from '../../public/js/builder/ops.js?v=27c7796f';
-import { forkStreet, forkOps, newTsid, libraryAsset, linkEdit, editsOn } from '../../public/js/builder/zone.js?v=11a49e7d';
-import { newStreet, newStreetOps, newHub, nextHubId, mapWithStreet, mapWithoutStreet, TEMPLATES, DEFAULT_MAP_COLOURS } from '../../public/js/builder/templates.js?v=17afc1e3';
-import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=658b4fd3';
-import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=ce8fc1a8';
-import { platformsScreen, isStandable } from '../../public/js/street-model.js?v=9f16f4ab';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=8571136f';
-import { groundOps, floatingLines, FLOAT_REACH } from '../../public/js/builder/ground.js?v=5758089e';
-import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=56d48e5a';
+import { forkStreet, forkOps, newTsid, libraryAsset, linkEdit, editsOn } from '../../public/js/builder/zone.js?v=bfae04c0';
+import { newStreet, newStreetOps, newHub, nextHubId, mapWithStreet, mapWithoutStreet, TEMPLATES, DEFAULT_MAP_COLOURS } from '../../public/js/builder/templates.js?v=82a63617';
+import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=27add2a3';
+import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=0528ad3e';
+import { platformsScreen, isStandable } from '../../public/js/street-model.js?v=dd20cc44';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=b381e9c9';
+import { groundOps, floatingLines, FLOAT_REACH } from '../../public/js/builder/ground.js?v=924f4978';
+import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=f030abf8';
 
 export const PERM_WORDS = Object.freeze({ floor: -1, roof: 1, soft: 0, hard: null });
 /** The game draws a signpost's first four arms (street-render.js); a fifth would never show. */
@@ -1165,7 +1165,7 @@ export async function run(argv, { env = process.env, fetchImpl = globalThis.fetc
       let report;
       let rev;
       if (local()) {
-        const { validateZone } = await import('../../public/js/builder/validate.js?v=a32bf167');
+        const { validateZone } = await import('../../public/js/builder/validate.js?v=61c1071c');
         const { loadValidatorContext } = await import('./validator-context.mjs');
         const zone = readJson(resolve(flags.file));
         rev = zone.rev;

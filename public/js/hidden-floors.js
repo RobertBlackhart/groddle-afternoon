@@ -58,7 +58,7 @@
  * jump (up to 500 / 417 px), spinach (720 px) or levitation.
  */
 
-import { NORMAL_BUFF, jumpApex as stepperJumpApex } from './avatar-step.js?v=a6f5a99b';
+import { NORMAL_BUFF, jumpApex as stepperJumpApex } from './avatar-step.js?v=0d75eb35';
 
 export const LOST_FLOOR_TSID = 'GA9QUBPI49J2MOB';
 export const LOST_FLOOR_SOURCE_TSID = 'LA9QUBPI49J2MOB';

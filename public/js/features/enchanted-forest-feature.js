@@ -32,7 +32,7 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { worldToScreen } from '../street-model.js?v=9f16f4ab';
+import { worldToScreen } from '../street-model.js?v=dd20cc44';
 import { frameTexture, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { ensureWoodTreeState, resetWoodTreeDay, woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {

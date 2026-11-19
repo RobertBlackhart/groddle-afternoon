@@ -109,15 +109,15 @@
 
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { runStreetTransition } from '../screen-fx.js?v=a0ed42e9';
-import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
+import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=7968c974';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=39041813';
 import { getPlot, tickGarden } from '../garden.js?v=d4e55862';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=465f8d14';
-import { butlerApi } from './butler-feature.js?v=ad2f53c8';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=a9bc8e4b';
+import { butlerApi } from './butler-feature.js?v=0139a842';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=6ac59f7f';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
 import {
@@ -172,9 +172,9 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=c20e6df1';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=6e80bd2a';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=87618cef';
 import { takeDragged } from '../drag-stack.js?v=199234f0';
-import { worldPoint } from './world-drop-feature.js?v=684091f1';
+import { worldPoint } from './world-drop-feature.js?v=13c77b49';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=18889f7a';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';

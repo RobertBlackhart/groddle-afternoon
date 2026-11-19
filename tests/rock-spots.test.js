@@ -38,9 +38,9 @@ import {
   rockShapeFor,
   rockSpawnPlan,
   setStreetEcologyCatalog,
-} from '../public/js/street-ecology.js?v=87ed5120';
+} from '../public/js/street-ecology.js?v=75052b58';
 import { PAPER_TREE_SPOTS, PEAT_SPOTS, ROCK_BERYL_SPOTS, ROCK_DULLITE_SPOTS, ROCK_METAL_SPOTS, ROCK_SPARKLY_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
-import { platformsScreen } from '../public/js/street-model.js?v=9f16f4ab';
+import { platformsScreen } from '../public/js/street-model.js?v=dd20cc44';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

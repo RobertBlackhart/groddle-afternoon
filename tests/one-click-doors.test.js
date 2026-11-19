@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GLITCH_ONE_CLICK_DOORS, isOneClick, isOneClickDoor, oneClickChoice, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=f952c4db';
-import { doorsFeature } from '../public/js/features/doors-feature.js?v=d72f8cea';
+import { doorsFeature } from '../public/js/features/doors-feature.js?v=55836331';
 import { STATIONS, stationStreet } from '../public/js/subway.js?v=af570a5d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

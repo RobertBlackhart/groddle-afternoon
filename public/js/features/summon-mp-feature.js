@@ -50,7 +50,7 @@ import {
   summonRefusal,
   summonVerb,
 } from '../summon-mp.js?v=7598f381';
-import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
+import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
 import { homeStreetName, houseName, readHomeStreet } from '../neighbours-mp.js?v=c20e6df1';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 

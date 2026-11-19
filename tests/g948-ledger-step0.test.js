@@ -14,12 +14,12 @@ import { gameFiles, gameText } from '../tools/build-economy.mjs';
 import { RARE_STORE } from '../public/js/quest-rooms/penalty.js?v=f6f2830b';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=55d4c257';
 
-import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=02f902e6';
+import { ISLAND_CURRANTS, ISLAND_FLAGS, normalizeNewxpSave } from '../public/js/newxp.js?v=8e9130b1';
 import { createIconState, pickUpIcon, placeIcon } from '../public/js/giant-icons.js?v=0d6b4965';
 import { GNOME_CLASS } from '../public/js/garden-gnome.js?v=d9f8e52b';
 import { NOTE_POLE_CLASS } from '../public/js/home-street-mp.js?v=64df32c2';
 import { FUNPICKLE } from '../public/js/funpickle.js?v=95796317';
-import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=cc7a4d96';
+import { funpickleFeature } from '../public/js/features/funpickle-feature.js?v=fb15bb14';
 
 const root = join(import.meta.dirname, '..');
 const economy = () => JSON.parse(readFileSync(join(SITE_DIR, 'data/economy.json'), 'utf8'));

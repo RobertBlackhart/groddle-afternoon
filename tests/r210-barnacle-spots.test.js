@@ -15,7 +15,7 @@ import { describe, it } from 'node:test';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+import { groundBeneath, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import {
   PLACEMENT_FOOTPRINTS,
   PLANNED_NODE_CAPS,
@@ -26,12 +26,12 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   steadyFloor,
-} from '../public/js/street-ecology.js?v=87ed5120';
+} from '../public/js/street-ecology.js?v=75052b58';
 import {
   prepareStreetResourceNodes,
   resourcePlacementGroups,
   resourceSpawnPlan,
-} from '../public/js/features/resource-nodes-feature.js?v=1b9fa690';
+} from '../public/js/features/resource-nodes-feature.js?v=2059f1ea';
 import { BARNACLE_SPOTS } from '../public/js/barnacle-spots-data.js?v=cea3daec';
 
 const root = join(import.meta.dirname, '..');

@@ -26,8 +26,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import {
   ecologyForStreet,
   planStreetPlacements,
@@ -38,7 +38,7 @@ import {
   gardenPlacementRequest,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87ed5120';
+} from '../public/js/street-ecology.js?v=75052b58';
 import {
   MYSTERY_QUOIN_KINDS,
   QUOIN_CLASSES,

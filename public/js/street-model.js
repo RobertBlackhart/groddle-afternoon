@@ -457,6 +457,14 @@ function joinedAt(platforms, p, ex, ey) {
   return false;
 }
 
+/** A wall whose top is this line end (a ceiling running into a room's end wall). */
+function wallTopAt(walls, ex, ey) {
+  for (const w of walls || []) {
+    if (Math.abs(w.x - ex) <= 1 && Math.abs(w.yTop - ey) <= 2) return true;
+  }
+  return false;
+}
+
 /**
  * The avatar's head moving up from prevFeetY to feetY that crosses a line solid
  * from below stops under it (AvatarPhysicsHandler: the client tests the head
@@ -465,7 +473,12 @@ function joinedAt(platforms, p, ex, ey) {
  * reach, never lower than prevFeetY), or null when clear.
  * Lines whose ends are within `inset` px of x are skipped, so brushing an
  * underside's end does not catch the avatar beside it; an end joined to another
- * such line is no end (Flipside's pipe roof is two lines meeting at x 1401).
+ * such line is no end (Flipside's pipe roof is two lines meeting at x 1401), nor
+ * is an end on a wall's top (`walls`, barriersScreen rows): a ceiling meeting the
+ * end wall of a room. A wall holds the avatar 1 px off its face, inside the inset,
+ * so a jump pressed into that corner went up past the ceiling and out over the
+ * wall (report #296, the Jethimadh Tower's corridor ends); the client's 15 px head
+ * circle met the line there (AvatarPhysicsHandler).
  * @param {{ x1:number,y1:number,x2:number,y2:number,pcPerm?:number|null }[]} platforms  screen-space
  * @param {number} prevX
  * @param {number} prevFeetY
@@ -473,8 +486,9 @@ function joinedAt(platforms, p, ex, ey) {
  * @param {number} feetY
  * @param {{ centre:number, reach:number }|number} [head]
  * @param {number} [inset=2]
+ * @param {{ x:number, yTop:number }[]} [walls]
  */
-export function headCeiling(platforms, prevX, prevFeetY, x, feetY, head = avatarHeadReach(1), inset = 2) {
+export function headCeiling(platforms, prevX, prevFeetY, x, feetY, head = avatarHeadReach(1), inset = 2, walls = []) {
   if (!(feetY < prevFeetY)) return null;
   const { reach, centre } = typeof head === 'number' ? { reach: head, centre: head } : head;
   const top = feetY - reach;
@@ -488,7 +502,7 @@ export function headCeiling(platforms, prevX, prevFeetY, x, feetY, head = avatar
       y = platformYAt(p, x, 0);
       if (y == null) continue;
       const [ex, ey] = Math.abs(x - p.x1) <= Math.abs(x - p.x2) ? [p.x1, p.y1] : [p.x2, p.y2];
-      if (!joinedAt(lines, p, ex, ey)) continue;
+      if (!joinedAt(lines, p, ex, ey) && !wallTopAt(walls, ex, ey)) continue;
     }
     const before = platformYAt(p, prevX, 0) ?? y;
     // Crossed it this frame: the head circle was under the line, now the head is over it.

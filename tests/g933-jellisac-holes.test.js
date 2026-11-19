@@ -41,10 +41,10 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87ed5120';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+} from '../public/js/street-ecology.js?v=75052b58';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

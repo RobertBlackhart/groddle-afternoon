@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=90517e2f';
-import { isItemSolid, isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { isItemSolid, isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import {
   PLACEMENT_FOOTPRINTS,
   PLACEMENT_HEIGHTS,
@@ -25,7 +25,7 @@ import {
   rockSpawnPlan,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87ed5120';
+} from '../public/js/street-ecology.js?v=75052b58';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 
 const root = join(import.meta.dirname, '..');

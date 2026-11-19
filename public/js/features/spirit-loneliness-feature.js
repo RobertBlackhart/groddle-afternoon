@@ -57,8 +57,8 @@
  * else" cheering it up, only makes sense alone. A multiplayer game (engine.mode) runs none of it.
  */
 
-import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
-import { getStreetEcologyCatalog } from '../street-ecology.js?v=87ed5120';
+import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
+import { getStreetEcologyCatalog } from '../street-ecology.js?v=75052b58';
 import { graphKey, tsidAliases } from '../map-routes.js?v=3cadc716';
 import { _useStreetGraph, loadStreetGraph, roadsFor, routeDistances, streetGraphLoaded } from '../street-graph.js?v=dcc5cae4';
 import { STREET_SPIRIT_VARIANTS, portraitFit, portraitSheet, spiritForStreet } from '../street-spirits.js?v=f9e88445';

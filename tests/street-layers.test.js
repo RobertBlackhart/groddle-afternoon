@@ -23,8 +23,8 @@ import {
   SKIRT_BAND,
   SKIRT_FADE_DEPTH,
   SKIRT_SLIDE_MAX,
-} from '../public/js/street-render.js?v=8571136f';
-import { streetHeight, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+} from '../public/js/street-render.js?v=b381e9c9';
+import { streetHeight, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const street = (tsid) =>

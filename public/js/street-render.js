@@ -9,8 +9,8 @@ import {
   platformsScreen,
   signpostNear,
   pickConnection,
-} from './street-model.js?v=9f16f4ab';
-import { availableStreetTsids } from './street-loader.js?v=90517e2f';
+} from './street-model.js?v=dd20cc44';
+import { availableStreetTsids } from './street-loader.js?v=e5a30b08';
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDeco, NEW_DECOS } from './deco-hires.js?v=03ac6512';
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';

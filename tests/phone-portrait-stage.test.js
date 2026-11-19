@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_PACK_HEIGHT, PHONE_PORTRAIT_MIN_VIEW_W, VIEW_FLOOR_H, VIEW_HOLD_H, phoneStage, stageFor } from '../public/js/location-view.js?v=ac404fcb';
 import { phoneScreenFrame } from '../public/js/touch-controls.js?v=b10f17bb';
-import { tutorialPillSpot } from '../public/js/newxp.js?v=02f902e6';
+import { tutorialPillSpot } from '../public/js/newxp.js?v=8e9130b1';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

@@ -28,8 +28,8 @@ import {
   refusedText,
   teleportCounters,
   teleportKindOf,
-} from '../public/js/follow-mp.js?v=be757faf';
-import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=794229af';
+} from '../public/js/follow-mp.js?v=74f37b54';
+import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=03855068';
 import { COMPANION_FOLLOW_TRAIL_DISTANCE } from '../public/js/local-companions.js?v=188f756c';
 import { loadContentCatalogsFromDir, getQuestCatalog, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';

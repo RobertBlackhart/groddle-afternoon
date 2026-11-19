@@ -29,7 +29,7 @@
  * (BARNACLE_VARIANT_FACES: blister1/3/5 open to the left, 2/4/6 to the right), so on the left part it stays as
  * drawn and on the right part it is mirrored (`mirror: true`). Without masks the rule is G916's.
  */
-import { platformsScreen, isStandable } from './street-model.js?v=9f16f4ab';
+import { platformsScreen, isStandable } from './street-model.js?v=dd20cc44';
 
 /** The wall art barnacles sat on in the measured streets (sprite stems). */
 export const BARNACLE_WALL_DECO = /^(background_)?bottletree|^legs_|^ground_rootpipe|^sprout/;

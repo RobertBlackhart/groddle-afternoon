@@ -54,13 +54,13 @@
 
 import { isCostume } from './pot-luck.js?v=84484e77';
 import { GAME_EPOCH_MS } from './game-day.js?v=50c112eb';
-import { INCUBATION } from './animal-husbandry.js?v=6115ea8e';
-import { isStandable } from './street-model.js?v=9f16f4ab';
-import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=87ed5120';
+import { INCUBATION } from './animal-husbandry.js?v=2a7b603e';
+import { isStandable } from './street-model.js?v=dd20cc44';
+import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=75052b58';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=e4af4096';
 import { CRAB_WALK } from './crabs.js?v=6d30a16a';
 import { FIRE_DRAGON_WALK } from './fire-dragon.js?v=b7f3d751';
-import { walkSurfaceY } from './walk-surface.js?v=e8de6d53';
+import { walkSurfaceY } from './walk-surface.js?v=bacb60c6';
 import { EAT_PAUSE_MS } from './animal-mood.js?v=a49495fc';
 import { CHICKEN_PAUSE_STATES } from './chicken-idles.js?v=eef0279b';
 

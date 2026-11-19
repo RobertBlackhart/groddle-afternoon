@@ -6,8 +6,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { walkerFloorY, WALKER_REACH_PX } from '../public/js/walk-surface.js?v=e8de6d53';
-import { platformYAt } from '../public/js/street-model.js?v=9f16f4ab';
+import { walkerFloorY, WALKER_REACH_PX } from '../public/js/walk-surface.js?v=bacb60c6';
+import { platformYAt } from '../public/js/street-model.js?v=dd20cc44';
 
 const root = join(import.meta.dirname, '..');
 const street = JSON.parse(readFileSync(join(root, 'public/assets/streets/GCR11JA67NJ15N3.json'), 'utf8'));

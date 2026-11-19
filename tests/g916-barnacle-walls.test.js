@@ -11,10 +11,10 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=9f16f4ab';
-import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=87ed5120';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=1b9fa690';
-import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=f6598c43';
+import { isStandable, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=dd20cc44';
+import { ecologyForStreet, measuredNodeSpots, measuredShrineSpot, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=75052b58';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=2059f1ea';
+import { BARNACLE_LIFTS, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=625eedec';
 import { fixedPictureBoxes } from '../tools/build-barnacle-wall-spots.mjs';
 import { BARNACLE_WALL_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=8ba1ff7d';
 

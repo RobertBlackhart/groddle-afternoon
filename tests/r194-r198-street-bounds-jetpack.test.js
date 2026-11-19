@@ -14,8 +14,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { JUMP_SPEED, NORMAL_BUFF, avatarGround, stepAvatar, streetPhysicsExtras, streetTopBottom } from '../public/js/avatar-step.js?v=a6f5a99b';
-import { avatarHeadReach, barriersScreen, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=9f16f4ab';
+import { JUMP_SPEED, NORMAL_BUFF, avatarGround, stepAvatar, streetPhysicsExtras, streetTopBottom } from '../public/js/avatar-step.js?v=0d75eb35';
+import { avatarHeadReach, barriersScreen, platformsScreen, streetHeight, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = JSON.parse(readFileSync(join(root, 'public/assets/content/puzzle-triggers.json'), 'utf8'));
@@ -97,8 +97,8 @@ describe('reports #194/#198: /stuck and Fernucopia\'s whistle stand (puzzles-fea
     globalThis.PIXI = { Sprite, Container: Display, Graphics: Display, Text, Texture, ImageSource, Rectangle: class {} };
     globalThis.Image ||= class { set src(v) { this._s = v; } decode() { return Promise.resolve(); } };
     globalThis.fetch = async () => ({ json: async () => raw });
-    ({ puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=6b793232'));
-    ({ locationEventsFeature: events, locationEventsApi: eventsApi } = await import('../public/js/features/location-events-feature.js?v=0843b12e'));
+    ({ puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=d4a9ba02'));
+    ({ locationEventsFeature: events, locationEventsApi: eventsApi } = await import('../public/js/features/location-events-feature.js?v=bc9fbc52'));
   });
 
   async function enterFernucopia() {

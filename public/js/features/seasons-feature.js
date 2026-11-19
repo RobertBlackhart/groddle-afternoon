@@ -74,14 +74,14 @@ function takePumpkin(engine, cls, copy) {
   engine.query?.('packTakeUnit', cls, at, 1, engine);
   takeToolCopy(engine.toolState, cls, { copy: at });
 }
-import { landingY, nearestSurfaceY } from '../walk-surface.js?v=e8de6d53';
-import { isStandable } from '../street-model.js?v=9f16f4ab';
-import { isBatterflyHabitat } from '../animal-husbandry.js?v=6115ea8e';
+import { landingY, nearestSurfaceY } from '../walk-surface.js?v=bacb60c6';
+import { isStandable } from '../street-model.js?v=dd20cc44';
+import { isBatterflyHabitat } from '../animal-husbandry.js?v=2a7b603e';
 import { emblemCostFor } from '../shrines.js?v=1b7760ec';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=161f11cf';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=1b9fa690';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=2059f1ea';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
