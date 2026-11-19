@@ -176,7 +176,16 @@ describe('ticket 50 and Wintry Place: a road closure never cuts a player off', (
 
   it('the feature keeps a way home on every arrival', () => {
     const feature = read('public/js/features/street-jobs-feature.js');
-    assert.match(feature, /if \(!demo && noteArrival\(state, catalog, engine\.streetTsid, opts\(\)\)\) engine\.save\(\);\n      if \(!demo && !engine\.param\('jobdemo'\)\) keepWayHome\(engine, mine\);/);
+    // arrive(): the roads you stand past open and a way home is kept, before anything else it does.
+    const arrive = feature.slice(feature.indexOf('function arrive(engine, mine) {'), feature.indexOf('const tsid = engine.streetTsid;', feature.indexOf('function arrive(engine, mine) {')));
+    assert.match(arrive, /^function arrive\(engine, mine\) \{\n  if \(mine !== generation \|\| !catalog\) return;\n  arrivalOwed = 0;\n/, 'nothing but a stale arrival returns early');
+    assert.match(arrive, /\n  if \(!demo && noteArrival\(state, catalog, engine\.streetTsid, opts\(\)\)\) engine\.save\(\);\n  if \(!demo && !engine\.param\('jobdemo'\)\) keepWayHome\(engine, mine\);\n/);
+    // Every arrival runs it: solo at once; online (#520) once the server's first project_world is in.
+    const enter = feature.slice(feature.indexOf('  onStreetEnter(street, engine) {'), feature.indexOf('  onStreetClear(engine) {'));
+    assert.match(enter, /if \(waitingWorld\(\)\) arrivalOwed = mine;\n\s*else arrive\(engine, mine\);/);
+    assert.match(feature, /const waitingWorld = \(\) => mpMode && !worldKnown;/, 'solo never waits');
+    const world = feature.slice(feature.indexOf("client.on('msg:project_world'"), feature.indexOf("client.on('msg:project_mine'"));
+    assert.match(world, /worldKnown = true;[\s\S]*if \(arrivalOwed && arrivalOwed === generation\) arrive\(engine, arrivalOwed\);/, 'online: the owed arrival runs when the world is known');
     assert.match(feature, /for \(const t of \[\.\.\.TELEPORTERS, \.\.\.WINTRY_PORTAL_TELEPORTERS\]\) add\(g\(t\.from\), g\(t\.to\)\);/);
   });
 
