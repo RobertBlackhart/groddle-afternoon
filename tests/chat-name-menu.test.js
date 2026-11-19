@@ -12,7 +12,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=59b08b8e';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=6ab71250';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { browserMenuPolicy } from '../public/js/ui/context-guard.js?v=0f71ac17';
 

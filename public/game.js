@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ca4eaa0f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b7b9712b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3ad83c43';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -815,7 +815,7 @@ import {
   POL_OWNER_SIZE,
 } from './js/screen-fx.js?v=a0ed42e9';
 import { momentMoreText } from './js/ui/moment-card.js?v=3850c51c';
-import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=4cde830b';
+import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
 import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e021b';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
@@ -1078,7 +1078,7 @@ import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=43eaeaef';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=59b08b8e';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=6ab71250';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=db8d7891';
@@ -1121,7 +1121,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=9fe26aff';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=94012d9b';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=7968c974';
 

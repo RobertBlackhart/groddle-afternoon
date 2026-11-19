@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CHAT_BUBBLE_CHARS, CHAT_MAX_CHARS, MAX_ROWS, bindChatInput, chatBubbleText, fitHeight, heldAtFocus, historyKey, keyWatch, oneLine, sendKey, strayRepeat } from '../public/js/ui/chat-input.js?v=4cde830b';
+import { CHAT_BUBBLE_CHARS, CHAT_MAX_CHARS, MAX_ROWS, bindChatInput, chatBubbleText, fitHeight, heldAtFocus, historyKey, keyWatch, oneLine, sendKey, strayRepeat } from '../public/js/ui/chat-input.js?v=8f2479a3';
 import { FakeEl } from './social-fake-dom.js';
 import { MAX_CHAT } from '../public/js/realtime-client.js?v=1108c7c5';
 import { SERVER_DIR, SITE_DIR, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
@@ -181,6 +181,42 @@ describe('the chat box: wired', () => {
     assert.equal(heldAtFocus({ key: 'a', code: 'KeyA', isComposing: true }, new Set(['keya'])), false, 'an input method keeps its keys');
     assert.equal(heldAtFocus({ key: 'a', code: 'KeyA' }, new Set()), false);
     assert.equal(keyWatch({}), null, 'no window, no watch (strayRepeat still drops repeats)');
+  });
+
+  it('the box is as tall as its placeholder, again when the street name changes (Austin 2026-11-19)', () => {
+    // A text area as the browser lays it out: 18 px lines, 7 px padding each side, border-box, a
+    // 244 px box holding 30 characters a line. Like Firefox, scrollHeight counts only the words.
+    const CHARS = 30;
+    class Box {
+      constructor() {
+        this._value = '';
+        this._hint = '';
+        this.style = {};
+        this.dataset = {};
+        this.listeners = {};
+      }
+      get value() { return this._value; }
+      set value(v) { this._value = String(v); }
+      get placeholder() { return this._hint; }
+      set placeholder(v) { this._hint = String(v); }
+      get scrollHeight() { return 14 + 18 * Math.max(1, Math.ceil(this._value.length / CHARS)); }
+      addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
+    }
+    const win = { getComputedStyle: () => ({ lineHeight: '18px', paddingTop: '7px', paddingBottom: '7px', borderTopWidth: '1px', borderBottomWidth: '1px', boxSizing: 'border-box', minHeight: '34px' }) };
+    const f = new Box();
+    f.placeholder = 'Local chat…';
+    bindChatInput(f, { form: null, win });
+    assert.equal(f.style.height, '34px', 'one line for a one-line hint');
+    // The drawer names the street: "Say something on Groddle Forest Junction" wraps to two lines.
+    f.placeholder = 'Say something on Groddle Forest Junction';
+    assert.equal(f.style.height, '52px', 'two lines for the two-line hint, fitted when it changed');
+    assert.equal(f.value, '', 'measuring the hint leaves the box empty');
+    f.placeholder = 'Say something on Switchback';
+    assert.equal(f.style.height, '34px', 'and back to one');
+    // Words in the box: its height is theirs, whatever the hint.
+    f.placeholder = 'Say something on Groddle Forest Junction';
+    f.value = 'hi';
+    assert.equal(f.style.height, '34px');
   });
 
   it('a chat line holds 1,000 characters, as the original box did, in the box, the client, the server and the site', () => {

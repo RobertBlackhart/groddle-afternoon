@@ -176,7 +176,8 @@ function metrics(field, win) {
 /**
  * Makes `field` (a textarea) the chat box: it grows with its words up to MAX_ROWS, Enter submits
  * `form`, line breaks become spaces, and the history keys are left to `onHistory(key)` (true when it
- * took the key) only where historyKey allows them. Setting field.value from code fits it again.
+ * took the key) only where historyKey allows them. Setting field.value or field.placeholder from code
+ * fits it again; an empty box is as tall as its placeholder.
  * Returns { fit } (fits the height now).
  */
 export function bindChatInput(field, { form = field?.form || null, onHistory = null, maxRows = MAX_ROWS, win = globalThis } = {}) {
@@ -195,7 +196,7 @@ export function bindChatInput(field, { form = field?.form || null, onHistory = n
       const border = bb ? m.border : -m.pad;
       const extra = bb ? m.pad + m.border : 0;
       field.style.height = 'auto';
-      const sh = field.scrollHeight || 0;
+      const sh = Math.max(field.scrollHeight || 0, placeholderHeight());
       const fitted = fitHeight({ scrollHeight: sh, lineHeight: m.lineHeight, extra, border, maxRows });
       const scroll = fitted.scroll;
       const height = Math.max(fitted.height, m.minHeight);
@@ -205,6 +206,25 @@ export function bindChatInput(field, { form = field?.form || null, onHistory = n
       field.dataset.chatRows = String(Math.min(rows, maxRows));
     } finally {
       fitting = false;
+    }
+  }
+
+  // The native value setter (the box's own words), so measuring the placeholder fits nothing again.
+  const proto = Object.getPrototypeOf(field);
+  const desc = proto && Object.getOwnPropertyDescriptor(proto, 'value');
+  /**
+   * An empty box is as tall as its placeholder ("Say something on Groddle Forest Junction" is two
+   * lines in the drawer): measured with the placeholder put in as the words for a moment, as
+   * Chrome counts it in scrollHeight and Firefox does not. 0 when the box has words or no hint.
+   */
+  function placeholderHeight() {
+    const hint = String(field.placeholder || '');
+    if (!hint || !desc?.get || !desc?.set || desc.get.call(field) !== '') return 0;
+    try {
+      desc.set.call(field, hint);
+      return field.scrollHeight || 0;
+    } finally {
+      desc.set.call(field, '');
     }
   }
 
@@ -228,8 +248,6 @@ export function bindChatInput(field, { form = field?.form || null, onHistory = n
   }
 
   // Setting the value from code (the history, a command clearing it, the Feat panel filling it in) fits it too.
-  const proto = Object.getPrototypeOf(field);
-  const desc = proto && Object.getOwnPropertyDescriptor(proto, 'value');
   if (desc?.get && desc?.set && !Object.prototype.hasOwnProperty.call(field, 'value')) {
     Object.defineProperty(field, 'value', {
       configurable: true,
@@ -241,6 +259,24 @@ export function bindChatInput(field, { form = field?.form || null, onHistory = n
       },
     });
   }
+
+  // A new placeholder fits it too (Austin 2026-11-19: walking from Switchback onto Groddle Forest
+  // Junction left the drawer's box one line tall, its two-line "Say something on ..." cut in half).
+  const hintDesc = proto && Object.getOwnPropertyDescriptor(proto, 'placeholder');
+  if (hintDesc?.get && hintDesc?.set && !Object.prototype.hasOwnProperty.call(field, 'placeholder')) {
+    Object.defineProperty(field, 'placeholder', {
+      configurable: true,
+      enumerable: true,
+      get() { return hintDesc.get.call(this); },
+      set(v) {
+        const was = hintDesc.get.call(this);
+        hintDesc.set.call(this, v);
+        if (hintDesc.get.call(this) !== was) fit();
+      },
+    });
+  }
+  // The game's font arriving changes where the words wrap.
+  win.document?.fonts?.addEventListener?.('loadingdone', () => fit());
 
   field.addEventListener('input', () => {
     const v = field.value;

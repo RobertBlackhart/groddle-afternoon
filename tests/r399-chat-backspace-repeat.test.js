@@ -7,7 +7,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { EDIT_KEYS, bindChatInput, editKey, heldAtFocus, strayRepeat } from '../public/js/ui/chat-input.js?v=4cde830b';
+import { EDIT_KEYS, bindChatInput, editKey, heldAtFocus, strayRepeat } from '../public/js/ui/chat-input.js?v=8f2479a3';
 import { FakeEl } from './social-fake-dom.js';
 
 function field() {
