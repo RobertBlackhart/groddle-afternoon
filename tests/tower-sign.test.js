@@ -62,7 +62,9 @@ describe('the Tower name sign', () => {
       let xml;
       try {
         xml = execFileSync('unzip', ['-p', join(ITEMS, `${base}.fla`), 'DOMDocument.xml'], { encoding: 'utf8', maxBuffer: 2 ** 28, stdio: ['ignore', 'pipe', 'ignore'] });
-      } catch (e) { xml = e.stdout; } // These FLAs have a short central directory; unzip warns and still reads them.
+      } catch (e) { xml = e.stdout; } // These FLAs have a short central directory; macOS's unzip warns and still reads them.
+      // Info-ZIP 6.0 on Linux refuses that central directory and prints nothing; libarchive streams the local headers.
+      if (!xml) xml = execFileSync('bsdtar', ['-xOf', join(ITEMS, `${base}.fla`), 'DOMDocument.xml'], { encoding: 'utf8', maxBuffer: 2 ** 28, stdio: ['ignore', 'pipe', 'ignore'] });
       const main = matrix(xml, 'maincontainer_mc');
       const pt = matrix(xml, 'sign_pt');
       assert.ok(main, style);
