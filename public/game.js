@@ -1012,7 +1012,7 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=78a605db';
+} from './js/map-graph.js?v=3b7d09a6';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=623190e2';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.

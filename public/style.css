@@ -6997,6 +6997,21 @@ body.buff-purple-pulse::after {
   pointer-events: none;
 }
 .map-street.building:hover .map-seg-stripes { stroke-width: calc(9px * var(--map-line-k, 1)); }
+/* #526: a street you have not been to has no road, only dots (MapStreet.as 51-63, showDots 142-155):
+   black, radius 2.5 every 8 (2 x 2.5 + 3 padd), the first one 2.5 in from the end, at 0.4 of the
+   street's alpha (0.7, 0.85 hovered). */
+.map-seg.travelable.unvisited {
+  stroke: #000;
+  stroke-width: calc(5px * var(--map-line-k, 1));
+  stroke-dasharray: 0 calc(8px * var(--map-line-k, 1));
+  stroke-dashoffset: calc(-2.5px * var(--map-line-k, 1));
+  opacity: 0.28;
+}
+.map-street.travelable.unvisited:hover .map-seg.travelable.unvisited {
+  stroke: #000;
+  stroke-width: calc(5px * var(--map-line-k, 1));
+  opacity: 0.34;
+}
 .map-label.loaded.building { opacity: 0.5; }
 /* #403: a street you have not been to, its name at half (MapStreet.as 20, 125: TF_DIM_ALPHA .5). */
 .map-label.loaded.unvisited { opacity: 0.5; }

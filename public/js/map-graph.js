@@ -919,10 +919,15 @@ export function renderHubMapSvg(view) {
     // name (MapStreet.as 16-20, 53-55, 125: STREET_LOCKED 'SL', location.js 2880-2935); its menu
     // still opens and says where to help build it.
     const building = Boolean(s.building && !s.current);
-    const cls = s.current ? 'map-seg current' : `map-seg travelable${building ? ' building' : ''}`;
+    // #526: a street you have not been to is a row of dots, not a road (MapStreet.as 51-63, showDots
+    // 142-155); the street you are on counts as visited (MapHub.as 559-562). game.js sets `unvisited`.
+    // A street under construction keeps its striped road (ours, ticket 66): stripes over dots read
+    // as a second kind of dotted street, and no one has walked it yet anyway.
+    const unvisited = Boolean(s.unvisited && !s.current && !building);
+    const cls = s.current ? 'map-seg current' : `map-seg travelable${building ? ' building' : ''}${unvisited ? ' unvisited' : ''}`;
     const travelTsid = s.loadedTsid || s.tsid;
     parts.push(
-      `<g class="map-street ${s.current ? 'current' : 'travelable'}${building ? ' building' : ''}" ` +
+      `<g class="map-street ${s.current ? 'current' : 'travelable'}${building ? ' building' : ''}${unvisited ? ' unvisited' : ''}" ` +
         `data-tsid="${escapeXml(travelTsid)}" data-label="${escapeXml(s.label)}" ` +
         // RIGHTCLICK: a street has a menu of ours (game.js openMapStreetMenu), never the browser's.
         `data-segment="${escapeXml(s.tsid)}" data-ctx="map-street"${building ? ' data-building="1"' : ''}>` +
