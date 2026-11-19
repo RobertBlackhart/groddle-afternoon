@@ -149,7 +149,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=cc74c26a';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=d5252bc6';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -638,12 +638,26 @@ function spawnGiver(engine, target) {
   tickIndicators(engine);
 }
 
-/** The bubble's view for a headline (JobManager.as 100-125). */
-function indicatorView(head, now) {
+/** The bubble's view for a headline (JobManager.as 100-125); `resting`: the spirit's rest countdown (ours). */
+function indicatorView(head, now, resting = false) {
   if (!head) return null;
   const job = jobDef(catalog, head.jobId);
   const reqs = phaseRequirements(state, catalog, head.jobId);
-  return jobIndicatorView(head, { phases: job?.phases?.length || 1, perc: jobPerc(reqs), now, featured: Boolean(featured && featured.jobId === head.jobId) });
+  return jobIndicatorView(head, { phases: job?.phases?.length || 1, perc: jobPerc(reqs), now, featured: Boolean(featured && featured.jobId === head.jobId), resting });
+}
+
+/**
+ * Ours (Austin 2026-11-19, after #520): online, a resting street's spirit counts down to its next
+ * project ("Opens in 12 min"); Glitch showed nothing there. When the rest runs out here the server
+ * is asked again, so the bubble that follows is its state, not only this page's clock.
+ */
+function tickRest(head, now) {
+  if (!giver || !mpMode) return;
+  if (head?.status === 'cooldown') giver.restUntil = Number(head.until) || 0;
+  else if (giver.restUntil) {
+    giver.restUntil = 0;
+    mp?.sync();
+  }
 }
 
 /** Each frame: the bubbles' text (the countdown ticks each second), their flip, and the spirit's over its head. */
@@ -652,7 +666,9 @@ function tickIndicators(engine, now = Date.now()) {
     const spr = giver.target?.sprite;
     const root = giver.indicator.root;
     if (spr && !spr.destroyed && !root.destroyed) {
-      const v = indicatorView(giverHeadline(engine), now);
+      const head = giverHeadline(engine);
+      tickRest(head, now);
+      const v = indicatorView(head, now, mpMode);
       giver.indicator.update(v, now);
       // Over the spirit's head and its name (ActionIndicatorView worldDisposableSpriteChangeHandler:
       // y above the display, less the bubble's height), and over our Enter hint, which sits on

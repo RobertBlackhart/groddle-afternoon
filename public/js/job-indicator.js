@@ -26,6 +26,7 @@
  * second line smaller and lighter.
  */
 import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
+import { FEATURED_TEXT, featuredWaitMins } from './featured-project.js?v=1180ebbd';
 
 export const JOB_INDICATOR_TEXT = Object.freeze({
   available: 'Project available',
@@ -109,20 +110,27 @@ export function secondsUntil(until, now = Date.now()) {
  * jobStatus), the job's phase count and the phase's perc, or null for no bubble:
  * - done / built: gone (JobManager.as 127-138);
  * - cooldown (a street just built, the next build not yet offered): no status at all, as
- *   jobs_get_available skips it (locations/inc_jobs.js 463-467), so no bubble;
+ *   jobs_get_available skips it (locations/inc_jobs.js 463-467), so no bubble; with `resting`
+ *   (ours, Austin 2026-11-19: the Street Spirit's) "Opens in 12 min", the Featured line's words
+ *   and minutes (js/featured-project.js), not clickable, then "Project available" when it ends;
  * - delayed: the countdown, not clickable;
  * - otherwise "Project available", or the phase's percent flipping with it.
  * Returns { kind, main: [line] | [big, small], alt, percent, clickable, featured, key }.
  * `featured` (G656, ours: Glitch had no featured project) puts a small star on the bubble of the
  * world's featured street project (js/featured-project.js).
  */
-export function jobIndicatorView(head, { phases = 1, perc = 0, now = Date.now(), featured = false } = {}) {
+export function jobIndicatorView(head, { phases = 1, perc = 0, now = Date.now(), featured = false, resting = false } = {}) {
   if (!head) return null;
   const st = head.status;
-  if (st === 'done' || st === 'built' || st === 'cooldown') return null;
+  if (st === 'done' || st === 'built' || (st === 'cooldown' && !resting)) return null;
   const T = JOB_INDICATOR_TEXT;
   let view;
-  if (st === 'delayed') {
+  if (st === 'cooldown') {
+    const mins = featuredWaitMins({ readyAt: Number(head.until) || 0 }, now);
+    view = mins
+      ? { kind: 'resting', main: [FEATURED_TEXT.waiting(mins)], alt: '', percent: 0, clickable: false }
+      : { kind: 'available', main: [T.available], alt: '', percent: 0, clickable: true };
+  } else if (st === 'delayed') {
     const sec = secondsUntil(head.until, now);
     if (sec <= 0) view = { kind: 'available', main: [T.available], alt: '', percent: 0, clickable: true };
     else {

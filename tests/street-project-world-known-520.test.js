@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=6dc5bd4b';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=60eba331';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
@@ -150,6 +150,36 @@ describe('#520 online, the projects wait for the server\'s first word', () => {
     streetJobsFeature.onTick(16, Date.now(), engine);
     st = streetJobsFeature._state();
     assert.notEqual(st.bubble.spirit, 'Project available', 'resting: never "Project available"');
+  });
+
+  it('ours: a resting street\'s spirit counts down, then asks the server and offers the project', async () => {
+    await login(SPIRIT_STREET, [spirit]);
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    assert.equal(streetJobsFeature._state().bubble.spirit, '', 'no countdown before the first project_world');
+    const offering = catalog.jobs[SPIRIT_JOB].connecting[0];
+    world({ rest: { [offering]: Date.now() - 60_000 } });
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    let st = streetJobsFeature._state();
+    assert.equal(st.giver, true);
+    assert.equal(st.bubble.spirit, 'Opens in 29 min', 'the Featured line\'s words and minutes');
+    assert.equal(data.streetJobStatus, 'cooldown');
+    assert.ok(!st.bubble.spirit.includes('\u2014'), 'no em dash');
+    // Still resting, with a minute and a half left.
+    st.state.streetDone[offering] = Date.now() - 30 * 60_000 + 90_000;
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    assert.equal(streetJobsFeature._state().bubble.spirit, 'Opens in 2 min');
+    // The rest runs out while you stand there: the server is asked again, and the project is offered.
+    const asked = client.sent.filter((m) => m.t === 'project_sync').length;
+    st.state.streetDone[offering] = Date.now() - 30 * 60_000 - 1;
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    assert.equal(client.sent.filter((m) => m.t === 'project_sync').length, asked + 1, 'project_sync once');
+    assert.equal(streetJobsFeature._state().bubble.spirit, 'Project available');
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    assert.equal(client.sent.filter((m) => m.t === 'project_sync').length, asked + 1, 'and only once');
+    // The server's answer still says it rests (a newer build): the countdown is back.
+    world({ rest: { [offering]: Date.now() - 1000 } });
+    streetJobsFeature.onTick(16, Date.now(), engine);
+    assert.equal(streetJobsFeature._state().bubble.spirit, 'Opens in 30 min');
   });
 
   it('an open project\'s bubble comes with the answer', async () => {
