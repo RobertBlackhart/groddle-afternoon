@@ -61,7 +61,7 @@ import {
   stepRide,
   ticketOffer,
 } from '../public/js/subway.js?v=af570a5d';
-import { dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=bc638163';
+import { choiceCardKey, dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=6649534a';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -497,6 +497,46 @@ describe('#387: subway cards and the keyboard', () => {
     assert.match(prompt, /focus: false/);
     assert.doesNotMatch(prompt, /onTimeout/);
     assert.match(src, /if \(opts\.focus !== false && dialogMayTakeFocus\(document, el\)\) actions\.querySelector\('button'\)\?\.focus/);
+  });
+});
+
+describe('#518 (R8): the gate\'s cards keep the keys, as the client\'s ChoicesDialog did', () => {
+  const key = (k, mods = {}) => ({ key: k, ...mods });
+  it('the arrows move round the choices, both ways, round the ends (_focusNextChoice, _focusPrevChoice)', () => {
+    assert.deepEqual(choiceCardKey(key('ArrowRight'), { count: 3, at: 0 }), { move: 1 });
+    assert.deepEqual(choiceCardKey(key('ArrowDown'), { count: 3, at: 2 }), { move: 0 });
+    assert.deepEqual(choiceCardKey(key('ArrowLeft'), { count: 3, at: 0 }), { move: 2 });
+    assert.deepEqual(choiceCardKey(key('ArrowUp'), { count: 3, at: 1 }), { move: 0 });
+    assert.deepEqual(choiceCardKey(key('ArrowRight'), { count: 3, at: -1 }), { move: 0 }, 'focus off the card: back to the first');
+    assert.deepEqual(choiceCardKey(key('ArrowLeft'), { count: 3, at: -1 }), { move: 2 });
+    assert.deepEqual(choiceCardKey(key('ArrowRight'), { count: 1, at: 0 }), { move: 0 }, 'one OK: stays on it, the avatar still does not walk');
+  });
+  it('Enter and Space press the focused choice; with focus elsewhere Enter only comes back to the card', () => {
+    assert.deepEqual(choiceCardKey(key('Enter'), { count: 3, at: 1 }), { native: true });
+    assert.deepEqual(choiceCardKey(key(' '), { count: 3, at: 1 }), { native: true });
+    assert.deepEqual(choiceCardKey(key('Enter'), { count: 3, at: -1 }), { move: 0 }, 'never buys a ticket unseen');
+    assert.deepEqual(choiceCardKey(key(' '), { count: 3, at: -1 }), { hold: true }, 'no jump under the card');
+  });
+  it('Escape closes it with no choice (_escKeyHandler: no cancel_value); W A S D do not walk under it', () => {
+    assert.deepEqual(choiceCardKey(key('Escape'), { count: 3, at: 0 }), { close: true });
+    for (const k of ['w', 'a', 's', 'D']) assert.deepEqual(choiceCardKey(key(k), { count: 3, at: 0 }), { hold: true }, k);
+  });
+  it('other keys and chords go on as usual (R for a report, Ctrl+R, the zoom keys)', () => {
+    for (const k of ['r', 'm', '1', 'Tab', '+']) assert.equal(choiceCardKey(key(k), { count: 3, at: 0 }), null, k);
+    assert.equal(choiceCardKey(key('ArrowLeft', { altKey: true }), { count: 3, at: 0 }), null);
+    assert.equal(choiceCardKey(key('r', { ctrlKey: true }), { count: 3, at: 0 }), null);
+  });
+  it('a gate card is modal and holds the keys while open; the get-off prompt mid-ride is not (#387)', () => {
+    const src = readFileSync(join(pub, 'js/features/subway-feature.js'), 'utf8');
+    const open = src.slice(src.indexOf('function openDialog('), src.indexOf('/** inc_transit.js transit_make_announcement'));
+    assert.match(open, /const modal = opts\.focus !== false;/);
+    assert.match(open, /el\.setAttribute\('aria-modal', modal \? 'true' : 'false'\);/);
+    assert.match(open, /if \(modal\) dialog\.release = holdKeys\(engine, el, /);
+    assert.match(src.slice(src.indexOf('function closeDialog('), src.indexOf('function closeDialog(') + 200), /dialog\.release\?\.\(\);/, 'closing lets the keys go');
+    const hold = src.slice(src.indexOf('function holdKeys('), src.indexOf('function openDialog('));
+    assert.match(hold, /window\.addEventListener\('keydown', onKey, true\)/, 'ahead of the game\'s keys');
+    assert.match(hold, /dialogMayTakeFocus\(document, el\)/, 'not over a text field or another window');
+    assert.match(hold, /e\.stopImmediatePropagation\(\)/);
   });
 });
 

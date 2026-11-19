@@ -217,6 +217,7 @@ const root = () => document.getElementById('game-root') || document.body;
 
 function closeDialog(engine) {
   if (!dialog) return;
+  dialog.release?.();
   dialog.el.remove();
   dialog = null;
   engine?.setData('subwayDialog', '');
@@ -246,8 +247,61 @@ export function dialogMayTakeFocus(doc, el) {
 }
 
 /**
+ * PURE (#518, R8): what a key does to a gate card. The Red Button's cards were conversations
+ * (subway_gate.js conversation_start), the client's ChoicesDialog: Right and Down focus the next
+ * choice, Left and Up the one before, round the ends (_focusNextChoice, _focusPrevChoice); Enter
+ * makes the focused choice (_enterHandler); Escape closes with no choice (_escKeyHandler: no
+ * cancel_value, so _makeNoChoice); and it stops the avatar while it has the keys
+ * (stops_avatar_on_focus), so W A S D and Space do not walk or jump under it.
+ * `at`: the focused choice's index, -1 when focus is not on one. Returns null for a key that goes
+ * on as usual, else { move } (focus that choice), { close }, { native } (the focused button's own
+ * Enter or Space presses it) or { hold } (kept from the avatar).
+ */
+export function choiceCardKey(e, { count = 0, at = -1 } = {}) {
+  if (!e || e.ctrlKey || e.metaKey || e.altKey) return null;
+  const k = String(e.key || '');
+  if (k === 'Escape') return { close: true };
+  if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'ArrowLeft' || k === 'ArrowUp') {
+    if (count < 1) return { hold: true };
+    const step = k === 'ArrowRight' || k === 'ArrowDown' ? 1 : -1;
+    if (at < 0) return { move: step > 0 ? 0 : count - 1 };
+    return { move: (at + step + count) % count };
+  }
+  if (k === 'Enter' || k === ' ' || k === 'Spacebar') {
+    if (at >= 0) return { native: true };
+    // Focus elsewhere (a click on the street): Enter brings it back to the first choice, never buys.
+    return k === 'Enter' && count > 0 ? { move: 0 } : { hold: true };
+  }
+  if (['w', 'a', 's', 'd'].includes(k.toLowerCase())) return { hold: true };
+  return null;
+}
+
+/**
+ * The gate cards keep the keys while they are open (choiceCardKey), as the game's modal windows
+ * do: aria-modal (game.js escapeOpenFeatureDialog hands it Escape, focus-return keeps its focus),
+ * and a capture listener ahead of the game's keys. Not over a text field the player is typing in,
+ * another window that holds the focus, or a window over the card (dialogMayTakeFocus).
+ */
+function holdKeys(engine, el, buttons) {
+  const onKey = (e) => {
+    if (!el.isConnected || dialog?.el !== el) return;
+    if (!el.contains(e.target) && !dialogMayTakeFocus(document, el)) return;
+    const list = buttons();
+    const act = choiceCardKey(e, { count: list.length, at: list.indexOf(document.activeElement) });
+    if (!act) return;
+    e.stopImmediatePropagation();
+    if (!act.native) e.preventDefault();
+    if (act.move != null) list[act.move]?.focus({ preventScroll: true });
+    else if (act.close) closeDialog(engine);
+  };
+  window.addEventListener('keydown', onKey, true);
+  return () => window.removeEventListener('keydown', onKey, true);
+}
+
+/**
  * A conversation card: { kicker, title, paras, lines, choices: [{ label, value, primary }], timeoutMs, onTimeout,
- * focus }. `focus: false` leaves the keyboard where it is. onChoice(value) runs after it closes.
+ * focus }. `focus: false` leaves the keyboard where it is, and the card is not modal (the get-off
+ * prompt mid-ride, #387). onChoice(value) runs after it closes; Escape closes it with no choice.
  */
 function openDialog(engine, opts, onChoice) {
   ensureStyle();
@@ -255,7 +309,9 @@ function openDialog(engine, opts, onChoice) {
   const el = document.createElement('div');
   el.className = 'subway-dialog glitch-modal';
   el.setAttribute('role', 'dialog');
-  el.setAttribute('aria-modal', 'false');
+  // #518: a gate card is modal (ChoicesDialog); the get-off prompt mid-ride is not (#387).
+  const modal = opts.focus !== false;
+  el.setAttribute('aria-modal', modal ? 'true' : 'false');
   const card = document.createElement('div');
   card.className = 'subway-dialog-card';
   if (opts.kicker) {
@@ -307,6 +363,7 @@ function openDialog(engine, opts, onChoice) {
   el.appendChild(card);
   root().appendChild(el);
   dialog = { el, onTimeout: opts.onTimeout || null, until: opts.timeoutMs ? Date.now() + opts.timeoutMs : 0, id: opts.id || '' };
+  if (modal) dialog.release = holdKeys(engine, el, () => [...actions.querySelectorAll('button')]);
   engine.setData('subwayDialog', opts.id || 'open');
   if (opts.focus !== false && dialogMayTakeFocus(document, el)) actions.querySelector('button')?.focus({ preventScroll: true });
   return dialog;
