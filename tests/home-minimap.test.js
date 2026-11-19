@@ -237,7 +237,7 @@ describe('home map: the wiring', () => {
 
   it('the scene\'s posts go on the map; a post with no tip is still named', () => {
     assert.match(feature, /view\.setSceneSigns\(marks\);/);
-    assert.match(ui, /el\.setAttribute\('aria-label', mark\.tip \? `Signpost to \$\{mark\.tip\.split\('\\n'\)\.join\(', '\)\}` : 'Signpost'\);/);
+    assert.match(ui, /el\.setAttribute\('aria-label', station \? mark\.tip \|\| 'Subway station' : mark\.tip \? `Signpost to \$\{mark\.tip\.split\('\\n'\)\.join\(', '\)\}` : 'Signpost'\);/);
     assert.match(read('public/js/features/home-street-mp-feature.js'), /state: \{ owner, arms: arms\.map\(\(n\) => n\.name\) \}/);
   });
 });

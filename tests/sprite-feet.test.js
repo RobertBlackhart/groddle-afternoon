@@ -69,6 +69,7 @@ const KEPT_OFFSETS = [
   [/^js\/features\/enchanted-forest-feature\.js: sprite\.y = entity\.y \+ 2;/, 'trees stand 2 px into their line (the same snap)'],
   [/^js\/features\/giant-icons-feature\.js: spr\.y = row\.y \+ 2;/, 'world art is not measured (trimmed to its SWF state): nothing to make up for'],
   [/^js\/features\/hell-feature\.js: graveSprite\.y = marker\.y \+ 29;/, 'the source raises the grave marker 29 px above the croak point'],
+  [/^js\/features\/graves-mp-feature\.js: sprite\.y = g\.y \+ 29;/, 'another player\'s grave, raised 29 px above the croak point as hell-feature\'s own'],
 ];
 
 test('nothing on its measured feet is pushed into its line by hand (R12: the walkers\' + 2 and the like)', () => {

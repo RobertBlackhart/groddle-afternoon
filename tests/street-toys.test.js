@@ -18,7 +18,7 @@ import {
   toyDecoId,
   toyHitBox,
 } from '../public/js/street-toys.js?v=09630452';
-import { GLITCH_ONE_CLICK, oneClickChoice } from '../public/js/world-context-menu.js?v=f952c4db';
+import { GLITCH_ONE_CLICK, oneClickChoice } from '../public/js/world-context-menu.js?v=e4c99c05';
 import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=7fd40f71';
 import { SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
 

@@ -62,7 +62,7 @@ export const GLITCH_ONE_CLICK = Object.freeze({
  * #385: Glitch's doors. A click on a location door went straight through, never a menu:
  * control/TSFrontController.as startInteractionWith 3600-3607 (a DoorView: startLocationMove with
  * MoveModel.DOOR_MOVE), reached by a click once the walk there ends (engine/AvatarController.as 164-197)
- * and by the keyboard's interaction (465-479). Ours are the
+ * and by the keyboard's interaction (465-479). Here that is the
  * location doors features/doors-feature.js draws (`street_door`: shop and tower doors, the subway
  * stations' stairs): a click, a tap or Enter runs their Enter; a door that refuses (locked, a level,
  * a closed instance) still says why. A right-click and a long press open the one-line menu.

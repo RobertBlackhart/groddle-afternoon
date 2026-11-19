@@ -2814,9 +2814,69 @@
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2790,
+  "commits": 2804,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The chat box in the Social drawer is as tall as its \"Say something on ...\" hint again after a street change"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Pot's Empty Table and other feature quests can be pinned"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "No dark strip with a light line along the right-hand wall of a Tower floor"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A Spinach jump pressed into the end of a Jethimadh Tower corridor no longer goes up through the ceiling and out"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "A click on a door goes straight through it, the subway station's steps too"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Purplysa: the gravity pad on the small block under the crystals lifts you"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "new",
+    "text": "Other players see your grave online and can mourn or celebrate it, as in Glitch"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "new",
+    "text": "subway stations on the street map, with a walk-to row on the phone"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "the open bag is marked in the pack row"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "A quoin touched past the daily limit says so, at most once a minute"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "The emblem spend confirm says when the half-the-time-left cap sets the speed-up"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "Wine of the Dead refused while dead says how to finish Beelzebooze"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2876,69 +2936,9 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "an ended party or the Interrogation room's door with no way back goes to Hechey Track"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "the Jellisac Mound grows three Jellisacs, and pods stand where Glitch drew them"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Towers, the scaffolding and Note Poles stand on the walk line"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The subway ticket card takes the arrows, Enter and Escape, and the avatar stays put under it"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "In the Juju Hideout your feet stand in the dirt, not on its far edge"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The Map's arrow walks to the signpost on your floor when two posts lead to the next street"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Planting on a shared garden or patch goes through while the game is saving"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "A refused yard verb gives back energy and mood through the stat API"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Visitors stay on the home street they visit, and a yard verb the server refuses keeps no reward"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "An expired Party Space sends you back where you entered it, not to Baqala"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Crushing with the Grand Ol' Grinder uses it, not the first Grinder in the pack"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "Street Spirit counts down \"Opens in N min\" while its street rests"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Street Spirit no longer flashes \"Project available\" on entry online"
    }
   ]
  },
- "tests": 1171,
+ "tests": 1177,
  "generatedAt": "2026-11-19"
 }
