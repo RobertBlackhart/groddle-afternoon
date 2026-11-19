@@ -384,7 +384,7 @@ describe('game wiring (G614)', () => {
 
   it('the player\'s own look goes on only with every sheet painted (no held frame on your own jump)', () => {
     assert.match(fnBody(game, 'makePlayer'), /getAppearanceTextures\(playerAppearance, \{ full: true \}\)/);
-    assert.match(fnBody(game, 'applyPlayerAppearance'), /swapPlayerPack\(getAppearanceTextures\(playerAppearance, \{ full: true \}\)\)/);
+    assert.match(fnBody(game, 'applyPlayerAppearance'), /swapPlayerPack\(ownPackFor\(getAppearanceTextures\(playerAppearance, \{ full: true \}\), player\.pack\)\)/);
     assert.equal(game.match(/getAppearanceTextures\(playerAppearance\b[^)]*\)/g).every((m) => /full: true/.test(m)), true, 'no other way onto the player');
     const get = fnBody(game, 'getAppearanceTextures');
     assert.match(get, /if \(cached && \(!full \|\| packComplete\(cached\)\)\) return cached;/);

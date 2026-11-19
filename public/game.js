@@ -848,6 +848,7 @@ import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverG
 import { hellBuffDesc, isInHell } from './js/hell.js?v=c1f68f31';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
+import { ownPackFor, whenOwnLookReady } from './js/avatar-placeholder.js?v=ff68d2e6';
 import { createNpcGlitchKit } from './js/npc-glitch.js?v=2027a750';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=8b20791a';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
@@ -11998,8 +11999,14 @@ function getAppearanceTextures(appearance, { full = false } = {}) {
 /** Apply current playerAppearance to the live player sprite. */
 function applyPlayerAppearance() {
   if (!player) return;
-  // Your own look goes on only with every sheet painted (G614): the default stays until then.
-  swapPlayerPack(getAppearanceTextures(playerAppearance, { full: true }));
+  // Your own look goes on only with every sheet painted (G614). R33 (#537): until then the look
+  // you wear stays on (js/avatar-placeholder.js ownPackFor); the stand-in only with none yet.
+  swapPlayerPack(ownPackFor(getAppearanceTextures(playerAppearance, { full: true }), player.pack));
+}
+
+/** R33 (#537): your own look is on, not a stand-in (the first loading card waits for it). */
+function ownLookWorn() {
+  return Boolean(player?.pack && !player.pack.pending);
 }
 
 function swapPlayerPack(pack) {
@@ -34901,8 +34908,16 @@ async function main() {
   // has drawn. Autostart, a tutorial reload (newxp resumeOnReload) and a started game skip it.
   const startOverlay = document.getElementById('overlay');
   const startCardWaits = !state.started && Boolean(startOverlay) && !startOverlay.classList.contains('hidden');
+  // R33 (#537): the loading card waits for your own look (Glitch loaded it before the street
+  // showed, BootStrapController.as 948-968), OWN_LOOK_WAIT_MS at most; a look that takes longer
+  // goes on as soon as it is in. Canvas data ownLookWait: worn|capped:<ms>.
+  const t0Look = performance.now();
+  const ownLookIn = () => whenOwnLookReady({ ready: ownLookWorn }).then((r) => {
+    if (app?.canvas) app.canvas.dataset.ownLookWait = `${r.ready ? 'worn' : 'capped'}:${Math.round(performance.now() - t0Look)}`;
+    return r;
+  });
   if (startCardWaits) startOverlay.classList.add('is-waiting');
-  else endBoot();
+  else ownLookIn().then(() => endBoot());
 
   let newDayCheckAccum = 0;
   let locSaveAccum = 0;
@@ -35147,13 +35162,13 @@ async function main() {
     // QA: &backdropcap=<ms> (0 shows the calm backdrop, then the street once drawn).
     const cap = Number(bootParams.get('backdropcap'));
     revealStartCard({
-      drawn: whenSceneDrawn({
+      drawn: Promise.all([whenSceneDrawn({
         // What the card sits over: the street and its front layers, the shrine, items and avatars.
         roots: () => [bgLayer, entityLayer, streetFrontLayer],
         isSettled: (source) => source.destroyed || isLoaded(source) || isFailed(source),
         whenSettled: (source) => Promise.race([whenLoaded(source).catch(() => {}), new Promise((resolve) => setTimeout(resolve, 15000))]),
         nextFrame: () => new Promise((resolve) => requestAnimationFrame(() => resolve())),
-      }),
+      }), ownLookIn()]).then(([ok]) => ok),
       show: (mode) => {
         startOverlay.classList.toggle('is-calm', mode === 'calm');
         endBoot({ fade: true });

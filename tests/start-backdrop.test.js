@@ -39,7 +39,8 @@ describe('the street draws under the start card', () => {
   it('the start card waits under the loading card, then fades in (or over the calm backdrop at the cap)', () => {
     const boot = between(game, "if (new URLSearchParams(location.search).has('autostart')) beginGame();", 'let newDayCheckAccum');
     assert.match(boot, /const startCardWaits = !state\.started && Boolean\(startOverlay\) && !startOverlay\.classList\.contains\('hidden'\);/);
-    assert.match(boot, /if \(startCardWaits\) startOverlay\.classList\.add\('is-waiting'\);\s*else endBoot\(\);/);
+    // R33 (#537): straight into the game, the loading card also waits for your own look (capped).
+    assert.match(boot, /if \(startCardWaits\) startOverlay\.classList\.add\('is-waiting'\);\s*else ownLookIn\(\)\.then\(\(\) => endBoot\(\)\);/);
     assert.match(boot, /bootLoader\.hidden = true/);
     const reveal = between(game, 'if (startCardWaits) {\n    const t0', '\nmain().catch');
     assert.match(reveal, /roots: \(\) => \[bgLayer, entityLayer, streetFrontLayer\]/);
