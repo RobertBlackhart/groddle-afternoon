@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.50.1",
+  "release": "v0.50.2",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 5,
+    "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 334,
+    "fixed": 340,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -1008,6 +1008,12 @@
           "report": 521,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "F117",
+          "text": "A mega rock mined right down came back as quickly as any other rock.",
+          "state": "fixed",
+          "version": "v0.50.2"
         }
       ]
     },
@@ -1320,8 +1326,8 @@
           "state": "fixing"
         },
         {
-          "id": "F115",
-          "text": "Race tickets, teleport scripts and the Gameshow Ticket did not work inside a Party Space.",
+          "id": "F116",
+          "text": "A Gameshow Ticket did not work inside a Party Space for one player. We could not make it happen yet.",
           "state": "fixing"
         },
         {
@@ -1406,6 +1412,24 @@
           "text": "If a Party Space ended while you were away, you came back on an unbuilt street in Baqala instead of where you entered the party.",
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "F115",
+          "text": "Race tickets and teleport scripts did not work inside a Party Space.",
+          "state": "fixed",
+          "version": "v0.50.2"
+        },
+        {
+          "id": "F118",
+          "text": "Trades, mail, auctions, boards, drops and home sales could fail with a save message while the game was busy saving.",
+          "state": "fixed",
+          "version": "v0.50.2"
+        },
+        {
+          "id": "F119",
+          "text": "When a party ended with no way back, or you left the Interrogation room, you landed on an unbuilt street in Baqala.",
+          "state": "fixed",
+          "version": "v0.50.2"
         }
       ]
     },
@@ -1966,12 +1990,6 @@
       "name": "Pack",
       "items": [
         {
-          "id": "F114",
-          "text": "Dragging a stack onto Decorate and some other places took from the first stack of that item, not the one you dragged.",
-          "report": 515,
-          "state": "fixing"
-        },
-        {
           "id": "F68",
           "text": "An open bag closed when you clicked away, so you could not watch its counts while collecting.",
           "report": 287,
@@ -1983,6 +2001,13 @@
           "text": "Pack search only lit up matching stacks; Glitch listed every match under the search box, items in bags included.",
           "state": "fixed",
           "version": "v0.43.0"
+        },
+        {
+          "id": "F114",
+          "text": "Dragging a stack onto Decorate and some other places took from the first stack of that item, not the one you dragged.",
+          "report": 515,
+          "state": "fixed",
+          "version": "v0.50.2"
         }
       ]
     },
@@ -2386,12 +2411,6 @@
       "name": "Render",
       "items": [
         {
-          "id": "F112",
-          "text": "On some graphics cards the minimap was blank and the ground below the street turned a flat brown.",
-          "report": 517,
-          "state": "fixing"
-        },
-        {
           "id": "G844",
           "text": "On some graphics cards the report picture came out black and the street map blank.",
           "state": "fixed",
@@ -2408,6 +2427,13 @@
           "text": "The Scion of Purple was drawn blurry on computers.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "F112",
+          "text": "On some graphics cards the minimap was blank and the ground below the street turned a flat brown.",
+          "report": 517,
+          "state": "fixed",
+          "version": "v0.50.2"
         }
       ]
     },

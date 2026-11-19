@@ -3453,7 +3453,10 @@
       "area": "Render",
       "show": "fixing",
       "text": "On some graphics cards the minimap was blank and the ground below the street turned a flat brown.",
-      "report": 517
+      "report": 517,
+      "commits": [
+        "game:128ad36c40f"
+      ]
     },
     {
       "id": "F113",
@@ -3467,13 +3470,57 @@
       "area": "Pack",
       "show": "fixing",
       "text": "Dragging a stack onto Decorate and some other places took from the first stack of that item, not the one you dragged.",
-      "report": 515
+      "report": 515,
+      "commits": [
+        "game:d17db7a911a",
+        "game:e3a2829cc6c",
+        "game:d9bd787f33e",
+        "game:c3fc88f3622",
+        "game:8fc73764a77"
+      ]
     },
     {
       "id": "F115",
       "area": "Multiplayer",
       "show": "fixing",
-      "text": "Race tickets, teleport scripts and the Gameshow Ticket did not work inside a Party Space."
+      "text": "Race tickets and teleport scripts did not work inside a Party Space.",
+      "commits": [
+        "game:787137acb1b"
+      ]
+    },
+    {
+      "id": "F116",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "A Gameshow Ticket did not work inside a Party Space for one player. We could not make it happen yet."
+    },
+    {
+      "id": "F117",
+      "area": "Mining and tools",
+      "show": "fixing",
+      "text": "A mega rock mined right down came back as quickly as any other rock.",
+      "commits": [
+        "game:77f9d711db0",
+        "server:ec31a10"
+      ]
+    },
+    {
+      "id": "F118",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Trades, mail, auctions, boards, drops and home sales could fail with a save message while the game was busy saving.",
+      "commits": [
+        "game:3d6cd35fa09"
+      ]
+    },
+    {
+      "id": "F119",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "When a party ended with no way back, or you left the Interrogation room, you landed on an unbuilt street in Baqala.",
+      "commits": [
+        "game:b4388cdd505"
+      ]
     }
   ]
 }
