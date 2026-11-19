@@ -20,7 +20,7 @@ import { CORE_FRAMES } from '../public/js/avatar-anims.js?v=fb921bf4';
 import {
   NONE_TYPES, TILE_FRAME, TILE_MIN_SPAN, TILE_PAGE, createTileArt, filterOptions, focusIn, itemsOf, pageCount, pageFor,
   pickPart, refocus, renderPartSwitch, renderPartTiles, tileFields, tileFrame, tileJob,
-} from '../public/js/avatar-tiles.js?v=a05b7d4f';
+} from '../public/js/avatar-tiles.js?v=2d2c18b4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -79,7 +79,21 @@ describe('what a tile wears', () => {
     assert.equal(v.outfit.hat, 'none');
     assert.equal(v.variant.hat, undefined);
     assert.equal(v.tint.hat, undefined);
-    assert.deepEqual(NONE_TYPES, ['hat', 'coat', 'dress', 'skirt', 'nose', 'ears']);
+    assert.deepEqual(NONE_TYPES, ['hat', 'coat', 'shirt', 'dress', 'pants', 'skirt', 'shoes', 'nose', 'ears']);
+  });
+
+  it('every clothing slot can be left empty, as Glitch let it (#527)', () => {
+    // GSJS config_base.js clothing_slots; avatar_set_clothing empties any of them.
+    for (const type of ['hat', 'coat', 'shirt', 'pants', 'dress', 'skirt', 'shoes']) assert.ok(NONE_TYPES.includes(type), type);
+    const v = pickPart(pickPart(pickPart({ outfit: { shirt: 'classic_undershirt', pants: 'plain_trousers', shoes: 'converse' }, variant: { shirt: 2 } }, 'shirt', 'none'), 'pants', 'none'), 'shoes', 'none');
+    assert.deepEqual(v.outfit, { shirt: 'none', pants: 'none', shoes: 'none' });
+    assert.equal(v.variant.shirt, undefined);
+    // Saved that way, the look stays bare (no catalog default fills the slots back in).
+    const look = resolveLook(v, catalog);
+    for (const type of ['shirt', 'pants', 'shoes']) assert.equal(look.outfit[type], undefined, `${type} drawn`);
+    assert.ok(look.outfit.eyes && look.outfit.hair, 'the face and hair stay');
+    // The tile builder offers None first for each (game.js renderStyleChips).
+    assert.match(game, /NONE_TYPES\.includes\(type\) \? \[\{ name: 'none', label: 'None' \}, \.\.\.items\]/);
   });
 
   it('draws the part on the player\'s look: bare-headed for hair and face, no coat over a top', () => {
@@ -135,6 +149,20 @@ describe('framing on the real rig', () => {
     assert.ok(centreY(eyes) < centreY(shirt) && centreY(shirt) < centreY(shoes));
     assert.ok(centreY(eyes) < eyes.whole[1] + h * 0.45, 'eyes sit in the head');
     assert.ok(centreY(shoes) > shoes.whole[1] + h * 0.8, 'shoes at the feet');
+  });
+
+  it('a look with no top, trousers or shoes draws the bare body and none of them (#527)', () => {
+    const bare = tileOf({ outfit: { shirt: 'none', pants: 'none', shoes: 'none' } }, 'eyes', 'eyes_01');
+    const dressed = tileOf({}, 'eyes', 'eyes_01');
+    assert.ok(bare.whole && dressed.whole, 'both draw');
+    const look = resolveLook({ outfit: { shirt: 'none', pants: 'none', shoes: 'none' } }, catalog);
+    const articles = new Map(Object.entries(look.outfit).map(([t, a]) => [a.name, json(`public/assets/avatar/articles/${t}/${a.name}.json`)]));
+    const ctx = { assign: slotAssignments(look.outfit, { hatAllowsHair: () => true }), articles, matrices: lookMatrices(look), face: look.face };
+    const srcs = new Set();
+    const walk = (list) => { for (const it of list) { if (it.items) walk(it.items); if (it.src) srcs.add(it.src); for (const c of it.clip || []) srcs.add(c.src); } };
+    walk(frameDrawList(rig, ctx, frame));
+    for (const name of ['classic_undershirt', 'plain_trousers', 'converse']) assert.ok(!srcs.has(name), `${name} drawn`);
+    assert.ok(srcs.has('base'), 'the body draws');
   });
 
   it('a part that draws nothing shows the whole look', () => {

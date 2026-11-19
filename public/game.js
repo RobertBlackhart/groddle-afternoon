@@ -862,7 +862,7 @@ import {
   appearanceCacheKey,
 } from './js/character-builder.js?v=ffa761e9';
 import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=4e57b8c5';
-import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=a05b7d4f';
+import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=2d2c18b4';
 import {
   loadAmbientMusicConfig,
   resolveAmbientTheme,

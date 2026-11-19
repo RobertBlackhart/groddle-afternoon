@@ -32,8 +32,12 @@ export const TILE_PAGE = 12;
 export const TILE_CACHE_MAX = 180;
 /** The standing frame the mirror shows at rest. */
 export const TILE_FRAME = 801;
-/** Types a look may go without: their first tile is None (Vanity's "none" button). */
-export const NONE_TYPES = Object.freeze(['hat', 'coat', 'dress', 'skirt', 'nose', 'ears']);
+/**
+ * Types a look may go without: their first tile is None (Vanity's "none" button). Glitch let
+ * every clothing slot be empty (GSJS config_base.js clothing_slots, inc_avatar.js
+ * avatar_set_clothing sets a slot to 0), so tops, trousers and shoes come off too.
+ */
+export const NONE_TYPES = Object.freeze(['hat', 'coat', 'shirt', 'dress', 'pants', 'skirt', 'shoes', 'nose', 'ears']);
 /** Face parts and hair are drawn bare-headed, a top without its coat. */
 const HATLESS = new Set(['hair', 'eyes', 'mouth', 'nose', 'ears']);
 const COATLESS = new Set(['shirt', 'dress', 'pants', 'skirt']);
