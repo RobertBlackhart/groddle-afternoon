@@ -1080,7 +1080,7 @@ function finishPhase(engine, jobId) {
       { text: solo, response: 'Continue' },
     ];
     const next = out.next;
-    const mins = out.readyAt ? Math.round((out.readyAt - Date.now()) / 60000) : 0;
+    const mins = phaseOpensInMins(out.readyAt);
     steps.push({
       text: mins
         ? `${next?.delayText ? `${plainText(jobText(next.delayText, { location: job.label }))} It opens in ${pluralize(mins, 'minute')}.` : `The ${phaseOrdinal(out.index + 1)} phase, ${nextPhaseName(job, next)}, opens in ${pluralize(mins, 'minute')}.`}`
@@ -2529,7 +2529,7 @@ function mpPhaseAward(engine, jobId, out, paid, paidPerformance, note) {
       { text: note, response: 'Continue' },
     ];
     const upcoming = out.next;
-    const mins = out.readyAt ? Math.round((out.readyAt - Date.now()) / 60000) : 0;
+    const mins = phaseOpensInMins(out.readyAt);
     steps.push({
       text: mins
         ? `${upcoming?.delayText ? `${plainText(jobText(upcoming.delayText, { location: job.label }))} It opens in ${pluralize(mins, 'minute')}.` : `The ${phaseOrdinal(out.index + 1)} phase, ${nextPhaseName(job, upcoming)}, opens in ${pluralize(mins, 'minute')}.`}`
@@ -3051,6 +3051,15 @@ function tickProjectsPack(engine, now) {
 
 /** Minutes since a time, for the redraw check ("5 min ago" moves on). */
 const agoMinute = (t) => Math.floor((Date.now() - t) / 60000);
+
+/**
+ * #542: whole minutes until the next phase opens, rounded up, or 0 when it is open: a phase
+ * that opened while you were away is "ready now", never "opens in -86 minutes".
+ */
+export function phaseOpensInMins(readyAt, now = Date.now()) {
+  const t = Number(readyAt) || 0;
+  return t > now ? Math.ceil((t - now) / 60000) : 0;
+}
 
 function syncProjectsBadge(engine) {
   const n = pj.open ? 0 : freshCount();
