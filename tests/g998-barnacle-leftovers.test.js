@@ -13,9 +13,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { isStandable, platformsScreen } from '../public/js/street-model.js?v=dd20cc44';
-import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=75052b58';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f84a87b3';
+import { isStandable, platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
+import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=578806c2';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=4fcce5c5';
 import { nudgedBarnacleSpots } from '../public/js/barnacle-nudges.js?v=159f11bf';
 import { BARNACLE_LEFTOVER_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=8ba1ff7d';
 

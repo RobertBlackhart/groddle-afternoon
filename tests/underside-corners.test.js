@@ -18,7 +18,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=0d75eb35';
+import { JUMP_SPEED, NORMAL_BUFF, avatarFall } from '../public/js/avatar-step.js?v=39d7b1af';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -33,7 +33,7 @@ import {
   isStandable,
   platformYAt,
   worldToScreen,
-} from '../public/js/street-model.js?v=dd20cc44';
+} from '../public/js/street-model.js?v=a9a05f9d';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const streetsDir = join(__dirname, '../public/assets/streets');

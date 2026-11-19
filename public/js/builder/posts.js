@@ -14,9 +14,9 @@
  * - arrivalOps: every arm into the zone's streets worked out again where the post leading back
  *   now stands (was cli.mjs's; the editor uses it after carrying or settling posts).
  */
-import { isStandable, platformsScreen, isBuriedSignpost } from '../street-model.js?v=dd20cc44';
+import { isStandable, platformsScreen, isBuriedSignpost } from '../street-model.js?v=a9a05f9d';
 import { applyOps } from './ops.js?v=27c7796f';
-import { arriveFor } from './geometry-handles.js?v=27add2a3';
+import { arriveFor } from './geometry-handles.js?v=f7ec3a7a';
 
 /** How far (px) a post's foot may be from its floor before it is off it: over it, and sunk into it. */
 export const POST_FLOOR = Object.freeze({ reach: 80, built: Object.freeze({ over: 4, under: 4 }), forked: Object.freeze({ over: 48, under: 8 }) });

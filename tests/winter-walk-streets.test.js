@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=dd20cc44';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=a9a05f9d';
 import { OWNED_STREETS, streetOwner } from '../public/js/location-events.js?v=7fd40f71';
 import { JUMP_GAP } from '../public/js/quest-rooms/puzzle-kit.js?v=4c6b445b';
 import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../public/js/winter-walk.js?v=6e67699f';
@@ -45,8 +45,8 @@ import {
   winterStreetEcology,
 } from '../public/js/winter-walk-streets.js?v=cbe116f2';
 import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=9d7146dc';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=d1835771';
-import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=0d75eb35';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=2d2eb5ac';
+import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

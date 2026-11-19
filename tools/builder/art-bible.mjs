@@ -32,10 +32,10 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { glitchLayerMatrix, DECO_TWINS } from '../../public/js/street-render.js?v=04647f8c';
+import { glitchLayerMatrix, DECO_TWINS } from '../../public/js/street-render.js?v=c2f22f5d';
 import { layerRole } from '../../public/js/builder/layer-role.js?v=e585f610';
 import { isZoneTsid } from '../../public/js/zone-streets.js?v=b40010d5';
-import { platformsScreen, isStandable, worldToScreen } from '../../public/js/street-model.js?v=dd20cc44';
+import { platformsScreen, isStandable, worldToScreen } from '../../public/js/street-model.js?v=a9a05f9d';
 import { hexToRgb, rgbToHex, rgbToLab, deltaE, hslToRgb } from './art-image.mjs';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');

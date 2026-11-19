@@ -28,8 +28,8 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BARNACLE_VARIANT_FACES, barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=625eedec';
-import { DECO_TWINS } from '../public/js/street-render.js?v=04647f8c';
+import { BARNACLE_VARIANT_FACES, barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=75e568c3';
+import { DECO_TWINS } from '../public/js/street-render.js?v=c2f22f5d';
 import { nudgedBarnacleSpots } from '../public/js/barnacle-nudges.js?v=159f11bf';
 import {
   ecologyForStreet,
@@ -39,7 +39,7 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=75052b58';
+} from '../public/js/street-ecology.js?v=578806c2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';

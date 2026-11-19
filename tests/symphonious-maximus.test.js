@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertStreetGeometry } from '../public/js/street-model.js?v=dd20cc44';
+import { assertStreetGeometry } from '../public/js/street-model.js?v=a9a05f9d';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { inEventBox, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=7fd40f71';
 import {
@@ -36,8 +36,8 @@ import {
   touchesStar,
 } from '../public/js/symphonious-maximus.js?v=345ad437';
 import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=a941e685';
-import { FEATURES } from '../public/js/features/index.js?v=29598669';
-import { parallaxLayerOffset } from '../public/js/street-render.js?v=04647f8c';
+import { FEATURES } from '../public/js/features/index.js?v=f009d9ca';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=c2f22f5d';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

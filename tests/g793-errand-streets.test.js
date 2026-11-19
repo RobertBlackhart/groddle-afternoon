@@ -19,8 +19,8 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pickRandomTeleport } from '../public/js/funpickle.js?v=95796317';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=25d965fa';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=c72a1751';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=2a185bbf';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');

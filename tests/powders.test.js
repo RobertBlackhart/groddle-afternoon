@@ -25,7 +25,7 @@ import {
   sprinkleHallowed,
   usePowderCharge,
 } from '../public/js/powders.js?v=c380df0c';
-import { powdersFeature } from '../public/js/features/powders-feature.js?v=64b67a61';
+import { powdersFeature } from '../public/js/features/powders-feature.js?v=82d2d6d3';
 import {
   applyAchievementProgress,
   createAchievementState,

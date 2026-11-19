@@ -50,10 +50,10 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getToolCondition } from '../tools.js?v=4156bba8';
-import { worldToScreen } from '../street-model.js?v=dd20cc44';
+import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
-import { followFloorY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=bacb60c6';
+import { followFloorY, nearestSurfaceY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { loadWildlifeCatalog, wildlifeCatalog, wildlifeFor } from '../wildlife.js?v=670c3a7f';
 import {
   FIBER_ID,
@@ -88,7 +88,7 @@ import {
   stepFox,
 } from '../foxes.js?v=4497a984';
 import { FOX_FLURRY_COUNTER, foxLegFrom, foxOnLeg, igniteBaitXs, normalizeBaits, normalizeFoxes, preserveOverCapacity, serverId } from '../foxes-mp.js?v=0a1438dc';
-import { clockOffset } from '../street-creatures.js?v=361ce900';
+import { clockOffset } from '../street-creatures.js?v=b8513dac';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 

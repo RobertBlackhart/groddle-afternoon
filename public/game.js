@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=dedb87b3';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=484f59d3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=29598669';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f009d9ca';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -136,7 +136,7 @@ import {
   travelToGregarious,
 } from './js/legalize-it.js?v=a5016c3a';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
-import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=151bd7de';
+import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=9c78e374';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=80101f13';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
@@ -507,8 +507,8 @@ import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchL
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=62e891eb';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=e0661e25';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=e0661e25';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=f4c8fbe4';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=f4c8fbe4';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -542,7 +542,7 @@ import {
   imagineHome,
   isHomePlaceTsid,
 } from './js/homes.js?v=c9fd92db';
-import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=2c9354f7';
+import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=fe9ee3a2';
 import {
   MAIL_COMPANIONS,
   archiveMail,
@@ -694,8 +694,8 @@ import {
   availableStreetTsids,
   ensureStreetIndex,
   resolveIndexTsid,
-} from './js/street-loader.js?v=25d965fa';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=2df977f7';
+} from './js/street-loader.js?v=10376267';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=dd8f14bd';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -712,9 +712,9 @@ import {
   isStandable,
   signpostReachY,
   stuckWay,
-} from './js/street-model.js?v=dd20cc44';
-import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=7e901d98';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=6fe51e29';
+} from './js/street-model.js?v=a9a05f9d';
+import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=0192e447';
+import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=d91c1e4c';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -726,7 +726,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=04647f8c';
+} from './js/street-render.js?v=c2f22f5d';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -838,9 +838,9 @@ import {
 } from './js/travel.js?v=7fd6e363';
 import { facingScaleX, facingFromVelocity } from './js/avatar.js?v=c4da73ea';
 import { AFK_TIMEOUT_MS, ANIMS, ANIM_FPS, CORE_FRAMES, EMOTIONS, EMOTION_MS, IDLE_SHEETS, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, animForState, avatarAnimState, createIdleClock, crowdScaleX, idleSheetFor } from './js/avatar-anims.js?v=fb921bf4';
-import { followFloorY, landingY, stackRestY, walkerFloorY, walkSurfaceY } from './js/walk-surface.js?v=bacb60c6';
+import { followFloorY, landingY, stackRestY, walkerFloorY, walkSurfaceY } from './js/walk-surface.js?v=3c919d5b';
 import { holdCloseToFloor } from './js/slope-walk.js?v=9af1e505';
-import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=0d75eb35';
+import { JUMP_SPEED, MAX_TICK_FRAMES, WALK_MAX, avatarGround, coastX, frameSteps, stepAvatar, steerAccel, steerX, streetPhysicsExtras } from './js/avatar-step.js?v=39d7b1af';
 import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from './js/user-path.js?v=68e6892c';
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=b10f17bb';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
@@ -898,7 +898,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=e0661e25';
+} from './js/animals.js?v=f4c8fbe4';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -1015,9 +1015,9 @@ import {
   PUBLIC_HUBS,
 } from './js/map-graph.js?v=3b7d09a6';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=5758d4e6';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=96b8e804';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=640efad3';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=02e4ad51';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
@@ -1038,8 +1038,8 @@ import {
   treePlacementRequest,
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
-} from './js/street-ecology.js?v=75052b58';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=361ce900';
+} from './js/street-ecology.js?v=578806c2';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=b8513dac';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';
@@ -1098,7 +1098,7 @@ import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-s
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=dad03e67';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=e3de5c2b';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=1c44e7c3';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=41a70b24';

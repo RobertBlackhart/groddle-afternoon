@@ -12,8 +12,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GLITCH_ONE_CLICK_DOORS, isOneClick, isOneClickDoor, oneClickChoice, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=e4c99c05';
-import { doorsFeature } from '../public/js/features/doors-feature.js?v=d07e086e';
-import { STATIONS, stationStreet } from '../public/js/subway.js?v=151bd7de';
+import { doorsFeature } from '../public/js/features/doors-feature.js?v=97fb3adf';
+import { STATIONS, stationStreet } from '../public/js/subway.js?v=9c78e374';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

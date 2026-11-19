@@ -21,7 +21,7 @@
 
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { listAnimalFeedOptions } from '../animals.js?v=e0661e25';
+import { listAnimalFeedOptions } from '../animals.js?v=f4c8fbe4';
 import { isBagClass } from '../pack-slots.js?v=2c09907f';
 import { dropFor, dropTip } from '../world-drop.js?v=a8956ae5';
 import { canUseTool } from '../tools.js?v=4156bba8';

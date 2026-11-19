@@ -5,8 +5,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { DOOR_CLEARANCE, TREE_OBSTACLE_W, clearOfDoors, treeObstacles } from '../public/js/street-furniture.js?v=d4f97cca';
-import { platformsScreen } from '../public/js/street-model.js?v=dd20cc44';
+import { DOOR_CLEARANCE, TREE_OBSTACLE_W, clearOfDoors, treeObstacles } from '../public/js/street-furniture.js?v=c5b73821';
+import { platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 
 const tii = JSON.parse(readFileSync(new URL('../public/assets/streets/GLI23TBNDHD19F2.json', import.meta.url), 'utf8'));
 const src = readFileSync(new URL('../public/js/features/street-furniture-feature.js', import.meta.url), 'utf8');

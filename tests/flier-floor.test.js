@@ -34,12 +34,12 @@ import {
   floorUnder,
   flyerAt,
   flyerLift,
-} from '../public/js/street-creatures.js?v=361ce900';
+} from '../public/js/street-creatures.js?v=b8513dac';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=75052b58';
-import { platformsScreen, streetWidth, isItemSolid } from '../public/js/street-model.js?v=dd20cc44';
-import { nearestSurfaceY } from '../public/js/walk-surface.js?v=bacb60c6';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=578806c2';
+import { platformsScreen, streetWidth, isItemSolid } from '../public/js/street-model.js?v=a9a05f9d';
+import { nearestSurfaceY } from '../public/js/walk-surface.js?v=3c919d5b';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

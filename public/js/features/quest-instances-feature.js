@@ -127,7 +127,7 @@ import {
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=b14f1d8f';
-import { locationEventsApi } from './location-events-feature.js?v=bc9fbc52';
+import { locationEventsApi } from './location-events-feature.js?v=2c3023b5';
 import {
   acceptOffer,
   ensureQuestOfferState,
@@ -146,9 +146,9 @@ import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=b342e1d9';
 import { sourceFromUrl } from '../textures.js?v=1c44e7c3';
-import { FIRST_SKILLS } from '../newxp.js?v=8e9130b1';
+import { FIRST_SKILLS } from '../newxp.js?v=5aa81665';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../puzzle-triggers.js?v=221b67a9';
-import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=0d75eb35';
+import { REMAKE_ROOM_PHYSICS } from '../avatar-step.js?v=39d7b1af';
 import { playRoomAutoplay } from '../autoplay-log.js?v=55bb4823';
 
 let quoinFrames = null;
@@ -219,8 +219,8 @@ const ROOM_MODULES = {
   radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=094ecb5d'),
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=d1f91878'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=63a88d27'),
-  back_alley: () => import('../quest-rooms/back-alley.js?v=2c03f6ff'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=e1102880'),
+  back_alley: () => import('../quest-rooms/back-alley.js?v=b7fd6576'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=5ad4607c'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=543cfc56'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=eeee8686'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=15124c06'),

@@ -12,11 +12,11 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildArrivals, render } from '../tools/build-street-arrivals.mjs';
-import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=6fe51e29';
-import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=25d965fa';
-import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
-import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=75052b58';
-import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=e07caefa';
+import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=d91c1e4c';
+import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
+import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
+import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=578806c2';
+import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=a6c058c2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

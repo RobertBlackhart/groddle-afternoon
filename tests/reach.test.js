@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 import { OUT_OF_REACH_LINE, STAND_LIFT, avatarHitBox, behindFloor, bodyReachDistance, floorBetween, reachPoint } from '../public/js/reach.js?v=1fd5de5a';
 import { EZ_COOKIN_TSID, EZ_COUNTERS, EZ_FOOD, EZ_KNIFE_AND_BOARD, practiceScreen } from '../public/js/practice-streets.js?v=557238c1';
-import { avatarHeadReach, groundBeneath, platformsScreen } from '../public/js/street-model.js?v=dd20cc44';
+import { avatarHeadReach, groundBeneath, platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

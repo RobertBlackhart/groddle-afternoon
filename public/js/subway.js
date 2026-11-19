@@ -648,6 +648,9 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     y: STATION_FLOOR - 2 - t,
     w: sw,
     h: sh,
+    // #385: the steps' foot is under the line that climbs them; /stuck (street-model.js stuckWay)
+    // stands you on the line over it.
+    stand: { x: STATION_X.stairs - l, y: stationFloorY(STATION_X.stairs) - t },
     sprite: 'door_asset_stairs',
     src: `${SUBWAY_ART_BASE}${SUBWAY_ART.door_asset_stairs[0]}`,
     key_id: 0,

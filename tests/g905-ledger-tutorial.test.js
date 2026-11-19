@@ -12,11 +12,11 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
-import { PRACTICE_TOOLS, TRAINING2_DRINKS, TRAINING2_FOOD } from '../public/js/newxp.js?v=8e9130b1';
+import { PRACTICE_TOOLS, TRAINING2_DRINKS, TRAINING2_FOOD } from '../public/js/newxp.js?v=5aa81665';
 import { EZ_FOOD, EZ_KNIFE_AND_BOARD, SOIL_TOOLS } from '../public/js/practice-streets.js?v=557238c1';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';
 import { MUSICBLOCK_ENDGAME_GIFT, START_STREET_MUSICBLOCKS } from '../public/js/musicblocks.js?v=97129d87';
-import { musicblocksFeature } from '../public/js/features/musicblocks-feature.js?v=476d3f8f';
+import { musicblocksFeature } from '../public/js/features/musicblocks-feature.js?v=a76803a3';
 
 const hasPhp = spawnSync('php', ['-v']).status === 0;
 const skip = skipWithoutSite || !hasPhp;

@@ -65,7 +65,7 @@
 
 import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
-import { isItemFloor, platformYAt } from '../street-model.js?v=dd20cc44';
+import { isItemFloor, platformYAt } from '../street-model.js?v=a9a05f9d';
 import { hiresSpriteUrl } from '../sprite-hires.js?v=e5d8f9ec';
 import { rollResourceNodeDrop } from './drops-feature.js?v=161f11cf';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
@@ -112,7 +112,7 @@ import { playItemOverlay } from '../item-overlay.js?v=b3bc2d59';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=a468ad38';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=361ce900';
+import { salmonSwimAt } from '../street-creatures.js?v=b8513dac';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';

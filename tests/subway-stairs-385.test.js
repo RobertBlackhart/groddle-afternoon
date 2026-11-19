@@ -10,10 +10,11 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=151bd7de';
-import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=0d75eb35';
-import { barriersScreen, platformsScreen } from '../public/js/street-model.js?v=dd20cc44';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=82707c3e';
+import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=9c78e374';
+import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=39d7b1af';
+import { barriersScreen, platformsScreen, stuckWay } from '../public/js/street-model.js?v=a9a05f9d';
+import { defaultArrival } from '../public/js/street-arrival.js?v=d91c1e4c';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=feda38d4';
 
 const PUB = join(import.meta.dirname, '..', 'public');
 const readJson = (rel) => JSON.parse(readFileSync(join(PUB, rel), 'utf8'));
@@ -82,5 +83,20 @@ describe('#385 the station\'s walking line climbs the stairs to the entrance', (
       assert.ok(over >= 0 && over <= 60, `${station.name}: source y ${src.y} is ${over} px over the line`);
     }
     assert.ok(stationArrival(-760).y + STATION_BOUNDS.t < STATION_FLOOR, 'a far-left arrival is up the steps, not under them');
+  });
+
+  it('an arrival with no spot of its own, and /stuck, stand on the line, not under the steps', () => {
+    const table = readJson('assets/content/street-arrivals.json');
+    for (const station of STATIONS) {
+      const street = readJson(`assets/streets/${station.streetTsid}.json`);
+      // G913: the station's incoming arrival is the surface door's (a Map trip, a QA trip).
+      const entry = defaultArrival(street, table, { worldW: street.bounds.r - street.bounds.l });
+      assert.equal(entry.from, 'incoming', station.name);
+      assert.equal(entry.y + street.bounds.t, stationFloorY(entry.x + street.bounds.l), `${station.name}: on the line`);
+      // /stuck's nearest way out is the steps: you stand on the line over their foot.
+      const way = stuckWay(street, 0);
+      assert.equal(way.y + street.bounds.t, stationFloorY(way.x + street.bounds.l), `${station.name}: /stuck on the line`);
+      assert.ok(way.y + street.bounds.t < STATION_FLOOR - 40, 'up the steps');
+    }
   });
 });

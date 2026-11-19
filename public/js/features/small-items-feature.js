@@ -25,9 +25,9 @@
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
-import { nearestSurfaceY } from '../walk-surface.js?v=bacb60c6';
+import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { openNoteView, openNotePicker } from '../note-view.js?v=eca7de52';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=27fd1cb7';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=406ea389';
 import {
   BALL,
   BALL_HIT,

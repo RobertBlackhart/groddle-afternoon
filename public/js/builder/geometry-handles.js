@@ -16,11 +16,11 @@
  * LocoDeco's set (BR:2048-2069). Picking: geometry wins over decos, platforms over the rest.
  * Pure: no DOM, no Pixi.
  */
-import { isStandable, platformsScreen } from '../street-model.js?v=dd20cc44';
-import { decoBox, handlePoints, resizeBy } from './handles.js?v=4d762d1f';
-import { floorUnder } from './zone.js?v=bfae04c0';
+import { isStandable, platformsScreen } from '../street-model.js?v=a9a05f9d';
+import { decoBox, handlePoints, resizeBy } from './handles.js?v=91612705';
+import { floorUnder } from './zone.js?v=ce289eb1';
 import { arrivalInTarget, streetAliases } from '../location-navigation.js?v=9555ce80';
-import { EFFECT_DEFAULTS } from '../street-effects.js?v=f030abf8';
+import { EFFECT_DEFAULTS } from '../street-effects.js?v=7d98182b';
 
 export const GEO_KINDS = Object.freeze(['platform', 'barrier', 'ladder', 'signpost', 'emitter']);
 export const GEO_LIST = Object.freeze({ platform: 'platforms', barrier: 'barriers', ladder: 'ladders', signpost: 'signposts', emitter: 'emitters' });

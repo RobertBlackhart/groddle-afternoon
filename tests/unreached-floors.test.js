@@ -12,7 +12,7 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import {
   hiddenBehindFloor,
   inUnreachedRun,
@@ -21,11 +21,11 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   unreachedFloorsFor,
-} from '../public/js/street-ecology.js?v=75052b58';
+} from '../public/js/street-ecology.js?v=578806c2';
 import { placementRequests, streetEcology } from '../tools/build-realtime-quoins.mjs';
 import { UNREACHED_JUMP, UNREACHED_JUMPS, overlapRuns, unreachedFloorsOf, unreachedJump } from '../tools/ecology/build-unreached-floors.mjs';
-import { NORMAL_BUFF, jumpApex } from '../public/js/avatar-step.js?v=0d75eb35';
-import { jumpArc, streetWorld } from '../public/js/builder/reach-graph.js?v=d1835771';
+import { NORMAL_BUFF, jumpApex } from '../public/js/avatar-step.js?v=39d7b1af';
+import { jumpArc, streetWorld } from '../public/js/builder/reach-graph.js?v=2d2eb5ac';
 import { shippedArrivals } from '../tools/builder/calibrate.mjs';
 import { shippedStreetFiles } from '../tools/builder/validator-context.mjs';
 

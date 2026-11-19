@@ -34,7 +34,7 @@ import { IM_VERB_ID } from '../player-im.js?v=da51888c';
 import { BUDDY_VERBS } from '../buddies.js?v=16407f62';
 import { BUDDY_DESTINATION_VERB } from '../buddy-list.js?v=b418f3f2';
 import { VISIT_VERB } from '../neighbours-mp.js?v=c20e6df1';
-import { FOLLOW_STOP_VERB } from '../follow-mp.js?v=74f37b54';
+import { FOLLOW_STOP_VERB } from '../follow-mp.js?v=129ab9f3';
 import { SUMMON_VERB } from '../summon-mp.js?v=7598f381';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 

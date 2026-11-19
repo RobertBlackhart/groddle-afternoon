@@ -275,7 +275,8 @@ export function navigableSignposts(signposts, hereTsid = '') {
  * Wintry Place (Austin 2026-11-07): from the slot right of its ice blocks the nearest post was
  * signpost_1, on the top ledge, whose only arm leads to Newcot Close, still being built; the way
  * out is signpost_2 on the floor. Signposts are world space, doors screen space
- * (build-street-navigation.mjs).
+ * (build-street-navigation.mjs). A door with a `stand` spot (screen space) puts you there instead of
+ * at its foot: a subway station's steps, whose foot is under the walking line that climbs them (#385).
  * @returns {{ x:number, y:number, open:boolean }|null}
  */
 export function stuckWay(street, x, closed = []) {
@@ -290,7 +291,8 @@ export function stuckWay(street, x, closed = []) {
   }
   for (const door of street.doors || []) {
     if (!door || door.hidden || !Number.isFinite(Number(door.x)) || !Number.isFinite(Number(door.y))) continue;
-    ways.push({ x: Number(door.x), y: Number(door.y), open: !door.is_locked && Boolean(door.connect?.tsid) && isOpen(door.connect.tsid) });
+    const stand = Number.isFinite(Number(door.stand?.x)) && Number.isFinite(Number(door.stand?.y)) ? door.stand : door;
+    ways.push({ x: Number(stand.x), y: Number(stand.y), open: !door.is_locked && Boolean(door.connect?.tsid) && isOpen(door.connect.tsid) });
   }
   const nearest = (list) => list.sort((a, b) => Math.abs(a.x - x) - Math.abs(b.x - x))[0] || null;
   return nearest(ways.filter((w) => w.open)) || nearest(ways);

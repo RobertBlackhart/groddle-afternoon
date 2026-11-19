@@ -19,6 +19,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { stationArrival, stationByTsid } from '../public/js/subway.js?v=9c78e374';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');
@@ -48,7 +49,11 @@ export function buildArrivals() {
     }
     for (const door of street.doors || []) {
       const to = door?.connect?.tsid || door?.connect?.street;
-      if (to && body(to) !== body(tsid)) add(to, door.connect.arrive);
+      // A subway entrance's archived connect has no `arrive`: the station's spot is the one
+      // subway-feature prepareStreet gives it (js/subway.js stationArrival: its x, on the walking line, #385).
+      const station = !door?.connect?.arrive && stationByTsid(to);
+      if (station) add(station.streetTsid, stationArrival(door.connect.x));
+      else if (to && body(to) !== body(tsid)) add(to, door.connect.arrive);
     }
   }
   const out = {};

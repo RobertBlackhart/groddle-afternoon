@@ -34,7 +34,7 @@
  * window.groddleParty in multiplayer.
  */
 
-import { STREET_INDEX } from '../street-loader.js?v=25d965fa';
+import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import {
   PARTY_LOG_LINES,
   PARTY_TEXT,

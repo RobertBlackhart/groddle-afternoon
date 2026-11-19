@@ -12,8 +12,8 @@
  * The editor gives each a context (ctx) with its helpers and its state; nothing here keeps the
  * draft itself. Every change is an op the editor commits (one undo step).
  */
-import { TEMPLATES, WIDTH, HEIGHT, MAP_W, MAP_H, templateOf, newStreet, newStreetOps, newHub, nextHubId, mapWithStreet } from './templates.js?v=82a63617';
-import { streetKeyFrom, POPULATION_CLASSES } from './zone.js?v=bfae04c0';
+import { TEMPLATES, WIDTH, HEIGHT, MAP_W, MAP_H, templateOf, newStreet, newStreetOps, newHub, nextHubId, mapWithStreet } from './templates.js?v=881dfa69';
+import { streetKeyFrom, POPULATION_CLASSES } from './zone.js?v=ce289eb1';
 
 /** Plain words for the population classes (street-ecology.json counts). */
 export const POPULATION_WORDS = Object.freeze({

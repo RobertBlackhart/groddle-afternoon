@@ -20,8 +20,8 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=75052b58';
-import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
+} from '../public/js/street-ecology.js?v=578806c2';
+import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
 import { CROP_GARDEN_STREETS_2012, gardenBedWidth, isCropGardenStreet, measuredGardenBeds, measuredGardenVendor } from '../public/js/garden-beds.js?v=831b1d97';
 import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=d4e55862';

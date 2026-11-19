@@ -25,7 +25,7 @@ import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 import { createHomeDecorState, INTERIOR, placeFurniture, settleStacks, stackSurfaceAt, STALE_REST_GIVE, surfaceHeight } from '../public/js/home-decor.js?v=ce3fe651';
 import { normalizeDroppedItemState } from '../public/js/world-items.js?v=66601f23';
-import { isStandable } from '../public/js/street-model.js?v=dd20cc44';
+import { isStandable } from '../public/js/street-model.js?v=a9a05f9d';
 import { BUILDER_TEXT } from '../public/js/ui/home-builder.js?v=378178ac';
 import { hasMagick, itemBottoms } from '../tools/furniture-upgrades/tops.mjs';
 import { basePlats, surfaceFrom } from '../tools/furniture-upgrades/build.mjs';

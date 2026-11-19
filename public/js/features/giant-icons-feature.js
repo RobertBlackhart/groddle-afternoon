@@ -39,7 +39,7 @@ import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import { emblemCostFor } from '../shrines.js?v=1b7760ec';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { landingY } from '../walk-surface.js?v=bacb60c6';
+import { landingY } from '../walk-surface.js?v=3c919d5b';
 import {
   EMBLEM_VERBS,
   GIANT_ICON_DATA,

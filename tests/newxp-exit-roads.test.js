@@ -18,9 +18,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { NEWXP_EXITS, GENTLE_ISLAND, indexTsid, normalizeNewxpSave } from '../public/js/newxp.js?v=8e9130b1';
+import { NEWXP_EXITS, GENTLE_ISLAND, indexTsid, normalizeNewxpSave } from '../public/js/newxp.js?v=5aa81665';
 import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=71fa73cd';
-import { __newxpTest, exitLeadsHome, newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=e07caefa';
+import { __newxpTest, exitLeadsHome, newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=a6c058c2';
 import { _useStreetGraph, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 
 const root = join(import.meta.dirname, '..');

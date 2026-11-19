@@ -14,7 +14,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
 import { DENSE_SPRITES, denseSprite } from '../public/js/sprite-dense.js?v=67101472';
-import { MAILBOX_SHEETS, STONE_ART, NOTE_ART, BOARD_ART } from '../public/js/street-furniture.js?v=d4f97cca';
+import { MAILBOX_SHEETS, STONE_ART, NOTE_ART, BOARD_ART } from '../public/js/street-furniture.js?v=c5b73821';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -10,8 +10,8 @@ import { describe, it } from 'node:test';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
-import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
+import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import {
   ecologyForStreet,
   footOverAir,
@@ -19,7 +19,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=75052b58';
+} from '../public/js/street-ecology.js?v=578806c2';
 import {
   FURNITURE_GROUPS,
   STONE_DEAD_END_PX,
@@ -29,7 +29,7 @@ import {
   measuredStones,
   stoneDeadEndZone,
   stoneSpotRow,
-} from '../public/js/street-furniture.js?v=d4f97cca';
+} from '../public/js/street-furniture.js?v=c5b73821';
 import { STONE_SPOTS } from '../public/js/stone-spots-data.js?v=3373caf6';
 import { STONE_SEAT_PX } from '../tools/snap-placements/stone-spots.mjs';
 import { creatureRequests, setCreatureEcology } from '../tools/build-realtime-objects.mjs';

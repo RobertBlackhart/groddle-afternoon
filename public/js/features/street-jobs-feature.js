@@ -52,9 +52,9 @@
 import { pluralize } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
-import { ecologyForStreet } from '../street-ecology.js?v=75052b58';
-import { worldToScreen } from '../street-model.js?v=dd20cc44';
-import { signArmWidth } from '../street-render.js?v=04647f8c';
+import { ecologyForStreet } from '../street-ecology.js?v=578806c2';
+import { worldToScreen } from '../street-model.js?v=a9a05f9d';
+import { signArmWidth } from '../street-render.js?v=c2f22f5d';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=1b7760ec';
@@ -114,7 +114,7 @@ import {
   percentCompleteText,
   jobRewardsText,
 } from '../street-jobs.js?v=71fa73cd';
-import { PAPERS_BADGE } from '../subway.js?v=151bd7de';
+import { PAPERS_BADGE } from '../subway.js?v=9c78e374';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=cccfda88';
 import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
@@ -154,7 +154,7 @@ import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_T
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
-import { TELEPORTERS } from '../hidden-floors.js?v=bc4196a1';
+import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=fe5054b5';
 import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ac5ef51e';

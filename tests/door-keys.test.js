@@ -22,7 +22,7 @@ import {
 } from '../public/js/door-key-spawns.js?v=8e6b40bb';
 import { doorKeysFeature, resetDoorKeysForTest, sharedKeyStacks } from '../public/js/features/door-keys-feature.js?v=7f944c3d';
 import { createDroppedItemState, dropInventoryStack, listDroppedStacks, pickupDroppedStack } from '../public/js/world-items.js?v=66601f23';
-import { isStandable, platformYAt, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=dd20cc44';
+import { isStandable, platformYAt, platformsScreen, streetWidth, streetHeight } from '../public/js/street-model.js?v=a9a05f9d';
 import { doorKeysData } from '../tools/build-realtime-door-keys.mjs';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
