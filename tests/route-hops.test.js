@@ -16,7 +16,9 @@ import { join } from 'node:path';
 import { SIGN_ARMS, createRouteState, doorToward, findRoute, isRide, planRoute, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=3cadc716';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=71fa73cd';
 import { stationByTsid } from '../public/js/subway.js?v=af570a5d';
-import { reachRoutes, reachStreet } from '../public/js/builder/reach-graph.js?v=33f40cb6';
+import { reachRoutes, reachStreet, streetTargets } from '../public/js/builder/reach-graph.js?v=33f40cb6';
+import { pickSignHop } from '../public/js/features/map-routes-feature.js?v=668e508b';
+import { postReachY } from '../public/js/street-model.js?v=9f16f4ab';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=9de15a33';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=2d5a9737';
@@ -224,5 +226,94 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
       assertWalkable(path, `to ${label(to)}`);
     }
     assert.ok(routes >= 60, `${routes} routes`);
+  });
+});
+
+describe('#516: two posts to one neighbour, the GPS walks to the one on your floor (pickSignHop)', () => {
+  // Strucote Stacks to Northwest Passage: the walk went to the first post in the file, a floor
+  // below the player, and ended under it. Every pair is checked from every way into its street.
+  const pairs = [];
+  for (const t of Object.keys(index.streets)) {
+    const s = street(t);
+    const by = new Map();
+    for (const p of s.signposts || []) {
+      if (p.hidden) continue;
+      for (const c of (p.connects || []).filter((c) => c && !c.hidden)) by.set(c.tsid.slice(1), [...(by.get(c.tsid.slice(1)) || []), p.id]);
+    }
+    for (const [to, ids] of by) if (ids.length > 1) pairs.push({ t, to, ids });
+  }
+  /** Where each street's arrivals set you down (every visible board into it). */
+  const arrivals = new Map();
+  for (const t of Object.keys(index.streets)) {
+    for (const p of street(t).signposts || []) {
+      if (p.hidden) continue;
+      for (const c of p.connects || []) {
+        if (!c?.arrive || c.hidden) continue;
+        const list = arrivals.get(c.tsid.slice(1)) || [];
+        if (!list.some((a) => a.x === c.arrive.x && a.y === c.arrive.y)) list.push({ x: c.arrive.x, y: c.arrive.y, from: label(t) });
+        arrivals.set(c.tsid.slice(1), list);
+      }
+    }
+  }
+  const postsOf = (t, ids) => {
+    const targets = streetTargets(street(t));
+    return ids.map((id) => targets.find((g) => g.id === id));
+  };
+
+  it('24 such pairs on 15 streets', () => {
+    assert.equal(pairs.length, 24);
+    assert.equal(new Set(pairs.map((p) => p.t)).size, 15);
+  });
+
+  it('standing by either post, the GPS picks that post', () => {
+    for (const { t, to, ids } of pairs) {
+      const posts = postsOf(t, ids);
+      posts.forEach((p, i) => {
+        for (const dx of [-300, 0, 300]) assert.equal(pickSignHop(posts, { x: p.x + dx, y: p.y }), i, `${label(t)} to ${to}: by ${ids[i]}`);
+      });
+    }
+  });
+
+  it('from every arrival on those streets, the picked post can be reached, and it is the one on your floor when there is one', () => {
+    let firstWasWrong = 0;
+    let reachable = 0;
+    for (const t of new Set(pairs.map((p) => p.t))) {
+      const ins = arrivals.get(t.slice(1)) || [];
+      const reach = reachStreet(street(t), ins);
+      ins.forEach((at, a) => {
+        for (const { to, ids } of pairs.filter((p) => p.t === t)) {
+          const posts = postsOf(t, ids);
+          const i = pickSignHop(posts, at);
+          const what = `${label(t)} from ${at.from} (${at.x},${at.y}) to ${to}: ${ids[i]}`;
+          const reached = (id) => reach.targets.find((g) => g.id === id)?.reachedFrom[a];
+          if (ids.some(reached)) {
+            assert.ok(reached(ids[i]), `${what} can be reached`);
+            reachable += 1;
+          }
+          const onFloor = posts.map((p) => postReachY(p.y, p.h, at.y));
+          if (onFloor.some(Boolean)) assert.ok(onFloor[i], `${what} is on the arrival's floor`);
+          if (onFloor.some(Boolean) && !onFloor[0]) firstWasWrong += 1;
+        }
+      });
+    }
+    assert.ok(reachable >= 60, `${reachable} arrivals with a post they can reach`);
+    assert.ok(firstWasWrong >= 10, `the first post in the file was a floor away ${firstWasWrong} times`);
+  });
+
+  it('Strucote Stacks from Northwest Passage (upper floor): back by the upper post, signpost_6', () => {
+    const t = pairs.find((p) => label(p.t) === 'Strucote Stacks' && label(`G${p.to}`) === 'Northwest Passage');
+    assert.deepEqual(t.ids, ['signpost_2', 'signpost_6']);
+    const posts = postsOf(t.t, t.ids);
+    assert.equal(pickSignHop(posts, { x: 3750, y: 631 }), 1);
+    assert.equal(pickSignHop(posts, { x: 3700, y: 1275 }), 0, 'the ground floor keeps signpost_2');
+  });
+
+  it('a post below beats one above when neither is on your floor (you can drop, not always climb)', () => {
+    const posts = [{ x: 0, y: 200, h: 200 }, { x: 0, y: 1400, h: 200 }];
+    assert.equal(pickSignHop(posts, { x: 0, y: 700 }), 1);
+    assert.equal(pickSignHop(posts, { x: 0, y: 2000 }), 1, 'both above: the nearer');
+    assert.equal(pickSignHop([posts[0]], { x: 0, y: 2000 }), 0);
+    assert.equal(pickSignHop([], { x: 0, y: 0 }), -1);
+    assert.equal(pickSignHop(posts, null), 0, 'no avatar: the first, as the client');
   });
 });

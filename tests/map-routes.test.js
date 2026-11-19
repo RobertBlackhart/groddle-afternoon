@@ -30,7 +30,7 @@ import {
   ROUTE_STOPS_SHOWN,
   signpostToward,
 } from '../public/js/map-routes.js?v=3cadc716';
-import { mapRoutesFeature, hopInReach, DOOR_REACH_Y } from '../public/js/features/map-routes-feature.js?v=cb87d7e1';
+import { mapRoutesFeature, hopInReach, DOOR_REACH_Y } from '../public/js/features/map-routes-feature.js?v=668e508b';
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=bbdff26f';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=6da8c49f';
 import { createFeatureHost } from '../public/js/feature-host.js?v=9fe319e4';
@@ -756,15 +756,71 @@ describe('G192 the GPS arrow walks you there', () => {
     const glowOf = (v) => v.children.find((c) => c.label === 'route-sign-glow');
     assert.ok(glowOf(lower) && glowOf(upper), 'the lower and the upper post both glow');
     assert.equal(glowOf(footlands), undefined, 'the Footlands Heath post does not');
-    // The arrow and its walk: the first post in the street's list (the client's loc_path_signpost).
-    assert.equal(mapRoutesFeature._highlight().view, lower);
-    assert.equal(engine.data.routeSign, `${Math.round(lower.x)}:1`, "signpost_3's second arm is Alpine Vista");
+    // The arrow and its walk: the post on the avatar's floor (#516), here the upper one.
+    assert.equal(engine.player.y, 500);
+    assert.equal(mapRoutesFeature._highlight().view, upper);
+    assert.equal(engine.data.routeSign, `${Math.round(upper.x)}:0`, "signpost_1's first arm is Alpine Vista");
+    assert.equal(upper.signBoards[0].connection.tsid.slice(1), ALPINE.slice(1));
     assert.equal(lower.signBoards[1].connection.tsid.slice(1), ALPINE.slice(1));
+    // Down on the lower floor the arrow points at the lower post, signpost_3 (its second arm).
+    Object.assign(engine.player, { y: lower.y, onGround: true });
+    mapRoutesFeature.onTick(16, Date.now() + 1000, engine);
+    assert.equal(mapRoutesFeature._highlight().view, lower);
+    assert.equal(engine.data.routeSign, `${Math.round(lower.x)}:1`);
     // Leaving clears both.
     const glows = [glowOf(lower), glowOf(upper)];
     mapRoutesFeature.mapRoute('clear', { reason: 'test' }, engine);
     assert.ok(glows.every((g) => g.destroyed && !g.parent));
     assert.equal(engine.data.routeSigns, '');
+  });
+
+  it('#516: Strucote Stacks to Northwest Passage, the arrow walks to the post on your floor and takes it', () => {
+    const STRUCOTE = 'GCR1IDDEB2M17RC';
+    const NORTHWEST = 'GLI23D3LDHD1FQA';
+    const run = (at) => {
+      mapRoutesFeature._reset();
+      mapRoutesFeature._setGraph(GRAPH_JSON);
+      const engine = onStreet(STRUCOTE);
+      engine.signViews = streetSignViews(STRUCOTE);
+      Object.assign(engine.player, at, { onGround: true });
+      mapRoutesFeature.mapRoute('set', { to: NORTHWEST, source: 'player' }, engine);
+      mapRoutesFeature.onStreetEnter(engine.street, engine);
+      assert.equal(engine.data.routeNext, 'Northwest Passage');
+      mapRoutesFeature._arrowClick(engine);
+      walkUntilDone(engine);
+      return engine;
+    };
+    const byId = (engine, id) => engine.signViews.find((v) => v.signpost.id === id);
+    // Upper floor, as you come in from Northwest Passage's upper post (signpost_2 is first in the file).
+    const up = run({ x: 3750, y: 631 });
+    assert.equal(up.data.routeWalkEnd, 'arrived', 'not "below": the walk ends at the post');
+    assert.equal(up.log.travel.length, 1);
+    const upper = byId(up, 'signpost_6').signBoards.find((b) => b.connection.tsid.slice(1) === NORTHWEST.slice(1));
+    assert.deepEqual(up.log.travel[0], [NORTHWEST, { label: 'Northwest Passage', arrive: upper.connection.arrive }]);
+    // Ground floor: signpost_2.
+    const down = run({ x: 3700, y: 1275 });
+    assert.equal(down.data.routeWalkEnd, 'arrived');
+    const lower = byId(down, 'signpost_2').signBoards.find((b) => b.connection.tsid.slice(1) === NORTHWEST.slice(1));
+    assert.deepEqual(down.log.travel[0], [NORTHWEST, { label: 'Northwest Passage', arrive: lower.connection.arrive }]);
+    assert.notDeepEqual(upper.connection.arrive, lower.connection.arrive, 'each post sets you down on its own floor there');
+  });
+
+  it('#516: the arrow re-aims when you change floors, not during its walk', () => {
+    const STRUCOTE = 'GCR1IDDEB2M17RC';
+    mapRoutesFeature._setGraph(GRAPH_JSON);
+    const engine = onStreet(STRUCOTE);
+    engine.signViews = streetSignViews(STRUCOTE);
+    Object.assign(engine.player, { x: 2000, y: 1275, onGround: true });
+    mapRoutesFeature.mapRoute('set', { to: 'GLI23D3LDHD1FQA', source: 'player' }, engine);
+    mapRoutesFeature.onStreetEnter(engine.street, engine);
+    const id = () => mapRoutesFeature._highlight().view.signpost.id;
+    assert.equal(id(), 'signpost_2');
+    Object.assign(engine.player, { y: 631, onGround: false });
+    mapRoutesFeature.onTick(16, Date.now() + 1000, engine);
+    assert.equal(id(), 'signpost_2', 'mid-jump: kept');
+    engine.player.onGround = true;
+    mapRoutesFeature.onTick(16, Date.now() + 2000, engine);
+    assert.equal(id(), 'signpost_6', 'landed on the upper floor');
   });
 
   it('report 96: the other streets with two posts to one neighbour light both', () => {

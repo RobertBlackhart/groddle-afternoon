@@ -493,16 +493,19 @@ function placeDoorGlow(engine, next, key) {
  * posts with an arm to Alpine Vista, and only the lower one lit). 15 streets have two posts to the
  * same neighbour (Groddle Heights and Northwest Passage); none is a one-way street
  * (one-way-roads.json), and the router decides by street, so every such arm is one the route can
- * use. The GPS arrow and its walk still go to the first post in the street's list that links
- * there, as the client's loc_path_signpost did (MiddleGroundLayer.as 191-201
- * getSignpostThatLinksToLocTsid, TSFrontController.as 1790-1792); the client drew no arm glow, so
- * the glow is the remake's.
+ * use. The client's loc_path_signpost walked to the first post in the street's list that links
+ * there (MiddleGroundLayer.as 191-201 getSignpostThatLinksToLocTsid, TSFrontController.as
+ * 1790-1792), whatever floor you were on. #516: on those 15 streets the posts stand one above the
+ * other (24 pairs), and the walk only goes left or right, so the first post was often a floor away
+ * and the walk ended under it. The GPS arrow and its walk go to the post on your floor
+ * (pickSignHop), aimed again while you are not walking. The client drew no arm glow, so the glow
+ * is the remake's.
  */
 function placeSignGlow(engine, next, key) {
   const views = engine.signViews || [];
   const { PIXI } = engine;
   const glows = [];
-  let first = null;
+  const options = [];
   for (const view of views) {
     if (!view || view.destroyed || view.visible === false) continue;
     const boards = (view.signBoards || []).filter((b) => sameStreet(b.connection?.tsid, next));
@@ -524,12 +527,61 @@ function placeSignGlow(engine, next, key) {
     // Behind the post and arms: the post's own art stays on top.
     view.addChildAt(glow, 0);
     glows.push(glow);
-    first ||= { view, glow, board: boards[0] };
+    options.push({ view, glow, board: boards[0] });
   }
-  if (!first) return false;
-  const { view, glow, board } = first;
-  highlight = { kind: 'sign', view, glow, glows, key, board: board.index, connection: board.connection, x: view.x, y: view.y - 60 };
+  if (!options.length) return false;
+  highlight = { kind: 'sign', glows, options, key };
+  aimSign(engine, true);
   return true;
+}
+
+/**
+ * PURE (#516): which of the posts leading to the next street the GPS walks to, for the avatar's
+ * feet at `at` ({ x, y }, screen). `posts`: [{ x, y (the post's foot), h }]. A post the avatar
+ * can use from where it stands (postReachY, the floor it is on) first; else the nearest post
+ * below the feet (you can drop to it), else the nearest above; then the nearest across.
+ * Returns the index, or -1 for none.
+ */
+export function pickSignHop(posts, at) {
+  if (!posts?.length) return -1;
+  const x = Number(at?.x);
+  const y = Number(at?.y);
+  if (posts.length === 1 || !Number.isFinite(x) || !Number.isFinite(y)) return 0;
+  const rank = (p) => {
+    const dy = Number(p.y) - y;
+    if (postReachY(Number(p.y), p.h, y)) return [0, 0, Math.abs(Number(p.x) - x)];
+    return [dy >= 0 ? 1 : 2, Math.abs(dy), Math.abs(Number(p.x) - x)];
+  };
+  let best = 0;
+  let bestRank = rank(posts[0]);
+  for (let i = 1; i < posts.length; i++) {
+    const r = rank(posts[i]);
+    const k = r.findIndex((v, j) => v !== bestRank[j]);
+    if (k >= 0 && r[k] < bestRank[k]) {
+      best = i;
+      bestRank = r;
+    }
+  }
+  return best;
+}
+
+/**
+ * Point the sign highlight at the post pickSignHop gives for where the avatar is now. Not during
+ * the arrow's walk (it keeps the post it set out for), nor mid-jump unless `force`.
+ */
+function aimSign(engine, force = false) {
+  if (highlight?.kind !== 'sign' || !highlight.options?.length) return;
+  if (walk && !force) return;
+  const p = engine?.player;
+  if (!force && (!p || p.onGround === false)) return;
+  const live = highlight.options.filter((o) => o.view && !o.view.destroyed);
+  if (!live.length) return;
+  const i = Math.max(0, pickSignHop(live.map((o) => ({ x: o.view.x, y: o.view.y, h: o.view.signpost?.h })), p && { x: p.x, y: p.y }));
+  const { view, glow, board } = live[i];
+  if (highlight.view === view && highlight.board === board.index) return;
+  if (highlight.glow && !highlight.glow.destroyed) highlight.glow.alpha = 1;
+  Object.assign(highlight, { view, glow, board: board.index, connection: board.connection, x: view.x, y: view.y - 60 });
+  if (!force) publish(engine);
 }
 
 /* ------------------------------------------------------------ GPS */
@@ -704,6 +756,7 @@ function stopWalk(engine, reason = '') {
 function startWalk(engine, now) {
   stopWalk(engine);
   if (!highlight || !engine.player) return false;
+  aimSign(engine, true);
   const x = highlight.kind === 'sign' ? highlight.view.x : highlight.x;
   if (!engine.walkTo?.({ kind: 'point', x })) return false;
   // goalX: the street walk's own x (clamped to the street), to know it is still ours.
@@ -1257,6 +1310,7 @@ export const mapRoutesFeature = {
         lastLook = now;
         refresh(engine);
       }
+      aimSign(engine);
       pointArrow(engine);
     }
     autoplay(engine, now);
