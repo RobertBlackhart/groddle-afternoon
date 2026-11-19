@@ -848,7 +848,7 @@ import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverG
 import { hellBuffDesc, isInHell } from './js/hell.js?v=c1f68f31';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
-import { ownPackFor, whenOwnLookReady } from './js/avatar-placeholder.js?v=ff68d2e6';
+import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
 import { createNpcGlitchKit } from './js/npc-glitch.js?v=2027a750';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=8b20791a';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
@@ -11831,6 +11831,53 @@ function vectorDefaultPack(key) {
   return animPackFromSheets(key, sheets, VECTOR_AVATAR, loadVectorIdleSheet);
 }
 
+/**
+ * R33 (#537): the placeholder sheets (js/avatar-placeholder.js), washed once from the default
+ * look's at 1x; null when they cannot be painted (no default sheets, no canvas).
+ */
+let vectorPlaceholderSheets;
+function placeholderSheets() {
+  if (vectorPlaceholderSheets !== undefined) return vectorPlaceholderSheets;
+  const out = {};
+  try {
+    for (const name of PLACEHOLDER_SHEETS) {
+      const from = textures[`vectorAvatar${name[0].toUpperCase()}${name.slice(1)}`];
+      const image = from?.frames?.[0]?.source?.resource;
+      const def = VECTOR_AVATAR.sheets[name];
+      if (!image || !def) continue;
+      const canvas = document.createElement('canvas');
+      canvas.width = def.cols * def.fw;
+      canvas.height = def.rows * def.fh;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      // A sharp screen may have swapped in the 3x file: drawn at 1x either way.
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const px = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      washPlaceholderPixels(px.data);
+      ctx.putImageData(px, 0, 0);
+      const source = new PIXI.CanvasSource({ resource: canvas, resolution: 1, scaleMode: 'linear' });
+      out[name] = { frames: sliceSheet(source, { fw: def.fw, fh: def.fh, cols: def.cols, rows: def.rows }, def.cells) };
+    }
+  } catch (err) {
+    console.warn('avatar placeholder failed', err);
+  }
+  vectorPlaceholderSheets = out.base ? out : null;
+  return vectorPlaceholderSheets;
+}
+
+/**
+ * R33 (#537): a look still being painted is drawn as the placeholder Glitch (Glitch's
+ * placeholder skin), never the default outfit; `pending` so the painted look swaps in. Only if
+ * the placeholder cannot be painted does the default look stand in, as before.
+ */
+function vectorPlaceholderPack(key) {
+  const sheets = placeholderSheets();
+  const pack = sheets ? animPackFromSheets(key, { ...sheets }, VECTOR_AVATAR) : vectorDefaultPack(key);
+  if (!pack) return null;
+  pack.pending = true;
+  pack.placeholderLook = Boolean(sheets);
+  return pack;
+}
+
 let vectorDefaultKey = null;
 /** lookKey of the catalog default (the prerendered sheets). */
 function defaultVectorLookKey() {
@@ -11868,8 +11915,8 @@ function finishOwnBake(bake) {
 
 /**
  * A vector look's pack: the prerendered sheets for the default outfit, a
- * baked pack for any other, or (while it bakes) the default with a pending
- * key so the finished bake swaps in.
+ * baked pack for any other, or (while it bakes) the placeholder Glitch with a
+ * pending key so the finished bake swaps in (R33: never the default outfit).
  *
  * A baked look paints only its base sheet (stand and walk) at first, and its pack is handed
  * out as soon as that is in (G614): its jump, climb and emotion sheets are painted when an
@@ -11877,11 +11924,7 @@ function finishOwnBake(bake) {
  * sheet. `full` (the player's own look) hands the pack out only with every sheet in.
  */
 function vectorAnimPack(key, app, { full = false } = {}) {
-  if (!avatarCatalog) {
-    const fallback = vectorDefaultPack(`${key}#pending`);
-    if (fallback) fallback.pending = true;
-    return fallback;
-  }
+  if (!avatarCatalog) return vectorPlaceholderPack(`${key}#pending`);
   const look = resolveLook(app.vector, avatarCatalog);
   const lk = lookKey(look);
   if (lk === defaultVectorLookKey()) return vectorDefaultPack(key);
@@ -11955,9 +11998,7 @@ function vectorAnimPack(key, app, { full = false } = {}) {
     finishOwnBake(bake);
   }
   bake.askedAt = performance.now();
-  const pending = vectorDefaultPack(`${key}#pending`);
-  if (pending) pending.pending = true;
-  return pending;
+  return vectorPlaceholderPack(`${key}#pending`);
 }
 
 /**
@@ -13051,8 +13092,8 @@ const engine = {
   /**
    * Another player's Glitch from their look ({ vector }): the anim pack the
    * player's own sprite uses (pack.anims by source animation). A custom
-   * look bakes first: the default look comes back with pending: true until
-   * it is ready, so ask again. Hold the packs in use with holdGlitchPacks.
+   * look bakes first: the placeholder Glitch comes back with pending: true
+   * until it is ready (R33), so ask again. Hold the packs in use with holdGlitchPacks.
    */
   glitchPack(look) {
     return getAppearanceTextures(normalizeAppearance({ vector: look?.vector && typeof look.vector === 'object' ? look.vector : {} }));
@@ -34723,6 +34764,8 @@ async function main() {
           ok: Boolean(tex && !tex.destroyed && tex.source && !tex.source.destroyed),
           held: Boolean(player?.pack && showsStandIn(player.pack, animForState(player.glitchState || 'stand', { idles: false }).anim, tex)),
           pending: Boolean(player?.pack?.pending),
+          // R33: the placeholder Glitch (a look still painting), never the default outfit.
+          placeholder: isPlaceholderPack(player?.pack),
         },
       };
     },
