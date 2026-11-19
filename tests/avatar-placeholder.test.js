@@ -129,6 +129,23 @@ describe('game wiring', () => {
     assert.match(body, /new PIXI\.CanvasSource\(\{ resource: canvas, resolution: 1, scaleMode: 'linear' \}\)/);
   });
 
+  it('a painted look\'s first climb borrows the placeholder\'s climb, not the default outfit\'s', () => {
+    const pack = fnBody(game, 'vectorAnimPack');
+    assert.match(pack, /const climb = placeholderSheets\(\)\?\.climb \|\| \(textures\.vectorAvatarClimb/);
+  });
+
+  it('the default look\'s sheets are read only for the default look, the wash, and a failed wash', () => {
+    const reads = [...game.matchAll(/textures\.vectorAvatar[A-Z]\w*|textures\[`vectorAvatar/g)].map((m) => m.index);
+    const owner = (at) => {
+      const fn = game.lastIndexOf('\nfunction ', at);
+      return game.slice(fn + 10, game.indexOf('(', fn));
+    };
+    const owners = new Set(reads.map(owner));
+    assert.deepEqual([...owners].sort(), ['placeholderSheets', 'vectorAnimPack', 'vectorDefaultPack']);
+    // In vectorAnimPack only as the climb's fallback.
+    assert.equal(fnBody(game, 'vectorAnimPack').match(/textures\.vectorAvatar/g).length, 2);
+  });
+
   it('putting a look on keeps the worn one while the new one paints', () => {
     assert.match(fnBody(game, 'applyPlayerAppearance'), /swapPlayerPack\(ownPackFor\(getAppearanceTextures\(playerAppearance, \{ full: true \}\), player\.pack\)\)/);
     assert.match(fnBody(game, 'ownLookWorn'), /return Boolean\(player\?\.pack && !player\.pack\.pending\);/);

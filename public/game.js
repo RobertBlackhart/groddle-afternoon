@@ -11980,9 +11980,11 @@ function vectorAnimPack(key, app, { full = false } = {}) {
           };
           return { def, stats, release, frames: sliceSheet(base, { fw: def.fw, fh: def.fh, cols: def.cols, rows: def.rows }, def.cells) };
         };
-        // Until the climb sheet is in, a climb shows the placeholder avatar's (the default look's) climb frames:
+        // Until the climb sheet is in, a climb shows the placeholder avatar's climb frames:
         // AvatarAnimationDefinitions.as climb standin_frame 0, "instead of showing a frame from the side view".
-        const climb = textures.vectorAvatarClimb?.frames?.length ? textures.vectorAvatarClimb : null;
+        // R33 (#537): the placeholder Glitch's (pale, no outfit), not the default outfit's; the default's only
+        // if the placeholder could not be painted.
+        const climb = placeholderSheets()?.climb || (textures.vectorAvatarClimb?.frames?.length ? textures.vectorAvatarClimb : null);
         if (climb) anchorSheetFrames(climb, VECTOR_AVATAR.sheets.climb);
         bake.pack = animPackFromSheets(lk, { base: { frames: base.frames } }, { sheets: { base: base.def } }, idleLoader, lateLoader, climb ? { sheets: { climb } } : null);
         trimVectorBakes(lk);

@@ -48,7 +48,7 @@ function basePack(lateLoader = null, placeholder = null) {
 const isStand = (tex) => tex.sheet === 'base' && tex.fn === 801;
 /** The walk's stride the original client held for a jump (standin_frame 107). */
 const isStride = (tex) => tex.sheet === 'base' && tex.fn === 107;
-/** The placeholder avatar's sheets (the default look's), told apart by `who`. */
+/** The placeholder avatar's sheets (the placeholder Glitch's), told apart by `who`. */
 const placeholderLook = () => ({ sheets: { climb: { frames: SHEET_FRAMES.climb.map((fn, index) => ({ who: 'placeholder', sheet: 'climb', index, fn })) } } });
 
 describe('which sheet an animation draws from', () => {
@@ -362,8 +362,9 @@ describe('game wiring (G614)', () => {
     assert.match(body, /bakeLook\(prep, scale, \{ budgetMs: VECTOR_BAKE_BUDGET_MS, sheets: \['base'\], stats: baseStats \}\)/);
     assert.match(body, /bakeSheet\(bake\.prep, name, scale, \{ budgetMs: VECTOR_BAKE_BUDGET_MS \}\)/);
     assert.match(body, /animPackFromSheets\(lk, \{ base: \{ frames: base\.frames \} \}, \{ sheets: \{ base: base\.def \} \}, idleLoader, lateLoader, climb \? \{ sheets: \{ climb \} \} : null\)/);
-    // The placeholder is the default look's climb sheet (prerendered, never freed), anchored on its feet.
-    assert.match(body, /const climb = textures\.vectorAvatarClimb\?\.frames\?\.length \? textures\.vectorAvatarClimb : null;\s*if \(climb\) anchorSheetFrames\(climb, VECTOR_AVATAR\.sheets\.climb\);/);
+    // The placeholder is the placeholder Glitch's climb sheet (R33: washed once, never freed; the default
+    // look's only if it could not be painted), anchored on its feet.
+    assert.match(body, /const climb = placeholderSheets\(\)\?\.climb \|\| \(textures\.vectorAvatarClimb\?\.frames\?\.length \? textures\.vectorAvatarClimb : null\);\s*if \(climb\) anchorSheetFrames\(climb, VECTOR_AVATAR\.sheets\.climb\);/);
     // One late sheet at a time for a look, and a look freed meanwhile takes nothing.
     assert.match(body, /const job = bake\.late\.then\(async \(\) => \{\s*if \(vectorBakes\.get\(lk\) !== bake\) return null;/);
     assert.match(body, /bake\.late = job\.catch\(\(\) => \{\}\);/);
