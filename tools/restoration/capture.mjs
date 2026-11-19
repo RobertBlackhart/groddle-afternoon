@@ -26,6 +26,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHOTS } from './shots.mjs';
+import { GPU_ARGS } from '../qa/browser.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const outDir = join(root, 'public', 'restoration', 'shots');
@@ -46,7 +47,7 @@ const fileFor = (key) => join(hd ? join(outDir, 'hd') : outDir, `${key.replace(/
 
 mkdirSync(hd ? join(outDir, 'hd') : outDir, { recursive: true });
 // Muted: QA browsers never play sound (brief, 2026-11-15).
-const browser = await chromium.launch({ args: ['--ignore-certificate-errors', '--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist', '--mute-audio'] });
+const browser = await chromium.launch({ args: ['--ignore-certificate-errors', ...GPU_ARGS, '--ignore-gpu-blocklist', '--mute-audio'] });
 let done = 0;
 for (const key of keys) {
   const target = fileFor(key);

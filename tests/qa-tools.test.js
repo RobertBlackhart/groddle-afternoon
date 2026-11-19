@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process';
 
 import { REALTIME_PORT, resolveRequest, startServer } from '../tools/qa/serve.mjs';
 import { acquireLock, judgeLock, lockStatus, OWNER_FILE, parseFlags, pidAlive } from '../tools/qa/browser-lock.mjs';
-import { browserArgs } from '../tools/qa/browser.mjs';
+import { browserArgs, gpuArgs, GPU_ARGS } from '../tools/qa/browser.mjs';
 
 const ROOT = new URL('..', import.meta.url).pathname;
 const tmp = () => mkdtempSync(join(tmpdir(), 'groddle-qa-'));
@@ -211,7 +211,9 @@ test('lock: parseFlags', () => {
 // —— Chrome flags ——
 
 test('browser: the project flags, plus local network access for online', () => {
-  assert.deepEqual(browserArgs().slice(0, 2), ['--use-angle=metal', '--enable-gpu']);
+  assert.deepEqual(browserArgs().slice(0, GPU_ARGS.length), GPU_ARGS);
+  assert.deepEqual(gpuArgs('darwin'), ['--use-angle=metal', '--enable-gpu']);
+  assert.ok(gpuArgs('linux').includes('--use-angle=vulkan'), 'Metal does not exist on Linux: Chrome there has no WebGL2 with it');
   assert.equal(browserArgs().some((a) => a.includes('LocalNetworkAccessChecks')), false);
   assert.ok(browserArgs().includes('--mute-audio'), 'QA browsers are silent unless GRODDLE_BROWSER_SOUND=1');
   assert.ok(browserArgs({ online: true }).some((a) => /^--disable-features=.*LocalNetworkAccessChecks/.test(a)));

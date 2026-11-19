@@ -4,9 +4,10 @@ import { chromium } from 'playwright';
 import { readFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { GPU_ARGS } from '../qa/browser.mjs';
 const [root, outDir] = process.argv.slice(2);
 mkdirSync(outDir, { recursive: true });
-const browser = await chromium.launch({ args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ args: [...GPU_ARGS, '--ignore-gpu-blocklist'] });
 const page = await browser.newPage();
 for (const d of readdirSync(root)) {
   const f = join(root, d, '1.svg');

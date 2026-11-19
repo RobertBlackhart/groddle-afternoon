@@ -3,9 +3,10 @@
 // node tools/deco-pipeline/svg-raster.mjs <jobs.json: [{svg, png, width, height}]>
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { GPU_ARGS } from '../qa/browser.mjs';
 
 const jobs = JSON.parse(readFileSync(process.argv[2], 'utf8'));
-const browser = await chromium.launch({ headless: true, args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ headless: true, args: [...GPU_ARGS, '--ignore-gpu-blocklist'] });
 try {
   const page = await browser.newPage();
   await page.setContent('<!doctype html><title>svg raster</title>');

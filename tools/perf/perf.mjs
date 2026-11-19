@@ -24,6 +24,7 @@
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { GPU_ARGS } from '../qa/browser.mjs';
 
 const argv = process.argv.slice(2);
 const flags = Object.fromEntries(argv.filter((a) => a.startsWith('--')).map((a) => {
@@ -435,7 +436,7 @@ function table(results) {
 
 async function main() {
   const names = String(flags.routes || Object.keys(ROUTES).join(',')).split(',');
-  const args = ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'];
+  const args = [...GPU_ARGS, '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'];
   if (!flags.capped) args.push('--disable-gpu-vsync', '--disable-frame-rate-limit');
   if (flags.webgpu) args.push('--enable-unsafe-webgpu');
   const browser = await chromium.launch({ headless: !flags.headed, args });

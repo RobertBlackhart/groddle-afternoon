@@ -12,6 +12,7 @@
 // data-* attributes. Headless Chrome uses the Metal GPU through ANGLE (60 fps)
 // unless --swiftshader is given, so timers fire in real time.
 import { chromium } from 'playwright';
+import { GPU_ARGS } from './qa/browser.mjs';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -1150,7 +1151,7 @@ export { Session, SCENARIOS, useTarget, exercisePanels };
 export function launchArgs() {
   const a = ['--ignore-certificate-errors'];
   if (flags.swiftshader) a.push('--use-angle=swiftshader', '--enable-unsafe-swiftshader');
-  else a.push('--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist');
+  else a.push(...GPU_ARGS, '--ignore-gpu-blocklist');
   return a;
 }
 
