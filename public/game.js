@@ -5,6 +5,7 @@
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b88c9884';
 import { createErrorOnce, createFeatureHost } from './js/feature-host.js?v=9fe319e4';
 import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1b51eb65';
+import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -525,7 +526,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=290b8765';
+} from './js/player-save.js?v=47c59f4d';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -1534,6 +1535,8 @@ let contextRestores = 0;
 let renderProbe = null;
 /** G844 / R29: pictures copied from the screen because a render texture could not be read (canvas data snapshotScreenCopies, readbackCopies by reader). */
 let snapshotScreenCopies = 0;
+/** R30: the frame's stage guard (feature-host createFrameStages), set once the ticker starts. */
+let frameStages = null;
 const readbackCopies = {};
 // FEEL (js/camera-feel.js): per axis, whether the eased camera rests on its target this frame and
 // the way it last travelled.
@@ -9946,6 +9949,28 @@ function updateCurrentAction(deltaMs) {
   }
 }
 
+/**
+ * R30 (#513): the action's frame, and when it throws with the same action still running, the
+ * action let go (cancelled, else dropped): a running action holds the avatar (avatarHeldByScene),
+ * so one whose frame threw every frame held it for good while the HUD went on. The throw goes on
+ * to the frame's stage guard, which reports it once.
+ */
+function updateActionOrLetGo(deltaMs) {
+  const was = currentAction;
+  try {
+    updateCurrentAction(deltaMs);
+  } catch (err) {
+    if (was && currentAction && currentAction.target === was.target && currentAction.verbId === was.verbId) {
+      try { cancelCurrentAction({ quiet: true }); } catch { /* dropped below */ }
+      if (currentAction) {
+        currentAction = null;
+        try { stopActionSoundLoop(); clearActionToolFx('cancelled'); renderCurrentAction(); } catch { /* its leftovers go with the next action */ }
+      }
+    }
+    throw err;
+  }
+}
+
 const SPEECH_REACTION_VERBS = new Set([
   'talk_to',
   'pet',
@@ -15451,7 +15476,7 @@ const PLAYER_STATE_STORAGE_KEY = 'playerState';
 const READ_ONLY_QA = Object.freeze([
   'groundSkirt', 'edgeMirrors', 'recolourStats', 'signArms', 'memoryStats', 'renderStats', 'drawnArt', 'itemOverlays',
   'drawnTextures', 'spinningWheel', 'cameraFrame', 'speech', 'pickups', 'streetDeco', 'animDecos', 'quoins',
-  'vectorBakes', 'idleState', 'snapshot',
+  'vectorBakes', 'idleState', 'snapshot', 'frameStageThrows',
   ['notify', ['notices', 'entries', 'stats', 'screensPending']],
   ['audio', ['state']],
 ]);
@@ -34233,6 +34258,8 @@ async function main() {
       else if (step === 'end') endPinchPreview();
       return { level: phoneZoom.get(), preview: Boolean(pinchPreview), stageScale: app?.stage?.scale?.x ?? null, viewW: VIEW_W, renderer: app?.renderer ? [app.renderer.width, app.renderer.height] : null };
     },
+    /** R30 QA: { stage: throws } for every frame stage that has thrown (feature-host createFrameStages). */
+    frameStageThrows: () => frameStages?.throws?.() || {},
     /** SKIRT QA: the street's ground skirt (street-render buildGroundSkirt): depth, band, colours, layers, chunks. */
     groundSkirt: () => (bgLayer?.groundSkirt ? { ...bgLayer.groundSkirt } : null),
     /** EDGE MIRROR QA: the street's mirrored end strips (street-render attachEdgeMirrors): sizes, resolution, bytes, builds. */
@@ -34793,190 +34820,213 @@ async function main() {
     bgLayer?.updateParallax?.(-world.x, -world.y, VIEW_W, LOCATION_VIEW_H, VIEW_H, parallaxSnap());
     bgLayer?.cullDecos?.(-world.x, -world.y, VIEW_W, VIEW_H);
   };
-  // Report 116: the frame's work runs inside one guard. A throw used to stop the loop for good
+  // Report 116: the frame's work runs inside a guard. A throw used to stop the loop for good
   // (Pixi's ticker asks for the next frame only after its listeners return): the view froze on
-  // the last street while the page around it went on. Now the error is reported once (the console
-  // and the report form's error list, feature-host reportPageError) and the next frame comes.
-  // Each feature's onTick has its own guard in the feature host, so one feature never stops the rest.
+  // the last street while the page around it went on. R30 (#513, players froze in a Party Space
+  // while the HUD went on): with one guard round the whole frame, a stage that threw every frame
+  // skipped every stage after it, movement included, reported once as "game loop". Now each stage
+  // has its own guard (feature-host createFrameStages): a throw is reported once per stage, named
+  // ("frame physics": the console and the report form's error list), and the other stages still
+  // run. The outer guard stays for what is left. Each feature's onTick has its own guard in the
+  // feature host, so one feature never stops the rest. Canvas data frameStageFailed names the
+  // stages that have thrown (QA: &framethrow=<stage> makes one throw every frame).
   const frameFailed = createErrorOnce();
+  const FRAME_THROW = String(bootParams.get('framethrow') || '');
+  const stage = createFrameStages({
+    onFirst: (name) => {
+      if (app?.canvas) app.canvas.dataset.frameStageFailed = Object.keys(stage.throws()).join(' ');
+    },
+  });
+  frameStages = stage;
+  /** A frame stage in its own guard; QA &framethrow=<name> makes that one throw every frame. */
+  const run = (name, fn) => stage(name, FRAME_THROW === name ? () => { throw new Error(`QA framethrow ${name}`); } : fn);
   const gameFrame = (ticker) => {
-    syncStreetFront();
-    orderPromptLayer();
+    run('street front', syncStreetFront);
+    run('prompt layer', orderPromptLayer);
     // G655: freed textures go once the renders since have rebuilt their batches (retireTextures).
-    retireQueue.tick();
-    tickAtmosphere();
+    run('retire textures', () => retireQueue.tick());
+    run('atmosphere', tickAtmosphere);
     if (!state.started) {
-      drawStreetFrame();
+      run('street view', drawStreetFrame);
       return;
     }
     // The frames this tick stands for (at most MAX_TICK_FRAMES), and the input and movement in
     // sub-steps of at most one frame (js/avatar-step.js frameSteps): air time and walking match
     // 60 fps at any frame rate. Everything after runs once with the whole tick.
     const dt = Math.min(ticker.deltaTime, MAX_TICK_FRAMES);
+    const ms = (1000 / 60) * dt;
     // Each tool or jar held is its own (js/tools.js): one that left this frame is gone before another arrives.
-    syncToolCopies(toolState);
-    updateCurrentAction((1000 / 60) * dt);
-    updateMakeCraft((1000 / 60) * dt);
+    run('tool copies', () => syncToolCopies(toolState));
+    run('current action', () => updateActionOrLetGo(ms));
+    run('make craft', () => updateMakeCraft(ms));
     for (const step of frameSteps(dt)) {
-      handleInput();
-      physics(step);
+      run('input', handleInput);
+      run('physics', () => physics(step));
     }
-    tickAvatarAfk();
-    updateShrineWalkBy();
-    updateBuriedSignposts();
-    updateLadderTopSignposts();
-    updateHogHaul((1000 / 60) * dt);
-    updateFourLetterQuest();
-    updateLegalizeIt();
-    updateWinterWalk(dt);
-    updateSummersDay(dt);
-    updateGreedyStreetSpirit();
-    updateRookWoods(dt);
-    updateRookMuseum(dt);
-    updateDeEmbiggenify(dt);
-    updateParadiseFlight(dt);
-    updateIlmenskieAutoplay();
-    updateSpinningWheel();
-    features.tick((1000 / 60) * dt, Date.now(), engine);
-    releaseHeldScriptedDialog();
-    drawStreetFrame();
+    run('avatar afk', tickAvatarAfk);
+    run('shrine walk by', updateShrineWalkBy);
+    run('buried signposts', updateBuriedSignposts);
+    run('ladder top signposts', updateLadderTopSignposts);
+    run('hog haul', () => updateHogHaul(ms));
+    run('four letter quest', updateFourLetterQuest);
+    run('legalize it', updateLegalizeIt);
+    run('winter walk', () => updateWinterWalk(dt));
+    run('summers day', () => updateSummersDay(dt));
+    run('greedy street spirit', updateGreedyStreetSpirit);
+    run('rook woods', () => updateRookWoods(dt));
+    run('rook museum', () => updateRookMuseum(dt));
+    run('de-embiggenify', () => updateDeEmbiggenify(dt));
+    run('paradise flight', () => updateParadiseFlight(dt));
+    run('ilmenskie autoplay', updateIlmenskieAutoplay);
+    run('spinning wheel', updateSpinningWheel);
+    run('features', () => features.tick(ms, Date.now(), engine));
+    run('held dialog', releaseHeldScriptedDialog);
+    run('street view', drawStreetFrame);
 
     buffTickAccum += dt;
     if (buffTickAccum >= 24) {
       buffTickAccum = 0;
-      handleBuffEvents([...bootBuffEvents.splice(0), ...tickBuffs(buffState, pc, Date.now())]);
+      run('buffs', () => handleBuffEvents([...bootBuffEvents.splice(0), ...tickBuffs(buffState, pc, Date.now())]));
     }
 
     skillTickAccum += dt;
     if (skillTickAccum >= 30) {
       skillTickAccum = 0;
-      const result = tickSkillStudy(skillState, Date.now());
-      if (result.completed.length) {
-        handleSkillCompletions(result.completed);
-        updateHud();
-      } else {
-        updateSkillChrome();
-        if (isSkillsOpen()) renderSkillsPanel();
-      }
+      run('skills', () => {
+        const result = tickSkillStudy(skillState, Date.now());
+        if (result.completed.length) {
+          handleSkillCompletions(result.completed);
+          updateHud();
+        } else {
+          updateSkillChrome();
+          if (isSkillsOpen()) renderSkillsPanel();
+        }
+      });
     }
 
     dametimeTickAccum += dt;
     if (dametimeTickAccum >= 60) {
       dametimeTickAccum = 0;
-      updateDametimeChrome();
-      updateHomeChrome();
-      if (isMailboxOpen() && !mailboxComposeReplyTo) renderMailboxPanel();
+      run('dametime chrome', () => {
+        updateDametimeChrome();
+        updateHomeChrome();
+        if (isMailboxOpen() && !mailboxComposeReplyTo) renderMailboxPanel();
+      });
     }
 
-    updateGardenTend();
+    run('garden tend', updateGardenTend);
     // Keep selection outline locked to animated sprite frames (pigs, chickens, …)
     if (hoverTarget?._hoverGlow?.syncOutlineTexture) {
-      hoverTarget._hoverGlow.syncOutlineTexture();
+      run('hover outline', () => hoverTarget._hoverGlow.syncOutlineTexture());
     }
 
     // Throttled map-location autosave while walking
     locSaveAccum += dt;
     if (locSaveAccum > 180) {
       locSaveAccum = 0;
-      maybeAutosaveLocation(false);
+      run('location autosave', () => maybeAutosaveLocation(false));
     }
 
     // Crop garden growth (wet plots: seeds → shoots → crop)
-    tickAllGardens(Date.now());
+    run('gardens', () => tickAllGardens(Date.now()));
 
     // Poll game-day boundary (~every 5s of ticker time)
     newDayCheckAccum += dt;
     if (newDayCheckAccum > 300) {
       newDayCheckAccum = 0;
-      notePlayedTime();
-      if (!isScreenFxBlocking()) maybeNewDay();
-      growStreetTrants();
+      run('new day', () => {
+        notePlayedTime();
+        if (!isScreenFxBlocking()) maybeNewDay();
+        growStreetTrants();
+      });
     }
 
-    if (!menuTarget && !currentAction && !isScreenFxBlocking()) {
-      // Recent keyboard chain wins briefly; otherwise hover, then footprint distance.
-      const recent =
-        recentInteractionTarget?.sprite &&
-        !recentInteractionTarget.sprite.destroyed &&
-        Date.now() < recentInteractionUntil &&
-        withinReach(recentInteractionTarget, 160)
-          ? recentInteractionTarget
+    run('prompt', () => {
+      if (!menuTarget && !currentAction && !isScreenFxBlocking()) {
+        // Recent keyboard chain wins briefly; otherwise hover, then footprint distance.
+        const recent =
+          recentInteractionTarget?.sprite &&
+          !recentInteractionTarget.sprite.destroyed &&
+          Date.now() < recentInteractionUntil &&
+          withinReach(recentInteractionTarget, 160)
+            ? recentInteractionTarget
+            : null;
+        const nearHover =
+          hoverTarget?.sprite && !hoverTarget.sprite.destroyed
+            ? hoverTarget
+            : null;
+        const near =
+          recent || (nearHover && withinReach(nearHover, 160)
+            ? nearHover
+            : nearestInteractable(100));
+        const nearSign = currentStreet ? signpostNear(walkUpSignpostStreet(currentStreet), player.x, 140, player.y) : null;
+        const postAtHand = signpostAtHand();
+        showSignpostKeys(postAtHand);
+        // FRIENDPOST: a scene post's hovered arm says where it leads, over the post's top (its
+        // number while you stand at the post), so the hint never covers an arm.
+        const armHover = hoveredSignBoard?.board?.scene && hoveredSignBoard.view && !hoveredSignBoard.view.destroyed ? hoveredSignBoard : null;
+        const nearClimb = !climb.active
+          ? findClimbWallNear(streetWalls, player.x, player.y, 42)
           : null;
-      const nearHover =
-        hoverTarget?.sprite && !hoverTarget.sprite.destroyed
-          ? hoverTarget
-          : null;
-      const near =
-        recent || (nearHover && withinReach(nearHover, 160)
-          ? nearHover
-          : nearestInteractable(100));
-      const nearSign = currentStreet ? signpostNear(walkUpSignpostStreet(currentStreet), player.x, 140, player.y) : null;
-      const postAtHand = signpostAtHand();
-      showSignpostKeys(postAtHand);
-      // FRIENDPOST: a scene post's hovered arm says where it leads, over the post's top (its
-      // number while you stand at the post), so the hint never covers an arm.
-      const armHover = hoveredSignBoard?.board?.scene && hoveredSignBoard.view && !hoveredSignBoard.view.destroyed ? hoveredSignBoard : null;
-      const nearClimb = !climb.active
-        ? findClimbWallNear(streetWalls, player.x, player.y, 42)
-        : null;
-      let want = null;
-      let wantArms = null;
-      if (climb.active) {
-        want = { key: '↑↓', label: 'climb · Space jump', x: player.x, y: player.y - 80 };
-      } else if (armHover) {
-        const v = armHover.view;
-        const live = postAtHand?.boards?.some(({ board }) => board === armHover.board);
-        want = { key: live ? armHover.board.key : '', label: signBoardLabel(armHover.board), x: v.x, y: v.y - (v._promptLift || 207) };
-      } else if (nearClimb && (!near || Math.abs(player.x - nearClimb.x) < 50)) {
-        want = { key: '↑', label: 'climb', x: nearClimb.x, y: Math.min(player.y, nearClimb.yBot) - 70 };
-      } else if (near) {
-        const box = spriteWorldHitBox(near.sprite, 0);
-        let label = near.label || near.classId || 'interact';
-        // G217: with several things in reach Enter asks which (tryOpenNearestMenu), so the chip says so.
-        if (near !== recent && near !== nearHover && !ENTER_CHOOSER_OFF) {
-          const plan = enterPlanForPrompt();
-          if (plan.mode === 'chooser') label = enterPromptLabel(plan, label);
+        let want = null;
+        let wantArms = null;
+        if (climb.active) {
+          want = { key: '↑↓', label: 'climb · Space jump', x: player.x, y: player.y - 80 };
+        } else if (armHover) {
+          const v = armHover.view;
+          const live = postAtHand?.boards?.some(({ board }) => board === armHover.board);
+          want = { key: live ? armHover.board.key : '', label: signBoardLabel(armHover.board), x: v.x, y: v.y - (v._promptLift || 207) };
+        } else if (nearClimb && (!near || Math.abs(player.x - nearClimb.x) < 50)) {
+          want = { key: '↑', label: 'climb', x: nearClimb.x, y: Math.min(player.y, nearClimb.yBot) - 70 };
+        } else if (near) {
+          const box = spriteWorldHitBox(near.sprite, 0);
+          let label = near.label || near.classId || 'interact';
+          // G217: with several things in reach Enter asks which (tryOpenNearestMenu), so the chip says so.
+          if (near !== recent && near !== nearHover && !ENTER_CHOOSER_OFF) {
+            const plan = enterPlanForPrompt();
+            if (plan.mode === 'chooser') label = enterPromptLabel(plan, label);
+          }
+          // G228: no Enter hint while a call-out holds Enter; none while the thing itself is talking
+          // (speakingNow: the client hides a stack's indicators under its bubble).
+          // A feature's own overlay over the player (a street project's work bubble) asks for no hint
+          // while it is up; Enter itself still works.
+          if (!enterHeldBy() && !speakingNow(near) && features.query('quietEnterHint', engine) !== true) want = {
+            key: 'Enter',
+            label,
+            x: near.sprite.x,
+            // FRIENDPOST: a post (the home street's signpost) has its hint over its top, clear of the arms.
+            y: near.sprite._promptLift ? near.sprite.y - near.sprite._promptLift : (box ? box.top : near.sprite.y - 74) - 12,
+          };
+        } else if (nearSign) {
+          const conn = pickAwayConnection(nearSign.signpost, currentStreetTsid, availableStreetTsids());
+          // Above the post, clear of the arms (SignpostView post 246px at 0.8). SIGNFOCUS: Enter
+          // takes the one arm, holds a post of several, and while held goes to the lit arm.
+          const arms = signpostBoardsInOrder(postAtHand);
+          const lit = signpostFocus?.boards[signpostFocus.index]?.board;
+          const y = nearSign.screen.y - 246 * 0.8 - 10;
+          wantArms = arms;
+          want = !conn && !arms.length
+            ? { key: 'G', label: 'map (no loaded link)', x: nearSign.screen.x, y }
+            : lit
+              ? { key: 'Enter', label: signBoardLabel(lit) || lit.connection?.label || 'go', x: nearSign.screen.x, y }
+              : arms.length === 1
+                ? { key: 'Enter', label: signBoardLabel(arms[0].board) || arms[0].board.connection?.label || conn?.label || '', x: nearSign.screen.x, y }
+                : { key: 'Enter', label: 'Choose a road', x: nearSign.screen.x, y };
         }
-        // G228: no Enter hint while a call-out holds Enter; none while the thing itself is talking
-        // (speakingNow: the client hides a stack's indicators under its bubble).
-        // A feature's own overlay over the player (a street project's work bubble) asks for no hint
-        // while it is up; Enter itself still works.
-        if (!enterHeldBy() && !speakingNow(near) && features.query('quietEnterHint', engine) !== true) want = {
-          key: 'Enter',
-          label,
-          x: near.sprite.x,
-          // FRIENDPOST: a post (the home street's signpost) has its hint over its top, clear of the arms.
-          y: near.sprite._promptLift ? near.sprite.y - near.sprite._promptLift : (box ? box.top : near.sprite.y - 74) - 12,
-        };
-      } else if (nearSign) {
-        const conn = pickAwayConnection(nearSign.signpost, currentStreetTsid, availableStreetTsids());
-        // Above the post, clear of the arms (SignpostView post 246px at 0.8). SIGNFOCUS: Enter
-        // takes the one arm, holds a post of several, and while held goes to the lit arm.
-        const arms = signpostBoardsInOrder(postAtHand);
-        const lit = signpostFocus?.boards[signpostFocus.index]?.board;
-        const y = nearSign.screen.y - 246 * 0.8 - 10;
-        wantArms = arms;
-        want = !conn && !arms.length
-          ? { key: 'G', label: 'map (no loaded link)', x: nearSign.screen.x, y }
-          : lit
-            ? { key: 'Enter', label: signBoardLabel(lit) || lit.connection?.label || 'go', x: nearSign.screen.x, y }
-            : arms.length === 1
-              ? { key: 'Enter', label: signBoardLabel(arms[0].board) || arms[0].board.connection?.label || conn?.label || '', x: nearSign.screen.x, y }
-              : { key: 'Enter', label: 'Choose a road', x: nearSign.screen.x, y };
+        // TOUCH: a phone's hint chips name a tap or the stick, not a key (js/touch-controls.js touchPrompt).
+        settlePrompt(TOUCH_PHONE ? touchPrompt(want) : want, performance.now());
+        if (prompt.visible) {
+          prompt.x = clampWorldOverlayX(prompt.x, prompt.width, 12);
+          promptKeepClear(wantArms);
+          app.canvas.dataset.promptScreenX = (prompt.x - camTarget).toFixed(2);
+          app.canvas.dataset.promptSafeRight = horizontalLocationViewWidth().toFixed(2);
+          app.canvas.dataset.promptWidth = prompt.width.toFixed(2);
+        }
+      } else {
+        prompt.visible = false;
+        showSignpostKeys(null);
       }
-      // TOUCH: a phone's hint chips name a tap or the stick, not a key (js/touch-controls.js touchPrompt).
-      settlePrompt(TOUCH_PHONE ? touchPrompt(want) : want, performance.now());
-      if (prompt.visible) {
-        prompt.x = clampWorldOverlayX(prompt.x, prompt.width, 12);
-        promptKeepClear(wantArms);
-        app.canvas.dataset.promptScreenX = (prompt.x - camTarget).toFixed(2);
-        app.canvas.dataset.promptSafeRight = horizontalLocationViewWidth().toFixed(2);
-        app.canvas.dataset.promptWidth = prompt.width.toFixed(2);
-      }
-    } else {
-      prompt.visible = false;
-      showSignpostKeys(null);
-    }
+    });
   };
   app.ticker.add((ticker) => {
     try {

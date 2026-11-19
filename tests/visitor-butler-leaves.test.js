@@ -216,11 +216,13 @@ describe('one throw no longer stops the game loop (report 116)', () => {
   it('game.js runs the frame inside one guard and keeps the ticker going', () => {
     const game = read('public/game.js');
     assert.match(game, /import \{ createErrorOnce, createFeatureHost[^}]*\} from '\.\/js\/feature-host\.js/);
-    assert.match(game, /const frameFailed = createErrorOnce\(\);\n\s*const gameFrame = \(ticker\) => \{\n\s*syncStreetFront\(\);/);
+    assert.match(game, /const frameFailed = createErrorOnce\(\);/);
+    // R30 (#513): and each stage inside it in its own guard (tests/r30-frame-stages.test.js).
+    assert.match(game, /const gameFrame = \(ticker\) => \{\n\s*run\('street front', syncStreetFront\);/);
     assert.match(game, /app\.ticker\.add\(\(ticker\) => \{\n\s*try \{\n\s*gameFrame\(ticker\);\n\s*\} catch \(err\) \{\n\s*frameFailed\('game loop', err\);\n\s*\}\n\s*\}\);/);
     // The features tick inside the frame, each in the host's own guard.
     const frame = game.slice(game.indexOf('const gameFrame = (ticker) => {'), game.indexOf("frameFailed('game loop', err);"));
-    assert.ok(frame.includes('features.tick((1000 / 60) * dt, Date.now(), engine);'));
+    assert.ok(frame.includes("run('features', () => features.tick(ms, Date.now(), engine));"));
     assert.match(read('public/js/feature-host.js'), /tick\(dtMs, now, engine\) \{\n\s*eachGuarded\('onTick', dtMs, now, engine\);/);
   });
 });

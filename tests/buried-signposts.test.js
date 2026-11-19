@@ -33,6 +33,6 @@ describe('buried signposts (Collision-triggered Teleporters)', () => {
     assert.match(step, /if \(best != null && py >= best - 80 && py <= best \+ UNDER_LINE_SLACK && !\(hole && py > best \+ 24\)\) return best;/);
     assert.ok(game.includes('return avatarGround(streetPlatforms, px, py, player?.vy ?? 0, { street: currentStreet, fallback: GROUND_Y });'));
     assert.match(game, /travelTo\(conn\.tsid, \{ label: conn\.label, arrive: conn\.arrive, via: 'door' \}\);/);
-    assert.match(game, /updateShrineWalkBy\(\);\n\s*updateBuriedSignposts\(\);/);
+    assert.match(game, /run\('shrine walk by', updateShrineWalkBy\);\n\s*run\('buried signposts', updateBuriedSignposts\);/);
   });
 });

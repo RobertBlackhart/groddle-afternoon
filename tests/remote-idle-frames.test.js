@@ -99,7 +99,7 @@ describe('G655: a freed sheet is destroyed only after the batches stop binding i
     // R29: drawn through js/render-probe.js readbackCanvas, a pass of its own.
     assert.match(read('public/js/ui/street-minimap.js'), /passes: \[view, layer, front\]\.filter\(Boolean\)\.map\(\(container\) => \(\{ container, transform: m \}\)\)/);
     assert.match(retire, /structureDidChange = true/);
-    assert.match(game, /const gameFrame = \(ticker\) => \{\s*syncStreetFront\(\);\s*orderPromptLayer\(\);\s*\/\/[^\n]*\n\s*retireQueue\.tick\(\);/);
+    assert.match(game, /const gameFrame = \(ticker\) => \{\s*run\('street front', syncStreetFront\);\s*run\('prompt layer', orderPromptLayer\);\s*\/\/[^\n]*\n\s*run\('retire textures', \(\) => retireQueue\.tick\(\)\);/);
     // A trimmed look's canvases go the same way.
     assert.match(fnBody(game, 'trimVectorBakes'), /retireTextures\(/);
   });

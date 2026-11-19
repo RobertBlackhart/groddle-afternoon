@@ -90,6 +90,36 @@ export function createErrorOnce({ report = reportPageError, limit = 40 } = {}) {
 }
 
 /**
+ * R30 (#513, players froze in a Party Space while the HUD went on): the frame ran inside one guard,
+ * so a stage early in it that threw every frame (the tool copies, the current action, input or
+ * physics) skipped every stage after it, movement included, and was reported once as "game loop".
+ * Each stage now runs in its own guard: `stage(name, fn)` calls fn() and returns what it returns;
+ * a throw is reported once per stage and message as `frame <name>` (createErrorOnce, so the console
+ * and the report form's error list name it) and the frame goes on to the next stage.
+ * `stage.throws()` gives { name: count } of every stage that has thrown; `onFirst(name)` hears
+ * a stage's first throw (game.js puts it on the canvas for QA).
+ */
+export function createFrameStages({ report = reportPageError, limit = 40, onFirst = null } = {}) {
+  const failed = createErrorOnce({ report, limit });
+  const counts = new Map();
+  const stage = (name, fn) => {
+    try {
+      return fn();
+    } catch (err) {
+      const n = (counts.get(name) || 0) + 1;
+      counts.set(name, n);
+      failed(`frame ${name}`, err);
+      if (n === 1 && onFirst) {
+        try { onFirst(name, err); } catch { /* never stops the frame */ }
+      }
+      return undefined;
+    }
+  };
+  stage.throws = () => Object.fromEntries(counts);
+  return stage;
+}
+
+/**
  * @param {object[]} features
  * @param {{ onError?: (where: string, err: unknown) => void }} [opts] who hears a feature's
  *   per-frame throw (default reportPageError)

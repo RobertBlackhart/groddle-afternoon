@@ -148,7 +148,7 @@ describe('ladder-top signposts: game.js', () => {
   const game = readFileSync(join(spike, 'public/game.js'), 'utf8');
   it('travels from the top like a door and keeps walk-up lookups off the post', () => {
     assert.match(game, /from '\.\/js\/ladder-top-signposts\.js\?v=[0-9a-f]{8}'/);
-    assert.match(game, /updateBuriedSignposts\(\);\n\s*updateLadderTopSignposts\(\);/);
+    assert.match(game, /run\('buried signposts', updateBuriedSignposts\);\n\s*run\('ladder top signposts', updateLadderTopSignposts\);/);
     assert.match(game, /if \(!climberAtLadderTop\(climb\.wall, player\.y\)\) return;/);
     assert.match(game, /const sign = ladderTopSignpostFor\(currentStreet, climb\.wall\.id\);[\s\S]{0,400}travelTo\(conn\.tsid, \{ label: conn\.label, arrive: conn\.arrive, via: 'door' \}\)/);
     // Enter, the T hint and the arm keys (signpostAtHand).

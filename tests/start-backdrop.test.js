@@ -24,12 +24,12 @@ const settled = (s) => s.loaded;
 
 describe('the street draws under the start card', () => {
   it('the ticker draws the street (view height, front, parallax, culling) before the started gate', () => {
-    const ticker = between(game, 'const gameFrame = (ticker) => {\n    syncStreetFront();', 'buffTickAccum += dt;');
+    const ticker = between(game, "const gameFrame = (ticker) => {\n    run('street front', syncStreetFront);", 'buffTickAccum += dt;');
     const gate = ticker.indexOf('if (!state.started) {');
     assert.ok(gate > 0, 'the started gate');
-    assert.match(ticker.slice(gate, gate + 80), /if \(!state\.started\) \{\s*drawStreetFrame\(\);\s*return;\s*\}/);
+    assert.match(ticker.slice(gate, gate + 110), /if \(!state\.started\) \{\s*run\('street view', drawStreetFrame\);\s*return;\s*\}/);
     // After Start, once per frame after physics moved the camera.
-    assert.ok(ticker.indexOf('physics(dt);') < ticker.lastIndexOf('drawStreetFrame();'));
+    assert.ok(ticker.indexOf('physics(step)') > 0 && ticker.indexOf('physics(step)') < ticker.lastIndexOf("run('street view', drawStreetFrame);"));
     const frame = between(game, 'const drawStreetFrame = () => {', '};');
     for (const step of ['syncLocationViewHeight()', 'syncStreetFront()', 'bgLayer?.updateParallax?.(', 'bgLayer?.cullDecos?.(']) {
       assert.ok(frame.includes(step), step);
@@ -47,7 +47,7 @@ describe('the street draws under the start card', () => {
     assert.match(reveal, /startOverlay\.classList\.remove\('is-waiting'\)/);
     assert.match(reveal, /bootParams\.get\('backdropcap'\)/);
     // The reveal runs once the ticker that draws the street is in.
-    assert.ok(game.indexOf('const gameFrame = (ticker) => {\n    syncStreetFront();') < game.indexOf('if (startCardWaits) {\n    const t0'));
+    assert.ok(game.indexOf("const gameFrame = (ticker) => {\n    run('street front', syncStreetFront);") < game.indexOf('if (startCardWaits) {\n    const t0'));
   });
 
   it('the overlay fades, waits invisible and has a calm backdrop that can clear', () => {
