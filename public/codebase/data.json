@@ -6,25 +6,25 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.50.2",
-   "commit": "8d113b33",
+   "ref": "v0.50.3",
+   "commit": "98b8ccaa",
    "licence": "MIT",
    "history": {
-    "commits": 2787,
+    "commits": 2789,
     "first": "2026-10-19",
     "latest": "2026-11-19"
    },
    "code": {
     "files": 4964,
-    "lines": 1020208,
-    "bytes": 61886878
+    "lines": 1020209,
+    "bytes": 61887014
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
      "files": 2242,
-     "lines": 681450
+     "lines": 681451
     },
     {
      "id": "html",
@@ -70,7 +70,7 @@
      "label": "Tests",
      "path": "tests/",
      "files": 1211,
-     "lines": 242624
+     "lines": 242625
     },
     {
      "id": "core",
@@ -134,7 +134,7 @@
      "id": "data",
      "label": "Data (JSON)",
      "files": 3183,
-     "bytes": 214475638
+     "bytes": 214498741
     },
     {
      "id": "generated",
