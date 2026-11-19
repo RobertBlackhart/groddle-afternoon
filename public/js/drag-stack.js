@@ -28,9 +28,8 @@
 import { TOOL_CONDITION_CATALOG, copyTags, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
 import { markLeaving, takeCopies } from './copy-picks.js?v=7968c974';
 import { unitRankAt } from './pack-slots.js?v=2c09907f';
+import { answerWaitMs } from './online-request.js?v=2a5117ff';
 
-/** features/bags-feature.js TAKE_WAIT_MS: the longest a mark waits for its removal. */
-export const DRAG_TAKE_WAIT_MS = 60000;
 /** A removal made now waits for the pack's next look (a HUD tick), then lapses; one fully taken ends at once. */
 export const DRAG_TAKE_SOON_MS = 5000;
 
@@ -126,11 +125,14 @@ export function takeDragged(engine, ds, n = 1, { wait = DRAG_TAKE_SOON_MS } = {}
 
 /**
  * The dragged stack gives the next `n` of its class that leave within `wait` ms (a verb run after
- * a walk into reach, a server's answer). A class with copies is not marked (false): its receiver
- * names the copy itself. Returns whether the slot was marked.
+ * a walk into reach, a server's answer). The wait is the server's answer wait (R26:
+ * js/online-request.js answerWaitMs of the realtime client, its fallback in solo); bags-feature caps
+ * it at its own TAKE_WAIT_MS. A class with copies is not marked (false): its receiver names the
+ * copy itself. Returns whether the slot was marked.
  */
-export function markDragged(engine, ds, n = 1, { wait = DRAG_TAKE_WAIT_MS } = {}) {
+export function markDragged(engine, ds, n = 1, { wait = null } = {}) {
   if (!ds || !engine || TOOL_CONDITION_CATALOG[ds.cls]) return false;
+  if (wait == null) wait = answerWaitMs(engine.query?.('realtimeClient'));
   if (!draggedHere(engine, ds)) return false;
   return Boolean(engine.query?.('packTakeFrom', ds.cls, Math.max(1, Math.floor(Number(n) || 1)), engine, { place: ds.place, wait }));
 }

@@ -104,7 +104,7 @@ import { pickupCountTitle } from '../world-items.js?v=66601f23';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
 import { isBagClass } from '../pack-slots.js?v=2c09907f';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=5ff6ce35';
+import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=199234f0';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
   CULTIVATION_CLASSES,
