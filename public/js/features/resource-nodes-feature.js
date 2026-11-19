@@ -506,6 +506,8 @@ let bonusSnailsAt = 0;
 let underSloth = null;
 const kit = { starterKit: false };
 let entities = [];
+/** #478: this street's nodes while their art loads, before their targets exist (pendingTargets). */
+let pendingItems = [];
 let effects = [];
 let generation = 0;
 let lastTickAt = 0;
@@ -1764,6 +1766,7 @@ async function spawnStreet(engine, items, myGeneration) {
     fireflies ? ensureSvgTextures(engine) : null,
   ]);
   if (myGeneration !== generation) return;
+  pendingItems = [];
   const now = Date.now();
   for (const item of items) {
     tickResourceNode(item.node, now);
@@ -1959,7 +1962,17 @@ export const resourceNodesFeature = {
       item.demo ? { ...item, node: createResourceNode(item.classTsid, { seed: item.key, now: Date.now() }) } : item
     ));
     publish(engine);
-    if (all.length) spawnStreet(engine, all, myGeneration);
+    pendingItems = all;
+    if (all.length) spawnStreet(engine, all, myGeneration).catch((err) => console.warn('resource nodes', err?.message || err));
+  },
+
+  /**
+   * #478: { classId } rows for the nodes still loading their art, so the loading card's Home to:
+   * counts them (location.js getLoadingInfo counted every item in this.items, drawn or not), as
+   * patches-feature does for its plots (G270). game.js adds these for loadingCardDetails.
+   */
+  pendingTargets() {
+    return pendingItems.map((item) => ({ classId: item.classTsid }));
   },
 
   onStreetClear() {
@@ -1970,6 +1983,7 @@ export const resourceNodesFeature = {
     releaseState = '';
     clearEffects();
     entities = [];
+    pendingItems = [];
     underSloth = null;
     demoEntity = null;
   },

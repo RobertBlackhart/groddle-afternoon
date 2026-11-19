@@ -20,7 +20,7 @@ import {
   rulesVerbId,
   surfaceNear,
   verbTooltip,
-} from '../public/js/features/resource-nodes-feature.js?v=2059f1ea';
+} from '../public/js/features/resource-nodes-feature.js?v=2593ea57';
 import {
   RESOURCE_NODE_CATALOG,
   RESOURCE_NODE_CLASS_IDS,
@@ -268,5 +268,28 @@ describe('resource QA and menu helpers', () => {
     assert.equal(host.verbsFor({ featureId: 'hell' }, {}), null);
     assert.deepEqual(host.verbsFor({ featureId: RESOURCE_FEATURE_ID, classId: 'mortar_barnacle' }, {}), []);
     assert.ok(createResourceNode('mortar_barnacle'));
+  });
+});
+
+describe('#478: the loading card counts nodes still loading their art', () => {
+  it('pendingTargets lists the street nodes until their targets exist (location.js getLoadingInfo counted every item)', () => {
+    const data = {};
+    const engine = {
+      streetTsid: 'GTEST478',
+      population: { resourceNodeClasses: ['peat_1', 'peat_1', 'jellisac'] },
+      placement: () => [{ x: 100, y: 300 }, { x: 600, y: 300 }, { x: 1100, y: 300 }],
+      streetSlot: () => data,
+      setData() {},
+      param: () => null,
+      inv: {},
+      pc: {},
+    };
+    resourceNodesFeature.onStreetClear();
+    assert.deepEqual(resourceNodesFeature.pendingTargets(), []);
+    resourceNodesFeature.onStreetEnter({ tsid: 'GTEST478' }, engine);
+    assert.deepEqual(resourceNodesFeature.pendingTargets().map((row) => row.classId).sort(), ['jellisac', 'peat_1', 'peat_1']);
+    // Leaving the street (or the art arriving and the targets registering) empties it.
+    resourceNodesFeature.onStreetClear();
+    assert.deepEqual(resourceNodesFeature.pendingTargets(), []);
   });
 });

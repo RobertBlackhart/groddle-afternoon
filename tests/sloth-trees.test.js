@@ -18,7 +18,7 @@ import {
   resourceSpawnPlan,
   slothGeometry,
   slothSpotsFromArt,
-} from '../public/js/features/resource-nodes-feature.js?v=2059f1ea';
+} from '../public/js/features/resource-nodes-feature.js?v=2593ea57';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ecology = JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8'));
