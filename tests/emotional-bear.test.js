@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { python311 } from './python311.js';
 
 import {
   EMOTIONAL_BEAR_ACTIONS,
@@ -201,5 +203,61 @@ describe('source-authored Emotional Bear', () => {
     assert.match(html, /id="emotional-bear-fx"/);
     assert.match(css, /\.emotional-bear-target/);
     assert.match(css, /\.pack-bear-state/);
+  });
+});
+
+describe('the four emotes are the SWF\'s scenes, built and checked by tools/emote-art (#530)', () => {
+  const root = join(import.meta.dirname, '..');
+  const meta = JSON.parse(readFileSync(join(root, 'tools/emote-art/bears.json'), 'utf8'));
+  // emotional_bear.swf's scene table (DefineSceneAndFrameLabelData) and items/emotional_bear.js's overlay times.
+  const SCENES = { hug: [10, 100, 'hug', 5000], high_5: [246, 322, 'high_five', 4000], moon: [101, 245, 'moon', 6000], kiss: [323, 391, 'kiss', 3000] };
+  const riff = (file) => {
+    const b = readFileSync(join(publicRoot, file));
+    assert.equal(b.toString('ascii', 0, 4), 'RIFF', file);
+    const out = { frames: 0, ms: 0, loop: -1, canvas: null };
+    for (let i = 12; i + 8 <= b.length;) {
+      const id = b.toString('ascii', i, i + 4);
+      const len = b.readUInt32LE(i + 4);
+      if (id === 'ANMF') { out.frames += 1; out.ms += b.readUIntLE(i + 8 + 12, 3); }
+      if (id === 'ANIM') out.loop = b.readUInt16LE(i + 12);
+      if (id === 'VP8X') out.canvas = [b.readUIntLE(i + 12, 3) + 1, b.readUIntLE(i + 15, 3) + 1];
+      i += 8 + len + (len & 1);
+    }
+    return out;
+  };
+
+  it('each file is one scene, every frame of it, for the overlay\'s time, inside the 220 x 226 box', () => {
+    assert.deepEqual(Object.keys(meta.emotes).sort(), Object.keys(SCENES).sort());
+    for (const [state, [first, last, action, overlay]] of Object.entries(SCENES)) {
+      const e = meta.emotes[state];
+      const count = last - first + 1;
+      assert.deepEqual(e.frames, [first, last], state);
+      assert.equal(e.count, count, state);
+      assert.equal(e.boxes.length, count, state);
+      assert.equal(e.overlayMs, overlay, state);
+      assert.equal(EMOTIONAL_BEAR_ACTIONS[action].durationMs, overlay, `${state}: the game shows it for the overlay's time`);
+      assert.equal(e.file, `assets/sprites/emotional-bear/${EMOTIONAL_BEAR_ACTIONS[action].animation}.webp`);
+      const w = riff(e.file);
+      assert.deepEqual(w.canvas, e.size, state);
+      assert.ok(e.size[0] <= 220 && e.size[1] <= 226, `${state} ${e.size}`);
+      assert.ok(w.frames <= count && w.frames >= count * 0.6, `${state}: ${w.frames} pictures for ${count} frames`);
+      assert.equal(w.ms, overlay, state);
+      assert.equal(w.loop, 0, state);
+      // The scene fades in from nothing and out to nothing; every frame between draws inside the file.
+      assert.equal(e.boxes[0], null, `${state} starts empty`);
+      assert.equal(e.boxes[count - 1], null, `${state} ends empty`);
+      for (const b of e.boxes.filter(Boolean)) assert.ok(b[0] >= 0 && b[1] >= 0 && b[2] <= e.size[0] && b[3] <= e.size[1], `${state} box ${b}`);
+    }
+  });
+
+  it('the shipped pictures draw where the scene does, frame by frame (a mis-cut sheet or trails fail)', { skip: !existsSync(python311) && 'no python3.11' }, () => {
+    let out;
+    try {
+      out = execFileSync(python311, ['-I', join(root, 'tools/emote-art/build.py'), '--check', '--only', 'bears', '--no-render'], { encoding: 'utf8' });
+    } catch (err) {
+      if (/ENOENT|No module named/.test(String(err.stderr || err))) return;
+      throw new Error(String(err.stdout || err));
+    }
+    assert.match(out, /bear emotes: 4 current/);
   });
 });

@@ -130,7 +130,7 @@ describe('the Plank swings for the player who is splanked', () => {
     assert.doesNotMatch(src, /pverb-splank/);
     let out;
     try {
-      out = execFileSync('python3.11', ['-I', join(root, 'tools/emote-art/build.py'), '--check'], { encoding: 'utf8' });
+      out = execFileSync('python3.11', ['-I', join(root, 'tools/emote-art/build.py'), '--check', '--only', 'plank'], { encoding: 'utf8' });
     } catch (err) {
       if (/ENOENT|No module named/.test(String(err.stderr || err))) return;
       throw new Error(String(err.stdout || err));

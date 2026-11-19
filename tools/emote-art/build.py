@@ -13,9 +13,14 @@ writes the 90 cells, in order,
 as one animated WebP that plays once (lossless, 100 ms / 3 a frame), the way the Emotional Bear's
 emotes ship (public/assets/sprites/emotional-bear/*.webp).
 
-  python3.11 -I tools/emote-art/build.py            writes public/assets/sprites/emotes/plank.webp and emotes.json
+The Emotional Bear's four emotes are built here too, from its SWF (tools/emote-art/bears.py, bears.json).
+
+  python3.11 -I tools/emote-art/build.py            writes plank.webp and emotes.json, and the bear emotes and bears.json
   python3.11 -I tools/emote-art/build.py --check    exit 1 when stale: with the OGA dump beside the repo the
         file's frames are compared with the sheet's cells; without it, with emotes.json (size, frames, sha256).
+        The bear emotes are compared with a fresh FFDec render of their scenes (Java, FFDec and glitch-items
+        found), else with the alpha boxes in bears.json.
+  --only plank|bears    one of the two; --no-render   check the bear emotes against bears.json without FFDec
 """
 import glob
 import hashlib
@@ -101,6 +106,32 @@ def meta():
 
 
 def main():
+    only = sys.argv[sys.argv.index('--only') + 1] if '--only' in sys.argv else None
+    stale, done = [], []
+    if only in (None, 'plank'):
+        stale += plank()
+        done.append('1 current' + ('' if audit_dir() else ' (no OGA dump: checked against emotes.json)'))
+    if only in (None, 'bears'):
+        sys.path.insert(0, HERE)
+        import bears
+        with tempfile.TemporaryDirectory() as work:
+            if '--check' not in sys.argv:
+                bears.build(work)
+            else:
+                if '--no-render' in sys.argv:
+                    bears.can_render = lambda: False
+                got, rendered = bears.check(work)
+                stale += got
+                done.append(f'bear emotes: {len(bears.EMOTES)} current' + ('' if rendered else ' (no FFDec render: checked against bears.json)'))
+    if '--check' not in sys.argv:
+        return
+    if stale:
+        print('\n'.join(stale))
+        sys.exit(1)
+    print('emote art: ' + '; '.join(done))
+
+
+def plank():
     check = '--check' in sys.argv
     have = audit_dir() is not None
     if not check:
@@ -116,7 +147,7 @@ def main():
         json.dump(meta(), open(META, 'w'), indent=1)
         open(META, 'a').write('\n')
         print(f'{OUT}: {FRAMES} frames of {FW}x{FH}, {os.path.getsize(OUT)} bytes')
-        return
+        return []
     stale = []
     if not os.path.exists(OUT) or not os.path.exists(META):
         stale.append('plank.webp or emotes.json is missing')
@@ -129,10 +160,7 @@ def main():
             src = cells()
             if total != sum(duration(k) for k in range(FRAMES)) or any(g.size != (FW, FH) or seen(g) != seen(s) for g, s in zip(got, src)):
                 stale.append("plank.webp is not the OGA sheet's 90 cells")
-    if stale:
-        print('\n'.join(stale))
-        sys.exit(1)
-    print('emote art: 1 current' + ('' if have else ' (no OGA dump: checked against emotes.json)'))
+    return stale
 
 
 if __name__ == '__main__':
