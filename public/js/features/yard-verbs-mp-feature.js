@@ -72,9 +72,9 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=39041813';
 import { readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=0f961c28';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=9338f4af';
 import { holdYardAnimal } from './animal-husbandry-feature.js?v=b5ecce35';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=7086d13e';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=31d97043';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -94,17 +94,17 @@ import {
   visitorRewardDelta,
   visitorRewardSnapshot,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=82419c10';
+} from '../yard-verbs-mp.js?v=a12f4c22';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=e9068e95';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=0b4fc106';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=2f096b98';
+import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=8463f2ac';
 import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=cf9aae18';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { rockReady } from '../street-objects.js?v=e35f12e7';
+import { rockReady } from '../street-objects.js?v=9c58706e';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=ac8ce37d';
 import {
   ROCK_RESPAWN_MS,
@@ -114,7 +114,7 @@ import {
   normalizeStockView,
   visitorNode,
   visitorRock,
-} from '../yard-stock-mp.js?v=6677ba0a';
+} from '../yard-stock-mp.js?v=0e5969e6';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
 export { YARD_VERBS_MP_ID };

@@ -36,7 +36,7 @@ import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3fa89550';
-import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=02635203';
+import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=ef87905b';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';

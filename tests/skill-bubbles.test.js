@@ -25,9 +25,9 @@ import {
   skillBubbleWord,
   skillToolClass,
   skillToolFor,
-} from '../public/js/skill-bubbles.js?v=819365c9';
+} from '../public/js/skill-bubbles.js?v=5a6facd4';
 import { SKILL_BUBBLE_WORD } from '../public/js/realtime-client.js?v=1108c7c5';
-import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=de1c6873';
+import { onSkillBubble, skillBubblesFeature } from '../public/js/features/skill-bubbles-feature.js?v=18e4da79';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');

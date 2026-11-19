@@ -9,7 +9,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as acorn from 'acorn';
-import { ROCK_SHAPE_SHEETS } from '../public/js/mining.js?v=2f096b98';
+import { ROCK_SHAPE_SHEETS } from '../public/js/mining.js?v=8463f2ac';
 
 // Spread rows in game.js's SHEETS, built by code the syntax-tree evaluator cannot run.
 const SHEET_SPREADS = { ROCK_SHAPE_SHEETS };

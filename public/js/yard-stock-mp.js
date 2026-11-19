@@ -54,8 +54,8 @@
  */
 
 import { cultivationDef, hiveFireflySpots } from './home-cultivation.js?v=39041813';
-import { createMineRock, tickMineRock } from './mining.js?v=2f096b98';
-import { ROCK_RESPAWN_MS } from './pace.js?v=ef709496';
+import { createMineRock, tickMineRock } from './mining.js?v=8463f2ac';
+import { ROCK_RESPAWN_MS } from './pace.js?v=c07dfbd8';
 import { createResourceNode, getResourceNodeDef, normalizeResourceNode, regrowDelayMs, tickResourceNode } from './resource-nodes.js?v=cf9aae18';
 
 /** The node classes a visitor may use on a home street (HOMES2: the hive's Fireflies too). */

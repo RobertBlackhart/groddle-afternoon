@@ -22,7 +22,7 @@ import {
 } from './inventory.js?v=6414dbdc';
 import { GRINDER_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
 import { SKILL_PACKAGES, skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { pace, ROCK_RESPAWN_MS } from './pace.js?v=ef709496';
+import { pace, rockRespawnMs } from './pace.js?v=c07dfbd8';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { GEM_ITEMS, MEGA_ROCK_CHUNKS, megaRockChance, miningExpertBonus, rollGemSmall, smeltingOverrides } from './imagination-effects.js?v=70169933';
@@ -498,14 +498,7 @@ export function mineRock(rock, inv, pc, opts = {}) {
 
   let cleared = false;
   if (rock.chunksRemaining <= 0) {
-    rock.chunksRemaining = 0;
-    rock.depleted = true;
-    // include/mining.js 422: 8 min; the remake's pace has 144 s (js/pace.js PACED_WAITS, #521).
-    rock.respawnAt = (opts.now || Date.now()) + ROCK_RESPAWN_MS;
-    // include/mining.js onRespawn: 0/5/10/20% of rocks come back as 150-chunk
-    // mega rocks, +50% of that with Rock Whisperer (the clearing player's card,
-    // passed to the respawn timer at mining.js:419). Rolled now, applied then.
-    rock.respawnChunks = rng() < megaRockChance(rock.rockType, upgrades) ? MEGA_ROCK_CHUNKS : 0;
+    crumbleRock(rock, upgrades, { now: opts.now || Date.now(), rng });
     cleared = true;
     msgs.push('The rock crumbles away. It will reform soon.');
   }
@@ -529,6 +522,34 @@ export function mineRock(rock, inv, pc, opts = {}) {
     cleared,
     rock,
   };
+}
+
+/**
+ * Chunks taken since the rock last reformed (include/mining.js chunks_taken, 339-342): its full
+ * count (150 for a mega rock) less what is left, past 0 when the last swing took more than was there.
+ */
+export function rockChunksTaken(rock) {
+  const full = rock?.mega ? MEGA_ROCK_CHUNKS : Number(rock?.chunksMax) || 50;
+  return full - (Number(rock?.chunksRemaining) || 0);
+}
+
+/**
+ * A rock mined out (include/mining.js 403-423): it crumbles and waits to reform. The wait is
+ * js/pace.js rockRespawnMs: 144 s (Glitch's 8 min at 0.3, #521), and up to 288 s more when more
+ * than 80 chunks were taken (a mega rock: Glitch's extra 0-16 min at 0.3). onRespawn 143-170:
+ * 0/5/10/20% of rocks come back as 150-chunk mega rocks, +50% of that with Rock Whisperer (the
+ * clearing player's card, passed to the respawn timer at 419). Rolled now, applied then.
+ * @param {ReturnType<typeof createMineRock>} rock
+ * @param {string[]} [upgrades] the clearing player's imagination upgrades
+ * @param {{ now?: number, rng?: () => number }} [opts]
+ */
+export function crumbleRock(rock, upgrades = [], { now = Date.now(), rng = Math.random } = {}) {
+  const taken = rockChunksTaken(rock);
+  rock.chunksRemaining = 0;
+  rock.depleted = true;
+  rock.respawnChunks = rng() < megaRockChance(rock.rockType, upgrades) ? MEGA_ROCK_CHUNKS : 0;
+  rock.respawnAt = now + rockRespawnMs(taken, rng);
+  return rock;
 }
 
 /**

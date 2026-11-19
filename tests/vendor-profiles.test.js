@@ -16,7 +16,7 @@ import {
   vendorBuy,
   vendorSell,
   vendorSellValue,
-} from '../public/js/vendor.js?v=0b5a7a7c';
+} from '../public/js/vendor.js?v=6895d7a2';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');

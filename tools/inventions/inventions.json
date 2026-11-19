@@ -4371,8 +4371,8 @@
      "symbol": "PACED_WAITS"
     }
    ],
-   "why": "Players pushed back on Glitch's 20/14/10/8 s swings once v0.41.0 restored them (G758, #330). A compromise at about a third, ranks keeping Glitch's proportions; Manic Mining still applies on top, and energy, wear, xp and yield per swing stay Glitch's (catalog_skill_packages.js mining, mining_fancypick). One shared factor so other timed systems can take it later. A mined-out rock reforms in 144 s, Glitch's 8 min (include/mining.js 422) at 0.3 (PACED_WAITS rock_respawn), read by solo mining, home rocks, help crews, the realtime server and the site (#521; it was 45 s, so two rocks alternated forever).",
-   "ruling": "Austin 2026-11-17 (G983): keep, mining at 0.3; the same pace for other timed systems is under consideration. Austin 2026-11-19 (#521): rocks reform in 480 s x 0.3 = 144 s",
+   "why": "Players pushed back on Glitch's 20/14/10/8 s swings once v0.41.0 restored them (G758, #330). A compromise at about a third, ranks keeping Glitch's proportions; Manic Mining still applies on top, and energy, wear, xp and yield per swing stay Glitch's (catalog_skill_packages.js mining, mining_fancypick). One shared factor so other timed systems can take it later. A mined-out rock reforms in 144 s, Glitch's 8 min (include/mining.js 422) at 0.3 (PACED_WAITS rock_respawn), read by solo mining, home rocks, help crews, the realtime server and the site (#521; it was 45 s, so two rocks alternated forever). A mega rock (more than 80 chunks taken) waits a random 0-288 s more, Glitch's extra 0-16 min (include/mining.js 415-417) at 0.3 (PACED_WAITS rock_respawn_extra), in solo mining, help crews and the realtime server.",
+   "ruling": "Austin 2026-11-17 (G983): keep, mining at 0.3; the same pace for other timed systems is under consideration. Austin 2026-11-19 (#521): rocks reform in 480 s x 0.3 = 144 s. Austin 2026-11-19: a mega rock's extra 0-960 s at 0.3",
    "rows": [
     "G983",
     "G758"
