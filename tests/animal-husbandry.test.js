@@ -52,7 +52,7 @@ import {
 import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=d3d5daed';
 import { getVerbsFor, runVerb } from '../public/content.js?v=ca4eaa0f';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=75052b58';
-import { batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=560b6376';
+import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=13018faa';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -160,6 +160,9 @@ describe('Batterflies and Guano (npc_batterfly.js)', () => {
     assert.equal(batterflyCountForStreet({ tsid: 'GLI2V0UN7RD1T2J' }), 0);
     assert.deepEqual(batterflyPlacementGroups({ tsid: 'GA9114MS8B32FB2' }), [{ key: 'batterfly', count: 4, clearance: 120 }]);
     assert.deepEqual(batterflyPlacementGroups({ tsid: 'GLI2V0UN7RD1T2J' }), []);
+    // #478: the loading card's early Home to: names them before the street is built.
+    assert.deepEqual(animalHusbandryFeature.homeToTargets({ tsid: 'GA9114MS8B32FB2' }).map((r) => r.classId), Array(4).fill('npc_batterfly'));
+    assert.deepEqual(animalHusbandryFeature.homeToTargets({ tsid: 'GLI2V0UN7RD1T2J' }), []);
   });
 });
 

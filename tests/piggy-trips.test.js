@@ -29,7 +29,7 @@ import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=50c112eb';
 import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=b4e6e8d2';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=2b5fab69';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=e5a30b08';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=25d965fa';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

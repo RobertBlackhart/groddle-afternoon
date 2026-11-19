@@ -31,7 +31,7 @@
  */
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
+import { STREET_INDEX } from '../street-loader.js?v=25d965fa';
 import { listDroppedStacks } from '../world-items.js?v=66601f23';
 import {
   MUSICBLOCK_CATALOG,

@@ -29,7 +29,7 @@ import {
 } from '../public/js/quoins.js?v=b342e1d9';
 import { QUOIN_COIN_COUNTS, QUOIN_SPOTS } from '../public/js/quoin-spots-data.js?v=7c343cbc';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=75052b58';
 
 const root = join(import.meta.dirname, '..');

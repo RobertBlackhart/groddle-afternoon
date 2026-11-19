@@ -41,9 +41,9 @@ import {
   quoteWoodTreeHarvest,
   woodTreeStatusLabel,
 } from '../public/js/woodcutting.js?v=9e9af511';
-import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=0c9d424b';
-import { enchantedForestFeature, hollowTrees, treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=b8d4ef62';
-import { FEATURES } from '../public/js/features/index.js?v=91cc01df';
+import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=a9a688d7';
+import { enchantedForestFeature, hollowTrees, treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=a4aa7c6e';
+import { FEATURES } from '../public/js/features/index.js?v=95fd37e8';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');
@@ -214,6 +214,9 @@ describe('enchanted forest hollows', () => {
     assert.deepEqual(ENCHANTED_FORESTS.map((f) => [f.label, f.woodTrees]), [['Grimssea Hollow', 17], ['Afar Cleft', 9], ['Magha Pleat', 21]]);
     assert.deepEqual(ENCHANTED_FORESTS.map((f) => f.sourceTsid), ['LDODG1KQLOS2GNO', 'LDOLMQFMNOS24AJ', 'LUVNMB7AOOS28EK']);
     assert.equal(enchantedForestByTsid('LDODG1KQLOS2GNO').id, 'grimssea');
+    // #478: the loading card names the Wood Trees before the hollow is built.
+    assert.equal(enchantedForestFeature.homeToTargets({ tsid: 'GDODG1KQLOS2GNO' }).filter((r) => r.classId === 'wood_tree').length, 17);
+    assert.deepEqual(enchantedForestFeature.homeToTargets({ tsid: 'GLI2V0UN7RD1T2J' }), []);
   });
 
   it('stand the Wood Trees on the shelves where the panoramas show them', () => {

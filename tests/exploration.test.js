@@ -20,7 +20,7 @@ import {
   countsTowardHub,
   hubMapStreetCount,
   streetVisitCounters,
-} from '../public/js/exploration.js?v=5f533ebf';
+} from '../public/js/exploration.js?v=871ba26b';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -160,13 +160,14 @@ import {
   STREET_VISITS_SLOT,
   formatLoadingTime,
   homeToFeatures,
+  homeToFromPopulation,
   loadingCardDetails,
   loadingVisitLine,
   ordinal,
   recordStreetEntry,
   streetFeaturesFromTargets,
   streetLoadingVisit,
-} from '../public/js/exploration.js?v=5f533ebf';
+} from '../public/js/exploration.js?v=871ba26b';
 
 describe('location loading card (LoadingLocationView.as, location.js getLoadingInfo)', () => {
   it('formats time and ordinals like StringUtil', () => {
@@ -246,6 +247,34 @@ describe('location loading card (LoadingLocationView.as, location.js getLoadingI
       'A shrine dedicated to <b>Mab</b>.',
       'Plus <b>2 Piggies</b>, <b>1 Peat Bog</b>, <b>2 Fruit Trees</b>, <b>1 Wood Tree</b>, <b>1 Beryl Rock for mining</b>, <b>1 Sparkly Rock for mining</b>, <b>6 Herb Garden plots</b>, and <b>8 Crop Garden plots</b>.',
     ]);
+  });
+
+  it('#478: the street data gives the list the built street will (homeToFromPopulation)', () => {
+    const pop = {
+      piggies: 2, chickens: 1, butterflies: 1, flyingButterflies: 2,
+      treeClasses: ['trant_fruit', 'wood_tree', 'trant_fruit'],
+      rockClasses: ['rock_beryl_1', 'rock_metal_1'],
+      resourceNodeClasses: ['peat_1', 'peat_1', 'npc_firefly'],
+    };
+    const extra = {
+      vendorLabel: 'Groceries Vendor',
+      shrineGiant: 'mab',
+      gardenBeds: [{ gardenType: 'default', cols: 4, rows: 2 }, { gardenType: 'herb', cols: 3, rows: 2 }],
+    };
+    // What enterStreet spawns from the same population, in its order.
+    const built = streetFeaturesFromTargets([
+      { classId: 'npc_piggy' }, { classId: 'npc_piggy' }, { classId: 'npc_chicken' },
+      { classId: 'npc_butterfly' }, { classId: 'npc_butterfly' }, { classId: 'npc_butterfly' },
+      { classId: 'trant_fruit' }, { classId: 'wood_tree' }, { classId: 'trant_fruit' },
+      { classId: 'street_spirit_groceries', state: { vendorLabel: 'Groceries Vendor' } },
+      { classId: 'npc_shrine_mab', state: { giantId: 'mab' } },
+      { classId: 'garden_new', state: { garden: { gardenType: 'default', cols: 4, rows: 2 } } },
+      { classId: 'garden_new', state: { garden: { gardenType: 'herb', cols: 3, rows: 2 } } },
+      { classId: 'rock_beryl_2' }, { classId: 'rock_metal_3' },
+      { classId: 'peat_1' }, { classId: 'peat_1' }, { classId: 'npc_firefly' },
+    ]);
+    assert.deepEqual(homeToFeatures(homeToFromPopulation(pop, extra)), homeToFeatures(built));
+    assert.deepEqual(homeToFeatures(homeToFromPopulation({})), []);
   });
 
   it('adds the Qurazy note on first visits and the upgrade badge after an upgrade', () => {

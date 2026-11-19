@@ -85,7 +85,7 @@ import {
 } from '../party-spaces.js?v=a748a93f';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
-import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
+import { STREET_INDEX } from '../street-loader.js?v=25d965fa';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=4d1fa7a3';

@@ -13,8 +13,8 @@ import {
   trantFrameStage,
   treeFrameUrl,
   patchesFeature,
-} from '../public/js/features/patches-feature.js?v=448295ea';
-import { FEATURES } from '../public/js/features/index.js?v=91cc01df';
+} from '../public/js/features/patches-feature.js?v=fec103d6';
+import { FEATURES } from '../public/js/features/index.js?v=95fd37e8';
 import { soilSpritePaths } from '../public/js/patches.js?v=85d156bc';
 
 const ecology = JSON.parse(await readFile(new URL('../public/assets/content/street-ecology.json', import.meta.url), 'utf8'));
@@ -77,6 +77,11 @@ describe('G270: plots still loading count on the loading card', () => {
     assert.equal(typeof patchesFeature.pendingTargets, 'function');
     patchesFeature.onStreetClear();
     assert.deepEqual(patchesFeature.pendingTargets(), []);
+  });
+
+  it('#478: names the street plots for the loading card before the street is built (homeToTargets)', () => {
+    assert.deepEqual(patchesFeature.homeToTargets({ soilCounts: { patch: 2, patch_dark: 1 } }).map((r) => r.classId), ['patch', 'patch', 'patch_dark']);
+    assert.deepEqual(patchesFeature.homeToTargets({}), []);
   });
 });
 

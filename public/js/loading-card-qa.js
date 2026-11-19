@@ -10,7 +10,7 @@
  * #screen-transition data: st-visit, st-home-to, st-status, st-split.
  * Canvas: data-load-card-demo (running|done), data-load-card-step.
  */
-import { STREET_VISITS_SLOT } from './exploration.js?v=5f533ebf';
+import { STREET_VISITS_SLOT } from './exploration.js?v=871ba26b';
 
 export function runLoadingCardDemo({ engine, travel, params }) {
   const stops = String(params.get('loadcarddemo') || '').split(',').map((s) => s.trim()).filter(Boolean);

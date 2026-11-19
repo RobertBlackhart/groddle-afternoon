@@ -1917,6 +1917,11 @@ export const animalHusbandryFeature = {
     return batterflyPlacementGroups(street);
   },
 
+  /** #478: the loading card's Home to: before the street is built: its Batterflies. */
+  homeToTargets(street) {
+    return Array.from({ length: batterflyCountForStreet(street || {}) }, () => ({ classId: BATTERFLY_ID }));
+  },
+
   /**
    * A Chicken of yours bound to a Magic Chicken Stick (npc_chicken.js move_limits): scared, its
    * kick is smaller so it stays near the stick (fly 872-876; features/chicken-scare-feature.js).

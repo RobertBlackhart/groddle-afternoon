@@ -60,7 +60,7 @@
  */
 
 import { BUTLER_STRINGS } from '../butler.js?v=465f8d14';
-import { butlerApi } from './butler-feature.js?v=610ca115';
+import { butlerApi } from './butler-feature.js?v=7a072ca6';
 import { hellFeature } from './hell-feature.js?v=10c16adb';
 import { locationEventsApi } from './location-events-feature.js?v=bc9fbc52';
 import { towerApi } from './home-tower-feature.js?v=252d8378';
@@ -69,7 +69,7 @@ import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareComm
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=fa56e8df';
 import { minnUrls } from '../minn-account.js?v=edf182bb';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_INDEX } from '../street-loader.js?v=e5a30b08';
+import { STREET_INDEX } from '../street-loader.js?v=25d965fa';
 
 export const SLASH_COMMANDS_FEATURE_ID = 'slash-commands';
 

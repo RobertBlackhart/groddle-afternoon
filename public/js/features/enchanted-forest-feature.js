@@ -216,6 +216,12 @@ export const enchantedForestFeature = {
     return { label: f.label, sourceTsid: f.sourceTsid, counts: {}, spawners: 0 };
   },
 
+  /** #478: the loading card's Home to: before the hollow is built: its Wood Trees. */
+  homeToTargets(street) {
+    const f = enchantedForestByTsid(street?.tsid);
+    return f ? Array.from({ length: f.woodTrees }, () => ({ classId: 'wood_tree' })) : [];
+  },
+
   onStreetEnter(street, engine) {
     clear();
     const f = enchantedForestByTsid(street?.tsid);

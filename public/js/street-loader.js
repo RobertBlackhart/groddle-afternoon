@@ -8,6 +8,8 @@ import { isSolo, resolveGameMode } from './game-mode.js?v=1ecf2899';
 import { withoutZoneRows, withoutZoneConnects } from './zone-streets.js?v=b40010d5';
 
 const cache = new Map();
+/** Streets being fetched, so two callers share one fetch. */
+const loading = new Map();
 
 /**
  * LEVEL BUILDER play-test (spec 6.8, js/builder/draft-play.js): a draft's streets, which are not
@@ -176,15 +178,25 @@ export async function loadStreetData(tsid) {
   }
   const meta = STREET_INDEX.streets[key];
   if (!meta) throw new Error(`Unknown street tsid: ${tsid}`);
-  const res = await fetch(meta.file);
-  if (!res.ok) throw new Error(`Failed to load street ${key}: HTTP ${res.status}`);
-  const data = await res.json();
-  assertStreetGeometry(data);
-  applyIndexHub(data, meta);
-  // Hidden signpost connects stay in the JSON (source data) but never show.
-  data.signposts = navigableSignposts(zonesShown ? data.signposts : withoutZoneConnects(data.signposts), data.tsid || key);
-  cache.set(key, data);
-  return data;
+  // #478: the loading card reads the street (its Home to:) while the trip loads it: one fetch.
+  if (loading.has(key)) return loading.get(key);
+  const load = (async () => {
+    const res = await fetch(meta.file);
+    if (!res.ok) throw new Error(`Failed to load street ${key}: HTTP ${res.status}`);
+    const data = await res.json();
+    assertStreetGeometry(data);
+    applyIndexHub(data, meta);
+    // Hidden signpost connects stay in the JSON (source data) but never show.
+    data.signposts = navigableSignposts(zonesShown ? data.signposts : withoutZoneConnects(data.signposts), data.tsid || key);
+    cache.set(key, data);
+    return data;
+  })();
+  loading.set(key, load);
+  try {
+    return await load;
+  } finally {
+    loading.delete(key);
+  }
 }
 
 /**

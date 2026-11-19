@@ -16,11 +16,11 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import { ecologyForStreet, gardenPlacementRequest, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=75052b58';
 import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=2593ea57';
-import { FEATURES } from '../public/js/features/index.js?v=91cc01df';
+import { FEATURES } from '../public/js/features/index.js?v=95fd37e8';
 import { streetGardenBeds } from '../public/js/garden.js?v=d4e55862';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

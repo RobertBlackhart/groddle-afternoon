@@ -8,10 +8,10 @@
  */
 
 import { ACHIEVEMENT_DROP, ACHIEVEMENT_ROCK_WH, achievementBubbleText, easeOutBounce, mountPetRock } from './familiar.js?v=b9597cd3';
-import { formatLoadingTime, ordinal } from './exploration.js?v=5f533ebf';
+import { formatLoadingTime, ordinal } from './exploration.js?v=871ba26b';
 import { artDensity, bodyFade, bodyFit, isModernSkin, momentArt, momentArtCap, momentArtShape, momentSharpUrl, rewardChips } from './ui/moment-card.js?v=3850c51c';
 import { decodeEntities, htmlToText } from './html-text.js?v=6bbf4d1f';
-import { READ_MAX_MS, READ_PER_WORD_MS, wordCount } from './read-time.js?v=3151fb1a';
+import { READ_PER_WORD_MS, wordCount } from './read-time.js?v=3151fb1a';
 
 /**
  * Street-load timings (seconds), Glitch's own (#478): the card fades in over 0.2 s
@@ -24,21 +24,82 @@ export const LOAD_FADE_OUT = 0.5;
 /** Pause after street is ready, before fade-out (ms): TSMainView.as 1766 setTimeout 200. */
 export const LOAD_HOLD_MS = 200;
 /**
- * #478 (G993, Austin 2026-11-18): a card that shows a Home to: list stays up until the list has
- * been visible for its reading time, then fades. Glitch sent the list with the move start
- * (NetController.as 1388-1395), so it was up for the whole load; the remake only knows it once
- * the street is built (exploration.js streetFeaturesFromTargets), so without this it was up for a
- * blink. The hold is the remake's own rule (invention loading-card-min-hold): 300 ms a word
- * (read-time.js READ_PER_WORD_MS), at least LOAD_LIST_MIN_MS, at most READ_MAX_MS. A card with
+ * #478 (G993): the card's Home to: list is up long enough to read. Glitch sent the list with the
+ * move start (NetController.as 1388-1395), so it was on the card from the fade-in and no extra
+ * hold was needed; the remake fills it from the destination's own street data as the card
+ * appears (the caller's `early`), then from the built street. The card holds until the list has
+ * been up its reading time (invention loading-card-min-hold, Austin 2026-11-18, cut 2026-11-19):
+ * 300 ms a word (read-time.js READ_PER_WORD_MS), at least LOAD_LIST_MIN_MS, at most
+ * LOAD_LIST_MAX_MS counted from when the list showed, and any click or key ends it. A card with
  * no list keeps Glitch's LOAD_HOLD_MS.
  */
-export const LOAD_LIST_MIN_MS = 2500;
+export const LOAD_LIST_MIN_MS = 1000;
+export const LOAD_LIST_MAX_MS = 4000;
 
-/** How long the card holds once the street is ready: the list's reading time when it shows one. */
-export function loadCardHoldMs(homeToText = '', base = LOAD_HOLD_MS) {
+/** How long a Home to: list wants on screen in all (0 for no list). */
+export function loadListReadMs(homeToText = '') {
   const words = wordCount(homeToText);
-  if (!words) return base;
-  return Math.max(base, LOAD_LIST_MIN_MS, Math.min(READ_MAX_MS, words * READ_PER_WORD_MS));
+  if (!words) return 0;
+  return Math.max(LOAD_LIST_MIN_MS, Math.min(LOAD_LIST_MAX_MS, words * READ_PER_WORD_MS));
+}
+
+/**
+ * How long the card holds once the street is ready: the rest of the list's reading time after
+ * the `shownMs` it has already been up, never under `base` (Glitch's 200 ms, or the caller's).
+ */
+export function loadCardHoldMs(homeToText = '', base = LOAD_HOLD_MS, shownMs = 0) {
+  const read = loadListReadMs(homeToText);
+  if (!read) return base;
+  return Math.max(base, read - Math.max(0, Number(shownMs) || 0));
+}
+
+/** Keys that are only a modifier: holding Shift to type is no wish to skip the card. */
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta', 'CapsLock']);
+
+/**
+ * #478: a click on the card or a key press (not a held key's repeats, not typing in a box
+ * elsewhere) ends the list's reading hold. Returns { skipped, wait(ms), stop() }: `wait` sleeps
+ * `ms` or until a skip, `stop` removes the listeners.
+ */
+export function loadCardSkip(el, win = globalThis.window) {
+  let skipped = false;
+  let wake = null;
+  const hit = () => {
+    if (skipped) return;
+    skipped = true;
+    if (el?.dataset) el.dataset.stHoldSkipped = '1';
+    wake?.();
+  };
+  const onKey = (event) => {
+    if (event.repeat || MODIFIER_KEYS.has(event.key) || typingElsewhere(event, el)) return;
+    hit();
+  };
+  el?.addEventListener?.('pointerdown', hit);
+  win?.addEventListener?.('keydown', onKey, true);
+  if (el?.dataset) delete el.dataset.stHoldSkipped;
+  return {
+    get skipped() {
+      return skipped;
+    },
+    /** Waits `ms`, or less when skipped. */
+    wait(ms) {
+      if (skipped || ms <= 0) return Promise.resolve();
+      return new Promise((resolve) => {
+        const id = setTimeout(done, ms);
+        function done() {
+          clearTimeout(id);
+          wake = null;
+          resolve();
+        }
+        wake = done;
+      });
+    },
+    stop() {
+      el?.removeEventListener?.('pointerdown', hit);
+      win?.removeEventListener?.('keydown', onKey, true);
+      wake?.();
+    },
+  };
 }
 /** BaseScreenView.as 33-34 fade_in_secs / fade_out_secs (tweens 109 and 153). */
 export const AWARD_FADE_IN = 0.4;
@@ -761,6 +822,7 @@ function setPolDetails(el, pol, features) {
  *   visitHtml?: string,
  *   details?: () => ({ visitHtml?: string, qurazyHere?: boolean, features?: string[], activeProject?: boolean,
  *     upgradeHtml?: string, upgradeBadge?: boolean }|null|Promise<object|null>),
+ *   early?: () => (same shape as details, from the street's data before it is built)|null|Promise,
  *   pol?: { type: 'interior'|'exterior'|'tower', ownerName?: string, customName?: string,
  *     visit?: { firstVisit?: boolean, visitCount?: number, lastVisitMins?: number },
  *     features?: string[], neighbours?: Array<{ name?: string, faceUrl?: string }>,
@@ -895,56 +957,99 @@ async function streetTransition(el, opts) {
   };
   setStatus(LOAD_STATUS.loading);
 
-  // Non-interactive during load (no click-to-skip)
+  // The card takes the clicks over the game; one ends the Home to: hold (loadCardSkip).
   el.style.pointerEvents = 'auto';
   el.setAttribute('aria-busy', 'true');
 
-  const fading = crossfadeElement(el, { show: true, durationSec: LOAD_FADE_IN });
-  if (polLayout) fitPolCard(el, polLayout);
-  await fading;
-
-  try {
-    setStatus(LOAD_STATUS.preparing);
-    if (opts.onMid) await opts.onMid();
-    // What the street turned out to hold (location.js getLoadingInfo street_details).
-    const info = opts.details ? await opts.details() : null;
-    if (info && polLayout) {
-      // LoadingLocationPOLView.setDetails: the box keeps its own words; Features: is the first street feature.
-      setPolDetails(el, opts.pol, Array.isArray(info.features) ? info.features : []);
-    } else if (info) {
-      if (info.visitHtml != null || info.qurazyHere) setVisit(info.visitHtml ?? opts.visitHtml, Boolean(info.qurazyHere));
-      const features = Array.isArray(info.features) ? info.features : [];
-      if (home && (features.length || info.activeProject)) {
-        // LoadingLocationView.buildHomeTo
+  const now = () => globalThis.performance?.now?.() ?? Date.now();
+  let listShownAt = 0;
+  let listText = '';
+  let listHtml = '';
+  // What the street holds (location.js getLoadingInfo street_details): the visit line, Home to:
+  // (LoadingLocationView.buildHomeTo) and the upgrade lines. First from the street's data as the
+  // card appears (opts.early), then from the built street (opts.details), which wins.
+  const applyDetails = (info) => {
+    if (info.visitHtml != null || info.qurazyHere) setVisit(info.visitHtml ?? opts.visitHtml, Boolean(info.qurazyHere));
+    const features = Array.isArray(info.features) ? info.features : [];
+    if (home) {
+      if (features.length || info.activeProject) {
         const proj = '<span class="st-hl">Active project!</span>';
         const items = features.length
           ? features.map((f, i) => `<li>${f}${i === 0 && info.activeProject ? `&nbsp;&nbsp;&nbsp;${proj}` : ''}</li>`)
           : [`<li>${proj}</li>`];
-        home.innerHTML = `<b>Home to:</b><ul>${items.join('')}</ul>`;
+        const html = `<b>Home to:</b><ul>${items.join('')}</ul>`;
+        // The same list stays as it is (no flicker when the built street agrees).
+        if (html !== listHtml) home.innerHTML = html;
+        listHtml = html;
         home.hidden = Boolean(info.upgradeBadge);
         el.dataset.stHomeTo = features.map((f) => f.replace(/<[^>]+>/g, '')).join(' | ');
+      } else {
+        home.innerHTML = '';
+        home.hidden = true;
+        listHtml = '';
+        el.dataset.stHomeTo = '';
       }
-      if (upgrade && info.upgradeHtml) {
-        upgrade.innerHTML = info.upgradeHtml;
-        upgrade.hidden = false;
-      }
-      if (badge) badge.hidden = !info.upgradeBadge;
-      el.dataset.stUpgradeBadge = info.upgradeBadge ? '1' : '0';
+    }
+    if (upgrade && info.upgradeHtml) {
+      upgrade.innerHTML = info.upgradeHtml;
+      upgrade.hidden = false;
+    }
+    if (badge) badge.hidden = !info.upgradeBadge;
+    el.dataset.stUpgradeBadge = info.upgradeBadge ? '1' : '0';
+    // #478: the reading time counts from when a list first showed.
+    listText = home && !home.hidden ? String(home.textContent || '').replace(/\u00a0/g, ' ') : '';
+    if (!listText) listShownAt = 0;
+    else if (!listShownAt) listShownAt = now();
+  };
+  let built = false;
+  el.dataset.stHomeToEarly = '';
+  // #478: Glitch's card had the list from the start (NetController.as 1388-1395).
+  if (!polLayout && typeof opts.early === 'function') {
+    Promise.resolve()
+      .then(opts.early)
+      .then((info) => {
+        if (built || !info) return;
+        applyDetails(info);
+        el.dataset.stHomeToEarly = el.dataset.stHomeTo || '';
+      })
+      .catch(() => {});
+  }
+
+  const skip = loadCardSkip(el);
+  const fading = crossfadeElement(el, { show: true, durationSec: LOAD_FADE_IN });
+  if (polLayout) fitPolCard(el, polLayout);
+
+  try {
+    await fading;
+    setStatus(LOAD_STATUS.preparing);
+    if (opts.onMid) await opts.onMid();
+    // What the street turned out to hold (location.js getLoadingInfo street_details).
+    const info = opts.details ? await opts.details() : null;
+    built = true;
+    if (info && polLayout) {
+      // LoadingLocationPOLView.setDetails: the box keeps its own words; Features: is the first street feature.
+      setPolDetails(el, opts.pol, Array.isArray(info.features) ? info.features : []);
+    } else if (info) {
+      applyDetails(info);
     }
     // LocationRenderer READYING_TEXT, counted up over the hold so travel is no slower.
     // QA only (js/loading-card-qa.js): &loadcardhold=<ms> keeps the card up for screenshots.
     const qaHold = Number(new URLSearchParams(globalThis.location?.search || '').get('loadcardhold')) || 0;
-    // #478: a Home to: list in view holds the card its reading time (loadCardHoldMs).
-    const listText = home && !home.hidden ? String(home.textContent || '').replace(/\u00a0/g, ' ') : '';
-    const hold = qaHold || loadCardHoldMs(listText, opts.holdMs ?? LOAD_HOLD_MS);
-    el.dataset.stHoldMs = String(hold);
+    // #478: a Home to: list in view holds the card the rest of its reading time (loadCardHoldMs).
+    const shown = listShownAt ? now() - listShownAt : 0;
+    const hold = qaHold || loadCardHoldMs(listText, opts.holdMs ?? LOAD_HOLD_MS, shown);
+    el.dataset.stHoldMs = String(Math.round(hold));
     const steps = 6;
     setStatus(LOAD_STATUS.splines);
     for (let i = 1; i <= steps; i += 1) {
-      await wait(hold / steps);
+      if (qaHold) await wait(hold / steps);
+      else await skip.wait(hold / steps);
       setStatus(LOAD_STATUS.splines, (100 * i) / steps);
     }
+    el.dataset.stListMs = listShownAt ? String(Math.round(now() - listShownAt)) : '';
   } finally {
+    built = true;
+    skip.stop();
     await crossfadeElement(el, { show: false, durationSec: LOAD_FADE_OUT });
     if (bar) bar.style.width = '0%';
     if (snap) snap.removeAttribute('src');

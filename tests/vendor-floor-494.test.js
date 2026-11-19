@@ -21,7 +21,7 @@ import { measuredGardenVendor } from '../public/js/garden-beds.js?v=831b1d97';
 import { VENDOR_REACH, VENDOR_WALK, vendorPlan, vendorWalkAt } from '../public/js/vendor-walk.js?v=6e6f1df4';
 import { followFloorY, walkSurfaceY } from '../public/js/walk-surface.js?v=bacb60c6';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

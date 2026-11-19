@@ -22,7 +22,7 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 import { isStandable, platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import { buildPlatformCandidates, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=75052b58';
 import { EDGE_MARGIN, JUMP_SPEED, NORMAL_BUFF, WALK_MAX, avatarFall } from '../public/js/avatar-step.js?v=0d75eb35';

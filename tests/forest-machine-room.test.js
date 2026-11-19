@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=dd20cc44';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { populationForStreet } from '../public/js/street-ecology.js?v=75052b58';
-import { MACHINE_ROOMS, availableHubStreets, countsTowardHub, isMachineRoom, streetVisitCounters } from '../public/js/exploration.js?v=5f533ebf';
+import { MACHINE_ROOMS, availableHubStreets, countsTowardHub, isMachineRoom, streetVisitCounters } from '../public/js/exploration.js?v=871ba26b';
 import {
   CLEARING_DOOR,
   CLEARING_SOURCE_TSID,
@@ -28,8 +28,8 @@ import {
   forestMachineRoomStreet,
   isForestMachineRoomTsid,
 } from '../public/js/forest-machine-room.js?v=5f7e4589';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=160a453e';
-import { FEATURES } from '../public/js/features/index.js?v=91cc01df';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=44c4ae2f';
+import { FEATURES } from '../public/js/features/index.js?v=95fd37e8';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

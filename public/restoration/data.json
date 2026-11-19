@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2804,
+  "commits": 2807,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The loading card's Home to: list counts Peat Bogs, Barnacles, Salmon and other nodes still loading"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "A teleport moves you half a second into the arm swing, as in Glitch"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "Race Tickets and teleports work inside a Party Space, as in Glitch"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "a mined-out mega rock takes a little longer to come back, as in Glitch"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "an ended party or the Interrogation room's door with no way back goes to Hechey Track"
    }
   ]
  },

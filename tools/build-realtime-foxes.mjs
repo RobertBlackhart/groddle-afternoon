@@ -31,7 +31,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 import { streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import { entranceScreenX } from '../public/js/features/foxes-feature.js?v=50e02f28';
 import { preserveLayout } from '../public/js/foxes.js?v=4497a984';

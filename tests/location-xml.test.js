@@ -20,7 +20,7 @@ import {
   clearStreetIndex,
   availableStreetTsids,
   STREET_INDEX,
-} from '../public/js/street-loader.js?v=e5a30b08';
+} from '../public/js/street-loader.js?v=25d965fa';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');

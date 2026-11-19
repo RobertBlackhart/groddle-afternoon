@@ -386,7 +386,7 @@ test.describe('the Street Spirits’ saved ledger moves onto the record', () => 
   });
 
   test('the spirit feature hands over an old slice once and saves a marker', async () => {
-    const { streetSpiritsFeature } = await import('../public/js/features/street-spirits-feature.js?v=78582d8b');
+    const { streetSpiritsFeature } = await import('../public/js/features/street-spirits-feature.js?v=d02ff8b8');
     resetConversationRecord();
     streetSpiritsFeature.restore(OLD);
     assert.equal(hasCompleted(conversationRecord(), 'when_down_was_up_1'), true);

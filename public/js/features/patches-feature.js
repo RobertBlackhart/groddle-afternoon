@@ -914,6 +914,11 @@ export const patchesFeature = {
     return soilPlacementGroups(soilCountsForStreet(street?.tsid));
   },
 
+  /** #478: the loading card's Home to: before the street is built: the plots its data names. */
+  homeToTargets(street) {
+    return soilSpawnClasses(street?.soilCounts || soilCountsForStreet(street?.tsid)).map((classId) => ({ classId }));
+  },
+
   onStreetEnter(street, engine) {
     generation += 1;
     const myGeneration = generation;

@@ -21,9 +21,9 @@ import {
   subwayRides,
 } from '../public/js/map-routes.js?v=3cadc716';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=71fa73cd';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=d1cc0838';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=ed2d2069';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
-import { applyStreetIndex } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=25d965fa';
 import { buildOneWay } from '../tools/routes/build-one-way.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

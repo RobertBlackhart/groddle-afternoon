@@ -468,6 +468,39 @@ export function streetFeaturesFromTargets(targets = []) {
 }
 
 /**
+ * #478 (G993): the homeToFeatures input before the street is built, from what enterStreet spawns
+ * it from (street-ecology.js populationForStreet), in the same order streetFeaturesFromTargets
+ * counts the built street: its animals, trees, vendor, shrine, garden beds, rocks, then its
+ * resource nodes. Glitch's card had the list from the move start (NetController.as 1388-1395);
+ * what a feature adds from the street's state on arrival (a tree that died) shows once it is built.
+ * @param {{ piggies?: number, chickens?: number, butterflies?: number, flyingButterflies?: number,
+ *   treeClasses?: string[], rockClasses?: string[], resourceNodeClasses?: string[] }} pop
+ * @param {{ vendorLabel?: string, shrineGiant?: string,
+ *   gardenBeds?: Array<{ gardenType?: string, cols?: number, rows?: number }>,
+ *   extraTargets?: Array<{ classId?: string }> }} [extra] extraTargets: what features will spawn
+ *   (their homeToTargets hook: Patches, Batterflies)
+ */
+export function homeToFromPopulation(pop = {}, { vendorLabel = '', shrineGiant = '', gardenBeds = [], extraTargets = [] } = {}) {
+  const targets = [];
+  const add = (classId, n = 1, state = undefined) => {
+    for (let i = 0; i < n; i += 1) targets.push(state ? { classId, state } : { classId });
+  };
+  add('npc_piggy', Number(pop.piggies) || 0);
+  add('npc_chicken', Number(pop.chickens) || 0);
+  add('npc_butterfly', (Number(pop.butterflies) || 0) + (Number(pop.flyingButterflies) || 0));
+  for (const id of pop.treeClasses || []) add(id);
+  if (vendorLabel) add('street_spirit', 1, { vendorLabel });
+  if (shrineGiant) add(`npc_shrine_${shrineGiant}`, 1, { giantId: shrineGiant });
+  for (const bed of gardenBeds) {
+    add('garden_new', 1, { garden: { gardenType: bed.gardenType === 'herb' ? 'herb' : 'crop', cols: bed.cols, rows: bed.rows } });
+  }
+  for (const id of pop.rockClasses || []) add(id);
+  for (const id of pop.resourceNodeClasses || []) add(id);
+  for (const row of extraTargets) if (row?.classId) targets.push(row);
+  return streetFeaturesFromTargets(targets);
+}
+
+/**
  * Everything the card learns once the street is built: Home to, the Qurazy
  * marker (first visits only, as getLoadingInfo checks), the upgrade badge
  * (upgraded since the last visit) and "Upgraded N ago. Led by:".

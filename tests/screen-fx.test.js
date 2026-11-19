@@ -18,7 +18,7 @@ import {
   awardRewardTokens,
   runStreetTransition,
   showAwardScreen,
-} from '../public/js/screen-fx.js?v=a0ed42e9';
+} from '../public/js/screen-fx.js?v=426bbc05';
 
 describe('screen-fx timings (LoadingLocationView / BaseScreenView)', () => {
   it('uses the street card windows and the BaseScreenView fades (seconds)', () => {
@@ -166,7 +166,7 @@ describe('badge + loading asset maps (local pack)', () => {
 
 describe('award card text', () => {
   it('drops GSJS item links and tags but keeps the words', async () => {
-    const { awardText, normalizeAwardPages } = await import('../public/js/screen-fx.js?v=a0ed42e9');
+    const { awardText, normalizeAwardPages } = await import('../public/js/screen-fx.js?v=426bbc05');
     assert.equal(
       awardText('Give 6 <a href="event:item|npc_piggy">Piggies</a> the pleasuring of a lifetime. By petting them, of course.'),
       'Give 6 Piggies the pleasuring of a lifetime. By petting them, of course.',
@@ -177,7 +177,7 @@ describe('award card text', () => {
   });
 });
 
-import { LOAD_STATUS, loadStatusLabel, loadingSplit, cssColor } from '../public/js/screen-fx.js?v=a0ed42e9';
+import { LOAD_STATUS, loadStatusLabel, loadingSplit, cssColor } from '../public/js/screen-fx.js?v=426bbc05';
 
 describe('loading card status and hub split (LoadingLocationView.as)', () => {
   it('uses the client status labels with the TimerBar percent', () => {
@@ -225,7 +225,7 @@ import {
   polGradient,
   polNeighbours,
   polVisitLine,
-} from '../public/js/screen-fx.js?v=a0ed42e9';
+} from '../public/js/screen-fx.js?v=426bbc05';
 
 describe('home loading card (G249, LoadingLocationPOLView.as)', () => {
   it('names the place as setText does (215-235)', () => {
@@ -305,7 +305,7 @@ describe('home loading card (G249, LoadingLocationPOLView.as)', () => {
 
 describe('home loading card on a narrow screen', () => {
   it('scales the holder and the fill to fit with 16 px gutters', async () => {
-    const { polCardScale } = await import('../public/js/screen-fx.js?v=a0ed42e9');
+    const { polCardScale } = await import('../public/js/screen-fx.js?v=426bbc05');
     const house = polCardLayout('interior');
     assert.equal(polCardScale(house, 1280), 1);
     assert.equal(polCardScale(house, 390), (390 - 32) / 616);
@@ -314,74 +314,179 @@ describe('home loading card on a narrow screen', () => {
   });
 });
 
-import { LOAD_LIST_MIN_MS, loadCardHoldMs } from '../public/js/screen-fx.js?v=a0ed42e9';
+import { LOAD_LIST_MAX_MS, LOAD_LIST_MIN_MS, loadCardHoldMs, loadListReadMs } from '../public/js/screen-fx.js?v=426bbc05';
 
 describe('#478 the loading card holds its Home to: list (G993, invention loading-card-min-hold)', () => {
-  it('a card with no list keeps Glitch hold; a list holds at least 2.5 s, 300 ms a word, at most 10 s', () => {
-    assert.equal(LOAD_LIST_MIN_MS, 2500);
+  const list = (n) => `<b>Home to:</b><ul>${Array.from({ length: n }, (_, i) => `<li>${i + 2} Piggies</li>`).join('')}</ul>`;
+
+  it('a list wants 300 ms a word, at least 1 s, at most 4 s on screen; no list keeps Glitch hold', () => {
+    // Austin 2026-11-19: cut from 2.5 s to 10 s.
+    assert.equal(LOAD_LIST_MIN_MS, 1000);
+    assert.equal(LOAD_LIST_MAX_MS, 4000);
+    assert.equal(loadListReadMs(''), 0);
+    assert.equal(loadListReadMs('<b>Home to:</b><ul><li>Vendor</li></ul>'), 1000);
+    assert.equal(loadListReadMs('<b>Home to:</b><ul><li>A Shrine to Mab</li></ul>'), 6 * 300);
+    assert.equal(loadListReadMs(list(4)), 10 * 300);
+    assert.equal(loadListReadMs(list(12)), 4000);
     assert.equal(loadCardHoldMs(''), LOAD_HOLD_MS);
     assert.equal(loadCardHoldMs('', 0), 0);
-    assert.equal(loadCardHoldMs('<b>Home to:</b><ul><li>A Shrine to Mab</li></ul>'), 2500);
-    const long = `<b>Home to:</b><ul>${Array.from({ length: 12 }, (_, i) => `<li>${i + 2} Piggies</li>`).join('')}</ul>`;
-    assert.equal(loadCardHoldMs(long), 26 * 300);
-    assert.equal(loadCardHoldMs(`${long}${long}`), 10000);
+    assert.equal(loadCardHoldMs(list(12)), 4000);
     // The caller's own longer hold still wins.
     assert.equal(loadCardHoldMs('<b>Home to:</b><ul><li>Vendor</li></ul>', 6000), 6000);
   });
 
-  it('the card fades only after the list has been up its reading time; without one it fades at Glitch pace', async () => {
-    const saved = { document: globalThis.document, raf: globalThis.requestAnimationFrame };
-    globalThis.document = { documentElement: Object.assign(new EventTarget(), { dataset: {} }) };
-    globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+  it('the time the list was already up counts against the hold, never under Glitch 200 ms', () => {
+    assert.equal(loadCardHoldMs(list(12), LOAD_HOLD_MS, 2500), 1500);
+    assert.equal(loadCardHoldMs(list(12), LOAD_HOLD_MS, 3900), LOAD_HOLD_MS);
+    assert.equal(loadCardHoldMs(list(12), LOAD_HOLD_MS, 9000), LOAD_HOLD_MS);
+    assert.equal(loadCardHoldMs(list(4), LOAD_HOLD_MS, 1000), 2000);
+  });
+
+  describe('on the card', () => {
+    const saved = {};
+    const setUp = () => {
+      saved.document = globalThis.document;
+      saved.raf = globalThis.requestAnimationFrame;
+      saved.window = globalThis.window;
+      globalThis.document = { documentElement: Object.assign(new EventTarget(), { dataset: {} }) };
+      globalThis.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+      globalThis.window = new EventTarget();
+    };
+    const tearDown = () => {
+      globalThis.document = saved.document;
+      globalThis.requestAnimationFrame = saved.raf;
+      globalThis.window = saved.window;
+    };
     const card = () => {
       // A page's textContent: the list's words without its tags (the card reads textContent, G955).
       const home = { innerHTML: '', hidden: true, get textContent() { return this.innerHTML.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); } };
-      const el = {
+      const el = Object.assign(new EventTarget(), {
         dataset: {},
         style: {},
         hidden: true,
         setAttribute() {},
         querySelector: (sel) => (sel === '[data-st-home]' ? home : null),
         classList: {
-          add() {},
+          add: (c) => {
+            if (c === 'is-visible') el.fadeInAt = Date.now();
+          },
           remove: (c) => {
             if (c === 'is-visible') el.fadeOutAt = Date.now();
           },
         },
-      };
+      });
       el.home = home;
       return el;
     };
-    try {
-      const withList = card();
-      let listUpAt = 0;
-      await runStreetTransition(withList, {
-        toLabel: 'Test Street',
-        details: () => {
-          listUpAt = Date.now();
-          return { features: ['A Shrine to Mab', 'A Street Spirit'] };
-        },
-      });
-      assert.equal(withList.home.hidden, false);
-      // "Home to: A Shrine to Mab A Street Spirit": 9 words at 300 ms.
-      assert.equal(withList.dataset.stHoldMs, '2700');
-      assert.ok(withList.fadeOutAt - listUpAt >= 2650, `list up ${withList.fadeOutAt - listUpAt} ms`);
+    const key = (k, repeat = false) => Object.assign(new Event('keydown'), { key: k, repeat });
 
-      const bare = card();
-      let readyAt = 0;
-      await runStreetTransition(bare, {
-        toLabel: 'Test Street',
-        details: () => {
-          readyAt = Date.now();
-          return { features: [] };
-        },
-      });
-      assert.equal(bare.home.hidden, true);
-      assert.equal(bare.dataset.stHoldMs, String(LOAD_HOLD_MS));
-      assert.ok(bare.fadeOutAt - readyAt < 1000);
-    } finally {
-      globalThis.document = saved.document;
-      globalThis.requestAnimationFrame = saved.raf;
-    }
+    it('shows the list from the street data as the card fades in, and counts that time (fails before 2026-11-19)', async () => {
+      setUp();
+      try {
+        const el = card();
+        let atLoad = null;
+        const t0 = Date.now();
+        await runStreetTransition(el, {
+          toLabel: 'Test Street',
+          early: () => ({ features: ['A Shrine to Mab', 'A Street Spirit'] }),
+          onMid: async () => {
+            // The list is up before the street loads, as Glitch's card had it from the start.
+            atLoad = { hidden: el.home.hidden, text: el.home.textContent };
+            await wait(1200);
+          },
+          details: () => ({ features: ['A Shrine to Mab', 'A Street Spirit'] }),
+        });
+        assert.deepEqual(atLoad, { hidden: false, text: 'Home to: A Shrine to Mab A Street Spirit' });
+        assert.equal(el.dataset.stHomeToEarly, 'A Shrine to Mab | A Street Spirit');
+        // 9 words: 2.7 s in all, 1.4 s of it already up (fade-in and load): about 1.3 s more.
+        const hold = Number(el.dataset.stHoldMs);
+        assert.ok(hold >= LOAD_HOLD_MS && hold < 1600, `hold ${hold}`);
+        const listMs = Number(el.dataset.stListMs);
+        assert.ok(listMs >= 2650 && listMs < 3100, `list up ${listMs} ms`);
+        assert.ok(el.fadeOutAt - t0 < 3200, `fade-out ${el.fadeOutAt - t0} ms after the start`);
+      } finally {
+        tearDown();
+      }
+    });
+
+    it('a long list is up 4 s at most, then the card fades', async () => {
+      setUp();
+      try {
+        const el = card();
+        const features = Array.from({ length: 12 }, (_, i) => `${i + 2} Piggies`);
+        await runStreetTransition(el, { toLabel: 'Test Street', early: () => ({ features }), details: () => ({ features }) });
+        const listMs = Number(el.dataset.stListMs);
+        assert.ok(listMs >= 3950 && listMs <= 4150, `list up ${listMs} ms`);
+      } finally {
+        tearDown();
+      }
+    });
+
+    it('the built street list replaces the early one where they differ; with none it keeps Glitch pace', async () => {
+      setUp();
+      try {
+        const el = card();
+        await runStreetTransition(el, {
+          toLabel: 'Test Street',
+          early: () => ({ features: ['A Shrine to Mab'] }),
+          details: () => ({ features: ['A Shrine to Mab', 'Plus <b>2 Piggies</b>.'] }),
+        });
+        assert.equal(el.dataset.stHomeTo, 'A Shrine to Mab | Plus 2 Piggies.');
+        assert.match(el.home.innerHTML, /2 Piggies/);
+
+        const bare = card();
+        let readyAt = 0;
+        await runStreetTransition(bare, {
+          toLabel: 'Test Street',
+          early: () => ({ features: [] }),
+          details: () => {
+            readyAt = Date.now();
+            return { features: [] };
+          },
+        });
+        assert.equal(bare.home.hidden, true);
+        assert.equal(bare.dataset.stHoldMs, String(LOAD_HOLD_MS));
+        assert.ok(bare.fadeOutAt - readyAt < 1000);
+      } finally {
+        tearDown();
+      }
+    });
+
+    it('a key or a click ends the hold; a held key repeating or a lone Shift does not', async () => {
+      setUp();
+      try {
+        const features = Array.from({ length: 12 }, (_, i) => `${i + 2} Piggies`);
+        const el = card();
+        let readyAt = 0;
+        const going = runStreetTransition(el, {
+          toLabel: 'Test Street',
+          early: () => ({ features }),
+          details: () => {
+            readyAt = Date.now();
+            return { features };
+          },
+        });
+        await wait(600);
+        globalThis.window.dispatchEvent(key('ArrowRight', true));
+        globalThis.window.dispatchEvent(key('Shift'));
+        await wait(300);
+        assert.equal(el.dataset.stHoldSkipped, undefined, 'a repeat or Shift skipped');
+        globalThis.window.dispatchEvent(key('ArrowRight'));
+        await going;
+        assert.equal(el.dataset.stHoldSkipped, '1');
+        assert.ok(el.fadeOutAt - readyAt < 1300, `fade-out ${el.fadeOutAt - readyAt} ms after ready`);
+
+        const clicked = card();
+        const going2 = runStreetTransition(clicked, { toLabel: 'Test Street', early: () => ({ features }), details: () => ({ features }) });
+        await wait(600);
+        clicked.dispatchEvent(new Event('pointerdown'));
+        const t = Date.now();
+        await going2;
+        assert.equal(clicked.dataset.stHoldSkipped, '1');
+        assert.ok(clicked.fadeOutAt - t < 200, 'the click ended the hold');
+      } finally {
+        tearDown();
+      }
+    });
   });
 });

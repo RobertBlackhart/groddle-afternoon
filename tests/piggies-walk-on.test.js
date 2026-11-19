@@ -38,7 +38,7 @@ import {
 } from '../public/js/street-ecology.js?v=75052b58';
 import { walkerAt } from '../public/js/street-creatures.js?v=50e4801b';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=25d965fa';
 
 const root = join(import.meta.dirname, '..');
 const streetsDir = join(root, 'public/assets/streets');

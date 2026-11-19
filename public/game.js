@@ -4,12 +4,12 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ca4eaa0f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=91cc01df';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=95fd37e8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=9cd33137';
+import { createPromptStack } from './js/prompt-stack.js?v=a57d2e90';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=49228b02';
 import {
@@ -419,11 +419,13 @@ import {
   applyStreetVisit,
   topUpCompletists,
   STREET_VISITS_SLOT,
+  homeToFeatures,
+  homeToFromPopulation,
   loadingCardDetails,
   loadingVisitLine,
   recordStreetEntry,
   streetLoadingVisit,
-} from './js/exploration.js?v=5f533ebf';
+} from './js/exploration.js?v=871ba26b';
 import { createCombobox, createSuggestBox, watchSelects } from './js/combobox.js?v=d43209e8';
 import {
   INCANTATION_LINES,
@@ -692,8 +694,8 @@ import {
   availableStreetTsids,
   ensureStreetIndex,
   resolveIndexTsid,
-} from './js/street-loader.js?v=e5a30b08';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=1e46efa8';
+} from './js/street-loader.js?v=25d965fa';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=3ec5f372';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -724,7 +726,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=b381e9c9';
+} from './js/street-render.js?v=caebd25d';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -813,7 +815,7 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=a0ed42e9';
+} from './js/screen-fx.js?v=426bbc05';
 import { momentMoreText } from './js/ui/moment-card.js?v=3850c51c';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
@@ -827,7 +829,7 @@ import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=0a9a61df';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=52319f13';
 import {
   planTravel,
   listMapDestinations,
@@ -3723,6 +3725,30 @@ async function enterStreetWithTransition(tsid, opts = {}) {
   return onStreetTrip(() => streetTripTo(tsid, opts));
 }
 
+/** #478: each street's Home to: list as its card last showed it, this session. */
+const homeToSeen = new Map();
+
+/**
+ * #478 (G993): the card's Home to: list before the street is built, as Glitch's card had it from
+ * the move start (NetController.as 1388-1395): the list this street showed last time, else the
+ * one its data gives (its JSON and ecology row, what enterStreet spawns from; exploration.js
+ * homeToFromPopulation). The built street's list replaces it where the two differ.
+ */
+async function earlyLoadingDetails(tsid) {
+  const data = await loadStreetData(tsid);
+  const key = data.tsid;
+  if (homeToSeen.has(key)) return { features: homeToSeen.get(key) };
+  const pop = populationForStreet(key, streetEcologyEntry(data), { starter: key === STREET_INDEX.default });
+  const vendor = pop.vendor ? selectVendorProfile(key, '', { rocks: pop.rockClasses.length, store: STREET_INDEX.streets?.[key]?.store }) : null;
+  const gardenBeds = [
+    ...streetGardenBeds(key, Array.from({ length: pop.gardens || 0 }, () => ({ x: 0, y: 0 })), pop),
+    ...streetGardenBoxBeds(data, pop),
+  ];
+  const shrineGiant = pop.shrine ? giantForStreet({ ...data, officialGiantId: pop.giantId || data.officialGiantId }).id : '';
+  const extraTargets = features.collect('homeToTargets', data, engine);
+  return { features: homeToFeatures(homeToFromPopulation(pop, { vendorLabel: vendor?.label || '', shrineGiant, gardenBeds, extraTargets })) };
+}
+
 async function streetTripTo(tsid, opts = {}) {
   // Ticket 67: a way back into your home (a Ticket to Paradise or a quest started there) goes in.
   if (isHomePlaceTsid(tsid) && homeState.owned) return arriveInHome(tsid, opts);
@@ -3770,13 +3796,18 @@ async function streetTripTo(tsid, opts = {}) {
     fromTopColor: fromColors.top,
     fromBottomColor: fromColors.bottom,
     visitHtml: loadingVisitLine(visit),
-    details: () => loadingCardDetails({
-      targets: [...interactables, ...features.collect('pendingTargets', engine)],
-      quoinTypes: quoins.map((q) => q.typeId),
-      visit,
-      ...(features.query('streetProjectInfo', currentStreetTsid, engine) || {}),
-      playerLabel: playerSpeechTarget?.label || 'Ur',
-    }),
+    early: () => earlyLoadingDetails(tsid),
+    details: () => {
+      const info = loadingCardDetails({
+        targets: [...interactables, ...features.collect('pendingTargets', engine)],
+        quoinTypes: quoins.map((q) => q.typeId),
+        visit,
+        ...(features.query('streetProjectInfo', currentStreetTsid, engine) || {}),
+        playerLabel: playerSpeechTarget?.label || 'Ur',
+      });
+      homeToSeen.set(currentStreetTsid, info.features);
+      return info;
+    },
     onMid: async () => {
       data = await enterStreet(tsid, { ...opts, quiet: true });
       // #215: a scene places the avatar (opts.arrive) before the card lifts, so the first frame shown has it there.
@@ -34777,7 +34808,7 @@ async function main() {
   }
   // Loading card QA (js/loading-card-qa.js): ?loadcarddemo=<tsid>[,<tsid>].
   if (new URLSearchParams(location.search).has('loadcarddemo')) {
-    import('./js/loading-card-qa.js?v=154d0e49').then((m) => m.runLoadingCardDemo({ engine, travel: (tsid) => enterStreetWithTransition(tsid), params: new URLSearchParams(location.search) }));
+    import('./js/loading-card-qa.js?v=3f3338a4').then((m) => m.runLoadingCardDemo({ engine, travel: (tsid) => enterStreetWithTransition(tsid), params: new URLSearchParams(location.search) }));
   }
   installMoreMenu();
   installPlayerMenu();

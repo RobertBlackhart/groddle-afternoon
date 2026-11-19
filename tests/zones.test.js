@@ -28,7 +28,7 @@ import { validateZone } from '../public/js/builder/validate.js?v=61c1071c';
 import { isZoneTsid, withoutZoneConnects, withoutZoneRows } from '../public/js/zone-streets.js?v=b40010d5';
 import { listHubsFromIndex } from '../public/js/map-graph.js?v=78a605db';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
-import { applyStreetIndex, clearStreetIndex, clearStreetCache, loadStreetDataFromFs, setZoneStreetsShown, STREET_INDEX } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, clearStreetIndex, clearStreetCache, loadStreetDataFromFs, setZoneStreetsShown, STREET_INDEX } from '../public/js/street-loader.js?v=25d965fa';
 import { run } from '../tools/builder/cli.mjs';
 
 const HECHEY = 'GLI2V0UN7RD1T2J';

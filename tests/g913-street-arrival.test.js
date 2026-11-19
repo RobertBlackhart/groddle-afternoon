@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildArrivals, render } from '../tools/build-street-arrivals.mjs';
 import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=6fe51e29';
-import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=e5a30b08';
+import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=25d965fa';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=dd20cc44';
 import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=75052b58';
 import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=c6c1b956';

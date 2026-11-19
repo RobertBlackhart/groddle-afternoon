@@ -17,7 +17,7 @@ import {
   streetWidth,
   streetHeight,
 } from '../public/js/street-model.js?v=dd20cc44';
-import { STREET_INDEX, availableStreetTsids } from '../public/js/street-loader.js?v=e5a30b08';
+import { STREET_INDEX, availableStreetTsids } from '../public/js/street-loader.js?v=25d965fa';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const streetsDir = join(__dirname, '../public/assets/streets');
