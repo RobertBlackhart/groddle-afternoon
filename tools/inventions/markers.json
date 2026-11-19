@@ -60,7 +60,9 @@
     "stand-in: // The default sheets failed to load: a blank stand-in, never": "not-an-invention",
     "stand-in: // The stand-in doing the work (dullite.js:124-133): a Grand Ol'": "solo-stand-ins",
     "stand-in: A frame on a sheet that is not in yet shows its stand-in": "not-an-invention",
-    "stand-in: in its batch (a freed idle frame swapped for its stand-in": "not-an-invention"
+    "stand-in: R33 (#537): your own look is on, not a stand-in (the first loading card waits for it).": "avatar-washed-placeholder",
+    "stand-in: in its batch (a freed idle frame swapped for its stand-in": "not-an-invention",
+    "stand-in: on (js/avatar-placeholder.js ownPackFor); the stand-in only with none": "avatar-washed-placeholder"
   },
   "public/js/account-forms.js": {
     "ours: or 'failed' with the site's own words (or ours when it didn't answer).": "ours-account-forms",
@@ -94,6 +96,10 @@
     "stand-in: in its batch (a freed idle frame swapped for its stand-in from the base": "not-an-invention",
     "stand-in: is in, every frame that belongs to it shows a stand-in (fillPackAnims),": "not-an-invention",
     "stand-in: stand (swf frame 801, in the base sheet): the stand-in when an animation names no other.": "not-an-invention"
+  },
+  "public/js/avatar-placeholder.js": {
+    "glitch-had-none: * which reads as a real player's real clothes. Glitch never did that. Another player": "avatar-washed-placeholder",
+    "stand-in: * nothing of yours to show yet is the stand-in (`next`)": "avatar-washed-placeholder"
   },
   "public/js/avatar-reimagined.js": {
     "ours: // Our own additions are mutations too; decorateWardrobe is": "avatar-reimagined-wardrobe",
@@ -740,6 +746,7 @@
   },
   "public/js/map-routes.js": {
     "remake-own: * PURE (#104, a remake addition: GpsUI.as showed only To and Next): the Map's": "map-route-line",
+    "remake-own: * the subway (a remake addition, subwayRides): the path holds the two surface": "subway-route-card",
     "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line"
   },
   "public/js/map-zoom.js": {
@@ -842,6 +849,9 @@
   "public/js/party-spaces.js": {
     "not-source: friends who came to the party (remake ambience, not in the source).": "ours-party-spaces",
     "ours: 505 pointed at the Party Chat pane's join; ours is the Map's Join party": "ours-party-spaces"
+  },
+  "public/js/patches.js": {
+    "ours: Beans (patch_dark.js canPlant; that line is ours).": "dark-patch-bean-line"
   },
   "public/js/peat-quest.js": {
     "ours: 'You need to be online to try this.', // ours": "remake-copy",

@@ -4935,6 +4935,55 @@
    "rows": [
     "G1038"
    ]
+  },
+  {
+   "id": "avatar-washed-placeholder",
+   "title": "A player whose look is still loading is drawn as the default look washed pale, colourless and see-through, standing in for Glitch's placeholder skin (#537).",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/avatar-placeholder.js",
+     "symbol": "washPlaceholderPixels PLACEHOLDER_SHEETS ownPackFor"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "whenOwnLookReady"
+    }
+   ],
+   "why": "Glitch drew a placeholder skin (AvatarSwf.as showPlaceholderSkin: pale see-through body parts, no clothes); its parts are in the CC0 Avatar.swf, but our compositor paints only the clothed body, so a wash of the default sheets stands in until it can paint those parts.",
+   "ruling": "Claude's default in lane avk 2026-11-19; on Austin's decision page (Groddle Calls Nov 19 Eve, card placeholder)",
+   "rows": []
+  },
+  {
+   "id": "subway-route-card",
+   "title": "The route card through a subway ride names the line to board, the stop to get off at and the steps up, in every view (#538).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/map-routes.js",
+     "symbol": "legStep"
+    }
+   ],
+   "why": "Glitch's routes never rode the subway (subway-ride-cost is ours), so it had no card text for a ride; the card follows the street-only wording Glitch used for the legs on foot.",
+   "ruling": "Claude's default in lane subk 2026-11-19, told Austin",
+   "rows": []
+  },
+  {
+   "id": "dark-patch-bean-line",
+   "title": "A Dark Patch refusing a bean that is not an Egg Plant Bean says the Egg Plant Bean line (#532).",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/patches.js",
+     "symbol": "wrongBeanLine"
+    }
+   ],
+   "why": "patch_dark.js canPlant takes only Egg Plant Beans with no line of its own; the refusal reuses patch.js 259 and the bean's own text so the player hears which kind grows there.",
+   "ruling": "Claude's default in lane vendk 2026-11-19",
+   "rows": []
   }
  ]
 }
