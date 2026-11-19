@@ -25,7 +25,7 @@ import {
   hasBuff,
   consumeRewardBuff,
   studyBuffBlockReason,
-} from '../public/js/buffs.js?v=57e5d8e0';
+} from '../public/js/buffs.js?v=2ed95a93';
 import { accelerateActiveStudy, createSkillState, getStudyStatus, startSkillStudy } from '../public/js/skills.js?v=4542bdf9';
 import { applyRewards } from '../public/js/quests.js?v=4a3fb1da';
 import { normalizeBuffSnapshot } from '../public/js/player-save.js?v=8fcdf179';

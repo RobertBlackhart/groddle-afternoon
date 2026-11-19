@@ -20,8 +20,8 @@
  * give a buff (not drawn back on those pages yet); rel 'after' to the buff it
  * follows, drawn back on that buff's page as "What comes after".
  */
-import { BUFF_ICONS, BUFF_END_MESSAGES, BUFF_TICK_MESSAGES, CONSUME_BUFFS, GANDLEVERY_MUNCH, KUKUBEE_WINTER_TSIDS, QUEST_TIMER_BUFFS } from '../../public/js/buff-triggers.js?v=a3093922';
-import { BUFF_ITEM_CATALOG } from '../../public/js/buffs.js?v=57e5d8e0';
+import { BUFF_ICONS, BUFF_END_MESSAGES, BUFF_TICK_MESSAGES, CONSUME_BUFFS, GANDLEVERY_MUNCH, KUKUBEE_WINTER_TSIDS, QUEST_TIMER_BUFFS } from '../../public/js/buff-triggers.js?v=9fd877c4';
+import { BUFF_ITEM_CATALOG } from '../../public/js/buffs.js?v=2ed95a93';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { esc, fmt, orList, tsHtml } from './parts.mjs';

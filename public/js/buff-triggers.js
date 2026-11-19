@@ -265,17 +265,21 @@ export function gandleveryMunchButton(ctx = {}) {
 /* ------------------------------------------------------------------ */
 
 /**
- * inc_avatar.js avatar_is_nekkid: no coat, shirt, pants, dress or skirt.
- * (The source also lets three plain shirts and two dresses count as bare by
- * their numeric article ids; the remake's articles are named, so only empty
- * slots count.)
+ * inc_avatar.js avatar_is_nekkid (747-750): no coat, shirt, pants, dress or skirt, except that
+ * three shirts (553, 557, 558: the Chest hair article's colourways) and two dresses (248, 278:
+ * the Censor bars) count as bare. The remake's articles are named, so those are listed by their
+ * catalog names (assets/avatar/catalog.json gsjsId / variant ids).
+ */
+export const NEKKID_ARTICLES = Object.freeze({ shirt: Object.freeze(['chest_hair']), dress: Object.freeze(['censor_bar_boys', 'censor_bar_girls']) });
+
+/**
  * @param {(type: string) => string} worn article name per type, 'none' when empty
  */
 export function isNekkid(worn) {
   if (typeof worn !== 'function') return false;
   return ['coat', 'shirt', 'pants', 'dress', 'skirt'].every((type) => {
     const name = worn(type);
-    return !name || name === 'none';
+    return !name || name === 'none' || Boolean(NEKKID_ARTICLES[type]?.includes(name));
   });
 }
 

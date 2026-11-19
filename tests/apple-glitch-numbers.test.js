@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInventory, getItemUseInfo, registerItemUse, useItem } from '../public/js/inventory.js?v=6414dbdc';
-import { consumeBuffFor } from '../public/js/buff-triggers.js?v=a3093922';
+import { consumeBuffFor } from '../public/js/buff-triggers.js?v=9fd877c4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 

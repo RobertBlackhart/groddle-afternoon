@@ -10,7 +10,7 @@
 import { getBuffCatalog } from './content-catalogs.js?v=10b118dd';
 import { energyMax, gainMetabolic, loseEnergy, loseMood, moodMax, shiftMetabolic } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
-import { BUFF_ICONS } from './buff-triggers.js?v=a3093922';
+import { BUFF_ICONS } from './buff-triggers.js?v=9fd877c4';
 
 const SECOND = 1000;
 

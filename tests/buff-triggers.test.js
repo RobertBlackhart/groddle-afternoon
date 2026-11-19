@@ -18,12 +18,13 @@ import {
   flamingGrinderFreeCrushes,
   freeBatchEnergyCost,
   gandleveryMunchButton,
+  NEKKID_ARTICLES,
   isNekkid,
   questTimerBuffs,
   smallEnlightenmentSeconds,
   smeltItDealtItFreeSmelts,
-} from '../public/js/buff-triggers.js?v=a3093922';
-import { MIRRORED_BUFFS, buffTriggersFeature } from '../public/js/features/buff-triggers-feature.js?v=dfc89748';
+} from '../public/js/buff-triggers.js?v=9fd877c4';
+import { MIRRORED_BUFFS, buffTriggersFeature } from '../public/js/features/buff-triggers-feature.js?v=c8fad3d8';
 import { meditationFeature } from '../public/js/features/meditation-feature.js?v=9f2a3044';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=3f04f41b';
 import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=6467ae7d';
@@ -40,7 +41,7 @@ import {
   hasBuff,
   removeBuff,
   tickBuffs,
-} from '../public/js/buffs.js?v=57e5d8e0';
+} from '../public/js/buffs.js?v=2ed95a93';
 import { getSkillPackageOverride, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
 import { miningProfile } from '../public/js/mining.js?v=8463f2ac';
 import { resolveAnimalKinshipPackage } from '../public/js/animal-kinship.js?v=75d3cb34';
@@ -543,6 +544,26 @@ describe('systems with their own timer show the source buff', () => {
     const engine = makeEngine({ wornArticle: () => 'none' });
     engine.sync();
     assert.ok(engine.hasBuff('nekkid'));
+  });
+
+  it('Chest hair and the Censor bars count as bare, as avatar_is_nekkid has them (shirts 553/557/558, dresses 248/278)', () => {
+    const catalog = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'public/assets/avatar/catalog.json'), 'utf8'));
+    const ids = (type, name) => { const a = catalog.types[type].find((x) => x.name === name); return [a.gsjsId, ...a.variants.map((v) => v.id)]; };
+    assert.deepEqual([...new Set(ids('shirt', 'chest_hair'))].sort(), [553, 557, 558]);
+    assert.deepEqual(ids('dress', 'censor_bar_boys')[0], 248);
+    assert.deepEqual(ids('dress', 'censor_bar_girls')[0], 278);
+    assert.deepEqual({ shirt: [...NEKKID_ARTICLES.shirt], dress: [...NEKKID_ARTICLES.dress] }, { shirt: ['chest_hair'], dress: ['censor_bar_boys', 'censor_bar_girls'] });
+    const outfit = { coat: 'none', shirt: 'chest_hair', pants: 'none', dress: 'none', skirt: 'none' };
+    assert.equal(isNekkid((t) => outfit[t] || 'none'), true);
+    Object.assign(outfit, { shirt: 'none', dress: 'censor_bar_girls' });
+    assert.equal(isNekkid((t) => outfit[t] || 'none'), true);
+    outfit.dress = 'censor_bar_boys';
+    assert.equal(isNekkid((t) => outfit[t] || 'none'), true);
+    outfit.shirt = 'classic_undershirt';
+    assert.equal(isNekkid((t) => outfit[t] || 'none'), false, 'any other top is clothing');
+    outfit.shirt = 'chest_hair';
+    outfit.coat = 'navy_coat';
+    assert.equal(isNekkid((t) => outfit[t] || 'none'), false, 'a coat over chest hair is clothing');
   });
 });
 
