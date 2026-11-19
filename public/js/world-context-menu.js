@@ -59,6 +59,22 @@ export const GLITCH_ONE_CLICK = Object.freeze({
 });
 
 /**
+ * #385: Glitch's doors. A click on a location door went straight through, never a menu:
+ * control/TSFrontController.as startInteractionWith 3600-3607 (a DoorView: startLocationMove with
+ * MoveModel.DOOR_MOVE), reached by a click once the walk there ends (engine/AvatarController.as 164-197)
+ * and by the keyboard's interaction (465-479). Ours are the
+ * location doors features/doors-feature.js draws (`street_door`: shop and tower doors, the subway
+ * stations' stairs): a click, a tap or Enter runs their Enter; a door that refuses (locked, a level,
+ * a closed instance) still says why. A right-click and a long press open the one-line menu.
+ */
+export const GLITCH_ONE_CLICK_DOORS = Object.freeze({ street_door: 'enter' });
+
+/** PURE (#385): is `thing` a Glitch door, which a click goes through? */
+export function isOneClickDoor(thing) {
+  return Object.prototype.hasOwnProperty.call(GLITCH_ONE_CLICK_DOORS, String(thing?.classId || ''));
+}
+
+/**
  * G661: the other 12 of the 24, and why none is in GLITCH_ONE_CLICK. newxp_chain already pulls on a
  * click (its own hit area, features/newxp-feature.js), so it never had a menu to skip.
  */
@@ -102,6 +118,7 @@ export function oneClickVerbId(thing) {
   if (!thing) return '';
   const cls = String(thing.classId || '');
   if (Object.prototype.hasOwnProperty.call(ONE_CLICK_VERBS, cls)) return ONE_CLICK_VERBS[cls];
+  if (isOneClickDoor(thing)) return GLITCH_ONE_CLICK_DOORS[cls];
   const item = oneClickItem(thing);
   return Object.prototype.hasOwnProperty.call(GLITCH_ONE_CLICK, item) ? GLITCH_ONE_CLICK[item].verb : '';
 }
@@ -112,7 +129,7 @@ export function isOneClick(thing) {
 }
 
 /**
- * PURE (G661): what a left click on a Glitch one-click thing does, given the menu's verbs for it now:
+ * PURE (G661, #385 doors): what a left click on a Glitch one-click thing does, given the menu's verbs for it now:
  * { kind: 'run', verb } when its verb is there and enabled (and needs no pick from the pack: a verb
  * that asks for one opens the menu, as the client opened it at the target item); else { kind: 'menu' }
  * (open_menu_when_one_click_is_disabled); null for a thing that is not one (the menu as ever).
@@ -120,7 +137,8 @@ export function isOneClick(thing) {
  */
 export function oneClickChoice(thing, verbs = []) {
   const item = oneClickItem(thing);
-  const entry = Object.prototype.hasOwnProperty.call(GLITCH_ONE_CLICK, item) ? GLITCH_ONE_CLICK[item] : null;
+  const door = isOneClickDoor(thing) ? { verb: GLITCH_ONE_CLICK_DOORS[thing.classId] } : null;
+  const entry = door || (Object.prototype.hasOwnProperty.call(GLITCH_ONE_CLICK, item) ? GLITCH_ONE_CLICK[item] : null);
   if (!entry) return null;
   if (entry.visitorsOnly && thing?.state?.owner) return { kind: 'menu' };
   const list = typeof verbs === 'function' ? verbs() : verbs;

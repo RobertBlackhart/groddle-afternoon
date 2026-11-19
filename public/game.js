@@ -1093,7 +1093,7 @@ import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from '
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
-import { oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=34676f3f';
+import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=f952c4db';
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=149ad544';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=1c44e7c3';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
@@ -10643,6 +10643,23 @@ function enterHeldBy() {
   return features.query('holdsEnter', engine) || null;
 }
 
+/**
+ * #385: Enter or E at a door goes through it, as Glitch's keyboard interaction did (a lone door in
+ * reach: engine/AvatarController.as 465-479, then TSFrontController.as startInteractionWith 3600-3607);
+ * anything else opens its menu. A door whose Enter is off (already going) opens the menu.
+ */
+function openMenuOrDoor(target) {
+  if (isOneClickDoor(target) && !currentAction) {
+    const one = oneClickChoice(target, () => menuVerbsFor(target));
+    if (one?.kind === 'run') {
+      setCanvasData('oneClick', `${target.classId || ''}:${one.verb.id}`);
+      requestVerb(target, one.verb);
+      return;
+    }
+  }
+  openVerbMenu(target);
+}
+
 function tryOpenNearestMenu({ nearestFirst = false } = {}) {
   // G228: a feature may hold Enter. G230 (Austin 2026-10-28): the crab's call-out no
   // longer does; Enter opens its menu as the client's (LocationInputHandler.as 193-237).
@@ -10658,12 +10675,12 @@ function tryOpenNearestMenu({ nearestFirst = false } = {}) {
     Date.now() < recentInteractionUntil &&
     withinReach(recentInteractionTarget, 160)
   ) {
-    openVerbMenu(recentInteractionTarget);
+    openMenuOrDoor(recentInteractionTarget);
     return;
   }
   // Prefer hovered target when player is roughly near it
   if (hoverTarget?.sprite && !hoverTarget.sprite.destroyed && withinReach(hoverTarget, 160)) {
-    openVerbMenu(hoverTarget);
+    openMenuOrDoor(hoverTarget);
     return;
   }
   // G206: several things in reach open the chooser in the client's order; a
@@ -10684,7 +10701,7 @@ function tryOpenNearestMenu({ nearestFirst = false } = {}) {
   // Bug report #5: Enter at a garden tends it (TSFrontController.as 3727-3733, js/garden-tend.js);
   // scripted presses keep the nearest plot's menu.
   if (t && !nearestFirst && /^garden_(new|plot)$/.test(t.classId) && startGardenTend(t.state?.gardenEntity || t)) return;
-  if (t) openVerbMenu(t);
+  if (t) openMenuOrDoor(t);
   else toast('Nothing nearby to interact with.');
 }
 
@@ -33970,6 +33987,7 @@ async function main() {
       // G661 (js/world-context-menu.js GLITCH_ONE_CLICK): Glitch's one-click items run their verb on a
       // click when it is enabled, else the menu opens (TSFrontController.as 3736-3758); never while
       // decorating (3736). Enter, a right-click and a long press still open the full menu.
+      // #385: a door's click goes through it (GLITCH_ONE_CLICK_DOORS, TSFrontController.as 3600-3607).
       const one = !currentAction && !features.query('homeEditMode', engine) ? oneClickChoice(best, () => menuVerbsFor(best)) : null;
       if (one?.kind === 'run') {
         setCanvasData('oneClick', `${best.classId || ''}:${one.verb.id}`);

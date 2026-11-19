@@ -21,7 +21,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GLITCH_ONE_CLICK, GLITCH_ONE_CLICK_ABSENT, ONE_CLICK_ITEM_OF, isOneClick, oneClickChoice, oneClickItem, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=34676f3f';
+import { GLITCH_ONE_CLICK, GLITCH_ONE_CLICK_ABSENT, ONE_CLICK_ITEM_OF, isOneClick, oneClickChoice, oneClickItem, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=f952c4db';
 import { cabinetVerbs } from '../public/js/home-storage.js?v=b0225465';
 import { poleVerbs } from '../public/js/home-street-mp.js?v=64df32c2';
 
@@ -128,9 +128,11 @@ describe('G661: Glitch\'s one-click items', () => {
     const game = read('public/game.js');
     const down = game.slice(game.indexOf("app.canvas.addEventListener('pointerdown', (e) => {"), game.indexOf("app.canvas.addEventListener('contextmenu'"));
     assert.match(down, /if \(best\.classId === 'npc_mailbox'\) \{[\s\S]*?return;\n      \}\n[\s\S]*?const one = !currentAction && !features\.query\('homeEditMode', engine\) \? oneClickChoice\(best, \(\) => menuVerbsFor\(best\)\) : null;\n      if \(one\?\.kind === 'run'\) \{\n[^\n]*\n        requestVerb\(best, one\.verb\);\n        return;\n      \}\n      openVerbMenu\(best\);/);
-    // Enter (tryOpenNearestMenu) still opens the menu.
+    // Enter (tryOpenNearestMenu) still opens an item's menu: only a door goes through (#385, openMenuOrDoor).
     const enter = game.slice(game.indexOf('\nfunction tryOpenNearestMenu('), game.indexOf('\n}\n', game.indexOf('\nfunction tryOpenNearestMenu(')));
     assert.doesNotMatch(enter, /oneClick/);
-    assert.match(enter, /if \(t\) openVerbMenu\(t\);/);
+    assert.match(enter, /if \(t\) openMenuOrDoor\(t\);/);
+    const helper = game.slice(game.indexOf('\nfunction openMenuOrDoor('), game.indexOf('\n}\n', game.indexOf('\nfunction openMenuOrDoor(')));
+    assert.match(helper, /if \(isOneClickDoor\(target\) && !currentAction\) \{/);
   });
 });

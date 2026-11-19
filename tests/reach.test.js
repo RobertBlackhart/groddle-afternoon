@@ -193,8 +193,8 @@ describe('game.js wiring', () => {
     // ENTERSHELF: Enter measures a thing at the avatar's height across, before the floor test.
     assert.match(game, /let d = interactDistance\(t, player\.x, player\.y\);[\s\S]{0,160}if \(!t\.airborne\) d = Math\.min\(d, enterBodyDistance\(t\)\);\s*\/\/[^\n]*\n\s*if \(d < 160 && behindFloorFromPlayer\(t\)\) return Infinity;/);
     assert.match(game, /function enterBodyDistance\(t\) \{[\s\S]{0,260}return bodyReachDistance\(box, player\.x, player\.y, head\);/);
-    assert.match(game, /withinReach\(recentInteractionTarget, 160\)\s*\) \{\s*openVerbMenu\(recentInteractionTarget\)/);
-    assert.match(game, /withinReach\(hoverTarget, 160\)\) \{\s*openVerbMenu\(hoverTarget\)/);
+    assert.match(game, /withinReach\(recentInteractionTarget, 160\)\s*\) \{\s*openMenuOrDoor\(recentInteractionTarget\)/);
+    assert.match(game, /withinReach\(hoverTarget, 160\)\) \{\s*openMenuOrDoor\(hoverTarget\)/);
     assert.match(game, /recent \|\| \(nearHover && withinReach\(nearHover, 160\)/);
   });
 
