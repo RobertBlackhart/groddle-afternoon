@@ -3333,6 +3333,147 @@
         "game:67e6ef55602",
         "game:b54da83ecca"
       ]
+    },
+    {
+      "id": "F101",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "Planting in a shared garden or patch could fail with a save message while the game was busy saving.",
+      "report": 519,
+      "commits": [
+        "game:4ef8166949d"
+      ]
+    },
+    {
+      "id": "F102",
+      "area": "Map",
+      "show": "fixing",
+      "text": "When two signposts led to the next street on different floors, the map's arrow could walk you to the one you could not reach.",
+      "report": 516,
+      "commits": [
+        "game:b38c722c6f8"
+      ]
+    },
+    {
+      "id": "F103",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "In the Juju Hideout your feet looked to stand above the ground.",
+      "report": 514,
+      "commits": [
+        "game:86557dae549"
+      ]
+    },
+    {
+      "id": "F104",
+      "area": "Subway",
+      "show": "fixing",
+      "text": "The subway ticket card ignored the arrow keys and Escape, and the arrows walked you behind it.",
+      "report": 518,
+      "commits": [
+        "game:523cccf1e89"
+      ]
+    },
+    {
+      "id": "F105",
+      "area": "Street projects",
+      "show": "fixing",
+      "text": "Online, a Street Spirit showed Project available for a moment on arrival, then it vanished. A resting street now counts down to when its next project opens.",
+      "report": 520,
+      "commits": [
+        "game:0e23d4a466b",
+        "game:7657e7607a6"
+      ]
+    },
+    {
+      "id": "F106",
+      "area": "Making",
+      "show": "fixing",
+      "text": "Crushing used the first Grinder in your pack, not the one you opened, so the Grand Ol' Grinder hit the plain Grinder's limit.",
+      "report": 515,
+      "commits": [
+        "game:4de36a96101"
+      ]
+    },
+    {
+      "id": "F107",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "If a Party Space ended while you were away, you came back on an unbuilt street in Baqala instead of where you entered the party.",
+      "commits": [
+        "game:fe1362c28b1"
+      ]
+    },
+    {
+      "id": "F108",
+      "area": "Mining and tools",
+      "show": "fixing",
+      "text": "Mined-out rocks came back in 45 seconds, so two rocks could be mined in turn forever.",
+      "report": 521,
+      "commits": [
+        "game:4f62b62bcaf",
+        "server:d294041",
+        "site:281fe1a"
+      ]
+    },
+    {
+      "id": "F109",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "After half an hour on someone's home street, petting, watering and harvesting there showed a message and did not reach their yard.",
+      "report": 522,
+      "commits": [
+        "game:a4352406f80",
+        "game:d25b6d6242f"
+      ]
+    },
+    {
+      "id": "F110",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Towers, their scaffolding and Note Poles stood lower than Glitch drew them, so you seemed to float above the porch.",
+      "report": 523,
+      "commits": [
+        "game:d25cade4659"
+      ]
+    },
+    {
+      "id": "F111",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "The Jellisac Mound grew two Jellisacs instead of three, and the mound, Barnacle Pod and Firefly Hive sat a little off.",
+      "report": 512,
+      "commits": [
+        "game:899f8161440",
+        "site:f0e93f0"
+      ]
+    },
+    {
+      "id": "F112",
+      "area": "Render",
+      "show": "fixing",
+      "text": "On some graphics cards the minimap was blank and the ground below the street turned a flat brown.",
+      "report": 517
+    },
+    {
+      "id": "F113",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Several players froze in place in a Party Space while the rest of the screen kept working.",
+      "report": 513
+    },
+    {
+      "id": "F114",
+      "area": "Pack",
+      "show": "fixing",
+      "text": "Dragging a stack onto Decorate and some other places took from the first stack of that item, not the one you dragged.",
+      "report": 515
+    },
+    {
+      "id": "F115",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Race tickets, teleport scripts and the Gameshow Ticket did not work inside a Party Space."
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.50.0",
+  "release": "v0.50.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 1,
+    "fixing": 5,
     "known": 13,
     "unreleased": 0,
-    "fixed": 323,
+    "fixed": 334,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -140,6 +140,13 @@
           "text": "Rooms where Glitch made you find your own way out showed a Go back button once solved.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "F103",
+          "text": "In the Juju Hideout your feet looked to stand above the ground.",
+          "report": 514,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -522,6 +529,13 @@
           "text": "The map named the wrong Giant for some shrine streets, and the Rook missed a built upgrade's shrine.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "F102",
+          "text": "When two signposts led to the next street on different floors, the map's arrow could walk you to the one you could not reach.",
+          "report": 516,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -818,6 +832,27 @@
           "version": "v0.50.0"
         },
         {
+          "id": "F109",
+          "text": "After half an hour on someone's home street, petting, watering and harvesting there showed a message and did not reach their yard.",
+          "report": 522,
+          "state": "fixed",
+          "version": "v0.50.1"
+        },
+        {
+          "id": "F110",
+          "text": "Towers, their scaffolding and Note Poles stood lower than Glitch drew them, so you seemed to float above the porch.",
+          "report": 523,
+          "state": "fixed",
+          "version": "v0.50.1"
+        },
+        {
+          "id": "F111",
+          "text": "The Jellisac Mound grew two Jellisacs instead of three, and the mound, Barnacle Pod and Firefly Hive sat a little off.",
+          "report": 512,
+          "state": "fixed",
+          "version": "v0.50.1"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -936,6 +971,13 @@
           "text": "The featured street project could send players to a street resting after a build, where no project board shows.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "F105",
+          "text": "Online, a Street Spirit showed Project available for a moment on arrival, then it vanished. A resting street now counts down to when its next project opens.",
+          "report": 520,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -959,6 +1001,13 @@
           "text": "Picks, Shovels and Scrapers have no verbs in the pack, and the Tinkertool cannot repair itself or mend a tool bit by bit when it is worn.",
           "state": "fixed",
           "version": "v0.36.0"
+        },
+        {
+          "id": "F108",
+          "text": "Mined-out rocks came back in 45 seconds, so two rocks could be mined in turn forever.",
+          "report": 521,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -1265,6 +1314,17 @@
       "name": "Multiplayer",
       "items": [
         {
+          "id": "F113",
+          "text": "Several players froze in place in a Party Space while the rest of the screen kept working.",
+          "report": 513,
+          "state": "fixing"
+        },
+        {
+          "id": "F115",
+          "text": "Race tickets, teleport scripts and the Gameshow Ticket did not work inside a Party Space.",
+          "state": "fixing"
+        },
+        {
           "id": "G641",
           "text": "A note left on the ground stays private to you. In Glitch anyone could read it.",
           "state": "known"
@@ -1340,6 +1400,12 @@
           "text": "Mining or digging together at a friend's home rocks and piles didn't count as helping, or for I Me Mine and It Takes Two.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "F107",
+          "text": "If a Party Space ended while you were away, you came back on an unbuilt street in Baqala instead of where you entered the party.",
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -1900,6 +1966,12 @@
       "name": "Pack",
       "items": [
         {
+          "id": "F114",
+          "text": "Dragging a stack onto Decorate and some other places took from the first stack of that item, not the one you dragged.",
+          "report": 515,
+          "state": "fixing"
+        },
+        {
           "id": "F68",
           "text": "An open bag closed when you clicked away, so you could not watch its counts while collecting.",
           "report": 287,
@@ -1984,6 +2056,13 @@
           "text": "Planting or tending a shared garden could say the garden did not answer when saving the game first was slow, and a late answer was redrawn without a word.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "F101",
+          "text": "Planting in a shared garden or patch could fail with a save message while the game was busy saving.",
+          "report": 519,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -2307,6 +2386,12 @@
       "name": "Render",
       "items": [
         {
+          "id": "F112",
+          "text": "On some graphics cards the minimap was blank and the ground below the street turned a flat brown.",
+          "report": 517,
+          "state": "fixing"
+        },
+        {
           "id": "G844",
           "text": "On some graphics cards the report picture came out black and the street map blank.",
           "state": "fixed",
@@ -2396,6 +2481,13 @@
           "text": "Spinning, smelting and crushing stopped at 99 at a time, so Spin Doctor could not be earned; Glitch let you use as much as you carried.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "F106",
+          "text": "Crushing used the first Grinder in your pack, not the one you opened, so the Grand Ol' Grinder hit the plain Grinder's limit.",
+          "report": 515,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     },
@@ -2468,6 +2560,13 @@
           "text": "A subway station's red button sat a few pixels off and glowed past the gate it is mounted on.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "F104",
+          "text": "The subway ticket card ignored the arrow keys and Escape, and the arrows walked you behind it.",
+          "report": 518,
+          "state": "fixed",
+          "version": "v0.50.1"
         }
       ]
     }
