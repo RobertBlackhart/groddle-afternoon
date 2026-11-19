@@ -29,10 +29,15 @@ const escapeHtml = (s) => String(s ?? '')
   .replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
 
-/** Signed amounts in plain text as gain/loss spans (the original's coloured Local Chat amounts). */
+/**
+ * Signed amounts in plain text as gain/loss spans (the original's coloured Local Chat amounts).
+ * A unit that starts with a capital is an item or a Giant: the whole name takes the colour, every
+ * word of it ("+3 Butterfly Butter", "-1 Pinch of Salt", "+5 Humbaba favor"; #547: only the first
+ * word did). A lower-case unit is a stat, one word ("+2 mood", "-4 energy").
+ */
 export function colorizeAmounts(text) {
   return escapeHtml(text).replace(
-    /(^|[\s(])([+\-−]\d[\d,]*(?:\.\d+)?)(\s+)([A-Za-z][\w'’-]*(?:\s(?:favor|Tree|Pie|Pies))?)/g,
+    /(^|[\s(])([+\-−]\d[\d,]*(?:\.\d+)?)(\s+)([A-Z][\w'’-]*(?:\s(?:of\s)?(?:[A-Z0-9][\w'’-]*|favor))*|[a-z][\w'’-]*(?:\s(?:favor|Tree|Pie|Pies))?)/g,
     (all, pre, num, sp, unit) => `${pre}<span class="${num[0] === '+' ? 'act-gain' : 'act-loss'}">${num}${sp}${unit}</span>`
   );
 }
