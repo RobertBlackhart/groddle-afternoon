@@ -11,12 +11,10 @@ The art leaves the SWF's 300 x 300 stage (the bear swells up to the camera), so 
 copy whose stage grows by one stage size on every side (tools/icon-hires/swfinfo.py rewrite, as
 tools/vector-sprites padStage). Each emote is drawn at the zoom that fits its scene's art (the
 union of every frame's alpha box) in FIT, the 220 x 226 box the solo game shows it in (style.css
-.emotional-bear-fx img), cropped to that union, and written as a looping lossy WebP (lossless
-alpha), the format the four shipped in. Every frame lasts the overlay's time over the scene's
-frames rounded down to 10 ms (50, 50, 40 and 40 ms: the pace the shipped files had), and the empty
-last frame holds the rest of the overlay, so a loop never restarts inside it. The 2012 client ran
-the scene at the SWF's 30 frames a second (the 2012 kiss recording, emo_bear_kiss.mp4, is 73 frames
-at 30 fps), so the remake's emotes play slower than Glitch's; that pace is kept here.
+.emotional-bear-fx img), cropped to that union, and written as a lossy WebP (lossless alpha) that
+plays once, as Glitch played it: at the SWF's 30 frames a second (33, 33 and 34 ms in turn; the
+2012 kiss recording, emo_bear_kiss.mp4, is 73 frames at 30 fps), each scene's last frame (empty) a
+stop() (MainTimeline frame100, frame245, frame322, frame391), held for the rest of the overlay.
 
 bears.json records, per emote, the scene, zoom, crop, size, frame time, every frame's alpha box in
 the render and the file's sha256. --check decodes each shipped file and compares the picture shown
@@ -90,13 +88,18 @@ def scenes(swf):
     return out
 
 
-def frame_ms(overlay, count):
-    return (overlay // count) // 10 * 10
+FPS = 30
+
+
+def frame_ms(k):
+    # 30 frames a second: 33, 33 and 34 ms in turn.
+    return 34 if k % 3 == 2 else 33
 
 
 def durations(overlay, count):
-    ms = frame_ms(overlay, count)
-    return [ms] * (count - 1) + [overlay - ms * (count - 1)]
+    """Each frame at 30 fps; the last (the scene's stop(), empty) holds until the overlay ends."""
+    head = [frame_ms(k) for k in range(count - 1)]
+    return head + [overlay - sum(head)]
 
 
 def box(img, floor=ALPHA_MIN):
@@ -183,7 +186,7 @@ def shown(path, durs):
 
 def encode(frames, durs, dst):
     with tempfile.TemporaryDirectory() as tmp:
-        args = ['img2webp', '-loop', '0', '-lossy', '-q', str(QUALITY), '-m', '6']
+        args = ['img2webp', '-loop', '1', '-lossy', '-q', str(QUALITY), '-m', '6']
         for k, (f, d) in enumerate(zip(frames, durs)):
             p = os.path.join(tmp, f'{k:03d}.png')
             f.save(p)
@@ -203,8 +206,8 @@ def build(work):
     meta = {
         'about': 'The Emotional Bear emotes (tools/emote-art/bears.py): scenes of glitch-items ' + SWF_REL + ' (CC0) rendered by FFDec '
                  'on a stage padded by one stage size, at the zoom that fits the scene\'s art in the fit box, cropped to its alpha union, '
-                 'lossy WebP at the given quality (lossless alpha), loop 0. frames: the scene\'s root timeline range; frameMs: the overlay '
-                 'time over the frames rounded down to 10 ms, the empty last frame holding the rest; boxes: each rendered frame\'s alpha box.',
+                 'lossy WebP at the given quality (lossless alpha), played once. frames: the scene\'s root timeline range, played at fps (the SWF\'s '
+                 'rate) and stopped on the last (empty) frame, which holds until overlayMs; boxes: each rendered frame\'s alpha box.',
         'swf': SWF_REL, 'swfSha256': sha(src), 'fit': list(FIT), 'quality': QUALITY, 'emotes': {},
     }
     for state, (stem, overlay) in EMOTES.items():
@@ -215,7 +218,7 @@ def build(work):
         encode(frames, durs, dst)
         meta['emotes'][state] = {
             'file': os.path.relpath(dst, os.path.join(SPIKE, 'public')), 'scene': state, 'frames': [first, last], 'count': len(frames),
-            'overlayMs': overlay, 'frameMs': durs[0], 'zoom': zoom, 'crop': list(crop), 'size': list(frames[0].size),
+            'overlayMs': overlay, 'fps': FPS, 'zoom': zoom, 'crop': list(crop), 'size': list(frames[0].size),
             'boxes': [list(b) if b else None for b in (box(f) for f in frames)], 'sha256': sha(dst),
         }
         print(f'{dst}: {len(frames)} frames of {frames[0].size[0]}x{frames[0].size[1]} at zoom {zoom:.4f}, {os.path.getsize(dst)} bytes')
@@ -256,13 +259,13 @@ def check(work):
         if sha(path) != e['sha256']:
             stale.append(f'bears.json does not describe {stem}.webp')
         count = e['frames'][1] - e['frames'][0] + 1
-        if e['count'] != count or len(e['boxes']) != count or e['overlayMs'] != overlay:
+        if e['count'] != count or len(e['boxes']) != count or e['overlayMs'] != overlay or e.get('fps') != FPS:
             stale.append(f'{stem}: bears.json frames or overlay time are wrong')
             continue
         durs = durations(overlay, count)
         got, total, size, loop = shown(path, durs)
-        if total != overlay or list(size) != e['size'] or loop != 0:
-            stale.append(f'{stem}.webp: {total} ms, {size[0]} x {size[1]}, loop {loop}; want {overlay} ms, {e["size"]}, loop 0')
+        if total != overlay or list(size) != e['size'] or loop != 1:
+            stale.append(f'{stem}.webp: {total} ms, {size[0]} x {size[1]}, loop {loop}; want {overlay} ms, {e["size"]}, loop 1')
             continue
         if rendering:
             if tuple(table.get(state, ())) != tuple(e['frames']):

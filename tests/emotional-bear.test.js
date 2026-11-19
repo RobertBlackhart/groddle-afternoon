@@ -214,11 +214,11 @@ describe('the four emotes are the SWF\'s scenes, built and checked by tools/emot
   const riff = (file) => {
     const b = readFileSync(join(publicRoot, file));
     assert.equal(b.toString('ascii', 0, 4), 'RIFF', file);
-    const out = { frames: 0, ms: 0, loop: -1, canvas: null };
+    const out = { frames: 0, ms: 0, loop: -1, canvas: null, durs: [] };
     for (let i = 12; i + 8 <= b.length;) {
       const id = b.toString('ascii', i, i + 4);
       const len = b.readUInt32LE(i + 4);
-      if (id === 'ANMF') { out.frames += 1; out.ms += b.readUIntLE(i + 8 + 12, 3); }
+      if (id === 'ANMF') { const d = b.readUIntLE(i + 8 + 12, 3); out.frames += 1; out.ms += d; out.durs.push(d); }
       if (id === 'ANIM') out.loop = b.readUInt16LE(i + 12);
       if (id === 'VP8X') out.canvas = [b.readUIntLE(i + 12, 3) + 1, b.readUIntLE(i + 15, 3) + 1];
       i += 8 + len + (len & 1);
@@ -226,7 +226,7 @@ describe('the four emotes are the SWF\'s scenes, built and checked by tools/emot
     return out;
   };
 
-  it('each file is one scene, every frame of it, for the overlay\'s time, inside the 220 x 226 box', () => {
+  it('each file is one scene, every frame of it, played once at Glitch\'s 30 fps and held for the overlay\'s time, inside the 220 x 226 box', () => {
     assert.deepEqual(Object.keys(meta.emotes).sort(), Object.keys(SCENES).sort());
     for (const [state, [first, last, action, overlay]] of Object.entries(SCENES)) {
       const e = meta.emotes[state];
@@ -242,7 +242,14 @@ describe('the four emotes are the SWF\'s scenes, built and checked by tools/emot
       assert.ok(e.size[0] <= 220 && e.size[1] <= 226, `${state} ${e.size}`);
       assert.ok(w.frames <= count && w.frames >= count * 0.6, `${state}: ${w.frames} pictures for ${count} frames`);
       assert.equal(w.ms, overlay, state);
-      assert.equal(w.loop, 0, state);
+      // Glitch played the scene at the SWF's 30 fps and stopped on its last frame (MainTimeline stop()):
+      // the art is over by (count - 1) / 30 s, the empty last picture holds until the overlay ends.
+      assert.equal(e.fps, 30, state);
+      assert.equal(w.loop, 1, `${state} plays once`);
+      const lastStart = w.ms - w.durs.at(-1);
+      assert.ok(lastStart <= Math.ceil(((count - 1) * 1000) / 30) && lastStart >= ((count - 1) * 1000) / 30 * 0.9, `${state}: the scene runs ${lastStart} ms for ${count} frames`);
+      const sorted = [...w.durs].sort((a, b) => a - b);
+      assert.ok([33, 34].includes(sorted[sorted.length >> 1]), `${state}: most pictures last a 30th of a second`);
       // The scene fades in from nothing and out to nothing; every frame between draws inside the file.
       assert.equal(e.boxes[0], null, `${state} starts empty`);
       assert.equal(e.boxes[count - 1], null, `${state} ends empty`);

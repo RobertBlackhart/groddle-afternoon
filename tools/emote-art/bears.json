@@ -1,5 +1,5 @@
 {
- "about": "The Emotional Bear emotes (tools/emote-art/bears.py): scenes of glitch-items misc/emotional_bear/emotional_bear.swf (CC0) rendered by FFDec on a stage padded by one stage size, at the zoom that fits the scene's art in the fit box, cropped to its alpha union, lossy WebP at the given quality (lossless alpha), loop 0. frames: the scene's root timeline range; frameMs: the overlay time over the frames rounded down to 10 ms, the empty last frame holding the rest; boxes: each rendered frame's alpha box.",
+ "about": "The Emotional Bear emotes (tools/emote-art/bears.py): scenes of glitch-items misc/emotional_bear/emotional_bear.swf (CC0) rendered by FFDec on a stage padded by one stage size, at the zoom that fits the scene's art in the fit box, cropped to its alpha union, lossy WebP at the given quality (lossless alpha), played once. frames: the scene's root timeline range, played at fps (the SWF's rate) and stopped on the last (empty) frame, which holds until overlayMs; boxes: each rendered frame's alpha box.",
  "swf": "misc/emotional_bear/emotional_bear.swf",
  "swfSha256": "b54bc71dd87a7222a8bbfca25afc0bd78b88dffd801f445c6a60b16490bb9df7",
  "fit": [220, 226],
@@ -11,7 +11,7 @@
    "frames": [10, 100],
    "count": 91,
    "overlayMs": 5000,
-   "frameMs": 50,
+   "fps": 30,
    "zoom": 0.555294,
    "crop": [142, 160, 361, 383],
    "size": [219, 223],
@@ -108,7 +108,7 @@
     [23, 7, 209, 210],
     null
    ],
-   "sha256": "1f996b6ae4b3f2b0c77462604e155cf81a490bbaa57912a8fa8ffaaa097d1f2a"
+   "sha256": "ad0c041891fd9ba8d214956a593ec91fbc8191fe013221c23c3aa440c4d30ced"
   },
   "high_5": {
    "file": "assets/sprites/emotional-bear/high-five.webp",
@@ -116,7 +116,7 @@
    "frames": [246, 322],
    "count": 77,
    "overlayMs": 4000,
-   "frameMs": 50,
+   "fps": 30,
    "zoom": 0.395683,
    "crop": [66, 64, 286, 255],
    "size": [220, 191],
@@ -199,7 +199,7 @@
     null,
     null
    ],
-   "sha256": "30158fae983b269199eaf3bfc3091ff24fa4bf3ba304ceee2eccc1d21465815d"
+   "sha256": "f8214ab5b9736f98294d3fa66c657bfdaa57344fbd40b5495dcc1dc61e299531"
   },
   "moon": {
    "file": "assets/sprites/emotional-bear/moon.webp",
@@ -207,7 +207,7 @@
    "frames": [101, 245],
    "count": 145,
    "overlayMs": 6000,
-   "frameMs": 40,
+   "fps": 30,
    "zoom": 0.626781,
    "crop": [169, 171, 389, 391],
    "size": [220, 220],
@@ -358,7 +358,7 @@
     [28, 26, 203, 193],
     null
    ],
-   "sha256": "3d42bde3e7fe7ddd8e585c50e3b1952c3baa5aa84a483d89faf18f735338ede6"
+   "sha256": "6d48833396a4afafc39b91b3555fd1e9e5b5d729c551d066a49bb4e1e39c112d"
   },
   "kiss": {
    "file": "assets/sprites/emotional-bear/kiss.webp",
@@ -366,7 +366,7 @@
    "frames": [323, 391],
    "count": 69,
    "overlayMs": 3000,
-   "frameMs": 40,
+   "fps": 30,
    "zoom": 0.441767,
    "crop": [82, 107, 302, 286],
    "size": [220, 179],
@@ -441,7 +441,7 @@
     [77, 42, 152, 136],
     null
    ],
-   "sha256": "4f7c6fefa4698d61a752d0cc02b7653f5bd7c046a7ddd6d89d2944f282919503"
+   "sha256": "a90930dafd08b11d65667edfe011c6625f6e76350fb03c5f1db770c8a77fa9f8"
   }
  }
 }
