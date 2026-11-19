@@ -13,6 +13,7 @@ import { join } from 'node:path';
 
 import { cameraTargetX, cameraLocationViewWidth, cameraOverlayCenterX } from '../public/js/movement.js?fresh=railcam';
 import { footOf } from '../public/js/sprite-feet.js?fresh=railcam';
+import { quadSpans } from '../public/js/wide-quads.js?fresh=railcam';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -66,10 +67,28 @@ describe('G582: the camera reserves the Social drawer over the world', () => {
     assert.match(render, /function buildGroundSkirt\([^)]*rightPad = 0\)/);
     // Whole texels ending on the end (edgeMirrorTexels' rule): a rounded-down texture left a gap there.
     assert.match(render, /const padW = wholeTexels\(pad, res\) \/ res;/);
-    assert.match(render, /spr\.scale\.x = -1;\n\s*spr\.x = W \+ padW;/);
-    for (const part of ['base.rect(0, sourceH, fullW', 'fade.width = fullW', 'shade.width = fullW', 'deep.rect(0, sourceH + fadeDepth, fullW']) {
+    // The band's last padW px, rendered once, laid on in pieces (js/wide-quads.js, the flicker fix),
+    // each flipped about the end: texel u (world W - padW + u) lands at W + padW - u.
+    assert.match(render, /renderer\.render\(\{ container: shell, target: rt, transform: new PIXI\.Matrix\(1, 0, 0, 1, -\(W - padW\), -top\), clear: true \}\);\n\s*textures\.push\(rt\);\n\s*const pieces = quadPieceViews\(PIXI, rt, views\);/);
+    assert.match(render, /spr\.scale\.x = -1;\n\s*spr\.x = W \+ padW - piece\.dx;/);
+    assert.match(render, /function quadPieceViews\(PIXI, texture, views\) \{\n\s*const spans = quadSpans\(0, texture\.width, texture\.height\);/);
+    for (const [W, padW, band] of [[6000, 900, 56], [3000, 899.6551724137931, 12]]) {
+      const pieces = quadSpans(0, padW, band);
+      assert.equal(pieces[0].x, 0);
+      assert.equal(pieces.at(-1).x + pieces.at(-1).w, padW, 'the pieces cover the whole pad');
+      for (const { x: dx, w } of pieces) {
+        const at = W + padW - dx;
+        for (const u of [dx, dx + w / 2, dx + w]) assert.ok(Math.abs((W - padW + u) + (at - (u - dx)) - 2 * W) < 1e-9, `mirrored about W (${W}, ${u})`);
+      }
+    }
+    // The fills and fades span fullW (the street and the pad), in pieces.
+    for (const part of ['wideRect(new PIXI.Graphics(), 0, sourceH, fullW, depth,', 'const ramps = (texture) => quadSpans(0, fullW, fadeDepth).map(', 'strip.addChild(...ramps(fadeTexture), ...ramps(shadeTexture), deep)', 'wideRect(new PIXI.Graphics(), 0, sourceH + fadeDepth, fullW,']) {
       assert.ok(render.includes(part), part);
     }
+    assert.match(render, /const ramps = [^\n]*\n\s*const spr = new PIXI\.Sprite\(texture\);\n\s*spr\.x = s\.x;\n\s*spr\.y = sourceH;\n\s*spr\.width = s\.w;/);
+    assert.match(render, /const fullW = W \+ pad;/);
+    const fill = quadSpans(0, 6900, 88);
+    assert.equal(fill.reduce((sum, s) => sum + s.w, 0), 6900);
     assert.match(render, /Number\(opts\.skirtRight\)/);
     assert.match(game, /skirtRight: SKIRT_RIGHT_PAD/);
     // Wide enough for the largest reserve the camera takes (0.42 of the view) at the Original zoom.
