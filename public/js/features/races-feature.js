@@ -454,11 +454,19 @@ function buyTicket(classTsid, engine) {
 /* Activation (race_ticket.js verb "activate")                         */
 /* ------------------------------------------------------------------ */
 
+/**
+ * A Party Space is no bar to a race: race_ticket.js 116-122 checks only that you are not already in
+ * a game, so Glitch let a ticket start from inside one. The race's way back is the party street; a
+ * party that ends meanwhile sends you on to the party's own way back (inc_instances.js 140-175,
+ * party-spaces-feature onStreetEnter). Every other held place keeps its own way out.
+ */
+const heldElsewhere = (engine) => engine.transientInstance() && engine.query?.('partyHoldHere', engine) !== true;
+
 function activationBlock(engine) {
   if (run || starting) return 'You are already racing!';
-  if (engine.transientInstance()) return 'You cannot start a race from here.';
+  if (heldElsewhere(engine)) return 'You cannot start a race from here.';
   if (engine.homeContext().inHome) return 'Races start out in the world, not at home.';
-  const gate = engine.travelGate?.(raceSceneTsid('space_race'));
+  const gate = engine.travelGate?.(raceSceneTsid('space_race'), { via: 'race' });
   if (gate && gate.ok === false) return gate.msg || 'You are too dead to be racing around.';
   return '';
 }

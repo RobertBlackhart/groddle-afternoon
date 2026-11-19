@@ -640,7 +640,10 @@ async function enterParty(engine) {
     // a race or game is given up, and the way back is the street you joined it from.
     const trip = engine.query?.('partyTrip', 'depart', engine) || null;
     const out = trip?.tsid ? trip : visit ? engine.sceneReturnTo : null;
-    p.returnTo = out?.tsid
+    // A race started in this party leads back into it: the party keeps the way back it already had
+    // (instances_enter 96-99 keeps `previously` for a member coming back in).
+    const backIntoParty = Boolean(out?.tsid && partySpaceForStreet(out.tsid) && p.returnTo);
+    if (!backIntoParty) p.returnTo = out?.tsid
       ? {
         tsid: out.tsid,
         label: out.label || STREET_INDEX.streets?.[out.tsid]?.label || '',
@@ -1500,6 +1503,9 @@ export const partySpacesFeature = {
     const target = partySpaceForStreet(tsid);
     if (target) return { ok: false, msg: 'Party spaces are private. Activate a Party Pack to throw a party.' };
     if (onPartyStreet(engine) && party()?.inside) {
+      // A teleport or a race ticket leaves the space, as in Glitch (teleportation_teleport 362-366,
+      // race_ticket.js 116-122): the party goes on without you, and its teleporter brings you back.
+      if (meta.via === 'teleport' || meta.via === 'race') return null;
       const back = party().returnTo;
       if (meta.via === 'signpost' && back && back.tsid === tsid) {
         if (!back.hold) return null;
@@ -1625,6 +1631,11 @@ export const partySpacesFeature = {
     if (!p?.mp || !space() || !partyAlive(p) || mpOnSpace(engine)) return false;
     enterParty(engine);
     return true;
+  },
+
+  /** Standing in a live Party Space under its own hold (races and teleports may leave it, as in Glitch). */
+  partyHoldHere(engine) {
+    return engine.instanceHold === HOLD && onPartyStreet(engine) && !engine.inScene?.();
   },
 
   /**

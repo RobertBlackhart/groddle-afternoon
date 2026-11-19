@@ -59,7 +59,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=280a4725';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=0ce61bb6';
+import { teleportationFeature } from './teleportation-feature.js?v=245a20d7';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,

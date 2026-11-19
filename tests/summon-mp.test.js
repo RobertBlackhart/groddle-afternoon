@@ -26,7 +26,7 @@ import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '
 import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=c20e6df1';
 import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=149ad544';
 import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=60948f39';
-import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=0ce61bb6';
+import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=245a20d7';
 
 const ROOT = join(import.meta.dirname, '..');
 const V = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];

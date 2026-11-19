@@ -19,8 +19,9 @@
  *   no_auto_return) so you land on the target; arriving outside runs the quest's
  *   onExitLocation (quests/quest_scripting.js 11-20), which fails an unfinished quest
  *   (btc_room_3.js 67-76), as the room's Leave does. Saving a point there stays refused
- *   (can_set_target 313), as does summoning (can_summon 777). The other places the game
- *   holds you (races, Paradise, party spaces, the older rooms in game.js) keep their own exits.
+ *   (can_set_target 313), as does summoning (can_summon 777). A Party Space can be teleported
+ *   out of the same way (its party goes on; its teleporter takes you back in). The other places
+ *   the game holds you (races, Paradise, the older rooms in game.js) keep their own exits.
  * - The jump plays the avatar's hit1 for one second (playHitAnimation('hit1', 1000)
  *   before teleportToLocationDelayed, G892), then engine.enter() lands on the saved x/y.
  *
@@ -274,8 +275,12 @@ function playWarpHit(engine) {
 /** A quest room the jump will leave (quest-instances-feature questRoomHere), else null. */
 const questRoomHere = (engine) => engine.query?.('questRoomHere', engine) || null;
 
-/** Held where teleporting waits: any instance but a quest room, which a jump leaves (header). */
-const noExit = (engine) => engine.transientInstance() && !questRoomHere(engine);
+/**
+ * Held where teleporting waits: any instance but a quest room or a Party Space, which a jump leaves
+ * (header; teleportation_teleport 362-366 leaves any instance, and teleportation_can_teleport has no
+ * party check: inc_teleportation.js 777 refuses only summoning from one).
+ */
+const noExit = (engine) => engine.transientInstance() && !questRoomHere(engine) && engine.query?.('partyHoldHere', engine) !== true;
 
 /** Shared checks before any jump: held places, then the host travel gate. */
 function preflight(engine, target) {

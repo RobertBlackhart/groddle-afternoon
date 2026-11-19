@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CULTIVATION_CLASSES } from '../public/js/homes-catalog.js?v=b787b3eb';
-import { nodeKeyMap } from '../public/js/features/homes-feature.js?v=9338f4af';
+import { nodeKeyMap } from '../public/js/features/homes-feature.js?v=7344582b';
 import { homeNodes } from '../public/js/yard-stock-mp.js?v=0e5969e6';
 import { SPRITE_FEET } from '../public/js/sprite-feet-data.js?v=ff9c5119';
 import { stageFoot, swfStage } from '../tools/swf-stage.mjs';
