@@ -92,9 +92,10 @@ describe('the Contribute page data (tools/contribute/build-data.mjs)', () => {
     assert.deepEqual([t('2026-11-03').out, t('2026-11-03').months], [8600, 1]);
     assert.deepEqual([t('2026-12-01').out, t('2026-12-01').months], [16200, 2]);
     const march = t('2027-03-15');
-    assert.deepEqual([march.out, march.months, march.in, march.difference], [39000, 5, 1500, -37500], 'three $5 gifts by GitHub Sponsors: 14, 15 and 18 November 2026');
+    assert.deepEqual([march.out, march.months, march.in, march.difference], [39000, 5, 2500, -36500], 'three $5 gifts by GitHub Sponsors (14, 15 and 18 November 2026) and a one-time $10 on 19 November');
     assert.deepEqual([t('2026-11-13').in, t('2026-11-14').in, t('2026-11-14').gifts], [0, 500, 1]);
     assert.deepEqual([t('2026-11-17').in, t('2026-11-17').gifts, t('2026-11-18').in, t('2026-11-18').gifts], [1000, 2, 1500, 3]);
+    assert.deepEqual([t('2026-11-19').in, t('2026-11-19').gifts], [2500, 4]);
     assert.deepEqual(march.costs.map((c) => c.times), [1, 5, 5, 5]);
     assert.deepEqual([t('2027-10-31').out, t('2027-11-01').out], [92200, 100800], 'the domain renews on the anniversary');
     // A start on the 31st: a short month is charged on its last day, a leap day's anniversary on 28 February.
