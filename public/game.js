@@ -28741,6 +28741,10 @@ function renderBuffStrip() {
     chip.addEventListener('click', openBuffsPanel);
     strip.appendChild(chip);
   }
+  // #539: an upright phone's route card goes under the strip (style.css --buffs-room).
+  const root = document.getElementById('game-root');
+  const h = strip.hidden ? 0 : Math.round(strip.offsetHeight);
+  if (root && root.style.getPropertyValue('--buff-strip-h') !== `${h}px`) root.style.setProperty('--buff-strip-h', `${h}px`);
 }
 
 function pulsePurpleJunk() {

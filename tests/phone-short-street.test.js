@@ -39,7 +39,9 @@ describe('a short street on an upright phone', () => {
     const css = resolvedStyleCss();
     const px = (expr) => {
       // calc() of px, rem and n * px terms, the tokens already resolved (--safe-t and --minimap-h are 0 here).
-      const body = expr.replace(/var\(--(?:safe-t|minimap-h)(?:, 0px)?\)/g, '0px').replace(/^calc\((.*)\)$/, '$1');
+      // The stack's max() (map, pins, buffs) is 0 with none of them shown.
+      const body = expr.replace(/max\(var\(--minimap-h, 0px\), var\(--pins-room, 0px\) \+ var\(--buffs-room, 0px\)\)/, '0px')
+        .replace(/var\(--(?:safe-t|minimap-h)(?:, 0px)?\)/g, '0px').replace(/^calc\((.*)\)$/, '$1');
       return body.split('+').reduce((sum, term) => {
         const t = term.trim();
         const m = t.match(/^(?:(\d+(?:\.\d+)?) \* )?(-?\d+(?:\.\d+)?)(px|rem)$/);
@@ -56,14 +58,33 @@ describe('a short street on an upright phone', () => {
   });
 });
 
-describe('G860 (#416): under 760 px the route card and the pinned quests', () => {
+describe('G860 (#416) and #539: under 760 px the route card goes under the pinned quests and the buff strip', () => {
   const css = readFileSync(join(root, 'public/style.css'), 'utf8');
   const narrow = css.slice(css.indexOf('#348: under 760 px'), css.indexOf('/* PHONE MAP (Austin 2026-11-13'));
-  it('the card goes under the pins while they show, by their height', () => {
-    const m = narrow.match(/#game-root:not\(\[data-sheet\]\):has\(#quest-pins:not\(\[hidden\]\)\) \.route-gps \{ top: ([^;]+);/);
-    assert.ok(m, 'the rule is in the narrow block');
-    const base = narrow.match(/\[data-ui="modern"\] #game-root \.route-gps \{ top: calc\(([^;]+)\);/)[1];
-    assert.equal(m[1], `calc(${base} + var(--quest-pins-h, 0px) + var(--space-2))`);
+  const card = () => narrow.match(/\[data-ui="modern"\] #game-root \.route-gps \{ top: calc\(([^;]+)\);/)[1];
+  it('one rule places the card: under the map (right) or the pins and the strip (left), the taller', () => {
+    assert.equal(card(), '2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + max(var(--minimap-h, 0px), var(--pins-room, 0px) + var(--buffs-room, 0px))');
+    // No second card rule for one case (the G860 one-off is gone).
+    assert.equal(narrow.match(/\.route-gps \{ top:/g).length, 1);
+  });
+  it('the pins take room while they show, by their height', () => {
+    assert.match(narrow, /#game-root:not\(\[data-sheet\]\):has\(#quest-pins:not\(\[hidden\]\)\) \{ --pins-room: calc\(var\(--quest-pins-h, 0px\) \+ var\(--space-2\)\); \}/);
+  });
+  it('#539: the buff strip takes room while it shows, by its height (game.js keeps --buff-strip-h)', () => {
+    assert.match(narrow, /#game-root:not\(\[data-sheet\]\):has\(#buff-strip:not\(\[hidden\]\)\) \{ --buffs-room: calc\(var\(--buff-strip-h, 0px\) \+ var\(--space-2\)\); \}/);
+    const game = readFileSync(join(root, 'public/game.js'), 'utf8');
+    const strip = game.slice(game.indexOf('function renderBuffStrip()'), game.indexOf('function pulsePurpleJunk()'));
+    assert.match(strip, /strip\.hidden \? 0 : Math\.round\(strip\.offsetHeight\)/);
+    assert.match(strip, /root\.style\.setProperty\('--buff-strip-h', `\$\{h\}px`\)/);
+  });
+  it('#539 (384 x 644): the card starts under the chips, which stand where the card did', () => {
+    // The strip's narrow top (no pins) is the card's base without the notch inset.
+    assert.ok(css.includes('  [data-ui="modern"] #buff-strip { top: calc(2 * var(--hud-h) + var(--space-4)); }'));
+    const hudH = 44, space2 = 8, space4 = 16, chips = 38; // .buff-chip height
+    const stripTop = 2 * hudH + space4;
+    const cardTop = 2 * hudH + space4 + Math.max(0, 0 + chips + space2);
+    assert.ok(cardTop >= stripTop + chips + space2, `card ${cardTop} under chips ${stripTop}-${stripTop + chips}`);
+    // Measured in Chrome at 384 x 644: chips 104 to 142, the card from 150 (it was 104, under them).
   });
   it('the pins stand at the card\'s height, and game.js keeps --quest-pins-h', () => {
     assert.match(css, /@media \(max-width: 760px\) \{\n\s+\[data-ui="modern"\] #game-root #quest-pins:not\(\[hidden\]\) \{ top: calc\(2 \* var\(--hud-h\) \+ var\(--space-4\)\); \}/);
