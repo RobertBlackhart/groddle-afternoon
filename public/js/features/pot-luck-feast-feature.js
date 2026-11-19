@@ -19,8 +19,9 @@
  *  - Harvest Stuffing: an Awesome Pot recipe that cooks only during the season (making.js
  *    recipe.season).
  *
- * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the
- * quest and the table. window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name), look(), list(),
+ * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the quest, the table and
+ * dressing (3 Turkey Tailfans and 3 Rooster Plumes: enough for Plume Fluffer I across the nearby streets).
+ * window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name), look(), list(),
  * seasonDate('2026-11-26') (online, where ?seasondate= cannot reach the page).
  * Canvas data: feastTable (on|off), feastCount, feastShown (classes drawn), feastQuest
  * (status:dishes/dressed/laid), feastLast, feastList (the Look list's row count, or closed).
@@ -511,7 +512,7 @@ function addRecipe() {
 function demoSetup(engine) {
   if (demoDone || !engine.param?.('feastdemo')) return;
   demoDone = true;
-  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 24], ['pinch_of_salt', 8], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 1]];
+  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 24], ['pinch_of_salt', 8], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 3], ['rooster_plume', 3]];
   for (const [cls, n] of kit) if (countItem(engine.inv, cls) < n) addItem(engine.inv, cls, n - countItem(engine.inv, cls));
   engine.refreshPack?.();
 }
