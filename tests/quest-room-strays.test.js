@@ -23,7 +23,7 @@ import { STRAY_FALLBACK_TSID, normalizeInstanceSave, strayWayOut } from '../publ
 import { BUILT_ROOMS, ROOM_STREETS, roomForStreet, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=8e9130b1';
 import { slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=410ccf2c';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=15279e25';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

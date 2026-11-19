@@ -11,8 +11,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=5f876a67';
 import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=2d9a0537';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=c74e154e';
-import { STATIONS } from '../public/js/subway.js?v=af570a5d';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=82707c3e';
+import { STATIONS } from '../public/js/subway.js?v=151bd7de';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

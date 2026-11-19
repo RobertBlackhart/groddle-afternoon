@@ -91,7 +91,7 @@ import {
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=af570a5d';
+} from '../subway.js?v=151bd7de';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 

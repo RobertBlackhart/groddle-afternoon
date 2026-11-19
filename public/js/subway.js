@@ -379,6 +379,25 @@ export const lineText = Object.freeze({
  */
 export const STATION_FLOOR = -136;
 export const STATION_BOUNDS = Object.freeze({ l: -750, r: 750, t: -640, b: -50 });
+/**
+ * #385: the walking line climbs the stairs to the entrance, so you walk up the steps as in Glitch
+ * (a player's rebuild of the station for Eleven draws the platform line as a slope from the floor up
+ * to the entrance). No station's location file survives, so the line is read off what does: the
+ * step noses in the 2012 snaps (the bottom tread at x -620, y -167; the top one at the left end, y
+ * -244) and the twelve surface doors' own arrival points into their stations (connect x, y: GFJ
+ * -582, -170; Jutuan Central -714, -239; Onto Parada -717, -242; Somewhat Sump -685, -257), which
+ * sit along it from x -720 to -520, 15 to 55 px over it (dropped onto the line). It meets the floor
+ * at x -580. One line for all 12 stations: they share one layout and one stairs.
+ */
+export const STATION_STAIRS_LINE = Object.freeze({ x1: -748, y1: -244, x2: -580, y2: -136 });
+/** The walking line's y at world x: up the stairs left of their foot, the floor elsewhere. */
+export function stationFloorY(x) {
+  const { x1, y1, x2, y2 } = STATION_STAIRS_LINE;
+  const at = Number(x);
+  if (!Number.isFinite(at) || at >= x2) return STATION_FLOOR;
+  const c = Math.max(x1, at);
+  return Math.round(y1 + ((y2 - y1) * (c - x1)) / (x2 - x1));
+}
 // The stairs' flat back stands flush with the station's left end (l -750 + 132 / 2), as in the snaps.
 // `train` is the nose's left edge; `sign` and `map` are GFJ's (STATION_SPOTS has each station's).
 // #509: A Red Button's centre at x 433 (snap x 1183 in every 2012 station snap), 27 x 47 px.
@@ -616,7 +635,12 @@ export const CAR_MUSIC = 'SUBWAY_CAR_HUM';
  */
 export function stationStreet(station, { surfaceDoor = null } = {}) {
   const { l, r, t, b } = STATION_BOUNDS;
-  const platforms = [{ id: 'plat_subway_platform', x1: l, y1: STATION_FLOOR, x2: r, y2: STATION_FLOOR, pc_perm: -1 }];
+  const S = STATION_STAIRS_LINE;
+  // #385: up the stairs to the entrance, then the platform floor.
+  const platforms = [
+    { id: 'plat_subway_stairs', x1: S.x1, y1: S.y1, x2: S.x2, y2: S.y2, pc_perm: -1 },
+    { id: 'plat_subway_platform', x1: S.x2, y1: STATION_FLOOR, x2: r, y2: STATION_FLOOR, pc_perm: -1 },
+  ];
   const [, sw, sh] = SUBWAY_ART.door_asset_stairs;
   const door = {
     id: 'door_subway_stairs',
@@ -661,7 +685,7 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     gradient: { top: '3A3B36', bottom: '55564F' },
     ladders: [],
     subway: { station: station.id },
-    why: { ...why, layout: 'Stairs, wall crack, the station sign, a column, the Subway Map post at the step-off spot (x 0, y -136 as in transit_disembark_callback), the train nose with the ticket post and the gate box with A Red Button, as the 2012 snaps show.' },
+    why: { ...why, layout: 'Stairs (the walking line climbs them to the entrance, #385), wall crack, the station sign, a column, the Subway Map post at the step-off spot (x 0, y -136 as in transit_disembark_callback), the train nose with the ticket post and the gate box with A Red Button, as the 2012 snaps show.' },
   };
 }
 
@@ -710,15 +734,18 @@ export function subwayIndexEntry(street) {
   };
 }
 
-/** Screen-space arrival on a station from its surface door (the door's connect x, on the floor). */
+/**
+ * Screen-space arrival on a station from its surface door: the door's connect x, on the walking line
+ * there (#385: the surface doors' arrival points are up the stairs, x -519 to -717).
+ */
 export function stationArrival(connectX) {
   const { l, r, t } = STATION_BOUNDS;
-  const x = Math.max(l + 120, Math.min(r - 120, Number(connectX) || STATION_X.stairs + 90));
-  return { x: Math.round(x - l), y: STATION_FLOOR - t };
+  const x = Math.max(STATION_STAIRS_LINE.x1 + 8, Math.min(r - 120, Number(connectX) || STATION_X.stairs + 90));
+  return { x: Math.round(x - l), y: stationFloorY(x) - t };
 }
 
 /** Screen-space spots inside the station and the car. */
-export const stationScreen = (x, y = STATION_FLOOR) => ({ x: x - STATION_BOUNDS.l, y: y - STATION_BOUNDS.t });
+export const stationScreen = (x, y = stationFloorY(x)) => ({ x: x - STATION_BOUNDS.l, y: y - STATION_BOUNDS.t });
 export const carScreen = (x, y = CAR_FLOOR) => ({ x: x - CAR_BOUNDS.l, y: y - CAR_BOUNDS.t });
 
 /** transit_enter_instance: x 0 + randInt(-300, 400), y -59. */

@@ -25,7 +25,7 @@
  * above ground; its region's name opens that region's map with the street found.
  */
 import { WORLD_MAP } from './map-views-data.js?v=07734585';
-import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName } from './subway.js?v=af570a5d';
+import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName } from './subway.js?v=151bd7de';
 
 export const MAP_VIEWS = Object.freeze(['hub', 'world', 'subway']);
 /** The window's title in each view (the client's: the region's name, "World Map", "Subway System"). */
