@@ -55,6 +55,7 @@ import {
 import { skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
 import { strikeDamageFor } from '../public/js/rook-attack.js?v=5e62a79f';
 import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=2f096b98';
+import { ROCK_RESPAWN_MS } from '../public/js/pace.js?v=ef709496';
 import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=3a1b5812';
 import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=4497a984';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=3e66996f';
@@ -364,12 +365,14 @@ describe('rooks, mining, herbs, foxes and sloths', () => {
     const res = mineRock(rock, inv, pc, { learned: ['mining_1'], now: 1, rng: () => 0.29 });
     assert.equal(res.cleared, true);
     assert.equal(rock.respawnChunks, 150);
-    assert.equal(tickMineRock(rock, 60000), true);
+    // It reforms after the paced wait (js/pace.js ROCK_RESPAWN_MS, #521), as the mega rock it rolled.
+    assert.equal(tickMineRock(rock, 1 + ROCK_RESPAWN_MS - 1), false);
+    assert.equal(tickMineRock(rock, 1 + ROCK_RESPAWN_MS), true);
     assert.equal(rock.chunksRemaining, 150);
     assert.equal(rock.mega, true);
     const plain = createMineRock('rock_sparkly_1', { chunksRemaining: 1 });
     mineRock(plain, createInventory({ pick: 1 }), { energy: 100 }, { learned: ['mining_1'], now: 1, rng: () => 0.29 });
-    tickMineRock(plain, 60000);
+    assert.equal(tickMineRock(plain, 1 + ROCK_RESPAWN_MS), true);
     assert.equal(plain.chunksRemaining, 50, '0.29 misses the plain 20%');
   });
 

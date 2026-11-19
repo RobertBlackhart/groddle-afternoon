@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2747,
+  "commits": 2751,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Mined-out rocks take longer to come back"
+   },
+   {
+    "date": "2026-11-18",
+    "kind": "fix",
+    "text": "QA browsers get the real GPU on Linux"
+   },
    {
     "date": "2026-11-18",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-18",
     "kind": "fix",
     "text": "A Piggy or Chicken that jumps along its shared walk stands on its line again instead of walking inside the ground"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Wine of the Dead flies from Hell's Bartender into your pack, as items handed over by NPCs did in Glitch"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A report picture with the game's UI matches the screen: its fonts, and scrolled lists where they were scrolled"
    }
   ]
  },
- "tests": 1159,
- "generatedAt": "2026-11-18"
+ "tests": 1160,
+ "generatedAt": "2026-11-19"
 }
