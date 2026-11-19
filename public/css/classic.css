@@ -1018,7 +1018,10 @@
 }
 :root[data-ui="classic"] #game-root .pack-bag-opener b { display: block; color: var(--c-classic-count); font: 700 var(--fs-classic-count)/var(--lh-none) var(--font-classic-count); }
 :root[data-ui="classic"] #game-root .pack-bag-opener i { display: block; width: 5px; height: 5px; margin-left: auto; border-radius: var(--radius-round); background: var(--c-classic-bag-dot); }
-:root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open { background: var(--c-classic-panel); transform: translateY(-6px); border-radius: 0 0 5px 5px; }
+/* #524: the open bag's slot in its tray's colour and border, square on top, joined up to the tray
+   (PackSlot.as drawFullBox 119-141: fill pack_container.backgroundColor, glow its borderColor). */
+:root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open { background: var(--c-classic-bag-panel); box-shadow: 0 0 0 1px var(--c-classic-bag-border); transform: translateY(-6px); border-radius: 0 0 5px 5px; }
+:root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open::before { content: none; }
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener { background: var(--c-classic-tab-off); }
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener b { color: var(--c-classic-panel); text-shadow: none; }
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener i { background: var(--c-classic-panel); }
