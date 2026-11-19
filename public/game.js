@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b88c9884';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d6946005';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f87123fe';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -525,7 +525,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=47c59f4d';
+} from './js/player-save.js?v=5120ba4d';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -932,11 +932,11 @@ import {
   quoteEmblemSpend,
   spendEmblemOnStudy,
   favorRelationNote,
-  emblemRelationNote,
+  emblemSpendConfirmText,
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=280a4725';
+} from './js/shrines.js?v=1b7760ec';
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
@@ -30378,7 +30378,7 @@ function confirmEmblemSpend(classTsid) {
     primaryLabel: 'Yes',
     cancelLabel: 'No',
     beats: [{
-      text: `Are you sure you want to spend this Emblem of ${giant.name} to reduce the learning time of ${quote.def?.name || skillName} by ${formatSpeedUpTime(quote.speedUp)}. Note! ${emblemRelationNote(giant.name, quote.giantRel)}`,
+      text: emblemSpendConfirmText(giant.name, quote.def?.name || skillName, quote),
       response: 'Yes',
     }],
     onComplete: () => performEmblemSpend(giantId),

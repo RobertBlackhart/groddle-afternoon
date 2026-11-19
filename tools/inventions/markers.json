@@ -1030,7 +1030,8 @@
     "ours: // R26, ours: the save a plant waits on first (the ledger": "online-request-save-first-line"
   },
   "public/js/shrines.js": {
-    "ours: The player's words use the Giant's name as ours spells": "ours-shrines"
+    "ours: The player's words use the Giant's name as ours spells": "ours-shrines",
+    "remake-own: * #443 (Austin 2026-11-19): the remake's own line in the emblem confirm when the": "emblem-half-cap-line"
   },
   "public/js/slash-commands.js": {
     "no-source: /stuck's words (the remake's own, no source line).": "stuck-command",

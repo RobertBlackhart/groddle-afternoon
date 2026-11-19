@@ -43,9 +43,9 @@ import {
   reopensAt,
 } from '../public/js/solo-feats.js?v=3bc9b43c';
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=387f86c7';
-import { FEATURES } from '../public/js/features/index.js?v=d6946005';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=47c59f4d';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=0685ed0d';
+import { FEATURES } from '../public/js/features/index.js?v=f87123fe';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=5120ba4d';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 
 const ROOT = join(import.meta.dirname, '..');

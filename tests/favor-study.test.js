@@ -28,6 +28,7 @@ import {
   FAVOR_STUDY_SECONDS,
   createShrineState,
   emblemRelationNote,
+  emblemSpendConfirmText,
   favorRelationNote,
   formatSpeedUpTime,
   giantRelationFor,
@@ -36,13 +37,13 @@ import {
   skillSpeedInfo,
   spendEmblemOnStudy,
   spendFavorOnStudy,
-} from '../public/js/shrines.js?v=280a4725';
+} from '../public/js/shrines.js?v=1b7760ec';
 import { emblemUnlockSkillFor } from '../public/js/skill-tree.js?v=e399b9ca';
 import { studyGiantsLine } from '../public/js/skills-panel.js?v=f5279b3d';
 import { EMITTED_EVENTS, routeQuestEvent, acceptOffer, requirementRoute } from '../public/js/quest-offers.js?v=8b51ffce';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import { getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { normalizeShrineState } from '../public/js/shrines.js?v=280a4725';
+import { normalizeShrineState } from '../public/js/shrines.js?v=1b7760ec';
 
 const root = join(import.meta.dirname, '..', 'public');
 
@@ -214,6 +215,21 @@ describe('spending an emblem (emblem_base spend)', () => {
     const idle = quoteEmblemSpend('humbaba', createSkillState(), opts);
     assert.equal(idle.text, 'You are not learning a skill.');
     assert.equal(spendEmblemOnStudy({}, 'humbaba', studying(), opts).reason, 'no_emblem');
+  });
+
+  it('#443: the confirm says when the half-the-time-left cap set the speed-up, and only then', () => {
+    const opts = { now: 0, unlockedAchievements: ['emblem_skill_unlock_humbaba_1', 'emblem_skill_unlock_mab_1'] };
+    // 600 s left: Humbaba (10 s/point) and Mab (7 s/point) both stop at 300 s, the same offer.
+    const humbaba = quoteEmblemSpend('humbaba', studying(600), opts);
+    const mab = quoteEmblemSpend('mab', studying(600), opts);
+    assert.deepEqual([humbaba.speedUp, mab.speedUp, humbaba.capped, mab.capped], [300, 300, true, true]);
+    assert.equal(emblemSpendConfirmText('Mab', 'Animal Kinship II', mab),
+      `Are you sure you want to spend this Emblem of Mab to reduce the learning time of Animal Kinship II by 5 mins. An emblem can cut at most half the time left. Note! ${emblemRelationNote('Mab', 's')}`);
+    // 100,000 s left: the emblem's own 10,000 s fits under the cap, so no line.
+    const free = quoteEmblemSpend('humbaba', studying(100_000), opts);
+    assert.equal(free.capped, false);
+    assert.equal(emblemSpendConfirmText('Humbaba', 'Animal Kinship II', free),
+      `Are you sure you want to spend this Emblem of Humbaba to reduce the learning time of Animal Kinship II by 2 hours 46 mins 40 secs. Note! ${emblemRelationNote('Humbaba', 'p')}`);
   });
 
   it('never sets a Better Learning flag', () => {

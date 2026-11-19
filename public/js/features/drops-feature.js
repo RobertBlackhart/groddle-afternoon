@@ -35,7 +35,7 @@
  */
 
 import { addItem, ensureItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
-import { emblemCostFor } from '../shrines.js?v=280a4725';
+import { emblemCostFor } from '../shrines.js?v=1b7760ec';
 import {
   DROP_ITEMS,
   DROP_TABLES,

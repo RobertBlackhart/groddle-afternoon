@@ -57,7 +57,7 @@ import { worldToScreen } from '../street-model.js?v=9f16f4ab';
 import { signArmWidth } from '../street-render.js?v=8571136f';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { GIANTS } from '../shrines.js?v=280a4725';
+import { GIANTS } from '../shrines.js?v=1b7760ec';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { teleportationFeature } from './teleportation-feature.js?v=245a20d7';
 import {

@@ -653,6 +653,13 @@ export const FAVOR_SPEND_COPY = Object.freeze({
 });
 
 /**
+ * #443 (Austin 2026-11-19): the remake's own line in the emblem confirm when the half-the-time-left
+ * cap (maxStudyAcceleration) cuts the emblem's speed-up, so two emblems offering the same time read
+ * as the rule they are. EmblemSpendDialog.as said nothing about the cap.
+ */
+export const EMBLEM_CAP_LINE = 'An emblem can cut at most half the time left.';
+
+/**
  * #377 (Austin 2026-11-15): the shrine's Learn Faster? box folds. Closed it is one line: its title and
  * this summary, the favor it would spend (or, in a few words, why it can't).
  */
@@ -713,6 +720,15 @@ export function emblemRelationNote(giantName, rel) {
   return `${giantName} is not affiliated with this skill, so spending their Emblem won't speed up learning as much.`;
 }
 
+/**
+ * EmblemSpendDialog.as setBody(): the confirm's words. #443: when the half-the-time-left cap set the
+ * speed-up, EMBLEM_CAP_LINE says so before the Note!.
+ */
+export function emblemSpendConfirmText(giantName, skillName, quote) {
+  const cap = quote?.capped ? ` ${EMBLEM_CAP_LINE}` : '';
+  return `Are you sure you want to spend this Emblem of ${giantName} to reduce the learning time of ${skillName} by ${formatSpeedUpTime(quote?.speedUp)}.${cap} Note! ${emblemRelationNote(giantName, quote?.giantRel)}`;
+}
+
 /** Giants.as getSex: the client's "he'll / she'll / they'll" for the Note! line. */
 const GIANT_SEX = Object.freeze({
   alph: 'm', cosma: 'f', friendly: 'm', grendaline: 'f', humbaba: 'f',
@@ -730,13 +746,15 @@ function giantPronounWill(giantName) {
  * whole number the client shows and the server removes (uint in ShrineDialog).
  */
 export function skillSpeedInfo(def, giantId, points, maxSeconds) {
-  const out = { giantRel: 'u', secondsPerPoint: FAVOR_STUDY_SECONDS.u, rawSpendPoints: 0, spendPoints: 0, speedUp: 0 };
+  const out = { giantRel: 'u', secondsPerPoint: FAVOR_STUDY_SECONDS.u, rawSpendPoints: 0, spendPoints: 0, speedUp: 0, capped: false };
   if (!def || !def.giants) return out;
   out.giantRel = giantRelationFor(def, giantId);
   out.secondsPerPoint = FAVOR_STUDY_SECONDS[out.giantRel];
   const maxPoints = Math.max(0, Number(maxSeconds) || 0) / out.secondsPerPoint;
   const budget = Math.max(0, Number(points) || 0);
   out.rawSpendPoints = maxPoints < budget ? maxPoints : budget;
+  // #443: the acceleration cap, not the budget, set the speed-up.
+  out.capped = maxPoints < budget;
   out.spendPoints = Math.floor(out.rawSpendPoints + 1e-9);
   out.speedUp = out.rawSpendPoints * out.secondsPerPoint;
   return out;

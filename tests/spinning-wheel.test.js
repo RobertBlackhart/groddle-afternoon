@@ -31,7 +31,7 @@ import {
 import {
   createShrineState,
   donateToShrine,
-} from '../public/js/shrines.js?v=280a4725';
+} from '../public/js/shrines.js?v=1b7760ec';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

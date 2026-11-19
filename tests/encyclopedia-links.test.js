@@ -25,7 +25,7 @@ import {
   encyclopediaSearchHref,
   isEncyclopediaKey,
 } from '../public/js/encyclopedia-links.js?v=eebc2a5d';
-import { GIANTS } from '../public/js/shrines.js?v=280a4725';
+import { GIANTS } from '../public/js/shrines.js?v=1b7760ec';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6895d7a2';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=c8210235';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=aca87866';

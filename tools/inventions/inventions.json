@@ -4839,6 +4839,27 @@
    "rows": [
     "G1032"
    ]
+  },
+  {
+   "id": "emblem-half-cap-line",
+   "title": "The emblem spend confirm adds \"An emblem can cut at most half the time left.\" when that cap sets the speed-up (#443).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/shrines.js",
+     "symbol": "EMBLEM_CAP_LINE emblemSpendConfirmText skillSpeedInfo.capped"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "confirmEmblemSpend"
+    }
+   ],
+   "why": "skills_start_acceleration caps any speed-up at half the study time left, so two emblems with different Giants can offer the same time; EmblemSpendDialog.as never said why (#443).",
+   "ruling": "Austin 2026-11-19 (lane hintk): approved the help line",
+   "rows": [
+    "G1033"
+   ]
   }
  ]
 }
