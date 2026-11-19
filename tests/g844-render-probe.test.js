@@ -11,10 +11,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { canvasTransparent, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=d2c7b0e0';
-import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=92ae727c';
-import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=2d5a9737';
-import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=13337887';
+import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=c4646998';
+import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=fb5e7850';
+import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=8571136f';
+import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=bf436021';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
@@ -139,14 +139,12 @@ describe("G844 the report's context and picture", () => {
     assert.equal(canvasTransparent(fakeCanvas(1280, 720), null), false, 'large, no document: not read, used');
   });
 
-  it('game.js: an empty off-screen picture is replaced by the screen copied in the same task', () => {
+  it('game.js: the report picture is read through the one readback, which copies the screen when it fails', () => {
     const game = read('game.js');
     const fn = game.slice(game.indexOf('function stageCanvas('), game.indexOf('\n}\n', game.indexOf('function stageCanvas(')));
-    assert.match(fn, /if \(!out \|\| canvasTransparent\(out\)\) return screenStageCanvas\(w, h, resolution\);/);
-    const copy = game.slice(game.indexOf('function screenStageCanvas('), game.indexOf('\n}\n', game.indexOf('function screenStageCanvas(')));
-    assert.ok(!/await|requestAnimationFrame|setTimeout/.test(copy), 'drawn and copied in one task');
-    assert.ok(copy.indexOf('app.renderer.render({ container: app.stage })') < copy.indexOf('drawImage(src'), 'drawn to the screen, then copied');
-    assert.match(copy, /return canvasTransparent\(out\) \? null : out;/);
+    // R29 (#517): js/render-probe.js readbackCanvas (tests/r29-readback.test.js drives it).
+    assert.match(fn, /readbackCanvas\(PIXI, app\.renderer, \{ width: w, height: h, resolution, passes: \[\{ container: app\.stage \}\]/);
+    assert.ok(!game.includes('function screenStageCanvas('), 'the screen copy lives in the readback');
     // A home frame copied from the screen: the camera is back, so the screen is drawn again.
     assert.match(game, /if \(frame && snapshotScreenCopies !== copies\) app\.renderer\.render\(\{ container: app\.stage \}\);/);
   });
@@ -160,6 +158,7 @@ describe('G844 the street map keeps its lines', () => {
   };
 
   it('an empty snapshot is null (the lines picture stays); its target gets depth and stencil before drawing', () => {
+    configureReadback();
     const calls = [];
     const renderer = {
       renderTarget: { getRenderTarget: () => ({ ensureDepthStencilTexture: () => calls.push('stencil') }) },
@@ -197,7 +196,9 @@ describe('G844 the ground skirt', () => {
   it('its targets get depth and stencil before drawing (the solid copy draws one sprite, no mask)', () => {
     const src = read('js/street-render.js');
     const fn = src.slice(src.indexOf('function buildGroundSkirt('), src.indexOf('root.groundSkirt = {'));
-    assert.equal((fn.match(/ensureDepthStencil\(renderer, PIXI\.RenderTexture\.create\(/g) || []).length, 4);
+    assert.equal((fn.match(/ensureDepthStencil\(renderer, PIXI\.RenderTexture\.create\(/g) || []).length, 3);
+    // R29 (#517): the band's colour is read through the one readback (its target gets them there).
+    assert.match(fn, /const read = readbackPixels\(PIXI, renderer, \{/);
     assert.match(fn, /const solid = PIXI\.RenderTexture\.create\(/);
   });
 });

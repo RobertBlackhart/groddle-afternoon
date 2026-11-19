@@ -693,7 +693,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=90517e2f';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e323d912';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=bf1058ea';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -724,7 +724,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=2d5a9737';
+} from './js/street-render.js?v=8571136f';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -821,7 +821,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e0
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=92ae727c';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=fb5e7850';
 import './js/classic/classic-zoom.js?v=d09cb283';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1063,7 +1063,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=03ac6512';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=3f4fdf4a';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=aca87866';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1099,7 +1099,7 @@ import { sceneAnim, syncAnim } from './js/deco-anim.js?v=41a70b24';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=7a63d78f';
 import * as textureUrls from './js/textures.js?v=1c44e7c3';
-import { canvasTransparent, ensureDepthStencil, probeRenderTexture, renderProbeLine } from './js/render-probe.js?v=d2c7b0e0';
+import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=c4646998';
 import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
 import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
@@ -1118,7 +1118,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=f5285804';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=87ee9e3e';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=7968c974';
 
@@ -1532,8 +1532,9 @@ let uploadGuard = null;
 let contextRestores = 0;
 /** G844 (#393): the boot probe of drawing into a render texture (js/render-probe.js), for a report's context. */
 let renderProbe = null;
-/** G844: snapshots whose off-screen picture came back empty and were copied from the screen (canvas data snapshotScreenCopies). */
+/** G844 / R29: pictures copied from the screen because a render texture could not be read (canvas data snapshotScreenCopies, readbackCopies by reader). */
 let snapshotScreenCopies = 0;
+const readbackCopies = {};
 // FEEL (js/camera-feel.js): per axis, whether the eased camera rests on its target this frame and
 // the way it last travelled.
 const cameraRest = { x: { rest: true, dir: 0 }, y: { rest: true, dir: 0 } };
@@ -8005,66 +8006,46 @@ function clearSpeechBubbles() {
   speechBubbles = [];
 }
 
-/** G844 (#393): draw a small square into a render texture and read it back (js/render-probe.js); canvas data renderProbe. */
+/**
+ * G844 (#393): draw a small square into a render texture and read it back (js/render-probe.js);
+ * canvas data renderProbe. R29 (#517): every reader of pixels asks it (configureReadback): where
+ * the read fails the screen is copied instead. QA: &readback=fail makes the probe fail and no
+ * render texture be read, as on that machine (canvas data readbackCopies counts the copies).
+ */
+const READBACK_FAIL = new URLSearchParams(location.search).get('readback') === 'fail';
 function runRenderProbe() {
   try {
     renderProbe = probeRenderTexture(PIXI, app?.renderer);
   } catch {
     renderProbe = null;
   }
+  if (READBACK_FAIL) renderProbe = { ...(renderProbe || {}), ok: false, plain: false };
+  configureReadback({
+    probe: renderProbe,
+    force: READBACK_FAIL,
+    redraw: () => app?.renderer?.render({ container: app.stage }),
+    onCopy: (label) => {
+      snapshotScreenCopies += 1;
+      readbackCopies[label || 'other'] = (readbackCopies[label || 'other'] || 0) + 1;
+      if (!app?.canvas) return;
+      app.canvas.dataset.snapshotScreenCopies = String(snapshotScreenCopies);
+      app.canvas.dataset.readbackCopies = Object.entries(readbackCopies).map(([k, n]) => `${k} ${n}`).join(', ');
+    },
+  });
   if (app?.canvas) app.canvas.dataset.renderProbe = renderProbeLine(renderProbe, { resolution: app.renderer?.resolution, restores: contextRestores });
 }
 
 /**
  * #380b (Firefox, Arjun Plunge at its right end: the report's picture was only the sky): the stage,
  * from the view's top left, drawn into a new canvas `w` x `h` view px at `resolution` (engine
- * snapshotCanvas and snapshotView). A layer clipped at its end (street-render's edge clip, a
- * stencil mask) drew nothing into an off-screen target in Firefox: Pixi adds the target's stencil
- * once the first mask is met, mid-draw. The target gets its depth and stencil before drawing, as
- * the screen has them, so it draws what the screen draws. Transparent where nothing is drawn, as
- * extract's own target was.
+ * snapshotCanvas and snapshotView). The target gets its depth and stencil before drawing, as the
+ * screen has them, so it draws what the screen draws. G844 (#393) / R29 (#517): through the one
+ * readback (js/render-probe.js readbackCanvas), so where reading a render texture back fails, or
+ * it comes back empty, the stage drawn to the screen is copied in the same task; null (no picture)
+ * when that fails too. Transparent where nothing is drawn, as extract's own target was.
  */
 function stageCanvas(w, h, resolution) {
-  const rt = PIXI.RenderTexture.create({ width: w, height: h, resolution });
-  let out = null;
-  try {
-    ensureDepthStencil(app.renderer, rt);
-    app.renderer.render({ container: app.stage, target: rt, clear: true, clearColor: [0, 0, 0, 0] });
-    out = app.renderer.extract.canvas(rt);
-  } finally {
-    rt.destroy(true);
-  }
-  // G844 (#393): a GPU whose off-screen draws come back empty (Firefox on Windows at DPR 3) gave
-  // a black report picture. The stage is always drawn somewhere, so an empty one has failed: the
-  // screen copy takes its place, or null (no picture) when that fails too.
-  if (!out || canvasTransparent(out)) return screenStageCanvas(w, h, resolution);
-  return out;
-}
-
-/**
- * G844 (#393): the stage drawn to the screen and the visible canvas copied in the same task, so
- * no preserveDrawingBuffer is needed (WebGL keeps the drawing buffer until the page is shown).
- * The view's top left `w` x `h` view px at `resolution`, as far as the screen reaches; null when
- * the copy cannot be made. The next frame draws the screen as usual.
- */
-function screenStageCanvas(w, h, resolution) {
-  const src = app?.canvas;
-  if (!src?.width || !src?.height) return null;
-  try {
-    app.renderer.render({ container: app.stage });
-    const per = src.width / VIEW_W;
-    const sw = Math.min(src.width, Math.round(w * per));
-    const sh = Math.min(src.height, Math.round(h * per));
-    const out = document.createElement('canvas');
-    out.width = Math.max(1, Math.round(w * resolution));
-    out.height = Math.max(1, Math.round(h * resolution));
-    out.getContext('2d').drawImage(src, 0, 0, sw, sh, 0, 0, (sw / per) * resolution, (sh / per) * resolution);
-    snapshotScreenCopies += 1;
-    src.dataset.snapshotScreenCopies = String(snapshotScreenCopies);
-    return canvasTransparent(out) ? null : out;
-  } catch {
-    return null;
-  }
+  return readbackCanvas(PIXI, app.renderer, { width: w, height: h, resolution, passes: [{ container: app.stage }], label: 'report' });
 }
 
 /**
@@ -10477,7 +10458,8 @@ function enterChoiceIcon(choice) {
     const drawn = drawTileArt({
       bounds: { x: b.x, y: b.y, width: b.width, height: b.height },
       dpr: window.devicePixelRatio || 1,
-      extract: ({ resolution, frame }) => app.renderer.extract.canvas({
+      // R29 (#517): through the one readback; empty or unreadable: the fallback icon.
+      extract: ({ resolution, frame }) => readbackExtract(app.renderer, {
         target: art,
         resolution,
         ...(frame ? { frame: new PIXI.Rectangle(frame.x, frame.y, frame.width, frame.height) } : {}),

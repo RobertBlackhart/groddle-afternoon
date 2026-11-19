@@ -17,12 +17,15 @@ const game = readFileSync(join(import.meta.dirname, '..', 'public/game.js'), 'ut
 describe('#380b report pictures keep clipped layers', () => {
   it('stageCanvas makes its target\'s depth and stencil before drawing', () => {
     const fn = game.slice(game.indexOf('function stageCanvas('), game.indexOf('\n}\n', game.indexOf('function stageCanvas(')));
-    // G844: through js/render-probe.js ensureDepthStencil (the same ensureDepthStencilTexture).
-    const stencil = fn.indexOf('ensureDepthStencil(app.renderer, rt)');
-    const draw = fn.indexOf('app.renderer.render({ container: app.stage, target: rt, clear: true, clearColor: [0, 0, 0, 0] })');
+    // R29 (#517): through the one readback (js/render-probe.js readbackCanvas), whose render
+    // texture gets its depth and stencil (ensureDepthStencil) before the passes draw.
+    assert.match(fn, /return readbackCanvas\(PIXI, app\.renderer, \{ width: w, height: h, resolution, passes: \[\{ container: app\.stage \}\], label: 'report' \}\);/);
+    const probe = readFileSync(join(import.meta.dirname, '..', 'public/js/render-probe.js'), 'utf8');
+    const read = probe.slice(probe.indexOf('function textureRead('), probe.indexOf('\n}\n', probe.indexOf('function textureRead(')));
+    const stencil = read.indexOf('rt = ensureDepthStencil(renderer, PIXI.RenderTexture.create(');
+    const draw = read.indexOf('drawPasses(renderer, passes, rt, CLEAR)');
     assert.ok(stencil > 0 && draw > stencil, 'stencil first, then the draw');
-    assert.match(fn, /out = app\.renderer\.extract\.canvas\(rt\);/);
-    assert.match(fn, /rt\.destroy\(true\);/);
+    assert.match(read, /rt\?\.destroy\(true\);/);
   });
   it('the report picture and the view snapshot both draw through it', () => {
     assert.match(game, /return stageCanvas\(VIEW_W, VIEW_H, resolution\);/);

@@ -175,7 +175,7 @@ describe('game.js wiring', () => {
     const icon = game.slice(at, game.indexOf('\n}\n', at));
     // Every dropped stack (not only the classes in content.js ITEM_ICONS) takes the item's icon.
     assert.match(icon, /if \(dropped && cls\) return itemIconUrl\(cls\);/);
-    assert.ok(icon.indexOf('itemIconUrl(cls)') < icon.indexOf('renderer.extract'), 'before any drawing');
+    assert.ok(icon.indexOf('itemIconUrl(cls)') < icon.indexOf('readbackExtract('), 'before any drawing');
     // A drawn sprite with a count badge child is drawn from its own frame, without the badge.
     assert.match(icon, /const badged = Boolean\(spr\.countBadge \|\| spr\._countBadge\);/);
     assert.match(icon, /spr\.texture && \(!spr\.children\?\.length \|\| badged\) \? new PIXI\.Sprite\(spr\.texture\) : spr/);
@@ -294,7 +294,7 @@ describe('tile art at the tile\'s pixel size', () => {
     const at = game.indexOf('function enterChoiceIcon(');
     const icon = game.slice(at, game.indexOf('\n}\n', at));
     assert.match(icon, /const named = choice\.target\?\.chooserIcon \|\| null;\n\s+if \(named\) return named;/);
-    assert.ok(icon.indexOf('chooserIcon') < icon.indexOf('renderer.extract'), 'before any drawing');
+    assert.ok(icon.indexOf('chooserIcon') < icon.indexOf('readbackExtract('), 'before any drawing');
     assert.match(icon, /return drawn \? trimmedIconUrl\(drawn\) : fallback;/);
     const storage = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/features/home-storage-feature.js'), 'utf8');
     assert.match(storage, /const chooserIcon = pieceArt\(row\.classTsid, row\.upgradeId\)\?\.path \|\| itemIcon\(row\.classTsid\);/);

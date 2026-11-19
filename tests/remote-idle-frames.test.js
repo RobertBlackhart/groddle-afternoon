@@ -96,7 +96,8 @@ describe('G655: a freed sheet is destroyed only after the batches stop binding i
     const retire = fnBody(game, 'retireTextures');
     // The entity layer is a render group of its own once the street map has drawn it alone.
     assert.match(retire, /entityLayer\?\.renderGroup, player\?\.parentRenderGroup, world\?\.renderGroup, app\?\.stage\?\.renderGroup/);
-    assert.match(read('public/js/ui/street-minimap.js'), /renderer\.render\(\{ container: layer, target: rt/);
+    // R29: drawn through js/render-probe.js readbackCanvas, a pass of its own.
+    assert.match(read('public/js/ui/street-minimap.js'), /passes: \[view, layer, front\]\.filter\(Boolean\)\.map\(\(container\) => \(\{ container, transform: m \}\)\)/);
     assert.match(retire, /structureDidChange = true/);
     assert.match(game, /const gameFrame = \(ticker\) => \{\s*syncStreetFront\(\);\s*orderPromptLayer\(\);\s*\/\/[^\n]*\n\s*retireQueue\.tick\(\);/);
     // A trimmed look's canvases go the same way.

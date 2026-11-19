@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=db8d7891';
-import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=13337887';
+import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=bf436021';
 
 const root = join(import.meta.dirname, '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

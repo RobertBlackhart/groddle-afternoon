@@ -16,7 +16,7 @@ import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDe
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
 import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=41a70b24';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
-import { ensureDepthStencil } from './render-probe.js?v=d2c7b0e0';
+import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=c4646998';
 import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
@@ -1837,24 +1837,28 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
         spr.y = sourceH - SOLID_OVERLAP;
         solids.push(spr);
       }
-      // The band's average colour from an eighth-size copy (one small read per chunk).
+      // The band's average colour from an eighth-size copy (one small read per chunk). R29 (#517):
+      // through the one readback (js/render-probe.js readbackPixels), which copies it from the
+      // screen where reading a render texture back fails; neither read: the fallback colour draws.
       const sw = Math.max(1, Math.ceil(w / 8));
       const sh = Math.max(1, Math.ceil(Math.max(band, 24) / 8));
-      const small = ensureDepthStencil(renderer, PIXI.RenderTexture.create({ width: sw, height: sh, resolution: 1 }));
-      renderer.render({ container: shell, target: small, transform: new PIXI.Matrix(1 / 8, 0, 0, 1 / 8, -x0 / 8, -(sourceH - Math.max(band, 24)) / 8), clear: true });
-      try {
-        const { pixels: px } = renderer.extract.pixels(small);
-        for (let i = 0; i < px.length; i += 4) {
-          const a = px[i + 3];
-          if (a < 200) continue;
-          // Premultiplied: back to the colour.
-          r += px[i] * 255 / a;
-          g += px[i + 1] * 255 / a;
-          b += px[i + 2] * 255 / a;
-          n += 1;
-        }
-      } catch { /* extract can fail on a lost context: the fallback colour draws */ }
-      small.destroy(true);
+      const read = readbackPixels(PIXI, renderer, {
+        width: sw,
+        height: sh,
+        resolution: 1,
+        passes: [{ container: shell, transform: new PIXI.Matrix(1 / 8, 0, 0, 1 / 8, -x0 / 8, -(sourceH - Math.max(band, 24)) / 8) }],
+        label: 'skirt',
+      });
+      const px = read?.pixels || [];
+      for (let i = 0; i < px.length; i += 4) {
+        const a = px[i + 3];
+        if (a < 200) continue;
+        // Premultiplied: back to the colour.
+        r += px[i] * 255 / a;
+        g += px[i + 1] * 255 / a;
+        b += px[i + 2] * 255 / a;
+        n += 1;
+      }
     }
     solidFilter?.destroy();
     const chunkCount = mirrors.length ? textures.length - solids.length : 0;

@@ -27,7 +27,7 @@ import {
   recognitionBranch,
   ticketDue,
 } from '../public/js/hell-tickets.js?v=d3c287af';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=bbdff26f';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=1e2516d2';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=6da8c49f';
 import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=ee2dec2d';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=e76f6d7a';

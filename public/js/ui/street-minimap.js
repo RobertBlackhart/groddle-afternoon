@@ -90,7 +90,7 @@
  */
 
 import { bindContextTrigger } from './context-menu.js?v=dfdf98f7';
-import { canvasTransparent, ensureDepthStencil } from '../render-probe.js?v=d2c7b0e0';
+import { canvasTransparent, readbackCanvas } from '../render-probe.js?v=c4646998';
 
 export const MAP_WIDTH = 160;
 export const MAX_CONTRACTED_H = 70;
@@ -495,7 +495,6 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
     obj[key] = value;
   };
   const keepTransform = (c) => restore.push([c.position, 'x', c.position.x], [c.position, 'y', c.position.y], [c.scale, 'x', c.scale.x], [c.scale, 'y', c.scale.y]);
-  let rt = null;
   try {
     if (view.parallaxLayers) {
       for (const lc of view.parallaxLayers) {
@@ -526,16 +525,19 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
       }
     }
     const front = view.frontView && !view.frontView.destroyed ? view.frontView : null;
-    rt = PIXI.RenderTexture.create({ width, height, resolution: 1 });
-    // G844 (#380b): its depth and stencil before drawing, as the screen has them (the street's edge clips are masks).
-    ensureDepthStencil(renderer, rt);
     const m = new PIXI.Matrix().scale(width / W, height / H);
-    renderer.render({ container: view, target: rt, clear: true, transform: m });
-    if (layer) renderer.render({ container: layer, target: rt, clear: false, transform: m });
-    if (front) renderer.render({ container: front, target: rt, clear: false, transform: m });
-    const canvas = renderer.extract.canvas(rt);
-    // G844 (#393): an empty picture (the GPU drew nothing off screen) has failed: the lines picture stays.
-    if (snapshotEmpty(canvas)) {
+    // R29 (#517): through the one readback (js/render-probe.js readbackCanvas): a render texture
+    // with its depth and stencil (#380b, the street's edge clips are masks), else, where reading
+    // one back fails, the same drawn to the screen and copied. Neither (G844): the lines picture stays.
+    const canvas = readbackCanvas(PIXI, renderer, {
+      width,
+      height,
+      resolution: 1,
+      passes: [view, layer, front].filter(Boolean).map((container) => ({ container, transform: m })),
+      label: 'map',
+      sample: 160,
+    });
+    if (!canvas) {
       console.warn('street map snapshot came back empty');
       return null;
     }
@@ -548,7 +550,6 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
       const [obj, key, value] = restore[i];
       obj[key] = value;
     }
-    rt?.destroy(true);
   }
 }
 
