@@ -1008,9 +1008,7 @@
     "stand-in: /** The opt-in stand-in Glitches (?companions=1|0, remembered): a solo": "solo-stand-ins"
   },
   "public/js/screen-fx.js": {
-    "invented: * blink. The hold is the remake's own rule (invention loading-card-min-hold): 300 ms a": "loading-card-min-hold",
-    "remake-only: 1388-1395), so it was up for the whole load; the remake only knows it": "loading-card-min-hold",
-    "remake-own: * blink. The hold is the remake's own rule (invention loading-card-min-hold): 300 ms a": "loading-card-min-hold"
+    "invented: * been up its reading time (invention loading-card-min-hold, Austin 2026-11-18, cut": "loading-card-min-hold"
   },
   "public/js/screen-queue.js": {
     "remake-own: * The remake's own gates, after the client's (UI audit 2026-10-29,": "ours-screen-queue"
