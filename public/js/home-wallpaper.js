@@ -330,6 +330,11 @@ function towerPieces(state, W, construction) {
     bottom: B,
     innerLeft: 130,
     innerRight: width - 76,
+    // #508: the floor and ceiling tiles run to 1200 and the right side wall (with its shadows) to
+    // 1195, past the room's 1178. Glitch's tower floor ended at the location's edge, so nothing
+    // past it ever showed; here the camera looks past it onto the timber wall, where that overhang
+    // drew a dark strip with a light line along the right-hand wall. The room is drawn clipped to it.
+    clip: { x: 0, w: width },
   };
 }
 

@@ -53,7 +53,7 @@ import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveT
 import { draggedStack, takeDragged } from '../drag-stack.js?v=199234f0';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
-import { homesFeature } from './homes-feature.js?v=6ac59f7f';
+import { homesFeature } from './homes-feature.js?v=3fa65380';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   SDB_PRICE_MAX,

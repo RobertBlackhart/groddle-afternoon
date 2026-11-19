@@ -216,8 +216,8 @@ import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=11d9014e';
 import { fadeInNewNear } from '../poof-fade.js?v=b9b5246d';
 import { projectApi } from './street-jobs-feature.js?v=399d5f01';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=18889f7a';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=99835b78';
-import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=cbff4813';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=252d8378';
+import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=0dc70bac';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=2059f1ea';
@@ -881,7 +881,16 @@ function drawRoomShell(engine, container, opts = {}) {
   outside.rect(0, room.bottom, width, 200).fill(0x3b2a1e);
   container.addChild(outside);
   const hires = wantsHiresPieces(engine);
-  for (const row of room.pieces) container.addChild(pieceSprite(engine, row, hires));
+  // #508: a room with a clip box (the Tower's floors) draws its pieces inside it, never over the
+  // timber wall past its ends (home-wallpaper.js towerPieces).
+  const piecesHost = room.clip ? new PIXI.Container() : container;
+  for (const row of room.pieces) piecesHost.addChild(pieceSprite(engine, row, hires));
+  if (room.clip) {
+    const clip = new PIXI.Graphics().rect(room.clip.x, top, room.clip.w, bottom - top).fill(0xffffff);
+    piecesHost.addChild(clip);
+    piecesHost.mask = clip;
+    container.addChild(piecesHost);
+  }
 
   // Warm light: glow pools under every lamp
   const light = new PIXI.Container();

@@ -18,7 +18,7 @@ import {
   swatchPiece,
   towerWallField,
   wallTargetAt,
-} from '../public/js/home-wallpaper.js?v=cbff4813';
+} from '../public/js/home-wallpaper.js?v=0dc70bac';
 import {
   INTERIOR,
   TOWER_ROOM,
@@ -151,6 +151,24 @@ describe('room composition (inc_homes.js homes_rebuild_floor)', () => {
     const fc = frames(c);
     assert.equal(fl.length, 2);
     assert.deepEqual(fc, [`crosssection_tower_base_horizontal_1177px@${fl[1].split("@")[1]}`, fl[0]]);
+  });
+
+  it('#508: a tower floor is drawn clipped to its width, so nothing hangs past its right-hand wall', () => {
+    const walls = Array(7).fill('creamy_stripes');
+    const t = roomPieces({ layout: 'tower', walls, floor: 'woodpanel', ceiling: 'wood' });
+    assert.deepEqual(t.clip, { x: 0, w: t.width });
+    // What the clip hides: the floor and ceiling tiles (to 1200) and the right side wall and its shadows (to 1195).
+    const over = t.pieces.filter((p) => p.x + p.w > t.width).map((p) => p.piece);
+    assert.ok(over.includes(WALLPAPER_MAPS.walls.creamy_stripes.right) || over.some((p) => /right/.test(p)), over.join());
+    assert.ok(t.pieces.filter((p) => p.target === 'floor').some((p) => p.x + p.w > t.width));
+    assert.ok(t.pieces.every((p) => p.x >= 0), 'nothing past the left end');
+    const c = roomPieces({ layout: 'tower', walls, floor: 'woodpanel', ceiling: 'wood' }, { construction: true });
+    assert.deepEqual(c.clip, { x: 0, w: c.width });
+    const house = roomPieces({ layout: 'house', walls: Array(6).fill('creamy_stripes'), floor: 'woodpanel', ceiling: 'wood' });
+    assert.equal(house.clip, undefined, 'a house is drawn as before');
+    const homes = readFileSync(join(pub, 'js/features/homes-feature.js'), 'utf8');
+    assert.match(homes, /const piecesHost = room\.clip \? new PIXI\.Container\(\) : container;/);
+    assert.match(homes, /new PIXI\.Graphics\(\)\.rect\(room\.clip\.x, top, room\.clip\.w, bottom - top\)\.fill\(0xffffff\);\n\s+piecesHost\.addChild\(clip\);\n\s+piecesHost\.mask = clip;/);
   });
 
   it('hits a segment centre (45 px inset) for one segment, its edge for the whole room', () => {
