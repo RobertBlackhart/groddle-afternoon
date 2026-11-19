@@ -33,7 +33,7 @@
  * keeps a dig crew (diggers) as a rock keeps miners.
  */
 
-import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear } from './mining.js?v=afb2b145';
+import { ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear } from './mining.js?v=2f096b98';
 import { MINING_EXPERT_UPGRADES } from './imagination-effects.js?v=70169933';
 import { TRANT_META, canHarvestTrant, fruitCapacityAt, resolveArborologyPackage } from './trants.js?v=b9147016';
 import { highestLightGreenThumbRank, quoteTrantCare } from './trant-care.js?v=9fba26b5';

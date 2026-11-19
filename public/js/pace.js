@@ -11,6 +11,12 @@
  * Only systems that call pace() take it: today mining alone (js/mining.js miningProfile). Austin is
  * weighing the same pace for every timed system; `default` is that figure, for a system to switch to
  * later by calling pace() with its own name. Every other package keeps Glitch's times for now.
+ *
+ * PACED_WAITS holds the single waits the remake paces (a row each: Glitch's time, the factor, the
+ * ruling). Every copy of such a wait reads it from here: the game's modules import it, and the
+ * builders carry it to the realtime server (tools/build-realtime-objects.mjs rules.rockRespawnMs)
+ * and the site (tools/build-yard-verbs.mjs respawnMs). tests/pace-waits.test.js fails when any copy
+ * disagrees with its row.
  */
 
 /** The share of Glitch's time each system takes (G983). */
@@ -27,6 +33,28 @@ export const PACED_PACKAGES = Object.freeze({
   mining: 'mining',
   mining_fancypick: 'mining',
 });
+
+/**
+ * Waits at the remake's pace, one row each: Glitch's own time (ms), the factor, the ruling.
+ *
+ * rock_respawn: a mined-out rock reforms 8 min on in Glitch (items/include/mining.js 422,
+ * apiSetTimerX('onRespawn', 1000 * 60 * (8 + extra_time))). The remake had 45 s, so with swings at
+ * 0.3 (G983) two rocks on a street alternated forever (#521). Austin 2026-11-19: 480 s x 0.3 = 144 s.
+ * Glitch's extra 0-16 min once more than 80 chunks were taken is not modelled.
+ */
+export const PACED_WAITS = Object.freeze({
+  rock_respawn: Object.freeze({ glitchMs: 480000, factor: 0.3, ruling: 'Austin 2026-11-19, #521' }),
+});
+
+/** A paced wait's time in the remake, in whole ms (Glitch's time x its factor). */
+export function pacedWaitMs(id) {
+  const row = PACED_WAITS[id];
+  if (!row) throw new Error(`pace.js: no paced wait ${id}`);
+  return Math.round(row.glitchMs * row.factor);
+}
+
+/** A mined-out rock comes back this long after (144 s: Glitch's 8 min at 0.3). */
+export const ROCK_RESPAWN_MS = pacedWaitMs('rock_respawn');
 
 /** A system's share of Glitch's time (`default` for a system not named). */
 export function paceFor(system) {

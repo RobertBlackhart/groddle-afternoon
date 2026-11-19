@@ -7,10 +7,10 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { REMAKE_PACE, pace, paceFor, pacedSystemOf } from '../public/js/pace.js?v=8aca33bc';
-import { MINING_COSTS, miningProfile, refiningProfile } from '../public/js/mining.js?v=afb2b145';
+import { REMAKE_PACE, pace, paceFor, pacedSystemOf } from '../public/js/pace.js?v=ef709496';
+import { MINING_COSTS, miningProfile, refiningProfile } from '../public/js/mining.js?v=2f096b98';
 import { SKILL_PACKAGES, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { actionDurationFor } from '../public/js/action-timing.js?v=579e6f6c';
+import { actionDurationFor } from '../public/js/action-timing.js?v=e9117770';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const RANKS = ['mining_1', 'mining_2', 'mining_3', 'mining_4'];

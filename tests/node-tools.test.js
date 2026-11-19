@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { MINE_STAND_X, NODE_TOOLS, NODE_TOOL_DELTAS, mineStandX, nodeToolOverlay, nodeToolSheet } from '../public/js/node-tools.js?v=47a93d54';
-import { miningProfile } from '../public/js/mining.js?v=afb2b145';
+import { miningProfile } from '../public/js/mining.js?v=2f096b98';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { packedCell, packedFrameAt } from '../public/js/packed-sheets.js?v=06079f1e';
 import { RESOURCE_NODE_CATALOG } from '../public/js/resource-nodes.js?v=cf9aae18';

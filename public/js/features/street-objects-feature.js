@@ -149,9 +149,9 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=4e059e03';
+} from '../street-objects.js?v=e35f12e7';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
-import { ROCK_CATALOG } from '../mining.js?v=afb2b145';
+import { ROCK_CATALOG } from '../mining.js?v=2f096b98';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
 import { highestLightGreenThumbRank, quoteTrantCare } from '../trant-care.js?v=9fba26b5';

@@ -52,8 +52,8 @@
  *     data-help-mine-companion (the last companion swing: name:chunks).
  */
 
-import { MINING_COSTS, ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=afb2b145';
-import { rockId } from '../street-objects.js?v=4e059e03';
+import { MINING_COSTS, ROCK_CATALOG, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=2f096b98';
+import { rockId } from '../street-objects.js?v=e35f12e7';
 import { addItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS, megaRockChance } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
@@ -78,13 +78,12 @@ import {
   removeMiner,
 } from '../help-mine.js?v=27f9d276';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { ROCK_RESPAWN_MS } from '../pace.js?v=ef709496';
 
 // js/node-tools.js PICK_SHEETS.pick (the SWF's 30 fps swing). A companion's pick stays beside it.
 const PICK_SHEET = 'assets/sprites/tools/pick-tool@3x.webp';
 const PICK_DEF = { fw: 115, fh: 63, cols: 11 };
 const PICK_FRAMES = 33;
-// mining.js MINING_COSTS rock respawn in the remake (GSJS 8 min).
-const RESPAWN_MS = 45_000;
 
 /** target -> crew for the rocks on this street (live only, like the source rock's miners). */
 const crews = new Map();
@@ -441,7 +440,7 @@ function takeFromRock(rock, bonus, engine) {
   if (rock.chunksRemaining <= 0 && !rock.depleted) {
     rock.chunksRemaining = 0;
     rock.depleted = true;
-    rock.respawnAt = Date.now() + RESPAWN_MS;
+    rock.respawnAt = Date.now() + ROCK_RESPAWN_MS; // js/pace.js: Glitch's 8 min at 0.3 (#521)
     rock.respawnChunks = Math.random() < megaRockChance(rock.rockType, engine.pc?.imaginationUpgrades || []) ? MEGA_ROCK_CHUNKS : 0;
     engine.pushActivity('The rock crumbles away. It will reform soon.');
   }

@@ -22,7 +22,7 @@ import {
 } from './inventory.js?v=6414dbdc';
 import { GRINDER_TOOLS, canUseTool, firstWorkingTool, useToolCondition } from './tools.js?v=4156bba8';
 import { SKILL_PACKAGES, skillPackageDetails } from './skill-packages.js?v=bfb87281';
-import { pace } from './pace.js?v=8aca33bc';
+import { pace, ROCK_RESPAWN_MS } from './pace.js?v=ef709496';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { GEM_ITEMS, MEGA_ROCK_CHUNKS, megaRockChance, miningExpertBonus, rollGemSmall, smeltingOverrides } from './imagination-effects.js?v=70169933';
@@ -500,8 +500,8 @@ export function mineRock(rock, inv, pc, opts = {}) {
   if (rock.chunksRemaining <= 0) {
     rock.chunksRemaining = 0;
     rock.depleted = true;
-    // GSJS: 8 min base; demo ~45s
-    rock.respawnAt = (opts.now || Date.now()) + 45000;
+    // include/mining.js 422: 8 min; the remake's pace has 144 s (js/pace.js PACED_WAITS, #521).
+    rock.respawnAt = (opts.now || Date.now()) + ROCK_RESPAWN_MS;
     // include/mining.js onRespawn: 0/5/10/20% of rocks come back as 150-chunk
     // mega rocks, +50% of that with Rock Whisperer (the clearing player's card,
     // passed to the respawn timer at mining.js:419). Rolled now, applied then.

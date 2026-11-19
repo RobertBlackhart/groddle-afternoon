@@ -26,7 +26,7 @@ import {
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES, KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { CRAB_WALK } from '../public/js/crabs.js?v=6d30a16a';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=50c112eb';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=402c7521';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=69b75a3f';
 import { heliKittiesFeature } from '../public/js/features/heli-kitties-feature.js?v=abe695b0';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

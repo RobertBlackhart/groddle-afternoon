@@ -32,7 +32,7 @@ import {
   youBox,
 } from '../public/js/map-graph.js?v=78a605db';
 import { mapIconStep, mapIconTipPlace } from '../public/js/ui/map-icon-tips.js?v=6b3eb3f9';
-import { selectVendorProfile } from '../public/js/vendor.js?v=3df46192';
+import { selectVendorProfile } from '../public/js/vendor.js?v=0b5a7a7c';
 import { CLASSIC_ART } from '../public/js/classic/classic-art.js?v=5f713e7d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

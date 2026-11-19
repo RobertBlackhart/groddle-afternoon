@@ -29,8 +29,8 @@
  *   scoop (jellisac.js:234).
  *
  * Remake choices:
- * - A rock comes back 45 s after it is mined out, as every rock in the remake
- *   does (js/mining.js; the source's 8 minutes), with its 50 chunks (no mega
+ * - A rock comes back 144 s after it is mined out, as every rock in the remake
+ *   does (js/pace.js ROCK_RESPAWN_MS: the source's 8 minutes at 0.3), with its 50 chunks (no mega
  *   rock on a visit: the roll is the clearing player's card).
  * - A home rock's cultivation wears one use a swing, as the owner's own
  *   mining wears it in the remake (homes-feature wearFromEvent); the source
@@ -54,7 +54,8 @@
  */
 
 import { cultivationDef, hiveFireflySpots } from './home-cultivation.js?v=57afc9e2';
-import { createMineRock, tickMineRock } from './mining.js?v=afb2b145';
+import { createMineRock, tickMineRock } from './mining.js?v=2f096b98';
+import { ROCK_RESPAWN_MS } from './pace.js?v=ef709496';
 import { createResourceNode, getResourceNodeDef, normalizeResourceNode, regrowDelayMs, tickResourceNode } from './resource-nodes.js?v=cf9aae18';
 
 /** The node classes a visitor may use on a home street (HOMES2: the hive's Fireflies too). */
@@ -86,8 +87,8 @@ export const STOCK_NODE_YIELD = Object.freeze({
   npc_firefly: null,
 });
 
-/** js/mining.js mineRock: a mined-out rock reforms 45 s on. */
-export const ROCK_RESPAWN_MS = 45000;
+/** js/mining.js mineRock: a mined-out rock reforms ROCK_RESPAWN_MS on (js/pace.js, 144 s, #521). */
+export { ROCK_RESPAWN_MS };
 
 const LABEL = Object.freeze({
   rock_metal_1: 'Metal Rock', rock_dullite_1: 'Dullite Rock', rock_beryl_1: 'Beryl Rock', rock_sparkly_1: 'Sparkly Rock',
