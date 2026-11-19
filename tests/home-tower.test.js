@@ -58,10 +58,11 @@ import {
   TOWER_PART_CHOICES,
   TOWER_VARIANT_ART,
   towerBounds,
+  towerOrigin,
   towerSecretText,
   towerSpotsFor,
   workCheck,
-} from '../public/js/home-tower.js?v=77d57cda';
+} from '../public/js/home-tower.js?v=18889f7a';
 import {
   countCultivations,
   createCultivationState,
@@ -70,7 +71,7 @@ import {
   cultivationCost,
   removeCultivation,
   towerItem,
-} from '../public/js/home-cultivation.js?v=57afc9e2';
+} from '../public/js/home-cultivation.js?v=c58ceeda';
 
 const root = join(import.meta.dirname, '..', 'public');
 const GS = join(import.meta.dirname, '..', '..', 'glitch-GameServerJS');
@@ -307,7 +308,7 @@ describe('exterior art', () => {
       assert.equal(nine.filter((op) => op.part.startsWith('floor_') && /\d$/.test(op.part)).length, 7, id);
       // initializehead: floor_top_container.y = -(bottom_floor_h + floor_h * extra)
       const top = nine.find((op) => op.part === 'floor_top');
-      assert.ok(Math.abs(top.y - art.scale[1] * -(art.bottomFloorH + art.floorH * 7)) < 1e-6, id);
+      assert.ok(Math.abs(top.y - towerOrigin(id).y - art.scale[1] * -(art.bottomFloorH + art.floorH * 7)) < 1e-6, id);
       assert.equal(two.some((op) => op.part === 'deco_side'), false, 'deco_side needs an extra floor');
       assert.ok(towerBounds(nine).h > towerBounds(two).h + 400, id);
     }
@@ -486,7 +487,8 @@ describe('Flip (facing_right)', () => {
     assert.equal(towerFacingX(TOWER_DOOR_DX, false), -TOWER_DOOR_DX);
     // the sign is a sibling of the chassis container, so only its x changes
     assert.match(featureSrc, /sign\.x = at\.x;/);
-    assert.match(featureSrc, /arrivalX = Number\.isFinite\(x\) \? x \+ towerFacingX\(TOWER_DOOR_DX, tower\.facingRight\)/);
+    // #523: out of the Tower onto the chassis foot, whichever way it faces (inc_homes.js tower_set_exit(this, x, y)).
+    assert.match(featureSrc, /arrivalX = Number\.isFinite\(x\) \? x : null;/);
   });
 
   it('puts Flip before Randomize under the part rows, and a flip verb before customize', () => {

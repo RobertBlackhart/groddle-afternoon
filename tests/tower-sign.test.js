@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TOWER_ART, TOWER_SIGN_KEY, TOWER_SIGN_POINTS, TOWER_SIGN_TEXT_DY, TOWER_SIGN_TEXT_WIDTH, towerSignPoint } from '../public/js/home-tower.js?v=77d57cda';
+import { TOWER_ART, TOWER_SIGN_KEY, TOWER_SIGN_POINTS, TOWER_SIGN_TEXT_DY, TOWER_SIGN_TEXT_WIDTH, towerSignPoint } from '../public/js/home-tower.js?v=18889f7a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');
@@ -74,7 +74,7 @@ describe('the Tower name sign', () => {
         near(want.dy, pt.y - main.y, style);
       } else {
         assert.equal(style, 'mushroom', 'only the mushroom chassis has no sign_pt');
-        const [w, h] = [408, 820.35];
+        const [w, h] = [408, 820]; // mc_h: the 820.35 stage rounded (ItemSSManager.as 513)
         near(want.dx, w / 2 + 8 - main.x, style);
         near(want.dy, h - 120 - main.y, style);
       }

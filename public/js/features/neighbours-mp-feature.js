@@ -112,12 +112,12 @@ import { runStreetTransition } from '../screen-fx.js?v=a0ed42e9';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=7968c974';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=c58ceeda';
 import { getPlot, tickGarden } from '../garden.js?v=d4e55862';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=465f8d14';
-import { butlerApi } from './butler-feature.js?v=bf981204';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=4822d590';
+import { butlerApi } from './butler-feature.js?v=ef8d5b86';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=89d28bd4';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
 import {
@@ -174,7 +174,7 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e9b9dbd2';
 import { worldPoint } from './world-drop-feature.js?v=7d3779ee';
-import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=77d57cda';
+import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=18889f7a';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
 const OWN_VERBS = new Set([VISIT_VERB.id, KEY_VERB.id, 'neighbour_noop']);
@@ -432,7 +432,8 @@ function createSession(engine, client) {
     const stop = tower ? elevatorStops(tower).find((row) => row.index === built.floor) : null;
     const label = room === 'interior' ? houseName(visit.name) : room === 'tower' ? visitedTowerName(visit.name, tower) : homeStreetName(visit.name);
     let x = arrive === 'door' && room === 'street' ? built.doorX + 70 : built.spawnX;
-    if (arrive === 'tower' && room === 'street' && Number.isFinite(visit.towerX)) x = visit.towerX + 60;
+    // #523: Glitch's Tower exit is the chassis x,y (inc_homes.js 3097-3112 tower_set_exit).
+    if (arrive === 'tower' && room === 'street' && Number.isFinite(visit.towerX)) x = visit.towerX;
     // G668: summoned, beside the summoner (inc_teleportation.js:660, x + 20), inside the room.
     if (at != null && Number.isFinite(Number(at))) x = Math.max(40, Math.min(built.width - 40, Math.round(Number(at))));
     const scene = {

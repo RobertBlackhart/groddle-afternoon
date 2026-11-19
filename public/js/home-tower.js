@@ -266,6 +266,37 @@ export const TOWER_ART = Object.freeze({
     containers: {"floor_ground":[-160.05,-122.4,1,1,1],"floor_1":[-128.05,-187.1,1,1,3],"deco_side":[96.95,-205.7,1,1,5],"floor_2":[-128.05,-260.1,1,1,7],"floor_3":[-128.05,-333.1,1,1,9],"floor_4":[-128.05,-406.1,1,1,11],"floor_5":[-128.05,-479.1,1,1,13],"floor_6":[-128.05,-552.1,1,1,15],"floor_7":[-128.05,-625.1,1,1,17],"floor_top":[-133.05,-722.1,1,1,19],"deco_ground":[-53.4,-7.9,1,1,21],"door":[30.4,2.9,0.77271,0.77049,23]} },
 });
 
+/**
+ * #523: where the chassis stands on its foot. Glitch drew an item with the bottom centre of its
+ * SWF's whole stage at the item's x,y (LocationItemstackView.as 853-854: the view at
+ * -round(mc_w / 2), -mc_h; FancyDoor.as 207-213 and HandleSpecialConfigsCmd.as 426 measure from
+ * the same corner), mc_w / mc_h the SWF header's size rounded (ItemSSManager.as 512-513), and
+ * that x,y is where the player stood (CultManager.as 571/723, inc_cultivation.js 136). TOWER_ART
+ * is drawn from maincontainer_mc, so its origin is maincontainer_mc's place on the stage less
+ * that corner. w, h: the stage (each FLA's DOMDocument, the SWF header the same) rounded as the
+ * client did; main: maincontainer_mc's tx, ty on the main timeline. tests/tower-stage.test.js
+ * reads them from the FLAs.
+ */
+export const TOWER_STAGE = Object.freeze({
+  base: Object.freeze({ w: 344, h: 790, main: Object.freeze([160.95, 744.95]) }),
+  tree: Object.freeze({ w: 382, h: 795, main: Object.freeze([187.9, 748.95]) }),
+  quarry: Object.freeze({ w: 400, h: 820, main: Object.freeze([213.2, 750.9]) }),
+  mushroom: Object.freeze({ w: 408, h: 820, main: Object.freeze([236.85, 807.05]) }),
+  spaceship: Object.freeze({ w: 519, h: 796, main: Object.freeze([277.8, 775.4]) }),
+  adobe: Object.freeze({ w: 335, h: 766, main: Object.freeze([175.05, 722.1]) }),
+});
+
+const hundredths = (v) => Math.round(v * 100) / 100;
+
+/** maincontainer_mc's origin from the item's foot (the spot the player stands on), x mirrored with the facing. */
+export function towerOrigin(styleId, facingRight = true) {
+  const s = TOWER_STAGE[styleId] || TOWER_STAGE.base;
+  return {
+    x: towerFacingX(hundredths(s.main[0] - Math.round(s.w / 2)), facingRight),
+    y: hundredths(s.main[1] - s.h),
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* Exterior choices (Customize)                                          */
 /* ------------------------------------------------------------------ */
@@ -356,7 +387,8 @@ export function towerArticle(styleId, part, choice = 1) {
 
 /**
  * initializehead(): the chassis articles for a style, extra-floor count and
- * config, in depth order, as sprite placements relative to the item's foot:
+ * config, in depth order, as sprite placements relative to the item's foot
+ * (maincontainer_mc at towerOrigin, #523):
  * { file, anchorX, anchorY, x, y, scaleX, scaleY, depth, part }.
  * floor_ground_<n> and door_<n> share the ground floor's choice;
  * floor_top_container.y = -(bottom_floor_h + floor_h * extra_floors);
@@ -371,6 +403,7 @@ export function composeTower(styleId, extraFloors = 0, config = null, facingRigh
   const extra = Math.max(0, Math.min(7, Math.floor(Number(extraFloors) || 0)));
   const [sx0, my] = art.scale;
   const mx = facingRight === false ? -sx0 : sx0;
+  const origin = towerOrigin(style, facingRight);
   const ops = [];
   const place = (part, containerKey, override = {}) => {
     const choice = part === 'door' ? cfg.floor_ground : part === 'extra_floor' ? cfg[containerKey] : cfg[part];
@@ -387,8 +420,8 @@ export function composeTower(styleId, extraFloors = 0, config = null, facingRigh
       anchorY: oy / h,
       w,
       h,
-      x: mx * cx,
-      y: my * cy,
+      x: origin.x + mx * cx,
+      y: origin.y + my * cy,
       scaleX: mx * sx,
       scaleY: my * sy,
       depth,
@@ -440,15 +473,15 @@ export function towerBounds(ops) {
  * FLAs carry a sign_pt, which wins over getExtraConfig's delta (furniture_tower_chassis.js 419-420,
  * HandleSpecialConfigsCmd.as 387-389, 422-427); here it is sign_pt less maincontainer_mc, the origin
  * TOWER_ART is drawn from. The mushroom chassis has none, so it keeps delta 8, -120 from the stage's
- * bottom centre (stage 408 x 820.35, maincontainer_mc 236.85, 807.05). The name sits 30 px above
- * (getExtraConfig sign_sd, HandleSpecialConfigsCmd.as 431-433).
+ * bottom centre (stage 408 x 820, mc_h rounded from 820.35; maincontainer_mc 236.85, 807.05). The
+ * name sits 30 px above (getExtraConfig sign_sd, HandleSpecialConfigsCmd.as 431-433).
  */
 export const TOWER_SIGN_KEY = 'tower_sign_scaffolding_overlay';
 export const TOWER_SIGN_POINTS = Object.freeze({
   base: Object.freeze({ dx: 23, dy: -107 }),
   tree: Object.freeze({ dx: 30.55, dy: -104.5 }),
   quarry: Object.freeze({ dx: 21, dy: -85.5 }),
-  mushroom: Object.freeze({ dx: -24.85, dy: -106.7 }),
+  mushroom: Object.freeze({ dx: -24.85, dy: -107.05 }),
   spaceship: Object.freeze({ dx: 24.15, dy: -92.9 }),
   adobe: Object.freeze({ dx: 5.9, dy: -92.6 }),
 });
@@ -460,7 +493,25 @@ export function towerSignPoint(style, facingRight = true) {
   const { dx, dy } = TOWER_SIGN_POINTS[style] || TOWER_SIGN_POINTS.base;
   return { x: towerFacingX(dx, facingRight), y: dy, flipped: facingRight === false };
 }
-/** The street spot the avatar steps out to beside the door (FancyDoor mirrors door_x about the foot). */
+/**
+ * #523: the sign's place from the item's foot, as the client placed it:
+ * tryAndGetSignCoordsFromMC [-(mc_w/2)+sign_pt.x, -(mc_h)+sign_pt.y] into an int delta
+ * (HandleSpecialConfigsCmd.as 386-389, 421-427), the mushroom's getExtraConfig delta 8, -120.
+ * x flips with the chassis; the words still read normally.
+ */
+export function towerSignFoot(style, facingRight = true) {
+  const key = TOWER_SIGN_POINTS[style] ? style : 'base';
+  const { dx, dy } = TOWER_SIGN_POINTS[key];
+  const s = TOWER_STAGE[key];
+  const x = Math.trunc(hundredths(s.main[0] + dx - s.w / 2));
+  const y = Math.trunc(hundredths(s.main[1] + dy - s.h));
+  return { x: towerFacingX(x, facingRight), y, flipped: facingRight === false };
+}
+/**
+ * Half the street doorway kept clear of plants either side of the foot (homes-feature
+ * towerDoorway). Leaving the Tower puts the player on the foot itself: Glitch's exit is the
+ * chassis x,y (inc_homes.js 3097-3112 tower_set_exit(this, x, y)).
+ */
 export const TOWER_DOOR_DX = 40;
 
 /** Mirror a foot-relative x for the Tower's facing. */
@@ -502,7 +553,8 @@ export const PROTO_ART = Object.freeze({
   3: 'proto_3.webp',
   w: 344,
   h: 204,
-  footY: 0.9,
+  // #523: Glitch stood the whole stage's bottom centre on the item's x,y (LocationItemstackView.as 853-854).
+  footY: 1,
 });
 
 /* ------------------------------------------------------------------ */

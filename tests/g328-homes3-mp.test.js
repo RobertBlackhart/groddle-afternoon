@@ -38,10 +38,10 @@ import {
   saleVerbs,
   signpostArms,
   signpostCandidates,
-} from '../public/js/home-street-mp.js?v=9034088e';
+} from '../public/js/home-street-mp.js?v=64df32c2';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../public/js/note-pole-art.js?v=fbda2f8a';
 import { isSharedJob } from '../public/js/street-jobs-mp.js?v=9de15a33';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=15cf6c87';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=1a099375';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
 import { HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
@@ -123,15 +123,18 @@ describe('Note Poles (items/note_pole.js)', () => {
     assert.deepEqual(own.map((v) => v.id), ['pole_read', 'pole_post', 'pole_customize', 'pole_pickup']);
     assert.equal(own[1].reason, "You don't have any notes.");
   });
-  it('draws the CC0 parts from the pole\'s base: the sign at 8, 64 or 129 (note_pole.as initializehead)', () => {
+  it('draws the CC0 parts from the stage\'s bottom centre: the sign at 8, 64 or 129 (note_pole.as initializehead)', () => {
     const art = { parts: NOTE_POLE_PARTS, containers: NOTE_POLE_CONTAINERS, signY: NOTE_POLE_SIGN_Y };
     for (const size of ['Tall', 'Medium', 'Short']) {
       for (let pole = 1; pole <= 10; pole += 1) {
         const parts = poleLayout({ size, pole, sign: 1 }, true, art);
         assert.equal(parts.length, 3, `${size} ${pole}`);
         const base = parts[0];
-        assert.ok(Math.abs(base.y + base.h) < 0.01, 'the pole stands on its base');
-        assert.ok(Math.abs(base.x + base.w / 2) < 0.01, 'centred');
+        // #523: from the stage's bottom centre, as the client stood it: the drawn pole ends above the foot.
+        const [left, top] = NOTE_POLE_PARTS[`pole${size}_${pole}`].slice(1, 3);
+        assert.ok(Math.abs(base.x - (NOTE_POLE_CONTAINERS.pole[0] + left - 2.35 - 25)) < 0.01, `${size} ${pole} x`);
+        assert.ok(Math.abs(base.y - (NOTE_POLE_CONTAINERS.pole[1] + top + 4 - 204)) < 0.01, `${size} ${pole} y`);
+        assert.ok(base.y + base.h < -7 && base.y + base.h > -17, `${size} ${pole} ends ${base.y + base.h} above the foot`);
         assert.ok(existsSync(join(root, 'public/assets/sprites/note-pole', base.file)));
       }
     }

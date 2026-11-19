@@ -57,7 +57,7 @@ import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../makin
 import { furnitureDef, furnitureScale, furnitureSize, pieceArt } from '../home-decor.js?v=128531cf';
 import { isStorageClass, storageHasContents } from '../home-storage.js?v=b0225465';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc9e2';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=c58ceeda';
 import { signpostX as fixtureSignpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note-pole-art.js?v=fbda2f8a';
@@ -65,12 +65,12 @@ import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=2d5a9737';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=4822d590';
-import { BENCH_ART, towerApi } from './home-tower-feature.js?v=39cab077';
-import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=77d57cda';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=89d28bd4';
+import { BENCH_ART, towerApi } from './home-tower-feature.js?v=99835b78';
+import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=18889f7a';
 import { projectApi } from './street-jobs-feature.js?v=60eba331';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=7b1f8d5e';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=a01786f2';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -79,6 +79,7 @@ import {
   NOTE_POLE_CLASS,
   NOTE_POLE_ITEM,
   NOTE_POLE_RECIPE,
+  NOTE_POLE_STAGE,
   PHILANTHROPIC_BADGE,
   POLES_MAX,
   POLE_SIGNS,
@@ -106,7 +107,7 @@ import {
   saleVerbs,
   signpostArms,
   signpostCandidates,
-} from '../home-street-mp.js?v=9034088e';
+} from '../home-street-mp.js?v=64df32c2';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -400,9 +401,10 @@ function createSession(engine, client) {
       spr.height = p.h;
       box.addChild(spr);
     }
-    box.addChild(hitBox(PIXI, -26, -185, 52, 187));
+    // The client's hit box was the whole stage (LocationItemstackView drawHitBox(mc_w, mc_h)).
+    box.addChild(hitBox(PIXI, -26, -NOTE_POLE_STAGE.h, 52, NOTE_POLE_STAGE.h));
     box._worldHitW = 52;
-    box._worldHitH = 187;
+    box._worldHitH = NOTE_POLE_STAGE.h;
     return box;
   }
 
@@ -429,7 +431,8 @@ function createSession(engine, client) {
       // The profile's diorama (js/home-layout.js): a pole and whether a note is up, never its words.
       box.homeLayout = { k: 'note_pole', i: 'note_pole', n: pole.note ? 1 : 0 };
       box.x = Math.round(x);
-      box.y = y + 2;
+      // #523: the item's x,y is the walk line; poleLayout stands the stage's bottom centre on it.
+      box.y = y;
       box.zIndex = 17;
       engine.entityLayer.addChild(box);
       const owner = w !== 'visit';

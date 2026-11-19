@@ -272,9 +272,18 @@ export function poleVerbs({ owner = false, hasNote = false, notes = 0 } = {}) {
 }
 
 /**
- * Where each part of a pole goes, from its base (the drawn pole's bottom,
- * centred): note_pole.as initializehead puts pole<Size>_<n> in
- * poleContainer_mc, sign_<n> and signNote_<n> at y 8/64/129.
+ * #523: note_pole.swf's stage, as the client stood it on the item's x,y: the bottom centre of the
+ * whole stage (LocationItemstackView.as 853-854, -round(mc_w / 2), -mc_h), mc_w / mc_h the SWF
+ * header rounded (ItemSSManager.as 512-513; 49.35 x 204.15), main mainContainer_mc's tx, ty.
+ * tests/tower-stage.test.js reads them from note_pole.fla.
+ */
+export const NOTE_POLE_STAGE = Object.freeze({ w: 49, h: 204, main: Object.freeze([-2.35, 4]) });
+
+/**
+ * Where each part of a pole goes, from the item's foot (the stage's bottom
+ * centre, NOTE_POLE_STAGE): note_pole.as initializehead puts pole<Size>_<n> in
+ * poleContainer_mc, sign_<n> and signNote_<n> at y 8/64/129, all in
+ * mainContainer_mc. The drawn pole ends 8 to 16 px above the foot, as it did.
  * art: js/note-pole-art.js ({ parts, containers, signY }).
  */
 export function poleLayout(cfg, hasNote, art) {
@@ -291,11 +300,11 @@ export function poleLayout(cfg, hasNote, art) {
   add(`pole${c.size}_${c.pole}`, cont.pole, 0, 0);
   add(`sign_${c.sign}`, cont.sign, 0, signY - cont.sign[1]);
   if (hasNote) add(`signNote_${c.sign}`, cont.note, 0, signY - cont.note[1]);
-  const pole = out[0];
-  if (!pole) return [];
-  const baseX = pole.x + pole.w / 2;
-  const baseY = pole.y + pole.h;
-  return out.map((p) => ({ ...p, x: +(p.x - baseX).toFixed(2), y: +(p.y - baseY).toFixed(2) }));
+  if (!out[0]) return [];
+  const stage = art?.stage || NOTE_POLE_STAGE;
+  const footX = Math.round(stage.w / 2) - stage.main[0];
+  const footY = stage.h - stage.main[1];
+  return out.map((p) => ({ ...p, x: +(p.x - footX).toFixed(2), y: +(p.y - footY).toFixed(2) }));
 }
 
 // —— Furniture for sale ——

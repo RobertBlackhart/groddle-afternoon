@@ -61,7 +61,6 @@ import {
   TOWER_ART_DIR,
   TOWER_CHASSIS,
   TOWER_CONFIG,
-  TOWER_DOOR_DX,
   TOWER_EXPANDER,
   TOWER_GEO,
   TOWER_JOB,
@@ -72,7 +71,7 @@ import {
   TOWER_SIGN_KEY,
   TOWER_SIGN_TEXT_DY,
   TOWER_SIGN_TEXT_WIDTH,
-  towerSignPoint,
+  towerSignFoot,
   TOWER_STYLES,
   activeProject,
   applyWorkUnit,
@@ -108,12 +107,11 @@ import {
   stepConfig,
   towerArticle,
   towerConfigRows,
-  towerFacingX,
   towerLabel,
   towerSecretText,
   towerSpotsFor,
   workCheck,
-} from '../home-tower.js?v=77d57cda';
+} from '../home-tower.js?v=18889f7a';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
 import { pieceUrl } from '../home-wallpaper.js?v=cbff4813';
@@ -261,7 +259,7 @@ function nameSign(PIXI, name, style, facingRight) {
   // getExtraConfig (422-443): Tiny Speck's scaffolding, h_flipped with the chassis, and the user
   // name in upper case 30 px above it. The words read normally on a flipped sign, with their
   // shadows on the other side (HandleSpecialConfigsCmd.as 437-443).
-  const at = towerSignPoint(style, facingRight);
+  const at = towerSignFoot(style, facingRight);
   const sign = new PIXI.Container();
   sign.x = at.x;
   sign.y = at.y;
@@ -322,7 +320,8 @@ export function visitorTowerView(engine, towerState, { x, groundY, built }) {
   const { PIXI } = engine;
   const box = new PIXI.Container();
   box.x = x;
-  box.y = groundY + 6;
+  // #523: the item's x,y is the foot (where the player stands); the art stands on its stage's bottom centre.
+  box.y = groundY;
   box.zIndex = 6;
   if (built && towerState?.built) {
     box.addChild(chassisContainer(PIXI, towerState.style, extraFloors(towerState), towerState.config, towerState.facingRight));
@@ -386,7 +385,8 @@ function spawnStreet(engine, { item, x, groundY }) {
   if (item) {
     const box = new PIXI.Container();
     box.x = x;
-    box.y = groundY + 6;
+    // #523: the foot is the walk line, as Glitch's item x,y was; composeTower stands the art on it.
+    box.y = groundY;
     box.zIndex = 6;
     let label = 'Tower';
     let subtitle = '';
@@ -592,8 +592,8 @@ async function leaveTower(engine) {
   closePanel();
   const x = bridge?.towerWorldX?.();
   tower.floor = null;
-  // FancyDoor: the door (and the spot you step out to) mirrors about the foot with the Tower.
-  arrivalX = Number.isFinite(x) ? x + towerFacingX(TOWER_DOOR_DX, tower.facingRight) : null;
+  // #523: Glitch's exit is the chassis x,y (inc_homes.js 3097-3112 tower_set_exit(this, x, y)).
+  arrivalX = Number.isFinite(x) ? x : null;
   engine.save();
   await engine.enter(HOME_STREET_TSID, { pol: { type: 'exterior' } });
   return true;

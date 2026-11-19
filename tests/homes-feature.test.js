@@ -20,17 +20,17 @@ import {
   rockItems,
   soilKeyMap,
   yardSoilInput,
-} from '../public/js/features/homes-feature.js?v=4822d590';
+} from '../public/js/features/homes-feature.js?v=89d28bd4';
 import { soilSpawnPlan } from '../public/js/features/patches-feature.js?v=7086d13e';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=10ac34b6';
 import { canPlantBean } from '../public/js/patches.js?v=85d156bc';
-import { TOWER_PART_CHOICES, TOWER_STYLES, composeTower, towerBounds } from '../public/js/home-tower.js?v=77d57cda';
+import { TOWER_PART_CHOICES, TOWER_STYLES, composeTower, towerBounds } from '../public/js/home-tower.js?v=18889f7a';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOffsetAnchor } from '../public/js/movement.js?v=f4be1a05';
 import { INTERIOR } from '../public/js/home-decor.js?v=128531cf';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { gardenLayout, gardenStyle } from '../public/js/garden-view.js?v=04fe8467';
-import { listCultivationClasses } from '../public/js/home-cultivation.js?v=57afc9e2';
+import { listCultivationClasses } from '../public/js/home-cultivation.js?v=c58ceeda';
 
 const root = join(import.meta.dirname, '..', 'public');
 
@@ -157,19 +157,20 @@ describe('a home street tall enough for a nine-floor Tower', () => {
   });
 
   it('shows the ninth floor of every style once the camera looks up, and frames the feet as before', () => {
-    // spawnStreet stands the chassis 6 px under the walk line.
+    // spawnStreet stands the chassis' foot on the walk line (#523).
     for (const style of Object.keys(TOWER_STYLES)) {
-      const top = STREET_GROUND_Y + 6 + towerBounds(composeTower(style, 7)).t;
+      const top = STREET_GROUND_Y + towerBounds(composeTower(style, 7)).t;
       assert.ok(top >= 40, `${style}: ${top} px of sky over the top`);
       const camY = cameraTargetY(STREET_GROUND_Y - 600, worldH, VIEW);
       assert.equal(camY, 0);
       assert.ok(top - camY < VIEW / 2, `${style} top in the upper half of the view`);
       // Every top choice: only the Tree Tower's two big canopies (floor_top_7, _8) rise past the
-      // ~1,000 px street the renders measure, as they would have in the original; at most 30 px.
+      // ~1,000 px street the renders measure, as they would have in the original; at most 80 px
+      // now the chassis stands on its stage (#523). The rest keep 30 px of sky.
       for (let n = 1; n <= TOWER_PART_CHOICES[style].floor_top; n += 1) {
-        const t = STREET_GROUND_Y + 6 + towerBounds(composeTower(style, 7, { floor_top: n })).t;
-        if (style === 'tree' && n >= 7) assert.ok(t >= -30, `tree top ${n}: ${t}`);
-        else assert.ok(t >= 40, `${style} top ${n}: ${t} px of sky`);
+        const t = STREET_GROUND_Y + towerBounds(composeTower(style, 7, { floor_top: n })).t;
+        if (style === 'tree' && n >= 7) assert.ok(t >= -80, `tree top ${n}: ${t}`);
+        else assert.ok(t >= 30, `${style} top ${n}: ${t} px of sky`);
       }
     }
     const camY = cameraTargetY(STREET_GROUND_Y, worldH, VIEW);
