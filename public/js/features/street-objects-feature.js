@@ -149,12 +149,12 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=ef6a1e67';
+} from '../street-objects.js?v=9cb07e5a';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
-import { TRANT_META, trantStatusLabel } from '../trants.js?v=b9147016';
+import { TRANT_META, trantStatusLabel } from '../trants.js?v=864ea9ff';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
-import { highestLightGreenThumbRank, quoteTrantCare } from '../trant-care.js?v=9fba26b5';
+import { highestLightGreenThumbRank, quoteTrantCare } from '../trant-care.js?v=cb7f539b';
 import { animalStatusLabel, pickerMaxCount } from '../animals.js?v=f4c8fbe4';
 import { highestAnimalKinshipRank, quoteAnimalKinship } from '../animal-kinship.js?v=75d3cb34';
 import { CREW_NODES } from '../help-dig.js?v=ca0cc848';

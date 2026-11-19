@@ -48,7 +48,7 @@ import {
 } from '../public/js/street-ecology.js?v=578806c2';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
-import { parallaxLayerOffset } from '../public/js/street-render.js?v=c2f22f5d';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=42745010';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
 

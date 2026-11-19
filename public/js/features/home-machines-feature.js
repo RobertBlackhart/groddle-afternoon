@@ -95,7 +95,7 @@ import {
   TAKEN_KEEP,
 } from '../home-machines.js?v=31b1b3ea';
 import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=b11cfa27';
-import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=a5301d82';
+import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=49cc5031';
 import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=ab7d71da';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
@@ -103,16 +103,16 @@ import { markLeaving, takeCopies } from '../copy-picks.js?v=01de4c58';
 import { RECIPE_CATALOG } from '../making.js?v=bf8b857b';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=39041813';
-import { lookOf, poseOf } from './realtime-feature.js?v=1fcbfbbf';
+import { lookOf, poseOf } from './realtime-feature.js?v=115bc4a4';
 import { readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { createSheetLoader } from '../sprite-sheets.js?v=11d9014e';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=5c2c6e4f';
-import { payAltarBonus } from './machine-rooms-feature.js?v=603d5804';
+import { createSheetLoader } from '../sprite-sheets.js?v=bb4fe94b';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=2a532244';
+import { payAltarBonus } from './machine-rooms-feature.js?v=b2847f0b';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { standOnFeet } from '../sprite-feet.js?v=86205485';
+import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
 
 export { HOME_MACHINES_ID };
 

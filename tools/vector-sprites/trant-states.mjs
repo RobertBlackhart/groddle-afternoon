@@ -17,6 +17,14 @@
  *    them (FRUIT_HEALTH9_LEAVES); cherries shown on frame id % 3 + 1 up to
  *    the health-10 fruit count, the rest hidden (see fruitState).
  *
+ * Report #545: each stage that bears fruit also gets the same plant holding
+ * less of it (FRUIT_LEVELS: trant_<species>_m<stage>_f0 bare, _f1 half), as
+ * updateTrantDisplay() shows fruit_amt (f_num / f_cap) of its fruit slots:
+ * the fruit tree's cherry_N up to floor(fruit_amt * slots), the others'
+ * bean_N, bubble_N, egg_N (its egg, not the stalk), flask_N and fruit_N up
+ * to ceil(fruit_amt * slots), the rest hidden (fruitLevelState). Those 1x
+ * files are not OGA cells: trant-fruit-levels.mjs draws them from the SWF.
+ *
  * Usage: node tools/vector-sprites/trant-states.mjs [--write]
  */
 import { execFileSync } from 'node:child_process';
@@ -94,6 +102,29 @@ export function fruitState(children, maturity, health = HEALTH, fruitAmt = 1) {
     }
   }
   return set;
+}
+
+/** Report #545: the fruit states drawn besides full (fruit_amt), named by file suffix. */
+export const FRUIT_LEVELS = Object.freeze([['f0', 0], ['f1', 0.5]]);
+
+/** Each species' fruit clip names (updateTrantDisplay in its .as); the fruit tree's are cherry_N. */
+export const FRUIT_CLIPS = Object.freeze({ bean: 'bean_', bubble: 'bubble_', egg: 'egg_', fruit: 'cherry_', gas: 'flask_', spice: 'fruit_' });
+
+/**
+ * The fruit a plant shows at fruit_amt `amt` (0-1), added to its full state `set`: the first
+ * ceil(amt * slots) fruit clips by number stay, the rest are hidden (null; the egg plant's
+ * egg_N keeps its stalk and hides its egg). The fruit tree is fruitState's (floor). Null when
+ * this stage has no fruit.
+ */
+export function fruitLevelState(species, children, maturity, set, amt) {
+  const prefix = FRUIT_CLIPS[species];
+  const ids = [...new Set(children.filter((c) => c.name.startsWith(prefix) && /^\d+$/.test(c.name.slice(prefix.length))).map((c) => Number(c.name.slice(prefix.length))))].sort((a, b) => a - b);
+  if (!ids.length) return null;
+  if (species === 'fruit') return { ...set, ...fruitState(children, maturity, HEALTH, amt) };
+  const out = { ...set };
+  const shown = Math.ceil(amt * ids.length);
+  for (const id of ids.slice(shown)) out[`${prefix}${id}`] = species === 'egg' ? { frame: 1, drop: ['egg'] } : null;
+  return out;
 }
 
 /** `this.<child>.gotoAndStop(n)` calls in an exported class's frameN() script. */
@@ -180,6 +211,20 @@ export function trantJobs() {
           ...(Object.keys(set).length ? { state: { set } } : {}),
           sheets: [{ path: `assets/sprites/trants/frames/trant_${species}_m${m}.webp`, fw, fh, cols: 1, frames: 1, swfStart: frame, swfCount: 1, mirror: false }],
         });
+        // Report #545: the same plant with less fruit.
+        for (const [suffix, amt] of FRUIT_LEVELS) {
+          const less = fruitLevelState(species, children, m, set, amt);
+          if (!less) continue;
+          jobs.push({
+            name: `trant-${species}-m${m}-${suffix}`,
+            swf: def.swf,
+            sprite: grow.id,
+            ...(def.renderer ? { renderer: def.renderer } : {}),
+            state: { set: less },
+            fruitOf: `assets/sprites/trants/frames/trant_${species}_m${m}.webp`,
+            sheets: [{ path: `assets/sprites/trants/frames/trant_${species}_m${m}_${suffix}.webp`, fw, fh, cols: 1, frames: 1, swfStart: frame, swfCount: 1, mirror: false, shift: 0 }],
+          });
+        }
       }
     } finally {
       if (asDir) rmSync(asDir, { recursive: true, force: true });

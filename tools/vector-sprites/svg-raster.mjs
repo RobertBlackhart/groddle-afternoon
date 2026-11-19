@@ -15,7 +15,9 @@ import { fileURLToPath } from 'node:url';
 export async function rasteriseSvgs(jobs) {
   if (!jobs.length) return;
   const { chromium } = await import('playwright');
-  const browser = await chromium.launch({ args: ['--force-color-profile=srgb'] });
+  const args = ['--force-color-profile=srgb'];
+  // Playwright's own Chromium, else the installed Chrome (a machine with only Chrome, as tools/qa/browser.mjs uses).
+  const browser = await chromium.launch({ args }).catch(() => chromium.launch({ channel: 'chrome', args }));
   try {
     const page = await browser.newPage();
     await page.setContent('<!doctype html><body></body>');

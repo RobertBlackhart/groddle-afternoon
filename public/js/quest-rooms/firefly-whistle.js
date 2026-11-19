@@ -61,7 +61,7 @@ import { advanceVpOverlay, vpOverlay, vpSequence } from './vp-overlay.js?v=a468a
 import { ENTRY, FLOOR, H, W, buildFront, buildLab, labPlatforms, sx, sy } from './firefly-whistle-scene.js?v=3e5e9235';
 import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { goToFallingLevel, withFallingRoom } from './falling-room.js?v=0d2d7f5b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 
 export const QUEST = 'firefly_whistle';
 export const TEMPLATE = Object.freeze({ prod: 'LM113UBSS8P18ET', dev: 'LHH11C4QUBP1DQD' });

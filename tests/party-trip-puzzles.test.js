@@ -15,8 +15,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { normalizeHeldPuzzle, normalizePuzzleSave } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { normalizeHeldScene, normalizeSceneSave } from '../public/js/puzzle-scenes.js?v=946a3e28';
-import { puzzlesFeature } from '../public/js/features/puzzles-feature.js?v=e082ab4b';
-import { puzzleScenesFeature } from '../public/js/features/puzzle-scenes-feature.js?v=d0ab81c7';
+import { puzzlesFeature } from '../public/js/features/puzzles-feature.js?v=504dd877';
+import { puzzleScenesFeature } from '../public/js/features/puzzle-scenes-feature.js?v=f6e29f0e';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');

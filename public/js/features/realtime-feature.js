@@ -72,7 +72,7 @@ import { lineKey } from '../chat-reactions.js?v=38460172';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { playOverlay } from '../overlays.js?v=68c0a634';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
+import { anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 import { NAMEPLATE_STYLE } from '../world-text.js?v=6b49f88c';
 
 export const REALTIME_FEATURE_ID = 'realtime';

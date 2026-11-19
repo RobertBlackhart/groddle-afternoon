@@ -30,7 +30,7 @@ import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.
 import { strayWayOut } from '../quest-instance.js?v=7365a572';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { anchorBottomCentre } from '../sprite-feet.js?v=86205485';
+import { anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const DEAD_ENDS_FEATURE_ID = 'dead-ends';

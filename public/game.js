@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=484f59d3';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=3caa9ab4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=166f6ad1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=12edc34c';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -396,7 +396,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=56b1e5e7';
+} from './js/paradise-course-runtime.js?v=ba8837d1';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -639,7 +639,7 @@ import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
 import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=9cadec38';
 import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=cba2a479';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
-import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=a5301d82';
+import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=49cc5031';
 import {
   createGarden,
   fitGardenToBed,
@@ -695,7 +695,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=dd8f14bd';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=da2f8e51';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -726,7 +726,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=c2f22f5d';
+} from './js/street-render.js?v=42745010';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -805,8 +805,10 @@ import {
   refillFruit,
   maturityLabel,
   trantStatusLabel,
-} from './js/trants.js?v=b9147016';
-import { growStreetTrant } from './js/patches.js?v=85d156bc';
+  trantFruitArt,
+  trantFrameKey,
+} from './js/trants.js?v=864ea9ff';
+import { growStreetTrant } from './js/patches.js?v=5516ff51';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -849,7 +851,7 @@ import { hellBuffDesc, isInHell } from './js/hell.js?v=54f9be3d';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
-import { createNpcGlitchKit } from './js/npc-glitch.js?v=2027a750';
+import { createNpcGlitchKit } from './js/npc-glitch.js?v=345d48e7';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=8b20791a';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
 import { catalogItem, lookKey, randomVectorFields, resolveLook, variantSwatch } from './js/avatar-looks.js?v=76eb9653';
@@ -943,7 +945,7 @@ import {
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
-import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=c380df0c';
+import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
 import {
   GAMESHOW_TICKET_ID,
   applySpinningWheelReward,
@@ -1040,9 +1042,9 @@ import {
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=578806c2';
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=b8513dac';
-import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=0b4fc106';
+import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=72ef33fb';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=b3bc2d59';
+import { itemOverlayStats } from './js/item-overlay.js?v=bc28c58d';
 import { isCrowdSad } from './js/animal-crowding.js?v=1966bc21';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1072,7 +1074,7 @@ import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=06ac7
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
-import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=e5d8f9ec';
+import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=b6bc6eae';
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
@@ -1125,7 +1127,7 @@ import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=e9f0e2af';
-import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
+import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=8f0b6303';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 
 /** @type {object|null} assets/maps/index.json */
@@ -7617,9 +7619,40 @@ async function loadTrantTables() {
   setTrantTables(await res.json());
 }
 
-/** Texture for a trant at maturity, with fallbacks. */
-function textureForTrant(classTsid, maturity) {
+/** Report #545: fruit-level frames load when a tree first needs one (trantFruitTexture). */
+const trantFruitLoading = new Set();
+
+/**
+ * Report #545: the frame of a stage holding less fruit (js/trants.js trantFruitArt), or null until
+ * it has loaded (the load starts here; syncTrantFruitArt swaps it in once it is there).
+ */
+function trantFruitTexture(classTsid, stage, fruitArt) {
+  const key = trantFrameKey(classTsid, stage, fruitArt);
+  if (!fruitArt || key === trantFrameKey(classTsid, stage)) return null;
+  const have = textures[key]?.frames?.[0];
+  if (have) return have;
+  if (!trantFruitLoading.has(key)) {
+    trantFruitLoading.add(key);
+    const url = `assets/sprites/trants/frames/${key}.webp?v=${TRANT_FRAME_VERSION}`;
+    loadTexture(url)
+      .then((tex) => {
+        textures[key] = { def: { url, whole: true }, frames: [tex] };
+      })
+      .catch(() => {});
+  }
+  return null;
+}
+
+/**
+ * Texture for a trant at maturity, with fallbacks. With its state, a stage that has fruit art
+ * shows the fruit the tree holds (report #545: bare, half or full, as Glitch drew fruit_amt).
+ */
+function textureForTrant(classTsid, maturity, state = null) {
   const m0 = maturity ?? 7;
+  if (state) {
+    const fruit = trantFruitTexture(classTsid, nearestTrantMatStage(m0), trantFruitArt({ classTsid, ...state, maturity: m0 }));
+    if (fruit) return fruit;
+  }
   // Every shipped stage is now one verified source cell, so show the nearest
   // actual maturity first instead of masking broken mid-stage atlases with m10.
   const order = [nearestTrantMatStage(m0), 10, 7, 5, 3, 1];
@@ -13641,10 +13674,11 @@ const engine = {
     if (target?.classId === 'wood_tree' && !target.grownFromBean) return refreshWoodTreeVisual(target);
     const meta = TRANT_META[target?.classId];
     if (!meta || !target.sprite || !target.state || target.grownFromBean) return;
-    const tex = textureForTrant(target.classId, target.state.maturity);
+    const tex = textureForTrant(target.classId, target.state.maturity, target.state);
     if (tex) {
       // A tree sprite re-reads its foot when its texture changes (js/sprite-feet.js standOnFeet).
       target.sprite.texture = tex;
+      target.sprite._trantArt = trantArtKey(target);
       const s = trantDisplayScale(tex, { targetH: 210, maxScale: 1 });
       target.sprite.scale.set((target.sprite._woodDirection || 1) * s, s);
     }
@@ -14671,7 +14705,7 @@ function spawnTrees(spots) {
       if (savedTree?.state) Object.assign(trantState, savedTree.state, { classTsid: classId });
       // The maturity cycles it ran while you were away (online the server holds street trees).
       if (GAME_MODE !== 'multiplayer') growStreetTrant(trantState, classId);
-      tex = textureForTrant(classId, trantState.maturity);
+      tex = textureForTrant(classId, trantState.maturity, trantState);
     }
     if (!tex) return;
     // Linear filtering without a mip chain (Pixi 8 sources have none by default).
@@ -14728,6 +14762,34 @@ function growStreetTrants(now = Date.now()) {
   for (const target of interactables) {
     if (!TRANT_META[target?.classId] || target.grownFromBean || !Number.isInteger(target.treeIndex) || !target.state) continue;
     if (growStreetTrant(target.state, target.classId, now) > 0) engine.refreshTreeVisual(target);
+  }
+}
+
+/** Report #545: what a street trant's art shows (stage and fruit), for syncTrantFruitArt. */
+function trantArtKey(target) {
+  const stage = nearestTrantMatStage(target.state.maturity ?? 7);
+  const art = trantFruitArt({ classTsid: target.classId, ...target.state });
+  return `${trantFrameKey(target.classId, stage, art)}:${textures[trantFrameKey(target.classId, stage, art)] ? 1 : 0}`;
+}
+
+/**
+ * Report #545: a street trant whose fruit changed (a harvest, its fruit growing back, the shared
+ * street's word online) redraws with the fruit it holds, as paper and wood trees follow theirs.
+ * Glitch's client redrew on every state change (updateTrantDisplay).
+ */
+function syncTrantFruitArt() {
+  for (const target of interactables) {
+    if (!TRANT_META[target?.classId] || target.grownFromBean || !target.sprite || target.sprite.destroyed || !target.state) continue;
+    const key = trantArtKey(target);
+    if (target.sprite._trantArt === key) continue;
+    target.sprite._trantArt = key;
+    engine.refreshTreeVisual(target);
+  }
+  if (app?.canvas) {
+    app.canvas.dataset.trantFruitArt = interactables
+      .filter((t) => TRANT_META[t?.classId] && !t.grownFromBean && t.sprite && !t.sprite.destroyed && t.state)
+      .map((t) => `${t.classId}:${t.state.fruitCount}:${trantFruitArt({ classTsid: t.classId, ...t.state }) || 'full'}`)
+      .join(',');
   }
 }
 
@@ -34969,6 +35031,8 @@ async function main() {
   else ownLookIn().then(() => endBoot());
 
   let newDayCheckAccum = 0;
+  /** Report #545: ticker time since the street trants' fruit art was last checked. */
+  let trantArtAccum = 0;
   let locSaveAccum = 0;
   let buffTickAccum = 0;
   let skillTickAccum = 0;
@@ -35093,6 +35157,13 @@ async function main() {
 
     // Crop garden growth (wet plots: seeds → shoots → crop)
     run('gardens', () => tickAllGardens(Date.now()));
+
+    // Report #545: a street trant draws the fruit it holds (~twice a second).
+    trantArtAccum += dt;
+    if (trantArtAccum > 30) {
+      trantArtAccum = 0;
+      run('trant fruit art', syncTrantFruitArt);
+    }
 
     // Poll game-day boundary (~every 5s of ticker time)
     newDayCheckAccum += dt;

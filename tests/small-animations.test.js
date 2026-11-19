@@ -13,10 +13,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { POWDER_SHAKE, powderShakerSheet } from '../public/js/powder-shakers.js?v=fcd18855';
-import { POWDERS } from '../public/js/powders.js?v=c380df0c';
+import { POWDERS } from '../public/js/powders.js?v=316a1f66';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
-import { packedCell, packedDurationMs, packedFrameAt } from '../public/js/packed-sheets.js?v=06079f1e';
-import { itemOverlayPlacement } from '../public/js/item-overlay.js?v=b3bc2d59';
+import { packedCell, packedDurationMs, packedFrameAt } from '../public/js/packed-sheets.js?v=ebcd61d5';
+import { itemOverlayPlacement } from '../public/js/item-overlay.js?v=bc28c58d';
 import { PLAYER_VERBS } from '../public/js/player-verbs-mp.js?v=4d0315f5';
 import { imageSize } from '../tools/image-size.mjs';
 

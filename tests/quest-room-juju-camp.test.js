@@ -9,7 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=b14f1d8f';
-import * as mod from '../public/js/quest-rooms/juju-camp.js?v=480bffba';
+import * as mod from '../public/js/quest-rooms/juju-camp.js?v=a24c9dc7';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(ROOT, 'assets', 'streets', `${tsid}.json`), 'utf8'));

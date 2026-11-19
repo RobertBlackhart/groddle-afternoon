@@ -24,10 +24,10 @@
  */
 
 import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=7a63d78f';
-import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=06079f1e';
-import { upgradeSource } from './sprite-hires.js?v=e5d8f9ec';
+import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=ebcd61d5';
+import { upgradeSource } from './sprite-hires.js?v=b6bc6eae';
 import { forgetTexture, loadTexture, whenLoaded } from './textures.js?v=1c44e7c3';
-import { anchorBottomCentre } from './sprite-feet.js?v=86205485';
+import { anchorBottomCentre } from './sprite-feet.js?v=8f0b6303';
 
 /** Decoded sheets kept after their overlay ends. */
 export const KEEP_SHEETS = 2;

@@ -31,7 +31,7 @@ import {
   upgradeStatus,
 } from '../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, isOfferedOnline } from '../public/js/imagination-remake.js?v=c37ad887';
-import { imaginationFeature } from '../public/js/features/imagination-feature.js?v=7a6ebdb9';
+import { imaginationFeature } from '../public/js/features/imagination-feature.js?v=ebf0fb42';
 import { NORMAL_BUFF, jumpApex } from '../public/js/avatar-step.js?v=39d7b1af';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=2d2eb5ac';
 import { WINTER_WALK_START, WINTER_WALK_TSID } from '../public/js/winter-walk-streets.js?v=cbe116f2';

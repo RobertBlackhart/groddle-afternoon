@@ -23,8 +23,8 @@ import {
   ARBOROLOGY_HARVEST,
   TRANT_META,
   trantHarvestResponse,
-} from '../public/js/trants.js?v=b9147016';
-import { getVerbsFor, runVerb } from '../public/content.js?v=484f59d3';
+} from '../public/js/trants.js?v=864ea9ff';
+import { getVerbsFor, runVerb } from '../public/content.js?v=3caa9ab4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

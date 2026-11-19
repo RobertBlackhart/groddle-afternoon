@@ -12,11 +12,11 @@ import {
   canHarvestTrant,
   harvestTrant,
   maturityLabel,
-} from './js/trants.js?v=b9147016';
+} from './js/trants.js?v=864ea9ff';
 import {
   quoteTrantCare,
   performTrantCare,
-} from './js/trant-care.js?v=9fba26b5';
+} from './js/trant-care.js?v=cb7f539b';
 import {
   listPlantableSeeds,
   waterAllPlots,

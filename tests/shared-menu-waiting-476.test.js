@@ -12,9 +12,9 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { COPY, greyWaitingVerbs, waitingIds } from '../public/js/street-objects.js?v=ef6a1e67';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=dbdf9aad';
-import { createTrantState } from '../public/js/trants.js?v=b9147016';
+import { COPY, greyWaitingVerbs, waitingIds } from '../public/js/street-objects.js?v=9cb07e5a';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ab2f7eea';
+import { createTrantState } from '../public/js/trants.js?v=864ea9ff';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

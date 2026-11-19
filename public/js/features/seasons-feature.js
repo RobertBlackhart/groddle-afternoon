@@ -39,7 +39,7 @@ import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=d4e5
 import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=d4e55862';
 import { setSeasonalRecipeCheck } from '../making.js?v=bf8b857b';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 
 /*
  * Each lit pumpkin's phrases are its own (pumpkin_lit_*.js this.phrases, 380-391, at most 3), kept
@@ -81,7 +81,7 @@ import { emblemCostFor } from '../shrines.js?v=1b7760ec';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=161f11cf';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=4fcce5c5';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=c78bc49c';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {

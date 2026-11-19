@@ -148,7 +148,7 @@ import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=2c3023b5';
 import * as kit from '../quest-rooms/kit.js?v=b14f1d8f';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=1c44e7c3';
-import { upgradeSource } from '../sprite-hires.js?v=e5d8f9ec';
+import { upgradeSource } from '../sprite-hires.js?v=b6bc6eae';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=7a63d78f';
 import { HOME_MACHINE } from '../home-ticket.js?v=fe9ee3a2';
@@ -172,7 +172,7 @@ import {
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const NEWXP_FEATURE_ID = 'newxp';

@@ -10,7 +10,9 @@
  *  - `set: { "<instance name>": frame }` places a new one-frame DefineSprite
  *    (the child's display list at that frame) instead of the child, so it
  *    shows that frame at any time; `null` drops the placement (visible =
- *    false);
+ *    false); `{ frame, drop: ["<name>", ...] }` freezes it too, without
+ *    those named children of its own (the egg plant hides imc.egg, not
+ *    the egg's stalk);
  *  - `pad: n` appends n frames holding the last frame's display list, so the
  *    sprite's frame F + k draws its still-playing children k frames later
  *    (fruit and bubbles animate on a stopped tree).
@@ -160,8 +162,8 @@ function spriteTable(buf) {
   return out;
 }
 
-/** A one-frame copy of sprite `src` showing its display list at `frame`. */
-function frozenSprite(buf, src, frame, newId) {
+/** A one-frame copy of sprite `src` showing its display list at `frame`, less its children named in `drop`. */
+function frozenSprite(buf, src, frame, newId, drop = []) {
   const keep = [];
   let shown = 0;
   const want = Math.max(1, Math.min(src.frames, frame));
@@ -171,6 +173,7 @@ function frozenSprite(buf, src, frame, newId) {
       if (shown === want) break;
       continue;
     }
+    if (drop.length && drop.includes(placement(buf, t)?.name)) continue;
     if ([PLACE, PLACE2, PLACE3, REMOVE, REMOVE2].includes(t.code)) keep.push(buf.subarray(t.start, t.end));
   }
   const head = Buffer.alloc(4);
@@ -202,7 +205,9 @@ export function freezeState(inFile, outFile, spriteId, { set = {}, pad = 0 } = {
     const pl = placement(buf, t);
     if (!pl?.name || !wanted.has(pl.name)) continue;
     seen.add(pl.name);
-    const frame = wanted.get(pl.name);
+    const want = wanted.get(pl.name);
+    const frame = want && typeof want === 'object' ? want.frame ?? 1 : want;
+    const drop = want && typeof want === 'object' ? want.drop || [] : [];
     if (frame === null) {
       body.writeUInt16LE((UNKNOWN_TAG << 6) | (buf.readUInt16LE(t.start) & 0x3f), rel(t.start));
       report.dropped += 1;
@@ -211,11 +216,11 @@ export function freezeState(inFile, outFile, spriteId, { set = {}, pad = 0 } = {
     if (pl.char === null) continue;
     const src = sprites.get(pl.char);
     if (!src) throw new Error(`${pl.name} places character ${pl.char}, not a sprite`);
-    const key = `${pl.char}:${frame}`;
+    const key = `${pl.char}:${frame}:${drop.join(',')}`;
     if (!frozen.has(key)) {
       const id = nextId++;
       frozen.set(key, id);
-      newTags.push(frozenSprite(buf, src, frame, id));
+      newTags.push(frozenSprite(buf, src, frame, id, drop));
       report.frozen += 1;
     }
     body.writeUInt16LE(frozen.get(key), rel(pl.charAt));

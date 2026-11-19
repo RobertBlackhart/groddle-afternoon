@@ -50,8 +50,8 @@
 import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { isItemFloor, platformYAt } from '../street-model.js?v=a9a05f9d';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=578806c2';
-import { trantStatusLabel } from '../trants.js?v=b9147016';
-import { standOnFeet } from '../sprite-feet.js?v=86205485';
+import { trantFrameKey, trantFruitArt, trantStatusLabel } from '../trants.js?v=864ea9ff';
+import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   GROWN_TREE_LABELS,
@@ -72,11 +72,11 @@ import {
   soilSpawnClasses,
   soilSpritePaths,
   tickPlot,
-} from '../patches.js?v=85d156bc';
+} from '../patches.js?v=5516ff51';
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { plotSignature, replayRng } from '../shared-patches.js?v=d6f7a0d9';
+import { plotSignature, replayRng } from '../shared-patches.js?v=afcb6ebb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PATCHES_FEATURE_ID = 'patches';
@@ -190,8 +190,10 @@ export function trantFrameStage(maturity) {
   return best;
 }
 
-export function treeFrameUrl(classId, maturity) {
-  return `assets/sprites/trants/frames/${classId}_m${trantFrameStage(maturity)}.webp?v=${TRANT_FRAME_VERSION}`;
+/** A grown tree's frame; with its state, the fruit it holds (report #545, js/trants.js trantFruitArt). */
+export function treeFrameUrl(classId, maturity, state = null) {
+  const art = state ? trantFruitArt({ classTsid: classId, ...state, maturity }) : '';
+  return `assets/sprites/trants/frames/${trantFrameKey(classId, trantFrameStage(maturity), art)}.webp?v=${TRANT_FRAME_VERSION}`;
 }
 
 /** The demo pack: tools plus a spread of Seasoned Beans (one that will not grow here). */
@@ -282,7 +284,7 @@ async function texturesForPlot(engine, plot) {
       const m = Math.max(1, Math.min(6, tree.state.maturity || 1));
       return sheetFrame(PIXI, tex.source, WOOD_SHEET, m - 1);
     }
-    return loadBase(PIXI, treeFrameUrl(tree.classId, tree.state.maturity));
+    return loadBase(PIXI, treeFrameUrl(tree.classId, tree.state.maturity, tree.state));
   }
   return loadBase(PIXI, plotArtPath(plot));
 }
@@ -388,6 +390,7 @@ async function buildView(engine, entity, myGeneration, { grow = false } = {}) {
     engine.entityLayer.addChild(sprite);
     entity.sprite = sprite;
     entity.shownMaturity = plot.tree.state.maturity;
+    entity.shownFruit = isWood ? '' : trantFruitArt({ classTsid: plot.tree.classId, ...plot.tree.state });
     entity.target = engine.register({
       classId: plot.tree.classId,
       label: GROWN_TREE_LABELS[plot.tree.classId],
@@ -431,15 +434,19 @@ function refreshTreeView(engine, entity) {
   if (plot.stage !== 'tree' || !entity.sprite || entity.sprite.destroyed) return;
   const tree = plot.tree;
   if (entity.target) entity.target.subtitle = treeSubtitle(tree);
-  if (entity.shownMaturity === tree.state.maturity || tree.state.maturity <= 0) return;
+  // Report #545: a trant also redraws when the fruit it shows changes (bare, half, full).
+  const art = tree.classId === 'wood_tree' ? '' : trantFruitArt({ classTsid: tree.classId, ...tree.state });
+  if ((entity.shownMaturity === tree.state.maturity && (entity.shownFruit ?? '') === art) || tree.state.maturity <= 0) return;
+  const grew = entity.shownMaturity !== tree.state.maturity;
   entity.shownMaturity = tree.state.maturity;
+  entity.shownFruit = art;
   const myGeneration = generation;
   texturesForPlot(engine, plot).then((tex) => {
     if (!tex || myGeneration !== generation || !entity.sprite || entity.sprite.destroyed) return;
     entity.sprite.texture = tex;
     const s = treeScale(tex, tree.classId === 'wood_tree');
     entity.sprite.scale.set(entity.direction * s, s);
-    growFx(engine, entity.sprite, s);
+    if (grew) growFx(engine, entity.sprite, s);
   });
 }
 
