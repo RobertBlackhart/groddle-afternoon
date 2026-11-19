@@ -32,8 +32,8 @@ import { requireSite, sitePath } from './repos.mjs';
 export const OUT = sitePath('data', 'home-machines.json');
 
 export async function homeMachinesJson() {
-  const hm = await import('../public/js/home-machines.js?v=e909d381');
-  const { MACHINE_SKILLS } = await import('../public/js/machine-rooms.js?v=eaf9f8d9');
+  const hm = await import('../public/js/home-machines.js?v=31b1b3ea');
+  const { MACHINE_SKILLS } = await import('../public/js/machine-rooms.js?v=b11cfa27');
   const { FRESH_FUEL, MACHINE_IDS } = await import('../public/js/machines.js?v=ab7d71da');
   const decor = await import('../public/js/home-decor.js?v=ce3fe651');
   const { HOME_LIMITS } = await import('../public/js/homes-catalog.js?v=b787b3eb');

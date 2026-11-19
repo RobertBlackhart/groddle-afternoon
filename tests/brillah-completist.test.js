@@ -16,7 +16,7 @@ import {
   unlockAchievement,
 } from '../public/js/achievements.js?v=7b03d657';
 import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyStreetVisit, availableHubStreets, topUpCompletists } from '../public/js/exploration.js?v=871ba26b';
+import { applyStreetVisit, availableHubStreets, topUpCompletists } from '../public/js/exploration.js?v=8f19e25d';
 import { ACHIEVEMENT_CONDITION_OVERRIDES, withAchievementOverrides } from '../tools/achievement-overrides.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -119,15 +119,16 @@ describe('#154 Brillah Completist', () => {
     assert.equal(getAchievementProgress(state, 'brillah_completist').conditions[0].current, 9);
   });
 
-  it('covers every hub Completist, never lowers progress, and leaves Naraka to hell.js', () => {
+  it('covers every hub Completist, follows the saved list down as well as up (#528), and leaves Naraka to hell.js', () => {
     const state = createAchievementState();
     state.groups = { streets_visited_in_hub_56: ['not-a-street', ...availableHubStreets('56', index).slice(0, 3)], streets_visited_in_hub_40: ['GHH101'] };
     state.progress.groddle_forest_completist = { progress: { number_56: 2 } };
     topUp(state);
     assert.equal(state.progress.groddle_forest_completist.progress.number_56, 3);
+    assert.equal(state.groups.streets_visited_in_hub_56.includes('not-a-street'), false, 'what the hub does not count leaves the list');
     state.progress.groddle_forest_completist.progress.number_56 = 10;
     topUp(state);
-    assert.equal(state.progress.groddle_forest_completist.progress.number_56, 10);
+    assert.equal(state.progress.groddle_forest_completist.progress.number_56, 3, 'a count the list does not hold is lowered (#528)');
     assert.equal(state.progress.naraka_completist, undefined);
     // Haraiva's is a group_count over the street list.
     state.groups.streets_visited_in_hub_116 = availableHubStreets('116', index).slice(0, 4);

@@ -4,12 +4,12 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ca4eaa0f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e6868d7a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a33ab493';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=a57d2e90';
+import { createPromptStack } from './js/prompt-stack.js?v=be2444f4';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=49228b02';
 import {
@@ -425,7 +425,7 @@ import {
   loadingVisitLine,
   recordStreetEntry,
   streetLoadingVisit,
-} from './js/exploration.js?v=871ba26b';
+} from './js/exploration.js?v=8f19e25d';
 import { createCombobox, createSuggestBox, watchSelects } from './js/combobox.js?v=d43209e8';
 import {
   INCANTATION_LINES,
@@ -815,7 +815,7 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=426bbc05';
+} from './js/screen-fx.js?v=df15804e';
 import { momentMoreText } from './js/ui/moment-card.js?v=3850c51c';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
@@ -829,7 +829,7 @@ import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=52319f13';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=104ccef6';
 import {
   planTravel,
   listMapDestinations,
@@ -34808,7 +34808,7 @@ async function main() {
   }
   // Loading card QA (js/loading-card-qa.js): ?loadcarddemo=<tsid>[,<tsid>].
   if (new URLSearchParams(location.search).has('loadcarddemo')) {
-    import('./js/loading-card-qa.js?v=3f3338a4').then((m) => m.runLoadingCardDemo({ engine, travel: (tsid) => enterStreetWithTransition(tsid), params: new URLSearchParams(location.search) }));
+    import('./js/loading-card-qa.js?v=2a589b02').then((m) => m.runLoadingCardDemo({ engine, travel: (tsid) => enterStreetWithTransition(tsid), params: new URLSearchParams(location.search) }));
   }
   installMoreMenu();
   installPlayerMenu();

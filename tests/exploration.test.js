@@ -20,7 +20,7 @@ import {
   countsTowardHub,
   hubMapStreetCount,
   streetVisitCounters,
-} from '../public/js/exploration.js?v=871ba26b';
+} from '../public/js/exploration.js?v=8f19e25d';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -167,7 +167,7 @@ import {
   recordStreetEntry,
   streetFeaturesFromTargets,
   streetLoadingVisit,
-} from '../public/js/exploration.js?v=871ba26b';
+} from '../public/js/exploration.js?v=8f19e25d';
 
 describe('location loading card (LoadingLocationView.as, location.js getLoadingInfo)', () => {
   it('formats time and ordinals like StringUtil', () => {

@@ -12,8 +12,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MAKING_BUSY } from '../public/js/make-tools.js?v=86877c3e';
-import { machineTank, roomMachineVerbs } from '../public/js/machine-rooms.js?v=eaf9f8d9';
-import { normalizeMachine, placedMachineVerbs } from '../public/js/home-machines.js?v=e909d381';
+import { machineTank, roomMachineVerbs } from '../public/js/machine-rooms.js?v=b11cfa27';
+import { normalizeMachine, placedMachineVerbs } from '../public/js/home-machines.js?v=31b1b3ea';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

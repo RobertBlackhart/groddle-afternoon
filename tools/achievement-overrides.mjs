@@ -28,7 +28,7 @@ import { FEAST_BADGES } from '../public/js/pot-luck-feast.js?v=8856930d';
  * count that some hubs outgrew. "Every street" is exploration.js availableHubStreets:
  * on the hub's street list, loadable in the remake, and counting by location.js:2756-2770
  * (no subway station, machine room or start street). Same condition id and counter, so
- * progress carries over; a badge already earned stays (topUpCompletists only raises).
+ * progress carries over; a badge already earned stays (topUpCompletists never takes one back).
  * `left` names what the hub's list holds that is not counted, for the record.
  */
 const everyStreet = (id, hub, was, num, left) => Object.freeze({

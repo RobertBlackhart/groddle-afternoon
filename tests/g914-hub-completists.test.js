@@ -16,7 +16,7 @@ import { createAchievementState, applyAchievementProgress, unlockAchievement } f
 import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import {
   GREETING_LOCATIONS, TRANSIT_STATIONS, applyStreetVisit, availableHubStreets, countsTowardHub, streetVisitCounters, topUpCompletists,
-} from '../public/js/exploration.js?v=871ba26b';
+} from '../public/js/exploration.js?v=8f19e25d';
 import { ACHIEVEMENT_CONDITION_OVERRIDES, withAchievementOverrides } from '../tools/achievement-overrides.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
