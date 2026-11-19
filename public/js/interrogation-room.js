@@ -85,8 +85,11 @@ export const INTERROGATION_CHAIR = Object.freeze({
   w: 101,
   h: 111,
 });
-/** Where the door out goes when no way back was kept (a QA look, a save from before): Empty Via 5, Baqala. */
-export const INTERROGATION_FALLBACK = Object.freeze({ tsid: 'GA5101HF7F429V5', label: 'Empty Via 5' });
+/**
+ * Where the door out goes when no way back was kept (a QA look, a save from before): the fresh
+ * start, Hechey Track in Groddle Forest (the street index default: Austin 2026-11-19).
+ */
+export const INTERROGATION_FALLBACK = Object.freeze({ tsid: 'GLI2V0UN7RD1T2J', label: 'Hechey Track' });
 
 export const INTERROGATION_TEXT = Object.freeze({
   door: 'Door',

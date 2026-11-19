@@ -86,7 +86,7 @@ import {
   INTERROGATION_TSID,
   interrogationIndexEntry,
   interrogationStreet,
-} from '../public/js/interrogation-room.js?v=b22294fe';
+} from '../public/js/interrogation-room.js?v=f621c3b9';
 import {
   EZ_COOKIN_TSID,
   PRACTICE_FLAMINGO,

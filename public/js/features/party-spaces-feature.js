@@ -103,7 +103,11 @@ const PORTAL_SCALE = 0.62;
 const GUEST_SCALE = 1.35 * 0.4;
 const DATA_MS = 250;
 const LIVELY_MUSIC = 'PARTY_LIVELY';
-const DEFAULT_STREET = { tsid: 'GA5101HF7F429V5', x: 900, y: 900 };
+/**
+ * The fresh start (Hechey Track, the street index default: Austin 2026-11-19), at its own arrival
+ * spot: no x/y, so the street places you as a new arrival would be.
+ */
+const DEFAULT_STREET = Object.freeze({ tsid: 'GLI2V0UN7RD1T2J', x: null, y: null });
 /**
  * Where a party's guest goes back to: the live party's way back, else the one an ended party left
  * on the record (normalizePartyRecord wayBack: it ran out while you were away), else DEFAULT_STREET.

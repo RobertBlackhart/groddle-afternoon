@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { execFileSync, spawnSync } from 'node:child_process';
 
-import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=21593282';
+import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=aeac57e3';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const PACK = 'party_pack_toxic_moon';
