@@ -6,6 +6,7 @@
  * Run: node --test tests/ladder-tiling.test.js
  */
 import { before, describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -22,7 +23,7 @@ const manifest = new Set(JSON.parse(read('public/assets/decos/manifest.json')));
 const clientRoot = join(here, '../../glitch-client/com/tinyspeck/engine');
 const xmlRoot = join(here, '../../streets/mnt/stos/location_data');
 const bundles = join(homedir(), 'Documents/glitch-audit/research/audio-hunt/raw/glitch-locations/glitch-location-swfs');
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 
 /** The 9 tiled ladders: street, x, y (foot), h. */
 const TILED = [

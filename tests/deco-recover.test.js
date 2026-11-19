@@ -5,6 +5,7 @@
  * Run: node --test tests/deco-recover.test.js
  */
 import { describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -13,7 +14,7 @@ import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const locations = join(homedir(), 'Documents/glitch-audit/research/audio-hunt/raw/glitch-locations');
 const rec = JSON.parse(readFileSync(join(root, 'tools/deco-pipeline/recovered.json'), 'utf8')).decos;
 const manifest = new Set(JSON.parse(readFileSync(join(root, 'public/assets/decos/manifest.json'), 'utf8')));

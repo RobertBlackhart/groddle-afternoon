@@ -9,6 +9,7 @@
  * tool_animation scenes when tinyspeck/glitch-items is present, and run the builder's --check.
  */
 import { before, describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -197,7 +198,7 @@ describe('G188 Make panel tool animations', () => {
     assert.ok(!existsSync(join(pub, 'assets/sprites/tools/tinkertool-repair.png')), 'the old two-row repair sheet is gone');
   });
 
-  it('the sheets and the table are current (tools/build-make-tool-sheets.py --check)', { skip: !existsSync('/opt/homebrew/bin/python3.11') && 'python3.11 missing' }, () => {
+  it('the sheets and the table are current (tools/build-make-tool-sheets.py --check)', { skip: !existsSync(python311) && 'python3.11 missing' }, () => {
     const out = execFileSync('python3.11', ['-I', join(spike, 'tools/build-make-tool-sheets.py'), '--check'], { encoding: 'utf8' });
     assert.match(out, /^ok/m);
   });

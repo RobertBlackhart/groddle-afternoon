@@ -7,6 +7,7 @@
  * Run: node --test tests/deco-anim.test.js
  */
 import { describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -18,7 +19,7 @@ import { ANIM_FPS, clockFrame, isAnimatedDeco, pickStrip, stripFrames, timelineT
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const xmlRoot = join(root, '../streets/mnt/stos/location_data');
 const locations = join(homedir(), 'Documents/glitch-audit/research/audio-hunt/raw/glitch-locations');
 const clientRoot = join(root, '../glitch-client/com/tinyspeck/engine');

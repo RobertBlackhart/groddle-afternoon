@@ -5,6 +5,7 @@
  * Run: node --test tests/deco-sharp.test.js
  */
 import { describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -23,7 +24,7 @@ const decoDir = join(root, 'public/assets/decos/groddle');
 const sharpPlan = JSON.parse(readFileSync(join(root, 'tools/deco-pipeline/plan-sharp.json'), 'utf8'));
 const rows = new Map(sharpPlan.decos.map((r) => [r.name, r]));
 const street = (tsid) => JSON.parse(readFileSync(join(root, `public/assets/streets/${tsid}.json`), 'utf8'));
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const url = (name) => `assets/decos/groddle/${name}.png`;
 
 function webpSize(file) {

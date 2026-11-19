@@ -3,6 +3,7 @@
 // measures their placements (room_placements) so the copies exist. The Penalty Cell's trunk and
 // bars drew 1.6 device px per texel from the 3x file on a 4x backing store.
 import { test } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -60,7 +61,7 @@ test('kit.deco asks for the sharp copy at its own scale and keeps the sprite at 
 
 test('sharp.py measures the quest rooms: every hard-edged blurry room deco has its copy', async () => {
   const { HIRES_DECOS } = await import('../public/js/deco-hires-list.js?v=60fcf361');
-  const out = execFileSync('/opt/homebrew/bin/python3.11', ['-I', '-c', [
+  const out = execFileSync(python311, ['-I', '-c', [
     'import sys, json',
     "sys.argv = ['x']",
     "sys.path.insert(0, 'tools/deco-pipeline')",

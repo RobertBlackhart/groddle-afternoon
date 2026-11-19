@@ -9,6 +9,7 @@
  * Run: node --test tests/door-signs.test.js
  */
 import { describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
@@ -23,7 +24,7 @@ const pub = join(spike, 'public');
 const read = (p) => readFileSync(join(spike, p), 'utf8');
 const signs = JSON.parse(read('tools/deco-pipeline/door-signs.json'));
 const plan = Object.fromEntries(JSON.parse(read('tools/deco-pipeline/plan.json')).decos.map((r) => [r.name, r]));
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const locations = join(homedir(), 'Documents/glitch-audit/research/audio-hunt/raw/glitch-locations');
 const HOUSES = ['large', 'medium', 'small'].flatMap((s) => [1, 2, 3, 4, 5].map((i) => `door_asset_house_${s}_0${i}`));
 

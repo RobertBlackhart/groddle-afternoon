@@ -9,6 +9,7 @@
  * Run: node --test tests/machine-art.test.js
  */
 import { before, describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -126,7 +127,7 @@ describe('G193 machine art: the sheets', () => {
     assert.equal(MACHINE_ART_SHEETS.blockmaker.states.loadClose[1], 19);
   });
 
-  it('the sheets and the table are current (tools/build-machine-art.py --check)', { skip: !existsSync('/opt/homebrew/bin/python3.11') && 'python3.11 missing' }, () => {
+  it('the sheets and the table are current (tools/build-machine-art.py --check)', { skip: !existsSync(python311) && 'python3.11 missing' }, () => {
     const out = execFileSync('python3.11', ['-I', join(spike, 'tools/build-machine-art.py'), '--check'], { encoding: 'utf8' });
     assert.match(out, /^ok/m);
   });

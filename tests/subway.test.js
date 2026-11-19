@@ -7,6 +7,7 @@
  * tools/build-subway.mjs, tools/build-subway-art.py).
  */
 import { describe, it } from 'node:test';
+import { python311 } from './python311.js';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -445,7 +446,7 @@ describe('Stations, the train and the surface entrances', () => {
     assert.equal(findStation('nowhere'), null);
   });
 
-  it('art is current (tools/build-subway-art.py --check)', { skip: !existsSync('/opt/homebrew/bin/python3.11') && 'python3.11 missing' }, () => {
+  it('art is current (tools/build-subway-art.py --check)', { skip: !existsSync(python311) && 'python3.11 missing' }, () => {
     execFileSync('python3.11', ['-I', join(spike, 'tools/build-subway-art.py'), '--check'], { stdio: 'pipe' });
   });
 });

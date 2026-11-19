@@ -7,6 +7,7 @@
  * draws its words with street-render.js signLabel.
  */
 import assert from 'node:assert/strict';
+import { python311 } from './python311.js';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -15,7 +16,7 @@ import { SIGN_FONT_FAMILY, SIGN_TEXT_FILL, SIGN_TEXT_FILL_UNBUILT, loadSignFont,
 import { WORLD_FONT_FACES } from '../public/js/world-text.js?v=6b49f88c';
 
 const root = join(import.meta.dirname, '..');
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const read = (p) => readFileSync(join(root, p), 'utf8');
 
 const FakePIXI = {

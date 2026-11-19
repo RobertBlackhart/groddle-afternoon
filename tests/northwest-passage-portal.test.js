@@ -15,6 +15,7 @@
  *   on a pc_perm 0 line (a531c873e, tests/soft-lines.test.js); this pins the cage itself.
  */
 import assert from 'node:assert/strict';
+import { python311 } from './python311.js';
 import { describe, it, mock } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -36,7 +37,7 @@ import {
 } from '../public/js/wintry-portal.js?v=1437deda';
 
 const root = join(import.meta.dirname, '..');
-const python = '/opt/homebrew/bin/python3.11';
+const python = python311;
 const street = JSON.parse(readFileSync(join(root, 'public/assets/streets/GLI23D3LDHD1FQA.json'), 'utf8'));
 const animDir = join(root, 'public/assets/decos/animated');
 const wintry = JSON.parse(readFileSync(join(root, 'public/assets/streets/GM11E7ODKHO1QJE.json'), 'utf8'));
