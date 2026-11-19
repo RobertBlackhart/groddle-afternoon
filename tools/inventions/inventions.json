@@ -4918,6 +4918,23 @@
    "rows": [
     "G1031"
    ]
+  },
+  {
+   "id": "map-building-no-dots",
+   "title": "A street under construction keeps its striped road on the hub map instead of Glitch's unvisited dots (#526).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/map-graph.js",
+     "symbol": "unvisited building"
+    }
+   ],
+   "why": "Glitch dotted every unvisited street (MapStreet.as 51-63); with our construction stripes (ticket 66) dots over stripes read as a second kind of dotted street, and no one can have walked a closed street.",
+   "ruling": "Claude's default in lane checkb, told Austin 2026-11-19; his call if he wants them dotted",
+   "rows": [
+    "G1038"
+   ]
   }
  ]
 }

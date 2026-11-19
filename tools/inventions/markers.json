@@ -735,7 +735,8 @@
   },
   "public/js/map-graph.js": {
     "made-up: map, drawn from its surviving grey (no made-up": "made-up-map-hills",
-    "ours: // RIGHTCLICK: a street has a menu of ours (game.js openMapStreetMenu), never the": "right-click-menus"
+    "ours: // RIGHTCLICK: a street has a menu of ours (game.js openMapStreetMenu), never the": "right-click-menus",
+    "ours: under construction keeps its striped road (ours, ticket 66): stripes over dots": "map-building-no-dots"
   },
   "public/js/map-routes.js": {
     "remake-own: * PURE (#104, a remake addition: GpsUI.as showed only To and Next): the Map's": "map-route-line",

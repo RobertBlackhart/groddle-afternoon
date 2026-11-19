@@ -48,14 +48,14 @@ describe('#526: unvisited streets are dotted on the Map', () => {
   it('the dots are Glitch\'s: black, radius 2.5 every 8, first one 2.5 in, at 0.4 x 0.7 (0.4 x 0.85 hovered)', () => {
     const css = readFileSync(join(root, 'public/style.css'), 'utf8');
     const rule = /\.map-seg\.travelable\.unvisited \{([^}]*)\}/.exec(css)?.[1] || '';
-    assert.match(rule, /stroke: #000;/);
+    assert.match(rule, /stroke: var\(--c-black\);/);
     assert.match(rule, /stroke-width: calc\(5px \* var\(--map-line-k, 1\)\);/);
     assert.match(rule, /stroke-dasharray: 0 calc\(8px \* var\(--map-line-k, 1\)\);/);
     assert.match(rule, /stroke-dashoffset: calc\(-2\.5px \* var\(--map-line-k, 1\)\);/);
     assert.match(rule, /opacity: 0\.28;/);
     const hover = /\.map-street\.travelable\.unvisited:hover \.map-seg\.travelable\.unvisited \{([^}]*)\}/.exec(css)?.[1] || '';
     assert.match(hover, /opacity: 0\.34;/);
-    assert.match(hover, /stroke: #000;/, 'hovering keeps the dots, not the yellow road');
+    assert.match(hover, /stroke: var\(--c-black\);/, 'hovering keeps the dots, not the yellow road');
     // .map-seg rounds the line's caps, which turns each zero-length dash into a dot.
     assert.match(/\n\.map-seg \{([^}]*)\}/.exec(css)?.[1] || '', /stroke-linecap: round;/);
     // The hover rule comes after the plain travelable hover so it wins.
