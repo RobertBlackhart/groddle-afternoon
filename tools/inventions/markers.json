@@ -598,6 +598,9 @@
     "stand-in: * was the live population walking past. The solo stand-ins": "solo-stand-ins",
     "stand-in: The solo stand-ins who walk past graves.": "solo-stand-ins"
   },
+  "public/js/hell.js": {
+    "remake-own: // #151 (Austin 2026-11-19): the remake's own line while Beelzebooze waits on the drink;": "wine-beelzebooze-hint"
+  },
   "public/js/help-mine.js": {
     "remake-own: * remake's own gentle cadence for them": "solo-stand-ins"
   },

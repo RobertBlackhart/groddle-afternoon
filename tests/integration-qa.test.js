@@ -45,7 +45,7 @@ test.describe('integration playtest regressions', () => {
   test('the Magic Rock waits out rook attacks, Naraka and meditation', async () => {
     const { createFeatureHost } = await import('../public/js/feature-host.js?v=b87e2cbc');
     const { rookAttackFeature } = await import('../public/js/features/rook-attack-feature.js?v=865e1401');
-    const { hellFeature } = await import('../public/js/features/hell-feature.js?v=6da8c49f');
+    const { hellFeature } = await import('../public/js/features/hell-feature.js?v=10c16adb');
     const { createRookAttack } = await import('../public/js/rook-attack.js?v=5e62a79f');
     const host = createFeatureHost([rookAttackFeature, hellFeature]);
     rookAttackFeature.restore({ active: createRookAttack({ tsid: 'L1', now: Date.now() }) });

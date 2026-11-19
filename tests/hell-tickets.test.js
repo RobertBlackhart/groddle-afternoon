@@ -11,8 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import { classifyQuests, eventCounters, isEventEmitted, questRoutingReport, requirementRoute } from '../public/js/quest-offers.js?v=8b51ffce';
-import { HELL_LOCATION, HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=834960da';
-import { PANKA_TSID, HELL_BAR_TSID } from '../public/js/hell-bar.js?v=870b4794';
+import { HELL_LOCATION, HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=c1f68f31';
+import { PANKA_TSID, HELL_BAR_TSID } from '../public/js/hell-bar.js?v=2b47a3d6';
 import {
   GRAVE_VISIT,
   GRAVE_VISITORS,
@@ -26,13 +26,13 @@ import {
   planGraveVisit,
   recognitionBranch,
   ticketDue,
-} from '../public/js/hell-tickets.js?v=d3c287af';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=1e2516d2';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=6da8c49f';
-import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=ee2dec2d';
+} from '../public/js/hell-tickets.js?v=8e4a914f';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=9f5f7939';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=10c16adb';
+import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=5c1eb810';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=e76f6d7a';
 import { questFlagsFeature } from '../public/js/features/quest-flags-feature.js?v=17c6ef48';
-import { FEATURES } from '../public/js/features/index.js?v=3ce21da7';
+import { FEATURES } from '../public/js/features/index.js?v=d6946005';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(spike, 'public/assets/content');
@@ -323,6 +323,11 @@ describe('the chain in play (features, fake engine)', () => {
 
     // The dead are not Pooped after a first croak, so they cannot drink it yet.
     assert.equal(hellFeature.packVerbs('wine_of_the_dead')[0].enabled, false);
+    // #151: while Beelzebooze waits on the drink, the refusal says how to finish it.
+    const [held] = hellFeature.packVerbs('wine_of_the_dead', engine);
+    assert.equal(held.enabled, false);
+    assert.equal(held.reason, "You aren't Pooped, so there's no reason to drink this now. To finish Beelzebooze, drink it once you're back among the living. It won't bring you back to life, though: squish 11 bunches of Hellish Grapes for that.");
+    assert.doesNotMatch(hellFeature.packVerbs('wine_of_the_dead', { questState: { active: {}, completed: ['hell_quest'] } })[0].reason, /Beelzebooze/);
     hellFeature.restore({});
     engine.enter('GLI2V0UN7RD1T2J');
     const xp = engine.pc.xp;

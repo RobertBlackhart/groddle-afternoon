@@ -106,6 +106,9 @@ export const HELL_TEXT = Object.freeze({
   wineNotPooped: "You aren't Pooped, so there's no reason to drink this now.",
   // Remake copy (players read the wine's "will revive" description as bringing them back to life).
   wineNoRevive: `It won't bring you back to life, though: squish ${GRAPES_REQUIRED} bunches of Hellish Grapes for that.`,
+  // #151 (Austin 2026-11-19): the remake's own line while Beelzebooze waits on the drink; Glitch had
+  // no word that the quest finishes by drinking it once alive (drinking it alive croaks you again).
+  wineBeelzebooze: "To finish Beelzebooze, drink it once you're back among the living.",
   wineTooltipDead: 'Bottoms up! Drink this to become less Pooped.',
   wineTooltipAlive: "Bottoms up! What's the worst that could happen?",
   walkingDeadTick: 'Braiiiiiiiiins!',
@@ -1457,12 +1460,16 @@ export function graveMarkerPhase(state, now = Date.now()) {
 /* Wine of the Dead + Hell's Bartender                                  */
 /* ------------------------------------------------------------------ */
 
-/** wine_of_the_dead drink conditions. */
-export function wineDrinkConditions(state, now = Date.now()) {
+/**
+ * wine_of_the_dead drink conditions. `opts.beelzebooze`: hell_quest is under way, so its drink
+ * step is still to do (#151: the refusal says how to finish it).
+ */
+export function wineDrinkConditions(state, now = Date.now(), opts = {}) {
   const s = normalizeHellState(state);
   const tooltip = s.isDead ? HELL_TEXT.wineTooltipDead : HELL_TEXT.wineTooltipAlive;
   if (s.isDead && isPooped(s, now) !== 'pooped') {
-    return { state: 'disabled', reason: `${HELL_TEXT.wineNotPooped} ${HELL_TEXT.wineNoRevive}`, tooltip };
+    const quest = opts.beelzebooze ? ` ${HELL_TEXT.wineBeelzebooze}` : '';
+    return { state: 'disabled', reason: `${HELL_TEXT.wineNotPooped}${quest} ${HELL_TEXT.wineNoRevive}`, tooltip };
   }
   return { state: 'enabled', reason: '', tooltip };
 }
@@ -1475,7 +1482,7 @@ export function wineDrinkConditions(state, now = Date.now()) {
 export function drinkWineOfTheDead(state, ctx = {}) {
   const s = normalizeHellState(state);
   const now = num(ctx.now, Date.now());
-  const cond = wineDrinkConditions(s, now);
+  const cond = wineDrinkConditions(s, now, { beelzebooze: ctx.beelzebooze === true });
   if (cond.state !== 'enabled') return { ok: false, reason: 'disabled', text: cond.reason, state: s, effects: [] };
   const base = [
     { type: 'consume_item', classTsid: 'wine_of_the_dead', count: 1 },

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b88c9884';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3ce21da7';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d6946005';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -843,7 +843,7 @@ import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=b10f17bb';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
-import { hellBuffDesc, isInHell } from './js/hell.js?v=834960da';
+import { hellBuffDesc, isInHell } from './js/hell.js?v=c1f68f31';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { createNpcGlitchKit } from './js/npc-glitch.js?v=2027a750';

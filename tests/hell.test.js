@@ -60,7 +60,7 @@ import {
   shouldWarnLowEnergy,
   squishGrape,
   wineDrinkConditions,
-} from '../public/js/hell.js?v=834960da';
+} from '../public/js/hell.js?v=c1f68f31';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=50c112eb';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
@@ -552,6 +552,11 @@ describe('graves, hell quests, and Wine of the Dead', () => {
     const dead = croaked().state;
     assert.equal(wineDrinkConditions(dead).reason, `${HELL_TEXT.wineNotPooped} ${HELL_TEXT.wineNoRevive}`);
     assert.match(HELL_TEXT.wineNoRevive, /squish 11 bunches/);
+    // #151: with Beelzebooze under way the refusal says it finishes by drinking once alive.
+    assert.equal(wineDrinkConditions(dead, Date.now(), { beelzebooze: true }).reason,
+      `${HELL_TEXT.wineNotPooped} To finish Beelzebooze, drink it once you're back among the living. ${HELL_TEXT.wineNoRevive}`);
+    assert.equal(drinkWineOfTheDead(dead, { beelzebooze: true }).text, wineDrinkConditions(dead, Date.now(), { beelzebooze: true }).reason);
+    assert.doesNotMatch(HELL_TEXT.wineBeelzebooze, /\u2014/);
     const pooped = { ...dead, pooped: { kind: 'pooped', appliedAt: DAY0, expiresAt: DAY0 + 1e7 } };
     const sip = drinkWineOfTheDead(pooped, { now: DAY0 });
     assert.equal(sip.reason, 'unpooped');

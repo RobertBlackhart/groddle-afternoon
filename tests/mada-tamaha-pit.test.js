@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=33f40cb6';
-import { MADA_TAMAHA_TSID, NARAKA_TELEPORTERS, narakaTeleportersOn } from '../public/js/hell.js?v=834960da';
+import { MADA_TAMAHA_TSID, NARAKA_TELEPORTERS, narakaTeleportersOn } from '../public/js/hell.js?v=c1f68f31';
 import { inTeleporter } from '../public/js/hidden-floors.js?v=014b5377';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -4818,6 +4818,27 @@
    ],
    "why": "Glitch had no pass (pols_canEnter read the owner's location); the remake's site-signed pass lasts 30 minutes, and an expired one left visitors off the street the game showed, so every yard verb was refused (#522).",
    "rows": []
+  },
+  {
+   "id": "wine-beelzebooze-hint",
+   "title": "Wine of the Dead refused while dead (not Pooped) adds \"To finish Beelzebooze, drink it once you're back among the living.\" while Beelzebooze is under way (#151).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/hell.js",
+     "symbol": "HELL_TEXT.wineBeelzebooze wineDrinkConditions"
+    },
+    {
+     "file": "public/js/features/hell-feature.js",
+     "symbol": "beelzeboozeUnderWay"
+    }
+   ],
+   "why": "wine_of_the_dead.js refuses the dead who are not Pooped with only \"You aren't Pooped, so there's no reason to drink this now.\"; nothing said the quest finishes by drinking it alive, so players stuck in the Hell Bar read the quest as broken (#151).",
+   "ruling": "Austin 2026-11-19 (lane hintk): approved the help line",
+   "rows": [
+    "G1032"
+   ]
   }
  ]
 }

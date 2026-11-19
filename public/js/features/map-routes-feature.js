@@ -53,7 +53,7 @@ import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=71fa73cd';
 import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=af570a5d';
-import { hellFeature } from './hell-feature.js?v=6da8c49f';
+import { hellFeature } from './hell-feature.js?v=10c16adb';
 import { postReachY } from '../street-model.js?v=9f16f4ab';
 import {
   ROUTE_COLOR,

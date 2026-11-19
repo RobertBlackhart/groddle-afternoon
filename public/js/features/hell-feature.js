@@ -58,7 +58,7 @@ import {
   wineDrinkConditions,
   POOPED_ENERGY_PERCENT,
   SUPER_POOPED_CONSUMED_MULTIPLIER,
-} from '../hell.js?v=834960da';
+} from '../hell.js?v=c1f68f31';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
@@ -194,6 +194,11 @@ function enterThenPrompt(engine, to, effects, after) {
   Promise.resolve(engine.enter(to.tsid, { spawnX: to.x, spawnY: to.y, bypassFeatureGates: true }))
     .then(() => engine.afterStreetCard?.())
     .then(arrived, arrived);
+}
+
+/** #151: Beelzebooze (hell_quest) is under way; it ends on the drink, so its drink step is still to do. */
+function beelzeboozeUnderWay(engine) {
+  return Boolean(engine?.questState?.active?.hell_quest);
 }
 
 function croakContext(engine) {
@@ -533,18 +538,19 @@ export const hellFeature = {
   },
 
   /** items/wine_of_the_dead.js drink: the dead stop being Pooped; the living croak. */
-  packVerbs(classTsid) {
+  packVerbs(classTsid, engine) {
     if (classTsid !== 'wine_of_the_dead') return [];
-    const cond = wineDrinkConditions(state, Date.now());
+    const cond = wineDrinkConditions(state, Date.now(), { beelzebooze: beelzeboozeUnderWay(engine) });
     return [{ id: 'drink', label: 'Drink', enabled: cond.state === 'enabled', reason: cond.reason, tooltip: cond.tooltip }];
   },
 
   runPackVerb(classTsid, verbId, engine) {
     if (classTsid !== 'wine_of_the_dead' || verbId !== 'drink') return false;
     if (countItem(engine.inv, 'wine_of_the_dead') < 1) return true;
-    const result = drinkWineOfTheDead(state, { ...croakContext(engine), now: Date.now() });
+    const beelzebooze = beelzeboozeUnderWay(engine);
+    const result = drinkWineOfTheDead(state, { ...croakContext(engine), now: Date.now(), beelzebooze });
     if (!result.ok) {
-      if (result.text) engine.toast(result.text, 2200);
+      if (result.text) engine.toast(result.text, beelzebooze ? 5200 : 2200);
       return true;
     }
     state = result.state;
