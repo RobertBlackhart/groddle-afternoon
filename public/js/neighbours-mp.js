@@ -52,6 +52,8 @@ export const VISIT_VERB = Object.freeze({
 export const KEY_VERB = Object.freeze({ id: 'house_keys', label: 'Keys', tooltip: 'Manage your keyring' });
 
 export const NEIGHBOURS_TEXT = Object.freeze({
+  // R31 (#522): the site would not give a fresh visit pass, or the server kept refusing it (ours).
+  passLost: "Their home street can't be reached right now. Try visiting again.",
   // G795: the Workbench while the floor's shared project is still on its way from the site (ours).
   benchNotReady: 'The Workbench is getting ready. Try again in a moment.',
   // port/ACLDialog.as 105, 123, 157, 168, 179, 256, 313.
@@ -236,6 +238,125 @@ export function sharedHomeStreet({ visit = null, me = 0, inHome = false, room = 
   return homeStreetFor(me, room === 'interior' ? 'interior' : 'street');
 }
 
+/** R31 (#522): a visit pass is renewed this long before it runs out (half its life when that is shorter). */
+export const VISIT_PASS_EARLY_MS = 5 * 60 * 1000;
+/** The least time between two asks to the site for a fresh pass. */
+export const VISIT_PASS_RETRY_MS = 15 * 1000;
+/** Asks in a row the server never took before the visit gives up (VISIT_TEXT passLost). */
+export const VISIT_PASS_TRIES = 3;
+/** The site's PASS_TTL (src/Neighbours.php), when an answer does not say. */
+export const VISIT_PASS_TTL = 1800;
+
+/** The pass's life in seconds from the site's expiresIn: PASS_TTL when missing, an hour at most (homes.go homePassLife). */
+export function visitPassTtl(expiresIn) {
+  const n = Math.floor(Number(expiresIn));
+  return n > 0 ? Math.min(3600, n) : VISIT_PASS_TTL;
+}
+
+/** A site refusal of the visit itself (blocked, no house, the tutorial): the visit cannot go on. */
+export function visitRefused(err) {
+  return /^groddle_home_/.test(String(err?.code || ''));
+}
+
+/**
+ * R31 (#522): keeps a visitor's pass to the home they visit good for the realtime server. The
+ * site signs a pass for PASS_TTL (30 minutes) and the server keeps it only for the socket it came
+ * on (homes.go disconnected), so after a reconnect, or a walk out of the house past its expiry,
+ * the server refused the rejoin (homes.go gate: home_private) and the old pass sent again ("homes":
+ * expired), and kept the visitor on their last street: every yard verb was then "You need to be
+ * on their home street to do that." Ours (Glitch had no pass: pols_canEnter read the owner's
+ * location directly): a fresh pass is fetched from the same site route as the visit (fetchView,
+ * groddle/v1/homes/<id>) before the old one runs out, and whenever the server refuses one.
+ *
+ * fetchView(owner) -> normalized view; onView(owner, view) sends its pass; onGone(owner, err) for
+ * a site refusal of the visit; onLost(owner) once after VISIT_PASS_TRIES asks the server never took.
+ */
+export function createVisitPassKeeper({ fetchView, onView, onGone = () => {}, onLost = () => {}, now = () => Date.now() } = {}) {
+  let owner = 0;
+  let at = 0;
+  let ttlMs = 0;
+  let triedAt = -Infinity;
+  let tries = 0;
+  let busy = false;
+  let lost = false;
+  let gen = 0;
+
+  const renewAt = () => at + Math.max(ttlMs / 2, ttlMs - VISIT_PASS_EARLY_MS);
+  const fresh = () => owner > 0 && ttlMs > 0 && now() < renewAt();
+
+  async function renew() {
+    if (!owner || busy || lost || now() - triedAt < VISIT_PASS_RETRY_MS) return false;
+    const id = owner;
+    const g = gen;
+    if (tries >= VISIT_PASS_TRIES) {
+      lost = true;
+      onLost(id);
+      return false;
+    }
+    busy = true;
+    triedAt = now();
+    tries += 1;
+    try {
+      const view = await fetchView(id);
+      if (g !== gen || !view?.pass) return false;
+      at = now();
+      ttlMs = visitPassTtl(view.passTtl) * 1000;
+      onView(id, view);
+      return true;
+    } catch (err) {
+      if (g === gen && visitRefused(err)) {
+        owner = 0;
+        gen += 1;
+        onGone(id, err);
+      }
+      return false;
+    } finally {
+      busy = false;
+    }
+  }
+
+  return {
+    /** A visit begins with the pass in its view. */
+    start(id, view) {
+      owner = positiveId(id) || 0;
+      at = now();
+      ttlMs = view?.pass ? visitPassTtl(view.passTtl) * 1000 : 0;
+      triedAt = -Infinity;
+      tries = 0;
+      lost = false;
+      gen += 1;
+    },
+    /** The visit is over: nothing more is asked. */
+    stop() {
+      owner = 0;
+      gen += 1;
+    },
+    get owner() { return owner; },
+    /** The pass is good for a while yet (sending it again will do). */
+    get fresh() { return fresh(); },
+    get lost() { return lost; },
+    renew,
+    /** Every frame of a visit: renew before the pass runs out. */
+    tick() {
+      if (owner && ttlMs > 0 && !fresh()) renew();
+    },
+    /** The server took a pass (home_pass_ok). */
+    accepted() {
+      tries = 0;
+    },
+    /**
+     * The server refused: "home_private" (no live pass for the street asked) is answered with the
+     * same pass while it is fresh, else a new one; "homes" (the pass itself refused) with a new one.
+     */
+    refused(code) {
+      if (!owner) return 'none';
+      if (code === 'home_private' && fresh() && tries === 0) return 'resend';
+      renew();
+      return 'renew';
+    },
+  };
+}
+
 /** The site's visit answer, checked: null unless it names an owner with a home. */
 export function normalizeHomeView(answer) {
   const owner = positiveId(answer?.owner?.id);
@@ -248,6 +369,8 @@ export function normalizeHomeView(answer) {
     homes: answer.homes && typeof answer.homes === 'object' && !Array.isArray(answer.homes) ? answer.homes : {},
     key: answer.key === true,
     pass: typeof answer.pass?.token === 'string' && answer.pass.token ? answer.pass.token : '',
+    // R31 (#522): how long the site said the pass is good for (Neighbours::PASS_TTL), in seconds.
+    passTtl: typeof answer.pass?.token === 'string' && answer.pass.token ? visitPassTtl(answer.pass.expiresIn) : 0,
     random: answer.random === true,
     // The owner's Garden Gnomes where they stand (Neighbours::gnomeRows; features/garden-gnome-feature.js draws them).
     gnomes: normalizeVisitGnomes(answer.gnomes),

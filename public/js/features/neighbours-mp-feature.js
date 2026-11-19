@@ -116,7 +116,7 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=57afc
 import { getPlot, tickGarden } from '../garden.js?v=d4e55862';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=465f8d14';
-import { butlerApi } from './butler-feature.js?v=5c9cad75';
+import { butlerApi } from './butler-feature.js?v=bf981204';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=4822d590';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
@@ -132,6 +132,7 @@ import {
   applyButlerStock,
   applyTendAct,
   butlerGiftOp,
+  createVisitPassKeeper,
   doorVerbs,
   givenLine,
   holdsKeyFrom,
@@ -169,9 +170,9 @@ import {
   TENDED_KEEP,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=81fe8611';
+} from '../neighbours-mp.js?v=c20e6df1';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=26dceab0';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e9b9dbd2';
 import { worldPoint } from './world-drop-feature.js?v=7d3779ee';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=77d57cda';
 
@@ -323,6 +324,33 @@ function createSession(engine, client) {
     if (visit?.view?.pass && client.state === 'online') client.send('home_pass', { token: visit.view.pass });
   }
 
+  // R31 (#522): a fresh pass from the site before this one runs out, and whenever the server refuses one.
+  const passes = createVisitPassKeeper({
+    fetchView: async (owner) => normalizeHomeView(await account.home(owner)),
+    onView: (owner, view) => {
+      if (visit?.owner !== owner) return;
+      visit.view.pass = view.pass;
+      visit.view.passTtl = view.passTtl;
+      sendPass();
+    },
+    onGone: (owner, err) => {
+      if (visit?.owner !== owner) return;
+      notice(err?.message || T.passLost, 3600);
+      goBack();
+    },
+    onLost: (owner) => {
+      if (visit?.owner === owner) notice(T.passLost, 4200);
+    },
+  });
+
+  /** The server refused the street (home_private) or the pass (homes): the pass again, or a fresh one, then the street. */
+  function rejoin(code) {
+    if (!visit) return;
+    if (code === 'home_private') needRejoin = true;
+    if (passes.owner !== visit.owner) passes.start(visit.owner, visit.view);
+    if (passes.refused(code) === 'resend') sendPass();
+  }
+
   // —— Visiting ——
   function visitBlock() {
     if (engine.transientInstance?.() && !readVisitScene(engine.streetTsid)) return T.cantFromHere;
@@ -370,6 +398,7 @@ function createSession(engine, client) {
     }
     const returnTo = returnPoint();
     visit = { owner: view.owner.id, name: view.owner.name || name, view, room: 'street', returnTo, key: view.key || holdsKeyFrom(keys, view.owner.id), letIn: false, targets: {}, gardens: new Set(), beds: new Map(), watered: new Set(), butler: answerButler(view) };
+    passes.start(visit.owner, view);
     sendPass();
     if (summoned) {
       // A Tower that is not built is no floor to land on: the home street then.
@@ -1425,6 +1454,7 @@ function createSession(engine, client) {
   });
   client.on('msg:home_pass_ok', (msg) => {
     if (!visit || Number(msg.owner) !== visit.owner) return;
+    passes.accepted();
     visit.key = visit.key || msg.key === true;
     if (needRejoin && client.wanted && engine.player) {
       needRejoin = false;
@@ -1433,9 +1463,10 @@ function createSession(engine, client) {
   });
   client.on('error', ({ code, message }) => {
     if (!visit) return;
-    if (code === 'home_private') {
-      needRejoin = true;
-      sendPass();
+    if (code === 'home_private' || code === 'homes') {
+      // R31 (#522): an expired pass sent again was refused ("homes") and ignored, so the server kept
+      // the visitor on their last street while the game showed this one.
+      rejoin(code);
     } else if (code === 'home_blocked') {
       notice(message, 3600);
       goBack();
@@ -1779,7 +1810,17 @@ function createSession(engine, client) {
       return mine.includes(target.state?.garden) && homePlotHeld(plot, me(), me(), now) ? HOME_PLANTER_HOLD_LINE : null;
     },
     ownerName: () => visit?.name || '',
+    /** R31 (#522): the server has the visitor off this home's street: the pass again (or a fresh one), then the street. */
+    rejoinVisit(owner) {
+      if (!visit || Number(owner) !== visit.owner) return false;
+      rejoin('home_private');
+      return true;
+    },
     tick(dtMs, now) {
+      if (visit) {
+        if (passes.owner !== visit.owner) passes.start(visit.owner, visit.view);
+        passes.tick();
+      } else if (passes.owner) passes.stop();
       tickButler(dtMs);
       scanGardens(now);
       keepOnPlanks();
@@ -1918,6 +1959,12 @@ export const neighboursMpFeature = {
   neighboursSummoned(opts, engine) {
     if (!session || engine?.mode !== 'multiplayer') return null;
     return session.summoned(opts) || null;
+  },
+
+  /** R31 (#522, features/yard-verbs-mp-feature.js): a yard verb was refused as "away": back onto owner's home street. */
+  neighboursRejoin(owner, engine) {
+    if (!session || engine?.mode !== 'multiplayer') return null;
+    return session.rejoinVisit(owner) || null;
   },
 
   /** G367 (features/butler-im-feature.js): the visited owner's Butler says a line; its name, or null. */

@@ -294,6 +294,62 @@ export function animalActs(before, after) {
   return out;
 }
 
+/** R31 (#522): the visitor's own stats a yard verb moves, put back when the server refuses the act. */
+export const VISITOR_REWARD_STATS = Object.freeze(['energy', 'mood', 'imagination', 'xp']);
+
+/** What the visitor holds before (or after) a yard verb: the pack's counts and VISITOR_REWARD_STATS. */
+export function visitorRewardSnapshot(inv = {}, pc = {}) {
+  const items = {};
+  for (const [c, n] of Object.entries(inv || {})) if (Number.isFinite(n) && n > 0) items[c] = n;
+  const stats = {};
+  for (const k of VISITOR_REWARD_STATS) stats[k] = Number(pc?.[k]) || 0;
+  return { items, stats, level: Number(pc?.level) || 0 };
+}
+
+/**
+ * What one verb gave the visitor (after minus before): items gained, and each stat's change
+ * (energy spent is negative). XP is left out when the verb raised a level (that level stays).
+ * Null when it changed nothing.
+ */
+export function visitorRewardDelta(before, after) {
+  if (!before || !after) return null;
+  const items = {};
+  for (const [c, n] of Object.entries(after.items)) {
+    const d = n - (before.items[c] || 0);
+    if (d > 0) items[c] = d;
+  }
+  const stats = {};
+  for (const k of VISITOR_REWARD_STATS) {
+    if (k === 'xp' && after.level !== before.level) continue;
+    const d = after.stats[k] - before.stats[k];
+    if (d) stats[k] = d;
+  }
+  return Object.keys(items).length || Object.keys(stats).length ? { items, stats } : null;
+}
+
+/**
+ * R31 (#522): a yard verb the server refused is undone on the visitor's side: the items it gave
+ * leave the pack (as many as are still there), the mood and iMG it gave go, the energy it cost
+ * comes back. Glitch ran the verb on the server, so a refused one never gave anything. Tool wear
+ * and the day's counters stay (the verb was tried). Returns the items taken back.
+ */
+export function undoVisitorReward(inv, pc, delta, { remove } = {}) {
+  const taken = {};
+  if (!delta) return taken;
+  for (const [c, d] of Object.entries(delta.items || {})) {
+    const n = Math.min(d, Number(inv?.[c]) || 0);
+    if (n <= 0) continue;
+    if (remove) remove(inv, c, n);
+    else inv[c] -= n;
+    taken[c] = n;
+  }
+  for (const [k, d] of Object.entries(delta.stats || {})) {
+    if (!VISITOR_REWARD_STATS.includes(k) || !pc) continue;
+    pc[k] = Math.max(0, (Number(pc[k]) || 0) - d);
+  }
+  return taken;
+}
+
 /** The waiting acts the site sends the owner (GET homes/yard), checked. */
 export function normalizeYardActs(list) {
   const out = [];

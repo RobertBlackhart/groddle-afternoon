@@ -22,7 +22,9 @@
  *   Magic Rock pool (HomePool) and writes the items it can count as a ledger
  *   receipt for the visitor. A refusal puts the copy back as the site has it.
  *   The visitor's own rewards (energy, mood, iMG, items, tool wear) are their
- *   own game's, as with any verb.
+ *   own game's, as with any verb; a refused act's are taken back (R31, #522:
+ *   the items it gave, its mood and iMG, the energy it cost), and a refusal
+ *   as "away" puts the visitor back on the street (neighboursRejoin) unsaid.
  * - The owner's game applies the acts to its own home (the patches and
  *   husbandry slots of RH_HOME_EXT): at once when the server tells it
  *   (home_yard_acted), else on load and on coming home (GET homes/yard), and
@@ -68,7 +70,7 @@ import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import { animalStatusLabel } from '../animals.js?v=bdc8ce34';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=57afc9e2';
-import { readVisitScene } from '../neighbours-mp.js?v=81fe8611';
+import { readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=4822d590';
 import { holdYardAnimal } from './animal-husbandry-feature.js?v=b5ecce35';
@@ -87,9 +89,12 @@ import {
   normalizeYardView,
   treeActs,
   treeSnapshot,
+  undoVisitorReward,
   visitorAnimalState,
+  visitorRewardDelta,
+  visitorRewardSnapshot,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=92acd0fe';
+} from '../yard-verbs-mp.js?v=70f64ea0';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=e9068e95';
@@ -173,7 +178,9 @@ function createSession(engine, client) {
   let visit = null;
   let loading = '';
   let req = 0;
-  const sent = new Map(); // req -> { owner, kind, id, verb }
+  const sent = new Map(); // req -> { owner, kind, id, verb, reward }
+  /** R31 (#522): a tree's or animal's verb running now: what the visitor held before it ({ key, before }). */
+  let verbBefore = null;
   let sentOk = 0;
   let applied = keepApplied(savedApplied, []);
   let appliedCount = 0;
@@ -698,33 +705,75 @@ function createSession(engine, client) {
 
   // —— Sending acts ——
 
-  function send(kind, id, verb) {
+  /** R31 (#522): the visitor's pack and stats now (yard-verbs-mp visitorRewardSnapshot). */
+  const held = () => visitorRewardSnapshot(engine.inv, engine.pc);
+
+  /** A refused act's local reward goes back (the owner's yard never got the act). */
+  function undoReward(ask) {
+    if (!ask?.reward) return;
+    undoVisitorReward(engine.inv, engine.pc, ask.reward, { remove: removeItem });
+    ask.reward = null;
+    engine.refreshPack?.();
+    engine.save?.();
+  }
+
+  function send(kind, id, verb, reward = null) {
     if (!visit) return;
     if (client.state !== 'online') {
       notice(T.offline);
+      // R31 (#522): never sent, so never kept.
+      undoReward({ reward });
       refreshVisit();
       return;
     }
     req += 1;
-    sent.set(req, { owner: visit.owner, kind, id, verb });
+    sent.set(req, { owner: visit.owner, kind, id, verb, reward });
     client.send('home_yard', { req, owner: visit.owner, kind, id, verb });
     last = `sent:${kind}:${id}:${verb}`;
     publish();
   }
 
-  /** A tree's or animal's copy changed under the game's own verbs: what changed goes to the server. */
+  /**
+   * A tree's or animal's copy changed under the game's own verbs: what changed goes to the server.
+   * R31 (#522): what the verb just run gave (beforeVerb) goes with its first act, so a refusal can
+   * take it back.
+   */
   function scan() {
+    const mark = verbBefore;
+    verbBefore = null;
     if (!visit) return;
+    const credit = mark ? { key: mark.key, reward: visitorRewardDelta(mark.before, held()) } : null;
+    let reward = credit?.reward || null;
+    const carry = (key) => {
+      if (!reward || credit.key !== key) return null;
+      const r = reward;
+      reward = null;
+      return r;
+    };
     for (const tr of visit.trees.values()) {
       const now = treeSnapshot(tr.state);
-      for (const verb of treeActs(tr.snap, now)) send('tree', tr.key, verb);
+      for (const verb of treeActs(tr.snap, now)) send('tree', tr.key, verb, carry(`tree:${tr.key}`));
       tr.snap = now;
     }
     for (const a of visit.animals.values()) {
       const now = animalUses(a.classId, a.state);
-      for (const verb of animalActs(a.snap, now)) send('animal', a.id, verb);
+      for (const verb of animalActs(a.snap, now)) send('animal', a.id, verb, carry(`animal:${a.id}`));
       a.snap = now;
     }
+  }
+
+  /**
+   * R31 (#522): a visitor's tree or animal verb is about to run on the copy (runVerbOverride, just
+   * before game.js runs it): what the visitor holds now, and once the verb has run (a microtask,
+   * after the synchronous verb) what it gave goes out with its act.
+   */
+  function beforeVerb(v) {
+    if (!visit || (v?.kind !== 'tree' && v?.kind !== 'animal')) return;
+    const mark = { key: `${v.kind}:${v.id}`, before: held() };
+    verbBefore = mark;
+    queueMicrotask(() => {
+      if (verbBefore === mark) scan();
+    });
   }
 
   // —— A Patch's verbs on a visit (js/patches.js, as features/patches-feature.js runs them) ——
@@ -762,6 +811,7 @@ function createSession(engine, client) {
     const e = plotOf(target);
     if (!e) return false;
     if (String(verbId).startsWith('plant:')) return askPlant(e, verbId);
+    const before = held();
     const result = performPlotVerb(e.plot, verbId, plotCtx());
     const x = e.sprite?.x ?? 0;
     const y = e.sprite?.y ?? STREET_GROUND_Y;
@@ -787,7 +837,7 @@ function createSession(engine, client) {
     if (e.plot.stage === 'tree') redrawPatch(e, e.plot);
     else redrawPlot(e);
     engine.save?.();
-    send('plot', e.key, verbId);
+    send('plot', e.key, verbId, visitorRewardDelta(before, held()));
     return true;
   }
 
@@ -888,7 +938,12 @@ function createSession(engine, client) {
       if (e?.sprite && Number(msg.added) > 0) engine.floatText?.(e.sprite.x, e.sprite.y - 120, T.pool(Number(msg.added)), 0xb388ff);
     } else {
       last = `no:${ask?.kind}:${ask?.id}:${ask?.verb}:${msg.why || ''}`;
-      notice(msg.text || T.failed);
+      // R31 (#522): the owner's yard never got it, so the visitor keeps nothing of it.
+      undoReward(ask);
+      // "away": the server has the visitor off this street (a pass run out): back on it, no line,
+      // as the act can be done again in a moment; any other refusal says why.
+      if (msg.why === 'away' && engine.query?.('neighboursRejoin', Number(msg.owner) || ask?.owner, engine)) engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
+      else notice(msg.text || T.failed);
       refreshVisit();
     }
     publish();
@@ -1106,6 +1161,7 @@ function createSession(engine, client) {
     get applied() { return applied; },
     verbsFor,
     runVerb,
+    beforeVerb,
     tick(dtMs, now) {
       const tsid = engine.streetTsid;
       const scene = readVisitScene(tsid);
@@ -1226,7 +1282,10 @@ export const yardVerbsMpFeature = {
     if (!v || v.kind === 'plot') return null;
     // MPVISIT: a swing or a harvest asks the site first (null: the local rules answer, a talk_to or a refusal).
     if (v.kind === 'rock' || v.kind === 'node') return session.askStock(target, verbId);
-    if (allowedVerbs(v.kind, target.classId).includes(String(verbId).split(':')[0])) return null;
+    if (allowedVerbs(v.kind, target.classId).includes(String(verbId).split(':')[0])) {
+      session.beforeVerb(v);
+      return null;
+    }
     engine?.toast?.(T.notYours(session.visit.name), 2400);
     return true;
   },
