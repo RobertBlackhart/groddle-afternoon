@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ca4eaa0f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a6b4cc9b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b7b9712b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1082,6 +1082,7 @@ import { mountSocialDrawer } from './js/ui/social-drawer.js?v=59b08b8e';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=db8d7891';
+import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=32471bc9';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dfdf98f7';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=5bc894c8';
@@ -6190,7 +6191,10 @@ const questSheet = createQuestSheet({
   document,
   questInfo: (classTsid) => {
     const p = getQuestProgress(questState, classTsid);
-    return p ? { requirements: p.requirements, desc: p.def.desc, rewards: p.def.rewards } : null;
+    if (p) return { requirements: p.requirements, desc: p.def.desc, rewards: p.def.rewards };
+    // A quest a feature owns (Pot Luck Day's): its steps head its card as a runner quest's do.
+    const f = featureQuestPinInfo(classTsid);
+    return f ? { requirements: f.requirements } : null;
   },
   renderText: (el, markup) => renderQuestText(el, markup),
   setData: (key, value) => { if (app?.canvas) app.canvas.dataset[key] = value; },
@@ -6213,6 +6217,20 @@ questSheet.mountTools(document.getElementById('quest-tabs'));
 /** The pins (features/quest-pins-feature.js: up to two, in the player save). */
 function questPins() {
   return features.get('quest-pins');
+}
+
+/**
+ * A quest a feature owns and draws into the log itself (questLogCards, e.g. Pot Luck Day's Pot's
+ * Empty Table): { title, requirements } while it runs, else null. It pins like a runner quest.
+ */
+function featureQuestPinInfo(id) {
+  if (!id) return null;
+  try {
+    return features.query('questPinInfo', id, engine) || null;
+  } catch (err) {
+    console.warn('[quests] a feature quest pin failed', id, err);
+    return null;
+  }
 }
 
 /** The Quests card's Pin button: "Pin to screen" or "Pinned"; a third pin says to unpin one first. */
@@ -6451,16 +6469,24 @@ const questTracker = createQuestTracker({
 function renderPinnedQuests() {
   const pins = questPins();
   if (!pins) return;
-  // A pinned quest that finished (or was given up) leaves the tracker.
-  if (state.started && pins.keepOnly(Object.keys(questState.active || {}))) savePlayerState();
-  const rows = pins.pins().map((classTsid) => {
-    const p = getQuestProgress(questState, classTsid);
-    // On hold: the pin stays, but it puts nothing on screen until the road opens.
-    if (!p?.active || questHoldOf(classTsid)) return null;
-    // Report 127: its try ended; "Try again" is on its card in the log, which the row opens.
-    const line = questState.offers?.failed?.[classTsid] ? failedQuestPin(p.def) : questStep(p.requirements);
-    return { classTsid, title: p.def.title || classTsid, ...line };
-  }).filter(Boolean);
+  const { keep, rows } = resolveQuestPins(pins.pins(), {
+    runnerActive: (classTsid) => Boolean(questState.active?.[classTsid]),
+    runnerRow: (classTsid) => {
+      const p = getQuestProgress(questState, classTsid);
+      // On hold: the pin stays, but it puts nothing on screen until the road opens.
+      if (!p?.active || questHoldOf(classTsid)) return null;
+      // Report 127: its try ended; "Try again" is on its card in the log, which the row opens.
+      const line = questState.offers?.failed?.[classTsid] ? failedQuestPin(p.def) : questStep(p.requirements);
+      return { classTsid, title: p.def.title || classTsid, ...line };
+    },
+    // A quest a feature owns (Pot Luck Day's): its title and the step it is on, from the feature.
+    featureRow: (classTsid) => {
+      const f = featureQuestPinInfo(classTsid);
+      return f ? { classTsid, title: f.title || classTsid, ...questStep(f.requirements) } : null;
+    },
+  });
+  // A pinned quest that finished (or was given up, or its season ended) leaves the tracker.
+  if (state.started && pins.keepOnly(keep)) savePlayerState();
   questTracker.render(rows, pins.collapsed());
   const el = document.getElementById('quest-pins');
   const root = document.getElementById('game-root');

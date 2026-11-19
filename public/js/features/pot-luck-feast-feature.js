@@ -39,7 +39,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=d4e55862';
 import { openListDialog } from '../ui/storage-windows.js?v=50a74a18';
-import { servingsText } from '../feast-day.js?v=1940dee3';
+import { servingsText } from '../feast-day.js?v=b16b26f0';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -71,11 +71,12 @@ import {
   packAway,
   questComplete,
   questEvent,
+  questPinInfo,
   questRows,
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=89e24bce';
+} from '../pot-luck-feast.js?v=8856930d';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -486,7 +487,8 @@ function questCard() {
   const done = quest.status === 'done';
   const card = document.createElement('div');
   card.className = `q-card${done ? ' done' : ''}`;
-  if (!done) card.dataset.quest = QUEST.id;
+  // An active card names its quest, so it can be pinned (game.js questPinButton) while it runs this season.
+  if (questPinInfo(quest, seasonOn())) card.dataset.quest = QUEST.id;
   card.dataset.feastQuest = QUEST.id;
   const title = document.createElement('div');
   title.className = 'q-title';
@@ -662,6 +664,14 @@ export const potLuckFeastFeature = {
   /** The quest's card in the log while it runs, and after (the Done tab). */
   questLogCards() {
     return questCard();
+  },
+
+  /**
+   * VERBS pins: the quest's title and steps for the tracker under the left pill and its card's head,
+   * while it runs this season; null for another id, once done or out of season (the pin goes).
+   */
+  questPinInfo(id) {
+    return String(id || '') === QUEST.id ? questPinInfo(quest, seasonOn()) : null;
   },
 
   save() {

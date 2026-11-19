@@ -321,6 +321,15 @@ export function questRows(q) {
   return QUEST.steps.map((s) => ({ id: s.id, desc: s.desc, current: Math.min(s.num, Number(q?.[s.id]) || 0), num: s.num }));
 }
 
+/**
+ * The quest for a pin (game.js renderPinnedQuests, the Quests card's head): its title and steps
+ * while it runs this season, else null, so a pin of it goes once it is done or the season ends.
+ */
+export function questPinInfo(q, seasonOn) {
+  if (!seasonOn || q?.status !== 'active') return null;
+  return { title: QUEST.title, requirements: questRows(q) };
+}
+
 export const questComplete = (q) => QUEST.steps.every((s) => (Number(q?.[s.id]) || 0) >= s.num);
 
 /**

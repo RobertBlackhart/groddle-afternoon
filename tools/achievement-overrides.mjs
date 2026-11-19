@@ -20,7 +20,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FEAST_BADGES } from '../public/js/pot-luck-feast.js?v=89e24bce';
+import { FEAST_BADGES } from '../public/js/pot-luck-feast.js?v=8856930d';
 
 /**
  * #441 (G914, Austin 2026-11-17: every hub Completist needs every street of its hub,

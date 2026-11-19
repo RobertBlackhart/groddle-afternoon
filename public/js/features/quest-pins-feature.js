@@ -20,6 +20,24 @@ export function normalizeQuestPins(slice) {
   return { pins, collapsed: slice?.collapsed === true };
 }
 
+/**
+ * The tracker's rows for the pins, and which pins stay. A quest runner quest stays while it is active
+ * (runnerActive), even when it shows nothing (on hold: runnerRow null). A quest a feature owns (Pot
+ * Luck Day's, drawn into the log by a feature's questLogCards) stays while featureRow answers a row.
+ * Anything else (finished, given up, out of season) goes.
+ * @returns {{ keep: string[], rows: object[] }}
+ */
+export function resolveQuestPins(pinIds, { runnerActive = () => false, runnerRow = () => null, featureRow = () => null } = {}) {
+  const keep = [];
+  const rows = [];
+  for (const id of pinIds || []) {
+    const row = runnerActive(id) ? runnerRow(id) : featureRow(id);
+    if (runnerActive(id) || row) keep.push(id);
+    if (row) rows.push(row);
+  }
+  return { keep, rows };
+}
+
 let state = normalizeQuestPins();
 
 export const questPinsFeature = {

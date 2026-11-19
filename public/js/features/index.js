@@ -177,7 +177,7 @@ import { homeLiveFeature } from './home-live-feature.js?v=ed80100f'; FEATURES.pu
 import { questVerbsFeature } from './quest-verbs-feature.js?v=f9471992'; FEATURES.push(questVerbsFeature);
 import { itemVerbsMoreFeature } from './item-verbs-more-feature.js?v=72ea5f30'; FEATURES.push(itemVerbsMoreFeature);
 import { yourLooksFeature } from './your-looks-feature.js?v=7f0af1c8'; FEATURES.push(yourLooksFeature);
-import { questPinsFeature } from './quest-pins-feature.js?v=e59012f1'; FEATURES.push(questPinsFeature);
+import { questPinsFeature } from './quest-pins-feature.js?v=0e07d9a1'; FEATURES.push(questPinsFeature);
 import { zoneEffectsFeature } from './zone-effects-feature.js?v=439ca187'; FEATURES.push(zoneEffectsFeature);
 import { updateReadyFeature } from './update-ready-feature.js?v=159862e2'; FEATURES.push(updateReadyFeature);
 import { butlerImFeature } from './butler-im-feature.js?v=5a298908'; FEATURES.push(butlerImFeature);
@@ -206,9 +206,9 @@ import { gameTeleporterFeature } from './game-teleporter-feature.js?v=70a8ab07';
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=166c8c11'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=9b16387d'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
-import { feastDayFeature } from './feast-day-feature.js?v=70e015cb'; FEATURES.push(feastDayFeature);
+import { feastDayFeature } from './feast-day-feature.js?v=9a08e08a'; FEATURES.push(feastDayFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=2b5fab69'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=07d973c6'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=1b10b444'; FEATURES.push(accountBackupFeature);

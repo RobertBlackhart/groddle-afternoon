@@ -39,7 +39,7 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=89e24bce';
+} from '../public/js/pot-luck-feast.js?v=8856930d';
 import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=bf8b857b';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
