@@ -9,6 +9,8 @@
     { "id": "ai", "name": "AI tokens", "amount": 50, "every": "month" }
   ],
   "in": [
-    { "date": "2026-11-14", "source": "GitHub Sponsors", "amount": 5 }
+    { "date": "2026-11-14", "source": "GitHub Sponsors", "amount": 5 },
+    { "date": "2026-11-15", "source": "GitHub Sponsors", "amount": 5 },
+    { "date": "2026-11-18", "source": "GitHub Sponsors", "amount": 5 }
   ]
 }
