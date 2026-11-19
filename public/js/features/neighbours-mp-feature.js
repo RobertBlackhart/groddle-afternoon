@@ -172,8 +172,9 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=c20e6df1';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e9b9dbd2';
-import { worldPoint } from './world-drop-feature.js?v=7d3779ee';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=4e3bc78e';
+import { takeDragged } from '../drag-stack.js?v=5ff6ce35';
+import { worldPoint } from './world-drop-feature.js?v=84ae16bb';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=18889f7a';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';
@@ -958,7 +959,7 @@ function createSession(engine, client) {
     if (!stacks.length) return butlerSay(drop && all.length ? BT.packageTypeFail : BT.nothingToGive);
     if (drop && stacks.length === 1 && leaveMax(stacks[0]) === 1) {
       engine.setData?.('butlerLeaveFrom', 'drop');
-      return confirmPackage(stacks[0].c, 1, stacks[0].box || null, stacks[0].pick || null);
+      return confirmPackage(stacks[0].c, 1, stacks[0].box || null, stacks[0].pick || null, drop.ds || null);
     }
     engine.setData?.('butlerLeaveFrom', drop ? 'drop' : 'menu');
     vb.busy = true;
@@ -990,7 +991,8 @@ function createSession(engine, client) {
       ok.addEventListener('click', () => {
         const n = Math.max(1, Math.min(leaveMax(pick), Math.floor(Number(count.value) || 1)));
         closeBox(false);
-        confirmPackage(pick.c, n, pick.box || null, pick.pick || null);
+        // #515: the stack dragged here gives the package (when it is still the class chosen).
+        confirmPackage(pick.c, n, pick.box || null, pick.pick || null, drop?.ds?.cls === pick.c && !pick.box ? drop.ds : null);
       });
       actions.append(label, ok);
       panel.append(grid, actions);
@@ -1003,10 +1005,13 @@ function createSession(engine, client) {
     return box.from?.name ? `${itemLabel(GIFT_WRAPPED_CLASS, 1)} from ${box.from.name}` : itemLabel(GIFT_WRAPPED_CLASS, 1);
   }
 
-  /** The copies chosen for the package under way (R18): they leave when the Butler says it took it. */
+  /**
+   * The copies chosen for the package under way (R18), or the stack dragged onto the Butler (#515,
+   * `ds`, js/drag-stack.js): they leave when the Butler says it took it.
+   */
   let leaving = null;
 
-  function confirmPackage(c, n, box = null, chosen = null) {
+  function confirmPackage(c, n, box = null, chosen = null, ds = null) {
     if (!visit) return;
     vb && (vb.busy = true);
     const { owner, name } = visit;
@@ -1027,7 +1032,7 @@ function createSession(engine, client) {
       butlerSay(BT.packageSuccess(name));
       // G974: the copy goes with its own wear and words (a named Cubimal arrives named).
       const item = box ? { c, n: 1, box: box.items, ref: box.id } : { c, n, ...leavingWire(engine.toolState, c, chosen, n) };
-      leaving = chosen ? { owner, c, pick: chosen } : null;
+      leaving = chosen || ds ? { owner, c, pick: chosen, ds } : null;
       messageBox(BT.packageSuccess(name), (msg) => send({ item, text: msg, owner }), { optional: true });
     };
     if (!engine.prompt) return go(true);
@@ -1545,7 +1550,9 @@ function createSession(engine, client) {
         if (engine.query?.('giftBoxOut', String(msg.item.ref || ''), box, engine) !== true && countItem(engine.inv, item.c) > 0) removeItem(engine.inv, item.c, 1);
       } else if (receipt !== false && countItem(engine.inv, item.c) > 0) {
         // The copies chosen are the ones that go (js/copy-picks.js).
-        if (leaving?.c === item.c && leaving.owner === visit.owner && engine.toolState && markLeaving(engine, item.c, leaving.pick, item.n)) takeCopies(engine.toolState, item.c, leaving.pick, item.n);
+        const ours = leaving?.c === item.c && leaving.owner === visit.owner;
+        if (ours && leaving.pick && engine.toolState && markLeaving(engine, item.c, leaving.pick, item.n)) takeCopies(engine.toolState, item.c, leaving.pick, item.n);
+        else if (ours && leaving.ds) takeDragged(engine, leaving.ds, item.n);
         removeItem(engine.inv, item.c, Math.min(item.n, countItem(engine.inv, item.c)));
       }
       leaving = null;

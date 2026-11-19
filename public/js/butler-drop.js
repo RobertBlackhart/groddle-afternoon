@@ -23,7 +23,8 @@
 
 import { ITEM_CATALOG } from './inventory.js?v=6414dbdc';
 import { registerDropTarget } from './drop-targets.js?v=59e6edb4';
-import { showWorldDropTip } from './features/world-drop-feature.js?v=7d3779ee';
+import { draggedStack } from './drag-stack.js?v=5ff6ce35';
+import { showWorldDropTip } from './features/world-drop-feature.js?v=84ae16bb';
 import { VISITOR_BUTLER_TEXT } from './neighbours-mp.js?v=c20e6df1';
 
 /** leave_package's drop_tip (bag_butler.js 1003). */
@@ -68,7 +69,8 @@ export function butlerDropAnswer(stack, butler, takes = butlerCarries) {
 
 /**
  * Registers the Butler as a drop target. `butlerAt(x, y)` -> null | { target, mine, busy, full } at a
- * client point; `takes(cls)`; `leave({ cls, count, copy })` opens the leave-a-package flow.
+ * client point; `takes(cls)`; `leave({ cls, count, copy, ds })` opens the leave-a-package flow (ds: the
+ * dragged stack, js/drag-stack.js).
  * Returns the unregister.
  */
 export function registerButlerDrop({ engine, scope, butlerAt, takes = butlerCarries, leave }) {
@@ -130,7 +132,9 @@ function butlerTarget({ engine, scope, butlerAt, takes, leave }) {
       engine?.closePackTray?.();
       const { cls, count, copy } = d.stack;
       engine?.setData?.('butlerDropLast', `left:${cls}:${count}`);
-      leave({ cls, count: Math.max(1, Math.floor(Number(count) || 1)), copy: Number.isInteger(copy) ? copy : null });
+      // #515: `ds` is the stack dragged (js/drag-stack.js): it is the one that leaves, not the first of
+      // its class (LocationInputHandler.as 619 opened the verb with the dragged itemstack's tsid).
+      leave({ cls, count: Math.max(1, Math.floor(Number(count) || 1)), copy: Number.isInteger(copy) ? copy : null, ds: draggedStack(engine, d.stack) });
     },
     end() {
       if (lit) clear();

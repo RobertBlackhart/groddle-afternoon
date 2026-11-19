@@ -180,6 +180,25 @@ describe('every drop target hands on the dragged stack (#515)', () => {
     assert.match(game, /const toolCopy = TOOL_WEAR\[classTsid\] \? leavingToolCopy\(classTsid, dragged\) : null;/, 'a shrine takes the tool dragged');
   });
 
+  it('both Butlers: the drop passes the stack, the package and the gift take from it', () => {
+    const e = engineFor(CHERRIES.items, CHERRIES.prefs);
+    const left = [];
+    const el = { contains: (n) => n === el };
+    const off = registerButlerDrop({ engine: e, scope: () => el, butlerAt: () => ({ target: {}, mine: false }), takes: () => true, leave: (d) => left.push(d) });
+    beginDrag(packCherry);
+    dragDrop({ x: 1, y: 1, el });
+    endDrag();
+    off();
+    assert.equal(left.length, 1);
+    assert.deepEqual(left[0].ds.place, { cls: 'cherry', container: 'pack', index: 1 });
+    const nb = read('js/features/neighbours-mp-feature.js');
+    assert.match(nb, /confirmPackage\(stacks\[0\]\.c, 1, stacks\[0\]\.box \|\| null, stacks\[0\]\.pick \|\| null, drop\.ds \|\| null\)/);
+    assert.match(nb, /else if \(ours && leaving\.ds\) takeDragged\(engine, leaving\.ds, item\.n\);/);
+    const bf = read('js/features/butler-feature.js');
+    assert.match(bf, /give: \(\{ cls, count, copy, ds \}\) => giveMenu\(engine, \{ cls, count, copy, ds \}\)/);
+    assert.match(bf, /else if \(ds\) takeDragged\(engine, ds, n\);\n {10}removeItem\(engine\.inv, chosen, n\);/);
+  });
+
   it('the garden stays a class drop, as in Glitch (handleDrop(dragged_itemstack.class_tsid))', () => {
     assert.doesNotMatch(read('js/features/garden-guano-feature.js'), /draggedStack|takeDragged|markDragged/);
   });

@@ -143,8 +143,9 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=144fa420';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=e9b9dbd2';
-import { worldPoint } from './world-drop-feature.js?v=7d3779ee';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=4e3bc78e';
+import { takeDragged } from '../drag-stack.js?v=5ff6ce35';
+import { worldPoint } from './world-drop-feature.js?v=84ae16bb';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { leavingWire, markLeaving, packPicks, pickKey, receiveWire, takeCopies } from '../copy-picks.js?v=7968c974';
@@ -1731,8 +1732,11 @@ function giveMenu(engine, pre = null) {
           if (countItem(engine.inv, chosen) < n) return closeDialog(engine);
           const wire = leavingWire(engine.toolState, chosen, pick, n);
           // Ticket 112: in multiplayer the Butler's stock is the site's, so a visitor gets it while you are away.
-          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null, pick, wire);
+          // #515: a stack dragged onto the Butler is the one given (a class with copies goes by its pick).
+          const ds = pre?.ds?.cls === chosen ? pre.ds : null;
+          if (engine.mode === 'multiplayer' && giftHook) return giveThroughSite(engine, chosen, n, offer.returns === null, pick, wire, ds);
           if (engine.toolState && markLeaving(engine, chosen, pick, n)) takeCopies(engine.toolState, chosen, pick, n);
+          else if (ds) takeDragged(engine, ds, n);
           removeItem(engine.inv, chosen, n);
           const out = setGift(st, { classTsid: chosen, count: n, stackMax: stackMax(chosen), ...wire });
           if (out.returned) {
@@ -1754,7 +1758,7 @@ function giveMenu(engine, pre = null) {
  * sends back an old gift of another class (onLeaveVisitorGift, onReturnOldGift);
  * the pack changes once the site says so, once per give (the trade slice's receipt).
  */
-function giveThroughSite(engine, cls, n, keep, pick = null, wire = {}) {
+function giveThroughSite(engine, cls, n, keep, pick = null, wire = {}, ds = null) {
   closeDialog(engine);
   giftHook.give(engine, { c: cls, n, keep, ...wire }).then((a) => {
     if (!a?.ok) {
@@ -1763,6 +1767,7 @@ function giveThroughSite(engine, cls, n, keep, pick = null, wire = {}) {
     }
     if (a.applied) {
       if (engine.toolState && markLeaving(engine, cls, pick, n)) takeCopies(engine.toolState, cls, pick, n);
+      else if (ds) takeDragged(engine, ds, n);
       removeItem(engine.inv, cls, Math.min(n, countItem(engine.inv, cls)));
       if (a.got) {
         addItem(engine.inv, a.got.c, a.got.n);
@@ -2279,7 +2284,7 @@ function installOwnButlerDrop(engine) {
       return { target: view.butler.target, mine: true, give: true, busy: rt.mode === 'interacting' && !!dialog };
     },
     takes: giftable,
-    give: ({ cls, count, copy }) => giveMenu(engine, { cls, count, copy }),
+    give: ({ cls, count, copy, ds }) => giveMenu(engine, { cls, count, copy, ds }),
   });
 }
 

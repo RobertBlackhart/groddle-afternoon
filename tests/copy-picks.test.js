@@ -238,7 +238,7 @@ describe('R18 every picker uses the copy picks', () => {
   it('the Butler\'s gift and a visitor\'s package: the copy chosen (or dragged) is the one that leaves', () => {
     const butler = read('js/features/butler-feature.js');
     assert.match(butler, /const items = packPicks\(engine\.toolState, slots\.map/);
-    assert.match(butler, /give: \(\{ cls, count, copy \}\) => giveMenu\(engine, \{ cls, count, copy \}\)/);
+    assert.match(butler, /give: \(\{ cls, count, copy, ds \}\) => giveMenu\(engine, \{ cls, count, copy, ds \}\)/);
     assert.equal((butler.match(/takeCopies\(engine\.toolState, (chosen|cls), pick, n\)/g) || []).length, 2, 'solo and through the site');
     const visit = read('js/features/neighbours-mp-feature.js');
     assert.match(visit, /copyPicks\(engine\.toolState, c\)/);
