@@ -394,7 +394,7 @@ export function verbBatchWornLine(inv, recipe, qty, opts = {}) {
   const upgrades = Array.isArray(opts.upgrades) ? opts.upgrades : [];
   const adjust = makingSkillAdjustments(recipe, opts.learned, upgrades);
   const base = opts.toolWear || adjust.toolWear || recipe.toolWear || 1;
-  const tool = opts.stationTool === recipe.tool ? recipe.tool : recipeToolInUse(inv, recipe.tool, opts.toolState, base);
+  const tool = recipeToolChosen(inv, recipe, opts, base);
   const total = Math.floor(base * batchWearUnits(recipe, qty) * toolWearMultiplier(tool, upgrades) + 1e-9);
   if (total <= 0 || canUseTool(opts.toolState, tool, total).ok) return null;
   const kind = /spindle/.test(recipe.tool) ? 'spindle' : recipe.tool === 'smelter' ? 'smelter' : 'ore_grinder';
@@ -977,6 +977,24 @@ export function recipeToolInUse(inv, toolId, toolState = null, wear = 1) {
 }
 
 /**
+ * #515: the tool a make wears. A machine at its station is itself; else the tool whose Make the
+ * player opened (opts.useTool, game.js craftOpts: the Grand Ol' Grinder clicked) when it makes this
+ * recipe and the pack holds it, as Glitch's crush was a verb on the clicked tool (ore_grinder.js,
+ * grand_ol_grinder.js 530); else the first owned stand-in that can take `wear` (recipeToolInUse).
+ * @param {import('./inventory.js').Inventory} inv
+ * @param {Recipe} recipe
+ * @param {{ stationTool?: string, useTool?: string|null, toolState?: object|null }} [opts]
+ * @param {number} [wear]
+ */
+export function recipeToolChosen(inv, recipe, opts = {}, wear = 1) {
+  const toolId = recipe?.tool;
+  if (!toolId || opts.stationTool === toolId) return toolId;
+  const asked = opts.useTool;
+  if (asked && toolOptions(toolId).includes(asked) && countItem(inv, asked) >= 1) return asked;
+  return recipeToolInUse(inv, toolId, opts.toolState, wear);
+}
+
+/**
  * @param {import('./inventory.js').Inventory} inv
  * @param {Recipe} recipe
  * @param {{ learned?: string[], requireSkill?: boolean, requireTool?: boolean }} [opts]
@@ -1127,7 +1145,7 @@ export function canCraft(inv, recipe, opts = {}) {
   }
   if (requireTool && recipe.tool && opts.toolState) {
     const wear = opts.toolWear || recipe.toolWear || 1;
-    const toolId = atStation ? recipe.tool : recipeToolInUse(inv, recipe.tool, opts.toolState, wear);
+    const toolId = atStation ? recipe.tool : recipeToolChosen(inv, recipe, opts, wear);
     const condition = canUseTool(opts.toolState, toolId, wear);
     if (!condition.ok) {
       return {
@@ -1269,9 +1287,8 @@ export function craftRecipe(inv, pc, recipeKey, opts = {}) {
   const cost = opts.batchEnergyCost ?? adjust.energyCost;
   // getHitPointModifier: the *_tool_wear cards halve that cooking tool's wear.
   // The Grand Ol' Grinder makes the Grinder's recipes and takes their wear.
-  const wornTool = opts.stationTool === recipe.tool
-    ? recipe.tool
-    : recipeToolInUse(inv, recipe.tool, opts.toolState, opts.toolWear || adjust.toolWear || recipe.toolWear || 1);
+  // #515: the tool the player asked for (opts.useTool), when it makes this recipe.
+  const wornTool = recipeToolChosen(inv, recipe, opts, opts.toolWear || adjust.toolWear || recipe.toolWear || 1);
   const wearFor = (wear) => scaledToolWear(opts.toolState, wornTool, wear, toolWearMultiplier(wornTool, upgrades));
   // inc_making.js refuses when energy_cost >= energy.
   if ((pc.energy || 0) <= cost) {

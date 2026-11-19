@@ -21,7 +21,7 @@ import {
   recipeTaskLimit,
   setRecipeCatalog,
   verbBatchWornLine,
-} from '../public/js/making.js?v=3ee33b55';
+} from '../public/js/making.js?v=bf8b857b';
 import { getToolCondition, createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { makingOutputAchievementCounters } from '../public/js/achievements.js?v=7b03d657';
 

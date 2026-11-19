@@ -10,8 +10,8 @@
  * learns them by experimenting. The stamp never runs twice for a save.
  * Canvas: compoundsKnown (the count), compoundsStamped.
  */
-import { setCompoundKnowledge } from '../making.js?v=3ee33b55';
-import { normalizeKnownCompounds, stampKnownCompounds } from '../test-tube.js?v=7fdd6a0a';
+import { setCompoundKnowledge } from '../making.js?v=bf8b857b';
+import { normalizeKnownCompounds, stampKnownCompounds } from '../test-tube.js?v=cba2a479';
 
 export const COMPOUND_DISCOVERY_FEATURE_ID = 'compound-discovery';
 

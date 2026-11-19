@@ -28,7 +28,7 @@ import {
   loadRecipeCatalogFromFile,
   recipeToolFor,
   recipeToolInUse,
-} from '../public/js/making.js?v=3ee33b55';
+} from '../public/js/making.js?v=bf8b857b';
 import { ITEM_CATALOG, countItem, createInventory, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
 import {
   GRINDER_TOOLS,
@@ -347,7 +347,8 @@ describe('G183: isToolItem and the Grand Ol\' Grinder animation', () => {
 
   it('the Make panel swings the Grand Ol\' Grinder sheet when it does the crushing', () => {
     const game = readFileSync(join(pub, 'game.js'), 'utf8');
-    assert.match(game, /const toolInUse = recipeToolInUse\(inv, recipe\.tool,/);
+    // #515: the tool asked for (craftOpts useTool), else the first working stand-in.
+    assert.match(game, /const toolInUse = recipeToolChosen\(inv, recipe,/);
     // G188: the stand-in's sheet first, then the recipe tool's (js/make-tool-sheets.js).
     assert.match(game, /makeToolSheetVisual\(toolInUse\) \|\| makeToolSheetVisual\(recipe\.tool\)/);
     // grand_ol_grinder__x1_tool_animation (850x395, 17x5 cells of 50x79, 83 frames): G191 renders it
