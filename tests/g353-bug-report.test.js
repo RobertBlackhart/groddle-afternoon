@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUGS_BOARD_URL, BUG_TEXT, MAX_MESSAGE, SOLO_BUGS_TIP, benignError, bugReportFeature, bugsBoardHref, buildKey, pageErrorLine, realtimeLine, rememberError, reportContext } from '../public/js/features/bug-report-feature.js?v=37c7f88c';
+import { BUGS_BOARD_URL, BUG_TEXT, MAX_MESSAGE, SOLO_BUGS_TIP, benignError, bugReportFeature, bugsBoardHref, buildKey, pageErrorLine, realtimeLine, rememberError, reportContext } from '../public/js/features/bug-report-feature.js?v=12cf5b64';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -111,6 +111,18 @@ describe('Report a bug (G353)', () => {
     assert.equal(realtimeLine(online({ street: '', wanted: '' })), 'rt none');
     assert.equal(realtimeLine(online({ street: '', wanted: 'HOME_520' })), 'rt none (asked HOME_520)');
     assert.equal(reportContext(online({ street: 'HOME_520', wanted: 'HOME_520' }), [], env).panels, 'rt HOME_520');
+  });
+
+  it('carries the update state: this build, a newer one, what holds the pill back (2026-11-19)', () => {
+    const env = { document: { getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] }, location: { pathname: '/play/' }, navigator: { userAgent: 'T' }, innerWidth: 1, innerHeight: 1 };
+    const line = 'upd d35e7518>f0e1d2c3 hidden 63m modal #craftybot-label';
+    const asked = [];
+    const engine = { query: (k, ...rest) => { asked.push([k, rest.length]); return k === 'updateState' ? line : null; } };
+    assert.equal(reportContext(engine, [], env).panels, line);
+    assert.deepEqual(asked.find(([k]) => k === 'updateState'), ['updateState', 1]);
+    assert.equal(reportContext({ query: () => null }, [], env).panels, '', 'an unstamped page says nothing');
+    const src = readFileSync(join(root, 'public/js/features/bug-report-feature.js'), 'utf8');
+    assert.match(src, /panels = \[rt, upd, panels\]\.filter\(Boolean\)\.join\(', '\)\.slice\(0, 300\);/);
   });
 
   it('sends the report to groddle/v1/feedback with the session nonce', async () => {

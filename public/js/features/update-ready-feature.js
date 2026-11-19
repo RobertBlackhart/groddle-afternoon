@@ -11,8 +11,13 @@
  * repo) checks nothing and draws nothing.
  *
  * - The pill waits while a race or other scene, the trade window, a modal prompt, a quest dialogue or
- *   an open panel is up (blockingUi), and shows once that clears. It is an ordinary button in the
- *   bar's tab order.
+ *   an open panel is up (blockingDetail), and shows once that clears. Only windows a player can see count
+ *   (shownToPlayer), and never the Reports window. It is an ordinary button in the bar's tab order.
+ * - The fallback (2026-11-19, a desktop page that found v0.51.0 and showed no pill for over an hour):
+ *   when the pill has stayed hidden HIDDEN_NUDGE_MS while an update waits, the news is said once more
+ *   (UPDATE_TEXT.waiting, a toast and Activity; createHiddenNudge).
+ * - A report carries the update state in its context (updateState: "upd <own>><newer> hidden 63m
+ *   modal #id", bug-report-feature reportContext).
  * - Classic's placement and colours are in css/classic.css (the Classic palette lives only there).
  * - Activity gets one line per new build: "A new version is ready. ...".
  * - #307/#308: a realtime refusal of a rock, tree or node as too far (street-objects-feature asks
@@ -20,11 +25,12 @@
  *   the pill if a blocking screen let it.
  *
  * QA: canvas data updateReady (the new build id, '' until one), updateOwn (this page's build),
- * updateChecks (checks so far), updateReminded (reach reminders so far); window.groddleUpdate
+ * updateChecks (checks so far), updateReminded (reach reminders so far), updateBlocked (what holds
+ * the pill back, '' when nothing), updateNudged ('1' once the fallback spoke); window.groddleUpdate
  * { check(), latest, own, reload(), remind() }.
  */
 
-import { UPDATE_TEXT, blockingUi, buildUrl, createReachReminder, createUpdateCheck, ownBuild, saveThenReload } from '../update-check.js?v=dc5ab3e0';
+import { UPDATE_TEXT, blockingDetail, buildUrl, createHiddenNudge, createReachReminder, createUpdateCheck, ownBuild, saveThenReload, updateLine } from '../update-check.js?v=380fa5a3';
 import { saveStore } from '../save-store.js?v=cd053443';
 
 export const UPDATE_READY_FEATURE_ID = 'update-ready';
@@ -101,12 +107,25 @@ function createSession(engine, own) {
   let announced = '';
   let busy = false;
   let blockTimer = null;
+  let blocked = '';
+  const nudge = createHiddenNudge();
 
   function place() {
     const ready = Boolean(check.latest);
-    const show = ready && (busy || !blockingUi(engine));
+    const why = ready && !busy ? blockingDetail(engine) : { reason: '', what: '' };
+    const show = ready && (busy || !why.reason);
     if (btn.hidden === show) btn.hidden = !show;
     if (row.hidden === show) row.hidden = !show;
+    const now = [why.reason, why.what].filter(Boolean).join(' ');
+    if (now !== blocked) {
+      blocked = now;
+      engine.setData?.('updateBlocked', blocked);
+    }
+    if (ready && nudge.update(show)) {
+      engine.toast?.(UPDATE_TEXT.waiting, 6000);
+      engine.pushActivity?.(UPDATE_TEXT.waiting);
+      engine.setData?.('updateNudged', '1');
+    }
   }
 
   const check = createUpdateCheck({
@@ -189,6 +208,12 @@ function createSession(engine, own) {
     get checks() { return check.checks; },
     get button() { return btn; },
     get menuRow() { return row; },
+    /** The update state for a report (updateLine): this build, the newer one, and what holds the pill back. */
+    line() {
+      const latest = check.latest?.build || '';
+      const why = latest ? blockingDetail(engine) : { reason: '', what: '' };
+      return updateLine({ own, latest, shown: Boolean(latest) && !btn.hidden, hiddenMs: nudge.hiddenFor, reason: why.reason, what: why.what });
+    },
     tick() {
       watchRealtime();
       engine.setData?.('updateChecks', String(check.checks));
@@ -219,6 +244,11 @@ export const updateReadyFeature = {
     if (now - lastTick < 1000) return;
     lastTick = now;
     session.tick();
+  },
+
+  /** bug-report-feature reportContext: the update state line ('' on a page with no stamp). */
+  updateState() {
+    return session ? session.line() : null;
   },
 
   /** street-objects-feature: the realtime server refused a rock, tree or node as too far (#307/#308). */

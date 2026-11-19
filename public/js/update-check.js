@@ -38,6 +38,7 @@ export const UPDATE_TEXT = Object.freeze({
   tip: 'A new version is ready. Save your game and reload',
   saving: 'Saving…',
   activity: 'A new version is ready. Update ready at the top saves your game and reloads.',
+  waiting: 'A new version is ready. Update ready at the top saves your game and reloads; it shows when nothing else is open.',
   notSaved: 'Your game could not be saved just now, so it did not reload. Try again in a moment.',
   reach: 'This page is an older version of the game, so some things may not be where everyone else sees them. Update ready at the top saves your game and reloads.',
 });
@@ -212,22 +213,130 @@ export function createReachReminder({ check, now = () => Date.now(), say = () =>
   };
 }
 
+/** Below this opacity (on the window or any of its parents) a window counts as not shown: a fade's last frames. */
+export const SHOWN_OPACITY = 0.05;
+
 /**
- * What would make the pill rude right now ('' when nothing): a race or other scene, the trade window,
- * a modal prompt or quest dialogue, an open panel (.glitch-modal) or any shown modal dialog.
- * The pill waits until it clears.
+ * Windows that never hold the pill back: the Reports window and its picture bar. Their pictures leave
+ * them out (bug-report-feature REPORT_LEAVE_OUT), so a picture sent while an update waited showed the
+ * bar without the pill, as if the page had lost it (the 2026-11-19 desktop report: v0.51.0 found, two
+ * later pictures with no pill).
  */
-export function blockingUi(engine, doc = globalThis.document) {
+export const UPDATE_IGNORES = Object.freeze(['bug-report-panel', 'report-shutter']);
+
+/**
+ * Whether a player can see `el` (the 2026-11-19 desktop report: the pill stayed away for over an hour
+ * after the game found a new build). A window counts when it has a box of some size inside the
+ * window, its own visibility is not hidden (visibility is inherited, so this covers its parents), and
+ * neither it nor any parent is display: none or faded out (opacity under SHOWN_OPACITY). A window
+ * moved off the screen, shrunk to nothing, faded or made invisible no longer holds the pill back.
+ */
+export function shownToPlayer(el, win = globalThis) {
   try {
-    if (engine?.inScene?.()) return 'scene';
-    if (engine?.questDialogueOpen?.()) return 'dialogue';
+    if (!el || el.hidden) return false;
+    const rects = el.getClientRects?.();
+    if (!rects?.length) return false;
+    const w = Number(win?.innerWidth) || Infinity;
+    const h = Number(win?.innerHeight) || Infinity;
+    let inView = false;
+    for (const r of rects) {
+      if (r.width >= 2 && r.height >= 2 && r.right > 0 && r.bottom > 0 && r.left < w && r.top < h) {
+        inView = true;
+        break;
+      }
+    }
+    if (!inView) return false;
+    const style = (n) => win?.getComputedStyle?.(n) || null;
+    const own = style(el);
+    if (own && (own.visibility === 'hidden' || own.visibility === 'collapse')) return false;
+    for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+      const cs = n === el ? own : style(n);
+      if (!cs) break;
+      if (cs.display === 'none') return false;
+      const op = Number.parseFloat(cs.opacity);
+      if (Number.isFinite(op) && op < SHOWN_OPACITY) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** A short name for a window in the report's line: "#id", else ".first-class". */
+function nameOf(el) {
+  if (el?.id) return `#${el.id}`;
+  const cls = String(el?.className?.baseVal ?? el?.className ?? '').trim().split(/\s+/)[0];
+  return cls ? `.${cls}` : String(el?.tagName || '').toLowerCase();
+}
+
+const ignored = (el) => UPDATE_IGNORES.some((id) => el?.id === id || el?.closest?.(`#${id}`));
+
+/**
+ * What would make the pill rude right now, and which window: { reason, what } (reason '' when
+ * nothing). A race or other scene, a quest dialogue, the trade window, an open panel (.glitch-modal)
+ * or a modal dialog (role=dialog aria-modal, or dialog[open]), each only while a player can see it
+ * (shownToPlayer). The Reports window never counts (UPDATE_IGNORES).
+ */
+export function blockingDetail(engine, doc = globalThis.document, win = globalThis) {
+  try {
+    if (engine?.inScene?.()) return { reason: 'scene', what: String(engine?.sceneTsid || '') };
+    if (engine?.questDialogueOpen?.()) return { reason: 'dialogue', what: '' };
     const trade = doc?.getElementById?.('trade-window');
-    if (trade && !trade.hidden) return 'trade';
-    if (doc?.querySelector?.('.glitch-modal:not([hidden])')) return 'panel';
-    const modals = doc?.querySelectorAll?.('[role="dialog"][aria-modal="true"], dialog[open]') || [];
-    for (const d of modals) if (!d.hidden && d.getClientRects?.().length) return 'modal';
+    if (trade && shownToPlayer(trade, win)) return { reason: 'trade', what: '#trade-window' };
+    for (const p of doc?.querySelectorAll?.('.glitch-modal:not([hidden])') || []) {
+      if (!ignored(p) && shownToPlayer(p, win)) return { reason: 'panel', what: nameOf(p) };
+    }
+    for (const d of doc?.querySelectorAll?.('[role="dialog"][aria-modal="true"], dialog[open]') || []) {
+      if (!ignored(d) && shownToPlayer(d, win)) return { reason: 'modal', what: nameOf(d) };
+    }
   } catch { /* no page */ }
-  return '';
+  return { reason: '', what: '' };
+}
+
+/** The pill waits while this says why ('' when nothing): blockingDetail's reason. */
+export function blockingUi(engine, doc = globalThis.document, win = globalThis) {
+  return blockingDetail(engine, doc, win).reason;
+}
+
+/** A pill hidden this long while an update waits says the news once more (HiddenNudge). */
+export const HIDDEN_NUDGE_MS = 5 * 60_000;
+
+/**
+ * The fallback (2026-11-19): an update waits but the pill has stayed hidden for HIDDEN_NUDGE_MS in a
+ * row (something held it back), so the "A new version is ready" line is said once more, once per
+ * page. update(shown) is called with each placement; it is true the one time the line is due.
+ */
+export function createHiddenNudge({ now = () => Date.now(), after = HIDDEN_NUDGE_MS } = {}) {
+  let since = null;
+  let said = false;
+  return {
+    update(shown) {
+      if (shown) {
+        since = null;
+        return false;
+      }
+      if (since == null) since = now();
+      if (said || now() - since < after) return false;
+      said = true;
+      return true;
+    },
+    /** How long the pill has been hidden while an update waits (0 while it shows). */
+    get hiddenFor() { return since == null ? 0 : Math.max(0, now() - since); },
+    get said() { return said; },
+  };
+}
+
+/**
+ * PURE: the update state in a report (bug-report-feature reportContext, in its `panels`):
+ * "upd d35e7518 current" (no newer build found), "upd d35e7518>f0e1d2c3 shown" (the pill is up), or
+ * "upd d35e7518>f0e1d2c3 hidden 63m modal #craftybot-label" (what held it back). '' on an unstamped page.
+ */
+export function updateLine({ own = '', latest = '', shown = false, hiddenMs = 0, reason = '', what = '' } = {}) {
+  if (!own) return '';
+  if (!latest) return `upd ${own} current`;
+  if (shown) return `upd ${own}>${latest} shown`;
+  const mins = Math.floor(Math.max(0, Number(hiddenMs) || 0) / 60_000);
+  return [`upd ${own}>${latest} hidden ${mins}m`, reason, what].filter(Boolean).join(' ');
 }
 
 /**

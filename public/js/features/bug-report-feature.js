@@ -247,7 +247,12 @@ export function reportContext(engine, errors = [], env = globalThis) {
   let panels = '';
   try { panels = openPanels(env.document).join(', '); } catch { panels = ''; }
   const rt = realtimeLine(engine);
-  panels = [rt, panels].filter(Boolean).join(', ').slice(0, 300);
+  // The update state (js/update-check.js updateLine: this build, a newer one found, what holds the pill
+  // back): a page that found a new build showed no pill for over an hour (2026-11-19). It rides in
+  // `panels`, a key the site keeps, as rt does.
+  let upd = '';
+  try { upd = String(engine?.query?.('updateState', engine) || '').slice(0, 120); } catch { upd = ''; }
+  panels = [rt, upd, panels].filter(Boolean).join(', ').slice(0, 300);
   // G844 (#393): the boot render-texture probe, the GPU's name and limits (js/render-probe.js).
   let gpu = '';
   try { gpu = String(engine?.renderProbeLine?.() || '').slice(0, 200); } catch { gpu = ''; }

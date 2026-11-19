@@ -11,8 +11,10 @@ import { join } from 'node:path';
 import { BUILD_FILE, PLAY_PAGES, buildIdOf, pageBuildId, stamp, stampBuild, unstamp } from '../tools/deploy/build-id.mjs';
 import {
   BACKOFF_MAX_MS, CHECK_EVERY_MS, JITTER, MIN_GAP_MS, RECONNECT_SPREAD_MS, REMIND_GAP_MS, UPDATE_TEXT,
-  blockingUi, buildUrl, createReachReminder, createUpdateCheck, nextDelay, ownBuild, saveThenReload,
-} from '../public/js/update-check.js?v=dc5ab3e0';
+  HIDDEN_NUDGE_MS, SHOWN_OPACITY, UPDATE_IGNORES,
+  blockingDetail, blockingUi, buildUrl, createHiddenNudge, createReachReminder, createUpdateCheck, nextDelay, ownBuild, saveThenReload,
+  shownToPlayer, updateLine,
+} from '../public/js/update-check.js?v=380fa5a3';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
@@ -253,22 +255,100 @@ describe('the check', () => {
 
 describe('the pill', () => {
   const engine = (o = {}) => ({ inScene: () => false, questDialogueOpen: () => false, ...o });
-  const doc = ({ trade = null, panel = false, modals = [] } = {}) => ({
+  // A window: a box at 100,100 (300 x 200) in a 1280 x 800 window unless `rect` says otherwise; `style`
+  // its computed style, `parent` the element it sits in.
+  const node = ({ id = '', className = '', hidden = false, rect = { left: 100, top: 100, width: 300, height: 200 }, style = {}, parent = null } = {}) => {
+    const r = rect && { ...rect, right: rect.left + rect.width, bottom: rect.top + rect.height };
+    return {
+      id, className, hidden, nodeType: 1, parentElement: parent, style: { display: 'block', visibility: 'visible', opacity: '1', ...style },
+      getClientRects: () => (r ? [r] : []),
+      closest(sel) {
+        for (let n = this; n; n = n.parentElement) if (sel === `#${n.id}`) return n;
+        return null;
+      },
+    };
+  };
+  const win = { innerWidth: 1280, innerHeight: 800, getComputedStyle: (n) => n.style };
+  const doc = ({ trade = null, panels = [], modals = [] } = {}) => ({
     getElementById: (id) => (id === 'trade-window' ? trade : null),
-    querySelector: (sel) => (sel.includes('glitch-modal') && panel ? {} : null),
-    querySelectorAll: () => modals,
+    querySelectorAll: (sel) => (sel.includes('glitch-modal') ? panels : modals),
   });
+  const why = (e, d) => blockingUi(e, d, win);
 
   it('waits for a race, a trade, a modal or a dialogue to clear', () => {
-    assert.equal(blockingUi(engine(), doc()), '');
-    assert.equal(blockingUi(engine({ inScene: () => true }), doc()), 'scene');
-    assert.equal(blockingUi(engine({ questDialogueOpen: () => true }), doc()), 'dialogue');
-    assert.equal(blockingUi(engine(), doc({ trade: { hidden: false } })), 'trade');
-    assert.equal(blockingUi(engine(), doc({ trade: { hidden: true } })), '');
-    assert.equal(blockingUi(engine(), doc({ panel: true })), 'panel');
-    assert.equal(blockingUi(engine(), doc({ modals: [{ hidden: false, getClientRects: () => [1] }] })), 'modal');
-    assert.equal(blockingUi(engine(), doc({ modals: [{ hidden: false, getClientRects: () => [] }] })), '', 'a modal not on screen');
+    assert.equal(why(engine(), doc()), '');
+    assert.equal(why(engine({ inScene: () => true }), doc()), 'scene');
+    assert.equal(why(engine({ questDialogueOpen: () => true }), doc()), 'dialogue');
+    assert.equal(why(engine(), doc({ trade: node({ id: 'trade-window' }) })), 'trade');
+    assert.equal(why(engine(), doc({ trade: node({ id: 'trade-window', hidden: true }) })), '');
+    assert.equal(why(engine(), doc({ panels: [node({ id: 'make-panel' })] })), 'panel');
+    assert.equal(why(engine(), doc({ modals: [node({ id: 'note' })] })), 'modal');
+    assert.equal(why(engine(), doc({ modals: [node({ rect: null })] })), '', 'a modal not on screen');
     assert.equal(blockingUi(null, null), '');
+    assert.deepEqual(blockingDetail(engine(), doc({ panels: [node({ className: 'glitch-modal craftybot-panel' })] }), win), { reason: 'panel', what: '.glitch-modal' });
+    assert.deepEqual(blockingDetail(engine(), doc({ modals: [node({ id: 'snaps' })] }), win), { reason: 'modal', what: '#snaps' });
+  });
+
+  it('2026-11-19: only a window a player can see holds the pill back', () => {
+    const shown = (o) => shownToPlayer(node(o), win);
+    assert.equal(shown({}), true);
+    assert.equal(shown({ hidden: true }), false);
+    assert.equal(shown({ rect: null }), false, 'no box (display: none here or above)');
+    assert.equal(shown({ rect: { left: -900, top: 100, width: 300, height: 200 } }), false, 'moved off the left');
+    assert.equal(shown({ rect: { left: 1300, top: 100, width: 300, height: 200 } }), false, 'moved off the right (a transform)');
+    assert.equal(shown({ rect: { left: 100, top: 900, width: 300, height: 200 } }), false, 'below the window');
+    assert.equal(shown({ rect: { left: 100, top: 100, width: 0, height: 0 } }), false, 'scaled to nothing');
+    assert.equal(shown({ rect: { left: -200, top: 100, width: 300, height: 200 } }), true, 'partly on screen');
+    assert.equal(shown({ style: { visibility: 'hidden' } }), false);
+    assert.equal(shown({ style: { opacity: '0' } }), false, 'faded out');
+    assert.equal(shown({ style: { opacity: String(SHOWN_OPACITY / 2) } }), false);
+    assert.equal(shown({ style: { opacity: '0.5' } }), true);
+    assert.equal(shown({ parent: node({ style: { opacity: '0' } }) }), false, 'its parent faded out');
+    assert.equal(shown({ parent: node({ parent: node({ style: { display: 'none' } }) }) }), false);
+    assert.equal(shownToPlayer(null, win), false);
+    // The old test held a .glitch-modal without [hidden] whatever it looked like, and any modal with a box.
+    assert.equal(why(engine(), doc({ panels: [node({ style: { opacity: '0' } })] })), '');
+    assert.equal(why(engine(), doc({ modals: [node({ style: { visibility: 'hidden' } })] })), '');
+    assert.equal(why(engine(), doc({ trade: node({ id: 'trade-window', rect: { left: 2000, top: 0, width: 300, height: 200 } }) })), '');
+  });
+
+  it('the Reports window never holds it back: its pictures leave it out and showed the bar with no pill', () => {
+    assert.deepEqual([...UPDATE_IGNORES], ['bug-report-panel', 'report-shutter']);
+    const reports = node({ id: 'bug-report-panel' });
+    assert.equal(why(engine(), doc({ modals: [reports] })), '');
+    assert.equal(why(engine(), doc({ modals: [node({ id: 'confirm', parent: reports })] })), '', 'a dialog inside it');
+    assert.equal(why(engine(), doc({ modals: [reports, node({ id: 'note' })] })), 'modal', 'another window still counts');
+  });
+
+  it('the fallback: hidden five minutes in a row while an update waits, the news once more, once', () => {
+    let t = 0;
+    const nudge = createHiddenNudge({ now: () => t });
+    assert.equal(HIDDEN_NUDGE_MS, 5 * 60_000);
+    assert.equal(nudge.update(false), false);
+    t = HIDDEN_NUDGE_MS - 1;
+    assert.equal(nudge.update(false), false);
+    t += 1000;
+    assert.equal(nudge.update(true), false, 'it showed: the count starts again');
+    assert.equal(nudge.hiddenFor, 0);
+    assert.equal(nudge.update(false), false);
+    t += HIDDEN_NUDGE_MS;
+    assert.equal(nudge.hiddenFor, HIDDEN_NUDGE_MS);
+    assert.equal(nudge.update(false), true, 'due');
+    assert.equal(nudge.said, true);
+    t += HIDDEN_NUDGE_MS * 20;
+    assert.equal(nudge.update(false), false, 'once');
+    assert.equal(nudge.update(true), false);
+    t += HIDDEN_NUDGE_MS * 2;
+    assert.equal(nudge.update(false), false);
+    assert.ok(!UPDATE_TEXT.waiting.includes('—') && UPDATE_TEXT.waiting.startsWith('A new version is ready.'));
+  });
+
+  it('the report\'s update line: this build, the newer one, and what held the pill back', () => {
+    assert.equal(updateLine({}), '', 'no stamp');
+    assert.equal(updateLine({ own: 'd35e7518' }), 'upd d35e7518 current');
+    assert.equal(updateLine({ own: 'd35e7518', latest: 'f0e1d2c3', shown: true }), 'upd d35e7518>f0e1d2c3 shown');
+    assert.equal(updateLine({ own: 'd35e7518', latest: 'f0e1d2c3', hiddenMs: 63 * 60_000 + 5, reason: 'modal', what: '#craftybot-label' }), 'upd d35e7518>f0e1d2c3 hidden 63m modal #craftybot-label');
+    assert.equal(updateLine({ own: 'd35e7518', latest: 'f0e1d2c3', hiddenMs: 0 }), 'upd d35e7518>f0e1d2c3 hidden 0m');
   });
 
   it('saves, then reloads: solo at once, online once the cloud save is written', async () => {
@@ -328,7 +408,9 @@ describe('the pill', () => {
     assert.match(src, /saveThenReload\(\{[\s\S]{0,200}reload: \(\) => location\.reload\(\)/, 'save, then reload');
     assert.match(src, /saveStore\?\.kind === 'multiplayer' \? saveStore : null/, 'online flushes the cloud save');
     assert.match(src, /announced !== build[\s\S]{0,80}pushActivity\?\.\(UPDATE_TEXT\.activity\)/, 'one Activity line per build');
-    assert.match(src, /blockingUi\(engine\)/, 'waits for blocking UI');
+    assert.match(src, /blockingDetail\(engine\)/, 'waits for blocking UI');
+    assert.match(src, /if \(ready && nudge\.update\(show\)\) \{\s*engine\.toast\?\.\(UPDATE_TEXT\.waiting, 6000\);\s*engine\.pushActivity\?\.\(UPDATE_TEXT\.waiting\);/, 'the fallback line, a toast and Activity');
+    assert.match(src, /updateState\(\) \{\s*return session \? session\.line\(\) : null;/, 'the report asks for the update line');
     assert.equal(src.split('location.reload(').length - 1, 1, 'reloads only from the click');
   });
 });
