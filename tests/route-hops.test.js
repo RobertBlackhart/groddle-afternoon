@@ -21,7 +21,7 @@ import { pickSignHop } from '../public/js/features/map-routes-feature.js?v=ed2d2
 import { postReachY } from '../public/js/street-model.js?v=dd20cc44';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=9de15a33';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=caebd25d';
+import { SIGN_MAX_ARMS } from '../public/js/street-render.js?v=6e20290d';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 
 const root = join(import.meta.dirname, '..');

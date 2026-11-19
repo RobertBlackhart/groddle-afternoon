@@ -1459,6 +1459,30 @@ export const SKIRT_FADE_DEPTH = 140;
 /** How dark the band's average gets at the skirt's bottom (the street's own ground, deeper). */
 export const SKIRT_DEEP_SHADE = 0.55;
 
+/**
+ * FLICKER (Austin 2026-11-19, Switchback at the right end: "a bottom light brown background on
+ * the right side ... it flickers"): the widest piece of the skirt drawn as one quad, in world px.
+ * The skirt's fills and fades ran the whole street as one quad (6,900 px on Switchback, 20,010
+ * device px at a 1.6x screen's 2.9 resolution), a long thin pair of triangles. On the GPU
+ * (Intel through ANGLE/Vulkan here, the MacBook's too) such a triangle wider than about 16,400
+ * device px is sometimes not drawn at all: in a raw WebGL copy of the draw, the deep fill's
+ * lower-right half went missing at 21% of camera positions, never at 5,660 px or less. With
+ * the camera moving, the half came and went frame to frame, and the lighter mirrored band
+ * under it flashed as a wedge in the bottom-right corner. Pieces of at most 2,048 px stay under
+ * 8,192 device px at the top resolution (render-density MAX_RENDER_RESOLUTION 4).
+ */
+export const SKIRT_SPAN = 2048;
+
+/** PURE: [x, x + width) cut into consecutive pieces of at most `max` px: [{ x, w }]. */
+export function skirtSpans(x, width, max = SKIRT_SPAN) {
+  const start = Number(x) || 0;
+  const total = Math.max(0, Number(width) || 0);
+  const step = Math.max(1, Number(max) || SKIRT_SPAN);
+  const out = [];
+  for (let at = 0; at < total; at += step) out.push({ x: start + at, w: Math.min(step, total - at) });
+  return out;
+}
+
 /** PURE: how many world px above the street's bottom are mirrored below it (SKIRT_BAND, never more than the skirt or the street). */
 export function skirtBandHeight(depth, sourceH) {
   const d = Math.ceil(Number(depth) || 0);
@@ -1722,7 +1746,7 @@ const SKIRT_BYTES = 24 * 1024 * 1024;
  * Fill the strip under a street's bottom edge (street art ends at bounds.b; the camera can show
  * up to MIN_GROUND_CLEARANCE below it, and the canvas runs on under the overlaid pack). The
  * ground layers' bottom band (skirtBandOffset) is rendered once into one texture per chunk
- * (4096 px, fewer on a small GPU), laid down the skirt (skirtTiles), shaded at the seam and faded
+ * (SKIRT_SPAN px, fewer on a small GPU), laid down the skirt (skirtTiles), shaded at the seam and faded
  * into skirtFadeColour, then that colour runs on to the skirt's foot. The strip sits over the
  * middleground with the middleground's solid art below bounds.b copied back on top (its
  * see-through art there is covered), and the front layers' art below bounds.b (The Great Hole to
@@ -1758,7 +1782,8 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     const below = Math.max(0, Math.min(depth, Math.ceil(mainBox.maxY - sourceH)));
     let res = Math.min(2, streetBakeResolution(renderer, root.bakeResolutionCap));
     while (res > 0.5 && W * (band + below) * res * res * 4 > SKIRT_BYTES) res /= 1.25;
-    const chunkW = Math.max(256, Math.min(4096, Math.floor(maxTex / res)));
+    // FLICKER: SKIRT_SPAN wide at most, each chunk's band copies drawn as one quad apiece.
+    const chunkW = Math.max(256, Math.min(SKIRT_SPAN, Math.floor(maxTex / res)));
     // Pixi 8 drops the filters of the container it renders (and makes it a render group), so
     // the layers render inside a throwaway parent: their colour filters apply as on screen.
     // Each goes back to its parent at its index, at its own position.
@@ -1895,27 +1920,30 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     const colour = skirtFadeColour(average, gradientBottom, fallback);
     // Under the mirror: its clear pixels show the ground's colour, not the layers behind.
     const fadeDepth = Math.min(depth, SKIRT_FADE_DEPTH);
+    // FLICKER: every fill and fade in pieces of SKIRT_SPAN (one street-wide quad is sometimes
+    // not drawn by the GPU).
+    const spans = skirtSpans(0, fullW);
     const base = new PIXI.Graphics();
-    base.rect(0, sourceH, fullW, depth).fill(average ?? colour);
+    for (const s of spans) base.rect(s.x, sourceH, s.w, depth).fill(average ?? colour);
     strip.addChild(base);
     for (const spr of mirrors) strip.addChild(spr);
     const stops = skirtFadeStops();
-    const fade = new PIXI.Sprite(rampTexture(PIXI, colour, stops.fade));
-    fade.x = 0;
-    fade.y = sourceH;
-    fade.width = fullW;
-    fade.height = fadeDepth;
-    const shade = new PIXI.Sprite(rampTexture(PIXI, 0x000000, stops.shade));
-    shade.x = 0;
-    shade.y = sourceH;
-    shade.width = fullW;
-    shade.height = fadeDepth;
+    const fadeTexture = rampTexture(PIXI, colour, stops.fade);
+    const shadeTexture = rampTexture(PIXI, 0x000000, stops.shade);
+    const ramps = (texture) => spans.map((s) => {
+      const spr = new PIXI.Sprite(texture);
+      spr.x = s.x;
+      spr.y = sourceH;
+      spr.width = s.w;
+      spr.height = fadeDepth;
+      return spr;
+    });
     const deep = new PIXI.Graphics();
     // Down past the last copy's foot (it can run up to a band past the skirt's depth).
-    deep.rect(0, sourceH + fadeDepth, fullW, Math.max(0, depth + band - fadeDepth)).fill(colour);
-    strip.addChild(fade, shade, deep);
+    for (const s of spans) deep.rect(s.x, sourceH + fadeDepth, s.w, Math.max(0, depth + band - fadeDepth)).fill(colour);
+    strip.addChild(...ramps(fadeTexture), ...ramps(shadeTexture), deep);
     for (const spr of solids) strip.addChild(spr);
-    textures.push(fade.texture, shade.texture);
+    textures.push(fadeTexture, shadeTexture);
     // The art below the edge darkens into the colour as it goes down (skirtArtFadeStops).
     const artRamp = rampTexture(PIXI, colour, skirtArtFadeStops());
     textures.push(artRamp);
@@ -1967,7 +1995,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       }
       let lres = 1;
       while (lres > 0.5 && lw * deepest * lres * lres * 4 > SKIRT_BYTES) lres /= 1.25;
-      const lchunk = Math.max(256, Math.min(4096, Math.floor(maxTex / lres)));
+      const lchunk = Math.max(256, Math.min(SKIRT_SPAN, Math.floor(maxTex / lres)));
       const home = { parent: lc.parent, index: lc.parent.getChildIndex(lc), x: lc.x, y: lc.y };
       const alone = new PIXI.Container();
       alone.addChild(lc);

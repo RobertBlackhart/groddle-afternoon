@@ -16,8 +16,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STUCK_TEXT, SLASH_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=0498e577';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=92f667d2';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=4e0dd7e6';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=36daff67';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

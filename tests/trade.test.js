@@ -30,7 +30,7 @@ import {
   untradeableReason,
 } from '../public/js/trade.js?v=d38b9202';
 import { tradeFeature } from '../public/js/features/trade-feature.js?v=76fc70c8';
-import { FEATURES } from '../public/js/features/index.js?v=95fd37e8';
+import { FEATURES } from '../public/js/features/index.js?v=f8f791d0';
 import { dropPage, fakeSlot, mouseDrop, touchDrop } from './drop-fake.js';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { GSJS } from '../tools/build-realtime-trade.mjs';
