@@ -293,7 +293,8 @@ describe('air time at any frame rate (sub-steps, 2026-11-04)', () => {
   it('game.js runs the input and movement in those steps', () => {
     const src = readFileSync(join(PUBLIC, 'game.js'), 'utf8');
     assert.match(src, /const dt = Math\.min\(ticker\.deltaTime, MAX_TICK_FRAMES\);/);
-    assert.match(src, /for \(const step of frameSteps\(dt\)\) \{\n\s*handleInput\(\);\n\s*physics\(step\);\n\s*\}/);
+    // R30: each a guarded stage of the frame (a throw in one leaves the other running).
+    assert.match(src, /for \(const step of frameSteps\(dt\)\) \{\n\s*run\('input', handleInput\);\n\s*run\('physics', \(\) => physics\(step\)\);\n\s*\}/);
     assert.doesNotMatch(src, /Math\.min\(ticker\.deltaTime, 2\.5\)/);
   });
 });

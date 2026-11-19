@@ -200,7 +200,8 @@ describe('emblem hitbox (2012-09-22: a waiting emblem is given as you walk past)
     assert.match(src, /function updateShrineWalkBy\(\)/);
     assert.match(src, /entered && !isScreenFxBlocking\(\) && canClaimEmblem\(shrineState, target\.state\?\.giantId\)/);
     // The movement runs in sub-steps (js/avatar-step.js frameSteps); the walk-by check after them.
-    assert.match(src, /physics\(step\);\n\s+\}\n\s+tickAvatarAfk\(\);\n\s+updateShrineWalkBy\(\);/);
+    // R30: each a guarded stage of the frame, right after the movement steps.
+    assert.match(src, /run\('physics', \(\) => physics\(step\)\);\n\s+\}\n\s+run\('avatar afk', tickAvatarAfk\);\n\s+run\('shrine walk by', updateShrineWalkBy\);/);
   });
 });
 

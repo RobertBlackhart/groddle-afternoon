@@ -102,7 +102,8 @@ describe('a tool that left is gone before a new one comes (the Fancy Pick that c
 
   it('game.js keeps the copies in step every frame and before a save', () => {
     const game = read('game.js');
-    assert.match(game, /syncToolCopies\(toolState\);\n\s*updateCurrentAction/);
+    // R30: each a guarded stage of the frame; the copies still come before the action.
+    assert.match(game, /run\('tool copies', \(\) => syncToolCopies\(toolState\)\);\n\s*run\('current action', \(\) => updateActionOrLetGo\(ms\)\);/);
     assert.match(game, /syncAnimalWorldState\(\);\n\s*syncToolCopies\(toolState\);/);
   });
 

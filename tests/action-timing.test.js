@@ -61,7 +61,10 @@ describe('world action timing', () => {
     const html = readFileSync(join(here, '../public/play/index.html'), 'utf8');
     const css = readFileSync(join(here, '../public/style.css'), 'utf8');
     assert.match(game, /(?:beginVerbAction|requestVerb)\(target, v\)/);
-    assert.match(game, /updateCurrentAction\(\(1000 \/ 60\) \* dt\)/);
+    // R30: the frame's ms (60 fps frames of dt) reach updateCurrentAction through its stage guard.
+    assert.match(game, /const ms = \(1000 \/ 60\) \* dt;/);
+    assert.match(game, /run\('current action', \(\) => updateActionOrLetGo\(ms\)\);/);
+    assert.match(game, /function updateActionOrLetGo\(deltaMs\) \{\n\s*const was = currentAction;\n\s*try \{\n\s*updateCurrentAction\(deltaMs\);/);
     assert.match(game, /menuTarget \|\| currentAction/);
     assert.match(game, /e\.key === 'e'/);
     assert.match(html, /id="action-progress"/);

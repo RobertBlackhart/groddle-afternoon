@@ -18,7 +18,8 @@ describe('the interaction hint stays readable', () => {
     assert.match(game, /promptLayer\.position\.copyFrom\(world\.position\);/);
   });
   it('is ordered once a tick just above the world and the street overlays', () => {
-    assert.match(game, /syncStreetFront\(\);\n    orderPromptLayer\(\);/);
+    // R30: each a guarded stage, the first two of the frame.
+    assert.match(game, /run\('street front', syncStreetFront\);\n    run\('prompt layer', orderPromptLayer\);/);
     assert.match(game, /if \(c\.label === 'world-overlay' && i > top\) top = i;/);
     assert.match(read('js/features/rook-attack-feature.js'), /root\.label = 'world-overlay';\n  stage\.addChild\(root\);/);
   });
