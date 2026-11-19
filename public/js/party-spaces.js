@@ -562,7 +562,27 @@ export function teleporterPhase(tp, now = Date.now()) {
   return 'portal';
 }
 
-/** Save normalization (unknown templates and dead parties drop out). */
+/** A party's way back (where it was entered from), or null: never a party street. */
+export function normalizePartyWayBack(back) {
+  if (!back || typeof back.tsid !== 'string' || !back.tsid || isPartyStreet(back.tsid)) return null;
+  return {
+    tsid: back.tsid,
+    label: typeof back.label === 'string' ? back.label : '',
+    x: Math.round(Number(back.x) || 0),
+    y: Math.round(Number(back.y) || 0),
+    // G904: the instance that holds your place (its owner puts you back on the spot `at`).
+    ...(/^[a-z][a-z-]{0,39}$/.test(String(back.hold || ''))
+      ? { hold: back.hold, at: { x: Math.round(Number(back.at?.x) || 0), y: Math.round(Number(back.at?.y) || 0) } }
+      : {}),
+  };
+}
+
+/**
+ * Save normalization (unknown templates and dead parties drop out). A party that ended while you
+ * were away keeps its way back on the record (`wayBack`), so the next load puts you on the street
+ * you entered it from: Glitch kept the way back on the player, not the instance
+ * (players/inc_instances.js 82-99, 140-175).
+ */
 export function normalizePartyRecord(seed = {}, now = Date.now()) {
   const count = (v) => Math.max(0, Math.floor(Number(v) || 0));
   const out = {
@@ -571,10 +591,10 @@ export function normalizePartyRecord(seed = {}, now = Date.now()) {
     extensions: count(seed?.extensions),
     themes: Array.isArray(seed?.themes) ? seed.themes.filter((t) => PARTY_SPACES[t]) : [],
     party: null,
+    wayBack: null,
   };
   const p = seed?.party;
   if (p && PARTY_SPACES[p.template] && Number.isFinite(Number(p.expiresAt)) && Number(p.expiresAt) > now) {
-    const back = p.returnTo;
     out.party = {
       template: p.template,
       packClass: isPartyPack(p.packClass) ? p.packClass : '',
@@ -584,18 +604,7 @@ export function normalizePartyRecord(seed = {}, now = Date.now()) {
       warned: p.warned === true,
       extensions: Math.max(0, Math.floor(Number(p.extensions) || 0)),
       inside: p.inside === true,
-      returnTo: back && typeof back.tsid === 'string' && !isPartyStreet(back.tsid)
-        ? {
-          tsid: back.tsid,
-          label: typeof back.label === 'string' ? back.label : '',
-          x: Math.round(Number(back.x) || 0),
-          y: Math.round(Number(back.y) || 0),
-          // G904: the instance that holds your place (its owner puts you back on the spot `at`).
-          ...(/^[a-z][a-z-]{0,39}$/.test(String(back.hold || ''))
-            ? { hold: back.hold, at: { x: Math.round(Number(back.at?.x) || 0), y: Math.round(Number(back.at?.y) || 0) } }
-            : {}),
-        }
-        : null,
+      returnTo: normalizePartyWayBack(p.returnTo),
       taken: Object.fromEntries(Object.entries(p.taken || {})
         .filter(([k, v]) => typeof k === 'string' && Number(v) > 0)
         .map(([k, v]) => [k, Math.floor(Number(v))])),
@@ -605,6 +614,9 @@ export function normalizePartyRecord(seed = {}, now = Date.now()) {
     // Multiplayer (G334): the realtime server's space this party is (js/party-spaces-mp.js).
     const mp = normalizeMpSpaceRef(p.mp);
     if (mp) out.party.mp = mp;
+  } else {
+    // The party is gone: its way back stays (a party dropped on an earlier load kept it as wayBack).
+    out.wayBack = normalizePartyWayBack(p?.returnTo) || normalizePartyWayBack(seed?.wayBack);
   }
   return out;
 }

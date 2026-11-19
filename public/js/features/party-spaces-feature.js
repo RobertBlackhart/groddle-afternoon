@@ -82,13 +82,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=4e8d4471';
+} from '../party-spaces.js?v=a748a93f';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { readVisitScene } from '../neighbours-mp.js?v=81fe8611';
 import { STREET_INDEX } from '../street-loader.js?v=90517e2f';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=68488a4d';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=4d1fa7a3';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -104,6 +104,11 @@ const GUEST_SCALE = 1.35 * 0.4;
 const DATA_MS = 250;
 const LIVELY_MUSIC = 'PARTY_LIVELY';
 const DEFAULT_STREET = { tsid: 'GA5101HF7F429V5', x: 900, y: 900 };
+/**
+ * Where a party's guest goes back to: the live party's way back, else the one an ended party left
+ * on the record (normalizePartyRecord wayBack: it ran out while you were away), else DEFAULT_STREET.
+ */
+const wayBack = (p = party()) => p?.returnTo || record.wayBack || DEFAULT_STREET;
 const DEMO_SLUGS = Object.freeze({
   moon: 'toxic_moon',
   mazzala: 'mazzala_gala',
@@ -655,7 +660,7 @@ async function enterParty(engine) {
 
 async function leaveParty(engine, { reason = '' } = {}) {
   const p = party();
-  const back = p?.returnTo || DEFAULT_STREET;
+  const back = wayBack(p);
   if (p) p.inside = false;
   engine.instanceHold = null;
   closeModal(engine);
@@ -667,10 +672,12 @@ async function leaveParty(engine, { reason = '' } = {}) {
 
 function expire(engine) {
   const inside = insideLiveParty(engine) || (party()?.inside && onPartyStreet(engine));
-  const back = party()?.returnTo || DEFAULT_STREET;
+  const back = wayBack();
   engine.toast(PARTY_TEXT.expired, 4200);
   engine.pushActivity(PARTY_TEXT.expired);
   note(engine, PARTY_TEXT.expired);
+  // A reload before the trip back lands still goes there (normalizePartyRecord keeps it too).
+  record.wayBack = back === DEFAULT_STREET ? record.wayBack : back;
   record.party = null;
   if (teleporter) despawnTeleporter(engine, { vanish: true });
   engine.save();
@@ -1037,7 +1044,8 @@ function spaceGone(engine, why, text = '') {
   if (!p?.mp) return;
   const words = text || (why === 'expired' ? PARTY_TEXT.expired : '');
   const here = onPartyStreet(engine);
-  const back = p.returnTo || DEFAULT_STREET;
+  const back = wayBack(p);
+  record.wayBack = back === DEFAULT_STREET ? record.wayBack : back;
   record.party = null;
   if (mp) mp.pending = '';
   if (teleporter) despawnTeleporter(engine, { vanish: true });
@@ -1416,7 +1424,7 @@ export const partySpacesFeature = {
     if (!partySpaceForStreet(saved?.tsid)) return null;
     const p = party();
     if (p && partyAlive(p) && p.inside && PARTY_SPACES[p.template].streetTsid === saved.tsid) return null;
-    const back = p?.returnTo || DEFAULT_STREET;
+    const back = wayBack(p);
     if (p) p.inside = false;
     return { tsid: back.tsid, x: back.x, y: back.y };
   },
@@ -1455,7 +1463,7 @@ export const partySpacesFeature = {
     if (s) {
       if (!p || !partyAlive(p) || p.template !== s.id) {
         // Nobody's party lives here: back to the saved street.
-        const back = p?.returnTo || DEFAULT_STREET;
+        const back = wayBack(p);
         engine.instanceHold = null;
         setTimeout(() => goBack(engine, back), 300);
         return;
@@ -1464,6 +1472,8 @@ export const partySpacesFeature = {
       setupSpace(street, engine);
       if (demo && !demo.mode && demo.stage === 'entering') demo.stage = 'inside';
     } else {
+      // Off the party streets: an ended party's way back has done its job.
+      record.wayBack = null;
       if (p?.inside) p.inside = false;
       if (engine.instanceHold === HOLD) engine.instanceHold = null;
       if (p?.teleporter) spawnTeleporter(engine);

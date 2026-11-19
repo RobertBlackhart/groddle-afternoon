@@ -85,8 +85,8 @@ export const INTERROGATION_CHAIR = Object.freeze({
   w: 101,
   h: 111,
 });
-/** Where the door out goes when no way back was kept (a QA look, a save from before): the fresh start. */
-export const INTERROGATION_FALLBACK = Object.freeze({ tsid: 'GA5101HF7F429V5', label: 'Hechey Track' });
+/** Where the door out goes when no way back was kept (a QA look, a save from before): Empty Via 5, Baqala. */
+export const INTERROGATION_FALLBACK = Object.freeze({ tsid: 'GA5101HF7F429V5', label: 'Empty Via 5' });
 
 export const INTERROGATION_TEXT = Object.freeze({
   door: 'Door',

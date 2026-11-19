@@ -38,13 +38,13 @@ import {
   roomX,
   roomY,
   wayBackFrom,
-} from '../public/js/interrogation-room.js?v=c6a73859';
+} from '../public/js/interrogation-room.js?v=b22294fe';
 import {
   INTERROGATION_DARK_STOPS,
   INTERROGATION_DOOR_CLASS,
   interrogationRoomFeature,
   interrogationWayBack,
-} from '../public/js/features/interrogation-room-feature.js?v=fa93819e';
+} from '../public/js/features/interrogation-room-feature.js?v=75dbbd90';
 import { CHAIR_BOX, CHAIR_OUT, CHAIR_PATHS, chairSvg, recolourHex } from '../tools/interrogation/build-chair.mjs';
 import { HAS_SITE, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 

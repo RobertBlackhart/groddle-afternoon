@@ -32,7 +32,7 @@ import {
   isInterrogationTsid,
   normalizeWayBack,
   wayBackFrom,
-} from '../interrogation-room.js?v=c6a73859';
+} from '../interrogation-room.js?v=b22294fe';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 
