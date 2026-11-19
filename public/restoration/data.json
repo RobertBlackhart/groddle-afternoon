@@ -2814,9 +2814,64 @@
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2771,
+  "commits": 2783,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The game, Home Street and home storage load again after the landing merge"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "one part of the game that breaks every frame no longer freezes your avatar"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "the street map and the ground band below the street draw where the GPU cannot read pictures back"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a stack dragged into a cabinet or a trade is the one that goes in"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a stack dragged onto another player is the one the Give window gives"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a stack dragged onto a Butler is the one left as a package or given to visitors"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a stack dragged onto Decorate, a display box, a pour or a thing on the street is the one that goes"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Trades, mail, auctions, boards, drops and home sales go through while the game is saving"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Race Tickets and teleports work inside a Party Space, as in Glitch"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a mined-out mega rock takes a little longer to come back, as in Glitch"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "an ended party or the Interrogation room's door with no way back goes to Hechey Track"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2881,64 +2936,9 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "Mined-out rocks take longer to come back"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "QA browsers get the real GPU on Linux"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "No hairline seam at the tower's elevator end of the floor"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The display box list keeps one column wide, and the subway's red button has no route halo spilling off the box"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The subway's red button sits where the 2012 stations had it, at its size"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A display box offers every item it can take, and the counts in its list no longer clip"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Spinning, smelting and crushing take as much as the pack holds, so Spin Doctor can be earned"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Replies to older chat lines go through, and a refused reply keeps its words with a Send in Global instead button"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Garden, patch and street object verbs wait as long as the server can take, and a late answer still lands"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "No dark hairline where home floor, wall and ceiling pieces meet"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "new",
-    "text": "Reports in the game show the chat's emoji reactions under each message, and you can add your own"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Encyclopedia item pages say how to get each item from where the game hands it out, not \"Part of the Hell Bar in the remake\""
    }
   ]
  },
- "tests": 1166,
+ "tests": 1171,
  "generatedAt": "2026-11-19"
 }
