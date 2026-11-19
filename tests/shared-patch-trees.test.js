@@ -28,7 +28,7 @@ import {
   sharedTreeSkill,
   TRANTSFORM_VERB,
 } from '../public/js/shared-patches.js?v=dc00d902';
-import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=64d0d3c4';
+import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=02635203';
 import { patchesFeature } from '../public/js/features/patches-feature.js?v=7086d13e';
 import { treeDeathFeature, decorateTreeVerbs } from '../public/js/features/tree-death-feature.js?v=86819914';
 import { potionsFeature } from '../public/js/features/potions-feature.js?v=48897a5f';

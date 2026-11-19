@@ -73,7 +73,7 @@
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { patchesFeature } from './patches-feature.js?v=7086d13e';
 import {
   COPY,
@@ -112,7 +112,6 @@ const TEND_LOCK_MS = 10000;
  */
 const GRANT_SAVE_DELAY_MS = 2500;
 const LOCAL_STATES = new Set(['off', 'signed-out', 'replaced', 'other-character', 'stopped']);
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 /** The soil verbs this feature asks about (tree verbs stay the page's until lane 3). */
 const SOIL_VERBS = new Set(['tend', 'dig', 'plant', 'pet', 'clear']);
 /** Verbs with an action bar the server hears the start of. */
@@ -355,21 +354,14 @@ function otherWorked(engine, msg) {
   publish(engine);
 }
 
-async function persist(engine) {
+/**
+ * Writes the save and answers true once a write holding this change landed (#519, R28). A busy
+ * save (the walking autosave) goes saving, pending, saving and never reads "saved", so waiting
+ * for that gave up and every plant said the save failed; savedThrough counts accepted writes.
+ */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let st;
-    try {
-      st = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || st;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function sendReq(engine, payload) {

@@ -35,6 +35,9 @@ import {
 import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff } from '../public/js/save-claim.js?v=30cf5250';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
+import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3fa89550';
+import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=02635203';
+import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
 import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=50c112eb';
@@ -855,6 +858,56 @@ describe('a change is in the stored save (savedThrough: the owed-message ack, 20
       assert.ok(/await persist\(engine\)|if \(ok\)|project_expired|client\.send\('project_ack', \{ id \}\);$/.test(line), line);
     }
   });
+});
+
+describe('#519 (R28): a plant on a shared garden or patch goes through while the save is busy', () => {
+  // Live: planting shucked seeds on a herb garden said the save failed on every try. persist()
+  // waited for the state "saved", and the walking autosave kept it saving, pending, saving.
+  const busyStore = (site) => {
+    const timers = fakeTimers();
+    const ev = eventScope();
+    let busy = 0;
+    let store;
+    const fetch = async (url, init) => {
+      const res = await site.fn(url, init);
+      store.set('location', `walking-${++busy}`); // the player walks on during every write
+      return res;
+    };
+    store = createMultiplayerSaveStore({ boot: { ...BOOT, writer: 'aaaa1111bbbb2222' }, scope: ev.scope, fetch, timers, now: timers.now, debounceMs: 2000, maxWaitMs: 10000 });
+    return { store, ...ev };
+  };
+  const plantFrom = (store) => ({ save: () => store.set('playerState', '{"savedAt":6,"seed":"seed_parsnip","n":0}') });
+
+  for (const [name, path, persist] of [['gardens', 'shared-gardens-feature.js', persistGarden], ['patches', 'shared-patches-feature.js', persistPatch]]) {
+    it(`${name}: the save first counts once a write holding the plant lands, and the request goes out`, async () => {
+      const site = fakeSite();
+      const { store, states } = busyStore(site);
+      store.set('location', 'before');
+      const engine = plantFrom(store);
+      const pending = createOnlineRequests({ later: () => 0, cancel: () => {} });
+      pending.open('r1', {});
+      let sent = 0;
+      const out = await pending.send('r1', () => ++sent, { save: () => persist(engine, store) });
+      assert.equal(out, 'sent', 'the plant went to the server');
+      assert.equal(sent, 1);
+      assert.equal(site.row.data.entries.playerState, '{"savedAt":6,"seed":"seed_parsnip","n":0}', 'the stored save holds the plant');
+      assert.notEqual(store.state, 'saved', 'the save stayed busy');
+      assert.ok(!states.includes('saved'), 'and never once read "saved"');
+    });
+
+    it(`${name}: a save that stopped still says no`, async () => {
+      const site = fakeSite();
+      site.claim('cccc3333dddd4444');
+      const { store } = busyStore(site);
+      assert.equal(await persist(plantFrom(store), store), false);
+    });
+
+    it(`${name}: persist waits through savedThrough, with no loop of its own on "saved"`, () => {
+      const src = read(`js/features/${path}`);
+      assert.ok(/async function persist\(engine, store = saveStore\) \{\n {2}engine\.save\?\.\(\);\n {2}return savedThrough\(store\);\n\}/.test(src), 'persist is engine.save() then savedThrough');
+      assert.ok(!/state === 'saved'/.test(src), 'no bare "saved" check');
+    });
+  }
 });
 
 describe('another tab of this browser takes the character (js/save-claim.js)', () => {

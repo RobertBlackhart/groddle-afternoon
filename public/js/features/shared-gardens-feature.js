@@ -72,7 +72,7 @@ import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-wor
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   LOCK_LINE,
   SHARED_GARDEN_STREETS,
@@ -96,7 +96,6 @@ const APPLIED_KEEP = 100;
  */
 const GRANT_SAVE_DELAY_MS = 2500;
 const LOCAL_STATES = new Set(['off', 'signed-out', 'replaced', 'other-character', 'stopped']);
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 const COPY = Object.freeze({
   connecting: 'The street is still connecting. Try again in a moment.',
   timeout: 'The garden did not answer. Try again.',
@@ -395,21 +394,14 @@ function tickOverlays(engine) {
   }
 }
 
-async function persist(engine) {
+/**
+ * Writes the save and answers true once a write holding this change landed (#519, R28). A busy
+ * save (the walking autosave) goes saving, pending, saving and never reads "saved", so waiting
+ * for that gave up and every plant said the save failed; savedThrough counts accepted writes.
+ */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let st;
-    try {
-      st = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || st;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function learned(engine) {
