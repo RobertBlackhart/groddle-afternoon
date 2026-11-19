@@ -199,6 +199,13 @@ describe('every drop target hands on the dragged stack (#515)', () => {
     assert.match(bf, /else if \(ds\) takeDragged\(engine, ds, n\);\n {10}removeItem\(engine\.inv, chosen, n\);/);
   });
 
+  it('a player (gift): the give comes off the dragged stack (LocationInputHandler.as 851)', () => {
+    const g = read('js/features/gifts-feature.js');
+    assert.match(g, /drag\.ds = draggedStack\(engine, st\)/);
+    assert.match(g, /open\(\{ to: p, classTsid: c, from: here \? \{ \.\.\.ds\.place, count: here \} : null \}\)/);
+    assert.match(g, /const at = from\?\.cls === classTsid \? from : engine\.query\?\.\('packFocused', classTsid, engine\);/);
+  });
+
   it('the garden stays a class drop, as in Glitch (handleDrop(dragged_itemstack.class_tsid))', () => {
     assert.doesNotMatch(read('js/features/garden-guano-feature.js'), /draggedStack|takeDragged|markDragged/);
   });

@@ -65,6 +65,7 @@ import {
 } from '../gifts.js?v=37ce7d76';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
+import { draggedHere, draggedStack } from '../drag-stack.js?v=5ff6ce35';
 
 export const GIFTS_FEATURE_ID = 'gifts';
 export const GIFT_VERB = 'gift_give';
@@ -360,7 +361,8 @@ function createSession(engine, client) {
     render();
   }
 
-  function open({ to = null, classTsid = null } = {}) {
+  /** `from`: the stack the give comes off ({ cls, container, index, count }), a dragged one (#515); else the menu's. */
+  function open({ to = null, classTsid = null, from = null } = {}) {
     if (client.state !== 'online') {
       engine.toast?.("You're offline.", 2400);
       return true;
@@ -370,7 +372,7 @@ function createSession(engine, client) {
     if (!give.to && others().length === 1) give.to = others()[0];
     if (classTsid) {
       // The stack whose menu opened this (features/bags-feature.js packFocused): the give comes off it.
-      const at = engine.query?.('packFocused', classTsid, engine);
+      const at = from?.cls === classTsid ? from : engine.query?.('packFocused', classTsid, engine);
       if (at?.count > 0) give.from = at;
       const t = givables().find((x) => x.c === classTsid);
       if (t && !t.reason) give.pick = { ...t, n: t.kind === 'stack' ? Math.min(t.max || 1, 1) : 1 };
@@ -778,7 +780,7 @@ function createSession(engine, client) {
     start(d) {
       const st = d.stack;
       drag = null;
-      if (st.from === 'pack' && !st.tool && !st.bag && engine?.mode === 'multiplayer') startDrag(st.cls);
+      if (st.from === 'pack' && !st.tool && !st.bag && engine?.mode === 'multiplayer' && startDrag(st.cls)) drag.ds = draggedStack(engine, st);
     },
     over(d, at) {
       if (!drag) return null;
@@ -800,9 +802,13 @@ function createSession(engine, client) {
       const p = playerAt(at.x, at.y) || drag.over;
       const c = drag.c;
       const soulbound = drag.soulbound;
+      const ds = drag.ds || null;
       endDrag();
       if (!p || soulbound) return;
-      open({ to: p, classTsid: c });
+      // #515: the give is the dragged stack's (LocationInputHandler.as 851: startPcGiveMenuWithItemstack
+      // with the dragged itemstack), as one opened from that stack's menu is; gone, the item as a whole.
+      const here = draggedHere(engine, ds);
+      open({ to: p, classTsid: c, from: here ? { ...ds.place, count: here } : null });
     },
     end() {
       if (drag) endDrag();

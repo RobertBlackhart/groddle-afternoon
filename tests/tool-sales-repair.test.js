@@ -163,7 +163,7 @@ describe('vendors buy tools (inc_stores.js storeSell)', () => {
     assert.match(game, /const toolSlot = Boolean\(s\.isTool \|\| opts\.toolRow\);\n\s*const canDragToVendor = true;/);
     // R9 (G967): the drag carries tool: toolSlot to every target (js/drop-targets.js); a player's (gifts-feature) refuses a tool.
     assert.match(game, /beginDrag\(packStackOf\(slot, \{ copy: s\.copy \?\? null, tool: toolSlot, vendor: canDragToVendor \}\)/);
-    assert.match(read('js/features/gifts-feature.js'), /if \(st\.from === 'pack' && !st\.tool && !st\.bag && engine\?\.mode === 'multiplayer'\) startDrag\(st\.cls\);/);
+    assert.match(read('js/features/gifts-feature.js'), /if \(st\.from === 'pack' && !st\.tool && !st\.bag && engine\?\.mode === 'multiplayer' && startDrag\(st\.cls\)\) drag\.ds = draggedStack\(engine, st\);/);
     assert.match(game, /vendorDragCopy = st\.tool && st\.copy != null \? st\.copy : null;/);
     assert.match(game, /if \(classTsid\) stageVendorSell\(classTsid, copy, place, bag\);/);
   });
