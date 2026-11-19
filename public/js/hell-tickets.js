@@ -38,6 +38,12 @@
  * 2026-11-02, ticket 39: a player missed the Hell quests twice to the dice and
  * took it for a bug); after that, one in three keeps drink tickets a treat.
  * Most first visits land in Hell One, where the source offers hell_hole.
+ *
+ * Online (G1022, report #505) the grave is the street's again, as in Glitch: other players see it
+ * and may mourn or celebrate it once (js/graves-mp.js, features/graves-mp-feature.js, the realtime
+ * server's graves.go decides who was first). Their recognition reaches you as a remote visit
+ * (remoteGraveVisit) and runs recognizeDeath as a companion's does. The companions still visit
+ * online too; whichever recognizes the grave first wins.
  */
 
 import { HELL_QUESTS, normalizeHellState } from './hell.js?v=c1f68f31';
@@ -82,7 +88,8 @@ export function createHellTicketsState() {
 /**
  * The feature's saved slice.
  * - plannedVisitId: the hell visitId whose croak has been rolled (one roll per croak)
- * - visit: the pending grave visit { visitId, at, type, recognizer } or null
+ * - visit: the pending grave visit { visitId, at, type, recognizer, remote? } or null (remote: a real
+ *   player online, G1022)
  * - visits: how many recognitions have reached you
  * - ticketGiven: hell_quest's onAccepted ticket has been handed over
  * - holeHinted: hell_hole's onAccepted overlay has been shown
@@ -91,12 +98,14 @@ export function createHellTicketsState() {
 export function normalizeHellTicketsState(saved = {}) {
   const s = saved && typeof saved === 'object' ? saved : {};
   const v = s.visit && typeof s.visit === 'object' ? s.visit : null;
+  const remote = v?.remote === true;
   const visit = v && Number.isFinite(Number(v.at)) && (v.type === 'mourn' || v.type === 'celebrate')
     ? {
         visitId: Math.max(0, Math.floor(Number(v.visitId) || 0)),
         at: Number(v.at),
         type: v.type,
-        recognizer: GRAVE_VISITORS.includes(v.recognizer) ? v.recognizer : GRAVE_VISITORS[0],
+        recognizer: remote ? remoteName(v.recognizer) : GRAVE_VISITORS.includes(v.recognizer) ? v.recognizer : GRAVE_VISITORS[0],
+        ...(remote ? { remote: true } : {}),
       }
     : null;
   return {
@@ -108,6 +117,24 @@ export function normalizeHellTicketsState(saved = {}) {
     holeHinted: s.holeHinted === true,
     chainOffered: s.chainOffered === true,
   };
+}
+
+/** A real player's name as the realtime server sent it (G1022). */
+const remoteName = (name) => String(name ?? '').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Someone';
+
+/**
+ * G1022 (#505): online, a real player mourned or celebrated your grave (the realtime server's
+ * grave_mourned, groddle-afternoon-server graves.go; graveside_marker.js 37-137). It becomes the
+ * pending visit, due now, so recognizeDeath runs through the same path as a companion's visit,
+ * once you stand in Naraka and the street has settled. Null when it is not for this croak, or the
+ * grave is already recognized (its companion was first).
+ */
+export function remoteGraveVisit(slice, hellState, { type, recognizer, croak, now = Date.now() } = {}) {
+  const h = normalizeHellState(hellState);
+  if (type !== 'mourn' && type !== 'celebrate') return null;
+  if (!h.isDead || !h.graveMarker || h.graveMarker.state !== 'none' || h.visitId !== Math.floor(Number(croak))) return null;
+  const s = normalizeHellTicketsState(slice);
+  return { ...s, visit: { visitId: h.visitId, at: now, type, recognizer: remoteName(recognizer), remote: true } };
 }
 
 const pick = (list, r) => list[Math.max(0, Math.min(list.length - 1, Math.floor(r * list.length)))];

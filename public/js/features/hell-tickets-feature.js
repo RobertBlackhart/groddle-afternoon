@@ -33,6 +33,8 @@
  *   &hellticketstepms=N            pause on each dialogue before advancing (default 2500)
  *   &routeautoplay=1               with hellticketautoplay: follow the map route to Panka
  *                                  Surazu signpost by signpost (map-routes feature, G177)
+ * Online (G1022) a real player's mourn or celebrate arrives through remoteRecognition
+ * (features/graves-mp-feature.js) and runs as a visit due at once.
  * Canvas data: hellTicketVisit, hellTicketVisitAt, hellTicketVisitor, hellTicketBranch,
  * hellTicketOffer, hellTicketStage, hellTicketQuest, hellTicketHole, hellTicketTickets,
  * hellTicketWine, hellTicketVisits.
@@ -59,8 +61,9 @@ import {
   normalizeHellTicketsState,
   planGraveVisit,
   recognitionBranch,
+  remoteGraveVisit,
   ticketDue,
-} from '../hell-tickets.js?v=8e4a914f';
+} from '../hell-tickets.js?v=8497b631';
 import { hellFeature } from './hell-feature.js?v=10c16adb';
 import { doorsFeature } from './doors-feature.js?v=d72f8cea';
 
@@ -422,6 +425,20 @@ export const hellTicketsFeature = {
       engine.save();
     }
     if (Math.floor(now / 1000) !== Math.floor((now - _dtMs) / 1000)) publish(engine);
+  },
+
+  /**
+   * G1022: a real player mourned or celebrated your grave online (features/graves-mp-feature.js
+   * passes the realtime server's grave_mourned). It runs as the pending visit, due now. True when
+   * it was taken.
+   */
+  remoteRecognition(engine, { type, recognizer, croak } = {}) {
+    const next = remoteGraveVisit(state, hellFeature._state(), { type, recognizer, croak, now: Date.now() });
+    if (!next) return false;
+    state = next;
+    engine.save();
+    publish(engine);
+    return true;
   },
 
   /** QA / tests. */
