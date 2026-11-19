@@ -376,9 +376,27 @@ export function plantChoices(inv, patchKind, hubId) {
         trantClass: SEASONED_BEANS[beanClass].trantClass,
         count: count(inv, beanClass),
         ok,
-        reason: ok ? '' : 'That bean will not grow here.',
+        reason: ok ? '' : wrongBeanLine(beanClass, patchKind),
       };
     });
+}
+
+/**
+ * #532: why a bean will not grow in this patch, for its kind. patch.js 259 "That bean will not grow
+ * here.", then the bean's own line (items/bean_*.js 178): an Egg Plant Bean only in a Dark Patch,
+ * the Bean and Bubble Tree Beans "will only grow", the rest "can only be planted" in certain regions.
+ * A Dark Patch takes only Egg Plant Beans (patch_dark.js canPlant; that line is ours).
+ */
+export function wrongBeanLine(beanClass, patchKind = 'patch') {
+  const bean = SEASONED_BEANS[beanClass];
+  const head = 'That bean will not grow here.';
+  if (!bean) return head;
+  if (bean.trantClass === 'trant_egg') {
+    return `${head} This kind of bean can only be planted in Dark Patches, which you will only find underground.`;
+  }
+  if (patchKind === 'patch_dark') return `${head} Only Egg Plant Beans grow in a Dark Patch.`;
+  const verb = ['trant_bean', 'trant_bubble'].includes(bean.trantClass) ? 'will only grow' : 'can only be planted';
+  return `${head} ${bean.label}s ${verb} in certain regions. Like attracts like.`;
 }
 
 /** Deterministic hub-legal tree for an archived Seedling whose bean was not preserved. */
@@ -854,7 +872,7 @@ export function plotVerbs(plot, ctx = {}) {
         tooltip: `${choice.count} in your pack. Grows a ${GROWN_TREE_LABELS[choice.trantClass]}.`,
         icon: choice.beanClass,
       });
-      if (!choice.ok) Object.assign(row, { enabled: false, reason: `${choice.reason} Beans only grow in certain regions. Like attracts like.` });
+      if (!choice.ok) Object.assign(row, { enabled: false, reason: choice.reason });
       out.push(row);
     }
   } else {

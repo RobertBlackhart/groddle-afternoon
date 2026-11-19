@@ -34,7 +34,7 @@ import {
 } from '../public/js/musicblocks.js?v=97129d87';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
 import { DROP_TABLES } from '../public/js/drop-tables-data.js?v=c51a6400';
-import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=5516ff51';
+import { SOIL_DROP_TABLES } from '../public/js/patches.js?v=83f7672f';
 import { SPINNING_WHEEL_DROP_TABLE } from '../public/js/spinning-wheel.js?v=1ce3f385';
 import { ISLAND_MUSICBLOCKS } from '../public/js/newxp.js?v=5aa81665';
 import { AWARD_ITEM } from '../public/js/funpickle.js?v=95796317';

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=6d578ad4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=cb358c24';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=53a450d3';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -810,7 +810,7 @@ import {
   trantFruitArt,
   trantFrameKey,
 } from './js/trants.js?v=864ea9ff';
-import { growStreetTrant } from './js/patches.js?v=5516ff51';
+import { growStreetTrant } from './js/patches.js?v=83f7672f';
 import {
   runStreetTransition,
   showAwardScreen,
