@@ -862,10 +862,26 @@ function platformYAtSource(p, x) {
 }
 
 /**
+ * The world frame of one Bunch of Hellish Grapes. The swf's four frames are its stack-count states
+ * "1" to "4" (one to four bunches), and Glitch drew an item on the ground in the state of its count
+ * (AbstractItemstackView.as 442: a LocationItemstackView's state_ob is _itemstack.count). Each bunch
+ * is a stack of one (bunch_of_grapes_hell.js stackmax 1), so every bunch on the ground shows one.
+ * Report #548: random frames drew two to four bunches for one squish.
+ */
+export const GRAPE_WORLD_FRAME = 0;
+
+/**
+ * Report #548: the fewest source px between two bunches on one platform. The one-bunch frame is
+ * 49 px wide (drawn at 0.8), so bunches this far apart never touch and read as one each.
+ */
+export const GRAPE_MIN_GAP = 48;
+
+/**
  * Deterministic grape layout. The archived location objects record each
  * street's exact grape count but not item x/y, so grapes are spread along the
  * walkable (pc_perm -1) floor in proportion to platform length, inset from
- * platform ends, with seeded jitter and one of the four source variants.
+ * platform ends, with seeded jitter. A platform takes no more than fit
+ * GRAPE_MIN_GAP apart; the rest go to the platforms with room (report #548).
  * @param {{ tsid:string, bounds:{l:number,t:number}, platforms:object[] }} street
  * @param {number} [count]
  * @returns {{ id:string, x:number, y:number, sourceX:number, sourceY:number, variant:number, platformId:string }[]}
@@ -879,14 +895,26 @@ export function planHellGrapes(street, count = null, opts = {}) {
   const bounds = street?.bounds || { l: 0, t: 0 };
   const margin = num(opts.margin, 36);
   const maxSlope = num(opts.maxSlope, 0.5);
-  const segments = (street?.platforms || [])
+  const floors = (street?.platforms || [])
     .filter((p) => p && (p.pc_perm == null || p.pc_perm === -1))
     .map((p) => (p.x1 <= p.x2 ? p : { ...p, x1: p.x2, y1: p.y2, x2: p.x1, y2: p.y1 }))
     .filter((p) => {
       const len = p.x2 - p.x1;
-      return len > margin * 2 + 8 && Math.abs((p.y2 - p.y1) / len) <= maxSlope;
+      return len > 0 && Math.abs((p.y2 - p.y1) / len) <= maxSlope;
     })
-    .map((p) => ({ p, a: p.x1 + margin, b: p.x2 - margin }))
+    .sort((m, n) => m.x1 - n.x1 || m.y1 - n.y1);
+  // Report #548: a floor drawn as many short platforms end to end is one run, inset at its two ends
+  // only. Taken one by one, most of Dhuma Maya's and Valuka Himsa's floor was too short to hold a
+  // bunch, and their 30 bunches piled onto the few long pieces.
+  const runs = [];
+  for (const p of floors) {
+    const run = runs.find((r) => Math.abs(p.x1 - r.at(-1).x2) <= 4 && Math.abs(p.y1 - r.at(-1).y2) <= 6);
+    if (run) run.push(p);
+    else runs.push([p]);
+  }
+  const segments = runs
+    .map((ps) => ({ ps, p: ps[0], a: ps[0].x1 + margin, b: ps.at(-1).x2 - margin }))
+    .filter((seg) => seg.b - seg.a > 8)
     .sort((m, n) => m.a - n.a || m.p.y1 - n.p.y1);
   if (!total || !segments.length) return [];
 
@@ -904,6 +932,28 @@ export function planHellGrapes(street, count = null, opts = {}) {
         left -= 1;
       }
     });
+  // Report #548: no platform holds more than fit apart; the extra go where there is room, roomiest
+  // first. A street with too little floor for its count keeps its count (the crowding stays).
+  const gap = num(opts.minGap, GRAPE_MIN_GAP);
+  const room = lengths.map((len) => Math.max(1, Math.floor(len / gap)));
+  let extra = 0;
+  alloc.forEach((n, i) => {
+    if (n > room[i]) {
+      extra += n - room[i];
+      alloc[i] = room[i];
+    }
+  });
+  while (extra > 0) {
+    let best = -1;
+    for (let i = 0; i < alloc.length; i += 1) {
+      const spare = (lengths[i] / (alloc[i] + 1)) - gap;
+      if (alloc[i] < room[i] && (best < 0 || spare > (lengths[best] / (alloc[best] + 1)) - gap)) best = i;
+    }
+    if (best < 0) break;
+    alloc[best] += 1;
+    extra -= 1;
+  }
+  for (let i = 0; extra > 0; i = (i + 1) % alloc.length, extra -= 1) alloc[i] += 1;
 
   const rand = mulberry32(hashSeed(`${tsid}:grapes`));
   const placed = [];
@@ -912,16 +962,19 @@ export function planHellGrapes(street, count = null, opts = {}) {
     if (!n) return;
     const step = (seg.b - seg.a) / n;
     for (let i = 0; i < n; i += 1) {
-      const jitter = (rand() - 0.5) * 0.4 * step;
+      // Never closer than the gap to the next bunch (report #548), where the platform has the room.
+      const jitter = (rand() - 0.5) * Math.max(0, Math.min(0.4 * step, step - gap));
       const sx = Math.round(seg.a + (i + 0.5) * step + jitter);
-      const sy = Math.round(platformYAtSource(seg.p, sx));
+      const under = seg.ps.find((q) => sx >= q.x1 && sx <= q.x2) || seg.ps.reduce((m, q) => (Math.abs(sx - (q.x1 + q.x2) / 2) < Math.abs(sx - (m.x1 + m.x2) / 2) ? q : m));
+      const sy = Math.round(platformYAtSource(under, sx));
       placed.push({
         sourceX: sx,
         sourceY: sy,
         x: sx - bounds.l,
         y: sy - bounds.t,
-        variant: Math.floor(rand() * 4) % 4,
-        platformId: String(seg.p.id || ''),
+        // The count-1 frame (GRAPE_WORLD_FRAME); the seed still draws here so every other street's layout keeps.
+        variant: (rand(), GRAPE_WORLD_FRAME),
+        platformId: String(under.id || ''),
       });
     }
   });

@@ -21,7 +21,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=1b10b444';
 import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=d959f086';
-import { yardVerbsMpFeature } from '../public/js/features/yard-verbs-mp-feature.js?v=1624e9a5';
+import { yardVerbsMpFeature } from '../public/js/features/yard-verbs-mp-feature.js?v=418c51ae';
 import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=eda3419c';
 import { qurazyFeature, resetQurazyFeatureForTests } from '../public/js/features/qurazy-feature.js?v=e133f912';
 import { QURAZY_SPAWN_LINE } from '../public/js/qurazy.js?v=ccced38d';

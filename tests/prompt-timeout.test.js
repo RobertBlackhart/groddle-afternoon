@@ -14,9 +14,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROMPT_ROLL_OUT_MS, armPromptTimeout, promptTimeoutMs, timeoutChoice } from '../public/js/prompt-timeout.js?v=104ccef6';
 import { STREET_CARD_GONE, STREET_CARD_UP, cardHidesKey, cardPausedTimeout, installStreetCardKeyGuard, streetCardUp } from '../public/js/screen-fx.js?v=df15804e';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=10c16adb';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=f569341e';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=e76f6d7a';
-import { HELL_ENTRY_PROMPT_TIMEOUT_MS, HELL_TEXT } from '../public/js/hell.js?v=c1f68f31';
+import { HELL_ENTRY_PROMPT_TIMEOUT_MS, HELL_TEXT } from '../public/js/hell.js?v=54f9be3d';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

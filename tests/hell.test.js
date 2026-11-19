@@ -17,6 +17,8 @@ import {
   HELL_ITEMS,
   HELL_LOCATION,
   HELL_MUSIC,
+  GRAPE_MIN_GAP,
+  GRAPE_WORLD_FRAME,
   HELL_ONE_GRAPES,
   HELL_ONE_PLATFORMS,
   HELL_QUESTS,
@@ -60,7 +62,7 @@ import {
   shouldWarnLowEnergy,
   squishGrape,
   wineDrinkConditions,
-} from '../public/js/hell.js?v=c1f68f31';
+} from '../public/js/hell.js?v=54f9be3d';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=50c112eb';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
@@ -179,7 +181,31 @@ describe('grapes', () => {
       assert.ok(g.sourceX < HELL_LOCATION.hellHole.sourceX1 || g.sourceX > HELL_LOCATION.hellHole.sourceX2);
       assert.equal(g.x, g.sourceX - HELL_LOCATION.bounds.l);
       assert.equal(g.y, g.sourceY - HELL_LOCATION.bounds.t);
-      assert.ok(g.variant >= 0 && g.variant <= 3);
+      assert.equal(g.variant, GRAPE_WORLD_FRAME);
+    }
+  });
+
+  // Report #548 (Jark): a squish took what looked like two to four bunches. Each bunch is one item of
+  // count 1 (bunch_of_grapes_hell.js stackmax 1), and Glitch drew a ground item in its count's state
+  // (AbstractItemstackView.as 442), so one bunch shows one; and no two bunches touch.
+  it('#548: every Naraka bunch shows one bunch, and no two bunches overlap', () => {
+    assert.equal(GRAPE_WORLD_FRAME, 0, 'frame 0 is the swf state "1"');
+    for (const row of NARAKA_STREETS) {
+      const street = JSON.parse(readFileSync(join(publicRoot, `assets/streets/${row.tsid}.json`), 'utf8'));
+      const grapes = planHellGrapes(street);
+      assert.equal(grapes.length, row.grapes, row.label);
+      for (const g of grapes) assert.equal(g.variant, GRAPE_WORLD_FRAME, `${row.label} ${g.id}`);
+      for (let i = 0; i < grapes.length; i += 1) {
+        for (let j = i + 1; j < grapes.length; j += 1) {
+          const [a, b] = [grapes[i], grapes[j]];
+          const touching = Math.abs(a.x - b.x) < GRAPE_MIN_GAP && Math.abs(a.y - b.y) < 31;
+          assert.ok(!touching, `${row.label}: ${a.id} and ${b.id} ${Math.abs(a.x - b.x)} px apart`);
+        }
+      }
+      for (const g of grapes) {
+        const p = street.platforms.find((q) => q.id === g.platformId);
+        assert.ok(p && g.sourceX >= Math.min(p.x1, p.x2) && g.sourceX <= Math.max(p.x1, p.x2), `${row.label} ${g.id} stands on its platform`);
+      }
     }
   });
 

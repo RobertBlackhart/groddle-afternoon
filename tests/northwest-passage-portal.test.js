@@ -26,7 +26,7 @@ import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.j
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f4be1a05';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
 import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=e1a92661';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=a79b2c77';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=de9c3275';
 import {
   NORTHWEST_PASSAGE_TSID,
   WINTRY_CAGE,

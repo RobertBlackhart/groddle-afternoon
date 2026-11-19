@@ -20,7 +20,7 @@ import {
   PANKA_TSID,
   hellBarIndexEntry,
   hellBarStreet,
-} from '../public/js/hell-bar.js?v=2b47a3d6';
+} from '../public/js/hell-bar.js?v=085ad2c3';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
