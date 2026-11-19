@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2751,
+  "commits": 2757,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "An expired Party Space sends you back where you entered it, not to Baqala"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Crushing with the Grand Ol' Grinder uses it, not the first Grinder in the pack"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "Street Spirit counts down \"Opens in N min\" while its street rests"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Street Spirit no longer flashes \"Project available\" on entry online"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2916,29 +2936,9 @@
     "date": "2026-11-18",
     "kind": "fix",
     "text": "The online Harvest Table takes only dishes and crops, the same food the game's table takes"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "improve",
-    "text": "Thanksgiving Day's feast piles sit either side of the street tree's trunk and end clear of the shrine"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The feast's QA setup sets energy through the stat API, and three tests follow today's merged code"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A Piggy or Chicken that loses its line after a jump stands on the nearest one (#497, with #494's follow)"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A Piggy or Chicken that jumps along its shared walk stands on its line again instead of walking inside the ground"
    }
   ]
  },
- "tests": 1160,
+ "tests": 1163,
  "generatedAt": "2026-11-19"
 }
