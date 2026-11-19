@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { WORLD_DROP_RULES, dropFor, dropRulesFor, dropTip } from '../public/js/world-drop.js?v=a8956ae5';
-import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=7d3779ee';
+import { overAt, runDrop } from '../public/js/features/world-drop-feature.js?v=84ae16bb';
 
 const root = join(import.meta.dirname, '..');
 const pub = (f) => readFileSync(join(root, 'public', f), 'utf8');
@@ -185,7 +185,7 @@ describe('the feature', () => {
     assert.match(feature, /globalThis\.groddleGifts\?\.playerAt\?\.\(clientX, clientY\)/);
     const game = pub('game.js');
     assert.match(game, /openPicker: \(target, verb, pick = ''\) => openFeedPicker\(target, verb, pick\),/);
-    assert.match(game, /openShrineDonate: \(target, classTsid\) => openShrinePanel\(target, \{ item: classTsid \}\),/);
+    assert.match(game, /openShrineDonate: \(target, classTsid, \{ copy = null \} = \{\}\) => openShrinePanel\(target, \{ item: classTsid, copy \}\),/);
     assert.match(game, /requestVerb: \(target, verb, opts\) => requestVerb\(target, verb, opts\),/);
     assert.match(pub('style.css'), /\.world-drop-tip\.is-no \{ color: var\(--c-red-53d\); \}/);
     assert.match(pub('css/classic.css'), /:root\[data-ui="classic"\] \.world-drop-tip \{/);

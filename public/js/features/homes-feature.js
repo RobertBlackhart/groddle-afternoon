@@ -104,6 +104,7 @@ import { pickupCountTitle } from '../world-items.js?v=66601f23';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
 import { isBagClass } from '../pack-slots.js?v=2c09907f';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
+import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=5ff6ce35';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
   CULTIVATION_CLASSES,
@@ -3268,8 +3269,11 @@ function pourTargetHere(engine) {
   return nearestPourTarget(pourTargets(engine), engine.player);
 }
 
-/** Pour on one row after the confirm (items/wine_of_the_dead.js modal_callback). */
-function applyPour(engine, row) {
+/**
+ * Pour on one row after the confirm (items/wine_of_the_dead.js modal_callback). `ds`: the bottle's
+ * stack when it was dragged there (#515, js/drag-stack.js): that stack gives the bottle.
+ */
+function applyPour(engine, row, ds = null) {
   const st = activeCult();
   const item = st.items.find((r) => r.id === Number(row?.id));
   if (!item || countItem(engine.inv, WOTD) < 1) return false;
@@ -3298,6 +3302,7 @@ function applyPour(engine, row) {
     }, WOTD_DEPLETE_MS);
   }
   pourFx(engine, row);
+  if (ds) takeDragged(engine, ds, 1);
   removeItem(engine.inv, WOTD, 1);
   engine.achievement('wotd:poured_on_something', 1);
   if (row.tower || item.depleted) {
@@ -3315,7 +3320,7 @@ let wotdPlaced = false;
 let wotdTreeDone = false;
 let pourSheets = null;
 let pourOverlay = null; // { clip, startedAt, lifeMs, end }
-let pourDrag = null; // { over }
+let pourDrag = null; // { over, ds } (ds: the dragged stack, js/drag-stack.js)
 let pourTip = null;
 
 /** The live target drawn for a pour row: the one standing nearest its x. */
@@ -3471,10 +3476,10 @@ function endPourDrag(engine) {
   engine.setData('homePourDrag', 'none');
 }
 
-/** Drop the bottle on a row: the remove verb hands it to verbs.pour with that target (patch.js:66-73). */
-function dropPour(engine, row) {
+/** Drop the bottle on a row: the remove verb hands it to verbs.pour with that target (patch.js:66-73), the bottle dragged (#515). */
+function dropPour(engine, row, ds = null) {
   if (!row || countItem(engine.inv, WOTD) < 1) return false;
-  return confirmPour(engine, row);
+  return confirmPour(engine, row, ds);
 }
 
 /**
@@ -3488,7 +3493,7 @@ const pourTarget = (engine) => ({
   start(d) {
     const st = d.stack;
     pourDrag = st.from === 'pack' && !st.tool && !st.bag && st.cls === WOTD && mode !== 'decorate'
-      && countItem(engine.inv, WOTD) > 0 && pourTargets(engine).length ? { over: null } : null;
+      && countItem(engine.inv, WOTD) > 0 && pourTargets(engine).length ? { over: null, ds: draggedStack(engine, st) } : null;
     if (pourDrag) engine.setData('homePourDrag', 'dragging');
   },
   over(d, at) {
@@ -3508,8 +3513,9 @@ const pourTarget = (engine) => ({
   },
   drop(d, at) {
     const row = pourRowAt(engine, at.x, at.y) || pourDrag?.over;
+    const ds = pourDrag?.ds || null;
     endPourDrag(engine);
-    if (row) dropPour(engine, row);
+    if (row) dropPour(engine, row, ds);
   },
   end() {
     if (pourDrag) endPourDrag(engine);
@@ -3537,8 +3543,8 @@ function confirmDialog(engine, { title, kicker, beats, yes, no, onYes }) {
   });
 }
 
-/** verbs.pour handler: "Please Confirm!", then the pour (every pour route asks first). */
-function confirmPour(engine, row) {
+/** verbs.pour handler: "Please Confirm!", then the pour (every pour route asks first; `ds`: a dragged bottle's stack). */
+function confirmPour(engine, row, ds = null) {
   if (!row) return false;
   confirmDialog(engine, {
     title: WOTD_TEXT.confirmTitle,
@@ -3546,7 +3552,7 @@ function confirmPour(engine, row) {
     beats: [{ text: pourConfirmText(row), response: WOTD_TEXT.yes }],
     yes: WOTD_TEXT.yes,
     no: WOTD_TEXT.nevermind,
-    onYes: () => applyPour(engine, row),
+    onYes: () => applyPour(engine, row, ds),
   });
   pourLast = `confirm:${row.id}`;
   engine.setData('homePour', pourLast);
@@ -5584,12 +5590,16 @@ function clearDisplayTarget(engine) {
   drawDisplayTarget(engine, null);
 }
 
-/** Put `count` of a pack class in a box (the Display button's deposit, the dragged stack's count). */
-function depositInBox(engine, box, cls, count) {
+/**
+ * Put `count` of a pack class in a box (the Display button's deposit, the dragged stack's count).
+ * #515: `ds` (js/drag-stack.js) is the stack dragged: it gives the units, not the first of its class.
+ */
+function depositInBox(engine, box, cls, count, ds = null) {
   const refusal = displayRefusal(box, cls, displayMeta(cls));
   if (refusal) return { ok: false, ...refusal };
   const n = Math.min(Math.max(1, Math.floor(Number(count) || 1)), Number(engine.inv[cls]) || 0);
   if (!n) return { ok: false, reason: 'missing', msg: 'That stack is no longer in your pack.' };
+  if (ds) takeDragged(engine, ds, n);
   const result = displayDeposit(decor, engine.inv, box.id, cls, n);
   if (result.ok) {
     engine.refreshPack();
@@ -5655,7 +5665,8 @@ const decorateTarget = (engine) => ({
   start(d) {
     const st = d.stack;
     if (st.from !== 'pack' || st.tool || st.bag || mode !== 'decorate' || scene?.room !== 'interior' || scene.construction) return;
-    packDrag = { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)), furniture: Boolean(FURNITURE_CATALOG[st.cls]) };
+    // #515: the stack dragged is the one that goes (HandOfDecorator.as 527: startWithItemFromPack(dragged_itemstack.tsid)).
+    packDrag = { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)), furniture: Boolean(FURNITURE_CATALOG[st.cls]), ds: draggedStack(engine, st) };
     if (packDrag.furniture) {
       beginPlacing(engine, st.cls, 'pack');
       carryBy = 'pointer';
@@ -5688,15 +5699,18 @@ const decorateTarget = (engine) => ({
     if (was.furniture) {
       pointer = { ...worldPoint(engine, e), inside: true };
       packDrag = null;
+      // The furniture dragged is the piece placed (furniture has no copies of its own: a mark that lapses if it is refused).
+      markDragged(engine, was.ds, 1, { wait: DRAG_TAKE_SOON_MS });
       const res = placeAtPointer(engine, toRoom(pointer));
       engine.setData('homeDropLast', res?.ok ? 'placed' : `refused:${res?.reason || ''}`);
       endPackDrag(engine);
       return;
     }
     const hit = displayDropAt(toRoom(worldPoint(engine, e)), was.classTsid);
+    const count = was.ds ? draggedCount(engine, was.ds) : was.count;
     if (hit) {
       endPackDrag(engine);
-      const res = depositInBox(engine, hit.box, was.classTsid, was.count);
+      const res = depositInBox(engine, hit.box, was.classTsid, count, was.ds);
       if (!res.ok) {
         if (res.msg) engine.toast(res.msg);
         engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
@@ -5706,7 +5720,8 @@ const decorateTarget = (engine) => ({
     }
     const target = packDropTarget(engine, e);
     endPackDrag(engine);
-    const res = engine.dropPackStackAt?.(was.classTsid, was.count, target.x + roomX0(), target.y);
+    // The dragged stack is the one set down, with its own wear and words (game.js dropPackStackAt beforeRemove).
+    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, { beforeRemove: (n) => takeDragged(engine, was.ds, n) });
     if (!res?.ok) {
       if (res?.msg) engine.toast(res.msg);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
@@ -5732,7 +5747,7 @@ const decorateTarget = (engine) => ({
 // house, the box is a drop target as it is in Decoration Mode. R9 (G967): a target of the drop
 // registry like the rest, so the touch lift reaches it; it takes only a drop over a box.
 
-let boxDrag = null; // { classTsid, count } a pack stack dragged while not decorating
+let boxDrag = null; // { classTsid, count, ds } a pack stack dragged while not decorating (ds: js/drag-stack.js)
 
 /** Whether a drag outside Decorate may go into a box here: your own house, its rooms drawn. */
 function boxDropHere(engine) {
@@ -5752,7 +5767,7 @@ const boxTarget = (engine) => ({
   scope: gameCanvas,
   start(d) {
     const st = d.stack;
-    boxDrag = st.from === 'pack' && st.cls && !st.bag && boxDropHere(engine) ? { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)) } : null;
+    boxDrag = st.from === 'pack' && st.cls && !st.bag && boxDropHere(engine) ? { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)), ds: draggedStack(engine, st) } : null;
   },
   over(d, at) {
     if (!boxDrag || !boxDropHere(engine)) return null;
@@ -5769,7 +5784,8 @@ const boxTarget = (engine) => ({
     const hit = displayDropAt(toRoom(worldPoint(engine, { clientX: at.x, clientY: at.y })), was.classTsid);
     endBoxDrag(engine);
     if (!hit) return;
-    const res = depositInBox(engine, hit.box, was.classTsid, was.count);
+    // #515: the dragged stack goes in (bag_furniture_sdb.js deposit took the itemstack dropped).
+    const res = depositInBox(engine, hit.box, was.classTsid, draggedCount(engine, was.ds) || was.count, was.ds);
     if (!res.ok) {
       if (res.msg) engine.toast(res.msg);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });

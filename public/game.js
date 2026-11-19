@@ -2836,6 +2836,8 @@ let questDialogueState = null;
 let activeShrineTarget = null;
 /** @type {string|null} selected pack good in the shrine donation panel */
 let shrineSelected = null;
+/** #515: the tool dragged onto the shrine ({ classTsid, copy }), donated in place of the most worn one; null otherwise. */
+let shrineDragCopy = null;
 let shrineQty = 1;
 /** The shrine panel's "You've done it! You spent that favor!" line (ShrineDialog spend()). */
 let shrineFavorSpent = false;
@@ -13469,7 +13471,7 @@ const engine = {
   /** The target-item picker; `pick` chooses that stack at once (a food dragged onto it, features/world-drop-feature.js). */
   openPicker: (target, verb, pick = '') => openFeedPicker(target, verb, pick),
   /** A shrine's donation window with that pack stack chosen (a stack dragged onto it, features/world-drop-feature.js). */
-  openShrineDonate: (target, classTsid) => openShrinePanel(target, { item: classTsid }),
+  openShrineDonate: (target, classTsid, { copy = null } = {}) => openShrinePanel(target, { item: classTsid, copy }),
   /** Light a thing as the pointer does (null: none), for a stack dragged over it (features/world-drop-feature.js). */
   setHoverTarget: (target) => (target ? setHoverTarget(target) : clearHoverGlow()),
   toast,
@@ -13732,8 +13734,10 @@ const engine = {
   /**
    * BUILDER: set `count` of a pack class down at world (x, y) here, as Drop does (the same drop
    * rules, the same dropped-stack record): Decoration Mode's drag from the pack onto a shelf.
+   * `beforeRemove(n)`: called once the drop will happen, just before the count goes down (#515: the
+   * dragged stack gives them and its copies' wear and words go down, js/drag-stack.js takeDragged).
    */
-  dropPackStackAt(classTsid, count, x, y) {
+  dropPackStackAt(classTsid, count, x, y, { beforeRemove = null } = {}) {
     if (!state.started || !currentStreetTsid) return { ok: false, reason: 'not_started' };
     const blocked = packDropBlockReason(classTsid);
     // A class a feature puts down itself (the Crafty Bot): its own drop and its own reason.
@@ -13743,6 +13747,7 @@ const engine = {
     if (blocked) return { ok: false, reason: 'blocked', msg: blocked };
     const n = normalizeStackQuantity(count, inv[classTsid] || 0);
     if (!n) return { ok: false, reason: 'missing', msg: 'That stack is no longer in your pack.' };
+    beforeRemove?.(n);
     // Its words go down with it too (#285: a Still's hopper and Hooch), as Drop's do.
     const result = dropInventoryStack(droppedItemState, inv, droppedStacksTsid(), classTsid, n, { x, y }, { now: Date.now(), mergeRadius: 12, ...(keepsOwnStack(classTsid) ? { merge: false } : {}), points: leavingToolPoints(classTsid, n), tags: leavingToolTags(classTsid, n) });
     if (!result.ok) return result;
@@ -29909,10 +29914,11 @@ function closeShrinePanel() {
   if (panel) panel.hidden = true;
   shrineFavorSpent = false;
   shrineSelected = null;
+  shrineDragCopy = null;
   shrineQty = 1;
 }
 
-function openShrinePanel(target, { item = '' } = {}) {
+function openShrinePanel(target, { item = '', copy = null } = {}) {
   closeFeatPanel();
   const giant = GIANTS[target?.state?.giantId];
   if (!giant) return;
@@ -29943,6 +29949,8 @@ function openShrinePanel(target, { item = '' } = {}) {
   activeShrineTarget = target;
   // renderShrinePanel falls back to the first donatable stack when this one isn't.
   shrineSelected = item && (inv[item] || 0) > 0 ? item : null;
+  // #515: a tool dragged onto the shrine is the one donated (its place among the class's copies).
+  shrineDragCopy = shrineSelected && TOOL_WEAR[item] && Number.isInteger(copy) && copy >= 0 ? { classTsid: item, copy } : null;
   // G630: renderShrinePanel fills the count in once the stack is settled (shrinePrefill).
   shrineQty = null;
   shrineFavorSpent = false;
@@ -30146,9 +30154,12 @@ function doShrineDonation(target, classTsid, qty) {
   const giantId = target?.state?.giantId;
   const giant = GIANTS[giantId];
   if (!target || !giant || !classTsid) return;
-  // A tool goes one at a time, its most worn copy (priced first, then moved last so it is the one removed).
-  const toolCopy = TOOL_WEAR[classTsid] ? leavingToolCopy(classTsid) : null;
-  const toolWorth = toolCopy != null ? leavingToolBaseCost(classTsid) : null;
+  // A tool goes one at a time, its most worn copy (priced first, then moved last so it is the one removed);
+  // one dragged onto the shrine goes itself (#515: the dragged itemstack, LocationInputHandler.as 619).
+  const dragged = shrineDragCopy?.classTsid === classTsid ? shrineDragCopy.copy : null;
+  shrineDragCopy = null;
+  const toolCopy = TOOL_WEAR[classTsid] ? leavingToolCopy(classTsid, dragged) : null;
+  const toolWorth = toolCopy != null ? leavingToolBaseCost(classTsid, toolCopy) : null;
   const result = donateToShrine(shrineState, giantId, inv, pc, classTsid, qty, {
     ...shrinePowderOpts(),
     toolBaseCost: toolCopy != null ? () => toolWorth : shrineToolOpts().toolBaseCost,
@@ -30209,7 +30220,8 @@ function doShrineDonation(target, classTsid, qty) {
 /** Hallowed shrine powders and No-No Powder on the next donation (js/powders.js). */
 /** Shrines took tools in the original, valued by their wear (include/shrines.js 397; tool_base.js getBaseCost). */
 function shrineToolOpts() {
-  return { toolBaseCost: (classTsid) => leavingToolBaseCost(classTsid) };
+  // The quote prices the tool that goes: the one dragged here (#515), else the most worn.
+  return { toolBaseCost: (classTsid) => leavingToolBaseCost(classTsid, shrineDragCopy?.classTsid === classTsid ? shrineDragCopy.copy : null) };
 }
 
 function shrinePowderOpts(now = Date.now()) {

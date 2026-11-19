@@ -27,11 +27,12 @@ import { dropFor, dropTip } from '../world-drop.js?v=a8956ae5';
 import { canUseTool } from '../tools.js?v=4156bba8';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
+import { draggedStack, markDragged } from '../drag-stack.js?v=5ff6ce35';
 
 export const WORLD_DROP_FEATURE_ID = 'world-drop';
 
 let wired = false;
-let dragging = null; // { cls, copy }
+let dragging = null; // { cls, copy, ds } (ds: the dragged stack, js/drag-stack.js)
 let tip = null;
 let lit = null;
 
@@ -123,8 +124,12 @@ function endDrag(engine) {
   engine.setData?.('worldDrag', 'none');
 }
 
-/** Run a drop: the target's own verb, through the menu's walk into reach. */
-export function runDrop(engine, over, cls, copy = null) {
+/**
+ * Run a drop: the target's own verb, through the menu's walk into reach. `ds` (js/drag-stack.js):
+ * the stack dragged, which gives what the verb uses (#515; LocationInputHandler.as 619 opened the
+ * verb with the dragged itemstack's tsid), a tool its own copy (chooseTool), a shrine its own tool.
+ */
+export function runDrop(engine, over, cls, copy = null, ds = null) {
   const { target, drop, ok } = over;
   const verb = drop.verb;
   engine.setData?.('worldDropLast', `${ok ? 'ran' : 'refused'}:${target.classId}:${verb.id}`);
@@ -134,10 +139,12 @@ export function runDrop(engine, over, cls, copy = null) {
     return false;
   }
   engine.closeVerbMenu?.();
-  // A tool dragged onto a rock or a node is the one that works it (js/tool-choice.js).
+  // A tool dragged onto a rock or a node is the one that works it (js/tool-choice.js); it stays in the pack.
   if (drop.rule.tool) chooseTool(target, cls, { copy });
+  // What the verb uses up comes off the dragged stack when it does (a class with copies: its own pick).
+  else markDragged(engine, ds, ds?.count || 1);
   if (drop.rule.use === 'pick') return engine.requestVerb?.(target, verb, { run: () => engine.openPicker?.(target, verb, cls) });
-  if (drop.rule.use === 'donate') return engine.requestVerb?.(target, verb, { run: () => engine.openShrineDonate?.(target, cls) });
+  if (drop.rule.use === 'donate') return engine.requestVerb?.(target, verb, { run: () => engine.openShrineDonate?.(target, cls, { copy: ds?.pick ? ds.pick.copy : null }) });
   return engine.requestVerb?.(target, verb);
 }
 
@@ -155,7 +162,7 @@ function wire(engine) {
     scope: () => canvas,
     start(d) {
       const st = d.stack;
-      dragging = st.from === 'pack' && st.cls && !st.bag ? { cls: st.cls, copy: Number.isInteger(st.copy) ? st.copy : null } : null;
+      dragging = st.from === 'pack' && st.cls && !st.bag ? { cls: st.cls, copy: Number.isInteger(st.copy) ? st.copy : null, ds: draggedStack(engine, st) } : null;
       if (dragging) engine.setData?.('worldDrag', `dragging:${dragging.cls}`);
     },
     over(d, at) {
@@ -179,10 +186,10 @@ function wire(engine) {
     },
     drop(d, at) {
       if (!dragging) return;
-      const { cls, copy } = dragging;
+      const { cls, copy, ds } = dragging;
       const over = overAt(engine, canvas, at.x, at.y, cls, copy);
       endDrag(engine);
-      if (over) runDrop(engine, over, cls, copy);
+      if (over) runDrop(engine, over, cls, copy, ds);
     },
     end() { if (dragging) endDrag(engine); },
   });

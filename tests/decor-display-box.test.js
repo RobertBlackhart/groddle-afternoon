@@ -75,7 +75,8 @@ describe('a Storage Display Box takes things, as the original did', () => {
     const over = wire.slice(wire.indexOf('  over(d, at) {'), wire.indexOf('  leave() {'));
     assert.match(over, /const hit = displayDropAt\(toRoom\(worldPoint\(engine, e\)\), packDrag\.classTsid\);\s+drawDisplayTarget\(engine, hit\);\s+drawPackMarker\(engine, hit \? null : packDropTarget\(engine, e\)\);/);
     const drop = wire.slice(wire.indexOf('  drop(d, at) {'), wire.indexOf('  end() {'));
-    assert.match(drop, /if \(hit\) \{[\s\S]{0,80}const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
+    // #515: the dragged stack's own count, and that stack gives it (js/drag-stack.js).
+    assert.match(drop, /if \(hit\) \{[\s\S]{0,80}const res = depositInBox\(engine, hit\.box, was\.classTsid, count, was\.ds\);/);
     assert.ok(drop.indexOf('depositInBox') < drop.indexOf('dropPackStackAt'), 'the box before the floor under it');
     assert.match(homes, /const tip = new PIXI\.Text\(\{ text: ok \? DISPLAY_TEXT\.dropTip : hit\.refusal\.msg/);
   });
@@ -90,7 +91,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
     assert.match(wire, /id: 'home-display-box',[\s\S]{0,200}st\.from === 'pack' && st\.cls && !st\.bag && boxDropHere\(engine\)/);
     assert.match(wire, /return hit \? \{ ok: !hit\.refusal \} : null;/, 'only a point over a box answers');
     const drop = wire.slice(wire.indexOf('  drop(d, at) {'));
-    assert.match(drop, /if \(!hit\) return;\s+const res = depositInBox\(engine, hit\.box, was\.classTsid, was\.count\);/);
+    assert.match(drop, /if \(!hit\) return;[\s\S]{0,140}const res = depositInBox\(engine, hit\.box, was\.classTsid, draggedCount\(engine, was\.ds\) \|\| was\.count, was\.ds\);/);
     assert.doesNotMatch(wire, /dropPackStackAt/, 'only a drop over a box is taken');
     assert.match(homes.slice(homes.indexOf('function afterEnter('), homes.indexOf('function afterEnter(') + 300), /wireDropTargets\(engine\);/, 'wired when a home room is entered');
   });

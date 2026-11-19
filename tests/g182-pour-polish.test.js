@@ -86,7 +86,7 @@ describe('the walk and the overlay', () => {
   it('homes-feature walks, pours, takes the drop and says no wear-out line for a pour', () => {
     const h = read('js/features/homes-feature.js');
     assert.match(h, /engine\.moveAvatar\?\.\(ap\.endpoint, ap\.face\);/);
-    assert.match(h, /pourFx\(engine, row\);\n  removeItem\(engine\.inv, WOTD, 1\);/);
+    assert.match(h, /pourFx\(engine, row\);\n  if \(ds\) takeDragged\(engine, ds, 1\);\n  removeItem\(engine\.inv, WOTD, 1\);/);
     // R9 (G967): the pour is a target of the drop registry (js/drop-targets.js), mouse and touch alike.
     assert.match(h, /id: 'home-pour',[\s\S]{0,200}st\.cls === WOTD && mode !== 'decorate'/);
     assert.doesNotMatch(h, /It wore out at once/);
