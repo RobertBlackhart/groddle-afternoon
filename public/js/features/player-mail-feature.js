@@ -226,13 +226,14 @@ function createSession(engine) {
 
   // —— Sending ——
 
-  /** Whether that many of a bag class can go: bags with things inside cannot (mail_can_send 26-29). */
+  /**
+   * Whether that many of a bag class can go: bags with things inside cannot (mail_can_send 26-29).
+   * #544: asked as a vendor asks (bags-feature packSaleBags), which also lines the empty bags up to
+   * be the ones that leave; counting alone let the count come off a bag that held things.
+   */
   function bagHolds(c, n) {
-    const layout = engine.query?.('packLayout', engine);
-    const boxes = Object.values(layout?.bags || {}).filter((b) => b?.cls === c);
-    if (!boxes.length) return false;
-    const full = boxes.filter((b) => Array.isArray(b.slots) && b.slots.length).length;
-    return n > countItem(engine.inv, c) - full;
+    const empty = engine.query?.('packSaleBags', c, engine);
+    return empty != null && n > empty;
   }
 
   async function send({ to, text, item = null, currants = 0, reply = null }) {

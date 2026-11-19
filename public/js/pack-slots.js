@@ -999,7 +999,19 @@ export function saleBags(inv, prefs, cls, opts = {}, chosen = '') {
   if (pick && holds(pick.key)) return { empty: 0, prefs: next };
   const empties = mine.filter((b) => b !== pick && !holds(b.key));
   next.bags = [...next.bags.filter((b) => b !== pick && !empties.includes(b)), ...empties, ...(pick ? [pick] : [])];
-  return { empty: empties.length + (pick ? 1 : 0), prefs: next };
+  // #544: the count is checked against the pack as it would be laid out with that many fewer
+  // (layoutPack keeps a class's first saved bags): every bag that holds something stays. A count
+  // that would take one away is cut until none would.
+  const full = Object.values(layout.bags).filter((b) => b.slots.length > 0).map((b) => b.key);
+  const have = Math.max(0, Math.floor(Number(inv?.[cls]) || 0));
+  const keepsFull = (k) => {
+    if (k <= 0 || !full.length) return true;
+    const after = layoutPack({ ...inv, [cls]: Math.max(0, have - k) }, next, opts);
+    return full.every((key) => after.bags[key]);
+  };
+  let empty = Math.min(have, empties.length + (pick ? 1 : 0));
+  while (empty > 0 && !keepsFull(empty)) empty -= 1;
+  return { empty, prefs: next };
 }
 
 /**

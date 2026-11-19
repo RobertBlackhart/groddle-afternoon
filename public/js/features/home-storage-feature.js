@@ -44,16 +44,16 @@
 import { announceCharacterChanged, characterHeaders, characterOf, isCharacterChanged } from '../character-guard.js?v=510034a7';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=6414dbdc';
-import { displayRefusal, furnitureDef, furnitureSize, isFurniture, pieceArt } from '../home-decor.js?v=ce3fe651';
+import { displayRefusal, furnitureDef, furnitureSize, isFurniture, pieceArt } from '../home-decor.js?v=d886268d';
 import { pieceLabel } from '../furniture-upgrades.js?v=a3788c0d';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=2c09907f';
+import { ownBagLabel, stackMaxOf, isBagClass } from '../pack-slots.js?v=d9ab4a0b';
 import { ELEMENT_CLASSES, NO_BAG_CLASSES, NO_SLOT_CLASSES } from '../pack-slots-data.js?v=800f664c';
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
-import { draggedStack, takeDragged } from '../drag-stack.js?v=63471c09';
+import { draggedStack, takeDragged } from '../drag-stack.js?v=536cddfb';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=1bbe1ab3';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
-import { homesFeature } from './homes-feature.js?v=2a532244';
+import { homesFeature } from './homes-feature.js?v=92a920f2';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   SDB_PRICE_MAX,

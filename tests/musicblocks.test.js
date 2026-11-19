@@ -44,7 +44,7 @@ import {
   countItem,
   createInventory,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { getVerbsFor } from '../public/content.js?v=3caa9ab4';
+import { getVerbsFor } from '../public/content.js?v=6d578ad4';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');
@@ -254,7 +254,7 @@ function fakeEngine({ streetTsid, inv, stacks = [] } = {}) {
 }
 
 async function freshFeature() {
-  const mod = await import('../public/js/features/musicblocks-feature.js?v=a76803a3');
+  const mod = await import('../public/js/features/musicblocks-feature.js?v=bc50e48c');
   mod.musicblocksFeature._reset();
   return mod;
 }
@@ -491,7 +491,7 @@ describe('Musicblock game integration', () => {
 
 describe('Musicblock collection badges from any source', () => {
   it('emits in_inventory the first time a block reaches the pack', async () => {
-    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=a76803a3');
+    const { musicblocksFeature, newlyOwnedMusicblocks } = await import('../public/js/features/musicblocks-feature.js?v=bc50e48c');
     assert.deepEqual(newlyOwnedMusicblocks(new Set(['musicblock_d_blue_01']), {
       musicblock_d_blue_01: 2, musicblock_d_blue_02: 1, apple: 3, musicblock_trumpets: 1,
     }), ['musicblock_d_blue_02']);

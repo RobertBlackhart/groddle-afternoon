@@ -27,7 +27,7 @@
  */
 import { TOOL_CONDITION_CATALOG, copyTags, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
 import { markLeaving, takeCopies } from './copy-picks.js?v=01de4c58';
-import { unitRankAt } from './pack-slots.js?v=2c09907f';
+import { unitRankAt } from './pack-slots.js?v=d9ab4a0b';
 import { answerWaitMs } from './online-request.js?v=2a5117ff';
 
 /** A removal made now waits for the pack's next look (a HUD tick), then lapses; one fully taken ends at once. */

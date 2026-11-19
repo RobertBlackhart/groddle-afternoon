@@ -29,7 +29,7 @@ import {
   normalizeHomeDecorState,
   setHomeTexture,
   wallSlots,
-} from '../public/js/home-decor.js?v=ce3fe651';
+} from '../public/js/home-decor.js?v=d886268d';
 import { TOWER_GEO } from '../public/js/home-tower.js?v=18889f7a';
 
 const root = join(import.meta.dirname, '..');

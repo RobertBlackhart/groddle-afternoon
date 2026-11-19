@@ -59,6 +59,7 @@ export const TRADE_TEXT = Object.freeze({
   cantTrade: "You can't trade this item!", // TradeDialog.as:1063
   soulbound: "That item is locked to you, and can't be traded.", // inc_trading.js:477
   notEnough: "You don't have enough of that item.", // inc_trading.js:456
+  bagHolds: 'You may not trade non-empty bags.', // inc_trading.js:465-469
   notEnoughCurrants: "You don't have enough currants for that.", // inc_trading.js:846
   unsettled: 'You have unsettled items from a previous trade. Make some room in your pack for them before attempting another trade.', // inc_trading.js:102
   busySelf: 'You are already trading with someone else. Finish that up first.', // inc_trading.js:91

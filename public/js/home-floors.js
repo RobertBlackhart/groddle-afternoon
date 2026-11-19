@@ -40,7 +40,7 @@
  */
 
 import { HOME_LIMITS } from './homes-catalog.js?v=b787b3eb';
-import { INTERIOR, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=ce3fe651';
+import { INTERIOR, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=d886268d';
 
 export const DOOR_CLASS = 'furniture_door';
 export const DOOR_JOB = 'job_proto_door';

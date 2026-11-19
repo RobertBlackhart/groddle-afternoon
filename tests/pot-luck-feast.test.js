@@ -43,7 +43,7 @@ import {
 import { SEED_CATALOG } from '../public/js/garden.js?v=d4e55862';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=bf8b857b';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
-import { takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
+import { takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
 import { setContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';

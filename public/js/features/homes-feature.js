@@ -100,11 +100,11 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { pickupCountTitle } from '../world-items.js?v=66601f23';
+import { pickupCountTitle } from '../world-items.js?v=9665f5dd';
 import { createCountChooser } from '../ui/count-chooser.js?v=5bc894c8';
-import { isBagClass } from '../pack-slots.js?v=2c09907f';
+import { isBagClass } from '../pack-slots.js?v=d9ab4a0b';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=63471c09';
+import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=536cddfb';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
   CULTIVATION_CLASSES,
@@ -149,7 +149,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=ce3fe651';
+} from '../home-decor.js?v=d886268d';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=dfdf98f7';
@@ -290,7 +290,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=d3656d39';
+} from '../home-floors.js?v=46dc8f2a';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=8f0b6303';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';

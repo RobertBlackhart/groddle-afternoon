@@ -69,10 +69,10 @@ import {
   tradeCommand,
   untradeableReason,
   goodsWithHeldTags,
-} from '../trade.js?v=d38b9202';
+} from '../trade.js?v=5fb43d2f';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { beginDrag, registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { draggedCount, draggedStack, takeDragged } from '../drag-stack.js?v=63471c09';
+import { draggedCount, draggedStack, takeDragged } from '../drag-stack.js?v=536cddfb';
 
 export const TRADE_FEATURE_ID = 'trade';
 export const TRADE_VERB = 'trade_start';
@@ -338,6 +338,13 @@ function createSession(engine, client) {
   }
 
   /** What more of a class the pack can still put in (the pack, plus what the hold already keeps, minus the offer). */
+  /** Whether n of a bag class can't leave the pack empty (bags-feature packSaleBags; false for anything else). */
+  function bagsHold(c, n) {
+    if (!(n > 0)) return false;
+    const empty = engine.query?.('packSaleBags', c, engine);
+    return empty != null && n > empty;
+  }
+
   function available(c) {
     if (!open) return 0;
     return countItem(engine.inv, c) + n0(saved.hold?.items?.[c]) - (countsOf(open.draft)[c] || 0);
@@ -530,6 +537,8 @@ function createSession(engine, client) {
     for (const [c, n] of Object.entries(want.items)) {
       const more = n - (have.items[c] || 0);
       if (more > 0 && countItem(engine.inv, c) < more) return false;
+      // #544: a bag leaves only empty; asked last, the empty ones are lined up to be the ones that go.
+      if (more > 0 && bagsHold(c, more)) return false;
     }
     if (want.currants - have.currants > n0(pc?.currants)) return false;
     if (!saved.hold) saved.hold = { trade: open.id, with: { ...open.with }, items: {}, currants: 0 };
@@ -654,6 +663,11 @@ function createSession(engine, client) {
       return;
     }
     const n = Math.min(left, slotMax(c, table), ds ? draggedCount(engine, ds) : Infinity);
+    // #544: only empty bags go (inc_trading.js 465-469), the bags offered and not yet held counted too.
+    if (bagsHold(c, (countsOf(open.draft)[c] || 0) - n0(saved.hold?.items?.[c]) + n)) {
+      line(TRADE_TEXT.bagHolds, 'error');
+      return;
+    }
     // A dragged script is that script (its words ride on its slot, chosenTags).
     if (tag === undefined && ds?.pick && copyTagKind(c) === 'script') tag = ds.pick.t;
     // Each tool wears on its own (js/tools.js): the offered ones carry their own wear (the most worn of

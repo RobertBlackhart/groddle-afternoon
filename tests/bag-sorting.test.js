@@ -29,10 +29,10 @@ import {
   specializeBag,
   stackUp,
   unitOrder,
-} from '../public/js/pack-slots.js?v=2c09907f';
+} from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { SORT_TAG_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=25097a18';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=b33074b7';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { remakeStatus, isOfferedInRemake } from '../public/js/imagination-remake.js?v=c37ad887';
 

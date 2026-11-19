@@ -8,10 +8,10 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { layoutPack, moveStack, packAccepts, packKeeps, roomFor, stackUp, isElementClass } from '../public/js/pack-slots.js?v=2c09907f';
+import { layoutPack, moveStack, packAccepts, packKeeps, roomFor, stackUp, isElementClass } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { smashTrophy } from '../public/js/item-verbs-more.js?v=377f760a';
 import { canCraft, grindsElements, grinderResultLine, NEED_POUCH_LINE, recipeBlockedLine, isGrinderRecipe } from '../public/js/making.js?v=bf8b857b';
-import { getVerbsFor } from '../public/content.js?v=3caa9ab4';
+import { getVerbsFor } from '../public/content.js?v=6d578ad4';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

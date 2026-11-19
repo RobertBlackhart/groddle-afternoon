@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=3caa9ab4';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=6d578ad4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=12edc34c';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=250b5e7b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -502,7 +502,7 @@ import {
 } from './js/inventory.js?v=6414dbdc';
 import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=4eb640c3';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=e45565a7';
-import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=2c09907f';
+import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=d9ab4a0b';
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
@@ -521,7 +521,7 @@ import {
   pickupDroppedStack,
   placeDroppedBag,
   takeDroppedRecord,
-} from './js/world-items.js?v=66601f23';
+} from './js/world-items.js?v=9665f5dd';
 import {
   createPlayerSave,
   inspectPlayerSave,
