@@ -3521,6 +3521,126 @@
       "commits": [
         "game:b4388cdd505"
       ]
+    },
+    {
+      "id": "G650",
+      "area": "Puzzles",
+      "show": "fixing",
+      "text": "In Purplysa, the gravity pad on the small block under the crystals did not lift you.",
+      "commits": [
+        "game:532d06c45f5"
+      ]
+    },
+    {
+      "id": "G1022",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Online, nobody else could see your grave or mourn it, so the Diabolical Drink Ticket was hard to come by.",
+      "commits": [
+        "game:e3d099a70cb",
+        "server:4711321"
+      ]
+    },
+    {
+      "id": "G1030",
+      "area": "Pack",
+      "show": "fixing",
+      "text": "With a bag open, nothing in the pack row showed which bag it was.",
+      "commits": [
+        "game:1a62b351a3b"
+      ]
+    },
+    {
+      "id": "G1035",
+      "area": "Doors",
+      "show": "fixing",
+      "text": "A door or a subway station's steps opened a menu instead of taking you through on a click.",
+      "commits": [
+        "game:73efffd1b50"
+      ]
+    },
+    {
+      "id": "G1036",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "A Spinach jump at the end of a Jethimadh Tower corridor could take you out through the ceiling.",
+      "commits": [
+        "game:cb9da9a3769"
+      ]
+    },
+    {
+      "id": "G1037",
+      "area": "Badges",
+      "show": "fixing",
+      "text": "A region's Completist badge could arrive one street early on a character who visited its subway station before mid-November.",
+      "commits": [
+        "game:bc3d9ea5ab8"
+      ]
+    },
+    {
+      "id": "G1038",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The map did not draw streets you have not been to as a dotted line.",
+      "commits": [
+        "game:d3349dc21cf"
+      ]
+    },
+    {
+      "id": "G1039",
+      "area": "Avatar",
+      "show": "fixing",
+      "text": "Vanity had no None for tops, trousers or shoes.",
+      "commits": [
+        "game:6bdaeda5691",
+        "game:5a4c9cea62f"
+      ]
+    },
+    {
+      "id": "G1040",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "The Emotional Bear's kiss showed several bears at once, and its other emotes left trails.",
+      "commits": [
+        "game:c9aed5b55a3"
+      ]
+    },
+    {
+      "id": "G1041",
+      "area": "Phone",
+      "show": "fixing",
+      "text": "On a phone set to reduce motion, the Make panel's tool stood still, and a report's picture showed Can make now ticked when it was not.",
+      "commits": [
+        "game:734c635a188"
+      ]
+    },
+    {
+      "id": "F120",
+      "area": "Render",
+      "show": "fixing",
+      "text": "On some graphics cards a lighter strip flickered at the bottom of short streets while walking.",
+      "commits": [
+        "game:cbc3b78d0be",
+        "game:49a6ea627ba"
+      ]
+    },
+    {
+      "id": "F121",
+      "area": "Chat",
+      "show": "fixing",
+      "text": "The chat box could show its hint cut in half after moving to a street with a longer name.",
+      "commits": [
+        "game:3e4aef3cdaa"
+      ]
+    },
+    {
+      "id": "F122",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "Pot's Empty Table and other event quests could not be pinned.",
+      "commits": [
+        "game:25e79697327"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.50.3",
+  "release": "v0.51.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 340,
+    "fixed": 353,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -147,6 +147,12 @@
           "report": 514,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1036",
+          "text": "A Spinach jump at the end of a Jethimadh Tower corridor could take you out through the ceiling.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -278,6 +284,12 @@
           "text": "The new quest sound can play while its notice is hidden under the map and the Social drawer.",
           "state": "fixed",
           "version": "v0.49.1"
+        },
+        {
+          "id": "F122",
+          "text": "Pot's Empty Table and other event quests could not be pinned.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -536,6 +548,12 @@
           "report": 516,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1038",
+          "text": "The map did not draw streets you have not been to as a dotted line.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -1430,6 +1448,18 @@
           "text": "When a party ended with no way back, or you left the Interrogation room, you landed on an unbuilt street in Baqala.",
           "state": "fixed",
           "version": "v0.50.2"
+        },
+        {
+          "id": "G1022",
+          "text": "Online, nobody else could see your grave or mourn it, so the Diabolical Drink Ticket was hard to come by.",
+          "state": "fixed",
+          "version": "v0.51.0"
+        },
+        {
+          "id": "G1040",
+          "text": "The Emotional Bear's kiss showed several bears at once, and its other emotes left trails.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -2008,6 +2038,12 @@
           "report": 515,
           "state": "fixed",
           "version": "v0.50.2"
+        },
+        {
+          "id": "G1030",
+          "text": "With a bag open, nothing in the pack row showed which bag it was.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -2434,6 +2470,12 @@
           "report": 517,
           "state": "fixed",
           "version": "v0.50.2"
+        },
+        {
+          "id": "F120",
+          "text": "On some graphics cards a lighter strip flickered at the bottom of short streets while walking.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -2462,6 +2504,12 @@
           "text": "Hub Completist badges could be earned before visiting every street of their hub.",
           "state": "fixed",
           "version": "v0.47.0"
+        },
+        {
+          "id": "G1037",
+          "text": "A region's Completist badge could arrive one street early on a character who visited its subway station before mid-November.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -2575,6 +2623,12 @@
           "text": "A reply to an older chat line could be refused after a server restart, and the typed words were lost.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "F121",
+          "text": "The chat box could show its hint cut in half after moving to a street with a longer name.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     },
@@ -2593,6 +2647,50 @@
           "report": 518,
           "state": "fixed",
           "version": "v0.50.1"
+        }
+      ]
+    },
+    {
+      "name": "Puzzles",
+      "items": [
+        {
+          "id": "G650",
+          "text": "In Purplysa, the gravity pad on the small block under the crystals did not lift you.",
+          "state": "fixed",
+          "version": "v0.51.0"
+        }
+      ]
+    },
+    {
+      "name": "Doors",
+      "items": [
+        {
+          "id": "G1035",
+          "text": "A door or a subway station's steps opened a menu instead of taking you through on a click.",
+          "state": "fixed",
+          "version": "v0.51.0"
+        }
+      ]
+    },
+    {
+      "name": "Avatar",
+      "items": [
+        {
+          "id": "G1039",
+          "text": "Vanity had no None for tops, trousers or shoes.",
+          "state": "fixed",
+          "version": "v0.51.0"
+        }
+      ]
+    },
+    {
+      "name": "Phone",
+      "items": [
+        {
+          "id": "G1041",
+          "text": "On a phone set to reduce motion, the Make panel's tool stood still, and a report's picture showed Can make now ticked when it was not.",
+          "state": "fixed",
+          "version": "v0.51.0"
         }
       ]
     }
