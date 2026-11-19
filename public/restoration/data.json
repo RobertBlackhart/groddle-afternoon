@@ -2810,13 +2810,18 @@
   ]
  },
  "release": {
-  "game": "0.50.1",
+  "game": "0.50.2",
   "deployed": "2026-11-19"
  },
  "git": {
-  "commits": 2783,
+  "commits": 2787,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "a dragged stack's mark waits the server's answer wait, not a wait of its own"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "Street Spirit no longer flashes \"Project available\" on entry online"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Mined-out rocks take longer to come back"
    }
   ]
  },
