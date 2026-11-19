@@ -26,7 +26,7 @@
 
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { BOARD_MP_TEXT, BOARD_NOTE_ID, boardFrom, carriedFromBoard, normalizeBoardNote, normalizeMineBoard, pinPayload, sameWords } from '../boards-mp.js?v=be55db1b';
 // The same key as features/index.js: one module instance holds the carried notes and draws the boards.
 import { carriedNoteList, giveCarriedNote, refreshSharedBoards, takeCarriedNote } from './street-furniture-feature.js?v=dc515cc5';
@@ -39,19 +39,10 @@ const NOTE = 'note';
 
 let multiplayer = false;
 
-/** Writes the save and waits for it, so the ledger has seen the Note a pin takes (drops-mp-feature persist). */
-async function persist(engine) {
+/** Writes the save and waits for it, so the ledger has seen the Note a pin takes (savedThrough, R28). */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 4; i += 1) {
-    try {
-      await saveStore.flush();
-    } catch {
-      return false;
-    }
-    if (saveStore.state === 'saved') return true;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function titleOf(note) {

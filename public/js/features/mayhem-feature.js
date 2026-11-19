@@ -50,7 +50,7 @@ import { hasRaceDispenser } from '../races.js?v=ab22a079';
 import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=68c0a634';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { standOnFeet } from '../sprite-feet.js?v=86205485';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -61,7 +61,6 @@ const PIG_CLASS = 'test_game_starter';
 const PIG_ART = 'assets/sprites/races/test_game_starter@3x.webp';
 const JUMP_SCALE = 1.15; // the arena's ledges, as crowns-feature
 const APPLIED_KEEP = 20;
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 /** AbstractAvatarView.as 209: a disc with a number is 22 px across the radius, 2 px ring. */
 const DISC_R = 22;
 
@@ -593,21 +592,10 @@ function clearEnd() {
 /* Rewards (games_end_math_mayhem 1077-1079)                           */
 /* ------------------------------------------------------------------ */
 
-async function persist(engine) {
+/** Writes the save and waits for a write holding the reward to land (savedThrough, R28). */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let st;
-    try {
-      st = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || st;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 /** mayhem_reward: the winner's 200 iMG with the mood bonus and the 50 currants the ledger holds, once. */

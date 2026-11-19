@@ -46,7 +46,7 @@ import { ITEM_CATALOG, addItem, countItem, itemIcon, listPackSlots, removeItem }
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { TOOL_CONDITION_CATALOG, copyTagKind, leavingCopyTag, leavingToolWear, receiveToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { createItemPicker } from '../ui/item-picker.js?v=144fa420';
 import { copyPicks, copyWire, markLeaving, packPicks, pickKey, takeCopies } from '../copy-picks.js?v=7968c974';
 import {
@@ -207,14 +207,10 @@ function createSession(engine) {
     }
   }
 
-  /** The save as the site will compare it: written before a listing or a purchase (trade-feature persist). */
+  /** The save as the site will compare it: written before a listing or a purchase (savedThrough, R28; best effort, the call goes on either way). */
   async function persist() {
     engine.save?.();
-    if (typeof saveStore?.flush !== 'function') return;
-    for (let i = 0; i < 3; i += 1) {
-      try { await saveStore.flush(); } catch { return; }
-      if (saveStore.state === 'saved') return;
-    }
+    await savedThrough(saveStore);
   }
 
   // —— Applying what the site settled ——

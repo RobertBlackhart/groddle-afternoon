@@ -54,6 +54,7 @@ import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
 import { possessive, readVisitScene } from '../neighbours-mp.js?v=c20e6df1';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { homesFeature } from './homes-feature.js?v=7344582b';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   SDB_PRICE_MAX,
   STORAGE_TEXT as T,
@@ -378,20 +379,10 @@ function createSite() {
 let site = null;
 const siteApi = () => (site ||= createSite());
 
-/** Writes the save now and waits for it (the site reads the stored house; home-street-mp-feature flush). */
-async function flush(engine) {
+/** Writes the save now and waits for it (the site reads the stored house; savedThrough, R28). */
+export async function flush(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    try {
-      await saveStore.flush();
-    } catch {
-      return false;
-    }
-    if (saveStore.state === 'saved') return true;
-    if (['conflict', 'elsewhere', 'signed-out', 'error', 'offline'].includes(saveStore.state)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 /** My boxes' prices and income, and my side of what others did to my house (applied once each). */

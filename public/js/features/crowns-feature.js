@@ -60,13 +60,13 @@ import {
   tickCrowns,
 } from '../game-of-crowns.js?v=e32f35f5';
 import { RACE_RIVALS } from '../races.js?v=ab22a079';
-import { mayhemHoldsArena } from './mayhem-feature.js?v=f3e019fc';
+import { mayhemHoldsArena } from './mayhem-feature.js?v=b3143de2';
 import { wallsScreen } from '../street-model.js?v=9f16f4ab';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { CROWNS_SPLASH, splashFor } from '../game-splash.js?v=49228b02';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   CROWNS_MP_TEXT,
   crownHolderPos,
@@ -750,7 +750,6 @@ let mpAppliedIds = []; // crown_reward ids this save applied (kept in the slice)
 const mpCounted = new Set(); // match:round counters applied this session
 const mpApplying = new Set();
 const MP_APPLIED_KEEP = 20;
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 
 function isMp(engine) {
   return engine?.mode === 'multiplayer' && Boolean(engine.query?.('realtimeClient'));
@@ -1461,21 +1460,10 @@ function mpDrop(engine) {
   if (!game && !pending && engine.instanceHold === CROWNS_ID) engine.instanceHold = null;
 }
 
-async function mpPersist(engine) {
+/** Writes the save and waits for a write holding the change to land (savedThrough, R28). */
+export async function mpPersist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let st;
-    try {
-      st = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || st;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 /**

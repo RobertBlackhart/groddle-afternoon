@@ -145,7 +145,7 @@ import { qurazyFeature } from './qurazy-feature.js?v=b7cdfe8f'; FEATURES.push(qu
 import { energyDecayFeature } from './energy-decay-feature.js?v=ee248429'; FEATURES.push(energyDecayFeature);
 import { partyFeature } from './party-feature.js?v=498a021a'; FEATURES.push(partyFeature);
 import { sharedQuoinsFeature } from './shared-quoins-feature.js?v=022bfd0e'; FEATURES.push(sharedQuoinsFeature);
-import { tradeFeature } from './trade-feature.js?v=33284c0e'; FEATURES.push(tradeFeature);
+import { tradeFeature } from './trade-feature.js?v=c1a1bcd7'; FEATURES.push(tradeFeature);
 import { ledgerFeature } from './ledger-feature.js?v=e611006c'; FEATURES.push(ledgerFeature);
 import { vendorFinderFeature } from './vendor-finder-feature.js?v=3338e0db'; FEATURES.push(vendorFinderFeature);
 import { buddiesFeature } from './buddies-feature.js?v=49e76ed2'; FEATURES.push(buddiesFeature);
@@ -160,7 +160,7 @@ import { playerMailFeature } from './player-mail-feature.js?v=031640f5'; FEATURE
 import { followMpFeature } from './follow-mp-feature.js?v=794229af'; FEATURES.push(followMpFeature);
 import { summonMpFeature } from './summon-mp-feature.js?v=60948f39'; FEATURES.push(summonMpFeature);
 import { hogHaulMpFeature } from './hog-haul-mp-feature.js?v=64c9fa28'; FEATURES.push(hogHaulMpFeature);
-import { dropsMpFeature } from './drops-mp-feature.js?v=c0d49c11'; FEATURES.push(dropsMpFeature);
+import { dropsMpFeature } from './drops-mp-feature.js?v=3f718120'; FEATURES.push(dropsMpFeature);
 import { doorKeysFeature } from './door-keys-feature.js?v=7f944c3d'; FEATURES.push(doorKeysFeature);
 import { boardsMpFeature } from './boards-mp-feature.js?v=9f5c67af'; FEATURES.push(boardsMpFeature);
 import { bugReportFeature } from './bug-report-feature.js?v=13337887'; FEATURES.push(bugReportFeature);
@@ -201,7 +201,7 @@ import { skillBubblesFeature } from './skill-bubbles-feature.js?v=18e4da79'; FEA
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=59f52680'; FEATURES.push(homeCrewMpFeature);
 import { chickenScareFeature } from './chicken-scare-feature.js?v=99a2833e'; FEATURES.push(chickenScareFeature);
-import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1df09118'; FEATURES.push(gameTeleporterFeature);
+import { gameTeleporterFeature } from './game-teleporter-feature.js?v=4be570ca'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push(potLuckFeature);

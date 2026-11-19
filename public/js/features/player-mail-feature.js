@@ -41,7 +41,7 @@ import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCop
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=7968c974';
 import { ITEM_BASE_COSTS } from '../store-catalog.js?v=c6ebb2bd';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   LETTER_ROW,
   PLAYER_MAIL_RULES as R,
@@ -95,14 +95,10 @@ function createSession(engine) {
     publish();
   }
 
-  /** The save as the site will compare it (trade-feature's persist). */
+  /** The save as the site will compare it (savedThrough, R28; best effort, the call goes on either way). */
   async function persist() {
     engine.save?.();
-    if (typeof saveStore?.flush !== 'function') return;
-    for (let i = 0; i < 3; i += 1) {
-      try { await saveStore.flush(); } catch { return; }
-      if (saveStore.state === 'saved') return;
-    }
+    await savedThrough(saveStore);
   }
 
   function rowFor(id) {

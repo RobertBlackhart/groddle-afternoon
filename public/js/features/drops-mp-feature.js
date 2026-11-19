@@ -46,7 +46,7 @@
 import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { DROP_OP, DROP_TEXT, dropEffect, eatenStack, groundFrom, homeStreetOwner, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=ad34ae0a';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
@@ -62,19 +62,10 @@ function itemLabel(c, n = 1) {
   return n === 1 ? meta.label : meta.namePlural || meta.label;
 }
 
-/** Writes the save and waits for it, so the ledger has seen what the drop takes (trade-feature persist). */
-async function persist(engine) {
+/** Writes the save and waits for it, so the ledger has seen what the drop takes (savedThrough, R28). */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 4; i += 1) {
-    try {
-      await saveStore.flush();
-    } catch {
-      return false;
-    }
-    if (saveStore.state === 'saved') return true;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function createSession(engine, client) {

@@ -23,8 +23,8 @@ import {
   normalizeCrownsPaid,
   normalizeCrownsPaidBack,
 } from '../public/js/crowns-mp.js?v=ab077bca';
-import { crownsFeature, crownsMpTeleport } from '../public/js/features/crowns-feature.js?v=187b8f62';
-import { GAME_TELEPORTER_PRICE, GAME_TELEPORTER_STREET, GAME_TELEPORTER_TEXT } from '../public/js/features/game-teleporter-feature.js?v=1df09118';
+import { crownsFeature, crownsMpTeleport } from '../public/js/features/crowns-feature.js?v=b8ece27f';
+import { GAME_TELEPORTER_PRICE, GAME_TELEPORTER_STREET, GAME_TELEPORTER_TEXT } from '../public/js/features/game-teleporter-feature.js?v=4be570ca';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -82,7 +82,12 @@ describe('the multiplayer branch: crownsMpTeleport', () => {
     players: [],
     on(type, fn) { handlers.set(type, fn); },
     send(kind, payload) { sent.push([kind, payload]); return true; },
-    fire(kind, msg) { return handlers.get(`msg:${kind}`)?.({ t: kind, ...msg }); },
+    // The handler saves before it acks (savedThrough, R28): let that settle before looking.
+    async fire(kind, msg) {
+      const out = handlers.get(`msg:${kind}`)?.({ t: kind, ...msg });
+      for (let i = 0; i < 20; i += 1) await Promise.resolve();
+      return out;
+    },
   };
   const applied = new Set();
   const log = { toasts: [], activity: [] };

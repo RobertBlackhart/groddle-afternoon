@@ -71,6 +71,7 @@ import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-t
 import { projectApi } from './street-jobs-feature.js?v=f1173a42';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=dc515cc5';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   GOOD_NEIGHBOUR_AT,
   GOOD_NEIGHBOUR_COUNTER,
@@ -218,20 +219,10 @@ let session = null;
 let savedSlice = null;
 let recipeAdded = false;
 
-/** Writes the save now and waits for it to land (street-jobs-feature persist): the site reads the stored save. */
-async function flush(engine) {
+/** Writes the save now and waits for it to land (savedThrough, R28): the site reads the stored save. */
+export async function flush(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    try {
-      await saveStore.flush();
-    } catch {
-      return false;
-    }
-    if (saveStore.state === 'saved') return true;
-    if (['conflict', 'elsewhere', 'signed-out', 'error', 'offline'].includes(saveStore.state)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function createSession(engine, client) {

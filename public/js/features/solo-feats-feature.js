@@ -125,7 +125,7 @@ import {
   streakCheck,
   takePending,
 } from '../solo-feats.js?v=3bc9b43c';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   capHeld,
   createOwed,
@@ -629,29 +629,16 @@ function applyDemo(engine) {
 
 // —— Multiplayer: the shared Feat (G345) ———————————————————————————————————
 
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 const ROCK_ICONS = Object.freeze({
   petrified_rock_small: 'assets/sprites/moment/petrified_rock_small.webp',
   petrified_rock_medium: 'assets/sprites/moment/petrified_rock_medium.webp',
   petrified_rock_large: 'assets/sprites/moment/petrified_rock_large.webp',
 });
 
-/** Writes the save now and waits for it to land (as street-jobs-feature persist): true once saved. */
-async function persist(engine) {
+/** Writes the save now and waits for it to land (savedThrough, R28): true once a write holding it is in. */
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let st;
-    try {
-      st = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || st;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 /**

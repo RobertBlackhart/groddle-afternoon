@@ -43,7 +43,7 @@
 import { ITEM_CATALOG, addItem, countItem, itemIcon, listPackSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, leavingToolWear, moveToolCopy, receiveToolCopies, receiveToolCopy, setCopyTag, setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=e95cf7cb';
-import { saveStore } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import { playOverlay } from '../overlays.js?v=68c0a634';
 import {
   APPLIED_KEEP,
@@ -78,7 +78,6 @@ export const TRADE_VERB = 'trade_start';
 const SEND_DEBOUNCE_MS = 220;
 const LOG_LINES = 40;
 const TABLE_URL = 'assets/content/trade-items.json';
-const BLOCKED_SAVES = new Set(['conflict', 'elsewhere', 'signed-out', 'error', 'offline']);
 
 /**
  * G329 trade requests (players/inc_requests.js, the realtime server's requests.go):
@@ -167,24 +166,13 @@ function iconFor(c) {
 }
 
 /**
- * Writes the character's save now and waits for it to land: true once the
- * store says saved (a solo store has nothing to wait for).
+ * Writes the character's save now and waits for it to land: true once a write
+ * holding the change is in (R28: savedThrough, a busy save never reads "saved";
+ * a solo store has nothing to wait for).
  */
-async function persist(engine) {
+export async function persist(engine, store = saveStore) {
   engine.save?.();
-  if (typeof saveStore?.flush !== 'function') return true;
-  for (let i = 0; i < 6; i += 1) {
-    let state;
-    try {
-      state = await saveStore.flush();
-    } catch {
-      return false;
-    }
-    const now = saveStore.state || state;
-    if (now === 'saved') return true;
-    if (BLOCKED_SAVES.has(now)) return false;
-  }
-  return saveStore.state === 'saved';
+  return savedThrough(store);
 }
 
 function createSession(engine, client) {

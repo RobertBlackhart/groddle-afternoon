@@ -37,6 +37,14 @@ import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3fa89550';
 import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=ef87905b';
+import { persist as persistTrade } from '../public/js/features/trade-feature.js?v=c1a1bcd7';
+import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=387f86c7';
+import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=b3143de2';
+import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=b8ece27f';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=ade27bcd';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=c4ea939d';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=6f231eac';
+import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=3f718120';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
@@ -906,6 +914,53 @@ describe('#519 (R28): a plant on a shared garden or patch goes through while the
       const src = read(`js/features/${path}`);
       assert.ok(/async function persist\(engine, store = saveStore\) \{\n {2}engine\.save\?\.\(\);\n {2}return savedThrough\(store\);\n\}/.test(src), 'persist is engine.save() then savedThrough');
       assert.ok(!/state === 'saved'/.test(src), 'no bare "saved" check');
+    });
+  }
+});
+
+describe('R28: every online action that saves first goes through while the save is busy', () => {
+  // #519 was gardens; the same copied loop waited for "saved" in trade, the shared Feat, Math
+  // Mayhem, Game of Crowns, the home street, home storage, boards and drops. The player walking on
+  // keeps the save busy, so each one told them the save failed. Now each waits through savedThrough.
+  const busyStore = (site) => {
+    const timers = fakeTimers();
+    const ev = eventScope();
+    let busy = 0;
+    let store;
+    const fetch = async (url, init) => {
+      const res = await site.fn(url, init);
+      store.set('location', `walking-${++busy}`);
+      return res;
+    };
+    store = createMultiplayerSaveStore({ boot: { ...BOOT, writer: 'aaaa1111bbbb2222' }, scope: ev.scope, fetch, timers, now: timers.now, debounceMs: 2000, maxWaitMs: 10000 });
+    return { store, ...ev };
+  };
+  const changeFrom = (store, what) => ({ save: () => store.set('playerState', `{"savedAt":7,"did":"${what}"}`) });
+
+  for (const [name, wait] of [
+    ['trade', persistTrade],
+    ['shared Feat', persistFeat],
+    ['Math Mayhem', persistMayhem],
+    ['Game of Crowns', persistCrowns],
+    ['home street', flushHomeStreet],
+    ['home storage', flushHomeStorage],
+    ['boards', persistBoards],
+    ['drops', persistDrops],
+  ]) {
+    it(`${name}: a busy save that takes the write lets the action through`, async () => {
+      const site = fakeSite();
+      const { store, states } = busyStore(site);
+      store.set('location', 'before');
+      assert.equal(await wait(changeFrom(store, name), store), true);
+      assert.equal(site.row.data.entries.playerState, `{"savedAt":7,"did":"${name}"}`, 'the stored save holds the change');
+      assert.ok(!states.includes('saved'), 'the save never once read "saved"');
+    });
+
+    it(`${name}: a save that stopped still says no`, async () => {
+      const site = fakeSite();
+      site.claim('cccc3333dddd4444');
+      const { store } = busyStore(site);
+      assert.equal(await wait(changeFrom(store, name), store), false);
     });
   }
 });
