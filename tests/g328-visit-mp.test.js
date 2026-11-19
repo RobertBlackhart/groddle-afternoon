@@ -26,7 +26,7 @@ import {
   visitorRock,
 } from '../public/js/yard-stock-mp.js?v=7efdf803';
 import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=92acd0fe';
-import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=590a58cc';
+import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=a193b4bf';
 import { homeStreetFor, readVisitScene, sharedHomeStreet, visitSceneTsid } from '../public/js/neighbours-mp.js?v=81fe8611';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=69b75a3f';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';

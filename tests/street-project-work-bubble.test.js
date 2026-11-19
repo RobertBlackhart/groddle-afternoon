@@ -18,7 +18,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=58d489ae';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=6dc5bd4b';
 import { soloNeed } from '../public/js/street-jobs.js?v=71fa73cd';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { soloTerms } from '../public/js/street-jobs-solo.js?v=3bcf5d1c';
@@ -156,6 +156,7 @@ describe('the street project\'s work bubble counts the last unit (report 111)', 
     assert.ok(globalThis.groddleProjects, 'the shared board is up');
     // The street's row from the server: the work two units short.
     const row = { phase: 0, got: gotTwoShort(), held: {}, mine: {}, started: Date.now() - 60_000, ready: 0, done: 0, top: [], count: 1 };
+    client.msg({ t: 'project_world', now: Date.now(), built: {}, rest: {} });
     client.msg({ t: 'project_street', street: BOARD_STREET, now: Date.now(), jobs: { [JOB]: row } });
     streetJobsFeature.onStreetEnter(engine.street, engine);
     await wait(5);

@@ -204,6 +204,16 @@ let mpMode = false;
 let mp = null;
 let mpLists = { applied: [], rewarded: [] };
 let mpMigrated = false;
+/**
+ * #520: online, the save keeps no shared rows (sharedSlice) and the board starts empty, so every
+ * project reads open until the server says otherwise. Glitch drew a giver's bubble only on the
+ * server's job_status (items/street_spirit.js 578-600; a resting street sent none, locations/inc_jobs.js
+ * 463-467). worldKnown: the first project_world of this save came. Until then, online, no giver,
+ * bubble, board sign or barricade, and no road opens on arrival (arrivalOwed: the street waiting).
+ */
+let worldKnown = false;
+let arrivalOwed = 0;
+const waitingWorld = () => mpMode && !worldKnown;
 const mpChoice = {};
 /** Is this project the server's (multiplayer, a street's build or upgrade)? */
 const shared = (jobId) => mpMode && Boolean(catalog) && isSharedJob(catalog, jobId);
@@ -607,7 +617,7 @@ export function topClearOver(boxes, left, right) {
 function syncGiver(engine) {
   if (!catalog || demo) return;
   const spirit = streetSpirit(engine);
-  const want = Boolean(spirit) && streetJobs(state, catalog, engine.streetTsid, Date.now(), opts())
+  const want = Boolean(spirit) && !waitingWorld() && streetJobs(state, catalog, engine.streetTsid, Date.now(), opts())
     .some((r) => spiritOffers(r.jobId) && r.status !== 'built' && r.status !== 'done');
   if (want && giver && giver.target !== spirit) {
     giver.indicator.destroy();
@@ -807,6 +817,8 @@ const SIGN_SCALE = 0.8;
 const SIGN_POST_H = 246;
 function drawBarricades(engine) {
   clearBarricades();
+  // #520: online, which roads stand closed is the server's to say.
+  if (waitingWorld()) return;
   const street = engine.street;
   if (!street?.signposts?.length || !street.bounds) return;
   const { PIXI } = engine;
@@ -2031,6 +2043,47 @@ async function persist(engine) {
   return savedThrough(saveStore);
 }
 
+/**
+ * A street's projects on arrival: the roads you stand past open, the giver (spirit, board or lot),
+ * the barricades and the upgrade's flora. Solo at once; online once the server's state is in (#520).
+ */
+function arrive(engine, mine) {
+  if (mine !== generation || !catalog) return;
+  arrivalOwed = 0;
+  // Ticket 50: a street you stand on opens its roads, so none of them can cut you off from here,
+  // and if closed roads further on still stand between here and the rest of the world, the
+  // fewest of them open too (keepWayHome).
+  if (!demo && noteArrival(state, catalog, engine.streetTsid, opts())) engine.save();
+  if (!demo && !engine.param('jobdemo')) keepWayHome(engine, mine);
+  const tsid = engine.streetTsid;
+  // Gap 3: the street's spirit gives its projects (a QA demo's too, when one stands here).
+  const spiritHere = streetSpirit(engine);
+  if (demo) {
+    if (spiritHere && spiritOffers(demo.jobId)) spawnGiver(engine, spiritHere);
+  } else syncGiver(engine);
+  if (demo && !giver) {
+    const p = engine.player;
+    const x = p.x + 110;
+    spawnBoard(engine, { x, y: floorYAt(engine.platforms, x, p.y) });
+  } else if (!demo && !board && boardNeeded(tsid, Boolean(spiritHere))) {
+    const point = engine.placement('street-job-board')[0] || { x: engine.player.x + 220, y: engine.player.y };
+    spawnBoard(engine, point);
+  }
+  const hall = lotHead(engine);
+  if (hall && !lot) spawnLot(engine, engine.placement(LOT_PLACEMENT.key)[0] || { x: engine.player.x + 360, y: engine.player.y }, hall);
+  drawBarricades(engine);
+  drawFlora(engine);
+}
+
+/** The Job Board sign off the street (onStreetClear, or the server says nothing here wants it). */
+function clearBoard(engine) {
+  if (!board) return;
+  if (engine?.unregister && board.target) engine.unregister(board.target);
+  if (board.sprite && !board.sprite.destroyed) board.sprite.destroy({ children: true });
+  board = null;
+  boardIndicator = null;
+}
+
 function ensureMp(engine) {
   if (mp || !mpMode || !catalog || typeof document === 'undefined') return mp;
   const client = engine.query?.('realtimeClient');
@@ -2056,6 +2109,8 @@ function createMp(engine, client) {
   const refresh = () => {
     // #339: the spirit's giver follows the server's project state, not only the state on arrival.
     syncGiver(engine);
+    // #520: a Job Board put up for a project the server says is built comes down.
+    if (board && !demo && !boardNeeded(engine.streetTsid, Boolean(streetSpirit(engine)))) clearBoard(engine);
     drawPlate(engine);
     renderPanel(engine);
     publish(engine);
@@ -2075,6 +2130,9 @@ function createMp(engine, client) {
   client.on('msg:project_world', (msg) => {
     clock(msg);
     applyWorld(state, catalog, msg, offset);
+    worldKnown = true;
+    // #520: the street entered before the server's answer arrives now.
+    if (arrivalOwed && arrivalOwed === generation) arrive(engine, arrivalOwed);
     drawBarricades(engine);
     refresh();
   });
@@ -3037,6 +3095,8 @@ export const streetJobsFeature = {
     pj.answered = false;
     pj.badge = -1;
     if (engine) mpMode = engine.mode === 'multiplayer';
+    // #520: a save loaded holds no shared rows; the next project_world tells them.
+    worldKnown = false;
     mpLists = mpMode ? listsFrom(slice) : { applied: [], rewarded: [] };
     // Report #425: the solo distance terms follow the mode a save loads in.
     if (catalog) applySoloScale(catalog, null, !mpMode);
@@ -3072,34 +3132,15 @@ export const streetJobsFeature = {
   onStreetEnter(street, engine) {
     generation += 1;
     const mine = generation;
+    arrivalOwed = 0;
     load().then(() => {
       if (mine !== generation || !catalog) return;
       if (initializeStreetJobs(state, engine.visitedStreets ? engine.visitedStreets() : [])) engine.save();
-      // Ticket 50: a street you stand on opens its roads, so none of them can cut you off from here,
-      // and if closed roads further on still stand between here and the rest of the world, the
-      // fewest of them open too (keepWayHome).
-      if (!demo && noteArrival(state, catalog, engine.streetTsid, opts())) engine.save();
-      if (!demo && !engine.param('jobdemo')) keepWayHome(engine, mine);
       if (mpMode) ensureMp(engine);
       if (engine.param('jobdemo') && !demo && !mpMode) demo = resolveDemo(engine);
-      const tsid = engine.streetTsid;
-      // Gap 3: the street's spirit gives its projects (a QA demo's too, when one stands here).
-      const spiritHere = streetSpirit(engine);
-      if (demo) {
-        if (spiritHere && spiritOffers(demo.jobId)) spawnGiver(engine, spiritHere);
-      } else syncGiver(engine);
-      if (demo && !giver) {
-        const p = engine.player;
-        const x = p.x + 110;
-        spawnBoard(engine, { x, y: floorYAt(engine.platforms, x, p.y) });
-      } else if (!demo && boardNeeded(tsid, Boolean(spiritHere))) {
-        const point = engine.placement('street-job-board')[0] || { x: engine.player.x + 220, y: engine.player.y };
-        spawnBoard(engine, point);
-      }
-      const hall = lotHead(engine);
-      if (hall) spawnLot(engine, engine.placement(LOT_PLACEMENT.key)[0] || { x: engine.player.x + 360, y: engine.player.y }, hall);
-      drawBarricades(engine);
-      drawFlora(engine);
+      // #520: online, the street's projects wait for the server's first word (project_world runs arrive).
+      if (waitingWorld()) arrivalOwed = mine;
+      else arrive(engine, mine);
       grantFinishedTrophies(engine);
       if (demo && engine.param('jobautoplay')) autoplay.timer = Date.now() + 1500;
       publish(engine);

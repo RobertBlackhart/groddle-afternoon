@@ -22,7 +22,7 @@ import {
 } from '../public/js/onscreen-sharp.js?v=75b8a30d';
 import { ONSCREEN_SPRITES } from '../public/js/sprite-onscreen.js?v=cdeffc77';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
-import { scionHeldLabels, scionHoldChange, scionNextState } from '../public/js/features/purple-journey-feature.js?v=4d0e91d9';
+import { scionHeldLabels, scionHoldChange, scionNextState } from '../public/js/features/purple-journey-feature.js?v=e6f56d41';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');

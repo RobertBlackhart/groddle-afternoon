@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=58d489ae';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=6dc5bd4b';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotJobIds, lotVerb } from '../public/js/group-hall-lot.js?v=23e8fbd9';
 import { batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=b5ecce35';
 import { imageSize } from '../tools/image-size.mjs';
@@ -141,6 +141,14 @@ describe('the lot on the street (multiplayer)', () => {
     };
     data = {};
     spirit.sprite = new Display();
+    // #520: online, the lot waits for the server's first project_world.
+    const listeners = new Map();
+    const client = {
+      state: 'online',
+      me: { id: 1, name: 'Bo' },
+      on(type, fn) { if (!listeners.has(type)) listeners.set(type, new Set()); listeners.get(type).add(fn); return () => listeners.get(type).delete(fn); },
+      send(t) { if (t === 'project_sync') queueMicrotask(() => { for (const fn of listeners.get('msg:project_world') || []) fn({ t: 'project_world', now: Date.now(), built: {}, rest: {} }); }); return true; },
+    };
     engine = {
       mode: 'multiplayer',
       started: true,
@@ -157,7 +165,7 @@ describe('the lot on the street (multiplayer)', () => {
       unlockedAchievements: ['you_have_papers'],
       param: () => null,
       placement: (key) => (key === LOT_PLACEMENT.key ? [{ x: 1400, y: 900 }] : []),
-      query: () => null,
+      query: (hook) => (hook === 'realtimeClient' ? client : null),
       register: (t) => t,
       unregister: (t) => {
         unregistered.push(t);
