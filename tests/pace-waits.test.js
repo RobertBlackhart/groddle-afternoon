@@ -14,7 +14,7 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PACED_WAITS, ROCK_RESPAWN_MS, pacedWaitMs } from '../public/js/pace.js?v=ef709496';
 import { createMineRock, mineRock, tickMineRock } from '../public/js/mining.js?v=2f096b98';
-import { ROCK_RESPAWN_MS as YARD_ROCK_RESPAWN_MS, applyStockAct } from '../public/js/yard-stock-mp.js?v=1480e64c';
+import { ROCK_RESPAWN_MS as YARD_ROCK_RESPAWN_MS, applyStockAct } from '../public/js/yard-stock-mp.js?v=6677ba0a';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { ruleTables } from '../tools/build-realtime-objects.mjs';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';

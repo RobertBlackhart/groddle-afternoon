@@ -39,8 +39,8 @@
  *    wall cannot be added while building) are short and ours.
  */
 
-import { HOME_LIMITS } from './homes-catalog.js?v=10ac34b6';
-import { INTERIOR, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=128531cf';
+import { HOME_LIMITS } from './homes-catalog.js?v=b787b3eb';
+import { INTERIOR, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=ce3fe651';
 
 export const DOOR_CLASS = 'furniture_door';
 export const DOOR_JOB = 'job_proto_door';

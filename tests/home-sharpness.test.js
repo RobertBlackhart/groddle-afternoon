@@ -29,7 +29,7 @@ async function homeArt() {
   const { PROTO_DEPLETED_ART } = await import('../public/js/home-proto-art.js?v=9309e9f3');
   const { NOTE_POLE_PARTS } = await import('../public/js/note-pole-art.js?v=fbda2f8a');
   const { moduleConsts } = await import('./sheet-sources.js');
-  const { FURNITURE_CATALOG } = await import('../public/js/homes-catalog.js?v=10ac34b6');
+  const { FURNITURE_CATALOG } = await import('../public/js/homes-catalog.js?v=b787b3eb');
   const rows = [];
   // The Tower: every article of every style, at the largest container x style scale
   // composeTower gives any of them (a 9-floor Tower facing either way).

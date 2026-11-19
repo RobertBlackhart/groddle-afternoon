@@ -2167,7 +2167,20 @@ export const CULTIVATION_CLASSES = Object.freeze({
         "classTsid": "jellisac",
         "dx": -45,
         "dy": -64
+      },
+      {
+        "classTsid": "jellisac",
+        "dx": -3,
+        "dy": -86
       }
+    ],
+    "artSize": [
+      228,
+      145
+    ],
+    "artFoot": [
+      104.23,
+      151.35
     ],
     "source": "items/proto_jellisac_mound.js"
   },
@@ -2200,6 +2213,14 @@ export const CULTIVATION_CLASSES = Object.freeze({
         "dy": -63
       }
     ],
+    "artSize": [
+      162,
+      177
+    ],
+    "artFoot": [
+      73.4,
+      183.2
+    ],
     "source": "items/proto_barnacle_pod.js"
   },
   "proto_firefly_hive": {
@@ -2215,6 +2236,14 @@ export const CULTIVATION_CLASSES = Object.freeze({
     "kind": "hive",
     "art": "firefly_hive",
     "nodeClass": "npc_firefly",
+    "artSize": [
+      161,
+      107
+    ],
+    "artFoot": [
+      75.9,
+      111.1
+    ],
     "source": "items/proto_firefly_hive.js"
   },
   "proto_crop_garden_small": {

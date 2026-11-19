@@ -15,11 +15,11 @@ import { after, before, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import { readImage } from '../tools/builder/art-image.mjs';
-import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=10ac34b6';
-import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=c58ceeda';
+import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=b787b3eb';
+import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=39041813';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { SOIL_JOIN, soilTiles } from '../public/js/landscape-reach.js?v=2f2d7cb3';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=89d28bd4';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=0f961c28';
 import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=6fdce442';
 import { FakeEl, fakePixi } from './fake-scene.js';
 

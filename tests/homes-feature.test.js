@@ -20,17 +20,17 @@ import {
   rockItems,
   soilKeyMap,
   yardSoilInput,
-} from '../public/js/features/homes-feature.js?v=89d28bd4';
+} from '../public/js/features/homes-feature.js?v=0f961c28';
 import { soilSpawnPlan } from '../public/js/features/patches-feature.js?v=7086d13e';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
-import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=10ac34b6';
+import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=b787b3eb';
 import { canPlantBean } from '../public/js/patches.js?v=85d156bc';
 import { TOWER_PART_CHOICES, TOWER_STYLES, composeTower, towerBounds } from '../public/js/home-tower.js?v=18889f7a';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOffsetAnchor } from '../public/js/movement.js?v=f4be1a05';
-import { INTERIOR } from '../public/js/home-decor.js?v=128531cf';
+import { INTERIOR } from '../public/js/home-decor.js?v=ce3fe651';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { gardenLayout, gardenStyle } from '../public/js/garden-view.js?v=04fe8467';
-import { listCultivationClasses } from '../public/js/home-cultivation.js?v=c58ceeda';
+import { listCultivationClasses } from '../public/js/home-cultivation.js?v=39041813';
 
 const root = join(import.meta.dirname, '..', 'public');
 
@@ -48,7 +48,8 @@ describe('homes feature helpers', () => {
       ['mortar_barnacle', -26, -63],
     ]);
     const mound = cultivationNodes({ protoClass: 'proto_jellisac_mound', endClass: 'jellisac_mound' });
-    assert.deepEqual(mound.map((n) => [n.dx, n.dy]), [[38, -44], [-45, -64]]);
+    // #512: jellisac_mound.js makes j1, j2 and j3.
+    assert.deepEqual(mound.map((n) => [n.dx, n.dy]), [[38, -44], [-45, -64], [-3, -86]]);
     assert.equal(cultivationNodes({ protoClass: 'proto_peat', endClass: 'peat_3' })[0].classTsid, 'peat_3');
     const hive = cultivationNodes({ protoClass: 'proto_firefly_hive', endClass: 'firefly_hive', placedAt: 0 }, 3 * 60_000);
     assert.equal(hive.length, 4);

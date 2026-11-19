@@ -26,7 +26,7 @@ import {
   renderOrder,
   stackSurfaceAt,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=128531cf';
+} from '../public/js/home-decor.js?v=ce3fe651';
 import { cabinetRefusal } from '../public/js/home-storage.js?v=b0225465';
 import { canSellClass } from '../public/js/home-street-mp.js?v=64df32c2';
 import { filterTiles, furniturePane, trayFilters } from '../public/js/ui/home-builder.js?v=378178ac';
@@ -34,8 +34,8 @@ import { hasUpgrades, upgradeVerb } from '../public/js/furniture-upgrades.js?v=a
 import { NO_SLOT_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { layoutPack, takesNoSlot } from '../public/js/pack-slots.js?v=2c09907f';
 import { WORLD_ART } from '../public/js/world-art-list.js?v=4653ee21';
-import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=1cac8c10';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=89d28bd4';
+import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=139cbcc7';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=0f961c28';
 import { planStreetTrophies } from '../public/js/street-jobs.js?v=71fa73cd';
 import { planEggTrophy } from '../public/js/seasons.js?v=8b81947e';
 import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=d9656427';

@@ -36,8 +36,8 @@ import {
   placeFurniture,
   stackSurfaceAt,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=128531cf';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=10ac34b6';
+} from '../public/js/home-decor.js?v=ce3fe651';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

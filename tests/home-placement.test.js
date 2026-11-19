@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=10ac34b6';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 import {
   INTERIOR,
   PLACEMENT_INSET,
@@ -17,7 +17,7 @@ import {
   placementRoom,
   placementSpan,
   snapPlacement,
-} from '../public/js/home-decor.js?v=128531cf';
+} from '../public/js/home-decor.js?v=ce3fe651';
 
 const GS = join(import.meta.dirname, '..', '..', 'glitch-GameServerJS');
 const haveGs = existsSync(GS);

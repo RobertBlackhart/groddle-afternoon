@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e5d8f9ec';
 import { DENSE_SPRITES, denseSprite } from '../public/js/sprite-dense.js?v=67101472';
 import { MAILBOX_SHEETS, STONE_ART, NOTE_ART, BOARD_ART } from '../public/js/street-furniture.js?v=868360eb';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=10ac34b6';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');

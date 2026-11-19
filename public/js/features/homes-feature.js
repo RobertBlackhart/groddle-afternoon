@@ -109,7 +109,7 @@ import {
   CULTIVATION_CLASSES,
   FURNITURE_CATALOG,
   FURNITURE_STORE,
-} from '../homes-catalog.js?v=10ac34b6';
+} from '../homes-catalog.js?v=b787b3eb';
 import {
   INTERIOR,
   arrangeStarterRoom,
@@ -148,7 +148,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=128531cf';
+} from '../home-decor.js?v=ce3fe651';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=dfdf98f7';
@@ -207,7 +207,7 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=c58ceeda';
+} from '../home-cultivation.js?v=39041813';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=7a63d78f';
@@ -289,7 +289,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=4da0f8db';
+} from '../home-floors.js?v=d3656d39';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=86205485';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -2816,11 +2816,19 @@ function selectionOutline(PIXI, b) {
 // Cultivation views and delegated spawns
 // ---------------------------------------------------------------------------
 
-const POD_ART = {
-  barnacle_pod: { w: 162, h: 177 },
-  firefly_hive: { w: 161, h: 107 },
-  jellisac_mound: { w: 228, h: 145 },
-};
+/**
+ * Pods, mounds and hives: each OGA frame's size and, in it, the item's x,y (#512, R12): Glitch stood
+ * the whole SWF stage's bottom centre there (LocationItemstackView.as 853-854), which the frame,
+ * cut to what is drawn, no longer shows (build-homes.mjs from the SWF, tools/swf-stage.mjs).
+ */
+const POD_ART = Object.fromEntries(Object.values(CULTIVATION_CLASSES)
+  .filter((d) => d.art && d.artSize && d.artFoot)
+  .map((d) => [d.art, { w: d.artSize[0], h: d.artSize[1], foot: d.artFoot }]));
+
+/** A pod's art on its item's x,y (the walk line), as the client drew it. */
+function standPodArt(spr, art) {
+  spr.anchor.set(art.foot[0] / art.w, art.foot[1] / art.h);
+}
 
 function cultivationWorldX(item, state = activeCult()) {
   return homeStreetLayout(state).houseX + item.rx;
@@ -2919,9 +2927,9 @@ function spawnCultivations(engine, st = activeCult()) {
     if (!def.art) continue;
     const art = POD_ART[def.art];
     const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/cultivation/${def.art}.webp`));
-    standOnFeet(spr);
+    standPodArt(spr, art);
     spr.x = cultivationWorldX(item, st);
-    spr.y = groundY + 6;
+    spr.y = groundY;
     spr.zIndex = 14;
     spr.width = art.w;
     spr.height = art.h;
@@ -7345,9 +7353,9 @@ function drawVisitorYard(engine, st, groundY, houseX, opts = {}) {
     if (def.art && POD_ART[def.art]) {
       const art = POD_ART[def.art];
       const spr = new PIXI.Sprite(textureFromUrl(`assets/sprites/cultivation/${def.art}.webp`));
-      standOnFeet(spr);
+      standPodArt(spr, art);
       spr.x = x;
-      spr.y = groundY + 6;
+      spr.y = groundY;
       spr.zIndex = 14;
       spr.width = art.w;
       spr.height = art.h;

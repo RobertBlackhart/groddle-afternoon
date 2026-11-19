@@ -34,10 +34,12 @@ import { fileURLToPath } from 'node:url';
 import { loadItem } from './build-recipes.mjs';
 import { encodeLosslessWebp } from './tools/webp-lossless.mjs';
 import { basePlats, surfaceFrom } from './tools/furniture-upgrades/build.mjs';
+import { stageFoot } from './tools/swf-stage.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const AUDIT = join(process.env.HOME || '', 'Documents/glitch-audit');
 const GSJS = process.env.GLITCH_GSJS || join(AUDIT, 'glitch-GameServerJS');
+const ITEMS = process.env.GLITCH_ITEMS || join(AUDIT, 'glitch-items');
 const OGA = process.env.OGA_HOMES || join(AUDIT, 'opengameart/extracted_homes/glitch-assets');
 const PUBLIC = join(root, 'public');
 const OUT = join(PUBLIC, 'js/homes-catalog.js');
@@ -347,8 +349,13 @@ const CULTIVATION_TARGET = {
   proto_jellisac_mound: {
     kind: 'node',
     art: 'jellisac_mound',
-    // jellisac_mound.js onContainerChanged createAndReturnItem offsets.
-    nodes: [{ classTsid: 'jellisac', dx: 38, dy: -44 }, { classTsid: 'jellisac', dx: -45, dy: -64 }],
+    // jellisac_mound.js onContainerChanged createAndReturnItem offsets (j1, j2, j3). #512: j3 came
+    // last, after the two the yard already keyed (Austin 2026-11-19: no migration).
+    nodes: [
+      { classTsid: 'jellisac', dx: 38, dy: -44 },
+      { classTsid: 'jellisac', dx: -45, dy: -64 },
+      { classTsid: 'jellisac', dx: -3, dy: -86 },
+    ],
   },
   proto_barnacle_pod: {
     kind: 'node',
@@ -363,6 +370,22 @@ const CULTIVATION_TARGET = {
   proto_firefly_hive: { kind: 'hive', art: 'firefly_hive', nodeClass: 'npc_firefly' },
   proto_patch: { kind: 'patch' },
 };
+
+/**
+ * #512 (R12): each pod's SWF. Its OGA frame is cut to what the SWF draws; the client stood the
+ * whole stage's bottom centre on the item's x,y, so artFoot is that point in the frame
+ * (tools/swf-stage.mjs) and artSize the frame.
+ */
+const POD_SWF = {
+  barnacle_pod: 'harvestable_resources/barnacle_pod/barnacle_pod.swf',
+  firefly_hive: 'misc/spawner/firefly_hive/firefly_hive.swf',
+  jellisac_mound: 'harvestable_resources/jellisac_mound/jellisac_mound.swf',
+};
+
+function podArt(art) {
+  const { w, h } = pngSize(ogaFrame(art));
+  return { artSize: [w, h], artFoot: stageFoot(join(ITEMS, POD_SWF[art]), w, h) };
+}
 
 function maxWearOf(classTsid) {
   const file = join(GSJS, 'items', `${classTsid}.js`);
@@ -391,6 +414,7 @@ function buildCultivation() {
       endItems: protoClass === 'proto_patch' ? ['patch'] : endItems,
       maxWear: target.kind === 'garden' ? gardenWear[size] : maxWearOf(endItems[0] === 'patch' ? 'patch' : endItems[0]),
       ...target,
+      ...(target.art ? podArt(target.art) : {}),
       source: `items/${protoClass}.js`,
     };
   }
