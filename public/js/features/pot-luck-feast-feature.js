@@ -20,7 +20,8 @@
  *    recipe.season).
  *
  * QA: ?seasondate=2026-11-26 (or &season=pot_luck_day); &feastdemo=1 stocks the pack for the quest, the table and
- * dressing (3 Turkey Tailfans and 3 Rooster Plumes: enough for Plume Fluffer I across the nearby streets).
+ * dressing (3 Turkey Tailfans and 3 Rooster Plumes: enough for Plume Fluffer I across the nearby streets), with the
+ * tools, ingredients and cooking skills (through Master Chef I) to cook every harvest dish and Harvest Stuffing.
  * window.groddleFeast (qa-gate): lay(cls), state(), quest(), offer(), event(name), look(), list(),
  * seasonDate('2026-11-26') (online, where ?seasondate= cannot reach the page).
  * Canvas data: feastTable (on|off), feastCount, feastShown (classes drawn), feastQuest
@@ -509,11 +510,19 @@ function addRecipe() {
   if (!RECIPE_CATALOG[STUFFING]) setRecipeCatalog({ ...RECIPE_CATALOG, [STUFFING]: { ...STUFFING_RECIPE, inputs: STUFFING_RECIPE.inputs.map((i) => ({ ...i })), outputs: STUFFING_RECIPE.outputs.map((o) => ({ ...o })), skills: [...STUFFING_RECIPE.skills], achievements: [] } });
 }
 
+/** &feastdemo=1's cooking skills: Master Chef I (Awesome Pot) and Cheffery III (the Frying Pan dishes), prerequisites first. */
+const DEMO_COOK_SKILLS = Object.freeze(['ezcooking_1', 'cheffery_1', 'cheffery_2', 'cheffery_3', 'saucery_1', 'grilling_1', 'blending_1', 'masterchef_1']);
+
 function demoSetup(engine) {
   if (demoDone || !engine.param?.('feastdemo')) return;
   demoDone = true;
-  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 24], ['pinch_of_salt', 8], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 3], ['rooster_plume', 3]];
+  const kit = [['pumpkin_pie', 2], ['hot_potatoes', 1], ['corny_fritter', 1], ['corn', 4], ['potato', 24], ['pinch_of_salt', 8], ['awesome_pot', 1], ['bun', 2], ['mushroom', 3], ['onion', 2], ['saffron', 1], ['turkey_tailfan', 3], ['rooster_plume', 3],
+    // Every harvest dish can be cooked: Corny Fritter and Pumpkin Pie (Frying Pan), Wavy Gravy (Saucepan), Potcorn (Awesome Pot).
+    ['frying_pan', 1], ['egg_plain', 2], ['flour', 1], ['honey', 1], ['butterfly_butter', 1], ['nutmeg', 1], ['pumpkin', 1],
+    ['saucepan', 1], ['camphor', 1], ['stock_sauce', 1], ['olive_oil', 2], ['potoxin', 3], ['paper', 2]];
   for (const [cls, n] of kit) if (countItem(engine.inv, cls) < n) addItem(engine.inv, cls, n - countItem(engine.inv, cls));
+  // The cooking skills those recipes and tools need, with their own prerequisites (skills.json reqSkills).
+  for (const id of DEMO_COOK_SKILLS) if (!(engine.learnedSkills || []).includes(id)) engine.grantSkill?.(id);
   engine.refreshPack?.();
 }
 
