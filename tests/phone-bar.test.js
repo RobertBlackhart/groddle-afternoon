@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MENU_GROUPS, MENU_ROWS, PHONE_MENU_GROUP, menuRowFor, phoneBar, studyRowDetail } from '../public/js/ui/topbar.js?v=5d75c045';
+import { MENU_GROUPS, MENU_ROWS, PHONE_MENU_GROUP, menuRowFor, phoneBar, studyRowDetail } from '../public/js/ui/topbar.js?v=06ac7384';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const css = readFileSync(join(root, 'public/style.css'), 'utf8');
@@ -55,8 +55,9 @@ describe('the phone Menu: Now first, then the rest', () => {
     assert.match(src, /row\('menu-study-btn', [^\n]*\(\) => doc\.getElementById\('skills-btn'\)\?\.click\(\)\);/);
     assert.match(src, /row\('menu-sound-btn', [^\n]*\(\) => sound\?\.click\(\)\);/);
     assert.match(src, /installNarrowRows\(doc\);\s*installPhoneRows\(doc\);/);
-    // The phone bar always moves the study, Map and Make; Quests stays.
-    assert.match(src, /if \(phoneBar\(doc\)\) return apply\(\['chip', 'map', 'make'\]\);/);
+    // The phone bar always moves the study, Map and Make; Quests stays (#540: `counts` may join them).
+    assert.match(src, /if \(phoneBar\(doc\)\) return apply\(pickPhoneOverflow\(fits\)\);/);
+    assert.match(src, /export const PHONE_OVERFLOW_STEPS = Object\.freeze\(\['chip', 'map', 'make'\]\);/);
   });
   it('Sound opens under the Menu button when the bar does not draw it', () => {
     assert.match(src, /const anchor = \(\) => \(btn\.getClientRects\(\)\.length \? btn : doc\.getElementById\('more-btn'\) \|\| btn\);/);

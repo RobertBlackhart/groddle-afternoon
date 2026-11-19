@@ -11573,6 +11573,18 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 @media (orientation: portrait) {
   :root.touch-phone[data-ui="modern"] .top-bar .hud-actions:has(#quest-pins-btn:not([hidden])) :is(#quest-btn, #quest-pins-btn, #bug-btn, #more-btn) { width: var(--hit); }
 }
+/* #540 (402 x 812, an iPhone upright): with the quest button and long counts (80.1K, 1,302) the stats pill
+   left the right pill 145 px for 148 px of buttons. Report #100's `min-width: 0` let the pill shrink but its
+   buttons kept their width, so the Menu stood past the pill's right edge. On a phone the buttons give way
+   together, down to 28 px wide (still 44 px tall). When even that does not fit (js/ui/topbar.js
+   fitTopActions adds `counts`), the buttons stay at 28 px and the counts beside them shorten instead. */
+:root.touch-phone[data-ui="modern"] .top-bar .hud-actions :is(#quest-btn, #quest-pins-btn:not([hidden]), #bug-btn, #more-btn, #sound-btn) { flex-shrink: 1; min-width: 28px; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] #hud-stats ~ .hud-actions { flex-shrink: 0; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] #hud-stats ~ .hud-actions :is(#quest-btn, #quest-pins-btn:not([hidden]), #bug-btn, #more-btn, #sound-btn) { width: 28px; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] .hud-stats { flex-shrink: 1; min-width: 0; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] .hud-stats .hud-cur { flex-shrink: 1; min-width: 0; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] .hud-stats .hud-cur img { flex: none; }
+:root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] .hud-stats .hud-cur strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* While the line is out the bar draws over the street's name, which sits under it upright. */
 #wrap > header.top-bar:has(#quest-pins-btn[data-line="on"]) { z-index: calc(var(--z-hud) + 1); }
 #quest-pins-pop[hidden] { display: none; }

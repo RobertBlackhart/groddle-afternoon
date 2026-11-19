@@ -931,6 +931,16 @@ export function pickTopOverflow(fits, steps = TOP_OVERFLOW_STEPS) {
   return [...steps];
 }
 
+/**
+ * PURE (#540): a phone's steps. The study, Map and Make are always in the Menu there (style.css
+ * PHONEBAR); `counts` joins them when the bar's buttons, squeezed to 28 px, still do not fit beside
+ * the counts, and the counts shorten instead, so the Menu never stands off its pill.
+ */
+export const PHONE_OVERFLOW_STEPS = Object.freeze(['chip', 'map', 'make']);
+export function pickPhoneOverflow(fits) {
+  return fits([...PHONE_OVERFLOW_STEPS]) ? [...PHONE_OVERFLOW_STEPS] : [...PHONE_OVERFLOW_STEPS, 'counts'];
+}
+
 /** Whether the actions pill fits: no content past its box, its box inside the window. */
 function actionsFit(doc, pill) {
   const win = doc.defaultView;
@@ -970,12 +980,13 @@ function fitTopActions(doc) {
   };
   // Classic lays its own bar out (classic.css): nothing moves there.
   if (doc.documentElement.dataset.ui !== 'modern') return apply([]);
-  // A phone: Quests stays on the bar; the study, Map and Make are always in the Menu (style.css).
-  if (phoneBar(doc)) return apply(['chip', 'map', 'make']);
-  apply(pickTopOverflow((steps) => {
+  const fits = (steps) => {
     apply(steps);
     return actionsFit(doc, pill);
-  }));
+  };
+  // A phone: Quests stays on the bar; the study, Map and Make are always in the Menu (style.css).
+  if (phoneBar(doc)) return apply(pickPhoneOverflow(fits));
+  apply(pickTopOverflow(fits));
 }
 
 /**
@@ -1176,6 +1187,11 @@ function installTopOverflow(doc) {
     }).observe(chip, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden'] });
   }
   new MutationObserver(fit).observe(doc.documentElement, { attributes: true, attributeFilter: ['data-ui'] });
+  // #540: a longer count (10.1K) or the phone's quest button coming and going changes what the bar holds.
+  const stats = doc.getElementById('hud-stats');
+  if (stats && typeof ResizeObserver === 'function') new ResizeObserver(fit).observe(stats);
+  const pins = doc.getElementById('quest-pins-btn');
+  if (pins && typeof MutationObserver === 'function') new MutationObserver(fit).observe(pins, { attributes: true, attributeFilter: ['hidden'] });
 }
 
 /** Effects and Music sliders and Mute (the game's #mute-btn, moved into the Sound popover). */

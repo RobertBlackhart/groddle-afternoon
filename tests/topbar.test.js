@@ -18,11 +18,13 @@ import {
   menuRowFor,
   nameplateLeft,
   pickTopOverflow,
+  pickPhoneOverflow,
+  PHONE_OVERFLOW_STEPS,
   ringDash,
   vitalRing,
   volumeLevel,
   soundChannelToggle,
-} from '../public/js/ui/topbar.js?v=5d75c045';
+} from '../public/js/ui/topbar.js?v=06ac7384';
 
 import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=1b7760ec';
 
@@ -172,6 +174,40 @@ describe('top bar markup and wiring', () => {
     assert.match(topbar, /if \(\(e\.key === 'Enter' \|\| e\.key === ' '\) && e\.target\.closest\?\.\('button, \[role="button"\], input'\)\) e\.stopPropagation\(\);/);
     assert.doesNotMatch(topbar.replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, ''), /—/);
     assert.doesNotMatch(header.replace(/<!--[\s\S]*?-->/g, ''), /—/);
+  });
+});
+
+describe('#540: an upright phone keeps the Menu on its pill', () => {
+  const css = read('style.css');
+  const shrink = ':root.touch-phone[data-ui="modern"] .top-bar .hud-actions :is(#quest-btn, #quest-pins-btn:not([hidden]), #bug-btn, #more-btn, #sound-btn) { flex-shrink: 1; min-width: 28px; }';
+  it('the buttons give way together, down to 28 px, after the rules that fix their width', () => {
+    assert.ok(css.includes(shrink));
+    // Later than PHONEBAR's `flex: none` and the quest button's own rule, which it must beat.
+    for (const earlier of [':root.touch-phone[data-ui="modern"] .top-bar .hud-actions #sound-btn { order: 0; flex: none;', ':root.touch-phone[data-ui="modern"] .top-bar .hud-actions #quest-pins-btn:not([hidden]) { display: inline-grid; order: 0; flex: none;']) {
+      assert.ok(css.indexOf(earlier) > 0 && css.indexOf(earlier) < css.indexOf(shrink), earlier);
+    }
+  });
+  it('the report\'s bar fits at 402 and 384 px wide; narrower, the counts shorten', () => {
+    // Measured in Chrome with 377 / 370 / 23, 3595 iMG, 80.1K currants, 1,302 favor: the stats pill is
+    // 233 px, the bar 8 px in from each edge, 8 px between the pills, the pill's padding 4 px a side.
+    const buttonsAt = (screenW, n = 4) => (screenW - 16 - 233 - 8 - 8) / n;
+    assert.ok(buttonsAt(402) >= 28 && buttonsAt(402) < 36, `402: ${buttonsAt(402)}`); // was 36 each, 3 px too many
+    assert.ok(buttonsAt(384) >= 28, `384: ${buttonsAt(384)}`);
+    assert.ok(buttonsAt(360) < 28, 'a 360 px phone needs the counts step');
+    assert.deepEqual([...PHONE_OVERFLOW_STEPS], ['chip', 'map', 'make']);
+    assert.deepEqual(pickPhoneOverflow(() => true), ['chip', 'map', 'make']);
+    assert.deepEqual(pickPhoneOverflow(() => false), ['chip', 'map', 'make', 'counts']);
+    assert.match(topbar, /if \(phoneBar\(doc\)\) return apply\(pickPhoneOverflow\(fits\)\);/);
+  });
+  it('counts: the buttons hold at 28 px and the counts shorten with an ellipsis', () => {
+    assert.ok(css.includes(':root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] #hud-stats ~ .hud-actions { flex-shrink: 0; }'));
+    assert.ok(css.includes('[data-overflow~="counts"] #hud-stats ~ .hud-actions :is(#quest-btn, #quest-pins-btn:not([hidden]), #bug-btn, #more-btn, #sound-btn) { width: 28px; }'));
+    assert.ok(css.includes(':root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] .hud-stats { flex-shrink: 1; min-width: 0; }'));
+    assert.match(css, /\[data-overflow~="counts"\] \.hud-stats \.hud-cur strong \{ min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; \}/);
+  });
+  it('the fit runs again when a count grows or the quest button comes or goes', () => {
+    assert.match(topbar, /new ResizeObserver\(fit\)\.observe\(stats\)/);
+    assert.match(topbar, /new MutationObserver\(fit\)\.observe\(pins, \{ attributes: true, attributeFilter: \['hidden'\] \}\)/);
   });
 });
 
