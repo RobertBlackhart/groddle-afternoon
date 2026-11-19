@@ -2814,9 +2814,44 @@
   "deployed": "2026-11-18"
  },
  "git": {
-  "commits": 2759,
+  "commits": 2769,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "the Jellisac Mound grows three Jellisacs, and pods stand where Glitch drew them"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Towers, the scaffolding and Note Poles stand on the walk line"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The subway ticket card takes the arrows, Enter and Escape, and the avatar stays put under it"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "In the Juju Hideout your feet stand in the dirt, not on its far edge"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The Map's arrow walks to the signpost on your floor when two posts lead to the next street"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Planting on a shared garden or patch goes through while the game is saving"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A refused yard verb gives back energy and mood through the stat API"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2901,44 +2936,9 @@
     "date": "2026-11-18",
     "kind": "fix",
     "text": "Encyclopedia item pages say how to get each item from where the game hands it out, not \"Part of the Hell Bar in the remake\""
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The featured street project says \"opens in N min\" while its street rests after a build, instead of sending players to a street with no board"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "The new-quest notice's bar lift sits beside the HUB layer block, which names only the popover lift and the notices"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "\"New Quest Added!\" shows over the minimap and the Social drawer instead of under them"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Food dragged from the pack onto a Piggy Feeder stocks it, as in Glitch"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "Music and sounds come back after AFK, another tab or a call, on Safari too"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "A short looped street track (the subway stations, the Rook, Sky Plunge, Party, meditation) plays as one copy, never two layered"
-   },
-   {
-    "date": "2026-11-18",
-    "kind": "fix",
-    "text": "An item the Fox Ranger or the Smuggler hands over flies into the pack without a second \"+1\" float over the avatar"
    }
   ]
  },
- "tests": 1164,
+ "tests": 1166,
  "generatedAt": "2026-11-19"
 }
