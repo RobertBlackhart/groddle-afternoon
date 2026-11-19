@@ -27,7 +27,7 @@ import { dropFor, dropTip } from '../world-drop.js?v=a8956ae5';
 import { canUseTool } from '../tools.js?v=4156bba8';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { draggedStack, markDragged } from '../drag-stack.js?v=199234f0';
+import { draggedStack, markDragged } from '../drag-stack.js?v=63471c09';
 
 export const WORLD_DROP_FEATURE_ID = 'world-drop';
 

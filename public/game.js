@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ca4eaa0f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3ad83c43';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d878240c';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1123,7 +1123,7 @@ import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; /
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=94012d9b';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=86205485';
-import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=7968c974';
+import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;

@@ -45,6 +45,13 @@ export const TELEPORT_COOLDOWN_SECONDS = 5;
 /** teleport_complete fires 3 s after the hit animation starts. */
 export const TELEPORT_COMPLETE_MS = 3000;
 export const TELEPORT_HIT_ANIMATION_MS = 1000;
+/**
+ * The move starts 500 ms into the hit1, not after it: teleportToLocationDelayed
+ * (players/player.js 516-528) sets handleDelayedTeleport for 500 ms right after
+ * playHitAnimation('hit1', 1000) (inc_teleportation.js 399, 528, 674), so the
+ * arm's second half played under the loading card.
+ */
+export const TELEPORT_MOVE_DELAY_MS = 500;
 
 export const XALANGA_HUB_ID = '95';
 export const ZONE_FROM_HUB_ID = '63';

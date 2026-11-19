@@ -29,8 +29,8 @@ import {
   tradeCommand,
   untradeableReason,
 } from '../public/js/trade.js?v=d38b9202';
-import { tradeFeature } from '../public/js/features/trade-feature.js?v=67df5bd3';
-import { FEATURES } from '../public/js/features/index.js?v=3ad83c43';
+import { tradeFeature } from '../public/js/features/trade-feature.js?v=76fc70c8';
+import { FEATURES } from '../public/js/features/index.js?v=d878240c';
 import { dropPage, fakeSlot, mouseDrop, touchDrop } from './drop-fake.js';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { GSJS } from '../tools/build-realtime-trade.mjs';

@@ -23,7 +23,9 @@
  *   out of the same way (its party goes on; its teleporter takes you back in). The other places
  *   the game holds you (races, Paradise, the older rooms in game.js) keep their own exits.
  * - The jump plays the avatar's hit1 for one second (playHitAnimation('hit1', 1000)
- *   before teleportToLocationDelayed, G892), then engine.enter() lands on the saved x/y.
+ *   before teleportToLocationDelayed, G892); 500 ms in (that function's own timer,
+ *   players/player.js 516-528) engine.enter() lands on the saved x/y, the arm finishing
+ *   under the loading card.
  *
  * - Summons (Teleportation V, multiplayer): js/summon-mp.js and
  *   features/summon-mp-feature.js ask here (teleportSummon): 'check' is the
@@ -59,6 +61,7 @@ import {
   SCRIPT_CLASS,
   SCRIPT_ITEM,
   TELEPORT_HIT_ANIMATION_MS,
+  TELEPORT_MOVE_DELAY_MS,
   adoptScripts,
   canCreateScript,
   canMapTeleport,
@@ -78,7 +81,7 @@ import {
   teleportRank,
   teleportToPoint,
   useScript,
-} from '../teleportation.js?v=e95cf7cb';
+} from '../teleportation.js?v=1bbe1ab3';
 import { energyMax, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
 
@@ -704,7 +707,7 @@ export const teleportationFeature = {
       engine.player.vx = 0;
       // QA: &teleportfx=hold keeps the avatar in hit1 and stays put, for a screenshot.
       if (engine.param('teleportfx') === 'hold') engine.playHit?.('hit1', TELEPORT_HIT_ANIMATION_MS);
-      if (engine.param('teleportfx') !== 'hold' && now - pending.startedAt >= TELEPORT_HIT_ANIMATION_MS) land(engine);
+      if (engine.param('teleportfx') !== 'hold' && now - pending.startedAt >= TELEPORT_MOVE_DELAY_MS) land(engine);
     }
     demoStep(engine, now);
   },

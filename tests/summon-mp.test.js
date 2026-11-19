@@ -15,18 +15,19 @@ import { join } from 'node:path';
 import {
   SUMMONS_PER_DAY,
   SUMMON_CHECK_TEXT,
+  TELEPORT_MOVE_DELAY_MS,
   TELEPORT_TEXT,
   canSummon,
   createTeleportState,
   maxSummons,
   paySummon,
   rollTeleportDay,
-} from '../public/js/teleportation.js?v=e95cf7cb';
+} from '../public/js/teleportation.js?v=1bbe1ab3';
 import { SUMMON_TEXT, SUMMON_VERB, askedText, summonRefusal, summonVerb } from '../public/js/summon-mp.js?v=7598f381';
 import { readHomeStreet, summonHomePlace } from '../public/js/neighbours-mp.js?v=c20e6df1';
 import { BLOCKED_PLAYER_VERBS, FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=dad03e67';
 import { summonMpFeature } from '../public/js/features/summon-mp-feature.js?v=9e2260c2';
-import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=245a20d7';
+import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=3f04f41b';
 
 const ROOT = join(import.meta.dirname, '..');
 const V = ['teleportation_1', 'teleportation_2', 'teleportation_3', 'teleportation_4', 'teleportation_5'];
@@ -312,10 +313,16 @@ describe('Summons: the world side', () => {
     assert.deepEqual(engine.log.hits.at(-1), ['hit1', 1000]);
     assert.equal(engine.log.drawn, 0);
     assert.equal(engine.player.alpha, 1);
-    // hit1 runs its second (TELEPORT_HIT_ANIMATION_MS), then the landing.
-    teleportationFeature.onTick(16, Date.now() + 2000, engine);
+    // player.js 516-528 teleportToLocationDelayed: the move starts 500 ms into the hit1
+    // (TELEPORT_MOVE_DELAY_MS), the arm finishing under the card; it waited the whole second.
+    assert.equal(TELEPORT_MOVE_DELAY_MS, 500);
+    const entered = engine.log.entered.length;
+    teleportationFeature.onTick(16, Date.now() + 300, engine);
     await Promise.resolve();
-    assert.deepEqual(engine.log.entered.at(-1), ['GA5B', { spawnX: 420, spawnY: -120 }]);
+    assert.equal(engine.log.entered.length, entered, 'not before 500 ms');
+    teleportationFeature.onTick(16, Date.now() + 600, engine);
+    await Promise.resolve();
+    assert.deepEqual(engine.log.entered.at(-1), ['GA5B', { spawnX: 420, spawnY: -120 }], 'moved 500 ms in, not after the 1 s hit1');
     globalThis.requestAnimationFrame ??= () => 0;
     teleportationFeature.onStreetEnter({ tsid: 'GA5B' }, { ...engine, floatText() {} });
     assert.deepEqual(engine.log.achievements.at(-1), ['teleportation_others:summonee', 1]);
