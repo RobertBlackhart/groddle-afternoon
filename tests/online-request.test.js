@@ -174,6 +174,7 @@ const NOT_A_REQUEST = Object.freeze([
   'public/game.js VECTOR_BAKE_ASKED_MS',
   'public/js/avatar-anims.js AFK_TIMEOUT_MS',
   'public/js/avatar-anims.js RANDOM_IDLE_WAIT_MS',
+  'public/js/avatar-placeholder.js OWN_LOOK_WAIT_MS',
   'public/js/bureaucratic-hall.js PLEASE_WAIT_MS',
   'public/js/crabs.js CRAB_OFFER_TIMEOUT_MS',
   'public/js/crabs.js CRAB_REPLY_MS',
