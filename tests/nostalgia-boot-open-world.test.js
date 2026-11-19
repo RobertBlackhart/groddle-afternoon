@@ -20,7 +20,7 @@ import { join } from 'node:path';
 
 import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=71fa73cd';
 import { nearestOpenStreet, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { routeGraph } from '../public/js/map-routes.js?v=3cadc716';
+import { routeGraph } from '../public/js/map-routes.js?v=70f30ddf';
 import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';

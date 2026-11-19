@@ -321,6 +321,99 @@ export function routeStep(route, graph, currentTsid) {
 }
 
 /**
+ * R34 (#538): the stations a route's subway legs use, read off the subway line (js/subway-line.js
+ * stations: id, name, label, surfaceStreetTsid / connects_to, next_stop, previous_stop).
+ */
+function stationOnStreet(stations, graph, tsid) {
+  if (!tsid) return null;
+  return (stations || []).find((s) => sameStreet(s.surfaceStreetTsid, tsid) || sameStreet(s.connects_to, tsid)
+    || (graph && graphKey(graph, s.surfaceStreetTsid || s.connects_to) === graphKey(graph, tsid))) || null;
+}
+
+/**
+ * PURE (#538): the line that reaches `to` from `from` in fewer stops (the Red Line runs next_stop,
+ * the Blue Line previous_stop: inc_transit.js transit_get_next_stop / transit_get_previous_stop).
+ * A tie takes the Red Line. Returns { direction: 'forwards'|'backwards', stops } or null.
+ */
+export function rideLine(stations, from, to) {
+  if (!from || !to || from.id === to.id) return null;
+  const byId = new Map((stations || []).map((s) => [Number(s.id), s]));
+  const count = (key) => {
+    let at = from;
+    for (let n = 1; n <= byId.size; n++) {
+      at = byId.get(Number(at?.[key]));
+      if (!at) return Infinity;
+      if (at.id === to.id) return n;
+    }
+    return Infinity;
+  };
+  const fwd = count('next_stop');
+  const back = count('previous_stop');
+  if (!Number.isFinite(fwd) && !Number.isFinite(back)) return null;
+  return back < fwd ? { direction: 'backwards', stops: back } : { direction: 'forwards', stops: fwd };
+}
+
+/**
+ * R34 (#538): the route step wherever a subway leg takes you, one model for every view. Routes ride
+ * the subway (a remake addition, subwayRides): the path holds the two surface streets and the ride
+ * between them, while the player passes the surface street's entrance, the station, the train and the
+ * far station. Glitch's GPS knew streets only (GpsUI.as getNextText), so each view says where the
+ * thing that glows leads, in the GPS's own "Next: " line:
+ * - `{ street }` on a surface street whose next hop is a ride: the station its entrance goes down to
+ *   ("Next: Jutuan Central Subway Station").
+ * - `{ station }` on a platform: the line to board when the ride starts here ("Next: Subway Blue
+ *   Line", whichever line reaches the stop sooner, rideLine); the street up the stairs otherwise,
+ *   the far station's own street included ("Next: Groddle Forest Junction"). Off the route (a stop
+ *   the route does not use), 'off', for the caller to plan again from the station's street.
+ * - `{ car: true, stop }` in the train (`stop` the station it last stood at): the stop to get off at
+ *   ("Next: Groddle Forest Junction"), with no arrow (the train has nothing to walk to; its stop
+ *   prompt asks).
+ * Each step carries `say` (the words after "Next: ") and `via` ('entrance'|'board'|'stairs'|'ride')
+ * on top of routeStep's fields; a step with no subway leg in it is routeStep's own.
+ */
+export function legStep(route, graph, where = {}, { rides = null, stations = [], lines = {}, label = (t) => t } = {}) {
+  const r = normalizeRoute(route);
+  if (!r) return { status: 'none', index: -1, next: '', remaining: [] };
+  const path = r.path || [];
+  const surface = (st) => (st ? graphKey(graph, st.surfaceStreetTsid || st.connects_to) || st.surfaceStreetTsid || st.connects_to : '');
+  const ride = (a, b) => isRide(graph, rides, a, b);
+  if (where.car) {
+    const at = where.stop ? path.indexOf(surface(where.stop)) : -1;
+    let i = -1;
+    for (let k = Math.max(0, at); k < path.length - 1 && i < 0; k++) if (ride(path[k], path[k + 1])) i = k;
+    for (let k = 0; k < path.length - 1 && i < 0; k++) if (ride(path[k], path[k + 1])) i = k;
+    let next = i > -1 ? path[i + 1] : '';
+    // No ride on the route (planned again on foot): off at the last station the route passes.
+    if (!next) {
+      for (let k = path.length - 1; k >= 0 && !next; k--) if (stationOnStreet(stations, graph, path[k])) [i, next] = [k - 1, path[k]];
+      if (!next && stationOnStreet(stations, graph, r.destination)) next = r.destination;
+    }
+    const to = stationOnStreet(stations, graph, next);
+    if (!to) return { status: 'off', index: -1, next: '', remaining: path };
+    return { status: 'on', index: i, next, remaining: i > -1 ? path.slice(i) : [next], say: to.name || label(next), via: 'ride' };
+  }
+  if (where.station) {
+    const here = surface(where.station);
+    if (sameStreet(here, r.destination)) return { status: 'on', index: path.length - 1, next: here, remaining: [here], say: label(here), via: 'stairs' };
+    const step = routeStep(r, graph, here);
+    if (step.status !== 'on') return step;
+    if (ride(here, step.next)) {
+      const line = rideLine(stations, where.station, stationOnStreet(stations, graph, step.next));
+      const name = line ? lines[line.direction] : '';
+      if (name) return { ...step, say: `Subway ${name}`, via: 'board', line: line.direction };
+      return { ...step, via: 'board' };
+    }
+    return { ...step, say: label(here), via: 'stairs' };
+  }
+  const step = routeStep(r, graph, where.street);
+  if (step.status === 'on' && ride(where.street, step.next)) {
+    const st = stationOnStreet(stations, graph, where.street);
+    if (st) return { ...step, say: st.label || label(step.next), via: 'entrance' };
+  }
+  return step;
+}
+
+/**
  * A street finished loading. Leaving the street you arrived on clears the
  * route (GpsUI moveMoveStarted); reaching the destination counts
  * map_dest_reached (location.js 310); off the path, a new route is asked for
@@ -402,7 +495,8 @@ export function gpsText(route, step, label = (t) => t) {
   if (!r) return null;
   const to = `${ROUTE_TEXT.to}${label(r.destination)}`;
   if (step?.status === 'arrived') return { to: ROUTE_TEXT.arrived, next: '', arrived: true };
-  if (step?.status === 'on' && step.next) return { to, next: `${ROUTE_TEXT.next}${label(step.next)}`, arrived: false };
+  // legStep's `say` (#538): what a subway leg's glowing door, gate or stop leads to.
+  if (step?.status === 'on' && step.next) return { to, next: `${ROUTE_TEXT.next}${step.say || label(step.next)}`, arrived: false, ...(step.via === 'ride' ? { noArrow: true } : {}) };
   return { to, next: ROUTE_TEXT.offPath, arrived: false, offPath: true };
 }
 

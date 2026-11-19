@@ -52,7 +52,7 @@
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=25d965fa';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=71fa73cd';
-import { STATIONS, isCarTsid, stationByTsid } from '../subway.js?v=af570a5d';
+import { STATIONS, SUBWAY_LINE, isCarTsid, stationByTsid, surfaceStation } from '../subway.js?v=af570a5d';
 import { hellFeature } from './hell-feature.js?v=10c16adb';
 import { postReachY } from '../street-model.js?v=dd20cc44';
 import {
@@ -69,18 +69,18 @@ import {
   graphKey,
   hubRouteDrawing,
   isRide,
+  legStep,
   normalizeRouteState,
   oneWayRoads,
   planRoute,
   resurrectRoute,
   routeRides,
-  routeStep,
   routeStopsLine,
   sameStreet,
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=3cadc716';
+} from '../map-routes.js?v=70f30ddf';
 import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=dcc5cae4';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
@@ -164,7 +164,39 @@ function offWorld(engine) {
 function currentStep(engine) {
   if (!state.route) return { status: 'none', index: -1, next: '', remaining: [] };
   if (offWorld(engine)) return { status: 'off', index: -1, next: '', remaining: state.route.path || [] };
-  return routeStep(state.route, roads(engine) || {}, routeStreet(engine));
+  return legStep(state.route, roads(engine) || {}, legWhere(engine), { rides: ridesNow(), stations: STATIONS, lines: SUBWAY_LINES, label });
+}
+
+/** The Red and Blue Lines' names (subway-line.js forwards_name / backwards_name). */
+const SUBWAY_LINES = Object.freeze({ forwards: SUBWAY_LINE.forwards_name, backwards: SUBWAY_LINE.backwards_name });
+
+/**
+ * R34 (#538): which view of a subway leg you are in, for map-routes.js legStep: a station's
+ * platform, the train (with the stop it last stood at, subway-feature mapStreet), or a street.
+ */
+function legWhere(engine) {
+  const t = engine.streetTsid;
+  if (isCarTsid(t)) return { car: true, stop: surfaceStation(engine.query?.('mapStreet', engine)?.tsid || '') };
+  const station = stationByTsid(t);
+  if (station) return { station };
+  return { street: t };
+}
+
+/**
+ * #538: where enterStreet looks from. On a platform the route goes on from the station's street, so
+ * a stop the route does not use plans the route again from there (the subway included) instead of
+ * saying "Return to world for directions". The train stays off the graph (its stop prompt decides).
+ */
+function enterFrom(engine) {
+  const t = engine.streetTsid;
+  const station = stationByTsid(t);
+  if (station && state.route) {
+    const surface = station.surfaceStreetTsid || station.connects_to;
+    // The destination's own station: nothing to plan, and arriving waits for its street.
+    if (sameStreet(surface, state.route.destination)) return null;
+    return { tsid: surface, offWorld: false };
+  }
+  return { tsid: t, offWorld: offWorld(engine) || underground(engine) };
 }
 
 /** Underground (a station or the train) the route goes on from the station's surface street (subway-feature mapStreet). */
@@ -685,7 +717,7 @@ function renderGps(engine, step) {
     lastHudKey = '';
     return;
   }
-  const key = `${text.to}|${text.next}|${text.arrived}`;
+  const key = `${text.to}|${text.next}|${text.arrived}|${Boolean(text.noArrow)}`;
   g.el.hidden = false;
   if (key === lastHudKey) return;
   lastHudKey = key;
@@ -695,7 +727,8 @@ function renderGps(engine, step) {
   g.next.hidden = !text.next;
   g.arrow.classList.toggle('arrived', text.arrived);
   g.arrow.innerHTML = text.arrived ? TICK_SVG : ARROW_SVG;
-  g.arrow.style.visibility = text.offPath ? 'hidden' : '';
+  // #538: in the train nothing glows to walk to (its stop prompt asks), so no arrow.
+  g.arrow.style.visibility = text.offPath || text.noArrow ? 'hidden' : '';
   const tip = text.arrived ? 'Close the route' : 'Walk to the next signpost';
   g.arrow.title = tip;
   g.arrow.setAttribute('aria-label', tip);
@@ -881,7 +914,7 @@ function publish(engine, step = currentStep(engine)) {
   engine.setData('routeActive', r ? '1' : '0');
   engine.setData('routeDest', r ? r.destination : '');
   engine.setData('routeTo', r ? label(r.destination) : '');
-  engine.setData('routeNext', step.next ? label(step.next) : '');
+  engine.setData('routeNext', step.next ? step.say || label(step.next) : '');
   engine.setData('routeStatus', step.status);
   engine.setData('routePath', r?.path ? r.path.map(label).join('>') : '');
   engine.setData('routeSource', r ? r.source : '');
@@ -1263,8 +1296,9 @@ export const mapRoutesFeature = {
     auto = { at: 0, key: '' };
     demoSetup(engine);
     const apply = () => {
-      if (state.route) {
-        const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides: ridesNow(), oneWay, startCut: cutHere(engine) });
+      const from = state.route ? enterFrom(engine) : null;
+      if (from) {
+        const res = enterStreet(state, roads(engine) || {}, from.tsid, { offWorld: from.offWorld, rides: ridesNow(), oneWay, startCut: cutHere(engine) });
         state = res.state;
         if (res.events.includes('arrived')) {
           // locations/location.js 310-313: pc.quests_inc_counter('map_dest_reached', 1).

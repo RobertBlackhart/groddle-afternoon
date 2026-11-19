@@ -12,10 +12,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SUBWAY_RIDE_STREETS, findRoute, loadStreetGraph, roadsFor, streetGraph, worldRoads } from '../public/js/street-graph.js?v=dcc5cae4';
-import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=3cadc716';
+import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=71fa73cd';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=25d965fa';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=2e57351d';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=180ba714';
 import { gateRefusal } from '../public/js/subway.js?v=af570a5d';
 
 const PUB = join(import.meta.dirname, '..', 'public');
