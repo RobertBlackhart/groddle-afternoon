@@ -9,7 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=3eb9956c';
-import * as mod from '../public/js/quest-rooms/juju-camp.js?v=630c58bc';
+import * as mod from '../public/js/quest-rooms/juju-camp.js?v=480bffba';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(ROOT, 'assets', 'streets', `${tsid}.json`), 'utf8'));
@@ -297,5 +297,25 @@ describe('Juju Hideout look (G70, players Snaps)', () => {
     const src = readFileSync(join(ROOT, 'js/quest-rooms/juju-camp.js'), 'utf8');
     assert.match(src, /KID_SHEETS, \{ ax: 148 \/ 240, ay: 185 \/ 254 \}\);\n\s*view\.x = [^\n]+\n\s*view\.y = sy\(FLOOR_Y\);/);
     assert.match(src, /GRANDMA_SHEETS, \{ ax: 0\.38, ay: 1 \}\);\n\s*view\.x = sx\(GRANDMA_X\);\n\s*view\.y = sy\(FLOOR_Y\) \+ 4;/);
+  });
+});
+
+describe('#514: the walk line runs inside the dirt, with the trees, grass and teepees', () => {
+  const src = readFileSync(join(ROOT, 'js/quest-rooms/juju-camp.js'), 'utf8');
+  const bg = src.slice(src.indexOf('function buildBackground('), src.indexOf('export const room = {'));
+
+  it('the dirt starts a quarter of a ground piece over the floor (builder groundStrip), not at it', () => {
+    assert.equal(mod.GROUND_TOP_DY, -Math.round(67 * 0.25));
+    assert.match(bg, /const top = floor \+ GROUND_TOP_DY;\n\s*g\.rect\(0, top, W, H - top \+ 400\)\.fill\(P\.ground\);\n\s*g\.rect\(0, top - 4, W, 12\)\.fill\(P\.groundTop\);/);
+    assert.doesNotMatch(bg, /g\.rect\(0, floor,/, 'not from the walk line');
+  });
+
+  it('every world ground piece stands in the dirt, at or under its top edge', () => {
+    const top = mod.GROUND_TOP_DY;
+    // Trees, the scrub, the grass, the dark patches (each `floor + n` in the world layer).
+    const world = bg.slice(bg.indexOf('const world = root.layer(1, 3);'));
+    const dys = [...world.matchAll(/floor \+ (\d+)/g)].map((m) => Number(m[1]));
+    assert.ok(dys.length >= 6, String(dys));
+    for (const dy of [...dys, ...mod.CAMP_PIECES.map((p) => p[2]), mod.CHAIR_DY, mod.CAMP_MOUND.dy]) assert.ok(dy >= top + 8, `${dy} under the dirt's edge strip`);
   });
 });

@@ -647,6 +647,15 @@ export const CAMP_PIECES = Object.freeze([
 export const CAMP_MOUND = Object.freeze({ x: -2060, dy: 112, scale: 0.62 });
 /** #276: the chair's file (208 px tall) ends its legs 13.5 px above its bottom edge: its legs on the floor. */
 export const CHAIR_DY = 14;
+/**
+ * #514: the dirt's top edge, over the walk line. It started at the walk line, so the feet stood on
+ * the ground's far edge while the trees (+6), the grass (+8), the teepees (+10) and the dark patches
+ * that read as shadows (+34 to +58) all sat lower, in the dirt: the avatar looked to hover over the
+ * ground, most on a phone's tall view. The walk line now runs inside the dirt with them: a
+ * quarter of a street's ground piece over it, as the builder lays a new street's ground strip
+ * (builder/templates.js groundStrip: evenground_platform_long, 67 px tall, top 17 px over the floor).
+ */
+export const GROUND_TOP_DY = -17;
 
 function buildBackground(ctx) {
   const { PIXI, kit } = ctx;
@@ -667,8 +676,9 @@ function buildBackground(ctx) {
   }
   const world = root.layer(1, 3);
   const g = new PIXI.Graphics();
-  g.rect(0, floor, W, H - floor + 400).fill(P.ground);
-  g.rect(0, floor - 4, W, 12).fill(P.groundTop);
+  const top = floor + GROUND_TOP_DY;
+  g.rect(0, top, W, H - top + 400).fill(P.ground);
+  g.rect(0, top - 4, W, 12).fill(P.groundTop);
   for (let x = 40; x < W; x += 170) g.ellipse(x + (x % 7) * 9, floor + 34 + (x % 3) * 12, 46, 6);
   g.fill({ color: P.groundSpot, alpha: 0.7 });
   world.addChild(g);
