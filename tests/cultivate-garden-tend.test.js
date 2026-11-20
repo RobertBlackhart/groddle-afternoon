@@ -51,3 +51,17 @@ describe('#558: Cultivation Mode never hands the arrows to a garden', () => {
     assert.equal(firstCode('signpostArmKey'), "if (features.query('homeEditMode', engine)) return false;");
   });
 });
+
+describe('#558: nothing stays selected after a thing is bought or moved in Cultivation Mode', () => {
+  const homes = readFileSync(join(root, 'public/js/features/homes-feature.js'), 'utf8');
+  const start = homes.indexOf('\nfunction placeAtPointer(');
+  const body = homes.slice(start, homes.indexOf('\n}\n', start));
+  const cultBranch = body.slice(body.indexOf('const st = activeCult();'));
+
+  it('the cultivation branch selects nothing and clears the selection once it is set down', () => {
+    assert.ok(cultBranch.includes('nudgeCultivation(') && cultBranch.includes('cultivate(st, engine.pc'), 'found the branch');
+    assert.doesNotMatch(cultBranch, /selected = \{ kind: 'cultivation'/);
+    // After the refusal's early return, so a refused spot keeps what you carry and your selection.
+    assert.match(cultBranch, /return result;\n\s+\}\n(?:\s*\/\/.*\n)*\s+selected = null;\n\s+placing = null;/);
+  });
+});

@@ -5081,13 +5081,16 @@ function placeAtPointer(engine, at) {
       engine.pushActivity(`You imagined a ${result.label} into your yard for ${result.cost.toLocaleString()} iMG.`);
       if (cultivationDef(result.item.protoClass)?.kind === 'tower') towerApi.onCultivated(engine, result.item);
       engine.floatText?.(at.x, yardGroundY(st) - 120, `-${result.cost} iMG`, 0xb38cff);
-      selected = { kind: 'cultivation', id: result.item.id };
     }
   }
   if (!result.ok) {
     engine.toast(result.msg || 'That does not fit there.');
     return result;
   }
+  // #558: a thing bought or moved is set down with nothing selected, so the next Esc leaves the
+  // mode, as the banner says. Glitch's purchaseIt and onMove (CultManager.as 706-743, 686-700)
+  // end with picker_ui.setChoice(null) and stopCarry(), and nothing stays chosen.
+  selected = null;
   placing = null;
   destroyGhost();
   engine.updateHud();
