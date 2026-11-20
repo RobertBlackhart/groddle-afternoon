@@ -26,7 +26,7 @@ import {
   quoinRespawnMs,
   streetQuoinClass,
   streetQuoinPoints,
-} from '../public/js/quoins.js?v=b342e1d9';
+} from '../public/js/quoins.js?v=5abad2c7';
 import { QUOIN_COIN_COUNTS, QUOIN_SPOTS } from '../public/js/quoin-spots-data.js?v=7c343cbc';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';

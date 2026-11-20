@@ -24,7 +24,7 @@ import {
   resolveParadiseCourseAlias,
   stepParadiseBody,
   usesParadiseBody,
-} from '../public/js/paradise-courses.js?v=d66031da';
+} from '../public/js/paradise-courses.js?v=17579e08';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -37,8 +37,8 @@ import {
   paradisePickupTouches,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=aa2cb3a1';
-import { QURAZY_REWARDS } from '../public/js/quoins.js?v=b342e1d9';
+} from '../public/js/paradise-flight.js?v=4f491849';
+import { QURAZY_REWARDS } from '../public/js/quoins.js?v=5abad2c7';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -105,7 +105,8 @@ test('new tickets share the source price curve, eleven-a-day cap and four-minute
   for (let index = 0; index < PARADISE_COURSES.mountain_scaling.pickupCount; index += 1) {
     assert.equal(collectParadisePickup(run, index, 2000).ok, true);
   }
-  assert.equal(finishParadiseRun(run, 3000).completionReward.amount, 1098);
+  // #560: the recorded +1098 (x100, full mood) is benefit 9, paid times the player's multiplier.
+  assert.equal(finishParadiseRun(run, 3000, { multiplier: 100 }).completionReward.amount, 900);
 });
 
 test('rewards line up one-to-one with pickups and keep recorded amounts', () => {
@@ -121,7 +122,7 @@ test('rewards line up one-to-one with pickups and keep recorded amounts', () => 
         continue;
       }
       assert.ok(types.has(entry.type), `${course.id} ${entry.type}`);
-      assert.ok(entry.amount > 0);
+      assert.ok(entry.recorded > 0 && entry.benefit >= 1);
       if (entry.type === 'favor') assert.ok(giants.has(entry.giantId), entry.giantId);
     }
     assert.match(course.objective, new RegExp(String(course.pickupCount)));
@@ -133,18 +134,19 @@ test('rewards line up one-to-one with pickups and keep recorded amounts', () => 
   }
   assert.deepEqual(Object.values(EXTRA_PARADISE_COURSES).filter((c) => c.palette).map((c) => c.id).sort(), ['abysmal_thrill', 'sky_plunge']);
   // Recorded endings: Mountain Scaling +1098, Abysmal / Arbor / Cloud Flight +954, Bippity Bop +858.
-  assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.completionReward.amount, 1098);
-  assert.equal(EXTRA_PARADISE_COURSES.abysmal_thrill.completionReward.amount, 954);
-  assert.equal(EXTRA_PARADISE_COURSES.arbor_hollow.completionReward.amount, 954);
-  assert.equal(EXTRA_PARADISE_COURSES.cloud_flight.completionReward.amount, 954);
-  assert.equal(EXTRA_PARADISE_COURSES.bippity_bop.completionReward.amount, 858);
-  assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.rewards.at(-1).amount, 3000);
+  assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.completionReward.recorded, 1098);
+  assert.equal(EXTRA_PARADISE_COURSES.abysmal_thrill.completionReward.recorded, 954);
+  assert.equal(EXTRA_PARADISE_COURSES.arbor_hollow.completionReward.recorded, 954);
+  assert.equal(EXTRA_PARADISE_COURSES.cloud_flight.completionReward.recorded, 954);
+  assert.equal(EXTRA_PARADISE_COURSES.bippity_bop.completionReward.recorded, 858);
+  assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.rewards.at(-1).recorded, 3000);
+  assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.rewards.at(-1).benefit, 25);
   assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.rewards.find((r) => r.type === 'favor').giantId, 'zille');
   assert.equal(EXTRA_PARADISE_COURSES.abysmal_thrill.rewards.find((r) => r.type === 'favor').giantId, 'ti');
   // The Arbor nest quoin is the +3000 one.
   const arbor = EXTRA_PARADISE_COURSES.arbor_hollow;
   const nestIndex = arbor.pickups.findIndex((pick) => pick.y < ARBOR_NEST.y && pick.x === 800);
-  assert.equal(arbor.rewards[nestIndex].amount, 3000);
+  assert.equal(arbor.rewards[nestIndex].recorded, 3000);
 });
 
 test('recorded on-screen text is kept verbatim; description-only courses are flagged', () => {
@@ -525,8 +527,8 @@ test('Sky Plunge has one Qurazy quoin among the last two, paid by the level tabl
   assert.equal(result.reward.amount, 30);
   assert.equal(result.reward.quoin, 'qurazy');
   assert.equal(run1.rewardTotals.xp, 30);
-  // Other rewards pass through untouched.
-  assert.equal(resolveParadiseReward(course.rewards[0]), course.rewards[0]);
+  // Other rewards pay their benefit times the multiplier (#560).
+  assert.deepEqual(resolveParadiseReward(course.rewards[0], { multiplier: 7 }), { ...course.rewards[0], amount: course.rewards[0].benefit * 7 });
 });
 
 test('Sky Plunge plays the Rainbow Run A Cappella cuts: CLOUD_DROP_2 loop, intro on every quoin', () => {
@@ -547,7 +549,7 @@ test('Sky Plunge plays the Rainbow Run A Cappella cuts: CLOUD_DROP_2 loop, intro
   assert.match(game, /musicFile: course\.musicFile/);
   assert.match(game, /if \(course\.musicFile\) setAmbientForStreet\(currentStreet\)/);
   assert.match(game, /if \(course\.completionSound\) playSound\(course\.completionSound/);
-  assert.match(game, /collectParadisePickup\(paradiseRun, entry\.index, Date\.now\(\), \{ level: pc\.level \}\)/);
+  assert.match(game, /collectParadisePickup\(paradiseRun, entry\.index, Date\.now\(\), \{ level: pc\.level, multiplier: quoinState\.multiplier \}\)/);
 });
 
 test('Updraft and Drafty Uplift carry an unconfirmed-release note shown to players', () => {

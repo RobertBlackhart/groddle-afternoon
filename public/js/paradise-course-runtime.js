@@ -17,7 +17,7 @@
  */
 
 import { heldDirection } from './held-keys.js?v=a28eb293';
-import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=d66031da';
+import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=17579e08';
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=1c44e7c3';
 import { anchorBottomCentre } from './sprite-feet.js?v=8f0b6303';

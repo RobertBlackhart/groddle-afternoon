@@ -20,7 +20,7 @@ import {
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
-import { normalizePlayerSnapshot } from '../public/js/player-save.js?v=79605158';
+import { normalizePlayerSnapshot } from '../public/js/player-save.js?v=23b1540f';
 
 before(async () => {
   await loadRecipeCatalogFromFile(join(fileURLToPath(new URL('../public/assets/content', import.meta.url)), 'recipes.json'));

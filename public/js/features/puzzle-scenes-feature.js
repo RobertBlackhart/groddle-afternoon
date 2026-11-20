@@ -7,8 +7,8 @@
  *   draw a piggy; closing the outline lights its eye. A miss or a pause makes
  *   the next star twinkle. First finish: +150 iMG, +50 mood.
  * - Beam Me Down: step off the start cloud and steer through the saucers'
- *   tractor beams, which slow the fall and hold 21 quoins (+4 each, through
- *   the normal quoin economy). Landing shows "Bravo! You made it!"; the first
+ *   tractor beams, which slow the fall and hold 21 quoins (1 each times your
+ *   quoin multiplier, outside the day's limit). Landing shows "Bravo! You made it!"; the first
  *   landing pays +138 iMG. Entered with a Ticket To Beam Me Down (pack:
  *   Activate) or from the Map's puzzle card.
  * Both leave by their EXIT door back to the street they were entered from;
@@ -28,7 +28,7 @@
  */
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { QUOIN_SHEET, QUOIN_TYPES, creditQuoinStat, quoinTouches } from '../quoins.js?v=b342e1d9';
+import { QUOIN_SHEET, QUOIN_TYPES, creditQuoinStat, quoinPay, quoinTouches } from '../quoins.js?v=5abad2c7';
 import {
   BEAM_ME_DOWN,
   CONSTELLATION,
@@ -48,7 +48,7 @@ import {
   nextStarIndex,
   normalizeSceneSave,
   sceneTsid,
-} from '../puzzle-scenes.js?v=946a3e28';
+} from '../puzzle-scenes.js?v=04413a6d';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
@@ -718,12 +718,14 @@ function stepBeam(engine) {
     if (spr) spr.visible = false;
     // Paradise pickups skip the daily quoin limit (the shipped courses do too).
     const pc = engine.pc;
-    let amount = q.amount;
+    // #560: the benefit times the player's own quoin multiplier (items/quoin.js 171-174), Paradise included.
+    const pay = quoinPay(q.benefit, engine.quoinState?.multiplier);
+    let amount = pay;
     // items/quoin.js 184: an iMG quoin takes the mood bonus.
-    if (q.type === 'xp') amount = grantMoodXp(pc, q.amount);
+    if (q.type === 'xp') amount = grantMoodXp(pc, pay);
     // G970 (the G608 #156 pattern): energy and mood credit through the quoin path (items/quoin.js
     // 185-186 metabolics_add_*): the tank, never a flat 100, refused while dead.
-    else amount = creditQuoinStat(pc, q.type, q.amount);
+    else amount = creditQuoinStat(pc, q.type, pay);
     const label = QUOIN_TYPES[q.type]?.label || 'iMG';
     engine.floatText(q.x, q.y - 14, `+${amount} ${label}`, '#ffffff');
     engine.playSound(`QUOIN_${q.type.toUpperCase()}`, { volume: 0.45 });

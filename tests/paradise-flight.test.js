@@ -37,7 +37,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from '../public/js/paradise-flight.js?v=aa2cb3a1';
+} from '../public/js/paradise-flight.js?v=4f491849';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, '..', 'public');
@@ -221,7 +221,8 @@ test('course endings enforce their source objectives and reward once', () => {
   }
   assert.equal(paradiseRunProgress(cloud).complete, true);
   assert.match(paradiseObjective(cloud), /way home/i);
-  assert.equal(finishParadiseRun(cloud, 2000).completionReward.amount, 500);
+  // #560: the recorded +500 is benefit 4, paid times the multiplier (1 here).
+  assert.equal(finishParadiseRun(cloud, 2000).completionReward.amount, 4);
   assert.equal(finishParadiseRun(cloud, 2100).reason, 'complete');
 
   const radial = createParadiseRun('radial_heights', { now: 0 });

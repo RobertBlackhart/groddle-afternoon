@@ -30,9 +30,29 @@
  * Reward amounts use the same scale as the four shipped courses (the
  * recorded values at the recorders' quoin multipliers: 120 iMG, 100 of a
  * stat, big 360-3,000 iMG quoins), so a Paradise run pays alike everywhere.
+ * Each is kept as `recorded` and turned into the quoin's `benefit`
+ * (recordedBenefit), which pays benefit x the player's own multiplier (#560).
  */
 
-const reward = (type, amount, giantId = null) => Object.freeze({ type, amount, giantId });
+/**
+ * #560: the recorded amounts are what a x100 player saw, iMG with the full-mood bonus on top
+ * (1 x 100 x 1.2 = 120, 25 x 100 x 1.2 = 3,000; mood, energy, currants and favor 1 x 100 = 100).
+ * items/quoin.js 161-174 pays a quoin's benefit times the grabber's own multiplier, Paradise
+ * quoins included ('paradise iMG' / 'paradise currants' are benefit 1, 575-590), so a course
+ * keeps the benefit and pays it through js/quoins.js quoinPay.
+ */
+export const PARADISE_RECORDED_MULTIPLIER = 100;
+export const PARADISE_RECORDED_MOOD_BONUS = 1.2;
+export function recordedBenefit(type, recorded) {
+  const n = Number(recorded) || 0;
+  if (n <= 0) return 0;
+  const per = PARADISE_RECORDED_MULTIPLIER * (type === 'xp' ? PARADISE_RECORDED_MOOD_BONUS : 1);
+  return Math.max(1, Math.round(n / per));
+}
+/** A course pickup: its kind, the amount recorded at x100, and the benefit that pays. */
+export const paradiseReward = (type, recorded, giantId = null) =>
+  Object.freeze({ type, benefit: recordedBenefit(type, recorded), recorded, giantId });
+const reward = paradiseReward;
 const xp = (amount = 120) => reward('xp', amount);
 const mood = () => reward('mood', 100);
 const energy = () => reward('energy', 100);

@@ -35,7 +35,7 @@ import { energyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { isNewxpSceneTsid } from '../newxp.js?v=5aa81665';
 import { homesFeature } from './homes-feature.js?v=f62a0811';
 import { meditationFeature } from './meditation-feature.js?v=1ced0f16';
-import { newxpFeature } from './newxp-feature.js?v=83efd3f0';
+import { newxpFeature } from './newxp-feature.js?v=3d220a06';
 
 export const ENERGY_DECAY_FEATURE_ID = 'energy-decay';
 const BEAM_ME_DOWN_TSID = 'PUZZLESCENE_BEAM_ME_DOWN';

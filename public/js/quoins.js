@@ -338,6 +338,17 @@ export function creditMetabolicReward(pc, typeId, rawAmount) {
 }
 
 /**
+ * PURE: what one grab of a quoin worth `benefit` pays this player: items/quoin.js 171-174,
+ * Math.round(amount * pc.stats_get_quoin_multiplier()), for every quoin a location holds
+ * (streets, games, races, Rainbow Run and Paradise alike; only Qurazy pays by level instead).
+ * #560: a grant that hands out a fixed amount instead of a benefit run through this skips the
+ * player's multiplier; collectQuoin and the Paradise courses both pay through it.
+ */
+export function quoinPay(benefit, multiplier = 1) {
+  return Math.max(0, Math.round(Math.max(0, finite(benefit, 0)) * clamp(finite(multiplier, 1), 1, 100)));
+}
+
+/**
  * Apply one quoin. Qurazy quoins bypass the daily limit, matching GSJS.
  * Time quoins accelerate an active skill study through opts.accelerateStudy,
  * matching GameServerJS `skills_start_acceleration`.
@@ -376,7 +387,7 @@ export function collectQuoin(state, typeId, pc, opts = {}) {
   const giantId = resolvedType === 'favor'
     ? String((classAmount !== null && quoinClassGiant(opts.className)) || opts.giantId || 'all').toLowerCase()
     : null;
-  const amount = Math.max(0, Math.round(baseAmount * multiplier));
+  const amount = quoinPay(baseAmount, multiplier);
   let actual = amount;
   let acceleration = null;
   let blocked = null;

@@ -11,7 +11,7 @@
  * - Beam Me Down (Paradise, template LHF12N7BER53E0U, not archived): video
  *   JyE3RpWp9nc starts on a cloud ("Everyone's friendly here!"), drops the
  *   avatar past green flying saucers whose tractor beams slow the fall and
- *   hold quoins (+4 iMG, mood, energy, currants), and ends on a cloud floor at
+ *   hold quoins (+4 iMG, mood, energy, currants at the recorder's x4), and ends on a cloud floor at
  *   "Bravo! You made it!" with an EXIT door (+138 iMG). Saucer art is the CoU
  *   tower_quest ufo_1 (CC0).
  */
@@ -241,7 +241,9 @@ export const BEAM_ME_DOWN = Object.freeze({
   beamBottom: 300,
   saucers: SAUCERS.map(([x, y]) => Object.freeze({ x, y })),
   quoinTypes: Object.freeze(['xp', 'mood', 'energy', 'currants']),
-  quoinAmount: 4,
+  // #560: Paradise quoins are benefit 1 ('paradise iMG' / 'paradise currants', items/quoin.js 575-590),
+  // paid times the player's own multiplier (171-174); the video's +4 was a x4 player's.
+  quoinBenefit: 1,
   objective: 'Drop through the saucers’ beams and gather what they hold',
   completion: 'Bravo! You made it!',
   reward: Object.freeze({ xp: 138 }),
@@ -271,7 +273,7 @@ export function beamQuoins(scene = BEAM_ME_DOWN) {
         x: Math.round(s.x + (k - 1) * 0.18 * (scene.beamTop + (scene.beamBottom - scene.beamTop) * t)),
         y: Math.round(s.y + 30 + scene.beamLength * t),
         type: scene.quoinTypes[(i + k) % scene.quoinTypes.length],
-        amount: scene.quoinAmount,
+        benefit: scene.quoinBenefit,
       });
     }
   });

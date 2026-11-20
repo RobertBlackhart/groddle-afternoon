@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=725fb714';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6ba8b930';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ea85b752';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=a5016c3a';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=36c6d2b2';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=80101f13';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=8a417fb3';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -390,13 +390,13 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=aa2cb3a1';
-import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=d66031da';
+} from './js/paradise-flight.js?v=4f491849';
+import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=17579e08';
 import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=ba8837d1';
+} from './js/paradise-course-runtime.js?v=a0961404';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -527,7 +527,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=79605158';
+} from './js/player-save.js?v=23b1540f';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -998,7 +998,7 @@ import {
   creditQuoinStat,
   creditMetabolicReward,
   streetQuoinPoints,
-} from './js/quoins.js?v=b342e1d9';
+} from './js/quoins.js?v=5abad2c7';
 import { isPartyStreet } from './js/party-spaces.js?v=a748a93f'; // G869: a Party Space's quoins are the party classes
 import {
   buildHubMapView,
@@ -23612,7 +23612,8 @@ function confirmParadiseTicketActivation(courseId) {
 
 function collectParadiseEntry(entry) {
   if (!entry?.sprite?.parent || entry.collected || !paradiseRun) return false;
-  const result = collectParadisePickup(paradiseRun, entry.index, Date.now(), { level: pc.level });
+  // #560: each Paradise quoin pays its benefit times the player's own multiplier (items/quoin.js 171-174).
+  const result = collectParadisePickup(paradiseRun, entry.index, Date.now(), { level: pc.level, multiplier: quoinState.multiplier });
   if (!result.ok) return false;
   entry.collected = true;
   const applied = applyParadiseReward(result.reward);
@@ -23642,7 +23643,7 @@ function collectParadiseEntry(entry) {
 
 function passParadiseRingEntry(entry) {
   if (!entry?.sprite?.parent || entry.passed || !paradiseRun) return false;
-  const result = passParadiseRing(paradiseRun, entry.index, Date.now());
+  const result = passParadiseRing(paradiseRun, entry.index, Date.now(), { multiplier: quoinState.multiplier });
   if (!result.ok) return false;
   entry.passed = true;
   const applied = applyParadiseReward(result.reward);
@@ -23713,7 +23714,7 @@ async function returnFromParadise({ expired = false, abandon = false } = {}) {
 
 function completeParadiseAtExit() {
   if (!paradiseIsInstanced() || !paradiseExit?.active || paradiseTransitionBusy) return false;
-  const result = finishParadiseRun(paradiseRun, Date.now());
+  const result = finishParadiseRun(paradiseRun, Date.now(), { multiplier: quoinState.multiplier });
   if (!result.ok) return false;
   const course = paradiseCourse();
   const applied = applyParadiseReward(result.completionReward);

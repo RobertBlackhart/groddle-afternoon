@@ -1,7 +1,7 @@
 /** Source-authored Ticket to Paradise economy and reusable flight-course state. */
 
-import { EXTRA_PARADISE_COURSES } from './paradise-courses.js?v=d66031da';
-import { qrazyRewardForLevel, quoinTouches } from './quoins.js?v=b342e1d9';
+import { EXTRA_PARADISE_COURSES, paradiseReward } from './paradise-courses.js?v=17579e08';
+import { qrazyRewardForLevel, quoinPay, quoinTouches } from './quoins.js?v=5abad2c7';
 import { getGameDayKey } from './game-day.js?v=50c112eb';
 
 export const PARADISE_DURATION_MS = 4 * 60 * 1000;
@@ -235,8 +235,8 @@ export function slipTerrainSlope(x, sample = 4) {
     (distance * 2);
 }
 
-const reward = (type, amount, giantId = null) =>
-  Object.freeze({ type, amount, giantId });
+// Each pickup keeps the amount recorded at x100 and the benefit it pays (paradise-courses.js recordedBenefit, #560).
+const reward = paradiseReward;
 
 export const PARADISE_COURSES = Object.freeze({
   cloud_rings: Object.freeze({
@@ -567,16 +567,22 @@ function noteReward(run, rewardDef) {
 }
 
 /**
- * A course reward as paid out. A Qurazy quoin pays the level-indexed iMG of
- * GSJS items/quoin.js:207-209 (config.qurazy_rewards[level - 1], no quoin
- * multiplier); it is paid as iMG and keeps `quoin: 'qurazy'` for its art.
+ * A course reward as paid out: `amount` is what lands before the mood bonus. A
+ * quoin pays its benefit times the player's own quoin multiplier (items/quoin.js
+ * 171-174, Paradise included; #560: the recorded x100 amounts were paid to everyone
+ * as they were). A Qurazy quoin pays the level-indexed iMG of GSJS items/quoin.js:
+ * 207-209 (config.qurazy_rewards[level - 1], no quoin multiplier); it is paid as
+ * iMG and keeps `quoin: 'qurazy'` for its art.
  */
-export function resolveParadiseReward(rewardDef, { level = 1 } = {}) {
-  if (rewardDef?.type !== 'qurazy') return rewardDef;
-  return Object.freeze({ type: 'xp', amount: qrazyRewardForLevel(level), giantId: null, quoin: 'qurazy' });
+export function resolveParadiseReward(rewardDef, { level = 1, multiplier = 1 } = {}) {
+  if (!rewardDef) return rewardDef;
+  if (rewardDef.type === 'qurazy') {
+    return Object.freeze({ type: 'xp', amount: qrazyRewardForLevel(level), giantId: null, quoin: 'qurazy' });
+  }
+  return Object.freeze({ ...rewardDef, amount: quoinPay(rewardDef.benefit, multiplier) });
 }
 
-export function collectParadisePickup(run, index, now = Date.now(), { level = 1 } = {}) {
+export function collectParadisePickup(run, index, now = Date.now(), { level = 1, multiplier = 1 } = {}) {
   const course = PARADISE_COURSES[run?.courseId];
   if (!run || !course) return { ok: false, reason: 'missing', run };
   if (paradiseRemainingMs(run, now) <= 0) {
@@ -590,14 +596,14 @@ export function collectParadisePickup(run, index, now = Date.now(), { level = 1 
   if (run.collected.includes(pickupIndex)) {
     return { ok: false, reason: 'already_collected', run };
   }
-  const rewardDef = resolveParadiseReward(course.rewards[pickupIndex % course.rewards.length], { level });
+  const rewardDef = resolveParadiseReward(course.rewards[pickupIndex % course.rewards.length], { level, multiplier });
   run.collected.push(pickupIndex);
   run.collected.sort((a, b) => a - b);
   noteReward(run, rewardDef);
   return { ok: true, reason: 'collected', reward: { ...rewardDef }, run };
 }
 
-export function passParadiseRing(run, index, now = Date.now()) {
+export function passParadiseRing(run, index, now = Date.now(), { multiplier = 1 } = {}) {
   const course = PARADISE_COURSES[run?.courseId];
   if (!run || !course) return { ok: false, reason: 'missing', run };
   if (paradiseRemainingMs(run, now) <= 0) {
@@ -611,7 +617,7 @@ export function passParadiseRing(run, index, now = Date.now()) {
   if (run.rings.includes(ringIndex)) {
     return { ok: false, reason: 'already_passed', run };
   }
-  const rewardDef = reward('xp', course.ringRewards[ringIndex] || 120);
+  const rewardDef = resolveParadiseReward(reward('xp', course.ringRewards[ringIndex] || 120), { multiplier });
   run.rings.push(ringIndex);
   run.rings.sort((a, b) => a - b);
   noteReward(run, rewardDef);
@@ -669,7 +675,7 @@ export function paradiseExitClosedLine(run) {
   return `The way home is shut until you collect all ${progress.total} ${things}: ${progress.total - progress.collected} more to go.`;
 }
 
-export function finishParadiseRun(run, now = Date.now()) {
+export function finishParadiseRun(run, now = Date.now(), { multiplier = 1 } = {}) {
   const course = PARADISE_COURSES[run?.courseId];
   if (!run || !course) return { ok: false, reason: 'missing', run };
   if (run.status === 'complete') return { ok: false, reason: 'complete', run };
@@ -682,7 +688,7 @@ export function finishParadiseRun(run, now = Date.now()) {
     return { ok: false, reason: 'objective_incomplete', run };
   }
   run.status = 'complete';
-  const completionReward = run.completionRewarded ? null : { ...course.completionReward };
+  const completionReward = run.completionRewarded ? null : { ...resolveParadiseReward(course.completionReward, { multiplier }) };
   if (completionReward) {
     noteReward(run, completionReward);
     run.completionRewarded = true;
