@@ -5030,6 +5030,22 @@
    "rows": [
     "G1063"
    ]
+  },
+  {
+   "id": "store-icons",
+   "title": "An item icon for each store in the vendor finder and the Encyclopedia's Sold by filter",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/store-icons.js"
+    }
+   ],
+   "why": "Report #564; Glitch gave a store no picture of its own (its hub map drew one shop icon for every store). The icons are items each store sells, in Tiny Speck's art.",
+   "ruling": "Austin 2026-11-20 (G1074): build, item icons in both places, no regional Street Spirit",
+   "rows": [
+    "G1074"
+   ]
   }
  ]
 }

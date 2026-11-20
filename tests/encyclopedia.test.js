@@ -196,7 +196,7 @@ describe('encyclopedia', () => {
   it('draws the Category, Sold by and section filters as the themed combobox over their selects', () => {
     const items = read('encyclopedia/items/index.html');
     assert.match(items, /<select id="cat">[\s\S]*data-icon="\.\.\/\.\.\/assets\/sprites\/icons\/[a-z0-9_]+\.webp"/);
-    if (BUILT_SECTIONS.includes('people')) assert.match(items, /<select id="sold">[\s\S]*<option value="produce" data-icon="\.\.\/\.\.\/assets\/sprites\/icons\/street_spirit\.webp">Produce Vendor \(\d+\)<\/option>/);
+    if (BUILT_SECTIONS.includes('people')) assert.match(items, /<select id="sold">[\s\S]*<option value="produce" data-icon="\.\.\/\.\.\/assets\/sprites\/icons\/carrot\.webp">Produce Vendor \(\d+\)<\/option>/);
     const js = readFileSync(join(dir, 'items', 'catalog.js'), 'utf8');
     assert.match(js, /combobox\(cat\);\n\s*combobox\(sold\);/);
     const cbx = readFileSync(join(dir, 'items', 'combobox.js'), 'utf8');

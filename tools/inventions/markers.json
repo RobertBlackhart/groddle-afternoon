@@ -1095,6 +1095,9 @@
   "public/js/start-backdrop.js": {
     "remake-own: * The card is the remake's own (no client equivalent). At boot the street is": "ours-start-backdrop"
   },
+  "public/js/store-icons.js": {
+    "remake-own: * The remake's own: Glitch gave a store no picture of its own (the": "store-icons"
+  },
   "public/js/street-arrival.js": {
     "glitch-had-none: * Glitch never set anyone down on a street at a made-up spot: a": "ours-street-arrival",
     "made-up: * Glitch never set anyone down on a street at a made-up spot: a signpost or door landed you on": "ours-street-arrival"
