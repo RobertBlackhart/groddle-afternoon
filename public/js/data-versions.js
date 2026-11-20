@@ -45,7 +45,7 @@
       "assets/content/street-jobs.json": "b5b35968",
       "assets/content/style-profiles.json": "db9582a4",
       "assets/content/trade-items.json": "e364f080",
-      "assets/content/zone.schema.json": "b5bcef88",
+      "assets/content/zone.schema.json": "56741ad0",
       "assets/decos/groddle/alakol_house_big_shadow@0.946x.webp": "23c6d2fd",
       "assets/decos/groddle/apartment_poster_discover_ix@1.75x.webp": "ef40fd18",
       "assets/decos/groddle/apartment_xsection_bottom_1@0.873x.webp": "0afb1ec2",

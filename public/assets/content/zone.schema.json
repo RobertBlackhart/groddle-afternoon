@@ -269,6 +269,7 @@
         "y": { "type": "number" },
         "w": { "type": "number" },
         "h": { "type": "number" },
+        "stand": { "description": "Where a player stands at this door when it is not the door's bottom centre (a subway station's stairs door stands on the slope, #385).", "type": "object", "required": ["x", "y"], "additionalProperties": false, "properties": { "x": { "type": "number" }, "y": { "type": "number" } } },
         "sprite": { "$ref": "#/$defs/spriteName" },
         "src": { "type": "string" },
         "flip": { "type": "boolean" },
