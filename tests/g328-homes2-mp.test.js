@@ -28,6 +28,8 @@ import {
   normalizeGiftAnswer,
   normalizeHomeView,
   normalizeNeighboursSlice,
+  takeFreshTendActs,
+  TENDED_KEEP,
   normalizeParcels,
   normalizeTendActs,
   giftedThisQuest,
@@ -37,13 +39,13 @@ import {
   tendAct,
   tendCounters,
   tendedText,
-} from '../public/js/neighbours-mp.js?v=9a35c17a';
+} from '../public/js/neighbours-mp.js?v=864c13c9';
 import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=465f8d14';
 import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=2ef01a9f';
-import { butlerApi } from '../public/js/features/butler-feature.js?v=3bf370a8';
+import { butlerApi } from '../public/js/features/butler-feature.js?v=18eb188f';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=8b51ffce';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=b4ae78ae';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=80a48795';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
@@ -174,6 +176,63 @@ describe('key-holders tending the owner\'s gardens', () => {
     assert.equal(g.counted, false, 'one owner counts once');
     assert.deepEqual(hostedCounters({ three: true, seventeen: true }), ['hosted_party:three', 'hosted_party:seventeen']);
     assert.deepEqual(normalizeNeighboursSlice({ tended: ['tend-0000000000000001', 'bad'], gifted: [7, 'x'], counts: { water_garden_for_others: 2, nope: 3 } }), { tended: ['tend-0000000000000001'], gifted: [7], counts: { water_garden_for_others: 2 } });
+  });
+
+  it('applies each waiting act exactly once, however many wait (200 acts past a 64-id list)', () => {
+    // The site (src/HomeTending.php): up to WAITING_MAX 200 acts wait, plus one call's 8; GET tending
+    // first lets go of the acts the stored save names, then lists the rest, oldest first.
+    const id = (n) => `tend-${n.toString(16).padStart(16, '0')}`;
+    let rows = [];
+    let next = 1;
+    const add = (n) => { for (let i = 0; i < n; i++) rows.push({ id: id(next), at: next++ }); };
+    let stored = [];
+    const waiting = () => {
+      const named = new Set(stored);
+      rows = rows.filter((r) => !named.has(r.id));
+      return rows.slice(0, 200);
+    };
+    const applied = new Map();
+    let slice = normalizeNeighboursSlice({});
+    const load = () => {
+      const take = takeFreshTendActs(waiting(), slice.tended);
+      for (const a of take.fresh) applied.set(a.id, (applied.get(a.id) || 0) + 1);
+      slice = normalizeNeighboursSlice({ ...slice, tended: take.tended });
+      return take.fresh.length;
+    };
+    const save = () => { stored = [...slice.tended]; };
+    add(207);
+    assert.equal(load(), 200, 'the oldest 200 the site lists');
+    assert.equal(load(), 0, 'asked again before the save is stored: nothing twice');
+    save();
+    assert.equal(load(), 7, 'the site let the 200 go and lists the 7 newer');
+    add(150);
+    assert.equal(load(), 150);
+    assert.equal(load(), 0);
+    save();
+    add(3);
+    assert.equal(load(), 3);
+    save();
+    assert.equal(load(), 0);
+    assert.equal(applied.size, 360);
+    assert.ok([...applied.values()].every((n) => n === 1), 'no act applied twice');
+    assert.ok(slice.tended.length <= 3, 'the list keeps only what still waits');
+    assert.ok(TENDED_KEEP >= 208, 'the bound is above what the site lets wait');
+    // A replayed plant would have turned the ripe crop back into seeds.
+    const g = createGarden({ cols: 1, rows: 1, now: 0 });
+    const acts = [{ id: id(1), yard: 'street', plot: '1-1', act: 'plant', seed: 'seed_spinach', at: 1000 }, { id: id(2), yard: 'street', plot: '1-1', act: 'water', at: 1001 }];
+    let tended = [];
+    for (let i = 0; i < 2; i++) {
+      const take = takeFreshTendActs(acts, tended);
+      for (const a of take.fresh) applyTendAct(g, a, tickGarden);
+      tended = take.tended;
+      tickGarden(g, 1001 + GARDEN_SEEDS.seed_spinach.grow1Ms + GARDEN_SEEDS.seed_spinach.grow2Ms);
+    }
+    assert.equal(g.plots['1-1'].state, 'crop');
+    // The feature asks the site one at a time, so its answers are read in order.
+    const src = read('public/js/features/neighbours-mp-feature.js');
+    assert.match(src, /if \(tendLoading\) \{\n\s+tendAgain = true;/);
+    assert.match(src, /takeFreshTendActs\(acts, slice\.tended\)/);
+    assert.doesNotMatch(src, /slice\.tended = \[\.\.\.slice\.tended, a\.id\]/);
   });
 
   it('keeps nothing in solo, and counts a visit to another player\'s home street as location.js does', () => {

@@ -116,7 +116,7 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=39041
 import { getPlot, tickGarden } from '../garden.js?v=2ef01a9f';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=465f8d14';
-import { butlerApi } from './butler-feature.js?v=3bf370a8';
+import { butlerApi } from './butler-feature.js?v=18eb188f';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=735a68e0';
 import { homeMusicFile } from '../homes.js?v=c9fd92db';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=c24d82cb';
@@ -168,11 +168,12 @@ import {
   tendCounters,
   tendedText,
   TENDED_KEEP,
+  takeFreshTendActs,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=9a35c17a';
+} from '../neighbours-mp.js?v=864c13c9';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e6c86fde';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=25b73729';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
 import { worldPoint } from './world-drop-feature.js?v=41462ff5';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=18889f7a';
@@ -698,8 +699,32 @@ function createSession(engine, client) {
     }
   }
 
-  /** My own gardens: what key-holders did while I was away (or just now). */
-  async function loadTending() {
+  /**
+   * My own gardens: what key-holders did while I was away (or just now). One ask at a time, and one
+   * more after it when another was wanted meanwhile, so the site's answers are read in order
+   * (takeFreshTendActs drops an id once an answer no longer lists it).
+   */
+  let tendLoading = null;
+  let tendAgain = false;
+  function loadTending() {
+    if (tendLoading) {
+      tendAgain = true;
+      return tendLoading;
+    }
+    tendLoading = (async () => {
+      let n = 0;
+      do {
+        tendAgain = false;
+        n += await loadTendingOnce();
+      } while (tendAgain);
+      return n;
+    })().finally(() => {
+      tendLoading = null;
+    });
+    return tendLoading;
+  }
+
+  async function loadTendingOnce() {
     if (!homesFeature._state) return 0;
     let acts;
     try {
@@ -709,14 +734,16 @@ function createSession(engine, client) {
       return 0;
     }
     const st = homesFeature._state();
-    const fresh = acts.filter((a) => !slice.tended.includes(a.id));
+    const take = takeFreshTendActs(acts, slice.tended);
+    const fresh = take.fresh;
     const changed = new Set();
     for (const a of fresh) {
       const where = a.yard === 'back' ? st.backCult : st.cult;
       const garden = where?.gardens?.[a.garden];
       if (garden && applyTendAct(garden, a, tickGarden)) changed.add(garden);
-      slice.tended = [...slice.tended, a.id].slice(-TENDED_KEEP);
     }
+    // Every act still waiting is applied now: the save names each once, until the site lets it go.
+    slice.tended = take.tended.slice(-TENDED_KEEP);
     if (!fresh.length) return 0;
     tendApplied += fresh.length;
     for (const t of engine.interactables || []) {

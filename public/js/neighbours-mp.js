@@ -793,8 +793,38 @@ export function hostedCounters(msg) {
   return out;
 }
 
-/** The slice the feature keeps in the save (tending applied, owners gifted, the neighbour counters). */
-export const TENDED_KEEP = 64;
+/**
+ * The slice the feature keeps in the save (tending applied, owners gifted, the neighbour counters).
+ * tended: the ids of the site's waiting acts this save has applied (takeFreshTendActs). It holds
+ * only ids the site still lists, so it is never longer than the site lets wait (HomeTending.php
+ * WAITING_MAX 200, plus one call's 8); TENDED_KEEP is a bound above that, never a window that lets
+ * an applied act fall off while it still waits.
+ */
+export const TENDED_KEEP = 256;
+
+/**
+ * The site's waiting acts (oldest first, every act still waiting) against the ids the save has
+ * applied: the acts not yet applied, and the applied list to keep once they are. An applied act
+ * stays on the site until the stored save names it (HomeTending.php waiting), so every id the site
+ * no longer lists is gone for good and drops off; every id it still lists stays, so no act is ever
+ * applied twice. (Before, the list kept the newest 64 of up to 200 waiting: past 64 the oldest
+ * acts were applied again, and a replayed plant turned a ripe crop back into seeds.)
+ * Call with the site's answers in the order they were asked (the feature asks one at a time).
+ */
+export function takeFreshTendActs(acts, tended) {
+  const done = new Set(Array.isArray(tended) ? tended : []);
+  const fresh = [];
+  const ids = [];
+  const seen = new Set();
+  for (const a of Array.isArray(acts) ? acts : []) {
+    const id = String(a?.id || '');
+    if (!/^tend-[0-9a-f]{16}$/.test(id) || seen.has(id)) continue;
+    seen.add(id);
+    ids.push(id);
+    if (!done.has(id)) fresh.push(a);
+  }
+  return { fresh, tended: ids };
+}
 
 export function normalizeNeighboursSlice(slice) {
   const s = slice && typeof slice === 'object' ? slice : {};
