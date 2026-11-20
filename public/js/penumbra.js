@@ -17,8 +17,10 @@
  *   (research/wayback/raw/snaps/penumbra/). So the C3 teleporter is the way in
  *   and that new top-left platform is where Penumbra drops you back.
  * - Quoins (items/quoin.js 156-184): a touched xp quoin pays its benefit as
- *   iMG. The benefit was an instance prop and is lost; the video shows
- *   +120 iMG on every Penumbra orb (and +100 mood on Umbra's).
+ *   iMG, times the player's quoin multiplier (171-174). The benefit was an
+ *   instance prop and is lost; the video shows +120 iMG on every Penumbra orb
+ *   (and +100 mood on Umbra's): benefit 1 at Lily's x100 with the full-mood
+ *   bonus, as her Paradise runs show for the benefit-1 'paradise iMG' quoins.
  *
  * Everything else is read off Lily Linguistic's run (video jBz24r82wPw,
  * t0057-t0126; reference only, no pixels): frames registered into a
@@ -37,7 +39,7 @@
  *   upper right floor) turns green with no visible effect in the run.
  * - red striped ladders between floors (the avatar climbs straight up them).
  * - 22 black orbs at +120 iMG: 10,438,475 -> 10,441,115 iMG on screen
- *   = 2,640 = 22 x 120.
+ *   = 2,640 = 22 x 120 (22 x benefit 1 x100 x1.2 mood).
  * - the ceiling barcode over the first gallery flickers bar by bar.
  * - the red ">>" corridor fades to grey; walking into it returns to Umbra
  *   ("Penning back to Umbra..." is a Snap caption at that spot).
@@ -53,7 +55,11 @@ export const UMBRA_TSID = 'GDOSHD9J6NT2HUJ';
 export const UMBRA_SOURCE_TSID = 'LDOSHD9J6NT2HUJ';
 export const PENUMBRA_HUB = Object.freeze({ hubId: '135', hubName: 'Puzzles' });
 export const PENUMBRA_SOURCE = 'reconstruction: Penumbra (LIFM2QAIQ1C31JV, not in tinyspeck/glitch-locations); layout from video jBz24r82wPw, art CC0 decos (newxpblack_blackcover_01a, mask_white, object_floor_fade) with Umbra\'s middleground filter';
-export const PENUMBRA_ORB_IMG = 120;
+/**
+ * #560: each orb is benefit 1. The recorded +120 was already a x100 player's (with the mood bonus);
+ * collectQuoin multiplies the amount it is given, so 120 here paid 12,000 (and the mood bonus) at x100.
+ */
+export const PENUMBRA_ORB_BENEFIT = 1;
 /** World px per video px (avatar ~80 video px, 130 in the remake). */
 export const VIDEO_SCALE = 1.6;
 
@@ -500,7 +506,7 @@ export function penumbraPuzzleEntry() {
     emptyEcology: true,
     start: { ...PENUMBRA_START },
     triggers,
-    quoins: [...ORBS.map((o) => ({ x: o.x, y: o.y, type: 'xp', amount: PENUMBRA_ORB_IMG, ...(o.flag ? { flag: o.flag } : {}) })), ...windowOrbs()],
+    quoins: [...ORBS.map((o) => ({ x: o.x, y: o.y, type: 'xp', amount: PENUMBRA_ORB_BENEFIT, ...(o.flag ? { flag: o.flag } : {}) })), ...windowOrbs()],
     quoinsWhy: '22 orbs at +120 iMG each: the video counter goes 10,438,475 -> 10,441,115 (= 22 x 120) and every pickup reads +120 iMG. Barcode-room orbs appear with sq4; window orbs (inside the grids) with sq2.',
     autoplay: ['sq1', 'sq2', 'sq6', 'sq3', 'sq4', 'sq5', '*quoins', 'exit'],
     events: { to_umbra: TO_UMBRA.map((a) => ({ ...a, code: { ...a.code, arrive: { ...a.code.arrive } } })) },
@@ -515,7 +521,7 @@ export function windowOrbs() {
     for (const col of g.orbs) {
       const cx = g.x0 + CELL.gap + col * (CELL.w + CELL.gap + 4) + CELL.w / 2;
       const cy = g.y0 + CELL.gap + (CELL.h + CELL.gap + 14) + CELL.h / 2;
-      out.push({ x: Math.round(cx), y: Math.round(cy), type: 'xp', amount: PENUMBRA_ORB_IMG, flag: 'windows' });
+      out.push({ x: Math.round(cx), y: Math.round(cy), type: 'xp', amount: PENUMBRA_ORB_BENEFIT, flag: 'windows' });
     }
   }
   return out;

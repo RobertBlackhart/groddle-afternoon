@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import {
   LADDERS,
   ORBS,
-  PENUMBRA_ORB_IMG,
+  PENUMBRA_ORB_BENEFIT,
   PENUMBRA_START,
   PENUMBRA_TSID,
   SQUARES,
@@ -21,9 +21,10 @@ import {
   UMBRA_TSID,
   penumbraStreet,
   windowOrbs,
-} from '../public/js/penumbra.js?v=f6f7176e';
+} from '../public/js/penumbra.js?v=9d5fe4dc';
 import { autoplaySteps, normalizePuzzleData, quoinsInReach, stepTriggers } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { createEventRuntime, dueEventTimers, runLocationEvent } from '../public/js/location-events.js?v=7fd40f71';
+import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=5abad2c7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(readFileSync(join(root, rel), 'utf8'));
@@ -57,12 +58,18 @@ describe('Penumbra build', () => {
 });
 
 describe('Penumbra layout', () => {
-  test('22 orbs at +120 iMG: the 2,640 iMG the video counter climbs', () => {
+  test('22 orbs at +120 iMG: the 2,640 iMG the video counter climbs at x100 and full mood', () => {
     const def = puzzles[PENUMBRA_TSID];
     assert.equal(def.quoins.length, 22);
     assert.equal(def.quoins.length, ORBS.length + windowOrbs().length);
-    assert.ok(def.quoins.every((q) => q.type === 'xp' && q.amount === PENUMBRA_ORB_IMG));
-    assert.equal(def.quoins.reduce((n, q) => n + q.amount, 0), 10441115 - 10438475);
+    // #560: benefit 1 each; collectQuoin multiplies it (items/quoin.js 171-174), so a x100 player at full mood sees +120.
+    assert.equal(PENUMBRA_ORB_BENEFIT, 1);
+    assert.ok(def.quoins.every((q) => q.type === 'xp' && q.amount === PENUMBRA_ORB_BENEFIT));
+    const pc = { level: 30, xp: 0, imagination: 0, mood: 100, moodMax: 100, energy: 100, energyMax: 100 };
+    const state = createQuoinState({ multiplier: 100 });
+    let got = 0;
+    for (const q of def.quoins) got += collectQuoin(state, q.type, pc, { amount: q.amount }).actual;
+    assert.equal(got, 10441115 - 10438475);
   });
 
   test('every orb sits within a jump of the floor under it', () => {

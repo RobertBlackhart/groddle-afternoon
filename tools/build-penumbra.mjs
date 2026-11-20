@@ -18,7 +18,7 @@ import {
   penumbraPuzzleEntry,
   penumbraStreet,
   umbraPuzzleEntry,
-} from '../public/js/penumbra.js?v=f6f7176e';
+} from '../public/js/penumbra.js?v=9d5fe4dc';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');

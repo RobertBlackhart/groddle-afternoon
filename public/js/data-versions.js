@@ -35,7 +35,7 @@
       "assets/content/garden-spots.json": "d1ec3e98",
       "assets/content/loading-images.json": "7f47de00",
       "assets/content/node-spots.json": "d0c87cff",
-      "assets/content/puzzle-triggers.json": "ef2644de",
+      "assets/content/puzzle-triggers.json": "2c9b9cd2",
       "assets/content/quests.json": "4086a7c7",
       "assets/content/quoin-spots.json": "a10e555f",
       "assets/content/recipes.json": "a0e6141c",
