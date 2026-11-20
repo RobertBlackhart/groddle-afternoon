@@ -2,7 +2,9 @@
  * Build the street projects ("jobs") catalog from Tiny Speck's GameServerJS and
  * archived location XML (both CC0).
  *
- *   node build-street-jobs.mjs
+ *   node build-street-jobs.mjs           writes public/assets/content/street-jobs.json
+ *   node build-street-jobs.mjs --check   fails when the file is stale or a street project's words
+ *                                        name another street or hub (#553, tools/street-jobs-words.mjs)
  *
  * Sources:
  *  - quests/job_*.js: the 200 job phase classes (type, requirements with
@@ -38,6 +40,7 @@ import vm from 'node:vm';
 import { decodeDataText } from './tools/data-text.mjs';
 import { obtainableItems } from './tools/job-obtainable.mjs';
 import { loadRetiredItems, retireRequirement } from './tools/retired-items.mjs';
+import { correctStreetJobWords, streetJobWordFailures } from './tools/street-jobs-words.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const gsjs = process.env.GRODDLE_GSJS || decodeURIComponent(new URL('../glitch-GameServerJS', import.meta.url).pathname);
@@ -324,8 +327,8 @@ for (const [jobId, rows] of byJobId) {
       kind: 'street',
       ...base,
       connecting,
-      title: info.title_override || `Build ${base.label}`,
-      desc: info.desc_override || '',
+      // #553: corrected where the source names another street or hub (tools/street-jobs-words.mjs).
+      ...correctStreetJobWords(jobId, { title: info.title_override || `Build ${base.label}`, desc: info.desc_override || '' }),
       phases,
     };
     for (const tsid of connecting) offer(tsid, jobId);
@@ -527,5 +530,22 @@ const catalog = {
 };
 
 // G955 (#472): GSJS htmlText entities as characters ("Plant &amp; Certify" read so on the boards).
-await writeFile(outputPath, `${JSON.stringify(decodeDataText(catalog))}\n`);
-console.log(JSON.stringify(catalog.counts, null, 2));
+const text = `${JSON.stringify(decodeDataText(catalog))}\n`;
+// #553: every street project's words name its own street and hub (tools/street-jobs-words.mjs).
+const wordFailures = streetJobWordFailures(JSON.parse(text));
+if (wordFailures.length) {
+  for (const [jobId, problems] of wordFailures) console.error(`street job ${jobId}: ${problems.join('; ')}`);
+  console.error('Add a correction to tools/street-jobs-words.mjs STREET_JOB_CORRECTIONS (the source text and the fix).');
+  process.exit(1);
+}
+if (process.argv.includes('--check')) {
+  const current = await readFile(outputPath, 'utf8').catch(() => '');
+  if (current !== text) {
+    console.error('public/assets/content/street-jobs.json is stale: run node build-street-jobs.mjs');
+    process.exit(1);
+  }
+  console.log(`street jobs are current (${catalog.counts.streetJobs} street projects, words checked)`);
+} else {
+  await writeFile(outputPath, text);
+  console.log(JSON.stringify(catalog.counts, null, 2));
+}

@@ -42,7 +42,7 @@
       "assets/content/sound-keys.json": "76e71d12",
       "assets/content/street-arrivals.json": "4ae953cf",
       "assets/content/street-ecology.json": "f18b3c16",
-      "assets/content/street-jobs.json": "b5b35968",
+      "assets/content/street-jobs.json": "52f091d9",
       "assets/content/style-profiles.json": "db9582a4",
       "assets/content/trade-items.json": "e364f080",
       "assets/content/zone.schema.json": "56741ad0",
