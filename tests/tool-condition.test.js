@@ -19,7 +19,7 @@ import {
   createGarden,
   plantPlot,
   waterPlot,
-} from '../public/js/garden.js?v=d4e55862';
+} from '../public/js/garden.js?v=2ef01a9f';
 import {
   createMineRock,
   mineRock,

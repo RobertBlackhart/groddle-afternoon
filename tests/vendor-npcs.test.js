@@ -31,7 +31,7 @@ import {
   vendorNpcsFor,
   vendorSheet,
 } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6895d7a2';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=71211643';
 import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import {

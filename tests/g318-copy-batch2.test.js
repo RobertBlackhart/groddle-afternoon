@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ITEM_CATALOG, createInventory, getItemUseInfo, registerItemUse } from '../public/js/inventory.js?v=6414dbdc';
-import { VENDOR_PROFILES, vendorBuy, vendorSell } from '../public/js/vendor.js?v=6895d7a2';
+import { VENDOR_PROFILES, vendorBuy, vendorSell } from '../public/js/vendor.js?v=71211643';
 import { canEatFood, createFoodState } from '../public/js/food.js?v=328b3274';
 
 const root = join(import.meta.dirname, '..');

@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { getVerbsFor, runVerb } from '../public/content.js?v=bbb5204c';
+import { getVerbsFor, runVerb } from '../public/content.js?v=7906bf62';
 import { createTrantState, setTrantTables, fruitCapacityAt } from '../public/js/trants.js?v=864ea9ff';
 import { quoteTrantCare } from '../public/js/trant-care.js?v=cb7f539b';
 import { harvestWoodTree, noteWoodCare, quoteWoodTreeHarvest, WOOD_TREE_MATURITY_MAP } from '../public/js/woodcutting.js?v=9e9af511';

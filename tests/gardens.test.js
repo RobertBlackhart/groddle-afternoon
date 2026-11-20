@@ -55,10 +55,10 @@ import {
   plotNeedsWater,
   gardenNeedsWater,
   GARDEN_NO_DRY_PLOTS_LINE,
-} from '../public/js/garden.js?v=d4e55862';
-import { getVerbsFor, runVerb } from '../public/content.js?v=bbb5204c';
+} from '../public/js/garden.js?v=2ef01a9f';
+import { getVerbsFor, runVerb } from '../public/content.js?v=7906bf62';
 import { plotPieces } from '../public/js/garden-view.js?v=04fe8467';
-import { plotsFor } from '../public/js/master-garden.js?v=43a08008';
+import { plotsFor } from '../public/js/master-garden.js?v=12329cf7';
 import {
   createInventory,
   countItem,
@@ -66,7 +66,7 @@ import {
   listPackToolSlots,
   isToolItem,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=6895d7a2';
+import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=71211643';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -695,11 +695,12 @@ describe('the tick catches up across every stage the time covers (G561)', () => 
   const hasPhp = spawnSync('php', ['-v']).status === 0;
   it('lands on the same plot as the site\'s tick (src/HomeTending.php tickPlot)', { skip: !HAS_SITE ? 'no groddle-afternoon-site checkout' : !hasPhp ? 'no php' : false }, () => {
     const code = `require ${JSON.stringify(SITE_DIR)} . '/src/HomeTending.php'; $seeds = Groddle\\Minn\\HomeTending::seeds(); $out = [];
-      foreach (json_decode($argv[1]) as $c) { $p = $c->plot; Groddle\\Minn\\HomeTending::tickPlot($p, (int) $c->now, $seeds); $out[] = $p; }
+      foreach (json_decode(file_get_contents('php://stdin')) as $c) { $p = $c->plot; Groddle\\Minn\\HomeTending::tickPlot($p, (int) $c->now, $seeds); $out[] = $p; }
       echo json_encode($out);`;
-    const site = JSON.parse(execFileSync('php', ['-r', code, '--', JSON.stringify(cases)], { encoding: 'utf8' }));
+    // The cases go on stdin: as one argument they pass Linux's 128 KB limit on a single argv string.
+    const site = JSON.parse(execFileSync('php', ['-r', code], { encoding: 'utf8', input: JSON.stringify(cases) }));
     assert.equal(site.length, cases.length);
-    const pick = (p) => ({ state: p.state, wet: p.wet, wetAt: p.wetAt ?? null, stageStartedAt: p.stageStartedAt, growthMs: p.growthMs, pace: p.pace ?? null, wetPace: p.wet ? p.wetPace ?? null : null });
+    const pick = (p) => ({ state: p.state, wet: p.wet, wetAt: p.wetAt ?? null, stageStartedAt: p.stageStartedAt, growthMs: p.growthMs, pace: p.pace ?? null, wetPace: p.wet ? p.wetPace ?? null : null, ripeAt: p.ripeAt ?? null });
     cases.forEach((c, i) => assert.deepEqual(pick(tickOne(c.plot, c.now).plot), pick(site[i]), c.name));
     // The fixture reaches every stage both ways.
     const states = new Set(site.map((p) => `${p.state}/${p.wet}`));

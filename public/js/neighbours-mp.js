@@ -24,7 +24,7 @@
  * Solo never loads any of this: solo's neighbours are js/neighbours.js.
  */
 
-import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=d4e55862';
+import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=2ef01a9f';
 import { normalizeParcelBox, stackCopy } from './butler.js?v=465f8d14';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
 
@@ -130,14 +130,17 @@ export const HOME_PLANTER_HOLD_LINE = 'Another player planted those seeds, give 
 
 /**
  * Whether a public home-street plot's ripe crop is still its planter's for `me` (include/garden.js
- * 1042-1046, 1229-1231; GardenView.as 481-486): a minute from when it ripened (the crop stage's
- * start). A plot with no planter is the owner's own planting. The site refuses the same
- * (src/HomeTending.php held).
+ * 1042-1046, 1229-1231; GardenView.as 481-486): a minute from when it ripened. That is the plot's
+ * ripeAt, set once when the crop ripens (garden.js tickPlot, crop_time in the source), not the
+ * stage clock a watering or its drying restarts (#550). A crop with no ripeAt (ripened before it
+ * was kept) is not held, as the realtime server's gardens.go reads a zero ripe time. A plot with
+ * no planter is the owner's own planting. The site refuses the same (src/HomeTending.php held).
  */
 export function homePlotHeld(plot, me, owner, now = Date.now()) {
   if (plot?.state !== 'crop') return false;
+  const ripe = Number(plot.ripeAt) || 0;
+  if (ripe <= 0) return false;
   const planter = Number(plot.planter) > 0 ? Number(plot.planter) : Number(owner) || 0;
-  const ripe = Number(plot.stageStartedAt) || 0;
   return planter !== Number(me) && now - ripe < HOME_PLANTER_HOLD_MS;
 }
 
@@ -683,6 +686,7 @@ export function applyTendAct(garden, act, tick = null) {
   }
   // include/garden.js 551: the pick ends the planter's claim.
   delete plot.planter;
+  delete plot.ripeAt;
   plot.state = act.act === 'clear' ? 'clean' : 'dirty';
   plot.seed = null;
   plot.stageStartedAt = at;

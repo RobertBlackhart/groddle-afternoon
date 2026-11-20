@@ -129,8 +129,10 @@ export function sowPlot(plot, seedId, now = Date.now(), growModifier = 1) {
   plot.state = 'seeds';
   plot.seed = seedId;
   plot.fertilized = false;
-  // A home-street plot's planter (G777, js/neighbours-mp.js homePlotHeld) is the new crop's to set.
+  // A home-street plot's planter (G777, js/neighbours-mp.js homePlotHeld) is the new crop's to set,
+  // and so is its ripe time (tickPlot).
   delete plot.planter;
+  delete plot.ripeAt;
   plot.growModifier = Number(growModifier) > 0 ? Number(growModifier) : 1;
   plot.pace = GARDEN_SPEEDUP;
   startStage(plot, now);
@@ -1253,6 +1255,9 @@ function tickPlot(plot, now) {
         // The next stage starts when this one ended, so the time past it carries on.
         plot.state = plot.state === 'seeds' ? 'shoots' : 'crop';
         startStage(plot, doneAt);
+        // include/garden.js 1043-1054: crop_time is set once, when the crop ripens. Watering a ripe
+        // crop or that watering drying restarts stageStartedAt, never this (#550, homePlotHeld).
+        if (plot.state === 'crop') plot.ripeAt = doneAt;
         changed = true;
         continue;
       }
@@ -1644,6 +1649,7 @@ export function harvestPlot(garden, key, inv, pc, opts = {}) {
   plot.fertilized = false;
   plot.guanoAt = null;
   delete plot.planter;
+  delete plot.ripeAt;
   startStage(plot, now);
   return {
     ok: true,

@@ -20,8 +20,8 @@ import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsSho
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { ecologyForStreet, gardenPlacementRequest, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=578806c2';
 import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=4bef77b6';
-import { FEATURES } from '../public/js/features/index.js?v=842fcaf1';
-import { streetGardenBeds } from '../public/js/garden.js?v=d4e55862';
+import { FEATURES } from '../public/js/features/index.js?v=65ac3113';
+import { streetGardenBeds } from '../public/js/garden.js?v=2ef01a9f';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
