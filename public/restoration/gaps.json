@@ -41,8 +41,8 @@
   "counts": {
     "fixing": 3,
     "known": 13,
-    "unreleased": 0,
-    "fixed": 372,
+    "unreleased": 1,
+    "fixed": 371,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -2136,6 +2136,11 @@
       "name": "Gardens",
       "items": [
         {
+          "id": "G1054",
+          "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
+          "state": "unreleased"
+        },
+        {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
           "report": 321,
@@ -2172,12 +2177,6 @@
           "text": "A bean that would not grow in a patch did not say that its kind grows only in certain regions.",
           "state": "fixed",
           "version": "v0.51.1"
-        },
-        {
-          "id": "G1054",
-          "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
-          "state": "fixed",
-          "version": "v0.51.2"
         },
         {
           "id": "G1055",
