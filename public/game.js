@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=078aeaf4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0696401d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5d2bcb12';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -13199,6 +13199,12 @@ const engine = {
   /** TICKETS: the modern panel shell (js/ui/panel-shell.js), so a window a feature builds joins it (add); null in a skin without it. */
   get panelShell() {
     return panelShell;
+  },
+  /** ENCYC (js/encyclopedia-links.js): a subject's "In the Encyclopedia" <a>, null when it has no page or the index is not in yet. */
+  encyclopediaLink: (subject, className = '') => encyclopedia.link(document, subject, className),
+  encyclopediaLoad: () => encyclopedia.load(),
+  get encyclopediaReady() {
+    return encyclopedia.ready;
   },
   get worldW() {
     return WORLD_W;

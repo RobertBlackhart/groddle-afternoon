@@ -28,7 +28,7 @@ import {
 } from '../public/js/street-jobs.js?v=71fa73cd';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
 import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=fe5054b5';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=2027fc52';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=bbbeb780';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
@@ -390,9 +390,16 @@ describe('online is untouched', () => {
       assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /Solo amounts are 1\/200 of the original multiplayer totals, and the phase rewards scale by the same 1\/200\./);
       // G890: the top contributor's line names the scaled share and chance.
       assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /As the top contributor you also earned the performance rewards, scaled the same way: 25% of a far-out project's, with a 25% chance at each drop\./);
-      // Phase 2's rows: a skill two levels lower says so, a waived one too.
+      // G1073: phase 2's work rows wait behind its items, so they name no skill yet.
+      const phase2All = raw.classes[job.phases[1].classTsid].requirements;
+      const lockedTexts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
+      assert.ok(lockedTexts.some((t) => t.includes('opens after the earlier steps')));
+      assert.ok(!lockedTexts.some((t) => /no skill needed|further out|needs /.test(t)), 'no skill on a locked work row');
+      // The items given, the work opens: a skill two levels lower says so, a waived one too.
+      for (const r of phase2All) if (r.group === 1) state.jobs[MULLAT].got[r.id] = r.num;
+      projectApi.open(engine, MULLAT);
       const texts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
-      const phase2 = raw.classes[job.phases[1].classTsid].requirements.filter((r) => r.skill);
+      const phase2 = phase2All.filter((r) => r.skill);
       for (const r of phase2) {
         const level = Number(r.skill.match(/_(\d+)$/)[1]);
         if (level <= 2) assert.ok(texts.some((t) => t.includes('no skill needed this close to the start')), r.id);

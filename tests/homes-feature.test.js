@@ -20,7 +20,7 @@ import {
   rockItems,
   soilKeyMap,
   yardSoilInput,
-} from '../public/js/features/homes-feature.js?v=2798697a';
+} from '../public/js/features/homes-feature.js?v=dd6a50b6';
 import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=49e7f103';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=b787b3eb';

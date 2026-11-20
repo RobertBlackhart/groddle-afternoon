@@ -163,6 +163,7 @@ import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=1180ebbd';
 import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=6bd977a8';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
+import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../street-job-asks.js?v=c2511e10';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 
@@ -1529,6 +1530,8 @@ const PANEL_CSS = `
 .sj-options button{text-align:left;white-space:normal;padding:.45rem .55rem;line-height:var(--lh-snug)}
 .sj-options button.is-chosen{background:var(--c-cream-96c);border-color:var(--c-gold-79);box-shadow:0 0 0 2px color-mix(in srgb, var(--c-gold-79) 35%, transparent)}
 .sj-options button span{display:block;font-weight:400;color:var(--c-sand-51b);font-size:var(--fs-xs);margin-top:var(--sp-1)}
+.sj-rule{margin:0 0 .45rem;font-size:var(--fs-sm);color:var(--c-sand-39)}
+.sj-req a.sj-get{display:inline-block;font-size:var(--fs-sm);color:var(--c-blue-51);text-decoration:underline}
 .sj-status{margin:var(--sp-4) 0 0;font-size:var(--fs-sm);color:var(--c-sand-51b)}
 .sj-others{margin:.55rem 0 0;padding:.45rem 0 0;border-top:1px dashed var(--c-sand-86);font-size:var(--fs-sm);color:var(--c-sand-51b)}
 .sj-others ul{margin:.2rem 0 0;padding-left:var(--sp-9)}
@@ -1583,6 +1586,7 @@ function ensurePanel() {
     <div class="sj-options" data-sj-options hidden></div>
     <div class="sj-hall" data-sj-hall hidden></div>
     <div class="sj-phase"><span data-sj-phase></span><div class="sj-bar"><i data-sj-bar></i></div><small class="sj-perc" data-sj-perc></small></div>
+    <p class="sj-rule" data-sj-rule hidden></p>
     <ul class="sj-reqs" data-sj-reqs></ul>
     <p class="sj-note" data-sj-note role="alert" hidden></p>
     <p class="sj-rewards" data-sj-rewards hidden></p>
@@ -1718,6 +1722,29 @@ function el(tag, attrs = {}, text = '') {
   return node;
 }
 
+/**
+ * G1073: an item ask's "Where to get it", the item's Encyclopedia page at How to get it
+ * (js/street-job-asks.js), or null when it has no page. Before the index is in it asks for it
+ * once and draws the board again when it lands.
+ */
+let askIndexAsked = false;
+function askGetLink(engine, subject) {
+  if (!subject || typeof engine?.encyclopediaLink !== 'function') return null;
+  const a = engine.encyclopediaLink(subject, 'sj-get');
+  if (!a) {
+    if (!engine.encyclopediaReady && !askIndexAsked && typeof engine.encyclopediaLoad === 'function') {
+      askIndexAsked = true;
+      Promise.resolve(engine.encyclopediaLoad()).then(() => renderPanel(engine), () => {});
+    }
+    return null;
+  }
+  a.href = itemGetHref(a.href);
+  a.textContent = JOB_ASK_TEXT.getIt;
+  a.title = JOB_ASK_TEXT.getItTip;
+  a.dataset.sjGet = subject.id;
+  return a;
+}
+
 function renderPanel(engine) {
   if (!panel || panel.hidden || !panelJobId || !catalog) return;
   if (!jobDef(catalog, panelJobId)) {
@@ -1785,6 +1812,10 @@ function renderPanel(engine) {
   list.replaceChildren();
   const open = (status.status === 'active' || status.status === 'open') && !unclaimed;
   const ctx = workCtx(engine);
+  // G1073: anyone can give items; skills are for tool work (quest.js 1471, 942-986).
+  const rule = q('[data-sj-rule]');
+  rule.textContent = JOB_ASK_TEXT.rule;
+  rule.hidden = !showAskRule(reqs, open);
   for (const r of reqs) {
     const li = el('li', { class: `sj-req${r.done ? ' is-done' : ''}${!r.done && !r.open ? ' is-locked' : ''}`, dataset: { sjReq: r.id } });
     const iconCls = r.type === 'currants' ? 'currant' : r.classId;
@@ -1802,9 +1833,9 @@ function renderPanel(engine) {
     if (r.type === 'item') meta.push(`you have ${countItem(engine.inv, r.classId)}`);
     if (r.type === 'work') {
       meta.push(workStepCost(r));
-      // Report #425: solo near the start a work ask's skill is lower (skillWas the source's) or waived.
-      if (r.skillWas && !r.skill) meta.push('no skill needed this close to the start');
-      else if (r.skill) meta.push(`needs ${skillLabel(r.skill)}${r.skillWas ? ` (${ROMAN[Number(String(r.skillWas).match(/_(\d+)$/)?.[1])] || skillLabel(r.skillWas)} further out)` : ''}`);
+      // G1073: the skill shows once the step is open (#425: lower or waived near the start, solo).
+      const skillNote = workSkillNote(r, skillLabel);
+      if (skillNote) meta.push(skillNote);
     }
     if (unclaimed) meta.push(HALL_TEXT.locked);
     else if (!r.done && !r.open) meta.push('opens after the earlier steps');
@@ -1812,6 +1843,9 @@ function renderPanel(engine) {
     text.append(el('small', {}, meta.join(' · ')));
     // G617: how gems are found, under a gem ask still open (the remake's own line; no source).
     if (r.type === 'item' && isGem(r.classId) && !r.done) text.append(el('small', { class: 'sj-hint', dataset: { sjHint: 'gems' } }, GEM_HINTS.project));
+    // G1073: where an item comes from: its Encyclopedia page's How to get it (the item card's link).
+    const getLink = askGetLink(engine, itemAskSubject(r, itemLabel));
+    if (getLink) text.append(getLink);
     const acts = el('div', { class: 'sj-acts' });
     // JobDetailsUI.as 63-75, 131, 216: "How many?", from 1 to what you have and the step still needs, 1 to start, Max.
     const left = Math.max(0, r.need - r.got - (shared(jobId) ? n0(row.held?.[r.id]) : 0));
