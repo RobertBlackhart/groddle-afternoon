@@ -3641,6 +3641,161 @@
       "commits": [
         "game:25e79697327"
       ]
+    },
+    {
+      "id": "G1042",
+      "area": "Selling",
+      "show": "fixing",
+      "text": "A vendor, a trade or a letter could take a bag that still held things when you asked for a count that reached it.",
+      "commits": [
+        "game:08512ae20a3"
+      ]
+    },
+    {
+      "id": "G1043",
+      "area": "Activity",
+      "show": "fixing",
+      "text": "The Activity window coloured only the first word of a made item's name.",
+      "commits": [
+        "game:e1240135403"
+      ]
+    },
+    {
+      "id": "G1044",
+      "area": "Projects",
+      "show": "fixing",
+      "text": "A project phase that opened while you were away said it opened in a negative number of minutes.",
+      "commits": [
+        "game:6708c98734f"
+      ]
+    },
+    {
+      "id": "G1045",
+      "area": "Making",
+      "show": "fixing",
+      "text": "The Make menu did not say on a recipe's tile when you lacked the skill for its tool.",
+      "commits": [
+        "game:cc118a7dd5e"
+      ]
+    },
+    {
+      "id": "G1046",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "A bean that would not grow in a patch did not say that its kind grows only in certain regions.",
+      "commits": [
+        "game:f012cea7c69"
+      ]
+    },
+    {
+      "id": "G1047",
+      "area": "Map",
+      "show": "fixing",
+      "text": "A route through the subway did not name the line to board or the stop to get off at.",
+      "commits": [
+        "game:2394a26b830",
+        "game:a13f3e19010"
+      ]
+    },
+    {
+      "id": "G1048",
+      "area": "Transit",
+      "show": "fixing",
+      "text": "At a subway station you stood at the foot of the steps instead of walking up to the entrance.",
+      "commits": [
+        "game:b8e3b2245bd",
+        "game:9bc74b675d5"
+      ]
+    },
+    {
+      "id": "G1049",
+      "area": "Phone",
+      "show": "fixing",
+      "text": "On an upright phone the route card covered the buffs and the Menu button slid off its pill.",
+      "commits": [
+        "game:e94c01a21ae",
+        "game:946623b8098"
+      ]
+    },
+    {
+      "id": "G1050",
+      "area": "Avatar",
+      "show": "fixing",
+      "text": "Glitches briefly showed the default outfit while their own look was still loading.",
+      "commits": [
+        "game:864b1a31294",
+        "game:5bed6cccb40",
+        "game:248092e0deb"
+      ]
+    },
+    {
+      "id": "G1051",
+      "area": "Naraka",
+      "show": "fixing",
+      "text": "Hellish Grapes bunches could pile up, so one squish could take more than one.",
+      "commits": [
+        "game:eb40de6ed3a"
+      ]
+    },
+    {
+      "id": "G1052",
+      "area": "Trees",
+      "show": "fixing",
+      "text": "Fruit trees and the other trants always looked full, even when picked clean.",
+      "commits": [
+        "game:a8b83dbdd18"
+      ]
+    },
+    {
+      "id": "G1053",
+      "area": "Updates",
+      "show": "fixing",
+      "text": "The Update ready button could stay hidden behind an open window, so a new version went unnoticed.",
+      "commits": [
+        "game:2ec8315721d"
+      ]
+    },
+    {
+      "id": "G1054",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened."
+    },
+    {
+      "id": "G1055",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds."
+    },
+    {
+      "id": "G1056",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "A home street showed at most eight Patches; any more were paid for but never appeared."
+    },
+    {
+      "id": "G1057",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree."
+    },
+    {
+      "id": "G1058",
+      "area": "Projects",
+      "show": "fixing",
+      "text": "A few street projects named the wrong street in their title or description."
+    },
+    {
+      "id": "G1059",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Choosing a home street style could pick one while you stopped to read its hint."
+    },
+    {
+      "id": "G1060",
+      "area": "Multiplayer",
+      "show": "fixing",
+      "text": "Following a friend could take you onto a street that was still being built."
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.51.0",
+  "release": "v0.51.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 3,
+    "fixing": 10,
     "known": 13,
     "unreleased": 0,
-    "fixed": 353,
+    "fixed": 365,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -296,6 +296,11 @@
     {
       "name": "Streets",
       "items": [
+        {
+          "id": "G1057",
+          "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree.",
+          "state": "fixing"
+        },
         {
           "id": "G351",
           "text": "A few named streets, such as Celestial Strum and Coulcairn, have no map and no layout anywhere we have found.",
@@ -554,6 +559,12 @@
           "text": "The map did not draw streets you have not been to as a dotted line.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1047",
+          "text": "A route through the subway did not name the line to board or the stop to get off at.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -714,6 +725,16 @@
     {
       "name": "Homes",
       "items": [
+        {
+          "id": "G1056",
+          "text": "A home street showed at most eight Patches; any more were paid for but never appeared.",
+          "state": "fixing"
+        },
+        {
+          "id": "G1059",
+          "text": "Choosing a home street style could pick one while you stopped to read its hint.",
+          "state": "fixing"
+        },
         {
           "id": "G223",
           "text": "Some house styles are still to come, including more interior and back yard styles. The Coral Caves style waits for its art to turn up.",
@@ -1346,6 +1367,11 @@
         {
           "id": "F116",
           "text": "A Gameshow Ticket did not work inside a Party Space for one player. We could not make it happen yet.",
+          "state": "fixing"
+        },
+        {
+          "id": "G1060",
+          "text": "Following a friend could take you onto a street that was still being built.",
           "state": "fixing"
         },
         {
@@ -2009,10 +2035,21 @@
       "name": "Projects",
       "items": [
         {
+          "id": "G1058",
+          "text": "A few street projects named the wrong street in their title or description.",
+          "state": "fixing"
+        },
+        {
           "id": "F66",
           "text": "Notices covered the featured project's progress under the street name.",
           "state": "fixed",
           "version": "v0.37.0"
+        },
+        {
+          "id": "G1044",
+          "text": "A project phase that opened while you were away said it opened in a negative number of minutes.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -2094,6 +2131,16 @@
       "name": "Gardens",
       "items": [
         {
+          "id": "G1054",
+          "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
+          "state": "fixing"
+        },
+        {
+          "id": "G1055",
+          "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
+          "state": "fixing"
+        },
+        {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
           "report": 321,
@@ -2124,6 +2171,12 @@
           "report": 519,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1046",
+          "text": "A bean that would not grow in a patch did not say that its kind grows only in certain regions.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -2412,6 +2465,12 @@
           "text": "The street map of a subway station showed only its wall and floor.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G1048",
+          "text": "At a subway station you stood at the foot of the steps instead of walking up to the entrance.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -2562,6 +2621,12 @@
           "report": 515,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1045",
+          "text": "The Make menu did not say on a recipe's tile when you lacked the skill for its tool.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -2680,6 +2745,12 @@
           "text": "Vanity had no None for tops, trousers or shoes.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1050",
+          "text": "Glitches briefly showed the default outfit while their own look was still loading.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     },
@@ -2691,6 +2762,67 @@
           "text": "On a phone set to reduce motion, the Make panel's tool stood still, and a report's picture showed Can make now ticked when it was not.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1049",
+          "text": "On an upright phone the route card covered the buffs and the Menu button slid off its pill.",
+          "state": "fixed",
+          "version": "v0.51.1"
+        }
+      ]
+    },
+    {
+      "name": "Selling",
+      "items": [
+        {
+          "id": "G1042",
+          "text": "A vendor, a trade or a letter could take a bag that still held things when you asked for a count that reached it.",
+          "state": "fixed",
+          "version": "v0.51.1"
+        }
+      ]
+    },
+    {
+      "name": "Activity",
+      "items": [
+        {
+          "id": "G1043",
+          "text": "The Activity window coloured only the first word of a made item's name.",
+          "state": "fixed",
+          "version": "v0.51.1"
+        }
+      ]
+    },
+    {
+      "name": "Naraka",
+      "items": [
+        {
+          "id": "G1051",
+          "text": "Hellish Grapes bunches could pile up, so one squish could take more than one.",
+          "state": "fixed",
+          "version": "v0.51.1"
+        }
+      ]
+    },
+    {
+      "name": "Trees",
+      "items": [
+        {
+          "id": "G1052",
+          "text": "Fruit trees and the other trants always looked full, even when picked clean.",
+          "state": "fixed",
+          "version": "v0.51.1"
+        }
+      ]
+    },
+    {
+      "name": "Updates",
+      "items": [
+        {
+          "id": "G1053",
+          "text": "The Update ready button could stay hidden behind an open window, so a new version went unnoticed.",
+          "state": "fixed",
+          "version": "v0.51.1"
         }
       ]
     }
