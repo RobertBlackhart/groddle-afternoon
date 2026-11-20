@@ -10,6 +10,8 @@
  * (assets/content/puzzle-triggers.json), reporting each moment below as it fires.
  * The Annex (LNVIL1E14M13K5I) was not archived and stays a drawn scene.
  */
+import { quoinPay } from './quoins.js?v=5abad2c7';
+
 export const SUMMERS_DAY_QUEST_ID = 'blue_and_white_part1';
 export const SUMMERS_DAY_REPEAT_QUEST_ID = 'blue_and_white_part2';
 
@@ -185,27 +187,30 @@ export const SUMMERS_DAY_ANNEX_REVEAL = Object.freeze({ x: 653, y: ROW_Y(0) + 51
 /**
  * The pickups: one quoin over every pair shelf and the lowest centre shelf, none over the
  * middle centre shelf (306 1:21-1:24), seven in all. Both recordings pay them in the same
- * places: the lower left one currants, the middle right one mood, the rest iMG. Amounts are
- * 306_7Jvz8RQ's (Cimm: iMG 9,882 to 9,912, currants 12,493 to 12,544, mood 510 to 515);
- * Lily's higher-level run pays +120 iMG, +100 currants and +100 mood in the same places,
- * with one +1098 iMG roll (cYK 3:12-3:25).
+ * places: the lower left one currants, the middle right one mood, the rest iMG. 306_7Jvz8RQ
+ * (Cimm: iMG 9,882 to 9,912, currants 12,493 to 12,544, mood 510 to 515) pays +6 iMG and +5
+ * mood; Lily's higher-level run pays +120 iMG, +100 currants and +100 mood in the same places,
+ * with one +1098 iMG roll (cYK 3:12-3:25). #560: those are one quoin of benefit 1 at each
+ * player's own multiplier (x5 and x100, iMG with the full-mood bonus), as items/quoin.js
+ * 161-174 pays every quoin, so each pickup keeps the benefit and pays it through quoinPay.
  */
 export const SUMMERS_DAY_ANNEX_PICKUP_RISE = 42;
-const pickup = (shelfId, type, amount, source) => {
+const pickup = (shelfId, type, benefit, source) => {
   const s = SUMMERS_DAY_ANNEX_SHELVES.find((row) => row.id === shelfId);
-  return Object.freeze({ shelf: shelfId, type, amount, x: (s.x1 + s.x2) / 2, y: s.y1 - SUMMERS_DAY_ANNEX_PICKUP_RISE, source });
+  return Object.freeze({ shelf: shelfId, type, benefit, x: (s.x1 + s.x2) / 2, y: s.y1 - SUMMERS_DAY_ANNEX_PICKUP_RISE, source });
 };
 export const SUMMERS_DAY_ANNEX_PICKUPS = Object.freeze([
-  pickup('pair1_left', 'currants', 51, '306 1:22-1:24 +51 currants; cYK 3:14 +100 currants'),
-  pickup('pair1_right', 'xp', 6, '306 1:21 +6 iMG; cYK 3:12 +120 iMG'),
-  pickup('centre1', 'xp', 6, '306 1:22 +6 iMG; cYK 3:13-3:14 +120 iMG'),
-  pickup('pair2_left', 'xp', 6, '306 1:24-1:25 +6 iMG; cYK 3:17 +120 iMG'),
-  pickup('pair2_right', 'mood', 5, '306 1:26-1:27 +5 mood; cYK 3:18-3:19 +100 mood'),
-  pickup('pair3_left', 'xp', 6, '306 1:25-1:26 +6 iMG; cYK 3:22-3:23 +120 iMG'),
-  pickup('pair3_right', 'xp', 6, '306 1:27 +6 iMG; cYK 3:20-3:21 +1098 iMG'),
+  pickup('pair1_left', 'currants', 1, '306 1:22-1:24 +51 currants; cYK 3:14 +100 currants'),
+  pickup('pair1_right', 'xp', 1, '306 1:21 +6 iMG; cYK 3:12 +120 iMG'),
+  pickup('centre1', 'xp', 1, '306 1:22 +6 iMG; cYK 3:13-3:14 +120 iMG'),
+  pickup('pair2_left', 'xp', 1, '306 1:24-1:25 +6 iMG; cYK 3:17 +120 iMG'),
+  pickup('pair2_right', 'mood', 1, '306 1:26-1:27 +5 mood; cYK 3:18-3:19 +100 mood'),
+  pickup('pair3_left', 'xp', 1, '306 1:25-1:26 +6 iMG; cYK 3:22-3:23 +120 iMG'),
+  pickup('pair3_right', 'xp', 1, '306 1:27 +6 iMG; cYK 3:20-3:21 +1098 iMG'),
 ]);
 export const SUMMERS_DAY_BONUS_DOT_COUNT = SUMMERS_DAY_ANNEX_PICKUPS.length;
-export const SUMMERS_DAY_BONUS_DOT_IMG = 6;
+/** What one Annex quoin is worth before the player's quoin multiplier (#560). */
+export const SUMMERS_DAY_BONUS_DOT_BENEFIT = 1;
 /** Back-compat name for the pickups' spots. */
 export const SUMMERS_DAY_ANNEX_DOTS = SUMMERS_DAY_ANNEX_PICKUPS;
 
@@ -426,7 +431,8 @@ export function collectSummersDayBonusQuoin(
   run,
   index,
   now = Date.now(),
-  total = SUMMERS_DAY_BONUS_DOT_COUNT
+  total = SUMMERS_DAY_BONUS_DOT_COUNT,
+  { multiplier = 1 } = {}
 ) {
   if (!run || run.stage !== 'bonus') return { ok: false, reason: 'wrong_stage', run };
   if (summersDayRemainingMs(run, now) <= 0) {
@@ -438,17 +444,19 @@ export function collectSummersDayBonusQuoin(
   if (run.bonusCollected.includes(i)) return { ok: false, reason: 'already_collected', run };
   run.bonusCollected.push(i);
   run.bonusCollected.sort((a, b) => a - b);
-  // Each pickup pays its recorded kind (SUMMERS_DAY_ANNEX_PICKUPS); iMG adds to bonusImgEarned.
-  const pick = SUMMERS_DAY_ANNEX_PICKUPS[i] || { type: 'xp', amount: SUMMERS_DAY_BONUS_DOT_IMG };
+  // Each pickup pays its recorded kind (SUMMERS_DAY_ANNEX_PICKUPS), its benefit times the player's
+  // quoin multiplier (items/quoin.js 171-174, #560); iMG adds to bonusImgEarned.
+  const pick = SUMMERS_DAY_ANNEX_PICKUPS[i] || { type: 'xp', benefit: SUMMERS_DAY_BONUS_DOT_BENEFIT };
+  const amount = quoinPay(pick.benefit, multiplier);
   if (pick.type === 'xp') {
-    run.bonusImgEarned = Math.max(0, Number(run.bonusImgEarned) || 0) + pick.amount;
+    run.bonusImgEarned = Math.max(0, Number(run.bonusImgEarned) || 0) + amount;
   }
   return {
     ok: true,
     reason: 'collected',
     index: i,
     type: pick.type,
-    amount: pick.amount,
+    amount,
     run,
   };
 }

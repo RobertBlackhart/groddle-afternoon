@@ -180,7 +180,7 @@ import {
   SUMMERS_DAY_ANNEX_WALLS,
   SUMMERS_DAY_BONUS_ID,
   SUMMERS_DAY_BONUS_DOT_COUNT,
-  SUMMERS_DAY_BONUS_DOT_IMG,
+  SUMMERS_DAY_BONUS_DOT_BENEFIT,
   SUMMERS_DAY_BONUS_PRODUCTION_TSID,
   SUMMERS_DAY_COMPLETION,
   SUMMERS_DAY_FIRST_PRODUCTION_TSID,
@@ -212,7 +212,7 @@ import {
   summersDayAnnexStreet,
   summersDayRemainingMs,
   summersDayStreetPoint,
-} from './js/summers-day.js?v=680eca6e';
+} from './js/summers-day.js?v=c15840a1';
 import {
   ROOK_AVATAR_HIT,
   ROOK_CRUSHERS,
@@ -20355,8 +20355,8 @@ function renderSummersDayHud() {
     app.canvas.dataset.summerDayAnnexArt =
       bgLayer?.summersDayAnnexArt || 'not-in-annex';
     app.canvas.dataset.summerDayAnnexDots = String(SUMMERS_DAY_BONUS_DOT_COUNT);
-    app.canvas.dataset.summerDayAnnexDotReward = String(SUMMERS_DAY_BONUS_DOT_IMG);
-    app.canvas.dataset.summerDayAnnexPickups = SUMMERS_DAY_ANNEX_PICKUPS.map((p) => `${p.type}:${p.amount}`).join(',');
+    app.canvas.dataset.summerDayAnnexDotReward = String(SUMMERS_DAY_BONUS_DOT_BENEFIT);
+    app.canvas.dataset.summerDayAnnexPickups = SUMMERS_DAY_ANNEX_PICKUPS.map((p) => `${p.type}:${p.benefit}`).join(',');
     app.canvas.dataset.summerDayAnnexRevealed = summersDayAnnexReveal?.touched ? '1' : '0';
     app.canvas.dataset.summerDayAnnexExit =
       summersDayExit?.art || 'not-in-annex';
@@ -20674,7 +20674,9 @@ function updateSummersDay(dt) {
         summersDayRun,
         entry.index,
         Date.now(),
-        SUMMERS_DAY_BONUS_DOT_COUNT
+        SUMMERS_DAY_BONUS_DOT_COUNT,
+        // #560: a memory quoin pays its benefit times the player's quoin multiplier (items/quoin.js 171-174).
+        { multiplier: quoinState.multiplier }
       );
       if (!result.ok) continue;
       entry.collected = true;

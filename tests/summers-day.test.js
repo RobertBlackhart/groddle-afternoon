@@ -25,7 +25,7 @@ import {
   SUMMERS_DAY_ANNEX_WALLS,
   SUMMERS_DAY_BONUS_DURATION_MS,
   SUMMERS_DAY_BONUS_DOT_COUNT,
-  SUMMERS_DAY_BONUS_DOT_IMG,
+  SUMMERS_DAY_BONUS_DOT_BENEFIT,
   SUMMERS_DAY_BONUS_PRODUCTION_TSID,
   SUMMERS_DAY_CHECKPOINTS,
   SUMMERS_DAY_FIRST_OFFER_COOLDOWN_MS,
@@ -55,7 +55,7 @@ import {
   summersDayAnnexAtExit,
   summersDayAnnexStreet,
   summersDayStreetPoint,
-} from '../public/js/summers-day.js?v=680eca6e';
+} from '../public/js/summers-day.js?v=c15840a1';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -77,9 +77,9 @@ test('A Summer’s Day preserves the source quest ids, production templates, and
   assert.equal(SUMMERS_DAY_BONUS_PRODUCTION_TSID, 'LNVIL1E14M13K5I');
   assert.equal(SUMMERS_DAY_MAIN_DURATION_MS, 300000);
   assert.equal(SUMMERS_DAY_BONUS_DURATION_MS, 120000);
-  // The Annex's seven quoins; its iMG ones pay +6 (306_7Jvz8RQ 1:21-1:28).
+  // The Annex's seven quoins, benefit 1 each: +6 iMG at x5 (306_7Jvz8RQ 1:21-1:28), +120 at x100 (cYK).
   assert.equal(SUMMERS_DAY_BONUS_DOT_COUNT, 7);
-  assert.equal(SUMMERS_DAY_BONUS_DOT_IMG, 6);
+  assert.equal(SUMMERS_DAY_BONUS_DOT_BENEFIT, 1);
   assert.deepEqual(SUMMERS_DAY_GUIDE_LINES, {
     bird_1: 'Hey, I’m up here!\nCan you reach me?',
     bird_2: 'Not bad.\nTry this next one.',
@@ -230,15 +230,15 @@ test('the Annex is laid out as the recordings show: a three-column lattice over 
 
 test('the Annex pays its seven quoins in the recorded places: currants low left, mood middle right, iMG elsewhere', () => {
   assert.equal(SUMMERS_DAY_ANNEX_PICKUPS.length, SUMMERS_DAY_BONUS_DOT_COUNT);
-  const by = Object.fromEntries(SUMMERS_DAY_ANNEX_PICKUPS.map((p) => [p.shelf, `${p.type}:${p.amount}`]));
+  const by = Object.fromEntries(SUMMERS_DAY_ANNEX_PICKUPS.map((p) => [p.shelf, `${p.type}:${p.benefit}`]));
   assert.deepEqual(by, {
-    pair1_left: 'currants:51',
-    pair1_right: 'xp:6',
-    centre1: 'xp:6',
-    pair2_left: 'xp:6',
-    pair2_right: 'mood:5',
-    pair3_left: 'xp:6',
-    pair3_right: 'xp:6',
+    pair1_left: 'currants:1',
+    pair1_right: 'xp:1',
+    centre1: 'xp:1',
+    pair2_left: 'xp:1',
+    pair2_right: 'mood:1',
+    pair3_left: 'xp:1',
+    pair3_right: 'xp:1',
   });
   // None over the middle centre shelf or the ladder's shelf.
   assert.equal(by.centre2, undefined);
@@ -292,15 +292,19 @@ test('the Annex quoins pay their kinds once each, and only iMG counts as Annex i
   completeMain(run);
   assert.equal(enterSummersDayBonus(run, 2000).ok, true);
   assert.equal(run.expiresAt, 122000);
-  const first = collectSummersDayBonusQuoin(run, 0, 2100);
-  assert.deepEqual([first.type, first.amount], ['currants', 51]);
+  // #560: each pays its benefit times the player's quoin multiplier (items/quoin.js 171-174).
+  const first = collectSummersDayBonusQuoin(run, 0, 2100, undefined, { multiplier: 100 });
+  assert.deepEqual([first.type, first.amount], ['currants', 100]);
   assert.equal(collectSummersDayBonusQuoin(run, 0, 2200).reason, 'already_collected');
   assert.equal(collectSummersDayBonusQuoin(run, 7, 2200).reason, 'invalid_quoin');
-  const img = collectSummersDayBonusQuoin(run, 1, 2300);
-  assert.deepEqual([img.type, img.amount], ['xp', 6]);
-  const mood = collectSummersDayBonusQuoin(run, 4, 2400);
+  const img = collectSummersDayBonusQuoin(run, 1, 2300, undefined, { multiplier: 5 });
+  assert.deepEqual([img.type, img.amount], ['xp', 5]);
+  const mood = collectSummersDayBonusQuoin(run, 4, 2400, undefined, { multiplier: 5 });
   assert.deepEqual([mood.type, mood.amount], ['mood', 5]);
+  assert.equal(collectSummersDayBonusQuoin(run, 2, 2500).amount, 1, 'x1 with no multiplier');
   assert.equal(run.bonusImgEarned, 6);
+  const game = fs.readFileSync(path.join(root, 'public/game.js'), 'utf8');
+  assert.match(game, /SUMMERS_DAY_BONUS_DOT_COUNT,\n\s*\/\/ #560[^\n]*\n\s*\{ multiplier: quoinState\.multiplier \}/);
   assert.match(summersDayObjective(run), /Annex/i);
 });
 
