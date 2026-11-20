@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState, listQuestLog, listQuestLogNewestFirst, listQuests } from '../public/js/quests.js?v=4a3fb1da';
-import { createQuestSheet } from '../public/js/ui/quest-sheet.js?v=db8d7891';
+import { createQuestSheet } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
 import { FakeEl, matches } from './social-fake-dom.js';
 
 const pub = join(import.meta.dirname, '../public');

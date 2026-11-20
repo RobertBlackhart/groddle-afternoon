@@ -9,9 +9,9 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=95ecafcc';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=decb630f';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { MORE_KEYS_LABEL } from '../public/js/ui/context-menu.js?v=dfdf98f7';
+import { MORE_KEYS_LABEL } from '../public/js/ui/context-menu.js?v=607a9bcd';
 import { IM_VERB_ID } from '../public/js/player-im.js?v=da51888c';
 
 function head(buttons) {

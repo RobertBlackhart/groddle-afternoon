@@ -89,7 +89,7 @@
  * streetMapWalk (the last click's kind:x, or "refused").
  */
 
-import { bindContextTrigger } from './context-menu.js?v=dfdf98f7';
+import { bindContextTrigger } from './context-menu.js?v=607a9bcd';
 import { canvasTransparent, readbackCanvas } from '../render-probe.js?v=476b7fdf';
 
 export const MAP_WIDTH = 160;

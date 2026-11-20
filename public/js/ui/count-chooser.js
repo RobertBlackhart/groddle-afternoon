@@ -114,6 +114,8 @@ export function bindCountField(input, { max, set, confirm, cancel, preview = nul
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
+      // #557: a held Enter's repeat is not an OK (the Enter that opened the count would press it).
+      if (e.repeat) return;
       confirm(countFromField(input.value, max()));
       return;
     }
@@ -212,6 +214,8 @@ export function createCountChooser(doc, { title, max, start = max, verb, hook, b
       cancel();
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.stopPropagation();
+      // #557: nor on the focused OK button.
+      if (e.repeat) e.preventDefault();
     }
   });
   return {

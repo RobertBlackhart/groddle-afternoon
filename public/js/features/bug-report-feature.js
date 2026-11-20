@@ -83,7 +83,7 @@
  */
 
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=813fec3c';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=a0afae81';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=7589fd04';
 import { PICTURE_TEXT } from '../report-pictures.js?v=7a6f29e0';
 import { canvasTransparent } from '../render-probe.js?v=476b7fdf';
 

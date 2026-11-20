@@ -321,13 +321,18 @@ export function lockVerbMenuSize(el) {
 /**
  * A key in an open menu. Returns true when the menu used it (the caller then stops it):
  * ArrowUp/ArrowDown and W/S move, 1-9 pick that row, 0 and Backspace pick the back row.
- * Enter and Space are left to the focused button.
+ * Enter and Space are left to the focused button, except a held key's repeat, which is stopped (#557).
  */
 export function verbMenuKey(el, e) {
   if (!el || e.altKey || e.ctrlKey || e.metaKey) return false;
   const rows = menuRows(el);
   if (!rows.length) return false;
   const k = e.key;
+  // #557: a held key's repeat never picks a row. Enter held a moment past the keyboard's repeat
+  // delay opened a menu and then pressed its lit row (a Refuel at an empty machine); a held digit
+  // pressed its row again and again. The caller stops the key, so the focused button's own Enter
+  // or Space does nothing either. Moving through the rows on a held arrow still repeats.
+  if (e.repeat && (k === 'Enter' || k === ' ' || k === '0' || k === 'Backspace' || /^[1-9]$/.test(k))) return true;
   const doc = el.ownerDocument;
   const at = rows.indexOf(doc?.activeElement?.closest?.('.vm-row'));
   // The picture level: the arrows (and W A S D) walk its grid; Up off the top row and Down off the
@@ -369,6 +374,7 @@ export function verbMenuKey(el, e) {
   // A row with a letter of its own (keys_in_location: the Knocker's k, sloth_knocker.js 116-118) takes it.
   if (/^[a-z]$/i.test(k) && !e.shiftKey) {
     const row = rows.find((r) => r.dataset.vmLetter === k.toLowerCase());
+    if (row && e.repeat) return true;
     if (row) {
       row.focus({ preventScroll: true });
       setDetail(el, row);

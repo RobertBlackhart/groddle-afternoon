@@ -7,10 +7,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_ROWS_BOX, menuRowsCap, placeVerbMenu, plainWords, verbRowKeys, verbRowInner, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=3a795424';
-import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=db8d7891';
+import { MIN_ROWS_BOX, menuRowsCap, placeVerbMenu, plainWords, verbRowKeys, verbRowInner, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=81321d29';
+import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
 import { MAX_QUEST_PINS, normalizeQuestPins, questPinsFeature } from '../public/js/features/quest-pins-feature.js?v=0e07d9a1';
-import { FEATURES } from '../public/js/features/index.js?v=41dadb47';
+import { FEATURES } from '../public/js/features/index.js?v=9a3e372f';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
