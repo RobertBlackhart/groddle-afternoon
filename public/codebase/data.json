@@ -6,31 +6,31 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.51.2",
-   "commit": "30d55bf2",
+   "ref": "v0.52.0",
+   "commit": "b9d0c8b3",
    "licence": "MIT",
    "history": {
-    "commits": 2863,
+    "commits": 2872,
     "first": "2026-10-19",
     "latest": "2026-11-20"
    },
    "code": {
-    "files": 4996,
-    "lines": 1026496,
-    "bytes": 62231797
+    "files": 4997,
+    "lines": 1026675,
+    "bytes": 62575876
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2273,
-     "lines": 687355
+     "files": 2274,
+     "lines": 687502
     },
     {
      "id": "html",
      "label": "HTML",
      "files": 2643,
-     "lines": 300647
+     "lines": 300679
     },
     {
      "id": "css",
@@ -69,8 +69,8 @@
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1236,
-     "lines": 245896
+     "files": 1237,
+     "lines": 245968
     },
     {
      "id": "core",
@@ -91,7 +91,7 @@
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
      "files": 351,
-     "lines": 81718
+     "lines": 81825
     },
     {
      "id": "rooms",
@@ -127,21 +127,21 @@
     {
      "id": "art",
      "label": "Art and sound",
-     "files": 21101,
-     "bytes": 1761278658
+     "files": 22493,
+     "bytes": 1835106027
     },
     {
      "id": "data",
      "label": "Data (JSON)",
      "files": 3184,
-     "bytes": 214643783
+     "bytes": 214767581
     },
     {
      "id": "generated",
      "label": "Generated modules and built pages",
      "files": 2269,
-     "bytes": 25927052,
-     "lines": 294128
+     "bytes": 26019952,
+     "lines": 295603
     },
     {
      "id": "vendored",
@@ -163,10 +163,10 @@
      "bytes": 8288803
     }
    ],
-   "totalFiles": 31602,
+   "totalFiles": 32995,
    "tests": {
-    "files": 1196,
-    "cases": 13687,
+    "files": 1197,
+    "cases": 13691,
     "runner": "node --test"
    }
   },
