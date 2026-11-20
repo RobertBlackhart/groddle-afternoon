@@ -2810,17 +2810,82 @@
   ]
  },
  "release": {
-  "game": "0.52.0",
+  "game": "0.53.0",
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2879,
+  "commits": 2901,
   "since": "2026-10-19",
   "recent": [
    {
     "date": "2026-11-20",
+    "kind": "improve",
+    "text": "Street project boards say anyone can give items and link where each item comes from"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Mossystep's Street Spirit no longer stands in a Bean Tree's crown"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Ticket To Beam Me Down costs the Paradise ticket price and counts in the day's 11"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Winter Walk motes pay 1 to 25 times your quoin multiplier, not 100 to 2500 times it"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Refuel asks how many Fuel Cells before any go into a machine"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "A held Enter or number key no longer presses a verb menu row on its own"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "The favor list and the shrine window show each Giant's own shrine symbol"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "Each stat has one icon and colour, in the top bar and in speech bubbles"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Penumbra orbs pay 1 iMG times your quoin multiplier, not 120 times it"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "A Summer's Day memory quoins pay your quoin multiplier"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Paradise quoins pay your quoin multiplier"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Nothing stays selected after you place something in Cultivation Mode, so one Esc leaves"
+   },
+   {
+    "date": "2026-11-20",
     "kind": "fix",
     "text": "Enter in Cultivation Mode no longer traps your keys in a garden's plots"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "The street map shows a blurred back layer across the whole street, not only where you have been"
    },
    {
     "date": "2026-11-20",
@@ -2871,71 +2936,6 @@
     "date": "2026-11-20",
     "kind": "improve",
     "text": "The phone street map's signpost arrows follow you and point eight ways"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "The star on the train's line map slides to the next stop during a ride"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Street projects name their own street: no more \"Build Perhoni Flim\" on Amerran Huddles"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "Standing on a home style ring asks \"Pick Uralia Style?\" before it picks"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "/stuck takes you back to where you came in by a signpost or door"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Following a friend no longer gets you onto a street still being built"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "A bean that will not grow in a patch says its kind only grows in certain regions"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "A tool you lack the skill for says so on every recipe tile in the Make menu"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "A project phase that opened while you were away says it is ready, not \"opens in -86 minutes\""
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The Activity window colours a made item's whole name, not just its first word"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "A vendor, a trade or a letter never takes a bag that still holds things, whatever the count"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "Fruit trees and the other trants show how much they hold: bare when picked clean, half, or full"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Each Hellish Grapes bunch shows as one bunch, and no two bunches pile up, so one squish takes one bunch"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Update ready waits only for windows a player can see, and says the news again if it stays hidden"
    }
   ]
  },
