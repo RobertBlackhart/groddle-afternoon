@@ -35,7 +35,7 @@ import {
   teleporterPhase,
 } from '../public/js/party-spaces.js?v=a748a93f';
 import { OWNED_STREETS } from '../public/js/location-events.js?v=7fd40f71';
-import { populationForStreet } from '../public/js/street-ecology.js?v=578806c2';
+import { populationForStreet } from '../public/js/street-ecology.js?v=11f50673';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -240,7 +240,7 @@ describe('party lifecycle (groups/party.js, party_atm.js)', () => {
 
 describe('party spaces feature wiring', async () => {
   const { partySpacesFeature } = await import('../public/js/features/party-spaces-feature.js?v=621baf05');
-  const { FEATURES } = await import('../public/js/features/index.js?v=5d7992ef');
+  const { FEATURES } = await import('../public/js/features/index.js?v=c56157a1');
 
   it('is registered with the feature host', () => {
     assert.ok(FEATURES.some((f) => f.id === partySpacesFeature.id));

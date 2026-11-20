@@ -1196,8 +1196,8 @@ export const PLACEMENT_HEIGHTS = Object.freeze({
  * footprint and this height (the art as drawn: the barnacle's blister frames 39-47 px, the
  * Jellisac's sack 39-52, the Ice Nubbin's knobs 52-71, the Peat Bog's mound 46-104, the Dust
  * Trap's idle trap 103, a Dirt Pile's mound about 120, a Paper Tree's 230 px canopy, the Visiting
- * Stone's 101x155 art at its 81 px width, 124). In Glitch they were set down by hand and never
- * planned into one another (the archived streets).
+ * Stone's 101x155 art at its 81 px width, 124, the Race Ticket Dispenser's 58x94, #555). In Glitch
+ * they were set down by hand and never planned into one another (the archived streets).
  */
 export const TREE_CANOPY = Object.freeze({ w: 267, h: 210 });
 export const UNDER_CANOPY_HEIGHTS = Object.freeze({
@@ -1209,6 +1209,16 @@ export const UNDER_CANOPY_HEIGHTS = Object.freeze({
   'resource:dirt_pile': 120,
   'resource:paper_tree': 230,
   furnitureStone: 124,
+  // #555 (Iable Var): the Race Ticket Dispenser stood on a ledge in a fruit tree's crown.
+  raceDispenser: 94,
+});
+/**
+ * The art's width for a canopy group with no PLACEMENT_FOOTPRINTS entry (a small fixture that needs no
+ * floor run of its own, so the planner asks it no room): the box it keeps out of a canopy with.
+ * The Race Ticket Dispenser: races/race_ticket_dispenser.webp, 58 x 94 at 1:1, drawn on its feet.
+ */
+export const UNDER_CANOPY_WIDTHS = Object.freeze({
+  raceDispenser: 58,
 });
 /** A planned tree's canopy box (TREE_CANOPY over its spot). */
 function canopyOf(point) {
@@ -2000,11 +2010,13 @@ export function planStreetPlacements(
     const height = Number.isFinite(request?.height) ? Math.max(0, request.height) : PLACEMENT_HEIGHTS[request.key] || 0;
     // The fixture each spot would cover for this request (null: clear); the arrival covers nothing.
     const covers = new Map();
-    const underCanopy = footprint > 0 && canopies.length ? UNDER_CANOPY_HEIGHTS[request.key] || 0 : 0;
+    // #555: a small fixture with no footprint keeps out by its art's width (UNDER_CANOPY_WIDTHS).
+    const canopyW = footprint > 0 ? footprint : UNDER_CANOPY_WIDTHS[request.key] || 0;
+    const underCanopy = canopyW > 0 && canopies.length ? UNDER_CANOPY_HEIGHTS[request.key] || 0 : 0;
     if (!avatar && (fixtures.length || underCanopy)) {
       for (const candidate of candidates) {
         const fixture = blockingFixture(candidate, fixtures, { footprint, height })
-          || (underCanopy ? blockingFixture(candidate, canopies, { footprint, height: underCanopy }) : null);
+          || (underCanopy ? blockingFixture(candidate, canopies, { footprint: canopyW, height: underCanopy }) : null);
         if (fixture) covers.set(candidate.id, fixture);
       }
     }

@@ -21,7 +21,7 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   unreachedFloorsFor,
-} from '../public/js/street-ecology.js?v=578806c2';
+} from '../public/js/street-ecology.js?v=11f50673';
 import { placementRequests, streetEcology } from '../tools/build-realtime-quoins.mjs';
 import { UNREACHED_JUMP, UNREACHED_JUMPS, overlapRuns, unreachedFloorsOf, unreachedJump } from '../tools/ecology/build-unreached-floors.mjs';
 import { NORMAL_BUFF, jumpApex } from '../public/js/avatar-step.js?v=39d7b1af';

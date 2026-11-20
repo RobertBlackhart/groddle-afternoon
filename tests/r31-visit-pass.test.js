@@ -26,8 +26,8 @@ import {
   normalizeHomeView,
   visitPassTtl,
 } from '../public/js/neighbours-mp.js?v=864c13c9';
-import { undoVisitorReward, visitorRewardDelta, visitorRewardSnapshot } from '../public/js/yard-verbs-mp.js?v=15a2a003';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=45eee9c3';
+import { undoVisitorReward, visitorRewardDelta, visitorRewardSnapshot } from '../public/js/yard-verbs-mp.js?v=b5f81940';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=a67bf93e';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

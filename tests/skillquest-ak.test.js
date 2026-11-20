@@ -30,9 +30,9 @@ import {
   akVerbReaction,
   createAkState,
 } from '../public/js/skillquest-ak.js?v=397a9d19';
-import { listAnimalFeedOptions } from '../public/js/animals.js?v=9c01daa8';
-import { populationForStreet } from '../public/js/street-ecology.js?v=578806c2';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=724772f7';
+import { listAnimalFeedOptions } from '../public/js/animals.js?v=f90b383d';
+import { populationForStreet } from '../public/js/street-ecology.js?v=11f50673';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=9e75b37f';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
