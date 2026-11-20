@@ -48,6 +48,28 @@ export function defaultArrival(street, table, { worldW, closed = [] } = {}) {
 }
 
 /**
+ * G575 (Austin 2026-11-19): the ways onto a street that count as an arrival for /stuck. A signpost
+ * or a door sets you down on its connect's spot, where you walked in; everything else (a load, a
+ * resurrection, a home return, a teleport point, a quest room's way out) is no arrival, and /stuck
+ * takes the nearest way out (game.js stuckReturn, street-model.js stuckWay).
+ */
+export const STUCK_ARRIVAL_WAYS = Object.freeze(['signpost', 'door']);
+
+/**
+ * PURE (G575): /stuck's spot for this entry onto `tsid`: { tsid, x, y, from: 'arrival' } at `at`
+ * (where the avatar was set down) when `opts.arrivalBy` is a signpost or a door with a spot
+ * (opts.spawnX), else { tsid, x, y, from: 'street' } at `street` (the street's own spot). Every
+ * trip enters quiet under the loading card, so quiet cannot tell an arrival apart; the way can.
+ */
+export function stuckArrivalSpot(tsid, opts = {}, { at, street } = {}) {
+  const arrived = STUCK_ARRIVAL_WAYS.includes(opts?.arrivalBy) && Number.isFinite(opts?.spawnX)
+    && Number.isFinite(at?.x) && Number.isFinite(at?.y);
+  return arrived
+    ? { tsid, x: at.x, y: at.y, from: 'arrival' }
+    : { tsid, x: street?.x, y: street?.y, from: 'street' };
+}
+
+/**
  * PURE (G920): the height for a spot given as x only (a QA or demo link's streetx with no streety,
  * a feature's trip that names an x): the street's ground at that x, the lowest standable floor
  * under it (screen y grows down), where a drop from above the street ends once it has fallen

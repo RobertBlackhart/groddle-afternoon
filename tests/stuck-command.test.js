@@ -144,8 +144,8 @@ describe('/stuck in the game (features/slash-commands-feature.js)', () => {
 
 describe('game.js: where you arrived on this street', () => {
   it('a signpost or door arrival is kept; a load from a save or a return is not an arrival (the street\'s own is used)', () => {
-    assert.match(game, /streetArrival = opts\.quiet \|\| !Number\.isFinite\(opts\.spawnX\)\s*\? \{\s*tsid: data\.tsid,\s*x: clamp\(sourceSpawnX \?\? WORLD_W \* 0\.5/);
-    assert.match(game, /: \{ tsid: data\.tsid, x: player\.x, y: player\.y, from: 'arrival' \};/);
+    // G575: decided by the way in (js/street-arrival.js stuckArrivalSpot, tests/stuck-arrival.test.js), not by quiet.
+    assert.match(game, /streetArrival = stuckArrivalSpot\(data\.tsid, opts, \{\s*at: \{ x: player\.x, y: player\.y \},\s*street: \{\s*x: clamp\(sourceSpawnX \?\? WORLD_W \* 0\.5/);
   });
 
   it('stuckReturn moves you on the street you are on, onto the floor, and the camera follows', () => {

@@ -716,7 +716,7 @@ import {
   stuckWay,
 } from './js/street-model.js?v=a9a05f9d';
 import { climberAtLadderTop, ladderTopSignpostFor, walkUpSignpostStreet } from './js/ladder-top-signposts.js?v=0192e447';
-import { defaultArrival, groundAt, loadStreetArrivals } from './js/street-arrival.js?v=d91c1e4c';
+import { STUCK_ARRIVAL_WAYS, defaultArrival, groundAt, loadStreetArrivals, stuckArrivalSpot } from './js/street-arrival.js?v=876bfaae';
 import {
   buildStreetView,
   glitchLayerMatrix,
@@ -25767,15 +25767,17 @@ async function enterStreet(tsid, opts = {}) {
     player.x = clamp(player.x, 40, Math.max(80, WORLD_W - 40));
     const streetH = bgLayer?.worldH || VIEW_H;
     player.y = clamp(player.y, 40, Math.max(80, streetH - 20));
-    // /stuck's spot: this arrival, or the street's own when this entry restores a place (quiet).
-    streetArrival = opts.quiet || !Number.isFinite(opts.spawnX)
-      ? {
-        tsid: data.tsid,
+    // /stuck's spot (G575, Austin 2026-11-19): where you walked in by a signpost or a door; any
+    // other entry (a load, a resurrection, a home return, a teleport point, a quest room's way
+    // out) takes the street's own spot, which stuckReturn turns into the nearest way out. Every
+    // trip enters quiet under the loading card, so quiet alone could not tell an arrival apart.
+    streetArrival = stuckArrivalSpot(data.tsid, opts, {
+      at: { x: player.x, y: player.y },
+      street: {
         x: clamp(sourceSpawnX ?? WORLD_W * 0.5, 40, Math.max(80, WORLD_W - 40)),
         y: clamp(sourceSpawnY ?? GROUND_Y, 40, Math.max(80, streetH - 20)),
-        from: 'street',
-      }
-      : { tsid: data.tsid, x: player.x, y: player.y, from: 'arrival' };
+      },
+    });
     player.vx = 0;
     player.vy = 0;
     player.onGround = true;
@@ -25926,8 +25928,9 @@ async function travelTo(toTsid, meta = {}) {
   closeMakePanel();
   closeVendor();
   // Signposts land on the connect's source arrival point (build-street-navigation.mjs).
+  // G575 (Austin 2026-11-19): a signpost or door is an arrival; /stuck goes back to where you walked in.
   const arrive = meta.arrive && Number.isFinite(meta.arrive.x) && Number.isFinite(meta.arrive.y)
-    ? { spawnX: meta.arrive.x, spawnY: meta.arrive.y }
+    ? { spawnX: meta.arrive.x, spawnY: meta.arrive.y, ...(STUCK_ARRIVAL_WAYS.includes(meta.via) ? { arrivalBy: meta.via } : {}) }
     : {};
   try {
     await enterStreetWithTransition(plan.toTsid, arrive);
