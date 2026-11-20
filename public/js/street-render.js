@@ -1040,6 +1040,29 @@ function freeBlurTile(tile, state) {
 }
 
 /**
+ * MINIMAP (#561): the street map draws every layer of the whole street at once, but a blurred
+ * layer's tiles are baked only as the camera nears them (and freed once far off), and an unbaked
+ * tile draws nothing: the map showed the far forest only around where you had been, the sky's
+ * gradient in a sharp-edged box everywhere else (Ramyeon Kon). Bake every tile that has no
+ * texture now (`bake`), for a snapshot taken with the layers unculled; the returned function,
+ * called once the snapshot is done and the cull put back, frees again (`free`) those of them
+ * that are culled, so the street's tile memory stays what the camera needs.
+ */
+export function bakeMissingBlurTiles(state, bake = bakeBlurTile, free = freeBlurTile) {
+  const fresh = [];
+  for (const layer of state?.layers || []) {
+    for (const tile of layer.tiles || []) {
+      if (tile.texture || tile.sprite?.destroyed) continue;
+      bake(tile, state);
+      if (tile.texture) fresh.push(tile);
+    }
+  }
+  return () => {
+    for (const tile of fresh) if (tile.texture && tile.sprite?.culled) free(tile, state);
+  };
+}
+
+/**
  * Which baked blur tiles to free, least recently seen first, while the street holds more than
  * `keep` bytes: tiles culled for RECOLOUR_EVICT_MS, or with `squeeze` (over `budget`) any culled
  * tile, down to the budget. A tile near the camera is never freed.
@@ -3042,6 +3065,20 @@ export function buildStreetView(street, PIXI, opts = {}) {
     root.edgeMirrorRebuild?.();
     cullAgain = true;
     return dropped;
+  };
+  /**
+   * MINIMAP (#561, js/ui/street-minimap.js snapshotStreetView): ready the whole street for one
+   * picture of it, with its layers unculled. Every blur tile is baked (bakeMissingBlurTiles), and
+   * a recoloured deco whose copy was freed far from the camera gets it back (evictRecolours frees
+   * it again on its next pass). Returns the function that frees the tiles baked only for it.
+   */
+  root.bakeForSnapshot = () => {
+    for (const entry of recolourCache.entries.values()) {
+      if (entry.texture) continue;
+      const user = [...entry.users].find((u) => !u.destroyed);
+      if (user) ensureRecoloured(PIXI, opts.renderer, recolourCache, user);
+    }
+    return bakeMissingBlurTiles(blurState);
   };
   root.cullDecos = (camX, camY, vpW, vpH, force = false) => {
     const now = performance.now();

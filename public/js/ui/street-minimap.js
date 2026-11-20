@@ -491,7 +491,8 @@ export function drawLinesPicture(canvas, street, platforms = []) {
  * SNAPSHOT_TYPE_NORMAL): returns a canvas of width x height device px, or null when the view
  * can't be drawn. Everything moved for it is put back as it was.
  * - A street (js/street-render.js buildStreetView): every layer stretched over the street as one
- *   flat picture, its sky left out (the gradient is drawn under it), its culled decos drawn too.
+ *   flat picture, its sky left out (the gradient is drawn under it), its culled decos drawn too,
+ *   and its blurred layers' tiles baked where the camera has not been (#561, bakeForSnapshot).
  * - A scene a feature builds (the home street, the house, Tower floors, a visit, the instances
  *   and races; lane HOMEMAP): `W` x `H` (the street's bounds) when the view names no size; its
  *   updateParallax runs as a camera as wide as the street, so its sky covers it, and every
@@ -514,6 +515,7 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
     restore.push([obj, key, obj[key]]);
     obj[key] = value;
   };
+  let release = null;
   const keepTransform = (c) => restore.push([c.position, 'x', c.position.x], [c.position, 'y', c.position.y], [c.scale, 'x', c.scale.x], [c.scale, 'y', c.scale.y]);
   try {
     if (view.parallaxLayers) {
@@ -528,6 +530,9 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
       for (const lc of view.layerContainers || []) {
         for (const child of lc.children || []) if (child.culled) set(child, 'culled', false);
       }
+      // #561: a blurred layer's tiles exist only where the camera has been (street-render
+      // bakeForSnapshot): bake the rest now, unculled, and free them again once the cull is back.
+      if (typeof view.bakeForSnapshot === 'function') release = view.bakeForSnapshot();
       if (view.skyView) set(view.skyView, 'visible', false);
     } else if (typeof view.updateParallax === 'function') {
       for (const c of view.children || []) keepTransform(c);
@@ -569,6 +574,13 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
     for (let i = restore.length - 1; i >= 0; i--) {
       const [obj, key, value] = restore[i];
       obj[key] = value;
+    }
+    if (typeof release === 'function') {
+      try {
+        release();
+      } catch (err) {
+        console.warn('street map snapshot release', err);
+      }
     }
   }
 }

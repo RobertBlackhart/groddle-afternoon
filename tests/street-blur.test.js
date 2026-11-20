@@ -14,12 +14,13 @@ import {
   BLUR_TILE_KEEP_BYTES,
   RECOLOUR_EVICT_MS,
   blurBakeResolution,
+  bakeMissingBlurTiles,
   blurTilePad,
   boxBlurWeights,
   flashBlurSize,
   pickBlurTilesToFree,
   planBlurTiles,
-} from '../public/js/street-render.js?v=42745010';
+} from '../public/js/street-render.js?v=21098596';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const src = readFileSync(join(here, '../public/js/street-render.js'), 'utf8');
@@ -198,5 +199,63 @@ describe('bake wiring (street-render.js)', () => {
     assert.match(src, /frame: new PIXI\.Rectangle\(pad, pad, tile\.w, tile\.h\)/);
     assert.match(src, /spr\.blurTile \? bakeBlurTile\(spr\.blurTile, blurState\)/);
     assert.match(src, /evictBlurTiles\(blurState, now\);/);
+  });
+});
+
+describe('street map snapshot (#561: Ramyeon Kon\'s far forest only where the camera had been)', () => {
+  // A tile as bakeBlurredLayer makes it: no texture and a hidden sprite until it is baked.
+  const tile = (id, o = {}) => ({ id, texture: null, bytes: 0, sprite: { visible: false, culled: true, destroyed: false }, ...o });
+  const bake = (t) => {
+    t.texture = { id: t.id };
+    t.sprite.visible = true;
+  };
+  const free = (t) => {
+    t.texture = null;
+    t.sprite.visible = false;
+  };
+
+  it('bakes every tile with no texture, so the whole layer draws in the picture', () => {
+    const near = tile('near', { texture: { id: 'near' }, sprite: { visible: true, culled: false } });
+    const left = tile('left');
+    const right = tile('right');
+    const gone = tile('gone', { sprite: { visible: false, culled: true, destroyed: true } });
+    const state = { layers: [{ tiles: [near, left] }, { tiles: [right, gone] }] };
+    const baked = [];
+    bakeMissingBlurTiles(state, (t, s) => {
+      assert.equal(s, state);
+      baked.push(t.id);
+      bake(t);
+    }, free);
+    assert.deepEqual(baked, ['left', 'right'], 'the near tile is already baked; a destroyed one is skipped');
+    assert.ok([near, left, right].every((t) => t.texture && t.sprite.visible));
+  });
+
+  it('afterwards frees only the tiles it baked that the camera still culls', () => {
+    const near = tile('near', { texture: { id: 'near' }, sprite: { visible: true, culled: true } });
+    const far = tile('far');
+    const fresh = tile('fresh', { sprite: { visible: false, culled: false } });
+    const state = { layers: [{ tiles: [near, far, fresh] }] };
+    const freed = [];
+    const release = bakeMissingBlurTiles(state, bake, (t) => {
+      freed.push(t.id);
+      free(t);
+    });
+    release();
+    assert.deepEqual(freed, ['far'], 'a tile baked before stays; one near the camera stays for it');
+    assert.ok(near.texture && fresh.texture && !far.texture);
+  });
+
+  it('a tile whose bake fails is not freed, and a street with no blurred layer is fine', () => {
+    const failed = tile('failed');
+    const release = bakeMissingBlurTiles({ layers: [{ tiles: [failed] }] }, () => {}, () => assert.fail('nothing to free'));
+    release();
+    assert.doesNotThrow(() => bakeMissingBlurTiles({ layers: [] })());
+    assert.doesNotThrow(() => bakeMissingBlurTiles(undefined)());
+  });
+
+  it('the street view offers it to the map snapshot, recoloured copies back too', () => {
+    assert.match(src, /root\.bakeForSnapshot = \(\) => \{/);
+    assert.match(src, /ensureRecoloured\(PIXI, opts\.renderer, recolourCache, user\)/);
+    assert.match(src, /return bakeMissingBlurTiles\(blurState\);/);
   });
 });

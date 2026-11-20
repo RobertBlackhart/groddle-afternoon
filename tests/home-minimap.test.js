@@ -207,6 +207,41 @@ describe('home map: the snapshot of a live scene (resnapMiniMap)', () => {
     }
     assert.deepEqual([s.far.x, s.far.scale.x, s.plot.visible, s.player.visible], [300, 1, true, true]);
   });
+
+  it('#561: a street bakes its blurred layers\' missing tiles unculled before the picture, and frees them after the cull is back', () => {
+    // A street-render street: one blurred far layer whose tile far from the camera is culled.
+    const tileSpr = node({ culled: true });
+    const far = node({ x: 120 });
+    add(far, tileSpr);
+    far.parallaxLayer = { w: 4200, h: 1000 };
+    const view = node({ worldW: 6000, worldH: 1000 });
+    add(view, far);
+    view.parallaxLayers = [far];
+    view.layerContainers = [far];
+    const log = [];
+    view.bakeForSnapshot = () => {
+      log.push(`bake culled=${tileSpr.culled}`);
+      return () => log.push(`release culled=${tileSpr.culled}`);
+    };
+    const renderer = {
+      render: () => log.push('render'),
+      extract: { canvas: () => 'picture' },
+    };
+    assert.equal(snapshotStreetView(fakePixi(), renderer, view, { width: 300, height: 50 }), 'picture');
+    assert.deepEqual(log, ['bake culled=false', 'render', 'release culled=true']);
+    assert.deepEqual([far.x, far.scale.x, tileSpr.culled], [120, 1, true], 'put back');
+
+    // A failed render still frees what was baked for it.
+    log.length = 0;
+    const warn = console.warn;
+    console.warn = () => {};
+    try {
+      snapshotStreetView(fakePixi(), { render: () => { throw new Error('lost context'); }, extract: { canvas: () => 'c' } }, view, { width: 300, height: 50 });
+    } finally {
+      console.warn = warn;
+    }
+    assert.deepEqual(log, ['bake culled=false', 'release culled=true']);
+  });
 });
 
 describe('home map: the wiring', () => {

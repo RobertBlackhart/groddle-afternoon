@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=725fb714';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ddbe3b1a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b881fe99';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -697,7 +697,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=c5b6676c';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=2a06f418';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -728,7 +728,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=42745010';
+} from './js/street-render.js?v=21098596';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -827,7 +827,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e0
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=5f876a67';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=df7a4171';
 import './js/classic/classic-zoom.js?v=d09cb283';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1072,7 +1072,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=03ac6512';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=06ac7384';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=44b13aa1';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1128,7 +1128,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=e9f0e2af';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=29d37d64';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=8f0b6303';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 
