@@ -22,9 +22,14 @@
  * TSEngineAssets/src/assets/graphics/slug_{mood,energy,imagination,xp,
  * currants,favor}_{pos,neg}.png (Assets.as 673-684), so they stay crisp at
  * any device pixel ratio. Only mood and energy have separate loss art.
+ *
+ * #562: that art is the classic skin's. The modern skin draws each slug with
+ * the stat's own icon and colour from js/stat-icons.js, the same the top bar
+ * shows (slugPaint, drawSlugGlyph), so a bubble's +energy has the bar's bolt.
  */
 
 import { outlinePoints } from './outline-points.js?v=c9edb089';
+import { drawStatIcon, statChipPaints } from './stat-icons.js?v=b89600eb';
 
 /** SortTools.as 96. */
 export const SLUG_ORDER = Object.freeze(['imagination', 'xp', 'energy', 'mood', 'currants', 'favor']);
@@ -169,12 +174,39 @@ export function formatRawSlugs(slugs) {
   }).join(',');
 }
 
+/** The modern skin's slug icons: the stat icons' 16 x 16 box (js/stat-icons.js). */
+export const MODERN_SLUG_ICON = Object.freeze([16, 16]);
+
+const hexNum = (hex) => parseInt(String(hex).replace('#', ''), 16);
+
+/**
+ * How one slug is painted: { fill, text } as Pixi colours, the icon's size and the pill's right
+ * corner. Classic: the client's (Slug.as fills, the slug PNG sizes, the energy slug's square end).
+ * Modern (#562): the stat's own tint and ink from js/stat-icons.js, the loss red for energy or
+ * mood going down, and the 16 px stat icon.
+ */
+export function slugPaint(type, amount, { classic = false } = {}) {
+  const neg = Number(amount) < 0;
+  if (classic) {
+    const s = SLUG_STYLES[type] || SLUG_STYLES.imagination;
+    return { fill: neg ? s.neg : s.pos, text: neg ? s.textNeg : s.text, icon: SLUG_ICON_SIZES[type] || [16, 16], classic: true };
+  }
+  const p = statChipPaints(type, amount);
+  return { fill: hexNum(p.tint), text: hexNum(p.ink), icon: MODERN_SLUG_ICON, rightRadius: SLUG_LAYOUT.cornerRadius, classic: false };
+}
+
+/** One slug's icon into a Pixi Graphics: the client's slug art (classic) or the stat icon (modern). */
+export function drawSlugGlyph(g, type, negative = false, { classic = false } = {}) {
+  return classic ? drawSlugIcon(g, type, negative) : drawStatIcon(g, type, { negative });
+}
+
 /**
  * One slug's box (Slug.as 157-182): widths of the sign and number text in,
- * x of each part and the pill's size out.
+ * x of each part and the pill's size out. `paint` (slugPaint) gives the
+ * modern skin's icon size and corner; without it, the client's.
  */
-export function slugBox(type, signWidth, numberWidth) {
-  const [iconW, iconH] = SLUG_ICON_SIZES[type] || [16, 16];
+export function slugBox(type, signWidth, numberWidth, paint = null) {
+  const [iconW, iconH] = paint?.icon || SLUG_ICON_SIZES[type] || [16, 16];
   const L = SLUG_LAYOUT;
   const gap = (L.height - iconH) / 2;
   const signX = L.leftPadding;
@@ -189,7 +221,7 @@ export function slugBox(type, signWidth, numberWidth) {
     iconY,
     width,
     height: L.height,
-    rightRadius: type === 'energy' ? L.energyCornerRadius : L.cornerRadius,
+    rightRadius: paint?.rightRadius ?? (type === 'energy' ? L.energyCornerRadius : L.cornerRadius),
   };
 }
 

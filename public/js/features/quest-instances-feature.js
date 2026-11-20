@@ -139,9 +139,9 @@ import {
 import { parseQuestConversation } from '../quests.js?v=4a3fb1da';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { runStreetTransition } from '../screen-fx.js?v=df15804e';
+import { runStreetTransition } from '../screen-fx.js?v=7a9ef8bd';
 import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=c9fd92db';
-import { armPromptTimeout, promptTimeoutMs } from '../prompt-timeout.js?v=104ccef6';
+import { armPromptTimeout, promptTimeoutMs } from '../prompt-timeout.js?v=6fd30d61';
 import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from '../speaker-card.js?v=94220469';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=5abad2c7';
@@ -220,7 +220,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=d1f91878'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=bd72025c'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=07483dfa'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=78aca104'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=43625580'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=beb7f494'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=cf0ef170'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=e12d992c'),

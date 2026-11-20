@@ -12,6 +12,7 @@
  */
 
 import { MOMENT_SHARP } from '../moment-art-list.js?v=e51336e6';
+import { statIconUrl } from '../stat-icons.js?v=b89600eb';
 
 /**
  * The award card's quest book (2026-11-12, Austin: "ship it if it matches"): a faithful 6x redraw
@@ -87,12 +88,13 @@ export function momentArtShape(url = '') {
 }
 
 /**
- * A reward's icon: iMG, currants and a Giant's favor have one, and an item given as a reward row
- * (`classTsid`) its own (glitch-client Slug.as getIcon 228-233, ItemIconView); the rest show words only.
+ * A reward's icon: iMG, energy, mood, currants and a Giant's favor have one, and an item given as a
+ * reward row (`classTsid`) its own (glitch-client Slug.as getIcon 228-233, ItemIconView); the rest
+ * show words only. #562: the stats' icons are the top bar's and the speech bubble's (js/stat-icons.js).
  */
 export function rewardIcon(text = '', kind = '', row = {}) {
-  if (kind === 'img') return 'assets/imagination/ui/imagination_button.webp';
-  if (kind === 'currants') return 'assets/sprites/icons/pile_of_currants@3x.webp';
+  if (kind === 'img') return statIconUrl('imagination');
+  if (kind === 'currants' || kind === 'energy' || kind === 'mood') return statIconUrl(kind);
   if (kind === 'favor') {
     const giant = String(row?.giant || '').toLowerCase();
     if (GIANTS.includes(giant)) return `assets/sprites/icons/emblem_${giant}@3x.webp`;

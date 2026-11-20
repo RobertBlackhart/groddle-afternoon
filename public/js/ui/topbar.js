@@ -27,6 +27,7 @@ import { PHONE_ZOOM_HINT, ZOOM_FIXED_NOTE, ZOOM_KEYS_HINT, clampZoom, phoneSidew
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=df7a4171';
 import { focusBack } from './focus-return.js?v=da190597';
+import { applyStatColors, paintStatIcons } from '../stat-icons.js?v=b89600eb';
 import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=8b0273b0';
 
 /** The Menu's groups, in the mock's order; Social shows only when something is in it. */
@@ -282,12 +283,6 @@ export function soundChannelToggle(level, restore) {
 // --------------------------------------------------------------------- DOM
 
 /** The mood ring's face for a level: content, flat, sad. */
-const FACE = {
-  ok: '<circle cx="4" cy="4.8" r=".9" fill="currentColor"/><circle cx="8" cy="4.8" r=".9" fill="currentColor"/><path d="M3.6 7.4c1.3 1.4 3.5 1.4 4.8 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
-  low: '<circle cx="4" cy="4.8" r=".9" fill="currentColor"/><circle cx="8" cy="4.8" r=".9" fill="currentColor"/><path d="M3.8 8h4.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>',
-  critical: '<circle cx="4" cy="4.8" r=".9" fill="currentColor"/><circle cx="8" cy="4.8" r=".9" fill="currentColor"/><path d="M3.6 8.6c1.3-1.4 3.5-1.4 4.8 0" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>',
-};
-
 const setAttr = (el, name, value) => {
   if (el && el.getAttribute(name) !== value) el.setAttribute(name, value);
 };
@@ -314,10 +309,11 @@ function drawVital(doc, stat, now, max) {
   setAttr(pill, 'data-sub', r.sub);
   setAttr(pill, 'aria-label', r.label);
   if (stat === 'mood') {
-    const face = pill.querySelector('.ring-glyph svg');
-    if (face && face.dataset.face !== r.level) {
-      face.innerHTML = FACE[r.level] || FACE.ok;
-      face.dataset.face = r.level;
+    // The face follows the mood (js/stat-icons.js MOOD_FACES), as the client's gauge face did.
+    const face = pill.querySelector('.ring-glyph[data-stat-icon]');
+    if (face && face.dataset.statVariant !== r.level) {
+      face.dataset.statVariant = r.level;
+      paintStatIcons(face.parentElement);
     }
   }
   return r.level;
@@ -1029,8 +1025,10 @@ function installNarrowRows(doc) {
     cur.dataset.menuControl = 'currants';
     cur.setAttribute('role', 'status');
     cur.innerHTML = '<span>Currants</span><strong></strong>';
-    // The bar's own currants picture (its keyed URL).
-    const pic = doc.querySelector('.top-bar .hud-cur.currants img')?.cloneNode(true);
+    // The bar's own currants picture: the stat icon (modern), else its image (its keyed URL).
+    const modern = doc.documentElement?.dataset?.ui !== 'classic';
+    const pic = (modern && doc.querySelector('.top-bar .hud-cur.currants .stat-icon')?.cloneNode(true))
+      || doc.querySelector('.top-bar .hud-cur.currants img')?.cloneNode(true);
     if (pic) {
       pic.alt = '';
       cur.prepend(pic);
@@ -1505,6 +1503,9 @@ export function installTopBar(doc, opts = {}) {
   const bar = doc?.querySelector?.('header.top-bar');
   if (!bar || bar.dataset.topbar === 'on') return null;
   bar.dataset.topbar = 'on';
+  // #562: the stats' icons and colours come from js/stat-icons.js, as the speech bubble's slugs do.
+  applyStatColors(doc);
+  paintStatIcons(doc);
   // A focused control's Enter or Space is its own (never the game's verbs or a jump).
   bar.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.closest?.('button, [role="button"], input')) e.stopPropagation();

@@ -18,14 +18,18 @@ import {
   momentMoreText,
   rewardChips,
   rewardIcon,
-} from '../public/js/ui/moment-card.js?v=3850c51c';
-import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=df15804e';
+} from '../public/js/ui/moment-card.js?v=35252236';
+import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=7a9ef8bd';
 import { questRewardSummary } from '../public/js/quests.js?v=4a3fb1da';
 import { questAwardPayload } from '../public/js/quest-offers.js?v=571620de';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
+import { statIconUrl } from '../public/js/stat-icons.js?v=b89600eb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(root, 'public');
+// #562: the stats' reward icons are the top bar's and the bubble's (js/stat-icons.js).
+const IMG_ICON = statIconUrl('imagination');
+const CURRANTS_ICON = statIconUrl('currants');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
 const css = read('style.css');
 const hub = css.slice(css.indexOf('/* —— HUB —— */'), css.indexOf('/* —— end HUB —— */'));
@@ -58,17 +62,17 @@ describe('moment card helpers', () => {
   it('turns a reward summary into chips, and leaves a cheer as words', () => {
     const chips = rewardChips(awardRewardTokens('+300 iMG · +40 Grendaline favor · +50 currants · +30 energy'));
     assert.deepEqual(chips.map((c) => [c.text, c.kind, c.icon]), [
-      ['+300 iMG', 'img', 'assets/imagination/ui/imagination_button.webp'],
+      ['+300 iMG', 'img', IMG_ICON],
       ['+40 Grendaline favor', 'favor', 'assets/sprites/icons/emblem_grendaline@3x.webp'],
-      ['+50 currants', 'currants', 'assets/sprites/icons/pile_of_currants@3x.webp'],
-      ['+30 energy', 'energy', null],
+      ['+50 currants', 'currants', CURRANTS_ICON],
+      ['+30 energy', 'energy', statIconUrl('energy')],
     ]);
-    for (const c of chips) if (c.icon) assert.ok(existsSync(join(PUBLIC, c.icon)), c.icon);
+    for (const c of chips) if (c.icon && !c.icon.startsWith('data:')) assert.ok(existsSync(join(PUBLIC, c.icon)), c.icon);
     assert.deepEqual(rewardChips(awardRewardTokens('Onwards and upwards!')), []);
     assert.deepEqual(rewardChips(awardRewardTokens('Numismatical!')), []);
     // #492: one chip per line, never all or nothing: a line that is not a reward keeps its words.
     assert.deepEqual(rewardChips(awardRewardTokens('+1,000 iMG · You opened the box!')).map((c) => [c.text, c.icon]), [
-      ['+1,000 iMG', 'assets/imagination/ui/imagination_button.webp'],
+      ['+1,000 iMG', IMG_ICON],
       ['You opened the box!', null],
     ]);
     assert.equal(isRewardText('2 levels gained'), true);
@@ -85,22 +89,22 @@ describe('moment card helpers', () => {
     assert.equal(payload.subtitle, '+275 iMG · +175 currants · +25 energy · +25 Pot favor · Recipe: Pineapple Upside Down Pizza');
     const chips = rewardChips(awardTokens(payload));
     assert.deepEqual(chips.map((c) => [c.text, c.kind, c.icon]), [
-      ['+275 iMG', 'img', 'assets/imagination/ui/imagination_button.webp'],
-      ['+175 currants', 'currants', 'assets/sprites/icons/pile_of_currants@3x.webp'],
-      ['+25 energy', 'energy', null],
+      ['+275 iMG', 'img', IMG_ICON],
+      ['+175 currants', 'currants', CURRANTS_ICON],
+      ['+25 energy', 'energy', statIconUrl('energy')],
       ['+25 Pot favor', 'favor', 'assets/sprites/icons/emblem_pot@3x.webp'],
       ['Recipe: Pineapple Upside Down Pizza', 'recipe', null],
     ]);
     // The subtitle alone (an old save's queued award) still gives the icons it can.
-    assert.equal(rewardChips(awardTokens({ subtitle: payload.subtitle })).filter((c) => c.icon).length, 3);
+    assert.equal(rewardChips(awardTokens({ subtitle: payload.subtitle })).filter((c) => c.icon).length, 4);
     // An item reward shows its own icon, as a Glitch reward slug did (Slug.as getIcon 228-233).
     const items = questRewardSummary({ xp: 10, items: { 0: { class_tsid: 'element_red', label: 'Red Element', count: 100 } } });
     const itemChips = rewardChips(awardTokens(questAwardPayload({ title: 'x' }, items)));
     assert.deepEqual(itemChips.map((c) => [c.text, c.icon]), [
-      ['+10 iMG', 'assets/imagination/ui/imagination_button.webp'],
+      ['+10 iMG', IMG_ICON],
       ['100× Red Element', 'assets/sprites/icons/element_red.webp'],
     ]);
-    for (const c of [...chips, ...itemChips]) if (c.icon) assert.ok(existsSync(join(PUBLIC, c.icon)), c.icon);
+    for (const c of [...chips, ...itemChips]) if (c.icon && !c.icon.startsWith('data:')) assert.ok(existsSync(join(PUBLIC, c.icon)), c.icon);
   });
 
   it('says how many screens wait behind this one', () => {

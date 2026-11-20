@@ -10980,12 +10980,15 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 /* The hole inside the stroke is 26.5 px: three digits ("100") step down a size to keep 4 px clear each side. */
 [data-ui="modern"] .top-bar .ring-num[data-digits="3"],
 [data-ui="modern"] .top-bar .ring-num[data-digits="4"] { font-size: var(--fs-2xs); letter-spacing: -0.04em; }
+/* #562: the badge is the stat's icon from js/stat-icons.js (the speech bubble's slugs draw the same);
+   its disc takes the ring's colour, so it turns amber and red with the ring when low. */
 [data-ui="modern"] .top-bar .ring-glyph {
   position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px;
   display: grid; place-items: center; border-radius: var(--radius-round);
-  background: var(--c); color: var(--c-white); box-shadow: 0 0 0 2px var(--surface-raised);
+  background: transparent; box-shadow: 0 0 0 2px var(--surface-raised);
 }
-[data-ui="modern"] .top-bar .ring-glyph svg { width: 10px; height: 10px; }
+[data-ui="modern"] .top-bar .ring-glyph svg { display: block; width: 16px; height: 16px; }
+[data-ui="modern"] .top-bar .ring .stat-icon-bg { fill: var(--c); }
 [data-ui="modern"] .top-bar .ring[data-stat="energy"] { --c: var(--energy); }
 [data-ui="modern"] .top-bar .ring[data-stat="mood"] { --c: var(--mood); }
 [data-ui="modern"] .top-bar .ring[data-stat="level"] { --c: var(--xp); }
@@ -11032,6 +11035,12 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 [data-ui="modern"] .top-bar .hud-cur strong { color: var(--text); font-size: var(--fs-m); font-weight: var(--fw-heavy); }
 [data-ui="modern"] .top-bar .hud-cur img { width: auto; height: 20px; }
 [data-ui="modern"] .top-bar .hud-img img { height: 18px; }
+/* #562: iMG and currants show their stat icons (js/stat-icons.js), the bubble's; the images stay for the classic skin. */
+[data-ui="modern"] .top-bar .stat-icon { display: inline-grid; place-items: center; flex: none; }
+[data-ui="modern"] .top-bar .stat-icon svg { display: block; width: 18px; height: 18px; }
+[data-ui="modern"] .top-bar .stat-icon + img { display: none; }
+[data-ui="modern"] .menu-currants .stat-icon { display: inline-grid; place-items: center; }
+[data-ui="modern"] .menu-currants .stat-icon svg { display: block; width: 18px; height: 18px; }
 [data-ui="modern"] .top-bar .quoin-stat { display: inline-flex; column-gap: 0; }
 [data-ui="modern"] .top-bar .quoin-stat > span { color: var(--imagination); font-size: var(--fs-l); }
 [data-ui="modern"] .top-bar .quoin-stat small { margin-left: 3px; color: var(--text-muted); font-size: var(--fs-xs); }
@@ -11868,6 +11877,8 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 }
 [data-ui="modern"] .award-screen .award-reward:has(.award-reward-icon) { padding-left: 8px; }
 [data-ui="modern"] .award-screen .award-reward-icon { width: 26px; height: 26px; object-fit: contain; }
+/* #562: a stat's own icon (js/stat-icons.js) has no margin in its art; drawn a little smaller. */
+[data-ui="modern"] .award-screen .award-reward-icon[src^="data:image/svg"] { width: 20px; height: 20px; }
 /* The button: 44 px tall, 16 px words, the accent (its label and entrance are the client's). */
 [data-ui="modern"] .award-screen .award-next,
 [data-ui="modern"] .award-screen[data-okin="true"] .award-next,

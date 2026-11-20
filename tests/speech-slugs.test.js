@@ -23,7 +23,7 @@ import {
   slugSign,
   slugsFromEffects,
   speechSlugList,
-} from '../public/js/speech-slugs.js?v=5c729187';
+} from '../public/js/speech-slugs.js?v=e79cecfa';
 import {
   VERB_RESPONSE_MS,
   animalResponseKey,
@@ -34,7 +34,7 @@ import {
 } from '../public/js/verb-responses.js?v=97df8351';
 import { VERB_RESPONSE_POOLS } from '../public/js/verb-responses-data.js?v=0777b59b';
 import { buildVerbResponses, render } from '../tools/build-verb-responses.mjs';
-import { runVerb } from '../public/content.js?v=725fb714';
+import { runVerb } from '../public/content.js?v=25245b19';
 import { createAnimalState } from '../public/js/animals.js?v=1adbeb1a';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { setTrantTables, createTrantState } from '../public/js/trants.js?v=864ea9ff';
@@ -166,7 +166,7 @@ describe('slug row: which keys show, their signs and order', () => {
   it('draws slugs with icons in the bubble and keeps the QA attributes', () => {
     const game = read('game.js');
     assert.match(game, /const slugRow = speechSlugRow\(speech\.slugs, 256\);/);
-    assert.match(game, /drawSlugIcon\(new PIXI\.Graphics\(\), slug\.type, neg\)/);
+    assert.match(game, /drawSlugGlyph\(new PIXI\.Graphics\(\), slug\.type, neg, \{ classic \}\)/);
     assert.match(game, /app\.canvas\.dataset\.lastSpeechSlugs = formatRawSlugs\(speech\.slugs\);/);
     assert.match(game, /app\.canvas\.dataset\.lastSpeechSlugRow = slugRow \? formatSlugList\(slugRow\._slugList\) : '';/);
     assert.match(game, /if \(slugRow\) animateSpeechSlugs\(slugRow\);/);

@@ -2,14 +2,14 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=725fb714';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=25245b19';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ea85b752';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7574b749';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=be2444f4';
+import { createPromptStack } from './js/prompt-stack.js?v=a2da510e';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=49228b02';
 import {
@@ -819,8 +819,8 @@ import {
   streetCardUp,
   STREET_CARD_UP,
   POL_OWNER_SIZE,
-} from './js/screen-fx.js?v=df15804e';
-import { momentMoreText } from './js/ui/moment-card.js?v=3850c51c';
+} from './js/screen-fx.js?v=7a9ef8bd';
+import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
 import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=610e021b';
@@ -833,7 +833,7 @@ import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
 import { placeDialogueBySpeaker } from './js/speaker-card.js?v=94220469';
-import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=104ccef6';
+import { armPromptTimeout, promptTimeoutMs } from './js/prompt-timeout.js?v=6fd30d61';
 import {
   planTravel,
   listMapDestinations,
@@ -1072,7 +1072,7 @@ import { installHiresDecos } from './js/deco-hires.js?v=03ac6512';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=44b13aa1';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=61361090';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1123,7 +1123,8 @@ import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, 
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=97df8351';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { outlinePoints } from './js/outline-points.js?v=c9edb089';
-import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_STYLES, SLUG_TARGETS, drawSlugIcon, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=5c729187';
+import { STAT_PAINTS } from './js/stat-icons.js?v=b89600eb';
+import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_TARGETS, drawSlugGlyph, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPaint, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=e79cecfa';
 import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own word filter
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
@@ -3858,7 +3859,9 @@ function logMoment(line) {
   if (line) notify.moment(wholeStatAmounts(line));
 }
 
-const GAIN_FLOAT_COLORS = { energy: 0x7dcea0, mood: 0xffe066, img: 0xb388ff, currants: 0xf0c85a };
+// #562: an amount floating up wears its stat's colour, the top bar's and the bubble's (js/stat-icons.js).
+const floatPaint = (stat) => parseInt(STAT_PAINTS[stat].float.slice(1), 16);
+const GAIN_FLOAT_COLORS = { energy: floatPaint('energy'), mood: floatPaint('mood'), img: floatPaint('imagination'), currants: floatPaint('currants') };
 
 /** A gain's amounts rising from the avatar, unless the caller already floated the same words. */
 function floatGains(tokens = []) {
@@ -8527,7 +8530,9 @@ function showSpeechBubble(target, speech) {
 /**
  * The bubble's reward slugs (Slug.as, LisChatBubbleManager.as 57-90): per
  * slug a white-bordered pill in the type's fill, the signed amount, then the
- * icon (vector redraws of the client's slug_*.png, js/speech-slugs.js).
+ * icon. #562: the modern skin paints each with the stat's own icon and colour,
+ * the top bar's (js/stat-icons.js through slugPaint); the classic skin keeps the
+ * client's slug art (vector redraws of slug_*.png, js/speech-slugs.js).
  * Takes { xp|imagination, energy (spent), energyGain, mood, moodLoss,
  * currants, favor }; returns null when nothing moved.
  */
@@ -8535,31 +8540,32 @@ function speechSlugRow(slugs, maxWidth = 256) {
   const list = speechSlugList(slugs);
   if (!list.length) return null;
   const L = SLUG_LAYOUT;
+  const classic = document.documentElement.dataset.ui === 'classic';
   const pills = list.map((slug) => {
     const neg = slug.amount < 0;
-    const style = SLUG_STYLES[slug.type];
+    const paint = slugPaint(slug.type, slug.amount, { classic });
     // Slug.as 205: a 1 px white drop shadow straight down (white1px90Degrees_DropShadowA).
     const textStyle = {
       fontFamily: WORLD_FONT_FAMILY, fontSize: L.fontSize, fontWeight: '700',
-      fill: neg ? style.textNeg : style.text,
+      fill: paint.text,
       dropShadow: { color: 0xffffff, alpha: 0.9, blur: 0, distance: 1, angle: Math.PI / 2 },
     };
     const sign = new PIXI.Text({ text: slugSign(slug.amount), style: textStyle });
     const num = new PIXI.Text({ text: slugNumber(slug.amount), style: textStyle });
-    const box = slugBox(slug.type, sign.width, num.width);
+    const box = slugBox(slug.type, sign.width, num.width, paint);
     const bg = new PIXI.Graphics();
     slugPillPath(bg, box.width, box.height, L.cornerRadius, box.rightRadius)
-      .fill({ color: neg ? style.neg : style.pos })
+      .fill({ color: paint.fill })
       .stroke({ width: L.borderWidth, color: L.borderColor });
     sign.x = box.signX;
     num.x = box.numberX;
     sign.y = num.y = Math.round((box.height - num.height) / 2);
-    const icon = drawSlugIcon(new PIXI.Graphics(), slug.type, neg);
+    const icon = drawSlugGlyph(new PIXI.Graphics(), slug.type, neg, { classic });
     icon.x = box.iconX;
     icon.y = box.iconY;
     const c = new PIXI.Container();
     c.addChild(bg, sign, num, icon);
-    c._slug = { ...slug, sign, num, box };
+    c._slug = { ...slug, sign, num, box, paint };
     return c;
   });
   const placed = layoutSlugRow(pills.map((p) => p._slug.box.width), maxWidth);
@@ -8660,7 +8666,6 @@ function animateSpeechSlugs(row) {
       const c = app.canvas.getBoundingClientRect();
       const mid = pill.toGlobal(new PIXI.Point((slug.box.signX + slug.box.iconX) / 2, slug.box.height / 2));
       const from = { x: c.left + mid.x * (c.width / VIEW_W), y: c.top + mid.y * (c.height / VIEW_H) };
-      const style = SLUG_STYLES[slug.type];
       const hex = (n) => `#${n.toString(16).padStart(6, '0')}`;
       const el = document.createElement('div');
       el.className = 'slug-flight';
@@ -8671,7 +8676,7 @@ function animateSpeechSlugs(row) {
         // Set at the 3x peak size and scaled down from it, so the grown amount stays sharp. The
         // pill's own world font (R17), so the amount does not change face as it leaves the bubble.
         font: worldCanvasFont(SLUG_LAYOUT.fontSize * A.growScale, '700'),
-        color: hex(slug.amount < 0 ? style.textNeg : style.text),
+        color: hex(slug.paint.text),
         textShadow: '0 0 3px #fff, 0 0 6px #fff, 0 0 9px rgba(255, 255, 255, 0.8)',
         whiteSpace: 'nowrap',
       });

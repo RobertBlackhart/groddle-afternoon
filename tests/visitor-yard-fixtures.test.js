@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { STICK_PICKUP, YARD_FIXTURES, YARD_MACHINES_MAX, normalizeYardMachines, yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../public/js/yard-fixtures-mp.js?v=dd022fe8';
 import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=0052ab7c';
 import { MAGIC_STICKS, REMOTE_MACHINES } from '../public/js/animal-husbandry.js?v=f9a102a4';
-import { STICK_SCALE } from '../public/js/features/animal-husbandry-feature.js?v=e18bc675';
+import { STICK_SCALE } from '../public/js/features/animal-husbandry-feature.js?v=0d8c2a24';
 import { GAME_DIR, HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const read = (rel) => readFileSync(join(GAME_DIR, rel), 'utf8');

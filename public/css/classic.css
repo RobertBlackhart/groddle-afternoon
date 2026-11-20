@@ -289,6 +289,8 @@
 :root[data-ui="classic"] .top-bar .hud-div,
 :root[data-ui="classic"] .top-bar #quoin-stat,
 :root[data-ui="classic"] .top-bar .ring-glyph { display: none !important; }
+/* #562: the modern skin's stat icons (js/stat-icons.js); the classic bar keeps the client's images. */
+:root[data-ui="classic"] .top-bar .stat-icon { display: none !important; }
 
 /* The ear: a #e6ecee patch over the viewport's top-left corner, 122 x 125 from the page's corner
    (PlayerInfoUI.as 114-133). Its pieces are placed in its own px, as the client did. */

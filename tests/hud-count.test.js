@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HUD_SHORT_OVER, hudCount, renderTopBar } from '../public/js/ui/topbar.js?v=44b13aa1';
+import { HUD_SHORT_OVER, hudCount, renderTopBar } from '../public/js/ui/topbar.js?v=61361090';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
