@@ -3284,12 +3284,14 @@
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .hud-pop-title { margin: 0 0 calc(4 * var(--cu)); color: var(--c-classic-title); font: 800 var(--fs-classic-body)/var(--lh-tight) var(--font-classic-title); }
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-list { list-style: none; margin: 0; padding: 0; }
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-row {
-  display: flex; justify-content: space-between; gap: calc(8 * var(--cu));
+  display: flex; align-items: center; gap: calc(8 * var(--cu));
   padding: calc(3 * var(--cu)) calc(4 * var(--cu)); border-radius: 3px; cursor: pointer;
 }
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-row:is(:hover, :focus-visible) { color: var(--c-classic-link); background: color-mix(in srgb, var(--c-classic-panel) 60%, transparent); outline: none; }
 :root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-name { flex: none; white-space: nowrap; }
-:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-where { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.8; }
+:root[data-ui="classic"] .top-bar #vendor-finder-pop .vf-where { margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.8; }
+/* G1074 (#564): the store's icon, an item it sells (js/store-icons.js). */
+:root[data-ui="classic"] .top-bar #vendor-finder-pop :is(.vf-row img, .vf-noic) { flex: none; width: calc(20 * var(--cu)); height: calc(20 * var(--cu)); object-fit: contain; }
 /* === end ideasa === */
 
 /* === ideasb (lane) === */

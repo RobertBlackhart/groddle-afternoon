@@ -22,7 +22,7 @@ import { OTHER_CHARACTER_TEXT, statusText } from '../public/js/features/realtime
 import { CHARACTER_COPY, FRESH_HASH, SAVE_ALERT_COPY, characterChoices, continuesAs, createRefusalText, saveAlertFor } from '../public/js/online-boot.js?v=d3834f20';
 import { SWITCHER_COPY, STYLE as SWITCHER_STYLE, cardUrl, popoverPlace, switcherChoices } from '../public/js/character-switcher.js?v=5d09bc88';
 import { LOCAL_STATES } from '../public/js/shared-quoins.js?v=89d7b201';
-import { menuRowFor } from '../public/js/ui/topbar.js?v=fec3ba02';
+import { menuRowFor } from '../public/js/ui/topbar.js?v=88972bec';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

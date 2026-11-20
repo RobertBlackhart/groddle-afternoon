@@ -28,7 +28,7 @@ import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL } from './street-minimap.js?v=b4843740';
 import { focusBack } from './focus-return.js?v=da190597';
 import { applyStatColors, paintStatIcons } from '../stat-icons.js?v=b89600eb';
-import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=8b0273b0';
+import { VENDOR_FINDER_TEXT } from '../vendor-finder.js?v=7fbfc51d';
 
 /** The Menu's groups, in the mock's order; Social shows only when something is in it. */
 export const MENU_GROUPS = Object.freeze([
@@ -569,6 +569,8 @@ function installCurrants(doc, finder) {
     pop.dataset.key = key;
     pop.innerHTML = `<h3 class="hud-pop-title">${esc(VENDOR_FINDER_TEXT.title)}</h3><ul class="vf-list">${rows.map((r) => (
       `<li class="vf-row" data-store="${esc(r.key)}"${r.here ? ' data-here' : ''} role="button" tabindex="0" title="${esc(r.tip || '')}">`
+      // G1074 (#564): the store's icon, an item it sells (js/store-icons.js), as a Giant's row shows its symbol.
+      + (r.icon ? `<img src="${esc(r.icon)}" alt="" width="20" height="20" />` : '<span class="vf-noic" aria-hidden="true"></span>')
       + `<span class="vf-name">${esc(r.label)}</span><span class="vf-where">${esc(r.where || '')}</span></li>`
     )).join('')}</ul>`;
   };

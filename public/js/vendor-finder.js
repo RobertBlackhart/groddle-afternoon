@@ -12,12 +12,14 @@
  * every street whose archived objects hold one (street-ecology.json counts.street_spirit), and the
  * vendor NPCs stand where the archive put them (street-ecology.json `vendors`, vendor-npcs.js:
  * the Tool Vendor, the scarecrow, Uncle Friendly, Helga, the Meal Vendor, the Sno Cone machine).
- * Their names are catalog_stores.js's (store-catalog.js).
+ * Their names are catalog_stores.js's (store-catalog.js). Each row shows its store's icon, an item
+ * it sells (js/store-icons.js, G1074, report #564), as the favor panel shows each Giant's symbol.
  *
  * Pure; the panel is js/ui/topbar.js installCurrants, the game side features/vendor-finder-feature.js.
  */
 import { STORE_CATALOG } from './store-catalog.js?v=c6ebb2bd';
 import { VENDOR_NPCS } from './vendor-npcs.js?v=90b0c123';
+import { storeIconUrl } from './store-icons.js?v=94487095';
 
 /** The panel's words (the remake's own). */
 export const VENDOR_FINDER_TEXT = Object.freeze({
@@ -45,7 +47,7 @@ export const sameStreet = (a, b) => Boolean(a) && Boolean(b) && G(a) === G(b);
 /**
  * Every kind of vendor and the streets it stands on, in catalog_stores.js order; kinds that
  * stand nowhere are left out. `ecology`: street-ecology.json; `streetIndex`: assets/streets/index.json.
- * @returns {{ key: string, label: string, streets: string[] }[]}
+ * @returns {{ key: string, label: string, icon: string, streets: string[] }[]}
  */
 export function vendorKinds(ecology, streetIndex, stores = STORE_CATALOG) {
   const byKey = new Map(stores.map((s) => [s.key, new Set()]));
@@ -63,7 +65,7 @@ export function vendorKinds(ecology, streetIndex, stores = STORE_CATALOG) {
     }
   }
   return stores
-    .map((s) => ({ key: s.key, label: s.label, streets: [...byKey.get(s.key)].sort() }))
+    .map((s) => ({ key: s.key, label: s.label, icon: storeIconUrl(s.key), streets: [...byKey.get(s.key)].sort() }))
     .filter((k) => k.streets.length);
 }
 
@@ -72,14 +74,15 @@ export function vendorKinds(ecology, streetIndex, stores = STORE_CATALOG) {
  * { destination, hops } by road, { unknown } while that can't be told (the roads loading, at
  * home), or null when no road gets there).
  * Nearest first (one on this street at the top), the kinds with no answer last, ties in catalog order.
- * @returns {{ key, label, here: boolean, destination: string, hops: number|null }[]}
+ * @returns {{ key, label, icon, here: boolean, destination: string, hops: number|null }[]}
  */
 export function vendorFinderRows(kinds, { here = '', find = () => null } = {}) {
   const rows = (kinds || []).map((k, order) => {
-    if (k.streets.some((t) => sameStreet(t, here))) return { key: k.key, label: k.label, here: true, destination: G(here), hops: 0, order };
+    const icon = k.icon ?? storeIconUrl(k.key);
+    if (k.streets.some((t) => sameStreet(t, here))) return { key: k.key, label: k.label, icon, here: true, destination: G(here), hops: 0, order };
     const r = find(k.streets);
     const hops = Number.isFinite(r?.hops) ? r.hops : null;
-    return { key: k.key, label: k.label, here: false, destination: hops == null ? '' : String(r.destination || ''), hops, ...(r?.unknown ? { unknown: true } : {}), order };
+    return { key: k.key, label: k.label, icon, here: false, destination: hops == null ? '' : String(r.destination || ''), hops, ...(r?.unknown ? { unknown: true } : {}), order };
   });
   const rank = (r) => (r.hops == null ? Infinity : r.hops);
   return rows.sort((a, b) => rank(a) - rank(b) || a.order - b.order).map(({ order, ...r }) => r);

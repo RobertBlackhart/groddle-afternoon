@@ -11258,8 +11258,9 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
   max-height: calc(100dvh - var(--hud-h) - 96px); overflow-y: auto; overscroll-behavior: contain;
 }
 [data-ui="modern"] .vf-list { list-style: none; margin: 0; padding: 0; }
+/* G1074 (#564): each store's icon first, an item it sells (js/store-icons.js), in the favor rows' 20 px box. */
 [data-ui="modern"] .vf-row {
-  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; gap: var(--space-3);
+  display: grid; grid-template-columns: 20px max-content minmax(0, 1fr); align-items: center; gap: var(--space-2);
   min-height: 30px; padding: 0 var(--space-2); border-radius: var(--radius-s); cursor: pointer;
   font-size: var(--fs-m); font-weight: var(--fw-bold); color: var(--text);
 }
@@ -11267,6 +11268,7 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 /* A phone's dialogs take the screen less 8 px; this one stays inside the bar it hangs from. */
 :root.touch-phone[data-ui="modern"] .top-bar .vendor-finder-pop[role="dialog"] { max-width: calc(100% - 8px); }
 [data-ui="modern"] .vf-row[data-here] { background: var(--surface-sunken); }
+[data-ui="modern"] .vf-row img { width: 20px; height: 20px; object-fit: contain; justify-self: center; }
 [data-ui="modern"] .vf-row:hover, [data-ui="modern"] .vf-row:focus-visible { background: color-mix(in srgb, currentColor 8%, transparent); }
 [data-ui="modern"] .vf-where {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right;
