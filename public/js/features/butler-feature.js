@@ -143,9 +143,9 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=144fa420';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=6072832d';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=df28eda1';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
-import { worldPoint } from './world-drop-feature.js?v=03737ca2';
+import { worldPoint } from './world-drop-feature.js?v=41462ff5';
 import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { leavingWire, markLeaving, packPicks, pickKey, receiveWire, takeCopies } from '../copy-picks.js?v=01de4c58';

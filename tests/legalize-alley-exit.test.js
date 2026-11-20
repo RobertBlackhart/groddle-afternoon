@@ -22,7 +22,7 @@ import { assignQuest, createQuestState } from '../public/js/quests.js?v=4a3fb1da
 import { createAchievementState } from '../public/js/achievements.js?v=7b03d657';
 import { countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=8fcdf179';
-import { STATION_X, stationScreen, surfaceStation } from '../public/js/subway.js?v=9c78e374';
+import { STATION_X, stationScreen, surfaceStation } from '../public/js/subway.js?v=36c6d2b2';
 import {
   LEGALIZE_BACK_ALLEY_TSID,
   LEGALIZE_CARD_ID,

@@ -1151,6 +1151,7 @@
     "ours: * Ours: a lone rider (nobody else on the platform)": "ours-subway"
   },
   "public/js/subway.js": {
+    "ours: * PURE (#538, our own touch; Glitch's star stayed on the station it": "subway-line-star-slides",
     "ours: reference only), each piece found by matching our own CC0 subway1.swf": "ours-subway",
     "remake-adds: * current_tsid / next_tsid / is_moving). The remake adds the stops in order and the stop": "ours-subway",
     "stand-in: * is lost, and the subway stand-in theme played under the recovered": "ours-subway"

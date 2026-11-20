@@ -78,11 +78,13 @@ import {
   isCarTsid,
   lineName,
   lineText,
+  lineStarPoint,
   lineView,
   nextStation,
   papersHint,
   payFare,
   rideNext,
+  rideProgress,
   rideTiming,
   stationArrival,
   stationById,
@@ -91,7 +93,7 @@ import {
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=9c78e374';
+} from '../subway.js?v=36c6d2b2';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
 
@@ -543,15 +545,49 @@ function lineSvg(view) {
     const isNext = view.next && p.s.id === view.next.id;
     let mark = `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#fff" stroke="${colour}" stroke-width="2.5"/>`;
     if (isNext) mark = `<image href="${artUrl(blue ? 'subway_map_next_stop_blue' : 'subway_map_next_stop_red')}" x="${p.x - 12}" y="${p.y - 11.5}" width="24" height="23"/>`;
-    if (isHere) mark = `<image class="${view.moving ? 'moving' : ''}" href="${artUrl(blue ? 'subway_map_current_station_blue' : 'subway_map_current_station_red')}" x="${p.x - 15}" y="${p.y - 14}" width="30" height="27"/>`;
     const ring = mine ? `<circle cx="${p.x}" cy="${p.y}" r="15" fill="none" stroke="#2b2a26" stroke-width="2.5" stroke-dasharray="4 3"/>` : '';
     const hint = mine ? ` (${lineText.yourStop.toLowerCase()})` : '';
     return `<g class="stop-hit" data-stop="${p.s.id}"><title>${esc(p.s.name)}${hint}</title><circle cx="${p.x}" cy="${p.y}" r="18" fill="transparent"/>${ring}${mark}`
       + `<text x="${tx}" y="${ty}" text-anchor="${anchor}" font-weight="700" font-style="italic" font-size="13" fill="#2b2a26">${esc(p.s.name)}</text>`
       + `<text x="${tx}" y="${ty + 13}" text-anchor="${anchor}" font-style="italic" font-size="11" fill="#8f8a7a">${mine ? esc(lineText.yourStop) : esc(p.s.hubName)}</text></g>`;
   }).join('');
+  // #538: the star is its own mark over the stops, placed every tick (placeLineStar): on the train's
+  // station while it stands, sliding to the next stop while it moves.
+  const star = `<image class="subway-line-star${view.moving ? ' moving' : ''}" data-star="1" pointer-events="none" href="${artUrl(blue ? 'subway_map_current_station_blue' : 'subway_map_current_station_red')}" x="-15" y="-14" width="30" height="27"/>`;
   return `<svg viewBox="110 0 590 475" role="img" aria-label="${esc(lineText.title(view.lineName))}"><rect x="110" width="590" height="475" rx="8" fill="#eceadb"/>`
-    + `<path d="${path}" fill="none" stroke="${colour}" stroke-width="3" stroke-linecap="round" opacity=".9"/>${arrows}${dots}</svg>`;
+    + `<path d="${path}" fill="none" stroke="${colour}" stroke-width="3" stroke-linecap="round" opacity=".9"/>${arrows}${dots}${star}</svg>`;
+}
+
+/** The line map's svg offset from map_pos (the dots above are drawn at map_pos + this). */
+const LINE_MAP_SHIFT = Object.freeze({ x: 60, y: 30 });
+
+const reducedMotion = () => {
+  try {
+    return Boolean(globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * #538: the star where the train is, `now`: the share of the hop gone (js/subway.js rideProgress) of
+ * the way to the next stop. Under reduced motion it steps in quarters instead of gliding.
+ */
+function placeLineStar(engine, now) {
+  const star = lineMap?.star;
+  if (!star) return;
+  const view = lineView(ride, chosenStop);
+  const p = rideProgress(ride, now, { steps: reducedMotion() ? 4 : 0 });
+  const pt = lineStarPoint(view, p);
+  if (!pt) return;
+  const at = `translate(${(pt.x + LINE_MAP_SHIFT.x).toFixed(1)},${(pt.y + LINE_MAP_SHIFT.y).toFixed(1)})`;
+  if (star.getAttribute('transform') === at) return;
+  star.setAttribute('transform', at);
+  const pct = Math.round(p * 100);
+  if (lineMap.starPct !== pct) {
+    lineMap.starPct = pct;
+    engine?.setData?.('subwayLineStar', String(pct));
+  }
 }
 
 const lineKey = (view) => (view ? `${view.direction}:${view.at.id}:${view.moving ? 'moving' : 'still'}:${view.chosen?.id || ''}` : '');
@@ -584,6 +620,8 @@ function drawLineMap(engine, { focus = null } = {}) {
   car.textContent = SUBWAY_LINE.car.label;
   lineMap.title.append(dot, lineText.title(view.lineName), car);
   lineMap.svg.innerHTML = lineSvg(view);
+  lineMap.star = lineMap.svg.querySelector('[data-star]');
+  placeLineStar(engine, Date.now());
   for (const g of lineMap.svg.querySelectorAll('[data-stop]')) g.addEventListener('click', () => chooseStop(engine, Number(g.dataset.stop)));
   lineMap.now.textContent = view.moving ? lineText.between(view.at.name, view.next?.name || '') : lineText.at(view.at.name);
   lineMap.next.replaceChildren(lineText.next);
@@ -673,7 +711,7 @@ function openLineMap(engine) {
     }
   });
   root().appendChild(el);
-  lineMap = { el, card, title, svg, now, next, mine, list, key: '' };
+  lineMap = { el, card, title, svg, now, next, mine, list, star: null, starPct: -1, key: '' };
   drawLineMap(engine);
   close.focus({ preventScroll: true });
   engine.playSound?.('OPEN_HUB_MAP', { volume: 0.5 });
@@ -1233,6 +1271,7 @@ export const subwayFeature = {
       runRide(engine, t);
       animateCar(t);
       if (lineMap && lineKey(lineView(ride, chosenStop)) !== lineMap.key) drawLineMap(engine);
+      placeLineStar(engine, t);
     }
     if (dialog?.until && t >= dialog.until) {
       const cb = dialog.onTimeout;

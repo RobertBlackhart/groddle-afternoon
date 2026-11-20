@@ -348,6 +348,39 @@ export function lineView(ride, chosen = null) {
   };
 }
 
+/**
+ * PURE (#538, our own touch; Glitch's star stayed on the station it left, grey, MapTransit.as
+ * setPlayerLocation): how far the train is through the hop it is making, 0 leaving its station to 1 at
+ * the next, from the ride's known departure and arrival times, like a progress bar. 0 while the train
+ * stands. `steps` > 0 rounds down to that many even steps (reduced motion: the star jumps, never glides).
+ */
+export function rideProgress(ride, now, { steps = 0 } = {}) {
+  if (!ride || ride.phase !== 'moving') return 0;
+  const span = Number(ride.arriveAt) - Number(ride.departAt);
+  if (!(span > 0)) return 1;
+  let p = Math.min(1, Math.max(0, (Number(now) - Number(ride.departAt)) / span));
+  if (steps > 0 && p < 1) p = Math.floor(p * steps) / steps;
+  return p;
+}
+
+/** PURE: the point `p` (0..1, clamped) of the way along the straight line from `a` to `b` ({ x, y }). */
+export function linePoint(a, b, p) {
+  const k = Number.isFinite(p) ? Math.min(1, Math.max(0, p)) : 0;
+  return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
+}
+
+/**
+ * PURE (#538): where the star sits on the line map (map_pos space): on the train's station while it
+ * stands, `p` of the way to the next stop while it moves. Null for a ride the map cannot place.
+ */
+export function lineStarPoint(view, p = 0) {
+  const at = view && stationById(view.at?.id);
+  if (!at) return null;
+  const from = { x: at.map_pos[0], y: at.map_pos[1] };
+  const next = view.moving && view.next ? stationById(view.next.id) : null;
+  return next ? linePoint(from, { x: next.map_pos[0], y: next.map_pos[1] }, p) : from;
+}
+
 /** The line map's footer: where you get off, if you picked a stop. */
 export const lineText = Object.freeze({
   title: (line) => `${line} map`,

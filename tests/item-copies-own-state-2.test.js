@@ -44,10 +44,10 @@ import { potionsFeature, usePotionNow } from '../public/js/features/potions-feat
 import { powdersFeature } from '../public/js/features/powders-feature.js?v=5a9436d4';
 import { treeDeathFeature } from '../public/js/features/tree-death-feature.js?v=b93211ad';
 import { masterGardenFeature } from '../public/js/features/master-garden-feature.js?v=b928a24b';
-import { itemVerbsMoreFeature } from '../public/js/features/item-verbs-more-feature.js?v=76b61e42';
+import { itemVerbsMoreFeature } from '../public/js/features/item-verbs-more-feature.js?v=a45b9ce9';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=6127da0c';
 import { cubimalRaceFeature } from '../public/js/features/cubimal-race-feature.js?v=013ea39d';
-import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=e7f0c8c0';
+import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=be40a087';
 
 const root = join(import.meta.dirname, '..');
 

@@ -36,7 +36,7 @@ import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3fa89550';
-import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=bce3e62c';
+import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=1c37d102';
 import { persist as persistTrade } from '../public/js/features/trade-feature.js?v=c229c403';
 import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=0685ed0d';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=d2bb1617';

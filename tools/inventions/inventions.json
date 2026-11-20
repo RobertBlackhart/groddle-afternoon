@@ -4984,6 +4984,29 @@
    "why": "patch_dark.js canPlant takes only Egg Plant Beans with no line of its own; the refusal reuses patch.js 259 and the bean's own text so the player hears which kind grows there.",
    "ruling": "Claude's default in lane vendk 2026-11-19",
    "rows": []
+  },
+  {
+   "id": "subway-line-star-slides",
+   "title": "On the train's line map the star slides from the stop it left to the next stop over the hop (#538).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/subway.js",
+     "symbol": "rideProgress"
+    },
+    {
+     "file": "public/js/subway.js",
+     "symbol": "lineStarPoint"
+    },
+    {
+     "file": "public/js/features/subway-feature.js",
+     "symbol": "placeLineStar"
+    }
+   ],
+   "why": "Glitch's transit map kept the star on the station the train left, greyed while moving (MapTransit.as setPlayerLocation). A player asked to see the train's progress; the star now moves like a progress bar, and steps in quarters under reduced motion.",
+   "ruling": "Austin approved the request 2026-11-19 (lane mapk)",
+   "rows": []
   }
  ]
 }

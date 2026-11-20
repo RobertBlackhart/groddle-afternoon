@@ -30,7 +30,7 @@ import {
   akVerbReaction,
   createAkState,
 } from '../public/js/skillquest-ak.js?v=397a9d19';
-import { listAnimalFeedOptions } from '../public/js/animals.js?v=f4c8fbe4';
+import { listAnimalFeedOptions } from '../public/js/animals.js?v=9c01daa8';
 import { populationForStreet } from '../public/js/street-ecology.js?v=578806c2';
 import { newxpFeature } from '../public/js/features/newxp-feature.js?v=02f559d6';
 

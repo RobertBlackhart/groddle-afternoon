@@ -23,7 +23,7 @@ import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=83
 import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=3d8d331c';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=504dd877';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=2f6bac3a';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=beaf5583';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=b1447e57';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=5a34f239';
 import { newxpFeature } from '../public/js/features/newxp-feature.js?v=02f559d6';
 import { Display, fakePixi } from './fake-scene.js';

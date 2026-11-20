@@ -10,7 +10,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=9c78e374';
+import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=36c6d2b2';
 import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { barriersScreen, platformsScreen, stuckWay } from '../public/js/street-model.js?v=a9a05f9d';
 import { defaultArrival } from '../public/js/street-arrival.js?v=876bfaae';

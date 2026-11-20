@@ -25,8 +25,8 @@ import {
   setFreeTooltip,
   setFreeVerbState,
 } from '../public/js/animal-set-free.js?v=6fcd8355';
-import { getVerbsFor } from '../public/content.js?v=6d578ad4';
-import { createAnimalState } from '../public/js/animals.js?v=f4c8fbe4';
+import { getVerbsFor } from '../public/content.js?v=bbb5204c';
+import { createAnimalState } from '../public/js/animals.js?v=9c01daa8';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
