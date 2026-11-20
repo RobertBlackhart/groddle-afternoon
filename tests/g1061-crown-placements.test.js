@@ -7,28 +7,26 @@
  * the resource nodes, the Visiting Stone and the Race Ticket Dispenser follow (#256, #555).
  *
  * tools/canopy-placements.mjs lays out every shared street (and each street upgrade) as game.js does
- * and lists the planned ones still drawn in a crown. Only the canopy rule's own last resort may be:
- * the planner had no clear spot left (every other spot steep, behind the front art or on another
- * fixture), named below so a new one fails.
+ * and lists the planned ones still drawn in a crown: none may be. Mossystep's vendor had no clear spot
+ * but one floor steeper than the planner allows; Austin's ruling (2026-11-20) allows that one spot
+ * (street-ecology.js SLOPE_RULINGS), pinned below.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  BIG_THING_MAX_SLOPE,
   PLACEMENT_FOOTPRINTS,
   PLACEMENT_HEIGHTS,
+  SLOPE_RULINGS,
   UNDER_CANOPY_HEIGHTS,
   UNDER_CANOPY_WIDTHS,
-} from '../public/js/street-ecology.js?v=010c8c45';
-import { CROWN_KINDS, crownOverlaps } from '../tools/canopy-placements.mjs';
+  slopeRuled,
+} from '../public/js/street-ecology.js?v=c9b461c0';
+import { groundAt } from '../public/js/street-arrival.js?v=33135feb';
+import { CROWN_KINDS, crownOverlaps, crownOverlapsInPlan, streetPlans } from '../tools/canopy-placements.mjs';
 
-/**
- * Mossystep (1800 px, two Bean Trees): the lower floor is all behind the front art and every other
- * spot is steeper than 0.3, on its Visiting Stone, on the measured tree's own box or in a crown, so
- * its vendor stays where it stood, 79 px from a Bean Tree's trunk (the plan lists it blocked by the
- * `canopy`). It needs a hand-set spot (Austin's call), not a planner rule.
- */
-const LAST_RESORT = new Set(['GCR15ST40FM1M1I:vendor:0']);
+const MOSSYSTEP = 'GCR15ST40FM1M1I';
 
 describe('G1061: planned vendors, shrines and mailboxes keep out of trees', () => {
   it('each keeps out of a canopy by its own art', () => {
@@ -40,17 +38,37 @@ describe('G1061: planned vendors, shrines and mailboxes keep out of trees', () =
     assert.equal(CROWN_KINDS.shrine.h, PLACEMENT_HEIGHTS.shrine);
   });
 
-  it('on every shared street, none is drawn in a crown but the planner\'s last resort', () => {
+  it('on every shared street, none is drawn in a crown', () => {
     const { overlaps, planned } = crownOverlaps();
     assert.ok(planned.vendor > 800 && planned.shrine > 500 && planned.furnitureMailbox > 80, JSON.stringify(planned));
-    const fresh = overlaps.filter((o) => !LAST_RESORT.has(`${o.tsid}:${o.key}:${o.index}`))
-      .map((o) => `${o.label} (${o.tsid}${o.upgrade ? `, upgrade ${o.upgrade}` : ''}): ${o.key} ${o.index} at ${o.x},${o.y} in tree ${o.tree} at ${o.tx},${o.ty}`);
-    assert.deepEqual(fresh, []);
-    for (const id of LAST_RESORT) {
-      const hit = overlaps.find((o) => `${o.tsid}:${o.key}:${o.index}` === id);
-      // Gone from the crown: take it off the list.
-      assert.ok(hit, `${id} is clear of the trees now`);
-      assert.ok(hit.blocked, `${id}: the planner had a clear spot`);
+    const hits = overlaps.map((o) => `${o.label} (${o.tsid}${o.upgrade ? `, upgrade ${o.upgrade}` : ''}): ${o.key} ${o.index} at ${o.x},${o.y} in tree ${o.tree} at ${o.tx},${o.ty}`);
+    assert.deepEqual(hits, []);
+  });
+
+  it('Mossystep\'s vendor stands on the ground at its ruled slope spot, clear of the Bean Trees', () => {
+    // The one ruling: this street, the vendor, one spot.
+    assert.deepEqual(Object.keys(SLOPE_RULINGS), [MOSSYSTEP]);
+    assert.deepEqual(Object.keys(SLOPE_RULINGS[MOSSYSTEP]), ['vendor']);
+    assert.equal(SLOPE_RULINGS[MOSSYSTEP].vendor.length, 1);
+    const spot = { x: 704, y: 810.75, slope: 0.316 };
+    assert.ok(spot.slope > BIG_THING_MAX_SLOPE);
+    assert.ok(slopeRuled(MOSSYSTEP, 'vendor', spot));
+    assert.ok(!slopeRuled(MOSSYSTEP, 'shrine', spot), 'only the vendor');
+    assert.ok(!slopeRuled('GCR15ST40FM1M1X', 'vendor', spot), 'only Mossystep');
+    assert.ok(!slopeRuled(MOSSYSTEP, 'vendor', { ...spot, x: 760 }), 'only that spot');
+    assert.ok(!slopeRuled(MOSSYSTEP, 'vendor', { ...spot, slope: 0.4 }), 'no steeper floor');
+
+    const street = streetPlans(MOSSYSTEP);
+    for (const { upgrade, plan } of street.plans) {
+      const [vendor] = plan.groups.vendor;
+      assert.equal(plan.groups.vendor.length, 1, `upgrade ${upgrade}`);
+      assert.equal(Math.round(vendor.x), 704, `upgrade ${upgrade}`);
+      assert.equal(Math.round(vendor.y), 811, `upgrade ${upgrade}`);
+      // On the street's reached ground there, not a ledge above it or over air.
+      assert.ok(Math.abs(groundAt(street.platforms, vendor.x, { tsid: MOSSYSTEP }) - vendor.y) < 1, `upgrade ${upgrade}`);
+      assert.deepEqual(crownOverlapsInPlan(plan).filter((o) => o.key === 'vendor'), []);
+      assert.ok(!plan.blocked.some((b) => b.key === 'vendor'), 'covers nothing');
+      assert.ok(!plan.steep.some((s) => s.key === 'vendor'), 'the ruled slope is not listed as steep');
     }
   });
 });

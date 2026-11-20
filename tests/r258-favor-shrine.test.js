@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { shrineStreetsFor } from '../public/js/street-ecology.js?v=010c8c45';
+import { shrineStreetsFor } from '../public/js/street-ecology.js?v=c9b461c0';
 import { GIANTS } from '../public/js/shrines.js?v=fd21d8ec';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '../public');

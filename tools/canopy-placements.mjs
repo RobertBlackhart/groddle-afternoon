@@ -29,7 +29,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=010c8c45';
+} from '../public/js/street-ecology.js?v=c9b461c0';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=71fa73cd';
 import { creatureRequests, setCreatureEcology } from './build-realtime-objects.mjs';
@@ -90,34 +90,47 @@ function load() {
 }
 
 /**
+ * A street's layouts as game.js enterStreet plans them: its own (upgrade null) and each street
+ * upgrade's that changes it: [{ upgrade, plan }], with its platforms; null when the street has no file.
+ */
+export function streetPlans(tsid) {
+  const { index, ecology, jobs } = load();
+  let data;
+  try {
+    data = JSON.parse(readFileSync(join(streetsDir, `${tsid}.json`), 'utf8'));
+  } catch {
+    return null;
+  }
+  const starter = tsid === STREET_INDEX.default;
+  const base = ecologyForStreet(tsid);
+  const layouts = [[null, base]];
+  for (const option of jobs.upgrades?.[tsid]?.options || []) {
+    if (option?.id) layouts.push([option.id, upgradeEcologyEntry(base, option)]);
+  }
+  const platforms = platformsScreen(data);
+  const reserved = streetReservedSpots(data);
+  const plans = layouts.map(([upgrade, entry]) => {
+    const pop = populationForStreet(tsid, entry, { starter });
+    const requests = creatureRequests(pop, data, ecology);
+    return { upgrade, plan: planStreetPlacements(platforms, requests, { worldW: streetWidth(data), seed: tsid, reserved }) };
+  });
+  return { label: index.streets[tsid]?.label || tsid, platforms, plans };
+}
+
+/**
  * Every shared street's planned vendors, shrines and mailboxes in a crown, and how many of each kind
  * were planned: { overlaps: [{ tsid, label, upgrade?, key, index, x, y, tree, tx, ty }], planned }.
  */
 export function crownOverlaps({ tsids = null } = {}) {
-  const { index, ecology, jobs } = load();
+  const { index } = load();
   const overlaps = [];
   const planned = { vendor: 0, shrine: 0, furnitureMailbox: 0 };
   const list = tsids || Object.keys(index.streets).filter((t) => !isZoneTsid(t)).sort();
   for (const tsid of list) {
-    let data;
-    try {
-      data = JSON.parse(readFileSync(join(streetsDir, `${tsid}.json`), 'utf8'));
-    } catch {
-      continue;
-    }
-    const starter = tsid === STREET_INDEX.default;
-    const base = ecologyForStreet(tsid);
-    const layouts = [[null, base]];
-    for (const option of jobs.upgrades?.[tsid]?.options || []) {
-      if (option?.id) layouts.push([option.id, upgradeEcologyEntry(base, option)]);
-    }
-    const platforms = platformsScreen(data);
-    const reserved = streetReservedSpots(data);
+    const street = streetPlans(tsid);
+    if (!street) continue;
     const seen = new Set();
-    for (const [upgrade, entry] of layouts) {
-      const pop = populationForStreet(tsid, entry, { starter });
-      const requests = creatureRequests(pop, data, ecology);
-      const plan = planStreetPlacements(platforms, requests, { worldW: streetWidth(data), seed: tsid, reserved });
+    for (const { upgrade, plan } of street.plans) {
       if (!upgrade) {
         for (const key of Object.keys(planned)) planned[key] += (plan.groups[key] || []).filter((p) => !p.fixed).length;
       }
@@ -126,7 +139,7 @@ export function crownOverlaps({ tsids = null } = {}) {
         const id = `${hit.key}:${hit.index}:${hit.x}:${hit.y}`;
         if (seen.has(id)) continue;
         seen.add(id);
-        overlaps.push({ tsid, label: index.streets[tsid]?.label || tsid, ...(upgrade ? { upgrade } : {}), ...hit });
+        overlaps.push({ tsid, label: street.label, ...(upgrade ? { upgrade } : {}), ...hit });
       }
     }
   }
@@ -148,6 +161,6 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   for (const o of show) {
     console.log(`  ${o.label} (${o.tsid}${o.upgrade ? `, upgrade ${o.upgrade}` : ''}): ${o.key} ${o.index} at ${o.x},${o.y} in tree ${o.tree} at ${o.tx},${o.ty}${o.blocked ? ' (no clear spot left)' : ''}`);
   }
-  // The canopy rule's own last resort (no clear spot left) is listed, not failed: tests/g1061-crown-placements.test.js names it.
-  if (overlaps.some((o) => !o.blocked)) process.exitCode = 1;
+  // G1061: none may be left (Mossystep's vendor took its hand-ruled slope spot, SLOPE_RULINGS).
+  if (overlaps.length) process.exitCode = 1;
 }

@@ -1015,6 +1015,28 @@ export const SOIL_STEADY_FLOOR = Object.freeze({ maxSlope: 0.25, ledgeRun: 0, ed
 export const BIG_THING_MAX_SLOPE = 0.3;
 export const BIG_THING_GROUPS = Object.freeze(['trees', 'rocks', 'vendor', 'shrine', 'piggies', 'chickens', 'furnitureMailbox']);
 
+/**
+ * Hand-ruled floors a big thing may take though steeper than BIG_THING_MAX_SLOPE, by street and
+ * group: { tsid: { key: [{ x, y, maxSlope }] } }, a planner spot within 1 px of x, y and no steeper
+ * than maxSlope. Each is one named spot on one street, not a looser rule; the plan does not list it
+ * under `steep`.
+ *
+ * G1061, Austin's ruling 2026-11-20: Mossystep's Street Spirit stood in a Bean Tree's crown, the
+ * only spot clear of the trees being the long floor at 704, 811 on a 0.32 slope (every other one is
+ * behind the front art, on its Visiting Stone or on the measured tree's own box). Allow that slope.
+ */
+export const SLOPE_RULINGS = Object.freeze({
+  GCR15ST40FM1M1I: Object.freeze({ vendor: Object.freeze([Object.freeze({ x: 704, y: 811, maxSlope: 0.32 })]) }),
+});
+
+/** PURE: whether SLOPE_RULINGS lets `key` stand on `candidate` on street `tsid` despite its slope. */
+export function slopeRuled(tsid, key, candidate) {
+  const spots = SLOPE_RULINGS[tsid]?.[key];
+  if (!spots || !candidate) return false;
+  return spots.some((s) => Math.abs(candidate.x - s.x) <= 1 && Math.abs(candidate.y - s.y) <= 1
+    && (candidate.slope || 0) <= s.maxSlope);
+}
+
 /** PURE: whether a planner spot (buildPlatformCandidates) is a floor a STEADY_FLOOR_GROUPS rule takes. */
 export function steadyFloor(candidate, rule) {
   if (!rule) return true;
@@ -2133,7 +2155,8 @@ export function planStreetPlacements(
         // Ticket 118: rooted scenery on or behind a front deco that players walk along, last too.
         if (!hidden && height > 0 && footAtWalkway(candidate, footprint, walkways)) hidden = 32;
         // Big things on a floor steeper than BIG_THING_MAX_SLOPE only when nothing else is left.
-        const tooSteep = maxSlope != null && (candidate.slope || 0) > maxSlope ? 64 : 0;
+        // G1061: a SLOPE_RULINGS spot (one hand-ruled floor on one street) is not too steep for its group.
+        const tooSteep = maxSlope != null && (candidate.slope || 0) > maxSlope && !slopeRuled(tsid, request.key, candidate) ? 64 : 0;
         // G852: big things and walkers up a tree's branch art only when nothing else is left.
         const onBranchArt = branchFree && onBranch.has(candidate.id) ? 128 : 0;
         const miss = zoneMiss(candidate);
@@ -2151,7 +2174,7 @@ export function planStreetPlacements(
       if (footprint > 0 && !perching && (best.under || 0) >= footprint && !(deck && (best.run || 0) >= DECK_RUN_PX)) perches.push({ key: request.key, index });
       if (covers.has(best.id)) blocked.push({ key: request.key, index, fixture: covers.get(best.id).key });
       if (branchFree && onBranch.has(best.id)) branch.push({ key: request.key, index });
-      if (maxSlope != null && (best.slope || 0) > maxSlope) steep.push({ key: request.key, index, slope: Math.round(best.slope * 100) / 100 });
+      if (maxSlope != null && (best.slope || 0) > maxSlope && !slopeRuled(tsid, request.key, best)) steep.push({ key: request.key, index, slope: Math.round(best.slope * 100) / 100 });
       used.add(best.id);
       const point = { x: best.x, y: best.y, id: best.id, key: request.key, clearance, room: best.room || 0 };
       groups[request.key].push(point);
