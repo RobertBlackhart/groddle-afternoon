@@ -23,10 +23,10 @@ import {
   machineWorkSounds,
   startAssembly,
   startDisassembly,
-} from '../public/js/machines.js?v=ab7d71da';
+} from '../public/js/machines.js?v=5d749d26';
 import { resolveSound } from '../public/js/sound-board.js?v=f41980b8';
 import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=6127da0c';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=157d9eec';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '..', 'glitch-GameServerJS', 'items');

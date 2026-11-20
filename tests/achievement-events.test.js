@@ -27,7 +27,7 @@ import { createResourceNode, harvestResourceNode } from '../public/js/resource-n
 import { createPlot, growTree, tickPlot } from '../public/js/patches.js?v=2498e678';
 import { noteWoodCare } from '../public/js/woodcutting.js?v=9e9af511';
 import { slothsChewing } from '../public/js/features/resource-nodes-feature.js?v=28d6b97d';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=6127da0c';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=157d9eec';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { normalizeAchievementSnapshot } from '../public/js/player-save.js?v=b70c0670';

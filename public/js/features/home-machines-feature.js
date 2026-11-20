@@ -93,10 +93,10 @@ import {
   expireSolo,
   tankOf,
   TAKEN_KEEP,
-} from '../home-machines.js?v=1ee17452';
-import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=b11cfa27';
+} from '../home-machines.js?v=566d83ed';
+import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, refuelCount, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=ca927ffd';
 import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=49cc5031';
-import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=ab7d71da';
+import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=5d749d26';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { markLeaving, takeCopies } from '../copy-picks.js?v=01de4c58';
@@ -109,7 +109,7 @@ import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { createSheetLoader } from '../sprite-sheets.js?v=bb4fe94b';
 import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=ef4591d8';
-import { payAltarBonus } from './machine-rooms-feature.js?v=b2847f0b';
+import { payAltarBonus } from './machine-rooms-feature.js?v=c2253de7';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
@@ -629,15 +629,29 @@ function createSession(engine, client) {
     act('take', m, othersInside(m, me()) ? { force: true } : {});
   }
 
-  function refuel(m, all) {
+  /**
+   * #557: `count` Fuel Cells from Refuel's How many?. Online the realtime server takes one cell or all
+   * that fit (home_machine refuel, `all`): all of them asks for all, any other count goes one at a
+   * time, the next asked when the last has settled (onDone, refuelMore).
+   */
+  let refuelMore = null;
+  function refuel(m, count = 1) {
+    const n = Math.max(1, Math.floor(Number(count)) || 1);
     if (mp) {
-      const go = () => send('refuel', m, all ? { all: true } : {});
-      const f = saveStore?.flush?.();
-      if (f?.then) f.then(go, go);
-      else go();
+      const most = Math.min(Math.floor((MAX_FUEL - m.fuel) / FUEL_PER_CELL), countItem(engine.inv, FUEL_CELL));
+      const all = n > 1 && n >= most;
+      refuelMore = all || n === 1 ? null : { id: m.id, left: n - 1 };
+      sendRefuel(m, all);
       return;
     }
-    solo('refuel', m, { all });
+    solo('refuel', m, { count: n });
+  }
+
+  function sendRefuel(m, all = false) {
+    const go = () => send('refuel', m, all ? { all: true } : {});
+    const f = saveStore?.flush?.();
+    if (f?.then) f.then(go, go);
+    else go();
   }
 
   /** Set a machine down from the pack: `copy`, the one its menu was about (its place among the class's copies). */
@@ -720,7 +734,7 @@ function createSession(engine, client) {
     }
     if (verb === 'refuel') {
       const fit = Math.floor((MAX_FUEL - row.fuel) / FUEL_PER_CELL);
-      const cells = Math.min(countItem(engine.inv, FUEL_CELL), extra.all ? fit : Math.min(1, fit));
+      const cells = Math.min(countItem(engine.inv, FUEL_CELL), fit, Math.max(1, Math.floor(Number(extra.count)) || 1));
       if (fit < 1) return say(`There is not enough space for a fuel cell. Current level: ${row.fuel}/${MAX_FUEL}`);
       if (cells < 1) return say("You don't have any fuel cells.");
       removeItem(engine.inv, FUEL_CELL, cells);
@@ -832,6 +846,7 @@ function createSession(engine, client) {
       return;
     }
     if (msg.status !== 'settled') {
+      if (msg.verb === 'refuel') refuelMore = null;
       last = `no:${msg.verb}:${msg.why || ''}`;
       say(String(msg.text || T.failed), 3000);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.45 });
@@ -865,6 +880,13 @@ function createSession(engine, client) {
       receipt(msg.receipt, -1);
       if (here) setMachine(m);
       refuelled(m, Number(msg.cells) || 1);
+      // #557: the next cell of a How many? count, one at a time.
+      const more = refuelMore;
+      refuelMore = null;
+      if (more && more.id === m.id && more.left > 0 && m.fuel <= MAX_FUEL - FUEL_PER_CELL && countItem(engine.inv, FUEL_CELL) > 0) {
+        refuelMore = more.left > 1 ? { id: m.id, left: more.left - 1 } : null;
+        sendRefuel(m);
+      }
     } else if (verb === 'collect' && m) {
       receipt(msg.receipt, 1);
       if (here) setMachine(m);
@@ -1038,8 +1060,8 @@ function createSession(engine, client) {
       const m = seen(e.m);
       if (verbId === 'use') useMachine(m);
       else if (verbId === 'collect') act('collect', m);
-      else if (verbId === 'refuel') refuel(m, false);
-      else if (verbId === 'refuel_all') refuel(m, true);
+      // #557: refuel:<n> from Refuel's How many? (plain refuel is one).
+      else if (refuelCount(verbId)) refuel(m, refuelCount(verbId));
       else if (verbId === 'machine_pickup') pickUp(m);
       else if (verbId === 'music_off') act('music', m, { on: false });
       else if (verbId === 'music_on') act('music', m, { on: true });

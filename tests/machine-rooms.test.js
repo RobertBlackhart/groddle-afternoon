@@ -39,9 +39,9 @@ import {
   renderX,
   roomMachineVerbs,
   tankFuel,
-} from '../public/js/machine-rooms.js?v=b11cfa27';
+} from '../public/js/machine-rooms.js?v=ca927ffd';
 import { FOREST_MACHINE_ROOM_HELD, FOREST_MACHINE_ROOM_TSID } from '../public/js/forest-machine-room.js?v=5f7e4589';
-import { FRESH_FUEL, MAX_FUEL, refuelMachine } from '../public/js/machines.js?v=ab7d71da';
+import { FRESH_FUEL, MAX_FUEL, refuelMachine } from '../public/js/machines.js?v=5d749d26';
 import { DROP_TABLES, applyDropResult, rollDropTable } from '../public/js/drop-tables.js?v=1ed0b596';
 import { countItem, removeItem } from '../public/js/inventory.js?v=6414dbdc';
 import { canUseTool } from '../public/js/tools.js?v=4156bba8';
@@ -50,7 +50,7 @@ import { fixedFurniturePoints, furniturePlacementGroups } from '../public/js/str
 import { worldToScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../public/js/walk-surface.js?v=3c919d5b';
 import { platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=b2847f0b';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=c2253de7';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(spike, '../glitch-GameServerJS');
@@ -174,7 +174,9 @@ describe('room machines: fixed, fuelled, usable', () => {
     assert.equal(verbs[1].reason, "You don't have any fuel cells.");
     const all = roomMachineVerbs('fuelmaker', tank, { learned: [], fuelCells: 5, skillName: () => 'Fuelmaking' });
     assert.equal(all[0].reason, 'You need to know Fuelmaking to use this.');
-    assert.deepEqual(all.map((v) => v.id), ['use', 'refuel', 'refuel_all']);
+    // #557: one Refuel row that asks how many (up to what fits: 3 cells at 50/200), no one-press fill.
+    assert.deepEqual(all.map((v) => v.id), ['use', 'refuel']);
+    assert.deepEqual(all[1].count, { max: 3, start: 1, title: 'How many Fuel Cells?', verb: 'Refuel' });
     assert.ok(!all.some((v) => /pick|disassemble/i.test(v.id + v.label)));
   });
 
@@ -505,7 +507,7 @@ describe('the feature in a room', () => {
       assert.equal(shared.inv.fuel_cell, 2);
       assert.ok(back.log.includes('You collected from a Fuelmaker.'));
       assert.ok(back.sounds.includes('COLLECT'));
-      assert.deepEqual(machineRoomsFeature.verbsFor(fm2, back).map((v) => v.id), ['use', 'refuel', 'refuel_all']);
+      assert.deepEqual(machineRoomsFeature.verbsFor(fm2, back).map((v) => v.id), ['use', 'refuel']);
       // A Woodworker job finishes with no bonus (recipe 192 only, woodworker.js:862).
       shared.inv.plank = 4;
       const ww = shared.registered.find((t) => t.classId === 'woodworker');

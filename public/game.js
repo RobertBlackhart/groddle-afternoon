@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=25245b19';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9a3e372f';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fa6e11e9';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -5099,9 +5099,11 @@ function renderPackPopover(classTsid, anchor = null) {
   // A verb on one picked copy (a potion, a powder, a named Cubimal) acts on that one (js/tools.js copyForVerb).
   const verbCopy = TOOL_WEAR[classTsid] && packSelectedCopy != null ? { copy: packSelectedCopy } : {};
   // A verb with `count` ({ max, verb, plural, idPrefix, quote(n) }) asks How many of this stack
-  // (report #101): its row opens the chooser, and OK runs `<idPrefix>:<n>`.
+  // (report #101): its row opens the chooser, and OK runs `<idPrefix>:<n>`. `ofStack: false` counts
+  // something else (#557: a machine's Refuel, its Fuel Cells): not cut to the stack, and asked even for one.
+  const countOf = (verb) => (verb.count?.ofStack === false ? Number(verb.count.max) >= 1 : Number(verb.count?.max) > 1);
   for (const verb of features.packVerbs(classTsid, engine, { ...verbCopy, stackCount })) {
-    if (verb.count && Number(verb.count.max) > 1) {
+    if (verb.count && countOf(verb)) {
       if (verb.id === packCountVerb) countVerb = verb;
       rows.push({
         attrs: `data-feature-pack-count="${escapeHtml(verb.id)}" data-feature-id="${escapeHtml(verb.featureId)}"`,
@@ -5131,7 +5133,7 @@ function renderPackPopover(classTsid, anchor = null) {
   }
   if (!subVerb) packSubLevel = '';
   if (!countVerb) packCountVerb = '';
-  const countMax = countVerb ? Math.max(1, Math.min(stackCount, Math.floor(Number(countVerb.count.max)) || 1)) : 1;
+  const countMax = countVerb ? Math.max(1, Math.min(countVerb.count.ofStack === false ? Infinity : stackCount, Math.floor(Number(countVerb.count.max)) || 1)) : 1;
   if (countVerb) packCountQty = normalizeStackQuantity(packCountQty, countMax);
   const countQuote = (n) => (countVerb && typeof countVerb.count.quote === 'function' ? countVerb.count.quote(n) : null) || { ok: true };
   const countPrompt = countVerb && !packDropMode && !packEatMode
@@ -9106,13 +9108,15 @@ function renderVerbMenu(target, verbs, level = null) {
   verbs.forEach((v, i) => {
     const picks = v.id === 'feed' || Boolean(v.picker);
     const askMax = v.id === 'pickup' ? pickupCountAsked(target) : 0;
+    // #557: a verb that spends what you carry by the count asks how many first (verb.count).
+    const asks = Boolean(v.count) && Number(v.count.max) >= 1;
     add({
       // G891: a verb with a key of its own (keys_in_location: the Knocker's k) shows and takes that letter.
       key: v.key ? String(v.key).toUpperCase() : keys[i],
       letter: v.key || '',
       label: v.label,
       cost: v.energy,
-      next: picks || askMax > 0,
+      next: picks || askMax > 0 || asks,
       disabled: !v.enabled,
       tip: v.tooltip || '',
       reason: v.reason || '',
@@ -9120,6 +9124,7 @@ function renderVerbMenu(target, verbs, level = null) {
     }, v.enabled ? (e) => {
       if (picks) openVerbPickLevel(target, v, e.currentTarget);
       else if (askMax) openPickupCount(target, v, askMax);
+      else if (asks) openVerbCount(target, v);
       else {
         closeVerbMenu();
         requestVerb(target, v);
@@ -15286,6 +15291,40 @@ function openPickupCount(target, verb, max) {
   syncVerbDetail(menu);
   placeWorldVerbMenu(target);
   say(max);
+  // Deferred as openVerbMenu's focus is, so the Enter that picked the row does not also press OK.
+  requestAnimationFrame(() => {
+    if (menuTarget === target && !menu.hidden) chooser.focus();
+  });
+}
+
+/**
+ * #557: How many? for a verb row that carries `count: { max, start, title, verb }` (a machine's
+ * Refuel: how many Fuel Cells). A level of the same menu, as Pick up's is; OK runs `<verb>:<n>`.
+ * Nothing is spent until OK, so the press that lit or chose the row only opens the count (machine_base
+ * refuel's requires_target_item step: the Fuel Cell was picked before any went in).
+ */
+function openVerbCount(target, verb) {
+  const menu = document.getElementById('verb-menu');
+  const { max, start = 1, title = '', verb: word = verb.label } = verb.count;
+  const say = (n) => setCanvasData('verbCount', `${verb.id}:${n}:${max}`);
+  const chooser = createCountChooser(document, {
+    title: title || `${verb.label}: how many?`,
+    max,
+    start,
+    verb: word,
+    hook: 'verb-count',
+    change: say,
+    confirm: (n) => {
+      closeVerbMenu();
+      setCanvasData('verbCount', '');
+      requestVerb(target, { ...verb, id: `${verb.id}:${n}`, count: undefined });
+    },
+    cancel: () => menu.querySelector('[data-vm-back]')?.click(),
+  });
+  renderVerbMenu(target, null, { verbId: verb.id, verb, options: [], title: target.subtitle || '', chooser });
+  syncVerbDetail(menu);
+  placeWorldVerbMenu(target);
+  say(Math.min(Math.max(1, start), max));
   // Deferred as openVerbMenu's focus is, so the Enter that picked the row does not also press OK.
   requestAnimationFrame(() => {
     if (menuTarget === target && !menu.hidden) chooser.focus();

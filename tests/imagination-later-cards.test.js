@@ -43,7 +43,7 @@ import {
   finishMachineWork,
   startAssembly,
   startDisassembly,
-} from '../public/js/machines.js?v=ab7d71da';
+} from '../public/js/machines.js?v=5d749d26';
 import {
   finishMeditation,
   levitationMinEnergy,
@@ -59,7 +59,7 @@ import { ROCK_RESPAWN_MS } from '../public/js/pace.js?v=c07dfbd8';
 import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=3a1b5812';
 import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=4497a984';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=3e66996f';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=6127da0c';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=157d9eec';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

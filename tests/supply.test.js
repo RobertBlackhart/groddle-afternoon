@@ -22,14 +22,14 @@ import {
   distillInStill,
   advanceStill,
   collectHooch,
-} from '../public/js/machines.js?v=ab7d71da';
+} from '../public/js/machines.js?v=5d749d26';
 import { runTransform, listTransformVerbs, transformCountMax, transformEdges, transformVerbCount } from '../public/js/item-transforms.js?v=3a1b5812';
 import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=d28b2a24';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=71211643';
 import { SEED_CATALOG } from '../public/js/garden.js?v=2ef01a9f';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 import { supplyReport } from '../tools/supply-report.mjs';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=6127da0c';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=157d9eec';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const ENGINEER = ['engineering_1'];
@@ -321,7 +321,7 @@ describe('supply feature pack verbs', () => {
     assert.equal(countItem(inv, 'woodworker'), 0);
     supplyFeature.onTick(16, Date.now() + 6100, engine);
     assert.equal(countItem(inv, 'woodworker'), 1);
-    assert.ok(supplyFeature.packVerbs('woodworker', engine).some((v) => v.id === 'refuel:1'));
+    assert.ok(supplyFeature.packVerbs('woodworker', engine).some((v) => v.id === 'refuel'));
     // #285: in the pack the Still's two rows stay, refused (still.js 134-136, 208-210).
     assert.deepEqual(supplyFeature.packVerbs('still', engine).map((v) => [v.id, v.enabled, v.reason]), [
       ['collect', false, 'You must first Drop this to use it.'],

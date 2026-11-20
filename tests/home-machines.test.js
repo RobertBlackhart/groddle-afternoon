@@ -39,8 +39,8 @@ import {
   towerPlace,
   settleSolo,
   soloRow,
-} from '../public/js/home-machines.js?v=1ee17452';
-import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=8c0aaae5';
+} from '../public/js/home-machines.js?v=566d83ed';
+import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=ed00f3ff';
 import { RECIPE_CATALOG, setRecipeCatalog } from '../public/js/making.js?v=d28b2a24';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
@@ -226,7 +226,7 @@ describe('a machine as everyone sees it', () => {
     const idle = normalizeMachine({ ...raw, job: null, waiting: [] });
     const ctx = { learned: ['fuelmaking_1', 'engineering_1'], fuelCells: 2, now: 5000 };
     const visitor = placedMachineVerbs(idle, { ...ctx, me: '9', mayTake: false }).map((v) => v.id);
-    assert.deepEqual(visitor.sort(), ['refuel', 'refuel_all', 'use'].sort());
+    assert.deepEqual(visitor.sort(), ['refuel', 'use'].sort());
     const owner = placedMachineVerbs(idle, { ...ctx, me: '7', mayTake: true });
     assert.equal(owner.find((v) => v.id === 'machine_pickup').enabled, true);
   });

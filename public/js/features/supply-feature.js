@@ -85,7 +85,7 @@ import {
   stillOnPickup,
   stillStopsAt,
   stillWaitsToStart,
-} from '../machines.js?v=ab7d71da';
+} from '../machines.js?v=5d749d26';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
 import { createSheetLoader } from '../sprite-sheets.js?v=bb4fe94b';
 import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=3a1b5812';
@@ -572,10 +572,19 @@ function machineVerbs(classTsid, engine) {
         : { id: 'music:on', label: 'Turn Music On', enabled: true, tooltip: 'Play Metal Music while the machine is working' }]
       : [];
     const one = refuelCheck(inv, engine.toolState, classTsid);
+    // #557: Refuel asks how many Fuel Cells (the pack's How many, one to start) and spends nothing
+    // until OK: it was a one-press spend, and the stack's lit row. machine_base refuel took the Fuel
+    // Cell as a target item first (requires_target_item, metalmaker.js 502-620).
     const rows = [
-      { id: 'refuel:1', label: 'Refuel', enabled: one.ok, reason: one.msg || '', tooltip: `Add more fuel. Current level: ${fuel}/${MAX_FUEL}`, primary: one.ok },
+      {
+        id: 'refuel',
+        label: 'Refuel',
+        enabled: one.ok,
+        reason: one.msg || '',
+        tooltip: `Add more fuel. Current level: ${fuel}/${MAX_FUEL}`,
+        ...(one.ok ? { count: { max: one.cells, verb: 'Refuel', plural: 'Fuel Cells', idPrefix: 'refuel', ofStack: false } } : {}),
+      },
     ];
-    if (one.ok && one.cells > 1) rows.push({ id: 'refuel:all', label: `Refuel with ${one.cells} cells`, enabled: true, tooltip: `Fill the tank. Current level: ${fuel}/${MAX_FUEL}` });
     rows.push(...music);
     // machine_base disassemble (one part at a time, 15 energy each) and
     // Master Exploder's fully_disassemble (15 energy, one go).
@@ -652,7 +661,7 @@ function runMachineVerb(classTsid, verbId, engine) {
     return true;
   }
   if (isMachine(classTsid) && verb === 'refuel') {
-    const res = refuelMachine(inv, engine.toolState, classTsid, { all: arg === 'all' });
+    const res = refuelMachine(inv, engine.toolState, classTsid, arg === 'all' ? { all: true } : { count: Number(arg) || 1 });
     if (res.ok) engine.achievement?.('machines:refueled', res.cells);
     say(engine, res.msg, res.ok);
     return true;

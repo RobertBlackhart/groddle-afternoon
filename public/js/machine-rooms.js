@@ -54,7 +54,7 @@
 
 import { FOREST_MACHINE_ROOM_HELD, FOREST_MACHINE_ROOM_TSID } from './forest-machine-room.js?v=5f7e4589';
 import { MACHINE_ROOMS } from './exploration.js?v=8f19e25d';
-import { FRESH_FUEL, FUEL_PER_CELL, MAX_FUEL } from './machines.js?v=ab7d71da';
+import { FRESH_FUEL, FUEL_PER_CELL, MAX_FUEL } from './machines.js?v=5d749d26';
 import { MAKING_BUSY } from './make-tools.js?v=86877c3e';
 
 /** config_prod.js:1332 machine_rooms, as built (G prefix). */
@@ -341,13 +341,36 @@ export function roomMachineVerbs(classTsid, tank, ctx = {}) {
     : cells < 1
       ? "You don't have any fuel cells."
       : '';
+  // #557: Refuel asks how many Fuel Cells (one to start, up to what fits and what you carry) and
+  // spends nothing until OK, so the menu's lit row (Refuel, when Use is off at an empty tank) is never
+  // a cell gone on a stray Enter. machine_base refuel (metalmaker.js 502-620) was never a one-press
+  // spend either: requires_target_item, the Fuel Cell picked from the pack, then one went in.
   const fit = Math.min(cells, Math.floor((MAX_FUEL - fuel) / FUEL_PER_CELL));
-  verbs.push({ id: 'refuel', label: 'Refuel', sort: 54, tooltip: `Add more fuel. Current level: ${fuel}/${MAX_FUEL}`, enabled: !refuelReason, reason: refuelReason, durationMs: 0 });
-  if (!refuelReason && fit > 1) {
-    verbs.push({ id: 'refuel_all', label: `Refuel with ${fit} cells`, sort: 55, tooltip: `Fill the tank. Current level: ${fuel}/${MAX_FUEL}`, enabled: true, reason: '', durationMs: 0 });
-  }
+  verbs.push({
+    id: 'refuel',
+    label: 'Refuel',
+    sort: 54,
+    tooltip: `Add more fuel. Current level: ${fuel}/${MAX_FUEL}`,
+    enabled: !refuelReason,
+    reason: refuelReason,
+    durationMs: 0,
+    ...(refuelReason ? {} : { count: { max: fit, start: 1, title: REFUEL_COUNT_TITLE, verb: 'Refuel' } }),
+  });
   verbs.push(...metalMusicVerbs(classTsid, { upgrade: ctx.musicUpgrade, musicOn: ctx.musicOn !== false }));
   return verbs;
+}
+
+/** #557: the title of Refuel's How many? step. */
+export const REFUEL_COUNT_TITLE = 'How many Fuel Cells?';
+
+/**
+ * #557: how many Fuel Cells a Refuel verb id asks for: `refuel:<n>` from the How many? step, a
+ * whole number of at least one; plain `refuel` (a QA act, a drop) is one. 0 for any other verb.
+ */
+export function refuelCount(verbId) {
+  const m = /^refuel(?::(\d+))?$/.exec(String(verbId || ''));
+  if (!m) return 0;
+  return m[1] == null ? 1 : Math.max(1, Math.floor(Number(m[1])) || 1);
 }
 
 /**

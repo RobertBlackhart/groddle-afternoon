@@ -79,13 +79,14 @@ import {
   machineRoomFurnitureRow,
   machineRoomLayout,
   machineTank,
+  refuelCount,
   roomMachineVerbs,
   runningSoundKey,
   secondsToString,
   takeJobIngredients,
   tankFuel,
-} from '../machine-rooms.js?v=b11cfa27';
-import { refuelMachine, MAX_FUEL } from '../machines.js?v=ab7d71da';
+} from '../machine-rooms.js?v=ca927ffd';
+import { refuelMachine, MAX_FUEL } from '../machines.js?v=5d749d26';
 import { DROP_ITEMS, applyDropResult, isEmptyDrop, rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
@@ -432,8 +433,8 @@ function collect(engine, m) {
   engine.save?.();
 }
 
-function refuel(engine, m, all) {
-  const res = refuelMachine(engine.inv, m.tank, m.def.classTsid, { all });
+function refuel(engine, m, count) {
+  const res = refuelMachine(engine.inv, m.tank, m.def.classTsid, { count });
   if (res.ok) {
     if (!isLowFuel(tankFuel(m.tank, m.def.classTsid))) delete lowFuelNext[m.def.id];
     // machine_base refuel handler: refueled, and refueled_for_others away from home (Bowser).
@@ -663,8 +664,8 @@ export const machineRoomsFeature = {
     if (!m) return false;
     if (verbId === 'use') useMachine(engine, m);
     else if (verbId === 'collect') collect(engine, m);
-    else if (verbId === 'refuel') refuel(engine, m, false);
-    else if (verbId === 'refuel_all') refuel(engine, m, true);
+    // #557: refuel:<n> from Refuel's How many? (plain refuel is one).
+    else if (refuelCount(verbId)) refuel(engine, m, refuelCount(verbId));
     else if (verbId === 'music_off') setMusic(engine, m, false);
     else if (verbId === 'music_on') setMusic(engine, m, true);
     return true;

@@ -301,10 +301,11 @@ export function refuelCheck(inv, toolState, machine) {
   return { ok: true, cells, fuel: fuel.remaining, copy: fuel.copy };
 }
 
-export function refuelMachine(inv, toolState, machine, { all = false } = {}) {
+/** `count`: how many cells (#557: Refuel's How many?), cut to what fits and what you carry; `all`: all that fit. */
+export function refuelMachine(inv, toolState, machine, { all = false, count = 1 } = {}) {
   const check = refuelCheck(inv, toolState, machine);
   if (!check.ok) return check;
-  const cells = all ? check.cells : 1;
+  const cells = all ? check.cells : Math.min(check.cells, Math.max(1, Math.floor(Number(count)) || 1));
   removeItem(inv, FUEL_CELL, cells);
   const after = setToolRemaining(toolState, machine, Math.min(MAX_FUEL, check.fuel + cells * FUEL_PER_CELL), { copy: check.copy });
   return {
