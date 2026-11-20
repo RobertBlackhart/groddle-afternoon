@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7892275b';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c56157a1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8b2fd5cc';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -37,8 +37,8 @@ import {
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=d315ed1e';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=8b51ffce';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=2dedb6d2';
+import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=c755e2a7';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -527,7 +527,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=8fcdf179';
+} from './js/player-save.js?v=5c2ff86e';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -28546,7 +28546,8 @@ function skillStudyContext() {
 function startFirstSkillQuest() {
   const learning = Boolean(getActiveStudy(skillState, Date.now()));
   if (!claimFirstSkillQuest(questState, { skills: skillsLearnedCount(), learning })) return;
-  const result = assignQuest(questState, FIRST_SKILL_QUEST_ID, { ignorePrereq: true });
+  // G1063 (#556): accepted as the offer engine accepts (marked managed), so its routes count the vendor buy.
+  const result = acceptOffer(questState, FIRST_SKILL_QUEST_ID, { inv, countItem, addItem, now: Date.now() });
   if (!result.ok) return;
   if (app?.canvas) app.canvas.dataset.firstSkillQuest = FIRST_SKILL_QUEST_ID;
   // One notice (pushActivity shows it): the accept path's extra toast would say it twice.

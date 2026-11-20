@@ -331,6 +331,21 @@ export function claimFirstSkillQuest(questState, { skills = 0, learning = false 
   return questStatus(questState, FIRST_SKILL_QUEST_ID) === 'none';
 }
 
+/**
+ * G1063 (#556): Buy a Bag's own run. Until v0.52.0 game.js started it with assignQuest, so it was
+ * never marked managed and the offer engine's routing (managedOnly) never counted the vendor buy
+ * for it: a Generic Bag bought with it running stayed at 0/1. A run started that way is adopted
+ * here (marked managed), as acceptOffer marks the runs it starts. Returns { adopted }.
+ */
+export function settleFirstSkillQuest(questState, { now = Date.now() } = {}) {
+  const quest = questState?.active?.[FIRST_SKILL_QUEST_ID];
+  if (!quest || !getQuestCatalog()[FIRST_SKILL_QUEST_ID]) return { adopted: false };
+  const offers = ensureQuestOfferState(questState);
+  if (offers.failed[FIRST_SKILL_QUEST_ID] || offers.managed[FIRST_SKILL_QUEST_ID]) return { adopted: false };
+  offers.managed[FIRST_SKILL_QUEST_ID] = Number(now) || Date.now();
+  return { adopted: true };
+}
+
 function questDone(questState, classTsid, ctx) {
   if ((questState.completed || []).includes(classTsid)) return true;
   const proxy = getQuestCatalog()[classTsid]?.prereqProxy;

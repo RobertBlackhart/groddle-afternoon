@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState, assignQuest } from '../public/js/quests.js?v=4a3fb1da';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=8b51ffce';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=c755e2a7';
 import { GATE_DEVIATIONS, SPECIAL_TRIGGERS, STAND_INS } from '../tools/quest-gates/table.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -63,7 +63,7 @@ describe('G979: Buy a Bag starts with the first skill', () => {
     const src = readFileSync(join(ROOT, 'public/game.js'), 'utf8');
     const fn = src.slice(src.indexOf('function startFirstSkillQuest()'), src.indexOf('function startFirstSkillQuest()') + 900);
     assert.match(fn, /claimFirstSkillQuest\(questState, \{ skills: skillsLearnedCount\(\), learning \}\)/);
-    assert.match(fn, /assignQuest\(questState, FIRST_SKILL_QUEST_ID, \{ ignorePrereq: true \}\)/);
+    assert.match(fn, /acceptOffer\(questState, FIRST_SKILL_QUEST_ID, /);
     const completions = src.slice(src.indexOf('function handleSkillCompletions('), src.indexOf('function updateSkillChrome('));
     assert.match(completions, /startFirstSkillQuest\(\);/);
     const study = src.slice(src.indexOf('function runSkillStudyAction('), src.indexOf('function confirmAcceleratedStudyPause('));

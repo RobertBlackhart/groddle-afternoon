@@ -116,7 +116,7 @@ import {
 } from '../street-jobs.js?v=71fa73cd';
 import { PAPERS_BADGE } from '../subway.js?v=36c6d2b2';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=cccfda88';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=7d5b0ed7';
 import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';

@@ -29,10 +29,10 @@ import { createMineRock, mineRock, MINING_COSTS } from '../public/js/mining.js?v
 import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=71211643';
 import { harvestWoodTree } from '../public/js/woodcutting.js?v=9e9af511';
 import { createGarden, plantPlot, waterPlot } from '../public/js/garden.js?v=2ef01a9f';
-import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=8fcdf179';
+import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=5c2ff86e';
 import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=9665f5dd';
 import { layoutPack, unitPlaces, unitRankAt } from '../public/js/pack-slots.js?v=d9ab4a0b';
-import { toolBreakEvents } from '../public/js/quest-offers.js?v=8b51ffce';
+import { toolBreakEvents } from '../public/js/quest-offers.js?v=c755e2a7';
 import { performAnimalKinship } from '../public/js/animal-kinship.js?v=75d3cb34';
 import { createAnimalState } from '../public/js/animals.js?v=f90b383d';
 

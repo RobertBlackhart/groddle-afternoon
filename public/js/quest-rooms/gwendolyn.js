@@ -65,7 +65,7 @@
  * they end with the room.
  */
 
-import { ensureQuestOfferState } from '../quest-offers.js?v=8b51ffce';
+import { ensureQuestOfferState } from '../quest-offers.js?v=c755e2a7';
 import { MEDITATION_MUSIC, ORB_TOOL_SHEET } from '../meditation.js?v=96f23682';
 import { gainMetabolic, loseMood } from '../metabolics.js?v=48f784bf';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';

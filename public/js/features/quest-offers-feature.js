@@ -98,6 +98,7 @@ import {
   restartTimedQuest,
   questOfferCard,
   routeQuestEvent,
+  settleFirstSkillQuest,
   syncItemRequirements,
   readyOfferedQuests,
   readyOfferText,
@@ -111,7 +112,7 @@ import {
   COLD_COMFORT_LEAVE_TEXT,
   HOME_TREE_GROWN_TEXT,
   SEED_TO_SCYTHE,
-} from '../quest-offers.js?v=8b51ffce';
+} from '../quest-offers.js?v=c755e2a7';
 import { PEAT_TEXT, retireSoloPeatQuest } from '../peat-quest.js?v=c7baea41';
 import { retireDeadQuests, retiredQuestLine } from '../retired-quests.js?v=61758261';
 import { parseQuestConversation } from '../quests.js?v=4a3fb1da';
@@ -877,6 +878,8 @@ export const questOffersFeature = {
       checkYardTrees(engine);
       // Report #126: courses already visited count when the quest is held, so on load and on accept alike.
       for (const event of paradiseVisitCredits(qs, engine.paradiseVisits?.())) this.onEvent(event, 1, engine);
+      // G1063 (#556): a Buy a Bag run an older build started outside the engine is counted by its routes.
+      if (settleFirstSkillQuest(qs, { now }).adopted) engine.save();
       const sync = syncItemRequirements(qs, engine.inv, questContext(engine, now));
       if (sync.advanced?.length) engine.updateHud();
       finish(sync.completable, engine);

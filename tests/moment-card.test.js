@@ -21,7 +21,7 @@ import {
 } from '../public/js/ui/moment-card.js?v=3850c51c';
 import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=df15804e';
 import { questRewardSummary } from '../public/js/quests.js?v=4a3fb1da';
-import { questAwardPayload } from '../public/js/quest-offers.js?v=8b51ffce';
+import { questAwardPayload } from '../public/js/quest-offers.js?v=c755e2a7';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
