@@ -3818,6 +3818,16 @@
       "commits": [
         "game:03c17790961"
       ]
+    },
+    {
+      "id": "G1062",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Most streets showed no picture of the street on the loading card, and a few pictures were missing decorations.",
+      "commits": [
+        "game:a84d8ae3d1a",
+        "game:97f865d0844"
+      ]
     }
   ]
 }

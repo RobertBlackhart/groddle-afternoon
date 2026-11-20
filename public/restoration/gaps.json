@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.51.2",
+  "release": "v0.52.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 372,
+    "fixed": 373,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -452,6 +452,12 @@
           "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree.",
           "state": "fixed",
           "version": "v0.51.2"
+        },
+        {
+          "id": "G1062",
+          "text": "Most streets showed no picture of the street on the loading card, and a few pictures were missing decorations.",
+          "state": "fixed",
+          "version": "v0.52.0"
         }
       ]
     },
