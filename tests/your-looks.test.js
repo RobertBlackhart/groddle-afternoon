@@ -12,7 +12,7 @@ import {
 } from '../public/js/your-looks.js?v=89b5ca2e';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { yourLooksFeature, YOUR_LOOKS_FEATURE_ID } from '../public/js/features/your-looks-feature.js?v=7f0af1c8';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=5c2ff86e';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=79605158';
 import { APPEARANCE_PRESETS } from '../public/js/character-builder.js?v=ffa761e9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

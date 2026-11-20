@@ -99,6 +99,7 @@ import {
   questOfferCard,
   routeQuestEvent,
   settleFirstSkillQuest,
+  FIRST_SKILL_QUEST_ID,
   syncItemRequirements,
   readyOfferedQuests,
   readyOfferText,
@@ -112,7 +113,7 @@ import {
   COLD_COMFORT_LEAVE_TEXT,
   HOME_TREE_GROWN_TEXT,
   SEED_TO_SCYTHE,
-} from '../quest-offers.js?v=c755e2a7';
+} from '../quest-offers.js?v=571620de';
 import { PEAT_TEXT, retireSoloPeatQuest } from '../peat-quest.js?v=c7baea41';
 import { retireDeadQuests, retiredQuestLine } from '../retired-quests.js?v=61758261';
 import { parseQuestConversation } from '../quests.js?v=4a3fb1da';
@@ -151,6 +152,8 @@ let ui = null;
 let noticeTimer = 0;
 /** Pack counts at the last sync, for `in_inventory:<item>` gain events. */
 let lastPack = null;
+/** G1063: the Buy a Bag run (its startedAt) whose owned bags this page has counted: at its start or this load. */
+let bagRunCounted = null;
 /** G440: which tools were broken at the last sync, for `tool_broke:<tool>` (quest-offers.js toolBreakEvents). */
 let lastBroken = null;
 /** G470: the street we were on, so leaving Wintry Place resets Cold Comfort. */
@@ -784,6 +787,7 @@ export const questOffersFeature = {
     openCard = null;
     lastWaiting = -1;
     nextSyncAt = 0;
+    bagRunCounted = null;
     demo = String(engine.param('questofferdemo') || '');
   },
 
@@ -878,8 +882,19 @@ export const questOffersFeature = {
       checkYardTrees(engine);
       // Report #126: courses already visited count when the quest is held, so on load and on accept alike.
       for (const event of paradiseVisitCredits(qs, engine.paradiseVisits?.())) this.onEvent(event, 1, engine);
-      // G1063 (#556): a Buy a Bag run an older build started outside the engine is counted by its routes.
-      if (settleFirstSkillQuest(qs, { now }).adopted) engine.save();
+      // G1063 (#556, Austin 2026-11-20): Buy a Bag counts with the offer engine's routes, and a bag
+      // beyond the tutorial's two counts as the purchase once per run on this page: at its start or on load.
+      const bagRun = qs.active?.[FIRST_SKILL_QUEST_ID];
+      if (bagRun) {
+        const countOwned = bagRunCounted !== (bagRun.startedAt ?? 0);
+        bagRunCounted = bagRun.startedAt ?? 0;
+        const bags = settleFirstSkillQuest(qs, engine.inv, { ...questContext(engine, now), countOwned });
+        if (bags.adopted || bags.credited) {
+          engine.updateHud();
+          engine.save();
+        }
+        finish(bags.completable, engine);
+      }
       const sync = syncItemRequirements(qs, engine.inv, questContext(engine, now));
       if (sync.advanced?.length) engine.updateHud();
       finish(sync.completable, engine);

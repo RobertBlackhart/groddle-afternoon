@@ -34,7 +34,7 @@ import {
   useToolCondition,
 } from '../public/js/tools.js?v=4156bba8';
 import { ITEM_CATALOG, addItem, createInventory, ensureItem, isToolItem, removeItem } from '../public/js/inventory.js?v=6414dbdc';
-import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=5c2ff86e';
+import { createPlayerSave, restorePlayerSave } from '../public/js/player-save.js?v=79605158';
 import { layoutPack, unitPlaces } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { bagsFeature } from '../public/js/features/bags-feature.js?v=b33074b7';
 import { VENDOR_PROFILES, vendorBuy, vendorSell } from '../public/js/vendor.js?v=71211643';
@@ -44,8 +44,8 @@ import {
   fireflyJarInUse,
   resourceNodesFeature,
   setFireflyJar,
-} from '../public/js/features/resource-nodes-feature.js?v=ddad67d6';
-import { toolBreakEvents } from '../public/js/quest-offers.js?v=c755e2a7';
+} from '../public/js/features/resource-nodes-feature.js?v=fd1f6375';
+import { toolBreakEvents } from '../public/js/quest-offers.js?v=571620de';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');

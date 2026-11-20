@@ -41,15 +41,15 @@ import { persist as persistTrade } from '../public/js/features/trade-feature.js?
 import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=0685ed0d';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=d2bb1617';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=cdb8a6d2';
-import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=f0f93a43';
-import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=6ac59927';
-import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=3ca29c3e';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=99e87187';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=59307f6c';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=32c9aae6';
 import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=3f718120';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
 import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=50c112eb';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=5c2ff86e';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=79605158';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');

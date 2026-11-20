@@ -335,15 +335,40 @@ export function claimFirstSkillQuest(questState, { skills = 0, learning = false 
  * G1063 (#556): Buy a Bag's own run. Until v0.52.0 game.js started it with assignQuest, so it was
  * never marked managed and the offer engine's routing (managedOnly) never counted the vendor buy
  * for it: a Generic Bag bought with it running stayed at 0/1. A run started that way is adopted
- * here (marked managed), as acceptOffer marks the runs it starts. Returns { adopted }.
+ * here (marked managed), as acceptOffer marks the runs it starts.
+ *
+ * Austin 2026-11-20: when the quest starts, or a save loads with it at 0, a Generic or Bigger Bag
+ * beyond the two the new-player tutorial gives counts as the purchase (`countOwned`). Glitch
+ * counted only a purchase made while it ran (inc_stores.js 224-225), but it started the quest at
+ * the first skill (learn_first_skill.js 74-76), before a third bag could be bought; the remake also
+ * hands it to saves already past that point. Bags are counted in the pack (no bag holds another:
+ * bag_generic.js 588-590). Returns { adopted, credited, completable } (completable: the
+ * routeQuestEvent rows, for the familiar's turn-in).
  */
-export function settleFirstSkillQuest(questState, { now = Date.now() } = {}) {
+export const TUTORIAL_GENERIC_BAGS = 2;
+export function genericBagsOwned(inv, ctx = {}) {
+  return GENERIC_BAG_CLASSES.reduce((n, cls) => n + countIn(inv, cls, ctx), 0);
+}
+export function settleFirstSkillQuest(questState, inv, { countOwned = false, now = Date.now(), ...ctx } = {}) {
+  const none = { adopted: false, credited: false, completable: [] };
   const quest = questState?.active?.[FIRST_SKILL_QUEST_ID];
-  if (!quest || !getQuestCatalog()[FIRST_SKILL_QUEST_ID]) return { adopted: false };
+  const def = getQuestCatalog()[FIRST_SKILL_QUEST_ID];
+  if (!quest || !def) return none;
   const offers = ensureQuestOfferState(questState);
-  if (offers.failed[FIRST_SKILL_QUEST_ID] || offers.managed[FIRST_SKILL_QUEST_ID]) return { adopted: false };
-  offers.managed[FIRST_SKILL_QUEST_ID] = Number(now) || Date.now();
-  return { adopted: true };
+  if (offers.failed[FIRST_SKILL_QUEST_ID]) return none;
+  const adopted = !offers.managed[FIRST_SKILL_QUEST_ID];
+  if (adopted) offers.managed[FIRST_SKILL_QUEST_ID] = Number(now) || Date.now();
+  const before = requirementsComplete(questState, def);
+  quest.progress ||= {};
+  let credited = false;
+  if (countOwned && !(Number(quest.progress.generic_bag_purchased) > 0) && genericBagsOwned(inv, ctx) > TUTORIAL_GENERIC_BAGS) {
+    quest.progress.generic_bag_purchased = 1;
+    credited = true;
+  }
+  const completable = !before && requirementsComplete(questState, def)
+    ? [{ classTsid: FIRST_SKILL_QUEST_ID, def, turnIn: turnInKind(def) }]
+    : [];
+  return { adopted, credited, completable };
 }
 
 function questDone(questState, classTsid, ctx) {

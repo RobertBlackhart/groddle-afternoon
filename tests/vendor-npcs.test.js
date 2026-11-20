@@ -43,7 +43,7 @@ import {
   pendingQuestOffers,
   syncItemRequirements,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=c755e2a7';
+} from '../public/js/quest-offers.js?v=571620de';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

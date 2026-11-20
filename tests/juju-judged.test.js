@@ -23,7 +23,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { classifyQuests, questOfferIndex, pendingQuestOffers, npcQuestOffers } from '../public/js/quest-offers.js?v=c755e2a7';
+import { classifyQuests, questOfferIndex, pendingQuestOffers, npcQuestOffers } from '../public/js/quest-offers.js?v=571620de';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -5009,6 +5009,27 @@
    "why": "Glitch's transit map kept the star on the station the train left, greyed while moving (MapTransit.as setPlayerLocation). A player asked to see the train's progress; the star now moves like a progress bar, and steps in quarters under reduced motion.",
    "ruling": "Austin approved the request 2026-11-19 (lane mapk)",
    "rows": []
+  },
+  {
+   "id": "buy-bag-owned-bags-count",
+   "title": "Enlarge Yer Slots counts a Generic or Bigger Bag owned beyond the tutorial's two when it starts or a save loads with it at 0",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/quest-offers.js",
+     "symbol": "settleFirstSkillQuest / genericBagsOwned / TUTORIAL_GENERIC_BAGS"
+    },
+    {
+     "file": "public/js/features/quest-offers-feature.js",
+     "symbol": "onTick bagRunCounted"
+    }
+   ],
+   "why": "Glitch counted only a bag bought while buy_bag ran (players/inc_stores.js 224-225) and started it at the first skill (quests/learn_first_skill.js 74-76), before a third bag could be bought. The remake also hands it to saves already past their first skill (G979), some of which had already bought a bag (#556). Pack bags only: home cabinets are not counted.",
+   "ruling": "Austin 2026-11-20 (G1063, #556): when the quest starts, a bag beyond the tutorial's two counts; record it as a remake change",
+   "rows": [
+    "G1063"
+   ]
   }
  ]
 }
