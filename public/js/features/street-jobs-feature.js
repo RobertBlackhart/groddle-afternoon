@@ -3248,13 +3248,17 @@ export const streetJobsFeature = {
    * (locations/inc_jobs.js jobs_modify_connections 578-603) and teleports there
    * (players/inc_teleportation.js 219-223) are refused, each saying which project board builds it
    * (js/street-jobs.js closedRoadText). Other ways in (quests, instances) are not roads and pass.
+   * #549 (Austin 2026-11-19): following someone onto a street still being built is refused too,
+   * with the signpost's line; it used to pass and then noteArrival kept the street open for the
+   * follower (#294). A street you have already stood on stays open (roadClosure reads opts()).
    */
   travelGate(tsid, engine, meta = {}) {
     const via = meta?.via;
-    if (!catalog || !['signpost', 'door', 'teleport'].includes(via)) return null;
+    if (!catalog || !['signpost', 'door', 'teleport', 'follow'].includes(via)) return null;
     const closed = roadClosure(state, catalog, tsid, via === 'signpost' ? signpostTsids(engine.street) : [tsid], opts());
     if (!closed) return null;
-    return { ok: false, msg: closedRoadText(state, catalog, closed, { here: engine.streetTsid, via, label: streetLabel, giver: (t) => giverNoun(t, closed.jobId), opts: opts() }) };
+    const says = via === 'follow' ? 'signpost' : via;
+    return { ok: false, msg: closedRoadText(state, catalog, closed, { here: engine.streetTsid, via: says, label: streetLabel, giver: (t) => giverNoun(t, closed.jobId), opts: opts() }) };
   },
 
   /**

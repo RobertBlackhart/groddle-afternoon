@@ -352,7 +352,12 @@ function createSession(engine, client) {
     Promise.resolve(engine.travel?.(go.street, { via: 'follow', arrive: go.arrive || undefined }))
       .then((plan) => {
         travelling = null;
-        if (following && plan && plan.ok === false && plan.reason !== 'already_here') {
+        if (following && plan && plan.reason === 'feature_gate') {
+          // #549: the leader went where you may not go (a street still being built says the
+          // signpost's line, game.js travelTo toasts it); the follow ends there.
+          line(FOLLOW_TEXT.private(following.name));
+          stopFollowing();
+        } else if (following && plan && plan.ok === false && plan.reason !== 'already_here') {
           line(FOLLOW_TEXT.lost(following.name), 3400);
           stopFollowing();
         }

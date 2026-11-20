@@ -88,7 +88,7 @@ test.describe('integration playtest regressions', () => {
     assert.equal(host.travelGate('L1', {}).ok, true);
     assert.deepEqual(seen, [{ via: 'signpost' }, {}]);
     const jobs = fs.readFileSync(path.join(root, 'public/js/features/street-jobs-feature.js'), 'utf8');
-    assert.match(jobs, /travelGate\(tsid, engine, meta = \{\}\) \{\n    const via = meta\?\.via;\n    if \(!catalog \|\| !\['signpost', 'door', 'teleport'\]\.includes\(via\)\) return null;/);
+    assert.match(jobs, /travelGate\(tsid, engine, meta = \{\}\) \{\n    const via = meta\?\.via;\n    if \(!catalog \|\| !\['signpost', 'door', 'teleport', 'follow'\]\.includes\(via\)\) return null;/);
     assert.match(game, /features\.travelGate\(toTsid, engine, \{ via: meta\.via \}\)/);
     assert.equal((game.match(/via: 'signpost' \}\)/g) || []).length, 3, 'T, signpost-board clicks and the arm keys all say signpost');
   });

@@ -91,9 +91,9 @@ describe('ticket 37: a road under construction says what is true', () => {
     assert.match(game, /const through = res && res\.ok === false \? routeThroughConstruction\(res\.through\) : null;\n\s+if \(through\) toast\(`No open road leads to \$\{street\.label\} yet: the way runs through \$\{through\.label\}, which is still under construction\. \$\{through\.note\}`, 6000\);/);
   });
 
-  it('the feature refuses signposts, doors and teleports into it, and the Map menu asks it', () => {
+  it('the feature refuses signposts, doors, teleports and follows (#549) into it, and the Map menu asks it', () => {
     const feature = read('public/js/features/street-jobs-feature.js');
-    assert.match(feature, /if \(!catalog \|\| !\['signpost', 'door', 'teleport'\]\.includes\(via\)\) return null;/);
+    assert.match(feature, /if \(!catalog \|\| !\['signpost', 'door', 'teleport', 'follow'\]\.includes\(via\)\) return null;/);
     assert.match(feature, /streetUnderConstruction\(tsid, engine\) \{/);
     assert.doesNotMatch(feature, /or use the Map/);
     assert.match(read('public/js/features/teleportation-feature.js'), /engine\.travelGate\(target\.tsid, \{ via: 'teleport', leavesQuestRoom: true \}\)/);

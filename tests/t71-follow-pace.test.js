@@ -29,7 +29,7 @@ import {
   takeoffDue,
   trailingX,
 } from '../public/js/follow-mp.js?v=129ab9f3';
-import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=ad52fec8';
+import { followMpFeature } from '../public/js/features/follow-mp-feature.js?v=7ca5d0c4';
 import { coastX, NORMAL_BUFF, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { createJumpState, matchLeaderJumpStep, queueJump, resolveQueuedJump } from '../public/js/movement.js?v=f4be1a05';
 
