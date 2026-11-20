@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
 import { acceptOffer, ensureQuestOfferState, paradiseVisitCredits, requirementRoute, routeQuestEvent } from '../public/js/quest-offers.js?v=571620de';
-import { PARADISE_COURSES, activateParadiseTicket, createParadiseState, normalizeParadiseState } from '../public/js/paradise-flight.js?v=4f491849';
+import { PARADISE_COURSES, activateParadiseTicket, createParadiseState, normalizeParadiseState } from '../public/js/paradise-flight.js?v=f7dcfbef';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const QUEST = 'fly_paradise';
@@ -69,9 +69,10 @@ describe('Up up and away!', () => {
     for (const t of tickets) assert.match(t, /^paradise_ticket_/);
   });
 
-  it('Beam Me Down counts its activation too, from both of its ways in', () => {
+  it('Beam Me Down counts its activation too, from both of its ways in (one activateTicket path)', () => {
     const src = readFileSync(join(root, 'public/js/features/puzzle-scenes-feature.js'), 'utf8');
-    assert.equal(src.match(/`\$\{TICKET\}:activate`/g)?.length, 2);
+    assert.equal(src.match(/`\$\{TICKET\}:activate`/g)?.length, 1);
+    assert.equal(src.match(/activateTicket\(engine\);/g)?.length, 2);
   });
 });
 

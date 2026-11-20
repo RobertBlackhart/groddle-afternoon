@@ -10,7 +10,8 @@
  *   tractor beams, which slow the fall and hold 21 quoins (1 each times your
  *   quoin multiplier, outside the day's limit). Landing shows "Bravo! You made it!"; the first
  *   landing pays +138 iMG. Entered with a Ticket To Beam Me Down (pack:
- *   Activate) or from the Map's puzzle card.
+ *   Activate, or the Map's puzzle card), a Ticket to Paradise like the rest:
+ *   it costs the ticket price and counts in the day's 11.
  * Both leave by their EXIT door back to the street they were entered from;
  * map travel waits for the door, and a reload resumes on that street.
  *
@@ -27,7 +28,7 @@
  * sceneId, sceneStatus, sceneProgress, sceneQuoins, sceneReward, sceneDemo.
  */
 
-import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
+import { countItem, ensureItem } from '../inventory.js?v=6414dbdc';
 import { QUOIN_SHEET, QUOIN_TYPES, creditQuoinStat, quoinPay, quoinTouches } from '../quoins.js?v=5abad2c7';
 import {
   BEAM_ME_DOWN,
@@ -455,6 +456,22 @@ function startScene(engine, id, opts = {}) {
   engine.toast(scene.objective, 3600);
   engine.save();
   return true;
+}
+
+/**
+ * Ticket To Beam Me Down is a Ticket to Paradise (paradise_ticket_beam_me_down.js, parent
+ * paradise_ticket): Activate asks, costs calc_img_cost (20 x the quoin multiplier, more above x40)
+ * and takes one of the day's 11 tickets (verbs.activate 154, modal_callback 330-331). game.js does
+ * that for every Paradise ticket (engine.activateParadiseTicket); this only enters the scene.
+ */
+function activateTicket(engine) {
+  if (countItem(engine.inv, TICKET) < 1 || engine.transientInstance()) return false;
+  return engine.activateParadiseTicket('beam_me_down', () => {
+    if (!startScene(engine, 'beam_me_down')) return false;
+    // Report #126: paradise_ticket.js verbs.activate counts through item.js notifyVerb.
+    engine.achievement?.(`${TICKET}:activate`, 1);
+    return true;
+  });
 }
 
 /** G904: hold the scene for a party trip; answers the party's way back. */
@@ -894,18 +911,15 @@ export const puzzleScenesFeature = {
 
   packVerbs(classTsid, engine) {
     if (classTsid !== TICKET) return [];
-    const block = engine.transientInstance() ? 'Not from here.' : '';
-    return [{ id: 'activate', label: 'Activate', primary: true, enabled: !block, reason: block, tooltip: 'Ride down past the friendly saucers' }];
+    const quote = engine.paradiseTicketQuote?.('beam_me_down');
+    const block = engine.transientInstance() ? 'Not from here.' : quote?.reason || '';
+    const used = quote ? ` You have used ${quote.ticketsToday} ${quote.ticketsToday === 1 ? 'ticket' : 'tickets'} today.` : '';
+    return [{ id: 'activate', label: 'Activate', primary: true, enabled: !block, reason: block, tooltip: `Be whisked away to Beam Me Down.${used}` }];
   },
 
   runPackVerb(classTsid, verbId, engine) {
     if (classTsid !== TICKET || verbId !== 'activate') return false;
-    if (countItem(engine.inv, TICKET) < 1 || engine.transientInstance()) return true;
-    removeItem(engine.inv, TICKET, 1);
-    engine.refreshPack();
-    if (!startScene(engine, 'beam_me_down')) addItem(engine.inv, TICKET, 1);
-    // Report #126: paradise_ticket.js verbs.activate counts through item.js notifyVerb, as game.js does for the flight courses.
-    else engine.achievement?.(`${TICKET}:activate`, 1);
+    activateTicket(engine);
     return true;
   },
 
@@ -930,11 +944,10 @@ export const puzzleScenesFeature = {
       b.style.cssText = `padding:3px 9px;border-radius:999px;border:1px solid #a8b8e0;background:${save.done[id] ? '#e3f4d8' : '#fff'};cursor:pointer`;
       b.addEventListener('click', () => {
         if (needsTicket) {
-          if (countItem(engine.inv, TICKET) < 1) return;
-          removeItem(engine.inv, TICKET, 1);
-          engine.refreshPack();
+          engine.closeMap?.();
+          activateTicket(engine);
         }
-        if (startScene(engine, id) && needsTicket) engine.achievement?.(`${TICKET}:activate`, 1);
+        else startScene(engine, id);
       });
       row.appendChild(b);
     }

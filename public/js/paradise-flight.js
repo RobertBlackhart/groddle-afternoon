@@ -355,6 +355,21 @@ export const PARADISE_TICKET_IDS = Object.freeze(
   Object.values(PARADISE_COURSES).map((course) => course.ticketId)
 );
 
+/**
+ * Paradise tickets whose place is a feature scene, not a flight course here (Beam Me Down:
+ * features/puzzle-scenes-feature.js). In Glitch paradise_ticket_beam_me_down.js is a
+ * paradise_ticket like the rest: the same calc_img_cost price and the same 11-a-day count
+ * (verbs.activate 154, modal_callback 330-331), so it is quoted and spent here too.
+ */
+export const PARADISE_SCENE_TICKETS = Object.freeze({
+  beam_me_down: Object.freeze({ id: 'beam_me_down', name: 'Beam Me Down', ticketId: 'paradise_ticket_beam_me_down' }),
+});
+
+/** Where a ticket goes: a flight course or a scene ticket, by id. */
+export function paradiseTicketPlace(id) {
+  return PARADISE_COURSES[id] || PARADISE_SCENE_TICKETS[id] || null;
+}
+
 function finite(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
@@ -492,7 +507,7 @@ export function quoteParadiseTicket(
   courseId,
   { imagination = 0, quoinMultiplier = 1, now = Date.now(), dead = false } = {}
 ) {
-  const course = PARADISE_COURSES[courseId];
+  const course = paradiseTicketPlace(courseId);
   if (!course) return { ok: false, reason: 'unknown_course', cost: 0, course: null };
   resetParadiseDay(state, now);
   const cost = paradiseTicketCost(quoinMultiplier);
@@ -510,11 +525,12 @@ export function activateParadiseTicket(state, courseId, opts = {}) {
   const quote = quoteParadiseTicket(state, courseId, opts);
   if (!quote.ok) return quote;
   state.ticketsToday += 1;
-  state.visits[courseId] = (state.visits[courseId] || 0) + 1;
+  // A scene ticket counts toward the day's limit; visits keep the flight courses only.
+  if (PARADISE_COURSES[courseId]) state.visits[courseId] = (state.visits[courseId] || 0) + 1;
   return {
     ...quote,
     ticketsToday: state.ticketsToday,
-    visits: state.visits[courseId],
+    visits: state.visits[courseId] || 0,
   };
 }
 

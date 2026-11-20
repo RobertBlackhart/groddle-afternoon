@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=25245b19';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=34d64873';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f25d35ee';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -385,12 +385,13 @@ import {
   passParadiseRing,
   PARADISE_HELL_BLOCK,
   PARADISE_TICKET_EAT,
+  paradiseTicketPlace,
   quoteParadiseTicket,
   slipTerrainSlope,
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=4f491849';
+} from './js/paradise-flight.js?v=f7dcfbef';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=17579e08';
 import {
   buildParadiseCourseArt,
@@ -527,7 +528,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=b70c0670';
+} from './js/player-save.js?v=c3a94589';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -4175,6 +4176,32 @@ function paradiseCourseForTicket(classTsid) {
   return Object.values(PARADISE_COURSES).find((course) => course.ticketId === classTsid) || null;
 }
 
+/**
+ * Why a Paradise ticket cannot be activated now, or ''. Source order: activate conditions (dead,
+ * daily limit), then the handler (already in Paradise, not enough iMG).
+ */
+function paradiseTicketBlock(quote) {
+  return quote.reason === 'dead'
+    ? PARADISE_HELL_BLOCK
+    : quote.reason === 'daily_limit'
+      ? `You have already activated the maximum ${PARADISE_DAILY_LIMIT} Ticket to Paradise cards per day.`
+      : paradiseRun
+        ? 'You already activated a ticket!'
+        : quote.reason === 'not_enough_imagination'
+          ? `You need at least ${quote.cost.toLocaleString()} iMG to do that!`
+          : '';
+}
+
+/** A Paradise ticket's quote as it stands (cost, tickets today) and why it is refused, or ''. */
+function paradiseTicketQuote(courseId) {
+  const quote = quoteParadiseTicket(paradiseState, courseId, {
+    imagination: pc.imagination,
+    quoinMultiplier: quoinState.multiplier,
+    dead: playerIsDead(),
+  });
+  return { ...quote, reason: paradiseTicketBlock(quote), ticketsToday: paradiseState.ticketsToday, dailyLimit: PARADISE_DAILY_LIMIT };
+}
+
 /*
  * Each Emotional Bear's upgrades are its own (emotional_bear.js 620-641: this.upgrades on the bear),
  * one bit each in js/tools.js copies (1 Lips, 2 Moon; 2026-11-04: one list for every bear made a new
@@ -4458,18 +4485,7 @@ function getPackUseInfo(classTsid) {
     });
     const tickets = paradiseState.ticketsToday;
     const ticketCopy = tickets === 1 ? 'ticket' : 'tickets';
-    // Source order: activate conditions (dead, daily limit), then the handler
-    // (already in Paradise, not enough iMG).
-    const reason =
-      quote.reason === 'dead'
-        ? PARADISE_HELL_BLOCK
-        : quote.reason === 'daily_limit'
-          ? `You have already activated the maximum ${PARADISE_DAILY_LIMIT} Ticket to Paradise cards per day.`
-          : paradiseRun
-            ? 'You already activated a ticket!'
-            : quote.reason === 'not_enough_imagination'
-              ? `You need at least ${quote.cost.toLocaleString()} iMG to do that!`
-              : '';
+    const reason = paradiseTicketBlock(quote);
     return {
       usable: !reason,
       verb: 'Activate',
@@ -13195,6 +13211,10 @@ const engine = {
   },
   /** Courses ever activated, by course id (js/paradise-flight.js; quest-offers-feature credits them, report #126). */
   paradiseVisits: () => paradiseState.visits,
+  /** A Paradise ticket's price and day count now, and why it is refused ('' when it can go). */
+  paradiseTicketQuote: (courseId) => paradiseTicketQuote(courseId),
+  /** Activate a scene's Paradise ticket as the flight courses' are: prompt, price, the 11 a day; `start` enters it. */
+  activateParadiseTicket: (courseId, start) => confirmParadiseTicketActivation(courseId, { start }),
   get learnedSkills() {
     return skillState.learned || [];
   },
@@ -23605,17 +23625,18 @@ function eatPackedParadiseTicket(classTsid, count = 1) {
   return true;
 }
 
-function confirmParadiseTicketActivation(courseId) {
-  const course = PARADISE_COURSES[courseId];
+/**
+ * paradise_ticket.js verbs.activate and modal_callback for every Paradise ticket: the prompt with
+ * the calc_img_cost price, then the iMG and one of the day's 11 tickets are spent. `start` enters a
+ * scene ticket's place (Beam Me Down, features/puzzle-scenes-feature.js); a false answer gives the
+ * ticket, the iMG and the day's count back. Without it the flight course starts.
+ */
+function confirmParadiseTicketActivation(courseId, { start = null } = {}) {
+  const course = paradiseTicketPlace(courseId);
   if (!course) return false;
-  const quote = quoteParadiseTicket(paradiseState, courseId, {
-    imagination: pc.imagination,
-    quoinMultiplier: quoinState.multiplier,
-    dead: playerIsDead(),
-  });
-  if (!quote.ok) {
-    const info = getPackUseInfo(course.ticketId);
-    toast(info.reason || 'That ticket cannot be activated.');
+  const quote = paradiseTicketQuote(courseId);
+  if (!quote.ok || quote.reason) {
+    toast(quote.reason || 'That ticket cannot be activated.');
     renderPackPopover(course.ticketId);
     return false;
   }
@@ -23639,7 +23660,7 @@ function confirmParadiseTicketActivation(courseId) {
         dead: playerIsDead(),
       });
       if (!activated.ok) {
-        toast(getPackUseInfo(course.ticketId).reason || 'The ticket fizzled.');
+        toast(paradiseTicketBlock(activated) || 'The ticket fizzled.');
         return;
       }
       if (!removeItem(inv, course.ticketId, 1)) return;
@@ -23648,10 +23669,18 @@ function confirmParadiseTicketActivation(courseId) {
       // Report #126: paradise_ticket.js verbs.activate ends in a successful verb, which item.js notifyVerb
       // counts as VERB:<ticket>:activate (fly_paradise.js 25-44). Here, not in startParadiseFlight: the QA
       // ?paradise= entry starts a course without a ticket and counts for nothing.
+      if (start && (await start()) === false) {
+        addItem(inv, course.ticketId, 1);
+        pc.imagination += activated.cost;
+        paradiseState.ticketsToday = Math.max(0, paradiseState.ticketsToday - 1);
+        updateHud();
+        savePlayerState();
+        return;
+      }
       emitGameEvent(`${course.ticketId}:activate`);
       savePlayerState();
       updateHud();
-      await startParadiseFlight(courseId);
+      if (!start) await startParadiseFlight(courseId);
     },
   });
   return true;
