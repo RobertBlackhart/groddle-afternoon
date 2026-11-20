@@ -9,19 +9,31 @@
 </head>
 <body style="margin:0;background:#222">
 <script type="module">
-import { installPixiFixes } from './js/pixi-fixes.js';
-import * as textureUrls from './js/textures.js';
-import { installHiresDecos } from './js/deco-hires.js';
-import { buildStreetView, loadDecoManifest } from './js/street-render.js';
-import { streetWidth, streetHeight } from './js/street-model.js';
+/**
+ * The game's modules as game.js names them, with their ?v= keys (tools/module-keys): a module
+ * imported under another URL is a second copy, so the 2x/3x deco route installed on a bare
+ * './js/textures.js' never reached the copy street-render.js draws with, and every deco without a
+ * sharp copy asked for its old .png (404) and dropped out (#543: a machine room drew all black).
+ */
+const gameSrc = await (await fetch('game.js')).text();
+const keyed = (name) => {
+  const m = new RegExp(`from '(\\./js/${name.replace(/[.-]/g, '\\$&')}\\.js(?:\\?v=[0-9a-f]+)?)'`).exec(gameSrc);
+  if (!m) throw new Error(`game.js does not import js/${name}.js`);
+  return m[1];
+};
+const { installPixiFixes } = await import(keyed('pixi-fixes'));
+const textureUrls = await import(keyed('textures'));
+const { installHiresDecos } = await import(keyed('deco-hires'));
+const { buildStreetView, loadDecoManifest } = await import(keyed('street-render'));
+const { streetWidth, streetHeight } = await import(keyed('street-model'));
 
 const PIXI = globalThis.PIXI;
 /**
  * The card shows the 840 x 160 strip in a 980 x 160 CSS box (object-fit: cover), so a 2x
- * screen wants about 2.33 px per strip px: the strip is written `scale` (?scale=, default
- * 2.5, G446) times that size, 2100 x 400.
+ * screen wants about 2.33 px per strip px: the strip is written `scale` (?scale=, set by
+ * build.mjs) times that size.
  */
-const SCALE = Number(new URLSearchParams(location.search).get('scale')) || 2.5;
+const SCALE = Number(new URLSearchParams(location.search).get('scale')) || 2;
 const OUT_W = Math.round(840 * SCALE);
 const OUT_H = Math.round(160 * SCALE);
 /** Drawn at this multiple of the strip, then box-filtered down (no mipmaps in Pixi). */
@@ -67,6 +79,9 @@ window.renderStrip = async (file) => {
     lc.x = 0;
     lc.y = H - h * k;
   }
+  // A wide street's strip reaches above its top: that band is the sky's top colour, not a stock blue.
+  const top = /^[0-9a-f]{6}$/i.test(street.gradient?.top || '') ? parseInt(street.gradient.top, 16) : 0x8ec8e8;
+  app.renderer.background.color = top;
   const sky = view.children.find((c) => c.zIndex === -1100);
   if (sky) { sky.x = 0; sky.y = 0; sky.width = W; sky.height = H; }
   // Layers above the middleground live in view.frontView since 71eea704 (they cover the avatars
@@ -103,12 +118,29 @@ window.renderStrip = async (file) => {
     g.drawImage(src, 0, 0, w, h);
     src = c;
   }
-  const url = src.toDataURL('image/jpeg', Number(new URLSearchParams(location.search).get('q')) || 0.75);
+  const url = src.toDataURL('image/jpeg', Number(new URLSearchParams(location.search).get('q')) || 0.7);
+  // How much the picture varies (luma standard deviation over a 96 x 18 thumbnail): near 0 is
+  // a flat sky with nothing on it, which build.mjs skips.
+  const t = document.createElement('canvas');
+  t.width = 96;
+  t.height = 18;
+  const tg = t.getContext('2d', { willReadFrequently: true });
+  tg.drawImage(src, 0, 0, 96, 18);
+  const px = tg.getImageData(0, 0, 96, 18).data;
+  let sum = 0;
+  let sq = 0;
+  for (let i = 0; i < px.length; i += 4) {
+    const y = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+    sum += y;
+    sq += y * y;
+  }
+  const n = px.length / 4;
+  const spread = Math.sqrt(Math.max(0, sq / n - (sum / n) ** 2));
   const drawn = view.decoDrawn;
   if (front) app.stage.removeChild(front);
   app.stage.removeChild(view);
   view.destroy({ children: true });
-  return { url, W, H, missing: left, drawn };
+  return { url, W, H, missing: left, drawn, spread: Math.round(spread * 10) / 10 };
 };
 window.stripReady = true;
 </script>
