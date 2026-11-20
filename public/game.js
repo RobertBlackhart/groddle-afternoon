@@ -10758,6 +10758,11 @@ function openMenuOrDoor(target) {
 }
 
 function tryOpenNearestMenu({ nearestFirst = false } = {}) {
+  // #558: in Cultivation or Decoration Mode Enter and E belong to the mode (homes-feature: set the
+  // carried thing down, or reach the selected piece's actions), never to the world. Glitch sent
+  // Enter in cult_mode to CultManager alone (LocationInputHandler.as enterKeyHandler 200-204), so
+  // it never tended a garden (whose plots then took the arrows) or opened the chooser there.
+  if (features.query('homeEditMode', engine)) return;
   // G228: a feature may hold Enter. G230 (Austin 2026-10-28): the crab's call-out no
   // longer does; Enter opens its menu as the client's (LocationInputHandler.as 193-237).
   const held = enterHeldBy();
@@ -10818,6 +10823,8 @@ function gardenTendPlot() {
 function startGardenTend(entity) {
   const garden = entity?.state?.garden;
   if (entity?.classId !== 'garden_new' || !garden?.cols || !garden?.rows) return false;
+  // #558: never under Cultivation or Decoration Mode, whose clicks and Esc never reach tending's exits.
+  if (features.query('homeEditMode', engine)) return false;
   gardenTend = { entity, key: firstTendKey(garden.cols, garden.rows) };
   showGardenTendFocus();
   return Boolean(gardenTend);
@@ -10872,11 +10879,15 @@ function gardenTendKey(e) {
   showGardenTendFocus();
   return true;
 }
-/** Each frame: walking away (or the garden going) stops tending; the focus glow comes back after a verb. */
+/**
+ * Each frame: walking away (or the garden going) stops tending; the focus glow comes back after a verb.
+ * #558: so does Cultivation or Decoration Mode coming on (Shift+C while tending): the mode takes the
+ * clicks and Esc, so a garden still tending there kept the arrows with no way off it.
+ */
 function updateGardenTend() {
   if (!gardenTend) return;
   const entity = gardenTend.entity;
-  if (!entity?.sprite || entity.sprite.destroyed || !gardens.includes(entity) || interactDistance(entity, player.x, player.y) > 200) {
+  if (features.query('homeEditMode', engine) || !entity?.sprite || entity.sprite.destroyed || !gardens.includes(entity) || interactDistance(entity, player.x, player.y) > 200) {
     stopGardenTend();
     return;
   }
@@ -26320,6 +26331,8 @@ function openMinimapSignpostMenu({ id, x, y, at = null, anchor = null, keys = fa
 const ROAD_NOT_IN_GAME = "That road leads somewhere that isn't in the game. Pick another destination on the Map.";
 
 function signpostArmKey(key) {
+  // #558: the arm numbers are hidden under an edit mode (the prompt), so their keys rest too.
+  if (features.query('homeEditMode', engine)) return false;
   const hit = signpostArmFor(key);
   if (!hit) return false;
   if (app?.canvas) app.canvas.dataset.signpostArmKey = `${key}:${signBoardLabel(hit.board) || hit.board.connection?.label || ''}`;
@@ -35190,7 +35203,8 @@ async function main() {
     }
 
     run('prompt', () => {
-      if (!menuTarget && !currentAction && !isScreenFxBlocking()) {
+      // #558: no Enter hint (and no arm numbers) under Cultivation or Decoration Mode: Enter is the mode's there.
+      if (!menuTarget && !currentAction && !isScreenFxBlocking() && !features.query('homeEditMode', engine)) {
         // Recent keyboard chain wins briefly; otherwise hover, then footprint distance.
         const recent =
           recentInteractionTarget?.sprite &&
