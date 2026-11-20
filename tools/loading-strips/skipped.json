@@ -1,0 +1,25 @@
+{
+ "about": "Streets with no loading-card strip and why (tools/loading-strips/build.mjs, #543). Their card shows no picture.",
+ "streets": {
+  "GA931BPTNLD3E35": {
+   "label": "Glutton Greens",
+   "why": "blank picture (luma spread 3.9)"
+  },
+  "GA9TCL1H7LD37DC": {
+   "label": "Bilicious Blues",
+   "why": "blank picture (luma spread 0.2)"
+  },
+  "GA9U27HN7LD3FVE": {
+   "label": "Greyving Grays",
+   "why": "blank picture (luma spread 3.3)"
+  },
+  "GIFGJ2246R72LJL": {
+   "label": "Mezzanine",
+   "why": "blank picture (luma spread 0)"
+  },
+  "GIFLFPPBUUT11SP": {
+   "label": "Interrogation",
+   "why": "blank picture (luma spread 0.9)"
+  }
+ }
+}
