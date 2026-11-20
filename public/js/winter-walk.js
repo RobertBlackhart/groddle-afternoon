@@ -110,18 +110,32 @@ export function failInterruptedWinterWalk(questState, now = Date.now()) {
  * quoins with a fixed benefit (items/quoin.js 165), multiplied by the player's quoin multiplier
  * (171-174) and then the mood bonus (184, inc_stats.js stats_add_xp 271, stats_xp_apply_bonus
  * 559-562: up to x1.2). The amounts are Lily Linguistic's recording (2Xko9Hy-cLE, 2012-12-06:
- * +3000, +120, +600, +720 and a white +1098), which already carried her x1.2 mood bonus at
- * multiplier 1: the table held those shown amounts, and the game then applied the player's own
+ * +3000, +120, +600, +720 and a white +1098), which already carried her multiplier and her x1.2
+ * mood bonus: the table once held those shown amounts and the game applied the player's own
  * multiplier and mood again (Friendly at x6: 120 -> 864, 3000 -> 19,800). The white +1098 was a
  * Qurazy quoin: 915 is qurazy_rewards[59], Lily's level 60 (config_base.js 263-323), x1.2; it is
- * level-scaled and takes no multiplier (quoin.js 207-210), but the table paid 1098 x the
- * multiplier (7,906 at x6). That mote is now a Qurazy (WINTER_MOTE_KINDS).
+ * level-scaled and takes no multiplier (quoin.js 207-210). That mote is a Qurazy (WINTER_MOTE_KINDS).
+ *
+ * G1068: #220 took her multiplier as x1, but the same recorder's Paradise runs show +120 for
+ * benefit-1 'paradise iMG' quoins (quoin.js 575-590), so she was at x100. Each mote's benefit is
+ * the recorded amount / (100 x 1.2), as paradise-courses.js recordedBenefit does for iMG (#560):
+ * +120 is 1, +3000 is 25. collectQuoin pays it through quoins.js quoinPay x the player's own
+ * multiplier, then the mood bonus.
  */
-export const WINTER_MOTE_REWARDS = Object.freeze({
-  surface: Object.freeze([100, 100, 2500, 100, 100, 200]),
-  haven: Object.freeze([100, 100, 100, 200, 100, 100]),
-  return: Object.freeze([0, 500, 600]),
+export const WINTER_MOTE_RECORDED_MULTIPLIER = 100;
+export const WINTER_MOTE_RECORDED_MOOD_BONUS = 1.2;
+/** The amounts shown in Lily's walk (0 for the Qurazy, which pays by level instead). */
+export const WINTER_MOTE_RECORDED = Object.freeze({
+  surface: Object.freeze([120, 120, 3000, 120, 120, 240]),
+  haven: Object.freeze([120, 120, 120, 240, 120, 120]),
+  return: Object.freeze([0, 600, 720]),
 });
+const recordedMoteBenefit = (recorded) =>
+  Math.round(recorded / (WINTER_MOTE_RECORDED_MULTIPLIER * WINTER_MOTE_RECORDED_MOOD_BONUS));
+/** Each mote's benefit: surface 1,1,25,1,1,2; haven 1,1,1,2,1,1; return Qurazy,5,6. */
+export const WINTER_MOTE_REWARDS = Object.freeze(Object.fromEntries(
+  Object.entries(WINTER_MOTE_RECORDED).map(([stage, list]) => [stage, Object.freeze(list.map(recordedMoteBenefit))]),
+));
 
 /** The kind of quoin each mote is ('xp' unless listed): a Qurazy pays by level (quoins.js qrazyRewardForLevel). */
 export const WINTER_MOTE_KINDS = Object.freeze({

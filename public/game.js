@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=25245b19';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fa6e11e9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=34d64873';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -163,7 +163,7 @@ import {
   winterWalkProgress,
   winterWalkRemainingMs,
   winterWalkRun,
-} from './js/winter-walk.js?v=6e67699f';
+} from './js/winter-walk.js?v=89f8dc32';
 import {
   SUMMERS_DAY_ANNEX_BOWL,
   SUMMERS_DAY_ANNEX_FLOOR_Y,
@@ -19904,7 +19904,7 @@ function collectWinterWalkMote(entry) {
   const { x, y } = entry.sprite;
   if (entry.sprite.parent) entry.sprite.parent.removeChild(entry.sprite);
   if (!entry.sprite.destroyed) entry.sprite.destroy({ children: true });
-  const big = result.amount >= 1000 || result.kind === 'qurazy';
+  const big = result.amount >= 25 || result.kind === 'qurazy';
   playSfx('quoin', { volume: big ? 0.8 : 0.56, rate: big ? 1.18 : 1.04 });
   floatText(x, y - 18, `+${amount.toLocaleString()} iMG`, 0xc98dff);
   pushActivity(`A winter mote sparkles into imagination. +${amount.toLocaleString()} iMG.`);

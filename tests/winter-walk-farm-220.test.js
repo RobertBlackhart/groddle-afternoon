@@ -17,6 +17,10 @@
  * 1098 x6 x1.2 = 7,906. The +1098 was a Qurazy quoin: 915 is qurazy_rewards[59] (level 60,
  * config_base.js 263-323) x1.2; a Qurazy pays by level, takes no multiplier (quoin.js 207-210) and
  * stays outside the daily limit (159, 236).
+ *
+ * G1068: #220 then took Lily's amounts / 1.2 (100-2500) as the benefit, on the guess she was at x1.
+ * Her Paradise runs show +120 for benefit-1 quoins, so she was at x100: the benefit is her amount
+ * / 120 (1-25), as the Paradise courses' recordedBenefit (#560), paid x the player's multiplier.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -38,7 +42,7 @@ import {
   winterMoteKind,
   winterWalkProgress,
   winterWalkRun,
-} from '../public/js/winter-walk.js?v=6e67699f';
+} from '../public/js/winter-walk.js?v=89f8dc32';
 import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=5abad2c7';
 
 const root = join(import.meta.dirname, '..');
@@ -126,17 +130,19 @@ describe('#220 mote values follow the quoin rule', () => {
     assert.equal(pay(3000, { mood: 85 }), 19800);
   });
 
-  it('the table is now the benefit before mood (Lily\'s amounts / 1.2), and her run comes back exactly', () => {
-    assert.deepEqual(WINTER_MOTE_REWARDS.surface, [100, 100, 2500, 100, 100, 200]);
-    assert.deepEqual(WINTER_MOTE_REWARDS.haven, [100, 100, 100, 200, 100, 100]);
-    assert.deepEqual(WINTER_MOTE_REWARDS.return.slice(1), [500, 600]);
-    // Lily: multiplier 1, mood over 90%, level 60.
+  it('G1068: the table is the benefit, Lily\'s amounts / (her x100 x her x1.2 mood), and her run comes back exactly', () => {
+    assert.deepEqual(WINTER_MOTE_REWARDS.surface, [1, 1, 25, 1, 1, 2]);
+    assert.deepEqual(WINTER_MOTE_REWARDS.haven, [1, 1, 1, 2, 1, 1]);
+    assert.deepEqual(WINTER_MOTE_REWARDS.return.slice(1), [5, 6]);
+    // Lily: multiplier x100 (her Paradise runs show +120 for benefit-1 quoins), mood over 90%, level 60.
     const lily = (benefit, kind = 'xp') => {
-      const qs = createQuoinState({ multiplier: 1 });
+      const qs = createQuoinState({ multiplier: 100 });
       return collectQuoin(qs, kind, { level: 60, mood: 100, energyMax: 100 }, { amount: benefit }).actual;
     };
-    assert.deepEqual([100, 2500, 500, 600].map((b) => lily(b)), [120, 3000, 600, 720]);
+    assert.deepEqual([1, 25, 5, 6].map((b) => lily(b)), [120, 3000, 600, 720]);
     assert.equal(lily(0, 'qurazy'), 1098);
+    // The same table at x1 pays what a new player's quoins do: 1 to 30.
+    assert.deepEqual([1, 25, 5, 6].map((b) => pay(b, { multiplier: 1 })), [1, 30, 6, 7]);
   });
 
   it('the return\'s first mote is a Qurazy: paid by level, no multiplier, outside the daily limit', () => {
@@ -154,10 +160,10 @@ describe('#220 mote values follow the quoin rule', () => {
     assert.equal(full.collectedToday, 110);
   });
 
-  it('at Friendly\'s x6 and full mood a whole walk now pays 35,280 iMG plus the Qurazy, not 50,242', () => {
+  it('at Friendly\'s x6 and full mood a whole walk pays 350 iMG plus the Qurazy (G1068), not 35,280 or 50,242', () => {
     const benefit = Object.values(WINTER_MOTE_REWARDS).flat().reduce((a, b) => a + b, 0);
-    assert.equal(benefit, 4900);
-    assert.equal(Object.values(WINTER_MOTE_REWARDS).flat().reduce((sum, b) => sum + (b ? pay(b) : 0), 0), 35280);
+    assert.equal(benefit, 49);
+    assert.equal(Object.values(WINTER_MOTE_REWARDS).flat().reduce((sum, b) => sum + (b ? pay(b) : 0), 0), 350);
   });
 });
 
