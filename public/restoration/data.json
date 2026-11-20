@@ -2810,13 +2810,98 @@
   ]
  },
  "release": {
-  "game": "0.51.0",
-  "deployed": "2026-11-19"
+  "game": "0.51.1",
+  "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2825,
+  "commits": 2849,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "A bean that will not grow in a patch says its kind only grows in certain regions"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "A tool you lack the skill for says so on every recipe tile in the Make menu"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A project phase that opened while you were away says it is ready, not \"opens in -86 minutes\""
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The Activity window colours a made item's whole name, not just its first word"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A vendor, a trade or a letter never takes a bag that still holds things, whatever the count"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "improve",
+    "text": "Fruit trees and the other trants show how much they hold: bare when picked clean, half, or full"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Each Hellish Grapes bunch shows as one bunch, and no two bunches pile up, so one squish takes one bunch"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Update ready waits only for windows a player can see, and says the news again if it stays hidden"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "On an upright phone the Menu button stays on its pill"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "On an upright phone the route card stands under the buff chips, not on top of them"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A trip into a subway station, and /stuck there, stand you on the steps, not under them"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A route set from the Map on a subway platform starts from the station's street"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "You walk up a subway station's steps to the entrance instead of standing at their foot"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "The route card names the subway line to board, the stop to get off at and the steps up"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "A player's first climb shows the pale placeholder Glitch, not the default outfit"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Other players whose look is still loading show as a pale placeholder Glitch, not the default outfit"
+   },
+   {
+    "date": "2026-11-19",
+    "kind": "fix",
+    "text": "Your own Glitch shows in your own look when the game appears, not the default outfit"
+   },
    {
     "date": "2026-11-19",
     "kind": "fix",
@@ -2851,94 +2936,9 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "Hub Completist badges no longer finish a street early on saves that visited the subway station before v0.47.0"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Long thin ground strips, the painted sky and the yard and Operation Grow strips are drawn in pieces so no half of them drops out"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The ground under a street no longer flickers lighter in the bottom-right corner while walking"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "The loading card shows a street's Home to: list as it appears, up 4 s at most, and a click or key skips it"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The loading card's Home to: list counts Peat Bogs, Barnacles, Salmon and other nodes still loading"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "A teleport moves you half a second into the arm swing, as in Glitch"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The chat box in the Social drawer is as tall as its \"Say something on ...\" hint again after a street change"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Pot's Empty Table and other feature quests can be pinned"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "No dark strip with a light line along the right-hand wall of a Tower floor"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "A Spinach jump pressed into the end of a Jethimadh Tower corridor no longer goes up through the ceiling and out"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "A click on a door goes straight through it, the subway station's steps too"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Purplysa: the gravity pad on the small block under the crystals lifts you"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "new",
-    "text": "Other players see your grave online and can mourn or celebrate it, as in Glitch"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "new",
-    "text": "subway stations on the street map, with a walk-to row on the phone"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "the open bag is marked in the pack row"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "A quoin touched past the daily limit says so, at most once a minute"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "The emblem spend confirm says when the half-the-time-left cap sets the speed-up"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "Wine of the Dead refused while dead says how to finish Beelzebooze"
    }
   ]
  },
  "tests": 1190,
- "generatedAt": "2026-11-19"
+ "generatedAt": "2026-11-20"
 }
