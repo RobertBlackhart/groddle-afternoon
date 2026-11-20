@@ -2,7 +2,8 @@
  * G1074 (report #564, Austin 2026-11-20): each store has an icon, one item it sells, in one shared
  * map (js/store-icons.js) that the vendor finder (the panel from the currants) and the
  * Encyclopedia's Sold by filter both read. The vendor finder's rows show it as the favor panel's
- * Giants show their shrine symbols (#563).
+ * Giants show their shrine symbols (#563); the Sold by filter shows it for every store a Street
+ * Spirit keeps, where it showed the same Street Spirit beside each one.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,6 +12,7 @@ import { STORE_ICON_ITEMS, storeIconItem, storeIconUrl } from '../public/js/stor
 import { STORE_CATALOG } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=71211643';
 import { vendorFinderRows, vendorKinds } from '../public/js/vendor-finder.js?v=7fbfc51d';
+import { vendorIcon } from '../tools/catalog/build.mjs';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');
@@ -68,5 +70,33 @@ describe('G1074: the vendor finder shows each store\'s icon', () => {
     assert.match(style, /\[data-ui="modern"\] \.vf-row img \{ width: 20px; height: 20px; object-fit: contain; justify-self: center; \}/);
     assert.match(style, /\[data-ui="modern"\] \.favor-row img \{ width: 20px; height: 20px; object-fit: contain; justify-self: center; \}/, 'the same box as the Giants\' rows');
     assert.match(read('css/classic.css'), /#vendor-finder-pop :is\(\.vf-row img, \.vf-noic\) \{ flex: none; width: calc\(20 \* var\(--cu\)\); height: calc\(20 \* var\(--cu\)\);/);
+  });
+});
+
+describe('G1074: the Encyclopedia\'s Sold by filter shows the same icons', () => {
+  it('a store a Street Spirit keeps shows its icon item; a vendor with its own face keeps its picture', () => {
+    const ency = {
+      stores: new Map([['groceries', 'people:vendor-groceries'], ['liquor', 'people:npc_jabba2'], ['fox_ranger', 'people:npc_fox_ranger']]),
+      entries: new Map([
+        ['people:vendor-groceries', { icon: { src: 'assets/sprites/icons/street_spirit.webp' } }],
+        ['people:npc_jabba2', { icon: { src: 'assets/sprites/encyclopedia/npc_jabba2.webp' } }],
+        ['people:npc_fox_ranger', { icon: { src: 'assets/sprites/encyclopedia/npc_fox_ranger.webp' } }],
+      ]),
+    };
+    assert.equal(vendorIcon('groceries', ency, storeIconUrl), 'assets/sprites/icons/bun.webp');
+    assert.equal(vendorIcon('liquor', ency, storeIconUrl), 'assets/sprites/encyclopedia/npc_jabba2.webp');
+    assert.equal(vendorIcon('fox_ranger', ency, storeIconUrl), 'assets/sprites/encyclopedia/npc_fox_ranger.webp');
+  });
+
+  it('the built page: no store shows the generic Street Spirit, and each Street Spirit store shows its icon item', () => {
+    const page = read('encyclopedia/items/index.html');
+    const select = /<select id="sold">([\s\S]*?)<\/select>/.exec(page)?.[1] || '';
+    assert.doesNotMatch(select, /icons\/street_spirit\.webp/);
+    for (const key of ['produce', 'hardware', 'gardening', 'kitchen', 'groceries', 'alchemical', 'animal', 'mining', 'toys', 'bags']) {
+      assert.match(select, new RegExp(`<option value="${key}" data-icon="\\.\\./\\.\\./${storeIconUrl(key).replace(/\./g, '\\.')}"`), key);
+    }
+    // The vendor NPCs keep their own art.
+    assert.match(select, /<option value="sno_cone" data-icon="\.\.\/\.\.\/assets\/sprites\/encyclopedia\/npc_sno_cone_vending_machine\.webp"/);
+    assert.match(select, /<option value="gardening_tools" data-icon="\.\.\/\.\.\/assets\/sprites\/encyclopedia\/npc_gardening_vendor\.webp"/);
   });
 });

@@ -715,8 +715,12 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
 
   const files = {};
   files[`${OUT}/data.json`] = `${JSON.stringify(data, null, 0).replace(/\{"id":/g, '\n{"id":')}\n`;
-  // Each store's keeper's picture for the Sold by combobox (the encyclopedia's People entry).
-  const vendorIcons = Object.fromEntries(data.vendors.map((v) => [v.key, ency.entries.get(ency.stores.get(v.key))?.icon?.src]).filter(([, src]) => src));
+  // Each store's picture for the Sold by combobox: a vendor with a face of its own (the scarecrow,
+  // Helga, the Sno Cone machine, the Fox Ranger...) shows its People entry's picture; a store a
+  // Street Spirit keeps shows an item it sells (js/store-icons.js, G1074, report #564), as the
+  // game's vendor finder does, instead of the same Street Spirit beside every one.
+  const { storeIconUrl } = await import(js('store-icons.js'));
+  const vendorIcons = Object.fromEntries(data.vendors.map((v) => [v.key, vendorIcon(v.key, ency, storeIconUrl)]).filter(([, src]) => src));
   files[`${OUT}/index.html`] = indexPage(data, vendorIcons);
   for (const e of entries) e.hero = heroFor(e.it.id, e.icon);
   entries.forEach((e, i) => {
@@ -728,6 +732,16 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   const keys = committedMap();
   for (const path of Object.keys(files)) if (path.endsWith('.html')) files[path] = keyAssetUrls(files[path], path, keys);
   return { files, data, excludedIds: excluded, stubIds: stubs, problems };
+}
+
+/**
+ * A store's picture in the Sold by filter: its keeper's People picture, unless a Street Spirit
+ * keeps it (the encyclopedia's own vendor-<key> entry), when its icon item stands in.
+ */
+export function vendorIcon(key, ency, storeIconUrl) {
+  const keeper = ency.stores.get(key);
+  const spirit = !keeper || keeper.startsWith('people:vendor-');
+  return (spirit && storeIconUrl(key)) || ency.entries.get(keeper)?.icon?.src || '';
 }
 
 /** Quest statuses the game offers a quest in (the inventory's): solo, rebuilt or between players. */
