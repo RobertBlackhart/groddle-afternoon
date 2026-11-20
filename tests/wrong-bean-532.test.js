@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { SEASONED_BEANS, plantChoices, wrongBeanLine } from '../public/js/patches.js?v=83f7672f';
+import { SEASONED_BEANS, plantChoices, wrongBeanLine } from '../public/js/patches.js?v=2498e678';
 
 const root = join(import.meta.dirname, '..');
 const gsjs = (f) => readFileSync(join(root, '..', 'glitch-GameServerJS', 'items', f), 'utf8');

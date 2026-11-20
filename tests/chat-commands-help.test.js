@@ -24,8 +24,8 @@ import {
   strayLetterCommand,
 } from '../public/js/slash-commands.js?v=fb3a8442';
 import { chatCommandsSection, createHotkeysSheet } from '../public/js/client-hotkeys.js?v=c8210235';
-import { HINT_DELAY_MS, showLocalLines, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=d363423f';
-import { FEATURES } from '../public/js/features/index.js?v=2bfe85af';
+import { HINT_DELAY_MS, showLocalLines, slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=559d4116';
+import { FEATURES } from '../public/js/features/index.js?v=5d7992ef';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { CHANNEL_WELCOME, tabCommand } from '../public/js/groups.js?v=c9635d96';
 

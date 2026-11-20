@@ -20,11 +20,11 @@ import {
   rockItems,
   soilKeyMap,
   yardSoilInput,
-} from '../public/js/features/homes-feature.js?v=735a68e0';
-import { soilSpawnPlan } from '../public/js/features/patches-feature.js?v=a2604ecb';
+} from '../public/js/features/homes-feature.js?v=6d212c44';
+import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=681303ed';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=b787b3eb';
-import { canPlantBean } from '../public/js/patches.js?v=83f7672f';
+import { SOIL_SPAWN_CAPS, canPlantBean } from '../public/js/patches.js?v=2498e678';
 import { TOWER_PART_CHOICES, TOWER_STYLES, composeTower, towerBounds } from '../public/js/home-tower.js?v=18889f7a';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOffsetAnchor } from '../public/js/movement.js?v=f4be1a05';
 import { INTERIOR } from '../public/js/home-decor.js?v=d886268d';
@@ -94,6 +94,24 @@ describe('homes feature helpers', () => {
     const src = readFileSync(join(root, 'js/features/homes-feature.js'), 'utf8');
     const spawn = src.slice(src.indexOf('function spawnCultivations('), src.indexOf('function drawCultivationMarkers('));
     assert.match(spawn, /yardSoilInput\(st\.items/, 'the yard drawing reads the same list');
+  });
+
+  it('#552: draws every Patch in the yard, past the eighth (no street cap on a home yard)', () => {
+    const items = [
+      ...Array.from({ length: 12 }, (_, i) => ({ id: i + 1, protoClass: 'proto_patch', endClass: 'patch', rx: 100 + i * 200 })),
+      ...Array.from({ length: 7 }, (_, i) => ({ id: 100 + i, protoClass: 'proto_patch', endClass: 'patch_dark', rx: 3000 + i * 200 })),
+    ];
+    const { soilCounts, soilPoints } = yardSoilInput(items, (item) => ({ x: item.rx, y: 0 }));
+    assert.deepEqual(soilCounts, { patch: 12, patch_dark: 7 });
+    // A street's catalog soil keeps its caps (8 Patches, 6 Dark Patches); a yard's own Patches do not.
+    assert.equal(soilSpawnPlan(soilCounts, (key) => soilPoints[key]).length, SOIL_SPAWN_CAPS.patch + SOIL_SPAWN_CAPS.patch_dark);
+    const drawn = new Map(soilSpawnPlan(soilCounts, (key) => soilPoints[key], { cap: false }).map((row) => [row.x, row.key]));
+    assert.equal(drawn.size, 19, 'the ninth to twelfth Patch and the seventh Dark Patch get plots too');
+    const keys = soilKeyMap(items);
+    for (const item of items) assert.equal(drawn.get(item.rx), keys.get(item.id)[0], `Patch ${item.id}`);
+    assert.equal(patchesFeature.homeToTargets({ soilCounts }).length, 19, 'the loading card counts them all');
+    const src = readFileSync(join(root, 'js/features/patches-feature.js'), 'utf8');
+    assert.match(src, /lastSoilCounts = street\?\.soilCounts \|\| null;[\s\S]{0,400}soilSpawnPlan\(counts, \(key\) => engine\.placement\(key\), \{ cap: !lastSoilCounts \}\)/, 'a home yard (soilCounts given) plans uncapped');
   });
 
   it('sells store 23 at its exact prices with the 0.5 buy-back', () => {

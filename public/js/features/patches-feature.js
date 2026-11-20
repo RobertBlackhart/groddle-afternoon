@@ -72,11 +72,11 @@ import {
   soilSpawnClasses,
   soilSpritePaths,
   tickPlot,
-} from '../patches.js?v=83f7672f';
+} from '../patches.js?v=2498e678';
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=5c729187';
-import { plotSignature, replayRng } from '../shared-patches.js?v=cf76584c';
+import { plotSignature, replayRng } from '../shared-patches.js?v=438da408';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PATCHES_FEATURE_ID = 'patches';
@@ -118,9 +118,10 @@ export function soilCountsForStreet(tsid, catalog = getStreetEcologyCatalog()) {
   return {};
 }
 
-export function soilPlacementGroups(counts) {
+/** opts.cap: false for a home yard's own Patches (soilSpawnClasses, #552). */
+export function soilPlacementGroups(counts, opts = {}) {
   const tally = new Map();
-  for (const classTsid of soilSpawnClasses(counts)) tally.set(classTsid, (tally.get(classTsid) || 0) + 1);
+  for (const classTsid of soilSpawnClasses(counts, opts)) tally.set(classTsid, (tally.get(classTsid) || 0) + 1);
   // G852: each plot on a level floor its footprint wide, never off a ledge end (street-ecology.js SOIL_STEADY_FLOOR).
   return [...tally.entries()].map(([classTsid, count]) => ({
     key: `${SOIL_GROUP_PREFIX}${classTsid}`,
@@ -131,9 +132,9 @@ export function soilPlacementGroups(counts) {
   }));
 }
 
-export function soilSpawnPlan(counts, placement) {
+export function soilSpawnPlan(counts, placement, opts = {}) {
   const plan = [];
-  for (const group of soilPlacementGroups(counts)) {
+  for (const group of soilPlacementGroups(counts, opts)) {
     const classTsid = group.key.slice(SOIL_GROUP_PREFIX.length);
     const points = (typeof placement === 'function' ? placement(group.key) : []) || [];
     points.slice(0, group.count).forEach((point, index) => {
@@ -923,7 +924,9 @@ export const patchesFeature = {
 
   /** #478: the loading card's Home to: before the street is built: the plots its data names. */
   homeToTargets(street) {
-    return soilSpawnClasses(street?.soilCounts || soilCountsForStreet(street?.tsid)).map((classId) => ({ classId }));
+    // A home yard's Patches are all drawn, past the street caps (#552).
+    if (street?.soilCounts) return soilSpawnClasses(street.soilCounts, { cap: false }).map((classId) => ({ classId }));
+    return soilSpawnClasses(soilCountsForStreet(street?.tsid)).map((classId) => ({ classId }));
   },
 
   onStreetEnter(street, engine) {
@@ -932,7 +935,9 @@ export const patchesFeature = {
     // Home streets pass their cultivated Patches (js/features/homes-feature.js).
     lastSoilCounts = street?.soilCounts || null;
     const counts = lastSoilCounts || soilCountsForStreet(street?.tsid || engine.streetTsid);
-    lastPlan = soilSpawnPlan(counts, (key) => engine.placement(key));
+    // A home yard's Patches each get a plot, however many the player placed (#552); the yard's
+    // item limit is the brake, as the price was in Glitch (locations/inc_cultivation.js 22-56).
+    lastPlan = soilSpawnPlan(counts, (key) => engine.placement(key), { cap: !lastSoilCounts });
     const items = streetItems(engine);
     plannedItems = items;
     if (!items.length) {

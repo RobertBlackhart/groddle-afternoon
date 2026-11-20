@@ -20,7 +20,7 @@ import { KITTY_PET, createKitty, petKitty } from '../public/js/heli-kitties.js?v
 import { createMusicblockState, playMusicblock } from '../public/js/musicblocks.js?v=97129d87';
 import { runTransform } from '../public/js/item-transforms.js?v=3a1b5812';
 import { applyTreePoison, performAntidotePour } from '../public/js/tree-poison.js?v=646d1bc1';
-import { createPlot, performPlotVerb } from '../public/js/patches.js?v=83f7672f';
+import { createPlot, performPlotVerb } from '../public/js/patches.js?v=2498e678';
 import { doChore, neighbourById, normalizeNeighbourState } from '../public/js/neighbours.js?v=13f35acd';
 import { runVerb } from '../public/content.js?v=7906bf62';
 import { applySetFree } from '../public/js/animal-set-free.js?v=6fcd8355';

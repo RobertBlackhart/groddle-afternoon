@@ -1208,7 +1208,12 @@ export function soilSpritePaths() {
   return [...out];
 }
 
-/** Capped per-street spawn list from the ecology catalog's `soil` counts. */
+/**
+ * Capped per-street spawn list from the ecology catalog's `soil` counts. A home yard's own Patches
+ * pass `{ cap: false }`: every one the player placed and paid for gets its plot (#552). Glitch put
+ * no per-class cap on a home street's cultivations (locations/inc_cultivation.js 22-56: the price
+ * and the yard's room were the brakes), and the yard's item limit still applies (homes-feature).
+ */
 export const SOIL_SPAWN_CAPS = Object.freeze({
   patch: 8,
   patch_dark: 6,
@@ -1221,10 +1226,11 @@ export const SOIL_SPAWN_CAPS = Object.freeze({
   trant_spice_dead: 2,
 });
 
-export function soilSpawnClasses(counts = {}) {
+export function soilSpawnClasses(counts = {}, { cap = true } = {}) {
   const out = [];
   for (const classTsid of SOIL_CLASSES) {
-    const n = Math.min(whole(counts?.[classTsid], 0), SOIL_SPAWN_CAPS[classTsid] || 2);
+    const want = whole(counts?.[classTsid], 0);
+    const n = cap ? Math.min(want, SOIL_SPAWN_CAPS[classTsid] || 2) : want;
     for (let i = 0; i < n; i += 1) out.push(classTsid);
   }
   return out;

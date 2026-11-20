@@ -41,7 +41,7 @@ import { HIRES_SPRITES, SPLIT_SPRITES } from './sprite-hires.js?v=b6bc6eae';
 import { HIRES_ICONS } from './icon-hires.js?v=fb952dde';
 import { CULTIVATION_CLASSES } from './homes-catalog.js?v=b787b3eb';
 import { TOWER_CHASSIS, TOWER_PROTO } from './home-tower.js?v=18889f7a';
-import { GROWN_TREE_LABELS } from './patches.js?v=83f7672f';
+import { GROWN_TREE_LABELS } from './patches.js?v=2498e678';
 import { shortHash } from './profiles.js?v=054ca723';
 import { MIN_PACK_HEIGHT, VIEW_CEIL_H, VIEW_MAX_W, stageFor } from './location-view.js?v=ac404fcb';
 

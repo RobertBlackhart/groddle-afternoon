@@ -19,7 +19,7 @@ import {
   createPlot,
   maturityGrowChance,
   tickPlot,
-} from '../public/js/patches.js?v=83f7672f';
+} from '../public/js/patches.js?v=2498e678';
 import { createTrantState } from '../public/js/trants.js?v=864ea9ff';
 import { PATCH_PILOT, SITE_OUT, sharedPatchStreets } from '../tools/build-realtime-patches.mjs';
 import { HAS_SITE, serverPath, skipWithoutServer } from '../tools/repos.mjs';

@@ -6,7 +6,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=83f7672f';
+import { createPlot, performPlotVerb, plotVerbs } from '../public/js/patches.js?v=2498e678';
 import { createResourceNode, resourceNodeVerbs } from '../public/js/resource-nodes.js?v=cf9aae18';
 
 describe('Plant on a weedy or dug Patch with no bean (patch.js 243-253 before 270-278)', () => {
