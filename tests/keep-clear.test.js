@@ -45,7 +45,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=11f50673';
+} from '../public/js/street-ecology.js?v=010c8c45';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { SHRINE_SPOTS } from '../public/js/shrine-spots-data.js?v=c45dc2c2';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=42745010';
@@ -232,7 +232,9 @@ describe('every shared street', () => {
       doors += reserved.filter((s) => s.doorway).length;
       assert.equal(plan.groups.trees.length, pop.treeClasses.length, tsid);
       bad.push(...offences(plan, reserved).map((o) => `${tsid} ${o}`));
-      bad.push(...plan.blocked.map((b) => `${tsid} blocked ${JSON.stringify(b)}`));
+      // A tree's crown taken for want of any other spot is the canopy rule's own last resort (G1061:
+      // tests/g1061-crown-placements.test.js names each one); no door, ladder or signpost is covered.
+      bad.push(...plan.blocked.filter((b) => b.fixture !== 'canopy').map((b) => `${tsid} blocked ${JSON.stringify(b)}`));
       bad.push(...plan.fallbacks.map((f) => `${tsid} fallback ${JSON.stringify(f)}`));
       for (const key of [...WALKERS, 'butterflies']) {
         for (const p of plan.groups[key] || []) {

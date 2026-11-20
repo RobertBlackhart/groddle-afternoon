@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { TREE_CANOPY, UNDER_CANOPY_HEIGHTS, blockingFixture, planStreetPlacements } from '../public/js/street-ecology.js?v=11f50673';
+import { TREE_CANOPY, UNDER_CANOPY_HEIGHTS, blockingFixture, planStreetPlacements } from '../public/js/street-ecology.js?v=010c8c45';
 
 const line = (id, x1, y1, x2, y2) => ({ id, x1, y1, x2, y2, pcPerm: -1, itemPerm: -1 });
 // A long floor and, behind the tree, a long ledge 135 px up (Kalix Follows: tree at 1077, ledge at 942).
@@ -46,7 +46,8 @@ describe('report #256: nodes and Visiting Stones keep out of planned trees', () 
       { key: 'furnitureStone', count: 1, clearance: 40 },
     ], { worldW: 3000, seed: 'r256', unreached: null });
     assert.equal(plan.groups.furnitureStone.length, 1);
-    assert.deepEqual(plan.blocked.map((b) => [b.key, b.fixture]), [['furnitureStone', 'trees']]);
+    // G1061: a canopy is named `canopy` in the plan's blocked list (a measured tree's own box is `trees`).
+    assert.deepEqual(plan.blocked.map((b) => [b.key, b.fixture]), [['furnitureStone', 'canopy']]);
   });
 
   it('other groups (quoins, Piggies, rocks) are not moved by it', () => {

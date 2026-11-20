@@ -12,11 +12,11 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildArrivals, render } from '../tools/build-street-arrivals.mjs';
-import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=59313758';
+import { arrivalsFor, defaultArrival, loadStreetArrivals, STREET_ARRIVALS_URL } from '../public/js/street-arrival.js?v=c9b150c0';
 import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
-import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=11f50673';
-import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=7a759321';
+import { planStreetPlacements, streetReservedSpots } from '../public/js/street-ecology.js?v=010c8c45';
+import { newxpFeature, pickOpenExit } from '../public/js/features/newxp-feature.js?v=83efd3f0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

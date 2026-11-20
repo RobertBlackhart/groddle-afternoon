@@ -1198,6 +1198,15 @@ export const PLACEMENT_HEIGHTS = Object.freeze({
  * Trap's idle trap 103, a Dirt Pile's mound about 120, a Paper Tree's 230 px canopy, the Visiting
  * Stone's 101x155 art at its 81 px width, 124, the Race Ticket Dispenser's 58x94, #555). In Glitch
  * they were set down by hand and never planned into one another (the archived streets).
+ *
+ * G1061 (#555's class, root R2): planned Street Spirits and mailboxes stood in trees' crowns too
+ * (Senna Karup's and Mossystep's vendor, six mailboxes such as Lotha Harte's on a ledge 115 px up a
+ * tree: tools/canopy-placements.mjs; Mossystep's has no other spot, CANOPY_RANK_ONLY). Glitch set every one down by hand from the street XML; where
+ * the archive has no position the vendor (decos/groddle/vendor.webp 422 x 508 at 0.25, 106 x 127),
+ * a planned shrine (a cell 151 x 188 at spawnShrine's 0.78, 118 x 147) and a planned mailbox (its
+ * opaque art, 72 x 135 of mailbox-left-idle.webp's 97 x 146 cell, wider than the 60 px stand it asks
+ * floor for: UNDER_CANOPY_WIDTHS) keep out of the canopies the same way. A shrine pinned from its
+ * street's picture and the mailboxes the snaps show are not planned and stay where they are.
  */
 export const TREE_CANOPY = Object.freeze({ w: 267, h: 210 });
 export const UNDER_CANOPY_HEIGHTS = Object.freeze({
@@ -1211,19 +1220,33 @@ export const UNDER_CANOPY_HEIGHTS = Object.freeze({
   furnitureStone: 124,
   // #555 (Iable Var): the Race Ticket Dispenser stood on a ledge in a fruit tree's crown.
   raceDispenser: 94,
+  // G1061: the Street Spirit, a planned shrine and a planned mailbox, by their art.
+  vendor: PLACEMENT_HEIGHTS.vendor,
+  shrine: PLACEMENT_HEIGHTS.shrine,
+  furnitureMailbox: 135,
 });
 /**
- * The art's width for a canopy group with no PLACEMENT_FOOTPRINTS entry (a small fixture that needs no
- * floor run of its own, so the planner asks it no room): the box it keeps out of a canopy with.
- * The Race Ticket Dispenser: races/race_ticket_dispenser.webp, 58 x 94 at 1:1, drawn on its feet.
+ * The art's width for a canopy group whose art is not its PLACEMENT_FOOTPRINTS width: the box it
+ * keeps out of a canopy with (else its footprint). The Race Ticket Dispenser, a small fixture with no
+ * footprint (the planner asks it no floor room): races/race_ticket_dispenser.webp, 58 x 94 at 1:1,
+ * drawn on its feet. A mailbox (G1061): its box overhangs the 60 px stand, 72 px of opaque art.
  */
 export const UNDER_CANOPY_WIDTHS = Object.freeze({
   raceDispenser: 58,
+  furnitureMailbox: 72,
 });
-/** A planned tree's canopy box (TREE_CANOPY over its spot). */
+/**
+ * G1061: groups a crown only ranks. A planned vendor, shrine or mailbox in a crown is taken last, but
+ * the crown does not lower the floor it asks for: with every roomy spot under a tree it stands in the
+ * roomiest one (the plan lists it under `blocked`, fixture `canopy`), never on a stub beside it, and a
+ * crown comes before covering a door, a signpost or a measured tree's own box. The resource nodes and
+ * the Visiting Stone keep #256's rule (a crown counts as covered for their room too).
+ */
+export const CANOPY_RANK_ONLY = Object.freeze(['vendor', 'shrine', 'furnitureMailbox']);
+/** A planned tree's canopy box (TREE_CANOPY over its spot), named `canopy` in a plan's `blocked`. */
 function canopyOf(point) {
   const w = TREE_CANOPY.w / 2;
-  return { ...point, block: { l: point.x - w, r: point.x + w, t: point.y - TREE_CANOPY.h, b: point.y } };
+  return { ...point, key: 'canopy', block: { l: point.x - w, r: point.x + w, t: point.y - TREE_CANOPY.h, b: point.y } };
 }
 export const LADDER_FOOT_PX = 120;
 /** Below a door's floor point, how far a spot still counts as its doorstep (a sloped floor). */
@@ -2010,13 +2033,19 @@ export function planStreetPlacements(
     const height = Number.isFinite(request?.height) ? Math.max(0, request.height) : PLACEMENT_HEIGHTS[request.key] || 0;
     // The fixture each spot would cover for this request (null: clear); the arrival covers nothing.
     const covers = new Map();
-    // #555: a small fixture with no footprint keeps out by its art's width (UNDER_CANOPY_WIDTHS).
-    const canopyW = footprint > 0 ? footprint : UNDER_CANOPY_WIDTHS[request.key] || 0;
+    // G1061: the spots a CANOPY_RANK_ONLY group would take in a crown and nothing else: still roomy floor.
+    const crownOnly = new Set();
+    const rankOnly = CANOPY_RANK_ONLY.includes(request.key);
+    // #555, G1061: a thing keeps out by its art's width (UNDER_CANOPY_WIDTHS), else its footprint.
+    const canopyW = UNDER_CANOPY_WIDTHS[request.key] || footprint;
     const underCanopy = canopyW > 0 && canopies.length ? UNDER_CANOPY_HEIGHTS[request.key] || 0 : 0;
     if (!avatar && (fixtures.length || underCanopy)) {
       for (const candidate of candidates) {
-        const fixture = blockingFixture(candidate, fixtures, { footprint, height })
-          || (underCanopy ? blockingFixture(candidate, canopies, { footprint: canopyW, height: underCanopy }) : null);
+        let fixture = blockingFixture(candidate, fixtures, { footprint, height });
+        if (!fixture && underCanopy) {
+          fixture = blockingFixture(candidate, canopies, { footprint: canopyW, height: underCanopy });
+          if (fixture && rankOnly) crownOnly.add(candidate.id);
+        }
         if (fixture) covers.set(candidate.id, fixture);
       }
     }
@@ -2050,10 +2079,10 @@ export function planStreetPlacements(
           if (used.has(candidate.id) || candidate.item === false || !steadyAt(candidate)) continue;
           const room = Math.min(footprint, candidate.room || 0);
           need = Math.max(need, room);
-          if (!covers.has(candidate.id)) clearNeed = Math.max(clearNeed, room);
+          if (!covers.has(candidate.id) || crownOnly.has(candidate.id)) clearNeed = Math.max(clearNeed, room);
           if ((branchFree || zone) && !(branchFree && onBranch.has(candidate.id)) && !zoneMiss(candidate)) {
             offNeed = Math.max(offNeed, room);
-            if (!covers.has(candidate.id)) offClear = Math.max(offClear, room);
+            if (!covers.has(candidate.id) || crownOnly.has(candidate.id)) offClear = Math.max(offClear, room);
           }
         }
         if (clearNeed >= 0) need = clearNeed;
@@ -2111,7 +2140,7 @@ export function planStreetPlacements(
         const outOfZone = miss > 0 ? 8 + Math.min(20, Math.ceil(miss / 400)) : 0;
         const tier = onBranchArt + outOfZone + tooSteep + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
-          : 0) + (covers.has(candidate.id) ? (walker ? 16 : 4) : 0) + hidden;
+          : 0) + (covers.has(candidate.id) ? (walker ? 16 : crownOnly.has(candidate.id) ? 3 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {
           bestTier = tier;
           bestScore = score;
