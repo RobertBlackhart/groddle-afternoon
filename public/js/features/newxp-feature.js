@@ -1156,7 +1156,7 @@ function stageDeco(PIXI, name, x, y, { ax = 0.5, ay = 0.5, scale = 1, sx = null,
   return spr;
 }
 
-/** How long you stand still on a style tube's ring before it chooses that style (ms). */
+/** How long you stand still on a style tube's ring before it asks to pick that style (ms). */
 export const STYLE_RING_DWELL_MS = 1000;
 /** Slower than this counts as standing still on the ring (px per ms). */
 export const STYLE_RING_STILL_VX = 0.05;
@@ -1164,6 +1164,34 @@ export const STYLE_RING_STILL_VX = 0.05;
 export function styleRingHint(label) {
   const name = String(label || '').replace(/^Pick\s+/i, '');
   return `Stand still here to pick ${name}, or keep walking to see the others.`;
+}
+/** #554: the question a ring asks once you stand still on it, and its two answers. */
+export const STYLE_RING_ASK = Object.freeze({ yes: 'Yes', no: 'Keep looking' });
+/** PURE: "Pick Uralia Style" -> "Pick Uralia Style?" (the tube's own verb, asked). */
+export function styleRingQuestion(label) {
+  const name = String(label || '').replace(/^Pick\s+/i, '');
+  return `Pick ${name}?`;
+}
+
+/**
+ * PURE (#554, Austin 2026-11-19): one look at the rings. `style` is the ring under your feet ('' on
+ * none), `still` whether you stand still on it. Returns the next ring state and what to do:
+ * `hint` (just stepped on: say how to pick), `ask` (stood still for STYLE_RING_DWELL_MS: ask
+ * "Pick <style>?"), `close` (walked off while it asked: keep looking). A ring asks once per visit:
+ * Keep looking leaves it quiet until you step off and back on. It never picks by itself; Yes does.
+ */
+export function styleRingStep(ring, { style = '', still = false, now = 0 } = {}) {
+  const asking = Boolean(ring?.asking);
+  if (!style) return { ring: null, close: asking };
+  if (ring?.style !== style) return { ring: { style, since: now, asked: false, asking: false }, hint: true, close: asking };
+  const next = { ...ring };
+  if (!still && !next.asked) next.since = now;
+  if (!next.asked && now - next.since >= STYLE_RING_DWELL_MS) {
+    next.asked = true;
+    next.asking = true;
+    return { ring: next, ask: true };
+  }
+  return { ring: next };
 }
 
 /** Camera look while you wait at the chain: shows the arrow's bottom (world y 667) in a 408 px view. */
@@ -2111,25 +2139,32 @@ async function runTraining2(t) {
     engine.setData('newxpAutoplay', 'hold:machine');
   }
   // Austin 2026-11-08: the rock stands past the three tubes, so walking back from it crossed Uralia's
-  // ring first and chose it. A ring now chooses only once you stand still on it (STYLE_RING_DWELL_MS),
-  // or by the tube's own Pick verb; walking across one says how to pick it.
+  // ring first and chose it. #554 (Austin 2026-11-19): standing still on a ring (STYLE_RING_DWELL_MS)
+  // asks "Pick Uralia Style?" with Yes and Keep looking (styleRingStep); Yes picks, walking off or
+  // Keep looking keeps looking. Glitch picked by the tube's verb alone (homestreet_ticket_dispenser.js
+  // 44-145), which still picks at once (verbRun 'choose').
   let ring = null;
+  let ask = null;
   await until(t, () => {
     const p = P();
     const c = L.machine.choices.find((m) => Math.abs(p.x - m.x) < 40 && p.y > L.floorY - 20);
-    if (!c || countItem(engine.inv, 'homestreet_ticket') < 1 || run.data.style) {
-      ring = null;
-      return run.data.style;
+    const open = c && countItem(engine.inv, 'homestreet_ticket') >= 1 && !run.data.style;
+    const still = Math.abs(Number(p.vx) || 0) <= STYLE_RING_STILL_VX && Boolean(p.onGround);
+    const step = styleRingStep(ring, { style: open ? c.style : '', still, now: Date.now() });
+    ring = step.ring;
+    if (step.close && ask) ask.close();
+    if (step.hint) engine.toast(styleRingHint(c.label), 2200);
+    if (step.ask) {
+      const style = c.style;
+      ask = askStyleRing(engine, c, L.floorY, (yes) => {
+        ask = null;
+        if (ring?.style === style) ring = { ...ring, asking: false };
+        if (yes && !run.data.style) run.data.style = style;
+      });
     }
-    const now = Date.now();
-    if (ring?.style !== c.style) {
-      ring = { style: c.style, since: now };
-      engine.toast(styleRingHint(c.label), 2200);
-    }
-    if (Math.abs(Number(p.vx) || 0) > STYLE_RING_STILL_VX || !p.onGround) ring.since = now;
-    if (now - ring.since >= STYLE_RING_DWELL_MS) run.data.style = c.style;
     return run.data.style;
   }, { help: () => { run.data.style = engine.param('newxpstyle') || 'meadow'; } });
+  if (ask) ask.close();
   removeItem(engine.inv, 'homestreet_ticket', 1);
   engine.refreshPack();
   save.homeStyle = run.data.style;
@@ -2172,6 +2207,53 @@ function giveEgg(engine) {
   run.data.eggGiven = true;
   engine.setData('newxpLast', 'egg_given');
   return true;
+}
+
+/**
+ * #554: the ring's question in the tutorial's own bubble, over the tube: "Pick Uralia Style?" with
+ * Yes and Keep looking. You can still walk while it asks (not rooted); walking off closes it
+ * (close(), answered as Keep looking). `done(yes)` runs once. Autoplay answers as talk does.
+ * QA: canvas data newxpRingAsk is the asked style while it is open.
+ */
+function askStyleRing(engine, choice, floorY, done) {
+  ensureUi();
+  let over = false;
+  const finish = (yes) => {
+    if (over) return;
+    over = true;
+    if (ui && ui.resolve === answer) {
+      ui.bubble.hidden = true;
+      ui.bubbleFor = null;
+      ui.resolve = null;
+    }
+    engine.setData('newxpRingAsk', '');
+    engine.setData('newxpTalk', '');
+    done(yes);
+  };
+  const answer = (value) => finish(value === 'yes');
+  const handle = { close: () => finish(false), answer };
+  if (!ui) {
+    finish(false);
+    return handle;
+  }
+  const text = styleRingQuestion(choice.label);
+  ui.bubbleFor = { x: choice.x, y: floorY, head: () => ({ x: choice.x, y: floorY - 200 }) };
+  ui.bubble.innerHTML = `<div>${text}</div>`;
+  const row = el('div', { class: 'nx-btns' });
+  [['yes', STYLE_RING_ASK.yes], ['no', STYLE_RING_ASK.no]].forEach(([value, label], k) => {
+    const b = el('button', { type: 'button', class: k ? 'alt' : '', 'data-nx-choice': value });
+    b.textContent = label;
+    b.addEventListener('click', () => answer(value), { once: true });
+    row.appendChild(b);
+  });
+  ui.bubble.appendChild(row);
+  ui.bubble.hidden = false;
+  ui.resolve = answer;
+  positionBubbles();
+  engine.setData('newxpTalk', text);
+  engine.setData('newxpRingAsk', choice.style);
+  if (auto) setTimeout(() => answer(engine.param('newxpchoice') === 'no' ? 'no' : 'yes'), 260);
+  return handle;
 }
 
 /* ------------------------------------------------------------------ */

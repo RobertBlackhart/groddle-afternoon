@@ -36,7 +36,7 @@ import { questInstancesFeature } from './quest-instances-feature.js?v=3d8d331c';
 import { partySpacesFeature } from './party-spaces-feature.js?v=9c225cce';
 import { seasonsFeature } from './seasons-feature.js?v=e7f0c8c0';
 import { cameraModeFeature } from './camera-mode-feature.js?v=51c80222';
-import { newxpFeature } from './newxp-feature.js?v=921e5dfb';
+import { newxpFeature } from './newxp-feature.js?v=02f559d6';
 import { streetMinimapFeature } from './street-minimap-feature.js?v=2d9a0537';
 
 export { questFlagsFeature };
@@ -88,7 +88,7 @@ import { treeDeathFeature } from './tree-death-feature.js?v=b93211ad'; FEATURES.
 import { enchantedForestFeature } from './enchanted-forest-feature.js?v=a4e49723'; FEATURES.push(enchantedForestFeature);
 import { jujuBanditsFeature } from './juju-bandits-feature.js?v=4ed66b4d'; FEATURES.push(jujuBanditsFeature);
 import { craftybotFeature } from './craftybot-feature.js?v=4fee65d0'; FEATURES.push(craftybotFeature);
-import { moodDecayFeature } from './mood-decay-feature.js?v=6fad8262'; FEATURES.push(moodDecayFeature);
+import { moodDecayFeature } from './mood-decay-feature.js?v=9ae762c8'; FEATURES.push(moodDecayFeature);
 import { animalMoodFeature } from './animal-mood-feature.js?v=c4e2cef6'; FEATURES.push(animalMoodFeature);
 import { butlerFeature } from './butler-feature.js?v=cbfc0121'; FEATURES.push(butlerFeature);
 import { mailCourierFeature } from './mail-courier-feature.js?v=eedc804b'; FEATURES.push(mailCourierFeature);
@@ -142,7 +142,7 @@ import { familiarDialogFeature } from './familiar-dialog-feature.js?v=bf5413ed';
 import { spiritLonelinessFeature } from './spirit-loneliness-feature.js?v=d1bb00f2'; FEATURES.push(spiritLonelinessFeature);
 import { funpickleFeature } from './funpickle-feature.js?v=ac1578a6'; FEATURES.push(funpickleFeature);
 import { qurazyFeature } from './qurazy-feature.js?v=e133f912'; FEATURES.push(qurazyFeature);
-import { energyDecayFeature } from './energy-decay-feature.js?v=ffedee8e'; FEATURES.push(energyDecayFeature);
+import { energyDecayFeature } from './energy-decay-feature.js?v=a0cc021a'; FEATURES.push(energyDecayFeature);
 import { partyFeature } from './party-feature.js?v=83668378'; FEATURES.push(partyFeature);
 import { sharedQuoinsFeature } from './shared-quoins-feature.js?v=8c8b1d5c'; FEATURES.push(sharedQuoinsFeature);
 import { tradeFeature } from './trade-feature.js?v=c229c403'; FEATURES.push(tradeFeature);

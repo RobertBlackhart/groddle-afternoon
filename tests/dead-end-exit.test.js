@@ -25,7 +25,7 @@ import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v
 import { hellFeature } from '../public/js/features/hell-feature.js?v=2f6bac3a';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=beaf5583';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=5a34f239';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=921e5dfb';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=02f559d6';
 import { Display, fakePixi } from './fake-scene.js';
 
 /** fake-scene's Pixi, with a texture source js/textures.js can wait on (the image never loads in Node). */
