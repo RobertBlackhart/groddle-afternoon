@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=25245b19';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7574b749';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=41dadb47';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -527,7 +527,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=23b1540f';
+} from './js/player-save.js?v=b70c0670';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -921,6 +921,7 @@ import {
   canClaimEmblem,
   favorPanelRows,
   favorDisplayGiant,
+  giantSymbolUrl,
   claimShrineEmblem,
   emblemCostFor,
   addGiantFavor,
@@ -943,7 +944,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=1b7760ec';
+} from './js/shrines.js?v=fd21d8ec';
 import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
@@ -6753,7 +6754,7 @@ function updateHud() {
       name: favorGiant.name,
       points: shrineState.favor?.[favorGiant.id] || 0,
       target: emblemCostFor(shrineState, favorGiant.id),
-      icon: `assets/sprites/giant-icons/icon_${favorGiant.id === 'ti' ? 'tii' : favorGiant.id}.webp`,
+      icon: giantSymbolUrl(favorGiant.id),
       any: favorAny,
     } : { name: '', any: favorAny },
   });
@@ -30235,6 +30236,12 @@ function renderShrinePanel() {
   const daily = document.getElementById('shrine-daily');
   const claim = document.getElementById('shrine-claim');
   if (title) title.textContent = `Shrine to ${giant.name}`;
+  // #563: the header shows the Giant's symbol as carved on the shrine, not a generic star.
+  const glyph = panel.querySelector('.shrine-glyph');
+  if (glyph && glyph.dataset.giant !== giantId) {
+    glyph.dataset.giant = giantId;
+    glyph.innerHTML = `<img src="${giantSymbolUrl(giantId)}" alt="" width="22" height="22" />`;
+  }
   if (desc) desc.textContent = giant.description;
   if (favorLabel) favorLabel.textContent = `Favor ${favor.toLocaleString()} / ${cost.toLocaleString()}`;
   if (emblemLabel) {

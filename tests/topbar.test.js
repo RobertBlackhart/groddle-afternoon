@@ -26,7 +26,7 @@ import {
   soundChannelToggle,
 } from '../public/js/ui/topbar.js?v=61361090';
 
-import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=1b7760ec';
+import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=fd21d8ec';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (f) => readFileSync(join(pub, f), 'utf8');
@@ -158,7 +158,8 @@ describe('top bar markup and wiring', () => {
     assert.match(game, /onMail: \(\) => \{ if \(state\.started\) openMailboxPanel\(\); \},/);
     assert.match(game, /onPlayerCard: \(\) => document\.getElementById\('player-menu-btn'\)\?\.click\(\),/);
     assert.match(game, /renderTopBar\(document, \{ unread, parcels \}\);/);
-    assert.match(game, /icon: `assets\/sprites\/giant-icons\/icon_\$\{favorGiant\.id === 'ti' \? 'tii' : favorGiant\.id\}\.webp`/);
+    // #563: the street's Giant shows its shrine symbol (js/shrines.js giantSymbolUrl).
+    assert.match(game, /icon: giantSymbolUrl\(favorGiant\.id\),/);
   });
 
   it('every ring number sits centred in its ring; three digits take the smaller size', () => {
@@ -261,7 +262,8 @@ describe('the favor panel (report #170): all eleven Giants from the favor displa
     assert.equal(by.cosma.points, 0);
     assert.equal(by.cosma.ready, false);
     assert.deepEqual(rows.filter((r) => r.here).map((r) => r.id), ['ti']);
-    assert.equal(by.ti.icon, 'assets/sprites/giant-icons/icon_tii.webp');
+    // #563: the Giant's symbol as carved on its shrine.
+    assert.equal(by.ti.icon, 'assets/sprites/giant-symbols/ti.svg');
     for (const r of rows) {
       assert.equal(r.target, emblemCostFor(state, r.id));
       assert.equal(r.ready, canClaimEmblem(state, r.id));

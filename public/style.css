@@ -5688,6 +5688,8 @@ body.buff-purple-pulse::after {
   background: var(--shrine-accent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--shrine-accent) 20%, transparent);
 }
+/* #563: the Giant's symbol (js/shrines.js giantSymbolUrl), white on the badge as the star was. */
+.shrine-glyph img { display: block; width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
 .shrine-desc {
   margin: var(--sp-1) 0 var(--sp-5);
   padding-left: var(--sp-5);
@@ -11219,6 +11221,7 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
 /* Favor with the Giants (report #170, js/ui/topbar.js installFavor): opens from the favor display. */
 [data-ui="modern"] .top-bar #favor-stat[role="button"] { cursor: pointer; }
 /* G631: on a street with no Giant the display is Tiny Speck's 12 px favor star alone, at its own size. */
+[data-ui="modern"] .top-bar #favor-stat img { width: 20px; height: 20px; object-fit: contain; }
 [data-ui="modern"] .top-bar #favor-stat[data-neutral] img { width: 12px; height: 12px; }
 [data-ui="modern"] .top-bar #favor-stat[data-neutral] strong { display: none; }
 [data-ui="modern"] .top-bar #favor-stat[aria-expanded="true"] { background: var(--surface-hover); }
@@ -11231,7 +11234,8 @@ html.stage-pinned[data-ui="modern"] header.top-bar { left: calc(var(--sp-5) + va
   font-size: var(--fs-m); font-weight: var(--fw-bold); color: var(--text);
 }
 [data-ui="modern"] .favor-row[data-here] { background: var(--surface-sunken); }
-[data-ui="modern"] .favor-row img { width: auto; height: 24px; justify-self: center; }
+/* #563: each Giant's symbol as carved on its shrine (js/shrines.js giantSymbolUrl), in a 20 px box: Tii's domino is wide. */
+[data-ui="modern"] .favor-row img { width: 20px; height: 20px; object-fit: contain; justify-self: center; }
 /* Report #258: a Giant's row finds its closest Shrine. */
 [data-ui="modern"] .favor-row[role="button"] { cursor: pointer; }
 [data-ui="modern"] .favor-row[role="button"]:hover, [data-ui="modern"] .favor-row[role="button"]:focus-visible { background: color-mix(in srgb, currentColor 8%, transparent); }

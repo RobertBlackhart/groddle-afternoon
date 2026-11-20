@@ -521,6 +521,16 @@ export function favorDisplayGiant(state, street, { shrineHere = false } = {}) {
 }
 
 /**
+ * #563: a Giant's symbol as carved on its shrine (Lem's arrows, Tii's domino), cut from Tiny
+ * Speck's vector shrine art by tools/giant-symbols/build.mjs. The favor panel, the favor display
+ * and the shrine window show it, as Glitch's favor window showed giant_<name>.png.
+ */
+export function giantSymbolUrl(giantId) {
+  const id = String(giantId || '').toLowerCase();
+  return `assets/sprites/giant-symbols/${id === 'tii' ? 'ti' : id}.svg`;
+}
+
+/**
  * The top bar's favor panel (report #170, js/ui/topbar.js): every Giant in name order with the
  * favor held, what the next emblem needs (emblemCostFor) and whether that emblem is ready to
  * claim (canClaimEmblem). `hereId` marks the Giant the favor display reads here (favorDisplayGiant). Reads only.
@@ -537,7 +547,7 @@ export function favorPanelRows(state, hereId = null) {
       share: target > 0 ? Math.min(1, points / target) : 0,
       ready: canClaimEmblem(state, giant.id),
       here: giant.id === hereId,
-      icon: `assets/sprites/giant-icons/icon_${giant.id === 'ti' ? 'tii' : giant.id}.webp`,
+      icon: giantSymbolUrl(giant.id),
     };
   });
 }
