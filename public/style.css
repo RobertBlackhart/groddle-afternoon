@@ -14508,8 +14508,18 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 .smm-sheet-sign img { flex: none; width: 14px; height: 21px; }
 .smm-sheet-sign[data-kind="station"] img { object-fit: contain; }
 .smm-sheet-sign span { flex: 1 1 auto; min-width: 0; }
-.smm-sheet-sign[data-side="left"]::before { content: "←" / ""; color: var(--text-muted); }
-.smm-sheet-sign[data-side="right"]::after { content: "→" / ""; color: var(--text-muted); }
+/* #534: the way each stands from you, live, in eight directions: left-hand ways before the name, the rest after.
+   One arrow glyph turned, so the diagonals match the straight ones (a font's own diagonal arrows draw heavier). */
+.smm-sheet-sign:is([data-side="left"], [data-side="up-left"], [data-side="down-left"])::before { content: "←" / ""; }
+.smm-sheet-sign:is([data-side="right"], [data-side="up-right"], [data-side="down-right"], [data-side="up"], [data-side="down"])::after { content: "→" / ""; }
+.smm-sheet-sign:is([data-side="left"], [data-side="up-left"], [data-side="down-left"])::before,
+.smm-sheet-sign:is([data-side="right"], [data-side="up-right"], [data-side="down-right"], [data-side="up"], [data-side="down"])::after { display: inline-block; color: var(--text-muted); }
+.smm-sheet-sign[data-side="up-left"]::before { transform: rotate(45deg); }
+.smm-sheet-sign[data-side="down-left"]::before { transform: rotate(-45deg); }
+.smm-sheet-sign[data-side="up-right"]::after { transform: rotate(-45deg); }
+.smm-sheet-sign[data-side="down-right"]::after { transform: rotate(45deg); }
+.smm-sheet-sign[data-side="up"]::after { transform: rotate(-90deg); }
+.smm-sheet-sign[data-side="down"]::after { transform: rotate(90deg); }
 .smm-sheet-sign:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .smm-sheet-none { margin: 0; color: var(--text-muted); font-size: var(--fs-s); }
 @media (orientation: landscape) {

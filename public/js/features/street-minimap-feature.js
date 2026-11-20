@@ -519,21 +519,71 @@ export function phoneMapWidth(street, availW, availH) {
 }
 
 /**
+ * The eight ways a signpost can stand from you on the phone sheet (#534, Austin 2026-11-19: live, eight
+ * directions), clockwise from right in screen space (y grows down), one per 45 degrees.
+ */
+export const PHONE_SIGN_DIRS = Object.freeze(['right', 'down-right', 'down', 'down-left', 'left', 'up-left', 'up', 'up-right']);
+/** Within this many world px of you a signpost is 'here'. */
+export const PHONE_SIGN_NEAR = 60;
+/** The dead zone: an arrow keeps its way until you are this far (degrees, px for 'here') past the edge. */
+export const PHONE_SIGN_DEAD = Object.freeze({ deg: 10, px: 15 });
+
+/**
+ * PURE (#534): which way a signpost `dx`, `dy` world px from you stands (screen space, y down): 'here'
+ * within PHONE_SIGN_NEAR, else one of PHONE_SIGN_DIRS. `prev`, the arrow it shows now, holds until
+ * the way is a dead zone past its edge, so an arrow never flickers between neighbours.
+ */
+export function phoneSignDir(dx, dy = 0, prev = '') {
+  const x = Number(dx);
+  const y = Number.isFinite(Number(dy)) ? Number(dy) : 0;
+  if (!Number.isFinite(x)) return 'here';
+  const d = Math.hypot(x, y);
+  if (d <= PHONE_SIGN_NEAR || (prev === 'here' && d <= PHONE_SIGN_NEAR + PHONE_SIGN_DEAD.px)) return 'here';
+  const ang = (Math.atan2(y, x) * 180) / Math.PI;
+  const i = PHONE_SIGN_DIRS.indexOf(prev);
+  if (i >= 0) {
+    const off = Math.abs((((ang - i * 45) % 360) + 540) % 360 - 180);
+    if (off <= 22.5 + PHONE_SIGN_DEAD.deg) return prev;
+  }
+  return PHONE_SIGN_DIRS[((Math.round(ang / 45) % 8) + 8) % 8];
+}
+
+/**
  * PURE: the signposts' rows under the phone map, left to right: { id, kind, x, y, text, side } where
- * side says which way it stands from you ('left', 'right' or 'here', within 60 world px). A subway
+ * side says which way it stands from `you` ({ x, y }, or an x alone; #534: phoneSignDir). A subway
  * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's name.
  */
-export function phoneSignRows(marks = [], youX = null) {
+export function phoneSignRows(marks = [], you = null) {
+  const at = typeof you === 'number' || you == null ? { x: you, y: null } : you;
   return [...marks]
     .filter((m) => m && Number.isFinite(m.x))
     .sort((a, b) => a.x - b.x)
     .map((m) => {
-      const dx = Number.isFinite(youX) ? m.x - youX : 0;
-      const side = !Number.isFinite(youX) || Math.abs(dx) <= 60 ? 'here' : dx < 0 ? 'left' : 'right';
+      const dy = Number.isFinite(at.y) && Number.isFinite(m.y) ? m.y - at.y : 0;
+      const side = Number.isFinite(at.x) ? phoneSignDir(m.x - at.x, dy) : 'here';
       const kind = m.kind === 'station' ? 'station' : 'sign';
       const text = String(m.tip || '').split('\n').filter(Boolean).join(', ') || (kind === 'station' ? 'Subway station' : 'Signpost');
       return { id: m.id, kind, x: m.x, y: m.y, text, side };
     });
+}
+
+/**
+ * #534: the open sheet's arrows follow you (an auto-walk is when it matters). `items` are
+ * { el, x, y, side }; each takes its new way from `you` ({ x, y }) and its button's data-side changes
+ * only when the way does. Returns how many changed.
+ */
+export function phoneSignRefresh(items = [], you = null) {
+  if (!Number.isFinite(you?.x)) return 0;
+  let changed = 0;
+  for (const it of items) {
+    const dy = Number.isFinite(you.y) && Number.isFinite(it.y) ? it.y - you.y : 0;
+    const side = phoneSignDir(it.x - you.x, dy, it.side);
+    if (side === it.side) continue;
+    it.side = side;
+    if (it.el?.dataset) it.el.dataset.side = side;
+    changed += 1;
+  }
+  return changed;
 }
 
 function phoneOpen(engine) {
@@ -587,7 +637,8 @@ function phoneOpen(engine) {
   view.expand(true);
   // The signposts' destinations, a tap away.
   const marks = [...signpostMarks(engine.street), ...(isLiveScene(engine.streetView) ? sceneSignMarks(engine.interactables || []) : []), ...stationMarks(engine.street)];
-  const rows = phoneSignRows(marks, engine.player?.x);
+  const rows = phoneSignRows(marks, engine.player ? { x: engine.player.x, y: engine.player.y } : null);
+  phone.signs = [];
   if (rows.length) {
     const list = doc.createElement('ul');
     for (const row of rows) {
@@ -600,6 +651,7 @@ function phoneOpen(engine) {
       b.dataset.kind = row.kind;
       b.innerHTML = `<img alt="" src="${classicArtUrl(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost')}" /><span></span>`;
       b.querySelector('span').textContent = row.text;
+      phone.signs.push({ el: b, x: row.x, y: row.y, side: row.side });
       b.setAttribute('aria-label', row.kind === 'station' ? `Walk to ${row.text}` : `Walk to the signpost to ${row.text}`);
       b.addEventListener('click', () => {
         if (walkFromMap(engine, { kind: row.kind, id: row.id, x: row.x, y: row.y }, { keyboard: true })) phoneClose(engine, { walked: true });
@@ -608,6 +660,7 @@ function phoneOpen(engine) {
       list.append(li);
     }
     signsBox.append(list);
+    engine.setData?.('streetMapPhoneSides', phone.signs.map((x) => x.side).join(','));
   } else {
     const p = doc.createElement('p');
     p.className = 'smm-sheet-none';
@@ -653,6 +706,7 @@ function phoneClose(engine, { walked = false, map = false } = {}) {
   snapOwed = false;
   phone.sheet?.remove();
   phone.sheet = null;
+  phone.signs = [];
   phone.btn.setAttribute('aria-expanded', 'false');
   engine.setData?.('streetMap', 'phone');
   engine.setData?.('streetMapPhone', walked ? 'walked' : map ? 'map' : 'closed');
@@ -682,7 +736,7 @@ function phoneInstall(engine) {
     else phoneOpen(engine);
   });
   plate.prepend(btn);
-  phone = { btn, sheet: null, plateStreet: undefined };
+  phone = { btn, sheet: null, signs: [], plateStreet: undefined };
 }
 
 export const streetMinimapFeature = {
@@ -745,6 +799,9 @@ export const streetMinimapFeature = {
         phoneClose(engine, { walked: true });
         return;
       }
+      // #534: the arrows follow you while the sheet is open (kept through a jump: the ground counts).
+      const me = engine.player;
+      if (me && me.onGround !== false && phoneSignRefresh(phone.signs, { x: me.x, y: me.y })) engine.setData?.('streetMapPhoneSides', phone.signs.map((x) => x.side).join(','));
     }
     if (!view) return;
     const t = performance.now();
