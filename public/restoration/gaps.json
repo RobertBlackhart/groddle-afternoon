@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.51.1",
+  "release": "v0.51.2",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -39,10 +39,10 @@
     }
   },
   "counts": {
-    "fixing": 10,
+    "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 365,
+    "fixed": 372,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -297,11 +297,6 @@
       "name": "Streets",
       "items": [
         {
-          "id": "G1057",
-          "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree.",
-          "state": "fixing"
-        },
-        {
           "id": "G351",
           "text": "A few named streets, such as Celestial Strum and Coulcairn, have no map and no layout anywhere we have found.",
           "state": "known"
@@ -451,6 +446,12 @@
           "text": "Some Peat Bogs, Dirt Piles, salmon and ice were planted behind huts and rocks where nobody could see them.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1057",
+          "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree.",
+          "state": "fixed",
+          "version": "v0.51.2"
         }
       ]
     },
@@ -726,16 +727,6 @@
       "name": "Homes",
       "items": [
         {
-          "id": "G1056",
-          "text": "A home street showed at most eight Patches; any more were paid for but never appeared.",
-          "state": "fixing"
-        },
-        {
-          "id": "G1059",
-          "text": "Choosing a home street style could pick one while you stopped to read its hint.",
-          "state": "fixing"
-        },
-        {
           "id": "G223",
           "text": "Some house styles are still to come, including more interior and back yard styles. The Coral Caves style waits for its art to turn up.",
           "state": "known"
@@ -890,6 +881,18 @@
           "report": 512,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1056",
+          "text": "A home street showed at most eight Patches; any more were paid for but never appeared.",
+          "state": "fixed",
+          "version": "v0.51.2"
+        },
+        {
+          "id": "G1059",
+          "text": "Choosing a home street style could pick one while you stopped to read its hint.",
+          "state": "fixed",
+          "version": "v0.51.2"
         },
         {
           "id": "G48",
@@ -1370,11 +1373,6 @@
           "state": "fixing"
         },
         {
-          "id": "G1060",
-          "text": "Following a friend could take you onto a street that was still being built.",
-          "state": "fixing"
-        },
-        {
           "id": "G641",
           "text": "A note left on the ground stays private to you. In Glitch anyone could read it.",
           "state": "known"
@@ -1486,6 +1484,12 @@
           "text": "The Emotional Bear's kiss showed several bears at once, and its other emotes left trails.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1060",
+          "text": "Following a friend could take you onto a street that was still being built.",
+          "state": "fixed",
+          "version": "v0.51.2"
         }
       ]
     },
@@ -2035,11 +2039,6 @@
       "name": "Projects",
       "items": [
         {
-          "id": "G1058",
-          "text": "A few street projects named the wrong street in their title or description.",
-          "state": "fixing"
-        },
-        {
           "id": "F66",
           "text": "Notices covered the featured project's progress under the street name.",
           "state": "fixed",
@@ -2050,6 +2049,12 @@
           "text": "A project phase that opened while you were away said it opened in a negative number of minutes.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1058",
+          "text": "A few street projects named the wrong street in their title or description.",
+          "state": "fixed",
+          "version": "v0.51.2"
         }
       ]
     },
@@ -2131,16 +2136,6 @@
       "name": "Gardens",
       "items": [
         {
-          "id": "G1054",
-          "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
-          "state": "fixing"
-        },
-        {
-          "id": "G1055",
-          "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
-          "state": "fixing"
-        },
-        {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
           "report": 321,
@@ -2177,6 +2172,18 @@
           "text": "A bean that would not grow in a patch did not say that its kind grows only in certain regions.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1054",
+          "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
+          "state": "fixed",
+          "version": "v0.51.2"
+        },
+        {
+          "id": "G1055",
+          "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
+          "state": "fixed",
+          "version": "v0.51.2"
         }
       ]
     },

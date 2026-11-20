@@ -3759,43 +3759,65 @@
       "id": "G1054",
       "area": "Gardens",
       "show": "fixing",
-      "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened."
+      "text": "On a home street, a crop a visitor planted could stay held from the owner long after it ripened.",
+      "commits": [
+        "game:d839c2c623f",
+        "site:fd1fe54"
+      ]
     },
     {
       "id": "G1055",
       "area": "Gardens",
       "show": "fixing",
-      "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds."
+      "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
+      "commits": [
+        "game:26cc9f9eb00"
+      ]
     },
     {
       "id": "G1056",
       "area": "Homes",
       "show": "fixing",
-      "text": "A home street showed at most eight Patches; any more were paid for but never appeared."
+      "text": "A home street showed at most eight Patches; any more were paid for but never appeared.",
+      "commits": [
+        "game:68bbf5e3e5f"
+      ]
     },
     {
       "id": "G1057",
       "area": "Streets",
       "show": "fixing",
-      "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree."
+      "text": "On Iable Var the Race Ticket Dispenser stood on top of a fruit tree.",
+      "commits": [
+        "game:b7166587829"
+      ]
     },
     {
       "id": "G1058",
       "area": "Projects",
       "show": "fixing",
-      "text": "A few street projects named the wrong street in their title or description."
+      "text": "A few street projects named the wrong street in their title or description.",
+      "commits": [
+        "game:45a9de33cee"
+      ]
     },
     {
       "id": "G1059",
       "area": "Homes",
       "show": "fixing",
-      "text": "Choosing a home street style could pick one while you stopped to read its hint."
+      "text": "Choosing a home street style could pick one while you stopped to read its hint.",
+      "commits": [
+        "game:f9cdaa5f16a"
+      ]
     },
     {
       "id": "G1060",
       "area": "Multiplayer",
       "show": "fixing",
-      "text": "Following a friend could take you onto a street that was still being built."
+      "text": "Following a friend could take you onto a street that was still being built.",
+      "commits": [
+        "game:03c17790961"
+      ]
     }
   ]
 }
