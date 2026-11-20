@@ -2814,9 +2814,59 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2849,
+  "commits": 2860,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "The Race Ticket Dispenser on Iable Var no longer stands in a fruit tree"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Every Patch in your yard is drawn, not just the first eight"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "A friend's garden help is applied once, even when many of their acts wait"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Watering a ripe crop on your home street no longer holds it for the planter again"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "The phone street map's signpost arrows follow you and point eight ways"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "The star on the train's line map slides to the next stop during a ride"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Street projects name their own street: no more \"Build Perhoni Flim\" on Amerran Huddles"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "Standing on a home style ring asks \"Pick Uralia Style?\" before it picks"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "/stuck takes you back to where you came in by a signpost or door"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Following a friend no longer gets you onto a street still being built"
+   },
    {
     "date": "2026-11-19",
     "kind": "improve",
@@ -2886,59 +2936,9 @@
     "date": "2026-11-19",
     "kind": "fix",
     "text": "The route card names the subway line to board, the stop to get off at and the steps up"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "A player's first climb shows the pale placeholder Glitch, not the default outfit"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Other players whose look is still loading show as a pale placeholder Glitch, not the default outfit"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Your own Glitch shows in your own look when the game appears, not the default outfit"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The Emotional Bear's emotes play at Glitch's 30 frames a second, once"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Chest hair and the Censor bars count as bare for The Lucky Streak"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The Make tool keeps working under reduced motion, and the report picture shows boxes and lists as the player left them"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "The Emotional Bear's kiss shows one bear and one KiSS, and hug, high five and moon lose their trails"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Vanity offers None for Tops, Trousers and Shoes"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "improve",
-    "text": "The Map draws streets you have not been to as a dotted line, as Glitch did"
-   },
-   {
-    "date": "2026-11-19",
-    "kind": "fix",
-    "text": "Hub Completist badges no longer finish a street early on saves that visited the subway station before v0.47.0"
    }
   ]
  },
- "tests": 1190,
+ "tests": 1196,
  "generatedAt": "2026-11-20"
 }
