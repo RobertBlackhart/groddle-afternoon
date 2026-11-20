@@ -4940,7 +4940,8 @@
    "id": "avatar-washed-placeholder",
    "title": "A player whose look is still loading is drawn as the default look washed pale, colourless and see-through, standing in for Glitch's placeholder skin (#537).",
    "kind": "visual",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-20 (decision page): keep the washed stand-in; Glitch's own placeholder skin is not planned.",
    "where": [
     {
      "file": "public/js/avatar-placeholder.js",
@@ -4989,7 +4990,8 @@
    "id": "subway-line-star-slides",
    "title": "On the train's line map the star slides from the stop it left to the next stop over the hop (#538).",
    "kind": "UI",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-20 (decision page): build it.",
    "where": [
     {
      "file": "public/js/subway.js",
