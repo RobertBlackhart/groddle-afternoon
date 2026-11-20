@@ -3828,6 +3828,104 @@
         "game:a84d8ae3d1a",
         "game:97f865d0844"
       ]
+    },
+    {
+      "id": "G1061",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "A few Street Spirits and mailboxes stood inside a tree's crown.",
+      "commits": [
+        "game:6099fd6ecfb",
+        "game:ed27641c1b6",
+        "server:ecc47df",
+        "server:8a806a3"
+      ]
+    },
+    {
+      "id": "G1063",
+      "area": "Quests",
+      "show": "fixing",
+      "text": "Enlarge Yer Slots could stay at 0 after you bought a Generic Bag.",
+      "commits": [
+        "game:0c419ad1627",
+        "game:d235e059511"
+      ]
+    },
+    {
+      "id": "G1064",
+      "area": "Machines",
+      "show": "fixing",
+      "text": "A machine could take Fuel Cells you never chose to put in, from a held key or the Act button.",
+      "commits": [
+        "game:d603d663ae4",
+        "game:9ccea14f954"
+      ]
+    },
+    {
+      "id": "G1065",
+      "area": "Homes",
+      "show": "fixing",
+      "text": "Pressing Enter in Cultivation Mode could leave your arrow keys stuck on a garden's plots.",
+      "commits": [
+        "game:b4420e82e38",
+        "game:8059c1f562e"
+      ]
+    },
+    {
+      "id": "G1067",
+      "area": "Paradise",
+      "show": "fixing",
+      "text": "Quoins in Paradise, A Summer's Day and Penumbra paid fixed amounts instead of following your quoin multiplier.",
+      "commits": [
+        "game:da09ca3a705",
+        "game:47b06e564d4",
+        "game:fdabb579d8d"
+      ]
+    },
+    {
+      "id": "G1068",
+      "area": "Quest rooms",
+      "show": "fixing",
+      "text": "Winter Walk motes paid about a hundred times what Glitch's did.",
+      "commits": [
+        "game:b646e1a5676"
+      ]
+    },
+    {
+      "id": "G1069",
+      "area": "Paradise",
+      "show": "fixing",
+      "text": "The Ticket To Beam Me Down cost nothing and did not count toward the day's tickets.",
+      "commits": [
+        "game:7fc095f3462"
+      ]
+    },
+    {
+      "id": "G1070",
+      "area": "Map",
+      "show": "fixing",
+      "text": "The street map could show a blank box where a street's back scenery should be.",
+      "commits": [
+        "game:9e0a97c0961"
+      ]
+    },
+    {
+      "id": "G1071",
+      "area": "Interface",
+      "show": "fixing",
+      "text": "Stat icons and colours in speech bubbles did not match the top bar.",
+      "commits": [
+        "game:c3383c666d7"
+      ]
+    },
+    {
+      "id": "G1073",
+      "area": "Projects",
+      "show": "fixing",
+      "text": "Street project boards named skills on steps that had not opened yet and never said anyone can give items.",
+      "commits": [
+        "game:49be867cf4b"
+      ]
     }
   ]
 }
