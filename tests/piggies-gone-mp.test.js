@@ -194,7 +194,7 @@ describe('the pages leave the Piggy\'s Plops and leaving to the server online', 
     assert.match(src, /engine\.mode === 'multiplayer' && engine\.query\?\.\('sharedPiggy', plop\.target, engine\) === true\) continue;/);
     assert.match(src, /engine\.query\?\.\('sharedObjectVerb', target, 'capture', engine\)/);
     assert.match(src, /engine\.query\?\.\('sharedVerbGrant', target, 'capture'\)/);
-    assert.match(src, /if \(engine\.mode === 'multiplayer'\) break;/, 'online the street-enter hide loop leaves captured Piggies to the server');
+    assert.match(src, /if \(engine\.mode === 'multiplayer' \|\| !Array\.isArray\(engine\.interactables\)\) return;/, 'online the street-enter hide loop leaves captured Piggies to the server');
   });
 
   it('potions-feature: a youth pour on a street Piggy online asks the server', () => {

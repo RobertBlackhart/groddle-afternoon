@@ -3263,7 +3263,7 @@ export const streetJobsFeature = {
     const mine = generation;
     arrivalOwed = 0;
     // B1: the upgrade this street was built with (null: unknown when enterStreet asked, before the
-    // catalog or the world). A street another feature's ecology built is not ours to build again.
+    // catalog or the world). A street another feature's ecology built is left to that feature.
     standing = street && builtWith.has(street) ? { tsid: street.tsid, upgrade: builtWith.get(street) } : null;
     load().then(() => {
       if (mine !== generation || !catalog) return;
