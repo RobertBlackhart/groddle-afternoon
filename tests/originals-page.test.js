@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ORIGINALS, originalsContent } from '../tools/new-content/to-minn.mjs';
+import { ORIGINALS, PHONE_PARTS, originalsContent } from '../tools/new-content/to-minn.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const html = originalsContent();
@@ -47,5 +47,20 @@ describe('Groddle Originals page', () => {
     assert.doesNotMatch(text, /Status: building|being drawn|\(planned\)|is a plan|planned here/i);
     assert.doesNotMatch(text, /\bnew content\b/i);
     assert.doesNotMatch(html, /—/, 'no em dashes');
+  });
+
+  it('has Playing on a phone as its second entry, live since November 12, 2026', () => {
+    assert.equal(ORIGINALS[1].id, 'phone');
+    assert.equal(ORIGINALS[1].title, 'Playing on a phone');
+    assert.equal(ORIGINALS[1].status, 'live');
+    assert.match(ORIGINALS[1].dates, /Nov 12, 2026/);
+    assert.ok(html.indexOf('id="pot-luck-day"') < html.indexOf('id="phone"'), 'Pot Luck Day first');
+    assert.match(text, /Glitch was a Flash game and never ran on a phone/);
+    assert.match(text, /upright or sideways/);
+    for (const part of [/stick/, /follow your thumb/, /Jump/, /Act, which does what Enter does/, /tap a ladder to climb/, /Pinch/, /pack row scrolls/, /Panels, Mail, Decorate and the character builder/, /companion page for reports, mail and friends/, /carry pictures/]) {
+      assert.ok(PHONE_PARTS.some((l) => part.test(l)), String(part));
+    }
+    assert.match(text, /newer than the rest/i);
+    assert.match(text, /tagged \[Mobile\]/);
   });
 });

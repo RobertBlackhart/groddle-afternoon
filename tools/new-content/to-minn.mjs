@@ -79,15 +79,29 @@ export const ITEMS = [
  */
 export const ORIGINALS = [
   { id: 'pot-luck-day', title: 'Pot Luck Day', status: 'live', dates: 'Nov 22-29, 2026, Pacific time', feast: 'Thanksgiving feast Nov 26' },
+  { id: 'phone', title: 'Playing on a phone', status: 'live', dates: 'Since Nov 12, 2026 (v0.35.0)' },
+];
+
+/** What playing on a phone gives (js/touch-controls.js, js/touch-pinch.js, js/phone/companion.js, style.css touch-phone). */
+export const PHONE_PARTS = [
+  'The street fills the screen, held upright or sideways.',
+  'Touch controls: a stick to walk and climb (in Settings it can follow your thumb instead), Jump, and Act, which does what Enter does on a keyboard.',
+  'Tap the street to walk there, tap a thing to see what you can do with it, and tap a ladder to climb it.',
+  'Pinch with two fingers to zoom in and out.',
+  'The pack row scrolls sideways, so every bag and stack can be reached.',
+  'Panels, Mail, Decorate and the character builder fit the screen.',
+  'A phone opens first on a companion page for reports, mail and friends, with a button into the full game.',
+  'Reports sent from a phone can carry pictures from the phone.',
 ];
 const STATUS_WORDS = { live: 'Live', building: 'Building', planned: 'Planned' };
 
 /** Every Tiny Speck icon the page's cards wear (each needs its nc-icon-<name> rule in style.css). */
-export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
+export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
 
 /** The page's blocks. */
 export function originalsContent() {
   const pld = ORIGINALS.find((o) => o.id === 'pot-luck-day');
+  const phone = ORIGINALS.find((o) => o.id === 'phone');
   const jump = [['#how', 'How an original is made'], ...ORIGINALS.map((o) => [`#${o.id}`, o.title])]
     .map(([href, label]) => `<a href="${href}">${label}</a>`).join(' ');
   return [
@@ -189,6 +203,22 @@ export function originalsContent() {
             p('', 'A cranberry crop, a turkey round-up race, gratitude notes, leaf piles to jump in, a Golden Turkey to find, new music and a festival street. Each would make the festival bigger than any of Glitch’s own except Zilloween, so none is in it.'),
           ]),
         ]),
+      ]),
+    ])]),
+
+    group('section', 'band nc-band', phone.id, [group('div', 'wrap', null, [
+      card('nc-event', 'camera', 'sky', [
+        p('nc-chips', `${chip(STATUS_WORDS[phone.status], 'status')} ${chip(phone.dates, 'date')}`),
+        h(2, phone.title, { id: `${phone.id}-h`, cls: 'nc-event-title' }),
+        p('nc-event-line', 'Glitch was a Flash game and never ran on a phone. Groddle Afternoon plays in a phone’s browser, upright or sideways.'),
+      ]),
+      group('div', 'nc-part', null, [
+        h(3, 'What works on a phone'),
+        list(PHONE_PARTS),
+      ]),
+      group('div', 'nc-callout', null, [
+        h(3, 'Newer than the rest of the game'),
+        p('', 'Phone play is newer than the rest of Groddle, so some things still fit a computer better. If something goes wrong on a phone, a report tagged [Mobile] helps.'),
       ]),
     ])]),
 
