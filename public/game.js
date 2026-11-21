@@ -4067,6 +4067,41 @@ let packSelectedCopy = null;
 /** The open pack popover's markup, so an unchanged redraw keeps its buttons (renderPackPopover). */
 let packPopoverMarkup = '';
 
+/**
+ * Glitch had one interaction menu: a pack item's menu took the place of the world's
+ * (InteractionMenuController.as startItemstackMenu 709-710, imm.reset). Here the world's verb menu
+ * and the Enter chooser stayed open under the pack card, and every pack verb that asks
+ * engine.busy() (Race, Name, Teleport, Meditate...) then said "Not right now." (live chat 2026-11-20).
+ */
+function closeWorldMenusForPack() {
+  if (menuTarget) closeVerbMenu();
+  if (enterChooser?.isOpen()) enterChooser.close('pack');
+}
+
+/**
+ * True while a verb picked on the pack card runs. The card was reachable, so a window open
+ * beside it (the Map, a project's card) does not make the verb busy: Glitch sent an itemstack verb
+ * to the server whatever dialog was up, and Race asked only that the figure be in the pack
+ * (npc_cubimal_*.js verbs.race ok_states in_pack). A verb in progress, a street change or an
+ * instance still make it busy.
+ */
+let packCardVerbRunning = false;
+
+/** A pack card's verb (features' runPackVerb), with the open windows not counting as busy. */
+function runPackCardVerb(classTsid, verbId, featureId, picked) {
+  packCardVerbRunning = true;
+  try {
+    return features.runPackVerb(classTsid, verbId, engine, featureId, picked);
+  } finally {
+    packCardVerbRunning = false;
+  }
+}
+
+/** busy()'s open-window test: a drawn panel, except while a pack card's verb runs (runPackCardVerb). */
+function panelMakesBusy() {
+  return !packCardVerbRunning && panelOnScreen();
+}
+
 function closePackPopover() {
   packSelected = null;
   packSelectedCopy = null;
@@ -5210,6 +5245,8 @@ function renderPackPopover(classTsid, anchor = null) {
   const named = menuBag?.cls === classTsid
     ? { label: menuBag.label, kind: menuBag.name ? menuBag.className : kind, one: true }
     : features.query('itemDisplayName', classTsid, TOOL_WEAR[classTsid] ? packSelectedCopy : null, engine);
+  // A pack card that opens takes the place of the world's menu (closeWorldMenusForPack).
+  if (pop.hidden) closeWorldMenusForPack();
   pop.hidden = false;
   pop.dataset.vmDefault = plainWords(slot.desc || 'A thing from Ur.');
   pop.dataset.vmLevel = level === 'sub' ? `sub:${subVerb.id}` : level === 'count' ? `count:${countVerb.id}` : level;
@@ -5281,7 +5318,7 @@ function renderPackPopover(classTsid, anchor = null) {
       // The copy the menu was about, read before the close forgets it.
       const picked = TOOL_WEAR[classTsid] && packSelectedCopy != null ? { copy: packSelectedCopy } : {};
       closePackPopover();
-      features.runPackVerb(classTsid, button.dataset.featurePackVerb, engine, button.dataset.featureId, picked);
+      runPackCardVerb(classTsid, button.dataset.featurePackVerb, button.dataset.featureId, picked);
     });
   });
   // A feature verb's How many (report #101): in, the number field takes the focus (type a count, Enter
@@ -5311,7 +5348,7 @@ function renderPackPopover(classTsid, anchor = null) {
       const runId = `${countVerb.count.idPrefix || countVerb.id}:${count}`;
       const featureId = countVerb.featureId;
       closePackPopover();
-      features.runPackVerb(classTsid, runId, engine, featureId, picked);
+      runPackCardVerb(classTsid, runId, featureId, picked);
     };
     const setCountQty = (value) => {
       packCountQty = normalizeStackQuantity(value, countMax);
@@ -13457,8 +13494,8 @@ const engine = {
         (!ignoreInstance && (anyTransientInstance() || engine.inScene())) ||
         engine.instanceHold ||
         (!ignoreHome && homeIsInstanced()) ||
-        // Any open panel (Feat, quests, make, vendor, map, mailbox, ...).
-        panelOnScreen() ||
+        // Any open panel (Feat, quests, make, vendor, map, mailbox, ...), but not for a pack card's verb.
+        panelMakesBusy() ||
         Boolean(imaginationHub?.isOpen())
     );
   },

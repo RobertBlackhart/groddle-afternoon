@@ -34,6 +34,7 @@ describe('panelOnScreen', () => {
     assert.equal(load([{ id: 'make-panel', ...drawn }, { id: 'map-panel', ...drawn }])(), true);
   });
   it('busy() asks it instead of the bare selector', () => {
-    assert.match(src, /\(!ignoreHome && homeIsInstanced\(\)\) \|\|\n\s+\/\/ Any open panel[^\n]*\n\s+panelOnScreen\(\)/);
+    assert.match(src, /\(!ignoreHome && homeIsInstanced\(\)\) \|\|\n\s+\/\/ Any open panel[^\n]*\n\s+panelMakesBusy\(\)/);
+    assert.match(src, /function panelMakesBusy\(\) \{\n\s+return !packCardVerbRunning && panelOnScreen\(\);/);
   });
 });
