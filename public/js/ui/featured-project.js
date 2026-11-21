@@ -17,7 +17,7 @@
  * #featured-project-row [data-featured-job].
  */
 
-import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=1180ebbd';
+import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=11115f7f';
 
 /** The line in the street name bubble; it keeps the old pill's id so routes and QA still find it. */
 export const FEATURED_PILL_ID = 'featured-project-pill';

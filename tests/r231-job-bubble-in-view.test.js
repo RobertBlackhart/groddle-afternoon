@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
-import { jobIndicatorTip } from '../public/js/job-indicator.js?v=d5252bc6';
-import { topClearOver } from '../public/js/features/street-jobs-feature.js?v=38b041da';
+import { jobIndicatorTip } from '../public/js/job-indicator.js?v=6baf4dce';
+import { topClearOver } from '../public/js/features/street-jobs-feature.js?v=ffb81d5b';
 
 const src = readFileSync(join(import.meta.dirname, '..', 'public', 'js', 'features', 'street-jobs-feature.js'), 'utf8');
 

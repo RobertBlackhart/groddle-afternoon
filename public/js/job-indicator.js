@@ -26,7 +26,7 @@
  * second line smaller and lighter.
  */
 import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
-import { FEATURED_TEXT, featuredWaitMins } from './featured-project.js?v=1180ebbd';
+import { FEATURED_TEXT, featuredWaitMins } from './featured-project.js?v=11115f7f';
 
 export const JOB_INDICATOR_TEXT = Object.freeze({
   available: 'Project available',

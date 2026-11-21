@@ -22,7 +22,7 @@
  */
 
 import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=cab811a6';
-import { featuredTag } from './featured-project.js?v=6bd977a8';
+import { featuredTag } from './featured-project.js?v=59764610';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
 const ICON = 'assets/sprites/street-jobs/sign_stake.webp';

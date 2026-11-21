@@ -11,10 +11,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=1180ebbd';
-import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=6bd977a8';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=75ce40eb';
-import { jobIndicatorView } from '../public/js/job-indicator.js?v=d5252bc6';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=11115f7f';
+import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=59764610';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=ce79d6ae';
+import { jobIndicatorView } from '../public/js/job-indicator.js?v=6baf4dce';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=32e4718f';
 import { rowFromServer } from '../public/js/street-jobs-mp.js?v=4064b06b';
 import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=cab811a6';
@@ -119,6 +119,13 @@ describe('the featured project message (js/featured-project.js)', () => {
     assert.equal(featuredStatus(f, NOW), 'Phase 2 of 4 · 37% built');
     assert.equal(featuredStatus({ ...f, readyAt: NOW + 5 * 60_000 }, NOW), 'Phase 2 of 4 opens in 5 min');
     assert.equal(featuredWhere({ ...f, kind: 'upgrade', label: 'Grand Mile', hub: 'Groddle Forest' }), 'An upgrade of Grand Mile, Groddle Forest');
+    // R11: with nothing left on foot the server features one the subway reaches, and says so.
+    assert.equal(f.subway, false);
+    const sub = featuredFromServer({ ...MSG, subway: true });
+    assert.equal(sub.subway, true);
+    assert.equal(featuredWhere(sub), 'A new street in Choru, from Gelatto Lane, by subway');
+    assert.equal(featuredWhere({ ...sub, kind: 'upgrade', label: 'Grand Mile', hub: 'Groddle Forest' }), 'An upgrade of Grand Mile, Groddle Forest, by subway');
+    assert.match(featuredLabel(sub, NOW), /from Gelatto Lane, by subway\. Phase 2 of 4/);
     assert.match(featuredLabel(f, NOW), /^Featured street project: Tumble Rd 1\./);
     assert.equal(featuredChanged(null, f), true);
     assert.equal(featuredChanged(f, { ...f, percent: 50 }), false, 'progress is not a change of project');

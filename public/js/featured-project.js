@@ -25,6 +25,8 @@ export const FEATURED_TEXT = Object.freeze({
   // G1023: a street in its 30-minute post-build rest shows no board (Glitch inc_jobs.js 463-467).
   waiting: (mins) => `Opens in ${mins} min`,
   needs: 'Needs',
+  // R11: nothing was left to build on foot, so the server featured one the subway reaches (needs papers).
+  bySubway: 'by subway',
 });
 
 const whole = (v) => Math.max(0, Math.floor(Number(v) || 0));
@@ -33,9 +35,10 @@ const words = (v, n = 80) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').tr
 
 /**
  * project_featured into { jobId, kind, street, board, label, hub, boardLabel, phase, phases, perc,
- * percent, since, by, readyAt, resting, row } in this page's clock, or null when nothing is featured.
+ * percent, since, by, readyAt, resting, subway, row } in this page's clock, or null when nothing is featured.
  * `row` is the server's row as it came (street-jobs-mp.js rowFromServer reads it). `resting`: readyAt
- * is the board street's post-build rest ending (G1023), not the next phase opening.
+ * is the board street's post-build rest ending (G1023), not the next phase opening. `subway`: its
+ * board is reached only by subway (the server's fallback when no project is left on foot, R11).
  * @param {object} msg
  * @param {number} offset server ms minus this page's ms
  */
@@ -60,6 +63,7 @@ export function featuredFromServer(msg, offset = 0) {
     by: msg.by === 'admin' ? 'admin' : 'auto',
     readyAt: local(msg.ready),
     resting: msg.rest === true && whole(msg.ready) > 0,
+    subway: msg.subway === true,
     row: msg.row && typeof msg.row === 'object' ? msg.row : null,
   };
 }
@@ -96,12 +100,16 @@ export function featuredStatus(f, now = Date.now()) {
   return [phase, `${f.percent}% built`].filter(Boolean).join(' · ');
 }
 
-/** Where it is: "A new street in Groddle Forest, from Hechey Track", "An upgrade of Grand Mile, Groddle Forest". */
+/**
+ * Where it is: "A new street in Groddle Forest, from Hechey Track", "An upgrade of Grand Mile, Groddle
+ * Forest", and ", by subway" when only the subway reaches it.
+ */
 export function featuredWhere(f) {
   if (!f) return '';
-  if (f.kind === 'upgrade') return `An upgrade of ${f.label}${f.hub ? `, ${f.hub}` : ''}`;
+  const by = f.subway ? `, ${FEATURED_TEXT.bySubway}` : '';
+  if (f.kind === 'upgrade') return `An upgrade of ${f.label}${f.hub ? `, ${f.hub}` : ''}${by}`;
   const from = f.boardLabel ? `, from ${f.boardLabel}` : '';
-  return `A new street${f.hub ? ` in ${f.hub}` : ''}${from}`;
+  return `A new street${f.hub ? ` in ${f.hub}` : ''}${from}${by}`;
 }
 
 /** The line's and the row's accessible name. */
