@@ -1,5 +1,5 @@
 import { upgradeSource } from './sprite-hires.js?v=b6bc6eae';
-import { frameTexture, loadTexture, whenLoaded } from './textures.js?v=1c44e7c3';
+import { frameTexture, loadTexture, whenLoaded } from './textures.js?v=090265fd';
 
 /**
  * Grid sprite-sheet slicing for feature modules (foxes, Heli Kitties).

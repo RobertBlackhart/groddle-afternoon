@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CAMERA_MENU_ID, CAMERA_PHONE_COPY, CAMERA_RANGE, EYEBALLERY_SKILL, cameraRange, dragLook, stepLook } from '../public/js/features/camera-mode-feature.js?v=51c80222';
+import { CAMERA_MENU_ID, CAMERA_PHONE_COPY, CAMERA_RANGE, EYEBALLERY_SKILL, cameraRange, dragLook, stepLook } from '../public/js/features/camera-mode-feature.js?v=37a8dfd4';
 
 const here = dirname(fileURLToPath(import.meta.url));
 

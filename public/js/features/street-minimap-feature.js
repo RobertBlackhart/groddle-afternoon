@@ -74,7 +74,7 @@ import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=610e021b';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=1c44e7c3';
+import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=090265fd';
 
 export const STREET_MINIMAP_FEATURE_ID = 'street-minimap';
 const UPDATE_MS = 100;

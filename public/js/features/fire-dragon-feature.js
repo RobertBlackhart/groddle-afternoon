@@ -16,7 +16,7 @@
  * Canvas: fireDragons, fireDragonLast, fireDragonPos, fireDragonMode.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bb4fe94b';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b6e8e690';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { followPath } from '../street-creatures.js?v=381d4163';
@@ -37,7 +37,7 @@ import {
   normalizeDragonMemory,
   petFireDragon,
 } from '../fire-dragon.js?v=b7f3d751';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 let loader = null;
 let generation = 0;

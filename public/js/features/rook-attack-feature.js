@@ -60,7 +60,7 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=c268eefe';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bb4fe94b';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b6e8e690';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { donationValueFor } from '../shrines.js?v=fd21d8ec';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -108,8 +108,8 @@ import {
 import { shrinePrimeBonus } from '../imagination-effects.js?v=70169933';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { forceMetabolic, gainMetabolic, loseEnergy, loseMood, topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=68c0a634';
+import { displayTopOf, easeOutBack, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=892af05a';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=f0966996';
 import {
   MP_ROOK,
   MP_ROOK_TEXT,
@@ -127,12 +127,12 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=945c8a6a';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=da8aca1e';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const ROOK_FEATURE_ID = 'rook-attack';

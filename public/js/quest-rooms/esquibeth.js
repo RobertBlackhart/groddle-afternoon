@@ -84,11 +84,11 @@
  */
 
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=090265fd';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from './esquibeth-art.js?v=fe515887';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 export const ROOM_ID = 'esquibeth';
 export const MAIN = 'last_pilgrimage_of_esquibeth';

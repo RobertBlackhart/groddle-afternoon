@@ -46,8 +46,8 @@ import {
 } from '../master-garden.js?v=49fbf68f';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { payDrop } from './drops-feature.js?v=8b703c17';
-import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=945c8a6a';
+import { textureFromUrl } from '../textures.js?v=090265fd';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=da8aca1e';
 import { copyFromLedger, keepsCopies, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';

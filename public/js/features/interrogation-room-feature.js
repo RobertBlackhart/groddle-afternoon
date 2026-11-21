@@ -33,8 +33,8 @@ import {
   normalizeWayBack,
   wayBackFrom,
 } from '../interrogation-room.js?v=f621c3b9';
-import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { textureFromUrl } from '../textures.js?v=090265fd';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 export const INTERROGATION_FEATURE_ID = 'interrogation-room';
 export const INTERROGATION_DOOR_CLASS = 'interrogation_door';

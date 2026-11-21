@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=187e3c76';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=21098596';
+import { signArmWidth } from '../street-render.js?v=87277227';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=fd21d8ec';
@@ -148,7 +148,7 @@ import {
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=d5252bc6';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
@@ -165,7 +165,7 @@ import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../street-job-asks.js?v=c2511e10';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';

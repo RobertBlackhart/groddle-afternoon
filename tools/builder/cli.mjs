@@ -30,12 +30,12 @@ import { builderGuide } from './guide.mjs';
 import { applyOps, applyOp, nextDecoId, nextGeometryId, findGeometry, findDeco, GEOMETRY, OpError, OP_NAMES } from '../../public/js/builder/ops.js?v=27c7796f';
 import { forkStreet, forkOps, newTsid, libraryAsset, linkEdit, editsOn } from '../../public/js/builder/zone.js?v=ce289eb1';
 import { newStreet, newStreetOps, newHub, nextHubId, mapWithStreet, mapWithoutStreet, TEMPLATES, DEFAULT_MAP_COLOURS } from '../../public/js/builder/templates.js?v=881dfa69';
-import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=f7ec3a7a';
-import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=b9013f85';
+import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=3f7693b1';
+import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=60907127';
 import { platformsScreen, isStandable } from '../../public/js/street-model.js?v=a9a05f9d';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=21098596';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=87277227';
 import { groundOps, floatingLines, FLOAT_REACH } from '../../public/js/builder/ground.js?v=f4254e96';
-import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=7d98182b';
+import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=e92ada09';
 
 export const PERM_WORDS = Object.freeze({ floor: -1, roof: 1, soft: 0, hard: null });
 /** The game draws a signpost's first four arms (street-render.js); a fifth would never show. */
@@ -1165,7 +1165,7 @@ export async function run(argv, { env = process.env, fetchImpl = globalThis.fetc
       let report;
       let rev;
       if (local()) {
-        const { validateZone } = await import('../../public/js/builder/validate.js?v=19c541fe');
+        const { validateZone } = await import('../../public/js/builder/validate.js?v=ecaa3190');
         const { loadValidatorContext } = await import('./validator-context.mjs');
         const zone = readJson(resolve(flags.file));
         rev = zone.rev;

@@ -32,10 +32,10 @@
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { applyRewards } from '../quests.js?v=4a3fb1da';
 import { ITEM_CATALOG, isToolItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=1c44e7c3';
-import { playPoofIn } from '../overlay-art.js?v=7a63d78f';
-import { KIDS_ROOM_FLOOR, KIDS_ROOM_H, KIDS_ROOM_W, buildKidsRoomScene } from '../kids-room-scene.js?v=83bd0547';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=090265fd';
+import { playPoofIn } from '../overlay-art.js?v=892af05a';
+import { KIDS_ROOM_FLOOR, KIDS_ROOM_H, KIDS_ROOM_W, buildKidsRoomScene } from '../kids-room-scene.js?v=6bc0174f';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 const W = KIDS_ROOM_W;
 const H = KIDS_ROOM_H;

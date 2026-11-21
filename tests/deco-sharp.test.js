@@ -14,8 +14,8 @@ import { fileURLToPath } from 'node:url';
 import { SHARP_DECOS } from '../public/js/deco-sharp-list.js?v=4c191ef5';
 import { HIRES_DECOS } from '../public/js/deco-hires-list.js?v=60fcf361';
 import { FAR_SHARP_BUDGET_BYTES, FAR_SLACKS, SHARP_SLACK, SVG_MAX_PIXELS, SVG_MAX_SIDE, admitSharp, isSharpDeco, sharpDeco } from '../public/js/deco-hires.js?v=03ac6512';
-import { resolutionOfUrl } from '../public/js/textures.js?v=1c44e7c3';
-import { landscapeArt } from '../public/js/features/homes-feature.js?v=11e7d77c';
+import { resolutionOfUrl } from '../public/js/textures.js?v=090265fd';
+import { landscapeArt } from '../public/js/features/homes-feature.js?v=de049872';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { layoutArtPath } from '../public/js/home-layout.js?v=a075e7ec';
 
@@ -226,7 +226,7 @@ describe('street-render draws sharp copies on the sharp layers', () => {
       }
     };
     globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage() {} }) }) };
-    const { buildStreetView } = await import('../public/js/street-render.js?v=21098596');
+    const { buildStreetView } = await import('../public/js/street-render.js?v=87277227');
     const handlers = {};
     const renderer = {
       resolution: 1,
@@ -272,7 +272,7 @@ describe('street-render draws sharp copies on the sharp layers', () => {
   });
 
   it('far layers: sharp copies within the street budget, the rest on their 2x files', async () => {
-    const { buildStreetView } = await import('../public/js/street-render.js?v=21098596');
+    const { buildStreetView } = await import('../public/js/street-render.js?v=87277227');
     const manifest = new Set(JSON.parse(readFileSync(join(root, 'public/assets/decos/manifest.json'), 'utf8')));
     const renderer = { resolution: 3.9, gl: { MAX_TEXTURE_SIZE: 1, getParameter: () => 8192 }, generateTexture: () => null, on() {}, off() {} };
     for (const tsid of ['GA95U14319524O9', 'GHFC3I4EKMI20JD', 'GA9117J18492SRS']) {

@@ -21,13 +21,20 @@
  * Memory: a sheet is fetched when first played and only the last KEEP_SHEETS are kept decoded;
  * an older one nobody is playing is destroyed (its 3x twin too) and fetched again if wanted. A
  * sheet marked `keep` is one another module draws from too, and is left alone.
+ * #577/#578 (R30): every other sheet is loaded as a source of our own (js/textures.js
+ * loadOwnTexture), never the one shared per URL. A tool's sheet is also cut by the module that
+ * shows that tool in your hands (game.js playPickAnimation keeps the pick's frames for good, so do
+ * help-mine, job-work-fx and the Patches); evicting the shared source destroyed theirs, and when
+ * you next swung that pick the render threw "Cannot read properties of null (reading
+ * 'addressModeU')" and the game froze (players mining Sparkly rocks in a Party Space, where other
+ * players' mining bubbles played the same pick sheet here).
  */
 
-import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=7a63d78f';
-import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=ebcd61d5';
+import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=892af05a';
+import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=f59127fb';
 import { upgradeSource } from './sprite-hires.js?v=b6bc6eae';
-import { forgetTexture, loadTexture, whenLoaded } from './textures.js?v=1c44e7c3';
-import { anchorBottomCentre } from './sprite-feet.js?v=8f0b6303';
+import { loadOwnTexture, loadTexture, whenLoaded } from './textures.js?v=090265fd';
+import { anchorBottomCentre } from './sprite-feet.js?v=fdd1d9ec';
 
 /** Decoded sheets kept after their overlay ends. */
 export const KEEP_SHEETS = 2;
@@ -58,7 +65,7 @@ function evict(entry) {
     // Texture.EMPTY (an empty frame) is Pixi's own: never destroyed.
     if (t && !t.destroyed && t.source === entry.source) t.destroy(false);
   }
-  forgetTexture(entry.path);
+  // Our own source (loadOwnTexture): nobody else holds it, and the shared one for the URL stays.
   const source = entry.source;
   if (source && !source.destroyed) {
     const bitmap = source.resource;
@@ -84,7 +91,9 @@ function hold(PIXI, def) {
   if (!entry) {
     entry = { path: def.path, refs: 0, usedAt: 0, frames: null, source: null, promise: null, keep: Boolean(def.keep) };
     const e = entry;
-    e.promise = loadTexture(def.path, { raw: true }).then((texture) => {
+    // A `keep` sheet is shared on purpose (never evicted); any other is ours alone to destroy.
+    const load = e.keep ? loadTexture : loadOwnTexture;
+    e.promise = load(def.path, { raw: true }).then((texture) => {
       e.source = texture.source;
       e.frames = cutPackedFrames(PIXI, texture.source, def);
       // The 3x twin, now that it is about to be drawn.

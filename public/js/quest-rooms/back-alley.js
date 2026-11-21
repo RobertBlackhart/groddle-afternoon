@@ -47,11 +47,11 @@
  */
 
 import { autoplayLog, runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
+import { onLoaded, textureFromUrl } from '../textures.js?v=090265fd';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=892af05a';
 import { STATION_FLOOR, stationArrival, stationByTsid, stationScreen, surfaceStation } from '../subway.js?v=36c6d2b2';
-import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=8a417fb3';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=2d06c735';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 export { ALLEY, ALLEY_ART, ALLEY_SET, alleyPlatforms };
 

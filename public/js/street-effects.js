@@ -29,7 +29,7 @@
  * render page (/builder-render/).
  */
 import { worldToScreen } from './street-model.js?v=a9a05f9d';
-import { textureFromUrl, isLoaded, isFailed, onLoaded } from './textures.js?v=1c44e7c3';
+import { textureFromUrl, isLoaded, isFailed, onLoaded } from './textures.js?v=090265fd';
 
 export const EFFECT_KINDS = Object.freeze(['steam', 'lava', 'embers']);
 /** Plain words for each kind (inspector, CLI, guide). */

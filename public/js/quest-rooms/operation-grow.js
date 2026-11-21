@@ -32,11 +32,11 @@
  * end beside the painted EXIT (or Leave). js/operation-grow-scene.js builds it.
  */
 
-import { JUMP_GAP, JUMP_RISE } from './puzzle-kit.js?v=63a322bf';
+import { JUMP_GAP, JUMP_RISE } from './puzzle-kit.js?v=da0acbb8';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { textureFromUrl } from '../textures.js?v=1c44e7c3';
-import { buildGrowBackground, makeStalk } from '../operation-grow-scene.js?v=9d55a56a';
-import { anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
+import { textureFromUrl } from '../textures.js?v=090265fd';
+import { buildGrowBackground, makeStalk } from '../operation-grow-scene.js?v=6c25f67f';
+import { anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
 
 export const W = 2500;
 export const H = 960;

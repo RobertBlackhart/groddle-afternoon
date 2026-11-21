@@ -244,6 +244,20 @@ export function loadTexture(url, opts = {}) {
   return whenLoaded(texture).then(() => texture);
 }
 
+/**
+ * #577/#578 (R30): a Texture over a TextureSource of its own, not the one shared per URL, for a
+ * module that destroys what it loaded when done with it (js/item-overlay.js). Destroying the shared
+ * source broke every other holder of that URL: a sheet's frames another module had cut (the pick
+ * you swing at a rock) then drew a destroyed source and the render threw. Resolves once loaded.
+ */
+export function loadOwnTexture(url, opts = {}) {
+  const key = routeUrl(url, { raw: Boolean(opts.raw) });
+  const source = createSource(key, opts);
+  source[LOAD].asked = String(url);
+  const texture = new (pixi().Texture)({ source, label: key, dynamic: true });
+  return whenLoaded(texture).then(() => texture);
+}
+
 /** Preload several URLs; failures resolve to null. */
 export function loadTextures(urls, opts = {}) {
   return Promise.all(urls.map((url) => loadTexture(url, opts).catch(() => null)));

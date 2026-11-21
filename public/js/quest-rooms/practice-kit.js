@@ -7,7 +7,7 @@
  */
 
 import { inPracticeBox, practiceScreen } from '../practice-streets.js?v=557238c1';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 
 const FLAMINGO_ART = 'assets/sprites/newxp/';
 /** features/newxp-feature.js SHEETS.flamingo: the npc_flamingo x1 sheets. */

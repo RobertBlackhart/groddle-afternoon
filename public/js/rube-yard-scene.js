@@ -25,7 +25,7 @@
  */
 
 import { RUBE_YARD_FILES } from './rube-yard-art.js?v=0a67d3e6';
-import { textureFromUrl } from './textures.js?v=1c44e7c3';
+import { textureFromUrl } from './textures.js?v=090265fd';
 // FLICKER: long thin strips in pieces the GPU always draws (js/wide-quads.js).
 import { wideRect } from './wide-quads.js?v=f34556e6';
 

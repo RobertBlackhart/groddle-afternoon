@@ -42,10 +42,10 @@ import {
 } from '../graves-mp.js?v=98110f0a';
 import { HELL_SPRITES } from '../hell.js?v=54f9be3d';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=1c44e7c3';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
-import { hellFeature } from './hell-feature.js?v=2f6bac3a';
-import { hellTicketsFeature } from './hell-tickets-feature.js?v=e23b701b';
+import { frameTexture, sourceFromUrl } from '../textures.js?v=090265fd';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
+import { hellFeature } from './hell-feature.js?v=46454cb5';
+import { hellTicketsFeature } from './hell-tickets-feature.js?v=6c7ed1ff';
 
 export const GRAVES_MP_FEATURE_ID = 'graves-mp';
 const CLASS_ID = 'graveside_marker';

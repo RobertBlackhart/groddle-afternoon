@@ -29,7 +29,7 @@
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { loadDecoManifest } from '../street-render.js?v=21098596';
+import { loadDecoManifest } from '../street-render.js?v=87277227';
 import {
   DOOR_KEYS,
   DOOR_KEY_BASE_COST,
@@ -46,10 +46,10 @@ import {
   normalizeDoorState,
   visibleDoors,
 } from '../doors.js?v=727d0e0b';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=090265fd';
 import { doorLockArt } from '../door-lock-art.js?v=e656851c';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
-import { anchorBottomCentre } from '../sprite-feet.js?v=8f0b6303';
+import { anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

@@ -57,13 +57,13 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bb4fe94b';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b6e8e690';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=7a63d78f';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=892af05a';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
 import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=23da5980';
-import { standOnFeet } from '../sprite-feet.js?v=8f0b6303';
+import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
 import {
   BABY_ANIMALS,
   BATTERFLY,
@@ -113,16 +113,16 @@ import {
 } from '../animal-husbandry.js?v=2ef60808';
 import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=381d4163';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { textureFromUrl } from '../textures.js?v=1c44e7c3';
+import { textureFromUrl } from '../textures.js?v=090265fd';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=2b7518a4';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=500ab64e';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=7f5793a0';
-import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=72ef33fb';
+import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=945a02da';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
-import { createPackedLoader } from '../packed-sheets.js?v=ebcd61d5';
+import { createPackedLoader } from '../packed-sheets.js?v=f59127fb';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';
