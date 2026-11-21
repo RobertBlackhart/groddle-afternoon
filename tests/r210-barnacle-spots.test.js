@@ -26,12 +26,12 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   steadyFloor,
-} from '../public/js/street-ecology.js?v=26d85806';
+} from '../public/js/street-ecology.js?v=e2c0c2ef';
 import {
   prepareStreetResourceNodes,
   resourcePlacementGroups,
   resourceSpawnPlan,
-} from '../public/js/features/resource-nodes-feature.js?v=c30d09e8';
+} from '../public/js/features/resource-nodes-feature.js?v=5cd1c52a';
 import { BARNACLE_SPOTS } from '../public/js/barnacle-spots-data.js?v=cea3daec';
 
 const root = join(import.meta.dirname, '..');

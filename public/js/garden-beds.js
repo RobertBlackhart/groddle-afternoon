@@ -65,7 +65,11 @@ export function measuredGardenBeds(tsid) {
  * - Kipacre Greens (LCR202JSVIN1STL_main_1339298354, Jun 2012): seven beds, two by the first garden sign,
  *   two past the conifer, three by the second. Their plots cannot be counted at this size (most look
  *   2 x 2, which adds up to far less than Zog's 49), so they stay 4 x 2 as before (56 plots): `how` says so.
- * { [G tsid]: { source, beds: [[x, y, cols, rows, kind, style, how], ...] } }, otherwise as GARDEN_SPOTS.
+ * Both pictures show the Gardening Tools Vendor (the scarecrow) standing by the beds: `vendor` is its feet
+ * (the foot of its pole), read the same way. Veldt Balm's stands among the flowers between the second and
+ * third beds (picture px 282, 89), Kipacre Greens' just right of the big tree by the first garden sign,
+ * left of the second bed (picture px 186, 105).
+ * { [G tsid]: { source, beds: [[x, y, cols, rows, kind, style, how], ...], vendor: [x, y] } }, otherwise as GARDEN_SPOTS.
  */
 export const PICTURE_GARDEN_SPOTS = Object.freeze({
   GIFGR46M8RE2RC7: Object.freeze({
@@ -78,6 +82,7 @@ export const PICTURE_GARDEN_SPOTS = Object.freeze({
       [3675, 798, 2, 2, 'crop', 'none', 'picture'],
       [4540, 842, 4, 2, 'crop', 'none', 'picture'],
     ]),
+    vendor: Object.freeze([2351, 741]),
   }),
   GCR202JSVIN1STL: Object.freeze({
     source: 'Tiny Speck street picture groddle-meadow/LCR202JSVIN1STL_main_1339298354.jpg (G1085)',
@@ -90,20 +95,29 @@ export const PICTURE_GARDEN_SPOTS = Object.freeze({
       [3867, 889, 4, 2, 'crop', 'none', 'picture spot, size kept'],
       [4265, 870, 4, 2, 'crop', 'none', 'picture spot, size kept'],
     ]),
+    vendor: Object.freeze([1550, 877]),
   }),
 });
 
-/** PURE: a street's beds read off Tiny Speck's picture (PICTURE_GARDEN_SPOTS) as measuredGardenBeds gives them, with `how`, or null. */
-export function pictureGardenBeds(tsid) {
+function pictureRow(tsid) {
   const want = body(tsid);
   const key = want && Object.keys(PICTURE_GARDEN_SPOTS).find((k) => body(k) === want);
-  if (!key) return null;
-  return PICTURE_GARDEN_SPOTS[key].beds.map(([x, y, cols, rows, kind, style, how]) => ({ x, y, cols, rows, gardenType: kind === 'herb' ? 'herb' : 'default', style, how }));
+  return key ? PICTURE_GARDEN_SPOTS[key] : null;
 }
 
-/** PURE: where the snaps show the street's Gardening Tools Vendor (the scarecrow's feet), or null. */
+/** PURE: a street's beds read off Tiny Speck's picture (PICTURE_GARDEN_SPOTS) as measuredGardenBeds gives them, with `how`, or null. */
+export function pictureGardenBeds(tsid) {
+  const row = pictureRow(tsid);
+  if (!row) return null;
+  return row.beds.map(([x, y, cols, rows, kind, style, how]) => ({ x, y, cols, rows, gardenType: kind === 'herb' ? 'herb' : 'default', style, how }));
+}
+
+/**
+ * PURE: where the snaps show the street's Gardening Tools Vendor (the scarecrow's feet), else where
+ * Tiny Speck's street picture shows it (PICTURE_GARDEN_SPOTS `vendor`, G1085), or null.
+ */
 export function measuredGardenVendor(tsid) {
-  const v = spotsRow(tsid)?.vendor;
+  const v = spotsRow(tsid)?.vendor || pictureRow(tsid)?.vendor;
   return Array.isArray(v) && Number.isFinite(v[0]) && Number.isFinite(v[1]) ? { x: v[0], y: v[1] } : null;
 }
 

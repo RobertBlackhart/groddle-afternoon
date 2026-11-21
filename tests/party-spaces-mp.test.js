@@ -17,7 +17,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 
 import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../public/js/party-spaces-mp.js?v=ba71aac2';
 import { PARTY_PACKS, PARTY_SPACES, PARTY_TEXT, normalizePartyRecord } from '../public/js/party-spaces.js?v=559a618a';
-import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=ec8804ff';
+import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=e8e01893';
 import { sharedStreet } from '../public/js/features/realtime-feature.js?v=24d0afae';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 

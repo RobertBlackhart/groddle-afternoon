@@ -14,7 +14,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildHubMapView } from '../public/js/map-graph.js?v=c3586fa9';
-import { ecologyForStreet, populationForStreet, setStreetEcologyCatalog, shrineStreetsFor } from '../public/js/street-ecology.js?v=26d85806';
+import { ecologyForStreet, populationForStreet, setStreetEcologyCatalog, shrineStreetsFor } from '../public/js/street-ecology.js?v=e2c0c2ef';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=49beeb2b';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

@@ -18,7 +18,7 @@ import {
   towerOrigin,
   towerSignFoot,
 } from '../public/js/home-tower.js?v=18889f7a';
-import { NOTE_POLE_STAGE } from '../public/js/home-street-mp.js?v=0af21c5c';
+import { NOTE_POLE_STAGE } from '../public/js/home-street-mp.js?v=ae5daa2a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CLIENT = join(root, '../glitch-client');

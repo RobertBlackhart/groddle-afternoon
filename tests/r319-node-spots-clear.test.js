@@ -32,9 +32,9 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   walkInScenery,
-} from '../public/js/street-ecology.js?v=26d85806';
+} from '../public/js/street-ecology.js?v=e2c0c2ef';
 import { getResourceNodeDef } from '../public/js/resource-nodes.js?v=cf9aae18';
-import { RESOURCE_PLACEMENT_CLEARANCE, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=c30d09e8';
+import { RESOURCE_PLACEMENT_CLEARANCE, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=5cd1c52a';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';

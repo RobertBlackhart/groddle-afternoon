@@ -29,16 +29,16 @@ import {
   stateFor,
   streetPigIndex,
   takeObjs,
-} from '../public/js/street-objects.js?v=2a4c4f54';
+} from '../public/js/street-objects.js?v=ee82030e';
 import { HELP_DIG_COUNTER, HELP_DIG_LABEL, IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST, digHelpFrom, helpDigMessage, othersDigging } from '../public/js/help-dig.js?v=ca0cc848';
 import { MULTIPLAYER_QUESTS, MULTIPLAYER_QUESTS_LEFT_OUT, creditedMultiplayerQuests, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { isPoisoned, TREE_ANTIDOTE, TREE_POISON, BOTANY_SKILL } from '../public/js/tree-poison.js?v=646d1bc1';
-import { treeDeathFeature } from '../public/js/features/tree-death-feature.js?v=711caa63';
-import { patchesFeature } from '../public/js/features/patches-feature.js?v=293d4a98';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=edc7a6b2';
-import { helpMineFeature, relabelOpenDig } from '../public/js/features/help-mine-feature.js?v=a58d82a9';
-import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=16e51ae3';
+import { treeDeathFeature } from '../public/js/features/tree-death-feature.js?v=1638ed94';
+import { patchesFeature } from '../public/js/features/patches-feature.js?v=883cfac0';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6d1bb710';
+import { helpMineFeature, relabelOpenDig } from '../public/js/features/help-mine-feature.js?v=4f156ccf';
+import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=330ceb4f';
 
 // ---------------------------------------------------------------------------
 // Pure helpers

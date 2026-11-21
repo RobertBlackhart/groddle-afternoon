@@ -16,9 +16,9 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { dropTargetIds, registerDropTarget, resolveDrop, currentDrag, beginDrag, dragDrop, endDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 import { dropPage, fakeSlot, touchDrop, mouseDrop } from './drop-fake.js';
-import { worldDropFeature } from '../public/js/features/world-drop-feature.js?v=b4849967';
-import { gardenGuanoFeature } from '../public/js/features/garden-guano-feature.js?v=c38dd0ae';
-import { createGarden } from '../public/js/garden.js?v=0afbe615';
+import { worldDropFeature } from '../public/js/features/world-drop-feature.js?v=cb27b8eb';
+import { gardenGuanoFeature } from '../public/js/features/garden-guano-feature.js?v=481e4f63';
+import { createGarden } from '../public/js/garden.js?v=ee1b3dc4';
 
 const root = join(import.meta.dirname, '..', 'public');
 const read = (f) => readFileSync(join(root, f), 'utf8');

@@ -38,15 +38,15 @@ import {
   takeObjs,
   treeReady,
   treeSkill,
-} from '../public/js/street-objects.js?v=2a4c4f54';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=edc7a6b2';
-import { FEATURES } from '../public/js/features/index.js?v=5b9e8d1d';
+} from '../public/js/street-objects.js?v=ee82030e';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6d1bb710';
+import { FEATURES } from '../public/js/features/index.js?v=61f9016f';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=8463f2ac';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=864ea9ff';
 import { placementRequests, ruleTables, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
-import { PLANNED_NODE_CAPS, measuredNodeSpots, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=26d85806';
+import { PLANNED_NODE_CAPS, measuredNodeSpots, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=e2c0c2ef';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 import { ANSWER_WAIT_FALLBACK_MS } from '../public/js/online-request.js?v=2a5117ff';
 

@@ -3,7 +3,9 @@
  * pen (middleground groddle_alakol_house_animal_pen). No player's snap shows Veldt Balm or Kipacre
  * Greens (GCR202JSVIN1STL), so their beds were planned anywhere; Tiny Speck's own whole-street pictures
  * show both streets' plots (garden-beds.js PICTURE_GARDEN_SPOTS). The planner also takes a spot in a
- * pen or on a fence (street-ecology.js penArtCovers, PEN_FREE_GROUPS) for a garden bed last.
+ * pen or on a fence (street-ecology.js penArtCovers, PEN_FREE_GROUPS) for a garden bed last. The same
+ * pictures show each street's Gardening Tools Vendor (the scarecrow): it stands there (garden-beds.js
+ * PICTURE_GARDEN_SPOTS `vendor`, measuredGardenVendor), selling store 12 as on the snapped streets.
  *
  * Run: node --test tests/g1085-garden-pictures.test.js
  */
@@ -24,17 +26,22 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=26d85806';
+} from '../public/js/street-ecology.js?v=e2c0c2ef';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
-import { gardenBedWidth } from '../public/js/garden-beds.js?v=fca3bae1';
-import { streetGardenBeds } from '../public/js/garden.js?v=0afbe615';
+import { gardenBedWidth, measuredGardenVendor } from '../public/js/garden-beds.js?v=a01abcff';
+import { VENDOR_NPC_ART, VENDOR_PLACEMENT_KEY, vendorNpcList, vendorNpcPlacementGroups, vendorNpcStoreProfile, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=27726340';
+import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=d9f15e3e';
+import { followFloorY } from '../public/js/walk-surface.js?v=3c919d5b';
+import { streetGardenBeds } from '../public/js/garden.js?v=ee1b3dc4';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 
 const root = join(import.meta.dirname, '..');
 const streetsDir = join(root, 'public/assets/streets');
 setZoneStreetsShown(false);
 applyStreetIndex(JSON.parse(readFileSync(join(streetsDir, 'index.json'), 'utf8')));
-setStreetEcologyCatalog(JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8')));
+const ecology = JSON.parse(readFileSync(join(root, 'public/assets/content/street-ecology.json'), 'utf8'));
+setStreetEcologyCatalog(ecology);
 
 const VELDT_BALM = 'GIFGR46M8RE2RC7';
 const KIPACRE_GREENS = 'GCR202JSVIN1STL';
@@ -101,4 +108,42 @@ describe('G1085 the unsnapped garden streets put their beds where Tiny Speck did
       assert.deepEqual(pop.gardenBeds.map((b) => [b.x, b.y, b.cols, b.rows]), row.beds.slice(0, pop.gardens).map((b) => b.slice(0, 4)), tsid);
     }
   });
+});
+
+describe('G1085 the Gardening Tools Vendor stands where Tiny Speck\'s pictures show it', () => {
+  // The scarecrow's feet (the foot of its pole) read off each picture: Veldt Balm between its second and
+  // third beds, Kipacre Greens right of the big tree by the first garden sign.
+  const PICTURE_VENDOR = { [VELDT_BALM]: { x: 2351, y: 741 }, [KIPACRE_GREENS]: { x: 1550, y: 877 } };
+
+  for (const [tsid, want] of Object.entries(PICTURE_VENDOR)) {
+    it(`${tsid}: the scarecrow at its picture spot, on its floor, selling the gardening tools store`, async () => {
+      const data = await loadStreetDataFromFs(tsid, streetsDir);
+      const row = vendorNpcsFor(ecology, tsid);
+      // The archived location objects (objref "Gardening Tools Vendor") put one here.
+      assert.deepEqual(vendorNpcList(row), ['npc_gardening_vendor'], data.label);
+      assert.deepEqual(measuredGardenVendor(tsid), want);
+      const groups = vendorNpcPlacementGroups(row, { npc_gardening_vendor: measuredGardenVendor(tsid) });
+      assert.equal(groups[0].late, true);
+      const pop = populationForStreet(tsid, ecologyForStreet(tsid), {});
+      const platforms = platformsScreen(data);
+      const plan = planStreetPlacements(platforms, [...placementRequests(pop), ...groups], { worldW: streetWidth(data), seed: tsid, reserved: streetReservedSpots(data) });
+      const at = plan.groups[VENDOR_PLACEMENT_KEY][0];
+      assert.deepEqual([at.x, at.y], [want.x, want.y], data.label);
+      // vendor-npcs-feature.js stepNpc keeps its feet on the floor under the spot (within its reach).
+      const feet = followFloorY(platforms, at.x, at.y, at.x, VENDOR_REACH);
+      assert.ok(feet != null && feet >= at.y && feet - at.y <= 30, `${data.label}: floor ${feet} under the spot ${at.y}`);
+      const crop = VENDOR_NPC_ART.npc_gardening_vendor.states.idle.crop;
+      // Not behind the front art. Kipacre Greens' spot is inside the box of the big foreground conifer
+      // (middleplus tree_coniferous_fg_2, x 1384, 679 wide), whose trunk the picture shows left of the scarecrow.
+      const fronts = frontDecoCovers(data).filter((c) => !(tsid === KIPACRE_GREENS && c.key === 'front:middleplus:18'));
+      assert.ok(frontCoverShare({ x: at.x, y: feet }, crop.w, crop.h, fronts) < FRONT_HIDE_SHARE, `${data.label}: the scarecrow behind the front art`);
+      // Clear of every bed, as the picture shows it.
+      for (const b of bedsOf(data)) assert.ok(Math.abs(b.x - at.x) > gardenBedWidth(b) / 2 + crop.w / 2, `${data.label}: scarecrow on the bed at ${b.x}`);
+      // npc_gardening_vendor.js store_id 12: the gardening tools store, hoes and all.
+      const store = vendorNpcStoreProfile('npc_gardening_vendor', VENDOR_PROFILES);
+      assert.equal(store.storeId, 12);
+      assert.equal(store.label, 'Gardening Tools Vendor');
+      assert.ok(store.offers.some((o) => o.classTsid === 'hoe'));
+    });
+  }
 });
