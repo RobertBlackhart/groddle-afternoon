@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2943,
+  "commits": 2948,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Ancestral Lands send you to an open street even right after you log in"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Projects tab says when a street's road is open only for you"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "The Map, the Projects tab and the server share one open-road rule"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Help mine works in a Party Space: its rocks, trees and nodes are the party's, shared"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Holding Enter at a vendor no longer buys again and again"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "A Cubimal's Race (and other pack verbs) works with the Map or a world menu open"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "new",
-    "text": "The start card shows what's happening today for a returning player"
    }
   ]
  },
- "tests": 1224,
+ "tests": 1225,
  "generatedAt": "2026-11-21"
 }
