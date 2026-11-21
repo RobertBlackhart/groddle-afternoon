@@ -1498,7 +1498,8 @@ export async function showAwardScreen(el, payload) {
     level: 'Level Up!',
     generic: 'Well done!',
   };
-  if (kicker) kicker.textContent = kickers[kind] || kickers.generic;
+  // A payload's own kicker (Pot Luck Day's notices) over its kind's.
+  if (kicker) kicker.textContent = awardText(payload.kicker) || kickers[kind] || kickers.generic;
   const bodyText = awardText(payload.body);
   if (title) title.textContent = awardText(payload.title);
   if (body) {

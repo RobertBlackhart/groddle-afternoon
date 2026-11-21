@@ -22,7 +22,7 @@
  */
 
 import { potLuckWindow, urDate } from './seasons.js?v=8b81947e';
-import { HARVEST_DISHES } from './pot-luck-feast.js?v=8856930d';
+import { HARVEST_DISHES } from './pot-luck-feast.js?v=06311759';
 
 export const FEAST_DAY_ID = 'feast_day';
 export const FEAST_PILE_CLASS = 'feast_day_pile';

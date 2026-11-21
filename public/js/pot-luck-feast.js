@@ -114,6 +114,37 @@ export const FEAST_BADGE = 'pld_feast_bringer';
 export const QUEST_COUNTER = 'pld_quest:pots_empty_table';
 export const LAID_COUNTER = 'harvest_table:laid';
 
+/**
+ * The festival's notices (lane potluckk; ours, Glitch never ran a Thanksgiving): one moment card per
+ * player when Pot Luck Day begins (the first time they play during it) and one on Thanksgiving Day
+ * for the feast, plain and short, with the place and the dates. `to` is the window's last November day.
+ */
+export const SEASON_NOTICES = Object.freeze({
+  season: (to) => Object.freeze({
+    kicker: 'New festival',
+    title: 'Pot Luck Day is here!',
+    body: `Bring a dish or a crop to the Harvest Table at Groddle Forest Junction. Until November ${to}.`,
+    icon: 'assets/sprites/icons/emblem_pot.webp',
+  }),
+  feast: Object.freeze({
+    kicker: 'Pot Luck Day',
+    title: 'Thanksgiving feast today',
+    body: 'The week’s food is out at Groddle Forest Junction, right of the Harvest Table: help yourself. Today only.',
+    icon: 'assets/sprites/icons/harvest_stuffing.webp',
+  }),
+});
+
+/**
+ * Which notices are due: 'season' when this season's key is not the one told, 'feast' on the
+ * feast's day when its key is not; `told` is { season, feast } (the keys last told).
+ */
+export function noticesDue(told = {}, seasonKey = '', feastKey = '') {
+  const due = [];
+  if (seasonKey && told?.season !== seasonKey) due.push('season');
+  if (seasonKey && feastKey && told?.feast !== feastKey) due.push('feast');
+  return due;
+}
+
 export const TABLE_LINES = Object.freeze({
   title: 'Harvest Table',
   subtitle: (n) => (n ? `${countText(n)} laid for Pot Luck Day` : 'Bare, for now'),

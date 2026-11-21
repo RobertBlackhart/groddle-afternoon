@@ -29,7 +29,7 @@ import { standOnFeet } from '../sprite-feet.js?v=53939279';
 import { FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { energyMax, forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { TABLE_AT, TABLE_STREET } from '../pot-luck-feast.js?v=8856930d';
+import { TABLE_AT, TABLE_STREET } from '../pot-luck-feast.js?v=06311759';
 import {
   FEAST_DAY_LINES,
   FEAST_DAY_RULES,
@@ -41,7 +41,7 @@ import {
   refillDue,
   servingsLeft,
   settleFeastDay,
-} from '../feast-day.js?v=e287f0eb';
+} from '../feast-day.js?v=d0e023af';
 
 export const FEAST_DAY_FEATURE_ID = 'feast-day';
 

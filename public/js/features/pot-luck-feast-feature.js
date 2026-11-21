@@ -31,7 +31,7 @@
 import { addItem, countItem, ensureItem, itemIcon, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
 import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=d28b2a24';
-import { activeSeasons, parseSeasonDate, seasonYearKey } from '../seasons.js?v=8b81947e';
+import { activeSeasons, parseSeasonDate, potLuckWindow, seasonYearKey } from '../seasons.js?v=8b81947e';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=b1f5bbfe';
@@ -39,7 +39,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=751ef424';
 import { openListDialog } from '../ui/storage-windows.js?v=5fff6b37';
-import { servingsText } from '../feast-day.js?v=e287f0eb';
+import { feastDayKey, servingsText } from '../feast-day.js?v=d0e023af';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -51,6 +51,7 @@ import {
   LAID_COUNTER,
   QUEST,
   QUEST_COUNTER,
+  SEASON_NOTICES,
   STUFFING,
   STUFFING_ITEM,
   STUFFING_RECIPE,
@@ -68,6 +69,7 @@ import {
   layCheck,
   layOffering,
   layableKind,
+  noticesDue,
   packAway,
   questComplete,
   questEvent,
@@ -76,7 +78,7 @@ import {
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=8856930d';
+} from '../pot-luck-feast.js?v=06311759';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -86,6 +88,7 @@ let seasonCheckAt = 0;
 let table = createTableState(); // solo: the save's; online: the server's last word
 let quest = createQuestState();
 let laidTotal = 0; // this player's offerings, all time (Good Neighbor counts them too)
+let told = {}; // { season, feast }: the keys this player's notices were last shown for
 let view = null; // { target, root, icons, label }
 let recipeAdded = false;
 let dishes = null;
@@ -153,6 +156,26 @@ function shownTable() {
 /** Is the table out? Online the server's word decides (it sets the table out at the season's first second, harvest_table.go), else the calendar. */
 function tableOn() {
   return online ? online.on : seasonOn();
+}
+
+/**
+ * The festival's moment cards, once each per player: Pot Luck Day the first time they play during it,
+ * the feast on Thanksgiving Day (SEASON_NOTICES). QA: &seasonnotice=off (or &questoffer=off) holds them.
+ */
+function tellSeason(engine) {
+  if (engine.param?.('seasonnotice') === 'off' || engine.param?.('questoffer') === 'off') return;
+  const now = nowForCalendar(engine);
+  const key = yearKey(engine);
+  const due = noticesDue(told, key, feastDayKey(now));
+  if (!due.length) return;
+  const y = Number(String(key).split(':')[1]) || new Date(now).getUTCFullYear();
+  for (const which of due) {
+    const n = which === 'season' ? SEASON_NOTICES.season(potLuckWindow(y).to[1]) : SEASON_NOTICES.feast;
+    told = { ...told, [which]: which === 'season' ? key : feastDayKey(now) };
+    engine.pushActivity?.(`${/[.!?]$/.test(n.title) ? n.title : `${n.title}.`} ${n.body}`);
+    engine.award?.({ kind: 'season', kicker: n.kicker, title: n.title, body: n.body, iconUrl: n.icon, primaryLabel: 'OK' });
+  }
+  engine.save?.();
 }
 
 /* --------------------------------------------------------------- online */
@@ -598,6 +621,7 @@ export const potLuckFeastFeature = {
       spawnTable(engine);
     }
     if (!engine.started || !seasonOn()) return;
+    tellSeason(engine);
     if (quest.status === '' && now >= offerAt && engine.param?.('questoffer') !== 'off' && !engine.query?.('holdQuestOffers', engine) && !engine.questDialogueOpen?.()) {
       offerAt = now + 10 * 60_000;
       offerQuest(engine);
@@ -684,7 +708,7 @@ export const potLuckFeastFeature = {
   },
 
   save() {
-    return { table: engineRef?.mode === 'multiplayer' ? undefined : table, quest, laidTotal };
+    return { table: engineRef?.mode === 'multiplayer' ? undefined : table, quest, laidTotal, told };
   },
 
   restore(slice, engine) {
@@ -692,6 +716,7 @@ export const potLuckFeastFeature = {
     table = createTableState(s.table || {});
     quest = createQuestState(s.quest || {});
     laidTotal = Math.max(0, Math.floor(Number(s.laidTotal) || 0));
+    told = s.told && typeof s.told === 'object' ? { season: String(s.told.season || ''), feast: String(s.told.feast || '') } : {};
     if (engine) {
       refreshSeason(engine, true);
       publish(engine);

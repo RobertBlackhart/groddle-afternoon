@@ -888,9 +888,11 @@
   },
   "public/js/pot-luck-feast.js": {
     "glitch-had-none: * All of it is ours: Glitch never ran a Thanksgiving event (inventions register:": "pot-luck-table",
+    "glitch-had-none: * The festival's notices (lane potluckk; ours, Glitch never ran a Thanksgiving): one moment card": "pot-luck-day",
     "invented: is ours: Glitch never ran a Thanksgiving event (inventions register:": "pot-luck-table",
     "ours: * All of it is ours: Glitch never ran a Thanksgiving event": "pot-luck-table",
     "ours: * Pot's Empty Table (ours, in Glitch's voice). Step 1 is the Magic Rock's": "pot-luck-quest",
+    "ours: * The festival's notices (lane potluckk; ours, Glitch never ran a Thanksgiving): one moment": "pot-luck-day",
     "ours: * The season's five badges (ours, Austin 2026-11-17; art approved the same day,": "pot-luck-badges",
     "ours: an Awesome Pot dish of existing ingredients (ours). Its numbers sit": "pot-luck-stuffing",
     "ours: first offering: mood, and favor with Pot (both ours).": "pot-luck-table"
