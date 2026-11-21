@@ -21,7 +21,7 @@
  * Memory: a sheet is fetched when first played and only the last KEEP_SHEETS are kept decoded;
  * an older one nobody is playing is destroyed (its 3x twin too) and fetched again if wanted. A
  * sheet marked `keep` is one another module draws from too, and is left alone.
- * #577/#578 (R30): every other sheet is loaded as a source of our own (js/textures.js
+ * #577/#578 (R30): every other sheet is loaded as a private source (js/textures.js
  * loadOwnTexture), never the one shared per URL. A tool's sheet is also cut by the module that
  * shows that tool in your hands (game.js playPickAnimation keeps the pick's frames for good, so do
  * help-mine, job-work-fx and the Patches); evicting the shared source destroyed theirs, and when
@@ -65,7 +65,7 @@ function evict(entry) {
     // Texture.EMPTY (an empty frame) is Pixi's own: never destroyed.
     if (t && !t.destroyed && t.source === entry.source) t.destroy(false);
   }
-  // Our own source (loadOwnTexture): nobody else holds it, and the shared one for the URL stays.
+  // A private source (loadOwnTexture): nobody else holds it, and the shared one for the URL stays.
   const source = entry.source;
   if (source && !source.destroyed) {
     const bitmap = source.resource;
@@ -91,7 +91,7 @@ function hold(PIXI, def) {
   if (!entry) {
     entry = { path: def.path, refs: 0, usedAt: 0, frames: null, source: null, promise: null, keep: Boolean(def.keep) };
     const e = entry;
-    // A `keep` sheet is shared on purpose (never evicted); any other is ours alone to destroy.
+    // A `keep` sheet is shared on purpose (never evicted); any other is this module's alone to destroy.
     const load = e.keep ? loadTexture : loadOwnTexture;
     e.promise = load(def.path, { raw: true }).then((texture) => {
       e.source = texture.source;

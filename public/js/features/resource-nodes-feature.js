@@ -108,7 +108,7 @@ import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureF
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=571620de';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=f0966996';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=892af05a';
-import { playItemOverlay } from '../item-overlay.js?v=77f9c3e5';
+import { playItemOverlay } from '../item-overlay.js?v=09ca470a';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=a43dd2ea';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
