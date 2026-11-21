@@ -157,16 +157,46 @@ export const HUD_SHORT_OVER = 9999;
  * shortened to one decimal with no trailing .0, cut rather than rounded so it never shows more
  * than you have: 17,230 is 17.2K, 110,510 is 110.5K, 20,000 is 20K, 1,234,567 is 1.2M. A desktop
  * (or a small count) keeps the number as it was.
+ * #595 (G1110): when the phone's bar still does not fit, `short` is a harder step (HUD_COUNT_STEP):
+ * 2 shortens from 1,000 up (1,302 is 1.3K), 3 also drops the decimal once the number has two
+ * digits (80,312 is 80K, 1,302 stays 1.3K), so a count is shortened before it is ever cut.
  */
+export const HUD_COUNT_STEP = Object.freeze({ 'counts-k': 2, 'counts-whole': 3 });
 export function hudCount(n, short = false) {
   const v = Math.floor(Number(n) || 0);
-  if (!short || Math.abs(v) <= HUD_SHORT_OVER) return String(short ? v : n ?? 0);
+  const step = short === true ? 1 : Number(short) || 0;
+  const over = step >= 2 ? 999 : HUD_SHORT_OVER;
+  if (!step || Math.abs(v) <= over) return String(step ? v : n ?? 0);
   for (const [size, unit] of [[1e9, 'B'], [1e6, 'M'], [1e3, 'K']]) {
     if (Math.abs(v) < size) continue;
     const tenths = Math.trunc((v * 10) / size);
+    if (step >= 3 && Math.abs(tenths) >= 100) return `${Math.trunc(tenths / 10)}${unit}`;
     return `${tenths % 10 ? (tenths / 10).toFixed(1) : String(tenths / 10)}${unit}`;
   }
   return String(v);
+}
+
+/** The phone bar's count step now (its `data-overflow`, fitTopActions): 1, or 2 / 3 when it is tight. */
+export function hudCountStep(doc) {
+  const steps = (doc?.querySelector?.('header.top-bar')?.dataset?.overflow || '').split(' ');
+  return Math.max(1, ...steps.map((s) => HUD_COUNT_STEP[s] || 0));
+}
+
+/**
+ * A top bar count on the page: the whole number kept on the element (`data-n`) so the fit can
+ * draw it again at another step, the text shortened on a phone (`short`) to the bar's step.
+ * `whole` is what a count shows when it is not shortened (favor's 1,302).
+ */
+export function drawHudCount(doc, el, n, short, whole = String(n ?? 0)) {
+  if (!el) return;
+  const v = String(Math.floor(Number(n) || 0));
+  if (el.dataset) {
+    if (!short) delete el.dataset.n;
+    else if (el.dataset.n !== v || el.dataset.whole !== whole) Object.assign(el.dataset, { n: v, whole });
+  }
+  const text = short ? hudCount(v, hudCountStep(doc)) : whole;
+  const shown = short && text === v ? whole : text;
+  if (el.textContent !== shown) el.textContent = shown;
 }
 
 /**
@@ -353,9 +383,10 @@ export function renderTopBar(doc, state = {}) {
     const f = favorChip(state.favor);
     chip.hidden = !f;
     if (f) {
-      // #372: shortened over 9,999 on a phone, as the iMG and currants beside it.
-      const short = !f.neutral && doc.documentElement?.classList?.contains('touch-phone') && whole(state.favor.points) > HUD_SHORT_OVER;
-      setText(doc.getElementById('stat-favor'), short ? hudCount(state.favor.points, true) : f.num);
+      // #372: shortened on a phone, as the iMG and currants beside it (over 9,999, or from 1,000
+      // when the bar is tight: #595).
+      const short = !f.neutral && doc.documentElement?.classList?.contains('touch-phone');
+      drawHudCount(doc, doc.getElementById('stat-favor'), state.favor.points, short, f.num);
       setAttr(chip, 'data-tip', f.tip);
       setAttr(chip, 'data-sub', f.sub);
       setAttr(chip, 'aria-label', f.label);
@@ -932,11 +963,27 @@ export function pickTopOverflow(fits, steps = TOP_OVERFLOW_STEPS) {
 /**
  * PURE (#540): a phone's steps. The study, Map and Make are always in the Menu there (style.css
  * PHONEBAR); `counts` joins them when the bar's buttons, squeezed to 28 px, still do not fit beside
- * the counts, and the counts shorten instead, so the Menu never stands off its pill.
+ * the counts, and the counts are cut instead, so the Menu never stands off its pill.
+ * #595 (G1110): before a count is cut ("70…") it is shortened harder, one step at a time
+ * (PHONE_COUNT_STEPS, hudCount): `counts-k` from 1,000 up (1.3K), then `counts-whole` (80K).
  */
 export const PHONE_OVERFLOW_STEPS = Object.freeze(['chip', 'map', 'make']);
+export const PHONE_COUNT_STEPS = Object.freeze(['counts-k', 'counts-whole', 'counts']);
 export function pickPhoneOverflow(fits) {
-  return fits([...PHONE_OVERFLOW_STEPS]) ? [...PHONE_OVERFLOW_STEPS] : [...PHONE_OVERFLOW_STEPS, 'counts'];
+  const base = [...PHONE_OVERFLOW_STEPS];
+  for (let n = 0; n < PHONE_COUNT_STEPS.length; n += 1) {
+    const steps = [...base, ...PHONE_COUNT_STEPS.slice(0, n)];
+    if (fits(steps)) return steps;
+  }
+  return [...base, ...PHONE_COUNT_STEPS];
+}
+
+/** Draws the bar's shortened counts again at its step now (drawHudCount kept each whole number). */
+function redrawHudCounts(doc) {
+  for (const id of ['stat-img', 'stat-currants', 'stat-favor']) {
+    const el = doc.getElementById(id);
+    if (el?.dataset?.n) drawHudCount(doc, el, el.dataset.n, true, el.dataset.whole);
+  }
 }
 
 /** Whether the actions pill fits: no content past its box, its box inside the window. */
@@ -970,6 +1017,8 @@ function fitTopActions(doc) {
     if ((bar.dataset.overflow || '') !== value) {
       if (value) bar.dataset.overflow = value;
       else delete bar.dataset.overflow;
+      // #595: a phone's counts shorten with the bar's step.
+      redrawHudCounts(doc);
     }
     for (const [step, [id]] of Object.entries(OVERFLOW_ROWS)) {
       const row = doc.getElementById(id);

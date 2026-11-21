@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HUD_SHORT_OVER, hudCount, renderTopBar } from '../public/js/ui/topbar.js?v=85a3deaf';
+import { HUD_COUNT_STEP, HUD_SHORT_OVER, drawHudCount, hudCount, hudCountStep, pickPhoneOverflow, renderTopBar } from '../public/js/ui/topbar.js?v=6f44bdcc';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
@@ -29,8 +29,8 @@ describe('#372 top bar counts on a phone', () => {
 
   it('the game writes the iMG and the bar currants through it on a phone; the pack and vendor keep the whole number', () => {
     const game = readFileSync(join(PUBLIC, 'game.js'), 'utf8');
-    assert.match(game, /document\.getElementById\('stat-img'\)\.textContent = hudCount\(pc\.imagination, TOUCH_PHONE\);/);
-    assert.match(game, /if \(curEl\) curEl\.textContent = hudCount\(cur, TOUCH_PHONE\);\s*const packCur = document\.getElementById\('pack-currants'\);\s*if \(packCur\) packCur\.textContent = cur;/);
+    assert.match(game, /drawHudCount\(document, document\.getElementById\('stat-img'\), pc\.imagination, TOUCH_PHONE\);/);
+    assert.match(game, /drawHudCount\(document, curEl, cur, TOUCH_PHONE\);\s*const packCur = document\.getElementById\('pack-currants'\);\s*if \(packCur\) packCur\.textContent = cur;/);
   });
 
   it('favor shortens on a phone only', () => {
@@ -46,5 +46,54 @@ describe('#372 top bar counts on a phone', () => {
     const desk = doc(false);
     renderTopBar(desk, { favor });
     assert.equal(desk.els['stat-favor'].textContent, '12,345');
+  });
+});
+
+describe('#595 (G1110): a tight phone bar shortens its counts harder before it cuts one', () => {
+  it('step 2 shortens from 1,000 up; step 3 drops the decimal from two digits; never more than you have', () => {
+    assert.deepEqual({ ...HUD_COUNT_STEP }, { 'counts-k': 2, 'counts-whole': 3 });
+    const two = [[1302, '1.3K'], [1000, '1K'], [9999, '9.9K'], [999, '999'], [70212, '70.2K'], [80312, '80.3K'], [1_234_567, '1.2M']];
+    for (const [n, want] of two) assert.equal(hudCount(n, 2), want, `2: ${n}`);
+    const three = [[1302, '1.3K'], [9999, '9.9K'], [70212, '70K'], [80312, '80K'], [80999, '80K'], [110510, '110K'], [999, '999'], [12_345_678, '12M']];
+    for (const [n, want] of three) assert.equal(hudCount(n, 3), want, `3: ${n}`);
+    // Step 1 is #372's, unchanged.
+    assert.equal(hudCount(1302, 1), '1302');
+    assert.equal(hudCount(80312, true), '80.3K');
+  });
+
+  it('the phone bar tries each count step before it cuts a count with an ellipsis', () => {
+    const tried = [];
+    const fitsAt = (ok) => (steps) => { tried.push(steps.join(' ')); return ok(steps); };
+    assert.deepEqual(pickPhoneOverflow(fitsAt((s) => s.includes('counts-whole'))), ['chip', 'map', 'make', 'counts-k', 'counts-whole']);
+    assert.deepEqual(tried, ['chip map make', 'chip map make counts-k', 'chip map make counts-k counts-whole']);
+    assert.deepEqual(pickPhoneOverflow(fitsAt((s) => s.includes('counts-k'))), ['chip', 'map', 'make', 'counts-k']);
+    assert.deepEqual(pickPhoneOverflow(() => true), ['chip', 'map', 'make']);
+    assert.deepEqual(pickPhoneOverflow(() => false), ['chip', 'map', 'make', 'counts-k', 'counts-whole', 'counts']);
+  });
+
+  it("the report's counts at each step: the bar's step is read from its data-overflow", () => {
+    const bar = { dataset: {} };
+    const doc = { querySelector: (q) => (q === 'header.top-bar' ? bar : null) };
+    const el = () => ({ dataset: {}, textContent: '' });
+    const img = el();
+    const cur = el();
+    const fav = el();
+    const draw = () => {
+      drawHudCount(doc, img, 70212, true);
+      drawHudCount(doc, cur, '80312', true);
+      drawHudCount(doc, fav, 1302, true, '1,302');
+      return [img, cur, fav].map((e) => e.textContent);
+    };
+    assert.equal(hudCountStep(doc), 1);
+    assert.deepEqual(draw(), ['70.2K', '80.3K', '1,302']);
+    bar.dataset.overflow = 'chip map make counts-k';
+    assert.deepEqual(draw(), ['70.2K', '80.3K', '1.3K']);
+    bar.dataset.overflow = 'chip map make counts-k counts-whole';
+    assert.deepEqual(draw(), ['70K', '80K', '1.3K']);
+    assert.deepEqual([img.dataset.n, cur.dataset.n, fav.dataset.n, fav.dataset.whole], ['70212', '80312', '1302', '1,302']);
+    // Not shortened (a desktop): the whole number, and nothing kept for the phone's redraw.
+    drawHudCount(doc, fav, 1302, false, '1,302');
+    assert.equal(fav.textContent, '1,302');
+    assert.equal(fav.dataset.n, undefined);
   });
 });
