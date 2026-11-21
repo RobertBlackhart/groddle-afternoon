@@ -3930,17 +3930,32 @@
     {
       "id": "G1075",
       "area": "Projects",
-      "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open."
+      "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open.",
+      "show": "fixing",
+      "commits": [
+        "game:f4d9605da74",
+        "game:f91201b2727",
+        "game:14023c5e71a",
+        "server:e828d6d"
+      ]
     },
     {
       "id": "G1077",
       "area": "Gardens",
-      "text": "Garden signs that carried words in Glitch show up blank."
+      "text": "Garden signs that carried words in Glitch show up blank.",
+      "show": "fixing",
+      "commits": [
+        "game:99830956f59"
+      ]
     },
     {
       "id": "G1078",
       "area": "Streets",
-      "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture."
+      "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture.",
+      "show": "fixing",
+      "commits": [
+        "game:138163f591b"
+      ]
     },
     {
       "id": "G1082",
@@ -4005,6 +4020,99 @@
       "text": "Holding Enter at a vendor could buy the same thing more than once.",
       "commits": [
         "game:b7245a230b2"
+      ]
+    },
+    {
+      "id": "G1076",
+      "area": "Maps",
+      "text": "Region pictures on the World Map appeared only now and then when you pointed at a region.",
+      "show": "fixing",
+      "commits": [
+        "game:0323fd8bb81"
+      ]
+    },
+    {
+      "id": "G1090",
+      "area": "Multiplayer",
+      "text": "Mining while other players used tools nearby, as at a party, could freeze your character until you reloaded.",
+      "show": "fixing",
+      "commits": [
+        "game:7d40a36ab2c",
+        "game:34f57909a29",
+        "game:1e66bd3b813"
+      ]
+    },
+    {
+      "id": "G1091",
+      "area": "Streets",
+      "text": "The street card on arrival left out the Batterflies on some streets.",
+      "show": "fixing",
+      "commits": [
+        "game:8f36327bf50"
+      ]
+    },
+    {
+      "id": "G1092",
+      "area": "Streets",
+      "text": "Narrow streets showed black bars at the sides on wide windows.",
+      "show": "fixing",
+      "commits": [
+        "game:149ccb9bfc1"
+      ]
+    },
+    {
+      "id": "G1093",
+      "area": "Streets",
+      "text": "Some rocks and resource spots hung an end in the air over a ledge.",
+      "show": "fixing",
+      "commits": [
+        "game:09bfaddf0b0",
+        "server:2f7ea78"
+      ]
+    },
+    {
+      "id": "G1094",
+      "area": "Trees",
+      "text": "A tree that needed care could be invisible until you watered it.",
+      "show": "fixing",
+      "commits": [
+        "game:f4168035b18"
+      ]
+    },
+    {
+      "id": "G1095",
+      "area": "Projects",
+      "text": "The street project work bubble covered faces, and some tools showed an empty bubble on phones.",
+      "show": "fixing",
+      "commits": [
+        "game:6c6ac9044d2"
+      ]
+    },
+    {
+      "id": "G1096",
+      "area": "Maps",
+      "text": "The Map could not be opened at home.",
+      "show": "fixing",
+      "commits": [
+        "game:7076f5b5400"
+      ]
+    },
+    {
+      "id": "G1097",
+      "area": "Quests",
+      "text": "The Quests list could show nothing even with quests active.",
+      "show": "fixing",
+      "commits": [
+        "game:5aa28f86743"
+      ]
+    },
+    {
+      "id": "G1098",
+      "area": "Maps",
+      "text": "Streets you had not visited were hard to see on dark region maps.",
+      "show": "fixing",
+      "commits": [
+        "game:bc50e91fd3a"
       ]
     }
   ]

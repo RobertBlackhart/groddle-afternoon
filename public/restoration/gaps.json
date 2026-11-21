@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.54.0",
+  "release": "v0.54.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 16,
+    "known": 13,
     "unreleased": 0,
-    "fixed": 390,
+    "fixed": 403,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -302,6 +302,12 @@
           "text": "Enlarge Yer Slots could stay at 0 after you bought a Generic Bag.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1097",
+          "text": "The Quests list could show nothing even with quests active.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     },
@@ -321,11 +327,6 @@
         {
           "id": "G681",
           "text": "Teleporters that work by walking into them have not all been checked yet.",
-          "state": "known"
-        },
-        {
-          "id": "G1078",
-          "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture.",
           "state": "known"
         },
         {
@@ -483,6 +484,12 @@
           "version": "v0.53.0"
         },
         {
+          "id": "G1078",
+          "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
           "id": "G1084",
           "text": "Some Visiting Stones and mailboxes stood behind trees or huts drawn in front of them.",
           "state": "fixed",
@@ -493,6 +500,24 @@
           "text": "A few ladders hang too high to grab from the floor below, and nothing said how to get back on.",
           "state": "fixed",
           "version": "v0.54.0"
+        },
+        {
+          "id": "G1091",
+          "text": "The street card on arrival left out the Batterflies on some streets.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
+          "id": "G1092",
+          "text": "Narrow streets showed black bars at the sides on wide windows.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
+          "id": "G1093",
+          "text": "Some rocks and resource spots hung an end in the air over a ledge.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     },
@@ -1543,6 +1568,12 @@
           "text": "Following a friend could take you onto a street that was still being built.",
           "state": "fixed",
           "version": "v0.51.2"
+        },
+        {
+          "id": "G1090",
+          "text": "Mining while other players used tools nearby, as at a party, could freeze your character until you reloaded.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     },
@@ -2092,11 +2123,6 @@
       "name": "Projects",
       "items": [
         {
-          "id": "G1075",
-          "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open.",
-          "state": "known"
-        },
-        {
           "id": "F66",
           "text": "Notices covered the featured project's progress under the street name.",
           "state": "fixed",
@@ -2119,6 +2145,18 @@
           "text": "Street project boards named skills on steps that had not opened yet and never said anyone can give items.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1075",
+          "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
+          "id": "G1095",
+          "text": "The street project work bubble covered faces, and some tools showed an empty bubble on phones.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     },
@@ -2206,11 +2244,6 @@
       "name": "Gardens",
       "items": [
         {
-          "id": "G1077",
-          "text": "Garden signs that carried words in Glitch show up blank.",
-          "state": "known"
-        },
-        {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
           "report": 321,
@@ -2259,6 +2292,12 @@
           "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
           "state": "fixed",
           "version": "v0.51.2"
+        },
+        {
+          "id": "G1077",
+          "text": "Garden signs that carried words in Glitch show up blank.",
+          "state": "fixed",
+          "version": "v0.54.1"
         },
         {
           "id": "G1085",
@@ -2918,6 +2957,12 @@
           "text": "Fruit trees and the other trants always looked full, even when picked clean.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1094",
+          "text": "A tree that needed care could be invisible until you watered it.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     },
@@ -2968,6 +3013,29 @@
           "text": "Cubimal races, battles and some other play were refused inside a party space.",
           "state": "fixed",
           "version": "v0.54.0"
+        }
+      ]
+    },
+    {
+      "name": "Maps",
+      "items": [
+        {
+          "id": "G1076",
+          "text": "Region pictures on the World Map appeared only now and then when you pointed at a region.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
+          "id": "G1096",
+          "text": "The Map could not be opened at home.",
+          "state": "fixed",
+          "version": "v0.54.1"
+        },
+        {
+          "id": "G1098",
+          "text": "Streets you had not visited were hard to see on dark region maps.",
+          "state": "fixed",
+          "version": "v0.54.1"
         }
       ]
     }
