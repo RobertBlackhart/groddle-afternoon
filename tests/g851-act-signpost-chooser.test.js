@@ -96,8 +96,8 @@ describe('G851: Act drives a held signpost', () => {
   it('game.js: Act gets the verb menu, then the held post, then a stack\'s menu; its press keeps the stack menu open', () => {
     const act = game.match(/actMenu: \(\) => \{[\s\S]*?\n {6}\},/)[0];
     const at = (s) => act.indexOf(s);
-    assert.ok(at('enterChooser?.isOpen()') >= 0 && at('enterChooser?.isOpen()') < at('stepVerbRow(menu, n)'));
-    assert.ok(at('stepVerbRow(menu, n)') < at('if (signpostFocus) return signpostActMenu();'));
+    assert.ok(at('enterChooser?.isOpen()') >= 0 && at('enterChooser?.isOpen()') < at('actVerbMenu(menu)'));
+    assert.ok(at('actVerbMenu(menu)') < at('if (signpostFocus) return signpostActMenu();'));
     assert.ok(at('if (signpostFocus) return signpostActMenu();') < at('stepVerbRow(pop, n)'));
     assert.match(act, /isPackPopoverOpen\(\) \? document\.getElementById\('pack-popover'\)/);
     assert.match(game, /if \(pop\?\.contains\(e\.target\) \|\| e\.target\?\.closest\?\.\('\.pack-slot\[data-tsid\]'\)\) return;\n\s*\/\/ G851[^\n]*\n\s*if \(e\.target\?\.closest\?\.\('\[data-touch-act\]'\)\) return;/);
