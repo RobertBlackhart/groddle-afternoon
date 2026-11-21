@@ -924,15 +924,9 @@ function spawnStreet(engine) {
   for (const target of engine.interactables) {
     if (ANIMAL_CLASSES.has(target.classId) && target.state?.userName) target.label = namedAnimalLabel(target.classId, target.state);
   }
-  // Captured ecology piggies stay gone (one capture per location cooldown). Online a street
-  // Piggy's leaving is the realtime server's (G605: back at the next game day; sharedPigGone).
-  for (const target of [...engine.interactables]) {
-    if (engine.mode === 'multiplayer') break;
-    if (target.classId === 'npc_piggy' && !target.husbandryAnimal && Number(target.state?.capturedAt) > 0
-      && t - Number(target.state.capturedAt) < HERDKEEPING.locationCooldownMs) {
-      hideEcologyAnimal(engine, target);
-    }
-  }
+  // Captured ecology piggies stay gone (hideCapturedPiggies, done on arrival; again here for any
+  // registered since).
+  hideCapturedPiggies(engine);
   if (isYard(engine)) {
     advanceYardNow(engine);
     for (const row of s.sticks) buildPlaced(engine, 'stick', row);
@@ -950,6 +944,25 @@ function spawnStreet(engine) {
   }
   setupDemo(engine);
   publish(engine, true);
+}
+
+/**
+ * Captured ecology piggies stay gone (one capture per location cooldown). Online a street Piggy's
+ * leaving is the realtime server's (G605: back at the next game day; sharedPigGone). Sibling audit
+ * B2: done as the street is entered (onStreetEnter), before the loading card counts the street
+ * (game.js streetTripTo details) and keeps that count for the street (homeToSeen); it used to wait
+ * for the first tick, after the card, and that tick threw on an undefined clock, so the Piggy also
+ * stayed on the street.
+ */
+function hideCapturedPiggies(engine, at = now()) {
+  if (engine.mode === 'multiplayer' || !Array.isArray(engine.interactables)) return;
+  if (engine.transientInstance?.() && !isYard(engine)) return;
+  for (const target of [...engine.interactables]) {
+    if (target.classId === 'npc_piggy' && !target.husbandryAnimal && Number(target.state?.capturedAt) > 0
+      && at - Number(target.state.capturedAt) < HERDKEEPING.locationCooldownMs) {
+      hideEcologyAnimal(engine, target);
+    }
+  }
 }
 
 function hideEcologyAnimal(engine, target) {
@@ -1962,9 +1975,11 @@ export const animalHusbandryFeature = {
     return stickFor(engine, 'npc_chicken') ? true : null;
   },
 
-  onStreetEnter() {
+  onStreetEnter(street, engine) {
     pendingEnter = true;
     spawnedFor = null;
+    // B2: before the loading card counts the street's Piggies.
+    if (engine) hideCapturedPiggies(engine);
   },
 
   onStreetClear() {
