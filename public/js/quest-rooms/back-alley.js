@@ -50,7 +50,7 @@ import { autoplayLog, runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { onLoaded, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=04d1a4c0';
 import { STATION_FLOOR, stationArrival, stationByTsid, stationScreen, surfaceStation } from '../subway.js?v=36c6d2b2';
-import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=ba8081ef';
+import { ALLEY, ALLEY_ART, ALLEY_SET, SHADY, alleyPlatforms, drawAlley, inEnteredBox } from './back-alley-set.js?v=cab681f4';
 import { standOnFeet } from '../sprite-feet.js?v=53939279';
 
 export { ALLEY, ALLEY_ART, ALLEY_SET, alleyPlatforms };

@@ -207,9 +207,10 @@ export function phoneZoomSpan(args = {}) {
  * - Under LOCATION_VIEW_W x VIEW_FLOOR_H it shrinks, so the smallest view
  *   every room was tuned for always fits.
  * - A scene narrower or shorter than that view magnifies until it fills it
- *   (homes, short rooms), never past the floors; with `sceneBorders` (a
- *   street) a narrow one keeps the scale instead and shows plain borders at
- *   its sides (computerStage, #337). Phones keep the magnifying rule.
+ *   (homes, short rooms, a street whose narrowest layer is narrower than the
+ *   window's view, #580), never past the floors. `sceneBorders` keeps the
+ *   scale instead and shows plain borders at the sides (computerStage, #337);
+ *   the game no longer asks for it (#580). Phones keep the magnifying rule.
  * - The canvas fills the room exactly, so the page never scrolls; only a view
  *   held at VIEW_HOLD_H (a portrait phone, where the width floor wins) leaves
  *   a band above.
@@ -255,6 +256,10 @@ export function stageFor({
  * width (never under LOCATION_VIEW_W) and the canvas is that much narrower (cssWidth < width,
  * `bordered`), centred, with a plain border at each side (style.css NARROW STREETS). Semsan Simile
  * (its far layer 960 wide) drew 1.76 times bigger than its neighbours in a 1687 px window.
+ * Report #580 (Sarda Rapt: its sky 1050 px wide on a 1500 px street) read the borders as black bars
+ * on a street you can pan, and Glitch's view never grew past the narrowest layer (TSMainView.as 514,
+ * max_vp_w = Math.min(max_vp_w, layer.w)): the game asks for no borders now (game.js stageArgs), so
+ * such a street magnifies just enough to fill the window; every other street keeps the zoom's scale.
  */
 function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false }) {
   if (pinned > 0 || !(W > 0) || !(H > 0)) {

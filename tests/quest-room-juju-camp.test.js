@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=a185ad58';
+import * as kit from '../public/js/quest-rooms/kit.js?v=8423c9fd';
 import * as mod from '../public/js/quest-rooms/juju-camp.js?v=86382ec3';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');

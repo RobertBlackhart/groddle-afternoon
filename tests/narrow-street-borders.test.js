@@ -5,6 +5,12 @@
  * the scale any other street gets in that window; the view stops at the street's width and the
  * canvas is that much narrower, centred (js/location-view.js computerStage, game.js stageArgs
  * sceneBorders, style.css NARROW STREETS). Phones keep filling the screen.
+ *
+ * Report #580 (Sarda Rapt, a 1687 x 966 window): the borders read as black bars on a street you can
+ * pan (its sky is 1050 px wide, the street 1500). Glitch's view never grew past the narrowest layer
+ * (TSMainView.as 514) and filled its frame, so game.js asks for no borders now: a street narrower
+ * than the window's view magnifies just enough to fill it, every other street keeps the zoom's
+ * scale. The border option itself (stageFor sceneBorders) is unchanged and still tested here.
  * Run: node --test tests/narrow-street-borders.test.js
  */
 import { describe, it } from 'node:test';
@@ -12,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LOCATION_VIEW_W, MIN_PACK_HEIGHT, sceneViewWidthCap, stageFor } from '../public/js/location-view.js?v=ac404fcb';
+import { LOCATION_VIEW_W, MIN_PACK_HEIGHT, sceneViewWidthCap, stageFor } from '../public/js/location-view.js?v=487afbb5';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const semsan = JSON.parse(readFileSync(join(here, '../public/assets/streets/GCR105E77812AEF.json'), 'utf8'));
@@ -67,9 +73,8 @@ describe('report #337: Semsan Simile at actual size between borders', () => {
     }
   });
 
-  it('game.js asks for borders on streets only, and sizes the canvas from the stage', () => {
+  it('game.js sizes the canvas from the stage (a bordered one centred)', () => {
     const game = readFileSync(join(here, '../public/game.js'), 'utf8');
-    assert.match(game, /sceneBorders: Array\.isArray\(bgLayer\?\.street\?\.layers\),/);
     assert.match(game, /if \(stage\.bordered\) \{\s+root\.style\.setProperty\('--stage-w', `\$\{stage\.cssWidth\.toFixed\(2\)\}px`\);\s+root\.dataset\.stageBordered = '1';/);
     const css = readFileSync(join(here, '../public/style.css'), 'utf8');
     assert.match(css, /#game-root\[data-stage-bordered\] > canvas\[role="application"\] \{\s+width: var\(--stage-w, 100%\) !important;\s+margin-inline: auto;/);
@@ -91,5 +96,54 @@ describe('report #337: Semsan Simile at actual size between borders', () => {
     // The rule that wins without the NARROW STREETS block is still there (kept, not replaced).
     const css = readFileSync(join(here, '../public/style.css'), 'utf8');
     assert.match(css, /#game-root canvas \{\s+display: block;\s+width: 100% !important;/);
+  });
+});
+
+describe('report #580: a narrow street fills the window, no black bars', () => {
+  const sarda = JSON.parse(readFileSync(join(here, '../public/assets/streets/GM169I1E0C226G1.json'), 'utf8'));
+  const sardaW = sarda.bounds.r - sarda.bounds.l;
+  const sardaCap = sceneViewWidthCap({ worldW: sardaW, street: sarda }, sardaW);
+  const game = readFileSync(join(here, '../public/game.js'), 'utf8');
+  const args = game.slice(game.indexOf('function stageArgs'), game.indexOf('function measureStage'));
+  // As game.js stageArgs asks for a street's stage now.
+  const street = (cap, w, h, extra = {}) => stageFor({ width: w, height: h, packReserve: MIN_PACK_HEIGHT, sceneWidth: cap, sceneHeight: 2700, ...extra });
+
+  it('Sarda Rapt: its sky (1050) caps the view on a street you can pan (1500)', () => {
+    assert.equal(sarda.label, 'Sarda Rapt');
+    assert.equal(sardaW, 1500);
+    assert.equal(sardaCap, 1050);
+  });
+
+  it('game.js asks for no borders', () => {
+    assert.ok(args.includes('sceneWidth: sceneViewWidthCap(bgLayer, WORLD_W)'));
+    assert.doesNotMatch(args, /sceneBorders:/);
+  });
+
+  for (const zoom of [0, 0.5, 0.8]) {
+    it(`the report's window (1687 x 914), zoom ${zoom}: the canvas fills it, the view no wider than the sky`, () => {
+      const s = street(sardaCap, 1687, 914, { zoom });
+      assert.equal(s.bordered, undefined);
+      assert.equal(s.cssWidth, 1687);
+      assert.ok(s.viewW <= sardaCap, `view ${s.viewW}`);
+      // Wide is just enough: the view is the sky's width; closer zooms go on to Original's 1000 px.
+      if (zoom === 0) assert.ok(s.viewW >= sardaCap - 1, `view ${s.viewW}`);
+      else assert.ok(s.viewW > 1000, `view ${s.viewW}`);
+      // Before (#337): the zoom's scale, between borders.
+      const before = street(sardaCap, 1687, 914, { zoom, sceneBorders: true });
+      assert.equal(before.bordered, true);
+      assert.ok(before.cssWidth < 1687);
+    });
+  }
+
+  it('the Original zoom already shows less than the sky: the same scale as any street', () => {
+    const s = street(sardaCap, 1687, 914, { zoom: 1 });
+    const wideStreet = street(6000, 1687, 914, { zoom: 1 });
+    assert.ok(Math.abs(s.scale - wideStreet.scale) < 1e-9);
+  });
+
+  it('a street wider than the view keeps the player zoom (Wide stays wide)', () => {
+    const s = street(6000, 1687, 914, { zoom: 0 });
+    assert.ok(s.viewW > 1500, `view ${s.viewW}`);
+    assert.equal(s.cssWidth, 1687);
   });
 });

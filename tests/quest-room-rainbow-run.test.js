@@ -11,8 +11,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=a185ad58';
-import { COINS_NEEDED, RUN_MS, SPAWN_X, rainbowCoins, rainbowPlatforms, room } from '../public/js/quest-rooms/rainbow-run.js?v=d3bc4fac';
+import * as kit from '../public/js/quest-rooms/kit.js?v=8423c9fd';
+import { COINS_NEEDED, RUN_MS, SPAWN_X, rainbowCoins, rainbowPlatforms, room } from '../public/js/quest-rooms/rainbow-run.js?v=0e483dca';
 import { COLUMNS, FLOOR, ISLANDS, PLANET, W } from '../public/js/quest-rooms/rainbow-run-scene.js?v=d9e35ade';
 import { RAINBOW_RUN_FILES } from '../public/js/quest-rooms/rainbow-run-art.js?v=bf073094';
 
