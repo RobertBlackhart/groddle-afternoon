@@ -24,8 +24,11 @@
  * or this window replaced by another, the local rules apply.
  * - Only a realtime room named for this street shares its objects: the
  *   server lays objects out by street tsid (data/objects.json) and answers
- *   any other room "none". On your own home street and back yard (HOME_<id>,
- *   HOUSE_<id>), a party space, a race or a train every verb is local, the
+ *   any other room "none". A Party Space's room (PARTY_<id>) shares its
+ *   template street's objects among the party in it (#576: Help mine at a
+ *   party, as Glitch's party spaces were instances of real items). On your
+ *   own home street and back yard (HOME_<id>, HOUSE_<id>), a race or a
+ *   train every verb is local, the
  *   same as a Patch (player report 36: a Dirt Pile placed in the yard always
  *   said the street was still connecting). A visited home's rocks and nodes
  *   are yard-verbs-mp-feature's (the site's). A street whose snapshot never
@@ -298,7 +301,7 @@ function bind(engine) {
   });
   // A street Piggy's tick (objects_pigs.go): the bubble, the croak, the walk to a tree it ate from.
   c.on('msg:obj_ev', (msg) => {
-    if (!msg || msg.street !== copy.street || copy.street !== engine.streetTsid) return;
+    if (!msg || msg.street !== copy.street || copy.street !== objectRoom(engine)) return;
     const obj = localObjects(engine).find((row) => row.id === msg.id);
     if (!obj) return;
     // Someone named it (animal_naming.js 49, a bubble with no pc: everyone sees it); the name itself comes as objs.
@@ -682,17 +685,27 @@ function waitingObject(engine, target) {
 const PICKER_KINDS = new Set(['pig', 'chicken', 'batterfly']);
 
 function shared(engine) {
-  return Boolean(client) && client.state === 'online' && copy.snap && !copy.none && copy.street === engine.streetTsid;
+  return Boolean(client) && client.state === 'online' && copy.snap && !copy.none && copy.street === objectRoom(engine);
 }
 
 /**
- * Whether the realtime room the player is in (or is joining) is this street. The server keeps
- * objects only for street tsids (objects.go handleSync answers any other room "none"), so a
- * home (HOME_<id>, HOUSE_<id>), party space, race or train room never holds them: no verb
- * there waits for the server (player report 36).
+ * The realtime room whose objects are this street's: the street itself, or in a Party Space its
+ * party's own room (PARTY_<id>, party-spaces-feature sharedObjectStreet), which the server lays out
+ * from the space's template street (objects_upgrades.go layoutOf, #576).
+ */
+function objectRoom(engine) {
+  const own = engine?.query?.('sharedObjectStreet', engine);
+  return own ? String(own) : String(engine?.streetTsid || '');
+}
+
+/**
+ * Whether the realtime room the player is in (or is joining) is this street's (objectRoom). The
+ * server keeps objects only for street tsids and Party Spaces (objects.go handleSync answers any
+ * other room "none"), so a home (HOME_<id>, HOUSE_<id>), race or train room never holds them: no
+ * verb there waits for the server (player report 36).
  */
 function roomIsStreet(engine, c) {
-  return Boolean(c?.wanted) && c.wanted === String(engine?.streetTsid || '');
+  return Boolean(c?.wanted) && c.wanted === objectRoom(engine);
 }
 
 function reconcileAll(engine, force = false) {
@@ -938,7 +951,7 @@ function landAnswer(engine, msg, ok) {
     if (shared(engine)) reconcileAll(engine);
     return;
   }
-  if (!p || p.gone || copy.street !== engine.streetTsid) {
+  if (!p || p.gone || copy.street !== objectRoom(engine)) {
     // The player walked on before the answer: a verb's refusal is still said.
     if (p && !ok && !p.silent) refuseLine(engine, msg);
     return;
@@ -1037,7 +1050,7 @@ function ask(engine, target, verbId) {
   if (!roomIsStreet(engine, c)) return null;
   const verb = sharedVerbOn(engine, target, verbId);
   if (!verb) return null;
-  if (copy.none && copy.street === engine.streetTsid) return null;
+  if (copy.none && copy.street === objectRoom(engine)) return null;
   if (!shared(engine)) {
     engine.toast?.(COPY.connecting, 2400);
     return true;
@@ -1115,7 +1128,7 @@ function askName(engine, target, value) {
   if (engine.mode !== 'multiplayer' || target?.yardVisit) return null;
   const c = bind(engine);
   if (!c || LOCAL_STATES.has(c.state) || !roomIsStreet(engine, c)) return null;
-  if (copy.none && copy.street === engine.streetTsid) return null;
+  if (copy.none && copy.street === objectRoom(engine)) return null;
   const pig = target?.classId === 'npc_piggy' ? streetPigIndex(target, engine.streetTsid) : -1;
   const animal = pig < 0 ? creatureOf(target) : null;
   let id = '';
@@ -1270,7 +1283,7 @@ export const streetObjectsFeature = {
     const c = bind(engine);
     if (!c || LOCAL_STATES.has(c.state) || !roomIsStreet(engine, c)) return null;
     const pig = streetPigIndex(target, engine.streetTsid);
-    if (pig < 0 || (copy.none && copy.street === engine.streetTsid)) return null;
+    if (pig < 0 || (copy.none && copy.street === objectRoom(engine))) return null;
     const id = pigId(pig);
     if (!shared(engine) || !copy.objs.has(id)) {
       engine.toast?.(COPY.connecting, 2400);
@@ -1309,7 +1322,7 @@ export const streetObjectsFeature = {
     const c = bind(engine);
     if (!c) return null;
     if (c.state === 'off') return false;
-    if (c.state !== 'online' || !copy.snap || copy.street !== engine.streetTsid) return null;
+    if (c.state !== 'online' || !copy.snap || copy.street !== objectRoom(engine)) return null;
     const piles = guanoPiles(copy);
     return piles ? { since: copy.guano, piles, spots: copy.spots || {} } : false;
   },
@@ -1440,7 +1453,7 @@ export const streetObjectsFeature = {
    * crew node (a Dirt Pile, an Ice Nubbin, a barnacle, a Jellisac, a Peat Bog: js/help-dig.js CREW_NODES), or null.
    */
   sharedDiggers(target, engine) {
-    if (!client || !copy.snap || copy.none || !target?.resourceKey || (engine && copy.street !== engine.streetTsid)) return null;
+    if (!client || !copy.snap || copy.none || !target?.resourceKey || (engine && copy.street !== objectRoom(engine))) return null;
     const n = (engine?.query?.('streetResourceNodes', engine) || []).find((row) => row.target === target);
     if (!n || !CREW_NODES.has(n.classTsid)) return null;
     const s = stateFor(copy, nodeId(n.key));

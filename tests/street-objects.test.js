@@ -39,8 +39,8 @@ import {
   treeReady,
   treeSkill,
 } from '../public/js/street-objects.js?v=de615f8d';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ab795d5b';
-import { FEATURES } from '../public/js/features/index.js?v=66361d5d';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=655e5647';
+import { FEATURES } from '../public/js/features/index.js?v=e413e81c';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=8463f2ac';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=864ea9ff';
@@ -460,6 +460,38 @@ describe('street objects: the feature', () => {
     // A visitor on someone's home street keeps the site's yard verbs (yard-verbs-mp-feature).
     const v = rig();
     assert.equal(streetObjectsFeature.runVerbOverride({ ...v.rockT, yardVisit: true }, 'mine', v.engine), null);
+  });
+
+  it('#576: a Party Space\'s room shares its template street\'s rocks with the party (Help mine)', () => {
+    // In a space the page stands on the template street (GSTREET here) in its party's room PARTY_<id>
+    // (party-spaces-feature sharedObjectStreet, the same room as its realtimeStreet).
+    const p = rig();
+    const query = p.engine.query;
+    p.engine.query = (hook, ...args) => (hook === 'sharedObjectStreet' ? 'PARTY_1234' : query(hook, ...args));
+    p.client.wanted = 'PARTY_1234';
+    p.client.street = 'PARTY_1234';
+    p.client.emit('roster', { street: 'PARTY_1234', players: [] });
+    assert.deepEqual(p.sent.at(-1), { t: 'obj_sync' }, 'the space\'s objects are asked for');
+    assert.equal(streetObjectsFeature.runVerbOverride(p.rockT, 'mine', p.engine), true, 'waits for the space\'s snapshot');
+    p.engine.toasts.length = 0;
+    p.client.emit('msg:objs', { t: 'objs', street: 'PARTY_1234', snap: true, objs: [{ id: 'rock:1', chunks: 30, mega: false, in: 0, miners: [9] }] });
+    streetObjectsFeature.onTick(16, 0, p.engine);
+    assert.deepEqual(streetObjectsFeature.sharedMiners(p.rockT), [9], 'another party member swinging: Help mine');
+    assert.equal(streetObjectsFeature.runVerbOverride(p.rockT, 'mine', p.engine), true, 'the swing asks the server');
+    assert.deepEqual(p.sent.at(-1), { t: 'obj_act', req: 1, id: 'rock:1', verb: 'mine' });
+    assert.equal(p.rock.chunksRemaining, 30, 'the party\'s rock as the server has it');
+    // An older server answers the space "none": its rocks stay each player's own, as before.
+    const old = rig();
+    const oq = old.engine.query;
+    old.engine.query = (hook, ...args) => (hook === 'sharedObjectStreet' ? 'PARTY_1234' : oq(hook, ...args));
+    old.client.wanted = 'PARTY_1234';
+    old.client.emit('roster', { street: 'PARTY_1234', players: [] });
+    old.client.emit('msg:objs', { t: 'objs', street: 'PARTY_1234', snap: true, none: true, objs: [] });
+    assert.equal(streetObjectsFeature.runVerbOverride(old.rockT, 'mine', old.engine), null);
+    assert.equal(streetObjectsFeature.sharedMiners(old.rockT), null);
+    assert.deepEqual(old.engine.toasts, []);
+    // party-spaces-feature names the room only while the player stands in their live space.
+    assert.match(read('public/js/features/party-spaces-feature.js'), /sharedObjectStreet\(engine\) \{\s*return mpOnSpace\(engine\) \? party\(\)\.mp\.street : null;/);
   });
 
   it('asks again for a street whose snapshot never came, and a street with none is local', () => {

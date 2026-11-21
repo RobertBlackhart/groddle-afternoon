@@ -33,7 +33,7 @@ import { dropsFeature } from './drops-feature.js?v=8b703c17';
 import { masterGardenFeature } from './master-garden-feature.js?v=9e5432ff';
 import { animalHusbandryFeature } from './animal-husbandry-feature.js?v=03cda267';
 import { questInstancesFeature } from './quest-instances-feature.js?v=ff6d7538';
-import { partySpacesFeature } from './party-spaces-feature.js?v=621baf05';
+import { partySpacesFeature } from './party-spaces-feature.js?v=8b9ecab8';
 import { seasonsFeature } from './seasons-feature.js?v=9c7cef3a';
 import { cameraModeFeature } from './camera-mode-feature.js?v=51c80222';
 import { newxpFeature } from './newxp-feature.js?v=9323782b';
@@ -211,6 +211,6 @@ import { potLuckFeature } from './pot-luck-feature.js?v=2835ca06'; FEATURES.push
 import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=478f22aa'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=edc4d9d8'; FEATURES.push(feastDayFeature);
-import { streetObjectsFeature } from './street-objects-feature.js?v=ab795d5b'; FEATURES.push(streetObjectsFeature);
+import { streetObjectsFeature } from './street-objects-feature.js?v=655e5647'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=115bc4a4'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=1b10b444'; FEATURES.push(accountBackupFeature);

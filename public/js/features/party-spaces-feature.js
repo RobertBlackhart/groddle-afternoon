@@ -1654,6 +1654,14 @@ export const partySpacesFeature = {
     return mpOnSpace(engine) ? party().mp.street : null;
   },
 
+  /**
+   * street-objects-feature: a space's rocks, trees and nodes are its party's, on the same hub street
+   * (#576: the server lays PARTY_<id> out from the template's, so Help mine works at a party).
+   */
+  sharedObjectStreet(engine) {
+    return mpOnSpace(engine) ? party().mp.street : null;
+  },
+
   /** shared-quoins-feature: a space's quoins are its party's, on the same hub street. */
   sharedQuoinStreet(engine) {
     return mpOnSpace(engine) ? party().mp.street : null;

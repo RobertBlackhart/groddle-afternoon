@@ -20,7 +20,7 @@ import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsSho
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { ecologyForStreet, gardenPlacementRequest, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=c9b461c0';
 import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f82d4e02';
-import { FEATURES } from '../public/js/features/index.js?v=66361d5d';
+import { FEATURES } from '../public/js/features/index.js?v=e413e81c';
 import { streetGardenBeds } from '../public/js/garden.js?v=2ef01a9f';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
@@ -69,7 +69,12 @@ function clientCoreGroups() {
 
 /** The page's layout of one street: planner groups (game.js) and its resource nodes (resource-nodes-feature). */
 function clientLayout(data, core, nodesFeature) {
-  const population = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === STREET_INDEX.default });
+  // game.js streetEcologyEntry: a feature's ecologyOverride first. The only street the server shares
+  // under an override is a Party Space's template (party-spaces-feature: its exact rocks, trees and
+  // nodes), laid out for each space's instance PARTY_<id> (#576); the other overrides are private places.
+  const party = FEATURES.find((f) => f.id === 'party-spaces');
+  const ecology = party.ecologyOverride(data) || ecologyForStreet(data.tsid);
+  const population = populationForStreet(data.tsid, ecology, { starter: data.tsid === STREET_INDEX.default });
   const requests = [
     ...core.map((g) => (g.request ? g.request(population) : { key: g.key, count: g.count(population), clearance: g.clearance })),
     // features.collect('placementGroups'): resource-nodes is the first feature with groups, and

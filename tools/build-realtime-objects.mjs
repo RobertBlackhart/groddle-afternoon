@@ -116,6 +116,7 @@ import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=71fa73cd';
+import { partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=a748a93f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
@@ -382,6 +383,18 @@ export function ruleTables(trantTables) {
   return { rocks, mega, rockRespawnMs: ROCK_RESPAWN_MS, rockRespawnExtra: { ms: ROCK_RESPAWN_EXTRA_MS, after: ROCK_RESPAWN_EXTRA_AFTER }, nodes, harvest, care, woodCare, woodMap, trants, prod, dig, pig, ak, incubate, pigtrip, holds };
 }
 
+/**
+ * The ecology row a street is planned from in multiplayer. A Party Space's template street is only
+ * ever played as a space, whose feature answers ecologyOverride with js/party-spaces.js
+ * partyEcologyEntry (its exact rocks, trees and nodes): the server lays a space's instance
+ * (PARTY_<id>) out from its template's row (objects_upgrades.go layoutOf, #576), so that row is
+ * planned the way the space is (Nylon Phool's salmon stands elsewhere on the street's own row).
+ */
+export function streetEcology(tsid) {
+  const space = partySpaceForStreet(tsid);
+  return space ? partyEcologyEntry(space.id) : ecologyForStreet(tsid);
+}
+
 async function main() {
   requireServer();
   // As a multiplayer page loads streets: no published zone, no arm into one (js/street-loader.js).
@@ -405,7 +418,7 @@ async function main() {
       continue;
     }
     const starter = data.tsid === STREET_INDEX.default;
-    const layout = streetObjectLayout(data, { starter });
+    const layout = streetObjectLayout(data, { starter, ecology: streetEcology(data.tsid) });
     const upgrades = upgradeLayouts(data, jobs.upgrades?.[data.tsid]?.options, { starter });
     if (!LAYOUT_KEYS.some((key) => layout[key].length) && !Object.keys(upgrades).length) continue;
     for (const key of LAYOUT_KEYS) totals[key] += layout[key].length;
