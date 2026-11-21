@@ -81,6 +81,7 @@ export const ORIGINALS = [
   { id: 'pot-luck-day', title: 'Pot Luck Day', status: 'live', dates: 'Nov 22-29, 2026, Pacific time', feast: 'Thanksgiving feast Nov 26' },
   { id: 'phone', title: 'Playing on a phone', status: 'live', dates: 'Since Nov 12, 2026 (v0.35.0)' },
   { id: 'modern-interface', title: 'The Modern interface', status: 'live', dates: 'Since Oct 30, 2026 (v0.6.0)' },
+  { id: 'alternate-characters', title: 'Alternate characters', status: 'live', dates: 'Since Nov 12, 2026 (v0.35.0)' },
 ];
 
 /** What playing on a phone gives (js/touch-controls.js, js/touch-pinch.js, js/phone/companion.js, style.css touch-phone). */
@@ -107,6 +108,16 @@ export const MODERN_PARTS = [
   'The Imagination hub on X: round tiles over your avatar for Skills, Quests, Upgrades, Looks, Teleport and Home.',
 ];
 
+/** How alternate characters work (the site's Logins.php LIMIT, CREATE_GAP, NAME_HOLD; js/character-switcher.js). */
+export const ALT_PARTS = [
+  'Up to three characters on one sign-in, the same email and password.',
+  'Pick one on the start card, or switch from anywhere: the save cloud at the end of the pack row lists your characters, and the Menu has Switch character.',
+  'Each character is its own: its own save, with its currants, pack and home, and its own buddies, mail and name. Only the sign-in is shared.',
+  'A new character can be made once a day.',
+  'Retire one you are done with from the start card. It is hidden, not deleted, and can be restored; its name stays held for 30 days.',
+  'Other players never see which characters share a sign-in.',
+];
+
 /** Every Tiny Speck icon the page's cards wear (each needs its nc-icon-<name> rule in style.css). */
 export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
 
@@ -115,6 +126,7 @@ export function originalsContent() {
   const pld = ORIGINALS.find((o) => o.id === 'pot-luck-day');
   const phone = ORIGINALS.find((o) => o.id === 'phone');
   const modern = ORIGINALS.find((o) => o.id === 'modern-interface');
+  const alts = ORIGINALS.find((o) => o.id === 'alternate-characters');
   /** An original's section: its card (status and dates), a line, what it gives, and any closing note. */
   const entry = (o, alt, icon, tone, line, heading, parts, note = null) => group('section', `band${alt ? ' band-alt' : ''} nc-band`, o.id, [group('div', 'wrap', null, [
     card('nc-event', icon, tone, [
@@ -249,6 +261,10 @@ export function originalsContent() {
       'Glitch had one interface, its Flash client’s. Groddle keeps a faithful copy of it as Classic, and adds Modern, a new design in Glitch’s colours. Modern is what a new player sees first.',
       'What Modern has', MODERN_PARTS,
       ['One game, two looks', 'Modern and Classic share one game: the same world, the same save and the same keys. To switch, open the Menu and choose Interface, or press the comma key for Preferences.']),
+
+    entry(alts, false, 'street_spirit_groddle', 'moss',
+      'Made for Groddle: more than one character on one sign-in, for playing online.',
+      'How they work', ALT_PARTS),
 
     group('div', 'wrap report-foot', null, [
       p('', 'Each original’s entry says whether it is live, being built or planned, and when it runs. The <a href="/changelog/">Notes</a> say when something ships.'),

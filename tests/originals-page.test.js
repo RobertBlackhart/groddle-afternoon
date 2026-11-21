@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MODERN_PARTS, ORIGINALS, PHONE_PARTS, originalsContent } from '../tools/new-content/to-minn.mjs';
+import { ALT_PARTS, MODERN_PARTS, ORIGINALS, PHONE_PARTS, originalsContent } from '../tools/new-content/to-minn.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const html = originalsContent();
@@ -75,5 +75,19 @@ describe('Groddle Originals page', () => {
     }
     assert.match(text, /share one game/);
     assert.match(text, /Menu and choose Interface, or press the comma key for Preferences/);
+  });
+
+  it('has Alternate characters fourth, live since November 12, 2026, with their limits', () => {
+    assert.equal(ORIGINALS[3].id, 'alternate-characters');
+    assert.equal(ORIGINALS[3].status, 'live');
+    assert.match(ORIGINALS[3].dates, /Nov 12, 2026 \(v0\.35\.0\)/);
+    assert.ok(html.indexOf('id="modern-interface"') < html.indexOf('id="alternate-characters"'));
+    for (const part of [/Up to three characters/, /start card/, /switch from anywhere/, /Only the sign-in is shared/, /once a day/, /Retire/, /30 days/]) {
+      assert.ok(ALT_PARTS.some((l) => part.test(l)), String(part));
+    }
+    // Glitch's own rule could not be established from the sources: no comparison is claimed.
+    const section = html.slice(html.indexOf('id="alternate-characters"'), html.indexOf('report-foot'));
+    assert.ok(section.length > 200);
+    assert.doesNotMatch(section, /Glitch/);
   });
 });
