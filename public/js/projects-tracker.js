@@ -17,6 +17,7 @@
  */
 
 import { jobDef, jobDivisor, jobStatus, phaseBaseCost, phaseClass, phaseName, phaseRequirements, workGear } from './street-jobs.js?v=32e4718f';
+import { keptOpen } from './open-roads.js?v=597feeb5';
 import { SOLO_PANEL_LINE } from './street-jobs-solo.js?v=3bcf5d1c';
 
 /** The projects the panel follows: a street's build or upgrade, and online a group hall. Homes' restorations stay their home's. */
@@ -47,6 +48,8 @@ export const PROJECTS_TEXT = Object.freeze({
   // G656: the featured street project (js/featured-project.js), online only.
   featured: 'Featured',
   featuredCopy: 'The street project everyone is building together. It stays featured until it is built.',
+  // G1075 (R11): a street you have stood on stays open for you alone (js/open-roads.js keptOpen), so the Map shows it open.
+  keptForYou: 'Its road is open for you because you have been there. Everyone else can walk in once it is built.',
   // Report #425: solo amounts scale by distance from the start (js/street-jobs-solo.js).
   solo: SOLO_PANEL_LINE,
   online: 'Shared amounts: 1/50 of the original totals.',
@@ -235,6 +238,8 @@ export function projectEntry(state, catalog, jobId, row, o = {}) {
     needs: reqs.filter((r) => !r.done).map((r) => needEntry(r, labels, o.ctx || null)),
     doneAt,
     isNew: finished && doneAt > 0 && doneAt > whole(o.seenAt),
+    // G1075: still being built for the world, but its road is open for you (the Map shows it open).
+    keptForYou: !finished && job.kind === 'street' && keptOpen(state, job.street),
   };
 }
 

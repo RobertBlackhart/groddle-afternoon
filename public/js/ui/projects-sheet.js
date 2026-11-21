@@ -21,7 +21,7 @@
  * or not you have put anything into it yet.
  */
 
-import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=ccc95475';
+import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=cab811a6';
 import { featuredTag } from './featured-project.js?v=6bd977a8';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
@@ -132,6 +132,7 @@ export function projectCard(doc, e, o = {}) {
   if (e.isNew) title.append(doc.createTextNode(' '), el(doc, 'span', { class: 'pj-new' }, T.newMark));
   head.append(title, el(doc, 'p', { class: 'pj-where' }, statusLine(e, now)));
   card.append(head);
+  if (e.keptForYou) card.append(el(doc, 'p', { class: 'pj-note pj-kept' }, T.keptForYou));
   if (!e.finished) {
     const bar = el(doc, 'div', { class: 'pj-bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(Math.round(e.progress * 100)), 'aria-label': `${e.title}: ${Math.round(e.progress * 100)}% of this phase` });
     const fill = el(doc, 'i');

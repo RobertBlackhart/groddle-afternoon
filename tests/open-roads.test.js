@@ -6,7 +6,7 @@
  * was built but stood in a pocket no open road joined to the world (the server's pick checked one
  * neighbour). In chat the same evening the Map showed Parsin's Trail SW open for one player while his
  * Projects tab listed it as under way, and a friend saw it closed: a street you have stood on stays
- * open for you alone (state.grandfathered).
+ * open for you alone (state.grandfathered), and nothing said so.
  *
  * js/open-roads.js is the rule; groddle-afternoon-server openroads.go is its mirror, and
  * testdata/open-roads.json in that repo holds cases both answer (its openroads_test.go replays the
@@ -20,6 +20,7 @@ import { describe, it } from 'node:test';
 
 import { builtForEveryone, closedForEveryone, exemptForEveryone, freeWays, keptForYou, openWorld, projectReachable } from '../public/js/open-roads.js?v=597feeb5';
 import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=32e4718f';
+import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=cab811a6';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
@@ -96,6 +97,21 @@ describe('the game\'s callers use the rule', () => {
       assert.equal(isJobBuilt(state, catalog, id, { exemptFrom: [index.default], mine: false }), builtForEveryone(job, null, { starters: [index.default] }), id);
     }
     assert.ok(n > 600, `${n} street projects`);
+  });
+
+  it('the Projects tab says when a project\'s road is open only for you', () => {
+    const id = Object.keys(catalog.jobs).find((k) => catalog.jobs[k].kind === 'street' && !builtForEveryone(catalog.jobs[k], null, { starters: [index.default] }));
+    const job = catalog.jobs[id];
+    const state = normalizeStreetJobState({ grandfathered: [job.street] });
+    const opts = { exemptFrom: [index.default], sharedWorld: true };
+    const e = projectEntry(state, catalog, id, { phase: 0, got: {}, mine: {} }, { now: 0, opts });
+    assert.equal(e.finished, false);
+    assert.equal(e.keptForYou, true);
+    assert.equal(projectEntry(normalizeStreetJobState({}), catalog, id, { phase: 0, got: {}, mine: {} }, { now: 0, opts }).keptForYou, false);
+    assert.match(PROJECTS_TEXT.keptForYou, /open for you/);
+    assert.doesNotMatch(PROJECTS_TEXT.keptForYou, /[—–]/);
+    // Solo: a kept street counts as built (nobody else to build it), so no line.
+    assert.equal(projectEntry(state, catalog, id, { phase: 0, got: {}, mine: {} }, { now: 0, opts: { exemptFrom: [index.default] } }).keptForYou, false);
   });
 });
 

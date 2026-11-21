@@ -27,8 +27,8 @@ import {
   projectPlace,
   shareLine,
   statusLine,
-} from '../public/js/projects-tracker.js?v=ccc95475';
-import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=bb571cb3';
+} from '../public/js/projects-tracker.js?v=cab811a6';
+import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=75ce40eb';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=88972bec';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=5c5a4301';

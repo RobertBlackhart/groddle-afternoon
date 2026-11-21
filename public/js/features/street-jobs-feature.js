@@ -156,8 +156,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=ccc95475';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=bb571cb3';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=cab811a6';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=75ce40eb';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=1180ebbd';
@@ -3058,7 +3058,7 @@ function renderProjectsPanel(engine) {
   const sig = JSON.stringify([
     meta,
     list.featured ? `f:${list.featured.jobId}` : '',
-    ...[...(list.featured ? [list.featured] : []), ...list.active, ...list.done].map((e) => [e.jobId, e.status, e.phase, Math.round(e.progress * 1000), e.known, e.isNew, e.doneAt ? agoMinute(e.doneAt) : 0, e.needs.map((n) => `${n.id}:${n.left}:${n.open}:${n.can}:${n.mark}`).join(','), e.shares.map((s) => Math.round(s.share * 100)).join(','), JSON.stringify(teleport(e)), e.place]),
+    ...[...(list.featured ? [list.featured] : []), ...list.active, ...list.done].map((e) => [e.jobId, e.status, e.phase, Math.round(e.progress * 1000), e.known, e.isNew, e.doneAt ? agoMinute(e.doneAt) : 0, e.needs.map((n) => `${n.id}:${n.left}:${n.open}:${n.can}:${n.mark}`).join(','), e.shares.map((s) => Math.round(s.share * 100)).join(','), JSON.stringify(teleport(e)), e.place, e.keptForYou ? 1 : 0]),
   ]);
   if (sig !== pj.sig) {
     pj.sig = sig;
