@@ -10,7 +10,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import vm from 'node:vm';
 import { createFrameStages } from '../public/js/feature-host.js?v=b87e2cbc';
+import { guardTickerRender } from '../public/js/pixi-fixes.js?v=4dcac864';
 
 const game = readFileSync(join(import.meta.dirname, '..', 'public/game.js'), 'utf8');
 
@@ -135,5 +137,84 @@ describe('R30 game.js runs every stage of the frame in its own guard', () => {
     assert.match(game, /const run = \(name, fn\) => stage\(name, FRAME_THROW === name \? \(\) => \{ throw new Error\(`QA framethrow \$\{name\}`\); \} : fn\);/);
     assert.match(game, /frameStageThrows: \(\) => frameStages\?\.throws\?\.\(\) \|\| \{\},/);
     assert.match(game, /try \{\n\s*gameFrame\(ticker\);\n\s*\} catch \(err\) \{\n\s*frameFailed\('game loop', err\);/);
+  });
+});
+
+/** The vendored Pixi in a vm whose requestAnimationFrame only queues (`frames.run()` plays the queue). */
+function pixiWithFrames() {
+  const queue = [];
+  const g = { console, setTimeout, clearTimeout, navigator: { userAgent: 'node' }, performance };
+  g.window = g;
+  g.self = g;
+  g.globalThis = g;
+  let now = 1000;
+  g.requestAnimationFrame = (fn) => { queue.push(fn); return queue.length; };
+  g.cancelAnimationFrame = () => {};
+  vm.createContext(g);
+  vm.runInContext(readFileSync(join(import.meta.dirname, '..', 'public/vendor/pixi/pixi-8.23.0.min.js'), 'utf8'), g);
+  const frames = {
+    /** Play up to n queued frames; how many ran. */
+    run(n) {
+      let ran = 0;
+      while (ran < n && queue.length) {
+        now += 1000 / 60;
+        const fn = queue.shift();
+        try { fn(now); } catch { /* the browser reports it; the next frame is whatever was asked for */ }
+        ran += 1;
+      }
+      return ran;
+    },
+  };
+  return { PIXI: g.PIXI, frames };
+}
+
+/** An Application as Pixi's TickerPlugin wires it: render() at UPDATE_PRIORITY.LOW; the game's frame before it. */
+function fakeApp(PIXI, render) {
+  const app = { ticker: new PIXI.Ticker(), render, moved: 0 };
+  app.ticker.autoStart = false;
+  app.ticker.add(() => { app.moved += 1; });
+  app.ticker.add(app.render, app, PIXI.UPDATE_PRIORITY.LOW);
+  return app;
+}
+
+describe('#577/#578 (R30): a render that throws does not stop the game', () => {
+  const badTexture = () => { throw new TypeError("Cannot read properties of null (reading 'addressModeU')"); };
+
+  it('the harness reproduces the freeze: Pixi\'s ticker asks for no frame after a render throws', () => {
+    const { PIXI, frames } = pixiWithFrames();
+    const app = fakeApp(PIXI, badTexture);
+    app.ticker.start();
+    assert.equal(frames.run(120), 1, 'one frame, then nothing more is ever asked for');
+    assert.equal(app.moved, 1, 'the avatar moved once and froze');
+  });
+
+  it('guarded: every frame runs, the avatar moves, the render throw is reported once as "frame render"', () => {
+    const { PIXI, frames } = pixiWithFrames();
+    let throwing = true;
+    let drawn = 0;
+    const app = fakeApp(PIXI, function render() {
+      assert.equal(this, app, 'render keeps its app');
+      if (throwing) badTexture();
+      drawn += 1;
+    });
+    const heard = [];
+    const stage = createFrameStages({ report: (where, err) => heard.push([where, err.message]) });
+    assert.equal(guardTickerRender(PIXI, app, (fn) => stage('render', fn)), true);
+    app.ticker.start();
+    assert.equal(frames.run(120), 120);
+    assert.equal(app.moved, 120);
+    assert.deepEqual(heard, [['frame render', "Cannot read properties of null (reading 'addressModeU')"]]);
+    throwing = false;
+    frames.run(5);
+    assert.equal(drawn, 5, 'and the view draws again once the bad frame is gone');
+    assert.equal(guardTickerRender(PIXI, app, (fn) => stage('render', fn)), true, 'installing twice is a no-op');
+    frames.run(1);
+    assert.equal(drawn, 6, 'still one render a frame');
+  });
+
+  it('game.js puts the render in the frame stages, after the game\'s own frame', () => {
+    const at = game.indexOf("guardTickerRender(PIXI, app, (fn) => run('render', fn));");
+    assert.ok(at > game.indexOf("frameFailed('game loop', err);"), 'installed once the frame listener is on the ticker');
+    assert.match(game, /import \{ guardDestroyedSources, guardTickerRender, installPixiFixes \} from '\.\/js\/pixi-fixes\.js/);
   });
 });

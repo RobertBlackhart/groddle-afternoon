@@ -1113,7 +1113,7 @@ import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d5
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=892af05a';
 import * as textureUrls from './js/textures.js?v=090265fd';
 import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=476b7fdf';
-import { guardDestroyedSources, installPixiFixes } from './js/pixi-fixes.js?v=5c7004d2';
+import { guardDestroyedSources, guardTickerRender, installPixiFixes } from './js/pixi-fixes.js?v=4dcac864';
 import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
@@ -35452,6 +35452,10 @@ async function main() {
       frameFailed('game loop', err);
     }
   });
+  // #577/#578 (R30): Pixi's own render listener threw on a destroyed texture and the ticker never
+  // asked for another frame, so the game froze for good. The render is a guarded stage too ("frame
+  // render", reported once), still last (js/pixi-fixes.js guardTickerRender).
+  guardTickerRender(PIXI, app, (fn) => run('render', fn));
 
   if (startCardWaits) {
     const t0 = performance.now();

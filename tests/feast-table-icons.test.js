@@ -49,7 +49,7 @@ const PIXI = loadPixi();
 globalThis.PIXI = PIXI;
 globalThis.Image = FakeImage;
 
-const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=5c7004d2');
+const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
 installPixiFixes(PIXI);
 const { isLoaded } = await import('../public/js/textures.js?v=090265fd');
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');

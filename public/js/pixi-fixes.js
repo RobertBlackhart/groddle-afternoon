@@ -111,3 +111,26 @@ export function guardDestroyedSources(PIXI, renderer, { onDestroyed = null } = {
   system.groddleDestroyedGuard = true;
   return true;
 }
+
+/**
+ * #577/#578 (R30): Pixi's render is a ticker listener (TickerPlugin adds Application.render at
+ * UPDATE_PRIORITY.LOW), and the Ticker asks for the next frame only after its listeners return
+ * (Ticker._tick), so one throw in a render stopped the whole game for good, movement and all, while
+ * the HUD around it went on. The render now runs in a guard (`guard(fn)`, game.js's frame stage
+ * "render": reported once, by name) at the same priority, so a bad frame is one bad frame.
+ * @param {any} PIXI
+ * @param {any} app a Pixi 8 Application
+ * @param {(fn: () => void) => void} guard runs fn and keeps its throw
+ * @returns {boolean} true once installed
+ */
+export function guardTickerRender(PIXI, app, guard) {
+  const ticker = app?.ticker;
+  if (!ticker || typeof app.render !== 'function' || typeof guard !== 'function') return false;
+  if (app.groddleRenderGuard) return true;
+  const render = app.render;
+  ticker.remove(render, app);
+  const guarded = () => guard(() => render.call(app));
+  ticker.add(guarded, null, PIXI?.UPDATE_PRIORITY?.LOW ?? -25);
+  app.groddleRenderGuard = guarded;
+  return true;
+}

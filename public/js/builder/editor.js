@@ -53,7 +53,7 @@ import { decoBox, contains, handlePoints, resizeBy, rotationTo, meetsRect, corne
 import { layerRole } from './layer-role.js?v=e585f610';
 import { installNewArt, withNewArt, provenanceSection } from './new-art.js?v=29f0b13e';
 import * as textureUrls from '../textures.js?v=090265fd';
-import { installPixiFixes } from '../pixi-fixes.js?v=5c7004d2';
+import { installPixiFixes } from '../pixi-fixes.js?v=4dcac864';
 import { installHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { OVERLAY_COLOURS, drawGeometryOverlay, drawReachOverlay, drawEffectMarkers, strokeSegs } from './overlays.js?v=e8a5e1a7';
 import { createStreetEffects, createRumbleClock, prefersReducedMotion } from '../street-effects.js?v=e92ada09';
