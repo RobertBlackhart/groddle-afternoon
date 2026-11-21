@@ -7034,7 +7034,8 @@ body.buff-purple-pulse::after {
   cursor: pointer;
 }
 .map-street.travelable { cursor: pointer; }
-.map-street.travelable:hover .map-seg.travelable {
+.map-street.travelable:hover .map-seg.travelable,
+.map-street.travelable.is-hot .map-seg.travelable {
   stroke: var(--c-yellow-95b);
   stroke-width: calc(9px * var(--map-line-k, 1));
   opacity: 0.85; /* MapStreet.as 18 HIGHLIGHT_ALPHA */
@@ -7051,23 +7052,40 @@ body.buff-purple-pulse::after {
 }
 .map-street.building:hover .map-seg-stripes { stroke-width: calc(9px * var(--map-line-k, 1)); }
 /* #526: a street you have not been to has no road, only dots (MapStreet.as 51-63, showDots 142-155):
-   black, radius 2.5 every 8 (2 x 2.5 + 3 padd), the first one 2.5 in from the end, at 0.4 of the
-   street's alpha (0.7, 0.85 hovered). */
+   black, radius 2.5 every 8 (2 x 2.5 + 3 padd), the first one 2.5 in from the end. Glitch drew them
+   at 0.4 of the street's alpha (0.28), which vanished on dark paintings such as Kloro's (#571): ours
+   are darker, each on a pale ring (.map-seg-ring) so they read on light and dark maps alike. */
+.map-seg.travelable.unvisited,
+.map-seg-ring {
+  stroke-dasharray: 0 calc(8px * var(--map-line-k, 1));
+  stroke-dashoffset: calc(-2.5px * var(--map-line-k, 1));
+}
 .map-seg.travelable.unvisited {
   stroke: var(--c-black);
   stroke-width: calc(5px * var(--map-line-k, 1));
-  stroke-dasharray: 0 calc(8px * var(--map-line-k, 1));
-  stroke-dashoffset: calc(-2.5px * var(--map-line-k, 1));
-  opacity: 0.28;
+  opacity: 0.75;
 }
-.map-street.travelable.unvisited:hover .map-seg.travelable.unvisited {
+.map-seg-ring {
+  stroke: var(--c-cream-91);
+  stroke-width: calc(8px * var(--map-line-k, 1));
+  stroke-linecap: round;
+  fill: none;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.map-street.travelable.unvisited:hover .map-seg.travelable.unvisited,
+.map-street.travelable.unvisited.is-hot .map-seg.travelable.unvisited {
   stroke: var(--c-black);
   stroke-width: calc(5px * var(--map-line-k, 1));
-  opacity: 0.34;
+  opacity: 0.9;
 }
+.map-street.travelable.unvisited:hover .map-seg-ring,
+.map-street.travelable.unvisited.is-hot .map-seg-ring { stroke: var(--c-yellow-95b); opacity: 1; }
 .map-label.loaded.building { opacity: 0.5; }
 /* #403: a street you have not been to, its name at half (MapStreet.as 20, 125: TF_DIM_ALPHA .5). */
 .map-label.loaded.unvisited { opacity: 0.5; }
+/* #571: a street's name picks the street, as its road does (game.js forwards the click). */
+.map-label[data-segment] { pointer-events: auto; cursor: pointer; }
 .map-label {
   font-family: var(--font-ui);
   font-size: calc(var(--fs-2xs) * var(--map-text-k, 1));

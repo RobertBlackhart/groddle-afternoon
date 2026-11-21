@@ -12,7 +12,7 @@ import { ROUTE_TEXT } from '../public/js/map-routes.js?v=70f30ddf';
 import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=0f93b4ac';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { findCurrentStreet, homeDoorMapSpot, pickMapSpot } from '../public/js/map-graph.js?v=2b2349ab';
+import { findCurrentStreet, homeDoorMapSpot, pickMapSpot } from '../public/js/map-graph.js?v=c3586fa9';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const readJson = (rel) => JSON.parse(readFileSync(join(PUBLIC, rel), 'utf8'));

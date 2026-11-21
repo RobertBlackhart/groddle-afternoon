@@ -1021,7 +1021,7 @@ import {
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=2b2349ab';
+} from './js/map-graph.js?v=c3586fa9';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=9c235863';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
@@ -26938,6 +26938,22 @@ async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } =
       const tsid = g.getAttribute('data-tsid');
       openMapStreetMenu(canvas, e, { tsid, label: g.getAttribute('data-label') || tsid, hubId: targetHub, hubName: view.hubName }, { here: true });
     });
+  });
+
+  // #571: a street's name does what its road does (a click, a right-click, the hover light).
+  canvas.querySelectorAll('.map-label[data-segment]').forEach((lab) => {
+    const seg = lab.getAttribute('data-segment');
+    const road = [...canvas.querySelectorAll('.map-street')].find((g) => g.getAttribute('data-segment') === seg);
+    if (!road) return;
+    for (const type of ['click', 'contextmenu']) {
+      lab.addEventListener(type, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        road.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY, button: e.button }));
+      });
+    }
+    lab.addEventListener('pointerenter', () => road.classList.add('is-hot'));
+    lab.addEventListener('pointerleave', () => road.classList.remove('is-hot'));
   });
 
   canvas.querySelectorAll('.map-hub-go').forEach((g) => {

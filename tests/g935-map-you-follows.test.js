@@ -6,7 +6,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STREET_ROTATION_BUFFER, hubYouPoints, renderHubMapSvg, youOnStreet } from '../public/js/map-graph.js?v=2b2349ab';
+import { STREET_ROTATION_BUFFER, hubYouPoints, renderHubMapSvg, youOnStreet } from '../public/js/map-graph.js?v=c3586fa9';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -44,7 +44,8 @@ describe('the You star on the region map (G935, #467)', () => {
   it('the streets you are not on at 0.7, 0.85 under the pointer, the one you are on whole', () => {
     const css = read('public/style.css');
     assert.match(css, /\.map-seg\.travelable \{\n  stroke: var\(--c-yellow-91\);\n  stroke-width: calc\(7px \* var\(--map-line-k, 1\)\);\n  opacity: 0\.7;\n\}/);
-    assert.match(css, /\.map-street\.travelable:hover \.map-seg\.travelable \{[^}]*opacity: 0\.85;/);
+    // #571: a street's name under the pointer lights its road the same way (.is-hot).
+    assert.match(css, /\.map-street\.travelable:hover \.map-seg\.travelable,\n\.map-street\.travelable\.is-hot \.map-seg\.travelable \{[^}]*opacity: 0\.85;/);
     const current = css.slice(css.indexOf('.map-seg.current {'), css.indexOf('}', css.indexOf('.map-seg.current {')));
     assert.doesNotMatch(current, /opacity/);
   });

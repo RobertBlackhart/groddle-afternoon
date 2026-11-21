@@ -729,7 +729,9 @@ export function layoutStreetLabels(streets, mapW = 760, mapH = 460, { hubs = [],
     // #403: so does a street you have not been to (the same line: !street.visited; game.js sets `unvisited`).
     const cls = s.current ? 'map-label current' : s.loaded ? `map-label loaded${s.building ? ' building' : ''}${s.unvisited ? ' unvisited' : ''}` : 'map-label dim';
     placed.push(best.quad);
-    out.push({ name: s.name, x: best.x, y: best.y, rot, cls, w, h });
+    // #571: a street's name picks the street, as its road does (game.js finds the road by data-segment).
+    const seg = s.loaded && !s.hidden ? String(s.tsid || '') : '';
+    out.push({ name: s.name, x: best.x, y: best.y, rot, cls, w, h, ...(seg ? { seg } : {}) });
   }
   return out;
 }
@@ -943,6 +945,8 @@ export function renderHubMapSvg(view) {
         // RIGHTCLICK: a street has a menu of ours (game.js openMapStreetMenu), never the browser's.
         `data-segment="${escapeXml(s.tsid)}" data-ctx="map-street"${building ? ' data-building="1"' : ''}>` +
         (building ? `<title>${escapeXml(s.label)}: under construction</title>` : '') +
+        // #571: the dots wear a pale ring so they read on dark paintings (Kloro) as on light ones.
+        (unvisited ? `<line class="map-seg-ring" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` : '') +
         `<line class="${cls}" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` +
         (building ? `<line class="map-seg-stripes" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` : '') +
         `<line class="map-seg-hit" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` +
@@ -955,7 +959,7 @@ export function renderHubMapSvg(view) {
   const { labels, icons } = layoutHubMapMarks(view);
   for (const lab of labels) {
     parts.push(
-      `<text class="${lab.cls}" x="${lab.x.toFixed(1)}" y="${lab.y.toFixed(1)}" text-anchor="middle" ` +
+      `<text class="${lab.cls}"${lab.seg ? ` data-segment="${escapeXml(lab.seg)}"` : ''} x="${lab.x.toFixed(1)}" y="${lab.y.toFixed(1)}" text-anchor="middle" ` +
         `transform="rotate(${lab.rot.toFixed(1)} ${lab.x.toFixed(1)} ${lab.y.toFixed(1)})" ` +
         `filter="url(#labelHalo)">${escapeXml(lab.name)}</text>`
     );
