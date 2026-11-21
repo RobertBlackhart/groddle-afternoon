@@ -17,7 +17,7 @@
  * Styles: style.css `.item-picker` (every skin + Modern), css/classic.css (Classic restyles in place).
  */
 import { packSearchMatch } from './pack-row.js?v=62e891eb';
-import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from './count-chooser.js?v=506f2686';
+import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from './count-chooser.js?v=c268eefe';
 
 /**
  * PURE: the items the search leaves (all of them for an empty search), in order.

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=078aeaf4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=64ded8f9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=66361d5d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1095,7 +1095,7 @@ import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from '
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=8e6bea62';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=607a9bcd';
-import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, typedCount } from './js/ui/count-chooser.js?v=506f2686';
+import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
 import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=81321d29';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
@@ -31113,6 +31113,13 @@ function renderVendorList() {
     });
     detail.onkeydown = (e) => {
       if (e.target?.matches?.('[data-vq-val]')) return;
+      // #557 (R38): a held Enter or Space never presses Buy or Sell. Its repeats bought one, went back
+      // to the shelf tile, opened the count again and bought again (live chat 2026-11-21: three bought).
+      if (heldPress(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       const next = countKeyValue(e.key, vendorQty, maxQ);
       if (next != null) {
         e.preventDefault();

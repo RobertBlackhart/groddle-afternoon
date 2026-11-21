@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { filterPickerItems, pickerGridMove, pickerTileText } from '../public/js/ui/item-picker.js?v=f05e71be';
+import { filterPickerItems, pickerGridMove, pickerTileText } from '../public/js/ui/item-picker.js?v=00c515f1';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');

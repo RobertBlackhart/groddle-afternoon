@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { COUNT_KEYS, bindCountField, countFromField, countKeyValue, countStepMarkup, typedCount } from '../public/js/ui/count-chooser.js?v=506f2686';
+import { COUNT_KEYS, bindCountField, countFromField, countKeyValue, countStepMarkup, heldPress, typedCount } from '../public/js/ui/count-chooser.js?v=c268eefe';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
@@ -126,5 +126,15 @@ describe('ticket 92: what OK says follows the count as it is typed', () => {
     assert.match(sw, /buy\.textContent = text\.buyButton\(n, n \* cur\.cost\);/);
     const rook = readFileSync(join(root, 'public/js/features/rook-attack-feature.js'), 'utf8');
     assert.match(rook, /syncCount\(\{ typing: true \}\);/);
+  });
+
+  it('a held Enter or Space never presses a vendor\'s Buy or Sell (live chat 2026-11-21: three bought at once)', () => {
+    assert.equal(heldPress({ key: 'Enter', repeat: true }), true);
+    assert.equal(heldPress({ key: ' ', repeat: true }), true);
+    assert.equal(heldPress({ key: 'Enter', repeat: false }), false, 'one press still buys');
+    assert.equal(heldPress({ key: 'ArrowUp', repeat: true }), false, 'a held arrow still steps the count');
+    // The vendor's count stops the repeat before its focused Buy button sees it.
+    const keys = game.match(/detail\.onkeydown = \(e\) => \{[\s\S]*?\n {4}\};/)[0];
+    assert.match(keys, /if \(heldPress\(e\)\) \{\n\s+e\.preventDefault\(\);\n\s+e\.stopPropagation\(\);\n\s+return;\n\s+\}\n\s+const next = countKeyValue/);
   });
 });

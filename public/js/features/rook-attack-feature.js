@@ -59,7 +59,7 @@
 
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
-import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=506f2686';
+import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=c268eefe';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bb4fe94b';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { donationValueFor } from '../shrines.js?v=fd21d8ec';

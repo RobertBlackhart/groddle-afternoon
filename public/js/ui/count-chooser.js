@@ -107,6 +107,14 @@ export function syncCountStep(input, n, max, min = 1) {
  * redraws only when the field shows something else (a count past the most, an empty field): a
  * redraw under a pressed OK button would drop the press.
  */
+/**
+ * #557: a held Enter's or Space's repeat is not a press. The key that opened a count would go on
+ * to press its focused OK (or a vendor's Buy) button, again each time the count came back.
+ */
+export function heldPress(e) {
+  return Boolean(e?.repeat && (e.key === 'Enter' || e.key === ' '));
+}
+
 export function bindCountField(input, { max, set, confirm, cancel, preview = null }) {
   if (!input || input.dataset.countBound) return;
   input.dataset.countBound = '1';
@@ -215,7 +223,7 @@ export function createCountChooser(doc, { title, max, start = max, verb, hook, b
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.stopPropagation();
       // #557: nor on the focused OK button.
-      if (e.repeat) e.preventDefault();
+      if (heldPress(e)) e.preventDefault();
     }
   });
   return {

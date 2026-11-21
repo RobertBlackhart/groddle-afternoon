@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { verbMenuKey } from '../public/js/ui/verb-menu.js?v=81321d29';
-import { bindCountField } from '../public/js/ui/count-chooser.js?v=506f2686';
+import { bindCountField } from '../public/js/ui/count-chooser.js?v=c268eefe';
 
 describe('#557: a held key never picks a row', () => {
   const menu = () => {
