@@ -180,7 +180,7 @@ function badges(id, achievements) {
 /** The `seasons` block of public/restoration/data.json. */
 export function seasonsData() {
   const achievements = json('assets/content/achievements.json');
-  // Restored events only: a designed one (Pot Luck Day, G982) is ours, so it is not a restoration (the New content page tells it).
+  // Restored events only: a designed one (Pot Luck Day, G982) is ours, so it is not a restoration (the Groddle Originals page tells it).
   const seasons = [...SEASON_IDS.map((id) => SEASONS[id]).filter((s) => s.source !== 'designed'), EGG_HUNT].map((s) => {
     const { id } = s;
     const status = SEASON_STATUS[s.source];
