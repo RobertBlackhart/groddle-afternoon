@@ -9,6 +9,10 @@
  * showed. Glitch counted the unit before it spoke (items/include/jobs.js 453). The bubble now
  * takes what is left from the server's project_worked (online) and from applyWorkUnit (solo).
  *
+ * Report #594 (G1108): online, a unit the network delayed less than the one before reached the
+ * server early, its pace refused it ("Work takes a moment a unit.") and the run stopped. Now that
+ * unit is sent again at the next 1.5 s slot; a second pace refusal in a row still stops the run.
+ *
  * This runs the real feature (the board, the Work button, the work loop) on a fake Pixi and page,
  * solo and then online against a fake realtime client.
  * Run: node --test tests/street-project-work-bubble.test.js
@@ -18,11 +22,12 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=3b39609d';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=0740947b';
 import { soloNeed } from '../public/js/street-jobs.js?v=32e4718f';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { soloTerms } from '../public/js/street-jobs-solo.js?v=3bcf5d1c';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
+import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
 const catalog = JSON.parse(readFileSync(join(root, 'public/assets/content/street-jobs.json'), 'utf8'));
@@ -50,6 +55,7 @@ describe('the street project\'s work bubble counts the last unit (report 111)', 
   let said;
   let client;
   let body;
+  const prompts = [];
 
   before(async () => {
     for (const k of ['document', 'window', 'fetch', 'groddleProjects', 'PIXI']) saved[k] = globalThis[k];
@@ -74,6 +80,7 @@ describe('the street project\'s work bubble counts the last unit (report 111)', 
       on(type, fn) { if (!listeners.has(type)) listeners.set(type, new Set()); listeners.get(type).add(fn); return () => listeners.get(type).delete(fn); },
       msg(m) { for (const fn of listeners.get(`msg:${m.t}`) || []) fn(m); },
       send(t, payload = {}) { client.sent.push({ t, ...payload }); return true; },
+      refuse(message) { for (const fn of listeners.get('error') || []) fn({ code: 'project', message }); },
     };
     engine = {
       mode: 'solo',
@@ -98,7 +105,7 @@ describe('the street project\'s work bubble counts the last unit (report 111)', 
       say: (target, text) => said.push(text),
       setData() {},
       toast() {},
-      prompt() {},
+      prompt(p) { prompts.push(p); },
       pushActivity() {},
       floatText() {},
       updateHud() {},
@@ -175,5 +182,75 @@ describe('the street project\'s work bubble counts the last unit (report 111)', 
     }
     assert.equal(streetJobsFeature._state().work, null, 'the work stops at the server\'s 0 left');
     assert.match(bubble(), /^Thanks! You contributed 2 units of the 2 we need right now\./, 'not "of the 3"');
+  });
+
+  it('online: a unit the pace refused is sent again once, and the run goes on (#594)', async () => {
+    said.length = 0;
+    prompts.length = 0;
+    client.sent.length = 0;
+    const got = { ...gotTwoShort(), [WORK.id]: NEED - 3 };
+    const row = { phase: 0, got, held: {}, mine: {}, started: Date.now() - 60_000, ready: 0, done: 0, top: [], count: 1 };
+    client.msg({ t: 'project_street', street: BOARD_STREET, now: Date.now(), jobs: { [JOB]: row } });
+    streetJobsFeature.onStreetEnter(engine.street, engine);
+    await wait(5);
+    projectApi.open(engine, JOB);
+    workButton().fire('click');
+    assert.ok(streetJobsFeature._state().work?.mp, 'shared work');
+    const units = () => client.sent.filter((m) => m.t === 'project_work');
+    let done = 0;
+    const worked = (left) => {
+      done += 1;
+      client.msg({ t: 'project_worked', job: units().at(-1).job, req: WORK.id, cost: WORK.baseCost, left });
+      client.msg({ t: 'project_state', job: units().at(-1).job, now: Date.now(), row: { ...row, got: { ...got, [WORK.id]: NEED - 3 + done } } });
+    };
+    const t0 = Date.now();
+    streetJobsFeature.onTick(16, t0 + UNIT_MS + 5, engine);
+    assert.equal(units().length, 1, 'unit 1 sent');
+    worked(2);
+    streetJobsFeature.onTick(16, t0 + 2 * UNIT_MS + 5, engine);
+    assert.equal(units().length, 2, 'unit 2 sent');
+    client.refuse('Work takes a moment a unit.');
+    assert.ok(streetJobsFeature._state().work, 'a pace refusal does not end the run');
+    assert.equal(prompts.length, 0, 'no "Work stopped"');
+    streetJobsFeature.onTick(16, t0 + 2 * UNIT_MS + 200, engine);
+    assert.equal(units().length, 2, 'it waits for the pace');
+    streetJobsFeature.onTick(16, t0 + 3 * UNIT_MS + 5, engine);
+    assert.equal(units().length, 3, 'unit 2 sent again a unit later');
+    assert.equal(units().at(-1).req, WORK.id);
+    worked(1);
+    assert.equal(streetJobsFeature._state().work?.units, 2, 'the refused unit was not counted twice');
+    // A later lone refusal gets its own retry; a second in a row stops the run.
+    streetJobsFeature.onTick(16, t0 + 4 * UNIT_MS + 5, engine);
+    assert.equal(units().length, 4, 'unit 3 sent');
+    client.refuse('Work takes a moment a unit.');
+    assert.ok(streetJobsFeature._state().work, 'retried again after a counted unit');
+    streetJobsFeature.onTick(16, t0 + 5 * UNIT_MS + 5, engine);
+    assert.equal(units().length, 5, 'unit 3 sent again');
+    client.refuse('Work takes a moment a unit.');
+    assert.equal(streetJobsFeature._state().work, null, 'twice in a row stops the run');
+    assert.equal(prompts.at(-1)?.text, 'Work takes a moment a unit.');
+    assert.match(bubble(), /^Thanks! You contributed 2 units of the 3 we need right now\./);
+  });
+
+  it('the pace refusal the feature waits out is the server\'s words (#594)', { skip: skipWithoutServer }, () => {
+    const go = readFileSync(serverPath('projects.go'), 'utf8');
+    const text = go.match(/^\s*projectTextPace\s*=\s*"([^"]*)"/m)?.[1];
+    assert.equal(text, 'Work takes a moment a unit.');
+    const feature = readFileSync(join(root, 'public/js/features/street-jobs-feature.js'), 'utf8');
+    assert.match(feature, /const WORK_PACE_REFUSAL = 'Work takes a moment a unit\.';/);
+  });
+
+  it('online: other refusals still stop the run', async () => {
+    said.length = 0;
+    prompts.length = 0;
+    client.sent.length = 0;
+    projectApi.open(engine, JOB);
+    workButton().fire('click');
+    assert.ok(streetJobsFeature._state().work?.mp, 'shared work');
+    streetJobsFeature.onTick(16, Date.now() + UNIT_MS + 5, engine);
+    assert.equal(client.sent.filter((m) => m.t === 'project_work').length, 1, 'unit sent');
+    client.refuse('You need to be at the project board to do that.');
+    assert.equal(streetJobsFeature._state().work, null, 'the run stops');
+    assert.equal(prompts.at(-1)?.text, 'You need to be at the project board to do that.');
   });
 });

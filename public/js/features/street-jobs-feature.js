@@ -1458,6 +1458,7 @@ function startWork(engine, jobId, rid, maxUnits = Infinity) {
     // Shared: each unit goes to the server, and counts (energy, wear) when it answers.
     mp: shared(jobId),
     awaiting: 0,
+    paceRetry: false, // #594: a pace refusal's unit is being sent again
     req: check.req,
     cls: jobDef(catalog, jobId).phases[state.jobs[jobId]?.phase || 0]?.classTsid || '',
   };
@@ -2143,6 +2144,8 @@ const n0 = (v) => Math.max(0, Math.floor(Number(v) || 0));
 /** A give the server has not answered is let go after this (its answer still applies when it comes). */
 const GIVE_WAIT_MS = 20000;
 const WORK_WAIT_MS = 6000;
+/** projects.go projectTextPace: a unit came before the server's pace allowed (#594). */
+const WORK_PACE_REFUSAL = 'Work takes a moment a unit.';
 
 /**
  * Writes the save now and waits for a write holding this change to land: true once the site has
@@ -2347,6 +2350,15 @@ function createMp(engine, client) {
   });
   client.on('error', ({ code, message } = {}) => {
     if (code !== 'project' || !message) return;
+    // #594: a unit the network delayed less than the last arrives early and the pace refuses it.
+    // The run goes on: the unit did not count, and it is sent again at the next 1.5 s slot (a
+    // whole unit after it was first sent, so the server's pace allows it). Once: a second pace
+    // refusal in a row stops the run as any other refusal does.
+    if (work?.mp && work.awaiting && message === WORK_PACE_REFUSAL && !work.paceRetry) {
+      work.awaiting = 0;
+      work.paceRetry = true;
+      return;
+    }
     // #502: the refusal is kept for the ask it answers and drawn in the panel (the hall box, or under the asks).
     const owner = refusalFor(s);
     s.note = owner ? { ...owner, text: owner.kind === 'claim' ? hallRefusalText(message) : message } : null;
@@ -2586,6 +2598,7 @@ function mpTickWork(engine, now) {
 function mpWorked(engine, msg) {
   if (!work?.mp || localOf(msg.job) !== work.jobId || msg.req !== work.rid) return;
   work.awaiting = 0;
+  work.paceRetry = false;
   const req = work.req;
   // items/include/jobs.js acceptJobWork: the unit's energy and tool wear (G289 loseEnergy).
   loseEnergy(engine.pc, req.energy);
