@@ -2101,11 +2101,27 @@ export function planStreetPlacements(
     const steadyRule = (candidate) => {
       if (!steadyFloor(candidate, steady)) return false;
       if (!Number.isFinite(steady?.edgeDrop)) return true;
-      const k = `${candidate.id}:${footprint}`;
+      const k = `${candidate.id}:${footprint}:${candidate.y}`;
       if (!edgeCache.has(k)) edgeCache.set(k, footOverAir(platforms, candidate, footprint / 2));
       return edgeCache.get(k) <= steady.edgeDrop;
     };
     let steadyAt = steadyRule;
+    // #581: a SEATED_GROUP judges each spot where it would stand, seated on its floor (seatOnFloor),
+    // so the front art, fixtures and canopies are measured from there.
+    const seat = seatRule(request);
+    // A rock's spot it cannot be seated on (an end of its foot over a ledge end or a step, more than
+    // ROCK_SEAT_MAX_PX down) is `overAir`: taken only when no other is left (before one behind the front art).
+    // One the front art would hide once seated, and not as planned, keeps its height (`afloat`): a
+    // thing a player can find, a few px up, before one sunk out of sight.
+    const pool = seat
+      ? candidates.map((c) => {
+          const drop = seatDrop(platforms, c, request.key, seat);
+          let spot = drop > 0 ? { ...c, y: c.y + drop } : c;
+          if (drop > 0 && fronts.length && hiddenBehindFront(spot, request.key, fronts) && !hiddenBehindFront(c, request.key, fronts)) spot = { ...c, afloat: true };
+          if (request.key === 'rocks' && footOverAir(platforms, spot, seat.footprint / 2) > ROCK_SEAT_MAX_PX) return { ...spot, overAir: true };
+          return spot;
+        })
+      : candidates;
     const walker = Boolean(ANIMAL_PATROL[request.key]);
     const height = Number.isFinite(request?.height) ? Math.max(0, request.height) : PLACEMENT_HEIGHTS[request.key] || 0;
     // The fixture each spot would cover for this request (null: clear); the arrival covers nothing.
@@ -2117,7 +2133,7 @@ export function planStreetPlacements(
     const canopyW = UNDER_CANOPY_WIDTHS[request.key] || footprint;
     const underCanopy = canopyW > 0 && canopies.length ? UNDER_CANOPY_HEIGHTS[request.key] || 0 : 0;
     if (!avatar && (fixtures.length || underCanopy)) {
-      for (const candidate of candidates) {
+      for (const candidate of pool) {
         let fixture = blockingFixture(candidate, fixtures, { footprint, height });
         if (!fixture && underCanopy) {
           fixture = blockingFixture(candidate, canopies, { footprint: canopyW, height: underCanopy });
@@ -2133,7 +2149,7 @@ export function planStreetPlacements(
         && !covers.has(c.id) && !(branchFree && onBranch.has(c.id)) && !(maxSlope != null && (c.slope || 0) > maxSlope)
         && (loose || !zoneMiss(c)) && !footAtWalkway(c, footprint, walkways);
       // Furniture (FURNITURE_FRONT_KEYS) may leave its zone, last: `miss` ranks the spots out of it.
-      fits.set(request.key, { fit, loose, miss: (c) => (zoneMiss(c) > 0 ? 1 : 0) });
+      fits.set(request.key, { fit, loose, miss: (c) => (zoneMiss(c) > 0 ? 1 : 0), pool });
     }
     for (let index = groups[request.key].length; index < count; index += 1) {
       if (fixedAt?.has(index)) {
@@ -2144,7 +2160,7 @@ export function planStreetPlacements(
       // A `keep` rule (mailboxes) goes down even with no steady spot left: on any spot, as a planned
       // thing did before the rule.
       if (steady?.keep) {
-        steadyAt = candidates.some((c) => !used.has(c.id) && c.item !== false && steadyRule(c)) ? steadyRule : () => true;
+        steadyAt = pool.some((c) => !used.has(c.id) && c.item !== false && steadyRule(c)) ? steadyRule : () => true;
       }
       // The room this one asks for: its footprint, or the most any free clear spot
       // has (any free spot's, when none is clear).
@@ -2155,7 +2171,7 @@ export function planStreetPlacements(
         // roomy branch or a spot far from a stone's dead end never outranks them (offNeed < 0: none left).
         let offNeed = -1;
         let offClear = -1;
-        for (const candidate of candidates) {
+        for (const candidate of pool) {
           if (used.has(candidate.id) || candidate.item === false || !steadyAt(candidate)) continue;
           const room = Math.min(footprint, candidate.room || 0);
           need = Math.max(need, room);
@@ -2178,7 +2194,7 @@ export function planStreetPlacements(
       let best = null;
       let bestScore = -Infinity;
       let bestTier = Infinity;
-      for (const candidate of candidates) {
+      for (const candidate of pool) {
         if (used.has(candidate.id)) continue;
         if (!avatar && candidate.item === false) continue;
         if (!steadyAt(candidate)) continue;
@@ -2221,7 +2237,9 @@ export function planStreetPlacements(
         const inPen = penFree && inPenArt(candidate, footprint, height, pens) ? 256 : 0;
         const miss = zoneMiss(candidate);
         const outOfZone = miss > 0 ? 8 + Math.min(20, Math.ceil(miss / 400)) : 0;
-        const tier = inPen + onBranchArt + outOfZone + tooSteep + (footprint > 0
+        // #581: a rock that would hang an end over the air, only when nothing else is left.
+        const overAir = candidate.overAir ? 16 : 0;
+        const tier = inPen + onBranchArt + outOfZone + tooSteep + overAir + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
           : 0) + (covers.has(candidate.id) ? (walker ? 16 : crownOnly.has(candidate.id) ? 3 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {
@@ -2236,7 +2254,7 @@ export function planStreetPlacements(
       if (branchFree && onBranch.has(best.id)) branch.push({ key: request.key, index });
       if (maxSlope != null && (best.slope || 0) > maxSlope && !slopeRuled(tsid, request.key, best)) steep.push({ key: request.key, index, slope: Math.round(best.slope * 100) / 100 });
       used.add(best.id);
-      const point = { x: best.x, y: best.y, id: best.id, key: request.key, clearance, room: best.room || 0 };
+      const point = { x: best.x, y: best.y, id: best.id, key: request.key, clearance, room: best.room || 0, ...(best.afloat ? { afloat: true } : {}) };
       groups[request.key].push(point);
       occupied.push(point);
       if (request.key === 'trees') canopies.push(canopyOf(point));
@@ -2245,8 +2263,67 @@ export function planStreetPlacements(
 
   // `reseat: false` (tests only): the plan as it was before #490, to show what reseatHiddenNodes moved.
   const moved = reseat ? reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) : [];
-  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch, moved };
+  const seated = seatOnFloor(groups, requests, platforms);
+  return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch, moved, seated };
 }
+
+/**
+ * #581: a planned rock or node stands on the floor under its whole foot, not only under its middle.
+ * The planner's spot is the line's height at the spot's x, and a flat-bottomed rock drawn there on a
+ * sloped or bowed floor hung its downhill end over the air (Gori Blear's Sparkly Rock: 9 px over a
+ * floor falling to the ledge's tip, its corner past the art's rim). Glitch set its rocks and nodes
+ * by hand (rock_*.js obey_physics false), seated in the art. So once the plan is made each planned
+ * point of a SEATED_GROUPS group goes down onto the floor under the lower end of its foot (its
+ * footprint, half each side: footOverAir), as far as the group's edgeDrop (a farther drop is a
+ * ledge end, which the planner keeps them off); its uphill end sinks into the floor instead, as a
+ * hand-set rock's did. Fixed and measured points stay where they are, and so does one the front art
+ * would hide once seated (`afloat`, planStreetPlacements). Returns [{ key, index, drop }].
+ */
+export function seatOnFloor(groups, requests, platforms) {
+  const seated = [];
+  for (const request of requests || []) {
+    const rule = seatRule(request);
+    if (!rule) continue;
+    (groups[request.key] || []).forEach((point, index) => {
+      if (!point || point.fixed || point.afloat || !Number.isFinite(point.x) || !Number.isFinite(point.y)) return;
+      const drop = seatDrop(platforms, point, request.key, rule);
+      if (!(drop > 0)) return;
+      point.y += drop;
+      seated.push({ key: request.key, index, drop: Math.round(drop * 10) / 10 });
+    });
+  }
+  return seated;
+}
+
+/** A SEATED_GROUP request's { footprint, cap } (null: not seated): its footprint and the most it goes down. */
+function seatRule(request) {
+  const footprint = Number.isFinite(request?.footprint) ? request.footprint : PLACEMENT_FOOTPRINTS[request?.key] || 0;
+  if (!SEATED_GROUP(request?.key) || !(footprint > 0)) return null;
+  if (request.key === 'rocks') return { footprint, cap: ROCK_SEAT_MAX_PX };
+  const rule = request?.steady || STEADY_FLOOR_GROUPS[request.key];
+  return Number.isFinite(rule?.edgeDrop) ? { footprint, cap: rule.edgeDrop } : null;
+}
+
+/**
+ * PURE: how far a thing of `key` at `spot` goes down to the floor under the lower end of its foot
+ * (0: it stands on it, or the drop is a ledge end it must not follow). A rock's shape is chosen
+ * after the plan from its spot's room (rockShapeFor: never wider than the room when one fits), so it
+ * is seated under the widest shape its room holds (up to ROCK_SEAT_MAX_PX down), else its footprint.
+ */
+function seatDrop(platforms, spot, key, { footprint, cap }) {
+  const halves = key === 'rocks'
+    ? [Math.max(footprint, Math.min(ROCK_DRAWN_WIDEST, Number(spot.room) || 0)) / 2, footprint / 2]
+    : [footprint / 2];
+  const drop = halves.map((half) => footOverAir(platforms, spot, half)).find((d) => d <= cap);
+  return drop > 0 ? drop : 0;
+}
+
+/** The widest rock shape as drawn (ROCK_SHAPE_WIDTHS), and the most a planned rock goes down to its floor. */
+const ROCK_DRAWN_WIDEST = Math.max(...Object.values(ROCK_SHAPE_WIDTHS).flat());
+export const ROCK_SEAT_MAX_PX = 28;
+
+/** The groups seatOnFloor seats: rocks and the resource nodes that stand on a floor. */
+export const SEATED_GROUP = (key) => key === 'rocks' || String(key || '').startsWith('resource:');
 
 /**
  * #490 (R2): a planned node mostly behind the front art (hiddenBehindFront, NODE_FRONT_KEYS) moves to
@@ -2258,7 +2335,7 @@ export function planStreetPlacements(
 function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) {
   const moved = [];
   if (!fronts.length) return moved;
-  for (const [key, { fit, loose, miss }] of fits) {
+  for (const [key, { fit, loose, miss, pool }] of fits) {
     for (const [index, point] of (groups[key] || []).entries()) {
       if (point.fixed || !hiddenBehindFront(point, key, fronts)) continue;
       // The nearest spot clear of every other thing's clearance, else the nearest at half of it (the
@@ -2267,7 +2344,8 @@ function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits })
       let best = null;
       let bestRank = [Infinity, Infinity, Infinity];
       const better = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
-      for (const c of candidates) {
+      // #581: a seated group's spots as it would stand on them (planStreetPlacements `pool`).
+      for (const c of pool || candidates) {
         const d = Math.abs(c.x - point.x) + Math.abs(c.y - point.y);
         if (d >= bestRank[2] && bestRank[0] === 0 && bestRank[1] === 0) continue;
         if (!fit(c) || hiddenBehindFront(c, key, fronts)) continue;
@@ -2285,6 +2363,8 @@ function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits })
       used.add(best.id);
       moved.push({ key, index, from: { x: point.x, y: point.y } });
       Object.assign(point, { x: best.x, y: best.y, id: best.id, room: best.room || 0 });
+      if (best.afloat) point.afloat = true;
+      else delete point.afloat;
     }
   }
   return moved;

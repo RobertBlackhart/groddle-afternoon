@@ -22,7 +22,7 @@
  */
 import { registerDraftStreets, loadStreetData, resolveIndexTsid, STREET_INDEX } from '../street-loader.js?v=10376267';
 import { streetWithEdits, editsOn } from './zone.js?v=ce289eb1';
-import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../street-ecology.js?v=187e3c76';
+import { getStreetEcologyCatalog, setStreetEcologyCatalog } from '../street-ecology.js?v=26d85806';
 import { createBuilderApi } from './api.js?v=9560d68f';
 import { installNewArt } from './new-art.js?v=29f0b13e';
 import { loadDecoManifest } from '../street-render.js?v=929d8d6b';

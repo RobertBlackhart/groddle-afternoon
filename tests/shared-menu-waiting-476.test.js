@@ -12,8 +12,8 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { COPY, greyWaitingVerbs, waitingIds } from '../public/js/street-objects.js?v=8ce76736';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ddcb77a7';
+import { COPY, greyWaitingVerbs, waitingIds } from '../public/js/street-objects.js?v=2a4c4f54';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=edc7a6b2';
 import { createTrantState } from '../public/js/trants.js?v=864ea9ff';
 
 const root = join(import.meta.dirname, '..');
