@@ -45,7 +45,7 @@ import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=d28b2
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=054773be';
 import { setContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { harvestTableData } from '../tools/build-realtime-harvest-table.mjs';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

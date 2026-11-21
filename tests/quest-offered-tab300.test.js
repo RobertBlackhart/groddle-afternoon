@@ -13,10 +13,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
-import { listDeclinedOffers, markOffered, offerCanWait, putOffOffer, waitingOffers } from '../public/js/quest-offers.js?v=571620de';
-import { questOffersFeature, waitingOfferCards } from '../public/js/features/quest-offers-feature.js?v=6b01d0ab';
-import { questCardTab } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
+import { listDeclinedOffers, markOffered, offerCanWait, putOffOffer, waitingOffers } from '../public/js/quest-offers.js?v=69e064ff';
+import { questOffersFeature, waitingOfferCards } from '../public/js/features/quest-offers-feature.js?v=561c16e3';
+import { questCardTab } from '../public/js/ui/quest-sheet.js?v=7467200c';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

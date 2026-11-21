@@ -15,8 +15,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState, listQuestLog, listQuestLogNewestFirst, listQuests } from '../public/js/quests.js?v=4a3fb1da';
-import { createQuestSheet } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
+import { createQuestState, listQuestLog, listQuestLogNewestFirst, listQuests } from '../public/js/quests.js?v=90a2ee3d';
+import { createQuestSheet } from '../public/js/ui/quest-sheet.js?v=7467200c';
 import { FakeEl, matches } from './social-fake-dom.js';
 
 const pub = join(import.meta.dirname, '../public');

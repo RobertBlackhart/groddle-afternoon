@@ -426,10 +426,11 @@ export function getQuestProgress(state, classTsid) {
     active: !!active,
     completed: state.completed.includes(classTsid),
     progress: active ? { ...active.progress } : {},
-    requirements: (def.requirements || []).map((r) => ({
+    // #585: a saved quest without its progress (or a def without a list of steps) is still listed.
+    requirements: (Array.isArray(def.requirements) ? def.requirements : []).filter(Boolean).map((r) => ({
       ...r,
       current: active
-        ? active.progress[r.name] || 0
+        ? active.progress?.[r.name] || 0
         : state.completed.includes(classTsid)
           ? r.num
           : 0,

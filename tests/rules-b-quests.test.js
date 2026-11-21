@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState, listQuestLog } from '../public/js/quests.js?v=4a3fb1da';
+import { createQuestState, listQuestLog } from '../public/js/quests.js?v=90a2ee3d';
 import {
   acceptOffer,
   ensureQuestOfferState,
@@ -18,7 +18,7 @@ import {
   routeQuestEvent,
   tickQuestTimers,
   HERB_GARDEN_STREETS,
-} from '../public/js/quest-offers.js?v=571620de';
+} from '../public/js/quest-offers.js?v=69e064ff';
 import { retireDeadQuests, retiredQuestLine } from '../public/js/retired-quests.js?v=61758261';
 import { questRemovedBy } from '../public/js/unlearning.js?v=20672dff';
 

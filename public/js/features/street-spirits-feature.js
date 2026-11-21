@@ -100,11 +100,11 @@ import {
   resumeTarget,
   setCurrentState,
 } from '../conversations.js?v=7cbdfea4';
-import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=571620de';
+import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=69e064ff';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { questRoomConverse } from './quest-instances-feature.js?v=50598ff0';
-import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=562e64fe';
-import { questDoneAt } from '../quests.js?v=4a3fb1da';
+import { questRoomConverse } from './quest-instances-feature.js?v=4d184950';
+import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=0fe114be';
+import { questDoneAt } from '../quests.js?v=90a2ee3d';
 
 export const STREET_SPIRITS_FEATURE_ID = 'street-spirits';
 const TALK_MS = 5000; // the remake's talk bubble; the source talks until the conversation ends

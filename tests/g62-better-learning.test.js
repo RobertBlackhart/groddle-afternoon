@@ -20,8 +20,8 @@ import { canLearnSkill, createSkillState, grantSkill, startSkillStudy, tickSkill
 import { skillTimeFactor } from '../public/js/imagination-effects.js?v=70169933';
 import { learnTimeReductions } from '../public/js/imagination.js?v=1bdfd77c';
 import { emblemUnlockSkillFor, skillRemakeNote, skillTitle, skillTreeEntry, spendEmblemForSkill } from '../public/js/skill-tree.js?v=e399b9ca';
-import { acceptOffer, pendingQuestOffers } from '../public/js/quest-offers.js?v=571620de';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
+import { acceptOffer, pendingQuestOffers } from '../public/js/quest-offers.js?v=69e064ff';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { normalizeStreetJobState, phaseRequirements, workCheck } from '../public/js/street-jobs.js?v=49beeb2b';
 import { skillArtFor } from '../public/js/familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../public/js/imagination-data.js?v=4a85e7fe';

@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState, assignQuest } from '../public/js/quests.js?v=4a3fb1da';
+import { createQuestState, assignQuest } from '../public/js/quests.js?v=90a2ee3d';
 import {
   FIRST_SKILL_QUEST_ID,
   TUTORIAL_GENERIC_BAGS,
@@ -26,7 +26,7 @@ import {
   routeQuestEvent,
   settleFirstSkillQuest,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=571620de';
+} from '../public/js/quest-offers.js?v=69e064ff';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(ROOT, 'public/assets/content');

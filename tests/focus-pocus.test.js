@@ -18,8 +18,8 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=571620de';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
+import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=69e064ff';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { setMetabolicGainGate } from '../public/js/metabolics.js?v=48f784bf';

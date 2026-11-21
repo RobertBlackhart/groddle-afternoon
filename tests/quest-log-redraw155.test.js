@@ -6,7 +6,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
+import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=7467200c';
 import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=c3870e8e';
 
 const root = join(import.meta.dirname, '..');
@@ -61,7 +61,7 @@ describe('#155 the Quests list redraws when it lost its rows', () => {
 
   it('game.js asks it with the live list and the fresh draw', () => {
     const block = game.slice(game.indexOf("const qShown = document.getElementById('quest');"), game.indexOf('renderQuestTracker();'));
-    assert.match(block, /questLogNeedsSwap\(\{ drawn, lastDrawn: questLogDrawn, shownCount: qShown\.childElementCount, drawnCount: qBox\.childElementCount \}\)/);
+    assert.match(block, /questLogNeedsSwap\(\{ drawn, lastDrawn: questLogDrawn, shownCount: qShown\.childElementCount, drawnCount: qBox\.childElementCount[^}]*\}\)/);
     assert.match(block, /qShown\.replaceChildren\(\.\.\.qBox\.childNodes\);\s*questLogDrawn = drawn;/);
     // The count is read before the swap moves the nodes out of qBox.
     assert.ok(block.indexOf('qBox.childElementCount') < block.indexOf('qShown.replaceChildren'));

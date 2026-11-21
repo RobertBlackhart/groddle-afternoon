@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4718d02e';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6618b5a4';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -33,12 +33,12 @@ import {
   cleanQuestMarkup,
   questDoneAt,
   paidRewardBits,
-} from './js/quests.js?v=4a3fb1da';
+} from './js/quests.js?v=90a2ee3d';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=562e64fe';
-import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=571620de';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=0fe114be';
+import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=69e064ff';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -134,7 +134,7 @@ import {
   qualificationVerb,
   requestLegalizeQualification,
   travelToGregarious,
-} from './js/legalize-it.js?v=a5016c3a';
+} from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=36c6d2b2';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=2d06c735';
@@ -416,7 +416,7 @@ import {
   resetAchievementCounter,
   purchaseAchievementUpdates,
   getAchievementProgress,
-} from './js/achievements.js?v=7b03d657';
+} from './js/achievements.js?v=054773be';
 import {
   applyStreetVisit,
   topUpCompletists,
@@ -529,7 +529,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=4c44494a';
+} from './js/player-save.js?v=dbf0a9dd';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -1091,7 +1091,7 @@ import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=decb630f';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep } from './js/ui/quest-sheet.js?v=ea7de2e2';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=7467200c';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=8e6bea62';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=607a9bcd';
@@ -6754,7 +6754,8 @@ function updateHud() {
     const drawn = qBox.innerHTML;
     // #155: a list that lost its rows (emptied or detached since the last swap) while the markup
     // stayed the same was never drawn again; one with fewer rows than this draw is swapped too.
-    if (questLogNeedsSwap({ drawn, lastDrawn: questLogDrawn, shownCount: qShown.childElementCount, drawnCount: qBox.childElementCount })) {
+    // #585: one holding every card but showing fewer rows than the draw (a blank Active tab under "Active 8") is swapped too.
+    if (questLogNeedsSwap({ drawn, lastDrawn: questLogDrawn, shownCount: qShown.childElementCount, drawnCount: qBox.childElementCount, shownVisible: visibleRowCount(qShown), drawnVisible: visibleRowCount(qBox) })) {
       qShown.replaceChildren(...qBox.childNodes);
       questLogDrawn = drawn;
     }

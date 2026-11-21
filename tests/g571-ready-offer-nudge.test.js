@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
-import { acceptOffer, declineOffer, markOffered, readyOfferText, readyOfferedQuests } from '../public/js/quest-offers.js?v=571620de';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
+import { acceptOffer, declineOffer, markOffered, readyOfferText, readyOfferedQuests } from '../public/js/quest-offers.js?v=69e064ff';
 
 const root = join(import.meta.dirname, '..');
 const ROCKS = { dullite: 17, beryl: 13, sparkly: 11 };

@@ -25,7 +25,7 @@ import {
   wetPlot,
 } from '../public/js/garden.js?v=0afbe615';
 import { canPour, mgDetails, plotsFor } from '../public/js/master-garden.js?v=49fbf68f';
-import { gardenPlotEvents } from '../public/js/quest-offers.js?v=571620de';
+import { gardenPlotEvents } from '../public/js/quest-offers.js?v=69e064ff';
 
 const MG = ['croppery_1', 'mastergardener_1'];
 

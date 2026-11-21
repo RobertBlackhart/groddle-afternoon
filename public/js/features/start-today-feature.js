@@ -23,7 +23,7 @@
  */
 
 import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS } from '../start-today.js?v=28c1e3c4';
-import { listQuestTracker } from '../quests.js?v=4a3fb1da';
+import { listQuestTracker } from '../quests.js?v=90a2ee3d';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../imagination-data.js?v=4a85e7fe';
 

@@ -37,7 +37,7 @@ import { isPoisoned, TREE_ANTIDOTE, TREE_POISON, BOTANY_SKILL } from '../public/
 import { treeDeathFeature } from '../public/js/features/tree-death-feature.js?v=7c3a8bc7';
 import { patchesFeature } from '../public/js/features/patches-feature.js?v=000b4cab';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ddcb77a7';
-import { helpMineFeature, relabelOpenDig } from '../public/js/features/help-mine-feature.js?v=8fbb23c2';
+import { helpMineFeature, relabelOpenDig } from '../public/js/features/help-mine-feature.js?v=e166bb86';
 import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=ea29adf9';
 
 // ---------------------------------------------------------------------------

@@ -17,12 +17,12 @@ import {
   periodicEnergyLoss,
 } from '../public/js/energy-decay.js?v=01009c8b';
 // The feature imports these with their browser cache tags; load the same module instances.
-import { energyDecayContext, energyDecayFeature, runEnergyLossTick } from '../public/js/features/energy-decay-feature.js?v=607b3dd0';
-import { __newxpTest } from '../public/js/features/newxp-feature.js?v=8ed1ab89';
+import { energyDecayContext, energyDecayFeature, runEnergyLossTick } from '../public/js/features/energy-decay-feature.js?v=a1957f36';
+import { __newxpTest } from '../public/js/features/newxp-feature.js?v=17c23254';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=46454cb5';
 import { HELL_TEXT } from '../public/js/hell.js?v=54f9be3d';
 import { SCENE_TSIDS } from '../public/js/newxp.js?v=5aa81665';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(spike, p), 'utf8');

@@ -9,8 +9,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState, assignQuest } from '../public/js/quests.js?v=4a3fb1da';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=571620de';
+import { createQuestState, assignQuest } from '../public/js/quests.js?v=90a2ee3d';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=69e064ff';
 import { GATE_DEVIATIONS, SPECIAL_TRIGGERS, STAND_INS } from '../tools/quest-gates/table.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

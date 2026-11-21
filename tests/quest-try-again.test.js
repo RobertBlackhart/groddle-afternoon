@@ -21,8 +21,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=4a3fb1da';
-import { acceptOffer, markOffered, questStatus, tickQuestTimers } from '../public/js/quest-offers.js?v=571620de';
+import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
+import { acceptOffer, markOffered, questStatus, tickQuestTimers } from '../public/js/quest-offers.js?v=69e064ff';
 import {
   ALREADY_DOING_TIP,
   NO_STARTING_QUESTS_TIP,
@@ -30,7 +30,7 @@ import {
   retryTimedQuest,
   showWaitingOffer,
   startBlockedReason,
-} from '../public/js/features/quest-offers-feature.js?v=6b01d0ab';
+} from '../public/js/features/quest-offers-feature.js?v=561c16e3';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');
@@ -272,7 +272,7 @@ describe('G255 game.js wiring', () => {
   it('the quest log draws only while open, and only when its markup changed', () => {
     assert.match(game, /if \(qShown && isQuestOpen\(\)\) \{\n\s+const qBox = document\.createElement\('div'\);/);
     // #155: also when the shown list holds fewer rows than the draw (questLogNeedsSwap, tests/quest-log-redraw155.test.js).
-    assert.match(game, /if \(questLogNeedsSwap\(\{ drawn, lastDrawn: questLogDrawn, [^)]*\}\)\) \{\n\s+qShown\.replaceChildren\(\.\.\.qBox\.childNodes\);/);
+    assert.match(game, /if \(questLogNeedsSwap\(\{ drawn, lastDrawn: questLogDrawn, [^}]*\}\)\) \{\n\s+qShown\.replaceChildren\(\.\.\.qBox\.childNodes\);/);
     assert.doesNotMatch(game, /qBox\.innerHTML = ''/);
     // openQuestPanel shows the panel before updateHud draws it.
     assert.match(game, /panel\.hidden = false;\n\s+updateHud\(\);\n\s+\}\n\}/);

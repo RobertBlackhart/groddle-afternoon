@@ -106,7 +106,7 @@ export function questMatches(words, query) {
 export function questProgress(requirements = []) {
   let got = 0;
   let need = 0;
-  for (const r of requirements || []) {
+  for (const r of Array.isArray(requirements) ? requirements : []) {
     if (!r) continue;
     const num = Math.max(0, Number(r.num) || 0);
     need += num;
@@ -146,8 +146,18 @@ export function orderQuestCards(rows, sort) {
  * its old markup string, so it was never drawn again (a report had the tabs counting 26 active
  * over no rows).
  */
-export function questLogNeedsSwap({ drawn = '', lastDrawn = '', shownCount = 0, drawnCount = 0 } = {}) {
-  return drawn !== lastDrawn || (Number(shownCount) || 0) < (Number(drawnCount) || 0);
+export function questLogNeedsSwap({ drawn = '', lastDrawn = '', shownCount = 0, drawnCount = 0, shownVisible = null, drawnVisible = null } = {}) {
+  if (drawn !== lastDrawn || (Number(shownCount) || 0) < (Number(drawnCount) || 0)) return true;
+  // #585: a list holding every card but showing fewer than the draw does ("Active 8" over a blank
+  // list, 0 of 20 cards shown and no "No active quests" line) is drawn again too.
+  return shownVisible != null && drawnVisible != null && (Number(shownVisible) || 0) < (Number(drawnVisible) || 0);
+}
+
+/** #585: the rows a list box shows (its child elements without `hidden`): the cards of the tab in use, or its empty line. */
+export function visibleRowCount(box) {
+  let n = 0;
+  for (const c of box?.children || []) if (!c.hidden) n += 1;
+  return n;
 }
 
 /** A tab's label: "Active 40", or "Active 3 of 40" while a search is on. */
@@ -188,7 +198,7 @@ export function questRewardChips(rewards = {}) {
  * one is needed). A quest of one step comes back as before: { step, count, percent }.
  */
 export function questStep(requirements = []) {
-  const reqs = (requirements || []).filter(Boolean);
+  const reqs = (Array.isArray(requirements) ? requirements : []).filter(Boolean);
   if (!reqs.length) return { step: '', count: '', percent: 0 };
   const steps = reqs.map((r) => {
     const num = Math.max(0, Number(r.num) || 0);
@@ -363,7 +373,7 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
     }
     // One step: its row is the head's; several: every step with its own bar stays in the body.
     const reqRows = rest.filter((n) => n.nodeType === 1 && (n.classList.contains('q-req') || n.classList.contains('q-bar')));
-    const single = info && (info.requirements || []).length <= 1;
+    const single = info && (Array.isArray(info.requirements) ? info.requirements : []).length <= 1;
     for (const n of rest) {
       if (single && reqRows.includes(n)) continue;
       body.appendChild(n);
@@ -440,14 +450,17 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
       }
       const which = questCardTab(n);
       counts[which] += 1;
-      rows[which].push({
-        el: n,
-        n: rows[which].length,
-        title: (n.querySelector(':scope > .q-title')?.textContent || '').replace(/\s*✓$/, ''),
-        words: cardWords(n),
-        progress: cardProgress(n, which),
-        pinned: Boolean(n.dataset.quest && isPinned(n.dataset.quest)),
-      });
+      const row = { el: n, n: rows[which].length, title: '', words: '', progress: 0, pinned: false };
+      // #585: a card whose words, progress or pin cannot be read is still counted, sorted and shown.
+      try {
+        row.title = (n.querySelector(':scope > .q-title')?.textContent || '').replace(/\s*✓$/, '');
+        row.words = cardWords(n);
+        row.progress = cardProgress(n, which);
+        row.pinned = Boolean(n.dataset.quest && isPinned(n.dataset.quest));
+      } catch (err) {
+        globalThis.console?.warn?.('[quests] card read as plain', cardId(n), err);
+      }
+      rows[which].push(row);
     }
     const total = counts.active + counts.offered + counts.done;
     // Ticket 77: the search and sort row shows for a long log (or while it still holds a search).

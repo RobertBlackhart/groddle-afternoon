@@ -20,8 +20,8 @@ import {
   rewardIcon,
 } from '../public/js/ui/moment-card.js?v=35252236';
 import { awardRewardTokens, awardTokens } from '../public/js/screen-fx.js?v=7a9ef8bd';
-import { questRewardSummary } from '../public/js/quests.js?v=4a3fb1da';
-import { questAwardPayload } from '../public/js/quest-offers.js?v=571620de';
+import { questRewardSummary } from '../public/js/quests.js?v=90a2ee3d';
+import { questAwardPayload } from '../public/js/quest-offers.js?v=69e064ff';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
 import { statIconUrl } from '../public/js/stat-icons.js?v=b89600eb';
 
