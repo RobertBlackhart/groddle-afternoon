@@ -884,6 +884,20 @@ function refreshPlacedLabels() {
 
 // —— Spawning ———————————————————————————————————————————————————————————
 
+/**
+ * #579: what spawnStreet puts on a street, as { classId } rows, for the loading card's Home to:
+ * before onTick has spawned it (the card is built when the street is, and the Batterflies wait for
+ * their sheets): the street's Batterflies (one per planner point with a place, up to its count) and
+ * the animals left there (a released Piggy, the back yard's animals).
+ */
+export function husbandryPendingRows({ batterflies = 0, points = null, animals = [] } = {}) {
+  const count = Math.max(0, Math.floor(Number(batterflies) || 0));
+  const placed = Array.isArray(points) ? points.slice(0, count).filter((pt) => Number.isFinite(pt?.x)).length : count;
+  const rows = Array.from({ length: placed }, () => ({ classId: BATTERFLY_ID }));
+  for (const a of animals || []) if (a?.classId && ANIMAL_CLASSES.has(a.classId)) rows.push({ classId: a.classId });
+  return rows;
+}
+
 function spawnStreet(engine) {
   spawnedFor = engine.streetTsid;
   pendingEnter = false;
@@ -1920,6 +1934,23 @@ export const animalHusbandryFeature = {
   /** #478: the loading card's Home to: before the street is built: its Batterflies. */
   homeToTargets(street) {
     return Array.from({ length: batterflyCountForStreet(street || {}) }, () => ({ classId: BATTERFLY_ID }));
+  },
+
+  /**
+   * #579: the built street's Home to: counts its Batterflies and the animals left on it before
+   * onTick spawns them (they wait for their sheets, so the card's list, built with the street, left
+   * them out and replaced the early list that had them; location.js getLoadingInfo counts every
+   * item on the street). Once spawned they are targets and this says nothing.
+   */
+  pendingTargets(engine) {
+    if (!engine?.streetTsid || spawnedFor === engine.streetTsid) return [];
+    if (engine.transientInstance?.() && !isYard(engine)) return [];
+    const count = batterflyCountForStreet(engine.street || {});
+    return husbandryPendingRows({
+      batterflies: count,
+      points: count ? engine.placement?.(BATTERFLY_GROUP) || [] : [],
+      animals: slot(engine).animals,
+    });
   },
 
   /**
