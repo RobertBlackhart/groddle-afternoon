@@ -27,7 +27,7 @@ import { routeGraph } from '../public/js/map-routes.js?v=70f30ddf';
 import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';
-import { FEATURES } from '../public/js/features/index.js?v=68aa35d4';
+import { FEATURES } from '../public/js/features/index.js?v=d494b810';
 import { createBuffState, applyBuff, hasBuff, removeBuff } from '../public/js/buffs.js?v=2ed95a93';
 
 const root = join(import.meta.dirname, '..');

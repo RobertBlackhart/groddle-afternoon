@@ -10,7 +10,7 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { page, memoryStore } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=decb630f';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=aaf612e5';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 
 const src = readFileSync(new URL('../public/js/ui/social-drawer.js', import.meta.url), 'utf8');

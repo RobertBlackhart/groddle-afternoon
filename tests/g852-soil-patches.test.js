@@ -11,7 +11,7 @@ import { join } from 'node:path';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
 import { platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, footOverAir, planStreetPlacements, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=3331ac39';
-import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=0a720cc7';
+import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=8a8d3cba';
 import { soilSpawnClasses } from '../public/js/patches.js?v=2498e678';
 import { streetPatchLayout } from '../tools/build-realtime-patches.mjs';
 import { setCreatureEcology } from '../tools/build-realtime-objects.mjs';

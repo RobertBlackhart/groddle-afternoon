@@ -70,7 +70,7 @@ export function verbRowInner(row) {
 }
 
 /** The row's attributes as markup (for menus drawn as one string, like the pack's). */
-export function verbRowAttrs({ tip = '', reason = '', disabled = false, back = false, current } = {}) {
+export function verbRowAttrs({ tip = '', reason = '', disabled = false, back = false, current, wait = false } = {}) {
   return [
     // A level of choices (a bag's sorts: `current` true or false on each) is a radio group.
     typeof current === 'boolean' ? `role="menuitemradio" aria-checked="${current}"` : 'role="menuitem"',
@@ -78,6 +78,7 @@ export function verbRowAttrs({ tip = '', reason = '', disabled = false, back = f
     tip ? `data-vm-tip="${escapeText(plainWords(tip))}"` : '',
     disabled && reason ? `data-vm-reason="${escapeText(plainWords(reason))}"` : '',
     back ? 'data-vm-back' : '',
+    disabled && wait ? 'data-vm-wait' : '',
   ].filter(Boolean).join(' ');
 }
 
@@ -107,6 +108,8 @@ export function makeVerbRow(doc, row) {
   if (row.tip) btn.dataset.vmTip = plainWords(row.tip);
   if (row.disabled && row.reason) btn.dataset.vmReason = plainWords(row.reason);
   if (row.back) btn.dataset.vmBack = '';
+  // #586: greyed only while the street answers a verb on this thing (verbMenuWaiting).
+  if (row.disabled && row.wait) btn.dataset.vmWait = '';
   if (row.letter) btn.dataset.vmLetter = String(row.letter).toLowerCase();
   btn.innerHTML = verbRowInner(row);
   // The words a screen reader says: the verb, its cost and why it can't be done.
@@ -566,4 +569,53 @@ export function chooseVerbRow(el) {
   if (!pick) pick = highlightedVerbRow(el) || focusVerbRow(el);
   pick?.click?.();
   return pick || null;
+}
+
+/**
+ * #586 (a phone, Act pressed quickly on a street tree online): a menu whose rows wait on the street's
+ * answer to a verb just done on its thing (greyed with the busy line: js/street-objects.js
+ * greyWaitingVerbs, row data-vm-wait). Its rows are not the tree's yet, so its first lit row was the
+ * one row the street does not decide (Talk to), and Act's quick second press chose it.
+ */
+export function verbMenuWaiting(el) {
+  return Boolean(el?.querySelector?.('[data-vm-wait]'));
+}
+
+/**
+ * #586: Act's hands on a verb menu ({ step(n), choose() }, js/touch-controls.js actMenu). A step or a
+ * choice made while the menu waits on the street (verbMenuWaiting) is kept, in the order pressed, and
+ * done when the menu is drawn again with the answer (settleVerbMenu), as Glitch's menu took no choice
+ * until the server had sent its verbs (InteractionMenuController.as startItemstackMenu 709-723:
+ * InteractionMenu placehold, then present on itemstackVerbMenuHandler).
+ */
+export function actVerbMenu(el) {
+  const run = (fn) => {
+    if (!verbMenuWaiting(el)) return fn();
+    (el._vmActs ||= []).push(fn);
+    return null;
+  };
+  return { step: (n) => run(() => stepVerbRow(el, n)), choose: () => run(() => chooseVerbRow(el)) };
+}
+
+/**
+ * #586: the menu drawn again (game.js refreshVerbMenu, which lights its first row that can be done
+ * when it stops waiting). Once nothing waits, Act's kept presses run in order, until one closes the
+ * menu. Returns how many ran.
+ */
+export function settleVerbMenu(el) {
+  if (!el || el.hidden || verbMenuWaiting(el)) return 0;
+  const acts = el._vmActs || [];
+  el._vmActs = [];
+  let ran = 0;
+  for (const fn of acts) {
+    if (el.hidden || verbMenuWaiting(el)) break;
+    fn();
+    ran += 1;
+  }
+  return ran;
+}
+
+/** #586: the menu closed or opened on something else: Act's kept presses go. */
+export function dropVerbMenuActs(el) {
+  if (el) el._vmActs = [];
 }

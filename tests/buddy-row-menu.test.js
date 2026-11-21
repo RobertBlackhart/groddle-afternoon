@@ -11,9 +11,9 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=decb630f';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=aaf612e5';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { LONG_PRESS_MS } from '../public/js/ui/context-menu.js?v=607a9bcd';
+import { LONG_PRESS_MS } from '../public/js/ui/context-menu.js?v=fba9a19d';
 
 const src = (p) => readFileSync(new URL(`../public/${p}`, import.meta.url), 'utf8');
 

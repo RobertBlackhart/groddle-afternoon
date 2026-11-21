@@ -28,8 +28,8 @@ import {
 import { GIANTS } from '../public/js/shrines.js?v=ff2390f2';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=0dc67da4';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=5c5a4301';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=88972bec';
-import { questCardMenuRows } from '../public/js/ui/quest-sheet.js?v=7467200c';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=85a3deaf';
+import { questCardMenuRows } from '../public/js/ui/quest-sheet.js?v=86be8b53';
 import { ISLAND_CONFIRM, ISLAND_LINES } from '../public/js/newxp.js?v=5aa81665';
 
 const here = dirname(fileURLToPath(import.meta.url));

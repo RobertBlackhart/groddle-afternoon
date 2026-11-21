@@ -97,7 +97,8 @@ export function greyWaitingVerbs(verbs, isShared) {
   const out = verbs.map((v) => {
     if (!v || v.enabled === false || !isShared(v)) return v;
     changed = true;
-    return { ...v, enabled: false, reason: COPY.busy };
+    // #586: marked as waiting (not refused), so the menu holds Act's presses until the answer.
+    return { ...v, enabled: false, reason: COPY.busy, waiting: true };
   });
   return changed ? out : null;
 }

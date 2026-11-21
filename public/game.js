@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=85e553c8';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=68aa35d4';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d494b810';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -829,7 +829,7 @@ import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=e44e0
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=b4843740';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=1d3f10cb';
 import './js/classic/classic-zoom.js?v=d897c7dd';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1075,7 +1075,7 @@ import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=03ac65
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=88972bec';
+import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=85a3deaf';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1088,16 +1088,16 @@ import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=decb630f';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=aaf612e5';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=7467200c';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=86be8b53';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=8e6bea62';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=607a9bcd';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=6e11faf8';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=fba9a19d';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { bindVerbMenu, centerVerbMenu, chooseVerbRow, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, stepVerbRow, syncVerbDetail, verbMenuKey, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=81321d29';
+import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=d114929c';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=5c5a4301';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
@@ -1132,7 +1132,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=8b603f92';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=0567ccfa';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=53939279';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -9035,12 +9035,15 @@ function openVerbMenu(target) {
     return;
   }
   const menu = document.getElementById('verb-menu');
+  dropVerbMenuActs(menu);
   renderVerbMenu(target, verbs);
   menu.hidden = false;
   placeWorldVerbMenu(target);
   // Defer focus so the Enter that opened the menu does not also activate this choice.
+  // #586: a menu still waiting on the street's answer lights its first row when it lands
+  // (refreshVerbMenu): until then its only row that can be done (Talk to) is not the tree's first.
   requestAnimationFrame(() => {
-    if (menuTarget === target && !menu.hidden) focusVerbRow(menu);
+    if (menuTarget === target && !menu.hidden && !verbMenuWaiting(menu)) focusVerbRow(menu);
   });
 }
 
@@ -9056,13 +9059,20 @@ function refreshVerbMenu(target) {
   // Only when a row or the subtitle changed (a walking animal's state lands often).
   if (menu._vmSig === verbMenuSig(target, verbs)) return false;
   const focused = menu.contains(document.activeElement) ? document.activeElement?.dataset?.verb || '' : null;
+  const waited = verbMenuWaiting(menu);
   renderVerbMenu(target, verbs);
   placeWorldVerbMenu(target);
   if (focused != null) {
     const at = [...menu.querySelectorAll('.vm-row')].findIndex((r) => r.dataset.verb === focused);
     focusVerbRow(menu, at < 0 ? null : at);
+  } else if (waited && !verbMenuWaiting(menu)) {
+    // #586: the answer landed on a menu opened while it waited: its first row now, as openVerbMenu.
+    focusVerbRow(menu);
   }
   setCanvasData('verbMenuRefreshed', `${target.classId || ''}:${Date.now()}`);
+  // #586: Act's presses kept while it waited, in order (Pet, then Act Act: Water, not Talk to).
+  const acts = settleVerbMenu(menu);
+  if (acts) setCanvasData('verbMenuActsHeld', `${target.classId || ''}:${acts}`);
   return true;
 }
 
@@ -9194,6 +9204,7 @@ function renderVerbMenu(target, verbs, level = null) {
       cost: v.energy,
       next: picks || askMax > 0 || asks,
       disabled: !v.enabled,
+      wait: Boolean(v.waiting),
       tip: v.tooltip || '',
       reason: v.reason || '',
       verb: v.id,
@@ -9391,6 +9402,7 @@ function targetPageRect(target, rr) {
 function closeVerbMenu() {
   const menu = document.getElementById('verb-menu');
   menu.hidden = true;
+  dropVerbMenuActs(menu);
   delete menu.dataset.vmLevel;
   menuTarget = null;
   setCanvasData('stackPickCount', '');
@@ -34450,7 +34462,8 @@ async function main() {
       actMenu: () => {
         if (enterChooser?.isOpen()) return enterChooser;
         const menu = document.getElementById('verb-menu');
-        if (menuTarget && menu && !menu.hidden) return { step: (n) => stepVerbRow(menu, n), choose: () => chooseVerbRow(menu) };
+        // #586: one still waiting on the street keeps Act's presses for its answer (actVerbMenu).
+        if (menuTarget && menu && !menu.hidden) return actVerbMenu(menu);
         // G851: a post held by Act's Enter (its roads) and a stack's own menu (the pack's item card) too.
         if (signpostFocus) return signpostActMenu();
         const pop = isPackPopoverOpen() ? document.getElementById('pack-popover') : null;

@@ -24,7 +24,7 @@ import {
   sameWords,
   whoText,
 } from '../public/js/chat-reactions.js?v=38460172';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=decb630f';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=aaf612e5';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { chatReactionsFeature } from '../public/js/features/chat-reactions-feature.js?v=704d27da';
 import { drawerLine, normalLine } from '../public/js/player-im.js?v=da51888c';

@@ -16,7 +16,7 @@ import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } fro
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { listDeclinedOffers, markOffered, offerCanWait, putOffOffer, waitingOffers } from '../public/js/quest-offers.js?v=69e064ff';
 import { questOffersFeature, waitingOfferCards } from '../public/js/features/quest-offers-feature.js?v=561c16e3';
-import { questCardTab } from '../public/js/ui/quest-sheet.js?v=7467200c';
+import { questCardTab } from '../public/js/ui/quest-sheet.js?v=86be8b53';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

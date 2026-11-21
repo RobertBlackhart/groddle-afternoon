@@ -23,7 +23,7 @@ import {
   stickKeys,
   touchTapPlan,
 } from '../public/js/touch-controls.js?v=b10f17bb';
-import { chooseVerbRow, stepVerbRow } from '../public/js/ui/verb-menu.js?v=81321d29';
+import { chooseVerbRow, stepVerbRow } from '../public/js/ui/verb-menu.js?v=d114929c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
@@ -245,7 +245,7 @@ describe('Act drives an open menu (ACTPRESS)', () => {
   });
 
   it('game.js hands Act the chooser or the verb menu, and the cue is in tokens', () => {
-    assert.match(game, /actMenu: \(\) => \{\s*if \(enterChooser\?\.isOpen\(\)\) return enterChooser;[\s\S]{0,200}return \{ step: \(n\) => stepVerbRow\(menu, n\), choose: \(\) => chooseVerbRow\(menu\) \};/);
+    assert.match(game, /actMenu: \(\) => \{\s*if \(enterChooser\?\.isOpen\(\)\) return enterChooser;[\s\S]{0,300}if \(menuTarget && menu && !menu\.hidden\) return actVerbMenu\(menu\);/);
     const cue = css.match(/\.touch-act\[data-menu="open"\] \{[^}]*\}/)?.[0] || '';
     assert.match(cue, /var\(--accent-soft\)/);
     assert.doesNotMatch(cue, /#[0-9a-f]{3,8}\b|\d+px\s*\/|font-size: \d/i);

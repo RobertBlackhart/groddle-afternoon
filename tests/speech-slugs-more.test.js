@@ -23,7 +23,7 @@ import { setTrantTables, createTrantState } from '../public/js/trants.js?v=864ea
 import { setMetabolicLossGate } from '../public/js/metabolics.js?v=48f784bf';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=ceb23742';
-import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=0a720cc7';
+import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=8a8d3cba';
 import { createKitty, petKitty } from '../public/js/heli-kitties.js?v=e4af4096';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 
