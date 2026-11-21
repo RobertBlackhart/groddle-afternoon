@@ -89,9 +89,9 @@ import {
   stepTriggers,
 } from '../puzzle-triggers.js?v=221b67a9';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
-import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';
+import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { partySpaceForStreet } from '../party-spaces.js?v=a748a93f';
-import { anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
+import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';

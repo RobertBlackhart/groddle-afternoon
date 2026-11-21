@@ -8,8 +8,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=06a3b693';
-import * as mod from '../public/js/quest-rooms/juju-camp.js?v=328e5f26';
+import * as kit from '../public/js/quest-rooms/kit.js?v=a185ad58';
+import * as mod from '../public/js/quest-rooms/juju-camp.js?v=86382ec3';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(ROOT, 'assets', 'streets', `${tsid}.json`), 'utf8'));

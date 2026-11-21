@@ -42,10 +42,10 @@
 import { countItem } from '../inventory.js?v=6414dbdc';
 import { isEditableTarget } from '../held-keys.js?v=a28eb293';
 import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=f0966996';
-import { doorsFeature } from './doors-feature.js?v=e3c15a5d';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=b748389b';
+import { doorsFeature } from './doors-feature.js?v=878d882c';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
-import { frameTexture, textureFromUrl } from '../textures.js?v=090265fd';
+import { frameTexture, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import {
   CAR_FLOOR,
   CAR_FLOOR_LIGHTS,
@@ -95,7 +95,7 @@ import {
   ticketOffer,
 } from '../subway.js?v=36c6d2b2';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
-import { anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
+import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
 
 export const SUBWAY_FEATURE_ID = 'subway';
 const STYLE_ID = 'subway-feature-style';

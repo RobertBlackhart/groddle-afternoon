@@ -61,15 +61,15 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=39041
 import { signpostX as fixtureSignpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note-pole-art.js?v=fbda2f8a';
-import { textureFromUrl } from '../textures.js?v=090265fd';
-import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=87277227';
+import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=929d8d6b';
 import { openNotePicker, openNoteView } from '../note-view.js?v=eca7de52';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=fe9ea8ca';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=1cec8ef7';
-import { BENCH_ART, towerApi } from './home-tower-feature.js?v=2abc9e12';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=2f7be44d';
+import { BENCH_ART, towerApi } from './home-tower-feature.js?v=c2441d2e';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=18889f7a';
-import { projectApi } from './street-jobs-feature.js?v=b1c2d2c4';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=54cf2b6a';
+import { projectApi } from './street-jobs-feature.js?v=e43c9d78';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=8a387571';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   GOOD_NEIGHBOUR_AT,
@@ -108,7 +108,7 @@ import {
   signpostArms,
   signpostCandidates,
 } from '../home-street-mp.js?v=0af21c5c';
-import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
+import { standOnFeet } from '../sprite-feet.js?v=53939279';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export { HOME_STREET_MP_ID };

@@ -40,9 +40,9 @@
  */
 
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { onLoaded } from '../textures.js?v=090265fd';
-import { sceneAnim } from '../deco-anim.js?v=e51e0b32';
-import { standOnFeet } from '../sprite-feet.js?v=fdd1d9ec';
+import { onLoaded } from '../textures.js?v=b1f5bbfe';
+import { sceneAnim } from '../deco-anim.js?v=23980a5e';
+import { standOnFeet } from '../sprite-feet.js?v=53939279';
 
 export const QUEST = 'stale_but_necessary';
 /**

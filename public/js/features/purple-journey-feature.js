@@ -41,9 +41,9 @@
 import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=5abad2c7';
-import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=090265fd';
+import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=b1f5bbfe';
 import { createOnscreenSharp, ktx2Loader, maxTextureSizeOf, rendererCompressedFormats, sharpAllowed, textureBytes } from '../onscreen-sharp.js?v=75b8a30d';
-import { playPoofIn } from '../overlay-art.js?v=892af05a';
+import { playPoofIn } from '../overlay-art.js?v=04d1a4c0';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
 import { POTION_ART } from '../potion-art.js?v=9d731b38';
@@ -66,8 +66,8 @@ import {
   purpleTimeline,
   scionWords,
 } from '../purple-journey.js?v=5e078ed8';
-import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=3caa9c70';
-import { homesFeature } from './homes-feature.js?v=1cec8ef7';
+import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=3aabd19c';
+import { homesFeature } from './homes-feature.js?v=2f7be44d';
 
 export const PURPLE_FEATURE_ID = 'purple-journey';
 /** The scene's own TSID (the template is LNVV4OTMAUG2PQV). */

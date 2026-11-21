@@ -68,8 +68,8 @@ import {
 import { HOE_TOOLS, WATERING_CAN_TOOLS, canUseTool, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=6414dbdc';
-import { JOB_WORK_OVERLAY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';
+import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
@@ -344,10 +344,10 @@ function showToolOver(engine, id, tool, ms) {
   root.zIndex = 40;
   root.label = 'garden-tool-over';
   const { width: w, height: h } = JOB_WORK_OVERLAY;
-  const r = Math.round(Math.max(w, h) / 2 + 9);
+  const { r, tail } = JOB_WORK_BUBBLE;
   const bubble = new PIXI.Graphics();
   bubble.circle(0, 0, r).fill({ color: 0xffffff, alpha: 0.94 }).stroke({ color: 0x8c7a5b, width: 1.5, alpha: 0.7 });
-  bubble.poly([-6, r - 2, 6, r - 2, 0, r + 9]).fill({ color: 0xffffff, alpha: 0.94 });
+  bubble.poly([-6, r - 2, 6, r - 2, 0, r + tail]).fill({ color: 0xffffff, alpha: 0.94 });
   root.addChild(bubble);
   const sheet = jobWorkToolSheet(tool);
   let art;
@@ -368,7 +368,8 @@ function showToolOver(engine, id, tool, ms) {
   art.anchor.set(0.5);
   root.addChild(art);
   root.x = at.x;
-  root.y = at.y + JOB_WORK_OVERLAY.deltaY;
+  // #583: over the tender's name plate, as a street project's crew bubble, not on the face.
+  root.y = at.y + JOB_WORK_REMOTE_BUBBLE_DY;
   (engine.fxLayer || engine.entityLayer).addChild(root);
   overlays.set(id, { root, until: Date.now() + Math.max(500, Math.min(6000, ms)) });
   engine.setData?.('sharedGardensToolOver', `${id}:${tool}:${sheet ? 'animation' : 'icon'}`);
@@ -390,7 +391,7 @@ function tickOverlays(engine) {
       continue;
     }
     o.root.x = at.x;
-    o.root.y = at.y + JOB_WORK_OVERLAY.deltaY;
+    o.root.y = at.y + JOB_WORK_REMOTE_BUBBLE_DY;
   }
 }
 

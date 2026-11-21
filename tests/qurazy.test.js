@@ -37,8 +37,8 @@ import {
   qurazyFeatureState,
   qurazyStreetEligible,
   resetQurazyFeatureForTests,
-} from '../public/js/features/qurazy-feature.js?v=9c6cb5c8';
-import * as qurazyModule from '../public/js/features/qurazy-feature.js?v=9c6cb5c8';
+} from '../public/js/features/qurazy-feature.js?v=e636b72c';
+import * as qurazyModule from '../public/js/features/qurazy-feature.js?v=e636b72c';
 import { GENTLE_ISLAND } from '../public/js/newxp.js?v=5aa81665';
 
 const here = dirname(fileURLToPath(import.meta.url));

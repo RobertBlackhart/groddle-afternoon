@@ -24,6 +24,33 @@ import { SOUND_ALIASES, SOUND_FILES } from './sound-keys.js?v=d6b20718';
 /** items/include/jobs.js startJobWork 293-305. */
 export const JOB_WORK_OVERLAY = Object.freeze({ deltaY: -110, width: 40, height: 40, bubble: true });
 
+/** The balloon the tool sits in: radius `r` round the 40x40 box, and a tail of `tail` px under it. */
+export const JOB_WORK_BUBBLE = Object.freeze({ r: Math.round(Math.max(JOB_WORK_OVERLAY.width, JOB_WORK_OVERLAY.height) / 2 + 9), tail: 9 });
+
+/**
+ * Another player's bubble, over the name plate (realtime-feature PLATE_Y -150), as the meditation
+ * bubble (meditation-feature.js BUBBLE_DY): its centre's offset from their feet.
+ */
+export const JOB_WORK_REMOTE_BUBBLE_DY = -186;
+
+/** An avatar's drawn height (its sprite), clamped to an avatar's range; 0 when unknown. */
+export function avatarDrawnHeight(player) {
+  const h = Number(player?.height);
+  return Number.isFinite(h) && h > 40 ? Math.min(160, h) : 0;
+}
+
+/**
+ * #583: the bubble's centre over your avatar standing at `footY`. Glitch hung a bubbled pc_overlay
+ * above its point (InLocationAnnouncementOverlay.as placeByPcView 128: y = pc.y + delta_y; 309-331:
+ * the bubble is drawn from -bubble_h down, so its tail ends at the point), and the point is delta_y
+ * -110 over the feet, the top of the head. The remake centred the balloon on that point, so it sat
+ * on the face. The tail now ends there, or at the avatar's drawn top when it is taller (a hat).
+ */
+export function jobWorkBubbleY(footY, avatarH = 0) {
+  const tip = Math.max(-JOB_WORK_OVERLAY.deltaY, (Number(avatarH) || 0) + 2);
+  return (Number(footY) || 0) - tip - JOB_WORK_BUBBLE.r - JOB_WORK_BUBBLE.tail;
+}
+
 /** The client's animation rate (TSEngineConstants.as:6). */
 const FPS = 30;
 
@@ -73,5 +100,5 @@ export function jobWorkFloatPoint(player, boardX = null) {
   const x = Number(player?.x) || 0;
   const y = Number(player?.y) || 0;
   const side = Number.isFinite(boardX) && boardX > x ? -1 : 1;
-  return { x: x + side * 62, y: y + JOB_WORK_OVERLAY.deltaY };
+  return { x: x + side * 62, y: jobWorkBubbleY(y, avatarDrawnHeight(player)) };
 }

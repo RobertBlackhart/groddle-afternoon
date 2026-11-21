@@ -28,7 +28,7 @@
  * video frames.
  */
 
-import { textureFromUrl } from '../textures.js?v=090265fd';
+import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { FALLING_ROOM_FILES } from './falling-room-art.js?v=6d588773';
 
 export const ART = 'assets/sprites/quest-rooms/falling_room/';

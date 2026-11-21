@@ -9,8 +9,8 @@
  * Canvas: potionBottle (<class>:<frame>:<self|target>, the frame last drawn).
  */
 
-import { displayTopOf, itemstackOverlayPoint } from './overlay-art.js?v=892af05a';
-import { pcOverlayPoint, playItemOverlay } from './item-overlay.js?v=09ca470a';
+import { displayTopOf, itemstackOverlayPoint } from './overlay-art.js?v=04d1a4c0';
+import { pcOverlayPoint, playItemOverlay } from './item-overlay.js?v=f9d3faef';
 import { POTION_POUR_MS, POTION_SELF_OVERLAY, POTION_TARGET_OVERLAY, potionBottleSheet, potionPourSide } from './potion-bottles.js?v=17925871';
 
 /** A garden's display top is 35 px over its art (LocationItemstackView.as 640-642). */

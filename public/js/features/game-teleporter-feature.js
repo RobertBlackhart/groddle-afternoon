@@ -31,8 +31,8 @@
  *   gameTeleporterLast.
  */
 
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=f0966996';
-import { crownsMpTeleport, startCrowns } from './crowns-feature.js?v=e3b5012c';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=b748389b';
+import { crownsMpTeleport, startCrowns } from './crowns-feature.js?v=ba5b5b30';
 
 export const GAME_TELEPORTER_FEATURE_ID = 'game-teleporter';
 export const GAME_TELEPORTER_CLASS = 'game_teleporter';

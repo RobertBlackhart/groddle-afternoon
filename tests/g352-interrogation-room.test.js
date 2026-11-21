@@ -44,7 +44,7 @@ import {
   INTERROGATION_DOOR_CLASS,
   interrogationRoomFeature,
   interrogationWayBack,
-} from '../public/js/features/interrogation-room-feature.js?v=0a31cf73';
+} from '../public/js/features/interrogation-room-feature.js?v=7a113af2';
 import { CHAIR_BOX, CHAIR_OUT, CHAIR_PATHS, chairSvg, recolourHex } from '../tools/interrogation/build-chair.mjs';
 import { HAS_SITE, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 

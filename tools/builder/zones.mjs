@@ -29,7 +29,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { streetStats, editsOn } from '../../public/js/builder/zone.js?v=ce289eb1';
-import { arriveFor } from '../../public/js/builder/geometry-handles.js?v=3f7693b1';
+import { arriveFor } from '../../public/js/builder/geometry-handles.js?v=9f7a8061';
 import { isZoneTsid, withoutZoneConnects } from '../../public/js/zone-streets.js?v=b40010d5';
 
 export const ZONES_DIR = 'public/assets/zones';

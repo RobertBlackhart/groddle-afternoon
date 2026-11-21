@@ -74,7 +74,7 @@ import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
-import { patchesFeature } from './patches-feature.js?v=000b4cab';
+import { patchesFeature } from './patches-feature.js?v=c965bb61';
 import {
   COPY,
   GRANT_CLASSES,

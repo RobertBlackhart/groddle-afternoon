@@ -138,6 +138,49 @@ async function resizeImage(url, { width, height }) {
   return canvas;
 }
 
+/** #583: the longest texture side the GPU takes (game.js sets it from the renderer); Infinity until then. */
+let sideLimit = Infinity;
+
+/**
+ * #583: tell this module the renderer's MAX_TEXTURE_SIZE. An image longer than it is drawn smaller
+ * on load, its logical size kept (a lower resolution), instead of reaching the GPU too big to
+ * upload and drawing nothing: the Grinders' work sheets are one row of 83 frames, 12450 px at 3x,
+ * a blank bubble on a phone that takes 4096 or 8192.
+ */
+export function setTextureSideLimit(n) {
+  sideLimit = Number(n) > 0 ? Number(n) : Infinity;
+}
+
+/** #583: the pixel size an image of w x h is kept at so its longer side fits `limit`, and the factor. */
+export function fitTextureSide(w, h, limit = sideLimit) {
+  const big = Math.max(Number(w) || 0, Number(h) || 0);
+  if (!(big > limit)) return { w, h, k: 1 };
+  const k = limit / big;
+  return { w: Math.max(1, Math.floor(w * k)), h: Math.max(1, Math.floor(h * k)), k };
+}
+
+/** #583: the decoded image, or a copy small enough for the GPU (fitTextureSide). */
+async function withinSideLimit(image) {
+  const w = image.naturalWidth || image.width;
+  const h = image.naturalHeight || image.height;
+  const fit = fitTextureSide(w, h);
+  if (fit.k === 1) return image;
+  if (typeof createImageBitmap === 'function') {
+    try {
+      return await createImageBitmap(image, { resizeWidth: fit.w, resizeHeight: fit.h, resizeQuality: 'high' });
+    } catch {
+      // Older engines: the canvas below.
+    }
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = fit.w;
+  canvas.height = fit.h;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(image, 0, 0, fit.w, fit.h);
+  return canvas;
+}
+
 function createSource(url, opts) {
   const PIXI = pixi();
   const resolution = opts.resolution || resolutionOfUrl(url);
@@ -151,16 +194,18 @@ function createSource(url, opts) {
   const state = { url, loaded: false, failed: false, promise: null };
   source[LOAD] = state;
   state.promise = (isSvg(url) ? rasteriseSvg(url, opts) : opts.width > 0 && opts.height > 0 ? resizeImage(url, opts) : decodeImage(url)).then(
-    (image) => {
+    (decoded) => withinSideLimit(decoded).catch(() => decoded).then((image) => {
       if (source.destroyed) return source;
       source.resource = image;
-      const w = (image.naturalWidth || image.width) / resolution;
-      const h = (image.naturalHeight || image.height) / resolution;
-      if (!source.resize(w, h, resolution)) source.update();
+      // The logical size is the file's; an image kept smaller (#583) is a lower resolution of it.
+      const w = (decoded.naturalWidth || decoded.width) / resolution;
+      const h = (decoded.naturalHeight || decoded.height) / resolution;
+      const res = image === decoded ? resolution : resolution * ((image.width || 1) / (decoded.naturalWidth || decoded.width || 1));
+      if (!source.resize(w, h, res)) source.update();
       state.loaded = true;
       source.emit('loaded', source);
       return source;
-    },
+    }),
     (err) => {
       state.failed = true;
       source.emit('error', err, source);

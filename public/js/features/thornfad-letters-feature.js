@@ -19,7 +19,7 @@
 
 import { LETTER_BOX, LETTER_INDICATOR, inLetterBox, isThornfadLayers, letterOverlayKey, parseForcedLetter, rollStreetLetter } from '../thornfad-letters.js?v=1efc7d8d';
 import { letterFromWord, letterWord, LETTER_WORD_OFF } from '../realtime-client.js?v=1108c7c5';
-import { playOverlay } from '../overlays.js?v=f0966996';
+import { playOverlay } from '../overlays.js?v=b748389b';
 
 export const THORNFAD_LETTERS_FEATURE_ID = 'thornfad-letters';
 const DATA_MS = 250;

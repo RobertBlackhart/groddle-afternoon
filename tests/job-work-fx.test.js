@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../public/js/job-work-fx.js?v=e16ca80f';
+import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../public/js/job-work-fx.js?v=2c489570';
 
 const root = join(import.meta.dirname, '..');
 const gsjs = join(root, '../glitch-GameServerJS/items/include/jobs.js');
@@ -43,9 +43,10 @@ describe('Street project work shows its tool as the original did', () => {
 
   it('floats each unit beside the bubble, on the side away from the board (and its Enter hint)', () => {
     const p = { x: 1000, y: 900 };
-    assert.deepEqual(jobWorkFloatPoint(p, 1150), { x: 938, y: 790 });
-    assert.deepEqual(jobWorkFloatPoint(p, 850), { x: 1062, y: 790 });
-    assert.deepEqual(jobWorkFloatPoint(p, null), { x: 1062, y: 790 });
+    // #583: level with the balloon, whose tail ends 110 px over the feet (900 - 110 - 29 - 9).
+    assert.deepEqual(jobWorkFloatPoint(p, 1150), { x: 938, y: 752 });
+    assert.deepEqual(jobWorkFloatPoint(p, 850), { x: 1062, y: 752 });
+    assert.deepEqual(jobWorkFloatPoint(p, null), { x: 1062, y: 752 });
   });
 
   it('the feature draws it in front of the street and hides the Enter hint while working', () => {

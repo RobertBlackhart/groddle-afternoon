@@ -50,8 +50,8 @@
 
 import { AN_AUTUMN_DAY_FILES } from '../an-autumn-day-art.js?v=d6b2601b';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { textureFromUrl } from '../textures.js?v=090265fd';
-import { sceneAnim } from '../deco-anim.js?v=e51e0b32';
+import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { sceneAnim } from '../deco-anim.js?v=23980a5e';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const ROOM_ID = 'an_autumn_day';

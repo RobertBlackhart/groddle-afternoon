@@ -70,9 +70,9 @@ import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { playOverlay } from '../overlays.js?v=f0966996';
+import { playOverlay } from '../overlays.js?v=b748389b';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
+import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
 import { NAMEPLATE_STYLE } from '../world-text.js?v=6b49f88c';
 
 export const REALTIME_FEATURE_ID = 'realtime';

@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2933,
+  "commits": 2936,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The street card on arrival lists the Batterflies on every street that has them"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Quests list draws again when it holds every quest but shows none"
+   },
    {
     "date": "2026-11-21",
     "kind": "improve",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Ticket To Beam Me Down costs the Paradise ticket price and counts in the day's 11"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Winter Walk motes pay 1 to 25 times your quoin multiplier, not 100 to 2500 times it"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Refuel asks how many Fuel Cells before any go into a machine"
    }
   ]
  },
- "tests": 1217,
+ "tests": 1220,
  "generatedAt": "2026-11-21"
 }

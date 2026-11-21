@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=187e3c76';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=87277227';
+import { signArmWidth } from '../street-render.js?v=929d8d6b';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=ff2390f2';
@@ -148,10 +148,10 @@ import {
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=d5252bc6';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
-import { JOB_WORK_OVERLAY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=e16ca80f';
+import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
@@ -165,7 +165,7 @@ import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../street-job-asks.js?v=c2511e10';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fdd1d9ec';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=53939279';
 
 export const STREET_JOBS_FEATURE_ID = 'street-jobs';
 const BOARD_CLASS = 'street_job_board';
@@ -1260,11 +1260,11 @@ function toolBubble(engine, tool, label) {
   root.zIndex = 40;
   root.label = label;
   const { width: w, height: h } = JOB_WORK_OVERLAY;
-  const r = Math.round(Math.max(w, h) / 2 + 9);
+  const { r, tail } = JOB_WORK_BUBBLE;
   const bubble = new PIXI.Graphics();
   // The client's overlay bubble: a round white balloon with a small tail toward the player.
   bubble.circle(0, 0, r).fill({ color: 0xffffff, alpha: 0.94 }).stroke({ color: 0x8c7a5b, width: 1.5, alpha: 0.7 });
-  bubble.poly([-6, r - 2, 6, r - 2, 0, r + 9]).fill({ color: 0xffffff, alpha: 0.94 });
+  bubble.poly([-6, r - 2, 6, r - 2, 0, r + tail]).fill({ color: 0xffffff, alpha: 0.94 });
   root.addChild(bubble);
   const sheet = jobWorkToolSheet(tool);
   let art;
@@ -1293,7 +1293,8 @@ function toolBubble(engine, tool, label) {
 function workToolFx(engine, tool) {
   const root = toolBubble(engine, tool, 'job-work-tool');
   root.x = engine.player.x;
-  root.y = engine.player.y + JOB_WORK_OVERLAY.deltaY;
+  // #583: above the head, its tail at the top of it (jobWorkBubbleY), not on the face.
+  root.y = jobWorkBubbleY(engine.player.y, avatarDrawnHeight(engine.player));
   (engine.fxLayer || engine.entityLayer).addChild(root);
   engine.setData?.('jobWorkTool', `${tool}:${jobWorkToolSheet(tool) ? 'animation' : 'icon'}`);
   return root;
@@ -1308,7 +1309,7 @@ function workToolFx(engine, tool) {
  * and project_workers on arriving).
  */
 /** Over the remote avatar's name plate, as the meditation bubble (meditation-feature.js 483 BUBBLE_DY). */
-const CREW_BUBBLE_DY = -186;
+const CREW_BUBBLE_DY = JOB_WORK_REMOTE_BUBBLE_DY;
 let crewToolSet = null;
 
 /** The tools the catalog's work asks for (workGear): the only classes a remote bubble draws. */
@@ -1443,7 +1444,7 @@ function tickWork(engine, now) {
   if (work.toolSprite && !work.toolSprite.destroyed) {
     // items/include/jobs.js 293-305: the overlay rides the player at delta_y -110.
     work.toolSprite.x = p.x;
-    work.toolSprite.y = p.y + JOB_WORK_OVERLAY.deltaY;
+    work.toolSprite.y = jobWorkBubbleY(p.y, avatarDrawnHeight(p));
   }
   if (work.street && engine.streetTsid !== work.street) {
     stopWork(engine, LEFT_TEXT, null, { quiet: true });

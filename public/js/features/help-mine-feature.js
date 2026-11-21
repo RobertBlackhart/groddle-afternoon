@@ -57,7 +57,7 @@ import { rockId } from '../street-objects.js?v=8ce76736';
 import { addItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
-import { frameTexture, loadTexture } from '../textures.js?v=090265fd';
+import { frameTexture, loadTexture } from '../textures.js?v=b1f5bbfe';
 import { acceptOffer } from '../quest-offers.js?v=69e064ff';
 import { CREW_NODES, CREW_VERBS, HELP_DIG_COUNTER, HELP_DIG_LABEL, HELP_SCRAPE_LABEL, digHelpFrom, helpDigMessage, helpScrapeMessage, othersDigging } from '../help-dig.js?v=ca0cc848';
 import {

@@ -108,7 +108,7 @@ describe('the walk up Organish Chute with the game\'s stepper (#390)', () => {
     globalThis.fetch = async () => ({ json: async () => raw });
     // The flip keys listen on the window (bindGravityFlip).
     if (typeof globalThis.window === 'undefined') globalThis.window = new EventTarget();
-    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=c56b7d70'));
+    ({ gravityFlipKey, puzzlesFeature: puzzles } = await import('../public/js/features/puzzles-feature.js?v=7ddb6086'));
     ({ locationEventsFeature: events, locationEventsApi: api } = await import('../public/js/features/location-events-feature.js?v=2c3023b5'));
   });
 

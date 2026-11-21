@@ -12,8 +12,8 @@ import { describe, it } from 'node:test';
 
 import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=0afbe615';
 import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=c3e8490a';
-import { FEATURES } from '../public/js/features/index.js?v=48a97c61';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=0810b973';
+import { FEATURES } from '../public/js/features/index.js?v=181da224';
 import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=49fbf68f';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
@@ -336,7 +336,8 @@ describe('Master Gardener potions on a shared bed (slice 2)', () => {
   it('another player\'s can or hoe goes over their head; the page\'s own acts name the tool', () => {
     const f = read('public/js/features/shared-gardens-feature.js');
     assert.match(f, /c\.on\('msg:garden_ev'/);
-    assert.match(f, /JOB_WORK_OVERLAY\.deltaY/);
+    // #583: over their name plate, as a street project's crew (JOB_WORK_REMOTE_BUBBLE_DY), not on the face.
+    assert.match(f, /at\.y \+ JOB_WORK_REMOTE_BUBBLE_DY/);
     const r = rig({});
     r.client.emit('msg:gardens', { t: 'gardens', street: COMMUNITY, snap: true, now: Date.now(), plots: { 'default:1-1': { state: 'dirty' } } });
     sharedGardensFeature.runVerbOverride(r.plot('1-1'), 'clear', r.engine);
