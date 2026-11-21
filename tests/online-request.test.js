@@ -178,6 +178,7 @@ const NOT_A_REQUEST = Object.freeze([
   'public/js/bureaucratic-hall.js PLEASE_WAIT_MS',
   'public/js/crabs.js CRAB_OFFER_TIMEOUT_MS',
   'public/js/crabs.js CRAB_REPLY_MS',
+  'public/js/extension-marks.js BAIT_WAIT_MS',
   'public/js/familiar.js ROCK_SHEET_WAIT_MS',
   'public/js/features/animal-mood-feature.js ROOT_TREE_WAIT_MS',
   'public/js/features/bug-report-feature.js FONT_WAIT_MS',

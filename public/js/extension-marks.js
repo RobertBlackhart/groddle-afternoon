@@ -2,7 +2,7 @@
  * What a bug report can honestly learn about browser extensions that may be changing the game page
  * (#585: an empty Quests list on Firefox that stock AdGuard and uBlock did not reproduce; most likely
  * a hiding rule the player made). A page cannot list extensions, and this never probes extension
- * URLs or files (that would be fingerprinting). It only reads what is already in our own document:
+ * URLs or files (that would be fingerprinting). It only reads what is already in the game page:
  *
  * - the bait check (startBaitCheck): a small element off screen with class names ad-block lists
  *   hide (BAIT_CLASSES), read again after a frame and a short wait: hidden, no size or removed

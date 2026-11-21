@@ -167,14 +167,14 @@ describe('#342 and #343: a phone held sideways (PHONE SIDEWAYS 2)', () => {
     assert.match(block, /#bug-report-panel \.reports-new-view \{\n\s+display: grid;/);
     assert.match(block, /\.reports-new-view > \.reports-new-title \{ display: none; \}/);
     assert.match(block, /:root\.touch-phone\.kbd-up\[data-ui="modern"\] #game-root #bug-report-panel\.reports-panel:focus-within \{\n\s+inset: var\(--kbd-top, 0px\) 0 auto 0; height: var\(--kbd-h, 100%\);/);
-    assert.match(block, /:focus-within :is\(\.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-tray, \.reports-foot\) \{ display: none; \}/);
+    assert.match(block, /:focus-within :is\(\.reports-new-title, \.reports-label, \.reports-picture-row, \.reports-tray, \.reports-foot, \.reports-ext-row:not\(:focus-within\)\) \{ display: none; \}/);
   });
 });
 
 describe('G857 (#406): sideways, the report window gives each picture row its own place', () => {
   const block = css.slice(css.indexOf('/* === PHONE SIDEWAYS 2 (chk6'), css.indexOf('/* === end PHONE SIDEWAYS 2 === */'));
   it('the Attach row, the Add and Take row, the tray and Send each have a grid area', () => {
-    assert.match(block, /grid-template-areas: "label label" "text pic" "text add" "text tray" "text send";/);
+    assert.match(block, /grid-template-areas: "label label" "text pic" "text add" "text ext" "text tray" "text send";/);
     assert.match(block, /\.reports-new-view > \.reports-picture-row \{ grid-area: pic;/);
     assert.match(block, /\.reports-new-view > \.reports-picture-row\.reports-new-pictures \{ grid-area: add;/);
     assert.match(block, /\.reports-new-view > \.reports-tray \{ grid-area: tray;/);
