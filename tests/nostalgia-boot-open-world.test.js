@@ -2,32 +2,33 @@
  * Live report 212 (2026-11-12, Friendly): "when your time runs out in ancestral lands, you get
  * sometimes placed in a region that doesn't have street projects done, and you cannot get out."
  * do_baqala_boot (GSJS players/inc_special_locations.js 199-226) picks one of 26 streets in Kajuu,
- * Andra, Tamila and Besara; every one of them is a street project, so on a fresh world all 26 sit
- * past roads still being built. The kick now keeps Glitch's pick only when the starter street
- * reaches it by open roads, and otherwise sets you down on the open-world street nearest it.
+ * Andra, Tamila and Besara; every one of them is a street project, closed on a fresh world and
+ * closed or in a pocket cut off by closed roads on the live world (R11, 2026-11-21). The kick now
+ * picks only among the 26 the open-road rule opens for everyone (js/open-roads.js openWorld), and
+ * with none open, or the roads never loaded, lands on the starter street (Hechey Track).
  *
- * 1. On a fresh world none of the 26 is open (the bug's cause), and for each the nearest open
- *    street (street-graph nearestOpenStreet) is reachable from Hechey Track.
- * 2. openBootTarget: an open pick stands; a closed one moves (to one of the 26 at its arrival
- *    point, else to the street's own arrival); no answer keeps the pick.
- * 3. The wiring: juju-bandits-feature asks street-jobs-feature's openStreetNear, which grows the
- *    open world from the starter street only (never from a pocket you stand in).
- * 4. G1075 (R11, 2026-11-21): a kick right after logging in, before the roads have loaded, waits
- *    for them. It used to take Glitch's pick (a street past a road still being built), and landing
- *    there opened that pocket's roads for you alone (street-jobs.js noteArrival, openWayHome).
+ * 1. On a fresh world none of the 26 is open for everyone, so the kick lands on the starter street.
+ * 2. openBootTarget: only open boot streets; none open or no answer gives the starter street.
+ * 3. street-jobs-feature openForEveryone: the open world from the starter street, the same for every
+ *    player (a road kept open for you alone does not count), and the kick asks it.
+ * 4. G1075: a kick right after logging in waits for the roads; when they never come, or none of
+ *    the 26 is open, it lands on the starter street (it used to take Glitch's pick, past a closed
+ *    road, and landing there opened that road for you alone: js/street-jobs.js openWayHome).
  */
-import { describe, it } from 'node:test';
+import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=32e4718f';
-import { nearestOpenStreet, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { routeGraph } from '../public/js/map-routes.js?v=70f30ddf';
-import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
+import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
+import { closedForEveryone, freeWays, openWorld } from '../public/js/open-roads.js?v=597feeb5';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
+import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
+import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=38b041da';
+import { STARTER_LANDING, openBootTarget } from '../public/js/ancestral-nostalgia.js?v=7c972d9f';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
-import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';
-import { FEATURES } from '../public/js/features/index.js?v=d494b810';
+import { FEATURES } from '../public/js/features/index.js?v=c7830c96';
 import { createBuffState, applyBuff, hasBuff, removeBuff } from '../public/js/buffs.js?v=2ed95a93';
 
 const root = join(import.meta.dirname, '..');
@@ -35,78 +36,91 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const json = (rel) => JSON.parse(read(rel));
 const catalog = json('public/assets/content/street-jobs.json');
 const index = json('public/assets/streets/index.json');
-const { graph } = routeGraph(json('public/assets/content/signpost-graph.json'));
+// The game's street graph (signposts and doors, locked doors marked: a new player holds no keys).
+const graph = streetGraph(json('public/assets/content/signpost-graph.json'));
 
-const fresh = normalizeStreetJobState({ initialized: true });
-const shut = new Set(closedStreets(fresh, catalog, { exemptFrom: [index.default] }));
-const reach = reachableStreets(streetGraph(graph, { closed: shut }), { starts: [index.default] });
-// The kick never lands in the Savanna it sends you from (Xalanga's Languid Line S is the nearest open street to Andra's six).
-const skip = (t) => SAVANNA_HUBS.includes(String(index.streets[t]?.hubId));
+const BOOT = new Set(NOSTALGIA_BOOT_STREETS.map((r) => r.tsid));
+// The open world for everyone on a fresh world: nothing built yet.
+const fresh = openWorld(graph, { closed: closedForEveryone(catalog, {}, { starters: [index.default] }), starter: index.default, free: freeWays([...TELEPORTERS, ...WINTRY_PORTAL_TELEPORTERS]) });
 
-describe('1. a fresh world: the 26 boot streets are all past closed roads', () => {
-  it('none of them is reachable from the starter street', () => {
+describe('1. a fresh world: none of the 26 boot streets is open, so the kick lands on the starter street', () => {
+  it('none of them is in the open world; the starter street is', () => {
     assert.equal(NOSTALGIA_BOOT_STREETS.length, 26);
-    for (const row of NOSTALGIA_BOOT_STREETS) assert.equal(reach.has(row.tsid), false, row.label);
+    for (const row of NOSTALGIA_BOOT_STREETS) assert.equal(fresh.has(row.tsid), false, row.label);
+    assert.ok(fresh.has(index.default));
   });
 
-  it('each has an open-world street near it, reachable and outside the Savanna', () => {
-    for (const row of NOSTALGIA_BOOT_STREETS) {
-      const near = nearestOpenStreet(graph, { reach, from: row.tsid, skip });
-      assert.ok(near, `${row.label}: no open street joins it`);
-      assert.ok(reach.has(near), `${row.label} -> ${near}`);
-      assert.ok(index.streets[near], `${near} is a real street`);
-      assert.equal(skip(near), false, `${row.label} -> ${index.streets[near].label} is in the Savanna`);
-    }
-  });
-
-  it('without the skip, Andra\'s nearest open street would be in Xalanga (a Savanna hub)', () => {
-    const near = nearestOpenStreet(graph, { reach, from: NOSTALGIA_BOOT_STREETS.find((r) => r.hubId === '89').tsid });
-    assert.equal(skip(near), true);
-  });
-
-  it('an open street is its own nearest', () => {
-    assert.equal(nearestOpenStreet(graph, { reach, from: index.default }), index.default);
-    assert.equal(nearestOpenStreet(graph, { reach: null, from: index.default }), null);
+  it('the landing is Hechey Track, the starter street, at its own arrival', () => {
+    assert.equal(STARTER_LANDING.tsid, index.default);
+    assert.equal(STARTER_LANDING.label, index.streets[index.default].label);
+    for (const streetRoll of [0, 0.5, 0.99]) assert.deepEqual(openBootTarget(NOSTALGIA_BOOT_STREETS, fresh, { streetRoll }), { tsid: index.default, label: 'Hechey Track', arrive: null });
   });
 });
 
 describe('2. openBootTarget', () => {
-  const pick = pickBootTarget(NOSTALGIA_BOOT_STREETS, { streetRoll: 0.6, arrivalRoll: 0 });
+  const kajuu = NOSTALGIA_BOOT_STREETS.filter((r) => r.hubId === NOSTALGIA_BOOT_STREETS[0].hubId);
+  const open = new Set([index.default, ...kajuu.map((r) => r.tsid)]);
 
-  it('keeps an open pick, and the pick when the roads are unknown', () => {
-    assert.equal(openBootTarget(pick, pick.tsid, NOSTALGIA_BOOT_STREETS), pick);
-    assert.equal(openBootTarget(pick, null, NOSTALGIA_BOOT_STREETS), pick);
+  it('picks only among the boot streets that are open, at one of their arrivals', () => {
+    assert.ok(kajuu.length > 0 && kajuu.length < 26);
+    for (let i = 0; i < 40; i += 1) {
+      const out = openBootTarget(NOSTALGIA_BOOT_STREETS, open, { streetRoll: i / 40, arrivalRoll: 0.5 });
+      const row = kajuu.find((r) => r.tsid === out.tsid);
+      assert.ok(row, out.tsid);
+      assert.ok(row.arrivals.some(([x, y]) => x === out.arrive.x && y === out.arrive.y));
+    }
   });
 
-  it('moves a closed pick to another of the 26 at its own arrival point', () => {
-    const other = NOSTALGIA_BOOT_STREETS[0];
-    const out = openBootTarget(pick, other.tsid, NOSTALGIA_BOOT_STREETS, { arrivalRoll: 0 });
-    assert.deepEqual(out, { tsid: other.tsid, label: other.label, arrive: { x: other.arrivals[0][0], y: other.arrivals[0][1] }, movedFrom: pick.tsid });
-  });
-
-  it('moves a closed pick to any open street, landing at that street\'s own arrival', () => {
-    const near = nearestOpenStreet(graph, { reach, from: pick.tsid, skip });
-    const out = openBootTarget(pick, near, NOSTALGIA_BOOT_STREETS);
-    assert.equal(out.tsid, near);
-    assert.equal(out.arrive, null);
-    assert.ok(reach.has(out.tsid));
-  });
-});
-
-describe('3. the wiring', () => {
-  const juju = read('public/js/features/juju-bandits-feature.js');
-  const jobs = read('public/js/features/street-jobs-feature.js');
-  it('the kick asks for the open street nearest Glitch\'s pick (a forced QA destination stays)', () => {
-    assert.match(juju, /engine\.query\?\.\('openStreetNear', pick\.tsid, engine, \{ skipHubs: SAVANNA_HUBS \}\)/);
-    assert.match(juju, /if \(!pick \|\| rows\.length\) return pick;/);
-  });
-  it('the open world grows from the starter street only', () => {
-    assert.match(jobs, /openStreetNear\(tsid, engine, options\) \{\n\s+return openStreetNear\(tsid, engine, options\);/);
-    assert.match(jobs, /starts: \[streetIndex\.default\] \}\)/);
+  it('the starter street when none is open, when the roads never loaded, or none exists', () => {
+    const starter = { tsid: index.default, label: 'Hechey Track', arrive: null };
+    assert.deepEqual(openBootTarget(NOSTALGIA_BOOT_STREETS, new Set([index.default])), starter);
+    assert.deepEqual(openBootTarget(NOSTALGIA_BOOT_STREETS, null), starter);
+    assert.deepEqual(openBootTarget(NOSTALGIA_BOOT_STREETS, open, { exists: () => false }), starter);
   });
 });
 
-describe('4. a kick before the roads load waits for them (G1075)', () => {
+describe('3. street-jobs-feature openForEveryone, and the kick asks it', () => {
+  const realFetch = globalThis.fetch;
+  const params = {};
+  const engine = {
+    started: true, mode: 'solo', streetTsid: index.default,
+    questState: { active: {}, done: {} },
+    param: (k) => params[k] ?? null,
+    setData() {}, save() {}, updateHud() {},
+  };
+  let open = null;
+  before(async () => {
+    globalThis.fetch = async (url) => ({ ok: true, json: async () => json(`public/${String(url).split('?')[0]}`) });
+    applyStreetIndex(index);
+    streetJobsFeature.init(engine);
+    // A player who has stood on every boot street: those roads are kept open for them alone.
+    streetJobsFeature.restore({ grandfathered: [...BOOT] }, engine);
+    for (let i = 0; i < 300 && !open; i += 1) {
+      open = streetJobsFeature.openForEveryone(engine);
+      if (!open) await new Promise((r) => setTimeout(r, 10));
+    }
+  });
+  after(() => {
+    globalThis.fetch = realFetch;
+  });
+
+  it('is the open world for everyone: the starter street, none of the 26, kept roads left out', () => {
+    assert.ok(open, 'the roads loaded');
+    assert.equal(streetJobsFeature.openRoadsLoaded(engine), true);
+    assert.ok(open.has(index.default));
+    for (const t of BOOT) assert.equal(open.has(t), false, t);
+    assert.deepEqual([...open].sort(), [...fresh].sort(), 'the same as js/open-roads.js openWorld');
+  });
+
+  it('juju-bandits-feature asks it, and lands on the starter street without it (a forced QA destination stays)', () => {
+    const juju = read('public/js/features/juju-bandits-feature.js');
+    assert.match(juju, /engine\.query\?\.\('openForEveryone', engine\)/);
+    assert.match(juju, /return openBootTarget\(NOSTALGIA_BOOT_STREETS, open, \{ exists \}\);/);
+    assert.match(juju, /if \(rows\.length\) return pickBootTarget\(rows, \{ exists \}\);/);
+  });
+});
+
+describe('4. a kick before the roads load waits for them (G1075), then never past a closed road', () => {
   const feature = FEATURES.find((f) => f.id === 'juju-bandits');
   const savanna = { hubId: '86', platforms: [], bounds: { l: 0, r: 3000, t: -1000, b: 0 } };
   const flush = () => new Promise((r) => setImmediate(r));
@@ -135,46 +149,51 @@ describe('4. a kick before the roads load waits for them (G1075)', () => {
       },
       streetExists: () => true,
       inScene: () => false, transientInstance: () => false, questDialogueOpen: () => false, acting: () => false,
-      // street-jobs-feature's answers: nothing while the roads load, then the open street near the pick.
+      // street-jobs-feature's answers: nothing while the roads load, then the open world for everyone.
       query: (hook) => {
         if (hook === 'openRoadsLoaded') return roads.loaded;
-        if (hook === 'openStreetNear') return roads.loaded ? 'GOPENSTREET' : null;
+        if (hook === 'openForEveryone') return roads.loaded ? roads.open : null;
         return null;
       },
     };
     return engine;
   }
-
-  it('lands on the open street once the roads are in, not on Glitch\'s pick', async () => {
+  const kick = async (roads, { before = 0, after = 0 } = {}) => {
     feature.restore(undefined);
-    const roads = { loaded: false };
     const engine = makeEngine(roads);
     feature.onStreetClear(engine);
     feature.onStreetEnter(savanna, engine);
     let now = Date.now();
     const play = (s) => { for (let i = 0; i < s; i += 1) feature.onTick(16, (now += 1000), engine); };
-    play(8);
+    play(before);
     await flush();
-    assert.equal(engine.travels.length, 0, 'no kick while the roads load');
-    assert.equal(engine.data.nostalgiaState, 'booting');
+    const waited = engine.travels.length;
     roads.loaded = true;
-    play(4);
+    play(after);
     await flush();
-    assert.equal(engine.travels.length, 1);
-    assert.equal(engine.travels[0].tsid, 'GOPENSTREET');
     feature.restore(undefined);
+    return { engine, waited };
+  };
+
+  it('waits while the roads load, then lands on an open one of the 26', async () => {
+    const row = NOSTALGIA_BOOT_STREETS[3];
+    const { engine, waited } = await kick({ loaded: false, open: new Set([index.default, row.tsid]) }, { before: 8, after: 4 });
+    assert.equal(waited, 0, 'no kick while the roads load');
+    assert.equal(engine.travels.length, 1);
+    assert.equal(engine.travels[0].tsid, row.tsid);
   });
 
-  it('gives up waiting after a while and takes Glitch\'s pick, as before', async () => {
-    feature.restore(undefined);
-    const engine = makeEngine({ loaded: false });
-    feature.onStreetClear(engine);
-    feature.onStreetEnter(savanna, engine);
-    let now = Date.now();
-    for (let i = 0; i < 120; i += 1) feature.onTick(16, (now += 1000), engine);
-    await flush();
+  it('lands on the starter street when none of the 26 is open', async () => {
+    const { engine } = await kick({ loaded: false, open: fresh }, { before: 8, after: 4 });
     assert.equal(engine.travels.length, 1);
-    assert.ok(NOSTALGIA_BOOT_STREETS.some((r) => r.tsid === engine.travels[0].tsid));
-    feature.restore(undefined);
+    assert.equal(engine.travels[0].tsid, index.default);
+    assert.equal(engine.travels[0].arrive, null);
+  });
+
+  it('gives up waiting after about a minute and lands on the starter street, never Glitch\'s pick', async () => {
+    const { engine } = await kick({ loaded: false, open: null }, { before: 120 });
+    assert.equal(engine.travels.length, 1);
+    assert.equal(engine.travels[0].tsid, index.default);
+    assert.equal(BOOT.has(engine.travels[0].tsid), false);
   });
 });

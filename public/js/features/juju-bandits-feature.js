@@ -69,7 +69,6 @@ import {
   ancestralSeconds,
   ancestralTick,
   isSavannaHub,
-  SAVANNA_HUBS,
   jujuAnchor,
   jujuCurse,
   jujuLine,
@@ -92,7 +91,7 @@ import {
   pickBootTarget,
   openBootTarget,
   resetBaqalaTimes,
-} from '../ancestral-nostalgia.js?v=3d97122d';
+} from '../ancestral-nostalgia.js?v=7c972d9f';
 import { NOSTALGIA_BOOT_STREETS } from '../ancestral-nostalgia-data.js?v=0adb9184';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 
@@ -188,10 +187,8 @@ const NOSTALGIA_ICON = 'assets/ui/buff-none.svg';
 const HELD_BY = 'ancestral-lands';
 const RETRY_MS = 3000;
 /**
- * G1075 (R11): how many times a kick waits for the roads to load before it takes Glitch's pick as it
- * stands. Right after logging in the roads are not loaded yet, and the pick (one of 26 streets that
- * are all street projects) used to stand: you landed past a road still being built, and arriving
- * there opened its roads for you alone (js/street-jobs.js noteArrival, openWayHome).
+ * G1075 (R11): how many times a kick waits for the roads to load (3 s apart, about a minute) before
+ * it gives up and lands on the starter street. Right after logging in the roads are not loaded yet.
  */
 const ROAD_WAITS = 20;
 
@@ -268,13 +265,12 @@ function bootTarget(engine) {
   const forced = engine.param?.('nostalgiadest');
   const rows = forced ? NOSTALGIA_BOOT_STREETS.filter((r) => r.tsid === forced || r.source === forced) : [];
   const exists = (tsid) => (typeof engine?.streetExists === 'function' ? engine.streetExists(tsid) : true);
-  const pick = pickBootTarget(rows.length ? rows : NOSTALGIA_BOOT_STREETS, { exists });
-  if (!pick || rows.length) return pick;
-  // Report 212: never past a road still being built; the open street nearest Glitch's pick instead.
-  const near = engine.query?.('openStreetNear', pick.tsid, engine, { skipHubs: SAVANNA_HUBS }) ?? null;
-  // G1075: the roads still loading is no answer yet; wait for them (a while, then Glitch's pick).
-  if (!near && engine.query?.('openRoadsLoaded', engine) === false && (pendingBoot?.waits || 0) < ROAD_WAITS) return { ...pick, wait: true };
-  return openBootTarget(pick, near && exists(near) ? near : null, NOSTALGIA_BOOT_STREETS);
+  if (rows.length) return pickBootTarget(rows, { exists });
+  // Report 212, R11: only one of the 26 the open-road rule opens for everyone, else the starter street.
+  const open = engine.query?.('openForEveryone', engine) ?? null;
+  // G1075: the roads still loading is no answer yet; wait for them (a while, then the starter street).
+  if (!open && engine.query?.('openRoadsLoaded', engine) === false && (pendingBoot?.waits || 0) < ROAD_WAITS) return { wait: true };
+  return openBootTarget(NOSTALGIA_BOOT_STREETS, open, { exists });
 }
 
 function showNostalgiaPrompt(engine, text, onChoice = null) {

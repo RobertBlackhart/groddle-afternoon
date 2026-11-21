@@ -117,7 +117,8 @@ import {
 import { PAPERS_BADGE } from '../subway.js?v=36c6d2b2';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=22b0540a';
-import { fewestClosures, loadStreetGraph, nearestOpenStreet, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
+import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
+import { openWorld } from '../open-roads.js?v=597feeb5';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
@@ -263,7 +264,7 @@ function loadWays() {
       for (const a of SUBWAY_STREETS) for (const b of SUBWAY_STREETS) if (a !== b) { add(a, b); (rails[a] ||= []).push(b); }
       const g = (t) => String(t || '').replace(/^L/, 'G');
       for (const t of [...TELEPORTERS, ...WINTRY_PORTAL_TELEPORTERS]) add(g(t.from), g(t.to));
-      waysReady = { graph: streetGraph(roads, { closed: closedNowHere }), free, rails };
+      waysReady = { graph: streetGraph(roads, { closed: closedNowHere }), roads, free, rails };
       return waysReady;
     })
     .catch(() => {
@@ -323,31 +324,29 @@ function walkReach(from, engine) {
 }
 
 /**
- * Live report 212 (2026-11-12): the open world, the streets the starter street reaches by the roads
- * as they stand (never from where you stand, which may be a pocket the roads have not reached), and
- * the street of it nearest `tsid`. Teleports that pick a street from Glitch's lists (the Ancestral
- * Lands' do_baqala_boot) ask it, so they never set you down past a road still being built.
- * `skipHubs`: hubs that will not do as a landing (the kick never lands in the Savanna it sends
- * you from). Null while the roads load.
+ * Live report 212 (2026-11-12), R11: the open world for everyone (js/open-roads.js openWorld), the
+ * streets the starter street reaches over the roads built for everyone and the Teleporters. Never
+ * your own kept roads or the subway (it needs papers), so it is the same for every player and never
+ * starts from a pocket you stand in. Teleports that pick a street from Glitch's lists (the Ancestral
+ * Lands' do_baqala_boot) ask it, so they never set you down past a road still being built. A Set of
+ * G tsids, or null while the roads load.
  */
-let openWorldCache = { key: '', reach: null, free: null };
-function openStreetNear(tsid, engine, { skipHubs = [] } = {}) {
+let everyoneCache = { key: '', reach: null };
+function openForEveryone() {
   if (!catalog || !streetIndex?.default) return null;
   if (!waysReady) {
     loadWays();
     return null;
   }
-  const papers = (engine?.unlockedAchievements || []).includes(PAPERS_BADGE);
   let done = 0;
   for (const row of Object.values(state.jobs)) if (row?.doneAt) done += 1;
-  const key = `${state.grandfathered.length}|${done}|${papers ? 1 : 0}|${demo?.jobId || ''}`;
-  if (openWorldCache.key !== key) {
-    const terms = wayHomeTerms({ starter: streetIndex.default, free: waysReady.free, rails: waysReady.rails, papers });
-    openWorldCache = { key, free: terms.free, reach: reachableStreets(waysReady.graph, { free: terms.free, starts: [streetIndex.default] }) };
+  const key = `${done}|${demo?.jobId || ''}|${openRoads() ? 1 : 0}`;
+  if (everyoneCache.key !== key) {
+    const closed = closedStreets(state, catalog, { ...opts(), mine: false });
+    const { free } = wayHomeTerms({ starter: streetIndex.default, free: waysReady.free, rails: waysReady.rails, papers: false });
+    everyoneCache = { key, reach: openWorld(waysReady.roads, { closed, starter: streetIndex.default, free }) };
   }
-  const hubs = new Set((skipHubs || []).map(String));
-  const skip = hubs.size ? (t) => hubs.has(String(streetIndex.streets?.[t]?.hubId ?? '')) : null;
-  return nearestOpenStreet(waysReady.graph, { free: openWorldCache.free, reach: openWorldCache.reach, from: tsid, skip });
+  return everyoneCache.reach;
 }
 
 /** Each project street's board streets (street-jobs.json connecting), G tsids. */
@@ -3324,16 +3323,16 @@ export const streetJobsFeature = {
     return walkReach(from, engine);
   },
 
-  /** G1075: are the roads loaded (openStreetNear can answer)? False starts loading them. */
+  /** G1075: are the roads loaded (openForEveryone can answer)? False starts loading them. */
   openRoadsLoaded() {
     if (catalog && streetIndex?.default && waysReady) return true;
     loadWays();
     return false;
   },
 
-  /** Report 212: the open-world street nearest `tsid` (itself when open), or null while the roads load. */
-  openStreetNear(tsid, engine, options) {
-    return openStreetNear(tsid, engine, options);
+  /** Report 212, R11: the open world for everyone (a Set of G tsids), or null while the roads load. */
+  openForEveryone() {
+    return openForEveryone();
   },
 
   streetUnderConstruction(tsid, engine) {

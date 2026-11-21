@@ -8,7 +8,7 @@
  *    and the jump was then refused; it skips them now, as Glitch skipped a job-locked street
  *    (players/inc_teleportation.js 574 jobs_is_street_locked);
  *  - Notice the Unnoticeable's haunts (js/ghost-quest.js: streetsReachable), Ancestral Nostalgia's
- *    boot street (features/juju-bandits-feature.js: openStreetNear), the lonely Street Spirit
+ *    boot street (features/juju-bandits-feature.js: openForEveryone), the lonely Street Spirit
  *    (features/spirit-loneliness-feature.js: spirits you have met, routes round closed roads), and
  *    every errand that sets a map route to several streets (vendor turn-ins, the shrine and vendor
  *    finders: map-routes.js findRoute, an open one wins, G780) already ask the roads.
@@ -20,7 +20,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { pickRandomTeleport } from '../public/js/funpickle.js?v=95796317';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=5d9d54a6';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=38b041da';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');
@@ -87,7 +87,7 @@ describe('G793: the other street-picking errands already ask the roads', () => {
     // #480: Contraband asks the roads on foot from the run's start (streetsWalkable: closed roads closed, no subway or Teleporter).
     assert.match(read('js/features/smuggling-feature.js'), /engine\.query\?\.\('streetsWalkable', start, engine\)/);
     assert.match(read('game.js'), /reachable: features\.query\('streetsReachable', engine\) \|\| null/);
-    assert.match(read('js/features/juju-bandits-feature.js'), /engine\.query\?\.\('openStreetNear', pick\.tsid, engine/);
+    assert.match(read('js/features/juju-bandits-feature.js'), /engine\.query\?\.\('openForEveryone', engine\)/);
     // R11 (G969): the lonely spirit and map routes walk the street graph, which holds the closed roads.
     assert.match(read('js/features/spirit-loneliness-feature.js'), /routeDistances\(roadsFor\(engine\), from\)/);
     assert.match(read('js/features/map-routes-feature.js'), /const roads = \(engine\) => roadsFor\(engine\);/);

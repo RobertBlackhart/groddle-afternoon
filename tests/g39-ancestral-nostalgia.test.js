@@ -17,7 +17,7 @@ import {
   nostalgiaLimitSeconds,
   pickBootTarget,
   resetBaqalaTimes,
-} from '../public/js/ancestral-nostalgia.js?v=3d97122d';
+} from '../public/js/ancestral-nostalgia.js?v=7c972d9f';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { BOOT_SOURCE_TSIDS, buildRows, render } from '../tools/build-ancestral-nostalgia.mjs';
 import { ancestralClock, stealChanceForSeconds } from '../public/js/juju-bandits.js?v=6cf92f4f';
@@ -26,7 +26,7 @@ import { getBuffCatalog, loadContentCatalogsFromDir } from '../public/js/content
 import { IMAGINATION_UPGRADES, buildDeck, upgradeStatus } from '../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 import { POTION_TEXT, ancestralCheck } from '../public/js/potions.js?v=4f4c996d';
-import { FEATURES } from '../public/js/features/index.js?v=d494b810';
+import { FEATURES } from '../public/js/features/index.js?v=c7830c96';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(root, '../glitch-GameServerJS');
@@ -204,6 +204,8 @@ describe('the visit, in the feature', () => {
         return { ok: true };
       },
       streetExists: () => true,
+      // street-jobs-feature's open world for everyone: a world where all 26 boot streets are built (R11).
+      query: (hook) => (hook === 'openForEveryone' ? new Set(NOSTALGIA_BOOT_STREETS.map((r) => r.tsid)) : hook === 'openRoadsLoaded' ? true : null),
       inScene: () => engine.scene,
       transientInstance: () => false,
       questDialogueOpen: () => engine.dialogue,

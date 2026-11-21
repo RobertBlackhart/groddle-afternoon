@@ -115,21 +115,22 @@ export function resetBaqalaTimes(clock) {
 }
 
 /**
- * Live report 212 (2026-11-12): do_baqala_boot's 26 streets are all street projects, closed on a
- * fresh world (Kajuu, Andra, Tamila, Besara), so the kick could set you down on a street whose every
- * road is still being built. The pick stands when it is open; otherwise the open-world street
- * nearest it by roads (`near`, street-jobs-feature openStreetNear) takes its place: one of the 26
- * at its own arrival point when it is one, else the street's own arrival. `near` null (the roads
- * not loaded, or nothing open joins it) keeps Glitch's pick.
+ * The starter street (streets/index.json default, Hechey Track): where a kick lands when none of
+ * Glitch's 26 is open. Party Spaces' way back and the Interrogation room fall back to it too.
  */
-export function openBootTarget(pick, near, streets = [], { arrivalRoll = Math.random() } = {}) {
-  if (!pick || !near || near === pick.tsid) return pick;
-  const row = streets.find((s) => s && s.tsid === near && s.arrivals?.length);
-  if (row) {
-    const [x, y] = row.arrivals[Math.min(row.arrivals.length - 1, Math.floor(arrivalRoll * row.arrivals.length))];
-    return { tsid: row.tsid, label: row.label, arrive: { x, y }, movedFrom: pick.tsid };
-  }
-  return { tsid: near, label: '', arrive: null, movedFrom: pick.tsid };
+export const STARTER_LANDING = Object.freeze({ tsid: 'GLI2V0UN7RD1T2J', label: 'Hechey Track', arrive: null });
+
+/**
+ * Live report 212 (2026-11-12) and R11 (2026-11-21): do_baqala_boot's 26 streets are all street
+ * projects (Kajuu, Andra, Tamila, Besara), closed or in pockets cut off by closed roads, so the kick
+ * could set you down past a road still being built, and arriving there opened that road for you
+ * alone (js/street-jobs.js noteArrival, openWayHome). The kick picks only among the 26 that `open`
+ * holds (the open world for everyone, js/open-roads.js openWorld); with none open, or `open` null
+ * (the roads never loaded), it lands on the starter street at its own arrival.
+ */
+export function openBootTarget(streets = [], open = null, { streetRoll, arrivalRoll, exists, starter = STARTER_LANDING } = {}) {
+  const pool = open && typeof open.has === 'function' ? streets.filter((s) => s && open.has(s.tsid)) : [];
+  return pickBootTarget(pool, { streetRoll, arrivalRoll, exists }) || { ...starter };
 }
 
 /** One of the do_baqala_boot streets (rows from js/ancestral-nostalgia-data.js), then one of its incoming arrivals. */

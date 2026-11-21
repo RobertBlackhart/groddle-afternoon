@@ -124,9 +124,10 @@ describe('R11: game code walks streets only through the street graph', () => {
 
   it('walks that count every road, built or not, are called only where that is the point', () => {
     // Which projects to build on the way (the way home, ticket 50 and #162; the On hold note); the
-    // open street nearest a pick (report 212); the Map's "No road there yet".
+    // Map's "No road there yet". The Ancestral Lands kick no longer walks to the open street nearest
+    // its pick (report 212): it picks among the open ones or lands on the starter street (R11).
     assert.deepEqual(callers('fewestClosures'), ['js/features/street-jobs-feature.js', 'js/street-jobs.js']);
-    assert.deepEqual(callers('nearestOpenStreet'), ['js/features/street-jobs-feature.js']);
+    assert.deepEqual(callers('nearestOpenStreet'), []);
     assert.deepEqual(callers('closedOnTheWay'), ['js/map-routes.js']);
     // The world's geography: the solo distance curve (#425) and the dead ends (G887, G888).
     assert.deepEqual(callers('hopsOverEveryRoad'), ['js/street-jobs-solo.js']);
