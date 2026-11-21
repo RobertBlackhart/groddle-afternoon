@@ -17,13 +17,15 @@ import {
   createGreedyStreetSpiritState,
   ensureGreedyStory,
   expireGreedyStreetSpirit,
+  greedyActDecoXs,
+  greedyButtonXs,
   greedyObjective,
   greedyRemainingMs,
   markGreedyFirstComplete,
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
-} from '../public/js/greedy-street-spirit.js?v=9cad6db6';
+} from '../public/js/greedy-street-spirit.js?v=4a262003';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 
@@ -194,5 +196,48 @@ describe('The Greedy Street Spirit source-authored story', () => {
     assert.match(body, /greedyButtonFrames\('out'\)\[GREEDY_BUTTON_FRAMES - 1\]/);
     assert.doesNotMatch(body, /textureFromUrl\(/, 'the whole strip is never the button texture');
     assert.doesNotMatch(body, /button\.width = 126/);
+  });
+});
+
+describe('#598 (G1111): each act\'s Wall Button stands under its own scene', () => {
+  const manifest = JSON.parse(readFileSync(join(PUBLIC, 'assets', 'content', 'greedy-street-spirit-scenes.json'), 'utf8'));
+  const street = JSON.parse(readFileSync(join(PUBLIC, 'assets', 'streets', `${GREEDY_STREET_GEOMETRY_TSID}.json`), 'utf8'));
+  const spans = greedyActDecoXs(manifest, street);
+  const xs = greedyButtonXs(manifest, street);
+
+  it("reads each act's scene from its events on the street, in game px", () => {
+    assert.equal(spans.length, GREEDY_ACTS.length);
+    for (const [i, s] of spans.entries()) assert.ok(s.length >= 6, `Act ${i + 1}: ${s.length} decos`);
+    // The street's left edge is -3000: Act I's scene runs 1088 to 1641, Act V's 5252 to 5334.
+    assert.deepEqual([spans[0][0], spans[0].at(-1)], [1088, 1641]);
+    assert.deepEqual([spans[4][0], spans[4].at(-1)], [5252, 5334]);
+  });
+
+  it("each button sits within its act's span, nearer its middle than either end, and in act order", () => {
+    for (const [i, x] of xs.entries()) {
+      const [lo, hi] = [spans[i][0], spans[i].at(-1)];
+      assert.ok(x >= lo && x <= hi, `Act ${i + 1}: ${x} in ${lo}-${hi}`);
+      assert.ok(Math.min(x - lo, hi - x) >= (hi - lo) / 4, `Act ${i + 1}: ${x} stands near an end of ${lo}-${hi}`);
+      if (i) assert.ok(x > xs[i - 1], 'in act order');
+    }
+    // The hand-typed places stood left of their scenes (Act I at 700, its scene from 1088).
+    assert.notDeepEqual(xs, [700, 1775, 2925, 4075, 5200]);
+  });
+
+  it('a phone-wide view (384 px) centred on a button shows most of its scene', () => {
+    for (const [i, x] of xs.entries()) {
+      const seen = spans[i].filter((d) => Math.abs(d - x) <= 192).length;
+      assert.ok(seen / spans[i].length >= 0.6, `Act ${i + 1}: ${seen} of ${spans[i].length}`);
+    }
+  });
+
+  it('game.js places the buttons from it, not from typed numbers', () => {
+    const game = readFileSync(join(PUBLIC, 'game.js'), 'utf8');
+    assert.match(game, /const buttonXs = greedyButtonXs\(greedyStreetSceneManifest, currentStreet\);/);
+    assert.doesNotMatch(game, /\[700, 1775, 2925, 4075, 5200\]/);
+  });
+
+  it('an act with no scene found stands at its fifth of the street', () => {
+    assert.deepEqual(greedyButtonXs({ events: {} }, { bounds: { l: -3000, r: 2900 }, layers: [] }), [590, 1770, 2950, 4130, 5310]);
   });
 });

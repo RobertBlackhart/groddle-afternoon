@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=85e553c8';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=73ee6fd1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=bcb6c559';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -343,13 +343,14 @@ import {
   expireGreedyStreetSpirit,
   failInterruptedGreedyStreetSpirit,
   greedyActsAllRead,
+  greedyButtonXs,
   greedyObjective,
   greedyRemainingMs,
   markGreedyFirstComplete,
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
-} from './js/greedy-street-spirit.js?v=9cad6db6';
+} from './js/greedy-street-spirit.js?v=4a262003';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -19368,7 +19369,8 @@ function setupGreedyStreetInstance() {
   };
   applyGreedySceneEvent('player_enter');
   const groundY = streetPlatforms?.[0]?.y1 || GROUND_Y;
-  const buttonXs = [700, 1775, 2925, 4075, 5200];
+  // #598: each act's button under its own scene (js/greedy-street-spirit.js greedyButtonXs).
+  const buttonXs = greedyButtonXs(greedyStreetSceneManifest, currentStreet);
   greedyStreetButtons = GREEDY_ACTS.map((act, actIndex) => {
     const sprite = greedyButtonSprite(actIndex, buttonXs[actIndex], groundY);
     return register({

@@ -21,7 +21,7 @@ import {
   failInterruptedGreedyStreetSpirit,
   greedyActsAllRead,
   markGreedyFirstComplete,
-} from '../public/js/greedy-street-spirit.js?v=9cad6db6';
+} from '../public/js/greedy-street-spirit.js?v=4a262003';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const PC = { level: 10 };

@@ -97,6 +97,42 @@ export const GREEDY_ACTS = Object.freeze([
   }),
 ]);
 
+/**
+ * PURE (#598, G1111): the x of each act's own scene decos on the street (the middleground decos its
+ * events show, from greedy-street-spirit-scenes.json), in game px (the deco's x less the street's
+ * left edge), sorted. An act with none gives [].
+ */
+export function greedyActDecoXs(manifest, street) {
+  const left = Number(street?.bounds?.l) || 0;
+  const xs = new Map();
+  for (const layer of street?.layers || []) {
+    if (layer?.name !== 'middleground') continue;
+    for (const deco of layer.decos || []) {
+      const x = Number(deco?.x);
+      if (deco?.id && Number.isFinite(x)) xs.set(String(deco.id), x - left);
+    }
+  }
+  return GREEDY_ACTS.map((act) => {
+    const ids = new Set(act.eventIds.flatMap((id) => manifest?.events?.[id]?.show || []));
+    return [...ids].filter((id) => xs.has(id)).map((id) => xs.get(id)).sort((a, b) => a - b);
+  });
+}
+
+/**
+ * PURE (#598, G1111): where each act's Wall Button stands: under the middle of its own scene (the
+ * median of its decos' x, so one star drifting off does not pull it aside), so on a phone the button
+ * and the panel it plays are on screen together. Glitch's quest file gives no positions. An act with
+ * no decos found stands at its fifth of the street.
+ */
+export function greedyButtonXs(manifest, street) {
+  const width = Math.max(0, (Number(street?.bounds?.r) || 0) - (Number(street?.bounds?.l) || 0));
+  return greedyActDecoXs(manifest, street).map((xs, i) => {
+    if (!xs.length) return Math.round(((i + 0.5) / GREEDY_ACTS.length) * width);
+    const mid = xs.length >> 1;
+    return Math.round(xs.length % 2 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2);
+  });
+}
+
 function finiteTime(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : fallback;
