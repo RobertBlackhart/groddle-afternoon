@@ -3372,12 +3372,12 @@ export const streetJobsFeature = {
   },
 
   /**
-   * B3: do the roads as they stand answer yet (the catalog, the graph and, online, the world's first
-   * project_world)? False while any is still coming; starts loading the ways.
+   * B3: are the roads' closures known (the catalog in and, online, the world's first project_world)?
+   * False while either is still coming; closedRoads then reads every world-built street closed.
+   * The graph may still be loading after (streetsWalkable answers null then).
    */
   roadsKnown() {
-    if (!waysReady) loadWays();
-    return Boolean(catalog && waysReady && !waitingWorld());
+    return Boolean(catalog) && !waitingWorld();
   },
 
   /** G1075: are the roads loaded (openForEveryone can answer)? False starts loading them. */

@@ -153,10 +153,13 @@ function streetHub(tsid) {
  * from `from`, the run's start. #480: on foot only (street-jobs-feature streetsWalkable: open
  * roads, no subway ride, no Teleporter), as the package shuts both (subway_gate.js 72-76,
  * inc_teleportation.js 165). Else, while the ways load, not under construction (closedRoads, the
- * predicate behind the map's barricades). Null when neither is known yet: the pick stands, and
- * steerRun checks it again later.
+ * predicate behind the map's barricades). Null when neither is known yet, or online before the
+ * world's projects are (roadsKnown): the pick stands, and steerRun checks it again later.
  */
 function openTest(engine, from) {
+  // Sibling audit B3: online, until the world's first project_world every world-built street reads
+  // closed; a redirect then would move a run off an open street and save it. Unknown: the run stands.
+  if (engine.query?.('roadsKnown', engine) === false) return null;
   const forms = (t) => {
     const s = String(t || '');
     const key = indexKey(s);
