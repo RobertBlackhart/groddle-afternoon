@@ -1,5 +1,5 @@
 /**
- * TODAYCARD (Austin 2026-11-20, "Let's go with the Today in Ur direction"; ideas from compostghost's
+ * TODAYCARD (Austin 2026-11-20, "Let's go with the Today in Ur direction"; ideas from report
  * #568): the start card's words for a returning player, worked out from the save. Pure: the feature
  * (features/start-today-feature.js) reads the game and draws them.
  *
@@ -15,7 +15,7 @@
  *   studyLeft(seconds)              "2h 04m", "12m", "45s"
  */
 
-/** Tips about things players miss (compostghost: "a tip line that changes each visit"). */
+/** Tips about things players miss (report #568 asked for a tip that changes each visit). */
 export const START_TIPS = Object.freeze([
   'Pick a street on the Map and Set as Destination: an arrow shows you the way.',
   'Press V near a vendor to browse its goods.',

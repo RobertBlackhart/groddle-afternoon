@@ -1,5 +1,5 @@
 /**
- * TODAYCARD (Austin 2026-11-20: "Let's go with the Today in Ur direction"; compostghost's #568 ideas,
+ * TODAYCARD (Austin 2026-11-20: "Let's go with the Today in Ur direction"; report #568's ideas,
  * welcome card ideas page layout A). The start card for a returning player:
  *
  *  - The keys panel gives way to a "Today" panel: what you are learning and the time left (or a Start
@@ -22,7 +22,7 @@
  * QA: &todaytip=<n> picks the tip.
  */
 
-import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS } from '../start-today.js?v=f80a2af6';
+import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS } from '../start-today.js?v=28c1e3c4';
 import { listQuestTracker } from '../quests.js?v=4a3fb1da';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../imagination-data.js?v=4a85e7fe';

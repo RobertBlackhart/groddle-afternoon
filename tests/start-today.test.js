@@ -1,5 +1,5 @@
 /**
- * TODAYCARD (Austin 2026-11-20, "Let's go with the Today in Ur direction"; compostghost's #568): a
+ * TODAYCARD (Austin 2026-11-20, "Let's go with the Today in Ur direction"; report #568): a
  * returning player's start card shows a Today panel (the skill, the Feat, a tip) in place of the keys,
  * and one personal nudge in place of "Today's goals". A new save keeps the first-steps goal and keys.
  * Browser check (1440 x 900 and 400 x 860): a new save shows the tutorial choice and the keys; the save
@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft } from '../public/js/start-today.js?v=f80a2af6';
+import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft } from '../public/js/start-today.js?v=28c1e3c4';
 import { runAt } from '../public/js/feats-mp.js?v=d5cb2199';
 import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=3bc9b43c';
 
