@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 2983,
+  "commits": 2986,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "A shared picture can no longer be freed by one of the parts drawing it"
+   },
    {
     "date": "2026-11-21",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "A Paper Tree whose care ran out while you were away is drawn, not invisible"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The street project work bubble sits over your head, and the Grinder animates in it on a phone"
    }
   ]
  },
- "tests": 1235,
+ "tests": 1236,
  "generatedAt": "2026-11-21"
 }
