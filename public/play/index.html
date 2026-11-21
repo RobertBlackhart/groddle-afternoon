@@ -66,7 +66,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Groddle Afternoon</title>
-    <link rel="stylesheet" href="style.css?v=6a61b36a" />
+    <link rel="stylesheet" href="style.css?v=afd7646d" />
   <!-- The UI font, self-hosted (style.css @font-face; OFL in assets/fonts/nunito/): the roman latin file, before first paint. -->
   <link rel="preload" href="assets/fonts/nunito/nunito-roman-latin.woff2" as="font" type="font/woff2" crossorigin />
   <!-- The Classic interface (js/classic/ui-mode.js sets <html data-ui="classic">); every rule is scoped to it. -->
@@ -195,10 +195,18 @@
               <button id="start-customize-btn" type="button" class="btn-secondary">Customize look first</button>
             </div>
             <section class="start-goal" aria-labelledby="start-goal-title">
-              <h3 id="start-goal-title">Today’s goals</h3>
-              <p>Gather grain or meat, make flour and sammiches, and jump again as you land, 3 times, for a Triple Jump.<span id="start-street-line" hidden> You start on <strong id="start-street"></strong>.</span></p>
+              <h3 id="start-goal-title">First steps</h3>
+              <p><span id="start-goal-text">Gather grain or meat, then make flour and sammiches.</span><span id="start-street-line" hidden> You start on <strong id="start-street"></strong>.</span></p>
             </section>
+            <p id="start-keyhint" class="start-keyhint" hidden>Hold <kbd>?</kbd> for every key.</p>
           </div>
+          <!-- TODAYCARD (Austin 2026-11-20, "the Today in Ur direction"): a returning player's card shows this in
+               place of the keys; features/start-today-feature.js fills the tiles and the tip. -->
+          <section id="start-today" class="start-today" aria-labelledby="start-today-title" hidden>
+            <h3 id="start-today-title">Today</h3>
+            <div id="start-tiles" class="start-tiles"></div>
+            <p class="start-tip"><b>Tip:</b> <span id="start-tip-text"></span></p>
+          </section>
           <section class="start-keys" aria-labelledby="start-keys-title">
             <h3 id="start-keys-title">Keys</h3>
             <div class="start-key-groups">
@@ -1023,6 +1031,6 @@
   </div>
   <!-- Password managers skip the game's own boxes (chat, searches, names); the account forms keep autofill. -->
   <script type="module" src="js/no-autofill.js?v=6a1a4382"></script>
-  <script type="module" src="game.js?v=27311bea"></script>
+  <script type="module" src="game.js?v=ef53a4bc"></script>
 </body>
 </html>

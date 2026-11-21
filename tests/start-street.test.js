@@ -2,7 +2,7 @@
  * #349: the start card said "You start on Hechey Track" (fixed page text) to a player whose save
  * started on Froughtful Fen. js/start-street.js fills the line from the nameplate of the street
  * loading under the card, and leaves it out with no street yet or while the card offers the tutorial
- * (which starts in the clouds). Today's goals stay as they are (Austin's call).
+ * (which starts in the clouds). The goal above it is a returning player's nudge since TODAYCARD.
  * Browser check (WebKit 874 x 402): a fresh save shows no street line beside the tutorial choice; the
  * same save reloaded reads "You start on Froughtful Fen.", and the card is one centred column.
  * Run: node --test tests/start-street.test.js
@@ -59,12 +59,14 @@ describe('the start card names the street you start on', () => {
     assert.equal(els['start-street-line'].hidden, true);
   });
 
-  it('the page no longer writes a street in, and Today\'s goals keep their words', () => {
+  // TODAYCARD (Austin 2026-11-20): the goal text is its own span (js/features/start-today-feature.js
+  // writes a returning player's nudge there), so the street line after it survives the rewrite.
+  it('the page no longer writes a street in; the street line follows the goal text', () => {
     for (const page of ['public/play/index.html', 'public/play/online/index.html']) {
       const html = readFileSync(join(import.meta.dirname, '..', page), 'utf8');
       assert.doesNotMatch(html, /You start on <strong>Hechey Track/, page);
-      assert.match(html, /for a Triple Jump\.<span id="start-street-line" hidden> You start on <strong id="start-street"><\/strong>\.<\/span><\/p>/, page);
-      assert.match(html, /Today’s goals/, page);
+      assert.match(html, /<p><span id="start-goal-text">Gather grain or meat, then make flour and sammiches\.<\/span><span id="start-street-line" hidden> You start on <strong id="start-street"><\/strong>\.<\/span><\/p>/, page);
+      assert.match(html, /<h3 id="start-goal-title">First steps<\/h3>/, page);
     }
   });
 

@@ -157,6 +157,7 @@ import {
   reportFor,
   rewardBits,
   rewardParts,
+  runAt,
   runFromServer,
   vogFor,
   youLine,
@@ -1030,6 +1031,28 @@ export const soloFeatsFeature = {
     mpMode = engine?.mode === 'multiplayer';
     render();
     publish(engine);
+  },
+
+  /**
+   * TODAYCARD (features/start-today-feature.js, js/start-today.js featTile): the start card's Feat tile.
+   * Online, today's shared Feat: the realtime session starts only after Start (realtime-feature onTick),
+   * so on the card it is the server's schedule worked out here (runAt; live runs no shift, feats.go
+   * 658-661), its name and end without the count, and the server's run with the count once one is in.
+   * Solo, the personal Feat with the most of its way done that is still open.
+   */
+  startCardFeat() {
+    if (mpMode) {
+      const run = mp?.run;
+      if (run) return { mode: 'world', title: run.title, what: FEAT_BY_ID[run.feat]?.what || '', total: run.total, goal: run.goal, end: run.end };
+      const due = runAt(Date.now());
+      const f = FEAT_BY_ID[due.feat];
+      return f ? { mode: 'world', title: f.title, what: f.what || '', end: due.end } : { mode: 'world', waiting: true };
+    }
+    const open = featRows(state).filter((r) => !r.complete && r.goal > 0);
+    if (!open.length) return { mode: 'solo', allDone: true };
+    open.sort((a, b) => b.value / b.goal - a.value / a.goal || a.goal - b.goal);
+    const best = open[0];
+    return { mode: 'solo', id: best.id, title: best.title, what: best.what, value: best.value, goal: best.goal };
   },
 
   /** engine.featsIncrement(featId, amount, opts): pc.feats_increment. */

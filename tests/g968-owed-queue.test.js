@@ -22,7 +22,7 @@ import {
   owedSave,
   retryDelay,
 } from '../public/js/feat-owed.js?v=83eb6c59';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=72429aac';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=fc326944';
 
 const root = join(import.meta.dirname, '..');
 const RUN = 5400;

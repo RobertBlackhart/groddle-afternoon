@@ -1436,6 +1436,8 @@ kbd {
 /* #349: with the keys gone the card was the left column of two, its right half empty (sideways): one column,
    a reading width, centred in the frame. */
 :root.touch-phone .start-card { grid-template-columns: minmax(0, 1fr); width: min(560px, 100%); }
+/* TODAYCARD: no keyboard, no Hold ? line. */
+:root.touch-phone .start-keyhint { display: none; }
 .start-key-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--sp-10); row-gap: var(--sp-8); }
 .start-key-move { grid-column: 1; grid-row: 1; }
 .start-key-do { grid-column: 1; grid-row: 2; }
@@ -1462,6 +1464,49 @@ kbd {
   font: var(--fw-heavy) var(--fs-sm)/var(--lh-none) var(--font-ui);
 }
 .start-card .start-keys-foot { margin: var(--sp-8) 0 0; padding-top: var(--sp-6); border-top: 1px solid var(--border); color: var(--text-muted); font-size: var(--fs-md); }
+
+/* TODAYCARD (Austin 2026-11-20, "the Today in Ur direction"): a returning player's card swaps the keys for a
+   Today panel (features/start-today-feature.js): a tile each for the skill being learned and the Feat, an icon,
+   a line, a bar and one button, then a tip. Every key is one Hold ? away, under the goal. */
+.start-today { padding: var(--sp-9) var(--sp-10) var(--sp-8); border-radius: var(--radius-xl); background: var(--surface-parchment); }
+.start-tiles { display: grid; gap: var(--sp-5); }
+.start-tile {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  column-gap: var(--sp-5);
+  row-gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-bright);
+}
+.start-tile-icon { width: 40px; height: 40px; object-fit: contain; }
+/* The skill's card art cropped to its picture, as the study chip does. */
+.start-tile[data-tile="skill"] .start-tile-icon { object-view-box: inset(76px 51px 109px 54px); }
+.start-tile-copy strong { display: block; font-size: var(--fs-md); line-height: var(--lh-snug); }
+.start-tile-copy small { display: block; margin-top: var(--sp-1); color: var(--text-muted); font-size: var(--fs-sm); line-height: var(--lh-snug); }
+.start-tile-meter { display: block; height: 6px; margin-top: var(--sp-3); border-radius: var(--radius-sm); background: var(--track); overflow: hidden; }
+.start-tile-meter[hidden],
+.start-tile-act[hidden],
+.start-tile[hidden] { display: none; }
+.start-tile-meter i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.start-tile-act {
+  grid-column: 2;
+  justify-self: start;
+  margin: 0;
+  padding: var(--sp-2) var(--sp-5);
+  border: 1px solid var(--border-moss);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--text-moss);
+  font: var(--fw-bold) var(--fs-sm)/var(--lh-snug) var(--font-ui);
+  cursor: pointer;
+}
+.start-tile-act:hover { background: var(--surface-moss); }
+.start-card .start-tip { margin: var(--sp-6) 0 0; padding-top: var(--sp-5); border-top: 1px solid var(--border); color: var(--text-muted); font-size: var(--fs-md); line-height: var(--lh-snug); }
+.start-tip b { color: var(--text-moss); }
+.start-card .start-keyhint { margin: var(--sp-6) 0 0; color: var(--text-muted); font-size: var(--fs-md); }
 .start-card .fine { grid-column: 1 / -1; margin: var(--sp-10) 0 0 !important; text-align: center; }
 
 /* Phone and narrow frames: one column, every action full width, the groups one under another. */
@@ -1473,7 +1518,8 @@ kbd {
   .start-card h2 { font-size: var(--fs-3xl); }
   .start-card .start-lede { margin-bottom: var(--sp-8); font-size: var(--fs-base); }
   .start-goal { margin: var(--sp-8) 0; }
-  .start-keys { padding: var(--sp-8); }
+  .start-keys,
+  .start-today { padding: var(--sp-8); }
   .start-key-groups { grid-template-columns: minmax(0, 1fr); }
   :is(.start-key-move, .start-key-do, .start-key-open) { grid-column: 1; grid-row: auto; }
 }

@@ -296,7 +296,9 @@ describe('the start card layout', () => {
       '<button id="start-btn" type="button">Start exploring</button>',
       '<button id="start-customize-btn" type="button" class="btn-secondary">Customize look first</button>',
       '<section class="start-goal" aria-labelledby="start-goal-title">',
-      '<h3 id="start-goal-title">Today’s goals</h3>',
+      '<h3 id="start-goal-title">First steps</h3>',
+      '<p id="start-keyhint" class="start-keyhint" hidden>Hold <kbd>?</kbd> for every key.</p>',
+      '<section id="start-today" class="start-today" aria-labelledby="start-today-title" hidden>',
       '<section class="start-keys" aria-labelledby="start-keys-title">',
       '<h3 id="start-keys-title">Keys</h3>',
       '<p class="start-keys-foot">Hold <kbd>?</kbd> for every key</p>',
@@ -305,11 +307,12 @@ describe('the start card layout', () => {
     assert.deepEqual(order, [...order].sort((a, b) => a - b));
     assert.equal(card.match(/<p class="start-lede">/g).length, 1, 'one welcome line');
     assert.match(card, /<p class="start-lede">[^<]{20,80}<\/p>/, 'a short one');
-    // The goals keep the gathering, the cooking and the Triple Jump; the street is the save's own,
-    // filled in by js/start-street.js (#349: it named Hechey Track to a player starting elsewhere).
-    const goal = text(card.slice(at('<section class="start-goal"'), at('<section class="start-keys"')));
-    assert.match(goal, /grain or meat.*flour and sammiches.*Triple Jump\. You start on \./);
-    assert.doesNotMatch(goal, /Hechey Track/);
+    // The first-steps goal keeps the gathering and the cooking; the Triple Jump left it (TODAYCARD: it is
+    // an upgrade you buy now). The street is the save's own, filled in by js/start-street.js (#349: it
+    // named Hechey Track to a player starting elsewhere).
+    const goal = text(card.slice(at('<section class="start-goal"'), at('<p id="start-keyhint"')));
+    assert.match(goal, /grain or meat.*flour and sammiches\. You start on \./);
+    assert.doesNotMatch(goal, /Hechey Track|Triple Jump/);
   });
 
   it('groups every key in Move, Do and Open: lists of a keycap and a label', () => {

@@ -126,7 +126,7 @@ import { machineRoomsFeature } from './machine-rooms-feature.js?v=c2253de7'; FEA
 import { gardenGuanoFeature } from './garden-guano-feature.js?v=ba503f8f'; FEATURES.push(gardenGuanoFeature);
 import { worldDropFeature } from './world-drop-feature.js?v=e682009d'; FEATURES.push(worldDropFeature);
 import { gardenNoticesFeature } from './garden-notices-feature.js?v=d227d324'; FEATURES.push(gardenNoticesFeature);
-import { soloFeatsFeature } from './solo-feats-feature.js?v=72429aac'; FEATURES.push(soloFeatsFeature);
+import { soloFeatsFeature } from './solo-feats-feature.js?v=fc326944'; FEATURES.push(soloFeatsFeature);
 import { slashCommandsFeature } from './slash-commands-feature.js?v=55ecd792'; FEATURES.push(slashCommandsFeature);
 import { hellTicketsFeature } from './hell-tickets-feature.js?v=e23b701b'; FEATURES.push(hellTicketsFeature);
 import { packTreeVerbsFeature } from './pack-tree-verbs-feature.js?v=0ffcfd94'; FEATURES.push(packTreeVerbsFeature);
@@ -201,6 +201,8 @@ import { streetFixesFeature } from './street-fixes-feature.js?v=06e9f5a2'; FEATU
 import { skillBubblesFeature } from './skill-bubbles-feature.js?v=bace99d5'; FEATURES.push(skillBubblesFeature);
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=085f902b'; FEATURES.push(homeCrewMpFeature);
+// TODAYCARD: the start card's Today panel and nudge for a returning player (asks solo-feats for startCardFeat).
+import { startTodayFeature } from './start-today-feature.js?v=54c38fa5'; FEATURES.push(startTodayFeature);
 import { chickenScareFeature } from './chicken-scare-feature.js?v=2780a77f'; FEATURES.push(chickenScareFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=a1b3e053'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
