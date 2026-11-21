@@ -2810,11 +2810,11 @@
   ]
  },
  "release": {
-  "game": "0.53.0",
+  "game": "0.54.0",
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2909,
+  "commits": 2921,
   "since": "2026-10-19",
   "recent": [
    {
@@ -2826,6 +2826,31 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Visiting Stones and mailboxes no longer stand behind trees and huts drawn in front"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "Standing under a ladder hung out of reach says how to get back on it"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Cubimal races, battles, chat and other ordinary play work inside a Party Space"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Help mine works in a Party Space: its rocks, trees and nodes are the party's, shared"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Holding Enter at a vendor no longer buys again and again"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "A Cubimal's Race (and other pack verbs) works with the Map or a world menu open"
    },
    {
     "date": "2026-11-20",
@@ -2911,31 +2936,6 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "The street map shows a blurred back layer across the whole street, not only where you have been"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Street Spirits and mailboxes no longer stand in a tree's crown"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "Enlarge Yer Slots counts a third bag you already own"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Enlarge Yer Slots counts the Generic Bag you buy"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "new",
-    "text": "Every street's loading card shows a picture of the street"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "The loading-card street picture tool renders every street, with every deco it draws"
    }
   ]
  },
