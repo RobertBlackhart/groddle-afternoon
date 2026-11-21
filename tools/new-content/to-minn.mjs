@@ -80,6 +80,7 @@ export const ITEMS = [
 export const ORIGINALS = [
   { id: 'pot-luck-day', title: 'Pot Luck Day', status: 'live', dates: 'Nov 22-29, 2026, Pacific time', feast: 'Thanksgiving feast Nov 26' },
   { id: 'phone', title: 'Playing on a phone', status: 'live', dates: 'Since Nov 12, 2026 (v0.35.0)' },
+  { id: 'modern-interface', title: 'The Modern interface', status: 'live', dates: 'Since Oct 30, 2026 (v0.6.0)' },
 ];
 
 /** What playing on a phone gives (js/touch-controls.js, js/touch-pinch.js, js/phone/companion.js, style.css touch-phone). */
@@ -95,6 +96,17 @@ export const PHONE_PARTS = [
 ];
 const STATUS_WORDS = { live: 'Live', building: 'Building', planned: 'Planned' };
 
+/** What the Modern interface is made of (js/ui/topbar.js, social-drawer.js, pack-row.js, panel-shell.js, verb-menu.js, imagination-hub.js). */
+export const MODERN_PARTS = [
+  'Warm paper: cream panels, brown text and a purple accent, in Glitch’s colours.',
+  'A top bar of three floating pills: your energy, mood and level rings, the street’s name, and the game’s buttons with their keys.',
+  'A Social drawer on the right for the Activity log, Local chat, Global, Buddies and your other chats.',
+  'The pack in one row: its bags, your items and tools, a count of the slots and a search.',
+  'Side sheets on the left for Quests, Skills, Make and the other panels, one at a time.',
+  'A compact verb menu for whatever you click on.',
+  'The Imagination hub on X: round tiles over your avatar for Skills, Quests, Upgrades, Looks, Teleport and Home.',
+];
+
 /** Every Tiny Speck icon the page's cards wear (each needs its nc-icon-<name> rule in style.css). */
 export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', ...RULES.map((r) => r.icon), ...BADGES.map((b) => b.icon), ...ITEMS.map((i) => i.icon)].filter((v, i, a) => a.indexOf(v) === i);
 
@@ -102,6 +114,17 @@ export const ICONS = ['emblem_pot', 'furniture_table', 'chicken_egg', 'camera', 
 export function originalsContent() {
   const pld = ORIGINALS.find((o) => o.id === 'pot-luck-day');
   const phone = ORIGINALS.find((o) => o.id === 'phone');
+  const modern = ORIGINALS.find((o) => o.id === 'modern-interface');
+  /** An original's section: its card (status and dates), a line, what it gives, and any closing note. */
+  const entry = (o, alt, icon, tone, line, heading, parts, note = null) => group('section', `band${alt ? ' band-alt' : ''} nc-band`, o.id, [group('div', 'wrap', null, [
+    card('nc-event', icon, tone, [
+      p('nc-chips', `${chip(STATUS_WORDS[o.status], 'status')} ${chip(o.dates, 'date')}`),
+      h(2, o.title, { id: `${o.id}-h`, cls: 'nc-event-title' }),
+      p('nc-event-line', line),
+    ]),
+    group('div', 'nc-part', null, [h(3, heading), list(parts)]),
+    ...(note ? [group('div', 'nc-callout', null, [h(3, note[0]), p('', note[1])])] : []),
+  ])]);
   const jump = [['#how', 'How an original is made'], ...ORIGINALS.map((o) => [`#${o.id}`, o.title])]
     .map(([href, label]) => `<a href="${href}">${label}</a>`).join(' ');
   return [
@@ -221,6 +244,11 @@ export function originalsContent() {
         p('', 'Phone play is newer than the rest of Groddle, so some things still fit a computer better. If something goes wrong on a phone, a report tagged [Mobile] helps.'),
       ]),
     ])]),
+
+    entry(modern, true, 'tinkertool', 'plum',
+      'Glitch had one interface, its Flash client’s. Groddle keeps a faithful copy of it as Classic, and adds Modern, a new design in Glitch’s colours. Modern is what a new player sees first.',
+      'What Modern has', MODERN_PARTS,
+      ['One game, two looks', 'Modern and Classic share one game: the same world, the same save and the same keys. To switch, open the Menu and choose Interface, or press the comma key for Preferences.']),
 
     group('div', 'wrap report-foot', null, [
       p('', 'Each original’s entry says whether it is live, being built or planned, and when it runs. The <a href="/changelog/">Notes</a> say when something ships.'),

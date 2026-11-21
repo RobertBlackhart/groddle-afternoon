@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ORIGINALS, PHONE_PARTS, originalsContent } from '../tools/new-content/to-minn.mjs';
+import { MODERN_PARTS, ORIGINALS, PHONE_PARTS, originalsContent } from '../tools/new-content/to-minn.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const html = originalsContent();
@@ -62,5 +62,18 @@ describe('Groddle Originals page', () => {
     }
     assert.match(text, /newer than the rest/i);
     assert.match(text, /tagged \[Mobile\]/);
+  });
+
+  it('has The Modern interface third, live since October 30, 2026, beside Classic', () => {
+    assert.equal(ORIGINALS[2].id, 'modern-interface');
+    assert.equal(ORIGINALS[2].status, 'live');
+    assert.match(ORIGINALS[2].dates, /Oct 30, 2026 \(v0\.6\.0\)/);
+    assert.ok(html.indexOf('id="phone"') < html.indexOf('id="modern-interface"'));
+    assert.match(text, /faithful copy of it as Classic/);
+    for (const part of [/Warm paper/, /three floating pills/, /Social drawer/, /one row/, /search/, /Side sheets/, /verb menu/, /Imagination hub on X/]) {
+      assert.ok(MODERN_PARTS.some((l) => part.test(l)), String(part));
+    }
+    assert.match(text, /share one game/);
+    assert.match(text, /Menu and choose Interface, or press the comma key for Preferences/);
   });
 });
