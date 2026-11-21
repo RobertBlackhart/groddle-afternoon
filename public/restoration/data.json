@@ -2810,11 +2810,11 @@
   ]
  },
  "release": {
-  "game": "0.54.0",
-  "deployed": "2026-11-20"
+  "game": "0.54.1",
+  "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 2948,
+  "commits": 2956,
   "since": "2026-10-19",
   "recent": [
    {
@@ -2831,6 +2831,21 @@
     "date": "2026-11-21",
     "kind": "improve",
     "text": "The Map, the Projects tab and the server share one open-road rule"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Kipacre Greens' seven garden beds are the sizes Tiny Speck's picture shows, 49 plots"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Gardening Tools Vendor on Veldt Balm and Kipacre Greens stands where Tiny Speck's street pictures show it"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A narrow street fills the window instead of showing black bars at the sides"
    },
    {
     "date": "2026-11-21",
@@ -2921,21 +2936,6 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Visiting Stones and mailboxes no longer stand behind trees and huts drawn in front"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "Standing under a ladder hung out of reach says how to get back on it"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Cubimal races, battles, chat and other ordinary play work inside a Party Space"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Help mine works in a Party Space: its rocks, trees and nodes are the party's, shared"
    }
   ]
  },
