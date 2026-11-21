@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2938,
+  "commits": 2943,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Wall mushrooms bounce only from their caps, so a fall beside one goes down"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Garden signs and other street signs show their words again"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Planned rocks and nodes sit on their floor instead of hanging an end in the air"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-20",
     "kind": "new",
     "text": "The start card shows what's happening today for a returning player"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "The Encyclopedia's Sold by filter shows each store's item icon, not the same Street Spirit"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "Vendors near you shows an icon for each store, an item it sells"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "Street project boards say anyone can give items and link where each item comes from"
    }
   ]
  },
- "tests": 1221,
+ "tests": 1224,
  "generatedAt": "2026-11-21"
 }
