@@ -286,10 +286,15 @@ let placeIdx = null;
 function roadsKey(engine) {
   let done = 0;
   for (const row of Object.values(state.jobs)) if (row?.doneAt) done += 1;
-  return `${state.grandfathered.length}|${done}|${engine?.streetTsid || ''}|${demo?.jobId || ''}`;
+  return `${state.grandfathered.length}|${done}|${engine?.streetTsid || ''}|${demo?.jobId || ''}|${waitingWorld() ? 0 : 1}`;
 }
+/**
+ * Sibling audit B3/B5 (2026-11-21): online, the roads are unknown until the first project_world
+ * (the save holds no shared rows, so every world-built street reads closed). The reach answers
+ * (questReach, walkReach, roadsKnown) say unknown until then, so nothing decides from them and saves.
+ */
 function questReach(engine) {
-  if (!catalog || !streetIndex) return null;
+  if (!catalog || !streetIndex || waitingWorld()) return null;
   if (!waysReady) {
     loadWays();
     return null;
@@ -311,7 +316,7 @@ function questReach(engine) {
  */
 let walkCache = { key: '', reach: null };
 function walkReach(from, engine) {
-  if (!catalog || !from) return null;
+  if (!catalog || !from || waitingWorld()) return null;
   if (!waysReady) {
     loadWays();
     return null;
@@ -1111,6 +1116,35 @@ function topRewardText(job) {
 
 let pendingReload = null;
 
+/**
+ * Sibling audit B1 (2026-11-21): the upgrade a street was built with, as ecologyOverride answered
+ * when enterStreet asked (keyed by the street's data object: the option's id, '' for none, null
+ * while unknown). Online the save holds no shared rows, so before the first project_world the
+ * answer is unknown and the street stands as archived (the old shrine Giant, no upgrade animals,
+ * rocks or flowers). When the world's word changes what stands where you are, the street is built
+ * again, once, in place. Glitch reloaded every player on an upgraded street, not only the one who
+ * finished it (locations/inc_upgrades.js upgrades_move_players 729-739).
+ */
+const builtWith = new WeakMap();
+let standing = null; // { tsid, upgrade }
+/** The upgrade standing on `tsid` as far as this page knows: its option id, '' for none, null while unknown. */
+function upgradeKnown(tsid) {
+  if (!catalog || !tsid || waitingWorld()) return null;
+  const option = appliedUpgrade(state, catalog, tsid);
+  return option ? String(option.id || option.name || 'upgraded') : '';
+}
+/** The street you stand on was built with another upgrade than the one now known: build it again once. */
+function rebuildIfUpgraded(engine) {
+  if (!standing || standing.tsid !== engine?.streetTsid) return;
+  const now = upgradeKnown(standing.tsid);
+  if (now == null) return;
+  const was = standing.upgrade;
+  standing.upgrade = now;
+  // Built while unknown, and nothing stands: it was built right (the archived street).
+  if (was === now || (was == null && now === '')) return;
+  pendingReload ||= { tsid: standing.tsid, x: engine.player?.x, y: engine.player?.y, quiet: true };
+}
+
 function finishJob(engine, jobId, out, solo) {
   const job = jobDef(catalog, jobId);
   const def = phaseClass(catalog, jobId, 0).def;
@@ -1221,7 +1255,8 @@ function tickReload(engine) {
   if (document.querySelector('#award-screen:not([hidden])') || engine.busy()) return;
   const r = pendingReload;
   pendingReload = null;
-  if (engine.streetTsid === r.tsid) engine.enter(r.tsid, { spawnX: r.x, spawnY: r.y });
+  // B1: a street learned late is built again where you stand, with no loading card or arrival line.
+  if (engine.streetTsid === r.tsid) engine.enter(r.tsid, { spawnX: r.x, spawnY: r.y, ...(r.quiet ? { useTransition: false, quiet: true } : {}) });
 }
 
 /** players/inc_jobs.js: the script points at an incoming signpost's arrival. */
@@ -2185,6 +2220,8 @@ function createMp(engine, client) {
     if (arrivalOwed && arrivalOwed === generation) arrive(engine, arrivalOwed);
     drawBarricades(engine);
     refresh();
+    // B1: the street stood as archived until now; an upgrade the world built here builds it again.
+    rebuildIfUpgraded(engine);
   });
   // Ticket 81: the answer to project_sync with mine: every project of yours, anywhere (the whole list).
   client.on('msg:project_mine', (msg) => {
@@ -2214,6 +2251,8 @@ function createMp(engine, client) {
     }
     drawBarricades(engine);
     refresh();
+    // B1: someone else finished this street's upgrade while you stand on it: it is built again for you too.
+    rebuildIfUpgraded(engine);
   });
   client.on('msg:project_street', (msg) => {
     clock(msg);
@@ -3168,7 +3207,11 @@ export const streetJobsFeature = {
   },
 
   ecologyOverride(street) {
-    if (!catalog || !street?.tsid) return null;
+    if (!street?.tsid) return null;
+    // B1: what the street is built with is kept, so a later word (project_world, the catalog) can build it again.
+    if (typeof street === 'object') builtWith.set(street, upgradeKnown(street.tsid));
+    // Online before project_world the upgrade is unknown (the save holds no shared rows): the archived row.
+    if (!catalog || waitingWorld()) return null;
     const option = appliedUpgrade(state, catalog, street.tsid);
     if (!option) return null;
     return upgradeEcologyEntry(ecologyForStreet(street.tsid), option);
@@ -3183,7 +3226,7 @@ export const streetJobsFeature = {
     }
     // Gap 1: the hall's lot wants a floor run as wide as its rope (the archive kept no x/y).
     if (mpMode && lotHeadline(streetJobs(state, catalog, tsid, Date.now(), opts()), catalog)) out.push({ ...LOT_PLACEMENT });
-    const option = appliedUpgrade(state, catalog, tsid);
+    const option = waitingWorld() ? null : appliedUpgrade(state, catalog, tsid);
     if (option && upgradeFeatures(option).flora.length) out.push({ key: 'street-job-flora', count: FLORA_COUNT, clearance: 60 });
     return out;
   },
@@ -3192,8 +3235,13 @@ export const streetJobsFeature = {
     generation += 1;
     const mine = generation;
     arrivalOwed = 0;
+    // B1: the upgrade this street was built with (null: unknown when enterStreet asked, before the
+    // catalog or the world). A street another feature's ecology built is not ours to build again.
+    standing = street && builtWith.has(street) ? { tsid: street.tsid, upgrade: builtWith.get(street) } : null;
     load().then(() => {
       if (mine !== generation || !catalog) return;
+      // B1 (solo too): the catalog came after the street was built; an upgrade it holds builds it again.
+      rebuildIfUpgraded(engine);
       if (initializeStreetJobs(state, engine.visitedStreets ? engine.visitedStreets() : [])) engine.save();
       if (mpMode) ensureMp(engine);
       if (engine.param('jobdemo') && !demo && !mpMode) demo = resolveDemo(engine);
@@ -3321,6 +3369,15 @@ export const streetJobsFeature = {
   /** #480: the streets `from` reaches on foot as the roads stand (walkReach), or null while they load. */
   streetsWalkable(from, engine) {
     return walkReach(from, engine);
+  },
+
+  /**
+   * B3: do the roads as they stand answer yet (the catalog, the graph and, online, the world's first
+   * project_world)? False while any is still coming; starts loading the ways.
+   */
+  roadsKnown() {
+    if (!waysReady) loadWays();
+    return Boolean(catalog && waysReady && !waitingWorld());
   },
 
   /** G1075: are the roads loaded (openForEveryone can answer)? False starts loading them. */
