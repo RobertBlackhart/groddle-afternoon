@@ -1130,7 +1130,7 @@ import { STAT_PAINTS } from './js/stat-icons.js?v=b89600eb';
 import { SLUG_ANIMATION, SLUG_LAYOUT, SLUG_TARGETS, drawSlugGlyph, formatRawSlugs, formatSlugList, layoutSlugRow, slugBox, slugNumber, slugPaint, slugPillPath, slugSign, speechSlugList } from './js/speech-slugs.js?v=e79cecfa';
 import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own word filter
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
-import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; // the Map's Shortcuts
+import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=0567ccfa';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=a593b732';
@@ -26740,7 +26740,15 @@ function renderHomeMapCallout(panel) {
   const title = document.createElement('strong');
   const detail = document.createElement('span');
   const unread = unreadMailCount(mailboxState, Date.now());
-  if (homeState.owned) {
+  // G1115: at home the card is the way back, on show above the map (not folded into the Shortcuts,
+  // js/map-extras.js), and its button is the Home panel's own Return to Ur (returnFromHome). M opened
+  // the Home panel at home before #584 made it open the Map.
+  const atHome = homeState.owned && homeIsInstanced();
+  if (atHome) {
+    box.classList.add('map-home-return');
+    title.textContent = 'You are at home';
+    detail.textContent = `Return to Ur takes you back to ${homeReturnDestination().label}.`;
+  } else if (homeState.owned) {
     const style = HOME_STYLES[homeState.style] || HOME_STYLES.meadow;
     title.textContent = `Your ${style.label} home`;
     detail.textContent = unread
@@ -26754,10 +26762,12 @@ function renderHomeMapCallout(panel) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'content-action-btn';
-  button.textContent = homeState.owned ? 'Teleport home' : 'Get your home street';
+  button.textContent = atHome ? 'Return to Ur' : homeState.owned ? 'Teleport home' : 'Get your home street';
+  if (atHome) button.dataset.mapHomeReturn = '1';
   button.addEventListener('click', () => {
     closeMap();
-    if (homeState.owned) teleportHome();
+    if (atHome) returnFromHome();
+    else if (homeState.owned) teleportHome();
     else openHomePanel();
   });
   box.append(copy, button);

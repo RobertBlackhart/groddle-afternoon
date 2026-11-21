@@ -7,8 +7,8 @@
 /**
  * G192: the Map's shortcut cards (home, puzzle streets, projects, ...) fold
  * into one Shortcuts line above the route card, so the map itself stays in
- * view; quest cards and the route card stay out. Open or shut is kept while
- * the game runs.
+ * view; quest cards, the route card and, at home, the Return to Ur card (G1115) stay
+ * out. Open or shut is kept while the game runs.
  *
  * Ticket 21 (Friendly: the Shortcuts and the destination squeezed the map, and the Shortcuts needed a
  * scrollbar): the Shortcuts line and the route card share one row (.map-bar), and the Shortcuts open
@@ -56,7 +56,7 @@ export function arrangeMapCards(panel) {
   card.querySelectorAll(':scope > .map-extras').forEach((el) => el.remove());
   const extras = [...card.children].filter((el) =>
     (el.classList.contains('map-home-card') || el.classList.contains('map-feature-card')) &&
-    !el.matches('[data-map-route], .nx-map-card'));
+    !el.matches('[data-map-route], .nx-map-card, .map-home-return'));
   const route = card.querySelector(':scope > [data-map-route]');
   const bar = document.createElement('div');
   bar.className = 'map-bar';

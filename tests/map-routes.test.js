@@ -1095,7 +1095,7 @@ describe('G192 the Map keeps the map in view', () => {
   it('the extra cards fold into one Shortcuts line; the canvas takes the room left', () => {
     const game = read(join(PUBLIC, 'game.js'));
     assert.match(game, /arrangeMapCards\(panel\);\n  panel\.hidden = false;/);
-    assert.match(read(join(PUBLIC, 'js/map-extras.js')), /!el\.matches\('\[data-map-route\], \.nx-map-card'\)/, 'the route card and quest cards stay out');
+    assert.match(read(join(PUBLIC, 'js/map-extras.js')), /!el\.matches\('\[data-map-route\], \.nx-map-card, \.map-home-return'\)/, 'the route card, quest cards and the Return to Ur card at home (G1115) stay out');
     const css = read(join(PUBLIC, 'style.css'));
     // Ticket 21: the canvas keeps the hub's shape and gives way on a short window (tests/map-fit.test.js).
     assert.match(css, /\.map-card\.map-hub > \.map-canvas \{\n  flex: 0 1 auto;\n  height: auto;\n  aspect-ratio: var\(--map-aspect, 760 \/ 460\);/);
