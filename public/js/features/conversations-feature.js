@@ -70,7 +70,7 @@
 
 import { addItem, ensureItem } from '../inventory.js?v=6414dbdc';
 import { isPoisoned } from '../tree-poison.js?v=646d1bc1';
-import { GREEDY_ACTS, GREEDY_STREET_SPIRIT_QUEST_ID, canOfferGreedyFirst } from '../greedy-street-spirit.js?v=4d19b0e9';
+import { GREEDY_ACTS, GREEDY_STREET_SPIRIT_QUEST_ID, canOfferGreedyFirst } from '../greedy-street-spirit.js?v=9cad6db6';
 import { questStatus } from '../quest-offers.js?v=69e064ff';
 import { questDoneAt } from '../quests.js?v=90a2ee3d';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';

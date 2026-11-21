@@ -23,7 +23,7 @@ import {
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
-} from '../public/js/greedy-street-spirit.js?v=4d19b0e9';
+} from '../public/js/greedy-street-spirit.js?v=9cad6db6';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 

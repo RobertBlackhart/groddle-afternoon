@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=85e553c8';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ea6be54a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3e2d6879';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -341,13 +341,15 @@ import {
   createGreedyStreetSpiritState,
   ensureGreedyStory,
   expireGreedyStreetSpirit,
+  failInterruptedGreedyStreetSpirit,
+  greedyActsAllRead,
   greedyObjective,
   greedyRemainingMs,
   markGreedyFirstComplete,
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
-} from './js/greedy-street-spirit.js?v=4d19b0e9';
+} from './js/greedy-street-spirit.js?v=9cad6db6';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -4954,6 +4956,7 @@ function renderPackPopover(classTsid, anchor = null) {
         }];
       })
     : [];
+  if (isEmotionalBear) settleLeftGreedyStreetSpirit();
   const bearReminisceQuote = isEmotionalBear
     ? canOfferGreedyRepeat(questState, Date.now(), {
         bypassCooldown: String(new URLSearchParams(location.search).get('questdemo') || '').startsWith('greedy'),
@@ -19513,8 +19516,10 @@ function handleGreedyStreetTarget(target, verbId) {
 
 function finishGreedyRepeat() {
   const active = questState.active?.[GREEDY_STREET_SPIRIT_REPEAT_ID];
-  if (!active || greedyStreetState?.actsRead.length !== GREEDY_ACTS.length) return false;
-  greedyStreetState.status = 'complete';
+  // G1112: with no storyland open (a run left by a reload), its saved act flags say it was all read.
+  const read = greedyStreetState ? greedyStreetState.actsRead.length === GREEDY_ACTS.length : greedyActsAllRead(active);
+  if (!active || !read) return false;
+  if (greedyStreetState) greedyStreetState.status = 'complete';
   const result = completeQuest(questState, GREEDY_STREET_SPIRIT_REPEAT_ID, pc);
   if (!result.ok) return false;
   addItem(inv, GREEDY_REPEAT_REWARD.item, GREEDY_REPEAT_REWARD.count);
@@ -19595,10 +19600,7 @@ async function returnFromGreedyStreetSpirit({ abandon = false, expired = false }
 function completeGreedyStreetSpiritWithPiggy(target) {
   const active = questState.active?.[GREEDY_STREET_SPIRIT_QUEST_ID];
   if (!active) return false;
-  const actsRead = GREEDY_ACTS.every(
-    (_act, index) => Number(active.progress[`read_act_${index + 1}`]) >= 1
-  );
-  if (!actsRead) return false;
+  if (!greedyActsAllRead(active)) return false;
   active.progress.talk_to_piggy = 1;
   const result = completeQuest(questState, GREEDY_STREET_SPIRIT_QUEST_ID, pc);
   if (!result.ok) return false;
@@ -19630,7 +19632,23 @@ function completeGreedyStreetSpiritWithPiggy(target) {
   return true;
 }
 
+/**
+ * G1112: a Greedy Street Spirit left with no storyland open (a logout, a closed tab, a reload: the run
+ * lives only in the page) fails as the source's did on leaving it before every act was read, so a
+ * Piggy offers it again; one with every act read stays for the Piggy, and a repeat read through is
+ * handed in (js/greedy-street-spirit.js failInterruptedGreedyStreetSpirit). At load, and before a
+ * Piggy or the Bear asks whether the story can be offered. Never during a run.
+ */
+function settleLeftGreedyStreetSpirit({ boot = false } = {}) {
+  if (greedyStreetState || greedyStreetStartPromise || greedyStreetTransitionBusy) return null;
+  const res = failInterruptedGreedyStreetSpirit(questState, Date.now());
+  const finished = res.finishRepeat && finishGreedyRepeat();
+  if (!boot && (res.failed.length || finished)) savePlayerState();
+  return { ...res, finished };
+}
+
 function handleGreedyStreetPiggy(target) {
+  settleLeftGreedyStreetSpirit();
   if (completeGreedyStreetSpiritWithPiggy(target)) return true;
   if (!canOfferGreedyFirst(questState, pc).ok) return false;
   openQuestDialogue(GREEDY_STREET_SPIRIT_QUEST_ID);
@@ -32651,6 +32669,8 @@ async function main() {
     dropBootStarterQuests(questState);
     // A Winter Walk still in the log was lost with the page: the source counts that as leaving it.
     failInterruptedWinterWalk(questState, Date.now());
+    // G1112: so is a Greedy Street Spirit run (one read through stays for the Piggy).
+    settleLeftGreedyStreetSpirit({ boot: true });
     // G562: a repeat the Magic Rock left waiting in Offered goes; only a Street Spirit offers it now.
     dropSpiritRepeatOffers(questState);
     const mainQuests = ['animalkinship_pet_piggies'];

@@ -252,3 +252,36 @@ export function markGreedyRepeatFailed(questState, now = Date.now()) {
   story.lastRepeatFailedAt = finiteTime(now);
   return story;
 }
+
+/** Every act's read_act_N flag is set in the quest's progress (the Piggy's own check). */
+export function greedyActsAllRead(active) {
+  return GREEDY_ACTS.every((_act, index) => Number(active?.progress?.[`read_act_${index + 1}`]) >= 1);
+}
+
+/**
+ * G1112: a Greedy Street Spirit in the log with no storyland open (left by a logout, a closed tab
+ * or a reload: the run lives only in the page). The source failed a run left before every act was
+ * read (quests/greedy_street_spirit.js onExitLocation 145-163: failQuest unless read_act_1..5;
+ * greedy_street_spirit_reminisce.js onExitLocation 108-118: failQuest unless complete, with
+ * fail_time), so a Piggy offers the story again and the Bear's hour starts. The first story with
+ * every act read stays: a Piggy talk finishes it (completeGreedyStreetSpiritWithPiggy). The repeat
+ * with every act read had completed in the source on its last act (its requirements are the five
+ * acts): `finishRepeat` says to hand it in. Call only with no live run. Returns { failed, finishRepeat }.
+ */
+export function failInterruptedGreedyStreetSpirit(questState, now = Date.now()) {
+  const failed = [];
+  let finishRepeat = false;
+  const first = questState?.active?.[GREEDY_STREET_SPIRIT_QUEST_ID];
+  if (first && !greedyActsAllRead(first)) {
+    delete questState.active[GREEDY_STREET_SPIRIT_QUEST_ID];
+    failed.push(GREEDY_STREET_SPIRIT_QUEST_ID);
+  }
+  const repeat = questState?.active?.[GREEDY_STREET_SPIRIT_REPEAT_ID];
+  if (repeat && greedyActsAllRead(repeat)) finishRepeat = true;
+  else if (repeat) {
+    delete questState.active[GREEDY_STREET_SPIRIT_REPEAT_ID];
+    markGreedyRepeatFailed(questState, now);
+    failed.push(GREEDY_STREET_SPIRIT_REPEAT_ID);
+  }
+  return { failed, finishRepeat };
+}
