@@ -84,6 +84,13 @@ export const STUCK_TEXT = Object.freeze({
   dead: "You are dead. Squish Hellish Grapes to get out of Naraka.",
   /** G528: once, on a floor a plain jump doesn't get off. */
   hint: "Can't get back up? Choose I'm stuck in the Menu, or type /stuck in chat, to go back to where you arrived on this street.",
+  /**
+   * G1086 (#573): once a visit, standing under a ladder whose foot hangs out of reach (Jacob's
+   * Climb's lower-left pocket): Up takes a ladder in the air, as Glitch's did (js/movement.js
+   * ladderMount); a jump spends the press that started it, so Up is pressed again in the air.
+   */
+  ladderJump: 'Jump, then press Up in the air to grab the ladder.',
+  ladderJumpTouch: 'Tap Jump, then push the stick up in the air to grab the ladder.',
   /** The cooldown's time left, in whole minutes (seconds under one). */
   wait: (ms) => {
     const s = Math.max(1, Math.ceil(ms / 1000));

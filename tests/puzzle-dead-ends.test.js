@@ -16,7 +16,7 @@ import { STRAY_FALLBACK_TSID, strayWayOut, streetsReachingUr } from '../public/j
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS, PUZZLE_LEAVE_TEXT } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=9163b479';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=ceba1e3a';
-import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
+import { STUCK_TEXT, slashPlan } from '../public/js/slash-commands.js?v=bb2569aa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

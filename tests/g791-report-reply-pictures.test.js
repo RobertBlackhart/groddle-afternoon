@@ -18,7 +18,7 @@ import { pathToFileURL } from 'node:url';
 import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=7589fd04';
 import { REPORT_TEXT as T, createReportsApi, isPictureKey, pictureSrc } from '../public/js/reports.js?v=813fec3c';
 import { REPORT_LEAVE_OUT } from '../public/js/features/bug-report-feature.js?v=c3870e8e';
-import { hotkeySections } from '../public/js/client-hotkeys.js?v=c8210235';
+import { hotkeySections } from '../public/js/client-hotkeys.js?v=5c5a4301';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

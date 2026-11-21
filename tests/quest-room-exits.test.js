@@ -15,8 +15,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STUCK_TEXT, SLASH_TEXT, slashPlan } from '../public/js/slash-commands.js?v=fb3a8442';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=309ffef2';
+import { STUCK_TEXT, SLASH_TEXT, slashPlan } from '../public/js/slash-commands.js?v=bb2569aa';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=e5e51999';
 import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=9163b479';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

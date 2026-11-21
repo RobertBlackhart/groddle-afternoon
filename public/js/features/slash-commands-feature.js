@@ -37,6 +37,9 @@
  *   (js/street-traps-data.js, by your jump), a one-time hint names /stuck. The /
  *   key opens the box without its slash, so a line that is only a command's name
  *   typed in a box it opened runs that command (js/slash-commands.js bareCommand).
+ *   G1086 (#573): standing 4 s in a ladder pocket (js/ladder-pockets-data.js: a floor left only
+ *   by a jump and Up onto a ladder whose foot hangs out of reach, Tiny Speck's geometry and
+ *   Glitch's grab, as at Jacob's Climb's lower left), a hint says how out, once a visit.
  *   G792: nine players got stuck and most never found /stuck, so the Menu (Modern and
  *   Classic share #more-list; phones too) has an "I'm stuck" row that runs /stuck itself,
  *   with every rule above (cooldown, quest room, refusals), after the Menu has closed.
@@ -55,7 +58,8 @@
  *
  * QA: type the commands into Local chat. Canvas data: slashLast
  *     (`<command>:<outcome>`, `/tp:<kind>:<outcome>` once a /tp is answered,
- *     `/stuck:<arrival|street|home-door|tower-door|quest-room|refused|failed>`),
+ *     `/stuck:<arrival|street|home-door|tower-door|quest-room|refused|failed>`,
+ *     `ladder-pocket:hint` once the ladder pocket hint shows),
  *     slashLine (the last line shown).
  */
 
@@ -65,11 +69,12 @@ import { hellFeature } from './hell-feature.js?v=2f6bac3a';
 import { locationEventsApi } from './location-events-feature.js?v=2c3023b5';
 import { towerApi } from './home-tower-feature.js?v=5a9fbc8f';
 import { platformYAt, platformsScreen } from '../street-model.js?v=a9a05f9d';
-import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=fb3a8442';
+import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=bb2569aa';
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=fa56e8df';
 import { minnUrls } from '../minn-account.js?v=edf182bb';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
+import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 
 export const SLASH_COMMANDS_FEATURE_ID = 'slash-commands';
 
@@ -86,6 +91,16 @@ let trapLines = [];
 let trapStreet = null;
 let trapMs = 0;
 let trapCheckAt = 0;
+/**
+ * G1086 (#573): seconds standing in a ladder pocket (js/ladder-pockets-data.js: a floor you leave
+ * only by a jump and Up onto a ladder whose foot hangs out of reach) before the hint, once a visit.
+ */
+export const LADDER_POCKET_DWELL_MS = 4000;
+let pocketLines = [];
+let pocketStreet = null;
+let pocketMs = 0;
+let pocketCheckAt = 0;
+let pocketHinted = false;
 /** Tests replace the clock. */
 let now = () => Date.now();
 let last = '';
@@ -198,6 +213,39 @@ function stuckHintTick(engine) {
   last = '/stuck:hint';
   publish(engine);
   engine.save?.();
+}
+
+/** The ladder pockets' list, loaded the first time a street is entered. A failed load costs only the hint. */
+let pocketData = null;
+function loadPockets() {
+  pocketData ||= import('../ladder-pockets-data.js?v=eb8f9176').then((m) => m.LADDER_POCKETS).catch(() => null);
+  return pocketData;
+}
+
+/** PURE: the ladder pocket hint's words, for the keys or a phone's stick and Jump button. */
+export function ladderPocketText(phone = isPhoneDevice()) {
+  return phone ? STUCK_TEXT.ladderJumpTouch : STUCK_TEXT.ladderJump;
+}
+
+/** G1086: how out of a ladder pocket, once a visit, after a few seconds standing in it. */
+function pocketHintTick(engine) {
+  const t = now();
+  const gap = pocketCheckAt ? Math.min(TRAP_CHECK_MS * 4, t - pocketCheckAt) : 0;
+  if (pocketCheckAt && gap < TRAP_CHECK_MS) return;
+  pocketCheckAt = t;
+  if (!engine.started || engine.busy?.()) return;
+  // Time on its floor adds up over the visit, so jumping at the ladder doesn't start it again.
+  if (!onTrapFloor(pocketLines, engine.player, engine.movementBuff?.()?.jump ?? 1)) return;
+  pocketMs += gap;
+  if (pocketMs < LADDER_POCKET_DWELL_MS) return;
+  pocketHinted = true;
+  pocketLines = [];
+  const line = ladderPocketText();
+  lastLine = line;
+  engine.pushActivity?.(line);
+  engine.toast?.(line, 8000);
+  last = 'ladder-pocket:hint';
+  publish(engine);
 }
 
 /** /stuck's move: the street's arrival, or the door at home. */
@@ -462,12 +510,21 @@ export const slashCommandsFeature = {
     trapLines = [];
     trapMs = 0;
     trapCheckAt = 0;
+    pocketLines = [];
+    pocketMs = 0;
+    pocketCheckAt = 0;
+    pocketHinted = false;
     placeStuckRow(engineRef);
-    if (stuckHinted || !street?.tsid) return undefined;
-    trapStreet = street;
-    return loadTraps().then((traps) => {
-      if (trapStreet === street && !stuckHinted) trapLines = trapLinesOn(street, traps);
+    if (!street?.tsid) return undefined;
+    pocketStreet = street;
+    const pockets = loadPockets().then((rows) => {
+      if (pocketStreet === street && !pocketHinted) pocketLines = trapLinesOn(street, rows);
     });
+    if (stuckHinted) return pockets;
+    trapStreet = street;
+    return Promise.all([pockets, loadTraps().then((traps) => {
+      if (trapStreet === street && !stuckHinted) trapLines = trapLinesOn(street, traps);
+    })]);
   },
 
   onStreetClear() {
@@ -475,9 +532,14 @@ export const slashCommandsFeature = {
     trapLines = [];
     trapMs = 0;
     trapCheckAt = 0;
+    pocketStreet = null;
+    pocketLines = [];
+    pocketMs = 0;
+    pocketCheckAt = 0;
   },
 
   onTick(_dtMs, _now, engine) {
+    if (pocketLines.length && !pocketHinted) pocketHintTick(engine);
     if (trapLines.length && !stuckHinted) stuckHintTick(engine);
   },
 
@@ -533,6 +595,11 @@ export const slashCommandsFeature = {
     trapLines = [];
     trapMs = 0;
     trapCheckAt = 0;
+    pocketStreet = null;
+    pocketLines = [];
+    pocketMs = 0;
+    pocketCheckAt = 0;
+    pocketHinted = false;
     last = '';
     lastLine = '';
   },
