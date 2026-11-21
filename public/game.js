@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=be8644f3';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8c50c19f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -27304,7 +27304,7 @@ function openMapStreetMenu(canvas, event, street, { here = false } = {}) {
       const res = features.query('mapRoute', 'set', { to: street.tsid, source: 'player' }, engine);
       // Routes never go through a closed road (js/map-routes.js findRoute): say which street is in the way.
       const through = res && res.ok === false ? routeThroughConstruction(res.through) : null;
-      if (through) toast(`No open road leads to ${street.label} yet: the way runs through ${through.label}, which is still under construction. ${through.note}`, 6000);
+      if (through) toast(`No open road leads to ${street.label} yet: the way runs through ${through.label}, which is still under construction. ${through.help}`, 6000);
       else if (res && res.ok === false) toast(res.error || 'No path to there.', 2600);
       else {
         pushActivity(`Destination set: ${street.label}.`);

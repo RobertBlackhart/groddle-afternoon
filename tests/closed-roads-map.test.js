@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=71fa73cd';
+import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=49beeb2b';
 import { findRoute } from '../public/js/map-routes.js?v=70f30ddf';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 
@@ -55,6 +55,26 @@ describe('ticket 37: a road under construction says what is true', () => {
     assert.equal(closedRoadText(state, catalog, null), '');
   });
 
+  it('#566 (G1075): a route through it says "still under construction" once', () => {
+    const help = closedRoadText(state, catalog, closed, { via: 'route', label, opts });
+    assert.match(help, /^Help build it at the project board on /);
+    const resting = fresh();
+    const now = 10 ** 12;
+    resting.streetDone[open] = now - 5 * 60_000;
+    assert.match(closedRoadText(resting, catalog, closed, { via: 'route', label, opts, now }), /^\S.* opens for help in about 25 minutes\.$/);
+    assert.doesNotMatch(closedRoadText(resting, catalog, closed, { via: 'route', label, opts, now }), /under construction/);
+    // The three toasts (the Map's street menu, the Projects tab, the buddy list) add the route help.
+    const feature = read('public/js/features/street-jobs-feature.js');
+    assert.match(feature, /note: text\('map'\), road: text\('signpost'\), help: text\('route'\) \};/);
+    for (const file of ['public/game.js', 'public/js/features/street-jobs-feature.js', 'public/js/features/buddies-feature.js']) {
+      const src = read(file);
+      assert.match(src, /which is still under construction\. \$\{through\.help\}`/, file);
+      assert.doesNotMatch(src, /which is still under construction\. \$\{through\.note\}/, file);
+    }
+    const toast = `No open road leads to X yet: the way runs through ${job.label}, which is still under construction. ${help}`;
+    assert.equal(toast.match(/under construction/gi).length, 1);
+  });
+
   it('#339 (G761): while the street rests after a project, the sign says when it opens, not to help now', () => {
     const resting = fresh();
     const now = 10 ** 12;
@@ -88,7 +108,7 @@ describe('ticket 37: a road under construction says what is true', () => {
     const game = read('public/game.js');
     assert.match(game, /const building = here \? null : features\.query\('streetUnderConstruction', street\.tsid, engine\);/);
     assert.match(game, /label: 'Set as Destination',\n\s+tip: 'Get a guided path to this location',\n\s+disabled: here \|\| Boolean\(building\),\n\s+reason: here \? MAP_ALREADY_HERE : building \? building\.note : '',/);
-    assert.match(game, /const through = res && res\.ok === false \? routeThroughConstruction\(res\.through\) : null;\n\s+if \(through\) toast\(`No open road leads to \$\{street\.label\} yet: the way runs through \$\{through\.label\}, which is still under construction\. \$\{through\.note\}`, 6000\);/);
+    assert.match(game, /const through = res && res\.ok === false \? routeThroughConstruction\(res\.through\) : null;\n\s+if \(through\) toast\(`No open road leads to \$\{street\.label\} yet: the way runs through \$\{through\.label\}, which is still under construction\. \$\{through\.help\}`, 6000\);/);
   });
 
   it('the feature refuses signposts, doors, teleports and follows (#549) into it, and the Map menu asks it', () => {

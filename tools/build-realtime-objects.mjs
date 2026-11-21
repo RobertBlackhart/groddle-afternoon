@@ -115,7 +115,7 @@ import { CRAB_PLACEMENT_KEY, CRAB_WALK, crabPlacementGroups } from '../public/js
 import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
-import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=71fa73cd';
+import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=49beeb2b';
 import { partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=a748a93f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

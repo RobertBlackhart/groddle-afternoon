@@ -884,7 +884,7 @@ export function roadClosure(state, catalog, toTsid, signpostTsids = [], opts = {
  * @param {{ jobId: string, job: object }} closed roadClosure's answer
  * Gap 3 (research/street-projects-audit-2026-11-11.md): `giver(tsid)` names who gives it on that
  * street ("the Street Spirit"); empty means the project board.
- * @param {{ here?: string, via?: 'signpost'|'door'|'teleport'|'map', label?: (tsid: string) => string, giver?: (tsid: string) => string, opts?: object }} [o]
+ * @param {{ here?: string, via?: 'signpost'|'door'|'teleport'|'map'|'route', label?: (tsid: string) => string, giver?: (tsid: string) => string, opts?: object }} [o]
  */
 export function closedRoadText(state, catalog, closed, { here = '', via = 'signpost', label = (t) => t, giver = () => '', opts = {}, now = Date.now() } = {}) {
   if (!closed?.job) return '';
@@ -906,10 +906,14 @@ export function closedRoadText(state, catalog, closed, { here = '', via = 'signp
       : `Its project is resting between steps and opens for help again in about ${wait}.`;
     if (via === 'teleport') return `${name} is still under construction, so you can't teleport there yet. ${why}`;
     if (via === 'map') return `Still under construction. ${why}`;
+    if (via === 'route') return why;
     return `The road to ${name} is still under construction. ${why} The road opens when the project is done.`;
   }
   if (via === 'teleport') return `${name} is still under construction, so you can't teleport there yet. Help build it ${where}.`;
   if (via === 'map') return `Still under construction. Help build it ${where}.`;
+  // #566: after "the way runs through <street>, which is still under construction." (the Map's, the
+  // Projects tab's and the buddy list's routes): what to do about it, without saying it twice.
+  if (via === 'route') return `Help build it ${where}.`;
   return `The road to ${name} is still under construction. Help build it ${where}, and the road opens when the project is done.`;
 }
 

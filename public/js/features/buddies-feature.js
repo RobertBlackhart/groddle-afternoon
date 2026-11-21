@@ -260,7 +260,7 @@ function createSession(engine, client) {
     if (!res || res.ok === false) {
       // Routes never go through a closed road (js/map-routes.js findRoute): say which street is in the way.
       const through = (Array.isArray(res?.through) ? res.through : []).map((t) => engine.query?.('streetUnderConstruction', t, engine)).find(Boolean);
-      engine.toast?.(through ? `No open road leads to ${label} yet: the way runs through ${through.label}, which is still under construction. ${through.note}` : res?.error || BUDDY_DESTINATION_TEXT.none, 6000);
+      engine.toast?.(through ? `No open road leads to ${label} yet: the way runs through ${through.label}, which is still under construction. ${through.help}` : res?.error || BUDDY_DESTINATION_TEXT.none, 6000);
       return;
     }
     engine.pushActivity?.(BUDDY_DESTINATION_TEXT.set(label));

@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { contributionsText, jobText, phaseName, plainText } from '../public/js/street-jobs.js?v=71fa73cd';
+import { contributionsText, jobText, phaseName, plainText } from '../public/js/street-jobs.js?v=49beeb2b';
 import { cleanQuestMarkup } from '../public/js/quests.js?v=4a3fb1da';
 
 const root = join(import.meta.dirname, '..');

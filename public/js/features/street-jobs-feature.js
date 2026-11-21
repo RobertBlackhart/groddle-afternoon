@@ -113,7 +113,7 @@ import {
   sharePercent,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=71fa73cd';
+} from '../street-jobs.js?v=49beeb2b';
 import { PAPERS_BADGE } from '../subway.js?v=36c6d2b2';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=c0c2e455';
@@ -144,7 +144,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=9de15a33';
+} from '../street-jobs-mp.js?v=a35440c3';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -156,8 +156,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=fe5054b5';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ac5ef51e';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=ba1fd9ab';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=cd0bb223';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=1180ebbd';
@@ -3034,7 +3034,7 @@ function projectAction(engine, act, e) {
     if (res && res.ok === false) {
       // Routes never go through a closed road (js/map-routes.js findRoute): say which street is in the way.
       const through = (Array.isArray(res.through) ? res.through : []).map((t) => streetJobsFeature.streetUnderConstruction(t, engine)).find(Boolean);
-      engine.toast(through ? `No open road leads to ${where.label} yet: the way runs through ${through.label}, which is still under construction. ${through.note}` : res.error || 'No path to there.', 6000);
+      engine.toast(through ? `No open road leads to ${where.label} yet: the way runs through ${through.label}, which is still under construction. ${through.help}` : res.error || 'No path to there.', 6000);
       return;
     }
     engine.pushActivity(`Destination set: ${where.label}.`);
@@ -3333,7 +3333,7 @@ export const streetJobsFeature = {
     const closed = roadClosure(state, catalog, tsid, [tsid], opts());
     if (!closed) return null;
     const text = (via) => closedRoadText(state, catalog, closed, { here: engine?.streetTsid, via, label: streetLabel, giver: (t) => giverNoun(t, closed.jobId), opts: opts() });
-    return { tsid: closed.job.street, label: closed.job.label || streetLabel(closed.job.street), note: text('map'), road: text('signpost') };
+    return { tsid: closed.job.street, label: closed.job.label || streetLabel(closed.job.street), note: text('map'), road: text('signpost'), help: text('route') };
   },
 
   /**
