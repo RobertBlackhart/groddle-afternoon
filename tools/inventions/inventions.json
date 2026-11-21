@@ -1008,7 +1008,8 @@
    "id": "pot-luck-day",
    "title": "Pot Luck Day (Nov 22-29): badges, the Harvest Table, a quest, chicken costumes, five items",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "tools/new-content/to-minn.mjs"
@@ -4318,7 +4319,8 @@
    "id": "pot-luck-costumes",
    "title": "Pot Luck Day chicken costumes: the Turkey Tailfan and the Rooster Plume, put on a street Chicken by a drop or a Dress verb, seen by everyone online, off when the season ends",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck.js",
@@ -4350,7 +4352,8 @@
    "id": "pot-luck-fancy-feather",
    "title": "Fancy Feather: a dressed Chicken's squeeze drops one, 1 in 4, five a game day; it rots into a Lump of Loam when Pot Luck Day ends",
    "kind": "behaviour",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck.js",
@@ -4400,7 +4403,8 @@
    "id": "pot-luck-table",
    "title": "Pot Luck Day's Harvest Table: one shared table by the Groddle Forest Junction signpost (Tiny Speck's deco_table_wooden_ghtest three times, end to end); dishes and crops laid by anyone stay on it, the newest twelve drawn with their icons in one row, a count on its front, its Look a list of every offering it keeps (newest first, who laid each, how many older ones it no longer keeps); each player's first offering of a game day gives 10 mood and 10 favor with Pot; packed away when the season ends",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck-feast.js",
@@ -4440,7 +4444,8 @@
    "id": "feast-day-piles",
    "title": "Thanksgiving Day's feast: on Thanksgiving Day (Ur's clock) the week's Harvest Table food lies in 16 eat-in-place piles right of the table in Groddle Forest Junction (source x 230 to 344 and 515 to 678, either side of the spice tree's trunk, the widest pile 6 px clear of it and of the shrine's base, G1015a), each one food with 3 bites drawn as its own put-down count art; Eat takes a bite (the first eater wins it online), 11 bites a player, an emptied spot refills 20 s later weighted by the week's per-class lays, Pot tops a thin week up to 20 dishes with his harvest dishes, the table's card says \"N servings left\", leftovers packed away at midnight; solo the same from the player's own table",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/feast-day.js",
@@ -4476,7 +4481,8 @@
    "id": "pot-luck-quest",
    "title": "Pot's Empty Table: a Pot Luck Day quest offered by the Magic Rock (cook three of five harvest dishes, dress a Chicken, lay three harvest dishes on the Harvest Table) for Pot's Cornucopia, 25 Pot favor, 50 iMG and the Feast Bringer badge",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck-feast.js",
@@ -4504,7 +4510,8 @@
    "id": "pot-luck-stuffing",
    "title": "Harvest Stuffing: an Awesome Pot recipe (2 Buns, 3 Mushrooms, 2 Onions, 1 Saffron; Master Chef I, 9 energy, 18 iMG) that cooks only during Pot Luck Day; food worth 72 (72 energy), with a Grok Bot icon",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck-feast.js",
@@ -4532,7 +4539,8 @@
    "id": "pot-luck-cornucopia",
    "title": "Pot's Cornucopia: the quest's keepsake, a trophy for the house (waits with the furniture, shown through Decorate), Tiny Speck's cornucopia_crops art rendered at 158 x 135",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/home-trophies.js",
@@ -4560,7 +4568,8 @@
    "id": "pot-luck-badges",
    "title": "Pot Luck Day's five badges: Feast Bringer, Plume Fluffer I, II and III (5, 23, 61 chickens dressed) and Good Neighbor (11 offerings), seasonal, with made centre pictures in generated medallions",
    "kind": "content",
-   "status": "proposed",
+   "status": "kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
    "where": [
     {
      "file": "public/js/pot-luck-feast.js",
