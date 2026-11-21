@@ -29,7 +29,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=c9b461c0';
+} from '../public/js/street-ecology.js?v=cd1a137b';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=71fa73cd';
 import { creatureRequests, setCreatureEcology } from './build-realtime-objects.mjs';

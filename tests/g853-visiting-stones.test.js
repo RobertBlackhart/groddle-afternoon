@@ -15,11 +15,13 @@ import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a
 import {
   ecologyForStreet,
   footOverAir,
+  frontDecoCovers,
+  hiddenBehindFront,
   planStreetPlacements,
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=c9b461c0';
+} from '../public/js/street-ecology.js?v=cd1a137b';
 import {
   FURNITURE_GROUPS,
   STONE_DEAD_END_PX,
@@ -82,6 +84,7 @@ describe('Visiting Stones at dead ends', () => {
 
   it('every planned stone stands within 800 px of its dead end, on a floor with both ends over it', async () => {
     let planned = 0;
+    let offZone = 0;
     for (const [rowTsid, row] of Object.entries(catalog.furniture)) {
       if (!row.visiting_stone) continue;
       const tsid = `G${rowTsid.slice(1)}`;
@@ -94,10 +97,19 @@ describe('Visiting Stones at dead ends', () => {
       const plan = planStreetPlacements(platforms, creatureRequests(pop, data, catalog), { worldW: streetWidth(data), seed: tsid, reserved: streetReservedSpots(data) });
       const [stone] = plan.groups[FURNITURE_GROUPS.visiting_stone.key] || [];
       assert.ok(stone, `${data.label}: no stone`);
-      assert.ok(stone.x >= zone.lo && stone.x <= zone.hi, `${data.label}: stone at ${Math.round(stone.x)}, dead end ${zone.lo}-${zone.hi}`);
+      // G1084 (#574): a dead end all behind the front art (Chuff Chase 1's acacia, East Spice's gear
+      // trees) sends its stone out of the zone to the nearest spot players can see it.
+      const offFront = plan.moved.some((m) => m.key === FURNITURE_GROUPS.visiting_stone.key);
+      if (offFront && (stone.x < zone.lo || stone.x > zone.hi)) {
+        offZone += 1;
+        assert.ok(!hiddenBehindFront(stone, FURNITURE_GROUPS.visiting_stone.key, frontDecoCovers(data)), `${data.label}: stone still behind the front art`);
+      } else {
+        assert.ok(stone.x >= zone.lo && stone.x <= zone.hi, `${data.label}: stone at ${Math.round(stone.x)}, dead end ${zone.lo}-${zone.hi}`);
+      }
       assert.ok(footOverAir(platforms, stone, 45) <= 12, `${data.label}: stone over air`);
       planned += 1;
     }
     assert.ok(planned >= 90, `${planned} planned stones checked`);
+    assert.ok(offZone <= 2, `${offZone} stones moved out of their dead end off the front art`);
   });
 });

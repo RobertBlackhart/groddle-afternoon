@@ -52,8 +52,8 @@ describe('G978: no dot bursts', () => {
 describe('G978: flyers fly on (npc_butterfly.js flyAround)', () => {
   it('a yard Butterfly never stops in the air and flies level at its own height; street flyers too', async () => {
     dropped('flyer-hover-bob');
-    const { YARD_WANDER, yardPlan, yardWanderAt } = await import('../public/js/yard-wander.js?v=0ed77be9');
-    const { CREATURE_PATHS, flyerAt } = await import('../public/js/street-creatures.js?v=029f6141');
+    const { YARD_WANDER, yardPlan, yardWanderAt } = await import('../public/js/yard-wander.js?v=2d5aed77');
+    const { CREATURE_PATHS, flyerAt } = await import('../public/js/street-creatures.js?v=c9e0ab98');
     assert.equal('pauses' in YARD_WANDER.npc_butterfly, false);
     assert.equal('bob' in YARD_WANDER.npc_butterfly, false);
     const plan = yardPlan({ id: 'a5', classId: 'npc_butterfly', left: 300, right: 800 });

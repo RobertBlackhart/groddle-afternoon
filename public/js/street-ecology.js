@@ -1636,11 +1636,26 @@ export const FRONT_BOXES = Object.freeze({
   'resource:dust_trap': [39, 103],
   'resource:paper_tree': [230, 230],
   'resource:npc_salmon': [64, 44],
+  // #574 (G1084, R2): planned street furniture too (street-furniture.js FURNITURE_GROUPS): Puckell Peck's
+  // Visiting Stone stood behind a front conifer's trunk. The stone and the mailbox by the boxes the
+  // canopy check keeps them out with (81 x 124, 72 x 135), the Notice Board by its opaque art (211 x 145
+  // of notice-board-m0.webp). The stones and mailboxes the snaps show, and a board hung where a
+  // picture shows it, are fixed and never move.
+  furnitureStone: [81, UNDER_CANOPY_HEIGHTS.furnitureStone],
+  furnitureMailbox: [UNDER_CANOPY_WIDTHS.furnitureMailbox, UNDER_CANOPY_HEIGHTS.furnitureMailbox],
+  furnitureBoard: [211, 145],
 });
 /** The FRONT_BOXES things a player has to find and click (FRONT_FIND_SHARE); the other nodes keep FRONT_HIDE_SHARE. */
 export const FRONT_FIND_KEYS = Object.freeze(['shrine', 'vendor', 'resource:jellisac']);
-/** #490: the nodes moved after the plan when the front art covers them (planStreetPlacements reseatHiddenNodes). */
+/** #490, #574: the nodes and furniture moved after the plan when the front art covers them (planStreetPlacements reseatHiddenNodes). */
 export const NODE_FRONT_KEYS = Object.freeze(Object.keys(FRONT_BOXES).filter((k) => !FRONT_FIND_KEYS.includes(k)));
+/**
+ * #574: the planned street furniture among them (street-furniture.js FURNITURE_GROUPS). A player goes
+ * looking for a Visiting Stone, a mailbox or a board, so when its own stretch has no clear spot it
+ * moves past its zone (a stone's dead end, the planner's own second choice) or to a crowded spot
+ * rather than stay behind the art: Puckell Peck's dead end is all behind one front conifer.
+ */
+export const FURNITURE_FRONT_KEYS = Object.freeze(['furnitureStone', 'furnitureMailbox', 'furnitureBoard']);
 
 /**
  * PURE: whether a thing of `key` at `spot` is behind the front decos (frontDecoCovers): one big
@@ -2073,9 +2088,12 @@ export function planStreetPlacements(
     }
     // #490: what a covered node may move to after the plan (reseatHiddenNodes): a free spot this group takes.
     if (NODE_FRONT_KEYS.includes(request.key)) {
-      fits.set(request.key, (c) => !used.has(c.id) && c.item !== false && steadyAt(c) && (c.room || 0) >= footprint
+      const loose = FURNITURE_FRONT_KEYS.includes(request.key);
+      const fit = (c) => !used.has(c.id) && c.item !== false && steadyAt(c) && (c.room || 0) >= footprint
         && !covers.has(c.id) && !(branchFree && onBranch.has(c.id)) && !(maxSlope != null && (c.slope || 0) > maxSlope)
-        && !zoneMiss(c) && !footAtWalkway(c, footprint, walkways));
+        && (loose || !zoneMiss(c)) && !footAtWalkway(c, footprint, walkways);
+      // Furniture (FURNITURE_FRONT_KEYS) may leave its zone, last: `miss` ranks the spots out of it.
+      fits.set(request.key, { fit, loose, miss: (c) => (zoneMiss(c) > 0 ? 1 : 0) });
     }
     for (let index = groups[request.key].length; index < count; index += 1) {
       if (fixedAt?.has(index)) {
@@ -2198,23 +2216,27 @@ export function planStreetPlacements(
 function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) {
   const moved = [];
   if (!fronts.length) return moved;
-  for (const [key, fit] of fits) {
+  for (const [key, { fit, loose, miss }] of fits) {
     for (const [index, point] of (groups[key] || []).entries()) {
       if (point.fixed || !hiddenBehindFront(point, key, fronts)) continue;
       // The nearest spot clear of every other thing's clearance, else the nearest at half of it (the
-      // planner too seats a node in a crowded spot when no clear one is left).
+      // planner too seats a node in a crowded spot when no clear one is left). Furniture (`loose`,
+      // FURNITURE_FRONT_KEYS) ranks its zone first, then takes a more crowded spot (the roomiest) too.
       let best = null;
-      let bestRank = [Infinity, Infinity];
+      let bestRank = [Infinity, Infinity, Infinity];
+      const better = (a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
       for (const c of candidates) {
         const d = Math.abs(c.x - point.x) + Math.abs(c.y - point.y);
-        if (d >= bestRank[1] && bestRank[0] === 0) continue;
+        if (d >= bestRank[2] && bestRank[0] === 0 && bestRank[1] === 0) continue;
         if (!fit(c) || hiddenBehindFront(c, key, fronts)) continue;
         let near = Infinity;
         for (const o of occupied) if (o !== point) near = Math.min(near, scaledDistance(c, o) / Math.max(1, point.clearance + o.clearance));
         const tier = near >= 1 ? 0 : near >= 0.5 ? 1 : 2;
-        if (tier === 2 || tier > bestRank[0] || (tier === bestRank[0] && d >= bestRank[1])) continue;
+        if (tier === 2 && !loose) continue;
+        const rank = [loose ? miss(c) : 0, tier, tier === 2 ? -near : d];
+        if (better(rank, bestRank) >= 0) continue;
         best = c;
-        bestRank = [tier, d];
+        bestRank = rank;
       }
       if (!best) continue;
       used.delete(point.id);

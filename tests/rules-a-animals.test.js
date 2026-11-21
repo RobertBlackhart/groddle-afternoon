@@ -14,9 +14,9 @@ import {
   quoteAnimalKinship,
   resolveAnimalKinshipPackage,
 } from '../public/js/animal-kinship.js?v=75d3cb34';
-import { createAnimalState } from '../public/js/animals.js?v=a981311c';
-import { getVerbsFor, runVerb } from '../public/content.js?v=078aeaf4';
-import { applyKinshipDrop, capturePiggy, HERDKEEPING, husbandryPack, normalizeHusbandryPack, releaseHogtied } from '../public/js/animal-husbandry.js?v=387f1815';
+import { createAnimalState } from '../public/js/animals.js?v=8e3efbef';
+import { getVerbsFor, runVerb } from '../public/content.js?v=7c9273d7';
+import { applyKinshipDrop, capturePiggy, HERDKEEPING, husbandryPack, normalizeHusbandryPack, releaseHogtied } from '../public/js/animal-husbandry.js?v=95a1ab55';
 
 const pc = (seed = {}) => ({ energy: 100, mood: 40, imagination: 0, xp: 0, ...seed });
 const AK = (n) => Array.from({ length: n }, (_, i) => `animalkinship_${i + 1}`);

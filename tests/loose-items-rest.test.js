@@ -31,7 +31,7 @@ import { join } from 'node:path';
 import { STACK_SINK_PX, landingY, stackRestY } from '../public/js/walk-surface.js?v=3c919d5b';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=c9b461c0';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=cd1a137b';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 
 const root = join(import.meta.dirname, '..');

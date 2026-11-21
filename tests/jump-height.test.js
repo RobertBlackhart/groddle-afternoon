@@ -16,14 +16,14 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AIR_FRICTION, GRAVITY, JUMP_SPEED, MAX_TICK_FRAMES, NORMAL_BUFF, REMAKE_ROOM_PHYSICS, TERMINAL_VY, flatJump, frameSteps, jumpApex, stepAvatar, avatarGround } from '../public/js/avatar-step.js?v=39d7b1af';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=9163b479';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=a4508fce';
 import { buffPhysics } from '../public/js/buffs.js?v=2ed95a93';
 import { physicsMultipliers } from '../public/js/location-events.js?v=7fd40f71';
 import { NEWXP_DEFAULT_PHYSICS, NEWXP_UPGRADES, reachFor } from '../public/js/newxp.js?v=5aa81665';
 import { NO_UPGRADE_PHYSICS_STREETS, ignoresUpgradePhysics, remakeMovementMultipliers } from '../public/js/imagination.js?v=1bdfd77c';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f4be1a05';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=2d2eb5ac';
-import { plainApex, LEDGE_RISE } from '../public/js/builder/validate.js?v=f76a04b4';
+import { plainApex, LEDGE_RISE } from '../public/js/builder/validate.js?v=a690c390';
 import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { CANOPY_PHYSICS } from '../public/js/hidden-floors.js?v=e1a92661';
 
