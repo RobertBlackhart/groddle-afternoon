@@ -40,12 +40,20 @@ export const FEAST_DAY_RULES = Object.freeze({
   refillMs: 20_000,
   /**
    * Where the piles lie, the street's source x, as runs [from, to, spots]: right of the Harvest
-   * Table (its right end ~202), either side of the spice tree's trunk (x 422, trunk and roots
-   * ~379-451; G1015a), ending at 700 clear of the Hardware Vendor solo and the shrine online (~790,
-   * base from ~730).
+   * Table (its right end ~202), either side of the spice tree's trunk (x 422; G1015a) and clear of
+   * the shrine (online its foot at 789, its base 118 px wide from 730 to 848; solo the Hardware
+   * Vendor stands about there). Each run keeps the widest pile (PILE_HALF each side) PILE_MARGIN
+   * clear of the trunk (396-464: game.js draws this tree mirrored at 0.84, so its trunk leans right
+   * of x 422) and of the shrine's base: the last pile, at 700, overlapped the shrine's base by up to
+   * 15 px and the first right of the tree, at 490, its trunk.
    */
-  runs: Object.freeze([Object.freeze([230, 345, 6]), Object.freeze([490, 700, 10])]),
+  runs: Object.freeze([Object.freeze([230, 344, 7]), Object.freeze([515, 678, 9])]),
 });
+
+/** Half the widest pile's art (a three-bite Sno Cone, 89 px; corn 79), for the spots' clearance. */
+export const PILE_HALF = 45;
+/** The gap kept between the widest pile and a fixture (the tree's trunk, the shrine, a signpost, the door). */
+export const PILE_MARGIN = 6;
 
 /** Each spot's source x, each run evenly from its `from` to its `to` (feast_day.go feastDaySpots, the same rounding). */
 export const FEAST_SPOTS = Object.freeze(FEAST_DAY_RULES.runs.flatMap(([from, to, spots]) => Array.from({ length: spots }, (_, i) => {

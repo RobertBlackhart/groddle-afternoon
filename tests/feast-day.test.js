@@ -51,9 +51,9 @@ const {
   servingsLeft,
   settleFeastDay,
   thanksgivingDay,
-} = await import('../public/js/feast-day.js?v=b16b26f0');
+} = await import('../public/js/feast-day.js?v=e287f0eb');
 const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=8856930d');
-const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=786f5f83');
+const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=cc293edf');
 
 const at = (y, m, d, h = 12) => Date.UTC(y, m - 1, d, h + 8); // Pacific standard time
 const fixed = (v) => () => v;
@@ -68,16 +68,13 @@ describe('the day (Ur clock)', () => {
     assert.equal(feastDayKey(at(2026, 11, 27, 0)), '');
   });
 
-  it('lays its spots where feast_day.go does: 230 to 700, off the spice tree\'s trunk, clear of the vendor and shrine (G1015a)', () => {
+  it('lays its spots where feast_day.go does: 230 to 344 and 515 to 678, off the spice tree\'s trunk, clear of the shrine (G1015a)', () => {
     assert.equal(FEAST_SPOTS.length, FEAST_DAY_RULES.piles);
     assert.equal(FEAST_SPOTS.length, 16);
-    assert.equal(FEAST_SPOTS[0], 230);
-    assert.equal(FEAST_SPOTS[1], 253); // feast_day.go: 230 + (115 + 2) / 5
-    assert.equal(FEAST_SPOTS[6], 490);
-    assert.equal(FEAST_SPOTS[15], 700); // the shrine's (and solo the Hardware Vendor's) base starts ~730
-    // The spice tree at x 422: its trunk and roots ~379-451 stay bare.
-    assert.equal(FEAST_SPOTS.filter((x) => x > 345 && x < 490).length, 0);
-    FEAST_SPOTS.forEach((x, i) => assert.ok(i === 0 || x > FEAST_SPOTS[i - 1] + 20, `spot ${i} apart`));
+    assert.deepEqual(FEAST_SPOTS, [230, 249, 268, 287, 306, 325, 344, 515, 535, 556, 576, 597, 617, 637, 658, 678]); // feast_day.go's rounding
+    // The spice tree at x 422: its trunk (396-464) and the widest pile's half either side stay bare.
+    assert.equal(FEAST_SPOTS.filter((x) => x > 344 && x < 515).length, 0);
+    FEAST_SPOTS.forEach((x, i) => assert.ok(i === 0 || x >= FEAST_SPOTS[i - 1] + 19, `spot ${i} apart`));
   });
 });
 

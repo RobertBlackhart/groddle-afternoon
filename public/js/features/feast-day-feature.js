@@ -3,7 +3,7 @@
  * Junction as piles eaten where they lie (rules and sources: js/feast-day.js; all ours, inventions
  * register feast-day-piles). This module puts them in the world.
  *
- *  - The piles: 20 spots right of the table, each one food drawn as its own put-down art for its
+ *  - The piles: 16 spots right of the table (js/feast-day.js FEAST_SPOTS), each one food drawn as its own put-down art for its
  *    bites (js/world-art.js count states, no number badge), one feature sprite each, created once and
  *    removed one at a time (as Hell One's grapes, hell-feature spawnGrapes), never picked up.
  *  - Eat takes one bite: the pack Eat's refusals first (engine.eatGate: full energy, stuffed, dead),
@@ -41,7 +41,7 @@ import {
   refillDue,
   servingsLeft,
   settleFeastDay,
-} from '../feast-day.js?v=b16b26f0';
+} from '../feast-day.js?v=e287f0eb';
 
 export const FEAST_DAY_FEATURE_ID = 'feast-day';
 
