@@ -41,9 +41,9 @@
 import { addItem, countItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES, quoinTouches } from '../quoins.js?v=5abad2c7';
-import { forgetTexture, frameTexture, sourceFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, holdSource, releaseTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { createOnscreenSharp, ktx2Loader, maxTextureSizeOf, rendererCompressedFormats, sharpAllowed, textureBytes } from '../onscreen-sharp.js?v=75b8a30d';
-import { playPoofIn } from '../overlay-art.js?v=04d1a4c0';
+import { playPoofIn } from '../overlay-art.js?v=95f23414';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
 import { POTION_ART } from '../potion-art.js?v=9d731b38';
@@ -66,8 +66,8 @@ import {
   purpleTimeline,
   scionWords,
 } from '../purple-journey.js?v=5e078ed8';
-import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=9f63727c';
-import { homesFeature } from './homes-feature.js?v=5d8138ce';
+import { VOYAGE_FLOOR, VOYAGE_H, VOYAGE_OFFSET, VOYAGE_W, buildVoyageScene } from '../purple-journey-scene.js?v=ebd3145b';
+import { homesFeature } from './homes-feature.js?v=7c97bf0a';
 
 export const PURPLE_FEATURE_ID = 'purple-journey';
 /** The scene's own TSID (the template is LNVV4OTMAUG2PQV). */
@@ -323,7 +323,8 @@ function scionTextures(engine) {
   const { PIXI } = engine;
   const cut = (name) => {
     const art = POTION_ART[name];
-    const base = sourceFromUrl(art.url);
+    // R30: held, given back with releaseTexture when the room is left.
+    const base = holdSource(art.url);
     const frames = [];
     for (let i = 0; i < art.frames; i += 1) {
       frames.push(frameTexture(base, new PIXI.Rectangle((i % art.cols) * art.cellW, Math.floor(i / art.cols) * art.cellH, art.cellW, art.cellH)));
@@ -341,12 +342,12 @@ function releaseScionTextures() {
   if (!scionFrames) return;
   const seen = new Set();
   for (const set of Object.values(scionFrames)) {
-    if (seen.has(set.art.url)) continue;
-    seen.add(set.art.url);
+    // One cut per sheet: its labels share `all`.
+    if (seen.has(set.all)) continue;
+    seen.add(set.all);
     const source = set.all[0]?.source;
     for (const t of set.all) if (!t.destroyed) t.destroy(false);
-    forgetTexture(set.art.url);
-    if (source && !source.destroyed) source.destroy();
+    if (source) releaseTexture(source);
   }
   scionFrames = null;
 }

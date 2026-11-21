@@ -37,12 +37,12 @@
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { ITEM_BASE_COSTS } from '../store-catalog.js?v=c6ebb2bd';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=8edc229b';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=cc58ae0e';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=5aa81665';
-import { OVERLAY_BASE, cellRect, loadOverlayManifest, overlayAlpha, overlayFrameAt, standPlacement, trackOverlay } from '../overlay-art.js?v=04d1a4c0';
+import { OVERLAY_BASE, cellRect, loadOverlayManifest, overlayAlpha, overlayFrameAt, standPlacement, trackOverlay } from '../overlay-art.js?v=95f23414';
 import {
   AWARD_ITEM,
   AWARD_LINE,

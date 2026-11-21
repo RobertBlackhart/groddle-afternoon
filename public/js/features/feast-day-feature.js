@@ -24,8 +24,8 @@
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { parseSeasonDate } from '../seasons.js?v=8b81947e';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=b1f5bbfe';
-import { standOnFeet } from '../sprite-feet.js?v=53939279';
+import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
+import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { energyMax, forceMetabolic } from '../metabolics.js?v=48f784bf';

@@ -10,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=8423c9fd';
+import * as kit from '../public/js/quest-rooms/kit.js?v=bdd3fd05';
 import {
   BARS_X,
   DIG_COUNTER,
@@ -33,7 +33,7 @@ import {
   cellStep,
   hasWorkingTool,
   room,
-} from '../public/js/quest-rooms/penalty.js?v=fea4655d';
+} from '../public/js/quest-rooms/penalty.js?v=c76a973d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

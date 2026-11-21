@@ -8,10 +8,10 @@
  */
 
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=13f35acd';
-import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { sharpRoomDeco } from '../deco-hires.js?v=03ac6512';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
-import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
+import { anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 
 const DECO = 'assets/decos/groddle/';
 /** The widest view the parallax layers must cover (js/landscape-reach.js). */

@@ -23,7 +23,7 @@
  * symphoniousGlowing, symphoniousTouches, symphoniousLast.
  */
 
-import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { STAR_JINGLER, SYMPHONIOUS_LABEL, SYMPHONIOUS_SOURCE_TSID, glowAlpha, isSymphoniousTsid, touchesStar } from '../symphonious-maximus.js?v=345ad437';
 
 export const SYMPHONIOUS_FEATURE_ID = 'symphonious-maximus';

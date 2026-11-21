@@ -47,11 +47,11 @@ import {
 } from '../math-mayhem.js?v=7fe952aa';
 import { platformYNear } from '../location-navigation.js?v=9555ce80';
 import { hasRaceDispenser } from '../races.js?v=ab22a079';
-import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=b748389b';
-import { textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { OVERLAY_USES, locationRect, playCountdownArt, playWindowOverlay } from '../overlays.js?v=1f5027a3';
+import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
-import { standOnFeet } from '../sprite-feet.js?v=53939279';
+import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 /** G738: whether this page may carry the Mayhem QA levers. */

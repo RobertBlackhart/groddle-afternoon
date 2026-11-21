@@ -19,8 +19,8 @@
 import { ANIMS, ANIM_FPS, EMOTIONS, EMOTION_MS, FALL_LOOP, IDLES_TO_RANDOM, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, SHEET_FRAMES, STAND_ANIM, frameRef } from './avatar-anims.js?v=fb921bf4';
 import { NPC_GLITCH_HIRES, NPC_GLITCH_SHEETS } from './npc-glitch-sheets.js?v=1163dc99';
 import { mulberry32, nameSeed, npcIdFor, npcIdleTiming } from './npc-glitch-looks.js?v=4971d6eb';
-import { forgetTexture, frameTexture, onLoaded, sourceFromUrl } from './textures.js?v=b1f5bbfe';
-import { anchorBottomCentre } from './sprite-feet.js?v=53939279';
+import { frameTexture, holdSource, onLoaded, releaseTexture } from './textures.js?v=729b29ea';
+import { anchorBottomCentre } from './sprite-feet.js?v=a593b732';
 
 /** Sheets loaded with the Glitch (walk/stand and the idle4 stand loop). */
 export const NPC_CORE_SHEETS = Object.freeze(['base', 'idle4']);
@@ -104,7 +104,8 @@ export function createNpcGlitchKit({ PIXI, ticker = null, stage = null, hires = 
     const def = st.entry.sheets[name];
     if (!def) return null;
     const url = `${st.entry.dir}${useHires ? def.hires : def.file}`;
-    const source = sourceFromUrl(url, { raw: true, scaleMode: 'linear' });
+    // R30: held, so releaseSheet frees it only when no other look or module still draws it.
+    const source = holdSource(url, { raw: true, scaleMode: 'linear' });
     const frames = [];
     for (let i = 0; i < def.cells; i += 1) {
       const c = i % def.cols;
@@ -128,9 +129,8 @@ export function createNpcGlitchKit({ PIXI, ticker = null, stage = null, hires = 
     const sheet = st.sheets[name];
     if (!sheet) return;
     delete st.sheets[name];
-    forgetTexture(sheet.url);
     for (const t of sheet.frames) t.destroy(false);
-    sheet.source.destroy();
+    releaseTexture(sheet.source);
   }
 
   /**

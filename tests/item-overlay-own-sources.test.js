@@ -50,8 +50,8 @@ before(async () => {
     get src() { return this._src; }
   };
   globalThis.requestAnimationFrame ??= (fn) => setTimeout(() => fn(performance.now()), 4);
-  textures = await import('../public/js/textures.js?v=b1f5bbfe');
-  overlay = await import('../public/js/item-overlay.js?v=f9d3faef');
+  textures = await import('../public/js/textures.js?v=729b29ea');
+  overlay = await import('../public/js/item-overlay.js?v=1d3eb0f7');
   ({ PICK_SHEETS: { pick: PICK } } = await import('../public/js/node-tools.js?v=47a93d54'));
 });
 

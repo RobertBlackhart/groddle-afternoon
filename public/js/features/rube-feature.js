@@ -22,7 +22,7 @@
 
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { hellFeature } from './hell-feature.js?v=00c337a8';
+import { hellFeature } from './hell-feature.js?v=2f111c91';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import {
   RUBE_CLASS,
@@ -44,9 +44,9 @@ import {
   rubeTalk,
   streetCanHostRube,
 } from '../rube.js?v=0b98cc11';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { standOnFeet } from '../sprite-feet.js?v=53939279';
+import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 
 export const RUBE_FEATURE_ID = 'rube';
 const SONG = 'assets/audio/ambient/The_Rube_Song_1290596637.mp3';

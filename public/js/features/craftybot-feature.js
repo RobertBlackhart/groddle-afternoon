@@ -53,7 +53,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } fr
 import { canUseTool, getToolCondition, setToolRemaining } from '../tools.js?v=4156bba8';
 import { MAKING_TOOL_SKILLS, listRecipes, recipeKnown, TOOL_CATALOG } from '../making.js?v=d28b2a24';
 import { listDroppedStacks } from '../world-items.js?v=9665f5dd';
-import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=5d8138ce';
+import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=7c97bf0a';
 import { cabinetTake, isCabinetClass } from '../home-storage.js?v=b0225465';
 import {
   CRAFTYBOT,
@@ -90,12 +90,12 @@ import {
   setLocked,
   setPaused,
 } from '../craftybot.js?v=77d8315d';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=04d1a4c0';
+import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=95f23414';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { countFromField, typedCount } from '../ui/count-chooser.js?v=c268eefe';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=53939279';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 
 export const CRAFTYBOT_FEATURE_ID = 'craftybot';
 const HOME_STREET_TSID = 'RH_HOME_EXT';

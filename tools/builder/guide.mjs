@@ -9,13 +9,13 @@ import { join } from 'node:path';
 import { GAME_DIR } from '../repos.mjs';
 import { GRAVITY, JUMP_SPEED, WALK_MAX, FLOOR_ACCEL, AIR_ACCEL_RATIO, STREET_PHYSICS_TERMINAL_VY, AVATAR_BODY_H, GROUND_SNAP, NORMAL_BUFF } from '../../public/js/avatar-step.js?v=39d7b1af';
 import { FLOAT_REACH, FLOAT_OPEN, FLOOR_SKIRT } from '../../public/js/builder/ground.js?v=f4254e96';
-import { RULES, LIMITS, MIN_VIEW, PARALLAX_VIEW, LICENCES, plainApex, LEDGE_RISE } from '../../public/js/builder/validate.js?v=913164a5';
+import { RULES, LIMITS, MIN_VIEW, PARALLAX_VIEW, LICENCES, plainApex, LEDGE_RISE } from '../../public/js/builder/validate.js?v=f43cfc91';
 import { REACH_LIMITS, POST_REACH_X, POST_BELOW, DOOR_REACH_X, TIGHT_MARGIN, LANDING_TRIES, AIR_JUMP_TRIES, LANDING_SHARE, streetWorld, jumpArc } from '../../public/js/builder/reach-graph.js?v=52856c5d';
 import { OP_NAMES } from '../../public/js/builder/ops.js?v=27c7796f';
 import { LAYER_ROLES } from '../../public/js/builder/layer-role.js?v=e585f610';
 import { POPULATION_CLASSES } from '../../public/js/builder/zone.js?v=ce289eb1';
 import { SCOPES, RATES, RENDER } from './limits.mjs';
-import { EFFECT_KINDS, EFFECT_WORDS, EFFECT_DEFAULTS, EFFECT_RANGES, EFFECT_LIMITS, RUMBLE_RANGES, RUMBLE_DEFAULTS, RUMBLE_SOUND } from '../../public/js/street-effects.js?v=3d444764';
+import { EFFECT_KINDS, EFFECT_WORDS, EFFECT_DEFAULTS, EFFECT_RANGES, EFFECT_LIMITS, RUMBLE_RANGES, RUMBLE_DEFAULTS, RUMBLE_SOUND } from '../../public/js/street-effects.js?v=f8f8bd01';
 
 /** Spec 2.1: where each kind of thing is measured. */
 export const SPACES = Object.freeze([

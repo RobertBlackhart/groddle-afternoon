@@ -87,7 +87,7 @@ import {
   stillWaitsToStart,
 } from '../machines.js?v=5d749d26';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
-import { createSheetLoader } from '../sprite-sheets.js?v=8edc229b';
+import { createSheetLoader } from '../sprite-sheets.js?v=cc58ae0e';
 import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=3a1b5812';
 import {
   BUREAUCRACY_ITEMS,
@@ -98,11 +98,11 @@ import {
   completePapers,
   completePapersCheck,
 } from '../bureaucracy.js?v=62eded48';
-import { frameTexture, sourceFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=53939279';
+import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 
 export const SUPPLY_FEATURE_ID = 'supply';
 export const CLERK_CLASS = 'npc_bureaucrat';

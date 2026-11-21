@@ -19,7 +19,7 @@
  */
 
 import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import {
   CLOSE_AFTER_MS,
   DOOR_DRINK,
@@ -40,7 +40,7 @@ import {
   prunePortals,
   useDoorDrink,
 } from '../door-drink.js?v=15add3b8';
-import { standOnFeet } from '../sprite-feet.js?v=53939279';
+import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 
 export const DOOR_DRINK_FEATURE_ID = 'door-drink';

@@ -18,7 +18,7 @@
  *   `anchor.set(0.5, 1)` (or a hand-guessed 0.9x foot) anywhere in the game.
  */
 import { SPRITE_FEET } from './sprite-feet-data.js?v=78336937';
-import { askedUrl } from './textures.js?v=b1f5bbfe';
+import { askedUrl } from './textures.js?v=729b29ea';
 
 /** Why a thing keeps its plain bottom centre (anchorBottomCentre's `why`). */
 export const BOTTOM_CENTRE = Object.freeze({

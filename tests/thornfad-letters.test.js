@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 import { LETTER_BOX, LETTER_INDICATOR, THORNFAD_LAYERS_TSID, inLetterBox, isThornfadLayers, letterOverlayKey, parseForcedLetter, rollStreetLetter } from '../public/js/thornfad-letters.js?v=1efc7d8d';
 import { LETTER_WEIGHTS } from '../public/js/potions.js?v=4f4c996d';
 import { LETTER_WORDS, LETTER_WORD_OFF, OVERLAY_EMOTES, letterFromWord, letterWord } from '../public/js/realtime-client.js?v=1108c7c5';
-import { thornfadLettersFeature, onRemoteLetter } from '../public/js/features/thornfad-letters-feature.js?v=6d5e8160';
-import { OVERLAY_USES } from '../public/js/overlays.js?v=b748389b';
+import { thornfadLettersFeature, onRemoteLetter } from '../public/js/features/thornfad-letters-feature.js?v=b76a80ce';
+import { OVERLAY_USES } from '../public/js/overlays.js?v=1f5027a3';
 import { LETTER_KEYS, OVERLAYS } from '../tools/overlays/build.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

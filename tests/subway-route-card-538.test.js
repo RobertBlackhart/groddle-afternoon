@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { gpsText, legStep, planRoute, rideLine, routeGraph, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=32e4718f';
 import { CAR_TSID, STATIONS, SUBWAY_LINE, findStation, stationByTsid } from '../public/js/subway.js?v=36c6d2b2';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=ef6c54aa';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=242ffc6d';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 

@@ -23,6 +23,12 @@
  *   or { scale } when given (Pixi 7's SVGResource options).
  * - Image sources are garbage collected on the GPU by Pixi when unused for a
  *   while (ImageSource.autoGarbageCollect); the decoded image stays here.
+ * - R30 (#577/#578): a picture from this cache is shared by every module that asked for its URL, so
+ *   none of them may free it with `.destroy()` (tests/r30-cached-frees.test.js holds the line). A
+ *   module that wants to free a sheet when done takes it with holdSource / holdTexture /
+ *   loadHeldTexture and gives it back with releaseTexture, which frees it only once every hold is
+ *   given back and nobody took it through the plain calls. A freed picture is never handed out again:
+ *   the next ask loads it afresh.
  */
 
 /** @type {Map<string, any>} url -> TextureSource */
@@ -191,7 +197,8 @@ function createSource(url, opts) {
     alphaMode: 'premultiply-alpha-on-upload',
     scaleMode: opts.scaleMode || 'linear',
   });
-  const state = { url, loaded: false, failed: false, promise: null };
+  // holds: holdSource/holdTexture takers not yet released; shared: handed out by a plain call (never freed).
+  const state = { url, loaded: false, failed: false, promise: null, holds: 0, shared: false, own: false };
   source[LOAD] = state;
   state.promise = (isSvg(url) ? rasteriseSvg(url, opts) : opts.width > 0 && opts.height > 0 ? resizeImage(url, opts) : decodeImage(url)).then(
     (decoded) => withinSideLimit(decoded).catch(() => decoded).then((image) => {
@@ -217,8 +224,8 @@ function createSource(url, opts) {
   return source;
 }
 
-/** The TextureSource for an image URL (shared, filled in when loaded). */
-export function sourceFromUrl(url, opts = {}) {
+/** The cached source for a URL, made when missing or freed (R30: a destroyed one is never handed out). */
+function cachedSource(url, opts) {
   const key = routeUrl(url, { raw: Boolean(opts.raw) });
   let source = sources.get(key);
   if (!source || source.destroyed) {
@@ -230,16 +237,92 @@ export function sourceFromUrl(url, opts = {}) {
   return source;
 }
 
-/** The whole-image Texture for a URL (shared, sized when loaded). */
-export function textureFromUrl(url, opts = {}) {
+/** The cached whole-image Texture for a URL; one over a freed source counts as missing (R30). */
+function cachedWhole(url, opts) {
   const key = routeUrl(url, { raw: Boolean(opts.raw) });
   let texture = textures.get(key);
-  if (!texture || texture.destroyed) {
+  if (!texture || texture.destroyed || !texture.source || texture.source.destroyed) {
     // dynamic: sprites re-read the size and UVs when the image arrives.
-    texture = new (pixi().Texture)({ source: sourceFromUrl(url, opts), label: key, dynamic: true });
+    texture = new (pixi().Texture)({ source: cachedSource(url, opts), label: key, dynamic: true });
     textures.set(key, texture);
   }
   return texture;
+}
+
+/** The TextureSource for an image URL (shared, filled in when loaded). Never destroy it: see releaseTexture. */
+export function sourceFromUrl(url, opts = {}) {
+  const source = cachedSource(url, opts);
+  source[LOAD].shared = true;
+  return source;
+}
+
+/** The whole-image Texture for a URL (shared, sized when loaded). Never destroy it: see releaseTexture. */
+export function textureFromUrl(url, opts = {}) {
+  const texture = cachedWhole(url, opts);
+  texture.source[LOAD].shared = true;
+  return texture;
+}
+
+/**
+ * R30: sourceFromUrl for a module that frees the sheet when done with it: give it back once with
+ * releaseTexture. Two holders of one URL share one source, freed when both have given it back.
+ */
+export function holdSource(url, opts = {}) {
+  const source = cachedSource(url, opts);
+  source[LOAD].holds += 1;
+  return source;
+}
+
+/** R30: textureFromUrl with a hold on its source (holdSource); give it back with releaseTexture. */
+export function holdTexture(url, opts = {}) {
+  const texture = cachedWhole(url, opts);
+  texture.source[LOAD].holds += 1;
+  return texture;
+}
+
+/** R30: holdTexture, resolved once loaded (rejects when it fails; the hold is still to be given back). */
+export function loadHeldTexture(url, opts = {}) {
+  const texture = holdTexture(url, opts);
+  return whenLoaded(texture).then(() => texture);
+}
+
+/** R30: what releaseTexture did, for QA (groddleQA). */
+const releases = { destroyed: 0, held: 0, shared: 0, unknown: 0 };
+export function releaseStats() {
+  return { ...releases };
+}
+
+/**
+ * R30 (#577/#578): the one way to free a picture this module loaded. Gives back one hold
+ * (holdSource / holdTexture / loadHeldTexture / loadOwnTexture) on the texture's source. Once no hold
+ * is left the source is forgotten here and destroyed, unless a plain sourceFromUrl / textureFromUrl /
+ * loadTexture caller also has it: they keep it for good, so it stays (an item overlay once freed the
+ * pick you swing that way, and the next frame threw). Frames the caller cut from it are its own to
+ * destroy (destroy(false)). Returns 'destroyed', 'held' (other holds left), 'shared' (kept for the
+ * plain callers), 'gone' (already destroyed) or 'unknown' (not this module's: nothing is done).
+ */
+export function releaseTexture(textureOrSource) {
+  const source = sourceOf(textureOrSource);
+  const state = source?.[LOAD];
+  if (!state) {
+    releases.unknown += 1;
+    return 'unknown';
+  }
+  if (source.destroyed) return 'gone';
+  if (state.holds > 0) state.holds -= 1;
+  if (state.holds > 0) {
+    releases.held += 1;
+    return 'held';
+  }
+  if (state.shared) {
+    releases.shared += 1;
+    return 'shared';
+  }
+  if (sources.get(state.url) === source) sources.delete(state.url);
+  if (textures.get(state.url)?.source === source) textures.delete(state.url);
+  source.destroy();
+  releases.destroyed += 1;
+  return 'destroyed';
 }
 
 /**
@@ -299,6 +382,9 @@ export function loadOwnTexture(url, opts = {}) {
   const key = routeUrl(url, { raw: Boolean(opts.raw) });
   const source = createSource(key, opts);
   source[LOAD].asked = String(url);
+  // Its one holder frees it with releaseTexture; it is never in the cache, so nobody else has it.
+  source[LOAD].own = true;
+  source[LOAD].holds = 1;
   const texture = new (pixi().Texture)({ source, label: key, dynamic: true });
   return whenLoaded(texture).then(() => texture);
 }
@@ -308,12 +394,15 @@ export function loadTextures(urls, opts = {}) {
   return Promise.all(urls.map((url) => loadTexture(url, opts).catch(() => null)));
 }
 
-/** The cached Texture for a URL, or null when it was never requested. */
+/** The cached Texture for a URL, or null when it was never requested or has been freed (R30). */
 export function cachedTexture(url) {
-  return textures.get(routeUrl(url)) || null;
+  const texture = textures.get(routeUrl(url));
+  if (!texture || texture.destroyed || !texture.source || texture.source.destroyed) return null;
+  if (texture.source[LOAD]) texture.source[LOAD].shared = true;
+  return texture;
 }
 
-/** Forget a URL (Pixi 7's Texture.removeFromCache); does not destroy it. */
+/** Forget a URL (Pixi 7's Texture.removeFromCache); does not destroy it (releaseTexture frees). */
 export function forgetTexture(url) {
   const key = routeUrl(url);
   textures.delete(key);

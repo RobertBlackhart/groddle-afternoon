@@ -30,11 +30,11 @@
  * players' mining bubbles played the same pick sheet here).
  */
 
-import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=04d1a4c0';
-import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=1fb995b8';
+import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=95f23414';
+import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=c4c5c764';
 import { upgradeSource } from './sprite-hires.js?v=f6344117';
-import { loadOwnTexture, loadTexture, whenLoaded } from './textures.js?v=b1f5bbfe';
-import { anchorBottomCentre } from './sprite-feet.js?v=53939279';
+import { loadOwnTexture, loadTexture, releaseTexture, whenLoaded } from './textures.js?v=729b29ea';
+import { anchorBottomCentre } from './sprite-feet.js?v=a593b732';
 
 /** Decoded sheets kept after their overlay ends. */
 export const KEEP_SHEETS = 2;
@@ -66,11 +66,11 @@ function evict(entry) {
     if (t && !t.destroyed && t.source === entry.source) t.destroy(false);
   }
   // A private source (loadOwnTexture): nobody else holds it, and the shared one for the URL stays.
+  // R30: freed through textures.js releaseTexture, which would keep a shared one.
   const source = entry.source;
   if (source && !source.destroyed) {
     const bitmap = source.resource;
-    source.destroy();
-    bitmap?.close?.();
+    if (releaseTexture(source) === 'destroyed') bitmap?.close?.();
   }
 }
 

@@ -51,10 +51,10 @@ import {
   sceneTsid,
 } from '../puzzle-scenes.js?v=04413a6d';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { partySpaceForStreet } from '../party-spaces.js?v=559a618a';
-import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
+import { anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const PUZZLE_SCENES_FEATURE_ID = 'puzzle-scenes';
