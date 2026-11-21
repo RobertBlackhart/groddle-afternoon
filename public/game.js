@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=08f43dd0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4718d02e';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -529,7 +529,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=60d89469';
+} from './js/player-save.js?v=4c44494a';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -946,7 +946,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=d553d771';
+} from './js/shrines.js?v=ff2390f2';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -30369,8 +30369,9 @@ function openShrinePanel(target, { item = '', copy = null, via = '' } = {}) {
   // G630: renderShrinePanel fills the count in once the stack is settled (shrinePrefill).
   shrineQty = null;
   shrineFavorSpent = false;
-  // #565: Learn Faster? opens unfolded from check favor, folded from donate (js/shrines.js learnFasterOpen).
-  shrineLearnOpen = learnFasterOpen({ via });
+  // #565: Learn Faster? opens unfolded from check favor, folded from donate; #377: always folded on a phone
+  // (js/shrines.js learnFasterOpen).
+  shrineLearnOpen = learnFasterOpen({ via, phone: TOUCH_PHONE });
   const panel = document.getElementById('shrine-panel');
   if (!panel) return;
   panel.style.setProperty('--shrine-accent', giant.color);

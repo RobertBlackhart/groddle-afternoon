@@ -40,7 +40,7 @@ import {
   TROPHY_PIECES,
   planStreetTrophies,
 } from '../public/js/street-jobs.js?v=49beeb2b';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=7d877f4b';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=7417e031';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=7b03d657';
 import { applyRewards } from '../public/js/quests.js?v=4a3fb1da';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';

@@ -685,11 +685,12 @@ export function learnFasterSummary(quote) {
  * PURE (#565 item 4): whether the Learn Faster? box opens unfolded, by how the window was opened, as in
  * Glitch: "check favor" ("View & spend favor points", npc_shrine_*.js check_favor) opened ShrineDialog,
  * whose spend section was the window itself; "donate" (and an item dropped on the shrine) opened
- * ShrineDonateDialog, which had none. So the spend opens unfolded only from check favor, on a phone too;
- * the player's fold holds while the window is open (game.js shrineLearnOpen), not past it.
+ * ShrineDonateDialog, which had none. So the spend opens unfolded only from check favor; on a phone
+ * it starts folded whatever the verb (#377, Austin 2026-11-15: the items to donate need the room).
+ * The player's fold holds while the window is open (game.js shrineLearnOpen), not past it.
  */
-export function learnFasterOpen({ via = '' } = {}) {
-  return via === 'check_favor';
+export function learnFasterOpen({ via = '', phone = false } = {}) {
+  return !phone && via === 'check_favor';
 }
 
 /**

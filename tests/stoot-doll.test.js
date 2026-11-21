@@ -31,7 +31,7 @@ import {
   createShrineState,
   listShrineDonationOptions,
   quoteShrineDonation,
-} from '../public/js/shrines.js?v=d553d771';
+} from '../public/js/shrines.js?v=ff2390f2';
 import {
   createVendorSellQuote,
   listSellOffers,

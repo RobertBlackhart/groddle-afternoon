@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=d553d771';
+import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=ff2390f2';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const GSJS = join(PUBLIC, '../../glitch-GameServerJS');
@@ -24,6 +24,10 @@ describe('#377 the Learn Faster fold', () => {
     assert.equal(learnFasterOpen({ via: 'donate_to' }), false);
     assert.equal(learnFasterOpen({ via: '' }), false);
     assert.equal(learnFasterOpen(), false);
+    // #377 (Austin's ruling): on a phone it starts folded whatever the verb, check favor included.
+    assert.equal(learnFasterOpen({ via: 'check_favor', phone: true }), false);
+    assert.equal(learnFasterOpen({ via: 'donate_to', phone: true }), false);
+    assert.equal(learnFasterOpen({ via: 'check_favor', phone: false }), true);
     if (existsSync(GSJS)) {
       const shrine = readFileSync(join(GSJS, 'items/npc_shrine_mab.js'), 'utf8');
       assert.match(shrine, /verbs\.check_favor = \{[\s\S]*?"tooltip"\s*: "View & spend favor points"/);
@@ -52,7 +56,7 @@ describe('#377 the Learn Faster fold', () => {
     assert.doesNotMatch(game, /learn-faster-pref|sessionStorage[^\n]*learnFaster/);
     assert.ok(!existsSync(join(PUBLIC, 'js/ui/learn-faster-pref.js')));
     assert.match(game, /openShrinePanel\(target, \{ via: verbId \}\);/);
-    assert.match(game, /shrineLearnOpen = learnFasterOpen\(\{ via \}\);/);
+    assert.match(game, /shrineLearnOpen = learnFasterOpen\(\{ via, phone: TOUCH_PHONE \}\);/);
     // Back from the spend's confirm (cancelled, failed or done) it opens on the spend again.
     assert.equal((game.match(/openShrinePanel\(target, \{ via: 'check_favor' \}\)/g) || []).length, 3);
     const css = readFileSync(join(PUBLIC, 'style.css'), 'utf8');
