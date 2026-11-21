@@ -19,8 +19,8 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { builtForEveryone, closedForEveryone, exemptForEveryone, freeWays, keptForYou, openWorld, projectReachable } from '../public/js/open-roads.js?v=597feeb5';
-import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=32e4718f';
-import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=cab811a6';
+import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=884e34b3';
+import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=e47ddea6';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

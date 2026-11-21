@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=0740947b';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=78228046';
 import {
   findWork,
   jobRewardsText,
@@ -27,11 +27,13 @@ import {
   rewardWords,
   settlePhase,
   sharePercent,
+  overallShare,
+  phaseBaseCost,
   soloNeed,
   STREET_JOB_COOLDOWN_MS,
   workCheck,
   contributeItems,
-} from '../public/js/street-jobs.js?v=32e4718f';
+} from '../public/js/street-jobs.js?v=884e34b3';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { soloTerms } from '../public/js/street-jobs-solo.js?v=3bcf5d1c';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
@@ -54,6 +56,30 @@ const gotBefore = (group) => {
 };
 
 describe('street project rules (pure)', () => {
+  it('G1109: the whole project\'s share weighs each phase by its size', () => {
+    assert.equal(sharePercent(overallShare([{ mine: 100, total: 100 }, { mine: 0, total: 100 }])), 50);
+    assert.equal(sharePercent(overallShare([{ mine: 100, total: 100 }, { mine: 100, total: 300 }])), 50);
+    assert.equal(sharePercent(overallShare([{ mine: 500, total: 100 }])), 100, 'never past a phase\'s total');
+    assert.equal(overallShare([]), 0);
+  });
+
+  it('G1109 solo: the last phase\'s settle names the share of the whole project', () => {
+    const [jobId, job] = Object.entries(catalog.jobs).find(([, j]) => j.kind === 'street' && j.phases.length === 2);
+    const [p0, p1] = job.phases.map((p) => p.classTsid);
+    const d = 1;
+    const size = (cls) => phaseBaseCost(catalog.classes[cls], d);
+    const got = {};
+    for (const r of catalog.classes[p1].requirements) got[r.id] = soloNeed(r.num, d);
+    const state = fresh();
+    state.jobs[jobId] = { phase: 1, got, mine: { [p0]: size(p0) }, hired: {}, startedAt: NOW - 5000, readyAt: 0, doneAt: 0, option: null };
+    const solo = { ...catalog, jobs: { ...catalog.jobs, [jobId]: { ...job, divisor: d, solo: undefined } } };
+    const out = settlePhase(state, solo, jobId, NOW, () => 0.99);
+    assert.equal(out.ok, true);
+    assert.equal(out.finalPhase, true);
+    assert.equal(out.participation, 0, 'the last phase alone');
+    assert.equal(out.overall, sharePercent(size(p0) / (size(p0) + size(p1))));
+  });
+
   it('the 30-minute rest holds a started street project and an upgrade too', () => {
     const state = fresh();
     state.jobs[JOB] = { phase: 0, got: {}, mine: { [CLS]: 5 }, hired: {}, startedAt: NOW - 5000, readyAt: 0, doneAt: 0, option: null };
@@ -299,5 +325,33 @@ describe('the board in play', () => {
     assert.match(text, /You contributed 34\.57% of the work!/);
     assert.match(text, /2\. [^:]+: You did not contribute\./);
     assert.match(text, /Teleportation Script/);
+  });
+
+  // G1109 (Austin 2026-11-21): "You did {job_participation}% of the work, nice." is your share of the
+  // whole project. Glitch filled it from the last phase (quest.js expandText 261), so all of phase 1
+  // and none of phase 2 read 0%.
+  it('online: the completion line names your share of the whole project, from the server\'s overall', async () => {
+    const [jobId, job] = Object.entries(catalog.jobs).find(([, j]) => j.kind === 'street' && j.phases.length === 2);
+    const [p0, p1] = job.phases.map((p) => p.classTsid);
+    const reward = (id, extra) => ({
+      t: 'project_reward', id, job: jobId, phase: 1, cls: p1, final: true, share: 0, participation: 0,
+      rewards: { xp: 0, currants: 0, mood: 0, energy: 0, favor: [] }, performance: { xp: 0, mood: 0, energy: 0, currants: 0, items: [], favor: [] },
+      winner: false, top5: false, phases: 1, option: '', readyAt: 0, count: 3, cost: 0, total: 100, finisher: false, shares: { [p0]: 100 }, complete: true,
+      ...extra,
+    });
+    awards.length = 0;
+    client.msg(reward(`job-r-${jobId}-1-g1109-1`, { overall: 50 }));
+    await wait(5);
+    let text = JSON.stringify(awards.at(-1) || {});
+    assert.match(text, /You did 50% of the work, nice\./, 'the server\'s overall share');
+    assert.doesNotMatch(text, /You did 0% of the work/);
+    // An older server names no overall: weighed from each phase's share and size here.
+    const size = (cls) => catalog.classes[cls].requirements.reduce((sum, r) => sum + r.num * r.baseCost, 0);
+    const want = sharePercent(size(p0) / (size(p0) + size(p1)));
+    awards.length = 0;
+    client.msg(reward(`job-r-${jobId}-1-g1109-2`, {}));
+    await wait(5);
+    text = JSON.stringify(awards.at(-1) || {});
+    assert.match(text, new RegExp(`You did ${String(want).replace('.', '\\.')}% of the work, nice\\.`));
   });
 });

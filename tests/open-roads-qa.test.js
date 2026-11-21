@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { closedStreets, isJobBuilt, noteArrival, normalizeStreetJobState, openRoadsWanted, roadClosure } from '../public/js/street-jobs.js?v=32e4718f';
+import { closedStreets, isJobBuilt, noteArrival, normalizeStreetJobState, openRoadsWanted, roadClosure } from '../public/js/street-jobs.js?v=884e34b3';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

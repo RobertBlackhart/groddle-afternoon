@@ -16,7 +16,7 @@
  * and only the player's own share is read from it (`mine`). Words come from `labels`.
  */
 
-import { jobDef, jobDivisor, jobStatus, phaseBaseCost, phaseClass, phaseName, phaseRequirements, workGear } from './street-jobs.js?v=32e4718f';
+import { jobDef, jobDivisor, jobStatus, phaseBaseCost, phaseClass, phaseName, phaseRequirements, workGear } from './street-jobs.js?v=884e34b3';
 import { keptOpen } from './open-roads.js?v=597feeb5';
 import { SOLO_PANEL_LINE } from './street-jobs-solo.js?v=3bcf5d1c';
 

@@ -324,6 +324,24 @@ export function contributionsText(job, catalog, { mine, share }) {
 export const sharePercent = (share) => Math.round((Number(share) || 0) * 10000) / 100;
 
 /**
+ * G1109 (Austin 2026-11-21): one player's share of all the work on a project, each phase weighted by
+ * its size: what they put into every phase over every phase's total (each part capped at its phase's
+ * total), 0..1. `parts` is [{ mine, total }] per phase. Glitch's completion line named the last phase's
+ * share only (quest.js expandText 261); the server sends the same figure as project_reward overall.
+ */
+export function overallShare(parts) {
+  let got = 0;
+  let all = 0;
+  for (const part of parts || []) {
+    const total = Math.max(0, Number(part?.total) || 0);
+    if (!total) continue;
+    all += total;
+    got += Math.min(total, Math.max(0, Number(part?.mine) || 0));
+  }
+  return all ? got / all : 0;
+}
+
+/**
  * Rewards.convertToString (glitch-client Rewards.as 54-96): "150 iMG, 20 mood, and 5 favor with all of
  * the giants." in the order of Reward.as REWARD_TYPES (xp, mood, energy, currants, favor, items,
  * drop tables); a drop table is named without a count. `parts` is [[amount, word]], amount null for a
@@ -825,6 +843,8 @@ export function settlePhase(state, catalog, jobId, now = Date.now(), rng = Math.
     phaseCount: job.phases.length,
   };
   if (finalPhase) {
+    // G1109: the completion line's share is of the whole project, not this last phase.
+    out.overall = sharePercent(overallShare(job.phases.map((p) => ({ mine: row.mine[p.classTsid] || 0, total: phaseBaseCost(catalog.classes?.[p.classTsid], divisor) }))));
     row.doneAt = now;
     if (job.kind === 'street') for (const tsid of job.connecting) state.streetDone[tsid] = now;
     else if (job.street) state.streetDone[job.street] = now;

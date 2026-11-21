@@ -111,9 +111,11 @@ import {
   findWork,
   countsForBadges,
   sharePercent,
+  overallShare,
+  phaseBaseCost,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=32e4718f';
+} from '../street-jobs.js?v=884e34b3';
 import { PAPERS_BADGE } from '../subway.js?v=36c6d2b2';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=22b0540a';
@@ -145,7 +147,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=4064b06b';
+} from '../street-jobs-mp.js?v=997303d1';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
@@ -157,8 +159,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=cab811a6';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=ce79d6ae';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=e47ddea6';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=835eb3f4';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=11115f7f';
@@ -1200,7 +1202,16 @@ function finishJob(engine, jobId, out, solo) {
   if (job.kind === 'hall') return finishHall(engine, jobId, job, contributions, solo);
   teleportationFeature.grantScript(engine, arrivalFor(job));
   if (job.kind === 'street') {
-    const { header, pages } = completionPages(def.completion, { location: job.label, participation: out.participation });
+    // G1109 (Austin 2026-11-21): "You did {job_participation}% of the work" is the share of the whole
+    // project, each phase by its size (Glitch filled it from the last phase, quest.js expandText 261).
+    // The server names it (project_reward overall); an older message is weighed from its shares here.
+    const overall = out.overall != null
+      ? out.overall
+      : sharePercent(overallShare(job.phases.map((p) => {
+        const total = phaseBaseCost(catalog.classes?.[p.classTsid], 1);
+        return { mine: shared(jobId) ? (sharedShare(p) / 100) * total : total, total };
+      })));
+    const { header, pages } = completionPages(def.completion, { location: job.label, participation: overall });
     const steps = pages.length ? pages : [{ text: `Hooray! The project ${job.title} has been completed!`, response: 'Continue' }];
     steps.push({ text: `Your contributions: ${contributions}`, response: 'Continue' });
     const from = job.connecting.includes(engine.streetTsid) ? engine.streetTsid : job.connecting[0];
@@ -2446,6 +2457,8 @@ function createMp(engine, client) {
         // HOMES3: a shared restoration's award names the iMG it paid (finishRestore).
         rewards: paid,
         participation: Math.max(0, Number(msg.participation) || 0),
+        // G1109: your share of the whole project, on the last phase's message (projects.go overallShareOf).
+        overall: msg.final === true && msg.overall != null ? Math.max(0, Number(msg.overall) || 0) : null,
         // Your share of every phase (projects.go shares), and whether your contribution finished it (finisher).
         shares: msg.shares && typeof msg.shares === 'object' ? msg.shares : null,
         finisher: msg.finisher === true,
