@@ -316,6 +316,11 @@ export const towerRoomsFeature = {
     return { label: room.label, sourceTsid: room.sourceTsid, counts: {}, interior: true, quoins: 0 };
   },
 
+  /** #570: a tower room prints its plaques' words itself (drawSigns), so the street view leaves them. */
+  printsSignWords(street) {
+    return anyTowerRoomByTsid(street?.tsid) ? true : null;
+  },
+
   onStreetEnter(street, engine) {
     clear();
     const room = anyTowerRoomByTsid(street?.tsid);

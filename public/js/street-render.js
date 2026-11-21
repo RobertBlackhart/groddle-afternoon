@@ -19,6 +19,7 @@ import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=476b7fdf';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=53939279';
+import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 const DECO_BASE = 'assets/decos/groddle/';
@@ -1452,6 +1453,35 @@ export function layerIsDrawn(layer) {
   return !!layer && (layer.id === 'middleground' || layer.hidden !== true);
 }
 
+/** Above every other deco of its layer: the client stacked a signed deco on top (LayerRenderer.as addDeco). */
+export const SIGN_DECO_Z = 100000;
+
+/**
+ * #570: a signed deco's words as a child of its sprite (so they show, hide, fade and turn with it,
+ * DecoRenderer.as 287-322): centred on the deco's middle, wrapped at its width, never stretched by
+ * the sprite's size or mirrored by its flip (scaled back each frame, as the art's size can arrive
+ * late). The deco goes on top of its layer. False when it has none to print.
+ */
+function addSignWords(PIXI, spr, deco) {
+  const words = signWords(deco);
+  if (!words) return false;
+  const label = new PIXI.Text({ text: words.text, style: words.style });
+  label.resolution = 2;
+  label.anchor.set(0.5);
+  label.eventMode = 'none';
+  label.onRender = () => {
+    const sx = spr.scale.x || 1;
+    const sy = spr.scale.y || 1;
+    label.scale.set(1 / sx, 1 / sy);
+    label.y = -(spr.texture?.orig?.height || spr.texture?.height || 0) / 2;
+  };
+  label.onRender();
+  spr.addChild(label);
+  spr.signWords = label;
+  spr.zIndex = SIGN_DECO_Z + (deco.z || 0);
+  return true;
+}
+
 function makePlaceholder(PIXI, deco, pos) {
   const g = new PIXI.Graphics();
   const w = deco.w || 48;
@@ -2818,6 +2848,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
   const decoViews = new Map();
   const missingSprites = new Set();
   let drawn = 0;
+  let signed = 0;
   // Layers above the middleground cover the avatars and entities (layerDrawsInFront). They
   // live in their own container with the root's coordinates; the game puts it above its
   // entity layer (game.js syncStreetFront) and it goes when the street view is destroyed.
@@ -2902,6 +2933,8 @@ export function buildStreetView(street, PIXI, opts = {}) {
       spr.glitchDecoName = deco.name || '';
       spr.glitchDecoSprite = deco.sprite || '';
       if (spr.glitchDecoId) decoViews.set(spr.glitchDecoId, spr);
+      // #570: a sign deco's words (js/deco-sign.js signWords), printed in it as the client did.
+      if (opts.signWords !== false && addSignWords(PIXI, spr, deco)) signed += 1;
       lc.addChild(spr);
       if (sharp && !blur) sharpViews.push({ spr, url, far, pick, size: sizeDeco });
       if (animated) {
@@ -2943,6 +2976,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
     attachEdgeMirrors(PIXI, opts.renderer, root, layerContainers, W, sourceH, opts.edgeMirror.insetShare || 0);
   }
   root.decoDrawn = drawn;
+  root.signWordsDrawn = signed;
   /** Decos that play, for QA (canvas data-anim-decos): placed, strips in, playing, stopped off screen. */
   root.animStats = (detail = false) => {
     const live = animViews.filter((s) => !s.destroyed);

@@ -43,7 +43,7 @@ import { countItem } from '../inventory.js?v=6414dbdc';
 import { isEditableTarget } from '../held-keys.js?v=a28eb293';
 import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SELECTOR } from '../window-stack.js?v=a7104f02';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=b748389b';
-import { doorsFeature } from './doors-feature.js?v=878d882c';
+import { doorsFeature } from './doors-feature.js?v=7ae44de1';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
 import { frameTexture, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import {

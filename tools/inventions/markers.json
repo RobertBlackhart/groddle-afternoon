@@ -275,6 +275,9 @@
     "glitch-had-none: * Source: Glitch never left anyone on one of these. Instances were": "dead-end-exit-sign",
     "remake-own: * remake's own (the remake keeps these instance copies as plain": "dead-end-exit-sign"
   },
+  "public/js/deco-sign.js": {
+    "invented: the game already prints recovered signs at (inventions.json": "deco-sign-styles"
+  },
   "public/js/door-key-spawns.js": {
     "ours: words name. Where the words give no spot (`at: 'ours'`) the key lies near the door or": "door-key-spots"
   },

@@ -5062,6 +5062,23 @@
    "rows": [
     "G1074"
    ]
+  },
+  {
+   "id": "deco-sign-styles",
+   "title": "The look of each sign class (font, size, colour) the street's sign decos print their words in (#570).",
+   "kind": "visual",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/deco-sign.js",
+     "symbol": "SIGN_CLASS_STYLES"
+    }
+   ],
+   "why": "DecoRenderer.as 287-322 printed sign_txt in its sign_css_class, but the stylesheet came from the server at run time (CSSManager) and was not archived. The 16 classes keep the editor's names (PropertiesPanel.mxml 28-45: White in four sizes, VAG Tan, Gray, Mud and Yellow in three), sized 14, 18, 22 and 26 px as the game already prints recovered signs, in Nunito for Helvetica and VAG Rounded; a sign's own <font color size> wins, as in the original.",
+   "ruling": "Claude's default in lane streetk 2026-11-21",
+   "rows": [
+    "G1077"
+   ]
   }
  ]
 }

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=400b60d1';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=18e6e6ff';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=75d19a62';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -699,7 +699,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=b5d853f0';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=aea927c4';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -730,7 +730,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=929d8d6b';
+} from './js/street-render.js?v=53fa608e';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -25757,6 +25757,8 @@ async function enterStreet(tsid, opts = {}) {
     // show past them (the Social drawer floats over the reserve). Classic covers nothing: narrow streets only.
     // G875: nothing reserved upright on a phone with the rail folded, so only the ends a narrow street shows.
     edgeMirror: { insetShare: () => (modernUi() && !cameraRailFloats ? CAMERA_RESERVE_SHARE : 0) },
+    // #570: sign decos print their words (js/deco-sign.js), unless a feature prints this street's itself.
+    signWords: !features.query('printsSignWords', data),
   });
   streetPlatforms = bgLayer.platformsScreen;
   streetWalls = wallsScreen(data);

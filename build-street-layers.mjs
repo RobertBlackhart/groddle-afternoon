@@ -122,6 +122,17 @@ function parseFilters(body) {
 }
 
 const files = (await readdir(streetsDir)).filter((f) => /^[GL][A-Z0-9]+\.json$/.test(f));
+/** A Flash XML string's text: the archive escapes the sign markup (&lt;br&gt;, &quot;). */
+function unescapeXml(text) {
+  return String(text)
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&amp;/g, '&');
+}
+
 /** XML deco flags keyed by sprite/x/y, in document order per key. */
 function decoFlags(layerBody) {
   const decos = childObjects(layerBody).find((c) => c.id === 'decos');
@@ -133,6 +144,8 @@ function decoFlags(layerBody) {
       flip: /<bool id="h_flip">true<\/bool>/.test(deco.body),
       hidden: /<bool id="hidden">true<\/bool>/.test(deco.body),
       animated: /<bool id="animated">true<\/bool>/.test(deco.body),
+      signText: typeof scalars.sign_txt === 'string' ? unescapeXml(scalars.sign_txt).trim() : '',
+      signClass: typeof scalars.sign_css_class === 'string' ? scalars.sign_css_class.trim() : '',
     };
     if (!byKey.has(key)) byKey.set(key, []);
     byKey.get(key).push(flags);
@@ -145,6 +158,8 @@ let flipped = 0;
 let hiddenDecos = 0;
 let hiddenLayers = 0;
 let animatedDecos = 0;
+let signedDecos = 0;
+const signedStreets = new Set();
 let itemPerms = 0;
 const itemPermCounts = new Map();
 const stale = [];
@@ -267,6 +282,18 @@ for (const file of files) {
         } else {
           delete deco.animated;
         }
+        // #570: the words the client printed in the deco (DecoRenderer.as 287-322: sign_txt as
+        // htmlText in its sign_css_class, centred in the deco's box), and the class when not the
+        // default white (Deco.as 20). A deco the archive gives no sign keeps any the remake wrote.
+        if (flag?.signText) {
+          deco.signText = flag.signText;
+          if (flag.signClass && flag.signClass !== 'default_deco_sign') deco.signClass = flag.signClass;
+          else delete deco.signClass;
+          signedDecos += 1;
+          signedStreets.add(tsid);
+        } else if (flag) {
+          delete deco.signClass;
+        }
       }
     }
   }
@@ -281,7 +308,7 @@ console.log(
   `${CHECK ? 'Checked' : 'Updated'} ${updated} streets: ${gradients} gradients, ${filtered} filtered layers, ` +
     `${flipped} flipped decos, ${hiddenDecos} hidden decos, ${animatedDecos} animated decos, ${hiddenLayers} hidden layers, ` +
     `${itemPerms} line item perms (${['-1', '0', '1', 'null'].map((k) => `${k}: ${itemPermCounts.get(k) || 0}`).join(', ')}), ` +
-    `${noMaps} no_map, ${fogMaps} fog_map.`
+    `${noMaps} no_map, ${fogMaps} fog_map, ${signedDecos} signed decos on ${signedStreets.size} streets.`
 );
 if (CHECK && stale.length) {
   console.log(`${stale.length} street files are stale (run node build-street-layers.mjs): ${stale.slice(0, 8).join(', ')}`);
