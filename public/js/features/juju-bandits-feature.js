@@ -187,6 +187,13 @@ function publishClock(engine) {
 const NOSTALGIA_ICON = 'assets/ui/buff-none.svg';
 const HELD_BY = 'ancestral-lands';
 const RETRY_MS = 3000;
+/**
+ * G1075 (R11): how many times a kick waits for the roads to load before it takes Glitch's pick as it
+ * stands. Right after logging in the roads are not loaded yet, and the pick (one of 26 streets that
+ * are all street projects) used to stand: you landed past a road still being built, and arriving
+ * there opened its roads for you alone (js/street-jobs.js noteArrival, openWayHome).
+ */
+const ROAD_WAITS = 20;
 
 const ownedCards = (engine) => (Array.isArray(engine?.pc?.imaginationUpgrades) ? engine.pc.imaginationUpgrades : []);
 const buffOn = (engine, id) => (typeof engine?.hasBuff === 'function' ? Boolean(engine.hasBuff(id)) : false);
@@ -265,6 +272,8 @@ function bootTarget(engine) {
   if (!pick || rows.length) return pick;
   // Report 212: never past a road still being built; the open street nearest Glitch's pick instead.
   const near = engine.query?.('openStreetNear', pick.tsid, engine, { skipHubs: SAVANNA_HUBS }) ?? null;
+  // G1075: the roads still loading is no answer yet; wait for them (a while, then Glitch's pick).
+  if (!near && engine.query?.('openRoadsLoaded', engine) === false && (pendingBoot?.waits || 0) < ROAD_WAITS) return { ...pick, wait: true };
   return openBootTarget(pick, near && exists(near) ? near : null, NOSTALGIA_BOOT_STREETS);
 }
 
@@ -294,6 +303,11 @@ function boot(engine, now) {
   if (!target) {
     pendingBoot = null;
     nostalgiaLast = 'boot:no_target';
+    return;
+  }
+  if (target.wait) {
+    pendingBoot = { reason, nextAt: now + RETRY_MS, waits: (pendingBoot.waits || 0) + 1 };
+    nostalgiaLast = 'boot:roads';
     return;
   }
   if (reason !== 'retry') {

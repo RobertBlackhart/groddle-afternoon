@@ -12,6 +12,9 @@
  *    point, else to the street's own arrival); no answer keeps the pick.
  * 3. The wiring: juju-bandits-feature asks street-jobs-feature's openStreetNear, which grows the
  *    open world from the starter street only (never from a pocket you stand in).
+ * 4. G1075 (R11, 2026-11-21): a kick right after logging in, before the roads have loaded, waits
+ *    for them. It used to take Glitch's pick (a street past a road still being built), and landing
+ *    there opened that pocket's roads for you alone (street-jobs.js noteArrival, openWayHome).
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -24,6 +27,8 @@ import { routeGraph } from '../public/js/map-routes.js?v=70f30ddf';
 import { openBootTarget, pickBootTarget } from '../public/js/ancestral-nostalgia.js?v=3d97122d';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
 import { SAVANNA_HUBS } from '../public/js/juju-bandits.js?v=6cf92f4f';
+import { FEATURES } from '../public/js/features/index.js?v=68aa35d4';
+import { createBuffState, applyBuff, hasBuff, removeBuff } from '../public/js/buffs.js?v=2ed95a93';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -98,5 +103,78 @@ describe('3. the wiring', () => {
   it('the open world grows from the starter street only', () => {
     assert.match(jobs, /openStreetNear\(tsid, engine, options\) \{\n\s+return openStreetNear\(tsid, engine, options\);/);
     assert.match(jobs, /starts: \[streetIndex\.default\] \}\)/);
+  });
+});
+
+describe('4. a kick before the roads load waits for them (G1075)', () => {
+  const feature = FEATURES.find((f) => f.id === 'juju-bandits');
+  const savanna = { hubId: '86', platforms: [], bounds: { l: 0, r: 3000, t: -1000, b: 0 } };
+  const flush = () => new Promise((r) => setImmediate(r));
+
+  function makeEngine(roads) {
+    const buffs = createBuffState();
+    const data = {};
+    const engine = {
+      data, buffs, travels: [], street: savanna, inv: {}, player: { x: 500, y: 0 },
+      pc: { imaginationUpgrades: [] },
+      questState: { active: { help_juju_bandits: {} }, completed: [] },
+      param: (k) => (k === 'nostalgiademo' ? '3' : null),
+      setData: (k, v) => { data[k] = String(v); },
+      achievement() {}, save() {}, refreshPack() {}, pushActivity() {},
+      hasBuff: (id) => hasBuff(buffs, id, Date.now()),
+      applyBuff: (id) => applyBuff(buffs, id, null, Date.now()),
+      removeBuff: (id) => removeBuff(buffs, id, null, Date.now()),
+      buffRow: (id) => (hasBuff(buffs, id, Date.now()) ? buffs.active[id] : null),
+      prompt: () => '',
+      travel: async (tsid, meta) => {
+        engine.travels.push({ tsid, ...meta });
+        engine.street = { ...savanna, hubId: '85' };
+        feature.onStreetClear(engine);
+        feature.onStreetEnter(engine.street, engine);
+        return { ok: true };
+      },
+      streetExists: () => true,
+      inScene: () => false, transientInstance: () => false, questDialogueOpen: () => false, acting: () => false,
+      // street-jobs-feature's answers: nothing while the roads load, then the open street near the pick.
+      query: (hook) => {
+        if (hook === 'openRoadsLoaded') return roads.loaded;
+        if (hook === 'openStreetNear') return roads.loaded ? 'GOPENSTREET' : null;
+        return null;
+      },
+    };
+    return engine;
+  }
+
+  it('lands on the open street once the roads are in, not on Glitch\'s pick', async () => {
+    feature.restore(undefined);
+    const roads = { loaded: false };
+    const engine = makeEngine(roads);
+    feature.onStreetClear(engine);
+    feature.onStreetEnter(savanna, engine);
+    let now = Date.now();
+    const play = (s) => { for (let i = 0; i < s; i += 1) feature.onTick(16, (now += 1000), engine); };
+    play(8);
+    await flush();
+    assert.equal(engine.travels.length, 0, 'no kick while the roads load');
+    assert.equal(engine.data.nostalgiaState, 'booting');
+    roads.loaded = true;
+    play(4);
+    await flush();
+    assert.equal(engine.travels.length, 1);
+    assert.equal(engine.travels[0].tsid, 'GOPENSTREET');
+    feature.restore(undefined);
+  });
+
+  it('gives up waiting after a while and takes Glitch\'s pick, as before', async () => {
+    feature.restore(undefined);
+    const engine = makeEngine({ loaded: false });
+    feature.onStreetClear(engine);
+    feature.onStreetEnter(savanna, engine);
+    let now = Date.now();
+    for (let i = 0; i < 120; i += 1) feature.onTick(16, (now += 1000), engine);
+    await flush();
+    assert.equal(engine.travels.length, 1);
+    assert.ok(NOSTALGIA_BOOT_STREETS.some((r) => r.tsid === engine.travels[0].tsid));
+    feature.restore(undefined);
   });
 });

@@ -3324,6 +3324,13 @@ export const streetJobsFeature = {
     return walkReach(from, engine);
   },
 
+  /** G1075: are the roads loaded (openStreetNear can answer)? False starts loading them. */
+  openRoadsLoaded() {
+    if (catalog && streetIndex?.default && waysReady) return true;
+    loadWays();
+    return false;
+  },
+
   /** Report 212: the open-world street nearest `tsid` (itself when open), or null while the roads load. */
   openStreetNear(tsid, engine, options) {
     return openStreetNear(tsid, engine, options);
