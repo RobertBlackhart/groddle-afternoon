@@ -63,8 +63,12 @@ export function measuredGardenBeds(tsid) {
  * - Veldt Balm (LIFGR46M8RE2RC7_main_1323829336, Dec 2011): six beds between the two garden signs,
  *   3 x 3, 3 x 2, 4 x 3, 3 x 3, 2 x 2 and 4 x 2 (plots counted at 16x zoom): 48 plots, Zog's 2012 count.
  * - Kipacre Greens (LCR202JSVIN1STL_main_1339298354, Jun 2012): seven beds, two by the first garden sign,
- *   two past the conifer, three by the second. Their plots cannot be counted at this size (most look
- *   2 x 2, which adds up to far less than Zog's 49), so they stay 4 x 2 as before (56 plots): `how` says so.
+ *   two past the conifer, three by the second. Their sizes come from the same visit's loading picture
+ *   (LCR202JSVIN1STL_loading_1339298353.jpg, 840 x 160 for street x 375 to 5625, 1 px = 6.25 street px):
+ *   each bed's plot columns (one slanted strip each), its depth (about 2.2 px a row) and its width
+ *   (59 px a plot and 31 px a row of slant, as gardenLayout draws it) agree on 3 x 2, 2 x 2, 3 x 1,
+ *   4 x 3, 2 x 3, 3 x 2 and 4 x 3: 49 plots, Zog's 2012 count and glitch.com's 2012 street page
+ *   (research/coverage/kipacre-beds.md).
  * Both pictures show the Gardening Tools Vendor (the scarecrow) standing by the beds: `vendor` is its feet
  * (the foot of its pole), read the same way. Veldt Balm's stands among the flowers between the second and
  * third beds (picture px 282, 89), Kipacre Greens' just right of the big tree by the first garden sign,
@@ -87,13 +91,13 @@ export const PICTURE_GARDEN_SPOTS = Object.freeze({
   GCR202JSVIN1STL: Object.freeze({
     source: 'Tiny Speck street picture groddle-meadow/LCR202JSVIN1STL_main_1339298354.jpg (G1085)',
     beds: Object.freeze([
-      [905, 866, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [1813, 893, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [2128, 884, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [3080, 843, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [3449, 861, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [3867, 889, 4, 2, 'crop', 'none', 'picture spot, size kept'],
-      [4265, 870, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [905, 866, 3, 2, 'crop', 'none', 'picture'],
+      [1813, 893, 2, 2, 'crop', 'none', 'picture'],
+      [2128, 884, 3, 1, 'crop', 'none', 'picture'],
+      [3080, 843, 4, 3, 'crop', 'none', 'picture'],
+      [3449, 861, 2, 3, 'crop', 'none', 'picture'],
+      [3867, 889, 3, 2, 'crop', 'none', 'picture'],
+      [4265, 870, 4, 3, 'crop', 'none', 'picture'],
     ]),
     vendor: Object.freeze([1550, 877]),
   }),

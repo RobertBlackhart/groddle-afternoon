@@ -15,12 +15,12 @@ import { setMetabolicGainGate } from '../public/js/metabolics.js?v=48f784bf';
 import { createInventory, useItem } from '../public/js/inventory.js?v=6414dbdc';
 import { ITEM_VERBS, crunchIce, runItemVerb } from '../public/js/item-verbs.js?v=ecade42e';
 import { performAnimalKinship } from '../public/js/animal-kinship.js?v=75d3cb34';
-import { createAnimalState } from '../public/js/animals.js?v=1274e0ce';
+import { createAnimalState } from '../public/js/animals.js?v=4dc5ccbf';
 import { performTrantCare } from '../public/js/trant-care.js?v=cb7f539b';
 import { createTrantState, setTrantTables } from '../public/js/trants.js?v=864ea9ff';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
-import { createGarden, plantPlot, plotKey } from '../public/js/garden.js?v=ee1b3dc4';
-import { potionTendGarden } from '../public/js/master-garden.js?v=359a29c3';
+import { createGarden, plantPlot, plotKey } from '../public/js/garden.js?v=751ef424';
+import { potionTendGarden } from '../public/js/master-garden.js?v=5e31d828';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

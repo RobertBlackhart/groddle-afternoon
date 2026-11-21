@@ -22,8 +22,8 @@ import {
   UNDER_CANOPY_HEIGHTS,
   UNDER_CANOPY_WIDTHS,
   slopeRuled,
-} from '../public/js/street-ecology.js?v=e2c0c2ef';
-import { groundAt } from '../public/js/street-arrival.js?v=be6bfb06';
+} from '../public/js/street-ecology.js?v=3331ac39';
+import { groundAt } from '../public/js/street-arrival.js?v=d0c4c778';
 import { CROWN_KINDS, crownOverlaps, crownOverlapsInPlan, streetPlans } from '../tools/canopy-placements.mjs';
 
 const MOSSYSTEP = 'GCR15ST40FM1M1I';

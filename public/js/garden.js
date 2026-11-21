@@ -19,7 +19,7 @@ import { skillPackageDetails } from './skill-packages.js?v=bfb87281';
 import { gardenGrowModifier } from './imagination-effects.js?v=70169933';
 import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
-import { isCropGardenStreet } from './garden-beds.js?v=a01abcff';
+import { isCropGardenStreet } from './garden-beds.js?v=2ac6a12c';
 import { superHarvestWords } from './words.js?v=274023af';
 
 /** @typedef {'clean'|'seeds'|'shoots'|'crop'|'dirty'} PlotState */

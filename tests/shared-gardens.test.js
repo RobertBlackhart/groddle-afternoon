@@ -10,11 +10,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=ee1b3dc4';
+import { SEED_CATALOG, createGarden, harvestPlot, plantPlot, tickGarden, waterAllPlots, waterPlot } from '../public/js/garden.js?v=751ef424';
 import { GARDEN_LOCK_MS, LOCK_LINE, SHARED_GARDEN_STREETS, applyPlot, isSharedGardenStreet, localPlot, lockedFor, parsePlotId, plotId, rollPasses } from '../public/js/shared-gardens.js?v=464472e5';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=2eb3b699';
-import { FEATURES } from '../public/js/features/index.js?v=61f9016f';
-import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=359a29c3';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=03be28f4';
+import { FEATURES } from '../public/js/features/index.js?v=7cb5607a';
+import { mgDetails, potionPlotCount, potionTooTired } from '../public/js/master-garden.js?v=5e31d828';
 // A fresh pick's save waits for the server's receipt (GRANT_SAVE_DELAY_MS): the tests wait it out.
 const settle = () => new Promise((res) => setTimeout(res, 2700));
 import { HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutServer } from '../tools/repos.mjs';
@@ -72,9 +72,10 @@ describe('the server\'s data and growth agree with the game', { skip: skipWithou
     // Report #252: the three Herb Gardens streets' 20 planter boxes hold 117 plots (their old two planned beds 42).
     // G940: every Garden the other streets' location files name, the snapped ones measured (Community
     // Gardens 10 beds and 62 plots, Middle Arbor 8 and 63, Mmumawwa Wala 4 and 27, Egret Taun Towers
-    // Basement 3 and 36; Kipacre Greens 7 and Veldt Balm 6 planned 4 by 2), Hechey Track's own two (14).
+    // Basement 3 and 36), the two read off Tiny Speck's street pictures (G1085: Kipacre Greens 7 and 49,
+    // Veldt Balm 6 and 48), Hechey Track's own two (14).
     assert.equal(Object.values(data.streets).flat().length, 60, '60 beds');
-    assert.equal(plots, 423, '423 plots');
+    assert.equal(plots, 416, '416 plots');
     for (const [id, s] of Object.entries(SEED_CATALOG)) {
       assert.deepEqual(data.rules.seeds[id], [s.gardenType === 'herb' ? 'herb' : 'default', s.grow1Ms, s.grow2Ms, s.cropId, s.produces], id);
       assert.deepEqual(data.rules.legacy.seeds[id], [Math.max(4000, s.grow1H * 8000), Math.max(4000, s.grow2H * 8000)], id);
@@ -476,7 +477,7 @@ function rig({ street = COMMUNITY }) {
 
 describe('report 188: the Herb Gardens streets grow herbs in both beds', () => {
   it('streetGardenBed gives two herb beds there (herb2, herb) and crop then herb everywhere else', async () => {
-    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=ee1b3dc4');
+    const { HERB_GARDEN_STREETS, bedKind, streetGardenBed } = await import('../public/js/garden.js?v=751ef424');
     assert.deepEqual([...HERB_GARDEN_STREETS].sort(), ['GA95U14319524O9', 'GA97L62229522GS', 'GA99U5PI39524GN']);
     for (const tsid of HERB_GARDEN_STREETS) {
       assert.deepEqual(streetGardenBed(tsid, 0), { bed: 'herb2', gardenType: 'herb', cols: 4 });

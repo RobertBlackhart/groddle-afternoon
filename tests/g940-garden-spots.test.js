@@ -20,11 +20,11 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=e2c0c2ef';
+} from '../public/js/street-ecology.js?v=3331ac39';
 import { platformYAt, platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
-import { CROP_GARDEN_STREETS_2012, gardenBedWidth, isCropGardenStreet, measuredGardenBeds, measuredGardenVendor, pictureGardenBeds } from '../public/js/garden-beds.js?v=a01abcff';
-import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=ee1b3dc4';
+import { CROP_GARDEN_STREETS_2012, gardenBedWidth, isCropGardenStreet, measuredGardenBeds, measuredGardenVendor, pictureGardenBeds } from '../public/js/garden-beds.js?v=2ac6a12c';
+import { BED_KEY_RE, SEED_CATALOG, bedKind, createGarden, harvestLostBeds, streetGardenBeds } from '../public/js/garden.js?v=751ef424';
 import { bedKey, parsePlotId, plotId } from '../public/js/shared-gardens.js?v=464472e5';
 import { VENDOR_PLACEMENT_KEY, vendorNpcPlacementGroups, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
 import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=dbf0a9dd';
@@ -124,7 +124,9 @@ describe('G940: street gardens where the 2012 snaps show them', () => {
     const kpop = populationForStreet(kipacre, ecologyForStreet(kipacre));
     const kbeds = streetGardenBeds(kipacre, plan(kipacre, kpop).groups.gardens, kpop);
     assert.equal(kbeds.length, 7);
-    assert.ok(kbeds.every((b) => b.gardenType === 'default' && b.cols === 4 && b.rows === 2));
+    // Sized from its June 2012 loading picture: 49 plots, Zog's count.
+    assert.ok(kbeds.every((b) => b.gardenType === 'default'));
+    assert.equal(kbeds.reduce((n, b) => n + b.cols * b.rows, 0), 49);
     assert.equal(new Set(kbeds.map((b) => b.bed)).size, 7);
     const hechey = 'GLI2V0UN7RD1T2J';
     const hpop = populationForStreet(hechey, ecologyForStreet(hechey), { starter: true });

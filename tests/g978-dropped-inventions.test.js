@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=27726340';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=0dc67da4';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -52,8 +52,8 @@ describe('G978: no dot bursts', () => {
 describe('G978: flyers fly on (npc_butterfly.js flyAround)', () => {
   it('a yard Butterfly never stops in the air and flies level at its own height; street flyers too', async () => {
     dropped('flyer-hover-bob');
-    const { YARD_WANDER, yardPlan, yardWanderAt } = await import('../public/js/yard-wander.js?v=76a712b7');
-    const { CREATURE_PATHS, flyerAt } = await import('../public/js/street-creatures.js?v=cb1b55f7');
+    const { YARD_WANDER, yardPlan, yardWanderAt } = await import('../public/js/yard-wander.js?v=e3b3e7b2');
+    const { CREATURE_PATHS, flyerAt } = await import('../public/js/street-creatures.js?v=0429e5a7');
     assert.equal('pauses' in YARD_WANDER.npc_butterfly, false);
     assert.equal('bob' in YARD_WANDER.npc_butterfly, false);
     const plan = yardPlan({ id: 'a5', classId: 'npc_butterfly', left: 300, right: 800 });

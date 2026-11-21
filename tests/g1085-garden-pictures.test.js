@@ -26,14 +26,14 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=e2c0c2ef';
+} from '../public/js/street-ecology.js?v=3331ac39';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
-import { gardenBedWidth, measuredGardenVendor } from '../public/js/garden-beds.js?v=a01abcff';
+import { gardenBedWidth, measuredGardenVendor } from '../public/js/garden-beds.js?v=2ac6a12c';
 import { VENDOR_NPC_ART, VENDOR_PLACEMENT_KEY, vendorNpcList, vendorNpcPlacementGroups, vendorNpcStoreProfile, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=27726340';
-import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=d9f15e3e';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=0dc67da4';
+import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=0a59da1c';
 import { followFloorY } from '../public/js/walk-surface.js?v=3c919d5b';
-import { streetGardenBeds } from '../public/js/garden.js?v=ee1b3dc4';
+import { streetGardenBeds } from '../public/js/garden.js?v=751ef424';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -67,9 +67,15 @@ describe('G1085 the unsnapped garden streets put their beds where Tiny Speck did
     assert.deepEqual(beds.map((b) => b.bed).sort(), ['default', 'default2', 'default3', 'default4', 'default5', 'default6']);
   });
 
-  it("Kipacre Greens' seven beds stand where its picture shows them", async () => {
+  it("Kipacre Greens' seven beds stand where its pictures show them, sized as its loading picture shows, 49 plots as Zog's 2012 count", async () => {
     const data = await loadStreetDataFromFs(KIPACRE_GREENS, streetsDir);
-    assert.deepEqual(bedsOf(data).map((b) => b.x), [905, 1813, 2128, 3080, 3449, 3867, 4265]);
+    const beds = bedsOf(data);
+    assert.deepEqual(beds.map((b) => [b.x, b.cols, b.rows]), [
+      [905, 3, 2], [1813, 2, 2], [2128, 3, 1], [3080, 4, 3], [3449, 2, 3], [3867, 3, 2], [4265, 4, 3],
+    ]);
+    // Zog's 2012 count and glitch.com's 2012-08-13 street page: 49 Crop Garden plots.
+    assert.equal(beds.reduce((n, b) => n + b.cols * b.rows, 0), 49);
+    assert.deepEqual(beds.map((b) => b.bed).sort(), ['default', 'default2', 'default3', 'default4', 'default5', 'default6', 'default7']);
   });
 
   it('every picture bed stands just above its floor, clear of the front art and of the other beds', async () => {

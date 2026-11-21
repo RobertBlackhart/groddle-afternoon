@@ -556,14 +556,16 @@
    "id": "kipacre-garden-bed-sizes",
    "title": "Kipacre Greens' seven garden beds kept at 4 x 2 plots (56; Zog's 2012 count is 49)",
    "kind": "placement",
-   "status": "proposed",
+   "status": "dropped",
    "where": [
     {
      "file": "public/js/garden-beds.js",
-     "symbol": "PICTURE_GARDEN_SPOTS"
+     "symbol": "PICTURE_GARDEN_SPOTS",
+     "gone": true
     }
    ],
    "why": "Tiny Speck's street picture shows where each bed stood but is too small to count plots (most look 2 x 2, about 32 plots in all); the beds keep the planner's old size so no planted plot is lost.",
+   "ruling": "Austin 2026-11-21: keep 4 x 2 for now and research the sources; the June 2012 loading picture (840 px) shows each bed's size, 49 plots in all as Zog and glitch.com's 2012 page (research/coverage/kipacre-beds.md): beds sized from it",
    "rows": [
     "G1085"
    ]
