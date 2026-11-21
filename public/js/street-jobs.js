@@ -59,7 +59,7 @@
  */
 
 export const SOLO_DIVISOR = 50;
-import { SUBWAY_LINE } from './subway-line.js?v=d74b3ee0';
+import { SUBWAY_STREETS, builtForEveryone, keptOpen } from './open-roads.js?v=597feeb5';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
 import { soloSkill } from './street-jobs-solo.js?v=3bcf5d1c';
 import { htmlToText } from './html-text.js?v=6bbf4d1f';
@@ -436,15 +436,8 @@ export function currentReqGroup(reqs, bucket) {
 /* Status                                                               */
 /* ------------------------------------------------------------------ */
 
-/**
- * Streets the subway comes up on (subway-line.js, config_prod.js transit_instances.subway_1). Ticket
- * 50 (calais, 2026-11-03): a fresh world closed 9 of the 12, so the subway set you down on a street
- * still "under construction" (Somewhat Sump), you walked out, and no road led back to it. Glitch
- * built the subway to streets that stood: every one of the 684 project streets is jobs_is_locked
- * false in the location dump (e.g. LLI57DI72HI153U.xml 110), and the Red Line was 2012's. So a
- * station street counts as built.
- */
-export const SUBWAY_STREETS = Object.freeze(SUBWAY_LINE.stations.map((s) => gTsid(s.surfaceStreetTsid || s.connects_to)).filter(Boolean));
+/** Streets the subway comes up on: counted as built for everyone (js/open-roads.js owns the rule). */
+export { SUBWAY_STREETS };
 
 /**
  * A street project counts as built when finished, built from the start (job.builtFromStart: Austin's
@@ -457,14 +450,13 @@ export const SUBWAY_STREETS = Object.freeze(SUBWAY_LINE.stations.map((s) => gTsi
 export function isJobBuilt(state, catalog, jobId, { exemptFrom = [], force = [], open = false, mine = true } = {}) {
   const job = jobDef(catalog, jobId);
   if (!job) return true;
-  if (state.jobs[jobId]?.doneAt) return true;
+  const row = state.jobs[jobId];
+  if (row?.doneAt) return true;
   if (force.includes(jobId)) return false;
-  if (job.builtFromStart) return true;
-  if (job.kind !== 'street') return false;
-  if (open) return true;
-  if (mine && state.grandfathered.includes(job.street)) return true;
-  if (SUBWAY_STREETS.includes(job.street)) return true;
-  return job.connecting.some((tsid) => exemptFrom.includes(tsid));
+  if (open && job.kind === 'street') return true;
+  // R11 (G1075): the one rule for everyone (js/open-roads.js, the server's openroads.go), then your own kept roads.
+  if (builtForEveryone(job, row, { starters: exemptFrom })) return true;
+  return Boolean(mine && job.kind === 'street' && keptOpen(state, job.street));
 }
 
 /**

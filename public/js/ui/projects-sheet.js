@@ -21,7 +21,7 @@
  * or not you have put anything into it yet.
  */
 
-import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=ba1fd9ab';
+import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=ccc95475';
 import { featuredTag } from './featured-project.js?v=6bd977a8';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
