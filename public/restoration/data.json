@@ -2810,13 +2810,38 @@
   ]
  },
  "release": {
-  "game": "0.55.0",
+  "game": "0.55.1",
   "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 2990,
+  "commits": 3000,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A street project's completion line names your share of the whole project, not only the last phase"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "Hellish Grapes lie in random piles again, one bunch per drawing, and one squish still takes one"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Greedy Street Spirit's Act buttons stand under their own scenes"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Social drawer grows with a larger browser font, so its tabs and channel buttons fit"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A phone's top bar shortens its counts further instead of cutting them to \"70…\""
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2831,6 +2856,11 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "In Decorate, a stack moved onto a like stack joins it"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Street project work goes on when the server says a unit came too soon"
    },
    {
     "date": "2026-11-21",
@@ -2906,36 +2936,6 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "The Ancestral Lands send you to an open street even right after you log in"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Projects tab says when a street's road is open only for you"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "The Map, the Projects tab and the server share one open-road rule"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Kipacre Greens' seven garden beds are the sizes Tiny Speck's picture shows, 49 plots"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Gardening Tools Vendor on Veldt Balm and Kipacre Greens stands where Tiny Speck's street pictures show it"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A narrow street fills the window instead of showing black bars at the sides"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Wall mushrooms bounce only from their caps, so a fall beside one goes down"
    }
   ]
  },
