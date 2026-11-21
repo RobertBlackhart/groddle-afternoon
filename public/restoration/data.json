@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2921,
+  "commits": 2925,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A drawing error no longer stops your avatar for good"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A texture freed while still on screen draws as nothing instead of freezing the game"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Mining while other players use tools no longer freezes the game"
+   },
    {
     "date": "2026-11-20",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Paradise quoins pay your quoin multiplier"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Nothing stays selected after you place something in Cultivation Mode, so one Esc leaves"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Enter in Cultivation Mode no longer traps your keys in a garden's plots"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "The street map shows a blurred back layer across the whole street, not only where you have been"
    }
   ]
  },
- "tests": 1213,
- "generatedAt": "2026-11-20"
+ "tests": 1215,
+ "generatedAt": "2026-11-21"
 }
