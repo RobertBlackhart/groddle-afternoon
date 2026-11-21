@@ -1023,9 +1023,9 @@ import {
   PUBLIC_HUBS,
 } from './js/map-graph.js?v=c3586fa9';
 // G471: the world map and the subway map in the Map's window.
-import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=9c235863';
+import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldCardFile, worldCardFiles, worldRegionList } from './js/map-views.js?v=b333b9df';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
-import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=4d8ac099';
+import { createMapBgPreloader, mapBgFiles, prepareMapBg, prepareSubwayPaper, prepareWorldCharts, subwayPaperFile, watchMapBg, worldChartFiles } from './js/map-bg-preload.js?v=0f198afe';
 import { hubMapArtNote, hubMapSubtitle, questLogSummary } from './js/panel-copy.js?v=85c3e029';
 import { bindMapIconTips } from './js/ui/map-icon-tips.js?v=6b3eb3f9';
 import { createMapZoom } from './js/map-zoom.js?v=4f0762b2';
@@ -1172,6 +1172,20 @@ function warmSubwayPaper() {
 /** The World view's two charts, the pair this screen draws, fetched ahead of its button's click (as the Subway paper). */
 function warmWorldCharts() {
   return worldChartFiles({ dpr: globalThis.devicePixelRatio, fitScale: mapFitScale }).map((f) => mapBgLoader.warm(f));
+}
+/**
+ * #567 (G1076): the World view's 48 region hover cards (3.7 MB of SVG), fetched, decoded and kept, so a
+ * card shows the moment the pointer comes to its region instead of only when its file beat the pointer
+ * out. When the World view opens or its button is hovered or focused; a phone keeps each card it taps.
+ */
+function warmWorldCards(files = worldCardFiles()) {
+  return files.map((f) => mapBgLoader.warm(f, { keep: true }));
+}
+/** A World view region's card is up: its painting fetched after a moment (at once on a tap), its card kept. */
+function previewWorldRegion(id, how) {
+  mapBgLoader.preview(id, { now: how === 'tap' });
+  const card = worldCardFile(id);
+  if (card) warmWorldCards([card]);
 }
 
 async function ensureMapIndex() {
@@ -27023,6 +27037,7 @@ function markMapView(panel, which) {
     const warmOn = (e) => {
       if (e.target.closest?.('[data-map-view="subway"]')) warmSubwayPaper();
       if (e.target.closest?.('[data-map-view="world"]')) warmWorldCharts();
+      if (e.target.closest?.('[data-map-view="world"]') && !TOUCH_PHONE) warmWorldCards();
     };
     bar.addEventListener('pointerover', warmOn);
     bar.addEventListener('focusin', warmOn);
@@ -27039,7 +27054,9 @@ function showMapView(which, { panel, canvas, title, sub, spot, mapIndex }) {
     const charts = prepareWorldCharts({ dpr: globalThis.devicePixelRatio, fitScale: mapFitScale });
     canvas.innerHTML = renderWorldMapSvg(regions, { youHubId: spot.hubId, charts });
     // MAPLOAD: a region's painting is fetched once its card has been up a moment, at once on a phone's first tap.
-    bindWorldMap(canvas, { touch, onOpen: (id) => openMap(id), onPreview: (id, how) => mapBgLoader.preview(id, { now: how === 'tap' }) });
+    // #567: every hover card fetched and kept while the World view is up (a phone keeps the ones it taps).
+    if (!TOUCH_PHONE) warmWorldCards();
+    bindWorldMap(canvas, { touch, onOpen: (id) => openMap(id), onPreview: (id, how) => previewWorldRegion(id, how) });
     subLine = mapViewSubtitle('world', { touch, regions });
   } else {
     const here = nearestStation(spot);

@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HUB_MAP_BACKGROUNDS } from '../public/js/hub-map-backgrounds.js?v=d6a23c90';
 import { WORLD_MAP } from '../public/js/map-views-data.js?v=07734585';
-import { bindWorldMap } from '../public/js/map-views.js?v=9c235863';
+import { bindWorldMap, worldCardFile, worldCardFiles } from '../public/js/map-views.js?v=b333b9df';
 import { MAP_THUMB_SOFT, buildHubMapView, renderHubMapSvg } from '../public/js/map-graph.js?v=c3586fa9';
 import {
   MAP_BG_FADE_MS,
@@ -30,7 +30,7 @@ import {
   subwayPaperFile,
   watchMapBg,
   worldChartFiles,
-} from '../public/js/map-bg-preload.js?v=4d8ac099';
+} from '../public/js/map-bg-preload.js?v=0f198afe';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -292,7 +292,8 @@ describe('the preview triggers (bindWorldMap onPreview, game.js)', () => {
 
   it('game.js: a card previews (a tap at once), the World view fetches your region, a station\'s menu its region', () => {
     const game = read('public/game.js');
-    assert.match(game, /onPreview: \(id, how\) => mapBgLoader\.preview\(id, \{ now: how === 'tap' \}\)/);
+    assert.match(game, /onPreview: \(id, how\) => previewWorldRegion\(id, how\)/);
+    assert.match(game, /function previewWorldRegion\(id, how\) \{\n  mapBgLoader\.preview\(id, \{ now: how === 'tap' \}\);/);
     assert.match(game, /fitMapCanvas\(panel\);\n  \/\/ MAPLOAD: [^\n]*\n  if \(which === 'world'\) mapBgLoader\.preload\(spot\.hubId\);\n  warmSubwayPaper\(\);\n  \/\/ G663: [^\n]*\n  if \(!TOUCH_PHONE\) warmWorldCharts\(\);\n\}/, 'after the fit, which picks the size');
     assert.match(game, /openMapStreetMenu\(canvas, e, street, \{ here: st\.surfaceStreetTsid === currentStreetTsid \}\);\n[^\n]*\n        mapBgLoader\.preload\(st\.surfaceHubId\);/);
     // The files at the size the Map draws (fitMapCanvas keeps its scale), the map data warmed beside them.
@@ -512,5 +513,61 @@ describe('the World view\'s two charts are fetched ahead too, the pair this scre
     // Both swaps take every Retina twin on the map (a region's painting, the Subway paper, both charts).
     assert.match(game, /for \(const soft of canvas\.querySelectorAll\('image\[data-hi\]'\)\) soft\.setAttribute\('href', soft\.dataset\.hi\);/);
     assert.match(read('public/js/map-zoom.js'), /for \(const soft of svg\.querySelectorAll\('image\[data-hi\]'\)\) soft\.setAttribute\('href', soft\.dataset\.hi\);/);
+  });
+});
+
+describe('#567 (G1076): the World view\'s hover cards are fetched, decoded and kept ahead of the hover', () => {
+  it('every open region\'s card, once each', () => {
+    const files = worldCardFiles();
+    assert.equal(files.length, Object.values(WORLD_MAP.regions).filter((r) => r.card).length);
+    assert.ok(files.length >= 47);
+    assert.ok(files.every((f) => /^assets\/maps\/art\/world\/cards\/\d+\.svg$/.test(f)));
+    assert.equal(worldCardFile('27'), 'assets/maps/art/world/cards/27.svg');
+    assert.equal(worldCardFile('nope'), '');
+  });
+
+  it('warm with keep holds the loaded Image and decodes it; a plain warm lets it go', () => {
+    const im = fakeImages();
+    const decoded = [];
+    const make = () => {
+      const img = im.make();
+      img.decode = () => {
+        decoded.push(img.src);
+        return Promise.resolve();
+      };
+      return img;
+    };
+    const pre = createMapBgPreloader({ makeImage: make });
+    const [a, b] = worldCardFiles();
+    pre.warm(a, { keep: true });
+    pre.warm(a, { keep: true });
+    assert.equal(im.images.length, 1, 'asked twice, fetched once');
+    im.images[0].load();
+    assert.deepEqual(pre.kept(), [a]);
+    assert.deepEqual(decoded, [a]);
+    pre.warm(a, { keep: true });
+    assert.equal(im.images.length, 1, 'kept: nothing fetched again');
+    pre.warm(b);
+    im.bySrc(b).load();
+    assert.deepEqual(pre.kept(), [a], 'without keep it is only known loaded');
+    // A picture loaded once without keep is fetched again to be kept.
+    pre.warm(b, { keep: true });
+    assert.equal(im.images.filter((i) => i.src === b).length, 2);
+    // A failed card is not kept and is tried again.
+    const c = worldCardFiles()[2];
+    pre.warm(c, { keep: true });
+    im.bySrc(c).fail();
+    assert.ok(!pre.kept().includes(c));
+    pre.warm(c, { keep: true });
+    assert.equal(im.images.filter((i) => i.src === c).length, 2);
+  });
+
+  it('game.js: when the World view opens or its button is hovered or focused (not on a phone), and each card that shows', () => {
+    const game = read('public/game.js');
+    assert.match(game, /function warmWorldCards\(files = worldCardFiles\(\)\) \{\n  return files\.map\(\(f\) => mapBgLoader\.warm\(f, \{ keep: true \}\)\);/);
+    assert.match(game, /closest\?\.\('\[data-map-view="world"\]'\) && !TOUCH_PHONE\) warmWorldCards\(\);/);
+    const view = game.slice(game.indexOf('function showMapView('), game.indexOf('function mapZoomFor('));
+    assert.match(view, /if \(!TOUCH_PHONE\) warmWorldCards\(\);\n    bindWorldMap\(/);
+    assert.match(game, /function previewWorldRegion\(id, how\) \{\n  mapBgLoader\.preview\(id, \{ now: how === 'tap' \}\);\n  const card = worldCardFile\(id\);\n  if \(card\) warmWorldCards\(\[card\]\);/);
   });
 });

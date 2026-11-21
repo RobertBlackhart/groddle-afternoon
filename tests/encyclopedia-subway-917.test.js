@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, posix } from 'node:path';
 import { STATIONS } from '../public/js/subway.js?v=36c6d2b2';
-import { renderSubwayMapSvg } from '../public/js/map-views.js?v=9c235863';
+import { renderSubwayMapSvg } from '../public/js/map-views.js?v=b333b9df';
 import { SUBWAY_PATH, SUBWAY_TEXT, stationAnchor } from '../tools/encyclopedia/subway.mjs';
 
 const pub = join(import.meta.dirname, '..', 'public');

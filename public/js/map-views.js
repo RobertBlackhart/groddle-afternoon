@@ -92,6 +92,20 @@ export function worldCharts({ dpr = Number(globalThis.devicePixelRatio) || 1, hi
   };
 }
 
+/**
+ * #567 (G1076): every open region's hover card (unkeyed), for game.js to fetch and keep when the World
+ * view opens, so a card shows the moment the pointer comes to its region. The client had them all in
+ * the one world map SWF (glitch-overlays/world_map.fla), so they were never late.
+ */
+export function worldCardFiles(regions = WORLD_MAP.regions) {
+  return [...new Set(Object.values(regions || {}).map((r) => r?.card?.href).filter(Boolean))];
+}
+
+/** One region's hover card (unkeyed), or '' (#567). */
+export function worldCardFile(hubId, regions = WORLD_MAP.regions) {
+  return regions?.[String(hubId ?? '')]?.card?.href || '';
+}
+
 /** A chart's href, and its Retina twin as data-hi when that is another file (keyed, escaped). */
 function chartHref(href, hi) {
   return `href="${esc(keyedArt(href))}"${hi && hi !== href ? ` data-hi="${esc(keyedArt(hi))}"` : ''}`;

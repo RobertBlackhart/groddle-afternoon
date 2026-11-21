@@ -32,7 +32,7 @@
  */
 import { HUB_MAP_BACKGROUNDS } from './hub-map-backgrounds.js?v=d6a23c90';
 import { WORLD_MAP } from './map-views-data.js?v=07734585';
-import { SUBWAY_PAPER, subwayPaper, worldCharts } from './map-views.js?v=9c235863';
+import { SUBWAY_PAPER, subwayPaper, worldCharts } from './map-views.js?v=b333b9df';
 
 /** How many regions' paintings are held at once (the latest previews, your own region among them). */
 export const MAP_BG_PRELOAD_CAP = 4;
@@ -115,7 +115,9 @@ export function prepareWorldCharts({ dpr = 1, fitScale = 0, world = WORLD_MAP } 
  * onPreload(hubId) runs each time a region is fetched (game.js warms its map data too).
  *   preload(hubId)                 fetch now (your region, a station's region)
  *   preview(hubId, { now })        a card showed: fetch after hoverMs, or now (a tap); '' puts a pending one away
- *   warm(file)                     fetch one picture outside the regions (the Subway paper), never let go; its keyed URL
+ *   warm(file, { keep })           fetch one picture outside the regions (the Subway paper), never let go; its keyed URL.
+ *                                  keep: true holds the decoded Image after it loads too (the World view's hover
+ *                                  cards, #567), so the browser keeps it ready to draw
  *   ready(url) / markReady(url)    a keyed painting URL known to have loaded (preloaded or drawn by the Map)
  *   held() / pending()             the hub ids held, oldest first, and the one waiting on the pointer (QA, tests)
  */
@@ -137,8 +139,8 @@ export function createMapBgPreloader({
   const fetchImage = (url, done) => {
     const img = makeImage();
     img.decoding = 'async';
-    img.onload = () => done(true);
-    img.onerror = () => done(false);
+    img.onload = () => done(true, img);
+    img.onerror = () => done(false, img);
     img.src = url;
     return img;
   };
@@ -187,12 +189,18 @@ export function createMapBgPreloader({
 
   /** keyed URL -> its Image while it downloads (held, so it is not collected half way). */
   const warming = new Map();
-  function warm(file) {
+  /** keyed URL -> its loaded Image, for the pictures warmed with keep (the World view's hover cards). */
+  const kept = new Map();
+  function warm(file, { keep = false } = {}) {
     const url = file ? keyed(file) : '';
-    if (!url || loaded.has(url) || warming.has(url)) return url;
-    warming.set(url, fetchImage(url, (ok) => {
+    if (!url || kept.has(url) || warming.has(url) || (!keep && loaded.has(url))) return url;
+    warming.set(url, fetchImage(url, (ok, img) => {
       warming.delete(url);
       if (ok) loaded.add(url);
+      if (!ok || !keep) return;
+      kept.set(url, img);
+      // Decoded ahead of the hover, not on it.
+      img.decode?.()?.catch?.(() => {});
     }));
     return url;
   }
@@ -221,6 +229,7 @@ export function createMapBgPreloader({
     preview,
     warm,
     warming: () => [...warming.keys()],
+    kept: () => [...kept.keys()],
     ready: (url) => loaded.has(String(url || '')),
     markReady: (url) => {
       if (url) loaded.add(String(url));

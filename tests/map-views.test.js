@@ -29,7 +29,7 @@ import {
   subwaySegments,
   worldCharts,
   worldRegionList,
-} from '../public/js/map-views.js?v=9c235863';
+} from '../public/js/map-views.js?v=b333b9df';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
