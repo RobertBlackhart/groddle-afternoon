@@ -62,10 +62,10 @@ import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 import { meditationFeature } from './meditation-feature.js?v=6b74b942';
 import { teleportationFeature } from './teleportation-feature.js?v=3f04f41b';
 import { rookAttackFeature } from './rook-attack-feature.js?v=6626b3e6';
-import { rubeFeature } from './rube-feature.js?v=10f38857';
-import { smugglingFeature } from './smuggling-feature.js?v=f84cb4f6';
-import { hellFeature } from './hell-feature.js?v=2f111c91';
-import { isPooped } from '../hell.js?v=54f9be3d';
+import { rubeFeature } from './rube-feature.js?v=251f8b70';
+import { smugglingFeature } from './smuggling-feature.js?v=83a1fc64';
+import { hellFeature } from './hell-feature.js?v=9507f5f8';
+import { isPooped } from '../hell.js?v=e77adbf2';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const BUFF_TRIGGERS_FEATURE_ID = 'buff-triggers';

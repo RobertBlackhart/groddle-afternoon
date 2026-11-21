@@ -45,8 +45,8 @@ import { OVERLAY_USES, playWindowOverlay } from '../overlays.js?v=1f5027a3';
 import { acceptOffer, ensureQuestOfferState, markOffered } from '../quest-offers.js?v=69e064ff';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { parseQuestConversation } from '../quests.js?v=90a2ee3d';
-import { HELL_LOCATION, HELL_QUESTS, isInHell, isInHellOne } from '../hell.js?v=54f9be3d';
-import { BARTENDER, PANKA_DOOR, PANKA_TSID, isHellBarTsid } from '../hell-bar.js?v=085ad2c3';
+import { HELL_LOCATION, HELL_QUESTS, isInHell, isInHellOne } from '../hell.js?v=e77adbf2';
+import { BARTENDER, PANKA_DOOR, PANKA_TSID, isHellBarTsid } from '../hell-bar.js?v=87b8440f';
 import {
   GRAVE_VISIT,
   HELL_HOLE_ACCEPTED_TEXT,
@@ -63,8 +63,8 @@ import {
   recognitionBranch,
   remoteGraveVisit,
   ticketDue,
-} from '../hell-tickets.js?v=d4163f0f';
-import { hellFeature } from './hell-feature.js?v=2f111c91';
+} from '../hell-tickets.js?v=635b4677';
+import { hellFeature } from './hell-feature.js?v=9507f5f8';
 import { doorsFeature } from './doors-feature.js?v=52f2ac27';
 
 export const HELL_TICKETS_FEATURE_ID = 'hell-tickets';

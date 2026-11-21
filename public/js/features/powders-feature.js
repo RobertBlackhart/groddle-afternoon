@@ -93,7 +93,7 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { isPooped } from '../hell.js?v=54f9be3d';
+import { isPooped } from '../hell.js?v=e77adbf2';
 import { forceMetabolic, gainMetabolic, loseEnergy, loseMood } from '../metabolics.js?v=48f784bf';
 import {
   POWDERS,
@@ -117,7 +117,7 @@ import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy
 import { migrateClassValue } from '../tools.js?v=4156bba8';
 import { DEAD_TRANT_CLASSES } from '../patches.js?v=2498e678';
 import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=aea2fa9e';
-import { hellFeature } from './hell-feature.js?v=2f111c91';
+import { hellFeature } from './hell-feature.js?v=9507f5f8';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=95f23414';
 import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=1d3eb0f7';

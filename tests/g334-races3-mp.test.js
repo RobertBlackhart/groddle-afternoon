@@ -20,7 +20,7 @@ import { pendingQuestOffers } from '../public/js/quest-offers.js?v=69e064ff';
 import { MP_RACE_QUESTS, MULTIPLAYER_QUESTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=561c16e3';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
-import { HELL_LOCATION } from '../public/js/hell.js?v=54f9be3d';
+import { HELL_LOCATION } from '../public/js/hell.js?v=e77adbf2';
 import { HOG_MP_COURSE } from '../public/js/hog-haul-mp.js?v=67f873fe';
 import { CROWNS_TICKET } from '../public/js/game-of-crowns.js?v=e32f35f5';
 import { economyCredits } from '../tools/build-economy.mjs';

@@ -17,7 +17,6 @@ import {
   HELL_ITEMS,
   HELL_LOCATION,
   HELL_MUSIC,
-  GRAPE_MIN_GAP,
   GRAPE_WORLD_FRAME,
   HELL_ONE_GRAPES,
   HELL_ONE_PLATFORMS,
@@ -62,8 +61,10 @@ import {
   shouldWarnLowEnergy,
   squishGrape,
   wineDrinkConditions,
-} from '../public/js/hell.js?v=54f9be3d';
+} from '../public/js/hell.js?v=e77adbf2';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=9507f5f8';
+import { Display, fakePixi } from './fake-scene.js';
 import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=50c112eb';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import {
@@ -185,27 +186,86 @@ describe('grapes', () => {
     }
   });
 
-  // Report #548 (Jark): a squish took what looked like two to four bunches. Each bunch is one item of
+  // Report #548: a squish took what looked like two to four bunches. Each bunch is one item of
   // count 1 (bunch_of_grapes_hell.js stackmax 1), and Glitch drew a ground item in its count's state
-  // (AbstractItemstackView.as 442), so one bunch shows one; and no two bunches touch.
-  it('#548: every Naraka bunch shows one bunch, and no two bunches overlap', () => {
+  // (AbstractItemstackView.as 442), so each bunch draws the one-bunch frame. G1118 (Austin
+  // 2026-11-21): the spread stays the old random one, so bunches may overlap and read as piles.
+  it('#548 G1118: every Naraka bunch draws one bunch, stands on its floor, and may overlap another', () => {
     assert.equal(GRAPE_WORLD_FRAME, 0, 'frame 0 is the swf state "1"');
+    let overlaps = 0;
     for (const row of NARAKA_STREETS) {
       const street = JSON.parse(readFileSync(join(publicRoot, `assets/streets/${row.tsid}.json`), 'utf8'));
       const grapes = planHellGrapes(street);
       assert.equal(grapes.length, row.grapes, row.label);
-      for (const g of grapes) assert.equal(g.variant, GRAPE_WORLD_FRAME, `${row.label} ${g.id}`);
+      for (const g of grapes) {
+        assert.equal(g.variant, GRAPE_WORLD_FRAME, `${row.label} ${g.id}`);
+        const p = street.platforms.find((q) => q.id === g.platformId);
+        assert.ok(p && (p.pc_perm == null || p.pc_perm === -1), `${row.label} ${g.id} is on walkable floor`);
+        assert.ok(g.sourceX >= Math.min(p.x1, p.x2) && g.sourceX <= Math.max(p.x1, p.x2), `${row.label} ${g.id} stands on its platform`);
+        const floorY = p.y1 + ((g.sourceX - p.x1) / (p.x2 - p.x1)) * (p.y2 - p.y1);
+        assert.ok(Math.abs(g.sourceY - floorY) <= 1, `${row.label} ${g.id} sits on the floor line`);
+      }
+      // The one-bunch frame is 49 px wide drawn at 0.8: closer than 39 px, two bunches overlap.
       for (let i = 0; i < grapes.length; i += 1) {
         for (let j = i + 1; j < grapes.length; j += 1) {
-          const [a, b] = [grapes[i], grapes[j]];
-          const touching = Math.abs(a.x - b.x) < GRAPE_MIN_GAP && Math.abs(a.y - b.y) < 31;
-          assert.ok(!touching, `${row.label}: ${a.id} and ${b.id} ${Math.abs(a.x - b.x)} px apart`);
+          if (Math.abs(grapes[i].x - grapes[j].x) < 39 && Math.abs(grapes[i].y - grapes[j].y) < 31) overlaps += 1;
         }
       }
-      for (const g of grapes) {
-        const p = street.platforms.find((q) => q.id === g.platformId);
-        assert.ok(p && g.sourceX >= Math.min(p.x1, p.x2) && g.sourceX <= Math.max(p.x1, p.x2), `${row.label} ${g.id} stands on its platform`);
+    }
+    assert.ok(overlaps >= 20, `the old random spread piles bunches (${overlaps} overlapping pairs)`);
+  });
+
+  it('G1118: a squish on overlapping bunches takes the one picked, and the bunch under it stays', () => {
+    const saved = globalThis.PIXI;
+    globalThis.PIXI = fakePixi;
+    try {
+      const street = JSON.parse(readFileSync(join(publicRoot, 'assets/streets/GA5REO5I9OE2KLS.json'), 'utf8'));
+      const targets = [];
+      const data = {};
+      const engine = {
+        PIXI: fakePixi,
+        entityLayer: new Display(),
+        pc: pc(0, 0),
+        inv: {},
+        streetTsid: street.tsid,
+        street: { ...street, hubId: '40' },
+        register: (t) => { targets.push(t); return t; },
+        unregister: (t) => { const i = targets.indexOf(t); if (i >= 0) targets.splice(i, 1); },
+        setData: (k, v) => { data[k] = v; },
+        param: () => null,
+        achievement() {},
+        questFlag() {},
+        playSound() {},
+        pushActivity() {},
+        updateHud() {},
+        toast() {},
+        save() {},
+      };
+      hellFeature.restore(croaked().state);
+      hellFeature.onStreetEnter(engine.street, engine);
+      assert.equal(targets.length, 30);
+      // Two bunches drawn over each other: one pile.
+      let pile = null;
+      for (let i = 0; i < targets.length && !pile; i += 1) {
+        for (let j = i + 1; j < targets.length && !pile; j += 1) {
+          const [a, b] = [targets[i], targets[j]];
+          if (Math.abs(a.sprite.x - b.sprite.x) < 20 && Math.abs(a.sprite.y - b.sprite.y) < 10) pile = [a, b];
+        }
       }
+      assert.ok(pile, 'Dhuma Maya has a pile');
+      const [picked, under] = pile;
+      assert.notEqual(picked.grapeId, under.grapeId, 'each bunch in a pile is its own item');
+      hellFeature.runVerb(picked, 'squish', engine);
+      assert.equal(data.hellGrapes, '1', 'one squish counts one bunch');
+      assert.equal(data.hellGrapesOnGround, '29');
+      assert.ok(!targets.includes(picked), 'the picked bunch is gone');
+      assert.ok(targets.includes(under), 'the bunch under it stays');
+      hellFeature.runVerb(picked, 'squish', engine);
+      assert.equal(data.hellGrapes, '1', 'the same bunch never counts twice');
+    } finally {
+      globalThis.PIXI = saved;
+      hellFeature.onStreetClear();
+      hellFeature.restore({});
     }
   });
 

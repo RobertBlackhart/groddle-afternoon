@@ -11,8 +11,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { energyMax, moodMax } from '../public/js/metabolics.js?v=48f784bf';
-import { normalizeHellState, resurrect } from '../public/js/hell.js?v=54f9be3d';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=2f111c91';
+import { normalizeHellState, resurrect } from '../public/js/hell.js?v=e77adbf2';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=9507f5f8';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');

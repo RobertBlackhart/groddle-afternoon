@@ -22,7 +22,7 @@
  *         {t:'grave_mourned', verb, by, croak}                         to the owner
  */
 
-import { GRAVE_MARKER_FADE_MS, HELL_SPRITES, graveMarkerLabel, graveRecognitionText } from './hell.js?v=54f9be3d';
+import { GRAVE_MARKER_FADE_MS, HELL_SPRITES, graveMarkerLabel, graveRecognitionText } from './hell.js?v=e77adbf2';
 import { formatDametime } from './game-day.js?v=50c112eb';
 import { UNNAMED_PLAYER } from './player-names.js?v=f9b78094';
 
