@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_TEXT } from '../public/js/reports.js?v=813fec3c';
-import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=572c2261';
+import { REPORT_TEXT } from '../public/js/reports.js?v=08604732';
+import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=133fd226';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -91,7 +91,7 @@ describe('the picture with the game UI', () => {
   });
 
   it('the site keeps the open windows with the report and the console shows them', { skip: skipWithoutSite }, () => {
-    assert.match(readFileSync(sitePath('src/BugReports.php'), 'utf8'), /'panels' => 300\]/);
+    assert.match(readFileSync(sitePath('src/BugReports.php'), 'utf8'), /'panels' => 300[,\]]/);
     assert.match(readFileSync(sitePath('console/console.js'), 'utf8'), /\['panels', 'Open windows'\]/);
   });
 });

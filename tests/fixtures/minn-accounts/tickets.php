@@ -256,6 +256,10 @@ echo json_encode([
             'words' => $refused !== null && str_contains($refused[2], '4,001 characters') && !preg_match('/[\x{2014}\x{2013}]/u', $refused[2]),
         ];
     })(),
+    'context' => (static function (): array {
+        $c = BugReports::context(['adblock' => 'yes', 'marks' => str_repeat('m', 300), 'extensions' => str_repeat('e', 300), 'unknown' => 'x', 'agent' => 'Test/2.0']);
+        return ['adblock' => $c['adblock'], 'marks' => mb_strlen($c['marks']), 'extensions' => mb_strlen($c['extensions']), 'unknown' => array_key_exists('unknown', $c), 'agent' => $c['agent']];
+    })(),
     'migration' => [
         'message' => $oldMessage, 'context' => $oldContext,
         'bareMessage' => $bareMessage, 'bareContext' => $bareContext,

@@ -51,6 +51,7 @@
  * ticket 115: [data-reports-tabs] (role tablist) with tabs #reports-tab-<all|open|answered|working|closed>
  * [data-reports-tab=<tab>] carrying data-count and data-unread, #reports-tabpanel [data-reports-tabpanel],
  * [data-reports-tab-empty]; #225: [data-reports-replied] (Has a reply, js/reports.js showsReplied) on a row;
+ * #585: #reports-extensions [data-reports-extensions] (Browser extensions you use, optional; sent as context.extensions).
  * Read by the team (Austin 2026-11-12): [data-reports-read] in a row's line and, in a thread,
  * [data-reports-thread-read] under the newest message (js/reports.js readByTeamWords; datetime on both).
  *
@@ -102,10 +103,10 @@
  * [data-react-add], [data-react-chip], [data-react-picker], [data-react-pick]; canvas data reportReact.
  */
 
-import { REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=813fec3c';
+import { REPORT_EXTENSIONS_MAX, REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=08604732';
 import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../report-reactions.js?v=69462240';
-import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=7a6f29e0';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=4eb43496';
 import { focusBack } from './focus-return.js?v=da190597';
 import { lightboxLink } from './picture-lightbox.js?v=b2cba91b';
 import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=75f90f5a';
@@ -124,6 +125,12 @@ export function previewWhich({ attach = true, want = 'ui', has = {}, pending = f
   if (!attach) return '';
   if (has[want]) return want;
   return want === 'ui' && pending && has.world ? 'world' : '';
+}
+
+/** #585: the context with the player's optional extensions line (trimmed, cut), when they wrote one. */
+export function withExtensions(ctx, typed) {
+  const extensions = String(typed || '').replace(/\s+/g, ' ').trim().slice(0, REPORT_EXTENSIONS_MAX);
+  return extensions ? { ...(ctx || {}), extensions } : ctx;
 }
 
 function el(doc, tag, attrs = {}, text = '') {
@@ -295,10 +302,16 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   const newPicHint = e('p', { id: 'reports-new-pictures-hint', class: 'reports-hint' }, P.addHint);
   newPicText.append(newTakeActs, newPicHint);
   newPicRow.append(newPicText);
+  // #585: Browser extensions you use (optional), one line; it stays for the next report (it is about the browser).
+  const extRow = e('div', { class: 'reports-ext-row', 'data-reports-extensions-row': '' });
+  const extLabel = e('label', { for: 'reports-extensions', class: 'reports-label' }, T.extensions);
+  const extBox = e('input', { type: 'text', id: 'reports-extensions', class: 'reports-text reports-ext', maxlength: String(REPORT_EXTENSIONS_MAX), autocomplete: 'off', spellcheck: 'false', 'aria-describedby': 'reports-extensions-hint', 'data-reports-extensions': '' });
+  const extHint = e('p', { id: 'reports-extensions-hint', class: 'reports-hint' }, T.extensionsHint);
+  extRow.append(extLabel, extBox, extHint);
   const newActs = e('div', { class: 'reports-actions' });
   const sendBtn = e('button', { type: 'button', class: 'reports-btn', 'data-bug-report-send': '' }, T.send);
   newActs.append(sendBtn);
-  newView.append(newTitle, label, text, picRow, newTray, newPicRow, newActs);
+  newView.append(newTitle, label, text, picRow, newTray, newPicRow, extRow, newActs);
   // Add pictures: the browser's file picker, several at once (any image; js/report-pictures.js reads each).
   const fileInput = e('input', { type: 'file', id: 'reports-file', class: 'reports-file', accept: REPORT_PICTURES.accept, multiple: true, tabindex: '-1', 'aria-hidden': 'true', 'data-reports-file': '' });
   body.append(listView, threadView, newView);
@@ -1007,15 +1020,16 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     const own = await pictureToSend();
     const urls = [own, ...held.map((p) => p.url)].filter(Boolean).slice(0, REPORT_PICTURES.max);
     const pic = urls.length > 1 ? urls : urls[0] || null;
+    const ctx = withExtensions(context(), extBox.value);
     try {
       let r;
       let without = false;
       try {
-        r = await api.create(words, context(), pic);
+        r = await api.create(words, ctx, pic);
       } catch (err) {
         // The site refused a picture, not the report: send the words without them.
         if (!pic || !pictureRefused(err)) throw err;
-        r = await api.create(words, context());
+        r = await api.create(words, ctx);
         without = true;
       }
       const sentWords = without ? (urls.length > 1 ? P.sentWithout : T.sentNoPicture) : T.sent;

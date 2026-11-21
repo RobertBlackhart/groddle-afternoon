@@ -3673,6 +3673,12 @@
 :root[data-ui="classic"] #bug-report-panel .reports-checkbox { margin: 0; accent-color: var(--c-classic-link); }
 :root[data-ui="classic"] #bug-report-panel .reports-checkbox:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
 :root[data-ui="classic"] #bug-report-panel .reports-hint { margin: 0; color: var(--c-classic-offline); font-size: calc(var(--fs-classic-body) * var(--cu-n, 1)); }
+/* #585: Browser extensions you use (optional), one line under the pictures. */
+:root[data-ui="classic"] #bug-report-panel .reports-ext-row { display: grid; gap: calc(2 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .reports-new-view .reports-ext-row .reports-text { flex: none; min-height: 0; resize: none; }
+/* The 2012 window is a fixed size: the line goes without its hint, and the box gives up a little, so Send stays in view. */
+:root[data-ui="classic"] #bug-report-panel .reports-ext-row .reports-hint { display: none; }
+:root[data-ui="classic"] #bug-report-panel .reports-new-view > .reports-text { min-height: calc(100 * var(--cu)); }
 /* Ticket 73: the picture at its own shape, a link to the lightbox (bug-report-feature.js has Modern's). */
 :root[data-ui="classic"] #bug-report-panel .reports-picture-thumb { flex: none; display: block; width: calc(216 * var(--cu)); max-width: 45%; border: 1px solid var(--c-classic-input-border); line-height: 0; cursor: zoom-in; }
 :root[data-ui="classic"] #bug-report-panel .reports-picture-thumb img { display: block; width: 100%; height: auto; }

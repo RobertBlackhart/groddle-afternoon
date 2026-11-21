@@ -43,6 +43,9 @@
 import { minnUrls } from './minn-account-core.js?v=bd210eb9';
 
 /** The sheet's words. The form welcomes feedback, suggestions and bugs alike (the original's BootError.as 280-290 asked only for bugs). */
+/** The optional extensions line's length, as the site keeps it (BugReports.php CONTEXT 'extensions'). */
+export const REPORT_EXTENSIONS_MAX = 200;
+
 export const REPORT_TEXT = Object.freeze({
   tip: 'Feedback, ideas and bugs',
   tipUnread: (n) => (n === 1 ? 'Feedback, ideas and bugs (1 new reply)' : `Feedback, ideas and bugs (${n} new replies)`),
@@ -96,6 +99,9 @@ export const REPORT_TEXT = Object.freeze({
   pictureNone: 'The game view could not be drawn, so no picture goes with this one.',
   // 18(b), Austin 2026-11-01: the picture shows the game's windows too, unless this is unticked.
   pictureUi: 'Include the game\'s UI',
+  // #585 (Austin 2026-11-21): an optional line, sent with the report as context.extensions.
+  extensions: 'Browser extensions you use (optional)',
+  extensionsHint: 'Ad blockers, dark modes, style changers. They can hide parts of the game.',
   pictureHintUi: 'It shows the game as you see it: the street, other players and their names, and the windows you have open. Chat, mail and Activity are blanked out. This window is never in it.',
   pictureDrawing: 'Drawing the picture…',
   pictureAlt: 'The game when you reported it',

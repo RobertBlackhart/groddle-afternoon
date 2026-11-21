@@ -82,10 +82,11 @@
  * window.groddleBugReport.open('list'|'new'), .openTicket(id), .refresh() in multiplayer.
  */
 
-import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=813fec3c';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=ab6d2e50';
-import { PICTURE_TEXT } from '../report-pictures.js?v=7a6f29e0';
+import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=08604732';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=6ab48e37';
+import { PICTURE_TEXT } from '../report-pictures.js?v=4eb43496';
 import { canvasTransparent } from '../render-probe.js?v=476b7fdf';
+import { marksLine, startBaitCheck } from '../extension-marks.js?v=3d698fbc';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -244,8 +245,18 @@ export function realtimeLine(engine) {
   return `rt ${on}${asked !== on ? ` (asked ${asked})` : ''}`;
 }
 
+/**
+ * #585: what the page can learn about extensions changing it (js/extension-marks.js): adblock is the
+ * bait check's answer (yes|no, '' when none ran) and marks the traces extensions left in the page.
+ */
+export function extensionContext(bait = null, doc = globalThis.document) {
+  let adblock = '';
+  try { adblock = String(bait?.read?.() || ''); } catch { adblock = ''; }
+  return { adblock, marks: marksLine(doc) };
+}
+
 /** What the report carries besides the player's words. */
-export function reportContext(engine, errors = [], env = globalThis) {
+export function reportContext(engine, errors = [], env = globalThis, bait = null) {
   const p = engine?.player;
   const street = engine?.street;
   let panels = '';
@@ -272,6 +283,7 @@ export function reportContext(engine, errors = [], env = globalThis) {
     screen: env.innerWidth ? `${env.innerWidth}x${env.innerHeight}` : '',
     panels,
     gpu,
+    ...extensionContext(bait, env.document),
     // The site keeps only the context keys it knows; a failed probe also rides in the errors so it reaches it now.
     errors: failed && gpu ? [...errors.slice(-(MAX_ERRORS - 1)), `render probe: ${gpu}`] : errors.slice(-MAX_ERRORS),
   };
@@ -830,6 +842,9 @@ const STYLE = `
 [data-ui="modern"] #bug-report-panel .reports-checkbox:disabled { cursor: default; }
 [data-ui="modern"] #bug-report-panel .reports-checkbox:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 [data-ui="modern"] #bug-report-panel .reports-hint { margin: 0; color: var(--text-muted); font-size: var(--fs-s); line-height: var(--lh-body); }
+/* #585: Browser extensions you use (optional), one line under the pictures. */
+[data-ui="modern"] #bug-report-panel .reports-ext-row { display: grid; gap: 2px; }
+[data-ui="modern"] #bug-report-panel .reports-new-view .reports-ext-row .reports-text { flex: none; min-height: 0; resize: none; }
 /* Ticket 73: the picture at its own shape, big enough to read, a link to the lightbox. */
 [data-ui="modern"] #bug-report-panel .reports-picture-thumb { flex: none; display: block; width: 216px; max-width: 45%; border: 1px solid var(--border); border-radius: var(--radius-s); overflow: hidden; line-height: 0; cursor: zoom-in; }
 [data-ui="modern"] #bug-report-panel .reports-picture-thumb img { display: block; width: 100%; height: auto; }
@@ -938,10 +953,13 @@ function createSession(engine, errors) {
   // G791: a picture being taken, and the bar while one waits to be taken (openShutter).
   let taking = false;
   let shutter = null;
+  // #585: the open form's bait check; its answer stays for the report it was made for.
+  let bait = null;
+  let baitOn = false;
   const sheet = mountReportsSheet({
     host,
     api,
-    context: () => reportContext(engine, errors),
+    context: () => reportContext(engine, errors, globalThis, bait),
     // The picture with the UI draws the canvas as the world picture found it when the form opened (ticket 73).
     capture: ({ ui = false, world = null } = {}) => (ui ? capturePictureWithUi(engine, document, REPORT_PICTURE, world?.frame) : capturePicture(engine)),
     // G791: Take a picture under the reply box: the bar over the game until the player takes it.
@@ -951,6 +969,11 @@ function createSession(engine, errors) {
     // REPORTSMENU: the rows' menu (js/ui/report-row-menu.js) names itself in the canvas data.
     setData: (k, v) => engine.setData?.(k, v),
     onState: ({ state, view, unread, last, held }) => {
+      // #585: the bait check runs while the new report form is open (js/extension-marks.js).
+      const writing = state !== 'closed' && view === 'new';
+      if (writing && !baitOn) { bait?.stop(); bait = startBaitCheck(); }
+      else if (!writing && baitOn) bait?.stop();
+      baitOn = writing;
       engine.setData?.('reportPicture', taking ? 'taking' : held ? 'held' : '');
       engine.setData?.('bugReport', state);
       engine.setData?.('bugReportLast', last);

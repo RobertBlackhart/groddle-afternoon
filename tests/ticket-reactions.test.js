@@ -17,9 +17,9 @@ import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { reactionsJson } from '../tools/build-reactions.mjs';
 import { NAMES_SHOWN, REACTIONS } from '../public/js/chat-reactions.js?v=38460172';
-import { REPORT_TEXT, createReportsApi } from '../public/js/reports.js?v=813fec3c';
+import { REPORT_TEXT, createReportsApi } from '../public/js/reports.js?v=08604732';
 import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../public/js/report-reactions.js?v=69462240';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=ab6d2e50';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=6ab48e37';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

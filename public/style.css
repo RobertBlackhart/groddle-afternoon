@@ -15119,7 +15119,7 @@ body.is-booting .touch-controls { display: none; }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-card { width: min(760px, 100%); height: 100%; }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(170px, 36%);
-    grid-template-rows: auto auto auto minmax(0, 1fr) auto; grid-template-areas: "label label" "text pic" "text add" "text tray" "text send";
+    grid-template-rows: auto auto auto auto minmax(0, 1fr) auto; grid-template-areas: "label label" "text pic" "text add" "text ext" "text tray" "text send";
     gap: var(--space-2) var(--space-3);
   }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-new-title { display: none; }
@@ -15129,6 +15129,9 @@ body.is-booting .touch-controls { display: none; }
   /* G857 (#406): Add pictures and Take a picture (G791) are a second picture row, and they shared the Attach
      row's cell, so the buttons lay over its words; each row, and the tray of waiting pictures, has its own. */
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-picture-row.reports-new-pictures { grid-area: add; align-items: flex-start; overflow: visible; }
+  /* #585: Browser extensions you use (optional): its own cell under Add pictures, without the hint. */
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-ext-row { grid-area: ext; }
+  :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-ext-row .reports-hint { display: none; }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view > .reports-tray { grid-area: tray; align-self: start; min-height: 0; max-height: 100%; overflow-y: auto; }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view .reports-picture-thumb { max-width: 100%; }
   :root.touch-phone[data-ui="modern"] #game-root #bug-report-panel .reports-new-view .reports-picture-thumb img { max-height: 72px; }
@@ -15154,7 +15157,7 @@ body.is-booting .touch-controls { display: none; }
   inset: var(--kbd-top, 0px) 0 auto 0; height: var(--kbd-h, 100%); padding: 0 calc(var(--sp-2) + var(--safe-r)) 0 calc(var(--sp-2) + var(--safe-l)); place-items: stretch center;
 }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-card { height: 100%; }
-:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-title, .reports-label, .reports-picture-row, .reports-tray, .reports-foot) { display: none; }
+:root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-title, .reports-label, .reports-picture-row, .reports-tray, .reports-foot, .reports-ext-row:not(:focus-within)) { display: none; }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-body { padding: var(--space-2); overflow-y: auto; }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within :is(.reports-new-view, .reports-thread-view:has(> #reports-reply-text:focus)) { display: flex; flex-direction: column; gap: var(--space-2); flex: 1 1 0; min-height: 0; }
 :root.touch-phone.kbd-up[data-ui="modern"] #game-root #bug-report-panel.reports-panel:focus-within .reports-thread-view:has(> #reports-reply-text:focus) .reports-messages { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }

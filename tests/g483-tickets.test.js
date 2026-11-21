@@ -16,9 +16,9 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=813fec3c';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=ab6d2e50';
-import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=572c2261';
+import { REPORT_MAX, REPORT_PICTURE, REPORT_TEXT, STATUS_WORDS, UNREAD_POLL_MS, base64Size, canEditFirst, createReportsApi, pictureRefused, pictureSize, pictureSrc, numberedLine, refusalWords, reportFromHash, reportNumber, ticketLine, unreadCount, whenWords } from '../public/js/reports.js?v=08604732';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=6ab48e37';
+import { BUG_TEXT, badgeFor, bugReportFeature, capturePicture } from '../public/js/features/bug-report-feature.js?v=133fd226';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -286,6 +286,34 @@ describe('the Reports sheet (js/ui/reports-sheet.js)', () => {
     assert.equal(panel.hidden, true);
     assert.equal(doc.activeElement, opener);
     assert.equal(sheet.state, 'closed');
+  });
+
+  it('#585: New report asks which browser extensions you use (optional) and sends the line with the context', async () => {
+    const doc = fakeDoc();
+    const host = new FakeNode('div', doc);
+    const api = fakeApi({ tickets: [] });
+    const sheet = mountReportsSheet({ doc, host, api, context: () => ({ street: 'GA5' }), now: () => NOW });
+    sheet.open('new');
+    await flush();
+    const box = byId(host, 'reports-extensions');
+    assert.ok(box && 'reportsExtensions' in box.dataset, 'the field');
+    assert.equal(box.getAttribute('type'), 'text');
+    assert.equal(box.getAttribute('maxlength'), '200');
+    assert.ok(host.find((n) => n.tagName === 'LABEL' && n.getAttribute('for') === 'reports-extensions' && n.textContent === 'Browser extensions you use (optional)'));
+    for (const w of [REPORT_TEXT.extensions, REPORT_TEXT.extensionsHint]) assert.ok(!/[\u2014\u2013]/.test(w), w);
+    byId(host, 'bug-report-text').value = 'No quests';
+    box.value = '  uBlock Origin,\n  Dark Reader ';
+    byData(host, 'bugReportSend').click();
+    await settle();
+    assert.deepEqual(api.calls.find((c) => c[0] === 'create'), ['create', 'No quests', { street: 'GA5', extensions: 'uBlock Origin, Dark Reader' }]);
+    // Left empty, nothing extra goes.
+    sheet.open('new');
+    await flush();
+    byId(host, 'reports-extensions').value = '   ';
+    byId(host, 'bug-report-text').value = 'Again';
+    byData(host, 'bugReportSend').click();
+    await settle();
+    assert.deepEqual(api.calls.filter((c) => c[0] === 'create').at(-1), ['create', 'Again', { street: 'GA5' }]);
   });
 
   it('keys typed in the sheet never reach the world', () => {
@@ -627,7 +655,7 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
   it('the console has a Reports tab: list, thread, reply, close and reopen, and the old reports\' button', async () => {
     const page = src('src/AdminConsolePage.php');
     for (const hook of ['data-console-tab="reports"', 'data-console-tickets', 'data-console-thread', 'data-console-reply', 'data-console-thread-close', 'data-console-thread-reopen', 'data-console-migrate', 'data-console-ticket-filter']) assert.ok(page.includes(hook), hook);
-    assert.match(page, /ASSET_KEY = 'skin-9'/);
+    assert.match(page, /ASSET_KEY = 'skin-10'/);
     const js = src('console/console.js');
     for (const route of ["admin/tickets?status=", "admin/tickets/${id}", "admin/tickets/${tickets.open}/reply", "admin/tickets/${tickets.open}/${kind}", "admin/tickets/migrate"]) assert.ok(js.includes(route), route);
     assert.match(js, /el\('p', \{ class: 'console-msg-body', text: m\.body \}\)/, 'messages set as text');
@@ -647,7 +675,9 @@ describe('the site (groddle-afternoon-site)', { skip: skipWithoutSite }, () => {
     assert.deepEqual(out.message, { fits: 4000, admin: 9000, refused: ['groddle_ticket_long', 422], words: true });
     // An old post: the words (entities read back, <br> a line, paragraphs a blank line apart), the Details as the context.
     assert.equal(out.migration.message, 'The pig & the <b>butterfly</b> froze.\nThen the street went dark.\n\nSecond paragraph.');
-    assert.deepEqual(out.migration.context, { street: 'GA5101HF7F429V5', streetName: 'Hechey Track', x: '120', y: '-30', build: 'g465-1', page: '/play/online/', agent: 'Test/1.0', screen: '1280x800', gpu: '', panels: '', errors: ['TypeError: boom <here>', 'second'] });
+    assert.deepEqual(out.migration.context, { street: 'GA5101HF7F429V5', streetName: 'Hechey Track', x: '120', y: '-30', build: 'g465-1', page: '/play/online/', agent: 'Test/1.0', screen: '1280x800', gpu: '', panels: '', adblock: '', marks: '', extensions: '', errors: ['TypeError: boom <here>', 'second'] });
+    // #585: the extension keys are kept and cut; keys the site does not know are dropped.
+    assert.deepEqual(out.context, { adblock: 'yes', marks: 200, extensions: 200, unknown: false, agent: 'Test/2.0' });
     assert.equal(out.migration.bareMessage, 'Only words');
     assert.equal(out.migration.bareContext.street, 'LIF12PMQ5121D68', 'meta fills what the Details lack');
     assert.deepEqual(out.migration.bareContext.errors, ['From meta']);
