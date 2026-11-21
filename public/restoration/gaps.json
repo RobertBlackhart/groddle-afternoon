@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.53.0",
+  "release": "v0.54.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 13,
+    "known": 16,
     "unreleased": 0,
-    "fixed": 383,
+    "fixed": 390,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -324,6 +324,11 @@
           "state": "known"
         },
         {
+          "id": "G1078",
+          "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture.",
+          "state": "known"
+        },
+        {
           "id": "G678",
           "text": "In Thornfad Layers, the letter or heart that shows over your head by the locked door is not drawn yet.",
           "state": "fixed",
@@ -476,6 +481,18 @@
           "text": "A few Street Spirits and mailboxes stood inside a tree's crown.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1084",
+          "text": "Some Visiting Stones and mailboxes stood behind trees or huts drawn in front of them.",
+          "state": "fixed",
+          "version": "v0.54.0"
+        },
+        {
+          "id": "G1086",
+          "text": "A few ladders hang too high to grab from the floor below, and nothing said how to get back on.",
+          "state": "fixed",
+          "version": "v0.54.0"
         }
       ]
     },
@@ -2075,6 +2092,11 @@
       "name": "Projects",
       "items": [
         {
+          "id": "G1075",
+          "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open.",
+          "state": "known"
+        },
+        {
           "id": "F66",
           "text": "Notices covered the featured project's progress under the street name.",
           "state": "fixed",
@@ -2159,6 +2181,12 @@
           "text": "A walking vendor could float above the floor after the page opened part way through its walk.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1088",
+          "text": "Holding Enter at a vendor could buy the same thing more than once.",
+          "state": "fixed",
+          "version": "v0.54.0"
         }
       ]
     },
@@ -2177,6 +2205,11 @@
     {
       "name": "Gardens",
       "items": [
+        {
+          "id": "G1077",
+          "text": "Garden signs that carried words in Glitch show up blank.",
+          "state": "known"
+        },
         {
           "id": "F93",
           "text": "Joining a street with a felled tree drew its Patch twice.",
@@ -2226,6 +2259,12 @@
           "text": "A busy home garden could replay an old planting and turn a ripe crop back into seeds.",
           "state": "fixed",
           "version": "v0.51.2"
+        },
+        {
+          "id": "G1085",
+          "text": "Garden beds on two streets stood in made-up spots, one inside an animal pen.",
+          "state": "fixed",
+          "version": "v0.54.0"
         }
       ]
     },
@@ -2357,6 +2396,12 @@
           "text": "Ladders whose bottom hangs a little above the floor could be climbed down but not up; Glitch's reach was longer.",
           "state": "fixed",
           "version": "v0.42.2"
+        },
+        {
+          "id": "G1087",
+          "text": "A Cubimal race and other pack actions were refused while the map or another menu was open.",
+          "state": "fixed",
+          "version": "v0.54.0"
         }
       ]
     },
@@ -2906,6 +2951,23 @@
           "text": "Stat icons and colours in speech bubbles did not match the top bar.",
           "state": "fixed",
           "version": "v0.53.0"
+        }
+      ]
+    },
+    {
+      "name": "Parties",
+      "items": [
+        {
+          "id": "G1082",
+          "text": "In a party space the rocks, trees and other things were not shared, so nobody could help mine.",
+          "state": "fixed",
+          "version": "v0.54.0"
+        },
+        {
+          "id": "G1083",
+          "text": "Cubimal races, battles and some other play were refused inside a party space.",
+          "state": "fixed",
+          "version": "v0.54.0"
         }
       ]
     }

@@ -3926,6 +3926,86 @@
       "commits": [
         "game:49be867cf4b"
       ]
+    },
+    {
+      "id": "G1075",
+      "area": "Projects",
+      "text": "The featured street project could be on a street nobody can walk to yet, and the Map and the Projects list could disagree about which streets are open."
+    },
+    {
+      "id": "G1077",
+      "area": "Gardens",
+      "text": "Garden signs that carried words in Glitch show up blank."
+    },
+    {
+      "id": "G1078",
+      "area": "Streets",
+      "text": "On one street a bouncy mushroom throws you back up from almost any fall, because its bounce area covers its whole picture."
+    },
+    {
+      "id": "G1082",
+      "area": "Parties",
+      "show": "fixing",
+      "text": "In a party space the rocks, trees and other things were not shared, so nobody could help mine.",
+      "commits": [
+        "game:16550734179",
+        "server:1783e03"
+      ]
+    },
+    {
+      "id": "G1083",
+      "area": "Parties",
+      "show": "fixing",
+      "text": "Cubimal races, battles and some other play were refused inside a party space.",
+      "commits": [
+        "game:b64f7a952f6"
+      ]
+    },
+    {
+      "id": "G1084",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "Some Visiting Stones and mailboxes stood behind trees or huts drawn in front of them.",
+      "commits": [
+        "game:76d2012f15e"
+      ]
+    },
+    {
+      "id": "G1085",
+      "area": "Gardens",
+      "show": "fixing",
+      "text": "Garden beds on two streets stood in made-up spots, one inside an animal pen.",
+      "commits": [
+        "game:32016210284",
+        "server:53a7a20"
+      ]
+    },
+    {
+      "id": "G1086",
+      "area": "Streets",
+      "show": "fixing",
+      "text": "A few ladders hang too high to grab from the floor below, and nothing said how to get back on.",
+      "commits": [
+        "game:c89c4e2ff13"
+      ]
+    },
+    {
+      "id": "G1087",
+      "area": "Controls",
+      "show": "fixing",
+      "text": "A Cubimal race and other pack actions were refused while the map or another menu was open.",
+      "commits": [
+        "game:b2ed66c3eb3"
+      ]
+    },
+    {
+      "id": "G1088",
+      "area": "Vendors",
+      "show": "fixing",
+      "text": "Holding Enter at a vendor could buy the same thing more than once.",
+      "commits": [
+        "game:b7245a230b2"
+      ]
     }
   ]
 }
