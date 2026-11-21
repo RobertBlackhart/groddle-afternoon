@@ -4103,7 +4103,9 @@
       "text": "The Quests list could show nothing even with quests active.",
       "show": "fixing",
       "commits": [
-        "game:5aa28f86743"
+        "game:5aa28f86743",
+        "game:3f21b1ddc59",
+        "game:5e22a5b41ee"
       ]
     },
     {
@@ -4113,6 +4115,80 @@
       "show": "fixing",
       "commits": [
         "game:bc50e91fd3a"
+      ]
+    },
+    {
+      "id": "G1099",
+      "area": "Controls",
+      "text": "Quick Act presses on a street tree could choose Talk to.",
+      "show": "fixing",
+      "commits": [
+        "game:b4349b70254"
+      ]
+    },
+    {
+      "id": "G1100",
+      "area": "Getting around",
+      "text": "The Ancestral Lands could send you past a closed road when the roads loaded slowly.",
+      "show": "fixing",
+      "commits": [
+        "game:c82f4315149"
+      ]
+    },
+    {
+      "id": "G1101",
+      "area": "Street projects",
+      "text": "With no project left to walk to, the featured street project could be one you had no way to reach.",
+      "show": "fixing",
+      "commits": [
+        "game:95b6f6bc509",
+        "server:130cf26"
+      ]
+    },
+    {
+      "id": "G1102",
+      "area": "Street projects",
+      "text": "An upgraded street could show its old look after a login or reload.",
+      "show": "fixing",
+      "commits": [
+        "game:3ec80b4a951"
+      ]
+    },
+    {
+      "id": "G1103",
+      "area": "Quests",
+      "text": "Logging in during a smuggling run could move the drop to a street no road reaches.",
+      "show": "fixing",
+      "commits": [
+        "game:3246fa56e26"
+      ]
+    },
+    {
+      "id": "G1104",
+      "area": "Animals",
+      "text": "The loading card counted a Piggy you had already captured on that street.",
+      "show": "fixing",
+      "commits": [
+        "game:87fd17dd258"
+      ]
+    },
+    {
+      "id": "G1105",
+      "area": "World",
+      "text": "A failed load at start could leave streets bare for the whole session.",
+      "show": "fixing",
+      "commits": [
+        "game:0b3bb8aa143"
+      ]
+    },
+    {
+      "id": "G1106",
+      "area": "Multiplayer",
+      "text": "Players already at Groddle Forest Junction at midnight would not see the Harvest Table or the feast until they left and came back.",
+      "show": "fixing",
+      "commits": [
+        "game:f826de355ce",
+        "server:a9521cc"
       ]
     }
   ]

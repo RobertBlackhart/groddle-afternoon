@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.54.1",
+  "release": "v0.55.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 403,
+    "fixed": 411,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -307,7 +307,13 @@
           "id": "G1097",
           "text": "The Quests list could show nothing even with quests active.",
           "state": "fixed",
-          "version": "v0.54.1"
+          "version": "v0.55.0"
+        },
+        {
+          "id": "G1103",
+          "text": "Logging in during a smuggling run could move the drop to a street no road reaches.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -566,6 +572,12 @@
           "report": 303,
           "state": "fixed",
           "version": "v0.38.0"
+        },
+        {
+          "id": "G1105",
+          "text": "A failed load at start could leave streets bare for the whole session.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -1098,6 +1110,18 @@
           "report": 520,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1101",
+          "text": "With no project left to walk to, the featured street project could be one you had no way to reach.",
+          "state": "fixed",
+          "version": "v0.55.0"
+        },
+        {
+          "id": "G1102",
+          "text": "An upgraded street could show its old look after a login or reload.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -1301,6 +1325,12 @@
           "text": "Online, a Piggy or Chicken could walk inside the ground after its path jumped.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1104",
+          "text": "The loading card counted a Piggy you had already captured on that street.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -1574,6 +1604,12 @@
           "text": "Mining while other players used tools nearby, as at a party, could freeze your character until you reloaded.",
           "state": "fixed",
           "version": "v0.54.1"
+        },
+        {
+          "id": "G1106",
+          "text": "Players already at Groddle Forest Junction at midnight would not see the Harvest Table or the feast until they left and came back.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -2116,6 +2152,12 @@
           "text": "Routes walked a long way round instead of taking the subway once any road was open.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1100",
+          "text": "The Ancestral Lands could send you past a closed road when the roads loaded slowly.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
@@ -2441,6 +2483,12 @@
           "text": "A Cubimal race and other pack actions were refused while the map or another menu was open.",
           "state": "fixed",
           "version": "v0.54.0"
+        },
+        {
+          "id": "G1099",
+          "text": "Quick Act presses on a street tree could choose Talk to.",
+          "state": "fixed",
+          "version": "v0.55.0"
         }
       ]
     },
