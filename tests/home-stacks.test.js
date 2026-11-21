@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=b787b3eb';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
 import { createHomeDecorState, INTERIOR, placeFurniture, settleStacks, stackSurfaceAt, STALE_REST_GIVE, surfaceHeight } from '../public/js/home-decor.js?v=d886268d';
-import { normalizeDroppedItemState } from '../public/js/world-items.js?v=9665f5dd';
+import { normalizeDroppedItemState } from '../public/js/world-items.js?v=4de0da41';
 import { isStandable } from '../public/js/street-model.js?v=a9a05f9d';
 import { BUILDER_TEXT } from '../public/js/ui/home-builder.js?v=378178ac';
 import { hasMagick, itemBottoms } from '../tools/furniture-upgrades/tops.mjs';
@@ -311,7 +311,7 @@ describe('Decoration Mode moves and takes back what is set down', () => {
     assert.match(homes, /for \(const row of roomStackRows\(engine\)\) \{\s+if \(row\.on !== placing\.moveId \|\| !dx\) continue;\s+row\.x \+= dx;/);
     // SEATSELECT: saved and redrawn where they went (before, they stayed drawn behind until a reload).
     assert.match(homes, /if \(carried\) engine\.droppedItemsChanged\?\.\(\);/);
-    // Only x, y and `on` change on a move: no item is made or lost.
+    // Only x, y and `on` change on a move, or it joins a like stack (tests/home-stack-merge-593.test.js): no item is made or lost.
     const mv = homes.slice(homes.indexOf('function moveStack('), homes.indexOf('function pickUpStack('));
     assert.doesNotMatch(mv, /count|addItem|removeItem|inv\b/);
   });

@@ -234,6 +234,62 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
   return { ok: true, count, stack: { ...stack }, merged: false, remaining: inv[item] || 0 };
 }
 
+/**
+ * How near a stack set down in a house must land to a like one to join it: the original's Decoration
+ * Mode merged only "dropping directly on stack", 10 px along the same plat line (HandOfDecorator.as
+ * shouldMerge 1656-1670, tolerance 10, on the drop and on a move's itemstack_modify alike; main.js
+ * doModifyItem and takeable_drop merge unless no_merge). Ours is the pack drop's 12 px (game.js dropPackStackAt).
+ */
+export const PLACED_MERGE_RADIUS = 12;
+
+/** A stack that can take another of its class into it (or go into one): no bag, name, sort or street share. */
+function joinable(row) {
+  return Boolean(row) && !row.contents && !row.name && !row.sort && !row.shared && cleanCount(row.count) > 0;
+}
+
+/**
+ * The like stack a stack laid at room-world `x` on surface `on` (a piece id, or null for the floor)
+ * joins: the nearest of its class on the same surface within `radius`, or null. `stack` itself, and
+ * anything not joinable, never counts.
+ */
+export function likeStackAt(rows, stack, x, on, radius = PLACED_MERGE_RADIUS) {
+  if (!Array.isArray(rows) || !joinable(stack)) return null;
+  const surface = on ?? null;
+  const px = finite(x, NaN);
+  if (!Number.isFinite(px)) return null;
+  let best = null;
+  for (const row of rows) {
+    if (row === stack || row.id === stack.id || row.classTsid !== stack.classTsid || !joinable(row)) continue;
+    if ((row.on ?? null) !== surface) continue;
+    const d = Math.abs(finite(row.x, Infinity) - px);
+    if (d <= radius && (!best || d < best.d)) best = { row, d };
+  }
+  return best?.row || null;
+}
+
+/**
+ * One set-down stack laid onto another of its class (a Decoration Mode move onto a like stack): it
+ * joins it, its copies' wear and words after the stack's own (as dropInventoryStack's merge), and its
+ * record goes. Nothing is made or lost. Returns { ok, count, stack } or { ok: false, reason }.
+ */
+export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {}) {
+  const rows = state?.streets?.[cleanStreetTsid(streetTsid)];
+  if (!Array.isArray(rows) || fromId === intoId) return { ok: false, reason: 'missing' };
+  const index = rows.findIndex((row) => row.id === fromId);
+  const into = rows.find((row) => row.id === intoId);
+  const from = rows[index];
+  if (!from || !into) return { ok: false, reason: 'missing' };
+  if (from.classTsid !== into.classTsid || !joinable(from) || !joinable(into)) return { ok: false, reason: 'unlike' };
+  const count = cleanCount(from.count);
+  const had = cleanCount(into.count);
+  if (from.points || into.points) into.points = [...pointsFor(into.points, had), ...pointsFor(from.points, count)];
+  if (from.tags || into.tags) into.tags = [...pointsFor(into.tags, had), ...pointsFor(from.tags, count)];
+  into.count = had + count;
+  into.droppedAt = Math.max(0, Math.floor(finite(opts.now, Date.now())));
+  rows.splice(index, 1);
+  return { ok: true, count, stack: { ...into } };
+}
+
 /** Move all or part of a street stack back into the pack. */
 export function pickupDroppedStack(state, inv, streetTsid, stackId, requested = Infinity) {
   const street = cleanStreetTsid(streetTsid);

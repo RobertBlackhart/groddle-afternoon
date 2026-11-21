@@ -100,7 +100,8 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { pickupCountTitle } from '../world-items.js?v=9665f5dd';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=4de0da41';
+import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
 import { isBagClass } from '../pack-slots.js?v=d9ab4a0b';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
@@ -5899,23 +5900,45 @@ function overPack(clientX, clientY) {
   return Boolean(r?.width) && clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
 }
 
-/** Set a stack down where `p` (room px) lands: on the shelf or table under it, else the floor. */
+/**
+ * The like stack a stack moved to `target` (stackSurfaceAt) joins, or null (#593): one of its class on
+ * the same shelf, table or floor, where it lands (js/world-items.js likeStackAt). A class whose copies
+ * each keep their own stack never joins (js/tools.js keepsOwnStack), as its pack drop does not.
+ */
+function moveJoins(engine, row, target) {
+  if (!row || !target || keepsOwnStack(row.classTsid)) return null;
+  return likeStackAt(roomStackRows(engine), row, target.x + roomX0(), target.on);
+}
+
+/**
+ * Set a stack down where `p` (room px) lands: on the shelf or table under it, else the floor. Onto a
+ * like stack there it joins it (#593), as the original's move did: Decoration Mode sent the move as
+ * itemstack_modify without no_merge when it landed on one (HandOfDecorator.as shouldMerge 1656-1670;
+ * main.js doModifyItem 4855-4866 puts it into position merging), as a pack drop there merges too.
+ */
 function moveStack(engine, id, p) {
   const row = stackRow(engine, id);
   if (!row) return { ok: false, reason: 'gone' };
   closeStackCount(engine);
   const target = stackSurfaceAt(decor, p.x, p.y);
-  row.x = target.x + roomX0();
-  row.y = target.y;
-  if (target.on != null) row.on = target.on;
-  else delete row.on;
+  const into = moveJoins(engine, row, target);
+  const joined = into ? mergeDroppedStacks(engine.droppedItems, engine.dropTsid ?? engine.streetTsid, id, into.id) : null;
+  if (!joined?.ok) {
+    row.x = target.x + roomX0();
+    row.y = target.y;
+    if (target.on != null) row.on = target.on;
+    else delete row.on;
+  }
   engine.droppedItemsChanged?.();
   engine.playSound?.('ITEM_DROP', { volume: 0.45 });
-  engine.setData('homeStackLast', `moved:${id}:${target.on ?? 'floor'}`);
+  if (joined?.ok) {
+    engine.setData('homeStackLast', `merged:${id}:${into.id}:${target.on ?? 'floor'}`);
+    id = into.id;
+  } else engine.setData('homeStackLast', `moved:${id}:${target.on ?? 'floor'}`);
   selected = { kind: 'stack', id };
   drawStackSelection(engine);
   renderBar(engine);
-  return { ok: true, target };
+  return { ok: true, target, ...(joined?.ok ? { merged: into.id } : {}) };
 }
 
 /**
@@ -6068,7 +6091,9 @@ function moveStackDrag(engine, e) {
   const hit = drag.over === 'room' && row ? displayDropAt(toRoom(worldPoint(engine, e)), row.classTsid) : null;
   drawDisplayTarget(engine, hit);
   const target = drag.over === 'room' && row && !hit ? stackSurfaceAt(decor, toRoom(worldPoint(engine, e)).x, toRoom(worldPoint(engine, e)).y) : null;
-  drawPackMarker(engine, target, row);
+  // Over a like stack it joins (#593): the marker sits on that stack.
+  const join = moveJoins(engine, row, target);
+  drawPackMarker(engine, join ? { x: join.x - roomX0(), y: join.y } : target, row);
   syncFloating(engine);
   engine.setData('homeDrag', `stack:${row?.classTsid || ''}:${drag.over || ''}`);
 }

@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { bagKeep, giveBag, layoutPack, ownBagLabel, takeBag } from '../public/js/pack-slots.js?v=d9ab4a0b';
-import { createDroppedItemState, parseDroppedItemState, placeDroppedBag, serializeDroppedItemState, takeDroppedRecord } from '../public/js/world-items.js?v=9665f5dd';
+import { createDroppedItemState, parseDroppedItemState, placeDroppedBag, serializeDroppedItemState, takeDroppedRecord } from '../public/js/world-items.js?v=4de0da41';
 import { cabinetPut, cabinetTake, normalizeContents, slotHoldsBag } from '../public/js/home-storage.js?v=b0225465';
 
 const root = join(import.meta.dirname, '..');
