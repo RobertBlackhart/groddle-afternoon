@@ -267,14 +267,18 @@ function questActive(engine, quest) {
 /* ------------------------------------------------------------ set / clear */
 
 function setRoute(engine, opts = {}) {
+  // #584: at home the route starts where the way out leads (the street you came from), as the Back
+  // Alley's route starts from the street you came from (npc_bureaucrat.js 786). Glitch refused any
+  // route from a house ("Return to the world to continue on your path", player.js 2481).
+  const door = opts.from ? '' : homeDoorStreet(engine);
   // #538: underground the route starts from the station's street (the train's last stop's), as legStep reads it.
-  const from = opts.from || (offWorld(engine) ? '' : routeStreet(engine));
+  const from = opts.from || door || (offWorld(engine) ? '' : routeStreet(engine));
   const res = planRoute(state, roads(engine) || {}, {
     from,
     to: opts.to,
     source: opts.source || 'player',
     quest: opts.quest || '',
-    inHome: !opts.from && Boolean(engine.homeContext?.().inHome),
+    inHome: !opts.from && !door && Boolean(engine.homeContext?.().inHome),
     rides: routeRides(rides, opts.source || 'player'),
     oneWay,
     // From where you stand, when the route starts on the street you are on.
@@ -287,6 +291,14 @@ function setRoute(engine, opts = {}) {
   refresh(engine);
   redrawOpenMap(engine);
   return res;
+}
+
+/** #584: at home, the street the way out leads to (homeContext wayOut), or '' anywhere else. */
+function homeDoorStreet(engine) {
+  const home = engine.homeContext?.();
+  if (!home?.inHome) return '';
+  const tsid = String(home.wayOut?.tsid || home.returnLocation?.tsid || '');
+  return tsid && graphKey(roads(engine) || {}, tsid) ? tsid : '';
 }
 
 /** G774: where a route to the nearest of `opts.to` would end and how many streets away, without setting it. */

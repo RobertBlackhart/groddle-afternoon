@@ -91,6 +91,17 @@ export function pickMapSpot(candidates, hubHasMap, streetOnHub, fallback = '56')
 }
 
 /**
+ * #584: at home (your home street or house, on no region map) the Map stands you on the street your
+ * way out leads to (`door`: { tsid }), on its region. The street index gives its hub; null when it
+ * has none.
+ */
+export function homeDoorMapSpot(door, streetIndex) {
+  const tsid = String(door?.tsid || '');
+  const hubId = tsid ? streetIndex?.[tsid]?.hubId : null;
+  return hubId == null || hubId === '' ? null : { tsid, hubId: String(hubId) };
+}
+
+/**
  * Naraka's map is for the dead (HubMapDialog.as goToHubFromClick 475-484, Hub.HELL_TSID '40': "because
  * mart has a link to a place in hell and you must be dead to see it"). The words a living player is
  * told instead of the map, or '' when the hub's map may open.

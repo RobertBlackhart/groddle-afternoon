@@ -30,7 +30,7 @@ import {
   ROUTE_STOPS_SHOWN,
   signpostToward,
 } from '../public/js/map-routes.js?v=70f30ddf';
-import { mapRoutesFeature, hopInReach, DOOR_REACH_Y } from '../public/js/features/map-routes-feature.js?v=dbf969c6';
+import { mapRoutesFeature, hopInReach, DOOR_REACH_Y } from '../public/js/features/map-routes-feature.js?v=0f93b4ac';
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=6c7ed1ff';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=46454cb5';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';

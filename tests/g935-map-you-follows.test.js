@@ -6,7 +6,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STREET_ROTATION_BUFFER, hubYouPoints, renderHubMapSvg, youOnStreet } from '../public/js/map-graph.js?v=3b7d09a6';
+import { STREET_ROTATION_BUFFER, hubYouPoints, renderHubMapSvg, youOnStreet } from '../public/js/map-graph.js?v=2b2349ab';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

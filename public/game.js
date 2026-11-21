@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=545f2ded';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=be8644f3';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1016,11 +1016,12 @@ import {
   parseMapSearchValue,
   noteMapTrail,
   pickMapSpot,
+  homeDoorMapSpot,
   hubMapRefusal,
   MAP_INDEX_URL,
   HUB_56_MAP_URL,
   PUBLIC_HUBS,
-} from './js/map-graph.js?v=3b7d09a6';
+} from './js/map-graph.js?v=2b2349ab';
 // G471: the world map and the subway map in the Map's window.
 import { MAP_VIEW_TITLES, bindSubwayMap, bindWorldMap, mapViewSubtitle, nearestStation, renderSubwayMapSvg, renderWorldMapSvg, worldRegionList } from './js/map-views.js?v=9c235863';
 // MAPLOAD: a region's painting fetched ahead of the click, its thumb in its place while it loads.
@@ -1217,7 +1218,9 @@ async function playerMapSpot(mapIndex) {
   const here = { tsid: currentStreetTsid, hubId: currentStreet?.hubId };
   const featureSpot = features.query('mapStreet', engine);
   const trail = mapTrail.filter((row) => row.tsid !== currentStreetTsid).reverse();
-  const candidates = [here, ...(featureSpot ? [featureSpot] : []), ...trail];
+  // #584: at home, the street your way out leads to stands for where you are.
+  const doorSpot = homeIsInstanced() ? homeDoorMapSpot(homeReturnDestination(), STREET_INDEX.streets) : null;
+  const candidates = [here, ...(featureSpot ? [featureSpot] : []), ...(doorSpot ? [doorSpot] : []), ...trail];
   const hubHasMap = (id) => {
     const row = mapIndex?.hubs?.[id];
     return Boolean(row && (row.streetCount > 0 || row.zone));
@@ -26729,10 +26732,9 @@ function renderHomeMapCallout(panel) {
 async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } = {}) {
   // On the subway train: the line you are riding (features/subway-feature.js openMapOverride).
   if (!hubId && !find && features.query('openMapOverride', engine) === true) return;
-  if (homeIsInstanced()) {
-    openHomePanel();
-    return;
-  }
+  // #584: the Map opens at home too, on the region your way out leads to (playerMapSpot). Glitch
+  // opened it in a house (locations/home.js prep_geometry_callback clears no_map; HubMapDialog.as
+  // start 943-947 opens the World Map in a POL).
   if (greedyStreetIsInstanced()) {
     toast('Storyland is read, not mapped.');
     return;
