@@ -6,8 +6,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=86be8b53';
-import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=2a55bf61';
+import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=1577e09d';
+import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=572c2261';
 
 const root = join(import.meta.dirname, '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

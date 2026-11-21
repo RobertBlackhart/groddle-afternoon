@@ -12853,6 +12853,8 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #quest .qc-body .content-action-btn:hover:not(:disabled) { background: var(--accent-hover); }
 [data-ui="modern"] #quest .qc-body .content-action-btn:disabled { background: var(--surface-sunken); border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
 [data-ui="modern"] #quest .qc-empty { margin: 0; padding: var(--space-6) var(--space-2); text-align: center; color: var(--text-muted); font-size: var(--fs-m); }
+/* #585: the browser hides the list (an ad blocker's rule): said above it (js/ui/quest-sheet.js markStyledOut). */
+#quest-panel .qc-styled-out { margin: 0 0 var(--space-2, 8px); padding: var(--space-2, 8px) var(--space-3, 12px); border-radius: var(--radius-m, 8px); background: var(--surface-sunken, #f3efe6); color: var(--warn, #9a5b00); font-size: var(--fs-s, 13px); font-weight: var(--fw-bold, 700); line-height: var(--lh-body, 1.4); }
 /* Ticket 77: the search box and the sort picker under the tabs (a long log only). */
 [data-ui="modern"] #game-root #quest-panel .qc-tools { flex: none; display: flex; align-items: center; gap: var(--space-2); margin: 0 var(--space-4) var(--space-2); }
 [data-ui="modern"] #game-root #quest-panel .qc-tools[hidden] { display: none; }

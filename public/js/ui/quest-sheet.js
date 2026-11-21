@@ -27,8 +27,9 @@
  *
  * The cards' classes and the buttons' hooks are game.js's (.q-card, .q-title, .q-req, .q-bar,
  * .q-put-off, .story-offer, data-quest-try ...). QA: canvas data questTab, questTabCounts (every
- * card), questTabShown (the cards the search keeps), questSearch, questSort, contextMenu
- * ("quest-card:<id>", "quest-sort"); #quest-tools, #quest-search, #quest-sort.
+ * card), questTabShown (the cards the search keeps), questSearch, questSort, questStyledOut (#585:
+ * cards a style from outside the game hides), contextMenu ("quest-card:<id>", "quest-sort");
+ * #quest-tools, #quest-search, #quest-sort, #quest-styled-out.
  */
 
 import { escapeText, CHEVRON_ICON } from './verb-menu.js?v=d114929c';
@@ -159,6 +160,24 @@ export function visibleRowCount(box) {
   for (const c of box?.children || []) if (!c.hidden) n += 1;
   return n;
 }
+
+/**
+ * #585 (and #155): the rows a list box keeps on show (no `hidden`) that the page draws no box for.
+ * Only a style from outside the game hides them that way: an ad blocker's element-hiding rule (the
+ * #155 reporter's list came back with AdGuard off). The cards are drawn, counted and not hidden, so
+ * a redraw cannot bring them back (questLogNeedsSwap). 0 while the box's own holder is not drawn
+ * (the sheet closed), so a closed sheet never counts.
+ */
+export function styledOutRowCount(box) {
+  const holder = box?.parentElement;
+  if (!holder?.getClientRects?.().length) return 0;
+  let n = 0;
+  for (const c of box.children || []) if (!c.hidden && c.getClientRects && !c.getClientRects().length) n += 1;
+  return n;
+}
+
+/** #585: the line over a list something outside the game hides. */
+export const QUEST_STYLED_OUT_TEXT = 'Your browser is hiding these quests. An ad blocker can do this: try turning it off for this site.';
 
 /** A tab's label: "Active 40", or "Active 3 of 40" while a search is on. */
 export function questTabLabel(id, total, shown = total, searching = false) {
@@ -295,6 +314,8 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
   let searching = false;
   /** The box the cards are drawn into (bindMenu), so a pick finds the card as drawn now. */
   let shownBox = null;
+  /** #585: the line that says the browser hides the list (styledOutRowCount), made when first needed. */
+  let styledOutNote = null;
   /** Cards the player opened or closed (by quest id); the first card of a tab starts open. */
   const toggled = new Map();
   /** A quest's details, or null when they cannot be had: one quest never stops the rest (lane questlist). */
@@ -656,9 +677,30 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
     });
   }
 
+  /**
+   * #585: after a draw, say so when the shown list's rows are kept on show but something outside
+   * the game hides them (styledOutRowCount). The line sits above the list, outside it, so a rule on
+   * the cards or the list leaves it. Returns how many rows are hidden that way.
+   */
+  function markStyledOut(box) {
+    const n = styledOutRowCount(box);
+    if (n && !styledOutNote && box?.parentElement) {
+      styledOutNote = doc.createElement('p');
+      styledOutNote.id = 'quest-styled-out';
+      styledOutNote.className = 'qc-styled-out';
+      styledOutNote.setAttribute('role', 'status');
+      styledOutNote.textContent = QUEST_STYLED_OUT_TEXT;
+      box.parentElement.insertBefore(styledOutNote, box);
+    }
+    if (styledOutNote) styledOutNote.hidden = !n;
+    setData('questStyledOut', String(n));
+    return n;
+  }
+
   return {
     arrange,
     renderTabs,
+    markStyledOut,
     /**
      * RIGHTCLICK: wire the cards' menu on the box they are shown in (once): right-click, Ctrl+click
      * on a Mac, Shift+F10 or the Menu key on a focused head or button in a card.

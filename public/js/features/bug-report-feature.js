@@ -211,7 +211,9 @@ export function openPanels(doc = globalThis.document) {
  * #155 (Quests sheet with counts and no rows): the sheet as drawn when the report was written,
  * "active 0/69 cards, tabs 26/8/32": the tab in use, the cards shown in it of the cards #quest
  * holds (every tab), and the numbers on the tabs. A report then tells a list that never drew
- * (0/0) from cards drawn but not shown (0/69) from a picture that missed them (25/69).
+ * (0/0) from cards drawn but not shown (0/69) from a picture that missed them (25/69). #585: cards
+ * on show that the page draws no box for are named, "0/20 cards (8 styled out)": a style from outside
+ * the game (an ad blocker's rule) hides them.
  */
 export function questLogDetail(panel) {
   const list = panel?.querySelector?.('#quest');
@@ -222,7 +224,9 @@ export function questLogDetail(panel) {
   const on = tabs.find((t) => t.getAttribute?.('aria-selected') === 'true');
   const tab = slug(on?.dataset?.tab || on?.textContent?.replace(/[\d\s]+(of[\d\s]+)?$/, '') || '');
   const counts = tabs.map((t) => (/\d+(?:\s+of\s+\d+)?/.exec(String(t.textContent || '')) || ['?'])[0]);
-  return `${tab ? `${tab} ` : ''}${shown}/${cards.length} cards${counts.length ? `, tabs ${counts.join('/')}` : ''}`;
+  // #585: cards kept on show (no hidden) with no box: a style from outside the game hides them.
+  const styled = list.parentElement?.getClientRects?.().length ? cards.filter((c) => !c.hidden && c.getClientRects && !c.getClientRects().length).length : 0;
+  return `${tab ? `${tab} ` : ''}${shown}/${cards.length} cards${styled ? ` (${styled} styled out)` : ''}${counts.length ? `, tabs ${counts.join('/')}` : ''}`;
 }
 
 /**

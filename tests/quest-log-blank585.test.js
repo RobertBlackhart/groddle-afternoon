@@ -15,11 +15,13 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState, getQuestProgress, listQuestLogNewestFirst, listQuests } from '../public/js/quests.js?v=90a2ee3d';
-import { createQuestSheet, questLogNeedsSwap, questProgress, questStep, visibleRowCount } from '../public/js/ui/quest-sheet.js?v=86be8b53';
+import { createQuestSheet, questLogNeedsSwap, questProgress, questStep, visibleRowCount, styledOutRowCount, QUEST_STYLED_OUT_TEXT } from '../public/js/ui/quest-sheet.js?v=1577e09d';
+import { questLogDetail } from '../public/js/features/bug-report-feature.js?v=572c2261';
 import { FakeEl, matches } from './social-fake-dom.js';
 
 const pub = join(import.meta.dirname, '../public');
 const game = readFileSync(join(pub, 'game.js'), 'utf8');
+const css = readFileSync(join(pub, 'style.css'), 'utf8');
 
 before(async () => {
   await loadContentCatalogsFromDir(join(pub, 'assets/content'));
@@ -132,5 +134,94 @@ describe('#585 one bad quest never blanks the list', () => {
     state.active[b] = { classTsid: b, progress: {}, startedAt: 1 };
     assert.equal(getQuestProgress(state, a).requirements[0].current, 0);
     assert.deepEqual(listQuestLogNewestFirst(state).map((r) => r.def.classTsid), [a, b]);
+  });
+});
+
+/**
+ * The cause, found in Firefox (Playwright's build): the reporter's picture and context ("0/20 cards",
+ * no "No active quests" line, the tabs still counting) are what an outside stylesheet hiding the
+ * cards gives (an ad blocker's element-hiding rule; #155's list came back with AdGuard off). The
+ * cards keep no `hidden`, so no redraw brings them back. A box the page draws (`drawn`) has rects.
+ */
+function drawnBox(drawn = true) {
+  const el = new El('div');
+  el.getClientRects = () => (drawn ? [{}] : []);
+  return el;
+}
+function styled(c, drawn) {
+  c.getClientRects = () => (drawn && !c.hidden ? [{}] : []);
+  return c;
+}
+
+describe('#585 cards a style from outside the game hides are named', () => {
+  it('counts rows kept on show that the page draws no box for, never a closed sheet', () => {
+    const body = drawnBox();
+    const box = drawnBox();
+    body.append(box);
+    const off = styled(card('Off tab'), false);
+    off.hidden = true;
+    box.append(styled(card('A'), false), styled(card('B'), false), off);
+    assert.equal(styledOutRowCount(box), 2, 'two cards on show, no box');
+    assert.equal(visibleRowCount(box), 2, 'what the v0.54.1 redraw counts: it sees nothing wrong');
+    const closed = drawnBox(false);
+    closed.append(box);
+    assert.equal(styledOutRowCount(box), 0, 'a closed sheet draws nothing: not counted');
+    const fine = drawnBox();
+    const box2 = drawnBox();
+    fine.append(box2);
+    box2.append(styled(card('C'), true));
+    assert.equal(styledOutRowCount(box2), 0);
+    assert.equal(styledOutRowCount(null), 0);
+  });
+
+  it('the sheet says so above the list, and takes the line away once the cards show', () => {
+    const data = {};
+    const sheet = createQuestSheet({ document: doc, setData: (k, v) => { data[k] = v; }, storage: null });
+    const body = drawnBox();
+    const box = drawnBox();
+    body.append(box);
+    const cards = [card('A', { quest: 'a' }), card('B', { quest: 'b' })].map((c) => styled(c, false));
+    box.append(...cards);
+    assert.equal(sheet.markStyledOut(box), 2);
+    const note = body.children[0];
+    assert.equal(note.id, 'quest-styled-out');
+    assert.equal(note.hidden, false);
+    assert.equal(note.textContent, QUEST_STYLED_OUT_TEXT);
+    assert.ok(!/\u2014/.test(QUEST_STYLED_OUT_TEXT), 'no em dash');
+    assert.equal(data.questStyledOut, '2');
+    cards.forEach((c) => styled(c, true));
+    assert.equal(sheet.markStyledOut(box), 0);
+    assert.equal(note.hidden, true);
+    assert.equal(body.children.filter((n) => n.id === 'quest-styled-out').length, 1, 'one line, made once');
+  });
+
+  it('game.js asks after every draw, and the line has its look', () => {
+    const block = game.slice(game.indexOf("const qShown = document.getElementById('quest');"), game.indexOf('renderQuestTracker();'));
+    assert.ok(block.indexOf('questSheet.markStyledOut(qShown)') > block.indexOf('qShown.replaceChildren'), 'after the swap');
+    assert.match(css, /#quest-panel \.qc-styled-out \{/);
+  });
+
+  it('a report names them: "0/20 cards (8 styled out)"', () => {
+    const panel = new El('div');
+    const body = drawnBox();
+    const list = drawnBox();
+    list.id = 'quest';
+    panel.append(body);
+    body.append(list);
+    for (const [t, sel] of [['active', 'true'], ['offered', 'false'], ['done', 'false']]) {
+      const b = new El('button');
+      b.setAttribute('role', 'tab');
+      b.dataset.tab = t;
+      b.setAttribute('aria-selected', sel);
+      b.textContent = `${t} 1`;
+      panel.append(b);
+    }
+    const a = styled(card('A', { quest: 'a' }), false);
+    const o = styled(card('O', { cls: 'q-put-off' }), false);
+    o.hidden = true;
+    list.append(a, o);
+    assert.equal(questLogDetail(panel), 'active 0/2 cards (1 styled out), tabs 1/1/1');
+    a.getClientRects = () => [{}];
+    assert.equal(questLogDetail(panel), 'active 1/2 cards, tabs 1/1/1');
   });
 });

@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { REPORT_TEXT } from '../public/js/reports.js?v=813fec3c';
-import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=2a55bf61';
+import { REPORT_LEAVE_OUT, REPORT_MASK, maskClone, openPanels } from '../public/js/features/bug-report-feature.js?v=572c2261';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=85e553c8';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=10627b7b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a26fa8d9';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1091,7 +1091,7 @@ import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=aaf612e5';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=86be8b53';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=1577e09d';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=6e11faf8';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=fba9a19d';
@@ -6760,6 +6760,9 @@ function updateHud() {
       qShown.replaceChildren(...qBox.childNodes);
       questLogDrawn = drawn;
     }
+    // #585: rows kept on show that the page draws no box for are hidden by a style from outside the
+    // game (an ad blocker's rule); no redraw brings them back, so the sheet says so.
+    questSheet.markStyledOut(qShown);
   }
   renderQuestTracker();
   renderPinnedQuests();
