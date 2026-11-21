@@ -22,7 +22,7 @@
  */
 
 import { addItem } from '../inventory.js?v=6414dbdc';
-import { listDroppedStacks } from '../world-items.js?v=4de0da41';
+import { listDroppedStacks } from '../world-items.js?v=46eb505b';
 import { DOOR_KEYS, doorKeyClass } from '../doors.js?v=727d0e0b';
 import {
   KEY_RESPAWN_MS,

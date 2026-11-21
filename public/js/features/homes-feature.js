@@ -100,7 +100,7 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=4de0da41';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=46eb505b';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
 import { isBagClass } from '../pack-slots.js?v=d9ab4a0b';

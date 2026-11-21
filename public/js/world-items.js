@@ -238,7 +238,7 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
  * How near a stack set down in a house must land to a like one to join it: the original's Decoration
  * Mode merged only "dropping directly on stack", 10 px along the same plat line (HandOfDecorator.as
  * shouldMerge 1656-1670, tolerance 10, on the drop and on a move's itemstack_modify alike; main.js
- * doModifyItem and takeable_drop merge unless no_merge). Ours is the pack drop's 12 px (game.js dropPackStackAt).
+ * doModifyItem and takeable_drop merge unless no_merge). The game uses the pack drop's 12 px (game.js dropPackStackAt).
  */
 export const PLACED_MERGE_RADIUS = 12;
 
