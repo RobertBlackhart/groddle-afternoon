@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 2956,
+  "commits": 2958,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Quick Act presses on a street tree no longer choose Talk to"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-20",
     "kind": "fix",
     "text": "Veldt Balm and Kipacre Greens garden beds stand where Tiny Speck's street pictures show them, none in the pig pen"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Visiting Stones and mailboxes no longer stand behind trees and huts drawn in front"
    }
   ]
  },
- "tests": 1225,
+ "tests": 1226,
  "generatedAt": "2026-11-21"
 }
