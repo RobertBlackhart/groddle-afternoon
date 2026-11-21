@@ -5098,6 +5098,21 @@
    "rows": [
     "G1078"
    ]
+  },
+  {
+   "id": "per-player-open-roads",
+   "title": "A street you have stood on keeps its road open for you while it is still being built for everyone else.",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/open-roads.js"
+    }
+   ],
+   "why": "Glitch locked a street being built for the whole world, with no per-player roads. The remake keeps a per-player list so nobody is stranded where they already stood, and the Projects tab says so. Whether to keep it is Austin's call (R11, 2026-11-21).",
+   "rows": [
+    "G1075"
+   ]
   }
  ]
 }

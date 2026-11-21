@@ -802,6 +802,9 @@
   "public/js/npc-glitch.js": {
     "stand-in: // Glitches showing the stand-in frame for this sheet switch to the real": "solo-stand-ins"
   },
+  "public/js/open-roads.js": {
+    "remake-only: * One remake-only layer on top, per player: a street you have": "per-player-open-roads"
+  },
   "public/js/operation-grow-scene.js": {
     "remake-own: * The remake's own reading: there is no known way between the tiers": "ours-operation-grow"
   },
