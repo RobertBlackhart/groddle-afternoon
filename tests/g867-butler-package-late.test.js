@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=73d76053';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=f8cb9de6';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { FakeEl, Display, fakePixi } from './fake-scene.js';
 

@@ -752,8 +752,10 @@ function buildGroundView(engine, entity) {
     sprite._worldHitH = Math.max(40, frame?.sheet?.frameHeight || 40);
   }
   engine.entityLayer.addChild(sprite);
-  entity.view = { kind: 'ground', sprite, sheetPath: frame?.sheet?.path, frameIndex: frame?.frameIndex };
+  // #582: a frame whose sheet is not loaded yet is not recorded as drawn, so the refresh draws it.
+  entity.view = { kind: 'ground', sprite, sheetPath: texture ? frame?.sheet?.path : null, frameIndex: texture ? frame?.frameIndex : null };
   entity.target = targetFor(engine, entity, sprite);
+  if (!texture && frame?.sheet) refreshEntity(engine, entity);
 }
 
 function buildFireflyView(engine, entity) {
@@ -1151,6 +1153,8 @@ function refreshEntity(engine, entity) {
   const missing = sheetsNeeded(entity.node).filter((def) => !sheets.has(def.path));
   if (missing.length) {
     Promise.all(missing.map((def) => ensureSheet(engine, def))).then(() => {
+      // A sheet that failed to load is not asked for again in a loop.
+      if (!missing.every((def) => sheets.has(def.path))) return;
       if (myGeneration === generation && entities.includes(entity)) refreshEntity(engine, entity);
     });
     return;
@@ -1758,6 +1762,12 @@ function scheduleAutoplay(engine) {
 }
 
 async function spawnStreet(engine, items, myGeneration) {
+  // #582: the sheets for each node as it will be drawn. A Paper Tree's care runs out 6 minutes after
+  // it was watered and petted (tickResourceNode), which changes its sheet: the needs were read before
+  // that tick, so a tree left cared for came back needing care over a sheet never loaded, and stood
+  // invisible (its Tap label and menu working) until watering changed its sheet again.
+  const ticked = Date.now();
+  for (const item of items) tickResourceNode(item.node, ticked);
   const needs = new Map();
   for (const item of items) for (const def of sheetsNeeded(item.node)) needs.set(def.path, def);
   const fireflies = items.some((item) => item.classTsid === 'npc_firefly');
