@@ -23,7 +23,7 @@ import {
 } from '../public/js/street-model.js?v=a9a05f9d';
 import { buildPlatformCandidates, planStreetPlacements } from '../public/js/street-ecology.js?v=26d85806';
 import { landingY } from '../public/js/walk-surface.js?v=3c919d5b';
-import { OWNED_STREETS } from '../public/js/location-events.js?v=7fd40f71';
+import { OWNED_STREETS } from '../public/js/location-events.js?v=c43d0f0b';
 
 const spike = join(import.meta.dirname, '..');
 const streetsDir = join(spike, 'public/assets/streets');

@@ -21,7 +21,7 @@ import {
   reachableEvents,
   runLocationEvent,
   streetOwner,
-} from '../public/js/location-events.js?v=7fd40f71';
+} from '../public/js/location-events.js?v=c43d0f0b';
 import { inOriginalOrder } from '../tools/stable-json.mjs';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 
@@ -172,7 +172,8 @@ describe('location events', () => {
     assert.equal(boxes, 345);
     const s = street('GIF2K0TOOK434L9');
     assert.equal(s.eventBoxes[0].onEnter[0], 'bounce');
-    assert.ok(inEventBox(s.eventBoxes[0], s.eventBoxes[0].x, s.eventBoxes[0].y - 60));
+    // #572: the cap's floor run and a little over it (tests/g1078-shroom-boxes.test.js).
+    assert.ok(inEventBox(s.eventBoxes[0], s.eventBoxes[0].x, s.eventBoxes[0].y - 20));
     assert.equal(inferEventBoxes(s, s.events, 3).length, 0, 'a count mismatch infers nothing');
   });
 
@@ -201,7 +202,7 @@ describe('location events', () => {
 
 describe('walkable fallback', () => {
   test('only platforms the arrival chain re-enables may be switched off', async () => {
-    const { recoverableToggles } = await import('../public/js/location-events.js?v=7fd40f71');
+    const { recoverableToggles } = await import('../public/js/location-events.js?v=c43d0f0b');
     const events = {
       player_enter: [{ type: 'plat', plat: 'p1', pc_perm: 0 }, { type: 'event', event: 'cycle', delay: 2000 }],
       cycle: [{ type: 'plat', plat: 'p1', pc_perm: -1 }, { type: 'wall', wall: 'w1', pc_perm: 0 }],

@@ -23,7 +23,7 @@ import {
   windowOrbs,
 } from '../public/js/penumbra.js?v=9d5fe4dc';
 import { autoplaySteps, normalizePuzzleData, quoinsInReach, stepTriggers } from '../public/js/puzzle-triggers.js?v=221b67a9';
-import { createEventRuntime, dueEventTimers, runLocationEvent } from '../public/js/location-events.js?v=7fd40f71';
+import { createEventRuntime, dueEventTimers, runLocationEvent } from '../public/js/location-events.js?v=c43d0f0b';
 import { collectQuoin, createQuoinState } from '../public/js/quoins.js?v=5abad2c7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

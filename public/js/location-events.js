@@ -434,7 +434,16 @@ export function eventDecoIds(events) {
  * many Collision-triggered Event Boxes as `tree_int_wall_sroom_1` wall-shroom
  * decos (43 of 43), so each shroom carries one box that fires `bounce`.
  * Boxes are screen space like `street.boxes`: bottom-centre x, y, w, h.
- * @param {object} street street JSON (layers, bounds)
+ *
+ * #572 (G1078): the boxes' own sizes were not archived, and a box as big as the whole picture
+ * (246 x 185, most of it the art's empty top and the stem under the cap) caught a fall past the
+ * cap's side, so Pholiota Squarros' only way down threw nearly every fall back up. The bounce is
+ * the cap's (the art: a flat red cap on a wall, nothing to land on but its top), and every one of
+ * the 345 shrooms has its cap drawn as a floor run (SHROOM_CAP_BAND: 0.49 to 0.72 of the picture's
+ * height over its foot, ends 0.29 to 0.58 of its width out). So the box is that run: as wide as it
+ * (never past the picture's sides), from its lowest point (feet on the cap) up SHROOM_CAP_BOX_UP
+ * of the picture's height. A shroom with no run under its middle keeps the art's cap (SHROOM_CAP_ART).
+ * @param {object} street street JSON (layers, bounds, platforms)
  * @param {Record<string, object[]>} events
  * @param {number} ctebCount Collision-triggered Event Box objrefs in the L*.xml
  */
@@ -454,15 +463,72 @@ export function inferEventBoxes(street, events, ctebCount = 0) {
     }
   }
   if (shrooms.length !== ctebCount) return [];
+  const floors = floorLines(street);
   return shrooms.map((rect, i) => ({
     id: `bounce_${i + 1}`,
-    ...rect,
+    ...shroomCapBox(rect, floors),
     onEnter: ['bounce'],
     // reset_phys exists too, but which box fired it was not archived; running
     // it on exit would cut the 300-400 ms bounce short, so the duration ends it.
     onExit: [],
     source: 'wall-shroom',
   }));
+}
+
+/** #572: where under a wall shroom its cap's floor run is looked for (shares of the picture's height over its foot). */
+export const SHROOM_CAP_BAND = Object.freeze({ low: 0.3, high: 0.9 });
+/** #572: how far over the cap's lowest point its box reaches (a share of the picture's height): the cap and a jump's feet. */
+export const SHROOM_CAP_BOX_UP = 0.25;
+/**
+ * #572: the art's cap for a shroom with no floor run (tree_int_wall_sroom_1, 374 x 282: the red top
+ * from row 64 to row 170, at most 1 to 373 wide), as shares of the picture: half its width each
+ * way, and its foot over the picture's.
+ */
+export const SHROOM_CAP_ART = Object.freeze({ half: 0.46, foot: 0.6 });
+
+/** A street's standable lines in screen space, left to right. */
+function floorLines(street) {
+  const l = street?.bounds?.l || 0;
+  const t = street?.bounds?.t || 0;
+  const out = [];
+  for (const p of street?.platforms || []) {
+    if (p.pc_perm === 1 || p.pc_perm === 0) continue;
+    const a = { x: p.x1 - l, y: p.y1 - t };
+    const b = { x: p.x2 - l, y: p.y2 - t };
+    out.push(a.x <= b.x ? { x1: a.x, y1: a.y, x2: b.x, y2: b.y } : { x1: b.x, y1: b.y, x2: a.x, y2: a.y });
+  }
+  return out;
+}
+
+/** PURE (#572): a wall shroom's bounce box ({ x, y, w, h }, bottom-centre): its cap's floor run, else the art's cap. */
+export function shroomCapBox(rect, floors) {
+  const yAt = (p, x) => (p.x2 === p.x1 ? Math.max(p.y1, p.y2) : p.y1 + ((p.y2 - p.y1) * (x - p.x1)) / (p.x2 - p.x1));
+  const lo = rect.y - rect.h * SHROOM_CAP_BAND.high;
+  const hi = rect.y - rect.h * SHROOM_CAP_BAND.low;
+  const under = (floors || []).filter((p) => p.x1 <= rect.x && p.x2 >= rect.x && yAt(p, rect.x) >= lo && yAt(p, rect.x) <= hi);
+  const up = Math.round(rect.h * SHROOM_CAP_BOX_UP);
+  if (!under.length) {
+    const foot = Math.round(rect.y - rect.h * SHROOM_CAP_ART.foot);
+    return { x: rect.x, y: foot, w: Math.round(rect.w * SHROOM_CAP_ART.half * 2), h: up };
+  }
+  // The cap's run: the top line under its middle, and the lines joined end to end with it.
+  const run = [under.reduce((a, b) => (yAt(b, rect.x) < yAt(a, rect.x) ? b : a))];
+  let left = run[0];
+  let right = run[0];
+  for (let grew = true; grew;) {
+    grew = false;
+    for (const p of floors) {
+      if (run.includes(p)) continue;
+      if (Math.abs(p.x2 - left.x1) <= 3 && Math.abs(p.y2 - left.y1) <= 6) { run.push(p); left = p; grew = true; }
+      else if (Math.abs(p.x1 - right.x2) <= 3 && Math.abs(p.y1 - right.y2) <= 6) { run.push(p); right = p; grew = true; }
+    }
+  }
+  // A run that goes on past the cap (joined to a ledge beside it) stops at the picture's sides.
+  const x1 = Math.max(left.x1, rect.x - rect.w / 2);
+  const x2 = Math.min(right.x2, rect.x + rect.w / 2);
+  const bottom = Math.max(...run.flatMap((p) => [p.y1, p.y2]));
+  const top = Math.min(...run.flatMap((p) => [p.y1, p.y2]));
+  return { x: Math.round((x1 + x2) / 2), y: Math.round(bottom), w: Math.round(x2 - x1), h: Math.round(bottom - top) + up };
 }
 
 /** Point (screen feet) inside a bottom-centre box. */

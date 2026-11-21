@@ -65,7 +65,7 @@
  * card offers the way back here).
  */
 
-import { locationEventsApi } from './location-events-feature.js?v=2c3023b5';
+import { locationEventsApi } from './location-events-feature.js?v=3836af7a';
 import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=5abad2c7';
 import {
@@ -90,7 +90,7 @@ import {
 } from '../puzzle-triggers.js?v=221b67a9';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
-import { partySpaceForStreet } from '../party-spaces.js?v=a748a93f';
+import { partySpaceForStreet } from '../party-spaces.js?v=559a618a';
 import { anchorBottomCentre } from '../sprite-feet.js?v=53939279';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

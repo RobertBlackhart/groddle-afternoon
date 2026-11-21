@@ -74,7 +74,7 @@ import {
 } from '../meditation.js?v=96f23682';
 import { energyMax, forceMetabolic, gainMetabolic, loseEnergy, loseMood, metabolicGain, moodMax } from '../metabolics.js?v=48f784bf';
 import { levitationCards } from '../imagination-effects.js?v=70169933';
-import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=7fd40f71';
+import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=c43d0f0b';
 import { sourceFromUrl } from '../textures.js?v=b1f5bbfe';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
 import { rainbowSound, showRainbow } from '../overlays.js?v=b748389b';

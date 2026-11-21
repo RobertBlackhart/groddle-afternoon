@@ -5079,6 +5079,23 @@
    "rows": [
     "G1077"
    ]
+  },
+  {
+   "id": "shroom-cap-bounce-box",
+   "title": "Each fungal wall shroom's bounce box is its cap: the cap's floor run and a quarter of the picture's height over it (#572).",
+   "kind": "data",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/location-events.js",
+     "symbol": "inferEventBoxes / shroomCapBox"
+    }
+   ],
+   "why": "The 345 Collision-triggered Event Boxes that fire `bounce` on the 40 Kloro bounce streets were not archived, only their count (one per tree_int_wall_sroom_1). The remake inferred each from the shroom (since the street events import); first as the whole picture, which caught falls beside the cap (Pholiota Squarros' only way down). Now the cap the street draws as a floor run, clamped to the picture, else the art's cap.",
+   "ruling": "Claude's default in lane streetk 2026-11-21",
+   "rows": [
+    "G1078"
+   ]
   }
  ]
 }

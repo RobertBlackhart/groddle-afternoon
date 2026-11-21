@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=2d2eb5ac';
+import { reachStreet, streetBuff } from '../public/js/builder/reach-graph.js?v=52856c5d';
 import { CAVE_PIT_TELEPORTERS, LEVEL_3_WEST_TELEPORTER, LEVEL_3_WEST_TSID, cavePitTeleportersOn } from '../public/js/cave-pit.js?v=81e62950';
 import { inTeleporter } from '../public/js/hidden-floors.js?v=e1a92661';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=de9c3275';
