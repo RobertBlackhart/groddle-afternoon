@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2936,
+  "commits": 2938,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A Paper Tree whose care ran out while you were away is drawn, not invisible"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The street project work bubble sits over your head, and the Grinder animates in it on a phone"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-20",
     "kind": "improve",
     "text": "Street project boards say anyone can give items and link where each item comes from"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Mossystep's Street Spirit no longer stands in a Bean Tree's crown"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Ticket To Beam Me Down costs the Paradise ticket price and counts in the day's 11"
    }
   ]
  },
- "tests": 1220,
+ "tests": 1221,
  "generatedAt": "2026-11-21"
 }
