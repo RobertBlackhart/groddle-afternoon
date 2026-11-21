@@ -21,7 +21,7 @@ import {
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
-import { gardenBedWidth, measuredGardenBeds } from './garden-beds.js?v=831b1d97';
+import { gardenBedWidth, measuredGardenBeds, pictureGardenBeds } from './garden-beds.js?v=fca3bae1';
 import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=256c00e9';
 import { SLOTH_SPOTS } from './sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from './sloth-trees.js?v=a3299191';
@@ -522,9 +522,12 @@ export function treePlacementRequest(population) {
   return { key: 'trees', count: population?.treeClasses?.length || 0, clearance: 135, ...(fixed.length ? { fixed } : {}) };
 }
 
-/** G940 (#469): a street's beds measured on its snaps (garden-beds.js), as a population field. */
+/**
+ * G940 (#469): a street's beds measured on its snaps (garden-beds.js), as a population field; on the
+ * two crop-garden streets no snap shows, the beds Tiny Speck's street picture shows (G1085, #575).
+ */
 function gardenBedsField(tsid) {
-  const beds = measuredGardenBeds(tsid);
+  const beds = measuredGardenBeds(tsid) || pictureGardenBeds(tsid);
   return beds ? { gardenBeds: beds } : {};
 }
 
@@ -1170,6 +1173,39 @@ export function branchArtCovers(street) {
   return out;
 }
 
+/**
+ * #575 (G1085, R2): Veldt Balm's planner put a street garden bed inside the animal pen
+ * (groddle_alakol_house_animal_pen, the fenced corral the Piggies live in), where no one plants. The
+ * planner knew nothing of middleground art. A pen or fence deco is kept here as
+ * `{ key, pen: true, block }` (screen space, streetReservedSpots); like branch art it keeps nothing
+ * clear: the PEN_FREE_GROUPS only take a spot whose box reaches into one when no other spot is left.
+ */
+export const PEN_ART = /animal_pen|fence/i;
+/** The groups kept out of pens and fences (PEN_ART): garden beds. */
+export const PEN_FREE_GROUPS = Object.freeze(['gardens']);
+
+/** The street's middleground pen and fence art (PEN_ART) as `{ key, pen: true, block }` in screen space. */
+export function penArtCovers(street) {
+  const out = [];
+  if (!street?.bounds) return out;
+  for (const layer of street.layers || []) {
+    if (!(layer?.name === 'middleground' || Number(layer?.z) === 0)) continue;
+    (layer.decos || []).forEach((d, i) => {
+      const w = Number(d?.w) || 0;
+      const h = Number(d?.h) || 0;
+      if (!Number.isFinite(d?.x) || !Number.isFinite(d?.y) || d.hidden || !w || !h || !PEN_ART.test(String(d.sprite || ''))) return;
+      const p = worldToScreen(street, d.x, d.y);
+      out.push({ x: p.x, y: p.y, key: `pen:${i}`, pen: true, block: { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h, b: p.y } });
+    });
+  }
+  return out;
+}
+
+/** PURE: whether a thing `w` x `h` standing on `spot` reaches into a pen or fence (penArtCovers). */
+export function inPenArt(spot, w, h, pens) {
+  return (pens || []).some(({ block: b }) => b && spot.x + w / 2 > b.l && spot.x - w / 2 < b.r && spot.y > b.t && spot.y - h < b.b);
+}
+
 /** PURE: whether a planner spot (buildPlatformCandidates) is a branch over another floor (branchArtCovers). */
 export function onBranchArt(candidate, branches) {
   if (!((candidate?.under || 0) > 0) || !branches?.length) return false;
@@ -1321,6 +1357,7 @@ export function streetReservedSpots(street) {
   out.push(...measuredNodeCovers(street?.tsid));
   out.push(...frontDecoCovers(street));
   out.push(...branchArtCovers(street));
+  out.push(...penArtCovers(street));
   return out;
 }
 
@@ -1726,8 +1763,8 @@ export function footAtWalkway(spot, footprint, walkways) {
 export function blockingFixture(spot, fixtures, { footprint = 0, height = 0 } = {}) {
   for (const fixture of fixtures || []) {
     const b = fixture?.block;
-    // A front deco (frontDecoCovers) covers things; nothing covers it. Branch art (G852) only marks floors.
-    if (!b || fixture.front || fixture.branch) continue;
+    // A front deco (frontDecoCovers) covers things; nothing covers it. Branch art (G852) only marks floors, pen art (#575) only ranks garden beds.
+    if (!b || fixture.front || fixture.branch || fixture.pen) continue;
     if (footprint > 0 && height > 0) {
       if (spot.x - footprint / 2 < b.r && b.l < spot.x + footprint / 2 && spot.y - height < b.b && b.t < spot.y) return fixture;
     } else if (fixture.doorway && spot.x > b.l && spot.x < b.r && spot.y >= b.t && spot.y <= b.b + DOORWAY_DROP_PX) {
@@ -1989,7 +2026,9 @@ export function planStreetPlacements(
   // Branch art (branchArtCovers, G852) keeps nothing clear either: it marks the spots big things take last.
   const branches = (reserved || []).filter((p) => p?.branch && p.block);
   const onBranch = new Set(branches.length ? candidates.filter((c) => onBranchArt(c, branches)).map((c) => c.id) : []);
-  const occupied = (reserved || []).filter((p) => !p?.front && !p?.branch && Number.isFinite(p?.x) && Number.isFinite(p?.y))
+  // Pen and fence art (penArtCovers, #575) keeps nothing clear either: PEN_FREE_GROUPS take a spot in one last.
+  const pens = (reserved || []).filter((p) => p?.pen && p.block);
+  const occupied = (reserved || []).filter((p) => !p?.front && !p?.branch && !p?.pen && Number.isFinite(p?.x) && Number.isFinite(p?.y))
     .map((point, index) => ({ ...point, key: point.key || `reserved:${index}`, clearance: whole(point.clearance, 120, 600) }));
   // A request's `fixed` points (measured rocks, rockPlacementRequest) are seated before anything is
   // planned: every other group keeps clear of them, and big scenery never covers one (`w` x `h`).
@@ -2046,6 +2085,7 @@ export function planStreetPlacements(
     const maxSlope = BIG_THING_GROUPS.includes(request.key) ? BIG_THING_MAX_SLOPE : null;
     const deck = DECK_GROUPS.includes(request.key);
     const branchFree = request.avatar !== true && branchFreeGroup(request.key);
+    const penFree = pens.length > 0 && PEN_FREE_GROUPS.includes(request.key);
     // G853: a request's `zone` ({ lo, hi } screen x: a planned Visiting Stone's dead end) is where it
     // stands while any spot there is left; outside it, the nearer the better.
     const zone = Number.isFinite(request?.zone?.lo) && Number.isFinite(request?.zone?.hi) ? request.zone : null;
@@ -2177,9 +2217,11 @@ export function planStreetPlacements(
         const tooSteep = maxSlope != null && (candidate.slope || 0) > maxSlope && !slopeRuled(tsid, request.key, candidate) ? 64 : 0;
         // G852: big things and walkers up a tree's branch art only when nothing else is left.
         const onBranchArt = branchFree && onBranch.has(candidate.id) ? 128 : 0;
+        // #575: a garden bed in an animal pen or on a fence (penArtCovers) only when nothing else is left.
+        const inPen = penFree && inPenArt(candidate, footprint, height, pens) ? 256 : 0;
         const miss = zoneMiss(candidate);
         const outOfZone = miss > 0 ? 8 + Math.min(20, Math.ceil(miss / 400)) : 0;
-        const tier = onBranchArt + outOfZone + tooSteep + (footprint > 0
+        const tier = inPen + onBranchArt + outOfZone + tooSteep + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
           : 0) + (covers.has(candidate.id) ? (walker ? 16 : crownOnly.has(candidate.id) ? 3 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {

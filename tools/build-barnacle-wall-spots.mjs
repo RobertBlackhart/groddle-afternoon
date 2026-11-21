@@ -39,7 +39,7 @@ import {
   shrinePlacementRequest,
   streetReservedSpots,
   treePlacementRequest,
-} from '../public/js/street-ecology.js?v=cd1a137b';
+} from '../public/js/street-ecology.js?v=187e3c76';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = 'public/js/barnacle-wall-spots-data.js';
@@ -139,7 +139,8 @@ export function buildBarnacleWallSpots({ masks = read(MASKS).masks } = {}) {
     const seen = (pictures[tsid]?.spots || []).slice(0, want - measured.length).map(([x, y, v]) => [x, y, v, 0]);
     // The street's keep-clear spots, less the barnacles' own covers (which this file feeds).
     const reserved = [
-      ...streetReservedSpots(street).filter((r) => !String(r.key || '').startsWith('node:mortar_barnacle:')),
+      // Pen and fence art (penArtCovers, #575) only ranks garden beds.
+      ...streetReservedSpots(street).filter((r) => !r.pen && !String(r.key || '').startsWith('node:mortar_barnacle:')),
       ...fixedPictureBoxes(populationForStreet(tsid, ecologyForStreet(tsid))),
     ];
     const keep = [...measured, ...seen].map(([x, y]) => ({ x, y }));

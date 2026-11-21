@@ -9,12 +9,12 @@ import { afterEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorKinds, vendorRowWhere } from '../public/js/vendor-finder.js?v=7fbfc51d';
-import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=a1e77db5';
-import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=cd1a137b';
+import { vendorFinderFeature } from '../public/js/features/vendor-finder-feature.js?v=86f8006b';
+import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=187e3c76';
 import { findRoute } from '../public/js/map-routes.js?v=70f30ddf';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { selectVendorProfile } from '../public/js/vendor.js?v=71211643';
+import { selectVendorProfile } from '../public/js/vendor.js?v=ed3bae48';
 
 const PUB = new URL('../public/', import.meta.url);
 const read = (rel) => readFileSync(new URL(rel, PUB), 'utf8');

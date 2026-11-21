@@ -553,6 +553,22 @@
    ]
   },
   {
+   "id": "kipacre-garden-bed-sizes",
+   "title": "Kipacre Greens' seven garden beds kept at 4 x 2 plots (56; Zog's 2012 count is 49)",
+   "kind": "placement",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/garden-beds.js",
+     "symbol": "PICTURE_GARDEN_SPOTS"
+    }
+   ],
+   "why": "Tiny Speck's street picture shows where each bed stood but is too small to count plots (most look 2 x 2, about 32 plots in all); the beds keep the planner's old size so no planted plot is lost.",
+   "rows": [
+    "G1085"
+   ]
+  },
+  {
    "id": "avatar-reimagined-wardrobe",
    "title": "Greyscale-master wardrobe items shipped with borrowed sibling colourways, marked reimagined",
    "kind": "visual",

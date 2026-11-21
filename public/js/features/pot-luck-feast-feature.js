@@ -37,7 +37,7 @@ import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=1c44e7c3';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { SEED_CATALOG } from '../garden.js?v=2ef01a9f';
+import { SEED_CATALOG } from '../garden.js?v=0afbe615';
 import { openListDialog } from '../ui/storage-windows.js?v=81d5c5ac';
 import { servingsText } from '../feast-day.js?v=b16b26f0';
 import {

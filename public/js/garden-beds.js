@@ -52,6 +52,55 @@ export function measuredGardenBeds(tsid) {
     .map(([x, y, cols, rows, kind, style]) => ({ x, y, cols, rows, gardenType: kind === 'herb' ? 'herb' : 'default', style: String(style || 'none') }));
 }
 
+/**
+ * G1085 (#575): the two crop-garden streets no player's snap shows, read off Tiny Speck's own
+ * whole-street pictures (research/wayback/raw/street-images/<region>/<L tsid>_main_<time>.jpg, 720 x 120
+ * for the 6,000 x 1,000 street, so 1 px = 8.3 street px; reference only, never shipped), the pictures
+ * tools/snap-placements/shrine-pictures.json seats shrines from. Both show the plots and the scarecrow.
+ * The planner had put the beds anywhere, one inside Veldt Balm's animal pen. Each bed's foot is the
+ * middle of its plots and the bottom of the front row (as GARDEN_SPOTS, checked against Middle Arbor's
+ * picture and its measured beds), good to about 15 px.
+ * - Veldt Balm (LIFGR46M8RE2RC7_main_1323829336, Dec 2011): six beds between the two garden signs,
+ *   3 x 3, 3 x 2, 4 x 3, 3 x 3, 2 x 2 and 4 x 2 (plots counted at 16x zoom): 48 plots, Zog's 2012 count.
+ * - Kipacre Greens (LCR202JSVIN1STL_main_1339298354, Jun 2012): seven beds, two by the first garden sign,
+ *   two past the conifer, three by the second. Their plots cannot be counted at this size (most look
+ *   2 x 2, which adds up to far less than Zog's 49), so they stay 4 x 2 as before (56 plots): `how` says so.
+ * { [G tsid]: { source, beds: [[x, y, cols, rows, kind, style, how], ...] } }, otherwise as GARDEN_SPOTS.
+ */
+export const PICTURE_GARDEN_SPOTS = Object.freeze({
+  GIFGR46M8RE2RC7: Object.freeze({
+    source: 'Tiny Speck street picture lida/LIFGR46M8RE2RC7_main_1323829336.jpg (G1085)',
+    beds: Object.freeze([
+      [1635, 727, 3, 3, 'crop', 'none', 'picture'],
+      [2045, 745, 3, 2, 'crop', 'none', 'picture'],
+      [2715, 730, 4, 3, 'crop', 'none', 'picture'],
+      [3240, 735, 3, 3, 'crop', 'none', 'picture'],
+      [3675, 798, 2, 2, 'crop', 'none', 'picture'],
+      [4540, 842, 4, 2, 'crop', 'none', 'picture'],
+    ]),
+  }),
+  GCR202JSVIN1STL: Object.freeze({
+    source: 'Tiny Speck street picture groddle-meadow/LCR202JSVIN1STL_main_1339298354.jpg (G1085)',
+    beds: Object.freeze([
+      [905, 866, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [1813, 893, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [2128, 884, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [3080, 843, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [3449, 861, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [3867, 889, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+      [4265, 870, 4, 2, 'crop', 'none', 'picture spot, size kept'],
+    ]),
+  }),
+});
+
+/** PURE: a street's beds read off Tiny Speck's picture (PICTURE_GARDEN_SPOTS) as measuredGardenBeds gives them, with `how`, or null. */
+export function pictureGardenBeds(tsid) {
+  const want = body(tsid);
+  const key = want && Object.keys(PICTURE_GARDEN_SPOTS).find((k) => body(k) === want);
+  if (!key) return null;
+  return PICTURE_GARDEN_SPOTS[key].beds.map(([x, y, cols, rows, kind, style, how]) => ({ x, y, cols, rows, gardenType: kind === 'herb' ? 'herb' : 'default', style, how }));
+}
+
 /** PURE: where the snaps show the street's Gardening Tools Vendor (the scarecrow's feet), or null. */
 export function measuredGardenVendor(tsid) {
   const v = spotsRow(tsid)?.vendor;
