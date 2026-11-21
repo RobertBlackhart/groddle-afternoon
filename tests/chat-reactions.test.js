@@ -24,7 +24,7 @@ import {
   sameWords,
   whoText,
 } from '../public/js/chat-reactions.js?v=38460172';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=aaf612e5';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=65c1a14a';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { chatReactionsFeature } from '../public/js/features/chat-reactions-feature.js?v=704d27da';
 import { drawerLine, normalLine } from '../public/js/player-im.js?v=da51888c';
@@ -541,7 +541,7 @@ describe('reactions: both skins\' styles', () => {
     // Modern: the drawer is --drawer-w wide; a line's column is that less the border, the log's padding
     // (--sp-6 a side) and a thin scrollbar where one takes room (11 px).
     const css = read('public/style.css');
-    const drawer = Number(/--drawer-w: (\d+)px/.exec(css)[1]);
+    const drawer = Number(/--drawer-w: ([\d.]+)rem/.exec(css)[1]) * 16;
     const rem = (name) => Number(new RegExp(`--${name}: ([\\d.]+)rem`).exec(css)[1]) * 16;
     const pick = px(/\n\.react-pick \{[^}]*\}/.exec(css)[0], 'width');
     assert.match(/\n\.react-picker \{[^}]*\}/.exec(css)[0], /gap: var\(--sp-1\);\s*padding: var\(--sp-2\);\s*border: 1px/);

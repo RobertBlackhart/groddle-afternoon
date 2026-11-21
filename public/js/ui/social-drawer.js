@@ -14,7 +14,7 @@
  * (RightSideView.as 195-199, ContactList.as 120-307), which is what the list is. Solo has Activity
  * only, with the chat input under it (solo's Local chat: Feat lines, hi, slash commands).
  *
- * - Open it is 300 px wide (--drawer-w), at most 600 px tall, top right under the top bar.
+ * - Open it is 300 px wide at the default font (--drawer-w, 18.75rem), at most 600 px tall, top right under the top bar.
  *   Collapsed it is a 44 px rail (--rail-w) of the same tabs with unread badges (Chats with the
  *   total of its conversations). It opens by default at 1440 px wide and up and starts as the rail
  *   below; the player's own choice is kept (localStorage SOCIAL_STORE_KEY, every access in
@@ -399,6 +399,18 @@ function storageOf() {
  * `notifier` is js/notify.js's; `mode` 'solo' or 'online'; `canChat()` says whether "/"
  * may take the keyboard now; `streetName()` names the street for the input's hint.
  */
+/**
+ * PURE (#596): a length token in CSS px: "300px" as is, "18.75rem" times the root font size (16 px by
+ * default, more with a larger browser font). The open drawer is --drawer-w: 18.75rem, so it grows with
+ * the text in it; the inset it publishes (--inset-r) must grow with it.
+ */
+export function cssLengthPx(value, remPx = 16) {
+  const m = /^\s*(-?[\d.]+)\s*(px|rem)?\s*$/.exec(String(value ?? ''));
+  if (!m) return NaN;
+  const n = parseFloat(m[1]);
+  return m[2] === 'rem' ? n * (Number(remPx) || 16) : n;
+}
+
 export function mountSocialDrawer({
   root,
   dock,
@@ -1976,7 +1988,8 @@ export function mountSocialDrawer({
     // The width it is going to (not one caught halfway through the open or close transition).
     let w = r.width;
     try {
-      const css = parseFloat(getComputedStyle(dock).getPropertyValue(open ? '--drawer-w' : '--rail-w'));
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const css = cssLengthPx(getComputedStyle(dock).getPropertyValue(open ? '--drawer-w' : '--rail-w'), rem);
       w = css > 0 ? css : open ? 300 : 44;
     } catch {
       /* no computed style (tests): the measured width */

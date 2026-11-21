@@ -19,6 +19,7 @@ import {
   badgeText,
   clockLabel,
   createHistory,
+  cssLengthPx,
   defaultOpen,
   mountSocialDrawer,
   PHONE_SIDE,
@@ -28,7 +29,7 @@ import {
   splitChat,
   withTimeLines,
   writeChoice,
-} from '../public/js/ui/social-drawer.js?v=aaf612e5';
+} from '../public/js/ui/social-drawer.js?v=65c1a14a';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { resolveTokens } from './css-tokens.js';
 
@@ -405,7 +406,7 @@ describe('the Social drawer: wiring', () => {
     const block = css.slice(css.indexOf('/* —— SOCIAL —— '), css.indexOf('/* —— end SOCIAL —— */'));
     assert.ok(block.length > 1000);
     assert.match(block, /\.local-chat-dock\.social-drawer \{[^}]*top: var\(--social-top, 8px\);[^}]*width: var\(--rail-w, 44px\);/);
-    assert.match(block, /\.local-chat-dock\.social-drawer\.is-open \{[^}]*width: var\(--drawer-w, 300px\);[^}]*height: min\(600px, /);
+    assert.match(block, /\.local-chat-dock\.social-drawer\.is-open \{[^}]*width: var\(--drawer-w, 18\.75rem\);[^}]*height: min\(600px, /);
     assert.match(css, /--inset-l: 0px;\n\s+--inset-r: 0px;\n\}/, 'the token block defaults both insets');
     assert.match(block, /\.notify-notices \{\n\s+left: calc\(50% \+ var\(--notify-shift, 0px\)\);/);
     assert.match(block, /@media \(prefers-reduced-motion: reduce\) \{\n\s+\.local-chat-dock\.social-drawer \{ transition: none; \}/);
@@ -558,5 +559,30 @@ describe('report #100: the open drawer and the top bar on phone screens (Chrome)
       await ctx.close();
     }
     assert.deepEqual(bad, []);
+  });
+});
+
+describe('#596 (G1114): the drawer grows with a larger browser font, and its head never scrolls sideways', () => {
+  const css = read('public/style.css');
+  it('the open drawer is 300 px at the default 16 px font, in rem so it grows with the text in it', () => {
+    const w = /\n\s+--drawer-w: ([\d.]+)rem;/.exec(css);
+    assert.ok(w, '--drawer-w is a rem length (it was a fixed 300px while the tabs and buttons in it are rem)');
+    assert.equal(Number(w[1]) * 16, 300);
+    // A 20 px browser font (Windows "Large"): the drawer is 375 px, as the tabs' and buttons' rem sizes are 1.25x.
+    assert.equal(cssLengthPx(`${w[1]}rem`, 20), 375);
+  });
+  it('the inset the drawer publishes reads a rem width in px', () => {
+    assert.equal(cssLengthPx('300px'), 300);
+    assert.equal(cssLengthPx(' 18.75rem', 16), 300);
+    assert.equal(cssLengthPx('18.75rem', 24), 450);
+    assert.equal(cssLengthPx('44px', 20), 44);
+    assert.ok(Number.isNaN(cssLengthPx('')));
+    assert.ok(Number.isNaN(cssLengthPx('calc(1px + 1rem)')));
+    const src = read('public/js/ui/social-drawer.js');
+    assert.match(src, /cssLengthPx\(getComputedStyle\(dock\)\.getPropertyValue\(open \? '--drawer-w' : '--rail-w'\), rem\)/);
+  });
+  it("a tab's head scrolls up and down only, and a channel's buttons wrap whole", () => {
+    assert.match(css, /\n\.social-view-head \{[^}]*overflow-x: hidden; overflow-y: auto;/);
+    assert.match(css, /\n\.social-chan-head button \{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; \}/);
   });
 });

@@ -81,7 +81,7 @@
   --hud-inset: 8px;
   --hit: 36px;
   --slot: 44px;
-  --drawer-w: 300px;
+  --drawer-w: 18.75rem; /* 300 px at the default 16 px font; it grows with a larger browser font, as its rem-sized contents do (#596) */
   --rail-w: 44px;
   --sheet-w: 360px;
 
@@ -10226,7 +10226,7 @@ html[data-street-cards] .notify-notices { visibility: hidden; }
   transition: width var(--motion-med, 180ms) var(--ease-out, ease-out);
 }
 .local-chat-dock.social-drawer.is-open {
-  width: var(--drawer-w, 300px);
+  width: var(--drawer-w, 18.75rem);
   height: min(600px, calc(100% - var(--social-top, 8px) - var(--pack-live-height, 112px)));
   min-height: 220px;
   background: var(--surface-bright);
@@ -10418,7 +10418,7 @@ html[data-street-cards] .notify-notices { visibility: hidden; }
 .social-av.social-conv-av { width: 22px; height: 22px; font-size: var(--fs-xs); box-shadow: none; }
 .social-conv-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .social-view { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
-.social-view-head { flex: none; max-height: 45%; overflow-y: auto; padding: var(--sp-4) var(--sp-6) 0; font-size: var(--fs-sm); }
+.social-view-head { flex: none; max-height: 45%; overflow-x: hidden; overflow-y: auto; padding: var(--sp-4) var(--sp-6) 0; font-size: var(--fs-sm); }
 .social-log {
   display: flex;
   flex: 1 1 auto;
@@ -10756,6 +10756,9 @@ button.social-buddy-what { margin: 0; padding: 0; border: 0; background: none; c
   cursor: pointer;
 }
 .social-view-head .mp-emotes, .social-chan-head { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); margin: 0; }
+/* #596: a channel's buttons (Earlier messages, Who is here, Close) wrap whole, never a word inside one, and
+   never wider than the head: the head scrolls up and down only (overflow-x above), so no sideways bar. */
+.social-chan-head button { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* The input */
 .social-compose { flex: none; padding: var(--sp-4); border-top: 1px solid var(--border); }
 .social-drawer #local-chat-form { display: flex; align-items: flex-end; gap: var(--sp-2); opacity: 1; }
