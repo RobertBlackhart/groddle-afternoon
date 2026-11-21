@@ -244,7 +244,7 @@ import {
 } from '../home-styles.js?v=13fe0aaa';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b1f5bbfe';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
-import { oneArmSignpost } from '../street-render.js?v=53fa608e';
+import { oneArmSignpost } from '../street-render.js?v=b3d88dd6';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
 import {
   HOUSE_SIGN,

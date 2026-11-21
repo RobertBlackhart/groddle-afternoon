@@ -15,7 +15,7 @@ const manifest = new Set(JSON.parse(readFileSync(join(pub, 'assets/decos/manifes
 
 async function farPicks(tsid, R) {
   const hires = await import('../public/js/deco-hires.js?v=03ac6512');
-  const sr = await import('../public/js/street-render.js?v=53fa608e');
+  const sr = await import('../public/js/street-render.js?v=b3d88dd6');
   const street = JSON.parse(readFileSync(join(pub, `assets/streets/${tsid}.json`), 'utf8'));
   const mz = street.layers.findIndex((l) => l.id === 'middleground');
   const mlz = street.layers[mz].z ?? mz;

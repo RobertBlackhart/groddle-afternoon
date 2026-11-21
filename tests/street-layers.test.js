@@ -23,7 +23,7 @@ import {
   SKIRT_BAND,
   SKIRT_FADE_DEPTH,
   SKIRT_SLIDE_MAX,
-} from '../public/js/street-render.js?v=53fa608e';
+} from '../public/js/street-render.js?v=b3d88dd6';
 import { streetHeight, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 
 const here = dirname(fileURLToPath(import.meta.url));

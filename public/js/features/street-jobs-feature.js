@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=3331ac39';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=53fa608e';
+import { signArmWidth } from '../street-render.js?v=b3d88dd6';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=ff2390f2';
@@ -438,8 +438,33 @@ function keepWayHome(engine, mine) {
   });
 }
 
+/**
+ * Sibling audit B9: the catalog came in without the street graph (its fetch failed), so every solo
+ * project took the far-out amounts. The graph is asked for again on the next load() (every street
+ * entered), and once it is in the distances are put on the catalog.
+ */
+let distancesOwed = false;
+let distancesLoading = null;
+function retryDistances() {
+  if (!distancesOwed || distancesLoading || !catalog) return;
+  distancesLoading = loadGraph()
+    .then((graph) => {
+      if (!catalog || !distancesOwed) return;
+      distancesOwed = false;
+      applySoloScale(catalog, hopsFromStart(graph, streetIndex?.default), !mpMode);
+      if (engineRef) projectsChanged(engineRef);
+    })
+    .catch(() => null)
+    .finally(() => {
+      distancesLoading = null;
+    });
+}
+
 function load() {
-  if (catalog) return Promise.resolve(catalog);
+  if (catalog) {
+    retryDistances();
+    return Promise.resolve(catalog);
+  }
   if (!loading) {
     loading = Promise.all([
       fetch('assets/content/street-jobs.json?v=jobs-6').then((r) => r.json()),
@@ -454,6 +479,8 @@ function load() {
         if (mpMode) mergeHalls(catalog);
         // Report #425: solo projects scale by distance from the start (js/street-jobs-solo.js); online never.
         applySoloScale(catalog, hopsFromStart(graph, idx?.default), !mpMode);
+        // B9: without the graph the far-out amounts stand for now; the next load asks for it again.
+        distancesOwed = !graph;
         for (const [id, meta] of Object.entries(cat.items || {})) {
           ensureItem(id, { label: meta.label, desc: meta.desc, baseCost: meta.baseCost, stackMax: meta.stackMax });
         }

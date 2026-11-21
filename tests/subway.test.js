@@ -61,7 +61,7 @@ import {
   stepRide,
   ticketOffer,
 } from '../public/js/subway.js?v=36c6d2b2';
-import { choiceCardKey, dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=e209339d';
+import { choiceCardKey, dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=a2f2dd69';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

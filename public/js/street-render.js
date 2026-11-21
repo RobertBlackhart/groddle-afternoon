@@ -532,7 +532,7 @@ export function signpostBoardAt(signViews, worldX, worldY, { pad = 0 } = {}) {
   return best ? { view: best.view, board: best.board, index: best.board.index, connection: best.board.connection } : null;
 }
 
-/** Load list of available deco basenames (no .png). */
+/** Load list of available deco basenames (no .png). Kept once in; a failed load is tried again next time. */
 export async function loadDecoManifest() {
   if (decoManifest) return decoManifest;
   try {
@@ -544,8 +544,9 @@ export async function loadDecoManifest() {
       return decoManifest;
     }
   } catch { /* */ }
-  decoManifest = new Set(NEW_DECOS);
-  return decoManifest;
+  // Sibling audit B8: a failed load is tried again on the next street. The fallback (only the new
+  // zone art) stands for this street alone; kept, it left every street bare for the session.
+  return new Set(NEW_DECOS);
 }
 
 // —— Glitch layer colour treatment (the production client's path) ——
