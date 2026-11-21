@@ -4039,7 +4039,8 @@
       "commits": [
         "game:7d40a36ab2c",
         "game:34f57909a29",
-        "game:1e66bd3b813"
+        "game:1e66bd3b813",
+        "game:fa48526a67b"
       ]
     },
     {
@@ -4105,7 +4106,9 @@
       "commits": [
         "game:5aa28f86743",
         "game:3f21b1ddc59",
-        "game:5e22a5b41ee"
+        "game:5e22a5b41ee",
+        "game:ce4fdca426e",
+        "site:451a66e"
       ]
     },
     {
@@ -4189,6 +4192,89 @@
       "commits": [
         "game:f826de355ce",
         "server:a9521cc"
+      ]
+    },
+    {
+      "id": "G1108",
+      "area": "Street projects",
+      "text": "Working on a street project could stop after a unit or two with \"Work takes a moment a unit\", most often on phones.",
+      "show": "fixing",
+      "commits": [
+        "game:ae49f1b992f",
+        "server:4493940"
+      ]
+    },
+    {
+      "id": "G1109",
+      "area": "Street projects",
+      "text": "The finished project card could say you did 0% of the work when you helped in earlier phases but not the last.",
+      "show": "fixing",
+      "commits": [
+        "game:49fea3a6539",
+        "server:42995b0"
+      ]
+    },
+    {
+      "id": "G1110",
+      "area": "Phones",
+      "text": "On a phone held upright, the top bar could cut your counts short with dots instead of showing them shorter.",
+      "show": "fixing",
+      "commits": [
+        "game:b39107825b8"
+      ]
+    },
+    {
+      "id": "G1111",
+      "area": "Quests",
+      "text": "In the Greedy Street Spirit story, each Act button stood away from its own scene, which was confusing on phones.",
+      "show": "fixing",
+      "commits": [
+        "game:08ff4123b59"
+      ]
+    },
+    {
+      "id": "G1112",
+      "area": "Quests",
+      "text": "Leaving the Greedy Street Spirit story before the end left the quest stuck with no way back in.",
+      "show": "fixing",
+      "commits": [
+        "game:a2a81ad2988"
+      ]
+    },
+    {
+      "id": "G1113",
+      "area": "Homes",
+      "text": "In Decorate, moving an item onto a matching stack did not join them.",
+      "show": "fixing",
+      "commits": [
+        "game:d4847b4356e"
+      ]
+    },
+    {
+      "id": "G1114",
+      "area": "Social",
+      "text": "With a larger browser font, the Social panel cut off its tabs and its buttons scrolled sideways.",
+      "show": "fixing",
+      "commits": [
+        "game:8ea3a04198d"
+      ]
+    },
+    {
+      "id": "G1115",
+      "area": "Map",
+      "text": "The Map at home no longer offered Return to Ur.",
+      "show": "fixing",
+      "commits": [
+        "game:175e5d72cf0"
+      ]
+    },
+    {
+      "id": "G1118",
+      "area": "Hell",
+      "text": "Hellish Grapes stood in tidy rows instead of the random piles Hell is known for.",
+      "show": "fixing",
+      "commits": [
+        "game:030dc547711"
       ]
     }
   ]

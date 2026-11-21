@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.55.0",
+  "release": "v0.55.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 411,
+    "fixed": 420,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -307,13 +307,25 @@
           "id": "G1097",
           "text": "The Quests list could show nothing even with quests active.",
           "state": "fixed",
-          "version": "v0.55.0"
+          "version": "v0.55.1"
         },
         {
           "id": "G1103",
           "text": "Logging in during a smuggling run could move the drop to a street no road reaches.",
           "state": "fixed",
           "version": "v0.55.0"
+        },
+        {
+          "id": "G1111",
+          "text": "In the Greedy Street Spirit story, each Act button stood away from its own scene, which was confusing on phones.",
+          "state": "fixed",
+          "version": "v0.55.1"
+        },
+        {
+          "id": "G1112",
+          "text": "Leaving the Greedy Street Spirit story before the end left the quest stuck with no way back in.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
@@ -650,6 +662,12 @@
           "text": "The street map could show a blank box where a street's back scenery should be.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1115",
+          "text": "The Map at home no longer offered Return to Ur.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
@@ -985,6 +1003,12 @@
           "version": "v0.53.0"
         },
         {
+          "id": "G1113",
+          "text": "In Decorate, moving an item onto a matching stack did not join them.",
+          "state": "fixed",
+          "version": "v0.55.1"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -1122,6 +1146,18 @@
           "text": "An upgraded street could show its old look after a login or reload.",
           "state": "fixed",
           "version": "v0.55.0"
+        },
+        {
+          "id": "G1108",
+          "text": "Working on a street project could stop after a unit or two with \"Work takes a moment a unit\", most often on phones.",
+          "state": "fixed",
+          "version": "v0.55.1"
+        },
+        {
+          "id": "G1109",
+          "text": "The finished project card could say you did 0% of the work when you helped in earlier phases but not the last.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
@@ -1603,7 +1639,7 @@
           "id": "G1090",
           "text": "Mining while other players used tools nearby, as at a party, could freeze your character until you reloaded.",
           "state": "fixed",
-          "version": "v0.54.1"
+          "version": "v0.55.1"
         },
         {
           "id": "G1106",
@@ -2003,6 +2039,12 @@
           "text": "On phones, item icons in the Make menu were squashed and the tool button's name spilled out.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G1110",
+          "text": "On a phone held upright, the top bar could cut your counts short with dots instead of showing them shorter.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
@@ -2098,6 +2140,12 @@
           "text": "Buying Wine of the Dead put it in your pack silently; in Glitch it flew from the bartender.",
           "state": "fixed",
           "version": "v0.49.0"
+        },
+        {
+          "id": "G1118",
+          "text": "Hellish Grapes stood in tidy rows instead of the random piles Hell is known for.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
@@ -2594,6 +2642,12 @@
           "text": "Players had no way to report another player.",
           "state": "fixed",
           "version": "v0.43.0"
+        },
+        {
+          "id": "G1114",
+          "text": "With a larger browser font, the Social panel cut off its tabs and its buttons scrolled sideways.",
+          "state": "fixed",
+          "version": "v0.55.1"
         }
       ]
     },
