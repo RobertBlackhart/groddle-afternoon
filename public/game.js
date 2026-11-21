@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8c50c19f';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=08f43dd0';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -529,7 +529,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=c3a94589';
+} from './js/player-save.js?v=60d89469';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -946,8 +946,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=fd21d8ec';
-import { loadLearnFasterOpen, saveLearnFasterOpen } from './js/ui/learn-faster-pref.js?v=08249a09';
+} from './js/shrines.js?v=d553d771';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -1712,6 +1711,7 @@ const encyclopedia = createEncyclopedia({
   onReady: () => {
     updateHud();
     if (isSkillsOpen()) renderSkillsPanel();
+    if (isShrineOpen()) renderShrinePanel();
   },
   ...(encyclopediaSheet ? { openWindow: (url) => encyclopediaSheet.open(url) } : {}),
 });
@@ -2876,6 +2876,8 @@ let shrineDragCopy = null;
 let shrineQty = 1;
 /** The shrine panel's "You've done it! You spent that favor!" line (ShrineDialog spend()). */
 let shrineFavorSpent = false;
+/** #565: whether the shrine's Learn Faster? box is unfolded, while the window is open (js/shrines.js learnFasterOpen). */
+let shrineLearnOpen = false;
 /** One transient owner-only prize wheel created by a Gameshow Ticket. */
 let spinningWheelTarget = null;
 let spinningWheelLastPhase = '';
@@ -10275,7 +10277,7 @@ function runVerbFinish(target, verbId) {
     if (verbId === 'rename' && features.query('bagRenameGround', target, engine)) return;
   }
   if (target?.classId?.startsWith('npc_shrine_') && (verbId === 'donate_to' || verbId === 'check_favor')) {
-    openShrinePanel(target);
+    openShrinePanel(target, { via: verbId });
     return;
   }
   const baseVerb = String(verbId || '').split(':')[0];
@@ -30331,7 +30333,7 @@ function closeShrinePanel() {
   shrineQty = 1;
 }
 
-function openShrinePanel(target, { item = '', copy = null } = {}) {
+function openShrinePanel(target, { item = '', copy = null, via = '' } = {}) {
   closeFeatPanel();
   const giant = GIANTS[target?.state?.giantId];
   if (!giant) return;
@@ -30367,6 +30369,8 @@ function openShrinePanel(target, { item = '', copy = null } = {}) {
   // G630: renderShrinePanel fills the count in once the stack is settled (shrinePrefill).
   shrineQty = null;
   shrineFavorSpent = false;
+  // #565: Learn Faster? opens unfolded from check favor, folded from donate (js/shrines.js learnFasterOpen).
+  shrineLearnOpen = learnFasterOpen({ via });
   const panel = document.getElementById('shrine-panel');
   if (!panel) return;
   panel.style.setProperty('--shrine-accent', giant.color);
@@ -30398,7 +30402,13 @@ function renderShrinePanel() {
     glyph.dataset.giant = giantId;
     glyph.innerHTML = `<img src="${giantSymbolUrl(giantId)}" alt="" width="22" height="22" />`;
   }
-  if (desc) desc.textContent = giant.description;
+  if (desc) {
+    desc.textContent = giant.description;
+    // #565: the Giant's page in the Encyclopedia, for who they are (encyclopedia/giants/<id>/).
+    const ency = encyclopedia.link(document, { section: 'giants', id: giantId }, 'shrine-ency');
+    if (ency) desc.append(' ', ency);
+    else encyclopedia.load();
+  }
   if (favorLabel) favorLabel.textContent = `Favor ${favor.toLocaleString()} / ${cost.toLocaleString()}`;
   if (emblemLabel) {
     emblemLabel.textContent = emblems
@@ -30421,8 +30431,19 @@ function renderShrinePanel() {
     allFavor.innerHTML = Object.values(GIANTS).map((row) => {
       const points = shrineState.favor[row.id] || 0;
       const owned = shrineState.emblems[row.id] || 0;
-      return `<span class="shrine-favor-chip${row.id === giantId ? ' active' : ''}" title="${escapeHtml(row.name)} favor">${escapeHtml(row.name)} ${points}${owned ? ` · ◉${owned}` : ''}</span>`;
+      // #565: an earned emblem shows as the Emblem itself (emblem_<giant>), not a fisheye glyph.
+      const emblem = owned ? ` · <img class="shrine-chip-emblem" src="${escapeHtml(itemIconUrl(`emblem_${row.id}`))}" alt="${owned === 1 ? 'emblem' : 'emblems'}" width="16" height="16" />${owned}` : '';
+      return `<span class="shrine-favor-chip${row.id === giantId ? ' active' : ''}" title="${escapeHtml(row.name)} favor${owned ? `, ${owned} emblem${owned === 1 ? '' : 's'}` : ''}">${escapeHtml(row.name)} ${points}${emblem}</span>`;
     }).join('');
+    // #565: a mouse wheel scrolls the row sideways (as the home builder's strips do).
+    if (!allFavor.dataset.wheel) {
+      allFavor.dataset.wheel = '1';
+      allFavor.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || allFavor.scrollWidth <= allFavor.clientWidth) return;
+        allFavor.scrollLeft += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+        e.preventDefault();
+      }, { passive: false });
+    }
   }
   renderShrineLearnFaster(giantId, giant);
 
@@ -30673,9 +30694,9 @@ function renderShrineLearnFaster(giantId, giant) {
     ? `Spend your ${quote.spendPoints} favor points with <b>${escapeHtml(giant.name)}</b> to speed up learning <b>${escapeHtml(skillName)}</b> by <b>${escapeHtml(formatSpeedUpTime(quote.speedUp))}.</b>`
     : escapeHtml(quote.text || '');
   const note = quote.ok ? `<b>Note!</b> ${escapeHtml(favorRelationNote(giant.name, quote.giantRel))}` : '';
-  // #377: the box folds to one line (the favor it would spend), closed on a phone, open on a desktop;
-  // the player's choice holds for the session.
-  const open = learnFasterOpen({ stored: loadLearnFasterOpen(), phone: TOUCH_PHONE });
+  // #377: the box folds to one line (the favor it would spend). #565: open from check favor, folded from
+  // donate (learnFasterOpen); the player's fold holds while the window is open.
+  const open = shrineLearnOpen;
   box.toggleAttribute('data-collapsed', !open);
   box.innerHTML = `
     <h3 class="shrine-section-title shrine-learn-head" style="margin-top:0"><button type="button" class="shrine-learn-toggle" aria-expanded="${open}" data-shrine-learn-toggle><span class="shrine-learn-chev" aria-hidden="true"></span><span>${escapeHtml(FAVOR_SPEND_COPY.title)}</span><span class="shrine-learn-sum" data-shrine-learn-sum>${escapeHtml(learnFasterSummary(quote))}</span></button></h3>
@@ -30686,7 +30707,7 @@ function renderShrineLearnFaster(giantId, giant) {
   box.querySelector('[data-shrine-learn-spend]')?.addEventListener('click', confirmShrineFavorSpend);
   box.querySelector('[data-shrine-learn-toggle]')?.addEventListener('click', (e) => {
     const next = box.hasAttribute('data-collapsed');
-    saveLearnFasterOpen(next);
+    shrineLearnOpen = next;
     box.toggleAttribute('data-collapsed', !next);
     e.currentTarget.setAttribute('aria-expanded', String(next));
     app.canvas.dataset.shrineLearnOpen = next ? '1' : '0';
@@ -30715,7 +30736,7 @@ function confirmShrineFavorSpend() {
     cancelLabel: FAVOR_SPEND_COPY.confirmNo,
     beats: [{ text: FAVOR_SPEND_COPY.confirm, response: FAVOR_SPEND_COPY.confirmYes }],
     onComplete: () => performShrineFavorSpend(target),
-    onCancel: () => openShrinePanel(target),
+    onCancel: () => openShrinePanel(target, { via: 'check_favor' }),
   });
 }
 
@@ -30727,7 +30748,7 @@ function performShrineFavorSpend(target) {
   const result = spendFavorOnStudy(shrineState, giantId, skillState, favorSpendOpts());
   if (!result.ok) {
     toast(result.text || FAVOR_SPEND_COPY.cannot);
-    openShrinePanel(target);
+    openShrinePanel(target, { via: 'check_favor' });
     return;
   }
   for (const event of result.events) emitGameEvent(event);
@@ -30743,7 +30764,7 @@ function performShrineFavorSpend(target) {
   refreshShrineTarget(target);
   updateHud();
   savePlayerState();
-  openShrinePanel(target);
+  openShrinePanel(target, { via: 'check_favor' });
   shrineFavorSpent = true;
   renderShrinePanel();
 }

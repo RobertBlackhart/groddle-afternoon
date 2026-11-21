@@ -38,18 +38,18 @@ import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=c3e8490a';
 import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=73ce0134';
 import { persist as persistTrade } from '../public/js/features/trade-feature.js?v=db45df06';
-import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=fc326944';
+import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=be78a270';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=cadd1e98';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=e3b5012c';
-import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=185e1250';
-import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=8b1d2fd2';
-import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=5033c128';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=0c1255fe';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=37e8a679';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=c5d8b2bb';
 import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=3f718120';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=ffa761e9';
 import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=50c112eb';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=c3a94589';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=60d89469';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');
@@ -1091,7 +1091,7 @@ describe('every save read and write goes through the store', () => {
   // js/ui/quest-sheet.js keeps the Quests sheet's sort (ticket 77, groddle.questSort), a device preference.
   // js/touch-controls.js keeps a phone's "Stick follows your thumb" setting (02c12d4bf2), a device preference;
   // js/shared-patches.js reads one QA flag (groddle.qa.sharedPatches, G564) that turns the dark shared Patches on in this browser, never a save.
-  const ALLOWED = new Set(['js/touch-controls.js', 'js/shared-patches.js', 'js/ui/quest-sheet.js', 'js/save-store.js', 'js/practice-mode.js', 'js/audio-pref.js', 'js/online-boot.js', 'js/features/groups-feature.js', 'js/ui/social-drawer.js', 'js/classic/ui-mode.js', 'js/world-zoom.js', 'js/night-tint.js', 'js/ui/street-minimap.js', 'js/builder/editor.js', 'js/phone/companion.js', 'js/save-claim.js', 'js/ui/learn-faster-pref.js']);
+  const ALLOWED = new Set(['js/touch-controls.js', 'js/shared-patches.js', 'js/ui/quest-sheet.js', 'js/save-store.js', 'js/practice-mode.js', 'js/audio-pref.js', 'js/online-boot.js', 'js/features/groups-feature.js', 'js/ui/social-drawer.js', 'js/classic/ui-mode.js', 'js/world-zoom.js', 'js/night-tint.js', 'js/ui/street-minimap.js', 'js/builder/editor.js', 'js/phone/companion.js', 'js/save-claim.js']);
 
   it('game.js and js/ make no direct localStorage or sessionStorage calls', () => {
     const offenders = [];

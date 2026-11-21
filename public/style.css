@@ -5799,6 +5799,9 @@ body.buff-purple-pulse::after {
   padding: var(--sp-2) 0.46rem;
   font-size: var(--fs-xs);
 }
+/* #565: an earned emblem in the chip row is the Emblem's own icon (emblem_<giant>). */
+.shrine-chip-emblem { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; margin-right: 1px; }
+.shrine-desc .shrine-ency { margin: 0; font-size: var(--fs-sm); white-space: nowrap; }
 .shrine-favor-chip.active {
   border-color: var(--shrine-accent);
   color: var(--c-lime-39);

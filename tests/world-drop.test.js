@@ -199,7 +199,7 @@ describe('the feature', () => {
     assert.doesNotMatch(open, /if \(item\) closePackTray/);
     assert.ok(open.indexOf('closePackTray();') < open.indexOf('panel.hidden = false'), 'before the window shows');
     assert.doesNotMatch(open, /closeShrinePanel/);
-    for (const call of game.match(/[^\n]*openShrinePanel\(target[^\n]*/g)) assert.match(call, /openShrinePanel\(target(, \{ item[^)]*\})?\)/, call);
+    for (const call of game.match(/[^\n]*openShrinePanel\(target[^\n]*/g)) assert.match(call, /openShrinePanel\(target(, \{ (item|via)[^)]*\})?\)/, call);
   });
 
 });
