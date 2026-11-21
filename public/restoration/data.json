@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-20"
  },
  "git": {
-  "commits": 2901,
+  "commits": 2909,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Veldt Balm and Kipacre Greens garden beds stand where Tiny Speck's street pictures show them, none in the pig pen"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "fix",
+    "text": "Visiting Stones and mailboxes no longer stand behind trees and huts drawn in front"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "new",
+    "text": "The start card shows what's happening today for a returning player"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "The Encyclopedia's Sold by filter shows each store's item icon, not the same Street Spirit"
+   },
+   {
+    "date": "2026-11-20",
+    "kind": "improve",
+    "text": "Vendors near you shows an icon for each store, an item it sells"
+   },
    {
     "date": "2026-11-20",
     "kind": "improve",
@@ -2911,34 +2936,9 @@
     "date": "2026-11-20",
     "kind": "improve",
     "text": "The loading-card street picture tool renders every street, with every deco it draws"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "The Race Ticket Dispenser on Iable Var no longer stands in a fruit tree"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Every Patch in your yard is drawn, not just the first eight"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "A friend's garden help is applied once, even when many of their acts wait"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Watering a ripe crop on your home street no longer holds it for the planter again"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "improve",
-    "text": "The phone street map's signpost arrows follow you and point eight ways"
    }
   ]
  },
- "tests": 1211,
+ "tests": 1213,
  "generatedAt": "2026-11-20"
 }
