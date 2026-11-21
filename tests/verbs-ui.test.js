@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { MIN_ROWS_BOX, menuRowsCap, placeVerbMenu, plainWords, verbRowKeys, verbRowInner, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=81321d29';
 import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=ea7de2e2';
 import { MAX_QUEST_PINS, normalizeQuestPins, questPinsFeature } from '../public/js/features/quest-pins-feature.js?v=0e07d9a1';
-import { FEATURES } from '../public/js/features/index.js?v=5b23d74b';
+import { FEATURES } from '../public/js/features/index.js?v=762aeb0f';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

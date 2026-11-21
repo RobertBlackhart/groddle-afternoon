@@ -2476,7 +2476,10 @@ export function installHiresFirstDraw(renderer, whenLoaded) {
   const init = system._initSource.bind(system);
   system._initSource = (source) => {
     const gpu = init(source);
-    if (source?.hiresParts && frameSource) {
+    // #577/#578: a destroyed source is drawn as nothing (js/pixi-fixes.js guardDestroyedSources)
+    // and never swapped to 3x.
+    if (!source || source.destroyed) return gpu;
+    if (source.hiresParts && frameSource) {
       for (const texture of frameSource.framesOf(source)) pointAtPart(source, texture);
     } else {
       const path = source?.hiresUpgrade ? null : sourceSheet(source);

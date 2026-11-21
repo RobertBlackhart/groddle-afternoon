@@ -22,7 +22,7 @@
 import { buildStreetView, loadDecoManifest, loadSignpostTextures } from '../js/street-render.js?v=87277227';
 import { navigableSignposts, streetWidth, streetHeight, worldToScreen } from '../js/street-model.js?v=a9a05f9d';
 import * as textureUrls from '../js/textures.js?v=090265fd';
-import { installPixiFixes } from '../js/pixi-fixes.js?v=173fb649';
+import { installPixiFixes } from '../js/pixi-fixes.js?v=5c7004d2';
 import { installHiresDecos } from '../js/deco-hires.js?v=03ac6512';
 import { installNewArt, withNewArt } from '../js/builder/new-art.js?v=29f0b13e';
 import { spotGroup } from '../js/builder/editor-zone.js?v=333b4867';

@@ -81,7 +81,7 @@ import { emblemCostFor } from '../shrines.js?v=fd21d8ec';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=eca7de52';
 import { payDrop } from './drops-feature.js?v=8b703c17';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=7f9c858e';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=679d95ad';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {

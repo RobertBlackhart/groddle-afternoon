@@ -188,7 +188,7 @@ async function build() {
   const sheets = await chickenSheets();
   const base = loadFla(FLA_FILE);
   frameLabels(base, sheets.flatMap((s) => s.flaFrames));
-  const { HIRES_SPRITES } = await import('../../public/js/sprite-hires.js?v=b6bc6eae');
+  const { HIRES_SPRITES } = await import('../../public/js/sprite-hires.js?v=f6344117');
   const tmpDir = mkdtempSync(join(os.tmpdir(), 'pot-luck-art-'));
   const tmp = join(tmpDir, 'shot.png');
   const p = await page();

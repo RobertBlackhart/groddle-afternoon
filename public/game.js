@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=a4f2caf3';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=5b23d74b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=762aeb0f';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -643,7 +643,7 @@ import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
 import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=75208dce';
 import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=0b4144eb';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
-import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=49cc5031';
+import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=0bdec903';
 import {
   createGarden,
   fitGardenToBed,
@@ -1047,9 +1047,9 @@ import {
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=187e3c76';
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=381d4163';
-import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=945a02da';
+import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=519f72a1';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=a36c53c9';
+import { itemOverlayStats } from './js/item-overlay.js?v=77f9c3e5';
 import { isCrowdSad } from './js/animal-crowding.js?v=1966bc21';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1079,7 +1079,7 @@ import { hudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=88972
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
-import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=b6bc6eae';
+import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=f6344117';
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
@@ -1113,7 +1113,7 @@ import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d5
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=892af05a';
 import * as textureUrls from './js/textures.js?v=090265fd';
 import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=476b7fdf';
-import { installPixiFixes } from './js/pixi-fixes.js?v=173fb649';
+import { guardDestroyedSources, installPixiFixes } from './js/pixi-fixes.js?v=5c7004d2';
 import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
@@ -32354,6 +32354,18 @@ async function main() {
     // GPU textures unused for 20 s (culled decos, old streets) are freed.
     gcMaxUnusedTime: 20000,
     gcFrequency: 5000,
+  });
+  // #577/#578 (R30): a destroyed texture still held by a sprite draws as nothing, reported once per
+  // texture, instead of throwing in the render every frame (js/pixi-fixes.js guardDestroyedSources).
+  // Canvas data destroyedDraws counts them (QA).
+  const destroyedDrawn = createErrorOnce();
+  let destroyedDraws = 0;
+  guardDestroyedSources(PIXI, app.renderer, {
+    onDestroyed: (source) => {
+      destroyedDraws += 1;
+      if (app?.canvas) app.canvas.dataset.destroyedDraws = String(destroyedDraws);
+      destroyedDrawn('draw destroyed texture', new Error(`destroyed texture drawn: ${source?.label || `source ${source?.uid}`}`));
+    },
   });
   // #312 (G708): on a phone an image upload that fails (the GPU's memory spent) is sent again, not left
   // an opaque black box (js/textures.js guardImageUploads). G714: after WebKit loses and restores the

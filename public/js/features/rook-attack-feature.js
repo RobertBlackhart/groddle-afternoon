@@ -60,7 +60,7 @@
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { bindCountField, countKeyValue, countStepMarkup } from '../ui/count-chooser.js?v=c268eefe';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=b6e8e690';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=96e8b93b';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { donationValueFor } from '../shrines.js?v=fd21d8ec';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
@@ -127,7 +127,7 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=da8aca1e';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=53950786';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=090265fd';

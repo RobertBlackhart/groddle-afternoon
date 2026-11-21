@@ -72,7 +72,7 @@ import { ITEM_CATALOG, ensureItem } from '../inventory.js?v=6414dbdc';
 import { moodMax, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { plantChoices } from '../patches.js?v=2498e678';
 import { textureFromUrl } from '../textures.js?v=090265fd';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=da8aca1e';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=53950786';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=892af05a';
 import {
   GUILT_BUFF,

@@ -11,7 +11,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { imageSize } from '../tools/image-size.mjs';
-import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=b6bc6eae';
+import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=f6344117';
 import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
 import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=8b81947e';

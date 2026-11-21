@@ -77,3 +77,37 @@ function installSizedSprites(PIXI) {
   };
   proto.groddleSizedSprites = true;
 }
+
+/**
+ * #577/#578 (R30): a destroyed TextureSource is never drawn. Destroying a source sets its `style`
+ * to null (TextureSource.destroy); a sprite or a batch still holding it then reached
+ * GlTextureSystem._initSource on the next render, whose updateStyle read `style.addressModeU` and
+ * threw. The throw came out of Pixi's own render listener, so the ticker never asked for another
+ * frame and the game froze for good (players mining Sparkly rocks in a Party Space). A destroyed
+ * source now draws as Texture.EMPTY (nothing), once told to `onDestroyed(source)` so the cause can
+ * still be found; it is not uploaded or kept on the GPU. Works on the WebGL and WebGPU texture
+ * systems (each makes a source's GPU copy in _initSource).
+ * @param {any} PIXI
+ * @param {any} renderer a Pixi 8 renderer
+ * @param {{ onDestroyed?: (source: any) => void }} [opts]
+ * @returns {boolean} true once installed
+ */
+export function guardDestroyedSources(PIXI, renderer, { onDestroyed = null } = {}) {
+  const system = renderer?.texture;
+  if (!system || typeof system._initSource !== 'function') return false;
+  if (system.groddleDestroyedGuard) return true;
+  const init = system._initSource;
+  const gpuOf = typeof system.getGlSource === 'function' ? system.getGlSource : system.getGpuSource;
+  system._initSource = function initLiveSource(source) {
+    if (source && (source.destroyed || !source.style)) {
+      const empty = PIXI?.Texture?.EMPTY?.source;
+      if (onDestroyed) {
+        try { onDestroyed(source); } catch { /* the draw goes on */ }
+      }
+      if (empty && empty !== source && !empty.destroyed && typeof gpuOf === 'function') return gpuOf.call(this, empty);
+    }
+    return init.call(this, source);
+  };
+  system.groddleDestroyedGuard = true;
+  return true;
+}

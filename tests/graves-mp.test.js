@@ -36,7 +36,7 @@ class FakeImage {
 const PIXI = loadPixi();
 globalThis.PIXI = PIXI;
 globalThis.Image = FakeImage;
-const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=173fb649');
+const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=5c7004d2');
 installPixiFixes(PIXI);
 
 const {
@@ -56,7 +56,7 @@ const { createQuestState } = await import('../public/js/quests.js?v=4a3fb1da');
 const { hellFeature } = await import('../public/js/features/hell-feature.js?v=46454cb5');
 const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=6c7ed1ff');
 const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=ce06f2a7');
-const { FEATURES } = await import('../public/js/features/index.js?v=5b23d74b');
+const { FEATURES } = await import('../public/js/features/index.js?v=762aeb0f');
 
 const STREET = 'GLI2V0UN7RD1T2J';
 const HELL_ONE = 'GA5PPFP86NF2FOS';

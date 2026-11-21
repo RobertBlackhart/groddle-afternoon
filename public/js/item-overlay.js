@@ -31,8 +31,8 @@
  */
 
 import { OVERLAY_FADE, overlayAlpha, overlayLifeMs, trackOverlay } from './overlay-art.js?v=892af05a';
-import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=f59127fb';
-import { upgradeSource } from './sprite-hires.js?v=b6bc6eae';
+import { cutPackedFrames, packedFrameAt } from './packed-sheets.js?v=5971faa8';
+import { upgradeSource } from './sprite-hires.js?v=f6344117';
 import { loadOwnTexture, loadTexture, whenLoaded } from './textures.js?v=090265fd';
 import { anchorBottomCentre } from './sprite-feet.js?v=fdd1d9ec';
 

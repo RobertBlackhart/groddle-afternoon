@@ -9,7 +9,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { actionLoopFor } from '../public/js/sound-moments.js?v=3e66996f';
-import { sfxFor } from '../public/js/features/resource-nodes-feature.js?v=7f9c858e';
+import { sfxFor } from '../public/js/features/resource-nodes-feature.js?v=679d95ad';
 
 describe('#310 scraping sounds from the start', () => {
   it('the Scraper sound loops for the whole scrape of a barnacle or an ice knob', () => {
