@@ -2814,9 +2814,39 @@
   "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 2960,
+  "commits": 2966,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A failed load at start no longer leaves streets bare or projects at far-out amounts all session"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The loading card no longer counts a Piggy you captured on that street"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Logging in mid smuggling run no longer moves the drop off an open street"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "An upgraded street shows its upgrade after a login or reload online"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "The featured street project says \"by subway\" when only the subway reaches it"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Ancestral Lands never send you past a closed road, even when the roads load slowly"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2906,39 +2936,9 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "World Map region cards show the moment you hover"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "Unvisited streets read on dark region maps, and a street's name picks the street"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "The Map opens at home, on the region your way out leads to"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A drawing error no longer stops your avatar for good"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A texture freed while still on screen draws as nothing instead of freezing the game"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Mining while other players use tools no longer freezes the game"
-   },
-   {
-    "date": "2026-11-20",
-    "kind": "fix",
-    "text": "Veldt Balm and Kipacre Greens garden beds stand where Tiny Speck's street pictures show them, none in the pig pen"
    }
   ]
  },
- "tests": 1226,
+ "tests": 1230,
  "generatedAt": "2026-11-21"
 }
