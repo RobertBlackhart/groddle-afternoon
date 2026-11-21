@@ -1737,8 +1737,9 @@ function maybeStartAccepted(engine, now) {
   if (!pendingStart || pendingStart.questId !== id) pendingStart = { questId: id, at: now + START_DELAY_MS };
   // Ticket 41: home does not hold it back (onStarted instanced you 0.1 s after accepting, at home
   // too: quest_scripting.js questInstanceLocation 26-46). busy() still waits out a street trip
-  // (game.js streetTrips), panels, dialogues and awards, and a house edit mode waits too.
-  if (now < pendingStart.at || engine.busy({ ignoreHome: true }) || dialogOpen() || engine.query?.('homeEditMode', engine)) return;
+  // (game.js streetTrips), panels, dialogues and awards, and a house edit mode waits too. The room
+  // takes you away, so a Party Space holds it back until you leave (R41: leaving).
+  if (now < pendingStart.at || engine.busy({ ignoreHome: true, leaving: true }) || dialogOpen() || engine.query?.('homeEditMode', engine)) return;
   pendingStart = null;
   startInstance(engine, id);
 }
@@ -1746,7 +1747,7 @@ function maybeStartAccepted(engine, now) {
 function maybeOfferRetry(engine, now) {
   if (run || entering || demo.quest || now < nextRetryAt) return;
   nextRetryAt = now + RETRY_CHECK_MS;
-  if (engine.busy() || dialogOpen() || engine.questOffersHeld?.()) return;
+  if (engine.busy({ leaving: true }) || dialogOpen() || engine.questOffersHeld?.()) return;
   const id = Object.keys(save.retry)
     .filter((q) => activeQuest(engine, q) && QUEST_ROOMS[q])
     .sort((a, b) => save.retry[a] - save.retry[b])[0];

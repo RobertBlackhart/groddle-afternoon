@@ -63,7 +63,7 @@ describe('Ticket 41: Join the Club starts at home and comes back there', () => {
   it('starts an accepted room at home, but never during a trip', () => {
     const qi = read('js/features/quest-instances-feature.js');
     const start = between(qi, 'function maybeStartAccepted(engine, now) {', 'function maybeOfferRetry');
-    assert.match(start, /engine\.busy\(\{ ignoreHome: true \}\)/);
+    assert.match(start, /engine\.busy\(\{ ignoreHome: true, leaving: true \}\)/);
     assert.doesNotMatch(start, /engine\.busy\(\)/);
     assert.match(start, /homeEditMode/);
     const startInstance = between(qi, 'async function startInstance(engine, questId, opts = {}) {', 'async function gotoStage');
@@ -76,7 +76,7 @@ describe('Ticket 41: Join the Club starts at home and comes back there', () => {
 
   it('counts a street trip as busy from its first step to the street load', () => {
     const game = read('game.js');
-    const busy = between(game, '  busy({ ignoreHome = false, ignoreInstance = false } = {}) {', '  /** A verb in progress or the verb menu open');
+    const busy = between(game, '  busy({ ignoreHome = false, ignoreInstance = false, leaving = false } = {}) {', '  /** A verb in progress or the verb menu open');
     assert.match(busy, /streetTrips > 0 \|\|/);
     // ignoreHome does not skip a trip.
     assert.doesNotMatch(busy, /ignoreHome[^\n]*streetTrips/);

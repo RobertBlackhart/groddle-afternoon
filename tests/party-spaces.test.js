@@ -239,8 +239,8 @@ describe('party lifecycle (groups/party.js, party_atm.js)', () => {
 });
 
 describe('party spaces feature wiring', async () => {
-  const { partySpacesFeature } = await import('../public/js/features/party-spaces-feature.js?v=8b9ecab8');
-  const { FEATURES } = await import('../public/js/features/index.js?v=e413e81c');
+  const { partySpacesFeature } = await import('../public/js/features/party-spaces-feature.js?v=f481a112');
+  const { FEATURES } = await import('../public/js/features/index.js?v=c83c72e3');
 
   it('is registered with the feature host', () => {
     assert.ok(FEATURES.some((f) => f.id === partySpacesFeature.id));
@@ -271,6 +271,29 @@ describe('party spaces feature wiring', async () => {
     assert.equal(partySpacesFeature.reloadLocation({ tsid: 'GDOBUP8IR8E2IPH', x: 1, y: 1 }), null);
     assert.deepEqual(partySpacesFeature.reloadLocation({ tsid: 'GDOGBH4BG1E2BM0', x: 1, y: 1 }), { tsid: 'GA5101HF7F429V5', x: 10, y: 20 });
     partySpacesFeature.restore({});
+  });
+
+  it('R41 (G1083, #576): a Party Space is a place, not busy; travel out stays frozen', async () => {
+    const { PLACE_HOLDS, holdKeepsBusy } = await import('../public/js/instance-holds.js?v=ff3a63a3');
+    assert.deepEqual([...PLACE_HOLDS], ['party']);
+    assert.equal(holdKeepsBusy(null), false);
+    assert.equal(holdKeepsBusy('party'), false, 'standing in a party is not busy');
+    assert.equal(holdKeepsBusy('party', { leaving: true }), true, 'leaving it for a quest room still waits');
+    // The games keep their holds (crowns, hog haul, mayhem, a quest room): unchanged.
+    for (const hold of ['it_game', 'hog-haul-mp', 'math_mayhem', 'quest-instances']) assert.equal(holdKeepsBusy(hold), true, hold);
+    const feature = readFileSync(join(publicDir, 'js/features/party-spaces-feature.js'), 'utf8');
+    assert.match(feature, /const HOLD = 'party';/, 'the party hold is the place hold');
+    const game = readFileSync(join(publicDir, 'game.js'), 'utf8');
+    const busy = game.slice(game.indexOf('  busy({ ignoreHome = false'), game.indexOf('imaginationHub: () =>'));
+    assert.match(busy, /busy\(\{ ignoreHome = false, ignoreInstance = false, leaving = false \} = \{\}\)/);
+    assert.match(busy, /holdKeepsBusy\(engine\.instanceHold, \{ leaving \}\)/);
+    assert.doesNotMatch(busy, /\n\s*engine\.instanceHold \|\|/, 'busy() no longer counts every hold');
+    // Travel stays frozen by the hold: transientInstance counts every hold (map routes, Teleport home, signposts).
+    assert.match(game, /transientInstance: \(\) => anyTransientInstance\(\) \|\| engine\.inScene\(\) \|\| Boolean\(engine\.instanceHold\)/);
+    // A quest room would take you out of the space: its start waits as before.
+    const qi = readFileSync(join(publicDir, 'js/features/quest-instances-feature.js'), 'utf8');
+    assert.match(qi, /engine\.busy\(\{ ignoreHome: true, leaving: true \}\)/);
+    assert.match(qi, /engine\.busy\(\{ leaving: true \}\) \|\| dialogOpen\(\) \|\| engine\.questOffersHeld/);
   });
 
   it('offers Activate on every pack', () => {

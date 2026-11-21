@@ -36,9 +36,10 @@ import { ensureCubimalItems } from '../public/js/cubimals.js?v=07f59f2f';
 import { addItem, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { bindToolInventory, copyTags, createToolConditionState, setCopyTag } from '../public/js/tools.js?v=4156bba8';
 import { cleanCopyTagOf } from '../public/js/copy-tags.js?v=7eec7d48';
-import { FEATURES } from '../public/js/features/index.js?v=e413e81c';
+import { FEATURES } from '../public/js/features/index.js?v=c83c72e3';
 import { cubimalBattleFeature, CUBIMAL_BATTLE_FEATURE_ID } from '../public/js/features/cubimal-battle-feature.js?v=604f7a0c';
 import { cubimalRaceFeature } from '../public/js/features/cubimal-race-feature.js?v=013ea39d';
+import { holdKeepsBusy } from '../public/js/instance-holds.js?v=ff3a63a3';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=7b03d657';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
@@ -364,6 +365,24 @@ describe('cubimal-battle feature', () => {
     assert.deepEqual(copyTags(engine.toolState, 'npc_cubimal_chick')[1], { name: 'Sprocket', level: 4, xp: 1 });
     assert.deepEqual(cubimalRaceFeature.itemDisplayName('npc_cubimal_chick', 1, engine), { label: 'Sprocket Lvl.4', kind: 'Chick Cubimal' });
     assert.deepEqual(cubimalRaceFeature.itemDisplayName('npc_cubimal_chick', null, engine, 'Bob'), { label: 'Bob', kind: 'Chick Cubimal' });
+  });
+
+  it('R41 (#576): battles in a Party Space, whose hold is a place; a game\'s hold still says not now', () => {
+    const game = fakeEngine();
+    game.engine.busy = (opts) => holdKeepsBusy('hog-haul-mp', opts);
+    cubimalBattleFeature.restore({}, game.engine);
+    addItem(game.engine.inv, 'npc_cubimal_chick', 1);
+    cubimalBattleFeature.runPackVerb('npc_cubimal_chick', 'cubimal_battle_s', game.engine);
+    assert.ok(game.log.some((l) => l.startsWith('toast:')), 'Hog Haul still holds');
+    assert.equal(countItem(game.engine.inv, 'npc_cubimal_chick'), 1);
+    const party = fakeEngine();
+    party.engine.busy = (opts) => holdKeepsBusy('party', opts);
+    cubimalBattleFeature.restore({}, party.engine);
+    addItem(party.engine.inv, 'npc_cubimal_chick', 1);
+    assert.equal(cubimalBattleFeature.runPackVerb('npc_cubimal_chick', 'cubimal_battle_s', party.engine), true);
+    assert.equal(party.log.some((l) => l.startsWith('toast:')), false);
+    assert.equal(countItem(party.engine.inv, 'npc_cubimal_chick'), 0);
+    assert.equal(party.data.cubiBattleState, 'waiting');
   });
 });
 

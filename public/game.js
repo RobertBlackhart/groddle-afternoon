@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=078aeaf4';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e413e81c';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c83c72e3';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1135,6 +1135,7 @@ import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=9f38c312'; /
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=55c15a59';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=8f0b6303';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
+import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -13480,8 +13481,12 @@ const engine = {
   },
   /** Player verbs: the Emotional Bear's upgrades (kiss, moon), for the player menu's emotes. */
   emotionalBearUpgrades: () => [...(emotionalBearState.upgrades || [])],
-  /** `{ ignoreHome: true }` lets a feature (Camera Mode) run at home while panels and verbs still block it. */
-  busy({ ignoreHome = false, ignoreInstance = false } = {}) {
+  /**
+   * `{ ignoreHome: true }` lets a feature (Camera Mode) run at home while panels and verbs still block it.
+   * R41: a place hold (a Party Space) is not busy; `{ leaving: true }` for an action that would take
+   * the player out of it, which still waits (js/instance-holds.js).
+   */
+  busy({ ignoreHome = false, ignoreInstance = false, leaving = false } = {}) {
     return Boolean(
       currentAction ||
         menuTarget ||
@@ -13492,7 +13497,7 @@ const engine = {
         streetTrips > 0 ||
         // ignoreInstance: being in a quest instance or rebuilt room is not busy (Camera Mode works there).
         (!ignoreInstance && (anyTransientInstance() || engine.inScene())) ||
-        engine.instanceHold ||
+        holdKeepsBusy(engine.instanceHold, { leaving }) ||
         (!ignoreHome && homeIsInstanced()) ||
         // Any open panel (Feat, quests, make, vendor, map, mailbox, ...), but not for a pack card's verb.
         panelMakesBusy() ||

@@ -911,7 +911,7 @@ function tickGuests(engine, dtMs, now) {
     g.sprite.scale.set(scale * flip, scale);
     g.name.x = g.sprite.x;
     g.name.y = g.sprite.y - g.sprite.height - 4;
-    // engine.busy() is always true inside the instance hold.
+    // Not engine.busy(): an open panel need not hush the dancers (R41: the party hold itself is not busy).
     if (now >= g.nextLine && !engine.acting() && !engine.questDialogueOpen() && !modal?.open) {
       g.nextLine = now + 14000 + Math.random() * 9000;
       g.line += 3;

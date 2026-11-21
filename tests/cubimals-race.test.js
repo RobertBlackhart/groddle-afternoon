@@ -38,8 +38,9 @@ import { addItem, countItem, createInventory } from '../public/js/inventory.js?v
 import { bindToolInventory, copyTags, createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=7b03d657';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { FEATURES } from '../public/js/features/index.js?v=e413e81c';
+import { FEATURES } from '../public/js/features/index.js?v=c83c72e3';
 import { cubimalRaceFeature, CUBIMAL_RACE_FEATURE_ID } from '../public/js/features/cubimal-race-feature.js?v=013ea39d';
+import { holdKeepsBusy } from '../public/js/instance-holds.js?v=ff3a63a3';
 import { FIRST_DRAW_SPRITES, HIRES_SPRITES } from '../public/js/sprite-hires.js?v=b6bc6eae';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -498,5 +499,30 @@ describe('cubimal-race feature', () => {
     assert.deepEqual(cubimalRaceFeature.save(), { version: 2, out: [], outNames: [], outTags: [] });
     clock += 1500;
     cubimalRaceFeature.onTick(16, clock, engine);
+  });
+
+  it('R41 (#576): races in a Party Space, whose hold is a place; a game\'s hold still says not now', () => {
+    Date.now = () => clock;
+    // Game of Crowns' hold (game-of-crowns.js CROWNS_ID) is a game: busy, as before.
+    const game = fakeEngine();
+    const gameToasts = [];
+    game.engine.toast = (m) => gameToasts.push(m);
+    game.engine.busy = (opts) => holdKeepsBusy('it_game', opts);
+    cubimalRaceFeature.restore({}, game.engine);
+    addItem(game.engine.inv, 'npc_cubimal_chick', 1);
+    cubimalRaceFeature.runPackVerb('npc_cubimal_chick', 'cubimal_race', game.engine);
+    assert.deepEqual(gameToasts, ['Not right now.']);
+    assert.equal(countItem(game.engine.inv, 'npc_cubimal_chick'), 1);
+    // A Party Space's hold ('party', party-spaces-feature) is not: npc_cubimal_*.js verbs.race has no place check.
+    const party = fakeEngine();
+    const partyToasts = [];
+    party.engine.toast = (m) => partyToasts.push(m);
+    party.engine.busy = (opts) => holdKeepsBusy('party', opts);
+    cubimalRaceFeature.restore({}, party.engine);
+    addItem(party.engine.inv, 'npc_cubimal_chick', 1);
+    assert.equal(cubimalRaceFeature.runPackVerb('npc_cubimal_chick', 'cubimal_race', party.engine), true);
+    assert.deepEqual(partyToasts, []);
+    assert.equal(party.data.cubimalRaceState, 'windup');
+    assert.equal(countItem(party.engine.inv, 'npc_cubimal_chick'), 0);
   });
 });
