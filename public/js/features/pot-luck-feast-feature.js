@@ -150,6 +150,11 @@ function shownTable() {
   return online || table;
 }
 
+/** Is the table out? Online the server's word decides (it sets the table out at the season's first second, harvest_table.go), else the calendar. */
+function tableOn() {
+  return online ? online.on : seasonOn();
+}
+
 /* --------------------------------------------------------------- online */
 
 function liveClient(engine) {
@@ -218,8 +223,7 @@ function clearTable(engine) {
 /** The table, when the season is on and this is its street (online: while the server says it is on). */
 function spawnTable(engine) {
   clearTable(engine);
-  if (!seasonOn() || !onTableStreet(engine) || engine.inScene?.()) return;
-  if (online && !online.on) return;
+  if (!tableOn() || !onTableStreet(engine) || engine.inScene?.()) return;
   const { PIXI } = engine;
   const l = engine.street?.bounds?.l || 0;
   const t = engine.street?.bounds?.t || 0;
@@ -292,7 +296,7 @@ function tableSubtitle(engine, total) {
 /** The newest dishes on the table top, left to right, and the count on its front. */
 function redraw(engine) {
   if (!view || view.root.destroyed) {
-    if (seasonOn() && onTableStreet(engine) && (!online || online.on) && engine.street) spawnTable(engine);
+    if (tableOn() && onTableStreet(engine) && engine.street) spawnTable(engine);
     publish(engine);
     return;
   }
@@ -384,7 +388,7 @@ function choices(engine) {
 /** Lay one `cls` on the table: the checks, then the server's word online, else the save's table. */
 function lay(engine, cls) {
   const c = String(cls || '');
-  const check = layCheck({ season: seasonOn() && (!online || online.on), kind: kindOf(c), have: countItem(engine.inv, c), label: label(c) });
+  const check = layCheck({ season: tableOn(), kind: kindOf(c), have: countItem(engine.inv, c), label: label(c) });
   if (!check.ok) {
     engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
     say(engine, check.msg, false);
@@ -587,7 +591,12 @@ export const potLuckFeastFeature = {
       syncAt = now;
       shared(engine).send('feast_sync', {});
     }
-    if (refreshSeason(engine) && engine.street) spawnTable(engine);
+    if (refreshSeason(engine) && engine.street) {
+      // The calendar turned (the season's start or end): online, ask the server for its word again
+      // rather than keep the one from this street's join (a table seen packed away before the start).
+      if (online && shared(engine)) shared(engine).send('feast_sync', {});
+      spawnTable(engine);
+    }
     if (!engine.started || !seasonOn()) return;
     if (quest.status === '' && now >= offerAt && engine.param?.('questoffer') !== 'off' && !engine.query?.('holdQuestOffers', engine) && !engine.questDialogueOpen?.()) {
       offerAt = now + 10 * 60_000;
@@ -605,7 +614,7 @@ export const potLuckFeastFeature = {
 
   verbsFor(target, engine) {
     if (!view || target !== view.target) return null;
-    const ok = seasonOn() && (!online || online.on);
+    const ok = tableOn();
     const has = choices(engine).length > 0;
     return [
       { id: 'lay', label: TABLE_LINES.verb, sort: 50, picker: 'lay', emptyMsg: TABLE_LINES.none, tooltip: TABLE_LINES.verbTip, enabled: ok && has, reason: ok ? TABLE_LINES.none : TABLE_LINES.noSeason, energy: 0, durationMs: 0 },

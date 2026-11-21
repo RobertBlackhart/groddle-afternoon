@@ -55,6 +55,8 @@ let offs = [];
 let pending = null; // { s, at }: a bite the server has not answered
 let syncAt = 0;
 let checkAt = 0;
+let dayAt = 0; // online: when the calendar's day was last read
+let dayWas = null; // online: the feast day key last read (null: not yet)
 let shown = new Map(); // spot -> { target, sprite, n, c, b }
 let last = '';
 let qaDate = null;
@@ -345,6 +347,14 @@ export const feastDayFeature = {
     if (!online && onStreet(engine) && now - syncAt > 5000 && shared(engine)) {
       syncAt = now;
       shared(engine).send('feastday_sync', {});
+    }
+    // Online the server lays the feast at midnight and tells the street (feast_day.go); when this
+    // page's calendar turns too, its word is asked for again in case that one was missed.
+    if (engine.mode === 'multiplayer' && now - dayAt > 2000) {
+      dayAt = now;
+      const day = feastDayKey(nowForCalendar(engine));
+      if (dayWas !== null && day !== dayWas && online && shared(engine)) shared(engine).send('feastday_sync', {});
+      dayWas = day;
     }
     settleSolo(engine);
   },
