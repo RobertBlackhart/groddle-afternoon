@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { PHONE_MAP_TEXT, phoneMapLinkAllowed, phoneMapWidth, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=0af46edd';
+import { PHONE_MAP_TEXT, phoneMapLinkAllowed, phoneMapWidth, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=b3f5aebe';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -25,6 +25,18 @@ describe('the street map on a phone', () => {
     assert.equal(phoneMapWidth(tall, 370, 400), 160, 'never under the 2012 width');
     assert.equal(phoneMapWidth(tall, 800, 900), 300);
     assert.equal(phoneMapWidth(null, 370, 400), 370);
+  });
+
+  it('#600: a tall street never covers the head or the list (measured once the list is in)', () => {
+    const open = feature.slice(feature.indexOf('function phoneOpen(engine)'), feature.indexOf('function phoneClose('));
+    const listIn = open.indexOf('signsBox.append(list);');
+    const noneIn = open.indexOf('signsBox.append(p);');
+    const measured = open.indexOf('const availH =');
+    assert.ok(listIn > 0 && noneIn > 0 && measured > 0);
+    assert.ok(measured > listIn && measured > noneIn, 'the map box is measured after the list takes its room');
+    assert.ok(open.indexOf('view = createStreetMinimap(') > measured);
+    assert.match(block, /\.smm-sheet-map \{ position: relative; flex: 1 1 0; min-height: 0;/);
+    assert.match(block, /\.smm-sheet-head, \.smm-sheet-signs \{ position: relative; z-index: 1; \}/);
   });
 
   it('lists the signposts left to right with the way they stand from you', () => {

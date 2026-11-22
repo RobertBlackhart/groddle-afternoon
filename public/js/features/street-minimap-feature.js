@@ -609,32 +609,6 @@ function phoneOpen(engine) {
   const mapBox = sheet.querySelector('.smm-sheet-map');
   const signsBox = sheet.querySelector('.smm-sheet-signs');
   phone.sheet = sheet;
-  host = mapBox;
-  // The map fits the box the sheet leaves it (at least a third of the screen stays for the list).
-  const availW = mapBox.clientWidth || gameRoot.clientWidth - 32;
-  const availH = Math.max(120, (mapBox.clientHeight || gameRoot.clientHeight * 0.6));
-  view = createStreetMinimap(doc, mapBox, {
-    artUrl: classicArtUrl,
-    reducedMotion: () => true,
-    onHide: () => phoneClose(engine),
-    onShow: () => {},
-    onLayout: () => {},
-    onReady: (on) => readyChanged(engine, on),
-    maxHeight: () => availH,
-    onResnap: () => scheduleSnaps(engine, [60]),
-    onWalk: (goal, how) => {
-      const ok = walkFromMap(engine, goal, how);
-      if (ok) phoneClose(engine, { walked: true });
-      return ok;
-    },
-  });
-  view.root.classList.add('is-phone-sheet');
-  view.root.style.setProperty('--mm-w', `${phoneMapWidth(engine.street, availW, availH)}px`);
-  street = null;
-  lastState = '';
-  lastDots = '';
-  sync(engine, true);
-  view.expand(true);
   // The signposts' destinations, a tap away.
   const marks = [...signpostMarks(engine.street), ...(isLiveScene(engine.streetView) ? sceneSignMarks(engine.interactables || []) : []), ...stationMarks(engine.street)];
   const rows = phoneSignRows(marks, engine.player ? { x: engine.player.x, y: engine.player.y } : null);
@@ -667,6 +641,33 @@ function phoneOpen(engine) {
     p.textContent = PHONE_MAP_TEXT.none;
     signsBox.append(p);
   }
+  host = mapBox;
+  // #600: the map fits the box the sheet leaves it once the head and the list are in (the list takes
+  // up to 38% of the card), so a tall street never runs over the Map button, the X or the list.
+  const availW = mapBox.clientWidth || gameRoot.clientWidth - 32;
+  const availH = Math.max(120, (mapBox.clientHeight || gameRoot.clientHeight * 0.6));
+  view = createStreetMinimap(doc, mapBox, {
+    artUrl: classicArtUrl,
+    reducedMotion: () => true,
+    onHide: () => phoneClose(engine),
+    onShow: () => {},
+    onLayout: () => {},
+    onReady: (on) => readyChanged(engine, on),
+    maxHeight: () => availH,
+    onResnap: () => scheduleSnaps(engine, [60]),
+    onWalk: (goal, how) => {
+      const ok = walkFromMap(engine, goal, how);
+      if (ok) phoneClose(engine, { walked: true });
+      return ok;
+    },
+  });
+  view.root.classList.add('is-phone-sheet');
+  view.root.style.setProperty('--mm-w', `${phoneMapWidth(engine.street, availW, availH)}px`);
+  street = null;
+  lastState = '';
+  lastDots = '';
+  sync(engine, true);
+  view.expand(true);
   sheet.querySelector('.smm-sheet-x').addEventListener('click', () => phoneClose(engine));
   // G858 (#409): the Map, a tap away, as the street's name is on a computer.
   const mapBtn = sheet.querySelector('.smm-sheet-mapbtn');
