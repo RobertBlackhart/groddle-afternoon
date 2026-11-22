@@ -296,7 +296,8 @@ describe('home loading card (G249, LoadingLocationPOLView.as)', () => {
     const game = readFileSync(join(pub, 'game.js'), 'utf8');
     assert.match(game, /pol: \{ type: homeState\.room === 'interior' \? 'interior' : 'exterior' \}/);
     assert.match(game, /pol: \{ type: room === 'interior' \? 'interior' : 'exterior' \}/);
-    assert.match(game, /if \(opts\.pol\) await showLocationTransition\(\{ pol: opts\.pol, load \}\);/);
+    // R46: the home card's trip runs under engine.enter's failure contract (enterResult).
+    assert.match(game, /enterResult\(\(\) => \(opts\.pol \? showLocationTransition\(\{ pol: opts\.pol, load \}\) : load\(\)\),/);
     const tower = readFileSync(join(pub, 'js/features/home-tower-feature.js'), 'utf8');
     assert.match(tower, /pol: \{ type: 'tower', customName: tower\.name \|\| ''/);
     assert.match(tower, /engine\.enter\(HOME_STREET_TSID, \{ pol: \{ type: 'exterior' \} \}\)/);

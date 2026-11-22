@@ -26,8 +26,11 @@ const fn = (name) => {
 describe('#215 the walk\'s streets open with the avatar already on its spawn', () => {
   it('streetTripTo runs opts.arrive after enterStreet, inside onMid (before the card lifts) and on the no-card path', () => {
     const trip = fn('streetTripTo');
-    assert.match(trip, /onMid: async \(\) => \{\n\s+data = await enterStreet\(tsid, \{ \.\.\.opts, quiet: true \}\);\n(?:\s+\/\/[^\n]*\n)*\s+opts\.arrive\?\.\(data\);\n\s+\},/);
-    assert.match(trip, /if \(!useFx \|\| !el\) \{\n\s+const arrived = await enterStreet\(tsid, opts\);\n\s+opts\.arrive\?\.\(arrived\);\n\s+return arrived;/);
+    // R46: the load is enterStreet under the trip's failure contract (enterStreetOrStay, a retry).
+    assert.match(trip, /const load = \(extra = \{\}\) => enterStreetOrStay\(tsid, \{ \.\.\.opts, \.\.\.extra \}/);
+    assert.match(game, /load: \(\) => enterStreet\(tsid, opts\),/);
+    assert.match(trip, /onMid: async \(\) => \{\n\s+data = await load\(\{ quiet: true \}\);\n(?:\s+\/\/[^\n]*\n)*\s+opts\.arrive\?\.\(data\);\n\s+\},/);
+    assert.match(trip, /if \(!useFx \|\| !el\) \{\n\s+const arrived = await load\(\);\n\s+opts\.arrive\?\.\(arrived\);\n\s+return arrived;/);
   });
 
   for (const [name, stage, street] of [

@@ -82,7 +82,7 @@ import {
   teleportToPoint,
   useScript,
 } from '../teleportation.js?v=1bbe1ab3';
-import { energyMax, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
+import { energyMax, forceMetabolic, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=10f6604f';
 
 export const TELEPORT_FEATURE_ID = 'teleportation';
@@ -437,7 +437,8 @@ async function land(engine) {
       arrival = null;
       if (warp.spent) {
         state = warp.spent.state;
-        engine.pc.energy = (Number(engine.pc.energy) || 0) + warp.spent.energy;
+        // G970: an undone loss, past both doors (a gain gate must not keep it).
+        forceMetabolic(engine.pc, 'energy', (Number(engine.pc.energy) || 0) + warp.spent.energy);
         engine.updateHud();
         engine.save();
       }
