@@ -33,6 +33,8 @@ describe('panels on a phone', () => {
     assert.ok(not, 'the cap names what it leaves out');
     const left = new Set(not[1].split(',').map((s) => s.trim()));
     for (const c of ['.ui-sheet-center', '.award-screen', '.new-day-screen', '.hog-haul-screen', '.img-reveal', '.quest-dialogue', '.feed-picker', '.imagination-hub']) assert.ok(left.has(c), c);
+    // #604: the naming boxes (.verb-menu scrims), the .glitch-modal scrims and the street map's sheet reach the right edge too.
+    for (const c of ['.verb-menu', '.glitch-modal', '.smm-sheet']) assert.ok(left.has(c), c);
     for (const c of ['.glitch-modal-card', '.side-card']) assert.ok(!left.has(c), c);
   });
 });
