@@ -45,13 +45,14 @@ import { onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { loseMood } from '../metabolics.js?v=48f784bf';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
 import { standOnFeet } from '../sprite-feet.js?v=a593b732';
+import { roomMemoryKey } from '../quest-instance.js?v=8858d29d';
 
 const Q1 = 'help_juju_bandits';
 const Q2 = 'help_juju_bandits_2';
 const ROOM_ID = 'juju_camp';
 const ART = 'assets/sprites/quest-rooms/juju_camp/';
 /** save.memory key shared by the room (ctx.memory('hunt')) and the world hooks. */
-export const HUNT_KEY = `room:${ROOM_ID}:hunt`;
+export const HUNT_KEY = roomMemoryKey(ROOM_ID, 'hunt');
 
 /* ------------------------------------------------------------------ */
 /* Source data                                                         */

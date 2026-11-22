@@ -113,6 +113,7 @@ import {
   reloadTarget,
   resumeQuestInstance,
   roomLeaveButton,
+  roomMemoryKey,
   runFromHeld,
   runFlag,
   scheduleStuckPrompt,
@@ -123,7 +124,7 @@ import {
   streetsReachingUr,
   stuckPromptDue,
   wayBackFrom,
-} from '../quest-instance.js?v=7365a572';
+} from '../quest-instance.js?v=8858d29d';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=bdd3fd05';
@@ -214,7 +215,7 @@ const ROOM_MODULES = {
   kids_room: () => import('../quest-rooms/kids-room.js?v=5e2826af'),
   rube_yard: () => import('../quest-rooms/rube-yard.js?v=c796a722'),
   le_miserable: () => import('../quest-rooms/le-miserable.js?v=7d56ca0e'),
-  juju_camp: () => import('../quest-rooms/juju-camp.js?v=3f3fc1f0'),
+  juju_camp: () => import('../quest-rooms/juju-camp.js?v=56561aec'),
   picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=df0fc397'),
   radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=91783a64'),
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=dc7d7814'),
@@ -961,12 +962,17 @@ function makeContext(engine) {
       cardEl.querySelector('button')?.click();
       return true;
     },
-    memory: (key) => (save.memory[`room:${room?.id}:${key}`] ||= {}),
+    /** This room's own save row (G1120: the key format is quest-instance.js roomMemoryKey). */
+    memory: (key) => roomMemory(room?.id, key),
     wait: (ms) => new Promise((r) => setTimeout(r, ms)),
     /** An autoplay step, logged when ok (playRoomAutoplay wires the log; G971). */
     step: (name, ok = true) => Boolean(ok),
   };
   return c;
+}
+
+function roomMemory(roomId, key) {
+  return (save.memory[roomMemoryKey(roomId, key)] ||= {});
 }
 
 function clearContextEntities(engine) {
@@ -2129,6 +2135,8 @@ export const questInstancesFeature = {
   _state() {
     return { run, room: room?.id || null, save, demo };
   },
+  /** Tests: a room's ctx.memory row. */
+  _roomMemory: (roomId, key) => roomMemory(roomId, key),
 };
 
 /**

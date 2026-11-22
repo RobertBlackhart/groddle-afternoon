@@ -55,6 +55,36 @@ const STATUSES = new Set(['active', 'solved', 'expired', 'left']);
 const cleanId = (value) => String(value || '').trim().replace(/[^a-zA-Z0-9_-]/g, '');
 
 /**
+ * G1120: a quest room's own save.memory key, room:<roomId>:<key> (ctx.memory, and the world hooks
+ * that read the same row, such as the Juju hunt). The one place the format lives: the normalizer
+ * keeps exactly these characters (cleanMemoryKey).
+ */
+export const roomMemoryKey = (roomId, key) => `room:${roomId}:${key}`;
+const cleanMemoryKey = (value) => String(value || '').trim().replace(/[^a-zA-Z0-9_:-]/g, '');
+
+/**
+ * G1120: saves from 2026-10-21 to the fix ran room keys through cleanId, which dropped the colons
+ * (room:juju_camp:hunt saved as roomjuju_camphunt). The rooms that wrote memory then, with the
+ * name each used; `more` when the name ran on (the Clubhouse's qurazy:<questId>).
+ */
+const STRIPPED_ROOM_MEMORY = Object.freeze([
+  Object.freeze({ room: 'juju_camp', name: 'hunt' }),
+  Object.freeze({ room: 'an_autumn_day', name: 'qurazy' }),
+  Object.freeze({ room: 'clubhouse', name: 'qurazy', more: true }),
+]);
+
+/** The real key for a stripped one, else null. */
+export function unstripRoomMemoryKey(key) {
+  if (!key.startsWith('room') || key.includes(':')) return null;
+  for (const { room, name, more } of STRIPPED_ROOM_MEMORY) {
+    const head = `room${room}${name}`;
+    if (key === head && !more) return roomMemoryKey(room, name);
+    if (more && key.length > head.length && key.startsWith(head)) return roomMemoryKey(room, `${name}:${key.slice(head.length)}`);
+  }
+  return null;
+}
+
+/**
  * The room bar's button (#486, G1003): Leave while the room runs, the room's doneLabel (Go back)
  * once solved, and none once solved in a room the source made with {no_auto_return: true}
  * (room.noAutoReturn): players/inc_instances.js instances_left 145 sends you back only without it,
@@ -363,10 +393,16 @@ export function normalizeInstanceSave(seed = {}) {
     if (key && Number.isFinite(n) && n > 0) retry[key] = n;
   }
   const memory = {};
+  const stripped = [];
   for (const [id, row] of Object.entries(src.memory || {})) {
-    const key = cleanId(id);
-    if (key && row && typeof row === 'object') memory[key] = JSON.parse(JSON.stringify(row));
+    const key = cleanMemoryKey(id);
+    if (!key || !row || typeof row !== 'object') continue;
+    const real = unstripRoomMemoryKey(key);
+    if (real) stripped.push([real, row]);
+    else memory[key] = JSON.parse(JSON.stringify(row));
   }
+  // G1120: a stripped row comes back under its real key; what was written there since wins.
+  for (const [real, row] of stripped) memory[real] = { ...JSON.parse(JSON.stringify(row)), ...(memory[real] || {}) };
   return {
     returnTo: cleanPoint(src.returnTo),
     questId: cleanId(src.questId) || null,

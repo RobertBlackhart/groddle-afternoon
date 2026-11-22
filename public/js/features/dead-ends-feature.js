@@ -25,9 +25,9 @@
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=61799f13';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=2782066a';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=10376267';
-import { strayWayOut } from '../quest-instance.js?v=7365a572';
+import { strayWayOut } from '../quest-instance.js?v=8858d29d';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { anchorBottomCentre } from '../sprite-feet.js?v=a593b732';

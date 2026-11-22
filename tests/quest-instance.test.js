@@ -25,7 +25,7 @@ import {
   setRunFlag,
   solveQuestInstance,
   stepQuestInstance,
-} from '../public/js/quest-instance.js?v=7365a572';
+} from '../public/js/quest-instance.js?v=8858d29d';
 import {
   BUILT_ROOMS,
   OFFER_OVERRIDES,
@@ -441,7 +441,7 @@ describe('G311: a failed room quest is Try again in the quest log', () => {
   };
 
   it('a run lost to a reload marks a startable quest failed, not a retry prompt', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=4dc234ea');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=03d04fe7');
     const { ensureQuestOfferState } = await import('../public/js/quest-offers.js?v=69e064ff');
     assert.equal(getQuestCatalog().mental_block?.needsStart, true);
     assert.notEqual(getQuestCatalog().help_juju_bandits?.needsStart, true, 'no onStarted in GSJS');
@@ -505,7 +505,7 @@ describe('G313: failed room quests the source removes', () => {
   });
 
   it('a reload removes a source-removed quest and its offers, and keeps the prompt for the three', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=4dc234ea');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=03d04fe7');
     const { questStatus } = await import('../public/js/quest-offers.js?v=69e064ff');
     const t = Date.now() - 60_000;
     questInstancesFeature.restore({ memory: {}, retry: { tower_quest: t, le_miserable_part_2: t, smuggle_the_smuggler_part2: t } });
@@ -533,7 +533,7 @@ describe('G313: failed room quests the source removes', () => {
   });
 
   it('has no map card', async () => {
-    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=4dc234ea');
+    const { questInstancesFeature } = await import('../public/js/features/quest-instances-feature.js?v=03d04fe7');
     assert.equal(questInstancesFeature.mapCards, undefined);
     const src = readFileSync(join(root, 'public/js/features/quest-instances-feature.js'), 'utf8');
     assert.doesNotMatch(src, /Unfinished quest places/);
@@ -554,7 +554,7 @@ describe('#107: a choice dialog can be dismissed', () => {
   const src = readFileSync(join(root, 'public/js/features/quest-instances-feature.js'), 'utf8');
 
   it('Escape and a click outside make the cancel choice (ChoicesDialog.as _escKeyHandler: cancel_value first)', async () => {
-    const { cancelChoice } = await import('../public/js/features/quest-instances-feature.js?v=4dc234ea');
+    const { cancelChoice } = await import('../public/js/features/quest-instances-feature.js?v=03d04fe7');
     const memories = [{ label: 'Four Letter Words', value: 'letter_block_2' }, { label: 'Hog Haul', value: 'hogtie_piggies' }, { label: 'Never mind', value: '', cancel: true }];
     assert.equal(cancelChoice(memories), '');
     assert.equal(cancelChoice([{ label: 'Stay', value: 'stay', cancel: true }, { label: 'Leave', value: 'leave' }]), 'stay');
@@ -588,5 +588,58 @@ describe('ticket 193: the Vision Quest room leaves typing alone', () => {
     const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/quest-rooms/vision-quest.js'), 'utf8');
     const attach = src.slice(src.indexOf('function attachKeys('), src.indexOf("if (k === 'c' || k === 'C')"));
     assert.match(attach, /e\.target\?\.closest\?\.\('input, textarea, select, \[contenteditable="true"\]/);
+  });
+});
+
+/*
+ * G1120 (R45): room memory (ctx.memory, room:<room>:<key>) must read back after a reload. The
+ * normalizer used to strip the colons, so the Juju hunt (the hint's clue, the trowel's dig) and
+ * the Clubhouse and An Autumn Day once-only Qurazy marks were lost.
+ */
+describe('G1120: quest room memory survives a reload', () => {
+  // Every room that writes ctx.memory, with the keys it writes (a new room fails the scan below).
+  const ROOM_KEYS = {
+    juju_camp: ['hunt'],
+    an_autumn_day: ['qurazy'],
+    clubhouse: ['qurazy:join_club', 'qurazy:join_club_reminisce'],
+  };
+
+  it('every room that calls ctx.memory is listed here', () => {
+    const users = BUILT_ROOMS.filter((id) => /\.memory\(/.test(readFileSync(join(root, 'public/js/quest-rooms', roomModulePath(id)), 'utf8')));
+    assert.deepEqual(users.sort(), Object.keys(ROOM_KEYS).sort(), 'a room writes room memory: list its keys in this test');
+  });
+
+  it('writes through the feature, saves, reloads and reads the same row', async () => {
+    const { questInstancesFeature: f } = await import('../public/js/features/quest-instances-feature.js?v=03d04fe7');
+    f.restore({});
+    for (const [room, keys] of Object.entries(ROOM_KEYS)) {
+      for (const key of keys) f._roomMemory(room, key).mark = `${room}/${key}`;
+    }
+    f.restore(JSON.parse(JSON.stringify(f.save())));
+    for (const [room, keys] of Object.entries(ROOM_KEYS)) {
+      for (const key of keys) assert.equal(f._roomMemory(room, key).mark, `${room}/${key}`, `${room} ${key}`);
+    }
+    const { HUNT_KEY } = await import('../public/js/quest-rooms/juju-camp.js?v=56561aec');
+    assert.equal(HUNT_KEY, 'room:juju_camp:hunt');
+    assert.equal(f._state().save.memory[HUNT_KEY].mark, 'juju_camp/hunt', 'the world hooks read the room row');
+  });
+
+  it('brings back rows a stripped save already lost, keeping anything written since', () => {
+    const save = normalizeInstanceSave({
+      memory: {
+        roomjuju_camphunt: { street: 'GLI_A', clue: 'dust_path' },
+        'room:juju_camp:hunt': { dug: true },
+        rooman_autumn_dayqurazy: { calm: 1 },
+        roomclubhousequrazyjoin_club: { q1: 2 },
+        help_juju_bandits: { completions: 1 },
+        'bad key!': { x: 1 },
+      },
+    });
+    assert.deepEqual(save.memory['room:juju_camp:hunt'], { street: 'GLI_A', clue: 'dust_path', dug: true });
+    assert.deepEqual(save.memory['room:an_autumn_day:qurazy'], { calm: 1 });
+    assert.deepEqual(save.memory['room:clubhouse:qurazy:join_club'], { q1: 2 });
+    assert.deepEqual(save.memory.help_juju_bandits, { completions: 1 });
+    assert.deepEqual(save.memory.badkey, { x: 1 });
+    assert.equal(save.memory.roomjuju_camphunt, undefined);
   });
 });

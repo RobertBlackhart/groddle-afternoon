@@ -25,10 +25,10 @@ import {
   setRunFlag,
   stepQuestInstance,
   stuckPromptDue,
-} from '../public/js/quest-instance.js?v=7365a572';
+} from '../public/js/quest-instance.js?v=8858d29d';
 import { normalizePartyRecord } from '../public/js/party-spaces.js?v=559a618a';
 import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=45846e06';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=4dc234ea';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=03d04fe7';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');
