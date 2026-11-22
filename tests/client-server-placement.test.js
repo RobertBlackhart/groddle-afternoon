@@ -9,6 +9,10 @@
  * This lays out every street the way game.js does, reading game.js's own planner call (its groups,
  * counts, clearances and options, not the builder's copy of them), and compares each shared
  * object's spot with the server's files: a drift fails here with the list of streets and things.
+ * The street is the one game.js plans: every feature's prepareStreet has run on it first (a Party
+ * Space's template inside its party keeps only its exit signpost, a keep-clear spot: R43, Toxic
+ * Moon's rocks and Nylon Phool's salmon stood elsewhere on the server), and its quoins are checked
+ * as well (data/quoins.json).
  * The server files skip when that repo is not beside this one (tools/repos.mjs).
  */
 import assert from 'node:assert/strict';
@@ -23,6 +27,8 @@ import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.
 import { FEATURES } from '../public/js/features/index.js?v=4cc3822e';
 import { streetGardenBeds } from '../public/js/garden.js?v=751ef424';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
+import { partySpaceForStreet } from '../public/js/party-spaces.js?v=559a618a';
+import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -67,6 +73,20 @@ function clientCoreGroups() {
   });
 }
 
+/**
+ * The street as game.js enterStreet has it when it plans: features.prepareStreet (every feature's, in
+ * order) on the loaded street. On a Party Space's template the player is in its party, come from
+ * another street, as anyone in the space online is (party-spaces-feature enterParty sets returnTo).
+ */
+function pageStreet(data, preparers, party) {
+  const space = partySpaceForStreet(data.tsid);
+  party.restore(space ? { party: { template: space.id, expiresAt: Date.now() + 3_600_000, inside: true, returnTo: { tsid: STREET_INDEX.default, x: 300, y: 600 } } } : {});
+  const engine = { mode: 'multiplayer', param: () => null, query: () => null, setData() {}, homeContext: () => ({ inHome: false }), transientInstance: () => false };
+  for (const f of preparers) f.prepareStreet(data, engine);
+  party.restore({});
+  return data;
+}
+
 /** The page's layout of one street: planner groups (game.js) and its resource nodes (resource-nodes-feature). */
 function clientLayout(data, core, nodesFeature) {
   // game.js streetEcologyEntry: a feature's ecologyOverride first. The only street the server shares
@@ -100,6 +120,9 @@ describe('the page lays out each street where the realtime server checks reach',
   let gardens;
   let core;
   let nodesFeature;
+  let quoins;
+  let preparers;
+  let party;
   before(() => {
     if (skipWithoutServer) return;
     setZoneStreetsShown(false);
@@ -109,6 +132,9 @@ describe('the page lays out each street where the realtime server checks reach',
     gardens = JSON.parse(readFileSync(serverPath('data/gardens.json'), 'utf8')).streets;
     core = clientCoreGroups();
     nodesFeature = FEATURES.find((f) => typeof f.placementGroups === 'function');
+    quoins = JSON.parse(readFileSync(serverPath('data/quoins.json'), 'utf8')).streets;
+    preparers = FEATURES.filter((f) => typeof f.prepareStreet === 'function');
+    party = FEATURES.find((f) => f.id === 'party-spaces');
   });
 
   it('game.js plans with the inputs the server\'s builder uses', () => {
@@ -119,7 +145,7 @@ describe('the page lays out each street where the realtime server checks reach',
     assert.equal(FEATURES.find((f) => typeof f.placementGroups === 'function').id, 'resource-nodes');
   });
 
-  it('every street: rocks, trees, nodes, Piggies, Chickens, Butterflies and garden beds', { skip: skipWithoutServer }, async () => {
+  it('every street: rocks, trees, nodes, Piggies, Chickens, Butterflies, garden beds and quoins', { skip: skipWithoutServer }, async () => {
     const tsids = Object.keys(STREET_INDEX.streets).filter((t) => !isZoneTsid(t)).sort();
     const drift = [];
     let checked = 0;
@@ -130,6 +156,7 @@ describe('the page lays out each street where the realtime server checks reach',
       } catch {
         continue;
       }
+      data = pageStreet(data, preparers, party);
       const { population, placement, nodes, rocks } = clientLayout(data, core, nodesFeature);
       const want = objects[tsid] || {};
       const bad = [];
@@ -175,11 +202,18 @@ describe('the page lays out each street where the realtime server checks reach',
         if (differs({ x: bed.x, y: bed.y - 2 }, x, y) || bed.bed !== key || bed.cols !== cols || bed.rows !== rows) bad.push(`garden ${index} page ${bed.bed} ${bed.cols}x${bed.rows} at ${bed.x},${bed.y} server ${key} ${cols}x${rows} at ${x},${y}`);
       }
       if ((gardens[tsid] || []).length && (gardens[tsid] || []).length !== beds.length + boxed.length) bad.push(`gardens: page ${beds.length + boxed.length} server ${(gardens[tsid] || []).length}`);
+      // Shared quoins (quoins.go): each spot by its index.
+      const q = streetQuoinLayout(data, { starter: tsid === STREET_INDEX.default });
+      const wantQ = quoins[tsid] || [];
+      if (q.length !== wantQ.length) bad.push(`quoins: page ${q.length} server ${wantQ.length}`);
+      else q.forEach(([x, y], i) => {
+        if (x !== wantQ[i][0] || y !== wantQ[i][1]) bad.push(`quoin:${i} page ${x},${y} server ${wantQ[i][0]},${wantQ[i][1]}`);
+      });
       if (bad.length) drift.push(`${tsid} ${data.label}: ${bad.slice(0, 4).join('; ')}${bad.length > 4 ? ` (+${bad.length - 4})` : ''}`);
       checked += 1;
     }
     assert.ok(checked > 1000, `laid out ${checked} streets`);
     for (const tsid of Object.keys(objects)) assert.ok(tsids.includes(tsid), `${tsid} is in the server's objects but not a street the page knows`);
-    assert.deepEqual(drift, [], `${drift.length} streets drift from the server: node tools/build-realtime-objects.mjs and tools/build-realtime-gardens.mjs, then release the server with the game\n${drift.slice(0, 30).join('\n')}`);
+    assert.deepEqual(drift, [], `${drift.length} streets drift from the server: node tools/build-realtime-objects.mjs, tools/build-realtime-quoins.mjs and tools/build-realtime-gardens.mjs, then release the server with the game\n${drift.slice(0, 30).join('\n')}`);
   });
 });

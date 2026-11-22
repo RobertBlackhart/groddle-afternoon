@@ -24,6 +24,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { plannedStreet } from './build-realtime-objects.mjs';
 import { requireServer, serverPath } from './repos.mjs';
 
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
@@ -170,7 +171,8 @@ async function main() {
       console.warn(`skip ${tsid}: ${err.message}`);
       continue;
     }
-    const layout = streetQuoinLayout(data, { starter: data.tsid === STREET_INDEX.default });
+    // A Party Space as its party plans it: only its exit signpost (build-realtime-objects.mjs plannedStreet).
+    const layout = streetQuoinLayout(plannedStreet(data), { starter: data.tsid === STREET_INDEX.default });
     if (!layout.length) continue;
     streets[data.tsid] = layout;
     total += layout.length;

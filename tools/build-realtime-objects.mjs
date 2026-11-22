@@ -116,7 +116,7 @@ import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=884e34b3';
-import { partyEcologyEntry, partySpaceForStreet } from '../public/js/party-spaces.js?v=559a618a';
+import { partyEcologyEntry, partyExitSignpost, partySpaceForStreet } from '../public/js/party-spaces.js?v=559a618a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
@@ -395,6 +395,21 @@ export function streetEcology(tsid) {
   return space ? partyEcologyEntry(space.id) : ecologyForStreet(tsid);
 }
 
+/**
+ * A street as a page plans it in multiplayer. A Party Space's template street is played inside a
+ * party, where party-spaces-feature prepareStreet leaves it only its exit signpost (at the space's
+ * own exit, js/party-spaces.js partyExitSignpost) before game.js enterStreet plans it, and a
+ * signpost is a keep-clear spot (streetReservedSpots). Toxic Moon and Nylon Phool have no signpost
+ * of their own, so planned from the archived street their rocks and Nylon Phool's salmon stood
+ * elsewhere on the server (R43). Where the way back leads does not move the post: any will do.
+ */
+export function plannedStreet(data) {
+  const space = partySpaceForStreet(data?.tsid);
+  if (!space) return data;
+  const exit = partyExitSignpost(space.id, { tsid: STREET_INDEX.default, x: 0, y: 0 });
+  return { ...data, signposts: exit ? [exit] : [] };
+}
+
 async function main() {
   requireServer();
   // As a multiplayer page loads streets: no published zone, no arm into one (js/street-loader.js).
@@ -417,6 +432,7 @@ async function main() {
       console.warn(`skip ${tsid}: ${err.message}`);
       continue;
     }
+    data = plannedStreet(data);
     const starter = data.tsid === STREET_INDEX.default;
     const layout = streetObjectLayout(data, { starter, ecology: streetEcology(data.tsid) });
     const upgrades = upgradeLayouts(data, jobs.upgrades?.[data.tsid]?.options, { starter });
