@@ -17,8 +17,8 @@ import {
   homeRefreshFrames,
   visitGardenPlots,
   visitSceneKey,
-} from '../public/js/home-live.js?v=c24d82cb';
-import { createHomeLive, homeLiveFeature } from '../public/js/features/home-live-feature.js?v=ed80100f';
+} from '../public/js/home-live.js?v=cebb24d4';
+import { createHomeLive, homeLiveFeature } from '../public/js/features/home-live-feature.js?v=5aacf300';
 import { YARD_ACT_HOLD_MS, YARD_LINGER_MS, followYardPath, holdYardWalk } from '../public/js/yard-wander.js?v=3cbc3983';
 
 const root = join(import.meta.dirname, '..');

@@ -25,7 +25,7 @@
 
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
-import { HOME_LIVE_WAIT_MS, changedHomeKinds, homeLivePrints, homeRefreshFrames } from '../home-live.js?v=c24d82cb';
+import { HOME_LIVE_WAIT_MS, changedHomeKinds, homeLivePrints, homeRefreshFrames } from '../home-live.js?v=cebb24d4';
 
 export const HOME_LIVE_FEATURE_ID = 'home-live';
 
