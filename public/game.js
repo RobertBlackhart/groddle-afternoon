@@ -1163,6 +1163,7 @@ import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=cdff03
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=a593b732';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
+import { createStreetMove, travelTurn } from './js/street-move.js?v=8b87fd56';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -3428,15 +3429,17 @@ let hubColorCache = {};
  * Ticket 41: street trips under way (returnFromHome, enterStreetWithTransition). busy() reports
  * them, so nothing starts in the gap between leaving one place and the next street's load (a
  * quest room started there was replaced by the street and ran on, unseen).
+ * G1129: and one at a time, as Glitch's moveModel.moving kept them (js/street-move.js): a trip you
+ * ask for mid-move is refused (travelTo), one the game sends you on waits for the first to end.
  */
-let streetTrips = 0;
-async function onStreetTrip(work) {
-  streetTrips += 1;
-  try {
-    return await work();
-  } finally {
-    streetTrips -= 1;
-  }
+const streetMove = createStreetMove();
+
+/**
+ * G1129: a street change is under way: a trip, a loading card up (a home's card too), or a scene's
+ * own swap. Your travel and Enter rest meanwhile (Glitch: moveModel.moving).
+ */
+function streetMoving() {
+  return streetMove.moving() || streetCardUp() || sceneTransitionBusy();
 }
 
 async function loadTransitionAssets() {
@@ -3785,7 +3788,8 @@ function announceAchievementUpdates(updates = []) {
  * @param {{ spawnX?: number, spawnY?: number, useTransition?: boolean, quiet?: boolean }} [opts]
  */
 async function enterStreetWithTransition(tsid, opts = {}) {
-  return onStreetTrip(() => streetTripTo(tsid, opts));
+  // G1129: never alongside another trip; one asked for mid-move waits for it to end.
+  return streetMove.queue(() => streetTripTo(tsid, opts));
 }
 
 /** #478: each street's Home to: list as its card last showed it, this session. */
@@ -10899,6 +10903,12 @@ function tryOpenNearestMenu({ nearestFirst = false } = {}) {
   // Enter in cult_mode to CultManager alone (LocationInputHandler.as enterKeyHandler 200-204), so
   // it never tended a garden (whose plots then took the arrows) or opened the chooser there.
   if (features.query('homeEditMode', engine)) return;
+  // G1129: not while a street changes (Glitch: no avatar key control while moving,
+  // TSFrontController.as maybeStartAvatarKeyControl 1237-1266): Enter on the card is no second trip.
+  if (streetMoving()) {
+    setCanvasData('enterMoving', String(Number(app?.canvas?.dataset.enterMoving || 0) + 1));
+    return;
+  }
   // G228: a feature may hold Enter. G230 (Austin 2026-10-28): the crab's call-out no
   // longer does; Enter opens its menu as the client's (LocationInputHandler.as 193-237).
   const held = enterHeldBy();
@@ -13570,7 +13580,7 @@ const engine = {
         isScreenFxBlocking() ||
         isVogOpen() ||
         // Ticket 41: between leaving a place and the next street's load.
-        streetTrips > 0 ||
+        streetMove.moving() ||
         // ignoreInstance: being in a quest instance or rebuilt room is not busy (Camera Mode works there).
         (!ignoreInstance && (anyTransientInstance() || engine.inScene())) ||
         holdKeepsBusy(engine.instanceHold, { leaving }) ||
@@ -25814,8 +25824,10 @@ function homeWayOut() {
 
 async function returnFromHome() {
   if (!homeIsInstanced()) return false;
+  // G1129: Back to world is a trip you ask for: not while another runs.
+  if (streetMoving()) return false;
   // Ticket 41: busy from the first step, before endHomeVisit stops counting you as home.
-  return onStreetTrip(() => returnFromHomeTrip());
+  return streetMove.run(() => returnFromHomeTrip());
 }
 
 async function returnFromHomeTrip() {
@@ -25824,7 +25836,8 @@ async function returnFromHomeTrip() {
   const destination = homeReturnDestination(result.returnLocation);
   closeHomePanel();
   closeMailboxPanel();
-  await enterStreetWithTransition(destination.tsid, {
+  // This trip's own street (returnFromHome runs it as one trip; a queued one would wait on itself).
+  await streetTripTo(destination.tsid, {
     spawnX: destination.x,
     spawnY: destination.y,
     quiet: true,
@@ -26365,6 +26378,14 @@ async function enterStreet(tsid, opts = {}) {
  * @param {{ label?: string }} [meta]
  */
 async function travelTo(toTsid, meta = {}) {
+  // G1129: one street change at a time. Glitch refused a move while moving (NetController.as
+  // actuallyStartLocationMove 352-358); a follow the game sends waits for the trip to end.
+  const turn = travelTurn({ moving: streetMoving(), via: meta.via });
+  setCanvasData('travelTurn', `${turn}:${meta.via || ''}`);
+  if (turn === 'refuse') return { ok: false, reason: 'moving' };
+  while (turn === 'wait' && (streetMove.moving() || streetCardUp())) {
+    await (streetMove.moving() ? streetMove.whenStill() : afterStreetCard());
+  }
   const featureGate = features.travelGate(toTsid, engine, { via: meta.via });
   if (!featureGate.ok) {
     toast(featureGate.msg || 'You cannot travel there right now.');
@@ -34000,6 +34021,11 @@ async function main() {
   };
   window.addEventListener('keydown', walkInput, { capture: true });
   window.addEventListener('pointerdown', walkInput, { capture: true });
+  // G1129: which keys went down during a street change or are held into one (js/street-move.js).
+  // Real keys only: a scripted press (the phone's Act, an autoplay) has no auto-repeat.
+  window.addEventListener('keydown', (e) => { if (e.isTrusted) streetMove.keyDown(e.key, { moving: streetMoving() }); }, { capture: true });
+  window.addEventListener('keyup', (e) => { if (e.isTrusted) streetMove.keyUp(e.key); }, { capture: true });
+  window.addEventListener('blur', () => streetMove.releaseKeys());
   window.addEventListener('keydown', (e) => {
     if (e.target?.matches?.('input, textarea, select, [contenteditable="true"]')) {
       if (e.key === 'Escape') {
@@ -34286,6 +34312,8 @@ async function main() {
     // Enter / Return or E — open verb menu on nearest interactable
     if (e.key === 'Enter' || e.key === 'e' || e.key === 'E') {
       e.preventDefault();
+      // G1129: a key held through a street change (auto-repeat) acts again only once let go.
+      if (e.isTrusted && streetMove.keyStale(e.key)) return;
       tryOpenNearestMenu({ nearestFirst: e.isTrusted === false && !e.touchAct });
       return;
     }

@@ -77,14 +77,14 @@ describe('Ticket 41: Join the Club starts at home and comes back there', () => {
   it('counts a street trip as busy from its first step to the street load', () => {
     const game = read('game.js');
     const busy = between(game, '  busy({ ignoreHome = false, ignoreInstance = false, leaving = false } = {}) {', '  /** A verb in progress or the verb menu open');
-    assert.match(busy, /streetTrips > 0 \|\|/);
+    assert.match(busy, /streetMove\.moving\(\) \|\|/);
     // ignoreHome does not skip a trip.
-    assert.doesNotMatch(busy, /ignoreHome[^\n]*streetTrips/);
-    assert.match(game, /async function onStreetTrip\(work\) \{\s*streetTrips \+= 1;\s*try \{\s*return await work\(\);\s*\} finally \{\s*streetTrips -= 1;/);
-    assert.match(game, /async function enterStreetWithTransition\(tsid, opts = \{\}\) \{\s*return onStreetTrip\(\(\) => streetTripTo\(tsid, opts\)\);\s*\}/);
+    assert.doesNotMatch(busy, /ignoreHome[^\n]*streetMove/);
+    // G1129: the trip count is js/street-move.js's (tests/travel-while-travelling.test.js).
+    assert.match(game, /async function enterStreetWithTransition\(tsid, opts = \{\}\) \{[^}]*return streetMove\.queue\(\(\) => streetTripTo\(tsid, opts\)\);\s*\}/);
     // Back to Ur is busy before endHomeVisit stops counting you as home.
     const back = between(game, 'async function returnFromHome() {', 'async function returnFromHomeTrip()');
-    assert.match(back, /return onStreetTrip\(\(\) => returnFromHomeTrip\(\)\);/);
+    assert.match(back, /return streetMove\.run\(\(\) => returnFromHomeTrip\(\)\);/);
     assert.doesNotMatch(back, /endHomeVisit\(/);
     assert.match(between(game, 'async function returnFromHomeTrip() {', 'function handleHomeTarget'), /const result = endHomeVisit\(homeState\);/);
   });
