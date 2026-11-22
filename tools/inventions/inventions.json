@@ -5313,6 +5313,22 @@
    "rows": [
     "G796"
    ]
+  },
+  {
+   "id": "house-customize-saves-each-change",
+   "title": "The house's Customize window keeps each change at once (Glitch previewed changes and asked Save Your Changes? on close)",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/homes-feature.js",
+     "symbol": "applyHouse"
+    }
+   ],
+   "why": "ChassisManager.as previewed the chassis and confirmed on close (cancelling_cdVO, and a credits confirm). With everything free the remake follows its Tower Customize, which also keeps each change.",
+   "rows": [
+    "G796"
+   ]
   }
 ]
 }

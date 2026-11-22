@@ -297,7 +297,8 @@ import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
-import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseLot, normalizeHouse } from '../home-house.js?v=e5e54f6a';
+import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=e5e54f6a';
+import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=79fc0b65';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -2681,10 +2682,12 @@ function spawnStreetTargets(engine) {
 }
 
 // ---------------------------------------------------------------------------
-// The house (G796): QA
+// The house's Customize window (G796)
 // ---------------------------------------------------------------------------
 
+export const HOUSE_CUSTOMIZE_VERB = 'customize_house';
 let houseDemoDone = false;
+let housePanelDemoDone = false;
 
 /**
  * QA (home demos): &homehouse=<chassis> builds that house once, free (&homehouseconfig=part:n,...
@@ -2703,11 +2706,79 @@ function qaHouse(engine) {
   const base = houseOf(id);
   engine.setHomeHouse?.({ chassis: base.chassis, config: { ...base.config, ...config }, facingRight: engine.param?.('homehousefacing') === 'right' });
 }
+/** ChassisManager scaleVP: the street is framed beside the docked window (WIDTH_OF_CONFIG_UI). */
+const HOUSE_UI_W = 390;
+let houseLook = null;
+
+/** The house as it stands on your home street. */
+function ownHouse(engine) {
+  const ctx = engine.homeContext?.() || {};
+  return houseOf(ctx.house || ctx.style || 'meadow');
+}
+
+/** Frame the house beside the window (the client scrolled the view so the house sat clear of it). */
+function lookAtHouse(engine) {
+  const p = engine?.player;
+  if (!p || typeof engine.setCameraLook !== 'function') return;
+  const h = ownHouse(engine);
+  const { bounds } = houseLot(h.chassis, h.config, h.facingRight);
+  const x = homeStreetLayout(cult).houseX;
+  const dx = Math.round(x - p.x - HOUSE_UI_W / 2);
+  const dy = Math.round(STREET_GROUND_Y + (bounds.t + bounds.b) / 2 - p.y + (engine.camera?.h || 408) * 0.25);
+  houseLook = { x: dx, y: dy, engine };
+  engine.setCameraLook(dx, dy);
+}
+
+function releaseHouseLook() {
+  if (!houseLook) return;
+  const { engine } = houseLook;
+  const now = engine?.cameraLook;
+  if (now && now.x === houseLook.x && now.y === houseLook.y) engine.setCameraLook(0, 0);
+  houseLook = null;
+}
+
+/**
+ * furniture_chassis.js verbs.customize -> furniture_upgrade_start (every style with its config,
+ * all free here); the client opened ChassisManager on it. Each change is kept at once and the
+ * street redrawn round it (ChassisManager previewed every change in place).
+ */
+export function openHouseCustomize(engine) {
+  if (!onOwnHomeStreet() || !engine.homeContext?.().inHome) {
+    engine.toast?.('You can change your house on your home street.', 2400);
+    return false;
+  }
+  if (mode) setMode(engine, null);
+  const ok = openHousePicker({
+    getHouse: () => ownHouse(engine),
+    apply: (next, what) => applyHouse(engine, next, what),
+    onClose: () => {
+      releaseHouseLook();
+      engine.setData?.('homeHousePicker', '0');
+    },
+  });
+  if (ok) {
+    engine.setData?.('homeHousePicker', '1');
+    lookAtHouse(engine);
+  }
+  return ok;
+}
+
+/** Keep a Customize change: the save, the street round the house, the window and the canvas data. */
+function applyHouse(engine, next, what) {
+  const before = ownHouse(engine);
+  const result = engine.setHomeHouse?.(next);
+  if (!result?.ok) return result;
+  if (what === 'style' && before.chassis !== result.house.chassis) engine.pushActivity?.(`Your house is now a ${houseLabel(result.house)}.`);
+  engine.refreshHomeScene?.();
+  publishHouse(engine);
+  lookAtHouse(engine);
+  refreshHousePicker();
+  return result;
+}
 
 /** QA: the house as data on the canvas (homeHouse "chassis|part:n,...|left"). */
 function publishHouse(engine) {
-  const ctx = engine.homeContext?.() || {};
-  const h = houseOf(ctx.house || ctx.style || 'meadow');
+  const h = ownHouse(engine);
   engine.setData?.('homeHouse', `${h.chassis}|${Object.entries(h.config).map(([k, v]) => `${k}:${v}`).join(',')}|${h.facingRight ? 'right' : 'left'}`);
 }
 
@@ -7892,6 +7963,8 @@ export function countHouseVisit(engine, roomKey) {
 }
 
 function homeScene(room, engine) {
+  // G796: the house's Customize window is for the street it stands on.
+  if (room !== 'street' && housePickerOpen()) closeHousePicker();
   const ctx = engine.homeContext?.() || {};
   const style = ctx.style || 'meadow';
   const floor = room === 'interior' ? towerApi.currentFloor() : null;
@@ -7988,6 +8061,11 @@ function homeScene(room, engine) {
       spawnCultivations(engine);
       afterEnter(engine);
       publishHouse(engine);
+      // QA &housepanel=customize: the house's Customize window, once.
+      if (engine.param?.('housepanel') === 'customize' && !housePanelDemoDone) {
+        housePanelDemoDone = true;
+        openHouseCustomize(engine);
+      }
     },
   };
 }
@@ -8152,6 +8230,7 @@ export const homesFeature = {
   onStreetEnter(street, engine) {
     // Ordinary streets: no home scene, so the mode bar must be gone.
     if (!engine.homeContext?.().inHome) {
+      if (housePickerOpen()) closeHousePicker();
       lastHomeRoom = null;
       stylePreview = null;
       stylePick = null;
@@ -8237,6 +8316,22 @@ export const homesFeature = {
   onEvent(counter, amount, engine) {
     wearFromEvent(engine, counter);
     if (counter.startsWith('making_recipe:')) bonusFurnitureUpgrade(engine, counter.slice('making_recipe:'.length));
+  },
+
+  /**
+   * G796: the house's Customize (furniture_chassis.js verbs.customize, sort_on 54, "Change it"):
+   * on your own home street, on the house's door, the one target the house has.
+   */
+  decorateVerbs(target, verbs, engine) {
+    if (target?.classId !== 'home_door' || target.state?.room !== 'street' || !onOwnHomeStreet() || !engine.homeContext?.().inHome) return null;
+    if (verbs.some((v) => v.id === HOUSE_CUSTOMIZE_VERB)) return null;
+    return [...verbs, { id: HOUSE_CUSTOMIZE_VERB, label: 'customize', sort: 54, tooltip: 'Change it', enabled: true, reason: '', energy: 0 }];
+  },
+
+  runVerbOverride(target, verbId, engine) {
+    if (target?.classId !== 'home_door' || verbId !== HOUSE_CUSTOMIZE_VERB) return null;
+    openHouseCustomize(engine);
+    return true;
   },
 
   /** Protos on the home street (items/proto_*.js restore / remove verbs). */
