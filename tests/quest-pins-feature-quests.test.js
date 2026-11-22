@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FakeEl } from './social-fake-dom.js';
 import { parseSeasonDate, seasonYearKey } from '../public/js/seasons.js?v=8b81947e';
-import { FEAST_SEASON, QUEST, QUEST_ID, questPinInfo } from '../public/js/pot-luck-feast.js?v=06311759';
+import { FEAST_SEASON, QUEST, QUEST_ID, questPinInfo } from '../public/js/pot-luck-feast.js?v=8fa008d0';
 import { questPinsFeature, resolveQuestPins } from '../public/js/features/quest-pins-feature.js?v=0e07d9a1';
 import { questStep } from '../public/js/ui/quest-sheet.js?v=13decb02';
 
@@ -27,7 +27,7 @@ class El extends FakeEl {
   appendChild(kid) { this.append(kid); return kid; }
 }
 globalThis.document ??= { createElement: (tag) => new El(tag) };
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=da6c239e');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=0ddc77dc');
 
 const engineOn = (date) => ({ mode: 'solo', started: false, inv: {}, param: (k) => (k === 'seasondate' ? date : ''), setData() {}, query: () => null });
 const IN_SEASON = '2026-11-24';

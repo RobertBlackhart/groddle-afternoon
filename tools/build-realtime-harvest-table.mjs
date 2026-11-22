@@ -21,7 +21,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
-import { cropClasses, dishClasses } from '../public/js/pot-luck-feast.js?v=06311759';
+import { cropClasses, dishClasses } from '../public/js/pot-luck-feast.js?v=8fa008d0';
 import { SEED_CATALOG } from '../public/js/garden.js?v=0efb1496';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

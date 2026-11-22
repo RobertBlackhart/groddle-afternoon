@@ -39,7 +39,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=0efb1496';
 import { openListDialog } from '../ui/storage-windows.js?v=02bcf142';
-import { feastDayKey, servingsText } from '../feast-day.js?v=d0e023af';
+import { feastDayKey, servingsText } from '../feast-day.js?v=438fdca7';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -78,7 +78,7 @@ import {
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=06311759';
+} from '../pot-luck-feast.js?v=8fa008d0';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;

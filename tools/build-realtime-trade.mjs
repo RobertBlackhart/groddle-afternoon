@@ -58,7 +58,7 @@ import { TOOL_CONDITION_CATALOG, copyTagKind } from '../public/js/tools.js?v=415
 import { PIGGY_CROP_SEEDS } from '../public/js/animal-husbandry.js?v=e0f33853';
 import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=84484e77';
 import { COPY_TAG_RULES } from '../public/js/copy-tags.js?v=7eec7d48';
-import { KEEPSAKE, STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=06311759';
+import { KEEPSAKE, STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=8fa008d0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const GSJS = join(root, '..', 'glitch-GameServerJS');

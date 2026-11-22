@@ -314,10 +314,10 @@ export const QUEST = Object.freeze({
   kicker: 'Magic Rock',
   offer: Object.freeze([
     Object.freeze({ text: 'Psst. Pot sent word. Pot wants a feast! A big one, with everyone bringing something, at the long table by the signpost in Groddle Forest Junction.', response: 'A feast?' }),
-    Object.freeze({ text: 'A feast needs a cook, and Pot thinks that cook is you. Cook three harvest dishes: Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn, any three you like. Dress a Chicken up for the occasion. Then lay your dishes on the Harvest Table.', response: 'Pot can count on me' }),
+    Object.freeze({ text: 'A feast needs a cook, and Pot thinks that cook is you. Cook three harvest dishes: Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn, any three you like, cooked from now on. Dress a Chicken up for the occasion. Then lay your dishes on the Harvest Table.', response: 'Pot can count on me' }),
   ]),
   steps: Object.freeze([
-    Object.freeze({ id: 'dishes', desc: 'Cook harvest dishes (Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn)', num: DISHES_NEEDED }),
+    Object.freeze({ id: 'dishes', desc: 'Cook harvest dishes after accepting (Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter or Potcorn)', num: DISHES_NEEDED }),
     Object.freeze({ id: 'dressed', desc: 'Dress a Chicken for the feast', num: 1 }),
     Object.freeze({ id: 'laid', desc: 'Lay harvest dishes on the Harvest Table in Groddle Forest Junction', num: DISHES_NEEDED }),
   ]),

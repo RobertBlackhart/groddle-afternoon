@@ -39,7 +39,7 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=06311759';
+} from '../public/js/pot-luck-feast.js?v=8fa008d0';
 import { SEED_CATALOG } from '../public/js/garden.js?v=0efb1496';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=d28b2a24';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
@@ -183,6 +183,13 @@ describe('Pot’s Empty Table', () => {
     assert.deepEqual([old.status, old.dishes], ['', 0]);
     const done = createQuestState({ key: 'pot_luck_day:2025', status: 'done', dishes: 3, dressed: 1, laid: 3 }, 'pot_luck_day:2026');
     assert.equal(done.status, 'done');
+  });
+
+  it('says that only dishes cooked after accepting count, in the offer and on the step', () => {
+    // Live 2026-11-22: players holding dishes cooked before the quest saw 0/3; the step now says when cooking counts.
+    const step = QUEST.steps.find((s) => s.id === 'dishes');
+    assert.match(step.desc, /^Cook harvest dishes after accepting \(/);
+    assert.match(QUEST.offer[1].text, /any three you like, cooked from now on\./);
   });
 
   it('is offered by the Magic Rock in four steps and pays favor with Pot', () => {
