@@ -45,7 +45,7 @@ import {
 } from '../public/js/conversations.js?v=7cbdfea4';
 import { assignQuest, completeQuest, questDoneAt } from '../public/js/quests.js?v=90a2ee3d';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
-import { normalizeQuestSnapshot } from '../public/js/player-save.js?v=dbf0a9dd';
+import { normalizeQuestSnapshot } from '../public/js/player-save.js?v=95cd6249';
 import { SPIRIT_CONVERSATIONS, TALK_CLASSES, TALK_ORDER, UNBUILT_GATES, canOffer as spiritCanOffer, offerNext } from '../public/js/street-spirit-talks.js?v=5321850f';
 import { GIANT_ICON_DATA } from '../public/js/giant-icons-data.js?v=5026b09c';
 import { buildConversations } from '../tools/build-conversations.mjs';
@@ -796,4 +796,25 @@ test.describe('G202: Icons and resume in the conversations feature', () => {
     const r = toldRecord(['icon_alph_1', 'nope', 'facts_of_the_giants_1'], 42);
     assert.deepEqual(r.completed, { icon_alph: { icon_alph_1: 42 }, npc_shrine_humbaba: { facts_of_the_giants_1: 42 } });
   });
+});
+
+/*
+ * R45: quest counters named in the source's own spelling ('VERB:'+patch+':'+dig, "Plant 5 seeds")
+ * read back after a reload; the save normalizer used to strip them to other names.
+ */
+test('R45: every quest counter name survives a save and reload', () => {
+  {
+    const quests = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'content', 'quests.json'), 'utf8'));
+    const defs = Array.isArray(quests) ? quests : quests.quests || Object.values(quests);
+    let checked = 0;
+    for (const def of Array.isArray(defs) ? defs : Object.values(defs)) {
+      const progress = {};
+      for (const req of Object.values(def.requirements || {})) if (req?.name) progress[req.name] = 1;
+      if (!Object.keys(progress).length) continue;
+      const out = normalizeQuestSnapshot(JSON.parse(JSON.stringify({ active: { [def.classTsid]: { progress } } })));
+      assert.deepEqual(Object.keys(out.active[def.classTsid].progress).sort(), Object.keys(progress).sort(), def.classTsid);
+      checked += 1;
+    }
+    assert.ok(checked > 100, String(checked));
+  }
 });

@@ -45,7 +45,7 @@ import {
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
 import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=6c843b5c';
 import { FEATURES } from '../public/js/features/index.js?v=b46e26c9';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=dbf0a9dd';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=95cd6249';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 
 const ROOT = join(import.meta.dirname, '..');

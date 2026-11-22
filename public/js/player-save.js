@@ -97,6 +97,16 @@ function cleanKey(value) {
   return String(value || '').trim().replace(/[^a-zA-Z0-9_:-]/g, '');
 }
 
+/**
+ * R45: quest counter names come straight from the quest content, and two keep the source's
+ * spelling with spaces, quotes and plus signs ('VERB:'+patch+':'+dig in
+ * smuggle_the_smuggler_part2, "Plant 5 seeds"). cleanKey would rename them on load, so their
+ * progress would never be read again; a counter keeps every printable character.
+ */
+function cleanCounter(value) {
+  return String(value || '').trim().replace(/[^\x20-\x7e]/g, '').slice(0, 120);
+}
+
 function cleanStringArray(value) {
   return [...new Set((Array.isArray(value) ? value : []).map(cleanKey).filter(Boolean))];
 }
@@ -195,7 +205,7 @@ export function normalizeQuestSnapshot(seed = {}) {
     if (!classTsid || !row || typeof row !== 'object') continue;
     const progress = {};
     for (const [rawCounter, rawAmount] of Object.entries(row.progress || {})) {
-      const counter = cleanKey(rawCounter);
+      const counter = cleanCounter(rawCounter);
       if (counter) progress[counter] = Math.max(0, Math.floor(finite(rawAmount, 0)));
     }
     active[classTsid] = {
