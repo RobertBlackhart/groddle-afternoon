@@ -12,10 +12,10 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { gpsText, legStep, planRoute, rideLine, routeGraph, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
+import { gpsText, legStep, planRoute, rideLine, routeGraph, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=884e34b3';
-import { CAR_TSID, STATIONS, SUBWAY_LINE, findStation, stationByTsid } from '../public/js/subway.js?v=071eb1d0';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=dc9c0ecc';
+import { CAR_TSID, STATIONS, SUBWAY_LINE, findStation, stationByTsid } from '../public/js/subway.js?v=c2acbb52';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=487b00a0';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 
@@ -101,6 +101,8 @@ describe('#538 the route feature walks a route through the subway', () => {
     const data = {};
     engine = {
       started: true,
+      // R24: a route rides only when the gate would let you through: this player has Your Papers.
+      unlockedAchievements: ['you_have_papers'],
       streetTsid: surface(JUTUAN),
       data,
       interactables: [],

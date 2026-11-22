@@ -116,7 +116,7 @@ import {
   percentCompleteText,
   jobRewardsText,
 } from '../street-jobs.js?v=884e34b3';
-import { PAPERS_BADGE } from '../subway.js?v=071eb1d0';
+import { gateTerms } from '../subway.js?v=c2acbb52';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=22b0540a';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
@@ -156,7 +156,7 @@ import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
+import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=74da8b8a';
@@ -428,7 +428,8 @@ function keepWayHome(engine, mine) {
   loadWays().then((w) => {
     if (!w || mine !== generation || !catalog || demo) return;
     // The subway is a way home only for a player it will carry (report #162: no papers, turned back at Alakol's gate).
-    const papers = (engine.unlockedAchievements || []).includes(PAPERS_BADGE);
+    // The gate's own papers check (subway.js gateTerms, R24); the dubious buff passes with the run, so it opens no road for good.
+    const papers = gateTerms(engine).hasPapers;
     const terms = wayHomeTerms({ starter: streetIndex?.default, free: w.free, rails: w.rails, papers });
     const opened = openWayHome(state, catalog, { graph: w.graph, free: terms.free, here: engine.streetTsid, homes: terms.homes, opts: opts() });
     engine.setData('streetJobWayHomeBy', papers ? 'subway' : 'road');

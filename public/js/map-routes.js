@@ -89,6 +89,12 @@ export const ROUTE_TEXT = Object.freeze({
   rerouteFailed: 'Creating path failed: Path not found',
   /** items/contraband.js check_address 71. */
   contrabandOffPath: 'Hmm. You seem to be off the path right now. Your contraband is temporarily confused about where it needs to go.',
+  /**
+   * The remake's own (R24): only the subway gets there, and the gate would turn you back
+   * (js/subway.js gateRefusal). The feature adds where Your Papers come from (subway.js papersHint).
+   */
+  subwayPapers: 'The only way there is the subway, and the gate needs your papers.',
+  subwayDubious: 'The only way there is the subway, and the gate turns away journeys of dubious purpose.',
   /** items/npc_bureaucrat.js 897 (Legalize It proposition, last beat). */
   bureaucratHall: "You can go back to wherever you were now: I'll set the closest Bureaucratic Hall as the destination on your map.",
 });
@@ -227,8 +233,13 @@ export function isRide(graph, rides, a, b) {
  */
 export const NO_RIDE_SOURCES = Object.freeze(['smuggling']);
 
-/** The rides (subwayRides) a route from this source may take: none for NO_RIDE_SOURCES. */
-export function routeRides(rides, source) {
+/**
+ * The rides (subwayRides) a route from this source may take: none for NO_RIDE_SOURCES, and none
+ * when the gate would refuse this player (R24: `refusal` is js/subway.js gateFor, the gate's own
+ * answer: no Your Papers badge, or the dont_get_caught buff).
+ */
+export function routeRides(rides, source, refusal = null) {
+  if (refusal) return null;
   return NO_RIDE_SOURCES.includes(String(source || '')) ? null : rides;
 }
 
@@ -268,7 +279,7 @@ export function normalizeRouteState(seed = {}) {
  * several destinations: the closest one wins.
  * @returns {{ ok: boolean, state: object, route?: object, error?: string }}
  */
-export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, locked = undefined, rides = null, oneWay = null, startCut = null, now = Date.now(), ...rest } = {}) {
+export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, locked = undefined, rides = null, refused = null, oneWay = null, startCut = null, now = Date.now(), ...rest } = {}) {
   const s = normalizeRouteState(state);
   if (inHome) return { ok: false, state: s, error: ROUTE_TEXT.fromHome };
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
@@ -276,6 +287,11 @@ export function planRoute(state, graph, { from, to, source = 'player', quest = '
   if (from && list.some((t) => sameStreet(t, from))) return { ok: false, state: s, error: ROUTE_TEXT.alreadyThere };
   const ways = { ...rest, locked, rides, oneWay, startCut };
   const path = from ? findRoute(graph, from, list, ways) : null;
+  // R24: no way on foot, and the only one rides the subway this player's gate refuses
+  // (`refused`: { rides, text }): say so instead of a route the gate turns back.
+  if (!path && from && refused?.rides && findRoute(graph, from, list, { ...ways, rides: refused.rides })) {
+    return { ok: false, state: s, error: String(refused.text || ROUTE_TEXT.subwayPapers), subway: true };
+  }
   // No route, but the roads would get there once built (street projects): say so (not_a_destination).
   const why = !path && from ? closedOnTheWay(graph, from, list, ways) : null;
   // Every destination still under construction: no route through its crossed arm.

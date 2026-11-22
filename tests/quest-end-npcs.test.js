@@ -20,8 +20,8 @@ import { join } from 'node:path';
 import { getQuestCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { classifyQuests, heldForNpcTurnIn } from '../public/js/quest-offers.js?v=69e064ff';
 import { vendorStreetsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { findRoute, routeGraph, ROUTE_SOURCES } from '../public/js/map-routes.js?v=70f30ddf';
-import { MERCHANT_ROUTE_SOURCE, routeHeldQuests } from '../public/js/features/vendor-npcs-feature.js?v=e747c496';
+import { findRoute, routeGraph, ROUTE_SOURCES } from '../public/js/map-routes.js?v=426e16ea';
+import { MERCHANT_ROUTE_SOURCE, routeHeldQuests } from '../public/js/features/vendor-npcs-feature.js?v=9cb7d013';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const json = (p) => JSON.parse(readFileSync(join(PUBLIC, p), 'utf8'));

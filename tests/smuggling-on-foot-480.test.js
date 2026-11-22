@@ -15,8 +15,8 @@ import { join } from 'node:path';
 
 import { DEFAULT_DESTINATIONS, DESTINATIONS, SMUGGLER_STREETS, chooseDestination, destinationPool, sourceKey } from '../public/js/smuggling.js?v=2fde7da3';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=f7c2a85f';
-import { NO_RIDE_SOURCES, createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=a6d88dd7';
+import { NO_RIDE_SOURCES, createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=884e34b3';
 import { loadStreetGraph, roadsFor } from '../public/js/street-graph.js?v=dcc5cae4';
 
@@ -112,7 +112,8 @@ describe('#480 a fresh world: every destination a run can pick is reachable on f
     assert.match(smug, /if \(!destination && open\) return false;/);
     assert.match(smug, /SMUGGLER\.hitW \/ 2 \+ 20 && !nowhereToGo\(engine\)\) \{/, 'no walkable run: the Smuggler stays hidden');
     const routes = read('js/features/map-routes-feature.js');
-    assert.match(routes, /rides: routeRides\(rides, opts\.source \|\| 'player'\)/);
-    assert.equal((routes.match(/rides: ridesNow\(\)/g) || []).length, 3, 'both replans and the route card (legStep, #538)');
+    assert.match(routes, /rides: ridesFor\(engine, opts\.source \|\| 'player'\)/);
+    assert.match(routes, /const ridesFor = \(engine, source\) => routeRides\(rides, source, gateFor\(engine\)\);/);
+    assert.equal((routes.match(/rides: ridesNow\(engine\)/g) || []).length, 3, 'both replans and the route card (legStep, #538)');
   });
 });

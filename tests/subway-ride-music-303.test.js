@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SILENT_THEME, resolveAmbientTheme, setAmbientMusicConfig } from '../public/js/ambient-music.js?v=75a5ad20';
-import { CAR_MUSIC, STATION_MUSIC, STATIONS, carStreet, stationStreet } from '../public/js/subway.js?v=071eb1d0';
+import { CAR_MUSIC, STATION_MUSIC, STATIONS, carStreet, stationStreet } from '../public/js/subway.js?v=c2acbb52';
 import { streetState } from '../tools/sound/sound-model.mjs';
 
 const root = join(import.meta.dirname, '..');

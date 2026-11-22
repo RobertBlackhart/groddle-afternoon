@@ -27,7 +27,9 @@
  *
  * Other modules set and clear routes through the feature host, so they need
  * no import:
- *   engine.query('mapRoute', 'set', { to, from, source, quest }, engine)  -> { ok, error, route }
+ *   engine.query('mapRoute', 'set', { to, from, source, quest }, engine)  -> { ok, error, route, subway }
+ *     (R24: a route rides the subway only when the gate would let you through, js/subway.js gateFor;
+ *     subway: true when only the subway gets there and the gate would refuse you, error says why)
  *   engine.query('mapRoute', 'clear', { source, reason }, engine)          -> { cleared }
  *   engine.query('mapRoute', 'get', null, engine)                         -> route | null
  *   engine.query('mapRoute', 'find', { to }, engine)                      -> { destination, hops } | { unknown } | null
@@ -46,18 +48,21 @@
  * routeMapPin, routeMode, routeRooms (the rooms behind doors listed for the
  * Map's hub while "Set a destination" is on, G198), routeDoorGlow
  * (edge|outline:<w>x<h>, G198), routeGlowLayer (untinted|with-door: where
- * the door glow sits, G200).
+ * the door glow sits, G200), routeGate (<papers|dubious|open>:replanned|subway-only|kept,
+ * R24: the route planned again when the gate's answer changed).
  */
 
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { SUBWAY_STREETS } from '../street-jobs.js?v=884e34b3';
-import { STATIONS, SUBWAY_LINE, isCarTsid, stationByTsid, surfaceStation } from '../subway.js?v=071eb1d0';
+import { CARD_BADGE, STATIONS, SUBWAY_LINE, TEXT as SUBWAY_TEXT, gateFor, isCarTsid, papersHint, stationByTsid, surfaceStation } from '../subway.js?v=c2acbb52';
+import { countItem } from '../inventory.js?v=6414dbdc';
 import { hellFeature } from './hell-feature.js?v=bcee741a';
 import { postReachY } from '../street-model.js?v=a9a05f9d';
 import {
   ROUTE_COLOR,
   ROUTE_COLOR_CSS,
+  NO_RIDE_SOURCES,
   ROUTE_TEXT,
   clearRoute,
   createRouteState,
@@ -80,7 +85,7 @@ import {
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=70f30ddf';
+} from '../map-routes.js?v=426e16ea';
 import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=dcc5cae4';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
@@ -96,8 +101,27 @@ let state = createRouteState();
 const roads = (engine) => roadsFor(engine);
 /** The subway between its surface streets (map-routes.js subwayRides): a route rides it when that saves walking (street-graph.js SUBWAY_RIDE_STREETS). */
 const rides = subwayRides(SUBWAY_STREETS);
-/** #480: the rides the route in force may take (none on a smuggling run: map-routes.js routeRides). */
-const ridesNow = () => routeRides(rides, state.route?.source);
+/**
+ * R24: the rides a route from `source` may take: only when the gate would let this player through
+ * (js/subway.js gateFor, the gate's own answer: Your Papers, no dubious buff), never on a smuggling
+ * run (#480, map-routes.js routeRides).
+ */
+const ridesFor = (engine, source) => routeRides(rides, source, gateFor(engine));
+/** The rides the route in force may take (ridesFor). */
+const ridesNow = (engine) => ridesFor(engine, state.route?.source);
+/**
+ * R24: the rides the gate refuses this player, and what the Map says when only they get there
+ * (map-routes.js planRoute `refused`), or null when the gate lets you through.
+ */
+function refusedRides(engine, source) {
+  const refusal = gateFor(engine);
+  if (!refusal || NO_RIDE_SOURCES.includes(String(source || ''))) return null;
+  if (refusal.code !== 'papers') return { rides, text: ROUTE_TEXT.subwayDubious };
+  const has = (id) => (engine.unlockedAchievements || []).includes(id);
+  const holds = (id) => Boolean(engine.inv) && countItem(engine.inv, id) > 0;
+  const hint = papersHint({ hasCardBadge: has(CARD_BADGE), hasPapersItem: holds('your_papers'), hasCardItem: holds(CARD_BADGE) });
+  return { rides, text: `${ROUTE_TEXT.subwayPapers} ${hint || SUBWAY_TEXT.papersAtHall}` };
+}
 /** The rebuilt stations' street keys (js/subway.js): a surface street's subway entrance is its door to one. */
 const STATION_STREETS = new Set(STATIONS.map((st) => st.streetTsid));
 let graphPromise = null;
@@ -131,6 +155,8 @@ let lastHudKey = '';
 let auto = { at: 0, key: '' };
 let demoDone = false;
 let canvasBound = false;
+/** R24: the gate's answer last seen for this player ('' when it lets you through, else its code), null before the roads load. */
+let lastGate = null;
 
 /* ------------------------------------------------------------ helpers */
 
@@ -166,7 +192,7 @@ function offWorld(engine) {
 function currentStep(engine) {
   if (!state.route) return { status: 'none', index: -1, next: '', remaining: [] };
   if (offWorld(engine)) return { status: 'off', index: -1, next: '', remaining: state.route.path || [] };
-  return legStep(state.route, roads(engine) || {}, legWhere(engine), { rides: ridesNow(), stations: STATIONS, lines: SUBWAY_LINES, label });
+  return legStep(state.route, roads(engine) || {}, legWhere(engine), { rides: ridesNow(engine), stations: STATIONS, lines: SUBWAY_LINES, label });
 }
 
 /** The Red and Blue Lines' names (subway-line.js forwards_name / backwards_name). */
@@ -255,7 +281,7 @@ function checkLanding(engine) {
   if (step.status !== 'on' || !step.next) return;
   const cut = cutHere(engine);
   if (!cut?.length || !cut.includes(graphKey(roads(engine) || {}, step.next) || step.next)) return;
-  const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides: ridesNow(), oneWay, startCut: cut });
+  const res = enterStreet(state, roads(engine) || {}, engine.streetTsid, { offWorld: offWorld(engine) || underground(engine), rides: ridesNow(engine), oneWay, startCut: cut });
   state = res.state;
   engine.setData?.('routeLast', `landed:${res.events.join(',')}`);
   if (res.events.length) engine.save?.();
@@ -281,7 +307,8 @@ function setRoute(engine, opts = {}) {
     source: opts.source || 'player',
     quest: opts.quest || '',
     inHome: !opts.from && !door && Boolean(engine.homeContext?.().inHome),
-    rides: routeRides(rides, opts.source || 'player'),
+    rides: ridesFor(engine, opts.source || 'player'),
+    refused: refusedRides(engine, opts.source || 'player'),
     oneWay,
     // From where you stand, when the route starts on the street you are on.
     startCut: opts.from && !sameStreet(opts.from, engine.streetTsid) ? null : cutHere(engine),
@@ -311,8 +338,33 @@ function findNearest(engine, opts = {}) {
     return { unknown: true };
   }
   if (offWorld(engine) || engine.homeContext?.().inHome) return { unknown: true };
-  const path = findRoute(graph, routeStreet(engine), opts.to, { rides, oneWay, startCut: cutHere(engine) });
+  const path = findRoute(graph, routeStreet(engine), opts.to, { rides: ridesFor(engine, 'player'), oneWay, startCut: cutHere(engine) });
   return path ? { destination: path[path.length - 1], hops: path.length - 1 } : null;
+}
+
+/**
+ * R24: plan the route again when the gate's answer changes: Your Papers came (or the dubious buff
+ * went), so it may ride now; or the gate shut, so a route that rides plans again on foot, and when
+ * only the subway gets there the Map says so and the route goes. A route saved before this rule
+ * that rides without papers is planned again on load.
+ */
+function checkGate(engine) {
+  if (!streetGraphLoaded()) return;
+  const gate = gateFor(engine)?.code || '';
+  if (gate === lastGate) return;
+  const was = lastGate;
+  lastGate = gate;
+  const r = state.route;
+  if (!r || r.arrivedAt || NO_RIDE_SOURCES.includes(r.source)) return;
+  const path = r.path || [];
+  const graph = roads(engine) || {};
+  const again = gate ? path.some((t, i) => i > 0 && isRide(graph, rides, path[i - 1], t)) : was !== null;
+  if (!again) return;
+  const res = setRoute(engine, { to: r.destination, source: r.source, quest: r.quest });
+  engine.setData?.('routeGate', `${gate || 'open'}:${res.ok ? 'replanned' : res.subway ? 'subway-only' : 'kept'}`);
+  if (res.ok || !res.subway) return;
+  engine.toast?.(res.error, 6000);
+  dropRoute(engine, { reason: 'subway-refused' });
 }
 
 /** A route set or cleared while the Map is open: draw it again. */
@@ -363,7 +415,7 @@ function placeHighlight(engine, next) {
     placeSubwayGlow(engine, next, key);
     return;
   }
-  if (isRide(roads(engine), ridesNow(), routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
+  if (isRide(roads(engine), ridesNow(engine), routeStreet(engine), next) && placeSubwayGlow(engine, next, key)) return;
   if (placeSignGlow(engine, next, key)) return;
   placeDoorGlow(engine, next, key);
 }
@@ -388,7 +440,7 @@ function placeTransportGlow(engine, next, key) {
 function placeSubwayGlow(engine, next, key) {
   if (isCarTsid(engine.streetTsid)) return false;
   if (stationByTsid(engine.streetTsid)) {
-    if (!isRide(roads(engine), ridesNow(), routeStreet(engine), next)) {
+    if (!isRide(roads(engine), ridesNow(engine), routeStreet(engine), next)) {
       const stairs = doorTargets(engine).find((t) => sameStreet(t.door?.connect?.street, routeStreet(engine)));
       return stairs ? glowTarget(engine, key, stairs, 'door', 'enter') : false;
     }
@@ -1034,7 +1086,7 @@ function bindMapCanvas(engine) {
       noRoadPick = !res.ok && res.error === ROUTE_TEXT.noRoad ? tsid : '';
       engine.setData?.('routeNoRoad', noRoadPick);
       if (!res.ok) {
-        engine.toast?.(res.error, 2600);
+        engine.toast?.(res.error, res.subway ? 6000 : 2600);
         redrawOpenMap(engine);
         return;
       }
@@ -1069,7 +1121,7 @@ function mapCard(engine) {
     head = shared ? quest.title : `${ROUTE_TEXT.to}${dest}`;
     // A subway hop reads "by subway" (map-routes.js isRide).
     const from = step.remaining[0];
-    const hop = (t, i) => (isRide(roads(engine), ridesNow(), i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
+    const hop = (t, i) => (isRide(roads(engine), ridesNow(engine), i ? rest[i - 1] : from, t) ? `${label(t)} (by subway)` : label(t));
     // #104: a long route names the next few stops, counts the rest, then the destination.
     const stops = rest.map(hop);
     const cut = routeStopsLine(stops);
@@ -1216,7 +1268,7 @@ function pickRoom(engine, room) {
   pickMode = false;
   const res = setRoute(engine, { to: room, source: 'player' });
   if (!res.ok) {
-    engine.toast?.(res.error, 2600);
+    engine.toast?.(res.error, res.subway ? 6000 : 2600);
     redrawOpenMap(engine);
     return res;
   }
@@ -1326,7 +1378,7 @@ export const mapRoutesFeature = {
     const apply = () => {
       const from = state.route ? enterFrom(engine) : null;
       if (from) {
-        const res = enterStreet(state, roads(engine) || {}, from.tsid, { offWorld: from.offWorld, rides: ridesNow(), oneWay, startCut: cutHere(engine) });
+        const res = enterStreet(state, roads(engine) || {}, from.tsid, { offWorld: from.offWorld, rides: ridesNow(engine), oneWay, startCut: cutHere(engine) });
         state = res.state;
         if (res.events.includes('arrived')) {
           // locations/location.js 310-313: pc.quests_inc_counter('map_dest_reached', 1).
@@ -1372,6 +1424,7 @@ export const mapRoutesFeature = {
         lastLook = now;
         refresh(engine);
       }
+      checkGate(engine);
       aimSign(engine);
       pointArrow(engine);
     }
@@ -1398,6 +1451,7 @@ export const mapRoutesFeature = {
     lastHudKey = '';
     airborne = false;
     oneWayAt = { tsid: '', ways: null, key: null };
+    lastGate = null;
   },
   /** Tests: a plain adjacency map, or signpost-graph.json as fetched ({ streets, doors, doorKeys }): the game's street graph (js/street-graph.js). */
   _setGraph(g) {

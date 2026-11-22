@@ -10,8 +10,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { animalHusbandryFeature } from '../public/js/features/animal-husbandry-feature.js?v=90ba81fa';
-import { HERDKEEPING } from '../public/js/animal-husbandry.js?v=2d70da09';
+import { animalHusbandryFeature } from '../public/js/features/animal-husbandry-feature.js?v=8942e4e3';
+import { HERDKEEPING } from '../public/js/animal-husbandry.js?v=bec08429';
 
 const piggy = (state = {}) => ({ classId: 'npc_piggy', label: 'Piggy', state, sprite: { visible: true, destroyed: false } });
 const engineWith = (interactables, mode = 'solo') => ({

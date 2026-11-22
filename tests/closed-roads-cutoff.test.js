@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, noteArrival, normalizeStreetJobState, openWayHome, roadClosure, wayHomeTerms } from '../public/js/street-jobs.js?v=884e34b3';
-import { routeGraph } from '../public/js/map-routes.js?v=70f30ddf';
+import { routeGraph } from '../public/js/map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS, WINTRY_PLACE_TSID } from '../public/js/wintry-portal.js?v=1437deda';
 
@@ -169,7 +169,7 @@ describe('ticket 50 and Wintry Place: a road closure never cuts a player off', (
     assert.deepEqual(openWayHome(ridden, catalog, { graph, free: rider.free, here: PIANO, homes: rider.homes, opts }), toStation);
 
     const feature = read('public/js/features/street-jobs-feature.js');
-    assert.match(feature, /const papers = \(engine\.unlockedAchievements \|\| \[\]\)\.includes\(PAPERS_BADGE\);/);
+    assert.match(feature, /const papers = gateTerms\(engine\)\.hasPapers;/, "the gate's own papers check (subway.js gateTerms, R24)");
     assert.match(feature, /wayHomeTerms\(\{ starter: streetIndex\?\.default, free: w\.free, rails: w\.rails, papers \}\)/);
     assert.match(feature, /openWayHome\(state, catalog, \{ graph: w\.graph, free: terms\.free, here: engine\.streetTsid, homes: terms\.homes, opts: opts\(\) \}\)/);
   });

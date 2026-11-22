@@ -13,11 +13,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { SIGN_ARMS, createRouteState, doorToward, findRoute, isRide, planRoute, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=70f30ddf';
+import { SIGN_ARMS, createRouteState, doorToward, findRoute, isRide, planRoute, routeGraph, signpostToward, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=884e34b3';
-import { stationByTsid } from '../public/js/subway.js?v=071eb1d0';
+import { stationByTsid } from '../public/js/subway.js?v=c2acbb52';
 import { reachRoutes, reachStreet, streetTargets } from '../public/js/builder/reach-graph.js?v=467ca20f';
-import { pickSignHop } from '../public/js/features/map-routes-feature.js?v=dc9c0ecc';
+import { pickSignHop } from '../public/js/features/map-routes-feature.js?v=487b00a0';
 import { postReachY } from '../public/js/street-model.js?v=a9a05f9d';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=997303d1';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
@@ -193,10 +193,10 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
 
   it('the GPS lights a Light Beam or a subway entrance before a post (map-routes-feature placeHighlight)', () => {
     const feature = readFileSync(join(PUB, 'js/features/map-routes-feature.js'), 'utf8');
-    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(roads\(engine\), ridesNow\(\), routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
-    // #480: only a smuggling route drops the rides; a route set on the Map still rides where it did.
-    assert.match(feature, /const ridesNow = \(\) => routeRides\(rides, state\.route\?\.source\);/);
-    assert.match(feature, /rides: routeRides\(rides, opts\.source \|\| 'player'\),/);
+    assert.match(feature, /if \(placeTransportGlow\(engine, next, key\)\) return;\n\s+if \(underground\(engine\)\) \{\n\s+placeSubwayGlow\(engine, next, key\);\n\s+return;\n\s+\}\n\s+if \(isRide\(roads\(engine\), ridesNow\(engine\), routeStreet\(engine\), next\) && placeSubwayGlow\(engine, next, key\)\) return;\n\s+if \(placeSignGlow\(engine, next, key\)\) return;/);
+    // #480: a smuggling route drops the rides; R24: so does any route the gate would refuse (subway.js gateFor).
+    assert.match(feature, /const ridesNow = \(engine\) => ridesFor\(engine, state\.route\?\.source\);/);
+    assert.match(feature, /rides: ridesFor\(engine, opts\.source \|\| 'player'\),/);
     // #500: the route's own hop through a post still travels at once (no walk first: armWhenThere is the world click's).
     assert.match(feature, /if \(engine\.travel\) engine\.travel\(step\.next, \{ label: c\.label \|\| label\(step\.next\), arrive: c\.arrive \}\);/);
     assert.doesNotMatch(feature, /armWhenThere/);

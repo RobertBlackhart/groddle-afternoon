@@ -176,6 +176,24 @@ export function gateRefusal({ hasPapers = false, dubious = false } = {}) {
   return null;
 }
 
+/**
+ * R24: what the gate asks of this player (engine.unlockedAchievements, engine.hasBuff): the
+ * you_have_papers badge, and the dont_get_caught buff (carrying contraband).
+ */
+export function gateTerms(engine) {
+  return {
+    hasPapers: (engine?.unlockedAchievements || []).includes(PAPERS_BADGE),
+    dubious: Boolean(engine?.hasBuff?.(DUBIOUS_BUFF)),
+  };
+}
+
+/**
+ * R24: the gate's answer for this player (gateRefusal, or null when it sells a ticket). The gate
+ * and the Map's routes (features/map-routes-feature.js) both ask this, so a route rides the subway
+ * only when the gate would let you through.
+ */
+export const gateFor = (engine) => gateRefusal(gateTerms(engine));
+
 /** subway_gate.js onConversation 'ok' after the papers refusal: where the player stands with the Bureaucratic Hall. */
 export function papersHint({ hasCardBadge = false, hasPapersItem = false, hasCardItem = false } = {}) {
   if (hasCardBadge) return hasPapersItem ? TEXT.papersIncomplete : TEXT.papersAtHall;
