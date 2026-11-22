@@ -18,7 +18,7 @@
  * their home (`owned` is read as before).
  */
 
-import { normalizeHouse } from './home-house.js?v=e5e54f6a';
+import { normalizeHouse } from './home-house.js?v=3c88c47c';
 
 export const HOME_STREET_TSID = 'RH_HOME_EXT';
 export const HOME_INTERIOR_TSID = 'RH_HOME_INT';

@@ -17,8 +17,8 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { getVerbsFor } from '../public/content.js?v=b52b3339';
 import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=fbc658a9';
-import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=0b533e1a';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=76b06f88';
+import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=57051ba3';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=bb705d92';
 import {
   SIGNPOST_POST_HALF,
   createCultivationState,
@@ -32,7 +32,7 @@ import {
 import { DISPATCHER_TEXT, SIGNPOST, dispatcherDefaultRx, dispatcherFits, signpostX, streetFixtures } from '../public/js/home-street-fixtures.js?v=bad831a1';
 import { sceneSignMarks } from '../public/js/ui/street-minimap.js?v=ad22dde6';
 import { HUB_TILES, hubTileBackground, hubTileForKey, hubTileState } from '../public/js/ui/imagination-hub.js?v=6928c5b7';
-import { HUB_CLOUDS, placeClouds } from '../public/js/classic/classic-hub.js?v=912cbe45';
+import { HUB_CLOUDS, placeClouds } from '../public/js/classic/classic-hub.js?v=018639fc';
 
 const root = join(import.meta.dirname, '..');
 const pub = join(root, 'public');

@@ -10,10 +10,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defaultHouseConfig } from '../public/js/home-house.js?v=e5e54f6a';
-import { createHomeState, setHomeHouse } from '../public/js/homes.js?v=b3059a1b';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=0b533e1a';
-import { HOUSE_PICKER_TEXT } from '../public/js/ui/house-picker.js?v=79fc0b65';
+import { defaultHouseConfig } from '../public/js/home-house.js?v=3c88c47c';
+import { createHomeState, setHomeHouse } from '../public/js/homes.js?v=10f6604f';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=57051ba3';
+import { HOUSE_PICKER_TEXT } from '../public/js/ui/house-picker.js?v=9d018a82';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

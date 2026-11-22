@@ -19,9 +19,9 @@ import {
   rockTicketBeats,
   ticketCount,
   useHomeTicket,
-} from '../public/js/home-ticket.js?v=b3d7775e';
+} from '../public/js/home-ticket.js?v=acb21418';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
-import { createHomeState } from '../public/js/homes.js?v=b3059a1b';
+import { createHomeState } from '../public/js/homes.js?v=10f6604f';
 
 const spike = join(import.meta.dirname, '..');
 const GS = join(spike, '../glitch-GameServerJS');

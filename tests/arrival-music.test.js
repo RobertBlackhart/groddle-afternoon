@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HOME_STYLES, homeMusicFile } from '../public/js/homes.js?v=b3059a1b';
+import { HOME_STYLES, homeMusicFile } from '../public/js/homes.js?v=10f6604f';
 import { resolveAmbientTheme, setAmbientMusicConfig, tracksForTheme } from '../public/js/ambient-music.js?v=75a5ad20';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

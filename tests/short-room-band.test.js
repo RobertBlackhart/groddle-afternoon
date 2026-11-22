@@ -11,9 +11,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=487afbb5';
+import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=08013079';
 import { stageSkyColour } from '../public/js/street-render.js?v=fbc658a9';
-import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=bdd3fd05';
+import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=747d42fd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

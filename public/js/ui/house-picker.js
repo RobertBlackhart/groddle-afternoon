@@ -28,7 +28,7 @@ import {
   randomHouseConfig,
   setHouseStyle,
   stepHouseConfig,
-} from '../home-house.js?v=e5e54f6a';
+} from '../home-house.js?v=3c88c47c';
 import { CHASSIS_ICONS } from '../chassis-icons.js?v=1a19ac08';
 
 export const HOUSE_PICKER_TEXT = Object.freeze({

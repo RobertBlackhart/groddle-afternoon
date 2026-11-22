@@ -49,9 +49,9 @@
  * flat, as the snaps show them.
  */
 
-import { pushOutOfSolids, spawnQuoins, takeQuoins, BODY_H } from './puzzle-kit.js?v=3b949e12';
+import { pushOutOfSolids, spawnQuoins, takeQuoins, BODY_H } from './puzzle-kit.js?v=69807121';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { deco } from './kit.js?v=bdd3fd05';
+import { deco } from './kit.js?v=747d42fd';
 
 const ROOM_ID = 'mental_block';
 const ART = `assets/sprites/quest-rooms/${ROOM_ID}/`;

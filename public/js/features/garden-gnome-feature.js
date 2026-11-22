@@ -27,8 +27,8 @@ import { readVisitScene } from '../neighbours-mp.js?v=6cabf58b';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { GNOME_ART, GNOME_ART_DIR } from '../garden-gnome-art.js?v=994b7c76';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
-import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=b3059a1b';
-import { homesFeature } from './homes-feature.js?v=0b533e1a';
+import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=10f6604f';
+import { homesFeature } from './homes-feature.js?v=57051ba3';
 import {
   GNOME_CLASS,
   GNOME_PHRASE_MAX,

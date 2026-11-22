@@ -33,7 +33,7 @@ import {
   styleSwitchCost,
   switchStreetStyle,
 } from '../public/js/home-styles.js?v=13fe0aaa';
-import { HOME_STYLES } from '../public/js/homes.js?v=b3059a1b';
+import { HOME_STYLES } from '../public/js/homes.js?v=10f6604f';
 import { templateNames, templatePair } from '../tools/home-styles/build.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
