@@ -66,7 +66,7 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Groddle Afternoon</title>
-    <link rel="stylesheet" href="style.css?v=5f213e6f" />
+    <link rel="stylesheet" href="style.css?v=32c7ae4b" />
   <!-- The UI font, self-hosted (style.css @font-face; OFL in assets/fonts/nunito/): the roman latin file, before first paint. -->
   <link rel="preload" href="assets/fonts/nunito/nunito-roman-latin.woff2" as="font" type="font/woff2" crossorigin />
   <!-- The Classic interface (js/classic/ui-mode.js sets <html data-ui="classic">); every rule is scoped to it. -->
@@ -82,13 +82,14 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=4774a7f0" />
   <!-- #345: Add to Home Screen opens the game full screen, as an app (manifest.webmanifest: display standalone,
        no start_url, so it opens the page it was added from). black-translucent runs the page under the status
-       bar; the HUD keeps inside the notch with --safe-* (env(safe-area-inset-*)). -->
+       bar; the HUD keeps inside the notch with --safe-* (env(safe-area-inset-*)). #595: the theme colour is the
+       game's dark (style.css), not the site's light ground, so the status bar over the game reads dark. -->
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Groddle" />
-  <meta name="theme-color" content="#dcefc9" />
+  <meta name="theme-color" content="#2a2a2a" />
 </head>
 <body class="is-booting">
   <div id="wrap" class="glitch-chrome">

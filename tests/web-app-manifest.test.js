@@ -7,6 +7,11 @@
  * Browser check: WebKit (402 x 812, iPhone) fetches and parses it from /play/phone/ (where /play/online/
  * sends a phone) and every icon loads; Chrome with the iPhone's insets (62/34 upright, 62/21 sideways)
  * keeps the HUD inside them. Standalone itself (display-mode) needs a real iPhone.
+ *
+ * #595 (iOS 27 Safari, upright): a light fog in the status bar over the game. Liquid Glass Safari
+ * runs the page under the status bar and fades that strip to the page's colour or a fixed top bar's;
+ * the play pages paint it the game's dark (style.css, a fixed strip --safe-t tall, 0 sideways and on a
+ * computer) and their theme colour is that dark too.
  * Run: node --test tests/web-app-manifest.test.js
  */
 import { describe, it } from 'node:test';
@@ -44,8 +49,23 @@ describe('Add to Home Screen opens Groddle Afternoon as an app', () => {
       assert.match(html, /<meta name="apple-mobile-web-app-capable" content="yes" \/>/, page);
       assert.match(html, /<meta name="mobile-web-app-capable" content="yes" \/>/, page);
       assert.match(html, /<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" \/>/, page);
-      assert.match(html, /<meta name="theme-color" content="#dcefc9" \/>/, page);
+      // #595: the game pages' status bar is the game's dark; the phone page keeps the site's ground.
+      assert.match(html, page === 'play/phone/index.html' ? /<meta name="theme-color" content="#dcefc9" \/>/ : /<meta name="theme-color" content="#2a2a2a" \/>/, page);
       assert.match(html, /viewport-fit=cover/, page);
     }
   });
+
+  it('upright on a phone, the status bar strip and the page colour are the game\'s dark (#595)', () => {
+    const css = readFileSync(join(pub, 'style.css'), 'utf8');
+    const rule = css.match(/:root\.touch-phone body::before \{([^}]*)\}/)?.[1] || '';
+    assert.match(rule, /position: fixed;/);
+    assert.match(rule, /top: 0;/);
+    assert.match(rule, /height: var\(--safe-t\);/, 'the top inset: 0 sideways and on a computer');
+    assert.match(rule, /background: var\(--c-grey-29\);/);
+    assert.match(rule, /pointer-events: none;/);
+    assert.match(css, /:root\.touch-phone,\n:root\.touch-phone body \{ background-color: var\(--c-grey-29\); \}/);
+    assert.match(css, /--c-grey-29: #2a2a2a;/);
+    assert.match(css, /--safe-t: env\(safe-area-inset-top, 0px\);/);
+  });
 });
+

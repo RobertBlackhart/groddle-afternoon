@@ -14683,6 +14683,26 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
 }
+/* #595 (an iPhone on iOS 27, Safari upright): a light fog over the street above the HUD, in the status
+   bar. Safari's Liquid Glass (iOS 26 on) runs the page under the status bar in its own window too
+   (the pills sit under it, --safe-t) and fades that strip to the page's colour, or to the colour of
+   a fixed bar at the top: the body is a light gradient with no background colour, so it faded to
+   white. Upright, the strip is the game's dark now (the band above a short scene, SHORT_SCENE_BAND
+   in js/location-view.js), and the page's own colour is too. --safe-t is 0 sideways and on a
+   computer, so nothing shows there. */
+:root.touch-phone,
+:root.touch-phone body { background-color: var(--c-grey-29); }
+:root.touch-phone body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--safe-t);
+  background: var(--c-grey-29);
+  z-index: var(--z-hud);
+  pointer-events: none;
+}
 /* The top bar's two pills. */
 [data-ui="modern"] header.top-bar,
 html:not(.stage-pinned)[data-ui="modern"] #wrap > .top-bar {
