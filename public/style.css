@@ -1053,6 +1053,11 @@ body.is-booting:not(.online-gated) #wrap ~ * { visibility: hidden; }
 }
 .boot-loader-card strong { font-size: var(--fs-xl); }
 .boot-loader-card span { color: var(--c-sage-55); font-size: var(--fs-base); }
+/* G1117 (#592): the step bar under the words (js/boot-progress.js sets --boot-progress). */
+.boot-loader-card .boot-loader-bar { display: block; height: 6px; margin-top: var(--sp-2); border-radius: var(--radius-pill); overflow: hidden; background: color-mix(in srgb, var(--c-lime-51b) 18%, transparent); }
+.boot-loader-card .boot-loader-bar[hidden] { display: none; }
+.boot-loader-card .boot-loader-bar i { display: block; height: 100%; width: var(--boot-progress, 0%); border-radius: inherit; background: var(--c-lime-51b); transition: width 0.3s ease; }
+.boot-loader.is-error .boot-loader-bar { display: none; }
 .boot-loader.is-error .boot-loader-card { border-color: var(--c-red-63); }
 .boot-loader.is-error .boot-loader-card strong { color: var(--c-red-49b); }
 

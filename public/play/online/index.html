@@ -92,7 +92,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex" />
   <title>Groddle Afternoon · Multiplayer</title>
-    <link rel="stylesheet" href="style.css?v=eb4d2837" />
+    <link rel="stylesheet" href="style.css?v=7c4458d2" />
   <!-- The UI font, self-hosted (style.css @font-face; OFL in assets/fonts/nunito/): the roman latin file, before first paint. -->
   <link rel="preload" href="assets/fonts/nunito/nunito-roman-latin.woff2" as="font" type="font/woff2" crossorigin />
   <!-- The Classic interface (js/classic/ui-mode.js sets <html data-ui="classic">); every rule is scoped to it. -->
@@ -271,6 +271,8 @@
         <div>
           <strong id="boot-loader-title">Loading Groddle Afternoon</strong>
           <span id="boot-loader-copy">Gathering a little scrap of Ur…</span>
+          <!-- G1117 (#592): which step of the start it is on (js/boot-progress.js fills it in). -->
+          <b id="boot-loader-bar" class="boot-loader-bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0" hidden><i></i></b>
         </div>
       </div>
     </div>
@@ -1204,7 +1206,9 @@
   </div>
   <!-- Password managers skip the game's own boxes (chat, searches, names); the account forms keep autofill. -->
   <script type="module" src="js/no-autofill.js?v=6a1a4382"></script>
+  <!-- G1117: ahead of game.js, so the loading card counts the game's code as it downloads. -->
+  <script type="module" src="js/boot-progress.js?v=d84b898d"></script>
   <!-- game.js loads once the multiplayer save is in memory (js/online-boot.js). -->
-  <script type="module" id="online-boot" src="js/online-boot.js?v=d3834f20" data-game="game.js?v=6b921b18"></script>
+  <script type="module" id="online-boot" src="js/online-boot.js?v=d3834f20" data-game="game.js?v=242aa289"></script>
 </body>
 </html>

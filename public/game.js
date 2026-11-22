@@ -1105,6 +1105,7 @@ import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settl
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=5c5a4301';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
+import { bootStep } from './js/boot-progress.js?v=d84b898d';
 import { mountHomeScreenTip } from './js/home-screen-tip.js?v=d6aa7d11';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
@@ -32462,6 +32463,8 @@ async function main() {
   installHiresSprites(textureUrls, { dpr: artDpr(), viewWidth: LOCATION_VIEW_W * Math.max(1, STAGE_SCALE) });
   // Street decos load as WebP, 3x on Retina (js/deco-hires.js), same logical sizes.
   installHiresDecos(textureUrls, { renderer: () => app?.renderer });
+  // G1117 (#592): the loading card says which step of the start this is (js/boot-progress.js).
+  bootStep('screen');
   app = new PIXI.Application();
   await app.init({
     width: VIEW_W,
@@ -32538,10 +32541,12 @@ async function main() {
   // Panels and the HUD can resize the canvas without a window resize.
   if (typeof ResizeObserver === 'function') new ResizeObserver(() => { syncLocationViewHeight(); syncRenderResolution(); }).observe(app.canvas);
 
+  bootStep('pictures');
   await loadSheets();
   // The vector avatar's catalog (looks, colourways); the default look's sheets are already loaded.
   avatarCatalog = await loadAvatarCatalog().catch(() => null);
   await loadTrantTables();
+  bootStep('sounds');
   await loadAudio();
   features.init(engine);
   // MPANELS: Upgrades (features/imagination-feature.js builds it) is the shell's centred size.
@@ -32587,6 +32592,7 @@ async function main() {
   app.stage.addChild(promptLayer);
 
   // Load mined GSJS catalogs (quests / achievements / skills / buffs)
+  bootStep('catalogs');
   await loadContentCatalogs();
   const summerCatalog = getQuestCatalog();
   if (summerCatalog[SUMMERS_DAY_QUEST_ID]) {
@@ -32616,6 +32622,7 @@ async function main() {
       applyAchievementProgress(achieveState, `in_inventory:${classTsid}`, 1, pc);
     }
   }
+  bootStep('recipes');
   await loadRecipeCatalog();
   ensureMakingItems();
   await loadTransitionAssets();
@@ -32643,7 +32650,9 @@ async function main() {
   }
 
   // Full locations-xml street catalog (index.json), then last saved street (or default)
+  bootStep('world');
   await Promise.all([ensureStreetIndex(), loadStreetEcologyCatalog()]);
+  bootStep('street');
   const bootParams = new URLSearchParams(location.search);
   // LEVEL BUILDER play-test (js/builder/draft-play.js): ?draft=<id>&street=<key> registers the
   // draft's streets and starts on one, as ?streetdemo= would (always a practice copy).
@@ -35338,7 +35347,10 @@ async function main() {
     return r;
   });
   if (startCardWaits) startOverlay.classList.add('is-waiting');
-  else ownLookIn().then(() => endBoot());
+  else {
+    bootStep('look');
+    ownLookIn().then(() => endBoot());
+  }
 
   let newDayCheckAccum = 0;
   /** Report #545: ticker time since the street trants' fruit art was last checked. */
