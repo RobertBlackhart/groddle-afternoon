@@ -10,7 +10,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { animalHusbandryFeature } from '../public/js/features/animal-husbandry-feature.js?v=8bd68115';
+import { animalHusbandryFeature } from '../public/js/features/animal-husbandry-feature.js?v=f7ce5c49';
 import { HERDKEEPING } from '../public/js/animal-husbandry.js?v=e90446db';
 
 const piggy = (state = {}) => ({ classId: 'npc_piggy', label: 'Piggy', state, sprite: { visible: true, destroyed: false } });

@@ -42,6 +42,13 @@
  *  - Hints (items/include/butler_hints.js giveHint): from ten minutes after the
  *    intro, when the owner comes within near_dist 250, at most every 7 min
  *    (level 7 and under), 30 min (12 and under) or an hour.
+ *  - Rook alerts (butler_hints.js getRookNotification 664-694, giveHint 54-62;
+ *    register G799): while the Rook is attacking a street, the owner above
+ *    level 4 who comes near hears "Hurry, boss! I just heard on the
+ *    butlervine that <street> is being attacked by the rook! Ur needs your
+ *    help!", once an attack, five minutes after the last hint at the soonest
+ *    (rook_interval), ahead of any other hint; muffled wisdom muffles it too
+ *    (rookAlert below).
  *  - Quests (doQuests, bag_butler.js 2095-2110): players/inc_stats.js gives
  *    the Butler Join the Club at 30128 iMG; once instance_exit_via_signpost is
  *    set, the owner coming home within 600 px (onPlayerEnter 4180-4184) or
@@ -111,6 +118,10 @@ export const BUTLER = Object.freeze({
   IDLE_QUIET_MS: 2 * 60_000,
   /** giveHint: start_delay 10 min after the intro. */
   HINT_START_DELAY_MS: 10 * 60_000,
+  /** giveHint: rook_interval, a rook alert at most 5 min after the last hint. */
+  ROOK_ALERT_INTERVAL_MS: 5 * 60_000,
+  /** getRookNotification: player_level > 4. */
+  ROOK_ALERT_MIN_LEVEL: 5,
   /** The source's chance of buildTowerComment over the usual idle line. */
   TOWER_COMMENT_CHANCE: 0.2,
   TOWER_COMMENT_LEVEL: 18,
@@ -549,6 +560,8 @@ export function normalizeButlerState(seed = {}) {
     lastWhoVisited: whole(s.lastWhoVisited),
     givenHints: (Array.isArray(s.givenHints) ? s.givenHints : []).map(cleanId).filter(Boolean).slice(-40),
     lastHintAt: whole(s.lastHintAt),
+    /** The Rook attacks already announced ("<street>@<since>", rookAlert; given_hints held the line). */
+    rookAlerted: (Array.isArray(s.rookAlerted) ? s.rookAlerted : []).map((k) => String(k || '').replace(/[^a-zA-Z0-9_@-]/g, '').slice(0, 64)).filter(Boolean).slice(-ROOK_ALERTS_KEPT),
     lastSpokeAt: whole(s.lastSpokeAt),
     /** Its hi sign (items/include/butler_emotes.js; rules in js/hi-signs.js). */
     hi: normalizeButlerHi(s.hi),
@@ -1094,7 +1107,7 @@ export function idleChatter(state, { now = Date.now(), lastCommandAt = 0, level 
  * plain text). Left out: UI and website pointers (Info Mode, zoom keys,
  * hotkeys, calendar, bug icon, Snaps, Global Chat, Facebook, Twitter, Glitch
  * Mash, wardrobe), friends and buddy towers, hub visit counts, the fox
- * preserve route, feats and rook alerts.
+ * preserve route and feats. Rook alerts are rookAlert, at the end.
  *
  * The /house and /tower hints (butler_hints.js:382-399) need more than ten
  * visits to your house or Tower (location.js butler_hint_counters
@@ -1170,4 +1183,48 @@ export function nearLevel(info) {
   if (remaining / info.needed > 0.1) return null;
   const xp = remaining > 1000 ? Math.round(remaining / 1000) * 1000 : remaining;
   return { xp, next: info.level + 1 };
+}
+
+// ---------------------------------------------------------------------------
+// Rook alerts (butler_hints.js getRookNotification 664-694; register G799)
+// ---------------------------------------------------------------------------
+
+/** How many announced attacks a save remembers (one a day comes, so this is weeks). */
+export const ROOK_ALERTS_KEPT = 20;
+
+/** getRookNotification's line; the source's location link (getLocationLink) is the street's name. */
+export function rookAlertLine(where) {
+  return `Hurry, boss! I just heard on the butlervine that ${where} is being attacked by the rook! Ur needs your help!`;
+}
+
+/**
+ * giveHint with a Rook out (items/include/butler_hints.js 5-62, 628-632, 664-694), when the owner
+ * comes near: the first attack under way not announced yet, as its line, or null. The source asks
+ * level > 4, a running attack, hints not muffled (bag_butler.js:4036 hints_off), ten minutes past the
+ * intro (start_delay), five minutes since the last hint (rook_interval; a due hint gives way to it,
+ * getHint 628-632) and a line it has not given (hintAlreadyGiven). That last test is kept per attack
+ * here ("<street>@<since>"): the source's was the line itself, so a street attacked again on another
+ * day would never be told of until the hint list ran out.
+ * attacks: [{ street, since, name }], name being what the line calls the street.
+ */
+export function rookAlert(state, attacks, { now = Date.now(), level = 1, force = false } = {}) {
+  if (!Array.isArray(attacks) || !attacks.length) return null;
+  if (!force) {
+    if (state.hintsOff) return null;
+    if (whole(level) < BUTLER.ROOK_ALERT_MIN_LEVEL) return null;
+    if (!state.createdAt || now - state.createdAt <= BUTLER.HINT_START_DELAY_MS) return null;
+    if (now - (state.lastHintAt || 0) <= BUTLER.ROOK_ALERT_INTERVAL_MS) return null;
+  }
+  state.rookAlerted = Array.isArray(state.rookAlerted) ? state.rookAlerted : [];
+  for (const a of attacks) {
+    const street = String(a?.street || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
+    if (!street) continue;
+    const key = `${street}@${whole(a.since)}`;
+    if (state.rookAlerted.includes(key)) continue;
+    state.rookAlerted.push(key);
+    if (state.rookAlerted.length > ROOK_ALERTS_KEPT) state.rookAlerted.splice(0, state.rookAlerted.length - ROOK_ALERTS_KEPT);
+    state.lastHintAt = whole(now);
+    return { key, street, text: rookAlertLine(String(a.name || street)) };
+  }
+  return null;
 }

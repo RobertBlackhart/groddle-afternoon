@@ -34,6 +34,10 @@
  *  - Hears about the club: back from Join the Club's painting, the quest
  *    turns in when you come within 550 px of the Butler at home (doQuests;
  *    quest-rooms/clubhouse.js world hook via butlerApi.questReady/hearQuest).
+ *  - Rook alerts (G799, butler_hints.js getRookNotification): with a Rook
+ *    attacking a street (the rook feature's rookAttacksUnderWay), the owner
+ *    above level 4 who comes near hears where, once an attack (js/butler.js
+ *    rookAlert).
  *  - Hi signs (butler_emotes.js): its sign is saved here (st.hi); the far
  *    hit box calls hiHooks.far and butlerApi.hi* serve
  *    js/features/hi-signs-feature.js, which runs the flow.
@@ -49,7 +53,7 @@
  *                        &homedemo=owned&stonedemo=1&stoneautoplay=optin)
  *   &butlerautoplay=greet|parcel|parceldone|rename|look|customize|discard|
  *                   offer|offeraccept|box|talk|joke|dance|
- *                   hint|tower|gift|visitors|mailbox|
+ *                   hint|rook (G799: the Rook alert, an attack under way needed)|tower|gift|visitors|mailbox|
  *                   turn (back to you, then lookAtPlayer: turnBack, turnFront)|
  *                   walk (220 px right on walk4 and back)
  *   &butlerhint=<id>     the next hint is that one, if its conditions hold
@@ -124,6 +128,7 @@ import {
   ownerGreeting,
   packagesAndMessagesForOwner,
   pickHint,
+  rookAlert,
   partIndex,
   pluralize,
   randomButlerParts,
@@ -139,11 +144,12 @@ import {
   takeVisitorDelivery,
   teachButler,
   visitorsReport,
-} from '../butler.js?v=465f8d14';
+} from '../butler.js?v=52b4f74d';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
+import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
 import { createItemPicker } from '../ui/item-picker.js?v=00c515f1';
-import { registerOwnButlerDrop } from '../butler-drop.js?v=95929da4';
+import { registerOwnButlerDrop } from '../butler-drop.js?v=509b8d05';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
 import { worldPoint } from './world-drop-feature.js?v=b4dce6d5';
 import { standOnFeet } from '../sprite-feet.js?v=a593b732';
@@ -930,6 +936,27 @@ function maybeHint(engine, force = false) {
   return true;
 }
 
+/**
+ * getRookNotification (butler_hints.js 664-694, G799): a Rook attacking a street, from the rook
+ * feature (rookAttacksUnderWay: the solo attack, or the realtime server's list online). The
+ * source named the street with a location link (getLocationLink, "event:location|hub#tsid"); here
+ * it is the street's name.
+ */
+function maybeRookAlert(engine, force = false) {
+  const attacks = (engine.query?.('rookAttacksUnderWay', engine) || []).map((a) => ({ ...a, name: streetLabel(a.street) }));
+  const alert = rookAlert(st, attacks, { now: now(), level: level(engine), force });
+  if (!alert) return false;
+  say(engine, alert.text, 6000, { activity: true });
+  engine.setData?.('butlerRookAlert', alert.key);
+  engine.save?.();
+  return true;
+}
+
+function streetLabel(tsid) {
+  const g = String(tsid || '').replace(/^L/, 'G');
+  return STREET_INDEX.streets?.[g]?.label || g;
+}
+
 function maybeChatter(engine, { force = false, towerLevel = false } = {}) {
   const text = idleChatter(st, {
     now: now(),
@@ -1016,7 +1043,10 @@ function secondTick(engine, t) {
       oneOff(engine, 'acknowledge');
     }
     // Not while greeting (onPlayerCollision skips hints in the greeting state).
-    if (!st.hintsOff && st.introDone && !rt.greeting && t - (rt.greetedAt || 0) > 12_000) maybeHint(engine);
+    // giveHint: a Rook out comes first (rook_interval 5 min), else the hint when one is due.
+    if (!st.hintsOff && st.introDone && !rt.greeting && t - (rt.greetedAt || 0) > 12_000) {
+      if (!maybeRookAlert(engine)) maybeHint(engine);
+    }
   }
   // onPlayerLeavingCollisionArea (4382-4430): leaving "near", look at the player; leaving
   // "far" with nobody left, a held turnBack turns to the front.
@@ -2177,6 +2207,10 @@ function autoplayStep(engine) {
     case 'hint':
       maybeHint(engine, true);
       return done('hint', said());
+    case 'rook':
+      // G799: the Rook alert now, whatever the clocks (an attack must be under way: &rookdemo=attack elsewhere).
+      maybeRookAlert(engine, true);
+      return done('rook', said());
     case 'tower':
       maybeChatter(engine, { force: true, towerLevel: true });
       return done('tower', said());

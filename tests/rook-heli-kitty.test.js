@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ROOK_LOOSE_KEY_BASE, rookKeyFor } from '../public/js/rook-attack.js?v=5e62a79f';
-import { syncKeys } from '../public/js/rook-mp.js?v=eace1128';
+import { syncKeys } from '../public/js/rook-mp.js?v=dda37008';
 import { kittyIndex } from '../public/js/features/heli-kitties-feature.js?v=aa063e24';
 import { creatureOf } from '../public/js/street-creatures.js?v=1d43faac';
 

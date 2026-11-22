@@ -114,6 +114,7 @@ import {
   MP_ROOK,
   MP_ROOK_TEXT,
   attackFromServer,
+  attacksFromServer,
   offerAllowed,
   orbOf,
   primeBonusLevel,
@@ -123,7 +124,7 @@ import {
   strikeDamage as mpStrikeDamage,
   syncKeys,
   syncObjs,
-} from '../rook-mp.js?v=eace1128';
+} from '../rook-mp.js?v=dda37008';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
@@ -2245,7 +2246,7 @@ function mpBind(engine) {
   if (mp) return mp;
   const client = engine.query?.('realtimeClient');
   if (!client) return null;
-  mp = { client, street: '', synced: '', snapped: '', syncAt: 0, attack: null, slot: { rooked: {}, pendingBeats: 0 }, arts: new Map(), lastYou: '' };
+  mp = { client, street: '', synced: '', snapped: '', syncAt: 0, attack: null, slot: { rooked: {}, pendingBeats: 0 }, arts: new Map(), lastYou: '', world: [] };
   // An MP save never runs a local attack (older saves may hold one from before the server owned them).
   save.active = null;
   client.on('msg:rook', (msg) => mpOnRook(engineRef || engine, msg));
@@ -2257,11 +2258,20 @@ function mpBind(engine) {
     // G605: the server would not let this dose start (three given or under way): the bar stops.
     if (msg?.what === 'revive_start' && eng.currentAction?.verbId === 'rook_revive') eng.cancelCurrentAction?.({ quiet: true });
   });
+  // G799: every attack under way, for the Butler (the server's rook_attacks, Glitch's
+  // rook_attack_tracker): told when it changes, asked for on each connect.
+  client.on('msg:rook_attacks', (msg) => {
+    mp.world = attacksFromServer(msg?.attacks);
+  });
   client.on('state', ({ state }) => {
-    if (state === 'online') return;
+    if (state === 'online') {
+      client.send('rook_attacks', {});
+      return;
+    }
     mp.synced = '';
     mp.snapped = '';
   });
+  if (client.state === 'online') client.send('rook_attacks', {});
   client.on('roster', ({ street }) => {
     if (street !== mp.synced) mp.synced = '';
   });
@@ -3198,6 +3208,18 @@ export const rookAttackFeature = {
   /** No Magic Rock offers over a Rook attack on this street. */
   holdQuestOffers(engine) {
     return here(engine) ? true : null;
+  },
+
+  /**
+   * G799: the attacks under way for the Butler's alert (js/butler.js rookAlert), [{ street, since }]:
+   * online the realtime server's list (every street), solo your own attack once the Rook is over
+   * its street (startAttack's running: not the herald, not once it is beaten or gone).
+   */
+  rookAttacksUnderWay(engine) {
+    if (engine?.mode === 'multiplayer') return mp ? mp.world.map((a) => ({ street: a.street, since: a.since })) : [];
+    const a = active();
+    if (!a || !['build_up', 'angry', 'stunned'].includes(a.phase)) return [];
+    return [{ street: a.tsid, since: a.startedAt || 0 }];
   },
 
   /** game.js beginVerbAction: a revive dose's 10 s began (include/rook.js startRevive): the street counts it (G605). */

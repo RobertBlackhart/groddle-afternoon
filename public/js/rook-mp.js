@@ -56,6 +56,21 @@ const PATCH_KEY_RE = /^(trant_[a-z]{1,8}|wood_tree):p((?:patch|patch_dark|trant_
 const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
 const PHASES = new Set(['herald', 'build_up', 'angry', 'stunned', 'dead', 'departed']);
 
+/**
+ * The attacks under way in the whole world (G799, the server's rook_alert.go rook_attacks, Glitch's
+ * rook_attack_tracker) as [{ street, hub, since }], for the Butler's alert. At most 16.
+ */
+export function attacksFromServer(list) {
+  const out = [];
+  for (const a of Array.isArray(list) ? list : []) {
+    const street = String(a?.street || '');
+    if (!/^[A-Z][A-Z0-9]{2,30}$/.test(street)) continue;
+    out.push({ street, hub: String(a.hub ?? '').replace(/[^0-9a-zA-Z_-]/g, '').slice(0, 16), since: Math.max(0, Math.floor(num(a.since))) });
+    if (out.length >= 16) break;
+  }
+  return out;
+}
+
 /** The rookable keys this client has on the street, as the server takes them (at most 64). */
 /**
  * The shared tree behind each tree key (js/street-objects.js treeId), for

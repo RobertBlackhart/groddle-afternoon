@@ -22,7 +22,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PARTY_SPACES, startParty } from '../public/js/party-spaces.js?v=559a618a';
-import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=45846e06';
+import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=922de2e1';
 import { racesFeature } from '../public/js/features/races-feature.js?v=80a0f5d9';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
