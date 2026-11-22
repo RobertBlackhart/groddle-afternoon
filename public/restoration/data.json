@@ -2810,13 +2810,38 @@
   ]
  },
  "release": {
-  "game": "0.55.1",
-  "deployed": "2026-11-21"
+  "game": "0.56.0",
+  "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3032,
+  "commits": 3040,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "You can no longer travel while travelling: Enter on the loading card starts no second trip"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Online, Pumpkin Seeds plant in a shared herb bed as well as a crop bed"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Pumpkin Seeds plant during Pot Luck Day, and the Plant menu shows them greyed out of season"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The Classic stylesheet's buddy face note names the 2012 client"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The Buddies window shows each buddy's head in the Modern interface"
+   },
    {
     "date": "2026-11-21",
     "kind": "fix",
@@ -2911,31 +2936,6 @@
     "date": "2026-11-21",
     "kind": "improve",
     "text": "Naming an animal shows which characters it drops and the name as it will be saved"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "On an upright phone, the naming box's dark backdrop reaches the right edge"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A thing's menu no longer flashes the last thing's picture as it opens"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The phone street map of a tall street no longer covers its Map button, X and signposts"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Dig your way out keeps its progress after a reload"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Carry That Weight goes on after leaving the Juju hideout"
    }
   ]
  },
