@@ -21,7 +21,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { homeStreetOwner, isPublicStreet, isSharedStreet, normalizeGroundStack, shareReason, stackAt } from '../public/js/drops-mp.js?v=ad34ae0a';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=homedrops';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=e3cffe98';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=4dd08b94';
 import { sharedHomeStreet } from '../public/js/neighbours-mp.js?v=1c9924eb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 

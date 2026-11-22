@@ -123,6 +123,7 @@ import {
   expandInterior,
   flipFurniture,
   furnishDemoRoom,
+  floorRestY,
   furnitureDef,
   furnitureDrawsInFront,
   furnitureScale,
@@ -151,7 +152,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=267da56e';
+} from '../home-decor.js?v=10e86ffb';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=22c44bae';
@@ -292,7 +293,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=e0778cdb';
+} from '../home-floors.js?v=0e1325c8';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=422a7242';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -7120,7 +7121,7 @@ function floorDemo(engine) {
   if (!want || floorDemoDone || houseFloorHere() !== 0) return;
   floorDemoDone = true;
   if (want === 'built' && floorCount(floors) === 1 && !floors.pending) {
-    houseDecor.placed.push({ id: houseDecor.nextId++, classTsid: DOOR_CLASS, slot: 'floor', x: 600, y: INTERIOR.floorY, facingRight: true, z: 1, on: null });
+    houseDecor.placed.push({ id: houseDecor.nextId++, classTsid: DOOR_CLASS, slot: 'floor', x: 600, y: floorRestY(DOOR_CLASS), facingRight: true, z: 1, on: null });
     noteDoorPlaced(floors, 0, houseDecor.nextId - 1);
     addFloor(floors, houseDecor);
     doorLast = 'demo:built';

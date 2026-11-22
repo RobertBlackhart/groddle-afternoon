@@ -90,6 +90,19 @@ export const TOWER_ROOM = Object.freeze({
  * front and rug pushed out 10 / 20 / 42 px).
  */
 export const PLACEMENT_INSET = Object.freeze({ ceiling: 10, wall: 10, bookshelf: 0, chair: -10, rug: -42, front: -20 });
+/**
+ * G1136 (#612): a Door stands at the base of the back wall, 65 px behind the
+ * walk line (inc_homes.js homes_rebuild_floor 749-750: doors at b - (108 +
+ * frame_height), the walk line at b - (43 + frame_height)). Every other floor
+ * piece still stands on the walk line.
+ */
+export const DOOR_FOOT_Y = INTERIOR.floorY - 65;
+const BACK_WALL_CLASSES = new Set(['furniture_door']);
+
+/** Where a floor-standing class's foot rests: the walk line, or the back wall's base for a Door. */
+export function floorRestY(classTsid) {
+  return BACK_WALL_CLASSES.has(classTsid) ? DOOR_FOOT_Y : INTERIOR.floorY;
+}
 /** The plat a slot falls back to when a class names no known set. */
 const SLOT_PLAT = Object.freeze({ ceiling: 'ceiling', wall: 'wall', rug: 'rug', floor: 'bookshelf' });
 /** The pre-G7 geometry, for migrating old saves. */
@@ -381,6 +394,7 @@ function fitPlacements(state, legacy) {
     const before = { x: row.x, y: row.y };
     row.x = horizontalClamp(state, row.classTsid, mapX(row.x), row.upgradeId);
     if (row.slot === 'ceiling') row.y = INTERIOR.ceilingY;
+    else if (BACK_WALL_CLASSES.has(row.classTsid)) row.y = DOOR_FOOT_Y;
     else if (row.slot === 'wall') {
       const h = furnitureSize(row.classTsid, row.upgradeId).h;
       const top = INTERIOR.wallTop + INTERIOR.wallMarginTop + h;
@@ -654,7 +668,7 @@ export function snapPlacement(state, classTsid, at = {}, excludeId = null, upgra
       return { x, y: host.y - surfaceHeight(host.classTsid, host.upgradeId), slot: 'floor', on: host.id };
     }
   }
-  return { x, y: INTERIOR.floorY, slot: 'floor', on: null };
+  return { x, y: floorRestY(classTsid), slot: 'floor', on: null };
 }
 
 function topZ(state) {
@@ -950,11 +964,12 @@ export function displayWithdraw(state, inv, id, qty = Infinity) {
   return { ok: true, classTsid, qty: n };
 }
 
-/** Back-to-front render order: rugs, then ceiling and wall, then floor by z. */
+/** Back-to-front render order: rugs, then ceiling and wall, then a Door at the wall's base (G1136), then floor by z. */
 export function renderOrder(state) {
   const rank = { rug: 0, ceiling: 1, wall: 2, floor: 3 };
+  const rankOf = (row) => (row.slot === 'floor' && BACK_WALL_CLASSES.has(row.classTsid) ? 2.5 : rank[row.slot]);
   return [...state.placed].sort((a, b) => {
-    const r = rank[a.slot] - rank[b.slot];
+    const r = rankOf(a) - rankOf(b);
     if (r) return r;
     // Tabletop decor always draws above the piece it rests on.
     if (a.on === b.id) return 1;

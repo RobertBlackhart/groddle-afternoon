@@ -40,7 +40,7 @@
  */
 
 import { HOME_LIMITS } from './homes-catalog.js?v=cce7f5a7';
-import { INTERIOR, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=267da56e';
+import { floorRestY, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=10e86ffb';
 
 export const DOOR_CLASS = 'furniture_door';
 export const DOOR_JOB = 'job_proto_door';
@@ -191,7 +191,7 @@ export function addFloor(fs, ground) {
     floor: top.floor,
     ceiling: top.ceiling,
   });
-  const down = { id: next.nextId++, classTsid: DOOR_CLASS, slot: 'floor', x: door.x, y: INTERIOR.floorY, facingRight: true, z: 1, on: null };
+  const down = { id: next.nextId++, classTsid: DOOR_CLASS, slot: 'floor', x: door.x, y: floorRestY(DOOR_CLASS), facingRight: true, z: 1, on: null };
   next.placed.push(down);
   fs.upper.push(next);
   const link = { floor: fs.pending.floor, x: door.x, up: door.id, down: down.id };

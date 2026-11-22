@@ -73,7 +73,7 @@
 
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { homeStreetLayout, towerItem } from '../home-cultivation.js?v=6d39d0d8';
-import { homesFeature } from './homes-feature.js?v=e9954a0b';
+import { homesFeature } from './homes-feature.js?v=ca0e2ca0';
 import { towerApi } from './home-tower-feature.js?v=1260c471';
 import { levelInfoForXp } from '../progression.js?v=05ff0260';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
