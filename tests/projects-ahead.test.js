@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=884e34b3';
 import { fewestClosures, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, streetProjectId } from '../public/js/projects-tracker.js?v=74da8b8a';
-import { buildProjectsPanel, renderAhead, renderProjects } from '../public/js/ui/projects-sheet.js?v=064b21c8';
+import { buildProjectsPanel, renderAhead, renderProjects } from '../public/js/ui/projects-sheet.js?v=1a0dd159';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

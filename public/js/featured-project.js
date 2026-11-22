@@ -30,6 +30,8 @@ export const FEATURED_TEXT = Object.freeze({
   notLearned: 'not learned',
   // R11: nothing was left to build on foot, so the server featured one the subway reaches (needs papers).
   bySubway: 'by subway',
+  // G805: the one-time hint under the street name bubble, the first time the line shows.
+  hint: (label) => `This line is the featured street project, ${label}. Click it to see what it needs.`,
 });
 
 const whole = (v) => Math.max(0, Math.floor(Number(v) || 0));

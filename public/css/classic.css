@@ -3255,8 +3255,11 @@
    featured project; the line takes the "Current location" readout's last row (CurrentLocationUI.as
    21-142), under the street's name, in the tool-wear teal and square ends of ItemstackStatusBar.as 11-13. */
 :root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill:not([hidden]) { display: block; left: calc(32 * var(--cu)); right: 0; bottom: 0; height: calc(9 * var(--cu)); border-radius: 0; color: var(--c-classic-wear); }
-:root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill .fp-track { bottom: calc(3 * var(--cu)); height: calc(3 * var(--cu)); border-radius: 0; background: var(--c-classic-wear-track); }
-:root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill .fp-star { bottom: calc(4.5 * var(--cu)); width: calc(9 * var(--cu)); height: calc(9 * var(--cu)); }
+:root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill .fp-track { bottom: calc(3 * var(--cu)); height: calc(4 * var(--cu)); border-radius: 0; background: var(--c-classic-wear-track); }
+:root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill .fp-star { bottom: calc(5 * var(--cu)); width: calc(12 * var(--cu)); height: calc(12 * var(--cu)); filter: drop-shadow(0 0 1px var(--c-classic-panel)); }
+/* G805: the one-time hint under the readout, in the client's pale yellow tip (as #hud-tip), the star in the wear teal. */
+:root[data-ui="classic"] .fp-hint { gap: calc(5 * var(--cu)); padding: calc(4 * var(--cu)) calc(8 * var(--cu)); border: 1px solid color-mix(in srgb, var(--c-classic-ink) 37%, transparent); border-radius: calc(4 * var(--cu)); background: var(--c-classic-tip); box-shadow: 0 1px 2px color-mix(in srgb, var(--c-classic-ink) 15%, transparent); color: var(--c-classic-text); font: var(--fs-classic-body)/var(--lh-tight) var(--font-classic-body); }
+:root[data-ui="classic"] .fp-hint .fp-star { color: var(--c-classic-wear); }
 :root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill:focus-visible { outline: 2px solid var(--c-classic-focus); outline-offset: 1px; }
 :root[data-ui="classic"] #game-root .street-nameplate > #featured-project-pill:focus-visible .fp-track { box-shadow: none; }
 /* === end bubble === */

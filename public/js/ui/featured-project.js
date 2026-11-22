@@ -13,17 +13,27 @@
  *
  * Both skins: Modern's accent purple, Classic's 2012 tool-wear teal under "Current location"
  * (css/classic.css, block bubble). Text is set as text.
+ *
+ * G805 (The Catface took the thin line for gone, 2026-11-14): a little stronger (a thicker track, a
+ * bigger star with a ring of the bubble's colour so it reads over the track), and the first time it
+ * shows for this viewer a hint under the bubble says what it is, while the track pulses twice (none
+ * with reduced motion). Gone after FEATURED_HINT_MS, on a click or on Escape; kept as seen in this
+ * browser (FEATURED_HINT_KEY). Never while the line is not drawn (a phone, the tutorial).
  * QA hooks: #featured-project-pill [data-featured-job] (the line keeps the pill's id),
  * #featured-project-row [data-featured-job].
  */
 
-import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=ee4dbf3c';
+import { FEATURED_TEXT as T, featuredLabel, featuredPillText, featuredStatus, featuredWhere } from '../featured-project.js?v=0149799d';
 
 /** The line in the street name bubble; it keeps the old pill's id so routes and QA still find it. */
 export const FEATURED_PILL_ID = 'featured-project-pill';
 export const FEATURED_ROW_ID = 'featured-project-row';
 /** PHONE (Austin 2026-11-12): the Menu's row that stands in for the pill on a phone. */
 export const FEATURED_MENU_ID = 'menu-featured-btn';
+/** G805: the one-time hint, and the browser key that says it has been shown. */
+export const FEATURED_HINT_ID = 'featured-project-hint';
+export const FEATURED_HINT_KEY = 'groddle.featured.hinted';
+export const FEATURED_HINT_MS = 9000;
 const STAR = 'm6 .8 1.6 3.3 3.6.5-2.6 2.5.6 3.6L6 9 2.8 10.7l.6-3.6L.8 4.6l3.6-.5z';
 
 const STYLE = `
@@ -32,13 +42,22 @@ const STYLE = `
 .featured-line[hidden] { display: none; }
 body.nx-tutorial .featured-line, body.nx-tutorial .featured-row { display: none; }
 body.nx-tutorial #menu-featured-btn { display: none; }
-.featured-line .fp-track { position: absolute; left: 0; right: 0; bottom: var(--space-1); height: 2px; border-radius: var(--radius-pill);
-  background: color-mix(in srgb, currentColor 20%, transparent); overflow: hidden; }
+.featured-line .fp-track { position: absolute; left: 0; right: 0; bottom: var(--space-1); height: 3px; border-radius: var(--radius-pill);
+  background: color-mix(in srgb, currentColor 28%, transparent); overflow: hidden; }
 .featured-line .fp-track i { display: block; height: 100%; width: var(--p); background: currentColor; border-radius: inherit; }
-.featured-line .fp-star { position: absolute; left: var(--p); bottom: calc(var(--space-1) + 1px); width: 0.6rem; height: 0.6rem; transform: translate(-50%, 50%); }
-.featured-line:hover .fp-track { height: 3px; }
+.featured-line .fp-star { position: absolute; left: var(--p); bottom: calc(var(--space-1) + 1.5px); width: 0.8rem; height: 0.8rem; transform: translate(-50%, 50%);
+  filter: drop-shadow(0 0 1px var(--surface)) drop-shadow(0 0 1px var(--surface)); }
+.featured-line:hover .fp-track { height: 4px; }
+.featured-line.is-hinting .fp-track { animation: fp-pulse 1.1s ease-in-out 2; }
+@keyframes fp-pulse { 50% { height: 5px; background: color-mix(in srgb, currentColor 45%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .featured-line.is-hinting .fp-track { animation: none; } }
+.fp-hint { position: fixed; z-index: var(--z-notice); display: flex; align-items: center; gap: var(--space-2); max-width: min(22rem, calc(100vw - 2 * var(--space-3)));
+  padding: var(--space-2) var(--space-3); border: 1px solid var(--accent); border-radius: var(--radius-md); background: var(--surface-card); color: var(--text);
+  box-shadow: var(--shadow-2); font: var(--fs-sm)/var(--lh-tight) var(--font-ui); text-align: left; white-space: normal; cursor: pointer; pointer-events: auto; }
+.fp-hint[hidden] { display: none; }
+.fp-hint .fp-star { flex: none; width: 1.1em; height: 1.1em; color: var(--accent); }
 .featured-line:focus-visible { outline: none; }
-.featured-line:focus-visible .fp-track { height: 3px; box-shadow: 0 0 0 2px var(--focus); overflow: visible; }
+.featured-line:focus-visible .fp-track { height: 4px; box-shadow: 0 0 0 2px var(--focus); overflow: visible; }
 .featured-row .fp-star { flex: none; width: 0.95em; height: 0.95em; color: var(--accent); }
 .featured-row { display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-2); width: 100%; margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3);
   border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-card); color: var(--text); text-align: left;
@@ -158,7 +177,89 @@ export function renderFeaturedLine(doc, f, o = {}) {
   line.setAttribute('aria-label', `${featuredLabel(f, o.now)}${o.needs ? ` ${o.needs}.` : ''}`);
   line.hidden = Boolean(o.hide);
   renderFeaturedMenuRow(doc, o.hide ? null : f, o);
+  if (!line.hidden) featuredHint(doc, line, f, o);
   return line;
+}
+
+function hintStore(o) {
+  if (o && 'storage' in o) return o.storage;
+  try {
+    return globalThis.localStorage || null;
+  } catch {
+    return null;
+  }
+}
+
+/** G805: whether this viewer has had the hint (a browser that keeps nothing counts as not yet, and shows it once per page). */
+export function featuredHintSeen(storage) {
+  try {
+    return storage?.getItem(FEATURED_HINT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+const hintShown = new WeakSet();
+
+/**
+ * G805: the first time the line is drawn for this viewer, a hint under the bubble that says what it is.
+ * Waits a frame for the line to be laid out; a line that is not drawn (a phone shows the Menu's row
+ * instead, the tutorial hides it) shows nothing and keeps the hint for later.
+ */
+export function featuredHint(doc, line, f, o = {}) {
+  if (!f || hintShown.has(doc) || featuredHintSeen(hintStore(o))) return null;
+  let tries = 0;
+  const show = () => {
+    if (hintShown.has(doc) || line.hidden || !f) return;
+    const r = line.getClientRects?.().length ? line.getBoundingClientRect() : null;
+    // Not laid out yet (the bubble still placing itself): a few more looks, then wait for the next draw.
+    if (!r?.width) {
+      if ((tries += 1) < 4) setTimeout(show, 1500);
+      return;
+    }
+    hintShown.add(doc);
+    try {
+      hintStore(o)?.setItem(FEATURED_HINT_KEY, '1');
+    } catch {
+      /* shown once on this page only */
+    }
+    let hint = doc.getElementById(FEATURED_HINT_ID);
+    if (!hint) {
+      hint = doc.createElement('button');
+      hint.type = 'button';
+      hint.id = FEATURED_HINT_ID;
+      hint.className = 'fp-hint';
+      (doc.getElementById('game-root') || doc.body).append(hint);
+    }
+    hint.replaceChildren(starIcon(doc), span(doc, 'fp-hint-text', T.hint(f.label)));
+    hint.setAttribute('role', 'status');
+    hint.hidden = false;
+    const vw = doc.documentElement?.clientWidth || r.right;
+    const w = hint.offsetWidth || 0;
+    hint.style.left = `${Math.round(Math.max(8, Math.min(vw - w - 8, r.left + r.width / 2 - w / 2)))}px`;
+    hint.style.top = `${Math.round(r.bottom + 10)}px`;
+    line.classList.add('is-hinting');
+    const done = () => {
+      hint.hidden = true;
+      line.classList.remove('is-hinting');
+      clearTimeout(timer);
+      doc.removeEventListener('keydown', onKey, true);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') done();
+    };
+    const timer = setTimeout(done, o.hintMs ?? FEATURED_HINT_MS);
+    hint.onclick = () => {
+      done();
+      line._onOpen?.();
+    };
+    line.addEventListener('click', done, { once: true });
+    doc.addEventListener('keydown', onKey, true);
+  };
+  const raf = doc.defaultView?.requestAnimationFrame;
+  if (raf) raf(() => raf(show));
+  else show();
+  return true;
 }
 
 /**

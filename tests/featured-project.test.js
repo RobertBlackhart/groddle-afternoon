@@ -11,10 +11,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=ee4dbf3c';
-import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=2b97d818';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=064b21c8';
-import { jobIndicatorView } from '../public/js/job-indicator.js?v=41ce4716';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=0149799d';
+import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=d0b0e9b1';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=1a0dd159';
+import { jobIndicatorView } from '../public/js/job-indicator.js?v=b8498964';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=884e34b3';
 import { rowFromServer } from '../public/js/street-jobs-mp.js?v=997303d1';
 import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=74da8b8a';
@@ -280,7 +280,10 @@ describe('wiring', () => {
     assert.match(feature, /renderFeaturedLine\(document, f,/);
     assert.match(feature, /renderFeaturedRow\(document, f,/);
     assert.match(feature, /featured: Boolean\(featured && featured\.jobId === head\.jobId\)/);
-    assert.match(feature, /const f = mpMode \? featured : null;/, 'solo shows nothing');
+    assert.match(feature, /const f = mpMode \|\| qaFeatured \? featured : null;/, 'solo shows nothing');
+    // G805's QA look (&projectsdemo=featured) is the only solo way in, and never online.
+    assert.equal((feature.match(/qaFeatured = true/g) || []).length, 1);
+    assert.match(feature, /if \(qaProjectsSeeded \|\| mpMode \|\| !catalog \|\| !engine\.param\?\.\('projectsdemo'\)\) return;/);
     assert.match(feature, /list\.featured = featuredEntry\(engine, seenAt\);/);
   });
   it('Global keeps the server notices as notes', () => {

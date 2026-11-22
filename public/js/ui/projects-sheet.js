@@ -34,7 +34,7 @@
  */
 
 import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=74da8b8a';
-import { featuredTag } from './featured-project.js?v=2b97d818';
+import { featuredTag } from './featured-project.js?v=d0b0e9b1';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
 /** G1116: the chip a viewer last picked, kept in this browser only. */

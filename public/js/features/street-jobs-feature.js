@@ -152,7 +152,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=41ce4716';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=b8498964';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -160,11 +160,11 @@ import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=74da8b8a';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=064b21c8';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=1a0dd159';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=ee4dbf3c';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=2b97d818';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=0149799d';
+import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=d0b0e9b1';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
@@ -2939,7 +2939,7 @@ function featuredEntry(engine, seenAt) {
 /** G656: the line in the street name bubble and the Feat panel's row (js/ui/featured-project.js), multiplayer only. */
 function drawFeatured(engine) {
   if (typeof document === 'undefined' || !document.getElementById) return;
-  const f = mpMode ? featured : null;
+  const f = mpMode || qaFeatured ? featured : null;
   const onOpen = () => openFeatured(engine);
   // Ticket 240: the row (and the line's tip) say what is left, from the Projects panel's own entry.
   const needs = f && engine ? featuredNeedsLine(featuredEntry(engine, Number(state.trackerSeen) || 0)) : '';
@@ -2977,13 +2977,24 @@ function openFeatured(engine) {
 
 /**
  * QA (&projectsdemo=1, solo only, G1116): the Projects panel filled for a look without playing for
- * it: 14 street upgrades finished at an hour apart and 2 under way (upgrades only, so no road
- * opens), then the panel opens. Kept in the save like any contribution.
+ * it: the first street upgrades, 2 under way and the rest finished an hour apart (upgrades only, so
+ * no road opens), then the panel opens. Kept in the save like any contribution.
+ * &projectsdemo=featured (G805): instead, the featured project's line in the street name bubble as
+ * online, for a street project at 40%, and nothing seeded or opened.
  */
 let qaProjectsSeeded = false;
+let qaFeatured = false;
 function qaProjectsDemo(engine) {
   if (qaProjectsSeeded || mpMode || !catalog || !engine.param?.('projectsdemo')) return;
   qaProjectsSeeded = true;
+  if (engine.param('projectsdemo') === 'featured') {
+    const id = Object.keys(catalog.jobs).find((k) => catalog.jobs[k].kind === 'street' && catalog.jobs[k].phases.length > 1);
+    const job = catalog.jobs[id];
+    featured = featuredFromServer({ job: id, kind: 'street', street: job.street, board: job.connecting[0], label: job.label, hub: job.hub, phases: job.phases.length, percent: 40, perc: 0.4 });
+    qaFeatured = true;
+    drawFeatured(engine);
+    return;
+  }
   const now = Date.now();
   const ups = Object.keys(catalog.jobs).filter((id) => catalog.jobs[id].kind === 'upgrade').slice(0, 16);
   ups.forEach((id, i) => {
