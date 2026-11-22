@@ -16,8 +16,8 @@ import {
   noticeAllowed,
   plotMarks,
 } from '../public/js/garden-notices.js?v=dc26dd82';
-import { gardenNoticesFeature } from '../public/js/features/garden-notices-feature.js?v=cfbeb870';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=cbf58dc6';
+import { gardenNoticesFeature } from '../public/js/features/garden-notices-feature.js?v=ecf218bf';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=f6fd1f2a';
 
 const T0 = 1_000_000;
 

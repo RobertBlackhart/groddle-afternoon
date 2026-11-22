@@ -482,7 +482,8 @@ export function takeObjs(copy, msg, now = Date.now()) {
     copy.homes = msg.homes && typeof msg.homes === 'object' ? msg.homes : {};
     copy.trunks = Array.isArray(msg.trunks) ? msg.trunks.map(Number).filter(Number.isFinite) : null;
     copy.animals = new Set(Array.isArray(msg.animals) ? msg.animals.filter((id) => typeof id === 'string') : []);
-    // A Batterfly's place, the same for everyone ({"batterfly:0":[x,y]}).
+    // A Batterfly's, a walker's, and every rock's, tree's and node's place, the same for everyone
+    // ({"batterfly:0":[x,y]}, {"rock:2":[x,y]}: snapshotPlace).
     copy.spots = msg.spots && typeof msg.spots === 'object' ? msg.spots : {};
   } else if (street !== copy.street || !copy.snap) {
     return null;
@@ -495,6 +496,26 @@ export function takeObjs(copy, msg, now = Date.now()) {
     ids.push(s.id);
   }
   return ids;
+}
+
+/**
+ * R43 (#587): where an online page draws a rock, a street tree (a Wood Tree too) or a resource node:
+ * the snapshot's spot for its id (objects.go placedBySnapshot), as the server checks reach from it.
+ * Each page planned these itself and named them by plan index, so a planner input only the page had
+ * (Indri Slope's Qurazy marker moved the salmon the planner reseats from behind front art) named
+ * another spot and the server refused Pocket as far while the player stood on the fish. Glitch drew
+ * the location's items where the server said. Returns where the thing stands as the page holds it
+ * ({ x, y }: a rock's root and a tree's sprite on the server's y, a node's spot 2 px above it, the
+ * foot drop tools/build-realtime-objects.mjs adds), or null (an older server, another kind, no spot).
+ */
+export function snapshotPlace(copy, id, kind) {
+  if (!copy?.snap || copy.none || !['rock', 'tree', 'wood', 'node'].includes(kind)) return null;
+  const spot = copy.spots?.[id];
+  if (!Array.isArray(spot) || spot.length < 2) return null;
+  const x = Number(spot[0]);
+  const y = Number(spot[1]);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return { x, y: kind === 'node' ? y - 2 : y };
 }
 
 /**

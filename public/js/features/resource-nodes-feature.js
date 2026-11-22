@@ -720,6 +720,23 @@ export function verbsForTarget(verbs, knocker) {
   return (verbs || []).filter((verb) => (knocker ? verb.on === SLOTH_KNOCKER.classId : !verb.on));
 }
 
+/**
+ * R43 (#587): a node's spot moved (online, to the server's spot for its key): the art drawn from it
+ * follows, a Salmon's swim from its next frame. Returns where it stood.
+ */
+export function moveEntity(entity, x, y) {
+  const from = { x: entity.x, y: entity.y };
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return from;
+  entity.x = x;
+  entity.y = y;
+  const view = entity.view;
+  if (view?.kind === 'ground' || view?.kind === 'trap') {
+    view.sprite.x = x;
+    view.sprite.y = entity.wall && view.kind === 'ground' ? y : y + 2;
+  }
+  return from;
+}
+
 function dropTarget(engine, entity) {
   if (entity.target) engine.unregister(entity.target);
   if (entity.knockerTarget) engine.unregister(entity.knockerTarget);
@@ -2119,6 +2136,8 @@ export const resourceNodesFeature = {
       node: entity.node,
       target: entity.target,
       refresh: () => refreshEntity(engine, entity),
+      /** R43: online it stands at the server's spot for its key (street-objects-feature); returns where it stood. */
+      moveTo: (x, y) => moveEntity(entity, x, y),
       ready(verbId) {
         return ownSide(engine, entity, verbId)?.enabled === true;
       },

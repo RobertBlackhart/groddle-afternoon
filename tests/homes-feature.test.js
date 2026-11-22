@@ -20,8 +20,8 @@ import {
   rockItems,
   soilKeyMap,
   yardSoilInput,
-} from '../public/js/features/homes-feature.js?v=cbf58dc6';
-import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=6e0cc472';
+} from '../public/js/features/homes-feature.js?v=f6fd1f2a';
+import { patchesFeature, soilSpawnPlan } from '../public/js/features/patches-feature.js?v=778fe69f';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { SOIL_SPAWN_CAPS, canPlantBean } from '../public/js/patches.js?v=2498e678';

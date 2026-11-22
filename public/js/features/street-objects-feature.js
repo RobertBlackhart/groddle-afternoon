@@ -113,6 +113,7 @@
  * QA: canvas data streetObjects (street:snap|none|waiting), streetObjectsLast
  * (id:verb:ok|code), streetObjectsShared (shared objects on this street),
  * streetObjectsView (each as this client has it: rock:1=43, tree:0=98pw),
+ * streetObjectsPlaced (what the snapshot's spots moved: node:npc_salmon:2@1247.5,328.5 from ...),
  * streetCreatures (when it was read, then each shared animal where this
  * client draws it, on the street and # on the canvas:
  * t1730000000000 chicken:0@2986,868#512,640).
@@ -142,6 +143,7 @@ import {
   streetPigIndex,
   reconcile,
   rockId,
+  snapshotPlace,
   rockPerks,
   rockReady,
   sharedNodeVerb,
@@ -152,7 +154,7 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=57f1edd9';
+} from '../street-objects.js?v=aa4aabe8';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=864ea9ff';
@@ -229,6 +231,8 @@ function clearPaths() {
 
 function reset() {
   clearPaths();
+  placedFor = new WeakMap();
+  placedView = '';
   copy = createStreetCopy();
   syncedStreet = '';
   seen = new WeakMap();
@@ -377,7 +381,7 @@ function localObjects(engine) {
   }
   for (const n of engine.query?.('streetResourceNodes', engine) || []) {
     if (!SHARED_NODE_CLASSES.includes(n.classTsid)) continue;
-    out.push({ id: nodeId(n.key), kind: 'node', target: n.target, classId: n.classTsid, node: n.node, refresh: n.refresh, ready: n.ready });
+    out.push({ id: nodeId(n.key), kind: 'node', target: n.target, classId: n.classTsid, node: n.node, refresh: n.refresh, ready: n.ready, moveTo: n.moveTo });
   }
   return out;
 }
@@ -715,6 +719,7 @@ function reconcileAll(engine, force = false) {
   const all = localObjects(engine);
   for (const obj of all) {
     n += 1;
+    placeFromSnapshot(obj);
     const key = stateKey(obj);
     if (!key || (grant && grant.target === obj.target)) continue;
     if (!force && !dirtyAll && seen.get(key) === copy.version && !dirty.has(obj.id)) continue;
@@ -727,7 +732,37 @@ function reconcileAll(engine, force = false) {
   dirty.clear();
   publish(engine, n);
   engine.setData?.('streetObjectsView', all.map(viewOf).join(','));
+  engine.setData?.('streetObjectsPlaced', placedView);
   showCreatures(engine, all);
+}
+
+/** The snapshot each drawn thing was last placed from (target -> copy.version). */
+let placedFor = new WeakMap();
+/** QA: the things this street's snapshot moved (node:npc_salmon:2@1247.5,328.5 from 2480,1102.5). */
+let placedView = '';
+
+/**
+ * R43 (#587): a rock, street tree or node stands at the snapshot's spot for its id, where the server
+ * checks reach (js/street-objects.js snapshotPlace), not where this page's planner put that id. Once
+ * per snapshot for each drawn thing; nothing moves with an older server (no spot for it).
+ */
+function placeFromSnapshot(obj) {
+  const t = obj.target;
+  if (!t || placedFor.get(t) === copy.version) return;
+  placedFor.set(t, copy.version);
+  const at = snapshotPlace(copy, obj.id, obj.kind);
+  if (!at) return;
+  const spr = t.sprite;
+  if (obj.kind === 'node') {
+    // resource-nodes-feature moves the node (its spot, the art drawn from it, a Salmon's swim).
+    const from = obj.moveTo?.(at.x, at.y);
+    if (from && (Math.abs(from.x - at.x) > 0.5 || Math.abs(from.y - at.y) > 0.5)) placedView += `${placedView ? ',' : ''}${obj.id}@${at.x},${at.y} from ${Math.round(from.x * 10) / 10},${Math.round(from.y * 10) / 10}`;
+    return;
+  }
+  if (!spr || spr.destroyed || (Math.abs(spr.x - at.x) <= 0.5 && Math.abs(spr.y - at.y) <= 0.5)) return;
+  placedView += `${placedView ? ',' : ''}${obj.id}@${at.x},${at.y} from ${Math.round(spr.x * 10) / 10},${Math.round(spr.y * 10) / 10}`;
+  spr.x = at.x;
+  spr.y = at.y;
 }
 
 /** QA: one object as this client has it (rock:1=43, node:peat_1:0=2, tree:0=98pw). */
