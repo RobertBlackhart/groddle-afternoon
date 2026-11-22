@@ -12326,6 +12326,8 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 }
 [data-ui="modern"] #verb-menu .vm-icon,
 [data-ui="modern"] #pack-popover .pack-pop-icon img { width: 24px; height: 24px; object-fit: contain; flex: none; }
+/* #601 (js/ui/verb-menu.js setVerbMenuIcon): a new picture waits unseen, its room kept, until it loads (both skins). */
+#verb-menu .vm-icon[data-vm-icon-wait] { visibility: hidden; }
 [data-ui="modern"] #pack-popover .pack-pop-icon { width: auto; height: auto; flex: none; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
 [data-ui="modern"] #verb-menu .vm-titles,
 [data-ui="modern"] #pack-popover .pack-pop-title { flex: 1; min-width: 0; }

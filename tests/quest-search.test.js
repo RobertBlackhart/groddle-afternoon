@@ -23,8 +23,8 @@ import {
   QUEST_SEARCH_MIN,
   QUEST_SORT_KEY,
   QUEST_SORTS,
-} from '../public/js/ui/quest-sheet.js?v=1577e09d';
-import { makeVerbRow } from '../public/js/ui/verb-menu.js?v=d114929c';
+} from '../public/js/ui/quest-sheet.js?v=84b57115';
+import { makeVerbRow } from '../public/js/ui/verb-menu.js?v=56837954';
 
 const pub = join(import.meta.dirname, '../public');
 const read = (p) => readFileSync(join(pub, p), 'utf8');

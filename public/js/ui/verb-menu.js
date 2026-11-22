@@ -34,6 +34,28 @@ export const BACK_ICON = SVG('<path d="M10 4 6 8l4 4"/>', 'vm-backicon');
 /** A second level's current choice (a bag's sort): it stands in for the lock on that row. */
 export const CHECK_ICON = SVG('<path d="m3.5 8.5 3 3 6-7"/>', 'vm-check');
 
+/**
+ * #601: the head's picture of the thing the menu is about (`url`, or none). An <img> given a new src
+ * keeps showing its old picture until the new one has loaded, so on a slow link the menu opened on a
+ * Dullite rock showed the Rube's face (the last thing it was opened on) for a moment. A changed
+ * picture waits unseen (data-vm-icon-wait: hidden, its room kept) until it has loaded; one already
+ * loaded (the browser's memory) shows at once. A picture that fails to load stays unseen.
+ */
+export function setVerbMenuIcon(icon, url) {
+  if (!icon) return;
+  const next = String(url || '');
+  icon.hidden = !next;
+  if (!next || icon.getAttribute('src') === next) return;
+  icon.dataset.vmIconWait = '1';
+  const shown = () => {
+    if (icon.getAttribute('src') === next) delete icon.dataset.vmIconWait;
+  };
+  icon.onload = shown;
+  icon.onerror = null;
+  icon.src = next;
+  if (icon.complete && icon.naturalWidth > 0) shown();
+}
+
 /** The highest number key a row can have. */
 export const MAX_KEYED_ROWS = 9;
 

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 import { SLOTH_KNOCKER, verbsForTarget, slothGeometry } from '../public/js/features/resource-nodes-feature.js?v=30ce2988';
 import { createResourceNode, resourceNodeVerbs } from '../public/js/resource-nodes.js?v=cf9aae18';
-import { verbMenuKey } from '../public/js/ui/verb-menu.js?v=d114929c';
+import { verbMenuKey } from '../public/js/ui/verb-menu.js?v=56837954';
 import { SLOTH_SPOTS } from '../public/js/sloth-spots-data.js?v=7396e9db';
 import { slothSpotFromRow } from '../public/js/sloth-trees.js?v=a3299191';
 

@@ -23,8 +23,8 @@ import {
   refusalText,
 } from '../public/js/player-im.js?v=da51888c';
 import { playerImFeature } from '../public/js/features/player-im-feature.js?v=96cb99c8';
-import { FEATURES } from '../public/js/features/index.js?v=5dc715f1';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=65c1a14a';
+import { FEATURES } from '../public/js/features/index.js?v=66b9bd0c';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=2b0aaf94';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { memoryStore, page } from './social-fake-dom.js';
 import { serverPath, sitePath, skipWithoutSite } from '../tools/repos.mjs';
