@@ -155,8 +155,8 @@ function ensureStyle() {
   text-align: center; pointer-events: none; color: var(--text-inverse); font: 700 clamp(var(--fs-xl), 3.2vw, var(--fs-4xl))/var(--lh-tight) var(--font-ui);
   text-shadow: 0 0 3px var(--c-sand-35), 0 2px 4px color-mix(in srgb, var(--c-black) 65%, transparent), 1px 1px 0 var(--c-sand-35), -1px -1px 0 var(--c-sand-35), 1px -1px 0 var(--c-sand-35), -1px 1px 0 var(--c-sand-35); }
 .subway-announce b { color: var(--c-yellow-90); }
-/* G1127 (#606): the Map's window (style.css #map-panel .map-card.map-hub, .map-canvas): its scrim, its card, the
-   map in its gold frame, the Map's own Subway drawing inside (js/map-views.js renderSubwayMapSvg). */
+/* The Map's window (style.css #map-panel .map-card.map-hub, .map-canvas): its scrim, its card, the
+   map in its gold frame, the Map's own Subway drawing inside. */
 .subway-map { position: absolute; inset: 0; z-index: calc(var(--z-notice) + 10); display: grid; place-items: center; background: var(--scrim); }
 .subway-map-card { width: 760px; max-width: calc(100% - 32px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); box-shadow: var(--shadow-3);
   padding: .7rem var(--sp-7) .8rem; font: var(--fs-base)/var(--lh-snug) var(--font-ui); color: var(--text); }
