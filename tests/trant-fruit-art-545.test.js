@@ -13,7 +13,7 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 import { TRANT_FRUIT_ART_STAGES, TRANT_META, setTrantTables, trantFrameKey, trantFruitArt } from '../public/js/trants.js?v=864ea9ff';
-import { treeFrameUrl } from '../public/js/features/patches-feature.js?v=6197ff43';
+import { treeFrameUrl } from '../public/js/features/patches-feature.js?v=34ffc20b';
 import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=f6344117';
 
 const root = join(import.meta.dirname, '..');

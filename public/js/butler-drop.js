@@ -24,7 +24,7 @@
 import { ITEM_CATALOG } from './inventory.js?v=6414dbdc';
 import { registerDropTarget } from './drop-targets.js?v=59e6edb4';
 import { draggedStack } from './drag-stack.js?v=536cddfb';
-import { showWorldDropTip } from './features/world-drop-feature.js?v=b4dce6d5';
+import { showWorldDropTip } from './features/world-drop-feature.js?v=916cafcb';
 import { VISITOR_BUTLER_TEXT } from './neighbours-mp.js?v=b34eb45a';
 
 /** leave_package's drop_tip (bag_butler.js 1003). */

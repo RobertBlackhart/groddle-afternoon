@@ -1071,6 +1071,37 @@ export function footOverAir(platforms, spot, half) {
   }
   return worst;
 }
+/**
+ * #602 (Hechey Track): a planned garden bed is a flat box, so it stands where the floor under its
+ * whole width (PLACEMENT_FOOTPRINTS.gardens, the four-plot bed) stays within `maxRise` px of its
+ * spot, up or down. The planner put Hechey Track's herb bed (the remake's own: the street had none
+ * in Glitch) on a 0.23 slope whose floor rises 58 px under its right end into the dirt mound
+ * there, so the bed sank into the mound. An uneven spot is taken only when no level one is left.
+ * Beds measured on snaps (fixed points) stand where the snaps show them.
+ */
+export const LEVEL_FLOOR_GROUPS = Object.freeze({ gardens: Object.freeze({ maxRise: 12 }) });
+
+/**
+ * PURE: the most the floor under a thing `half` px each side of a spot rises over it or falls under
+ * it (screen px, sampled across its width; Infinity where a sample has no floor). The floor at each
+ * sample is the highest item line (isItemSolid) no more than EDGE_STEP_UP_PX over the spot.
+ */
+export function floorUnevenUnder(platforms, spot, half, samples = 8) {
+  let worst = 0;
+  for (let k = 0; k <= samples; k += 1) {
+    const x = spot.x - half + (2 * half * k) / samples;
+    let best = null;
+    for (const line of platforms || []) {
+      if (!isItemSolid(line)) continue;
+      const py = platformYAt(line, x, 0);
+      if (py == null || py < spot.y - EDGE_STEP_UP_PX) continue;
+      if (best == null || py < best) best = py;
+    }
+    worst = Math.max(worst, best == null ? Infinity : Math.abs(best - spot.y));
+  }
+  return worst;
+}
+
 /** Groups that need their room but may sit on a perch as readily as on a floor. */
 export const PERCHING_GROUPS = Object.freeze(['butterflies']);
 
@@ -2097,6 +2128,14 @@ export function planStreetPlacements(
       : PLACEMENT_FOOTPRINTS[request.key] || 0;
     const perching = request?.perch === true || PERCHING_GROUPS.includes(request.key);
     const steady = request?.steady || STEADY_FLOOR_GROUPS[request.key] || null;
+    const level = LEVEL_FLOOR_GROUPS[request.key] || null;
+    const levelCache = new Map();
+    // LEVEL_FLOOR_GROUPS: a spot whose floor rises or falls under the thing's width, only when no level one is left.
+    const uneven = (candidate) => {
+      if (!level || !(footprint > 0)) return false;
+      if (!levelCache.has(candidate.id)) levelCache.set(candidate.id, floorUnevenUnder(platforms, candidate, footprint / 2) > level.maxRise);
+      return levelCache.get(candidate.id);
+    };
     // Reports #249, #250: a steady group with an edgeDrop also keeps both ends of its footprint over a floor.
     const steadyRule = (candidate) => {
       if (!steadyFloor(candidate, steady)) return false;
@@ -2239,7 +2278,8 @@ export function planStreetPlacements(
         const outOfZone = miss > 0 ? 8 + Math.min(20, Math.ceil(miss / 400)) : 0;
         // #581: a rock that would hang an end over the air, only when nothing else is left.
         const overAir = candidate.overAir ? 16 : 0;
-        const tier = inPen + onBranchArt + outOfZone + tooSteep + overAir + (footprint > 0
+        const unlevel = uneven(candidate) ? 64 : 0;
+        const tier = inPen + onBranchArt + outOfZone + tooSteep + overAir + unlevel + (footprint > 0
           ? walker ? (perch ? 8 : 0) + (scenery === 2 ? 4 : 0) + (nearest < 1 ? 2 : 0) + (scenery === 1 ? 1 : 0) : (perch ? 1 : 0) + (nearest < 1 ? 2 : 0)
           : 0) + (covers.has(candidate.id) ? (walker ? 16 : crownOnly.has(candidate.id) ? 3 : 4) : 0) + hidden;
         if (tier < bestTier || (tier === bestTier && score > bestScore)) {

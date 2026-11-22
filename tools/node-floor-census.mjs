@@ -18,8 +18,8 @@ import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a
 import {
   ecologyForStreet, footOverAir, planStreetPlacements, populationForStreet, rockSpawnPlan,
   setStreetEcologyCatalog, streetReservedSpots, ROCK_SHAPE_WIDTHS, PLACEMENT_FOOTPRINTS, STEADY_FLOOR_GROUPS,
-} from '../public/js/street-ecology.js?v=3331ac39';
-import { resourceSpawnPlan, RESOURCE_GROUP_PREFIX } from '../public/js/features/resource-nodes-feature.js?v=c13519c3';
+} from '../public/js/street-ecology.js?v=1401a97c';
+import { resourceSpawnPlan, RESOURCE_GROUP_PREFIX } from '../public/js/features/resource-nodes-feature.js?v=cc2902d7';
 import { creatureRequests, placementRequests, setCreatureEcology } from './build-realtime-objects.mjs';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 
