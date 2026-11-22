@@ -187,7 +187,9 @@ export function pickGridStep(i, n, cols, dir) {
  * under them (1891-1916: "Grain (you have 5)"). Here the count also sits on the picture the way
  * the pack draws it (none for one), and the name is the tooltip and what a screen reader says.
  * @param {Document} doc
- * @param {{ key?: string, label: string, have: number, icon: string, verb?: string, food?: string, verbLabel?: string, tip?: string }} pick (tip: the footer line, when not the name and count)
+ * A choice that can't be taken now (`disabled`, a seed out of season) stays in the grid, greyed, its
+ * `reason` the footer line (rowDetail) and the click refused by bindVerbMenu.
+ * @param {{ key?: string, label: string, have: number, icon: string, verb?: string, food?: string, verbLabel?: string, tip?: string, disabled?: boolean, reason?: string }} pick (tip: the footer line, when not the name and count)
  */
 export function makePickTile(doc, pick) {
   const have = Math.max(0, Math.floor(Number(pick.have) || 0));
@@ -201,6 +203,11 @@ export function makePickTile(doc, pick) {
   btn.title = pick.label;
   btn.setAttribute('aria-label', `${pick.verbLabel ? `${pick.verbLabel} ` : ''}${pick.label}, ${have} in your pack`);
   if (pick.key) btn.setAttribute('aria-keyshortcuts', pick.key);
+  if (pick.disabled) {
+    btn.classList.add('is-disabled');
+    btn.setAttribute('aria-disabled', 'true');
+    if (pick.reason) btn.dataset.vmReason = plainWords(pick.reason);
+  }
   const key = pick.key ? `<span class="vm-key kcap" aria-hidden="true">${escapeText(pick.key)}</span>` : '';
   const count = have > 1 ? `<span class="count" aria-hidden="true">${have}</span>` : '';
   btn.innerHTML = `${key}<img class="vm-pick-icon" src="${escapeText(pick.icon)}" alt="" draggable="false" />${count}`;

@@ -21,6 +21,7 @@ import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf'
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { isCropGardenStreet } from './garden-beds.js?v=2ac6a12c';
 import { superHarvestWords } from './words.js?v=274023af';
+import { SEASONS } from './seasons.js?v=8b81947e';
 
 /** @typedef {'clean'|'seeds'|'shoots'|'crop'|'dirty'} PlotState */
 
@@ -1273,11 +1274,16 @@ function tickPlot(plot, now) {
 
 /**
  * Seasonal seeds (seed_base getDescExtras: "This item is seasonal. It can
- * only be grown during the appropriate holidays."): Pumpkin Seeds plant only
- * during Zilloween. js/features/seasons-feature.js installs the season test;
- * until it does every seed is in season.
+ * only be grown during the appropriate holidays."): each seed's list of the
+ * seasons it plants in. Pumpkin Seeds plant during Zilloween (seed_pumpkin.js,
+ * common.js isZilloween) and, by Austin's ruling of 2026-11-22, during Pot Luck
+ * Day too (G982, the remake's own rule: inventions register pot-luck-pumpkin-seeds).
+ * Every season check (planting, the Plant menu, a seed dropped on a plot, the
+ * Lament verb, master gardens, the season cards) reads this one table.
+ * js/features/seasons-feature.js installs the season test; until it does every
+ * seed is in season.
  */
-export const SEASONAL_SEEDS = Object.freeze({ seed_pumpkin: 'zilloween' });
+export const SEASONAL_SEEDS = Object.freeze({ seed_pumpkin: Object.freeze(['zilloween', 'pot_luck_day']) });
 let seasonalSeedCheck = () => true;
 
 /** @param {(seedId: string, season: string) => boolean} fn */
@@ -1285,10 +1291,29 @@ export function setSeasonalSeedCheck(fn) {
   seasonalSeedCheck = typeof fn === 'function' ? fn : () => true;
 }
 
-/** Whether a seed may be planted today. */
+/** The seasons a seed plants in ([] for a seed that plants all year). */
+export function seedSeasons(seedId) {
+  return SEASONAL_SEEDS[seedId] || [];
+}
+
+/** Whether a seed may be planted today: it has no seasons, or one of them is on. */
 export function seedInSeason(seedId) {
-  const season = SEASONAL_SEEDS[seedId];
-  return !season || seasonalSeedCheck(seedId, season) !== false;
+  const seasons = seedSeasons(seedId);
+  return !seasons.length || seasons.some((season) => seasonalSeedCheck(seedId, season) !== false);
+}
+
+/**
+ * PURE: the one line that says when a seasonal seed grows ("Pumpkins grow only during Zilloween
+ * and Pot Luck Day."), for the Plant menu, the refusals and the season cards; '' for any other seed.
+ */
+export function seedSeasonLine(seedId) {
+  const seasons = seedSeasons(seedId);
+  if (!seasons.length) return '';
+  const seed = SEED_CATALOG[seedId];
+  const crop = ITEM_CATALOG[seed?.cropId]?.namePlural || (seed?.cropLabel ? `${seed.cropLabel}s` : ITEM_CATALOG[seedId]?.namePlural || 'These');
+  const names = seasons.map((id) => SEASONS[id]?.label || id);
+  const said = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0];
+  return `${crop} grow only during ${said}.`;
 }
 
 /**
@@ -1335,11 +1360,18 @@ function seedPlural(seed) {
 /**
  * PURE (#197): the seeds a plot's Plant can ask about, as the verb menu's picture choices
  * ({ classTsid, label, have }), sorted by name as the original's seed menu was
- * (InteractionMenuController.as 1547-1552, sortArrayOfItems: label, case-insensitive).
+ * (InteractionMenuController.as 1547-1552, sortArrayOfItems: label, case-insensitive). A seed out of
+ * season comes with `disabled` and its `reason` (seedSeasonLine) instead of being left out.
  */
 export function plantSeedChoices(inv, gardenType = 'default') {
-  return listPlantableSeeds(inv, gardenType)
-    .map((s) => ({ classTsid: s.seedId, label: s.label, have: countItem(inv, s.seedId) }))
+  ensureGardenItems();
+  // Austin 2026-11-22: a seed out of season stays in the menu, greyed, with the line saying when it grows.
+  return Object.values(SEED_CATALOG)
+    .filter((s) => seedFitsGarden(s, gardenType) && countItem(inv, s.seedId) > 0)
+    .map((s) => {
+      const choice = { classTsid: s.seedId, label: s.label, have: countItem(inv, s.seedId) };
+      return seedInSeason(s.seedId) ? choice : { ...choice, disabled: true, reason: seedSeasonLine(s.seedId) };
+    })
     .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
 }
 
@@ -1353,20 +1385,22 @@ export function chosenSeedRefusal(inv, seedId, gardenType = 'default') {
     return { reason: 'wrong_garden', msg: herb ? 'Only herb seeds go in an herb garden.' : 'Only crop seeds go in a crop garden.' };
   }
   if (countItem(inv, seedId) < 1) return { reason: 'seed', msg: `You don't have any ${seedPlural(seed)}.` };
-  if (!seedInSeason(seedId)) return { reason: 'season', msg: 'Pumpkin Seeds are seasonal. They can only be grown during Zilloween.' };
+  if (!seedInSeason(seedId)) return { reason: 'season', msg: seedSeasonLine(seedId) };
   return null;
 }
 
 /**
  * PURE (#197): what a plot says to a seed dragged over it (GardenPlotView.as dragOver 166-176,
  * handleDrop 211-215): a seed of the bed's kind on a clean plot plants (ok), on any other plot
- * "Clear the plot first!", and any other seed "This can't be planted here".
+ * "Clear the plot first!", and any other seed "This can't be planted here". A seasonal seed out of
+ * season says when it grows (seedSeasonLine).
  */
 export function seedDropCheck(plot, seedId, gardenType = 'default') {
   ensureGardenItems();
   const seed = SEED_CATALOG[seedId];
   if (!seed || !seedFitsGarden(seed, gardenType)) return { ok: false, tip: "This can't be planted here" };
   if (plot?.state !== 'clean') return { ok: false, tip: 'Clear the plot first!' };
+  if (!seedInSeason(seedId)) return { ok: false, tip: seedSeasonLine(seedId) };
   return { ok: true, tip: `Plant ${seedPlural(seed)}` };
 }
 
@@ -1417,13 +1451,8 @@ export function plantPlot(garden, key, inv, pc, seedId, opts = {}) {
     if (why) return { ok: false, reason: why.reason, msgs: [why.msg] };
   }
   const seed = pickSeedToPlant(inv, seedId, gType);
-  if (!seed && Object.keys(SEASONAL_SEEDS).some((id) => countItem(inv, id) > 0 && !seedInSeason(id))) {
-    return {
-      ok: false,
-      reason: 'season',
-      msgs: ['Pumpkin Seeds are seasonal. They can only be grown during Zilloween.'],
-    };
-  }
+  const outOfSeason = seed ? null : Object.keys(SEASONAL_SEEDS).find((id) => countItem(inv, id) > 0 && seedFitsGarden(SEED_CATALOG[id], gType) && !seedInSeason(id));
+  if (outOfSeason) return { ok: false, reason: 'season', msgs: [seedSeasonLine(outOfSeason)] };
   if (!seed) {
     return {
       ok: false,

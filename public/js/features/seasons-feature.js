@@ -35,8 +35,8 @@
 
 import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=50c112eb';
-import { setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=751ef424';
-import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=751ef424';
+import { SEASONAL_SEEDS, seedInSeason, seedSeasonLine, seedSeasons, setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=0efb1496';
+import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=0efb1496';
 import { setSeasonalRecipeCheck } from '../making.js?v=d28b2a24';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
@@ -408,6 +408,11 @@ function renderChip(engine) {
   chip.innerHTML = `<img src="assets/sprites/icons/${def.icon}.webp" alt=""><span>${def.label}</span>`;
 }
 
+/** The season card's line for each seed that plants in this season (js/garden.js SEASONAL_SEEDS). */
+function seedTodo(id) {
+  return Object.keys(SEASONAL_SEEDS).filter((seed) => seedSeasons(seed).includes(id)).map(seedSeasonLine);
+}
+
 function seasonTodo(id) {
   if (id === 'zilloween') {
     return [
@@ -416,7 +421,8 @@ function seasonTodo(id) {
       'Light a carved pumpkin with a full Firefly Jar, then Place it at home.',
       'Eat candy for a Sugar Rush (eleven a day before the toothache).',
       'Give candy to Piggies, Chickens, Butterflies and Street Spirits.',
-      'Pumpkin Seeds only grow now. Carved pumpkins rot when Zilloween ends.',
+      ...seedTodo('zilloween'),
+      'Carved pumpkins rot when Zilloween ends.',
     ];
   }
   if (id === 'glitchmas') {
@@ -435,6 +441,7 @@ function seasonTodo(id) {
       'Drop one on a Chicken, or Dress it up from its menu: everyone on the street sees the costume.',
       'Squeeze a dressed Chicken: now and then it lets go of a Fancy Feather (five a day at most).',
       'When Pot Luck Day ends the costumes fall off and Fancy Feathers rot into loam.',
+      ...seedTodo('pot_luck_day'),
     ];
   }
   return [];
@@ -1507,7 +1514,8 @@ export const seasonsFeature = {
       rows.push({ id: 'teach', label: 'Teach', enabled: true, tooltip: 'Teach me a new phrase', primary: true });
       rows.push({ id: 'smash', label: 'Smash', enabled: true, tooltip: 'Smash it' });
       rows.push({ id: 'place', label: 'Place', enabled: true, tooltip: 'Drop it on the ground' });
-    } else if (classTsid === 'seed_pumpkin' && !z) {
+    } else if (classTsid === 'seed_pumpkin' && !seedInSeason(classTsid)) {
+      // seed_pumpkin.js verbs.lament: offered only while the seeds will not plant (js/garden.js SEASONAL_SEEDS).
       rows.push({ id: 'lament', label: 'Lament', enabled: true, tooltip: SOURCE_LINES.lamentTooltip });
     } else if (CANDY_CLASSES.includes(classTsid)) {
       const lover = nearestLover(engine);
@@ -1558,7 +1566,7 @@ export const seasonsFeature = {
       return true;
     }
     if (verbId === 'lament' && classTsid === 'seed_pumpkin') {
-      if (countItem(engine.inv, 'seed_pumpkin') < 1) return true;
+      if (countItem(engine.inv, 'seed_pumpkin') < 1 || seedInSeason(classTsid)) return true;
       removeItem(engine.inv, 'seed_pumpkin', 1);
       const xp = grant(engine, 'xp', 2);
       say(engine, SOURCE_LINES.lament, true, { xp });

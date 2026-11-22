@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=0dc67da4';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=05564505';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

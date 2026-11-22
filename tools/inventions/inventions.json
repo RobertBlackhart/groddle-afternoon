@@ -4597,6 +4597,35 @@
    ]
   },
   {
+   "id": "pot-luck-pumpkin-seeds",
+   "title": "Pumpkin Seeds plant during Pot Luck Day as well as Zilloween; out of season the Plant menu shows them greyed with the reason (\"Pumpkins grow only during Zilloween and Pot Luck Day.\") instead of hiding them",
+   "kind": "behaviour",
+   "status": "kept",
+   "ruling": "Austin 2026-11-22 (live report on Pot Luck Day: Pumpkin Seeds would not plant): plant during Zilloween and Pot Luck Day; the rest of the year greyed in the Plant menu with the reason",
+   "where": [
+    {
+     "file": "public/js/garden.js",
+     "symbol": "SEASONAL_SEEDS"
+    },
+    {
+     "file": "public/js/garden.js",
+     "symbol": "plantSeedChoices"
+    },
+    {
+     "file": "public/content.js",
+     "symbol": "garden_plot plant"
+    },
+    {
+     "file": "public/js/ui/verb-menu.js",
+     "symbol": "makePickTile disabled"
+    }
+   ],
+   "why": "Glitch sold Pumpkin Seeds all year and planted them only during Zilloween (seed_pumpkin.js, common.js isZilloween), with Lament offered out of season; its seed menu never listed a seed it would refuse. Added here: Pot Luck Day (G982, a designed season whose Harvest Table takes Pumpkin Pie) as a second planting season, so Lament is hidden then too, and the greyed menu choice with the season line.",
+   "rows": [
+    "G982"
+   ]
+  },
+  {
    "id": "smuggler-hidden-no-walkable-run",
    "title": "Warm and Smuggly: the give Smuggler stays hidden on a street with no destination reachable on foot",
    "kind": "behaviour",

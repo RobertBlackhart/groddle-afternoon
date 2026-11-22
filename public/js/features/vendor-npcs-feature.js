@@ -37,7 +37,7 @@
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=cc58ae0e';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
-import { VENDOR_PROFILES } from '../vendor.js?v=0dc67da4';
+import { VENDOR_PROFILES } from '../vendor.js?v=05564505';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { parseQuestConversation } from '../quests.js?v=90a2ee3d';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';

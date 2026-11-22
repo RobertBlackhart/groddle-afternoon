@@ -2519,7 +2519,7 @@
      },
      {
       "label": "Grow",
-      "text": "Pumpkin Seeds only grow during Zilloween.",
+      "text": "Pumpkins grow only during Zilloween and Pot Luck Day.",
       "items": [
        {
         "id": "seed_pumpkin",
@@ -2814,131 +2814,131 @@
   "deployed": "2026-11-21"
  },
  "git": {
-  "commits": 3000,
+  "commits": 3032,
   "since": "2026-10-19",
   "recent": [
    {
     "date": "2026-11-21",
     "kind": "fix",
-    "text": "A street project's completion line names your share of the whole project, not only the last phase"
+    "text": "Hechey Track's herb garden sits on level ground, not sunk into the dirt mound"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "No strip of dirt floating at the top of Mart's Way 1 and Dust Path 1C"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Paradise skies reach the top of the screen on an upright phone"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Radial Heights starts you on its cloud in the middle, not falling onto the stars"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The Home Screen tip and the loading steps keep to the project's rules"
    },
    {
     "date": "2026-11-21",
     "kind": "improve",
-    "text": "Hellish Grapes lie in random piles again, one bunch per drawing, and one squish still takes one"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Greedy Street Spirit's Act buttons stand under their own scenes"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Social drawer grows with a larger browser font, so its tabs and channel buttons fit"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A phone's top bar shortens its counts further instead of cutting them to \"70…\""
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A Greedy Street Spirit left mid-story can be heard again"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Map at home shows Return to Ur again"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "In Decorate, a stack moved onto a like stack joins it"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Street project work goes on when the server says a unit came too soon"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "A shared picture can no longer be freed by one of the parts drawing it"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "Bug reports say whether an ad blocker or other extensions are changing the game page"
+    "text": "The loading card says which step of the start it is on, with a bar"
    },
    {
     "date": "2026-11-21",
     "kind": "new",
-    "text": "Each player gets a card when Pot Luck Day begins and on Thanksgiving Day for the feast"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Thanksgiving feast piles keep clear of the shrine and the street tree's trunk at Groddle Forest Junction"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Online, the Harvest Table appears when the server sets it out at midnight, without rejoining the street"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The hidden-list line takes its colours from the design tokens"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Quests sheet says when the browser hides its list"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A failed load at start no longer leaves streets bare or projects at far-out amounts all session"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The loading card no longer counts a Piggy you captured on that street"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Logging in mid smuggling run no longer moves the drop off an open street"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "An upgraded street shows its upgrade after a login or reload online"
+    "text": "iPhone and iPad Safari show a tip that Add to Home Screen plays the game full screen"
    },
    {
     "date": "2026-11-21",
     "kind": "improve",
-    "text": "The featured street project says \"by subway\" when only the subway reaches it"
+    "text": "A vendor's buy window offers Find auctions online, opening the Auctions on that item"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "A Party Space shows its time left, in the space and in the party panel"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "Street project windows name every work step's skill and mark the ones you don't know"
    },
    {
     "date": "2026-11-21",
     "kind": "fix",
-    "text": "The Ancestral Lands never send you past a closed road, even when the roads load slowly"
+    "text": "The Calendar registers before street objects, which stays just before realtime"
    },
    {
     "date": "2026-11-21",
     "kind": "fix",
-    "text": "Quick Act presses on a street tree no longer choose Talk to"
+    "text": "The Calendar registers before the realtime feature, and the tests follow the Calendar and Rook alert"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "new",
+    "text": "A Calendar of Ur's holidays, the events coming up and the Feats, from the clock"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "new",
+    "text": "Your Butler tells you when the Rook is attacking a street"
    },
    {
     "date": "2026-11-21",
     "kind": "fix",
-    "text": "The Ancestral Lands send you to an open street even right after you log in"
+    "text": "Toxic Moon's rocks, Nylon Phool's salmon and party quoins are where the server checks reach"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The phone street map's head and signposts lift with the raised layer token"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A paused skill in Skills shows the time it would take to finish now"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Each Switch to resume button in Skills resumes its own skill after switching around"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "improve",
+    "text": "Naming an animal shows which characters it drops and the name as it will be saved"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "On an upright phone, the naming box's dark backdrop reaches the right edge"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "A thing's menu no longer flashes the last thing's picture as it opens"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "The phone street map of a tall street no longer covers its Map button, X and signposts"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Dig your way out keeps its progress after a reload"
+   },
+   {
+    "date": "2026-11-21",
+    "kind": "fix",
+    "text": "Carry That Weight goes on after leaving the Juju hideout"
    }
   ]
  },
- "tests": 1252,
- "generatedAt": "2026-11-21"
+ "tests": 1253,
+ "generatedAt": "2026-11-22"
 }

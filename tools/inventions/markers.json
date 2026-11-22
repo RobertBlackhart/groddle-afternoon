@@ -577,7 +577,9 @@
     "ours: theirs: (name) => `That belongs to ${name}.`, // ours: a visitor's click on a gnome with no verbs for": "remake-copy"
   },
   "public/js/garden.js": {
-    "made-up: a solo save's beds a street no longer has (the made-up herb bed on the": "ours-garden"
+    "invented: * Day too (G982, the remake's own rule: inventions register": "pot-luck-pumpkin-seeds",
+    "made-up: a solo save's beds a street no longer has (the made-up herb bed on the": "ours-garden",
+    "remake-own: * Day too (G982, the remake's own rule: inventions register": "pot-luck-pumpkin-seeds"
   },
   "public/js/gem-hints.js": {
     "remake-own: * These words are the remake's own (the original had no such hint). They hold for": "gem-hints"

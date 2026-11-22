@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=60c23ee9';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=2ac14ba9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6bfae12a';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=637d0a65';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -698,7 +698,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=751ef424';
+} from './js/garden.js?v=0efb1496';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -854,7 +854,7 @@ import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=a22e61d5';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=ad22dde6';
 import './js/classic/classic-zoom.js?v=d897c7dd';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -924,7 +924,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=0dc67da4';
+} from './js/vendor.js?v=05564505';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -1100,7 +1100,7 @@ import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=03ac65
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=d513154a';
+import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=44e61ce8';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1113,16 +1113,16 @@ import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=4f69aa6d';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=9c1f93c6';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=84b57115';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=13decb02';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=9034fad7';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=9efb70a9';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=c60a5628';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=22c44bae';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=56837954';
+import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=ba740394';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=5c5a4301';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
@@ -1132,7 +1132,7 @@ import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip } from './js/home-screen-tip.
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=5eabb447';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=c66d6529';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=0bde1729';
@@ -1159,7 +1159,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=f7fd76d1';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=cdff0354';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=a593b732';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -9200,6 +9200,8 @@ function renderVerbMenu(target, verbs, level = null) {
         verb: `${level.verbId}:${food.classTsid}`,
         verbLabel: level.verbLabel || FEED_PICKER_VERB_LABELS[level.verbId] || 'Feed',
         tip: level.tipFor?.(food, i) || '',
+        disabled: Boolean(food.disabled),
+        reason: food.reason || '',
       });
       tile.classList.add('verb-choice');
       tile.addEventListener('click', () => {
@@ -35517,7 +35519,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=58ae459b').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=76a7c4ff').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

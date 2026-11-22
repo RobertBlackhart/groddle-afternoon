@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { alphaFromBlackWhite, configureReadback, readbackCanvas, readbackExtract, readbackPixels, readbackUsesTexture } from '../public/js/render-probe.js?v=476b7fdf';
-import { snapshotStreetView } from '../public/js/ui/street-minimap.js?v=a22e61d5';
+import { snapshotStreetView } from '../public/js/ui/street-minimap.js?v=ad22dde6';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

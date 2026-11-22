@@ -41,8 +41,8 @@ const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864
 installPixiFixes(PIXI);
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');
 const { TABLE_LINES, TABLE_RULES, TABLE_STREET, HARVEST_DISHES, tableList, createTableState, layOffering } = await import('../public/js/pot-luck-feast.js?v=06311759');
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=51c0981c');
-const { storageWindowKind, closeStorageWindow } = await import('../public/js/ui/storage-windows.js?v=ffd5fe97');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=da6c239e');
+const { storageWindowKind, closeStorageWindow } = await import('../public/js/ui/storage-windows.js?v=02bcf142');
 
 let target = null;
 const data = {};

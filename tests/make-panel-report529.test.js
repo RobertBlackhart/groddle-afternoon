@@ -10,7 +10,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { markFormState, restoreFormState } from '../public/js/features/bug-report-feature.js?v=714a9bbe';
+import { markFormState, restoreFormState } from '../public/js/features/bug-report-feature.js?v=08c67a5a';
 import { renderProbeLine } from '../public/js/render-probe.js?v=476b7fdf';
 
 const root = join(import.meta.dirname, '..');

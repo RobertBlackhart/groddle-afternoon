@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 
 import { cropClasses, dishClasses } from '../public/js/pot-luck-feast.js?v=06311759';
-import { SEED_CATALOG } from '../public/js/garden.js?v=751ef424';
+import { SEED_CATALOG } from '../public/js/garden.js?v=0efb1496';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outPath = serverPath('data', 'harvest-table.json');

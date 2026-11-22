@@ -19,7 +19,7 @@ import { reactionsJson } from '../tools/build-reactions.mjs';
 import { NAMES_SHOWN, REACTIONS } from '../public/js/chat-reactions.js?v=38460172';
 import { REPORT_TEXT, createReportsApi } from '../public/js/reports.js?v=08604732';
 import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../public/js/report-reactions.js?v=69462240';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=634a068a';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=a9a6e61e';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

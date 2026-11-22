@@ -1186,6 +1186,7 @@
   padding: 0;
 }
 :root[data-ui="classic"] #verb-menu .vm-pick .vm-pick-icon { width: calc(40 * var(--cu)); height: calc(40 * var(--cu)); object-fit: contain; pointer-events: none; }
+:root[data-ui="classic"] #verb-menu .vm-pick[aria-disabled="true"] .vm-pick-icon { filter: grayscale(1); opacity: 0.45; }
 :root[data-ui="classic"] #verb-menu .vm-pick .count {
   position: absolute;
   right: calc(4 * var(--cu));

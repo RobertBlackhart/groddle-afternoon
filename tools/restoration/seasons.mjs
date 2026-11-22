@@ -35,7 +35,7 @@ import {
 } from '../../public/js/seasons.js?v=8b81947e';
 import { SEASON_DATA } from '../../public/js/seasons-data.js?v=b5174bc9';
 import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_YEAR_MS, MONTH_LENGTHS, MONTH_NAMES } from '../../public/js/game-day.js?v=50c112eb';
-import { SEASONAL_SEEDS } from '../../public/js/garden.js?v=751ef424';
+import { SEASONAL_SEEDS, seedSeasonLine, seedSeasons } from '../../public/js/garden.js?v=0efb1496';
 import { SEASONAL_RECIPES } from '../../public/js/making.js?v=d28b2a24';
 import { SKILL_PACKAGES } from '../../public/js/skill-packages-data.js?v=cb4e9ab3';
 import { TRANT_META } from '../../public/js/trants.js?v=864ea9ff';
@@ -123,12 +123,12 @@ function piRecipe() {
 function facts(id) {
   if (id === 'zilloween') {
     const [[, pepitas]] = CARVE.outputs;
-    const seeds = Object.entries(SEASONAL_SEEDS).filter(([, s]) => s === 'zilloween').map(([seed]) => seed);
+    const seeds = Object.keys(SEASONAL_SEEDS).filter((seed) => seedSeasons(seed).includes('zilloween'));
     return [
       { label: 'Carve', text: `Carve a Pumpkin with a ${label('pick')} and a ${label('knife_and_board')} for ${CARVE.energy} energy. Each one comes out with one of five faces, plus ${pepitas} ${label('pepitas')} and a ${label('jellisac_clump')}.`, items: CARVED_CLASSES.map(item) },
       { label: 'Light', text: `Light a carved pumpkin with a full ${label('firefly_jar')} (${LIGHT.flies} fireflies), place it at home and teach it phrases to say. Carved pumpkins rot when Zilloween ends.`, items: LIT_CLASSES.map(item) },
       { label: 'Candy', text: `The Jack-O-Lanterns on the streets answer Trick or treat once a game day. Candy gives a Sugar Rush, ${CANDY_DAILY_MAX} a game day at most (the last one brings toothache), or give it to Piggies, Chickens, Butterflies and Street Spirits.`, items: CANDY_CLASSES.map(item) },
-      { label: 'Grow', text: `${list(seeds.map((s) => SEASON_DATA.items[s]?.namePlural || label(s)))} only grow during Zilloween.`, items: seeds.map(item) },
+      { label: 'Grow', text: seeds.map(seedSeasonLine).join(' '), items: seeds.map(item) },
     ];
   }
   if (id === 'glitchmas') {

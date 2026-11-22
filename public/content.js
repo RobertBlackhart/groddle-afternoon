@@ -19,6 +19,7 @@ import {
 } from './js/trant-care.js?v=cb7f539b';
 import {
   listPlantableSeeds,
+  plantSeedChoices,
   waterAllPlots,
   gardenActionProfile,
   plantPlot,
@@ -36,7 +37,7 @@ import {
   GARDEN_FERTILIZE_MS,
   fertilizeCheck,
   fertilizePlot,
-} from './js/garden.js?v=751ef424';
+} from './js/garden.js?v=0efb1496';
 import { firstWorkingTool, HOE_TOOLS, WATERING_CAN_TOOLS } from './js/tools.js?v=4156bba8';
 import { miningGemHint } from './js/gem-hints.js?v=4b65f7ac';
 import {
@@ -865,6 +866,10 @@ export function getVerbsFor(target, ctx) {
     const garden = target.state?.garden;
     const gType = garden?.gardenType || 'default';
     const seeds = listPlantableSeeds(inv, gType);
+    // Austin 2026-11-22: a seed out of season (Pumpkin Seeds) shows in the Plant menu, greyed, with
+    // the line saying when it grows (plantSeedChoices), and alone it is the Plant row's reason.
+    const seedChoices = plantSeedChoices(inv, gType);
+    const offSeason = seedChoices.find((c) => c.disabled);
     const st = plot?.state || 'clean';
     const gardenLearned = ctx.skills?.learned || ctx.learned || [];
     const gardenCost = (action) => gardenActionProfile(gType, action, gardenLearned).energy;
@@ -879,15 +884,15 @@ export function getVerbsFor(target, ctx) {
         energy: gardenCost('plant'),
         ...(refusedAtOnce('plant') ? { durationMs: 0 } : {}),
         enabled: seeds.length > 0,
-        reason: seeds.length ? '' : gType === 'herb' ? 'Need herb seeds' : 'Need crop seeds',
-        tooltip: seeds.length > 1
+        reason: seeds.length ? '' : offSeason ? offSeason.reason : gType === 'herb' ? 'Need herb seeds' : 'Need crop seeds',
+        tooltip: seedChoices.length > 1
           ? 'Choose which seeds to plant'
           : seeds.length
             ? `Plant ${seeds[0].label}`
             : 'Buy seeds from the street spirit',
         // #197: more than one kind of seed asks which (the original's "What would you like to
         // plant?", InteractionMenuController.as 1531-1556); the choice runs plant:<seed>.
-        ...(seeds.length > 1 ? { picker: 'plant' } : {}),
+        ...(seeds.length && seedChoices.length > 1 ? { picker: 'plant' } : {}),
       });
     }
     // G537: a dry empty plot takes water too (GardenView: a click on a dry plot with nothing in
