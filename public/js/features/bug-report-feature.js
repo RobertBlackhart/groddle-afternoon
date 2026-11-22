@@ -83,7 +83,7 @@
  */
 
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=08604732';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=a9a6e61e';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=1ab76733';
 import { PICTURE_TEXT } from '../report-pictures.js?v=4eb43496';
 import { canvasTransparent } from '../render-probe.js?v=476b7fdf';
 import { marksLine, startBaitCheck } from '../extension-marks.js?v=36c70f4b';
@@ -902,6 +902,49 @@ const STYLE = `
 [data-ui="modern"] #bug-report-panel .picture-lightbox-tab:hover { background: var(--surface-hover); text-decoration: underline; }
 [data-ui="modern"] #bug-report-panel .picture-lightbox-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { [data-ui="modern"] #bug-report-panel .reports-card, .picture-lightbox { animation: none; } }
+/* G808, Circle the spot (js/ui/picture-marks.js, #49): the picture sits in a frame its size with the rings' SVG
+   over it (clipped to it, as the JPEG is), and the marking bar under it. While the bar shows, the picture keeps
+   clear of it. Classic: css/classic.css; the phone companion: play/phone/phone.css. */
+.picture-lightbox { --marks-room: 7rem; }
+.picture-lightbox-frame { position: relative; flex: none; display: block; margin: auto; line-height: 0; }
+.picture-lightbox[data-markable] .picture-lightbox-stage { bottom: var(--marks-room); }
+.picture-lightbox[data-markable] .picture-lightbox-img { max-height: calc(100vh - var(--marks-room) - 2 * var(--space-6)); }
+.picture-lightbox[data-markable] .picture-lightbox-count { bottom: auto; top: var(--space-4); left: var(--space-4); transform: none; }
+.picture-marks-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+.picture-lightbox[data-marking] .picture-marks-layer { pointer-events: auto; cursor: crosshair; touch-action: none; }
+.picture-marks-layer:focus { outline: none; }
+.picture-marks-layer:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.picture-mark-focus { display: none; stroke: var(--focus); stroke-dasharray: 10 8; }
+.picture-marks-layer:focus-visible .picture-mark[data-selected] .picture-mark-focus { display: inline; }
+.picture-mark.is-draft { opacity: 0.75; }
+.picture-marks { position: absolute; left: 50%; bottom: var(--space-4); transform: translateX(-50%); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-2); width: max-content; max-width: calc(100vw - 2 * var(--space-4)); box-sizing: border-box; margin: 0; padding: var(--space-2) var(--space-4); animation: picture-marks-in var(--motion-med) var(--ease-out); }
+.picture-marks-btn { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); margin: 0; }
+.picture-marks-icon { display: inline-block; width: 0.85em; height: 0.85em; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; }
+.picture-marks-help { flex: 1 0 100%; margin: 0; text-align: center; }
+.picture-marks-live { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@keyframes picture-marks-in { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 600px), (pointer: coarse) {
+  .picture-lightbox { --marks-room: 9.5rem; }
+  .picture-marks { left: var(--space-2); right: var(--space-2); bottom: var(--space-2); width: auto; max-width: none; transform: none; }
+  .picture-marks-title { flex: 1 0 100%; text-align: center; }
+  .picture-marks-keys { display: none; }
+  .picture-marks-btn { min-height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .picture-marks { animation: none; } }
+[data-ui="modern"] #bug-report-panel .picture-marks { border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); font: var(--fw-bold) var(--fs-s)/var(--lh-tight) var(--font-ui); }
+[data-ui="modern"] #bug-report-panel .picture-marks-title { font-weight: var(--fw-heavy); }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn { min-height: 32px; padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); background: var(--surface-raised); color: var(--text); font: var(--fw-heavy) var(--fs-s)/var(--lh-tight) var(--font-ui); cursor: pointer; }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn:hover:not(:disabled) { background: var(--surface-hover); }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn.is-go { border-color: var(--accent); background: var(--accent); color: var(--text-inverse); }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn.is-go:hover { border-color: var(--accent-hover); background: var(--accent-hover); }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn:disabled { opacity: 0.5; cursor: default; }
+[data-ui="modern"] #bug-report-panel .picture-marks-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[data-ui="modern"] #bug-report-panel :is(.picture-marks-count, .picture-marks-help) { color: var(--text-muted); font-size: var(--fs-xs); }
+@media (max-width: 600px), (pointer: coarse) { [data-ui="modern"] #bug-report-panel .picture-marks-btn { min-height: 40px; } }
+/* The "2 marks" tag on a thumbnail whose picture has rings (G808). */
+#bug-report-panel .reports-thumb-marks { position: absolute; left: var(--space-1); bottom: var(--space-1); padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--danger); color: var(--text-inverse); font: var(--fw-heavy) var(--fs-2xs)/var(--lh-normal) var(--font-ui); white-space: nowrap; pointer-events: none; }
+#bug-report-panel .reports-thumb-marks[hidden] { display: none; }
 /* #264 (Friendly, an upright phone): Send sat just below the window's foot. The picture of a phone's
    screen is tall, so its preview (up to 45% of the row across) stood about 270 px high. On a phone the
    window runs nearly to the foot of the screen (over the pack row), the preview is a short thumbnail and

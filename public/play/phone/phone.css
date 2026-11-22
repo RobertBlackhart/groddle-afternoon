@@ -271,6 +271,34 @@ p { margin: 0; }
 .picture-lightbox-prev { left: 10px; }
 .picture-lightbox-next { right: 10px; }
 .picture-lightbox-count { position: absolute; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%); margin: 0; padding: 4px 12px; border-radius: 14px; background: var(--surface); color: var(--fg); font-weight: 800; }
+/* G808, Circle the spot (js/ui/picture-marks.js): the rings over a photo about to go and the marking bar under it
+   (the game's own styles are in features/bug-report-feature.js). The rings' colours are the picture's, set by the module. */
+.picture-lightbox-frame { position: relative; flex: none; display: block; margin: auto; line-height: 0; }
+.picture-lightbox[data-markable] .picture-lightbox-stage { bottom: calc(150px + env(safe-area-inset-bottom)); }
+.picture-lightbox[data-markable] .picture-lightbox-img { max-height: calc(100vh - 230px); }
+.picture-lightbox[data-markable] .picture-lightbox-count { bottom: auto; top: max(12px, env(safe-area-inset-top)); left: 12px; transform: none; }
+.picture-marks-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; border-radius: 8px; }
+.picture-lightbox[data-marking] .picture-marks-layer { pointer-events: auto; cursor: crosshair; touch-action: none; }
+.picture-marks-layer:focus { outline: none; }
+.picture-marks-layer:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.picture-mark-focus { display: none; stroke: var(--accent); stroke-dasharray: 10 8; }
+.picture-marks-layer:focus-visible .picture-mark[data-selected] .picture-mark-focus { display: inline; }
+.picture-mark.is-draft { opacity: 0.75; }
+.picture-marks { position: absolute; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--surface); color: var(--fg); font-weight: 800; animation: picture-marks-in 0.18s ease-out; }
+.picture-marks-title { flex: 1 0 100%; text-align: center; }
+.picture-marks-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; margin: 0; padding: 0 16px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+.picture-marks-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.picture-marks-btn.is-go { border-color: var(--accent); background: var(--accent); color: var(--surface); }
+.picture-marks-btn:disabled { opacity: 0.5; cursor: default; }
+.picture-marks-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.picture-marks-icon { display: inline-block; width: 0.85em; height: 0.85em; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; }
+.picture-marks-count, .picture-marks-help { font-weight: 600; opacity: 0.8; }
+.picture-marks-help { flex: 1 0 100%; margin: 0; text-align: center; font-size: 0.9em; }
+.picture-marks-keys { display: none; }
+.picture-marks-live { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@keyframes picture-marks-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .picture-marks { animation: none; } }
+.pc-photo-marks { position: absolute; left: 4px; bottom: 4px; padding: 0 6px; border-radius: 10px; background: #c62f35; color: #fff; font-size: 0.75em; font-weight: 800; white-space: nowrap; pointer-events: none; }
 .pc-status { min-height: 1.4em; font-weight: 700; color: var(--moss); }
 .pc-status:empty { min-height: 0; }
 

@@ -197,7 +197,8 @@ function importGraph(entry, { lazy = true } = {}) {
 }
 
 /** js/ui modules the phone may load: plain DOM, no game (2026-11-15: the pictures over the page, at the first tap). */
-const PHONE_UI = ['js/ui/picture-lightbox.js', 'js/ui/focus-return.js'];
+// G808: the rings on a photo about to go (js/ui/picture-marks.js) load with the lightbox.
+const PHONE_UI = ['js/ui/picture-lightbox.js', 'js/ui/focus-return.js', 'js/ui/picture-marks.js'];
 
 describe('play/phone/ (the companion page)', () => {
   const html = read('play/phone/index.html');
@@ -242,10 +243,12 @@ describe('play/phone/ (the companion page)', () => {
   // 250 KB from 240 (2026-11-11): site/theme.js gained the Analytics pageview beacon (about 1 KB).
   // 2026-11-15: up to four photos a report (js/report-pictures.js reads any picture into the report's
   // JPEG, about 10 KB); the pictures' lightbox loads at the first tap on one, so it is not counted.
-  it('stays small: everything it loads before a panel opens is under 265 KB', () => {
+  // 275 KB from 265 (2026-11-22, G808): Circle the spot on a photo about to go: the bar's and the rings'
+  // styles in phone.css and the companion's hooks (about 5 KB); the rings module loads with the lightbox.
+  it('stays small: everything it loads before a panel opens is under 275 KB', () => {
     const files = ['play/phone/index.html', 'play/phone/phone.css', 'site/theme.js', 'site/site-nav.css', 'favicon.svg', ...eager];
     const bytes = files.reduce((n, f) => n + statSync(join(pub, f)).size, 0);
-    assert.ok(bytes < 265 * 1024, `${bytes} bytes`);
+    assert.ok(bytes < 275 * 1024, `${bytes} bytes`);
   });
 
   it('signs in with the game\'s own forms and the /play/online/ gate\'s session check', () => {

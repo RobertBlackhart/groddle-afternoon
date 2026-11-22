@@ -3783,6 +3783,44 @@
 }
 :root[data-ui="classic"] #bug-report-panel .picture-lightbox-x::after { transform: translate(-50%, -50%) rotate(-45deg); }
 :root[data-ui="classic"] #bug-report-panel .picture-lightbox-x:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-classic-ink) 37%, transparent), inset 0 0 6px var(--c-classic-close-hover); }
+/* Circle the spot (G808, js/ui/picture-marks.js): the marking bar as a 2012 dialog strip (the panel border, the
+   minor buttons, the window's dark Send for Done); the rings' layer sits inside the picture's white frame. */
+:root[data-ui="classic"] #bug-report-panel .picture-marks-layer { inset: calc(6 * var(--cu)); width: calc(100% - 12 * var(--cu)); height: calc(100% - 12 * var(--cu)); }
+:root[data-ui="classic"] #bug-report-panel .picture-lightbox[data-zoomed] .picture-marks-layer { inset: 0; width: 100%; height: 100%; }
+:root[data-ui="classic"] #bug-report-panel .picture-marks-layer:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #bug-report-panel .picture-marks {
+  gap: calc(8 * var(--cu));
+  padding: calc(8 * var(--cu)) calc(14 * var(--cu));
+  border: calc(3 * var(--cu)) solid var(--c-classic-panel);
+  border-radius: var(--radius-xs);
+  background: var(--c-classic-well);
+  color: var(--c-classic-text);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-classic-ink) 37%, transparent);
+  font: 800 calc(var(--fs-classic-button) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-title);
+}
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn {
+  min-height: calc(29 * var(--cu));
+  padding: 0 calc(12 * var(--cu));
+  border: 1px solid var(--c-classic-btn-minor-border);
+  border-radius: var(--radius-xs);
+  background: linear-gradient(180deg, var(--c-classic-btn-minor-top), var(--c-classic-btn-minor-bottom));
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--c-classic-ink) 30%, transparent);
+  color: var(--c-classic-btn-minor-label);
+  font: 800 calc(var(--fs-classic-button) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-title);
+  cursor: pointer;
+}
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn:hover:not(:disabled) { background: linear-gradient(180deg, var(--c-classic-panel), var(--c-classic-btn-minor-top)); }
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn[aria-pressed="true"] { box-shadow: inset 0 1px 3px color-mix(in srgb, var(--c-classic-ink) 35%, transparent); }
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn.is-go {
+  border-color: color-mix(in srgb, var(--c-classic-panel) 55%, transparent);
+  background: linear-gradient(180deg, var(--c-classic-btn-dark-top), var(--c-classic-btn-dark-bottom));
+  color: var(--c-classic-btn-dark-label);
+}
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn.is-go:hover:not(:disabled) { filter: brightness(1.15); }
+:root[data-ui="classic"] #bug-report-panel .picture-marks-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #bug-report-panel :is(.picture-marks-count, .picture-marks-help) { color: var(--c-classic-offline); font-size: calc(var(--fs-classic-body) * var(--cu-n, 1)); font-weight: 400; }
+:root[data-ui="classic"] #bug-report-panel .reports-thumb-marks { border-radius: var(--radius-xs); background: var(--c-classic-unread); color: var(--c-classic-btn-dark-label); font-family: var(--font-classic-title); }
+@media (max-width: 600px), (pointer: coarse) { :root[data-ui="classic"] #bug-report-panel .picture-marks-btn { min-height: 40px; } }
 :root[data-ui="classic"] #bug-report-panel .reports-foot {
   flex: none;
   display: flex;

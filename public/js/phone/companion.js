@@ -28,6 +28,10 @@
  * in a thread, opens the pictures over the page (js/ui/picture-lightbox.js: swipe or the arrows
  * between them, the close button; loaded at the first tap, so the page stays small). QA hooks: [data-phone-photo-preview] (the thumbnails),
  * [data-phone-photo-thumb=<n>], [data-phone-photo-remove], [data-phone-message-picture].
+ *
+ * G808, Circle the spot (#49, Austin 2026-11-22): a photo about to go opens with the marking bar of
+ * the shared lightbox (js/ui/picture-marks.js, loaded with it): up to 3 red rings, drawn into the
+ * photo that is sent and shown on its thumbnail ("1 mark", [data-phone-photo-marks]).
  */
 
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
@@ -476,7 +480,7 @@ function drawThread(answer, status = '') {
     send.disabled = true;
     msg.textContent = REPORT_TEXT.sending;
     await photo.settled();
-    const urls = photo.photos.map((p) => p.url);
+    const urls = photo.urls();
     const url = urls.length > 1 ? urls : urls[0] || null;
     try {
       let answer;
@@ -546,18 +550,22 @@ function editFirst(t, m, li, body, edit) {
 
 /** The pictures over the page (js/ui/picture-lightbox.js, plain DOM), loaded at the first tap on a picture. */
 let lightboxModule = null;
-const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=b2cba91b').catch((err) => { lightboxModule = null; throw err; }));
+const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=bd2ae70d').catch((err) => { lightboxModule = null; throw err; }));
+/** G808: the rings module, loaded with the lightbox at the first tap on a photo about to go. */
+let marksModule = null;
+const loadMarks = () => (marksModule ||= import('../ui/picture-marks.js?v=c53dc0fc').catch((err) => { marksModule = null; throw err; }));
 
 /**
  * A picture link that opens `gallery` (each { src, width, height, alt }) at `index` over the page on
  * a plain tap or click; a modified click keeps the link's own tab (as lightboxLink does in the game).
  */
-function pictureOpener(a, gallery, index) {
+function pictureOpener(a, gallery, index, prepare = null) {
   a.addEventListener('click', (ev) => {
     if ((ev.button ?? 0) !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
     ev.preventDefault();
-    const list = typeof gallery === 'function' ? gallery() : gallery;
-    loadLightbox().then(({ openLightbox }) => {
+    Promise.all([loadLightbox(), prepare?.()]).then(([{ openLightbox }]) => {
+      // Read once ready: a photo's rings (G808) come with it.
+      const list = typeof gallery === 'function' ? gallery() : gallery;
       openLightbox({ doc, host: doc.body, src: list[index]?.src || a.getAttribute('href'), alt: list[index]?.alt || '', label: REPORT_TEXT.pictureLabel, opener: a, gallery: list, index });
     }).catch(() => { globalThis.open?.(a.getAttribute('href'), '_blank', 'noopener'); });
   });
@@ -576,7 +584,14 @@ function photoPicker(id, msg) {
   const pick = el('input', { type: 'file', id, accept: REPORT_PICTURES.accept, multiple: true, class: 'pc-file' });
   const pickLabel = el('label', { for: id, class: 'pc-button pc-button-quiet' }, T.photo);
   const preview = el('ul', { class: 'pc-photo-preview', hidden: true, 'aria-label': REPORT_TEXT.trayLabel, 'data-phone-photo-preview': '' });
-  const gallery = () => photos.map((p, i) => ({ src: p.url, width: p.width, height: p.height, alt: PICTURE_TEXT.thumbAlt(i + 1) }));
+  // G808: each photo's rings (js/ui/picture-marks.js createMarkBook), made at the first open.
+  let book = null;
+  let markTag = null;
+  const marksReady = () => loadMarks().then(({ createMarkBook, MARK_TEXT }) => {
+    markTag = MARK_TEXT.tag;
+    book ||= createMarkBook({ onChange: () => drawPreview() });
+  });
+  const gallery = () => photos.map((p, i) => ({ src: p.url, width: p.width, height: p.height, alt: PICTURE_TEXT.thumbAlt(i + 1), mark: book ? book.holder(p) : null }));
   pick.addEventListener('change', () => {
     const files = Array.from(pick.files || []);
     pick.value = '';
@@ -608,18 +623,30 @@ function photoPicker(id, msg) {
     pick.disabled = full;
     preview.replaceChildren(...photos.map((p, i) => {
       const li = el('li', { class: 'pc-photo-thumb', 'data-phone-photo-thumb': String(i + 1) });
-      const a = el('a', { href: p.url, class: 'pc-photo-open', 'aria-label': PICTURE_TEXT.open(i + 1, photos.length), title: PICTURE_TEXT.open(i + 1, photos.length) });
-      a.append(el('img', { src: p.url, alt: PICTURE_TEXT.thumbAlt(i + 1), width: p.width, height: p.height }));
-      pictureOpener(a, gallery, i);
+      // G808: the thumbnail shows the photo with its rings drawn in.
+      const look = book ? book.shown(p) : p;
+      const a = el('a', { href: look.url, class: 'pc-photo-open', 'aria-label': PICTURE_TEXT.open(i + 1, photos.length), title: PICTURE_TEXT.open(i + 1, photos.length) });
+      a.append(el('img', { src: look.url, alt: PICTURE_TEXT.thumbAlt(i + 1), width: p.width, height: p.height }));
+      pictureOpener(a, gallery, i, marksReady);
       const remove = el('button', { type: 'button', class: 'pc-photo-remove', 'aria-label': PICTURE_TEXT.remove(i + 1), title: PICTURE_TEXT.remove(i + 1), 'data-phone-photo-remove': '' }, '×');
-      remove.addEventListener('click', () => { photos = photos.filter((x) => x !== p); drawPreview(); });
+      remove.addEventListener('click', () => { photos = photos.filter((x) => x !== p); book?.drop(p); drawPreview(); });
       li.append(a, remove);
+      const rings = book ? book.count(p) : 0;
+      if (rings) li.append(el('span', { class: 'pc-photo-marks', 'data-phone-photo-marks': '' }, markTag(rings)));
       return li;
     }));
   }
   const row = el('div', { class: 'pc-form-row' });
   row.append(pickLabel, pick);
-  return { row, preview, get photos() { return photos; }, get photo() { return photos[0] || null; }, settled: () => job };
+  return {
+    row,
+    preview,
+    get photos() { return photos; },
+    get photo() { return photos[0] || null; },
+    /** What Send sends: each photo with its rings drawn in (G808). */
+    urls: () => photos.map((p) => (book ? book.url(p) : p.url)),
+    settled: () => job.then(() => book?.settled()),
+  };
 }
 
 function newReport() {
@@ -644,7 +671,7 @@ function newReport() {
     msg.textContent = REPORT_TEXT.sending;
     const context = phoneContext(globalThis);
     await picker.settled();
-    const urls = picker.photos.map((p) => p.url);
+    const urls = picker.urls();
     const photo = urls.length > 1 ? urls : urls[0] || null;
     let sent;
     let words = REPORT_TEXT.sent;

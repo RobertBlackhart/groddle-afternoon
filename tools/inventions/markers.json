@@ -1227,6 +1227,11 @@
   "public/js/ui/name-prompt.js": {
     "ours: * optional small line under the input (ours; the bag Rename's blank rule,": "ours-name-prompt"
   },
+  "public/js/ui/picture-marks.js": {
+    "glitch-had-none: * mark the problem on a report's picture. Glitch had nothing like it: its bug form": "report-picture-rings",
+    "invented: * registered in tools/inventions/inventions.json": "report-picture-rings",
+    "remake-own: details, with no picture at all. So this is the remake's own,": "report-picture-rings"
+  },
   "public/js/ui/quest-sheet.js": {
     "ours: // RIGHTCLICK: the card has a menu of ours (js/ui/context-guard.js stops the browser's over": "right-click-menus"
   },

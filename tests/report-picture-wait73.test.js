@@ -7,9 +7,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { UI_IDLE_MS, mountReportsSheet, previewWhich } from '../public/js/ui/reports-sheet.js?v=a9a6e61e';
+import { UI_IDLE_MS, mountReportsSheet, previewWhich } from '../public/js/ui/reports-sheet.js?v=1ab76733';
 import { REPORT_TEXT as T } from '../public/js/reports.js?v=08604732';
-import { capturePicture, captureFrame, standardStyleNames, viewRows } from '../public/js/features/bug-report-feature.js?v=08c67a5a';
+import { capturePicture, captureFrame, standardStyleNames, viewRows } from '../public/js/features/bug-report-feature.js?v=755096fc';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -227,6 +227,9 @@ describe('ticket 73: the report form never waits on the picture with the UI', ()
     m.doc.__inputIntent = { last: 'pointer', pressed: new WeakMap([[m.preview, 'pointer']]) };
     const ev = fire(m.preview, 'click', { button: 0 });
     assert.equal(ev.prevented, true, 'not a browser tab');
+    // G808: the picture with the UI is drawn first (as Send does), so rings drawn on it land on the picture that goes.
+    await waitFor(() => byData(m.host, 'pictureLightbox'));
+    assert.equal(m.preview.dataset.which, 'ui');
     const lb = byData(m.host, 'pictureLightbox');
     assert.ok(lb, 'the lightbox is open');
     assert.equal(lb.parentNode, m.sheet.panel, 'inside the report window');

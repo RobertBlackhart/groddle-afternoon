@@ -88,6 +88,15 @@
  * [data-reports-file] (the picker), data-dropping on the panel while pictures are dragged over,
  * data-held (how many wait) and data-reading (how many are being read).
  *
+ * G808, Circle the spot (#49, Austin 2026-11-22: option A): every picture about to go (the new
+ * report's own and the waiting ones, in a new report or a reply) can carry up to 3 red rings, drawn
+ * in its big view (js/ui/picture-lightbox.js with js/ui/picture-marks.js). Done draws them into a
+ * JPEG the thumbnail shows ("2 marks") and Send sends; the picture itself is kept until Send, so
+ * the rings can be changed again. The world picture and the one with the game's UI are framed
+ * differently, so Include the game's UI changed after marking clears the rings, in a short line.
+ * The picture with the UI is drawn before its big view opens (as Send does), so the rings land on
+ * the picture that goes. QA hooks: [data-reports-thumb-marks] (the "2 marks" tag).
+ *
  * REPORTSMENU (Austin 2026-11-12): each row has a menu (js/ui/report-row-menu.js): right-click, a
  * long press, or Shift+F10 or the Menu key on a focused row; Open, Add a message (Reopen when
  * closed), Close report, Mark as read or unread, Copy link. Up and Down (Home, End) move between
@@ -108,7 +117,8 @@ import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../report-reactions.js?v=69462240';
 import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=4eb43496';
 import { focusBack } from './focus-return.js?v=da190597';
-import { lightboxLink } from './picture-lightbox.js?v=b2cba91b';
+import { lightboxLink } from './picture-lightbox.js?v=bd2ae70d';
+import { MARK_TEXT, bakeMarks, createMarkBook } from './picture-marks.js?v=c53dc0fc';
 import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=063d70a3';
 
 /** How long Send waits for a picture still drawing before it sends the world-only one (ms). */
@@ -147,9 +157,10 @@ function el(doc, tag, attrs = {}, text = '') {
  * @param {{ doc?: Document, host: HTMLElement, api: ReturnType<import('../reports.js').createReportsApi>,
  *   context?: () => object, capture?: () => ({ url: string, width: number, height: number }|null|Promise<object|null>), onState?: (s: { state: string, view: string, unread: number, ticket: number, last: string }) => void,
  *   toast?: (text: string, ms?: number) => void, opener?: () => HTMLElement|null, now?: () => number, pictureWait?: number,
- *   setData?: (k: string, v: string) => void }} opts  setData: the rows' menu's QA data (canvas data contextMenu, reportMenu).
+ *   setData?: (k: string, v: string) => void, bake?: (pic: object, rings: object[]) => Promise<object|null> }} opts
+ *   setData: the rows' menu's QA data (canvas data contextMenu, reportMenu). bake: G808's rings drawn into a picture (js/ui/picture-marks.js bakeMarks).
  */
-export function mountReportsSheet({ doc = globalThis.document, host, api, context = () => ({}), capture = () => null, takePicture: takeOnPurpose = null, onState = () => {}, toast = () => {}, opener = () => null, now = () => Date.now(), pictureWait = PICTURE_WAIT_MS, uiIdle = UI_IDLE_MS, setData = () => {}, convert = (file) => convertPicture(file, { doc }) } = {}) {
+export function mountReportsSheet({ doc = globalThis.document, host, api, context = () => ({}), capture = () => null, takePicture: takeOnPurpose = null, onState = () => {}, toast = () => {}, opener = () => null, now = () => Date.now(), pictureWait = PICTURE_WAIT_MS, uiIdle = UI_IDLE_MS, setData = () => {}, convert = (file) => convertPicture(file, { doc }), bake = (pic, rings) => bakeMarks(pic, rings, { doc }) } = {}) {
   let state = 'closed';
   let view = 'list';
   let tickets = [];
@@ -185,6 +196,19 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   // Pictures being read (js/report-pictures.js convertPicture), and the work Send waits for.
   let reading = 0;
   let readingJob = Promise.resolve();
+  // G808: the rings on the pictures about to go, kept beside them (js/ui/picture-marks.js); a change redraws the thumbnails.
+  const marks = createMarkBook({ bake, onChange: () => redrawKeepingFocus() });
+  /** The thumbnails again (a picture's rings drawn in); a thumbnail that had the keys keeps them. */
+  function redrawKeepingFocus() {
+    const was = doc.activeElement;
+    const li = was?.closest?.('[data-reports-thumb]');
+    const n = li?.getAttribute?.('data-reports-thumb');
+    const tray = li?.parentNode;
+    const sel = was?.hasAttribute?.('data-reports-thumb-remove') ? '[data-reports-thumb-remove]' : 'a';
+    if (view === 'new') drawPicture();
+    else drawHeld();
+    if (n && tray && was && !was.isConnected) tray.querySelector?.(`[data-reports-thumb="${n}"] ${sel}`)?.focus?.({ preventScroll: true });
+  }
 
   // Reactions on the thread's messages: each message's list as the chips read it, by reaction key, and you among them.
   const reacted = new Map();
@@ -290,7 +314,9 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   picPreview.append(picPreviewImg);
   const picRemove = e('button', { type: 'button', class: 'reports-thumb-remove', 'aria-label': P.remove(1), title: P.remove(1), 'data-reports-thumb-remove': '' }, '×');
   const leadThumb = e('li', { class: 'reports-thumb', 'data-reports-thumb': '1', 'data-lead': '' });
-  leadThumb.append(picPreview, picRemove);
+  // G808: "2 marks" on the thumbnail of a picture with rings.
+  const leadTag = e('span', { class: 'reports-thumb-marks', hidden: true, 'data-reports-thumb-marks': '' });
+  leadThumb.append(picPreview, leadTag, picRemove);
   picRow.append(picText);
   const newTray = e('ul', { class: 'reports-tray', 'aria-label': T.trayLabel, hidden: true, 'data-reports-tray': 'new' });
   const newPicRow = e('div', { class: 'reports-picture-row reports-new-pictures' });
@@ -544,15 +570,17 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   function trayGallery(which) {
     const list = [];
     const lead = which === 'new' ? leadShot() : null;
-    if (lead) list.push({ src: previewHref(lead), width: lead.width || 0, height: lead.height || 0, alt: T.pictureAlt });
-    held.forEach((p, i) => list.push({ src: previewHref(p), width: p.width || 0, height: p.height || 0, alt: P.thumbAlt(i + 1 + (lead ? 1 : 0)) }));
+    // G808: each picture with its rings to mark (the game's own only once it is the one that goes).
+    if (lead) list.push({ src: previewHref(lead), width: lead.width || 0, height: lead.height || 0, alt: T.pictureAlt, mark: lead === shots[mode()] ? marks.holder(lead) : null });
+    held.forEach((p, i) => list.push({ src: previewHref(p), width: p.width || 0, height: p.height || 0, alt: P.thumbAlt(i + 1 + (lead ? 1 : 0)), mark: marks.holder(p) }));
     return list;
   }
 
   /** One waiting picture's thumbnail: a link to the lightbox (the tray's pictures) and its remove button. */
   function heldThumb(pic, i, which, offset) {
     const n = i + 1 + offset;
-    const href = previewHref(pic);
+    // G808: the thumbnail shows the picture with its rings drawn in.
+    const href = previewHref(marks.shown(pic));
     const li = e('li', { class: 'reports-thumb', 'data-reports-thumb': String(n) });
     const a = e('a', { class: 'reports-picture-thumb', href, target: '_blank', rel: 'noopener', 'aria-label': P.open(n, held.length + offset), title: P.open(n, held.length + offset), 'data-reports-held-picture': '' });
     a.append(e('img', { src: href, alt: P.thumbAlt(n), width: String(pic.width || ''), height: String(pic.height || '') }));
@@ -569,6 +597,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       onOpen: (lb) => { lightbox = lb; },
       onClose: () => { lightbox = null; },
     });
+    const rings = marks.count(pic);
+    if (rings) li.append(e('span', { class: 'reports-thumb-marks', 'data-reports-thumb-marks': '' }, MARK_TEXT.tag(rings)));
     const x = e('button', { type: 'button', class: 'reports-thumb-remove', 'aria-label': P.remove(n), title: P.remove(n), 'data-reports-thumb-remove': '' }, '×');
     x.addEventListener('click', () => {
       unhold(pic);
@@ -617,7 +647,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     if (pic === null || pic === undefined) {
       const was = held;
       held = [];
-      for (const p of was) forget(p);
+      for (const p of was) { forget(p); forgetMarks(p); }
       drawHeld();
       publish();
       return false;
@@ -636,8 +666,16 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     if (!held.includes(pic)) return;
     held = held.filter((p) => p !== pic);
     forget(pic);
+    forgetMarks(pic);
     drawHeld();
     publish();
+  }
+
+  /** G808: a picture's rings go with it, and the address of its marked copy. */
+  function forgetMarks(pic) {
+    const look = marks.shown(pic);
+    if (look !== pic) forget(look);
+    marks.drop(pic);
   }
 
   /** A picture's preview address goes with it. */
@@ -814,8 +852,10 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   /** A report's preview addresses go with it (a new report, or one sent); the waiting pictures keep theirs. */
   function releasePreview() {
     const keep = new Map();
+    // The waiting pictures keep theirs, and so do their marked copies (G808).
+    const kept = new Set([...held, ...held.map((p) => marks.shown(p))]);
     for (const [pic, url] of previewUrls) {
-      if (held.includes(pic)) keep.set(pic, url);
+      if (kept.has(pic)) keep.set(pic, url);
       else if (url.startsWith('blob:')) { try { globalThis.URL.revokeObjectURL(url); } catch { /* gone */ } }
     }
     previewUrls = keep;
@@ -840,8 +880,12 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     else picHint.textContent = has ? (wantUi ? T.pictureHintUi : T.pictureHint) : T.pictureNone;
     picPreview.hidden = !shown;
     leadPic = shown;
+    // G808: the thumbnail shows the rings drawn in (the big view opens the picture itself, its rings over it).
+    const rings = shown ? marks.count(shown) : 0;
+    leadTag.hidden = !rings;
+    leadTag.textContent = rings ? MARK_TEXT.tag(rings) : '';
     if (shown) {
-      const href = previewHref(shown);
+      const href = previewHref(marks.shown(shown));
       picPreview.setAttribute('href', href);
       picPreview.dataset.which = which;
       picPreviewImg.setAttribute('src', href);
@@ -908,6 +952,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   function newPictures() {
     round += 1;
     stopIdle();
+    marks.keepOnly(held);
     releasePreview();
     shots = { ui: null, world: null };
     jobs = { ui: null, world: null };
@@ -942,10 +987,13 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     if (!shots[want] && !jobs[want]) takePicture(want);
     const job = jobs[want];
     if (job) await Promise.race([job.catch(() => {}), new Promise((r) => setTimeout(r, pictureWait))]);
-    if (shots[want]?.url) return shots[want].url;
+    // G808: with its rings drawn in, once they are drawn.
+    await marks.settled();
+    if (shots[want]?.url) return marks.url(shots[want]);
     if (!shots.world && !jobs.world) await takePicture('world');
     else if (jobs.world) await jobs.world.catch(() => {});
-    return shots.world?.url || null;
+    await marks.settled();
+    return shots.world?.url ? marks.url(shots.world) : null;
   }
 
   function open(which = 'list', { keep = false } = {}) {
@@ -1018,7 +1066,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     drawHeld();
     await readingJob;
     const own = await pictureToSend();
-    const urls = [own, ...held.map((p) => p.url)].filter(Boolean).slice(0, REPORT_PICTURES.max);
+    const urls = [own, ...held.map((p) => marks.url(p))].filter(Boolean).slice(0, REPORT_PICTURES.max);
     const pic = urls.length > 1 ? urls : urls[0] || null;
     const ctx = withExtensions(context(), extBox.value);
     try {
@@ -1038,6 +1086,7 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
       shot = null;
       round += 1;
       stopIdle();
+      marks.keepOnly(held);
       releasePreview();
       shots = { ui: null, world: null };
       jobs = { ui: null, world: null };
@@ -1078,7 +1127,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     try {
       // G791: the waiting pictures go with it (any still being read first); a refused picture never costs the words.
       await readingJob;
-      const urls = held.map((p) => p.url).slice(0, REPORT_PICTURES.max);
+      await marks.settled();
+      const urls = held.map((p) => marks.url(p)).slice(0, REPORT_PICTURES.max);
       const pic = urls.length > 1 ? urls : urls[0] || null;
       let r;
       let without = false;
@@ -1305,6 +1355,11 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
   });
   filter.addEventListener('input', () => { drawList(); if (view === 'list') say(listMeta()); });
   uiBox.addEventListener('change', () => {
+    // G808 (Austin 2026-11-22): the world picture and the one with the UI are framed differently, so rings on either go, in a line.
+    const hadUi = marks.count(shots.ui) > 0;
+    const hadWorld = marks.count(shots.world) > 0;
+    for (const pic of [shots.ui, shots.world]) if (pic) forgetMarks(pic);
+    if (hadUi || hadWorld) say(MARK_TEXT.uiCleared);
     wantUi = uiBox.checked;
     // Ticked again with no picture with the UI yet: it waits for a pause in typing, as at the start (ticket 73).
     if (wantUi && !shots.ui && !jobs.ui) { queued.add('ui'); drawPicture(); idleUi(); }
@@ -1320,6 +1375,8 @@ export function mountReportsSheet({ doc = globalThis.document, host, api, contex
     label: T.pictureLabel,
     gallery: () => trayGallery('new'),
     index: 0,
+    // G808: the picture with the UI still to come is drawn first (as Send does), so its rings land on the picture that goes.
+    ready: () => (view === 'new' && picBox.checked && wantUi && !shots.ui && (jobs.ui || queued.has('ui')) ? takePicture('ui') : null),
     fallback: () => text,
     onOpen: (lb) => { lightbox = lb; },
     onClose: () => { lightbox = null; },

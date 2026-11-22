@@ -23,12 +23,19 @@
  *   swipe across it go round them.
  *
  * Styles: features/bug-report-feature.js STYLE (base and Modern), css/classic.css (Classic).
- * QA hooks: [data-picture-lightbox] (data-zoomable, data-zoomed, data-index, data-count), [data-picture-lightbox-img],
+ * - Circle the spot (G808, Austin 2026-11-22): a picture given with `mark` (a gallery item's, or
+ *   the one picture's: { rings, history, save }, js/ui/picture-marks.js createMarkBook holder) gets
+ *   the marking bar under it and its rings over it (js/ui/picture-marks.js createMarker). While
+ *   marking, the picture stays fitted: no zoom, no swipe; on the rings' layer the arrows are the rings' keys.
+ *   Every close (Done, Esc, the close button, the backdrop) hands the rings back with save.
+ *
+ * QA hooks: [data-picture-lightbox] (data-zoomable, data-zoomed, data-index, data-count, data-markable, data-marking), [data-picture-lightbox-img],
  * [data-picture-lightbox-stage], [data-picture-lightbox-zoom], [data-picture-lightbox-tab],
  * [data-picture-lightbox-close], [data-picture-lightbox-prev], [data-picture-lightbox-next], [data-picture-lightbox-count].
  */
 
 import { focusBackTarget, lastInput, pressedBy } from './focus-return.js?v=da190597';
+import { createMarker } from './picture-marks.js?v=c53dc0fc';
 
 export const LIGHTBOX_TEXT = Object.freeze({
   label: 'Picture',
@@ -128,7 +135,7 @@ const pick = (x) => (typeof x === 'function' ? x() : x) || null;
  *   label?: string, opener?: HTMLElement|(() => HTMLElement|null), fallback?: HTMLElement|(() => HTMLElement|null),
  *   onClose?: (to: string) => void, win?: Window }} opts
  */
-export function openLightbox({ doc = globalThis.document, host = doc?.body, src, width = 0, height = 0, alt = '', label = LIGHTBOX_TEXT.label, opener = null, fallback = null, onClose = () => {}, win = doc?.defaultView || globalThis.window, gallery = null, index = 0 } = {}) {
+export function openLightbox({ doc = globalThis.document, host = doc?.body, src, width = 0, height = 0, alt = '', label = LIGHTBOX_TEXT.label, opener = null, fallback = null, onClose = () => {}, win = doc?.defaultView || globalThis.window, gallery = null, index = 0, mark = null } = {}) {
   const T = LIGHTBOX_TEXT;
   // Several pictures: each { src, width, height, alt }; one alone is the picture given.
   const pics = (Array.isArray(gallery) ? gallery : []).filter((p) => p && typeof p.src === 'string' && p.src);
@@ -140,8 +147,11 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
 
   const root = e('div', { class: 'picture-lightbox', role: 'dialog', 'aria-modal': 'true', 'aria-label': label, tabindex: '-1', 'data-picture-lightbox': '' });
   const stage = e('div', { class: 'picture-lightbox-stage', 'data-picture-lightbox-stage': '' });
+  // The picture in a frame its size, so G808's rings (an SVG beside it) sit on it at any size.
+  const frame = e('div', { class: 'picture-lightbox-frame' });
   const img = e('img', { class: 'picture-lightbox-img', src, alt, width: Number(width) || null, height: Number(height) || null, draggable: 'false', 'data-picture-lightbox-img': '' });
-  stage.append(img);
+  frame.append(img);
+  stage.append(frame);
   const bar = e('div', { class: 'picture-lightbox-bar' });
   const zoomBtn = e('button', { type: 'button', class: 'picture-lightbox-btn picture-lightbox-zoom', 'aria-pressed': 'false', 'aria-label': T.zoomIn, title: T.zoomIn, hidden: true, 'data-picture-lightbox-zoom': '' }, '+');
   const tab = e('a', { class: 'picture-lightbox-tab', href: src, target: '_blank', rel: 'noopener', 'data-picture-lightbox-tab': '' }, T.newTab);
@@ -164,11 +174,25 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   let open = true;
   let drag = null;
   let dragged = false;
+  // G808: Circle the spot, for a picture given with `mark` (each gallery item's own, or the one picture's).
+  const markOf = (i) => (pics.length ? pics[i]?.mark : mark) || null;
+  const marker = (pics.length ? pics.some((p) => p.mark) : Boolean(mark))
+    ? createMarker({
+      doc,
+      root,
+      frame,
+      size: () => ({ w: img.naturalWidth || natW, h: img.naturalHeight || natH }),
+      setMode: (on) => { if (on) zoom(false); measure(); },
+      done: () => close(),
+    })
+    : null;
+  const marking = () => Boolean(marker?.marking);
 
   function measure() {
     if (img.naturalWidth && img.naturalHeight) { natW = img.naturalWidth; natH = img.naturalHeight; }
     const fit = fitPicture(natW, natH, win?.innerWidth, win?.innerHeight);
-    zoomable = fit.zoomable;
+    zoomable = fit.zoomable && !marking();
+    marker?.draw();
     zoomBtn.hidden = !zoomable;
     if (zoomable) root.setAttribute('data-zoomable', '');
     else root.removeAttribute?.('data-zoomable');
@@ -177,7 +201,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
 
   /** Fit (false) or actual size (true); `at` is the spot to keep in view (0-1 across the picture). */
   function zoom(on, at = null) {
-    const want = Boolean(on) && zoomable;
+    const want = Boolean(on) && zoomable && !marking();
     if (want === zoomed) return zoomed;
     zoomed = want;
     if (zoomed) {
@@ -205,7 +229,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   }
 
   function focusables() {
-    return [prevBtn, nextBtn, zoomBtn, tab, x].filter((n) => !n.hidden && n.parentNode);
+    return [prevBtn, nextBtn, ...(marker ? marker.focusables() : []), zoomBtn, tab, x].filter((n) => !n.hidden && n.parentNode);
   }
 
   /** The gallery's words and attributes for the picture shown. */
@@ -218,6 +242,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   /** Another picture of the gallery (step -1 or 1, going round): fitted, measured again. */
   function go(step) {
     if (!many) return at;
+    marker?.save();
     at = galleryStep(at, step, pics.length);
     const p = pics[at];
     zoom(false);
@@ -229,6 +254,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
     else { img.removeAttribute?.('width'); img.removeAttribute?.('height'); }
     tab.setAttribute('href', p.src);
     drawCount();
+    marker?.show(markOf(at));
     measure();
     return at;
   }
@@ -236,6 +262,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   function close({ focus = true } = {}) {
     if (!open) return '';
     open = false;
+    marker?.save();
     root.remove?.();
     if (host && host.__lightbox === api) host.__lightbox = null;
     win?.removeEventListener?.('resize', measure);
@@ -273,6 +300,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
       if (k === '+' || k === '=') { ev.preventDefault(); zoom(true); return; }
       if (k === '-' || k === '_') { ev.preventDefault(); zoom(false); return; }
       // Several pictures: Left and Right go between them while the picture is fitted.
+      // (G808: on the rings' layer the arrows move the ring; it keeps them to itself.)
       if (many && !zoomed && (k === 'ArrowLeft' || k === 'ArrowRight')) { ev.preventDefault(); go(k === 'ArrowLeft' ? -1 : 1); return; }
       const pan = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[k];
       if (pan) {
@@ -291,7 +319,7 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
   // Several pictures, fitted: a swipe across the picture goes to the next or previous one.
   let swipe = null;
   img.addEventListener('pointerdown', (ev) => {
-    if (!many || zoomed || (ev.button ?? 0) !== 0) return;
+    if (!many || zoomed || marking() || (ev.button ?? 0) !== 0) return;
     swipe = { id: ev.pointerId, x: ev.clientX, y: ev.clientY };
   });
   img.addEventListener('pointerup', (ev) => {
@@ -366,12 +394,15 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
     go,
     get index() { return at; },
     get count() { return pics.length || 1; },
+    /** G808: the marking parts (js/ui/picture-marks.js createMarker), or null for a picture without `mark`. */
+    marks: marker,
   };
   if (host) {
     host.append(root);
     host.__lightbox = api;
   }
   drawCount();
+  marker?.show(markOf(at));
   measure();
   // Focus moves in, on the dialog itself: a stray Space or Enter (a jump, a habit) presses nothing,
   // Esc closes, Tab reaches the buttons.
@@ -382,16 +413,23 @@ export function openLightbox({ doc = globalThis.document, host = doc?.body, src,
 /**
  * Makes a picture link open the lightbox: a plain click, Enter (the link's own click) or Space.
  * Modified and middle clicks keep the link's new tab. `opts` go to openLightbox (src from the href);
- * onOpen(box) hears each open. `gallery`, when given, is a function giving the pictures the link
+ * onOpen(box) hears each open; `ready()`, when given, may return a promise the open waits for. `gallery`, when given, is a function giving the pictures the link
  * is one of (read at each open: the list can change) and `index` its place. Returns a function that opens it.
  */
-export function lightboxLink(link, { onOpen = () => {}, gallery = null, index = 0, ...opts } = {}) {
-  const show = () => {
+export function lightboxLink(link, { onOpen = () => {}, gallery = null, index = 0, ready = null, ...opts } = {}) {
+  const now = () => {
     const list = typeof gallery === 'function' ? gallery() : gallery;
     const at = typeof index === 'function' ? index() : index;
-    const box = openLightbox({ src: link.getAttribute('href'), opener: link, doc: link.ownerDocument || globalThis.document, ...opts, ...(Array.isArray(list) && list.length > 1 ? { gallery: list, index: at } : {}) });
+    // A picture with rings to mark (G808) opens from its gallery item even alone: its own src, not the link's (the marked copy).
+    const asGallery = Array.isArray(list) && (list.length > 1 || (list.length === 1 && list[0]?.mark));
+    const box = openLightbox({ src: link.getAttribute('href'), opener: link, doc: link.ownerDocument || globalThis.document, ...opts, ...(asGallery ? { gallery: list, index: at } : {}) });
     onOpen(box);
     return box;
+  };
+  // `ready()` may give a promise to wait for first (G808: the picture with the UI still drawing).
+  const show = () => {
+    const wait = typeof ready === 'function' ? ready() : null;
+    return wait && typeof wait.then === 'function' ? wait.then(now, now) : now();
   };
   link.addEventListener('click', (ev) => {
     if (!plainClick(ev)) return;

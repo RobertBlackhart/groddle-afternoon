@@ -5242,6 +5242,35 @@
    "rows": [
     "G1127"
    ]
+  },
+  {
+   "id": "report-picture-rings",
+   "title": "Circle the spot: a report's picture can carry up to three red rings, drawn in its big view with a drag or a tap (or the keys), drawn into the JPEG that is sent and shown on its thumbnail, in the game in both skins and in the phone companion (#49).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ui/picture-marks.js",
+     "symbol": "MARKS / ringKey / paintRings / bakeMarks / createMarkBook / createMarker"
+    },
+    {
+     "file": "public/js/ui/picture-lightbox.js",
+     "symbol": "openLightbox (mark)"
+    },
+    {
+     "file": "public/js/ui/reports-sheet.js",
+     "symbol": "marks / trayGallery / uiBox change"
+    },
+    {
+     "file": "public/js/phone/companion.js",
+     "symbol": "photoPicker (book)"
+    }
+   ],
+   "why": "A player asked to circle or mark the spot on a report's picture. Glitch's bug form (BootError.as) was a text box and the session details, with no picture at all, so there is nothing to match. The rings go in as pixels, so the site, the console and the reply emails show them with no change of their own. The world picture and the picture with the game's UI are framed differently, so changing Include the game's UI after marking clears the rings, with a line saying so.",
+   "ruling": "Austin 2026-11-22: build option A, circle the spot",
+   "rows": [
+    "G808"
+   ]
   }
  ]
 }
