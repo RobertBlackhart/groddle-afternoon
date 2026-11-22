@@ -1055,6 +1055,19 @@ export const soloFeatsFeature = {
     return { mode: 'solo', id: best.id, title: best.title, what: best.what, value: best.value, goal: best.goal };
   },
 
+  /**
+   * G800 (features/calendar-feature.js, js/calendar.js): the Feats for the Calendar. Online, today's
+   * shared run as the server sent it (its feat and start anchor the turns after it), or null before
+   * it has; solo, your own Feats, each open or Done with when it opens again.
+   */
+  calendarFeats() {
+    if (mpMode) {
+      const run = mp?.run;
+      return { mode: 'world', run: run ? { feat: run.feat, start: run.start, end: run.end } : null };
+    }
+    return { mode: 'solo', rows: featRows(state).map((r) => ({ id: r.id, title: r.title, complete: r.complete, reopensAt: r.reopensAt })) };
+  },
+
   /** engine.featsIncrement(featId, amount, opts): pc.feats_increment. */
   featsIncrement(featId, amount, opts, engine) {
     if (!engine || !FEAT_BY_ID[featId]) return null;

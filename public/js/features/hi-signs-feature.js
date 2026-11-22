@@ -848,6 +848,7 @@ const BOARD_STYLE = `
   border-radius: var(--radius-xl); padding: 0.8rem 0.95rem var(--sp-7); background: var(--surface-card); color: var(--c-sand-28); box-shadow: var(--shadow-3); font: var(--fs-md)/var(--lh-normal) var(--font-system); }
 .hi-board[hidden] { display: none; }
 .hi-board h2 { margin: 0 0 var(--sp-3); font-size: var(--fs-lg); }
+.hi-board .hi-calendar { float: right; margin: 0 var(--sp-4) 0 0; border: 1px solid var(--c-gold-84b); border-radius: var(--radius-pill); padding: 0 var(--sp-5); background: var(--c-cream-99b); color: var(--c-brown-46); font: inherit; font-weight: 700; cursor: pointer; }
 .hi-board .hi-close { float: right; border: 0; background: transparent; font-size: var(--fs-xl); line-height: var(--lh-none); cursor: pointer; color: var(--c-sand-28); }
 .hi-board .hi-you { display: flex; align-items: center; gap: var(--sp-4); margin: 0.2rem 0 var(--sp-3); font-weight: 600; }
 .hi-board .hi-sign { display: inline-block; flex: none; background-repeat: no-repeat; }
@@ -948,7 +949,15 @@ function renderBoard(engine) {
     board.more = !board.more;
     renderBoard(engine);
   });
-  const parts = [close, el('h2', '', BOARD_TEXT.title), you, el('p', '', isPhoneDevice() ? BOARD_TEXT.instructTouch : BOARD_TEXT.instruct), more];
+  // DateTimeDialog.as 131-160: the clock's dialog has a Calendar button (G800, features/calendar-feature.js).
+  const calendar = el('button', 'hi-calendar', 'Calendar');
+  calendar.type = 'button';
+  calendar.dataset.calendarOpen = '';
+  calendar.addEventListener('click', () => {
+    setBoardOpen(engine, false);
+    window.dispatchEvent(new CustomEvent('groddle:calendar'));
+  });
+  const parts = [close, calendar, el('h2', '', BOARD_TEXT.title), you, el('p', '', isPhoneDevice() ? BOARD_TEXT.instructTouch : BOARD_TEXT.instruct), more];
   if (board.more) parts.push(el('p', 'hi-desc', BOARD_TEXT.desc));
   const list = el('ol');
   list.setAttribute('aria-label', 'Signs today');

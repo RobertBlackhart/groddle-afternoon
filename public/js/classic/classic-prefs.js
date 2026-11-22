@@ -22,7 +22,7 @@
  */
 import { CLASSIC, MODERN, onUiModeChange, setUiMode, setUiSize, uiState } from './ui-mode.js?v=e44e0f90';
 import { CLASSIC_MIN_W, CLASSIC_MIN_H } from './classic-layout.js?v=24f07215';
-import { installClassicChrome } from './classic-chrome.js?v=1e66355a';
+import { installClassicChrome } from './classic-chrome.js?v=909e2f9d';
 import { ZOOM_KEYS_HINT, clampZoom, onZoomChange, setWorldZoom, worldZoom, zoomLabel, zoomValueText } from '../world-zoom.js?v=38816228';
 import { NIGHT_TINT_HINT, NIGHT_TINT_LABEL, nightTintOn, onNightTintChange, setNightTint } from '../night-tint.js?v=1dfc9c89';
 import { STREET_MAP_HINT, STREET_MAP_LABEL, onStreetMapChange, setStreetMap, streetMapOn } from '../ui/street-minimap.js?v=a22e61d5';

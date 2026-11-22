@@ -175,10 +175,12 @@ export function installClassicTopbar({ doc = globalThis.document, win = globalTh
   // js/ui/topbar.js installLocationLink wires it for both skins (ticket 60): in Classic the whole block.
 
   // The date block: a click opens the clock's dialog (DateTimeUI.as 71-74: DateTimeDialog, the hi
-  // sign board), where the clock has one (multiplayer, hi-signs-feature bindClock).
+  // sign board), where the clock has one (multiplayer, hi-signs-feature bindClock), or solo the
+  // Calendar the clock opens there (G800, calendar-feature bindClock).
+  const clockOpens = (clock) => clock?.dataset.hiBoard !== undefined || clock?.dataset.calendar !== undefined;
   date.addEventListener('click', () => {
     const clock = doc.getElementById('dametime-clock');
-    if (classic() && clock?.dataset.hiBoard !== undefined) clock.click();
+    if (classic() && clockOpens(clock)) clock.click();
   });
   date.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -225,16 +227,17 @@ export function installClassicTopbar({ doc = globalThis.document, win = globalTh
   function syncDate() {
     if (!classic()) return;
     const clock = doc.getElementById('dametime-clock');
-    // The board's clock is a button; without one the block is only words.
-    const board = clock?.dataset.hiBoard !== undefined;
+    // The board's clock is a button (or solo the Calendar's); without one the block is only words.
+    const board = clockOpens(clock);
     if ((date.dataset.hiBoard !== undefined) !== board) {
       if (board) {
         date.dataset.hiBoard = '';
         date.setAttribute('role', 'button');
         date.setAttribute('tabindex', '0');
         date.removeAttribute('aria-hidden');
-        date.setAttribute('aria-label', clock.getAttribute('title') || 'Daily limits and things');
-        date.dataset.tip = 'Daily limits and things';
+        const tip = clock.dataset.hiBoard !== undefined ? 'Daily limits and things' : 'Calendar';
+        date.setAttribute('aria-label', clock.getAttribute('title') || tip);
+        date.dataset.tip = tip;
       } else {
         delete date.dataset.hiBoard;
         delete date.dataset.tip;
