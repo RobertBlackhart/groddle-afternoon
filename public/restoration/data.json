@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3082,
+  "commits": 3085,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Online, rocks, trees and nodes stand where the server has them, so Indri Slope's salmon can be pocketed"
+   },
    {
     "date": "2026-11-22",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "No strip of dirt floating at the top of Mart's Way 1 and Dust Path 1C"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Paradise skies reach the top of the screen on an upright phone"
    }
   ]
  },
- "tests": 1269,
+ "tests": 1270,
  "generatedAt": "2026-11-22"
 }
