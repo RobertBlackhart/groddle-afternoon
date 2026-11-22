@@ -26,11 +26,11 @@
  * chickenSquawks, chickenScareRolls, chickenFlying, chickenScareMode (flight | hop).
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=cc58ae0e';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { ANIMAL_PATROL } from '../street-ecology.js?v=1401a97c';
 import { forcedRoll } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdSad } from './animal-mood-feature.js?v=e8bcecda';
+import { animalCrowdSad } from './animal-mood-feature.js?v=2046d39c';
 import {
   CHICKEN_CLASS,
   CHICKEN_HOP,

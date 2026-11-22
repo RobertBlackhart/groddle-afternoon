@@ -11,7 +11,7 @@ import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc
 import { bindToolInventory, createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { levitateHint, meditationFeature } from '../public/js/features/meditation-feature.js?v=d17e9069';
 import { TOUCH_JUMP_EVENT } from '../public/js/touch-controls.js?v=b10f17bb';
-import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=3f04f41b';
+import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=5176f65f';
 
 function fakeEngine(overrides = {}) {
   const toasts = [];

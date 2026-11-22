@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b52b3339';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=159ef4e7';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=283a5cce';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -554,7 +554,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=c565105f';
+} from './js/player-save.js?v=6ad01088';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -568,8 +568,9 @@ import {
   homeStayAfterArrival,
   imagineHome,
   isHomePlaceTsid,
-} from './js/homes.js?v=c9fd92db';
-import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=fe9ee3a2';
+  setHomeHouse,
+} from './js/homes.js?v=b3059a1b';
+import { HOME_MACHINE, offerHomeTicket, renderTicketMachine } from './js/home-ticket.js?v=b3d7775e';
 import {
   MAIL_COMPANIONS,
   archiveMail,
@@ -668,7 +669,7 @@ import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
 import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=75208dce';
 import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=0b4144eb';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
-import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=0bdec903';
+import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=55d312b7';
 import {
   createGarden,
   fitGardenToBed,
@@ -1073,9 +1074,9 @@ import {
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=1401a97c';
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=c25179f2';
-import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=a0c8f323';
+import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=ead8cdf8';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=1d3eb0f7';
+import { itemOverlayStats } from './js/item-overlay.js?v=619d2782';
 import { isCrowdSad } from './js/animal-crowding.js?v=1966bc21';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1105,7 +1106,7 @@ import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=4
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
-import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=f6344117';
+import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=ad1e46a9';
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
@@ -14284,6 +14285,12 @@ const engine = {
     savePlayerState();
     return true;
   },
+  /** G796: change the house on your home street (the Customize window); saved at once. */
+  setHomeHouse(house) {
+    const result = setHomeHouse(homeState, house);
+    if (result.ok) savePlayerState();
+    return result;
+  },
   /** Deliver one letter ({ sender, text, deliveryAt, attachment, currants }) to the player's mail. */
   deliverMail(message) {
     const row = deliverMail(mailboxState, { sentAt: Date.now(), ...message });
@@ -14406,6 +14413,8 @@ const engine = {
       room: homeState.room || 'street',
       owned: homeState.owned === true,
       style: homeState.style || 'meadow',
+      // G796: the house on the home street (a copy: engine.setHomeHouse changes it).
+      house: homeState.house ? { ...homeState.house, config: { ...homeState.house.config } } : null,
       returnLabel: homeState.returnLocation?.label || '',
       // G328: where the home's way back leads (a visit to someone's home from yours returns there).
       returnLocation: homeState.returnLocation ? { ...homeState.returnLocation } : null,

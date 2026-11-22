@@ -18,6 +18,8 @@
  * their home (`owned` is read as before).
  */
 
+import { normalizeHouse } from './home-house.js?v=e5e54f6a';
+
 export const HOME_STREET_TSID = 'RH_HOME_EXT';
 export const HOME_INTERIOR_TSID = 'RH_HOME_INT';
 
@@ -83,12 +85,20 @@ function normalizeReturn(seed = {}) {
   };
 }
 
+/**
+ * G796: `house` is the furniture_chassis on the home street ({ chassis, config, facingRight },
+ * js/home-house.js). A save from before it has none and takes the original its style's door-deco
+ * house moves to (HOUSE_FROM_HOME_STYLE: Meadow the Groddle Cottage, Firebog the Firebog House,
+ * Uralia the Tiny Hominid House); `style` stays, for the home's music and its first street and
+ * yard looks.
+ */
 export function normalizeHomeState(seed = {}) {
   const style = HOME_STYLES[seed?.style] ? seed.style : 'meadow';
   const owned = seed?.owned === true;
   return {
     owned,
     style,
+    house: normalizeHouse(seed?.house, style),
     purchasedAt: owned ? finiteInt(seed?.purchasedAt) : 0,
     visits: owned ? finiteInt(seed?.visits) : 0,
     inHome: owned && seed?.inHome === true,
@@ -113,6 +123,7 @@ export function imagineHome(state, style = 'meadow', now = Date.now()) {
   Object.assign(state, {
     owned: true,
     style,
+    house: normalizeHouse(null, style),
     purchasedAt: finiteInt(now),
     visits: 0,
     inHome: false,
@@ -172,6 +183,14 @@ export function endHomeVisit(state) {
   return { ok: true, returnLocation };
 }
 
+
+/** G796: change the house (the Customize window): it is normalized and kept; answers it. */
+export function setHomeHouse(state, house) {
+  const home = normalizeHomeState(state);
+  if (!home.owned) return { ok: false, reason: 'not_owned' };
+  state.house = normalizeHouse(house, home.style);
+  return { ok: true, house: state.house };
+}
 
 /** Ticket 67: your home street or your house (any floor of it). */
 export function isHomePlaceTsid(tsid) {

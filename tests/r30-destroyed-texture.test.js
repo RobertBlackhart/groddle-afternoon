@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { guardDestroyedSources } from '../public/js/pixi-fixes.js?v=4dcac864';
-import { installHiresFirstDraw } from '../public/js/sprite-hires.js?v=f6344117';
+import { installHiresFirstDraw } from '../public/js/sprite-hires.js?v=ad1e46a9';
 
 const ROOT = join(import.meta.dirname, '..');
 

@@ -66,7 +66,7 @@
 import { ITEM_CATALOG, addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
 import { isItemFloor, platformYAt } from '../street-model.js?v=a9a05f9d';
-import { hiresSpriteUrl } from '../sprite-hires.js?v=f6344117';
+import { hiresSpriteUrl } from '../sprite-hires.js?v=ad1e46a9';
 import { rollResourceNodeDrop } from './drops-feature.js?v=d839ece2';
 import { peekToolChoice, takeToolChoice } from '../tool-choice.js?v=e0dcb60e';
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
@@ -108,7 +108,7 @@ import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureF
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=69e064ff';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=95f23414';
-import { playItemOverlay } from '../item-overlay.js?v=1d3eb0f7';
+import { playItemOverlay } from '../item-overlay.js?v=619d2782';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=038e7344';
 import { itemZ } from '../item-bands.js?v=e98b10bc';

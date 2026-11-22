@@ -87,7 +87,7 @@ import {
   stillWaitsToStart,
 } from '../machines.js?v=5d749d26';
 import { STILL_ART_BOX, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../still-art.js?v=2eeb65ff';
-import { createSheetLoader } from '../sprite-sheets.js?v=cc58ae0e';
+import { createSheetLoader } from '../sprite-sheets.js?v=bac259c0';
 import { HERB_SEEDS, ITEM_TRANSFORMS, listTransformVerbs, runTransform, transformVerbCount } from '../item-transforms.js?v=3a1b5812';
 import {
   BUREAUCRACY_ITEMS,
