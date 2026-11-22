@@ -112,12 +112,12 @@ import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=01de4c58';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=6d39d0d8';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=72615a1b';
 import { getPlot, tickGarden } from '../garden.js?v=152fa293';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=86bb97ad';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=52b4f74d';
-import { butlerApi } from './butler-feature.js?v=a462297c';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=ca0e2ca0';
+import { butlerApi } from './butler-feature.js?v=44d77537';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=3cb9c8a9';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=cebb24d4';
 import {

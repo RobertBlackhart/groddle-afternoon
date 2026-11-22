@@ -211,7 +211,7 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=6d39d0d8';
+} from '../home-cultivation.js?v=72615a1b';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';

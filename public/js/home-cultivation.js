@@ -457,9 +457,11 @@ export function fixtureObstacles(state, id, { excludeId = null, at = {} } = {}) 
 
 /**
  * Where movable fixture `id` stands on the home street, x from the house's centre (null in a
- * back yard, or for the Mailbox without `at.mailboxX`). The Mailbox and the Magic Rock stand
- * in their usual spots until moved; a moved one (and the dispatcher always) stands at its spot,
- * or the nearest that is clear of the other fixtures and the cultivations (but `excludeId`).
+ * back yard, or for the Mailbox without `at.mailboxX`). The Magic Rock stands in its usual spot
+ * until moved; a moved one (and the dispatcher and the Mailbox always) stands at its spot, or
+ * the nearest that is clear of the other fixtures and the cultivations (but `excludeId`).
+ * G1138: the Mailbox's usual spot is off the house's left corner, so it moves with the house
+ * art (G796) and could land on a saved garden; an unmoved Mailbox steps aside like a moved one.
  */
 export function fixtureRx(state, id, { excludeId = null, at = {} } = {}) {
   if (isBackYard(state) || !MOVABLE_FIXTURES[id]) return null;
@@ -467,7 +469,8 @@ export function fixtureRx(state, id, { excludeId = null, at = {} } = {}) {
   const layout = homeStreetLayout(state);
   const saved = savedFixtureRx(state, id);
   const usual = usualFixtureRx(layout, id, at);
-  if (saved == null && id !== 'dispatcher') return usual;
+  if (saved == null && usual == null) return null;
+  if (saved == null && id === 'rock') return usual;
   return fixtureSpot(layout, id, saved ?? usual, fixtureObstacles(state, id, { excludeId, at })) - layout.houseX;
 }
 

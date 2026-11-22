@@ -28,7 +28,7 @@ import {
   listCultivationClasses,
   nearestFreeRx,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=6d39d0d8';
+} from '../public/js/home-cultivation.js?v=72615a1b';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import {
   FRINGE_CORE,
@@ -42,7 +42,7 @@ import {
   landscapeNearSpots,
   streetNearSkip,
   streetTrimSpots,
-} from '../public/js/features/homes-feature.js?v=ca0e2ca0';
+} from '../public/js/features/homes-feature.js?v=3cb9c8a9';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const RICH = { level: 60, imagination: 1e9 };

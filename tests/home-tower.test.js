@@ -71,7 +71,7 @@ import {
   cultivationCost,
   removeCultivation,
   towerItem,
-} from '../public/js/home-cultivation.js?v=6d39d0d8';
+} from '../public/js/home-cultivation.js?v=72615a1b';
 
 const root = join(import.meta.dirname, '..', 'public');
 const GS = join(import.meta.dirname, '..', '..', 'glitch-GameServerJS');
