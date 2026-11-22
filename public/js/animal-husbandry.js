@@ -704,6 +704,35 @@ export function sanitizeAnimalName(value) {
   return String(value ?? '').substr(0, NAMING.maxLength).replace(/[^a-z0-9 ]/gi, '');
 }
 
+/** A name as it is saved: the source's rule (32 characters, then letters, numbers and spaces), then the word filter. */
+export function animalNameAsSaved(value) {
+  return filterText(sanitizeAnimalName(value));
+}
+
+/** #604: what each kind spells, for the naming box's hint. */
+export const NAMING_KIND_PLURALS = Object.freeze({ npc_piggy: 'Piggies', npc_chicken: 'Chickens', npc_butterfly: 'Butterflies', npc_batterfly: 'Batterflies' });
+
+/**
+ * PURE (#604): the naming box's live hint while you type. The rule stays the source's
+ * (animal_naming.js onInputBoxResponse: 32 characters, then only a-z, 0-9 and spaces), so a name
+ * with other characters says so and shows what will be saved. { saved, ok, rule, savedLine }:
+ * `ok` false when nothing would be left (OK is then off); `rule` the line about the characters
+ * (only when some will be dropped); `savedLine` the name as it will be saved (only when it differs
+ * from what was typed), or that nothing would be left.
+ */
+export function animalNameHint(classId, typed) {
+  const raw = String(typed ?? '').substr(0, NAMING.maxLength);
+  const saved = animalNameAsSaved(raw);
+  const dropped = sanitizeAnimalName(raw) !== raw;
+  const ok = Boolean(saved);
+  const who = NAMING_KIND_PLURALS[classId] || 'Animals';
+  const rule = dropped ? `${who} only spell letters, numbers and spaces.` : '';
+  let savedLine = '';
+  if (!ok && raw) savedLine = 'Nothing would be left to save.';
+  else if (ok && saved !== raw) savedLine = `Saved as: ${saved}`;
+  return { saved, ok, rule, savedLine };
+}
+
 /** animal_naming.js canName for the solo remake (the player id is constant). */
 export function canNameAnimal(state = {}, { learned = [], playerId = 'player', nowS = Math.floor(Date.now() / 1000), ownYard = false } = {}) {
   if (!(learned || []).includes(NAMING.skill)) return false;
@@ -727,7 +756,7 @@ export function namingVerbs(classId, state = {}, ctx = {}) {
 export function nameAnimal(classId, state, value, ctx = {}) {
   if (!canNameAnimal(state, ctx)) return { ok: false, reason: "You can't name this animal right now." };
   // The word filter (the remake's own addition, js/word-filter.js): a bad word is kept as a grawlix.
-  const name = filterText(sanitizeAnimalName(value));
+  const name = animalNameAsSaved(value);
   if (!name) return { ok: false, reason: 'Names need at least one letter or number.' };
   if (name === state.userName) return { ok: false, reason: 'unchanged' };
   const previous = state.userName || '';

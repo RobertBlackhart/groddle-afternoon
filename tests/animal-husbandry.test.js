@@ -44,15 +44,17 @@ import {
   queuePlops,
   releaseHogtied,
   sanitizeAnimalName,
+  animalNameHint,
+  animalNameAsSaved,
   startIncubation,
   stepHogtie,
   stickPlaceState,
   takePlop,
-} from '../public/js/animal-husbandry.js?v=9167a6d5';
-import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=4dc5ccbf';
-import { getVerbsFor, runVerb } from '../public/content.js?v=85e553c8';
+} from '../public/js/animal-husbandry.js?v=e90446db';
+import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=c0117ac6';
+import { getVerbsFor, runVerb } from '../public/content.js?v=26af9625';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=3331ac39';
-import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=8ea00f77';
+import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=ecaa1367';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -336,6 +338,41 @@ describe('Incubation and baby animals (npc_chicken.js, chick/piglet/caterpillar.
   });
 });
 
+describe('#604: the naming box says what a name drops, live', () => {
+  it('keeps the source rule: 32 characters, then letters, numbers and spaces', () => {
+    assert.equal(animalNameAsSaved('Dr. Oink!'), 'Dr Oink');
+    assert.equal(animalNameAsSaved('x'.repeat(40)).length, 32);
+    assert.equal(animalNameAsSaved('Café'), 'Caf', 'no widening of the character set');
+  });
+  it('a clean name has no hint and OK is on', () => {
+    assert.deepEqual(animalNameHint('npc_piggy', 'Wilbur'), { saved: 'Wilbur', ok: true, rule: '', savedLine: '' });
+  });
+  it('dropped characters are named and the saved name shows', () => {
+    const h = animalNameHint('npc_piggy', 'Dr. Oink');
+    assert.equal(h.ok, true);
+    assert.equal(h.rule, 'Piggies only spell letters, numbers and spaces.');
+    assert.equal(h.savedLine, 'Saved as: Dr Oink');
+    assert.equal(animalNameHint('npc_chicken', 'Dr Clucksalot!').rule, 'Chickens only spell letters, numbers and spaces.');
+  });
+  it('nothing left: OK is off, and the box says so', () => {
+    const h = animalNameHint('npc_piggy', '+×÷=/_<>[])(*&^%$#@!-\'":;,?.');
+    assert.equal(h.ok, false);
+    assert.equal(h.saved, '');
+    assert.equal(h.rule, 'Piggies only spell letters, numbers and spaces.');
+    assert.equal(h.savedLine, 'Nothing would be left to save.');
+    assert.deepEqual(animalNameHint('npc_piggy', ''), { saved: '', ok: false, rule: '', savedLine: '' });
+  });
+  it('the box wires it: a live hint under the field, OK off when nothing is left; plain words, no em dash', () => {
+    const feature = readFileSync(join(publicDir, 'js/features/animal-husbandry-feature.js'), 'utf8');
+    assert.match(feature, /<div id="animal-name-hint" class="animal-name-hint" aria-live="polite" hidden>/);
+    assert.match(feature, /input\.addEventListener\('input', showHint\);\n\s*showHint\(\);/);
+    assert.match(feature, /okBtn\.disabled = !h\.ok;/);
+    const lib = readFileSync(join(publicDir, 'js/animal-husbandry.js'), 'utf8');
+    const fn = lib.slice(lib.indexOf('export function animalNameHint'), lib.indexOf('/** animal_naming.js canName'));
+    assert.doesNotMatch(fn, /\u2014/);
+  });
+});
+
 describe('Naming (animal_naming.js)', () => {
   it('needs Animal Kinship V, cleans names, and waits an hour before others rename', () => {
     const ctx = { learned: ['animalkinship_5'], playerId: 'player', nowS: 1000 };
@@ -559,7 +596,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=eff51e0e');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=b33dd0ea');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');

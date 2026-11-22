@@ -1761,6 +1761,11 @@ footer a { color: inherit; }
   box-shadow: inset 3px 0 0 var(--c-lime-67);
 }
 
+/* #604 (js/features/animal-husbandry-feature.js openNameModal): the naming box's live hint, what a
+   name drops and how it will be saved, under the field. Both skins. */
+.animal-name-hint { display: grid; gap: 2px; margin-top: -0.25rem; font-size: var(--fs-s); line-height: var(--lh-tight); color: var(--text-muted); }
+.animal-name-hint[hidden], .animal-name-hint span:empty { display: none; }
+.animal-name-hint [data-saved] { color: var(--text); font-weight: var(--fw-bold); overflow-wrap: anywhere; }
 .verb-choice:disabled {
   cursor: not-allowed;
   opacity: 0.55;

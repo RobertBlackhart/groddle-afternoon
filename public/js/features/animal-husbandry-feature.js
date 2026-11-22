@@ -62,7 +62,7 @@ import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=95f23414';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=4dc5ccbf';
+import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=c0117ac6';
 import { standOnFeet } from '../sprite-feet.js?v=a593b732';
 import {
   BABY_ANIMALS,
@@ -73,6 +73,7 @@ import {
   INCUBATION,
   MAGIC_STICKS,
   NAMEABLE_ANIMALS,
+  animalNameHint,
   PLOP,
   REMOTE_MACHINES,
   REMOTE_SKILL,
@@ -110,15 +111,15 @@ import {
   resetIncubation,
   stepHogtie,
   stickPlaceState,
-} from '../animal-husbandry.js?v=9167a6d5';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=0429e5a7';
+} from '../animal-husbandry.js?v=e90446db';
+import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=1d43faac';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=eff51e0e';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=b33dd0ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=e3b3e7b2';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=8743f502';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=a0c8f323';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
@@ -1138,22 +1139,38 @@ function openNameModal(engine, target, title) {
       </div>
       <form style="padding:0.2rem 0.85rem 0.85rem;display:grid;gap:0.55rem">
         <label style="font-size:0.82rem;opacity:0.75">My new name:</label>
-        <input type="text" maxlength="32" autocomplete="off" spellcheck="false"
+        <input type="text" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="animal-name-hint"
           style="font:inherit;padding:0.45rem 0.6rem;border:1px solid #d9ccb3;border-radius:8px;background:#fff" />
+        <div id="animal-name-hint" class="animal-name-hint" aria-live="polite" hidden><span data-rule></span><span data-saved></span></div>
         <div style="display:flex;gap:0.5rem;justify-content:flex-end">
           <button type="button" data-cancel class="verb-choice" style="width:auto;border:1px solid #e4d9c4;border-radius:8px;padding:0.35rem 0.8rem">Cancel</button>
-          <button type="submit" class="verb-choice" style="width:auto;border:1px solid #9cc47a;border-radius:8px;padding:0.35rem 0.8rem;background:#e8f0dc;font-weight:700">OK</button>
+          <button type="submit" data-ok class="verb-choice" style="width:auto;border:1px solid #9cc47a;border-radius:8px;padding:0.35rem 0.8rem;background:#e8f0dc;font-weight:700">OK</button>
         </div>
       </form>
     </div>`;
   wrap.querySelector('.verb-menu-title').textContent = title;
   const input = wrap.querySelector('input');
   input.value = target.state?.userName || '';
+  // #604: while you type, the characters a name drops are named and the name as it will be saved
+  // shows (the source's rule, animal_naming.js: letters, numbers and spaces); OK is off when
+  // nothing would be left.
+  const hint = wrap.querySelector('.animal-name-hint');
+  const okBtn = wrap.querySelector('[data-ok]');
+  const showHint = () => {
+    const h = animalNameHint(target.classId, input.value);
+    hint.querySelector('[data-rule]').textContent = h.rule;
+    hint.querySelector('[data-saved]').textContent = h.savedLine;
+    hint.hidden = !h.rule && !h.savedLine;
+    okBtn.disabled = !h.ok;
+  };
+  input.addEventListener('input', showHint);
+  showHint();
   const cancel = () => closeNameModal();
   wrap.querySelector('.verb-menu-x').addEventListener('click', cancel);
   wrap.querySelector('[data-cancel]').addEventListener('click', cancel);
   wrap.querySelector('form').addEventListener('submit', (e) => {
     e.preventDefault();
+    if (okBtn.disabled) return;
     const value = input.value;
     closeNameModal();
     applyName(engine, target, value);
