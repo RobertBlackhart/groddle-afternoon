@@ -5271,6 +5271,48 @@
    "rows": [
     "G808"
    ]
+  },
+  {
+   "id": "house-styles-free",
+   "title": "Every house style and every part of a house costs nothing (Glitch sold six of the ten houses for credits)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/home-house.js",
+     "symbol": "HOUSE_STYLES"
+    },
+    {
+     "file": "public/js/ui/house-picker.js",
+     "symbol": "HOUSE_PICKER_TEXT.note"
+    }
+   ],
+   "why": "catalog_furniture.js priced the Frog House, Creepy House, House of Whimsy, House of Orient, Shipwreck and Prehistoric Bone Dwelling in credits (real money: 90 to 180); the remake has no credits, and Tower styles were already free.",
+   "ruling": "Austin 2026-11-22 (G796): free, as towers are",
+   "rows": [
+    "G796"
+   ]
+  },
+  {
+   "id": "house-save-migration",
+   "title": "Homes saved with one of the remake's three door-deco houses move onto Glitch's houses: Meadow to the Groddle Cottage, Firebog to the Firebog House, Uralia to the Tiny Hominid House",
+   "kind": "data",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/home-house.js",
+     "symbol": "HOUSE_FROM_HOME_STYLE"
+    },
+    {
+     "file": "public/js/homes.js",
+     "symbol": "normalizeHomeState"
+    }
+   ],
+   "why": "The three door-deco houses were stand-ins for the furniture_chassis. Uralia goes to the Tiny Hominid House so the three stay three different houses, the three free starter houses Glitch's Magic Rock offered (magic_rock.js 859-876).",
+   "ruling": "Austin 2026-11-22 (G796): move saves onto the originals; the Uralia pick is the lane's (Tiny Hominid), for Austin to confirm",
+   "rows": [
+    "G796"
+   ]
   }
- ]
+]
 }

@@ -633,6 +633,10 @@
     "ours: cannot be added while building) are short and ours.": "ours-home-floors",
     "ours: up your floor project first!\" (:584). `made` is ours: the": "ours-home-floors"
   },
+  "public/js/home-house.js": {
+    "invented: * (inventions:": "house-save-migration",
+    "invented: * house and part is free, as Tower styles are (inventions:": "house-styles-free"
+  },
   "public/js/home-layout.js": {
     "not-source: New art (gz_ decos, made animals) is not Tiny Speck's: it never goes on a profile.": "ours-home-layout"
   },
