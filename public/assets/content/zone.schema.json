@@ -404,24 +404,28 @@
         "url": { "type": "string" },
         "lines": { "type": "array", "items": { "type": "string" } },
         "next": { "type": "string" },
-        "code": {
-          "type": "object",
-          "required": ["type"],
-          "additionalProperties": false,
-          "properties": {
-            "type": { "enum": ["code", "activity", "noop", "teleport", "stop_sound", "quest_flag"] },
-            "reason": { "type": "string" },
-            "supported": { "type": "boolean" },
-            "tsid": { "$ref": "#/$defs/tsid" },
-            "street": { "$ref": "#/$defs/tsid" },
-            "x": { "type": "number" },
-            "y": { "type": "number" },
-            "arrive": { "$ref": "#/$defs/point" },
-            "flag": { "type": "string" },
-            "name": { "type": "string" },
-            "text": { "type": "string" }
-          }
-        }
+        "code": { "$ref": "#/$defs/eventCode" }
+      }
+    },
+    "eventCode": {
+      "description": "A code action as js/location-events.js parseEventCode reads it: one step, several (steps), or unsupported (code, with a reason). A quoin step is a quoin the script sets down at x, y (world px) with the instance props it sets (props).",
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["code", "activity", "noop", "teleport", "stop_sound", "quest_flag", "quoin", "steps"] },
+        "reason": { "type": "string" },
+        "supported": { "type": "boolean" },
+        "tsid": { "$ref": "#/$defs/tsid" },
+        "street": { "$ref": "#/$defs/tsid" },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "arrive": { "$ref": "#/$defs/point" },
+        "flag": { "type": "string" },
+        "name": { "type": "string" },
+        "text": { "type": "string" },
+        "props": { "type": "object", "additionalProperties": { "type": ["string", "number"] } },
+        "steps": { "type": "array", "items": { "$ref": "#/$defs/eventCode" } }
       }
     },
     "eventBox": {

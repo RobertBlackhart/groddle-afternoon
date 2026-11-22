@@ -543,11 +543,15 @@
      "file": "public/js/street-ecology.js"
     },
     {
+     "file": "public/js/street-ecology.js",
+     "symbol": "LEVEL_FLOOR_GROUPS"
+    },
+    {
      "file": "public/js/shared-gardens.js"
     }
    ],
    "why": "Onboarding needs things to mine, harvest and plant on the first street; its archived row names none.",
-   "ruling": "Austin 2026-11-07 (beds kept); G852 #394 rocks set on fixed floor spots",
+   "ruling": "Austin 2026-11-07 (beds kept); G852 #394 rocks set on fixed floor spots; #602 the planned beds stand on level floor (the herb bed off the dirt mound)",
    "rows": [
     "G852"
    ]

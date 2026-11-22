@@ -37,6 +37,7 @@
     "invented: * G1009 (ours, inventions feast-day-piles): whether `classTsid` could be": "feast-day-piles",
     "no-source: // G258: jumping costs no energy (no source; players/player.js onPeriodicEnergyLoss is the": "jump-no-energy",
     "no-source: 16973-16978, 679); the old hub label had no source.": "not-an-invention",
+    "no-source: perms (paradiseSourceGeometry). A course with no source street gets": "not-an-invention",
     "ours: * G1009 (ours, inventions feast-day-piles): whether": "feast-day-piles",
     "ours: // Only ours (important): Pixi's own inline size stays, under": "not-an-invention",
     "ours: // menu of ours ([data-ctx]) or a plain HUD button; text fields,": "right-click-menus",
@@ -1117,7 +1118,8 @@
     "no-source: * - INTERIOR_STREETS: the few interiors no source field marks, each with": "ours-street-ecology",
     "no-source: the street drop that drew a block here is gone (no source); the planner keeps the": "ours-street-ecology",
     "remake-own: #394: Hechey Track's five starter rocks are the remake's own (its archived row names": "starter-street-extras",
-    "remake-own: // The starter's onboarding trees are the remake's own: they are": "starter-street-extras"
+    "remake-own: // The starter's onboarding trees are the remake's own: they are": "starter-street-extras",
+    "remake-own: The planner put Hechey Track's herb bed (the remake's own: the street had": "starter-street-extras"
   },
   "public/js/street-furniture.js": {
     "invented: * The invented notices the boards carried before 2026-10-31. A": "invented-board-notices",
@@ -1157,6 +1159,10 @@
   "public/js/street-objects.js": {
     "ours: // offset: the server's clock minus ours, from the least delayed of the recent objs": "ours-street-objects",
     "stand-in: // When the marks clear is the server's; a stand-in keeps js/woodcutting.js from reading them as an": "ours-street-objects"
+  },
+  "public/js/street-render.js": {
+    "glitch-had-none: * about it) lies over the street's top. Glitch never showed one: CameraMan kept the view inside": "not-an-invention",
+    "glitch-had-none: art parked wholly over the street's top, which Glitch never": "not-an-invention"
   },
   "public/js/subway-mp.js": {
     "ours: * Ours: a lone rider (nobody else on the platform)": "ours-subway"
