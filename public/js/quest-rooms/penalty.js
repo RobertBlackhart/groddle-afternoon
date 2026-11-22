@@ -68,6 +68,15 @@ export const BARS_X = 1290;
 export const TRUNK_X = 1330;
 /** The grassy ledge's top under the floor line: its grass shows below the mud floor's edge. */
 export const GRASS_TOP = 62;
+/** The roof's top edge (penaltybox_roof, 572 px at 0.62: 355 px deep, its bottom 70 px ragged). */
+export const ROOF_TOP = FLOOR - 470;
+const ROOF_H = 572 * 0.62;
+const ROOF_LIP = 70;
+/** Roof copies stacked over the roof: rock to 420 px over the room's top, past any phone view's top. */
+export const ROCK_ABOVE = 2;
+/** The patch's z in the world entity layer and the Smuggler's, in front of it (the player is 50). */
+export const PATCH_Z = 12;
+export const VENDOR_Z = 20;
 const VENDOR = { cell: { w: 187, h: 91 }, anchor: { x: 153 / 187, y: 90 / 91 } };
 
 /**
@@ -200,13 +209,7 @@ function drawPatch(ctx) {
   const hit = new PIXI.Graphics();
   hit.rect(-70, -40, 140, 50).fill({ color: 0xffffff, alpha: 0.001 });
   c.addChild(hit);
-  if (ctx.data.plot.stage === 'dug') {
-    // The tunnel under the dug patch.
-    const g = new PIXI.Graphics();
-    g.ellipse(0, -6, 62, 18).fill({ color: 0x120d09, alpha: 0.92 });
-    g.ellipse(0, -4, 44, 11).fill({ color: 0x000000, alpha: 0.9 });
-    c.addChild(g);
-  }
+  // #613: the dug patch is Glitch's patch_dark dug art alone (the remake had drawn a black hole under it).
   const art = new PIXI.Sprite(textureFromUrl(plotArtPath(ctx.data.plot)));
   standOnFeet(art);
   art.scale.set(1.6);
@@ -349,15 +352,22 @@ export const room = {
     far.addChild(kit.deco(PIXI, 'moon', 760, 170, { scale: 0.5, alpha: 0.85 }));
     for (let i = 0; i < 3; i++) far.addChild(kit.deco(PIXI, 'penaltybox_water_reflection', 300 + i * 900, 640, { scale: 0.5, alpha: 0.7 }));
     const world = root.layer(1, 3);
+    const rock = new PIXI.Graphics();
+    // #613: solid rock behind the roof, so the sky no longer shows through the seams of its art.
+    rock.rect(-200, ROOF_TOP - 500, W + 400, 500 + ROOF_H - ROOF_LIP).fill(0x5b4d40);
+    world.addChild(rock);
     // The cave cell behind, the rock roof above, the mud floor.
     world.addChild(kit.deco(PIXI, 'penaltybox_cell_background', W / 2, FLOOR + 30, { scale: 0.66 }));
-    // The Snap's trunk: behind the bars at the right, roots under the sign, its top under the roof.
-    world.addChild(kit.deco(PIXI, 'penaltybox_trunk', TRUNK_X, FLOOR + 8, { scale: 0.62 }));
-    world.addChild(kit.deco(PIXI, 'penaltybox_roof', W / 2, FLOOR - 470, { ay: 0, scale: 0.62 }));
-    world.addChild(kit.deco(PIXI, 'penaltybox_doorway', 60, FLOOR + 12, { scale: 0.62, tint: 0x8a8278 }));
-    world.addChild(kit.deco(PIXI, 'penaltybox_sign_youarehere', 430, FLOOR + 4, { scale: 0.5 }));
-    world.addChild(kit.deco(PIXI, 'penaltybox_sign_knockitoff', 1210, FLOOR + 4, { scale: 0.42 }));
+    // #613 (G1142): an upright phone shows the room's full height and more, so rock goes on up over
+    // the roof to the view's top: copies of the roof stacked above it, each one's ragged bottom edge
+    // hidden behind the straight top of the one below.
+    for (let i = ROCK_ABOVE; i >= 1; i--) {
+      world.addChild(kit.deco(PIXI, 'penaltybox_roof', W / 2, ROOF_TOP - (i - 1) * (ROOF_H - ROOF_LIP) + ROOF_LIP, { scale: 0.62, flip: i % 2 === 1 }));
+    }
+    world.addChild(kit.deco(PIXI, 'penaltybox_roof', W / 2, ROOF_TOP, { ay: 0, scale: 0.62 }));
     const g = new PIXI.Graphics();
+    // The cave's dark floor behind the doorway's foot, where the cell background's lower corner curves away (#613).
+    g.rect(-200, FLOOR - 60, 420, 60).fill(0x1f1915);
     // The earth below the grassy ledge.
     g.rect(-200, FLOOR + 180, W + 400, H - FLOOR + 50).fill(0x4a3a2e);
     world.addChild(g);
@@ -369,6 +379,12 @@ export const room = {
     band.rect(-200, FLOOR - 6, W + 400, 6).fill(0x9d8c76);
     world.addChild(band);
     world.addChild(kit.deco(PIXI, 'penaltybox_middleplus_side', W / 2, FLOOR - 10, { ay: 0, scale: 0.62 }));
+    // #613: what stands on the floor is drawn after it, so the floor no longer hides its foot.
+    // The Snap's trunk: behind the bars at the right, roots under the sign, its top under the roof.
+    world.addChild(kit.deco(PIXI, 'penaltybox_trunk', TRUNK_X, FLOOR + 8, { scale: 0.62 }));
+    world.addChild(kit.deco(PIXI, 'penaltybox_doorway', 60, FLOOR + 12, { scale: 0.62, tint: 0x8a8278 }));
+    world.addChild(kit.deco(PIXI, 'penaltybox_sign_youarehere', 430, FLOOR + 4, { scale: 0.5 }));
+    world.addChild(kit.deco(PIXI, 'penaltybox_sign_knockitoff', 1210, FLOOR + 4, { scale: 0.42 }));
     // The cell door: a row of recovered bars from floor to roof.
     for (let i = 0; i < 6; i++) {
       world.addChild(kit.deco(PIXI, i % 2 ? 'penaltybox_bar_2' : 'penaltybox_bar_1', BARS_X + i * 22, FLOOR + 8, { scale: 0.62 }));
@@ -395,7 +411,7 @@ export const room = {
     patch.y = FLOOR;
     ctx.data.patchView = patch;
     drawPatch(ctx);
-    ctx.add(patch, 12);
+    ctx.add(patch, PATCH_Z);
     patch._worldHitW = 140;
     patch._worldHitH = 50;
     ctx.data.patchTarget = ctx.register({ classId: 'patch_dark', label: 'Dark Patch', subtitle: 'Soft, under the straw', sprite: patch });
@@ -409,6 +425,8 @@ export const room = {
     v.y = FLOOR;
     v._worldHitW = 70;
     v._worldHitH = 90;
+    // #613: in front of the patch (z 12) as the player is, so he goes down the hole, not behind it.
+    v.zIndex = VENDOR_Z;
     ctx.data.vendor = v;
     ctx.data.vendorClip = '';
     ctx.data.vendorDir = 1;

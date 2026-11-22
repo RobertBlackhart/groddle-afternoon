@@ -3,7 +3,7 @@
  * from quests/smuggle_the_smuggler_part1-3.js, the reconstructed cell's
  * reach and visible band, the shipped art, and the three-part step machine.
  */
-import { describe, it } from 'node:test';
+import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -11,6 +11,9 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=15fb2b7a';
+import { stageFor } from '../public/js/location-view.js?v=8060082c';
+import { cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
+import { Display, FakeEl, fakePixi } from './fake-scene.js';
 import {
   BARS_X,
   DIG_COUNTER,
@@ -19,21 +22,25 @@ import {
   FLOOR,
   FREE_TEXT,
   GRASS_TOP,
+  H,
   NEED_TOOL,
   PACE,
   PART_1,
   PART_2,
   PART_3,
   PATCH_X,
+  PATCH_Z,
+  ROOF_TOP,
   SPAWN,
   TOOLS,
   TRUNK_X,
+  VENDOR_Z,
   W,
   cellPlatforms,
   cellStep,
   hasWorkingTool,
   room,
-} from '../public/js/quest-rooms/penalty.js?v=f9f68f5d';
+} from '../public/js/quest-rooms/penalty.js?v=a309d175';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -118,5 +125,84 @@ describe('Penalty cell steps', () => {
     assert.ok(hasWorkingTool({ ace_of_spades: 1 }, null, () => true));
     assert.ok(!hasWorkingTool({ shovel: 1 }, null, () => false));
     assert.ok(!hasWorkingTool({ hoe: 1 }, null, () => true));
+  });
+});
+
+/**
+ * #613 (G1142, an upright Android phone, 384 x 644): the phone shows the cell's full height and
+ * more, and the sky gradient filled the top 30% over the roof; the floor band was drawn over the
+ * doorway's, the signs' and the trunk's feet; the Smuggler stood behind the dug patch (z 0 under
+ * its 12) as he went down; and a drawn black ellipse sat under Glitch's dug patch art.
+ */
+describe('The Cell on an upright phone (#613)', () => {
+  const saved = {};
+  let scene;
+  let world;
+  before(async () => {
+    saved.document = globalThis.document;
+    saved.PIXI = globalThis.PIXI;
+    globalThis.PIXI = fakePixi;
+    globalThis.document = { baseURI: 'https://groddle.localhost/', createElement: (t) => new FakeEl(t), head: new FakeEl('head'), body: new FakeEl('body'), getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] };
+    scene = room.build({ PIXI: fakePixi, kit, data: {}, param: () => null, engine: {}, state: {} });
+    world = scene.background.children.find((c) => c.factor === 1);
+  });
+  after(() => {
+    globalThis.document = saved.document;
+    globalThis.PIXI = saved.PIXI;
+  });
+
+  it('rock covers every view from its top down to the roof: phones and windows', () => {
+    const roofH = 572 * 0.62;
+    const lip = 70;
+    // The roof (top-anchored at ROOF_TOP) and the copies stacked over it (bottom-anchored).
+    const roofs = world.children.filter((c) => c.x === W / 2 && Math.abs(c.scale.y) === 0.62 && (c.anchor.y === 1 ? c.y <= ROOF_TOP + lip : c.y === ROOF_TOP));
+    const spans = roofs.map((c) => (c.anchor.y === 1 ? [c.y - roofH, c.y - lip] : [c.y, c.y + roofH - lip])).sort((a, b) => a[0] - b[0]);
+    assert.ok(spans.length >= 2, `${spans.length} roof pieces`);
+    for (let i = 1; i < spans.length; i++) assert.ok(spans[i][0] <= spans[i - 1][1], `roof pieces ${i - 1} and ${i} meet (${spans[i - 1]} / ${spans[i]})`);
+    const views = [
+      { width: 384, height: 644, phone: true },
+      { width: 402, height: 812, phone: true },
+      { width: 430, height: 932, phone: true },
+      { width: 1280, height: 740, phone: false },
+      { width: 1920, height: 1020, phone: false },
+    ];
+    for (const v of views) {
+      const { viewH } = stageFor({ width: v.width, height: v.height, sceneWidth: W, sceneHeight: H, phone: v.phone });
+      const worldH = cameraWorldHeightForGround(H, FLOOR, viewH);
+      const camY = cameraTargetY(FLOOR, worldH, viewH);
+      assert.ok(spans[0][0] <= camY, `${v.width}x${v.height}: the view's top ${camY} is rock (rock from ${spans[0][0]})`);
+    }
+  });
+
+  it('draws the floor before what stands on it: doorway, signs and trunk', () => {
+    const at = (x, y) => world.children.findIndex((c) => c.x === x && c.y === y);
+    const floorEdge = at(W / 2, FLOOR - 10);
+    assert.ok(floorEdge > 0, 'the mud floor strip');
+    for (const [name, x, y] of [['doorway', 60, FLOOR + 12], ['you are here', 430, FLOOR + 4], ['knock it off', 1210, FLOOR + 4], ['trunk', TRUNK_X, FLOOR + 8]]) {
+      const i = at(x, y);
+      assert.ok(i > floorEdge, `${name} (${i}) after the floor (${floorEdge})`);
+    }
+  });
+
+  it('the Smuggler stands in front of the patch; the dug patch is the art alone', () => {
+    const added = [];
+    const PIXI = new Proxy({ AnimatedSprite: Display }, { get: (t, k) => (k in t ? t[k] : fakePixi[k]) });
+    const ctx = {
+      PIXI,
+      kit,
+      // The Smuggler's idle sheet as if loaded (the fake page loads no pictures).
+      data: { vendorSheets: { idle: { frames: [{}], base: null } } },
+      engine: { questState: { completed: [PART_2] } },
+      add: (o, z) => { o.zIndex = z; added.push(o); return o; },
+      register: (t) => ({ ...t }),
+      quest: () => ({ active: () => false }),
+    };
+    room.enter(ctx);
+    assert.equal(ctx.data.plot.stage, 'dug');
+    assert.equal(ctx.data.patchView.zIndex, PATCH_Z);
+    assert.equal(ctx.data.vendor.zIndex, VENDOR_Z);
+    assert.ok(VENDOR_Z > PATCH_Z && VENDOR_Z < 50, 'in front of the hole, behind the player (50)');
+    // The hit area and the patch_dark dug art: no drawn tunnel.
+    assert.equal(ctx.data.patchView.children.length, 2);
   });
 });

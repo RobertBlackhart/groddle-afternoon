@@ -229,7 +229,7 @@ const ROOM_MODULES = {
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=1fe4ced5'),
   gwendolyn: () => import('../quest-rooms/gwendolyn.js?v=bbfd01b9'),
   mental_block: () => import('../quest-rooms/mental-block.js?v=6ac7efb7'),
-  penalty: () => import('../quest-rooms/penalty.js?v=f9f68f5d'),
+  penalty: () => import('../quest-rooms/penalty.js?v=a309d175'),
   esquibeth: () => import('../quest-rooms/esquibeth.js?v=74efa68e'),
   ez_cookin: () => import('../quest-rooms/ez-cookin.js?v=66fc9191'),
   soil_appreciation: () => import('../quest-rooms/soil-appreciation.js?v=5a30fd55'),
