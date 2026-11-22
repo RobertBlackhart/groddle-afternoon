@@ -56,8 +56,9 @@ describe('ticket 60: the street name opens the Map', () => {
     assert.match(classicCss, /\.street-nameplate:hover \{ background-image: url\("\.\.\/assets\/classic\/map_icon_hover\.webp/);
   });
 
-  it('Classic: the date block opens the hi sign board where the clock has one (multiplayer)', () => {
-    assert.match(classicTopbar, /date\.addEventListener\('click', \(\) => \{\s+const clock = doc\.getElementById\('dametime-clock'\);\s+if \(classic\(\) && clock\?\.dataset\.hiBoard !== undefined\) clock\.click\(\);/);
+  it('Classic: the date block opens the hi sign board where the clock has one (multiplayer), or solo the Calendar (G800)', () => {
+    assert.match(classicTopbar, /const clockOpens = \(clock\) => clock\?\.dataset\.hiBoard !== undefined \|\| clock\?\.dataset\.calendar !== undefined;/);
+    assert.match(classicTopbar, /date\.addEventListener\('click', \(\) => \{\s+const clock = doc\.getElementById\('dametime-clock'\);\s+if \(classic\(\) && clockOpens\(clock\)\) clock\.click\(\);/);
     assert.match(classicTopbar, /date\.setAttribute\('role', 'button'\);\s+date\.setAttribute\('tabindex', '0'\);/);
     assert.match(classicCss, /\.classic-date\[data-hi-board\] \{ cursor: pointer; pointer-events: auto; \}/);
     // The board itself is still the clock's (features/hi-signs-feature.js bindClock).

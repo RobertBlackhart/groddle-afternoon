@@ -22,7 +22,7 @@
  *
  * The remake fills it from its own data: Ur's days (js/game-day.js), Glitch's holidays as the
  * calendar named them, the events the remake runs on real dates (js/seasons.js SEASONS: Zilloween,
- * Glitchmas and Pi Day from Glitch, Pot Luck Day ours) and in Ur's own Zilloween (Remember 25-37,
+ * Glitchmas and Pi Day from Glitch, Pot Luck Day the remake's) and in Ur's own Zilloween (Remember 25-37,
  * isDametimeZilloween), and the Feats: online the shared Feat's turns (js/feats-mp.js runAt, one a
  * real day, six Ur days, as Glitch's), solo your own Feats (js/solo-feats.js). Real times are shown
  * in the player's own time zone (fmtLocal), as the page linked "Find out when the feat starts in
@@ -172,7 +172,7 @@ export function dametimeZilloween(year) {
 
 /**
  * The events on now or coming next, one row each, soonest first: { id, label, start, end, on,
- * glitch (from Glitch, or ours), blurb, ur (true for Ur's own Zilloween) }.
+ * glitch (from Glitch, or the remake's), blurb, ur (true for Ur's own Zilloween) }.
  */
 export function calendarEvents(now = Date.now()) {
   const t = whole(now);

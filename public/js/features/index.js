@@ -212,6 +212,6 @@ import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=51c0981c'; FE
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=771d3355'; FEATURES.push(feastDayFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=8ecb552e'; FEATURES.push(streetObjectsFeature);
+import { calendarFeature } from './calendar-feature.js?v=3d1d34b2'; FEATURES.push(calendarFeature);
 import { realtimeFeature } from './realtime-feature.js?v=24175621'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=1b10b444'; FEATURES.push(accountBackupFeature);
-import { calendarFeature } from './calendar-feature.js?v=00439c0c'; FEATURES.push(calendarFeature);

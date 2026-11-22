@@ -157,7 +157,8 @@ describe('ticket 12: a rooked animal keeps its own key and its own healers', () 
     const sentB = [];
     const A = onlineEngine([...a], sentA);
     enter(featureA, A.engine);
-    assert.deepEqual(sentA[0][1].keys, ['npc_butterfly:0', 'npc_butterfly:1', 'npc_butterfly:2', 'npc_butterfly:3']);
+    // The first message on binding asks for the attacks under way (G799 rook_attacks); then the street's sync.
+    assert.deepEqual(sentA.find(([k]) => k === 'rook_sync')[1].keys, ['npc_butterfly:0', 'npc_butterfly:1', 'npc_butterfly:2', 'npc_butterfly:3']);
     featureA.onStreetClear(A.engine);
     // Player B: Butterfly 0 is away today, then comes back.
     const listB = [b[1], b[2], b[3]];
