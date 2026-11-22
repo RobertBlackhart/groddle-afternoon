@@ -4151,6 +4151,6 @@
 
 
 /* Report #608: the Buddies window's heads are the Modern skin's (js/features/buddies-feature.js);
-   Glitch's contact rows were a name and an online dot, no portrait (ContactElement.as). Hidden, the
+   The 2012 client's contact rows were a name and an online dot, no portrait (ContactElement.as). Hidden, the
    lazy picture is never asked for. */
 :root[data-ui="classic"] .buddies-panel .buddy-av { display: none; }
