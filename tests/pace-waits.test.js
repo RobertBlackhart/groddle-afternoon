@@ -20,7 +20,7 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { PACED_WAITS, ROCK_RESPAWN_EXTRA_AFTER, ROCK_RESPAWN_EXTRA_MS, ROCK_RESPAWN_MS, pacedWaitMs, rockRespawnMs } from '../public/js/pace.js?v=c07dfbd8';
 import { createMineRock, crumbleRock, mineRock, rockChunksTaken, tickMineRock } from '../public/js/mining.js?v=8463f2ac';
-import { ROCK_RESPAWN_MS as YARD_ROCK_RESPAWN_MS, applyStockAct } from '../public/js/yard-stock-mp.js?v=0e5969e6';
+import { ROCK_RESPAWN_MS as YARD_ROCK_RESPAWN_MS, applyStockAct } from '../public/js/yard-stock-mp.js?v=1833eeb0';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { ruleTables } from '../tools/build-realtime-objects.mjs';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';

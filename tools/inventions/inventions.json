@@ -5184,6 +5184,35 @@
    "rows": [
     "G801"
    ]
+  },
+  {
+   "id": "unhidden-home-finishes",
+   "title": "Eight home finishes Glitch defined but never offered are in the Decorate swatch tray: Blue Tiles, Dark Starry Sky Wallpaper, Pastel Glow Wallpaper, Dark Starry Sky Floor, Starry Sky Floor, Rook Forest Floor, Dark Starry Sky Ceiling and Rook Forest Ceiling, with Tiny Speck's names and prices",
+   "kind": "content",
+   "status": "kept",
+   "ruling": "Austin 2026-11-22: unhide the hidden home finishes where art survives (G400); Test Greenhouse Ceiling stays hidden as a test asset",
+   "where": [
+    {
+     "file": "tools/home-wallpaper/configs.mjs",
+     "symbol": "UNHIDDEN_FINISHES / finishShown"
+    },
+    {
+     "file": "build-homes.mjs",
+     "symbol": "buildTextures"
+    },
+    {
+     "file": "tools/home-wallpaper/build.py",
+     "symbol": "wanted_pieces"
+    },
+    {
+     "file": "public/js/home-decor.js",
+     "symbol": "textureCategory"
+    }
+   ],
+   "why": "inc_data_homes.js sets is_visible false on these configs and nothing else in GSJS assigns their keys, so no player could buy them in Glitch. Their pieces survive in the CC0 home_wallpaper.swf, all but darkstar_black_ceiling_left, which homes_get_ceiling_sprite never draws. The Rook Forest pair has no category in the source and sorts under Other, as SwatchBagUI did with a null category.",
+   "rows": [
+    "G400"
+   ]
   }
  ]
 }

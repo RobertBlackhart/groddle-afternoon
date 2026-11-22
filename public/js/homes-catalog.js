@@ -1197,7 +1197,7 @@ export const FURNITURE_STARTER_KIT = Object.freeze({
   "furniture_walldeco": 1
 });
 
-/** inc_data_homes.js visible wallpaper / floor / ceiling configs. */
+/** inc_data_homes.js visible wallpaper / floor / ceiling configs, and the hidden ones G400 unhides. */
 export const HOME_TEXTURE_CONFIGS = Object.freeze({
   "walls": {
     "8bit": {
@@ -1248,6 +1248,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "isDefault": false,
       "isSubscriber": false
     },
+    "blue_tiles": {
+      "key": "blue_tiles",
+      "name": "Blue Tiles",
+      "category": "Tiles",
+      "costCredits": 25,
+      "isDefault": false,
+      "isSubscriber": false
+    },
     "brown_boghouse": {
       "key": "brown_boghouse",
       "name": "Brown Bog Wallpaper",
@@ -1279,6 +1287,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "costCredits": 55,
       "isDefault": false,
       "isSubscriber": true
+    },
+    "darkstar_black": {
+      "key": "darkstar_black",
+      "name": "Dark Starry Sky Wallpaper",
+      "category": "Novelty",
+      "costCredits": 40,
+      "isDefault": false,
+      "isSubscriber": false
     },
     "tealgreen_stucco": {
       "key": "tealgreen_stucco",
@@ -1477,6 +1493,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "name": "Paper Monster Walls",
       "category": "Fun",
       "costCredits": 55,
+      "isDefault": false,
+      "isSubscriber": false
+    },
+    "club_light": {
+      "key": "club_light",
+      "name": "Pastel Glow Wallpaper",
+      "category": "Novelty",
+      "costCredits": 25,
       "isDefault": false,
       "isSubscriber": false
     },
@@ -1746,6 +1770,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "isDefault": false,
       "isSubscriber": true
     },
+    "darkstar_black_floor": {
+      "key": "darkstar_black_floor",
+      "name": "Dark Starry Sky Floor",
+      "category": "Novelty",
+      "costCredits": 25,
+      "isDefault": false,
+      "isSubscriber": false
+    },
     "darkuralia": {
       "key": "darkuralia",
       "name": "Dark Uralia Floor",
@@ -1842,6 +1874,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "isDefault": false,
       "isSubscriber": false
     },
+    "rook_forestfloor": {
+      "key": "rook_forestfloor",
+      "name": "Rook Forest Floor",
+      "category": null,
+      "costCredits": 0,
+      "isDefault": false,
+      "isSubscriber": false
+    },
     "sea_sand_floor": {
       "key": "sea_sand_floor",
       "name": "Sandy Seascape Flooring",
@@ -1857,6 +1897,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "costCredits": 40,
       "isDefault": false,
       "isSubscriber": true
+    },
+    "sky_dark_floor": {
+      "key": "sky_dark_floor",
+      "name": "Starry Sky Floor",
+      "category": "Novelty",
+      "costCredits": 25,
+      "isDefault": false,
+      "isSubscriber": false
     },
     "starter_crappy": {
       "key": "starter_crappy",
@@ -1932,6 +1980,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "isDefault": false,
       "isSubscriber": false
     },
+    "darkstar_black_ceiling": {
+      "key": "darkstar_black_ceiling",
+      "name": "Dark Starry Sky Ceiling",
+      "category": "Novelty",
+      "costCredits": 25,
+      "isDefault": false,
+      "isSubscriber": false
+    },
     "dark_uraliaceiling": {
       "key": "dark_uraliaceiling",
       "name": "Dark Uralia Ceiling",
@@ -1992,6 +2048,14 @@ export const HOME_TEXTURE_CONFIGS = Object.freeze({
       "key": "lime_crappy_ceiling",
       "name": "Plain Lime Ceiling",
       "category": "Stucco",
+      "costCredits": 0,
+      "isDefault": false,
+      "isSubscriber": false
+    },
+    "rook_forest": {
+      "key": "rook_forest",
+      "name": "Rook Forest Ceiling",
+      "category": null,
       "costCredits": 0,
       "isDefault": false,
       "isSubscriber": false

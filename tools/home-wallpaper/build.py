@@ -18,7 +18,8 @@ Outputs
   detail over the 2x file upscaled (most pieces are bitmaps drawn at 1x; their 3x would only be
   bigger). textures.js reads the resolution from the file name.
 - public/js/home-wallpaper-art.js (generated): placed size and 3x flag per piece, and the piece
-  map of every visible wallpaper / floor / ceiling config.
+  map of every shipped wallpaper / floor / ceiling config: the visible ones, and the hidden ones
+  the remake unhides (G400, configs.mjs UNHIDDEN_FINISHES).
 - tools/home-wallpaper/plan.json: inputs, metrics and output hashes per piece.
 
 Usage (python3.11 has numpy + Pillow; FFDec needs Java 21; cwebp 1.6; node for the GSJS configs):
@@ -270,7 +271,7 @@ def bundle_bins(work, bundle):
 
 
 def wanted_pieces(cfg):
-    """{piece: {'bundle', 'size'}} and the piece map per visible config."""
+    """{piece: {'bundle', 'size'}} and the piece map per shipped config (configs.mjs `shown`)."""
     pieces = {}
     maps = {}
 
@@ -283,7 +284,7 @@ def wanted_pieces(cfg):
     for kind, fields in (('walls', WALL_FIELDS), ('floors', FLOOR_FIELDS), ('ceilings', CEILING_FIELDS)):
         maps[kind] = {}
         for key, conf in cfg[kind].items():
-            if not conf.get('is_visible'):
+            if not conf.get('shown'):
                 continue
             row = {}
             for field, size in fields.items():
@@ -496,7 +497,7 @@ def js_text(plan):
         '/** piece -> [placed w, placed h, has a 3x file]. Files: assets/homes/wallpaper/<piece>@2x.webp / @3x.webp. */',
         'export const WALLPAPER_PIECES = Object.freeze(' + json.dumps(sizes, separators=(',', ':')) + ');',
         '',
-        '/** Visible configs: field -> piece (",FLIP" = drawn mirrored), inc_data_homes.js. */',
+        '/** Shipped configs (visible, and G400 unhidden): field -> piece (",FLIP" = drawn mirrored), inc_data_homes.js. */',
         'export const WALLPAPER_MAPS = Object.freeze(' + json.dumps(plan['maps'], separators=(',', ':'), sort_keys=True) + ');',
         '',
     ]

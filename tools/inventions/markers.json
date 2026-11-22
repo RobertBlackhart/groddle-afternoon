@@ -1418,6 +1418,10 @@
   "tools/garden-art/build.mjs": {
     "stand-in: the drawn plot dishes and wooden bed (G316 stand-ins) and the root-frame": "drawn-garden-plots"
   },
+  "tools/home-wallpaper/configs.mjs": {
+    "glitch-had-none: * Glitch never offered them; their pieces are in the CC0": "unhidden-home-finishes",
+    "invented: the hidden home finishes where art survives; inventions": "unhidden-home-finishes"
+  },
   "tools/item-art/render.mjs": {
     "reimagined: Render reimagined item icons (tools/item-art/*.svg) to the pack": "ours-tools-item-art"
   },

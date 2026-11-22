@@ -114,7 +114,7 @@ import {
 } from '../home-tower.js?v=18889f7a';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
-import { pieceUrl } from '../home-wallpaper.js?v=0dc70bac';
+import { pieceUrl } from '../home-wallpaper.js?v=99228166';
 import { wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=c268eefe';

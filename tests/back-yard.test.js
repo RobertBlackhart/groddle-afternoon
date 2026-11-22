@@ -33,8 +33,8 @@ import {
   quoteYardExpansion,
   restoreJobId,
   yardSegments,
-} from '../public/js/home-cultivation.js?v=39041813';
-import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=b787b3eb';
+} from '../public/js/home-cultivation.js?v=6d39d0d8';
+import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import {
   INTERIOR_STYLES,
   START_YARD_STYLE,
@@ -47,12 +47,12 @@ import {
   yardStyleChoices,
   yardStyleFor,
 } from '../public/js/home-styles.js?v=13fe0aaa';
-import { WALLPAPER_MAPS, WALLPAPER_PIECES } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
-import { roomPieces } from '../public/js/home-wallpaper.js?v=0dc70bac';
-import { BACK_YARD_GROUND_Y, clampRowsX, homesFeature, shiftHusbandryRows, shiftInteriorRows, towerDropTsid } from '../public/js/features/homes-feature.js?v=cbb07f6a';
+import { WALLPAPER_MAPS, WALLPAPER_PIECES } from '../public/js/home-wallpaper-art.js?v=129c514f';
+import { roomPieces } from '../public/js/home-wallpaper.js?v=99228166';
+import { BACK_YARD_GROUND_Y, clampRowsX, homesFeature, shiftHusbandryRows, shiftInteriorRows, towerDropTsid } from '../public/js/features/homes-feature.js?v=9ad8b36d';
 import { getGameDayKey } from '../public/js/game-day.js?v=50c112eb';
-import { towerApi } from '../public/js/features/home-tower-feature.js?v=702608ff';
-import { shiftBotX } from '../public/js/features/craftybot-feature.js?v=26b55606';
+import { towerApi } from '../public/js/features/home-tower-feature.js?v=3aec2785';
+import { shiftBotX } from '../public/js/features/craftybot-feature.js?v=a5f8560b';
 import { normalizeDroppedItemState } from '../public/js/world-items.js?v=46eb505b';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=054773be';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
@@ -202,7 +202,8 @@ describe('cultivating the back yard (inc_cultivation.js)', () => {
 describe('the house’s open left end (home_groddle.swf, homes_rebuild_floor left-open)', () => {
   it('ships the left_open piece of every visible wallpaper and the frame_open post', () => {
     const walls = Object.entries(WALLPAPER_MAPS.walls);
-    assert.equal(walls.length, 65);
+    // 65 visible in inc_data_homes.js, and the three hidden papers G400 unhides.
+    assert.equal(walls.length, 68);
     for (const [key, row] of walls) {
       assert.ok(row.left_open, key);
       const piece = row.left_open.split(',')[0];

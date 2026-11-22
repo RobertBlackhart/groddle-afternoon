@@ -6,11 +6,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { END_SEAM, roomPieces } from '../public/js/home-wallpaper.js?v=0dc70bac';
-import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=9f8473e6';
+import { END_SEAM, roomPieces } from '../public/js/home-wallpaper.js?v=99228166';
+import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { DOCK_GAP, DOCK_W, dockedPickerSpot } from '../public/js/furniture-upgrade-picker.js?v=3a637ec8';
 import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=378178ac';
-import { listTextures } from '../public/js/home-decor.js?v=d886268d';
+import { listTextures } from '../public/js/home-decor.js?v=267da56e';
 import { salePlacementKey } from '../public/js/home-street-mp.js?v=8142fcdf';
 import { beginHomeVisit, createHomeState, imagineHome } from '../public/js/homes.js?v=c9fd92db';
 
@@ -113,7 +113,8 @@ describe('53: swatch categories read across, as filter buttons', () => {
   it('All, then each category by name (SwatchBagUI / BagFilterUI)', () => {
     const rows = listTextures('ceiling');
     const f = swatchFilters(rows);
-    assert.deepEqual(f.map((x) => x.id), ['all', 'Concrete', 'Novelty', 'Stucco', 'Wood']);
+    // Other: the Rook Forest Ceiling has no category (G400; SwatchBagUI CATEGORY_OTHER).
+    assert.deepEqual(f.map((x) => x.id), ['all', 'Concrete', 'Novelty', 'Other', 'Stucco', 'Wood']);
     assert.equal(f[0].count, rows.length);
     assert.ok(filterSwatches(rows, 'Novelty').every((r) => r.category === 'Novelty'));
     assert.ok(filterSwatches(rows, 'Novelty').some((r) => r.key === 'spaceship_ceiling'));

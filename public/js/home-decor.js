@@ -50,7 +50,7 @@ import {
   FURNITURE_STARTER_KIT,
   HOME_LIMITS,
   HOME_TEXTURE_CONFIGS,
-} from './homes-catalog.js?v=b787b3eb';
+} from './homes-catalog.js?v=cce7f5a7';
 import { cleanHistory, cleanUpgradeId, upgradeArt, upgradeRow } from './furniture-upgrades.js?v=a3788c0d';
 import { SDB_COUNT_MAX, SDB_PRICE_MAX, isCabinetClass, normalizeContents, storagePickupLock } from './home-storage.js?v=b0225465';
 import { stackMaxOf } from './pack-slots.js?v=d9ab4a0b';
@@ -208,9 +208,17 @@ export function textureConfig(kind, key) {
   return HOME_TEXTURE_CONFIGS[TEXTURE_CONFIG_KEY[kind]]?.[key] || null;
 }
 
+/**
+ * A swatch's category heading. Some configs have none (the Rook Forest floor and ceiling, G400):
+ * SwatchBagUI sorted them under CATEGORY_OTHER, "swatches have a null category need to be shown too!".
+ */
+export function textureCategory(row) {
+  return String(row?.category || '').trim() || 'Other';
+}
+
 export function listTextures(kind) {
   const all = Object.values(HOME_TEXTURE_CONFIGS[TEXTURE_CONFIG_KEY[kind]] || {});
-  return all.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  return all.sort((a, b) => textureCategory(a).localeCompare(textureCategory(b)) || a.name.localeCompare(b.name));
 }
 
 export function defaultTexture(kind) {

@@ -111,7 +111,7 @@ import {
   CULTIVATION_CLASSES,
   FURNITURE_CATALOG,
   FURNITURE_STORE,
-} from '../homes-catalog.js?v=b787b3eb';
+} from '../homes-catalog.js?v=cce7f5a7';
 import {
   INTERIOR,
   arrangeStarterRoom,
@@ -131,6 +131,7 @@ import {
   interiorWidth,
   listPlaceable,
   listTextures,
+  textureCategory,
   moveFurniture,
   normalizeHomeDecorState,
   pickUpFurniture,
@@ -150,7 +151,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=d886268d';
+} from '../home-decor.js?v=267da56e';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=22c44bae';
@@ -209,7 +210,7 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=39041813';
+} from '../home-cultivation.js?v=6d39d0d8';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
@@ -217,8 +218,8 @@ import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=cc58ae0e';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
 import { projectApi } from './street-jobs-feature.js?v=5b6f3e76';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=18889f7a';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=702608ff';
-import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=0dc70bac';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=3aec2785';
+import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=cc2902d7';
@@ -291,7 +292,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=46dc8f2a';
+} from '../home-floors.js?v=e0778cdb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -4205,7 +4206,7 @@ function swatchTray(engine, kind) {
   swatchFilter[kind] = filter;
   const groups = [];
   for (const row of filterSwatches(all, filter)) {
-    const heading = filter === 'all' ? row.category : '';
+    const heading = filter === 'all' ? textureCategory(row) : '';
     if (!groups.length || groups[groups.length - 1].heading !== heading) groups.push({ heading, tiles: [] });
     const armed = stamping?.kind === kind && stamping.key === row.key;
     const name = row.name;

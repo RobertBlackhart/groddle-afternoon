@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CULTIVATION_CLASSES } from '../public/js/homes-catalog.js?v=b787b3eb';
-import { nodeKeyMap } from '../public/js/features/homes-feature.js?v=cbb07f6a';
-import { homeNodes } from '../public/js/yard-stock-mp.js?v=0e5969e6';
+import { CULTIVATION_CLASSES } from '../public/js/homes-catalog.js?v=cce7f5a7';
+import { nodeKeyMap } from '../public/js/features/homes-feature.js?v=9ad8b36d';
+import { homeNodes } from '../public/js/yard-stock-mp.js?v=1833eeb0';
 import { SPRITE_FEET } from '../public/js/sprite-feet-data.js?v=78336937';
 import { stageFoot, swfStage } from '../tools/swf-stage.mjs';
 

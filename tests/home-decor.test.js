@@ -8,7 +8,7 @@ import {
   FURNITURE_STORE,
   HOME_LIMITS,
   HOME_TEXTURE_CONFIGS,
-} from '../public/js/homes-catalog.js?v=b787b3eb';
+} from '../public/js/homes-catalog.js?v=cce7f5a7';
 import {
   INTERIOR,
   SEGMENT_W,
@@ -31,7 +31,7 @@ import {
   restackFurniture,
   setHomeTexture,
   snapPlacement,
-} from '../public/js/home-decor.js?v=d886268d';
+} from '../public/js/home-decor.js?v=267da56e';
 
 const root = join(import.meta.dirname, '..', 'public');
 

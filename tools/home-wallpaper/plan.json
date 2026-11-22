@@ -39,6 +39,12 @@
     "right": "darkconcrete_ceiling",
     "swatch": "darkconcrete_ceiling_swatch"
    },
+   "darkstar_black_ceiling": {
+    "main": "darkstar_black_ceiling",
+    "main_2": "darkstar_black_ceiling_2",
+    "right": "darkstar_black_ceiling",
+    "swatch": "darkstar_black_ceiling_swatch"
+   },
    "grey_crappy_ceiling": {
     "left": "grey_crappy_ceiling",
     "main": "grey_crappy_ceiling",
@@ -74,6 +80,15 @@
     "main": "pink_crappy_ceiling",
     "right": "pink_crappy_ceiling",
     "swatch": "pink_crappy_ceiling_swatch"
+   },
+   "rook_forest": {
+    "left": "rook_forest_ceiling_1",
+    "main": "rook_forest_ceiling_1",
+    "main_2": "rook_forest_ceiling_2",
+    "main_3": "rook_forest_ceiling_3",
+    "main_4": "rook_forest_ceiling_4",
+    "right": "rook_forest_ceiling_1",
+    "swatch": "rook_forest_ceiling_swatch"
    },
    "spaceship_ceiling": {
     "left": "spaceship_ceililng",
@@ -166,6 +181,13 @@
     "right": "brown_boghouse_floor",
     "swatch": "brown_boghouse_floor_swatch"
    },
+   "darkstar_black_floor": {
+    "left": "darkstar_black_floor_left",
+    "main": "darkstar_black_floor",
+    "main_2": "darkstar_black_floor_2",
+    "right": "darkstar_black_floor",
+    "swatch": "darkstar_black_floor_swatch"
+   },
    "darkuralia": {
     "left": "dark_uralia_floor_left",
     "main": "dark_uralia_floor",
@@ -238,11 +260,26 @@
     "right": "moss_floor",
     "swatch": "moss_floor_swatch"
    },
+   "rook_forestfloor": {
+    "left": "rook_forest_floor_left",
+    "main": "rook_forest_floor_1",
+    "main_2": "rook_forest_floor_2",
+    "main_3": "rook_forest_floor_3",
+    "main_4": "rook_forest_floor_4",
+    "right": "rook_forest_floor_1",
+    "swatch": "rook_forest_floor_swatch"
+   },
    "sea_sand_floor": {
     "left": "seasand_floor_left",
     "main": "seasand_floor",
     "right": "seasand_floor",
     "swatch": "seasand_swatch"
+   },
+   "sky_dark_floor": {
+    "left": "sky_dark_floor",
+    "main": "sky_dark_floor",
+    "right": "sky_dark_floor",
+    "swatch": "sky_dark_floor_swatch"
    },
    "snow_leopard_skin": {
     "left": "snow_leopard_skin_floor_left",
@@ -360,6 +397,16 @@
     "wall_right": "blue_stucco_wall",
     "wall_single": "blue_stucco_wall"
    },
+   "blue_tiles": {
+    "left": "blue_tiles_left",
+    "left_open": "blue_tiles_left_open",
+    "right": "blue_tiles_left,FLIP",
+    "swatch": "blue_tiles_swatch",
+    "wall": "blue_tiles_wall",
+    "wall_left": "blue_tiles_wall",
+    "wall_right": "blue_tiles_wall",
+    "wall_single": "blue_tiles_wall"
+   },
    "bluepillar_molding": {
     "left": "bluepillar_molding_left",
     "left_open": "bluepillar_molding_left_open",
@@ -425,6 +472,16 @@
     "wall_right": "cave_wall_right",
     "wall_single": "cave_wall_single"
    },
+   "club_light": {
+    "left": "club_light_left",
+    "left_open": "club_light_left_open",
+    "right": "club_light_left,FLIP",
+    "swatch": "club_light_swatch",
+    "wall": "club_light_wall",
+    "wall_left": "club_light_wall",
+    "wall_right": "club_light_wall",
+    "wall_single": "club_light_wall"
+   },
    "color_brick": {
     "left": "color_brick_left",
     "left_open": "color_brick_left_open",
@@ -479,6 +536,17 @@
     "wall_left": "dark_uralia_wall_left",
     "wall_right": "dark_uralia_wall_right",
     "wall_single": "dark_uralia_wall_single"
+   },
+   "darkstar_black": {
+    "left": "darkstar_black_left",
+    "left_open": "darkstar_black_left_open",
+    "right": "darkstar_black_left,FLIP",
+    "swatch": "darkstar_black_swatch",
+    "wall": "darkstar_black_wall",
+    "wall_2": "darkstar_black_wall_2",
+    "wall_left": "darkstar_black_wall_left",
+    "wall_right": "darkstar_black_wall_left,FLIP",
+    "wall_single": "darkstar_black_wall"
    },
    "darktealbaseboard_molding": {
     "left": "darktealbaseboard_molding_left",
@@ -1818,6 +1886,98 @@
    "swf_sha": "97611e6279b89384",
    "tiles": true
   },
+  "blue_tiles_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 35072,
+   "bytes_3x": 62784,
+   "err_2x": 3.6,
+   "err_3x": 3.47,
+   "frames": 1,
+   "gain_3x": 26.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "b8dbdcf54aa99203",
+   "sha_3x": "621f0a32f77530a8",
+   "size": [
+    150,
+    458
+   ],
+   "stage": [
+    150.0,
+    458.0
+   ],
+   "swf_sha": "5ea3463b39504285",
+   "tiles": false
+  },
+  "blue_tiles_left_open": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 24146,
+   "bytes_3x": 40114,
+   "err_2x": 3.29,
+   "err_3x": 3.18,
+   "frames": 1,
+   "gain_3x": 32.5,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "38cf1de15790fb36",
+   "sha_3x": "ccf15d279377103a",
+   "size": [
+    150,
+    393
+   ],
+   "stage": [
+    150.0,
+    393.45
+   ],
+   "swf_sha": "b8bd8b6160bcd629",
+   "tiles": false
+  },
+  "blue_tiles_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2012,
+   "err_2x": 4.12,
+   "frames": 1,
+   "gain_3x": 58.9,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "a7acdb876745bcfd",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "201611c9e23665b8",
+   "tiles": false
+  },
+  "blue_tiles_wall": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 21944,
+   "bytes_3x": 40134,
+   "err_2x": 3.43,
+   "err_3x": 3.41,
+   "frames": 1,
+   "gain_3x": 15.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "a622adac1e49883a",
+   "sha_3x": "898a254b83741b2d",
+   "size": [
+    150,
+    300
+   ],
+   "stage": [
+    150.0,
+    300.0
+   ],
+   "swf_sha": "0076ab622c911b29",
+   "tiles": true
+  },
   "bluepillar_molding_left": {
    "bundle": "home_wallpaper",
    "bytes_2x": 9196,
@@ -2793,6 +2953,98 @@
    ],
    "swf_sha": "2937711b3e96bf42",
    "tiles": false
+  },
+  "club_light_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 20746,
+   "bytes_3x": 37182,
+   "err_2x": 3.0,
+   "err_3x": 2.49,
+   "frames": 1,
+   "gain_3x": 19.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "ec8ed81bce5cda15",
+   "sha_3x": "e4012a86dda30c88",
+   "size": [
+    150,
+    458
+   ],
+   "stage": [
+    150.0,
+    458.0
+   ],
+   "swf_sha": "edef035315bd1dbe",
+   "tiles": false
+  },
+  "club_light_left_open": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 16406,
+   "bytes_3x": 28332,
+   "err_2x": 2.86,
+   "err_3x": 2.39,
+   "frames": 1,
+   "gain_3x": 30.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "6f7779ecc2ac58cf",
+   "sha_3x": "780aa7f6be30d44d",
+   "size": [
+    150,
+    393
+   ],
+   "stage": [
+    150.0,
+    393.45
+   ],
+   "swf_sha": "55ec64c4a76aa4c9",
+   "tiles": false
+  },
+  "club_light_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 1914,
+   "err_2x": 4.49,
+   "frames": 1,
+   "gain_3x": 55.1,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "cfae52d238528a96",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "081a0ac906e9981a",
+   "tiles": false
+  },
+  "club_light_wall": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 17672,
+   "bytes_3x": 32194,
+   "err_2x": 3.28,
+   "err_3x": 2.78,
+   "frames": 1,
+   "gain_3x": 9.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": true,
+   "sha_2x": "29320700da7ef15f",
+   "sha_3x": "d08f2a58435cbd78",
+   "size": [
+    150,
+    300
+   ],
+   "stage": [
+    150.0,
+    300.0
+   ],
+   "swf_sha": "b66eb5fec4cda96a",
+   "tiles": true
   },
   "color_brick_left": {
    "bundle": "home_wallpaper",
@@ -4308,6 +4560,282 @@
     300.0
    ],
    "swf_sha": "023f917877fdd59a",
+   "tiles": true
+  },
+  "darkstar_black_ceiling": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 648,
+   "err_2x": 0.08,
+   "frames": 1,
+   "gain_3x": 5.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "77873bf8723787a7",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "2911ef671d6f06dc",
+   "tiles": true
+  },
+  "darkstar_black_ceiling_2": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 612,
+   "err_2x": 0.08,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "6921bcd8cf6226e2",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "93d1241501a2b92d",
+   "tiles": true
+  },
+  "darkstar_black_ceiling_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 344,
+   "err_2x": 0.45,
+   "frames": 1,
+   "gain_3x": 63.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "bc1d2cdc99ff865d",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "c422874d149b3ffb",
+   "tiles": false
+  },
+  "darkstar_black_floor": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 1074,
+   "err_2x": 0.12,
+   "frames": 1,
+   "gain_3x": 5.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "36d36a2c8a784828",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "a5eeb01b42a44b5c",
+   "tiles": true
+  },
+  "darkstar_black_floor_2": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 1008,
+   "bytes_3x": 1484,
+   "err_2x": 0.12,
+   "err_3x": 0.07,
+   "frames": 1,
+   "gain_3x": 6.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": true,
+   "sha_2x": "685f625f2f53cf94",
+   "sha_3x": "ebc42385f7ec6c4f",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "ff6de2328544f634",
+   "tiles": true
+  },
+  "darkstar_black_floor_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 974,
+   "bytes_3x": 2508,
+   "err_2x": 0.2,
+   "err_3x": 0.15,
+   "frames": 1,
+   "gain_3x": 63.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "67d16960f32714ec",
+   "sha_3x": "4aa7b8ed026d3fb6",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "2a9cdee1ca6b466a",
+   "tiles": true
+  },
+  "darkstar_black_floor_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 450,
+   "err_2x": 0.66,
+   "frames": 1,
+   "gain_3x": 55.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "2e072db4cd226bab",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "4b14429ac278c9fc",
+   "tiles": false
+  },
+  "darkstar_black_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 3924,
+   "bytes_3x": 6964,
+   "err_2x": 0.1,
+   "err_3x": 0.07,
+   "frames": 1,
+   "gain_3x": 12.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "11675e7fb036f396",
+   "sha_3x": "ab57a32fd0c45d03",
+   "size": [
+    150,
+    458
+   ],
+   "stage": [
+    150.0,
+    458.0
+   ],
+   "swf_sha": "11888cd0b6302451",
+   "tiles": false
+  },
+  "darkstar_black_left_open": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 3624,
+   "bytes_3x": 6502,
+   "err_2x": 0.16,
+   "err_3x": 0.12,
+   "frames": 1,
+   "gain_3x": 32.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "313645862450171f",
+   "sha_3x": "8c00e59fdf574878",
+   "size": [
+    150,
+    393
+   ],
+   "stage": [
+    150.0,
+    393.0
+   ],
+   "swf_sha": "539c8c1bacc3afa1",
+   "tiles": false
+  },
+  "darkstar_black_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 512,
+   "err_2x": 0.29,
+   "frames": 1,
+   "gain_3x": 63.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "4cb8d5c217c06a33",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "ce968f74eef814d6",
+   "tiles": false
+  },
+  "darkstar_black_wall": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2348,
+   "err_2x": 0.08,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "a27d94414141e36f",
+   "size": [
+    150,
+    300
+   ],
+   "stage": [
+    150.0,
+    300.0
+   ],
+   "swf_sha": "c1eb30c1d20183ca",
+   "tiles": true
+  },
+  "darkstar_black_wall_2": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2180,
+   "err_2x": 0.08,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "e3ed92e294376a40",
+   "size": [
+    150,
+    300
+   ],
+   "stage": [
+    150.0,
+    300.0
+   ],
+   "swf_sha": "9a729b66bc753c5d",
+   "tiles": true
+  },
+  "darkstar_black_wall_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2356,
+   "err_2x": 0.08,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "397fb7a6aea68463",
+   "size": [
+    150,
+    300
+   ],
+   "stage": [
+    150.0,
+    300.0
+   ],
+   "swf_sha": "c4e90f90b8fe6ea8",
    "tiles": true
   },
   "darktealbaseboard_molding_left": {
@@ -9148,6 +9676,230 @@
    "swf_sha": "d800c31a1f82c6ef",
    "tiles": true
   },
+  "rook_forest_ceiling_1": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 502,
+   "err_2x": 1.04,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "c0d9a44f23a892e0",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "285352c367013945",
+   "tiles": true
+  },
+  "rook_forest_ceiling_2": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 422,
+   "err_2x": 0.99,
+   "frames": 1,
+   "gain_3x": 2.1,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "e57d17d124b53c09",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "f59388a31682c034",
+   "tiles": true
+  },
+  "rook_forest_ceiling_3": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 580,
+   "err_2x": 1.07,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "2d0b49658ec1570a",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "4c268c1d9ef4e3e8",
+   "tiles": true
+  },
+  "rook_forest_ceiling_4": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 326,
+   "err_2x": 0.98,
+   "frames": 1,
+   "gain_3x": 2.1,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "9219c178cb2c2325",
+   "size": [
+    150,
+    63
+   ],
+   "stage": [
+    150.0,
+    50.0
+   ],
+   "swf_sha": "3efbeb5a96e9c908",
+   "tiles": true
+  },
+  "rook_forest_ceiling_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 364,
+   "err_2x": 1.51,
+   "frames": 1,
+   "gain_3x": 55.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "892566bbb47a017f",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "9c22f8ef106197e9",
+   "tiles": false
+  },
+  "rook_forest_floor_1": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2250,
+   "err_2x": 1.09,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "531b628dc7503828",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "4b76d68e43764a15",
+   "tiles": true
+  },
+  "rook_forest_floor_2": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2324,
+   "err_2x": 1.02,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "1a113993a6e4c971",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "b61abfd62babb2e0",
+   "tiles": true
+  },
+  "rook_forest_floor_3": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2264,
+   "err_2x": 1.16,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "d8bfcf33a5bfd6a2",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "32e8b24c5ea40b25",
+   "tiles": true
+  },
+  "rook_forest_floor_4": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 2218,
+   "err_2x": 1.05,
+   "frames": 1,
+   "gain_3x": 3.0,
+   "lossless_2x": false,
+   "sealed": true,
+   "sha_2x": "6de4baed77998691",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "6730913fa3855754",
+   "tiles": true
+  },
+  "rook_forest_floor_left": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 1996,
+   "bytes_3x": 4580,
+   "err_2x": 1.2,
+   "err_3x": 1.16,
+   "frames": 1,
+   "gain_3x": 55.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": false,
+   "sha_2x": "75721a3ef71f6c99",
+   "sha_3x": "b687d4f227a64640",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "eab7a9f26c692d9f",
+   "tiles": true
+  },
+  "rook_forest_floor_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 614,
+   "err_2x": 1.61,
+   "frames": 1,
+   "gain_3x": 55.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "f093a8582c2b5b72",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "46e32858cafbf5d3",
+   "tiles": false
+  },
   "rook_forest_line_left": {
    "bundle": "home_wallpaper",
    "bytes_2x": 11978,
@@ -9614,6 +10366,50 @@
     514.0
    ],
    "swf_sha": "ab68408356103014",
+   "tiles": false
+  },
+  "sky_dark_floor": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 7958,
+   "bytes_3x": 13928,
+   "err_2x": 2.79,
+   "err_3x": 2.52,
+   "frames": 1,
+   "gain_3x": 16.0,
+   "lossless_2x": false,
+   "lossless_3x": false,
+   "sealed": true,
+   "sha_2x": "fc804b5f3a3f8bc8",
+   "sha_3x": "7f149cc1d215a023",
+   "size": [
+    150,
+    108
+   ],
+   "stage": [
+    150.0,
+    108.0
+   ],
+   "swf_sha": "ee6ed176fadc5870",
+   "tiles": true
+  },
+  "sky_dark_floor_swatch": {
+   "bundle": "home_wallpaper",
+   "bytes_2x": 1126,
+   "err_2x": 2.73,
+   "frames": 1,
+   "gain_3x": 55.0,
+   "lossless_2x": false,
+   "sealed": false,
+   "sha_2x": "672484b83d359073",
+   "size": [
+    50,
+    50
+   ],
+   "stage": [
+    50.0,
+    50.0
+   ],
+   "swf_sha": "510ff49bee22f178",
    "tiles": false
   },
   "snow_leopard_skin_floor": {

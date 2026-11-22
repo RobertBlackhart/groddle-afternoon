@@ -39,7 +39,7 @@
  */
 import { HIRES_SPRITES, SPLIT_SPRITES } from './sprite-hires.js?v=f6344117';
 import { HIRES_ICONS } from './icon-hires.js?v=fb952dde';
-import { CULTIVATION_CLASSES } from './homes-catalog.js?v=b787b3eb';
+import { CULTIVATION_CLASSES } from './homes-catalog.js?v=cce7f5a7';
 import { TOWER_CHASSIS, TOWER_PROTO } from './home-tower.js?v=18889f7a';
 import { GROWN_TREE_LABELS } from './patches.js?v=2498e678';
 import { shortHash } from './profiles.js?v=054ca723';

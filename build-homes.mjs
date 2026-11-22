@@ -11,6 +11,7 @@
  *   items/catalog_stores.js                          store 23 (Furniture Store)
  *   players/inc_furniture.js                         furniture_populate starter kit
  *   inc_data_homes.js                                wallpaper / floor / ceiling configs
+ *                                                    (shown: tools/home-wallpaper/configs.mjs)
  *   config_base.js                                   home_limits + yard expansion costs
  *   locations/inc_cultivation.js                     cultivation classes, img cost formula
  *   items/proto_*.js + end items                     labels, base_cost, width, max wear
@@ -35,6 +36,7 @@ import { loadItem } from './build-recipes.mjs';
 import { encodeLosslessWebp } from './tools/webp-lossless.mjs';
 import { basePlats, surfaceFrom } from './tools/furniture-upgrades/build.mjs';
 import { stageFoot } from './tools/swf-stage.mjs';
+import { finishShown } from './tools/home-wallpaper/configs.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const AUDIT = join(process.env.HOME || '', 'Documents/glitch-audit');
@@ -287,10 +289,11 @@ function buildTextures() {
     join(GSJS, 'inc_data_homes.js'),
     'this.w = homes_wallpaper_configs; this.f = homes_floor_configs; this.c = homes_ceiling_configs;'
   );
-  const pick = (configs) =>
+  // The visible configs, and the hidden ones G400 unhides (tools/home-wallpaper/configs.mjs).
+  const pick = (kind, configs) =>
     Object.fromEntries(
       Object.entries(configs)
-        .filter(([, v]) => v.is_visible)
+        .filter(([key, v]) => finishShown(kind, key, v))
         .map(([key, v]) => [
           key,
           {
@@ -303,7 +306,7 @@ function buildTextures() {
           },
         ])
     );
-  return { walls: pick(ctx.w), floors: pick(ctx.f), ceilings: pick(ctx.c) };
+  return { walls: pick('walls', ctx.w), floors: pick('floors', ctx.f), ceilings: pick('ceilings', ctx.c) };
 }
 
 function buildHomeLimits() {
@@ -509,7 +512,7 @@ export const FURNITURE_STORE = Object.freeze(${j(furniture.store)});
 /** players/inc_furniture.js furniture_populate: what a new house owner receives. */
 export const FURNITURE_STARTER_KIT = Object.freeze(${j(furniture.starterKit)});
 
-/** inc_data_homes.js visible wallpaper / floor / ceiling configs. */
+/** inc_data_homes.js visible wallpaper / floor / ceiling configs, and the hidden ones G400 unhides. */
 export const HOME_TEXTURE_CONFIGS = Object.freeze(${j(textures)});
 
 /** config_base.js home_limits (+ FRONTYARD/BACKYARD_EXPAND_COSTS). */
