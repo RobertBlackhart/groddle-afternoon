@@ -324,6 +324,9 @@ export const QUEST = Object.freeze({
   completion: 'Now THAT is a table! Pot has not looked this happy since gravy was first poured. Pot sends you this, a horn of plenty to keep at home, so your house never forgets the feast.',
   rewards: Object.freeze({ favor: Object.freeze({ giant: 'pot', points: 25 }), xp: 50 }),
   accepted: 'Pot’s Empty Table: cook three harvest dishes, dress a Chicken out on the streets, and lay your dishes on the Harvest Table in Groddle Forest Junction.',
+  // #610: each lay says whether it counted, while the laying step is open.
+  layCounted: (n) => `${n} of ${DISHES_NEEDED} harvest dishes laid for Pot’s Empty Table.`,
+  layNotCounted: 'It doesn’t count for Pot’s Empty Table: only Pumpkin Pie, Hot Potatoes, Wavy Gravy, Corny Fritter and Potcorn do.',
   stepDone: Object.freeze({
     dishes: 'Three harvest dishes ready for Pot’s table.',
     dressed: 'One Chicken, dressed for dinner.',
@@ -362,6 +365,20 @@ export function questPinInfo(q, seasonOn) {
 }
 
 export const questComplete = (q) => QUEST.steps.every((s) => (Number(q?.[s.id]) || 0) >= s.num);
+
+/**
+ * #610: what laying `cls` on the table did for the quest, said with the lay: the count while a
+ * harvest dish brings the laying step closer ("2 of 3 harvest dishes laid ..."), or that anything
+ * else does not count, naming the five dishes. Nothing when the quest is not running or its laying
+ * step is done, nor for the dish that finishes the step (its stepDone line says so).
+ */
+export function layQuestNote(q, cls) {
+  if (!q || q.status !== 'active') return '';
+  const laid = Number(q.laid) || 0;
+  if (laid >= DISHES_NEEDED) return '';
+  if (!HARVEST_DISHES.includes(String(cls || ''))) return QUEST.layNotCounted;
+  return laid + 1 < DISHES_NEEDED ? QUEST.layCounted(laid + 1) : '';
+}
 
 /**
  * A game event while the quest runs: `making_recipe:<dish>` (a harvest dish made),
@@ -407,7 +424,7 @@ const badge = (classTsid, name, desc, statusText, cond, rewards) => Object.freez
 const dressed = (n) => Object.freeze({ type: 'group_sum', group: 'chicken_dressed', name: 'chicken_dressed', num: n });
 
 export const FEAST_BADGES = Object.freeze({
-  pld_feast_bringer: badge('pld_feast_bringer', 'Feast Bringer', 'Set Pot’s Empty Table for the Pot Luck Day feast',
+  pld_feast_bringer: badge('pld_feast_bringer', 'Feast Bringer', 'Finished Pot’s Empty Table, the Magic Rock’s quest for Pot Luck Day',
     'Three dishes cooked, one Chicken dressed and a table laid. Pot, Giant of plenty, is very nearly full. Very nearly.',
     { type: 'counter', group: 'pld_quest', name: 'pots_empty_table', num: 1 }, [100, 15]),
   pld_plume_fluffer_1: badge('pld_plume_fluffer_1', 'Plume Fluffer I', 'Dressed 5 Chickens up for Pot Luck Day',

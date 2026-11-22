@@ -51,9 +51,9 @@ const {
   servingsLeft,
   settleFeastDay,
   thanksgivingDay,
-} = await import('../public/js/feast-day.js?v=b409cdbe');
-const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=036c6456');
-const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=a744eba4');
+} = await import('../public/js/feast-day.js?v=637eef11');
+const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=4e3b1e03');
+const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=1f3991b8');
 
 const at = (y, m, d, h = 12) => Date.UTC(y, m - 1, d, h + 8); // Pacific standard time
 const fixed = (v) => () => v;

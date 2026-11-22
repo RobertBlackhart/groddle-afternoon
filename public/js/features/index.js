@@ -208,9 +208,9 @@ import { gameTeleporterFeature } from './game-teleporter-feature.js?v=1e9ccf98';
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=8cae18d6'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=6eb3998e'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=a596038f'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
-import { feastDayFeature } from './feast-day-feature.js?v=a744eba4'; FEATURES.push(feastDayFeature);
+import { feastDayFeature } from './feast-day-feature.js?v=1f3991b8'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=251decd0'; FEATURES.push(calendarFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=aed600c5'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=8858935a'; FEATURES.push(realtimeFeature);

@@ -39,7 +39,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=152fa293';
 import { openListDialog } from '../ui/storage-windows.js?v=02bcf142';
-import { feastDayKey, servingsText } from '../feast-day.js?v=b409cdbe';
+import { feastDayKey, servingsText } from '../feast-day.js?v=637eef11';
 import {
   DISHES_NEEDED,
   DISH_BOX,
@@ -72,13 +72,14 @@ import {
   noticesDue,
   packAway,
   questComplete,
+  layQuestNote,
   questEvent,
   questPinInfo,
   questRows,
   shownRows,
   tableCountLabel,
   tableList,
-} from '../pot-luck-feast.js?v=036c6456';
+} from '../pot-luck-feast.js?v=4e3b1e03';
 
 export const POT_LUCK_FEAST_ID = 'pot-luck-feast';
 const OFFER_DELAY_MS = 20_000;
@@ -449,7 +450,9 @@ function laid(engine, cls, first) {
     if (favor) effects.favor = favor;
     engine.updateHud?.();
   }
-  say(engine, `${TABLE_LINES.laid(label(cls))}${first ? ` ${TABLE_LINES.first}` : ''}`, true, effects);
+  // #610: whether it counted for Pot's Empty Table, in the same line (before the quest counts it).
+  const note = layQuestNote(quest, cls);
+  say(engine, `${TABLE_LINES.laid(label(cls))}${first ? ` ${TABLE_LINES.first}` : ''}${note ? ` ${note}` : ''}`, true, effects);
   engine.achievement?.(LAID_COUNTER, 1);
   questStep(engine, 'harvest_table:laid', { cls });
   engine.refreshPack?.();

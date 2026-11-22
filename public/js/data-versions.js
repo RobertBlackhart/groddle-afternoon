@@ -26,7 +26,7 @@
       "assets/badges/pld_plume_fluffer_1.webp": "a8c01f02",
       "assets/badges/pld_plume_fluffer_2.webp": "109312b7",
       "assets/badges/pld_plume_fluffer_3.webp": "c1b65138",
-      "assets/content/achievements.json": "3fab14cc",
+      "assets/content/achievements.json": "58634f0c",
       "assets/content/ambient-music.json": "fd84e46f",
       "assets/content/badge-icons-generated.json": "486b5773",
       "assets/content/barnacle-picture-spots.json": "9639e117",

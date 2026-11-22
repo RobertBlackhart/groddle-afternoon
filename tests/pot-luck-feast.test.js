@@ -31,6 +31,7 @@ import {
   createTableState,
   dishClasses,
   layCheck,
+  layQuestNote,
   layOffering,
   layableKind,
   cropClasses,
@@ -39,7 +40,7 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=036c6456';
+} from '../public/js/pot-luck-feast.js?v=4e3b1e03';
 import { SEED_CATALOG } from '../public/js/garden.js?v=152fa293';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=d28b2a24';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
@@ -200,6 +201,34 @@ describe('Pot’s Empty Table', () => {
     assert.match(QUEST.accepted, /dress a Chicken out on the streets,/);
   });
 
+  it('says on each lay whether it counted: the count, or that only the five dishes do (#610)', () => {
+    // #610: the table took any dish or crop and never said whether it counted toward the quest.
+    const q = createQuestState({ status: 'active' }, 'pot_luck_day:2026');
+    q.status = 'active';
+    const lay = (cls) => {
+      const note = layQuestNote(q, cls);
+      questEvent(q, 'harvest_table:laid', { cls });
+      return note;
+    };
+    const other = lay('corn');
+    assert.match(other, /^It doesn’t count for Pot’s Empty Table: only /);
+    const items = readJson('public/assets/content/making-items.json').items;
+    for (const cls of HARVEST_DISHES) assert.ok(other.includes(items[cls].label), `${cls} named (${items[cls].label})`);
+    assert.equal(lay('pumpkin_pie'), '1 of 3 harvest dishes laid for Pot’s Empty Table.');
+    assert.equal(lay('simple_slaw'), other, 'a dish that is not one of the five');
+    assert.equal(lay('potcorn'), '2 of 3 harvest dishes laid for Pot’s Empty Table.');
+    assert.equal(lay('hot_potatoes'), '', 'the third: the step\'s own line says it is done');
+    assert.equal(lay('corn'), '', 'nothing once the dishes are laid');
+    assert.equal(layQuestNote(createQuestState({}, 'pot_luck_day:2026'), 'corn'), '', 'nothing before the quest is taken');
+    for (const t of [QUEST.layNotCounted, QUEST.layCounted(2)]) assert.doesNotMatch(t, /—/);
+  });
+
+  it('the feature says the note in the lay line itself', () => {
+    const src = readFileSync(join(pub, 'js/features/pot-luck-feast-feature.js'), 'utf8');
+    const laid = src.slice(src.indexOf('function laid('), src.indexOf('/* ---------------------------------------------------------------- quest */'));
+    assert.ok(laid.indexOf('layQuestNote(quest, cls)') > 0 && laid.indexOf('layQuestNote(quest, cls)') < laid.indexOf("questStep(engine, 'harvest_table:laid'"), 'read before the quest counts the lay');
+  });
+
   it('is offered by the Magic Rock in four steps and pays favor with Pot', () => {
     assert.equal(QUEST.kicker, 'Magic Rock');
     // Step 1 is the offer (Pot wants a feast); the log counts the other three.
@@ -252,6 +281,11 @@ describe('the five badges', () => {
     for (const [id, row] of Object.entries(FEAST_BADGES)) assert.deepEqual(catalog[id], JSON.parse(JSON.stringify(row)), id);
     assert.deepEqual(['pld_plume_fluffer_1', 'pld_plume_fluffer_2', 'pld_plume_fluffer_3', 'pld_good_neighbor'].map((id) => catalog[id].conditions[0].num), [5, 23, 61, 11]);
     for (const id of Object.keys(FEAST_BADGES)) assert.equal(catalog[id].category, 'seasonal');
+  });
+
+  it('Feast Bringer names its quest and who gives it (#610)', () => {
+    assert.match(catalog.pld_feast_bringer.desc, new RegExp(QUEST.title));
+    assert.match(catalog.pld_feast_bringer.desc, new RegExp(QUEST.kicker));
   });
 
   it('unlock from the game’s counters: the quest, each costume dressed, each offering laid', () => {
