@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { stageSkyColour } from '../public/js/street-render.js?v=fbc658a9';
+import { stageSkyColour } from '../public/js/street-render.js?v=966122ea';
 import { resolvedStyleCss } from './css-tokens.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -216,11 +216,11 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=6d33e7e2';
+import { projectApi } from './street-jobs-feature.js?v=f7c2a85f';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=18889f7a';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=9c43393f';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=1260c471';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
-import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=03ac6512';
+import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=196ca767';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=4c191ef5';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=e56cbbec';
 import { patchesFeature } from './patches-feature.js?v=a5feda31';
@@ -243,10 +243,10 @@ import {
   yardLook,
   yardStyleChoices,
   yardStyleFor,
-} from '../home-styles.js?v=13fe0aaa';
+} from '../home-styles.js?v=ec5d2f69';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
-import { oneArmSignpost } from '../street-render.js?v=fbc658a9';
+import { oneArmSignpost } from '../street-render.js?v=966122ea';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
 import {
   HOUSE_SIGN,
@@ -1822,7 +1822,15 @@ export function landscapeNearSpots(style, seed, width, skip = () => false, { lot
         return;
       }
       px = moved;
-      out.push({ item, row, x: px, half, flip: hash01(`${item.s}:${tag}${i + 1}`) > 0.5, back, part });
+      const flip = hash01(`${item.s}:${tag}${i + 1}`) > 0.5;
+      // Its companion (besideSpot) stands behind it where the street has room for it too.
+      const pal = besideSpot(item, i, px, flip);
+      if (pal) {
+        const palHalf = (pal.row.w * pal.row.scale) / 2;
+        const at = skip(pal.x, palHalf, item) ? null : move ? move(pal.x, palHalf, item) : pal.x;
+        if (at != null) out.push({ item, row: pal.row, x: at, half: palHalf, flip, back, part });
+      }
+      out.push({ item, row, x: px, half, flip, back, part });
     };
     if (back == null || !lot) {
       let i = 0;
@@ -1979,7 +1987,28 @@ function decoSprite(PIXI, item, x, y, flip = false, texture = null) {
 /** Half the widest sprite a repeated landscape item draws (any of its alts), as sizeDecoSprite sizes it. */
 export function landscapeItemHalf(item) {
   const rows = item?.alts?.length ? item.alts : [item];
-  return Math.max(0, ...rows.map((row) => (Number(row?.w ?? item.w) || 0) * (Number(item.scale) || 0) / 2));
+  const half = Math.max(0, ...rows.map((row) => (Number(row?.w ?? item.w) || 0) * (Number(item.scale) || 0) / 2));
+  const b = item?.beside;
+  // A companion reaches past the piece by its offset (besideSpot).
+  return b ? Math.max(half, Math.abs(Number(b.dx) || 0) + (Number(b.w) || 0) * (Number(b.scale ?? item.scale) || 0) / 2) : half;
+}
+
+/**
+ * A landscape piece's companion (`beside`: { s, w, h, dx, every, scale?, tint? }), drawn next to the
+ * i-th piece of its row and every `every`-th one only (Coral Caves: a pale crystal cluster beside
+ * every second dark one, as header-1346981279 pairs them). It stands `dx` px to the piece's facing
+ * side at the piece's feet, mirrored with it, behind it; null at the other positions. PURE.
+ */
+export function besideSpot(item, i, x, flip = false) {
+  const b = item?.beside;
+  if (!b) return null;
+  const n = Math.max(1, Math.round(b.every || 1));
+  if (((i % n) + n) % n !== 0) return null;
+  const row = { s: b.s, w: b.w, h: b.h, scale: b.scale ?? item.scale };
+  const tint = b.tint ?? item.tint;
+  if (tint != null) row.tint = tint;
+  if (item.alpha != null) row.alpha = item.alpha;
+  return { row, x: x + (flip ? -1 : 1) * (b.dx || 0) };
 }
 
 /** A repeated item's sprite at position i: one of its alts, by a stable hash. */
@@ -2154,7 +2183,14 @@ export function drawLandscape(engine, root, style, seed, { width, groundY, lift,
         const jx = item.jitter ? (hash01(`${seed}:${li}:${item.s}:${i}`) - 0.5) * item.jitter * 2 : 0;
         const row = pickAlt(item, `${seed}:${li}:${item.s}:${i}:alt`);
         if (row.tint == null && layer.tint != null) row.tint = layer.tint;
-        lc.addChild(artist.sprite(PIXI, row, x + jx, item.y + lift - (item.hang || item.flipY ? 0 : rise), hash01(`${item.s}:${i}:flip`) > 0.5));
+        const flip = hash01(`${item.s}:${i}:flip`) > 0.5;
+        const y = item.y + lift - (item.hang || item.flipY ? 0 : rise);
+        const pal = besideSpot(item, i, x + jx, flip);
+        if (pal) {
+          if (pal.row.tint == null && layer.tint != null) pal.row.tint = layer.tint;
+          lc.addChild(artist.sprite(PIXI, pal.row, pal.x, y, flip));
+        }
+        lc.addChild(artist.sprite(PIXI, row, x + jx, y, flip));
       }
     }
     if (layer.alpha != null) lc.alpha = layer.alpha;

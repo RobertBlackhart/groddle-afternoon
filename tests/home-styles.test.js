@@ -32,8 +32,9 @@ import {
   styleChoices,
   styleSwitchCost,
   switchStreetStyle,
-} from '../public/js/home-styles.js?v=13fe0aaa';
+} from '../public/js/home-styles.js?v=ec5d2f69';
 import { HOME_STYLES } from '../public/js/homes.js?v=10f6604f';
+import { besideSpot, landscapeItemHalf, landscapeNearSpots } from '../public/js/features/homes-feature.js?v=2b773d47';
 import { templateNames, templatePair } from '../tools/home-styles/build.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -388,27 +389,81 @@ describe('composed styles (tools/home-styles/build.mjs)', () => {
     for (const want of ['cone_top_rock_01a_al1', 'rock_rubble_01b_al1', 'underground_bogwillow', 'plant_fern_1', 'plant_giant_fern_2', 'purple_mushroom_2', 'mushrooms', 'cave_background_hill_1', 'back_wall_1', 'boat']) assert.ok(s.has(want), want);
     const y = names(yard.look);
     for (const want of ['cone_top_rock_01a_al1', 'underground_bogwillow_3', 'plant_fern_2', 'plant_giant_fern_2', 'rock_rubble_01b_al1', 'rock_snowy_1c_al1', 'cave_background_hill_1']) assert.ok(y.has(want), want);
-    // Nothing stands in for the pieces no CC0 symbol matched (kelp blades, dark crystal columns, pale spires).
+    // No CC0 stand-in for the pieces no CC0 symbol matched (kelp blades, dark crystal columns, pale spires).
     for (const look of [streetLook('pol_ext_coral_high'), yard.look]) {
       for (const name of names(look)) assert.ok(!/cave_crystal|cave_icicle|stalagmite_/.test(name), name);
     }
   });
 
-  it('draws only shipped CC0 decos', () => {
+  it('draws the Coral Caves pieces made for Groddle where the brief and the header put them (lane corak, G223)', () => {
+    const look = streetLook('pol_ext_coral_high');
+    const at = (f) => look.layers.find((l) => l.f === f).items;
+    const one = (items, s) => items.find((it) => it.s === s);
+    // C, the pale spires, with the tiered rocks at the back (f 0.2); A, the kelp, beside the beaded branches (f 0.32).
+    const spires = one(at(0.2), 'gz_ai_cc_spires');
+    assert.ok(spires && spires.scale >= 0.4 && spires.scale <= 0.6, 'spires at scale 0.4-0.6');
+    assert.ok(one(at(0.2), 'cone_top_rock_01b_al1'));
+    const kelp = one(at(0.32), 'gz_ai_cc_kelp');
+    assert.ok(kelp && kelp.scale >= 0.3 && kelp.scale <= 0.45, 'kelp at scale 0.3-0.45');
+    assert.ok(one(at(0.32), 'underground_bogwillow'));
+    // B, the dark crystals, in the f 0.45 layer and the front fringe, each second one with B2, the pale cluster, beside it.
+    for (const b of [one(at(0.45), 'gz_ai_cc_crystal_dark'), one(look.near, 'gz_ai_cc_crystal_dark')]) {
+      assert.ok(b && b.scale >= 0.4 && b.scale <= 0.7, 'dark crystals at scale 0.4-0.7');
+      assert.equal(b.beside.s, 'gz_ai_cc_crystal_pale');
+      assert.equal(b.beside.every, 2);
+    }
+    // Sized from their provenance rows (2x files: w x h units at 2 px a unit).
+    const made = JSON.parse(readFileSync(join(spike, 'tools/provenance/made-decos.json'), 'utf8')).art;
+    for (const it of [spires, kelp, one(at(0.45), 'gz_ai_cc_crystal_dark'), one(at(0.45), 'gz_ai_cc_crystal_dark').beside]) {
+      assert.deepEqual([it.w, it.h], [made[it.s].w * 2, made[it.s].h * 2], it.s);
+    }
+    // Every piece of the street is drawn: the spires, kelp, dark crystals and the pale ones beside them.
+    const spots = landscapeNearSpots(look, 'coral', 6000);
+    const rows = spots.filter((s) => s.row.s.startsWith('gz_ai_cc_crystal'));
+    assert.ok(rows.some((s) => s.row.s === 'gz_ai_cc_crystal_pale') && rows.some((s) => s.row.s === 'gz_ai_cc_crystal_dark'));
+  });
+
+  it('draws a companion beside every n-th piece, at its feet, mirrored with it (besideSpot)', () => {
+    const item = { s: 'a', w: 100, h: 200, scale: 0.5, tint: 0x112233, beside: { s: 'b', w: 60, h: 120, dx: 30, every: 2 } };
+    assert.deepEqual(besideSpot(item, 0, 500), { row: { s: 'b', w: 60, h: 120, scale: 0.5, tint: 0x112233 }, x: 530 });
+    assert.equal(besideSpot(item, 1, 500), null);
+    assert.equal(besideSpot(item, -1, 500), null);
+    assert.equal(besideSpot(item, -2, 500, true).x, 470, 'mirrored with its piece');
+    assert.equal(besideSpot({ ...item, beside: { ...item.beside, tint: 0xabcdef, scale: 0.4 } }, 4, 0).row.tint, 0xabcdef);
+    assert.equal(besideSpot({ s: 'a', w: 1, h: 1, scale: 1 }, 0, 0), null, 'no companion, none drawn');
+    // The row reaches as far as its companion does.
+    assert.equal(landscapeItemHalf(item), 30 + 15);
+    // In the front fringe the companion stands just before its piece, both mirrored alike.
+    const style = { near: [{ s: 'a', w: 100, h: 200, scale: 0.5, every: 400, jitter: 0, offset: 100, beside: item.beside }] };
+    const spots = landscapeNearSpots(style, 'seed', 1300);
+    assert.deepEqual(spots.map((s) => s.row.s), ['b', 'a', 'a', 'b', 'a'], 'pieces at 100, 500 and 900; companions by the first and third');
+    for (const [pal, main] of [[spots[0], spots[1]], [spots[3], spots[4]]]) {
+      assert.equal(pal.flip, main.flip);
+      assert.equal(pal.x, main.x + (main.flip ? -30 : 30));
+    }
+    // A companion the street has no room for is left out; its piece still stands.
+    const first = spots[0].x;
+    const kept = landscapeNearSpots(style, 'seed', 1300, (x) => Math.abs(x - first) < 1);
+    assert.deepEqual(kept.map((s) => s.row.s), ['a', 'a', 'b', 'a']);
+  });
+
+  it('draws only shipped decos: Tiny Speck\'s CC0 ones, or ones made for Groddle with their provenance', () => {
     const decos = join(spike, 'public/assets/decos/groddle');
     const names = new Set();
     // Every street look, and every yard drawn from a picture of its own (G223).
     for (const row of [...EXTERIOR_STYLES, ...INTERIOR_STYLES].filter((r) => r.built && r.look)) {
       const { look } = row;
-      for (const layer of look.layers) for (const item of layer.items || []) for (const alt of item.alts || [item]) names.add(alt.s);
-      for (const item of look.near) for (const alt of item.alts || [item]) names.add(alt.s);
+      for (const layer of look.layers) for (const item of layer.items || []) for (const alt of [...(item.alts || [item]), ...(item.beside ? [item.beside] : [])]) names.add(alt.s);
+      for (const item of look.near) for (const alt of [...(item.alts || [item]), ...(item.beside ? [item.beside] : [])]) names.add(alt.s);
       for (const item of look.trim) names.add(item.s);
       if (look.soil) names.add(look.soil);
       assert.ok(look.sky.length >= 2 && look.trim.length === 3, row.key);
     }
+    const made = JSON.parse(readFileSync(join(spike, 'tools/provenance/made-decos.json'), 'utf8')).art;
     for (const name of names) {
       const file = name.endsWith('.svg') ? name : `${name}.webp`;
       assert.ok(existsSync(join(decos, file)), file);
+      if (name.startsWith('gz_')) assert.ok(made[name]?.homeStyles?.length, `${name}: a made deco with a provenance row naming the styles`);
     }
   });
 

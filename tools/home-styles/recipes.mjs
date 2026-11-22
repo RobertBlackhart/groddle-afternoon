@@ -19,7 +19,9 @@
  * Item fields: s (deco name, or a list cycled by position), scale, y (bottom
  * on the pre-STREET_LIFT 620 px street, field top 586), every, jitter, offset,
  * and optional tint, alpha, hang (y is the top), flipY (mirrored, drawn down
- * from y), noFlip (never mirrored).
+ * from y), noFlip (never mirrored), beside ({ s, dx, every, scale?, tint? }: a
+ * companion piece drawn behind every `every`-th one, dx px to its facing side,
+ * mirrored with it; homes-feature besideSpot).
  * Layer fields: f (parallax: 0 sky, 1 world), items, or band ({ y, h, color,
  * alpha }: a full-width strip such as water or mist), tint, alpha.
  * Near rows (the look's `near`): s, scale, every, jitter, offset and below (px
@@ -44,6 +46,9 @@
  */
 
 const item = (s, scale, y, every, jitter = 0, offset = 0, extra = {}) => ({ s, scale, y, every, jitter, offset, ...extra });
+
+/** Coral Caves: the pale crystal cluster (made for Groddle, B2) beside every second dark one, as header-1346981279 pairs them. */
+const CORAL_PALE_CRYSTALS = { s: 'gz_ai_cc_crystal_pale', dx: 34, every: 2, tint: 0xc8c0a0 };
 
 // Groddle forest and meadow (groddle1.swf, Groddle Forest / Meadow / Heights streets)
 const TALL_PINES = ['tree_coniferous_fg_1', 'tree_coniferous_fg_2', 'tree_coniferous_fg_3', 'tree_coniferous_fg_4'];
@@ -946,9 +951,11 @@ export const RECIPES = {
   // fiddleheads Ilmenskie plant_fern_* and plant_giant_fern_*, the purple mushrooms purple_mushroom_*, the red
   // ones firebog mushrooms, the dark mounds cave_background_hill_*, the dark columns back_wall_*, all under
   // one murky olive layer tint. Laid out from header-1346981279 (2400x272) and a
-  // player's game-scale picture (Flickr 8411950008); both reference only. Left out: the tall kelp-like blades
-  // and the dark crystal columns of the header, which no CC0 symbol matched, and the pale spires (most like
-  // Ilmenskie cave_icicle_*, but a tint cannot turn that teal art the header's tan).
+  // player's game-scale picture (Flickr 8411950008); both reference only. The four pieces no CC0 symbol
+  // matched are made for Groddle (gz_ai_cc_*, tools/provenance/made-decos.json; 2026-11-22), drawn fresh
+  // from the header: the pale spires behind the rocks (f 0.2), the kelp stalks beside the beaded branches
+  // (f 0.32), the dark crystal clusters (f 0.45 and the front fringe), each second one with a pale cluster
+  // beside it, as the header pairs them.
   pol_ext_coral_high: {
     look: {
       sky: [0x5e3a20, 0x6e4426, 0x7a4c2c],
@@ -961,8 +968,20 @@ export const RECIPES = {
         { f: 0.05, items: [item(['back_wall_1', 'back_wall_2', 'back_wall_4', 'back_wall_5'], 0.36, 566, 560, 240, 0, { tint: 0xffba39 })] },
         { f: 0.09, items: [item(['cave_background_hill_1', 'cave_background_hill_2'], 0.15, 560, 120, 50, 40, { tint: 0xff8e0e, alpha: 0.8 })] },
         { band: { y: 550, h: 12, color: 0x24200a, alpha: 1 }, f: 0.11 },
-        { f: 0.2, items: [item(['cone_top_rock_01b_al1', 'cone_top_rock_01a_al1'], 0.26, 568, 720, 260, 100, { tint: 0x7a6630 })] },
-        { f: 0.32, items: [item('underground_bogwillow', 0.42, 580, 820, 260, 380, { tint: 0xffb49f })] },
+        {
+          f: 0.2,
+          items: [
+            item(['cone_top_rock_01b_al1', 'cone_top_rock_01a_al1'], 0.26, 568, 720, 260, 100, { tint: 0x7a6630 }),
+            item('gz_ai_cc_spires', 0.45, 566, 1300, 300, 460, { tint: 0xa09060 }),
+          ],
+        },
+        {
+          f: 0.32,
+          items: [
+            item('underground_bogwillow', 0.42, 580, 820, 260, 380, { tint: 0xffb49f }),
+            item('gz_ai_cc_kelp', 0.32, 582, 600, 220, 120, { tint: 0xc89a60 }),
+          ],
+        },
         {
           f: 0.45,
           items: [
@@ -970,6 +989,7 @@ export const RECIPES = {
             item(['underground_bogwillow_1', 'underground_bogwillow_3'], 0.7, 592, 1000, 260, 260, { tint: 0xffb49f }),
             item('mushrooms', 0.4, 592, 900, 260, 560, { tint: 0xae9861 }),
             item('purple_mushroom_3', 0.35, 592, 1100, 260, 760, { tint: 0x906645 }),
+            item('gz_ai_cc_crystal_dark', 0.55, 594, 700, 220, 640, { tint: 0xd0c090, beside: CORAL_PALE_CRYSTALS }),
           ],
         },
         {
@@ -989,6 +1009,7 @@ export const RECIPES = {
         { s: 'purple_mushroom_2', scale: 0.45, every: 520, jitter: 180, offset: 200, tint: 0x906645 },
         { s: 'underground_bogwillow_2', scale: 0.55, every: 900, jitter: 260, offset: 420, tint: 0xffb49f },
         { s: 'mushrooms', scale: 0.3, every: 760, jitter: 240, offset: 600, tint: 0xae9861 },
+        { s: 'gz_ai_cc_crystal_dark', scale: 0.45, every: 1100, jitter: 300, offset: 820, tint: 0xd0c090, beside: CORAL_PALE_CRYSTALS },
       ],
       nearTint: 0x947c39,
       trim: ['plant_fern_2', 'purple_mushroom_3', 'rock_rubble_01d_al1'],

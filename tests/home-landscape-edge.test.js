@@ -23,11 +23,11 @@ import { after, before, describe, it } from 'node:test';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=6d39d0d8';
 import { interiorWidth } from '../public/js/home-decor.js?v=267da56e';
-import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
+import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import { cameraLocationViewWidth, cameraTargetX } from '../public/js/movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, cameraEnds, landscapeWindow, rowRange } from '../public/js/landscape-reach.js?v=2f2d7cb3';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeItemHalf } from '../public/js/features/homes-feature.js?v=57051ba3';
-import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=d5bdf73e';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeItemHalf } from '../public/js/features/homes-feature.js?v=2b773d47';
+import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=d559bb23';
 import { NEIGHBOUR_SCENE } from '../public/js/neighbours.js?v=13f35acd';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

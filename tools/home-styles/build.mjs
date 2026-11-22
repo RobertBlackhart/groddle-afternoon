@@ -4,7 +4,9 @@
  * styles of GameServerJS inc_data_homes_prod.js (homes_interior_configs 1-816,
  * homes_exterior_configs 818-1152), in source order, with the CC0 deco
  * composition (tools/home-styles/recipes.mjs) for each exterior style whose
- * art survives. Deco sizes come from assets-src/decos/groddle/<name>.png.
+ * art survives. Deco sizes come from assets-src/decos/groddle/<name>.png; a deco
+ * made for Groddle (gz_, tools/provenance/made-decos.json) has no source PNG and
+ * takes its 2x file's size from its provenance row (w x h units at 2 px a unit).
  *
  *   node tools/home-styles/build.mjs          write the module
  *   node tools/home-styles/build.mjs --check  exit 1 if it is stale
@@ -20,6 +22,7 @@ const GSJS_MAPS = join(spike, '../glitch-GameServerJS/inc_data_maps_prod.js');
 const SRC_DECOS = join(spike, 'assets-src/decos/groddle');
 const PUB_DECOS = join(spike, 'public/assets/decos/groddle');
 const OUT = join(spike, 'public/js/home-styles-data.js');
+const MADE_DECOS = join(spike, 'tools/provenance/made-decos.json');
 const check = process.argv.includes('--check');
 
 /**
@@ -95,7 +98,15 @@ export function templatePair(intTemplate, exterior, names = templateNames()) {
   return near.length === 1 ? near[0] : null;
 }
 
+let madeDecos = null;
+
 function pngSize(name) {
+  if (name.startsWith('gz_')) {
+    madeDecos ??= JSON.parse(readFileSync(MADE_DECOS, 'utf8')).art;
+    const row = madeDecos[name];
+    if (!row) throw new Error(`deco ${name}: no provenance row in ${MADE_DECOS}`);
+    return { w: row.w * 2, h: row.h * 2 };
+  }
   const path = join(SRC_DECOS, `${name}.png`);
   if (!existsSync(path)) throw new Error(`deco ${name}: no ${path}`);
   const b = readFileSync(path);
@@ -114,11 +125,13 @@ function resolveSprite(name, given = {}) {
 }
 
 function resolveItem(raw) {
-  const { s, w, h, ...rest } = raw;
+  const { s, w, h, beside, ...rest } = raw;
   const names = [].concat(s);
   const alts = names.map((name) => resolveSprite(name, { w, h }));
   const out = { ...alts[0], ...rest };
   if (alts.length > 1) out.alts = alts;
+  // A companion piece drawn beside this one (homes-feature besideSpot).
+  if (beside) out.beside = { ...beside, ...resolveSprite(beside.s) };
   return out;
 }
 
