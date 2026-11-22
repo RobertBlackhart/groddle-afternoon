@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=26af9625';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2a8e9040';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e72b2fce';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -31164,6 +31164,8 @@ function renderVendorList() {
         : 99
       : Math.max(1, quote.maxQty ?? have);
     vendorQty = Math.max(1, Math.min(vendorQty, maxQ));
+    // G803: online, Find auctions for what the vendor sells (StoreBuyUI.as 166-187; features/auctions-feature.js).
+    const findAuctions = isBuy ? features.query('vendorFindAuctions', vendorSelected) : null;
     detail.style.display = 'block';
     detail.classList.toggle('count-pop', vendorPop);
     detail.setAttribute('role', 'group');
@@ -31187,7 +31189,8 @@ function renderVendorList() {
             ${vendorGoLabel(isBuy, vendorQty, unit)}
           </button>
         </div>${vendorRefusal ? `
-        <p class="vendor-refusal" role="alert">${escapeHtml(vendorRefusal.text)}</p>` : ''}
+        <p class="vendor-refusal" role="alert">${escapeHtml(vendorRefusal.text)}</p>` : ''}${findAuctions ? `
+        <p class="vendor-auctions"><button type="button" class="vendor-auctions-btn" data-v-auctions title="${escapeHtml(findAuctions.tooltip || '')}">${escapeHtml(findAuctions.label)}</button></p>` : ''}
         <p class="count-pop-esc mp-modern-only"><span class="count-pop-key"><span class="kcap">Esc</span> back · </span>${isBuy ? `◎ ${pc.currants || 0} to spend` : `${have} in your pack`}</p>
       </div>`;
     const applyQ = (n) => {
@@ -31198,6 +31201,12 @@ function renderVendorList() {
     detail.querySelector('[data-v-back]')?.addEventListener('click', () => {
       vendorSelected = null;
       renderVendorList();
+    });
+    // G803: the Auctions window on this item, the shop closed behind it (one window at a time).
+    detail.querySelector('[data-v-auctions]')?.addEventListener('click', () => {
+      const cls = vendorSelected;
+      closeVendor();
+      runPackCardVerb(cls, 'auctions_find', 'auctions');
     });
     detail.querySelector('[data-vq="-"]')?.addEventListener('click', () => applyQ(vendorQty - 1));
     detail.querySelector('[data-vq="+"]')?.addEventListener('click', () => applyQ(vendorQty + 1));

@@ -14,6 +14,8 @@
  * - A pack item's Find auctions (GetInfoDialog.as:189, StoreBuyUI.as:169:
  *   the item's auctions page), and Sell at auction (ours: the create page
  *   picked a stack from your pack; the pack popover goes straight to it).
+ * - A vendor's buy window, Find auctions under the count (StoreBuyUI.as
+ *   166-187; G803: players could not find the Auctions): vendorFindAuctions.
  * - Another player's menu, View Auctions (InteractionMenuController.as:
  *   560-562, "View active auctions from this person.").
  * - Deliveries (inc_mail.js mail_add_auction_delivery 1209-1212) come 10
@@ -979,6 +981,18 @@ export const auctionsFeature = {
     // #362: the table lists this class, so a stack in the pack the site cannot sell yet is waiting to be counted.
     out.push({ id: 'auctions_sell', label: T.sell, enabled: can, reason: can ? '' : T.notCounted, tooltip: T.sellTip });
     return out;
+  },
+
+  /**
+   * G803 (two players could not find the Auctions until told they are in the Menu): a vendor's buy
+   * window offers Find auctions for what it sells, as Glitch's did (StoreBuyUI.as 166-187, 548-558:
+   * the "Find auctions" button for an auctionable item). game.js renderVendorList asks; null in solo
+   * or for a class the trade table does not list.
+   */
+  vendorFindAuctions(classTsid) {
+    const verbs = this.packVerbs(classTsid);
+    const find = verbs?.find((v) => v.id === 'auctions_find');
+    return find ? { label: find.label, tooltip: find.tooltip } : null;
   },
 
   runPackVerb(classTsid, verbId) {

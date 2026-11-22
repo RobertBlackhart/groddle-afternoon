@@ -14377,6 +14377,9 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 /* G862 (#420): a refused Buy or Sell (a full pack) says why in the pop on a phone, where the notice waits
    behind the shop until it closes (js/notify-view.js); elsewhere the notice says it at once. */
 #vendor-panel .vendor-refusal { display: none; }
+/* G803: Find auctions under the count (StoreBuyUI.as's button), a plain link-like button in both skins. */
+#vendor-panel .vendor-auctions { margin: var(--sp-2) 0 0; }
+#vendor-panel .vendor-auctions-btn { padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-sm); font-weight: 700; color: var(--c-blue-51); text-decoration: underline; cursor: pointer; }
 :root.touch-phone[data-ui="modern"] #vendor-panel .vendor-detail.count-pop .vendor-refusal {
   display: block; margin: var(--space-2) 0 0; padding: var(--sp-2) var(--space-2);
   border-radius: var(--radius-m); background: var(--status-warn-soft); color: var(--c-brown-44c);
