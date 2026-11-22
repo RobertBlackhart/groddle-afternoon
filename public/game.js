@@ -9,7 +9,7 @@ import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, tri
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
-import { createPromptStack } from './js/prompt-stack.js?v=900598e0';
+import { createPromptStack } from './js/prompt-stack.js?v=19885e1b';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
 import { HOG_HAUL_SPLASH, createGameSplash, splashFor } from './js/game-splash.js?v=dd9fe5da';
 import {

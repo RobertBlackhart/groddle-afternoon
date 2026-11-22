@@ -20,7 +20,7 @@ import {
   promptChoices,
   promptStackHasRoom,
   usesIconButtons,
-} from '../public/js/prompt-stack.js?v=900598e0';
+} from '../public/js/prompt-stack.js?v=19885e1b';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
@@ -182,6 +182,25 @@ describe('the source prompt (inc_prompts.js, PromptView.as)', () => {
     assert.match(PROMPT_STACK_CSS, /width: min\(300px, calc\(100% - 32px\)\); display: flex; flex-direction: column; gap: 7px;/);
     assert.match(PROMPT_STACK_CSS, /background: color-mix\(in srgb, var\(--c-sand-35\) 90%, transparent\)/, 'the dark card (was rgba(57,59,50,.9))');
     assert.match(PROMPT_STACK_CSS, /html\[data-street-cards\] \.prompt-stack \{ visibility: hidden; \}/);
+  });
+
+  it('G1143: the check and X sit on a light cream face so the art reads; text buttons keep the lime', () => {
+    const rule = (sel) => PROMPT_STACK_CSS.match(new RegExp(`${sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\{([^}]*)\\}`))?.[1] || '';
+    const icons = rule('.prompt-stack .game-prompt-choices.is-icons button');
+    assert.match(icons, /background: linear-gradient\(var\(--c-cream-99b\), var\(--c-cream-91\)\)/);
+    assert.match(rule('.prompt-stack .game-prompt-choices button'), /background: linear-gradient\(var\(--c-lime-68\), var\(--c-lime-54\)\)/);
+    // The icon art's ink (prompt_check: olive #688305, prompt_x: #393b32) against both ends of the face.
+    const tokens = read('style.css');
+    const hex = (name) => tokens.match(new RegExp(`--${name}: (#[0-9a-f]{6});`))[1];
+    const lum = (h) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a, b) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+    for (const face of [hex('c-cream-99b'), hex('c-cream-91')]) {
+      assert.ok(ratio('#688305', face) >= 3, `the check on ${face}: ${ratio('#688305', face).toFixed(2)}`);
+      assert.ok(ratio('#393b32', face) >= 4.5, `the X on ${face}: ${ratio('#393b32', face).toFixed(2)}`);
+    }
   });
 });
 

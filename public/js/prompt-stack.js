@@ -37,6 +37,11 @@
  *   - sendChoice 168-189: an expired prompt sends its timeout_value, or
  *     nothing when it has none.
  *
+ * G1143 (Austin 2026-11-22, #613): the check and X buttons have a light cream face (cream 99b to
+ * 91) so the art reads: Glitch's olive check measured 1.1-1.6:1 on the lime face, now 3.4-4.2:1, and
+ * the dark X 8.8-11:1. Glitch's own face colour is not in the held client source; the icon art
+ * suggests a light one. Text buttons keep the lime.
+ *
  * Remake: the prompts take no keyboard focus when they appear (the client's
  * never did), so walking and jumping go on; each prompt is role="dialog"
  * (not modal), so a button you Tab to takes Enter and Space (game.js
@@ -126,7 +131,8 @@ html[data-street-cards] .prompt-stack { visibility: hidden; }
 .prompt-stack .game-prompt-choices button:first-child { border-top-left-radius: var(--radius-xs); border-bottom-left-radius: var(--radius-xs); }
 .prompt-stack .game-prompt-choices button:last-child { border-top-right-radius: var(--radius-xs); border-bottom-right-radius: var(--radius-xs); }
 .prompt-stack .game-prompt-choices button:focus-visible { outline: 2px solid var(--c-white); outline-offset: 1px; }
-.prompt-stack .game-prompt-choices.is-icons button { width: 24px; min-width: 24px; padding: 0; display: grid; place-items: center; }
+.prompt-stack .game-prompt-choices.is-icons button { width: 24px; min-width: 24px; padding: 0; display: grid; place-items: center;
+  border-color: var(--c-sand-75); background: linear-gradient(var(--c-cream-99b), var(--c-cream-91)); }
 .prompt-stack .game-prompt-choices.is-icons img { display: block; image-rendering: auto; }
 @media (max-width: 620px) { .prompt-stack { right: 16px; } }
 `;
