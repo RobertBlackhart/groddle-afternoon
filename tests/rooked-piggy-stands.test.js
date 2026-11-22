@@ -4,8 +4,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createAnimalState } from '../public/js/animals.js?v=af87d692';
-import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=2046d39c';
-import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=a305b771';
+import { animalMoodFeature } from '../public/js/features/animal-mood-feature.js?v=ce139d6d';
+import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=598ddfc3';
 
 const TSID = 'GLI2HVHUM4F16B0'; // Pasha's Place, Groddle Forest: where Austin met it
 

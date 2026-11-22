@@ -83,14 +83,14 @@ import {
   drawFinishGate,
   raceLoadingColors,
   renderRaceCourse,
-} from '../race-render.js?v=0df667ec';
+} from '../race-render.js?v=c81f18ed';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { CROWNS_STREET, CROWNS_TICKET, CROWNS_TITLE } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { QUOIN_GRAB_SPLASH, RACE_SPLASH, splashFor } from '../game-splash.js?v=dd9fe5da';
-import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=362d2cd7';
-import { startHogHaulMp } from './hog-haul-mp-feature.js?v=2f0c56ef';
+import { crownsMpChallenge, startCrowns } from './crowns-feature.js?v=7fd1943b';
+import { startHogHaulMp } from './hog-haul-mp-feature.js?v=717165d0';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=5abad2c7';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
@@ -107,7 +107,7 @@ import {
   shardAmount,
   splitScores,
 } from '../races-mp.js?v=4531b30c';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=422a7242';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 const RACE_ICON_DIR = 'assets/sprites/races/';

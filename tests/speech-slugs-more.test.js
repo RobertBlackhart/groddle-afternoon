@@ -22,8 +22,8 @@ import { runVerb } from '../public/content.js?v=b52b3339';
 import { setTrantTables, createTrantState } from '../public/js/trants.js?v=864ea9ff';
 import { setMetabolicLossGate } from '../public/js/metabolics.js?v=48f784bf';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
-import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=d3f21981';
-import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=145d3e31';
+import { talkbackFor } from '../public/js/features/resource-nodes-feature.js?v=e56cbbec';
+import { plotVerbSlugs } from '../public/js/features/patches-feature.js?v=a5feda31';
 import { createKitty, petKitty } from '../public/js/heli-kitties.js?v=e4af4096';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 

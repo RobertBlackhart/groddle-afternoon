@@ -9,7 +9,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as mod from '../public/js/quest-rooms/operation-grow.js?v=3f79c5c3';
+import * as mod from '../public/js/quest-rooms/operation-grow.js?v=0c7638f0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');

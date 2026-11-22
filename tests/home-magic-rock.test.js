@@ -156,11 +156,11 @@ describe('source wording', { skip: !existsSync(ROCK_JS) }, () => {
  * shiftCKeyHandler 816-828; HouseManager.as startCultivation 102-118).
  */
 describe('the home street rock (G231)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=76f24077');
-  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=9c3135bf');
-  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=bb55b2bb');
-  const { homeEditing } = await import('../public/js/features/camera-mode-feature.js?v=a125faeb');
-  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=c987f650');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=0b533e1a');
+  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=9c43393f');
+  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=641d0060');
+  const { homeEditing } = await import('../public/js/features/camera-mode-feature.js?v=ac6e8030');
+  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=bceb6d4d');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const towerQuest = { active: { build_a_tower: { started: 1 } }, completed: [], offers: {} };
@@ -285,7 +285,7 @@ describe('the home street rock (G231)', async () => {
  * (NCMsgHandler.as 3093-3096). Solo: no visitors, so only the stipend.
  */
 describe('the rock’s daily iMG and the house sign (G232)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=76f24077');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=0b533e1a');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const quiet = { active: {}, completed: [], offers: {} };

@@ -34,7 +34,7 @@ import {
 import { mayhemData } from '../tools/build-realtime-mayhem.mjs';
 import { CROWNS_START_POINTS, CROWNS_STREET } from '../public/js/game-of-crowns.js?v=e32f35f5';
 import { OVERLAY_USES } from '../public/js/overlays.js?v=1f5027a3';
-import { sharedStreet } from '../public/js/features/realtime-feature.js?v=24175621';
+import { sharedStreet } from '../public/js/features/realtime-feature.js?v=13eaf66b';
 import { HAS_SERVER, serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -237,7 +237,7 @@ describe('the feature', () => {
   };
 
   it('asks which game, joins, and enters the arena on the game\'s own street', async () => {
-    const { mayhemFeature } = await import('../public/js/features/mayhem-feature.js?v=b06fc4cc');
+    const { mayhemFeature } = await import('../public/js/features/mayhem-feature.js?v=f0e5a6d2');
     mayhemFeature.init(engine);
     mayhemFeature.restore({}, engine);
     mayhemFeature.onTick(16, 0, engine);
@@ -259,7 +259,7 @@ describe('the feature', () => {
   });
 
   it('counts the end once and applies a reward once', async () => {
-    const { mayhemFeature } = await import('../public/js/features/mayhem-feature.js?v=b06fc4cc');
+    const { mayhemFeature } = await import('../public/js/features/mayhem-feature.js?v=f0e5a6d2');
     client.fire('mayhem_go', { room: '00000000000000a1', round: 1, target: 12, players: [{ id: 7, name: 'Ada', team: 'blue', score: 1 }, { id: 8, name: 'Bo', team: 'red', score: 1 }] });
     assert.equal(mayhemFeature.physics(engine).jump, 1.15);
     const end = { room: '00000000000000a1', round: 1, target: 12, winner: { id: 7, name: 'Ada' }, why: 'won', players: [], played: true };
@@ -284,7 +284,7 @@ describe('solo has no Math Mayhem', () => {
     assert.doesNotMatch(feature, /placementGroups/, 'no street plan changes, solo or online');
   });
   it('leaves Game of Crowns its arena when no Math Mayhem game holds it', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=362d2cd7');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=7fd1943b');
     assert.deepEqual(crownsFeature.labelFor('CROWNS_00000000000000A1'), { street: 'Game of Crowns', hub: '', hubId: 'it_game' });
   });
 });

@@ -47,7 +47,7 @@ import {
   petEnchantedSeedling,
   seedlingStatusLabel,
 } from '../enchanted-forests.js?v=17ac01e4';
-import { standOnFeet } from '../sprite-feet.js?v=a593b732';
+import { standOnFeet } from '../sprite-feet.js?v=422a7242';
 
 export const ENCHANTED_FEATURE_ID = 'enchanted-forest';
 const SEEDLING_URL = 'assets/sprites/soil/patch-seedling@3x.webp';

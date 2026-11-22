@@ -19,8 +19,8 @@ import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=6d39d0d8';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=13fe0aaa';
 import { SOIL_JOIN, soilTiles } from '../public/js/landscape-reach.js?v=2f2d7cb3';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=76f24077';
-import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=888f37df';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=0b533e1a';
+import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=d5bdf73e';
 import { FakeEl, fakePixi } from './fake-scene.js';
 
 const ART = (f) => fileURLToPath(new URL(`../public/assets/decos/groddle/${f}`, import.meta.url));

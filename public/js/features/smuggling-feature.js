@@ -44,8 +44,8 @@ import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=10376267';
 import { isStandable, worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { hellFeature } from './hell-feature.js?v=9507f5f8';
-import { questRoomConverse } from './quest-instances-feature.js?v=3e953685';
+import { hellFeature } from './hell-feature.js?v=bcee741a';
+import { questRoomConverse } from './quest-instances-feature.js?v=1b672c75';
 import {
   CONTRABAND,
   CONTRABAND_ITEM,
@@ -85,7 +85,7 @@ import {
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { findRoute, loadStreetGraph, openRoads, roadsFor, streetGraphLoaded } from '../street-graph.js?v=dcc5cae4';
-import { standOnFeet } from '../sprite-feet.js?v=a593b732';
+import { standOnFeet } from '../sprite-feet.js?v=422a7242';
 
 export const SMUGGLING_FEATURE_ID = 'smuggling';
 const ART = 'assets/sprites/smuggling/';

@@ -103,16 +103,16 @@ import { markLeaving, takeCopies } from '../copy-picks.js?v=01de4c58';
 import { RECIPE_CATALOG } from '../making.js?v=d28b2a24';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=6d39d0d8';
-import { lookOf, poseOf } from './realtime-feature.js?v=24175621';
+import { lookOf, poseOf } from './realtime-feature.js?v=13eaf66b';
 import { readVisitScene } from '../neighbours-mp.js?v=6cabf58b';
 import { saveStore } from '../save-store.js?v=cd053443';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { createSheetLoader } from '../sprite-sheets.js?v=bac259c0';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=76f24077';
-import { payAltarBonus } from './machine-rooms-feature.js?v=9124c084';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=0b533e1a';
+import { payAltarBonus } from './machine-rooms-feature.js?v=71ad0056';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { standOnFeet } from '../sprite-feet.js?v=a593b732';
+import { standOnFeet } from '../sprite-feet.js?v=422a7242';
 
 export { HOME_MACHINES_ID };
 

@@ -46,12 +46,14 @@ test('the two re-framed house copies line up with their 2x files', () => {
 });
 
 test('the house picks its copy at R 4 and keeps the 2x file on a phone', async () => {
-  const { landscapeArt } = await import('../public/js/features/homes-feature.js?v=76f24077');
+  const { landscapeArt } = await import('../public/js/features/homes-feature.js?v=0b533e1a');
   const house = { s: 'door_asset_house_medium_03', w: 764, h: 586, scale: 0.58 };
   assert.equal(landscapeArt(house, 4).url, `assets/decos/groddle/door_asset_house_medium_03@${rows.get('door_asset_house_medium_03').res}x.webp`);
   assert.equal(landscapeArt(house, 1).url, 'assets/decos/groddle/door_asset_house_medium_03.png');
   const src = readFileSync(join(pub, 'js/features/homes-feature.js'), 'utf8');
-  assert.match(src, /const house = land\.artist\.sprite\(PIXI, \{ s: h\.path, w: h\.w, h: h\.h, scale: h\.scale \}, layout\.houseX, STREET_GROUND_Y \+ 14\);/);
+  // G796: your own street draws one of Glitch's ten houses from its parts (home-house.js), not the
+  // door_asset_house_* stand-in; a neighbour's street still draws the stand-in copy below.
+  assert.match(src, /for \(const op of composeHouse\(house\.chassis, house\.config, house\.facingRight\)\)/);
   const nb = readFileSync(join(pub, 'js/features/neighbour-scene.js'), 'utf8');
   assert.match(nb, /const sharp = sharpRoomDeco\(`\$\{DECO\}\$\{h\.path\}\.png`, h\.scale\);/);
 });

@@ -63,7 +63,7 @@ import {
   wineDrinkConditions,
 } from '../public/js/hell.js?v=e77adbf2';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=9507f5f8';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=bcee741a';
 import { Display, fakePixi } from './fake-scene.js';
 import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=50c112eb';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';

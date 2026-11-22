@@ -53,7 +53,7 @@ const {
   thanksgivingDay,
 } = await import('../public/js/feast-day.js?v=438fdca7');
 const { HARVEST_DISHES, createTableState, layOffering, packAway, TABLE_STREET } = await import('../public/js/pot-luck-feast.js?v=8fa008d0');
-const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=19d829dc');
+const { feastDayFeature } = await import('../public/js/features/feast-day-feature.js?v=e770c689');
 
 const at = (y, m, d, h = 12) => Date.UTC(y, m - 1, d, h + 8); // Pacific standard time
 const fixed = (v) => () => v;

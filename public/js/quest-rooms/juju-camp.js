@@ -44,7 +44,7 @@
 import { onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { loseMood } from '../metabolics.js?v=48f784bf';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
-import { standOnFeet } from '../sprite-feet.js?v=a593b732';
+import { standOnFeet } from '../sprite-feet.js?v=422a7242';
 import { roomMemoryKey } from '../quest-instance.js?v=8858d29d';
 
 const Q1 = 'help_juju_bandits';

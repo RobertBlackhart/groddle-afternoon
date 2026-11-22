@@ -117,10 +117,10 @@ import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy
 import { migrateClassValue } from '../tools.js?v=4156bba8';
 import { DEAD_TRANT_CLASSES } from '../patches.js?v=2498e678';
 import { COPY as SHARED_PATCH_COPY } from '../shared-patches.js?v=2f46e9b9';
-import { hellFeature } from './hell-feature.js?v=9507f5f8';
+import { hellFeature } from './hell-feature.js?v=bcee741a';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, playSheetOverlay } from '../overlay-art.js?v=95f23414';
-import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=619d2782';
+import { pcOverlayPoint, playItemOverlay } from '../item-overlay.js?v=d5b87d17';
 import { POWDER_SHAKE, powderShakerSheet } from '../powder-shakers.js?v=fcd18855';
 import { OVERLAY_USES, playOverlay, playWindowOverlay, windowOverlayFit } from '../overlays.js?v=1f5027a3';
 import {

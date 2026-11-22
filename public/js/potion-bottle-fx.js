@@ -10,7 +10,7 @@
  */
 
 import { displayTopOf, itemstackOverlayPoint } from './overlay-art.js?v=95f23414';
-import { pcOverlayPoint, playItemOverlay } from './item-overlay.js?v=619d2782';
+import { pcOverlayPoint, playItemOverlay } from './item-overlay.js?v=d5b87d17';
 import { POTION_POUR_MS, POTION_SELF_OVERLAY, POTION_TARGET_OVERLAY, potionBottleSheet, potionPourSide } from './potion-bottles.js?v=17925871';
 
 /** A garden's display top is 35 px over its art (LocationItemstackView.as 640-642). */
