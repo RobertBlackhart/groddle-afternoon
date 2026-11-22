@@ -41,7 +41,9 @@ describe('G575: /stuck remembers a signpost or door arrival', () => {
     assert.match(game, /\? \{ spawnX: meta\.arrive\.x, spawnY: meta\.arrive\.y, \.\.\.\(STUCK_ARRIVAL_WAYS\.includes\(meta\.via\) \? \{ arrivalBy: meta\.via \} : \{\}\) \}/);
     assert.match(game, /await enterStreetWithTransition\(plan\.toTsid, arrive\);/);
     // The loading card keeps the trip's options when it enters quiet.
-    assert.match(game, /data = await enterStreet\(tsid, \{ \.\.\.opts, quiet: true \}\);/);
+    // R46: through the trip's failure contract (enterStreetOrStay), opts kept and quiet added.
+    assert.match(game, /const load = \(extra = \{\}\) => enterStreetOrStay\(tsid, \{ \.\.\.opts, \.\.\.extra \}/);
+    assert.match(game, /data = await load\(\{ quiet: true \}\);/);
     assert.match(game, /streetArrival = stuckArrivalSpot\(data\.tsid, opts, \{/);
     assert.doesNotMatch(game, /streetArrival = opts\.quiet/);
     // Every signpost and door path says which it is.

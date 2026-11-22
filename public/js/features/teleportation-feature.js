@@ -299,16 +299,19 @@ function preflight(engine, target) {
 }
 
 function launch(engine, out, how) {
+  // R46: what the jump took, to give back should its trip fail (land).
+  const before = { state, energy: Number(engine.pc.energy) || 0 };
   state = out.state;
   // G289: metabolics_lose_energy, nothing lost while dead (inc_metabolics.js 108-122).
   if (out.energyCost) loseEnergy(engine.pc, out.energyCost);
+  const spent = { state: before.state, energy: Math.max(0, before.energy - (Number(engine.pc.energy) || 0)) };
   engine.updateHud();
   engine.closeMap();
   engine.pushActivity(
     `You begin to teleport to ${placeLabel(out.target)}.${out.energyCost ? ` -${out.energyCost} energy` : ''}`
   );
   engine.setData('teleportLast', `${how}:${out.target.tsid}:e${out.energyCost || 0}`);
-  pending = { target: out.target, events: out.events, label: placeLabel(out.target), startedAt: Date.now() };
+  pending = { target: out.target, events: out.events, label: placeLabel(out.target), startedAt: Date.now(), spent };
   playWarpHit(engine);
   engine.save();
   publish(engine);
@@ -428,7 +431,19 @@ async function land(engine) {
   try {
     // From a quest room: leave it as its Leave does, landing on the target (header).
     const left = questRoomHere(engine) ? await engine.query('questRoomLeave', engine, { to: warp.target }) : false;
-    if (!left) await engine.enter(warp.target.tsid, { spawnX: warp.target.x, spawnY: warp.target.y });
+    if (!left && (await engine.enter(warp.target.tsid, { spawnX: warp.target.x, spawnY: warp.target.y })) === false) {
+      // R46: the street never loaded (the trip said so): you stay, and the jump's charge and
+      // energy come back, since it never took you anywhere.
+      arrival = null;
+      if (warp.spent) {
+        state = warp.spent.state;
+        engine.pc.energy = (Number(engine.pc.energy) || 0) + warp.spent.energy;
+        engine.updateHud();
+        engine.save();
+      }
+      engine.setData('teleportLast', `failed:${warp.target.tsid}`);
+      publish(engine);
+    }
   } catch (err) {
     console.error(err);
     arrival = null;

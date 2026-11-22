@@ -204,7 +204,8 @@ export async function runTeleportCommand(args, deps) {
   if (r.data?.delivery === 'self') {
     const at = r.data.spot && r.data.at ? { spawnX: Number(r.data.at.x), spawnY: Number(r.data.at.y) } : {};
     try {
-      await engine.enter?.(r.data.street?.tsid || body.tsid, at);
+      // R46: engine.enter answers false for a trip that failed (and said so).
+      if ((await engine.enter?.(r.data.street?.tsid || body.tsid, at)) === false) return 'self:enter-failed';
       engine.save?.();
       await deps.flush?.();
     } catch {

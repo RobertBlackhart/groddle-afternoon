@@ -243,17 +243,16 @@ function enterDoor(engine, target) {
   }
   engine.setData('doorLast', check.consumeKey ? 'unlocked' : 'open');
   // The client plays the door art's unlock() and waits a second before a locked move.
-  pending = { at: Date.now() + (check.consumeKey ? UNLOCK_MS : 120), door, dest, target };
+  pending = { at: Date.now() + (check.consumeKey ? UNLOCK_MS : 120), door, dest, target, key: check.consumeKey || '' };
   const sprite = target.sprite;
   if (sprite && !sprite.destroyed) sprite.tint = 0xfff2c8;
   return true;
 }
 
 async function finishEnter(engine) {
-  const { door, dest } = pending;
+  const { door, dest, key } = pending;
   pending = null;
-  state.entered += 1;
-  engine.setData('doorFrom', engine.streetTsid);
+  const from = engine.streetTsid;
   const arrive = dest.arrive;
   if (dest.street === engine.streetTsid) {
     if (arrive && engine.player) {
@@ -263,9 +262,20 @@ async function finishEnter(engine) {
       engine.player.vy = 0;
       engine.snapCamera();
     }
-  } else {
-    await engine.enter(dest.street, arrive ? { spawnX: arrive.x, spawnY: arrive.y } : {});
+  } else if ((await engine.enter(dest.street, arrive ? { spawnX: arrive.x, spawnY: arrive.y } : {})) === false) {
+    // R46: the street never loaded (the trip said so): you are still at the door, and a key it
+    // took comes back, so the next try opens it again.
+    if (key) {
+      addItem(engine.inv, key, 1);
+      state.keysUsed = Math.max(0, state.keysUsed - 1);
+      engine.refreshPack();
+      engine.save();
+    }
+    engine.setData('doorLast', 'failed');
+    return null;
   }
+  state.entered += 1;
+  engine.setData('doorFrom', from);
   engine.setData('doorArrived', engine.streetTsid);
   engine.setData('doorArrivedX', Math.round(engine.player?.x || 0));
   engine.save();

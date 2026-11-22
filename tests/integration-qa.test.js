@@ -128,7 +128,7 @@ test.describe('integration playtest regressions', () => {
   test('a street that fails to load keeps you put and says so', () => {
     const body = fnBody('travelTo');
     assert.match(body, /try \{\n    await enterStreetWithTransition\(plan\.toTsid, arrive\);\n  \} catch \(err\) \{/);
-    assert.match(body, /Could not reach \$\{plan\.label/);
+    assert.match(body, /tripFailedLine\(plan\.label/);
     assert.match(body, /reason: 'load_failed'/);
   });
 });

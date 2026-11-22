@@ -223,7 +223,7 @@ const ROOM_MODULES = {
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=4ac73832'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=178f4f36'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=fb9e5d6a'),
-  clubhouse: () => import('../quest-rooms/clubhouse.js?v=da690eb2'),
+  clubhouse: () => import('../quest-rooms/clubhouse.js?v=16466eaa'),
   light_perspective: () => import('../quest-rooms/light-perspective.js?v=71abc87e'),
   tile_puzzle: () => import('../quest-rooms/tile-puzzle.js?v=2ef4f0f6'),
   operation_grow: () => import('../quest-rooms/operation-grow.js?v=1fe4ced5'),
@@ -1046,14 +1046,14 @@ async function buildStage(engine, stage) {
     engine.instanceHold = street.hold === false ? null : QUEST_INSTANCES_FEATURE_ID;
     delete ctx.data._sceneTsid;
     ctx.data._awaitStreet = { tsid: street.tsid, stage };
-    await engine.enter(street.tsid, {
+    // R46: false when the room's street never loaded (the trip said so).
+    return (await engine.enter(street.tsid, {
       spawnX: street.x,
       spawnY: street.y,
       quiet: true,
       bypassFeatureGates: true,
       useTransition: false,
-    });
-    return;
+    })) !== false;
   }
   const scene = room.build(ctx, stage);
   engine.instanceHold = null;
@@ -1081,7 +1081,11 @@ async function buildStage(engine, stage) {
   if (engine.street) engine.street.barriers = scene.barriers || [];
   room.enter?.(ctx, stage);
   renderHud(engine, true);
+  return true;
 }
+
+/** R46: a room start whose street never loaded waits this long before it tries again. */
+const START_RETRY_MS = 30_000;
 
 async function startInstance(engine, questId, opts = {}) {
   // G904: nor while a held run waits for the party to lead back.
@@ -1124,7 +1128,19 @@ async function startInstance(engine, questId, opts = {}) {
     engine.closeMap?.();
     room.start?.(ctx);
     const label = room.loadingLabel?.(run.stage, ctx) || room.stageLabel?.(run.stage, ctx) || room.title;
-    await withTransition(engine, label, room.theme, () => buildStage(engine, run.stage));
+    let built = true;
+    await withTransition(engine, label, room.theme, async () => {
+      built = await buildStage(engine, run.stage);
+    });
+    if (!built) {
+      // R46: the room's street never loaded (the trip said so and left you where you were). The
+      // run ends where you stand, the quest not failed (Ticket 41's drop), and the room tries
+      // again in a while rather than at once.
+      if (run) dropReplacedRun(engine);
+      pendingStart = { questId, at: Date.now() + START_RETRY_MS };
+      engine.setData('qiStatus', 'start-failed');
+      return false;
+    }
     engine.setData('qiStatus', run.status);
     publish(engine, true);
     if (opts.autoplay) runAutoplay(engine, opts.autoplay);
@@ -1499,12 +1515,17 @@ async function leaveStray(engine, opts = {}) {
     const to = opts.to?.tsid ? opts.to : strayExit(engine);
     strayData = 'left';
     engine.setData('qiStray', strayData);
-    await engine.enter(to.tsid, {
+    // R46: false when the trip failed (it said so); the room's EXIT and /stuck stay for another go.
+    const ok = (await engine.enter(to.tsid, {
       ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
       ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
       ...(opts.to ? {} : { quiet: true, bypassFeatureGates: true }),
       useTransition: opts.transition !== false,
-    });
+    })) !== false;
+    if (!ok) {
+      strayData = '';
+      return false;
+    }
     engine.save?.();
     return true;
   } catch (err) {

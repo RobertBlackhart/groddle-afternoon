@@ -172,7 +172,12 @@ async function teleport(engine, row) {
     teleports += 1;
     last = row.id;
     publish(engine, Date.now(), true);
-    await engine.enter(row.to, { spawnX: row.arrive.x, spawnY: row.arrive.y });
+    // R46: a trip that failed (it said so) took you nowhere, so it does not count.
+    if ((await engine.enter(row.to, { spawnX: row.arrive.x, spawnY: row.arrive.y })) === false) {
+      teleports = Math.max(0, teleports - 1);
+      publish(engine, Date.now(), true);
+      return;
+    }
     engine.save?.();
   } finally {
     teleporting = false;

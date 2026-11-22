@@ -384,7 +384,13 @@ async function teleport(engine, row) {
     engine.setData('midTowerTeleports', teleports);
     engine.setData('midTowerLast', `teleport:${row.id}`);
     engine.playSound?.('TELEPORT_AWAY', { volume: 0.5 });
-    await engine.enter(row.street, { spawnX: row.arrive.x, spawnY: row.arrive.y });
+    // R46: a trip that failed (it said so) took you nowhere: no count, no line.
+    if ((await engine.enter(row.street, { spawnX: row.arrive.x, spawnY: row.arrive.y })) === false) {
+      teleports = Math.max(0, teleports - 1);
+      engine.setData('midTowerTeleports', teleports);
+      engine.setData('midTowerLast', `failed:${row.id}`);
+      return;
+    }
     engine.pushActivity(row.street === MEZZANINE_TSID ? 'You slipped back under the Mezzanine floorboards.' : `You slipped through to ${row.label}.`);
     engine.save();
   } finally {

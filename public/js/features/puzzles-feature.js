@@ -903,13 +903,19 @@ async function leavePuzzle(engine, opts = {}) {
   leaving = true;
   try {
     const to = opts.to?.tsid ? opts.to : wayOut(engine);
+    const kept = save.returnTo;
     save.returnTo = null;
     engine.closeMap?.();
-    await engine.enter(to.tsid, {
+    const ok = (await engine.enter(to.tsid, {
       ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
       ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
       useTransition: opts.transition !== false,
-    });
+    })) !== false;
+    if (!ok) {
+      // R46: the trip failed (it said so): the way back is kept for another go.
+      save.returnTo = kept;
+      return false;
+    }
     engine.setData?.('puzzleLeft', key(to.tsid));
     engine.save?.();
     return true;

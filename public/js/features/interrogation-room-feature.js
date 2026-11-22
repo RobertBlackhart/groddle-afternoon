@@ -163,12 +163,20 @@ export async function leaveInterrogation(engine) {
   if (!isInterrogationTsid(engine.streetTsid)) return false;
   const dest = doorDestinationFor(wayBack);
   last = `${wayBack ? 'left' : 'fallback'}:${dest.tsid}`;
+  const kept = wayBack;
   wayBack = null;
   engine.playSound?.('DOOR_OPEN');
   engine.save?.();
   publish(engine);
   const spot = Number.isFinite(dest.x) && Number.isFinite(dest.y) ? { spawnX: dest.x, spawnY: dest.y } : {};
-  await engine.enter(dest.tsid, spot);
+  if ((await engine.enter(dest.tsid, spot)) === false) {
+    // R46: the trip failed (it said so): still in the room, its door leads where it did.
+    wayBack = kept;
+    last = `failed:${dest.tsid}`;
+    engine.save?.();
+    publish(engine);
+    return false;
+  }
   return true;
 }
 

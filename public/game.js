@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=8ccaad08';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fd227c60';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a190447b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1166,6 +1166,7 @@ import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6ffaec43'
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 import { createStreetMove, travelTurn } from './js/street-move.js?v=8b87fd56';
+import { enterResult, tripFailedLine, tripWithRetry } from './js/street-trip.js?v=89addd51';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -3802,6 +3803,37 @@ async function enterStreetWithTransition(tsid, opts = {}) {
   return streetMove.queue(() => streetTripTo(tsid, opts));
 }
 
+/**
+ * R46 (#614): a trip's street load under one failure contract (js/street-trip.js): tried again once,
+ * and when it still fails a street the load had begun to replace is put back where you stood, you
+ * are told in one line, and it throws a TripFailed (engine.enter answers false). Glitch's server
+ * owned the move and a client whose load failed reconnected where it was (players/player.js 2707).
+ */
+function enterStreetOrStay(tsid, opts, { label = '' } = {}) {
+  return tripWithRetry({
+    label,
+    load: () => enterStreet(tsid, opts),
+    snapshot: () => {
+      const back = engine.inScene() ? engine.sceneReturnTo : null;
+      return {
+        street: currentStreet,
+        bg: bgLayer,
+        ...(back?.tsid ? { tsid: back.tsid, x: back.x, y: back.y } : { tsid: currentStreetTsid, x: player?.x, y: player?.y }),
+      };
+    },
+    changed: (was) => currentStreet !== was.street || bgLayer !== was.bg,
+    restore: (was) => was.tsid && enterStreet(was.tsid, {
+      ...(Number.isFinite(was.x) ? { spawnX: was.x } : {}),
+      ...(Number.isFinite(was.y) ? { spawnY: was.y } : {}),
+      quiet: true,
+      bypassFeatureGates: true,
+      useTransition: false,
+    }),
+    say: (line) => toast(line, 4000),
+    warn: (err, step) => console.warn('street trip', tsid, step, err),
+  });
+}
+
 /** #478: each street's Home to: list as its card last showed it, this session. */
 const homeToSeen = new Map();
 
@@ -3850,8 +3882,10 @@ async function streetTripTo(tsid, opts = {}) {
   const colors = await resolveHubColors(hubId);
   const loadingImg = resolveLoadingImg(tsid);
 
+  // R46: the load (and its one retry) under the trip's failure contract.
+  const load = (extra = {}) => enterStreetOrStay(tsid, { ...opts, ...extra }, { label: toLabel });
   if (!useFx || !el) {
-    const arrived = await enterStreet(tsid, opts);
+    const arrived = await load();
     opts.arrive?.(arrived);
     return arrived;
   }
@@ -3886,7 +3920,7 @@ async function streetTripTo(tsid, opts = {}) {
       return info;
     },
     onMid: async () => {
-      data = await enterStreet(tsid, { ...opts, quiet: true });
+      data = await load({ quiet: true });
       // #215: a scene places the avatar (opts.arrive) before the card lifts, so the first frame shown has it there.
       opts.arrive?.(data);
     },
@@ -14892,22 +14926,36 @@ const engine = {
   /** Whether the shared vendor panel is open. */
   shopOpen: () => isVendorOpen(),
   _shopReturn: null,
-  /** Feature-driven travel: home rooms, ordinary streets, gate bypass. */
+  /**
+   * Feature-driven travel: home rooms, ordinary streets, gate bypass.
+   * R46 (#614): true once you have arrived, false when the trip failed (never a throw): the load was
+   * tried again once, you stand where you were and were told (js/street-trip.js). A feature that
+   * changes its own state for the trip checks the answer and puts it back (subway-feature
+   * disembark); tests/street-trip-r46.test.js keeps new callers to that.
+   */
   async enter(tsid, opts = {}) {
+    const say = (line) => toast(line, 4000);
+    const warn = (err) => console.warn('engine.enter', tsid, err);
     if (tsid === HOME_STREET_TSID || tsid === HOME_INTERIOR_TSID) {
+      const was = { inHome: homeState.inHome, room: homeState.room };
       homeState.inHome = true;
       homeState.room = tsid === HOME_INTERIOR_TSID ? 'interior' : 'street';
       const load = () => renderHomeScene(homeState.room, { spawnX: opts.spawnX });
       // G249: a feature's own door into a home place (the Tower's) shows the home card.
-      if (opts.pol) await showLocationTransition({ pol: opts.pol, load });
-      else await load();
-      return;
+      const ok = await enterResult(() => (opts.pol ? showLocationTransition({ pol: opts.pol, load }) : load()), { say, warn, label: 'your home' });
+      if (!ok) Object.assign(homeState, was);
+      return ok;
     }
     // Ticket 57: any trip to a world street ends a stay at home, from a scene too (another
     // player's home, a Tower floor), not only from your own street or house.
+    const wasHome = homeState.inHome;
     if (homeState.inHome) homeState.inHome = false;
     const resolved = resolveIndexTsid(tsid) || tsid;
-    await enterStreetWithTransition(resolved, opts);
+    const label = features.query('labelFor', resolved, engine)?.street || STREET_INDEX.streets?.[resolved]?.label || '';
+    const ok = await enterResult(() => enterStreetWithTransition(resolved, opts), { say, warn, label });
+    // A trip that failed leaves you where you were (or put you back there), at home too.
+    if (!ok) homeState.inHome = wasHome;
+    return ok;
   },
 };
 
@@ -26812,9 +26860,10 @@ async function travelTo(toTsid, meta = {}) {
   try {
     await enterStreetWithTransition(plan.toTsid, arrive);
   } catch (err) {
-    // A failed street fetch leaves you where you were; say so instead of nothing.
+    // A failed street fetch leaves you where you were; say so instead of nothing. R46: the trip
+    // tried again once and said so itself (js/street-trip.js); anything else is said here.
     console.warn('travel', err);
-    toast(`Could not reach ${plan.label || meta.label || 'that street'}. Try again in a moment.`, 4000);
+    if (!err?.said) toast(tripFailedLine(plan.label || meta.label || 'that street'), 4000);
     return { ok: false, reason: 'load_failed' };
   }
   if (player) floatText(player.x, player.y - 80, '✦ ' + (meta.label || plan.label), 0xc9a0ff);

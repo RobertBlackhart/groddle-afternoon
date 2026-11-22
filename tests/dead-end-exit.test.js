@@ -18,13 +18,13 @@ import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-insta
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS } from '../public/js/newxp.js?v=5aa81665';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=221b67a9';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=524cda4d';
-import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=147277cb';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=58dec3a8';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=61b24d47';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=9a8baa9e';
+import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=08a5aef9';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=9740b084';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=84b3c18c';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=0f649865';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=e342b63b';
-import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=acb75496';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=5d948885';
+import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=33b645b5';
 import { newxpFeature } from '../public/js/features/newxp-feature.js?v=38715abe';
 import { Display, fakePixi } from './fake-scene.js';
 
