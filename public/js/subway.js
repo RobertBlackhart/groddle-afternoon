@@ -65,8 +65,16 @@ export const SUBWAY_BADGES = Object.freeze([
   Object.freeze({ id: 'chute_jockey', rides: 503 }),
 ]);
 
-/** Line colours read off the Subway System map in the footage (bvOH7rsQ6qo t0016). */
-export const LINE_COLOURS = Object.freeze({ forwards: '#e8553c', backwards: '#5aaee6' });
+/**
+ * Each line's colour, the one table every subway map draws from (the Map's Subway view, the station's
+ * Subway Map and the line map on the train, G1127): the Red Line red and the Blue Line blue, as on the
+ * Subway System map in the footage (bvOH7rsQ6qo t0016). They are design tokens (style.css --subway-red,
+ * --subway-blue) a shade deeper than the footage's, so a line's name and Next stop read on the cream
+ * card as text, not only as a stroke. LINE_COLOURS is the CSS value for a style (a custom property or a
+ * style attribute; SVG presentation attributes do not take var()).
+ */
+export const LINE_TOKENS = Object.freeze({ forwards: '--subway-red', backwards: '--subway-blue' });
+export const LINE_COLOURS = Object.freeze({ forwards: `var(${LINE_TOKENS.forwards})`, backwards: `var(${LINE_TOKENS.backwards})` });
 
 export const lineName = (direction) => (direction === 'backwards' ? SUBWAY_LINE.backwards_name : SUBWAY_LINE.forwards_name);
 

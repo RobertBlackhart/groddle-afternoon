@@ -14,6 +14,7 @@
  */
 import { join } from 'node:path';
 import { esc } from './parts.mjs';
+import { readTokens } from '../tokens/css-sources.mjs';
 
 const root = join(import.meta.dirname, '..', '..');
 const mod = (name) => import(join(root, 'public', 'js', name));
@@ -24,6 +25,16 @@ export const SUBWAY_PATH = 'encyclopedia/subway/';
 export const stationAnchor = (station) => `station-${Number(station?.id) || 0}`;
 /** The link a street page's Subway line ends with (p: the path from that page to the site root). */
 export const subwayMapLink = (p, station) => `<a class="st-subway-map" href="${p}${SUBWAY_PATH}#${stationAnchor(station)}">Subway map</a>`;
+
+/**
+ * G1127: the game's line colours are design tokens (js/subway.js LINE_COLOURS, style.css --subway-red);
+ * this page has no game stylesheet, so they are written out as the colours they stand for.
+ */
+export function resolveTokens(value, tokens = readTokens(root)) {
+  let out = String(value);
+  for (let i = 0; i < 10 && /var\(--/.test(out); i += 1) out = out.replace(/var\((--[\w-]+)\)/g, (m, name) => tokens.get(name) ?? m);
+  return out;
+}
 
 export const SUBWAY_TEXT = Object.freeze({
   title: 'Subway System',
@@ -41,6 +52,8 @@ export async function subwayPage({ d, P, p, info }) {
   const [{ renderSubwayMapSvg, SUBWAY_PAPER }, { STATIONS, LINE_COLOURS, FARE, lineName, stationById }] = await Promise.all([mod('map-views.js'), mod('subway.js')]);
   const red = lineName('forwards');
   const blue = lineName('backwards');
+  const tokens = readTokens(root);
+  const colour = { forwards: resolveTokens(LINE_COLOURS.forwards, tokens), backwards: resolveTokens(LINE_COLOURS.backwards, tokens) };
   const streetHref = (tsid) => {
     const k = tsid && d.streetKeyOf(tsid);
     return k ? P.href(k) : null;
@@ -58,7 +71,7 @@ export async function subwayPage({ d, P, p, info }) {
     const place = k ? d.entries.get(k)?.street?.place : null;
     return place && info(place) ? place : null;
   };
-  const svg = renderSubwayMapSvg({
+  const drawn = renderSubwayMapSvg({
     direction: 'forwards',
     buttons: false,
     paper: { href: `${p}${SUBWAY_PAPER.x2}`, hi: null },
@@ -71,6 +84,7 @@ export async function subwayPage({ d, P, p, info }) {
       };
     },
   });
+  const svg = drawn.split(LINE_COLOURS.forwards).join(colour.forwards).split(LINE_COLOURS.backwards).join(colour.backwards);
   const rows = STATIONS.map((s) => {
     const place = placeOf(s);
     const next = stationById(s.next_stop);
@@ -96,7 +110,7 @@ export async function subwayPage({ d, P, p, info }) {
 
   <main class="band cat-main">
     <div class="wrap">
-      <figure class="sub-map" style="--sub-red: ${LINE_COLOURS.forwards}; --sub-blue: ${LINE_COLOURS.backwards}">
+      <figure class="sub-map" style="--sub-red: ${colour.forwards}; --sub-blue: ${colour.backwards}">
         <div class="sub-map-frame">${svg}</div>
         <p class="sub-map-hint">${esc(SUBWAY_TEXT.phoneHint)}</p>
         <figcaption>${esc(SUBWAY_TEXT.lineNote(red, blue))} ${esc(SUBWAY_TEXT.caption)}</figcaption>
@@ -104,7 +118,7 @@ export async function subwayPage({ d, P, p, info }) {
       <section class="ency-group sub-stations" aria-labelledby="stations-h">
         <h2 id="stations-h">${esc(SUBWAY_TEXT.stations)} <span class="count">${STATIONS.length}</span></h2>
         <p class="ency-lead-small">${esc(SUBWAY_TEXT.stationsLead(red))}</p>
-        <ol class="sub-list" style="--sub-red: ${LINE_COLOURS.forwards}; --sub-blue: ${LINE_COLOURS.backwards}">
+        <ol class="sub-list" style="--sub-red: ${colour.forwards}; --sub-blue: ${colour.backwards}">
         ${rows}
         </ol>
       </section>

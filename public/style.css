@@ -731,6 +731,9 @@
   --currants: var(--c-gold-65);
   --imagination: var(--c-violet-55d);
   --img: var(--imagination);
+  /* The subway's lines (js/subway.js LINE_COLOURS, G1127): every subway map, the Map's and the train's */
+  --subway-red: var(--c-red-58b);           /* 4.4:1 on --surface */
+  --subway-blue: var(--c-blue-53);          /* 4.9:1 on --surface */
 
   /* Status */
   --status-good: var(--c-green-47b);         /* 6.0:1 on --surface: text-safe */

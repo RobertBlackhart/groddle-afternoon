@@ -35,7 +35,7 @@ describe('lineView: the line being ridden', () => {
     const v = lineView(createRide({ stop: 3, direction: 'backwards', now: 0, timing: rideTiming(1) }));
     assert.equal(v.lineName, 'Blue Line');
     assert.equal(v.next.id, nextStation(3, 'backwards').id);
-    assert.equal(v.colour, '#5aaee6');
+    assert.equal(v.colour, 'var(--subway-blue)');
   });
 
   it('moving: still at its last station (the client\'s star, grey), the next stop ahead; a stop you pick counts down', () => {

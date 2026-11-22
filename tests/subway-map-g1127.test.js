@@ -8,8 +8,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STATIONS, createRide, cubicAt, curvePoint, lineStarPoint, lineView, nextStation, rideTiming, stationById, stepRide, subwayPoints, subwaySegments } from '../public/js/subway.js?v=36c6d2b2';
+import { LINE_COLOURS, LINE_TOKENS, STATIONS, createRide, cubicAt, curvePoint, lineStarPoint, lineView, nextStation, rideTiming, stationById, stepRide, subwayPoints, subwaySegments } from '../public/js/subway.js?v=36c6d2b2';
 import { renderSubwayMapSvg } from '../public/js/map-views.js?v=b333b9df';
+import { readTokens } from '../tools/tokens/css-sources.mjs';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/subway-feature.js'), 'utf8');
@@ -33,6 +34,36 @@ const movingRide = (stop, direction) => {
   assert.equal(ride.phase, 'moving');
   return ride;
 };
+
+describe('(4) one colour table, design tokens', () => {
+  it('each line has its own token, defined in style.css as a palette colour', () => {
+    const tokens = readTokens(root);
+    assert.notEqual(LINE_TOKENS.forwards, LINE_TOKENS.backwards);
+    for (const dir of ['forwards', 'backwards']) {
+      assert.equal(LINE_COLOURS[dir], `var(${LINE_TOKENS[dir]})`);
+      const value = tokens.get(LINE_TOKENS[dir]);
+      assert.match(value || '', /^var\(--c-(red|blue)-[\w-]+\)$/, `${LINE_TOKENS[dir]} is a palette colour`);
+    }
+    assert.match(tokens.get('--subway-red'), /--c-red-/);
+    assert.match(tokens.get('--subway-blue'), /--c-blue-/);
+  });
+
+  it('the Map\'s Subway view and the train\'s line map both take their colour from it', () => {
+    for (const dir of ['forwards', 'backwards']) {
+      assert.match(renderSubwayMapSvg({ direction: dir }), new RegExp(`class="subway-map-svg"[^>]*style="--line-c: var\\(${LINE_TOKENS[dir]}\\)"`));
+      const view = lineView(movingRide(3, dir));
+      assert.equal(view.colour, LINE_COLOURS[dir]);
+      assert.match(renderSubwayMapSvg({ ride: view }), new RegExp(`class="subway-map-svg is-riding"[^>]*style="--line-c: var\\(${LINE_TOKENS[dir]}\\)"`));
+    }
+  });
+
+  it('no raw colour left in the subway feature\'s maps: they are the Map\'s drawing', () => {
+    assert.match(fn('lineSvg'), /return renderSubwayMapSvg\(\{ ride: view, paper: subwayPaper\(\) \}\);/);
+    assert.match(fn('mapSvg'), /return renderSubwayMapSvg\(\{/);
+    assert.doesNotMatch(feature, /#e8553c|#5aaee6|#eceadb/i);
+    for (const name of ['lineSvg', 'mapSvg']) assert.doesNotMatch(fn(name), /#[0-9a-f]{3,6}\b/i, name);
+  });
+});
 
 describe('(1) the line map on the train is the Map\'s Subway view', () => {
   const view = lineView(movingRide(3, 'forwards'), nextStation(nextStation(3, 'forwards').id, 'forwards').id);
