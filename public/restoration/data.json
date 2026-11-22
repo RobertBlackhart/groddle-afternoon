@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3078,
+  "commits": 3082,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Your own Chickens say only a street Chicken can dress up for Pot Luck Day"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Map routes take the subway only when the gate would let you through"
+   },
    {
     "date": "2026-11-22",
     "kind": "improve",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "Paradise skies reach the top of the screen on an upright phone"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Radial Heights starts you on its cloud in the middle, not falling onto the stars"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The Home Screen tip and the loading steps keep to the project's rules"
    }
   ]
  },
- "tests": 1268,
+ "tests": 1269,
  "generatedAt": "2026-11-22"
 }
