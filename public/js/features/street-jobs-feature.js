@@ -152,19 +152,19 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=e4a48327';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=a7d840f2';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=783ef786';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=c2d5e5d5';
+import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=efa005a7';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=cd6b23a3';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=0149799d';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=d0b0e9b1';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins } from '../featured-project.js?v=514e3e82';
+import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=c632bca0';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
@@ -2330,14 +2330,18 @@ function createMp(engine, client) {
     clock(msg);
     const next = featuredFromServer(msg, offset);
     if (next) next.jobId = localOf(next.jobId);
+    if (next?.back) next.back.jobId = localOf(next.back.jobId);
     const first = !s.featuredSeen;
     s.featuredSeen = true;
     const changed = featuredChanged(featured, next);
+    const prev = featured;
     featured = next;
-    // A new one while you play is said once (the first sync only shows it).
+    // A new one while you play is said once (the first sync only shows it); G1140: a stand-in for one
+    // waiting between phases, and that one coming back, say so (featuredToast).
     if (changed && !first && featured) {
-      engine.toast(FEATURED_TEXT.toast(featured.label), 4200);
-      engine.pushActivity(FEATURED_TEXT.toast(featured.label));
+      const text = featuredToast(prev, featured);
+      engine.toast(text, 4200);
+      engine.pushActivity(text);
     }
     drawFeatured(engine);
     drawPlate(engine);
@@ -2951,7 +2955,9 @@ function drawFeatured(engine) {
   clearTimeout(featuredTick);
   featuredTick = 0;
   const wait = featuredWaitMins(f, now);
-  if (wait) featuredTick = setTimeout(() => drawFeatured(engine), ((f.readyAt - now) % 60_000 || 60_000) + 50);
+  // G1140: a stand-in's "Ex Lane is back in N min" counts down the same way.
+  const until = wait ? f.readyAt : featuredWaitMins(f?.back, now) ? f.back.readyAt : 0;
+  if (until) featuredTick = setTimeout(() => drawFeatured(engine), ((until - now) % 60_000 || 60_000) + 50);
   engine?.setData?.('featuredWait', wait ? String(wait) : '');
   engine?.setData?.('featuredNeeds', needs);
   engine?.setData?.('featuredJob', f?.jobId || '');

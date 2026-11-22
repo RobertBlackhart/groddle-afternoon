@@ -20,7 +20,7 @@ import { describe, it } from 'node:test';
 
 import { builtForEveryone, closedForEveryone, exemptForEveryone, freeWays, keptForYou, openWorld, projectReachable } from '../public/js/open-roads.js?v=597feeb5';
 import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=692d65c4';
-import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=783ef786';
+import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=efa005a7';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

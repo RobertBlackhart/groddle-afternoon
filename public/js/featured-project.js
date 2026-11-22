@@ -19,9 +19,13 @@
 export const FEATURED_TEXT = Object.freeze({
   tag: 'Featured',
   heading: 'Featured street project',
-  copy: 'One street project at a time, for everyone to build together. It stays featured until it is built.',
+  copy: 'One street project at a time, for everyone to build together. It stays featured until it is built, and another stands in while it waits between phases.',
   open: 'See the project',
   toast: (label) => `New featured street project: ${label}.`,
+  // G1140: a project waiting between phases steps aside; another stands in until its next phase opens.
+  standIn: (label, back) => `Featured street project while ${back} waits for its next phase: ${label}.`,
+  again: (label) => `The next phase of ${label} is open. It is the featured street project again.`,
+  backIn: (back, mins) => `${back} is back in ${mins} min`,
   // G1023: a street in its 30-minute post-build rest shows no board (Glitch inc_jobs.js 463-467).
   waiting: (mins) => `Opens in ${mins} min`,
   needs: 'Needs',
@@ -40,7 +44,9 @@ const words = (v, n = 80) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').tr
 
 /**
  * project_featured into { jobId, kind, street, board, label, hub, boardLabel, phase, phases, perc,
- * percent, since, by, readyAt, resting, subway, row } in this page's clock, or null when nothing is featured.
+ * percent, since, by, readyAt, resting, subway, back, row } in this page's clock, or null when nothing is featured.
+ * `back` (G1140): { jobId, label, kind, readyAt } of the featured project waiting between phases while
+ * this one stands in (the server features it again when its next phase opens), else null.
  * `row` is the server's row as it came (street-jobs-mp.js rowFromServer reads it). `resting`: readyAt
  * is the board street's post-build rest ending (G1023), not the next phase opening. `subway`: its
  * board is reached only by subway (the server's fallback when no project is left on foot, R11).
@@ -69,6 +75,9 @@ export function featuredFromServer(msg, offset = 0) {
     readyAt: local(msg.ready),
     resting: msg.rest === true && whole(msg.ready) > 0,
     subway: msg.subway === true,
+    back: msg.back && typeof msg.back === 'object' && clean(msg.back.job, 16)
+      ? { jobId: clean(msg.back.job, 16), label: words(msg.back.label) || clean(msg.back.job, 16), kind: msg.back.kind === 'upgrade' ? 'upgrade' : 'street', readyAt: local(msg.back.ready) }
+      : null,
     row: msg.row && typeof msg.row === 'object' ? msg.row : null,
   };
 }
@@ -76,6 +85,22 @@ export function featuredFromServer(msg, offset = 0) {
 /** Did the featured project itself change (not only its progress)? */
 export function featuredChanged(prev, next) {
   return (prev?.jobId || '') !== (next?.jobId || '');
+}
+
+/**
+ * The toast when the featured project changes (G1140): a stand-in for one waiting between phases
+ * says so, the waiting one coming back says that, any other change is a new featured project.
+ */
+export function featuredToast(prev, next) {
+  if (!next) return '';
+  if (next.back) return FEATURED_TEXT.standIn(next.label, featuredName(next.back));
+  if (prev?.back && prev.back.jobId === next.jobId) return FEATURED_TEXT.again(featuredName(next, true));
+  return FEATURED_TEXT.toast(next.label);
+}
+
+/** A project by name mid-sentence: "Ex Lane", "the upgrade of Grand Mile". */
+function featuredName(p, lower = true) {
+  return p.kind === 'upgrade' ? `${lower ? 'the' : 'The'} upgrade of ${p.label}` : p.label;
 }
 
 /** Whole minutes until it opens (at least 1), or 0 when it is open. */
@@ -102,7 +127,10 @@ export function featuredStatus(f, now = Date.now()) {
   if (mins) {
     return `${phase || 'The next phase'} opens in ${mins} min`;
   }
-  return [phase, `${f.percent}% built`].filter(Boolean).join(' · ');
+  // G1140: standing in for the featured project waiting between phases, and when that one is back.
+  const backMins = f.back ? featuredWaitMins(f.back, now) : 0;
+  const back = backMins ? FEATURED_TEXT.backIn(featuredName(f.back, false), backMins) : '';
+  return [phase, `${f.percent}% built`, back].filter(Boolean).join(' · ');
 }
 
 /**

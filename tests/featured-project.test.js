@@ -8,21 +8,23 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=0149799d';
-import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=d0b0e9b1';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=c2d5e5d5';
-import { jobIndicatorView } from '../public/js/job-indicator.js?v=e4a48327';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredToast, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=514e3e82';
+import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=c632bca0';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=cd6b23a3';
+import { jobIndicatorView } from '../public/js/job-indicator.js?v=a7d840f2';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=692d65c4';
 import { rowFromServer } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
-import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=783ef786';
+import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=efa005a7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
 const catalog = JSON.parse(read('public/assets/content/street-jobs.json'));
 const NOW = Date.UTC(2026, 10, 11, 12);
+const SERVER_DIR = process.env.GRODDLE_SERVER_DIR || join(root, '..', 'groddle-afternoon-server');
+const serverSrc = existsSync(join(SERVER_DIR, 'projects_featured.go')) ? readFileSync(join(SERVER_DIR, 'projects_featured.go'), 'utf8') : '';
 const TUMBLE = '377'; // Build Tumble Rd 1 (Choru): four phases
 
 const MSG = {
@@ -155,6 +157,40 @@ describe('the featured project message (js/featured-project.js)', () => {
     const src = read('public/js/features/street-jobs-feature.js');
     assert.match(src, /featuredTick = setTimeout\(\(\) => drawFeatured\(engine\)/, 'the minutes count down');
     assert.ok(!/[–—]/.test(FEATURED_TEXT.waiting(3)));
+  });
+});
+
+describe('G1140: a stand-in while the featured project waits between phases', () => {
+  const standIn = featuredFromServer({ ...MSG, back: { job: '558', label: 'Hammar Steadies', kind: 'street', ready: NOW + 1000 + 12 * 60_000 } }, 1000);
+  it('reads back (the waiting one) in this page clock, and nothing without it', () => {
+    assert.deepEqual(standIn.back, { jobId: '558', label: 'Hammar Steadies', kind: 'street', readyAt: NOW + 12 * 60_000 });
+    assert.equal(featuredFromServer(MSG).back, null);
+    assert.equal(featuredFromServer({ ...MSG, back: { job: '<>' } }).back, null, 'only an id survives');
+  });
+  it('says the stand-in, the waiting one coming back, and any other change in its own words', () => {
+    const waiting = featuredFromServer({ ...MSG, job: '558', label: 'Hammar Steadies' });
+    assert.equal(featuredToast(waiting, standIn), 'Featured street project while Hammar Steadies waits for its next phase: Tumble Rd 1.');
+    assert.equal(featuredToast(standIn, waiting), 'The next phase of Hammar Steadies is open. It is the featured street project again.');
+    assert.equal(featuredToast(standIn, featuredFromServer({ ...MSG, job: '12', label: 'Other Way' })), 'New featured street project: Other Way.', 'built, the next is new');
+    assert.equal(featuredToast({ ...standIn, back: { ...standIn.back, kind: 'upgrade', label: 'Grand Mile' } }, { ...waiting, kind: 'upgrade', label: 'Grand Mile' }),
+      'The next phase of the upgrade of Grand Mile is open. It is the featured street project again.');
+    assert.equal(featuredToast(standIn, null), '');
+  });
+  it('the row says when the waiting one is back, counting down, and drops it once it is open', () => {
+    assert.equal(featuredStatus(standIn, NOW), 'Phase 2 of 4 · 37% built · Hammar Steadies is back in 12 min');
+    assert.equal(featuredStatus(standIn, NOW + 12 * 60_000), 'Phase 2 of 4 · 37% built');
+    const feature = read('public/js/features/street-jobs-feature.js');
+    assert.match(feature, /next\.back\.jobId = localOf\(next\.back\.jobId\)/);
+    assert.match(feature, /const text = featuredToast\(prev, featured\);/);
+    assert.match(feature, /featuredWaitMins\(f\?\.back, now\) \? f\.back\.readyAt/, 'the minutes count down');
+    for (const text of [FEATURED_TEXT.standIn('A', 'B'), FEATURED_TEXT.again('A'), FEATURED_TEXT.backIn('A', 2), FEATURED_TEXT.copy, PROJECTS_TEXT.featuredCopy]) {
+      assert.ok(!/[–—]/.test(text), `no dashes: ${text}`);
+    }
+  });
+  it('the server sends back beside the stand-in and features the waiting one again (projects_featured.go)', { skip: !serverSrc && 'no server checkout' }, () => {
+    assert.match(serverSrc, /msg\["back"\] = back/);
+    assert.match(serverSrc, /"job": b\.Job, "label": m\.jobLabel\(m\.t\.Jobs\[b\.Job\]\), "kind": m\.t\.Jobs\[b\.Job\]\.Kind/);
+    assert.match(serverSrc, /back\["ready"\] = end/);
   });
 });
 

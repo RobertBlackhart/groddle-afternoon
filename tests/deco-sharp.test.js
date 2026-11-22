@@ -16,7 +16,7 @@ import { HIRES_DECOS } from '../public/js/deco-hires-list.js?v=60fcf361';
 import { NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=f5285888';
 import { FAR_SHARP_BUDGET_BYTES, FAR_SLACKS, SHARP_SLACK, SVG_MAX_PIXELS, SVG_MAX_SIDE, admitSharp, isSharpDeco, sharpDeco } from '../public/js/deco-hires.js?v=196ca767';
 import { resolutionOfUrl } from '../public/js/textures.js?v=729b29ea';
-import { landscapeArt } from '../public/js/features/homes-feature.js?v=9506de2d';
+import { landscapeArt } from '../public/js/features/homes-feature.js?v=b0820c6c';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import { layoutArtPath } from '../public/js/home-layout.js?v=3e0dd424';
 

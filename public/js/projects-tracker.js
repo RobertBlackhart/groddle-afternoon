@@ -47,7 +47,7 @@ export const PROJECTS_TEXT = Object.freeze({
   haveNone: 'You have none',
   // G656: the featured street project (js/featured-project.js), online only.
   featured: 'Featured',
-  featuredCopy: 'The street project everyone is building together. It stays featured until it is built.',
+  featuredCopy: 'The street project everyone is building together. It stays featured until it is built, and another stands in while it waits between phases.',
   // G1075 (R11): a street you have stood on stays open for you alone (js/open-roads.js keptOpen), so the Map shows it open.
   keptForYou: 'Its road is open for you because you have been there. Everyone else can walk in once it is built.',
   // Report #425: solo amounts scale by distance from the start (js/street-jobs-solo.js).

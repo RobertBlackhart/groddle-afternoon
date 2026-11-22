@@ -2,7 +2,7 @@
 // the 5x19 quest_bubble_active.png at street zoom), same teal and outline, inside the icon's box.
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { JOB_BANG, JOB_INDICATOR_LOOK, drawJobBang } from '../public/js/job-indicator.js?v=e4a48327';
+import { JOB_BANG, JOB_INDICATOR_LOOK, drawJobBang } from '../public/js/job-indicator.js?v=a7d840f2';
 
 function recorder() {
   const calls = [];

@@ -311,7 +311,8 @@
   },
   "public/js/featured-project.js": {
     "glitch-had-none: * project at a time. Glitch had no featured-project screen (Tiny Speck chose which": "featured-project",
-    "ours: * so the screen and its words are ours.": "featured-project"
+    "ours: * so the screen and its words are ours.": "featured-project",
+    "stand-in: when the featured project changes (G1140): a stand-in for one waiting between": "featured-project"
   },
   "public/js/features/aggressive-hoeing-feature.js": {
     "ours: players lost track of why one plot took 4 wear. Ours says": "hoe-mode-line"
@@ -531,7 +532,9 @@
     "ours: * Ours (Austin 2026-11-19, after #520): online, a": "street-spirit-rest-countdown",
     "ours: `resting`: the spirit's rest countdown (ours).": "street-spirit-rest-countdown",
     "ours: street's (game.js clears it); only its bubble is ours.": "ours-street-jobs",
-    "remake-own: gems are found, under a gem ask still open (the remake's own line; no": "gem-hints"
+    "remake-own: gems are found, under a gem ask still open (the remake's own line; no": "gem-hints",
+    "stand-in: // G1140: a stand-in's \"Ex Lane is back in N min\" counts down the": "featured-project",
+    "stand-in: once (the first sync only shows it); G1140: a stand-in for": "featured-project"
   },
   "public/js/features/street-minimap-feature.js": {
     "remake-own: * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's": "minimap-subway-stations"
