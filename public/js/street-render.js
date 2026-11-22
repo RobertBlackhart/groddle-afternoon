@@ -1454,6 +1454,29 @@ export function layerIsDrawn(layer) {
   return !!layer && (layer.id === 'middleground' || layer.hidden !== true);
 }
 
+/**
+ * PURE (#602): a middleground deco whose whole box (w x h from its bottom centre, turned r degrees
+ * about it) lies over the street's top. Glitch never showed one: CameraMan kept the view inside the
+ * location's bounds and Tiny Speck's street pictures stopped at the top too (Dust Path 1C's
+ * LA51DET7GF42FKO_main). Tiny Speck parked spare art there, such as the heights_topper_wide_1 strip
+ * of dirt at -1025, -1021 on 14 Baqala streets (Mart's Way 1, Dust Path 1C). An upright phone's
+ * camera rises over the top by the top bar's height (game.js cameraTopSlack, G928) and the loading
+ * strips draw a little over it, so the remake leaves these out. `top` is the street's bounds.t.
+ */
+export function decoWhollyAboveTop(deco, top) {
+  if (!deco || !Number.isFinite(top)) return false;
+  const w = Math.abs(Number(deco.w) || 0);
+  const h = Math.abs(Number(deco.h) || 0);
+  const y = Number(deco.y);
+  if (!Number.isFinite(y) || !(w > 0 || h > 0)) return false;
+  const r = ((Number(deco.r) || 0) * Math.PI) / 180;
+  const c = Math.cos(r);
+  const sn = Math.sin(r);
+  let low = -Infinity;
+  for (const [px, py] of [[-w / 2, 0], [w / 2, 0], [-w / 2, -h], [w / 2, -h]]) low = Math.max(low, y + px * sn + py * c);
+  return low < top;
+}
+
 /** Above every other deco of its layer: the client stacked a signed deco on top (LayerRenderer.as addDeco). */
 export const SIGN_DECO_Z = 100000;
 
@@ -2888,7 +2911,10 @@ export function buildStreetView(street, PIXI, opts = {}) {
       // the layer's already-normalized 0..width / 0..height canvas space.
       // Applying worldToScreen twice pushed entire underground race layers
       // one street-width down/right, leaving only collision debug lines.
-      const pos = parallax || /^T_/.test(String(layer.id || ''))
+      const localLayer = parallax || /^T_/.test(String(layer.id || ''));
+      // #602: spare art parked wholly over the street's top, which Glitch never showed.
+      if (!localLayer && street.bounds && decoWhollyAboveTop(deco, street.bounds.t)) continue;
+      const pos = localLayer
         ? { x: deco.x, y: deco.y }
         : worldToScreen(street, deco.x, deco.y);
       // #482: a reconstructed street's own art (the subway's stations and car, js/subway.js

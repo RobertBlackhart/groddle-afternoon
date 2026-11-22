@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { MIN_PACK_HEIGHT, PHONE_CLOSEST_SHARE, VIEW_FLOOR_H, VIEW_HOLD_H, phoneStage, phoneZoomSpan, stageFor } from '../public/js/location-view.js?v=487afbb5';
 import { PHONE_ZOOM_DEFAULT, PHONE_ZOOM_STORAGE_KEY, ZOOM_DEFAULT, ZOOM_STORAGE_KEY, createWorldZoom, phoneZoomLabel } from '../public/js/world-zoom.js?v=38816228';
 import { TAP_SLOP_PX, isWorldTap, pinchLevel } from '../public/js/touch-pinch.js?v=5bdb5971';
-import { signpostBoardAt } from '../public/js/street-render.js?v=09f41925';
+import { signpostBoardAt } from '../public/js/street-render.js?v=5a3623f5';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=d513154a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

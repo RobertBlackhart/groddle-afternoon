@@ -29,7 +29,7 @@ import {
   unwrapPack,
   wrapBox,
 } from '../public/js/gifts.js?v=37ce7d76';
-import { giftsFeature } from '../public/js/features/gifts-feature.js?v=3b20122d';
+import { giftsFeature } from '../public/js/features/gifts-feature.js?v=567edaa7';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

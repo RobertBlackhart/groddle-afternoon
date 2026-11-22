@@ -102,7 +102,7 @@ import {
 } from '../conversations.js?v=7cbdfea4';
 import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=69e064ff';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
-import { questRoomConverse } from './quest-instances-feature.js?v=183f5647';
+import { questRoomConverse } from './quest-instances-feature.js?v=0d06a9f2';
 import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=0fe114be';
 import { questDoneAt } from '../quests.js?v=90a2ee3d';
 
