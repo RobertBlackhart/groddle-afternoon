@@ -45,7 +45,7 @@ import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SE
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { doorsFeature } from './doors-feature.js?v=7a42b673';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
-import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=a9615c26';
+import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=0c615d92';
 import { frameTexture, textureFromUrl } from '../textures.js?v=729b29ea';
 import {
   CAR_FLOOR,
@@ -94,7 +94,7 @@ import {
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=c2acbb52';
+} from '../subway.js?v=c21aef93';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
@@ -109,6 +109,8 @@ let windows = []; // { engine, x, y, handle } (G398: the subway_window overlay w
 let floorLights = [];
 let ride = null;
 let pendingBoard = null;
+/** G1139: the station you are getting off at while its trip loads (the ride stays until you arrive). */
+let gettingOff = null;
 let travelLoop = null;
 let dialog = null; // { el, onTimeout, until }
 let announceTimer = 0;
@@ -861,10 +863,19 @@ function buyTicket(engine, station, direction) {
   return true;
 }
 
-function enterCar(engine) {
+async function enterCar(engine) {
   if (pendingBoard) pendingBoard.until = 0;
   const spot = boardingSpot();
-  engine.enter(CAR_TSID, { spawnX: spot.x, spawnY: spot.y });
+  const ok = await engine.enter(CAR_TSID, { spawnX: spot.x, spawnY: spot.y });
+  // R46: the car never loaded (the trip said so): no ticket used, so the fare comes back, as the
+  // source's transit_refund_fare did for a boarding that did not happen.
+  if (ok === false && pendingBoard && !inCar(engine)) {
+    pendingBoard = null;
+    engine.pc.currants = (Number(engine.pc.currants) || 0) + FARE;
+    engine.updateHud();
+    engine.setData('subwayLast', 'board-failed');
+  }
+  return ok;
 }
 
 /* ------------------------------------------------------------------ */
@@ -957,20 +968,57 @@ function getOffPrompt(engine, station) {
 }
 const CAR_LABEL_KICKER = SUBWAY_LINE.car.label;
 
+/**
+ * Get off at this stop. G1139 (#614): the ride stays until the station is up (the station's
+ * onStreetEnter ends it), as Glitch's server kept the ride and moved you itself
+ * (players/player.js transit_disembark_callback 2707, teleportToLocationDelayed). A trip that
+ * fails (engine.enter false, R46) leaves you riding: the stop asks again while the doors are open,
+ * else the next one does.
+ */
 async function disembark(engine) {
-  if (!canDisembark(ride)) return false;
+  if (gettingOff || !canDisembark(ride)) return false;
   const station = stationById(ride.stop);
+  gettingOff = station.id;
   clearAnnouncement();
-  stopTravelSound();
-  ride = null;
-  chosenStop = null;
   closeLineMap(engine);
-  state = { ...state, stop: station.id, inCar: false };
-  engine.setData('subwayLast', `off:${station.id}`);
+  engine.setData('subwayLast', `leaving:${station.id}`);
   const spot = disembarkSpot(station);
-  await engine.enter(station.streetTsid, { spawnX: spot.x, spawnY: spot.y });
+  let ok = false;
+  try {
+    ok = (await engine.enter(station.streetTsid, { spawnX: spot.x, spawnY: spot.y })) !== false;
+  } finally {
+    gettingOff = null;
+  }
+  if (!ok) {
+    engine.setData('subwayLast', `off-failed:${station.id}`);
+    if (ride && inCar(engine) && canDisembark(ride) && Date.now() < (Number(ride.doorsAt) || Infinity)) getOffPrompt(engine, station);
+    return false;
+  }
+  engine.setData('subwayLast', `off:${station.id}`);
   engine.save();
   return true;
+}
+
+/** G1139: in the car with no ride (a stale route, a trip that failed): nothing will move it on. */
+const stranded = (engine) => inCar(engine) && !ride && !pendingBoard && !gettingOff;
+
+/** Where a stranded car lets you out: the platform of the last stop. */
+function strandedWayOut() {
+  const back = stationById(state.stop) || STATIONS[0];
+  const spot = disembarkSpot(back);
+  return { tsid: back.streetTsid, x: spot.x, y: spot.y };
+}
+
+/** Off a stranded car to the last stop's platform; false when the trip failed (the EXIT stays). */
+async function leaveStrandedCar(engine, opts = {}) {
+  const to = opts.to?.tsid ? opts.to : strandedWayOut();
+  const ok = await engine.enter(to.tsid, {
+    ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
+    ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
+    ...(opts.transition === false ? { useTransition: false } : {}),
+  });
+  if (ok === false) engine.setData('subwayLast', 'stranded-failed');
+  return ok !== false;
 }
 
 function runRide(engine, now) {
@@ -1175,10 +1223,9 @@ export const subwayFeature = {
       drawCar(engine, street);
       if (pendingBoard) board(engine);
       else if (!ride) {
-        // In the train with no ride (a stale route): back to the platform of the last stop.
-        const back = stationById(state.stop) || STATIONS[0];
-        const spot = disembarkSpot(back);
-        engine.enter(back.streetTsid, { spawnX: spot.x, spawnY: spot.y });
+        // In the train with no ride (a stale route): back to the platform of the last stop. G1139:
+        // should that trip fail, the car's EXIT and /stuck lead there (deadEndRun, questRoomLeave).
+        leaveStrandedCar(engine);
       }
       setMoving(ride?.phase === 'moving');
     } else {
@@ -1213,7 +1260,8 @@ export const subwayFeature = {
       engine.setData('subwayLast', 'alone');
       enterCar(engine);
     }
-    if (ride && inCar(engine)) {
+    // G1139: not while a stop's trip loads (the ride waits for it, and goes on should it fail).
+    if (ride && inCar(engine) && !gettingOff) {
       runRide(engine, t);
       animateCar(t);
       if (lineMap && lineKey(lineView(ride, chosenStop)) !== lineMap.key) drawLineMap(engine);
@@ -1266,9 +1314,27 @@ export const subwayFeature = {
     return station ? { tsid: station.surfaceStreetTsid, hubId: station.surfaceHubId } : null;
   },
 
-  /** G888: the car has its own way off (a ride's stops, else back to the platform): no dead-end exit. */
+  /**
+   * G888: a ride owns the car's way off (its stops): no dead-end exit. G1139 (#614): only while
+   * there is one; a car with no ride (stranded) shows the EXIT, to the last stop's platform.
+   */
   deadEndRun(engine) {
-    return inCar(engine) ? 'subway' : null;
+    return inCar(engine) && (ride || pendingBoard || gettingOff) ? 'subway' : null;
+  },
+
+  /** G1139: where the EXIT in a stranded car leads (features/dead-ends-feature.js wayOut). */
+  deadEndWayOut(engine) {
+    return stranded(engine) ? strandedWayOut() : null;
+  },
+
+  /** G1139: /stuck and I'm stuck in a stranded car take you off it (slash-commands-feature stuck). */
+  questRoomHere(engine) {
+    return stranded(engine) ? { title: SUBWAY_LINE.car.label, solved: true, stray: true, stuckLine: TEXT.strandedOff } : null;
+  },
+
+  /** G1139: off a stranded car (the EXIT, /stuck, a teleport's `to`); null elsewhere. */
+  questRoomLeave(engine, opts = {}) {
+    return stranded(engine) ? leaveStrandedCar(engine, opts) : null;
   },
 
   /** A reload in the train resumes on the platform of its last stop. */
@@ -1293,6 +1359,17 @@ export const subwayFeature = {
 
   /** QA / tests. */
   _state() {
-    return { state: { ...state }, ride: ride ? { ...ride, timing: undefined } : null, dialog: dialog?.id || '', windows: windows.length, lineMap: lineMap?.key || '', chosenStop };
+    return { state: { ...state }, ride: ride ? { ...ride, timing: undefined } : null, dialog: dialog?.id || '', windows: windows.length, lineMap: lineMap?.key || '', chosenStop, gettingOff };
+  },
+
+  /** Tests (G1139): a ride to set, the Get off answer and the boarding trip, as the dialogs run them. */
+  _test: {
+    setRide(r, extra = {}) {
+      ride = r;
+      if ('state' in extra) state = { ...state, ...extra.state };
+      if ('pendingBoard' in extra) pendingBoard = extra.pendingBoard;
+    },
+    disembark,
+    enterCar,
   },
 };

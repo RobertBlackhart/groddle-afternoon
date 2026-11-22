@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STATIONS, createRide, lineText, lineView, nextStation, rideTiming, stepRide } from '../public/js/subway.js?v=c2acbb52';
+import { STATIONS, createRide, lineText, lineView, nextStation, rideTiming, stepRide } from '../public/js/subway.js?v=c21aef93';
 import { applyTrain } from '../public/js/subway-mp.js?v=ffd57d82';
 
 const root = join(import.meta.dirname, '..');
@@ -86,7 +86,9 @@ describe('wiring', () => {
 
   it('it follows the train while open, and the stop you picked is forgotten off the train', () => {
     assert.match(feature, /if \(lineMap && lineKey\(lineView\(ride, chosenStop\)\) !== lineMap\.key\) drawLineMap\(engine\);/);
-    assert.match(feature, /ride = null;\s*chosenStop = null;\s*closeLineMap\(engine\);/);
+    // G1139: Get off keeps the ride (and the stop picked) until the station is up; arriving off the train forgets it.
+    assert.match(feature, /gettingOff = station\.id;\s*clearAnnouncement\(\);\s*closeLineMap\(engine\);/);
+    assert.match(feature, /if \(!isCarTsid\(street\?\.tsid\)\) \{\s*chosenStop = null;/);
     assert.match(feature, /kicker: chosenStop === station\.id \? lineText\.yourStop : CAR_LABEL_KICKER,/);
   });
 

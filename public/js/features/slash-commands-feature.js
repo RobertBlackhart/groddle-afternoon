@@ -64,7 +64,7 @@
  */
 
 import { BUTLER_STRINGS } from '../butler.js?v=52b4f74d';
-import { butlerApi } from './butler-feature.js?v=fa15fc69';
+import { butlerApi } from './butler-feature.js?v=5b8301a5';
 import { hellFeature } from './hell-feature.js?v=0f649865';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
 import { towerApi } from './home-tower-feature.js?v=6b189997';
@@ -260,7 +260,8 @@ async function stuck(engine, plan) {
       publish(engine);
       return;
     }
-    activity(engine, room?.puzzle ? STUCK_TEXT.donePuzzle : room?.solved ? STUCK_TEXT.doneQuestRoomSolved : STUCK_TEXT.doneQuestRoom);
+    // G1139: a place with its own words for it (subway-feature: a train car with no ride).
+    activity(engine, room?.stuckLine || (room?.puzzle ? STUCK_TEXT.donePuzzle : room?.solved ? STUCK_TEXT.doneQuestRoomSolved : STUCK_TEXT.doneQuestRoom));
     last = '/stuck:quest-room';
     publish(engine);
     return;

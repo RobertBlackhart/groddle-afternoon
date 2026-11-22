@@ -146,6 +146,8 @@ export const TEXT = Object.freeze({
   mapTitle: 'Subway System',
   yes: 'yes',
   no: 'no',
+  /** G1139: /stuck off a train car with no ride (the remake's own words). */
+  strandedOff: "You're off the train, back on the platform.",
 });
 
 /** subway_gate.js push: the ticket conversation for a station. */

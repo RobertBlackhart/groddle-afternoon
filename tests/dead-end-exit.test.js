@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=2782066a';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=d9cc9ec7';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=582a8195';
 import { loadStreetIndexObject } from '../public/js/street-loader.js?v=10376267';
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=8858d29d';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
@@ -20,12 +20,12 @@ import { FIRST_SKILLS } from '../public/js/newxp.js?v=5aa81665';
 import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzle-triggers.js?v=221b67a9';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=9a8baa9e';
 import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=08a5aef9';
-import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=9740b084';
+import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=d9fa418d';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=84b3c18c';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=0f649865';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=5d948885';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=6f42bce7';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=33b645b5';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=38715abe';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=7148fdf0';
 import { Display, fakePixi } from './fake-scene.js';
 
 /** fake-scene's Pixi, with a texture source js/textures.js can wait on (the image never loads in Node). */
@@ -360,7 +360,11 @@ describe('each owner answers its own check (deadEndRun)', () => {
   it('the tutorial, the dead, the subway car and the Interrogation room', () => {
     assert.equal(newxpFeature.deadEndRun(fakeEngine({ tsid: 'GA952QGCH3D31E2' })), null, 'no tutorial running here');
     assert.equal(hellFeature.deadEndRun(), null, 'alive');
-    assert.equal(subwayFeature.deadEndRun(fakeEngine({ tsid: SUBWAY_CAR })), 'subway');
+    // G1139: a ride owns the car's way off; a car with no ride (stranded) shows the exit.
+    assert.equal(subwayFeature.deadEndRun(fakeEngine({ tsid: SUBWAY_CAR })), null, 'no ride');
+    subwayFeature._test.setRide({ stop: 1, phase: 'moving' });
+    assert.equal(subwayFeature.deadEndRun(fakeEngine({ tsid: SUBWAY_CAR })), 'subway', 'riding');
+    subwayFeature._test.setRide(null);
     assert.equal(subwayFeature.deadEndRun(fakeEngine({ tsid: HECHEY })), null);
     assert.equal(interrogationRoomFeature.deadEndRun(fakeEngine({ tsid: INTERROGATION })), 'interrogation');
     assert.equal(interrogationRoomFeature.deadEndRun(fakeEngine({ tsid: HECHEY })), null);

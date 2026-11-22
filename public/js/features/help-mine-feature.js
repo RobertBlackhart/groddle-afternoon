@@ -53,7 +53,7 @@
  */
 
 import { MINING_COSTS, ROCK_CATALOG, crumbleRock, findWorkingPick, miningProfile, miningToolWear, setMiningBuffs } from '../mining.js?v=8463f2ac';
-import { rockId } from '../street-objects.js?v=aa4aabe8';
+import { rockId } from '../street-objects.js?v=c4aa9734';
 import { addItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { MEGA_ROCK_CHUNKS } from '../imagination-effects.js?v=70169933';
 import { crowdScaleX } from '../avatar-anims.js?v=fb921bf4';

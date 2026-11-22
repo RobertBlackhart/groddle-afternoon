@@ -15,8 +15,8 @@ import { SUBWAY_RIDE_STREETS, findRoute, loadStreetGraph, roadsFor, streetGraph,
 import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=692d65c4';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=60b778c7';
-import { gateRefusal } from '../public/js/subway.js?v=c2acbb52';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=c409d60d';
+import { gateRefusal } from '../public/js/subway.js?v=c21aef93';
 
 const PUB = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(PUB, rel), 'utf8');

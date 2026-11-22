@@ -107,7 +107,8 @@ function loadReach(engine) {
 
 /** Where the exit leads now ({ tsid, x, y }), for its words and its own way out. */
 function wayOut(engine) {
-  return engine?.query?.('safeWayOut', engine, {}) || strayWayOut({});
+  // G1139: a street's owner may name its own (subway-feature deadEndWayOut: a stranded car's platform).
+  return engine?.query?.('deadEndWayOut', engine) || engine?.query?.('safeWayOut', engine, {}) || strayWayOut({});
 }
 
 function placeName(tsid) {
@@ -228,14 +229,14 @@ async function useExit(engine) {
     if (owned != null) ok = (await owned) !== false;
     else {
       const to = wayOut(engine);
-      await engine.enter(to.tsid, {
+      // R46: false when the trip failed (it said so); the exit stays for another go.
+      ok = (await engine.enter(to.tsid, {
         ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
         ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
         quiet: true,
         bypassFeatureGates: true,
         useTransition: true,
-      });
-      ok = true;
+      })) !== false;
     }
     if (ok && engine.streetTsid !== from) {
       last = `left:${engine.streetTsid}`;

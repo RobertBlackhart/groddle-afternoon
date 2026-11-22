@@ -116,7 +116,6 @@ describe('the trip failure contract (js/street-trip.js)', () => {
  * `(await engine.enter(...)) === false`, `return engine.enter(...)`), or converts an old one.
  */
 const IGNORED_BASELINE = {
-  'js/features/dead-ends-feature.js': 1,
   'js/features/bureaucratic-halls-feature.js': 1,
   'js/features/crowns-feature.js': 3,
   'js/features/door-drink-feature.js': 2,
@@ -145,7 +144,7 @@ const IGNORED_BASELINE = {
   'js/features/snaps-feature.js': 1,
   'js/features/street-furniture-feature.js': 2,
   'js/features/street-jobs-feature.js': 1,
-  'js/features/subway-feature.js': 4,
+  'js/features/subway-feature.js': 1,
   'js/features/teleportation-feature.js': 1,
   'js/quest-rooms/back-alley.js': 1,
   'js/quest-rooms/juju-camp.js': 1,

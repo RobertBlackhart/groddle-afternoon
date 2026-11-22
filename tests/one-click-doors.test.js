@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GLITCH_ONE_CLICK_DOORS, isOneClick, isOneClickDoor, oneClickChoice, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=e4c99c05';
 import { doorsFeature } from '../public/js/features/doors-feature.js?v=7a42b673';
-import { STATIONS, stationStreet } from '../public/js/subway.js?v=c2acbb52';
+import { STATIONS, stationStreet } from '../public/js/subway.js?v=c21aef93';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
