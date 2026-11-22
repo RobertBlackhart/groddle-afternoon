@@ -192,6 +192,7 @@ const NOT_A_REQUEST = Object.freeze([
   'public/js/online-request.js ACT_ANSWER_MARGIN_MS',
   'public/js/online-request.js ANSWER_WAIT_MAX_MS',
   'public/js/online-request.js ANSWER_WAIT_MIN_MS',
+  'public/js/street-move.js MAX_QUEUE_WAIT_MS',
   'public/js/test-tube.js EXPERIMENT_WAIT_MS',
   'public/js/ui/reports-sheet.js PICTURE_WAIT_MS',
   'public/js/winter-walk.js WINTER_WALK_OFFER_WAIT_MS',
