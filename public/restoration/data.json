@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3074,
+  "commits": 3078,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The Coral Caves home street has its kelp, dark and pale crystals and pale spires, as Glitch's header shows"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "new",
+    "text": "Coral Caves' kelp stalks, crystal clusters and pale spires, made for Groddle"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "The Home Screen tip and the loading steps keep to the project's rules"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "The loading card says which step of the start it is on, with a bar"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "new",
-    "text": "iPhone and iPad Safari show a tip that Add to Home Screen plays the game full screen"
    }
   ]
  },
