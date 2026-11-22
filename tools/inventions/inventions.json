@@ -840,7 +840,11 @@
     "gz_ai_om_foot",
     "gz_ai_om_floor",
     "gz_ai_vv_stump",
-    "gz_ai_vv_spiral_stone"
+    "gz_ai_vv_spiral_stone",
+    "gz_ai_cc_kelp",
+    "gz_ai_cc_crystal_dark",
+    "gz_ai_cc_crystal_pale",
+    "gz_ai_cc_spires"
    ]
   },
   {

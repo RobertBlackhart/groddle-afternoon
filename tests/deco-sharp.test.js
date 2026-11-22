@@ -13,6 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHARP_DECOS } from '../public/js/deco-sharp-list.js?v=4c191ef5';
 import { HIRES_DECOS } from '../public/js/deco-hires-list.js?v=60fcf361';
+import { NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=f5285888';
 import { FAR_SHARP_BUDGET_BYTES, FAR_SLACKS, SHARP_SLACK, SVG_MAX_PIXELS, SVG_MAX_SIDE, admitSharp, isSharpDeco, sharpDeco } from '../public/js/deco-hires.js?v=196ca767';
 import { resolutionOfUrl } from '../public/js/textures.js?v=729b29ea';
 import { landscapeArt } from '../public/js/features/homes-feature.js?v=2b773d47';
@@ -374,7 +375,8 @@ describe('home street and back-yard landscapes (homes-feature landscapeArt)', ()
         const logical = SHARP_DECOS.get(name)?.[2] ?? it.w;
         const per = (it.w * it.scale) / logical;
         // sharp.py: ratio = view px x R over the texels of the file loaded (3x where there is one).
-        const ratio = (4 * per) / (HIRES_DECOS.has(name) ? 1.5 : 1);
+        // Made art (gz_ decos, js/deco-new-list.js) with its own 3x file loads it as the library's do (deco-hires.js).
+        const ratio = (4 * per) / (HIRES_DECOS.has(name) || NEW_DECOS_HIRES.has(name) ? 1.5 : 1);
         if (ratio < sharpPlan.settings.ratio_min || notSharp.has(name)) continue;
         assert.ok(rows.get(name)?.sh >= per - 1e-3, `${row.label}: ${name} at ${per} is in the sharp list`);
         assert.notEqual(landscapeArt(it, 4).url, `assets/decos/groddle/${name}.png`, `${row.label}: ${name}`);
