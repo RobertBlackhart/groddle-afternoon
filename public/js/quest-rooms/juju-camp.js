@@ -910,6 +910,7 @@ export const room = {
       lastWorld = w;
       // onEnterLocation / onExitLocation: a new street drops the armed range.
       w.data.juju = { tsid: street?.tsid || w.engine.streetTsid || '', armed: null, inside: false };
+      liveHunt(w);
       publishHunt(w);
     },
 
@@ -933,6 +934,7 @@ export const room = {
     },
 
     packVerbs(w, cls) {
+      if (cls === 'juju_trowel' || cls === 'note_hint') liveHunt(w);
       if (cls === 'juju_trowel') {
         const active = w.questActive(Q1);
         const ok = active && canDig({ armed: w.data.juju?.armed, x: w.engine.player?.x || 0, hasPaperweight: w.count('juju_paperweight') > 0 })
@@ -969,6 +971,23 @@ export const room = {
 };
 
 let lastWorld = null;
+
+/**
+ * #607: the hunt goes on outside and the hint you hold always reads. In the source the clue's
+ * text lived on the Secret Juju Hint itself (giveHint: title, contents), and Part I had no way
+ * back into the hideout (only Part II's onStarted went there), so a hint was never blank. A hunt
+ * lost from the save (G1120 stripped its key) is dealt again from the clue you were on: the same
+ * hint number (solve_clue + 1), a street in this hub's clue set (onAccepted's pick).
+ */
+export function liveHunt(w) {
+  const h = w.questMemory(HUNT_KEY);
+  if (clueFor(h) || !w.questActive(Q1) || w.count('note_hint') === 0 || w.count('juju_paperweight') > 0) return h;
+  const { color, celebrated } = h;
+  const hint = Math.min(CLUES, Math.max(1, Math.floor(w.questProgress(Q1, 'solve_clue')) + 1));
+  Object.assign(h, newHunt(w.engine.street?.hubId), { hint }, color ? { color } : {}, celebrated ? { celebrated } : {});
+  w.save?.();
+  return h;
+}
 
 function publishHunt(w) {
   const h = w.questMemory(HUNT_KEY);

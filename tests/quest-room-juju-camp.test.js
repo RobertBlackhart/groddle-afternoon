@@ -9,7 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import * as kit from '../public/js/quest-rooms/kit.js?v=bdd3fd05';
-import * as mod from '../public/js/quest-rooms/juju-camp.js?v=56561aec';
+import * as mod from '../public/js/quest-rooms/juju-camp.js?v=a3b84a3c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(ROOT, 'assets', 'streets', `${tsid}.json`), 'utf8'));
@@ -317,5 +317,63 @@ describe('#514: the walk line runs inside the dirt, with the trees, grass and te
     const dys = [...world.matchAll(/floor \+ (\d+)/g)].map((m) => Number(m[1]));
     assert.ok(dys.length >= 6, String(dys));
     for (const dy of [...dys, ...mod.CAMP_PIECES.map((p) => p[2]), mod.CHAIR_DY, mod.CAMP_MOUND.dy]) assert.ok(dy >= top + 8, `${dy} under the dirt's edge strip`);
+  });
+});
+
+/*
+ * #607: out of the hideout with the hint and trowel, the hunt goes on outside (Part I had no way
+ * back in the source) and the hint you hold always reads: in the source its text lived on the
+ * note. A hunt lost from the save is dealt again; Part II put off stays in the quest log.
+ */
+describe('#607: the hunt goes on after leaving the hideout', () => {
+  const fakeWorld = ({ memory = {}, active = true, inv = { note_hint: 1, juju_trowel: 1 }, solved = 0, hubId = '91' } = {}) => {
+    let saves = 0;
+    return {
+      memory,
+      get saves() { return saves; },
+      engine: { street: { hubId } },
+      questMemory: (id) => (memory[id] ||= {}),
+      questActive: (id) => active && id === 'help_juju_bandits',
+      questProgress: (id, name) => (id === 'help_juju_bandits' && name === 'solve_clue' ? solved : 0),
+      count: (cls) => inv[cls] || 0,
+      save: () => { saves += 1; },
+    };
+  };
+
+  it('a blank hunt is dealt again from the clue you were on, keeping the colour', () => {
+    const w = fakeWorld({ memory: { [mod.HUNT_KEY]: { color: 'green' } }, solved: 1 });
+    const h = mod.liveHunt(w);
+    assert.ok(mod.clueFor(h), 'the hint reads');
+    assert.equal(h.hint, 2, 'the second hint (one clue solved)');
+    assert.equal(h.hub, 'zhambu', 'onAccepted: the hub you stand in (91 Zhambu)');
+    assert.equal(h.color, 'green');
+    assert.equal(w.saves, 1);
+    assert.equal(mod.isClueStreet(h, mod.streetForLocation(h.location)), true);
+  });
+
+  it('leaves a live hunt alone, and needs the quest and the hint in hand', () => {
+    const live = { hub: 'choru', location: 'tumble_rd', used: ['choru'], hint: 1, color: 'red' };
+    const w = fakeWorld({ memory: { [mod.HUNT_KEY]: { ...live } } });
+    assert.deepEqual(mod.liveHunt(w), live);
+    assert.equal(w.saves, 0);
+    for (const opts of [{ active: false }, { inv: { juju_trowel: 1 } }, { inv: { note_hint: 1, juju_paperweight: 1 } }]) {
+      const v = fakeWorld(opts);
+      assert.equal(mod.clueFor(mod.liveHunt(v)), null);
+    }
+  });
+
+  it('the world hooks deal it before the hint is read or the trowel digs', () => {
+    const src = readFileSync(join(ROOT, 'js', 'quest-rooms', 'juju-camp.js'), 'utf8');
+    const enter = src.slice(src.indexOf('onStreetEnter(w, street) {'), src.indexOf('onTick(w) {'));
+    assert.match(enter, /liveHunt\(w\);/);
+    const verbs = src.slice(src.indexOf('packVerbs(w, cls) {'), src.indexOf('runPackVerb(w, cls, verb) {'));
+    assert.match(verbs, /if \(cls === 'juju_trowel' \|\| cls === 'note_hint'\) liveHunt\(w\);/);
+  });
+
+  it('Part II put off in the hideout waits in the quest log with Try it (G229)', () => {
+    const src = readFileSync(join(ROOT, 'js', 'features', 'quest-instances-feature.js'), 'utf8');
+    const offer = src.slice(src.indexOf('export async function offerInRoom('), src.indexOf('export { converse as questRoomConverse };'));
+    assert.match(offer, /answer === 'no' && offerCanWait\(def\) && putOffOffer\(engine\.questState, questId\)\.ok/);
+    assert.equal(questDef('help_juju_bandits_2')?.needsStart, true, 'onStarted: it can wait (quest.js get_status 1094)');
   });
 });

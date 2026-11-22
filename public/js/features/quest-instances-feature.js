@@ -134,6 +134,8 @@ import {
   ensureQuestOfferState,
   npcQuestOffers,
   questAwardPayload,
+  offerCanWait,
+  putOffOffer,
   questMoveNote,
   turnInQuest,
 } from '../quest-offers.js?v=69e064ff';
@@ -215,7 +217,7 @@ const ROOM_MODULES = {
   kids_room: () => import('../quest-rooms/kids-room.js?v=5e2826af'),
   rube_yard: () => import('../quest-rooms/rube-yard.js?v=c796a722'),
   le_miserable: () => import('../quest-rooms/le-miserable.js?v=7d56ca0e'),
-  juju_camp: () => import('../quest-rooms/juju-camp.js?v=56561aec'),
+  juju_camp: () => import('../quest-rooms/juju-camp.js?v=a3b84a3c'),
   picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=df0fc397'),
   radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=91783a64'),
   an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=dc7d7814'),
@@ -2209,7 +2211,15 @@ export async function offerInRoom(engine, questId, { kicker = '' } = {}) {
       { label: def.declineLabel || 'Not right now', value: 'no', cancel: true },
     ],
   });
-  if (answer !== 'yes') return false;
+  if (answer !== 'yes') {
+    // #607: "Not right now" on a quest you start yourself (Carry That Weight II) puts it in the log
+    // with Try it, as a familiar offer does (G229, putOffOffer), so its room can still be reached.
+    if (answer === 'no' && offerCanWait(def) && putOffOffer(engine.questState, questId).ok) {
+      engine.pushActivity(`“${def.title}” is in your quest log, not started yet. Choose Try it there when you are ready.`);
+      engine.save();
+    }
+    return false;
+  }
   const result = acceptOffer(engine.questState, questId, questCtx(engine));
   if (result.ok) {
     (save.memory[questId] ||= {}).started = Date.now();
