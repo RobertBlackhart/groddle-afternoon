@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { actVerbMenu, dropVerbMenuActs, focusVerbRow, makeVerbRow, settleVerbMenu, verbMenuWaiting, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=ba740394';
-import { greyWaitingVerbs } from '../public/js/street-objects.js?v=8215d7eb';
+import { greyWaitingVerbs } from '../public/js/street-objects.js?v=9a78951b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

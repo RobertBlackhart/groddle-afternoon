@@ -38,7 +38,7 @@
  */
 
 import { withArticle } from './words.js?v=274023af';
-import { createAnimalState } from './animals.js?v=cd07178e';
+import { createAnimalState } from './animals.js?v=af87d692';
 import { petPiggy } from './animal-mood.js?v=a49495fc';
 import { trantFruitCycle } from './trant-care.js?v=cb7f539b';
 import { fruitCapacityAt, resetTrantDay } from './trants.js?v=864ea9ff';

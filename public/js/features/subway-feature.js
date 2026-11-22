@@ -45,7 +45,7 @@ import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SE
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { doorsFeature } from './doors-feature.js?v=a3ff43c8';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
-import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=b333b9df';
+import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=ed71878e';
 import { frameTexture, textureFromUrl } from '../textures.js?v=729b29ea';
 import {
   CAR_FLOOR,
@@ -94,7 +94,7 @@ import {
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=36c6d2b2';
+} from '../subway.js?v=071eb1d0';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 

@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isStandable, platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { ecologyForStreet, measuredNodeSpots, populationForStreet, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=1401a97c';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=cc2902d7';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=50a089d2';
 import { nudgedBarnacleSpots } from '../public/js/barnacle-nudges.js?v=159f11bf';
 import { BARNACLE_LEFTOVER_SPOTS } from '../public/js/barnacle-wall-spots-data.js?v=8ba1ff7d';
 

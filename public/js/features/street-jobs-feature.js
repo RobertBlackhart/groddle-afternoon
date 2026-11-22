@@ -116,7 +116,7 @@ import {
   percentCompleteText,
   jobRewardsText,
 } from '../street-jobs.js?v=884e34b3';
-import { PAPERS_BADGE } from '../subway.js?v=36c6d2b2';
+import { PAPERS_BADGE } from '../subway.js?v=071eb1d0';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=22b0540a';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';

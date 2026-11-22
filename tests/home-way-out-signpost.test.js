@@ -15,7 +15,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { getVerbsFor } from '../public/content.js?v=2ac14ba9';
+import { getVerbsFor } from '../public/content.js?v=b52b3339';
 import { SIGN_FIRST_ARM_Y, SIGN_POST_W, SIGN_SCALE } from '../public/js/street-render.js?v=5a3623f5';
 import { WAY_OUT_ARM, WAY_OUT_HIT, wayOutTarget } from '../public/js/features/homes-feature.js?v=9ad8b36d';
 import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=990c1e3f';

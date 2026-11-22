@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STATIONS, createRide, lineText, lineView, nextStation, rideTiming, stepRide } from '../public/js/subway.js?v=36c6d2b2';
+import { STATIONS, createRide, lineText, lineView, nextStation, rideTiming, stepRide } from '../public/js/subway.js?v=071eb1d0';
 import { applyTrain } from '../public/js/subway-mp.js?v=ffd57d82';
 
 const root = join(import.meta.dirname, '..');

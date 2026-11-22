@@ -23,9 +23,9 @@ import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=53
 import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=7c13165c';
 import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=9b4fd1f4';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=9507f5f8';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=b36df33b';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=aa372946';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=aa6e9f09';
-import { newxpFeature } from '../public/js/features/newxp-feature.js?v=9446092b';
+import { newxpFeature } from '../public/js/features/newxp-feature.js?v=d6a71734';
 import { Display, fakePixi } from './fake-scene.js';
 
 /** fake-scene's Pixi, with a texture source js/textures.js can wait on (the image never loads in Node). */
