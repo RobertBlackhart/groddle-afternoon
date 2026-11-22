@@ -7420,6 +7420,9 @@ export function visitorHomeState(view = {}) {
   const style = ['meadow', 'firebog', 'uralia'].includes(view?.home?.style) ? view.home.style : 'meadow';
   const tower = normalizeTowerState(slice.tower || {});
   return {
+    // G796: the owner's house as their save holds it (systems.home.house, sent with the home);
+    // a site or save from before it gives none and the house is the original their style moved to.
+    house: normalizeHouse(view?.home?.house, style),
     tower,
     towerDecor: (Array.isArray(slice.towerDecor) ? slice.towerDecor : [])
       .slice(0, TOWER_CONFIG.MAX_FLOORS)
@@ -7563,7 +7566,7 @@ function drawVisitorYard(engine, st, groundY, houseX, opts = {}) {
 export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) {
   const v = visitorHomeState(view);
   const shim = Object.create(engine, {
-    homeContext: { value: () => ({ inHome: false, room, owned: true, style: v.style, returnLabel: opts.returnLabel || '', unread: 0 }) },
+    homeContext: { value: () => ({ inHome: false, room, owned: true, style: v.style, house: v.house, returnLabel: opts.returnLabel || '', unread: 0 }) },
   });
   if (room === 'tower') {
     // MPVISIT: a floor of the owner's Tower (towerFloorScene, read-only: furniture_base's verbs are the owner's).
@@ -7655,7 +7658,7 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
     });
   }
   return withOwnersHome(v, () => {
-    const background = streetBackground(shim, shownStreetStyle(shim), v.style);
+    const background = streetBackground(shim, shownStreetStyle(shim), v.house);
     const layout = homeStreetLayout(v.cult);
     const st = v.cult;
     return {

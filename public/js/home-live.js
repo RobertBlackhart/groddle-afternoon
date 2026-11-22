@@ -21,7 +21,7 @@
  *   animal's x is left out: it walks every frame, the same seeded walk on
  *   every page (js/yard-wander.js).
  * - home: the house and street look as Neighbours reads it (systems.home
- *   style, the homes feature's decor, cultivations, back yard and styles, the
+ *   style and house, G796, the homes feature's decor, cultivations, back yard and styles, the
  *   Tower's look and floors; upper house floors are the owner's own, G153).
  *   Private counts (furniture storage) and what a
  *   cabinet holds are left out; so are the owner's own tallies (houseVisits,
@@ -93,6 +93,8 @@ export function homeLiveParts(save) {
     },
     home: {
       style: systems.home.style || '',
+      // G796: the house and its parts (Customize), so visitors see each change.
+      house: obj(systems.home.house) || null,
       decor: decorLook(homes.decor),
       cult: homes.cult || null,
       backYard: homes.backYard || null,
