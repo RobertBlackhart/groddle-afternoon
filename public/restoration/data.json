@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3040,
+  "commits": 3049,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Pot's Empty Table says only dishes cooked after accepting count"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The featured project line is easier to spot, with a one-time hint"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Projects sheet has All / Open / Done chips with counts"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "The phone street map's head and signposts lift with the raised layer token"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "A paused skill in Skills shows the time it would take to finish now"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Each Switch to resume button in Skills resumes its own skill after switching around"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "Naming an animal shows which characters it drops and the name as it will be saved"
    }
   ]
  },
- "tests": 1256,
+ "tests": 1257,
  "generatedAt": "2026-11-22"
 }
