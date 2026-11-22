@@ -51,6 +51,10 @@
  *   look (the site's tile picture, the lettered circle when there is none), and a buddy who is
  *   online on a public street has Set as Destination in their menu: the Map's directions to the
  *   street the list already names. Never for a private place.
+ * - Report #608 (Austin 2026-11-22): the Buddies window shows each buddy's head too (the drawer's
+ *   round avatar, js/ui/buddy-face.js: the lettered circle until the picture loads, and when it does
+ *   not; dimmed offline), in the Modern skin only. Classic hides it (css/classic.css), as Glitch's
+ *   contact rows were a name and an online dot (ContactElement.as).
  *
  * QA: canvas data buddiesDestination (id@street, the last one set), buddiesCount, buddiesOnline (name@street,...),
  * buddiesIgnoring (ids), buddiesAsking (ids with an "Add them back?" prompt),
@@ -80,6 +84,7 @@ import {
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { PLAYER_REPORT_TEXT, playerReportView } from '../player-report.js?v=8d7e5653';
 import { openReportView } from '../note-view.js?v=eca7de52';
+import { createBuddyFaces } from '../ui/buddy-face.js?v=cb11f179';
 
 export const BUDDIES_FEATURE_ID = 'buddies';
 const VERB_IDS = new Set([...Object.values(BUDDY_VERBS), BUDDY_DESTINATION_VERB]);
@@ -100,6 +105,8 @@ const STYLE = `
 .buddies-panel button.buddy-what { margin: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; border-radius: var(--radius-xs); }
 .buddies-panel button.buddy-what:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .buddies-panel li .buddy-what small { display: block; opacity: 0.8; }
+.buddies-panel li .buddy-av { width: 32px; height: 32px; font-size: var(--fs-md); box-shadow: none; }
+.buddies-panel li[data-online="false"] .buddy-av { opacity: 0.55; }
 .buddies-panel li .buddy-dot { display: inline-block; width: 8px; height: 8px; margin-right: var(--sp-3); border-radius: var(--radius-round); background: var(--c-sand-67); vertical-align: 1px; }
 .buddies-panel li[data-online="true"] .buddy-dot { background: var(--c-lime-67); }
 .buddies-panel li .buddy-new { margin-left: 0.3rem; padding: 0 var(--sp-3); border-radius: var(--radius-pill); font-size: var(--fs-xs); font-weight: 700; color: var(--text-inverse); background: var(--c-orange-68); }
@@ -268,7 +275,11 @@ function createSession(engine, client) {
     engine.setData?.('buddiesDestination', `${player.id}@${street}`);
   }
 
-  function row(entry, { buttons = [], showWhere = true, isNew = false } = {}) {
+  // Report #608: each buddy's head in the window, as in the drawer and chat (Modern only: the
+  // classic skin hides it, as Glitch's contact rows had none, ContactElement.as).
+  const faces = createBuddyFaces({ lazy: true });
+
+  function row(entry, { buttons = [], showWhere = true, isNew = false, face = true } = {}) {
     const on = online.has(entry.id);
     const menu = Boolean(engine.openPlayerMenu);
     const li = el('li', { 'data-buddy': String(entry.id), 'data-online': String(on), 'data-ctx': menu ? 'player' : false, 'data-name': entry.name });
@@ -278,6 +289,7 @@ function createSession(engine, client) {
     what.append(el('span', { class: 'buddy-dot', 'aria-hidden': 'true' }), document.createTextNode(entry.name));
     if (isNew) what.append(el('span', { class: 'buddy-new' }, 'new'));
     if (showWhere) what.append(el('small', { 'data-buddy-where': '' }, on ? `Online: ${where(entry.id)}` : BUDDY_TEXT.offlineWhere));
+    if (face) li.append(faces.avatar({ id: entry.id, name: entry.name, face: buddyFaceUrl(entry.id) }, { className: 'buddy-av' }));
     li.append(what);
     for (const b of buttons) {
       const button = el('button', { type: 'button', class: 'buddy-act', [`data-buddy-${b.kind}`]: String(entry.id) }, b.label);
@@ -318,7 +330,7 @@ function createSession(engine, client) {
       if (list.ignoring.length) {
         panel.append(el('h3', {}, 'Blocked'));
         const ul = el('ul', { 'data-buddies-ignoring': '' });
-        for (const r of list.ignoring) ul.append(row(r, { showWhere: false, buttons: [{ kind: 'unignore', label: 'Un-block', run: () => confirmUnignore(r) }] }));
+        for (const r of list.ignoring) ul.append(row(r, { showWhere: false, face: false, buttons: [{ kind: 'unignore', label: 'Un-block', run: () => confirmUnignore(r) }] }));
         panel.append(ul);
       }
     }

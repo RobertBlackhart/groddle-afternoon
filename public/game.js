@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=60c23ee9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=84a564a7';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6bfae12a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1113,7 +1113,7 @@ import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=2b0aaf94';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=4f69aa6d';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=84b57115';

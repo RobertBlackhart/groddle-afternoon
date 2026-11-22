@@ -30,11 +30,11 @@ import {
   normalizeList,
 } from '../public/js/buddies.js?v=16407f62';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
-import { buddiesFeature } from '../public/js/features/buddies-feature.js?v=607da17f';
+import { buddiesFeature } from '../public/js/features/buddies-feature.js?v=5b2e2df0';
 import { BUDDY_DESTINATION_TEXT, BUDDY_DESTINATION_VERB, buddyDestination, buddyFaceUrl, createFaceMemory } from '../public/js/buddy-list.js?v=b418f3f2';
 import { STREET_INDEX } from '../public/js/street-loader.js?v=10376267';
 import { FROM_LIST_VERBS, playerMenuRows } from '../public/js/ui/player-menu.js?v=5eabb447';
-import { FEATURES } from '../public/js/features/index.js?v=84a564a7';
+import { FEATURES } from '../public/js/features/index.js?v=6bfae12a';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -228,6 +228,9 @@ class FakeEl {
     if (k === 'id') this.id = String(v);
     if (k.startsWith('data-')) this.dataset[k.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = String(v);
   }
+  getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; }
+  removeAttribute(k) { delete this.attrs[k]; }
+  remove() { const p = this.parentElement; if (p) p.children = p.children.filter((c) => c !== this); this.parentElement = null; }
   append(...kids) { for (const k of kids) { if (k && typeof k === 'object') k.parentElement = this; } this.children.push(...kids); }
   insertBefore(kid, ref) { kid.parentElement = this; const i = this.children.indexOf(ref); this.children.splice(i < 0 ? this.children.length : i, 0, kid); }
   replaceChildren(...kids) { this.children = kids; }
@@ -397,6 +400,41 @@ describe('buddies feature (js/features/buddies-feature.js)', () => {
     client.msg({ t: 'buddy_offline', id: 2, name: 'Bo' });
     assert.ok(events.includes(`toast:${BUDDY_TEXT.offline('Bo')}`));
     globalThis.groddleBuddies.close();
+  });
+
+  it('report #608: the Buddies window shows each buddy\'s head, the circle when it does not load, none in Classic', () => {
+    const hasClass = (n, c) => String(n.attrs.class || '').split(' ').includes(c);
+    const panel = () => body.find('data-buddies-panel');
+    const av = (id) => panel().find('data-buddy', id).all().find((n) => hasClass(n, 'buddy-av')) || null;
+    const img = (id) => av(id)?.all().find((n) => n.tagName === 'IMG') || null;
+    globalThis.groddleBuddies.open();
+    // Di is online, Bo offline: both get the drawer's round avatar (dimmed offline, by CSS).
+    for (const [id, letter] of [[4, 'D'], [2, 'B']]) {
+      assert.ok(hasClass(av(id), 'social-av'), `the drawer's avatar for ${id}`);
+      assert.equal(av(id).textContent, letter, 'the lettered circle under the picture');
+      assert.equal(img(id).getAttribute('src'), `/players/${id}/tile`);
+      assert.equal(img(id).getAttribute('loading'), 'lazy', 'a hidden circle asks for no picture');
+      assert.equal(av(id).getAttribute('data-face'), null, 'not shown until it loads');
+    }
+    assert.equal(panel().find('data-buddy', 2).dataset.online, 'false');
+    assert.ok(panel().find('data-buddy', 5).all().some((n) => hasClass(n, 'buddy-av')), 'who added you has a face too');
+    assert.equal(panel().find('data-buddy', 3).all().some((n) => hasClass(n, 'buddy-av')), false, 'the blocked list has none');
+    img(4).fire('load');
+    assert.equal(av(4).getAttribute('data-face'), '');
+    img(2).fire('error');
+    assert.equal(av(2).getAttribute('data-face'), null);
+    assert.equal(img(2), null, 'no broken picture');
+    globalThis.groddleBuddies.open();
+    assert.equal(av(4).getAttribute('data-face'), '', 'a redraw shows a loaded face at once');
+    assert.equal(img(2), null, 'a picture that did not load is not asked for again');
+    assert.equal(av(2).textContent, 'B', 'the circle stays');
+    globalThis.groddleBuddies.close();
+    // The look: the drawer's circle at its size, dimmed offline; Classic hides it (ContactElement.as).
+    const src = read('public/js/features/buddies-feature.js');
+    assert.match(src, /\.buddies-panel li \.buddy-av \{ width: 32px; height: 32px;/);
+    assert.match(src, /\.buddies-panel li\[data-online="false"\] \.buddy-av \{ opacity: 0\.55; \}/);
+    assert.match(read('public/css/classic.css'), /:root\[data-ui="classic"\] \.buddies-panel \.buddy-av \{ display: none; \}/);
+    assert.doesNotMatch(read('public/style.css'), /\.buddy-av/, 'Modern shows it (no other rule hides it)');
   });
 
   it('report #178: Set as Destination for a buddy online on a public street, through the Map\'s directions', () => {

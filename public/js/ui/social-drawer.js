@@ -117,7 +117,8 @@ import { createNodeCache, pressLeavesKeys, reconcileChildren, uniqueKeys } from 
 import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { sameWords } from '../chat-reactions.js?v=38460172';
 import { THREAD_TEXT, mergeReplies, normalSummary, summaryText } from '../chat-threads.js?v=2ba621c8';
-import { buddyFaceUrl, createFaceMemory } from '../buddy-list.js?v=b418f3f2';
+import { buddyFaceUrl } from '../buddy-list.js?v=b418f3f2';
+import { avatarOf, createBuddyFaces } from './buddy-face.js?v=cb11f179';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../whos-here.js?v=cb52c987';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deleteConfirmRows } from '../chat-delete.js?v=c55a1043';
 import { htmlToText } from '../html-text.js?v=6bbf4d1f';
@@ -362,13 +363,8 @@ export function createHistory(limit = HISTORY_LIMIT) {
   };
 }
 
-/** A name's initial and a colour slot (0-7) for the round avatar. */
-export function avatarOf(name) {
-  const s = String(name || '?').trim() || '?';
-  let h = 0;
-  for (const ch of s) h = (h * 31 + ch.codePointAt(0)) >>> 0;
-  return { initial: [...s][0].toUpperCase(), hue: h % 8 };
-}
+/** A name's initial and a colour slot (0-7) for the round avatar (js/ui/buddy-face.js). */
+export { avatarOf };
 
 /** "Ada: hi" (a solo chat line in the Activity log) as name and words, or null. */
 export function splitChat(text) {
@@ -1100,29 +1096,11 @@ export function mountSocialDrawer({
     return row;
   }
 
-  /** Report #178: which buddies' pictures loaded and which did not (js/buddy-list.js createFaceMemory). */
-  const faces = createFaceMemory();
-  /** id -> the one picture node of a buddy, moved into each redraw of their row (no reload, no flash). */
-  const faceNodes = new Map();
-  function faceNode(r, nodes = faceNodes) {
-    if (!r.face || faces.state(r.id) === 'bad') return null;
-    const had = nodes.get(r.id);
-    if (had && had.src === r.face) return had.node;
-    const node = el('span', { class: 'social-face' });
-    const img = el('img', { src: r.face, alt: '', width: '100', height: '144', decoding: 'async', draggable: 'false' });
-    // The circle the picture sits in now (its row is drawn again whenever the list changes).
-    const circle = () => node.parentElement || null;
-    img.addEventListener('load', () => { faces.ok(r.id); circle()?.setAttribute('data-face', ''); });
-    img.addEventListener('error', () => {
-      faces.bad(r.id);
-      nodes.delete(r.id);
-      circle()?.removeAttribute('data-face');
-      node.remove?.();
-    });
-    node.append(img);
-    nodes.set(r.id, { src: r.face, node });
-    return node;
-  }
+  /**
+   * Report #178: the buddies' own looks over the lettered circles, which pictures loaded and which
+   * did not, one picture node per buddy moved into each redraw (js/ui/buddy-face.js).
+   */
+  const buddyFaces = createBuddyFaces();
 
   function buddyData() {
     try {
@@ -1188,13 +1166,7 @@ export function mountSocialDrawer({
     for (const r of v.rows) {
       const menu = Boolean(playerMenu && !r.you && r.id > 0);
       const li = el('li', { 'data-social-here': String(r.id), 'data-you': r.you ? 'true' : false, 'data-ctx': menu ? 'player' : false, 'data-name': r.you ? false : r.name });
-      const a = avatarOf(r.you ? me?.name || r.name : r.name);
-      const av = el('span', { class: 'social-av', 'data-hue': String(a.hue), 'aria-hidden': 'true' }, a.initial);
-      const face = r.id > 0 ? faceNode({ id: r.id, face: buddyFaceUrl(r.id) }, whoFaces) : null;
-      if (face) {
-        if (faces.state(r.id) === 'ok') av.setAttribute('data-face', '');
-        av.append(face);
-      }
+      const av = buddyFaces.avatar({ id: r.id, name: r.you ? me?.name || r.name : r.name, face: r.id > 0 ? buddyFaceUrl(r.id) : '' }, { nodes: whoFaces });
       const what = menu
         ? el('button', { type: 'button', class: 'social-buddy-what', 'data-social-here-who': String(r.id), 'aria-haspopup': 'menu', 'aria-keyshortcuts': 'Shift+F10' })
         : el('span', { class: 'social-buddy-what' });
@@ -1238,15 +1210,9 @@ export function mountSocialDrawer({
       // RIGHTCLICK: the row opens the buddy's menu (a click, a right-click, a long press; Enter or
       // Shift+F10 on the name), as Glitch's contact rows did (ContactElement.as 267-271); the chips act.
       const li = el('li', { 'data-social-buddy': String(r.id), 'data-online': String(Boolean(r.online)), 'data-ctx': playerMenu ? 'player' : false, 'data-name': r.name });
-      const a = avatarOf(r.name);
-      const av = el('span', { class: 'social-av', 'data-hue': String(a.hue), 'aria-hidden': 'true' }, a.initial);
       // Report #178: the buddy's own look over the lettered circle, which stays when there is no
       // picture or it does not load (and is not asked for again for a while).
-      const face = faceNode(r);
-      if (face) {
-        if (faces.state(r.id) === 'ok') av.setAttribute('data-face', '');
-        av.append(face);
-      }
+      const av = buddyFaces.avatar(r);
       if (r.online) av.append(el('span', { class: 'social-dot' }));
       const what = playerMenu
         ? el('button', { type: 'button', class: 'social-buddy-what', 'data-social-buddy-who': String(r.id), 'aria-haspopup': 'menu', 'aria-keyshortcuts': 'Shift+F10' })

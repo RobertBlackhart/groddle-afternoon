@@ -4149,3 +4149,8 @@
 :root[data-ui="classic"] .pj-card.is-featured { box-shadow: inset 0 0 0 2px var(--c-classic-wear); }
 :root[data-ui="classic"] .pj-featured-tag { border-radius: 0; background: var(--c-classic-wear); }
 
+
+/* Report #608: the Buddies window's heads are the Modern skin's (js/features/buddies-feature.js);
+   Glitch's contact rows were a name and an online dot, no portrait (ContactElement.as). Hidden, the
+   lazy picture is never asked for. */
+:root[data-ui="classic"] .buddies-panel .buddy-av { display: none; }
