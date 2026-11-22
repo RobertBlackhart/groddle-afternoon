@@ -30,7 +30,6 @@
  * [data-phone-photo-thumb=<n>], [data-phone-photo-remove], [data-phone-message-picture].
  */
 
-import { mountHomeScreenTip } from '../home-screen-tip.js?v=d6aa7d11';
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
@@ -48,6 +47,12 @@ function el(tag, attrs = {}, text = '') {
   }
   if (text) node.textContent = text;
   return node;
+}
+
+/** G807: an iPhone or iPad (Mac with touch), or ?hstip=1. */
+function mayShowHomeScreenTip() {
+  const nav = globalThis.navigator || {};
+  return /iPhone|iPad|iPod/.test(String(nav.userAgent || '')) || (/Mac/.test(String(nav.platform || '')) && nav.maxTouchPoints > 1) || /[?&]hstip=1(?:&|$)/.test(location.search);
 }
 
 function storeGet() {
@@ -86,8 +91,13 @@ function mountPlay(host) {
   }
   play.append(full, el('p', { class: 'pc-hint pc-stay' }, T.stayHere));
   host.append(play);
-  // G807 (#345): iPhone and iPad Safari, not the Home Screen app: Add to Home Screen plays full screen.
-  mountHomeScreenTip(doc, { host: play });
+  // G807: the Add to Home Screen tip, loaded only on an iPhone or iPad (the page's size budget).
+  if (mayShowHomeScreenTip()) {
+    import('../home-screen-tip.js?v=6b9d56e1').then(({ HOME_SCREEN_TIP_KEY, mountHomeScreenTip }) => {
+      const store = { get: () => localStorage.getItem(HOME_SCREEN_TIP_KEY), set: (v) => localStorage.setItem(HOME_SCREEN_TIP_KEY, v) };
+      mountHomeScreenTip(doc, { host: play, store });
+    }).catch(() => {});
+  }
 }
 
 /** The note under the panels: best on a computer, and the home page. */

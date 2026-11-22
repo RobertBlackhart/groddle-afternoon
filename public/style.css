@@ -1053,6 +1053,17 @@ body.is-booting:not(.online-gated) #wrap ~ * { visibility: hidden; }
 }
 .boot-loader-card strong { font-size: var(--fs-xl); }
 .boot-loader-card span { color: var(--c-sage-55); font-size: var(--fs-base); }
+/* G807 (#345): the Add to Home Screen tip over the game (js/home-screen-tip.js), iPhone and iPad Safari only. */
+.hs-tip { display: flex; align-items: flex-start; gap: var(--sp-4); box-sizing: border-box; padding: var(--sp-4) var(--sp-5); border-radius: var(--radius-xl);
+  background: var(--surface-card); color: var(--c-green-37); border: 1px solid color-mix(in srgb, var(--c-lime-51b) 45%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--c-black) 16%, transparent); font-size: var(--fs-sm); line-height: var(--lh-snug); text-align: left; }
+.hs-tip[hidden] { display: none; }
+.hs-tip div { flex: 1; min-width: 0; }
+.hs-tip strong { display: block; margin-bottom: var(--sp-1); }
+.hs-tip button { flex: none; min-height: 32px; padding: var(--sp-2) var(--sp-5); border: 0; border-radius: var(--radius-pill); font: inherit; font-weight: 700; cursor: pointer;
+  color: var(--text-inverse); background: var(--c-violet-54); }
+.hs-tip.is-floating { position: fixed; z-index: var(--z-overlay); left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 32px));
+  top: calc(env(safe-area-inset-top, 0px) + 64px); }
 /* G1117 (#592): the step bar under the words (js/boot-progress.js sets --boot-progress). */
 .boot-loader-card .boot-loader-bar { display: block; height: 6px; margin-top: var(--sp-2); border-radius: var(--radius-pill); overflow: hidden; background: color-mix(in srgb, var(--c-lime-51b) 18%, transparent); }
 .boot-loader-card .boot-loader-bar[hidden] { display: none; }

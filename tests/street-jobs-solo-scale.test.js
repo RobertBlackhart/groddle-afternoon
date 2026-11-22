@@ -390,11 +390,11 @@ describe('online is untouched', () => {
       assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /Solo amounts are 1\/200 of the original multiplayer totals, and the phase rewards scale by the same 1\/200\./);
       // G890: the top contributor's line names the scaled share and chance.
       assert.match(awards.at(-1).steps.map((x) => x.text).join(' '), /As the top contributor you also earned the performance rewards, scaled the same way: 25% of a far-out project's, with a 25% chance at each drop\./);
-      // G1073: phase 2's work rows wait behind its items, so they name no skill yet.
+      // G802 (after G1073): phase 2's work rows wait behind its items, and still name their (eased) skill.
       const phase2All = raw.classes[job.phases[1].classTsid].requirements;
       const lockedTexts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
       assert.ok(lockedTexts.some((t) => t.includes('opens after the earlier steps')));
-      assert.ok(!lockedTexts.some((t) => /no skill needed|further out|needs /.test(t)), 'no skill on a locked work row');
+      assert.ok(lockedTexts.some((t) => /no skill needed|further out/.test(t)), 'a locked work row names its skill');
       // The items given, the work opens: a skill two levels lower says so, a waived one too.
       for (const r of phase2All) if (r.group === 1) state.jobs[MULLAT].got[r.id] = r.num;
       projectApi.open(engine, MULLAT);

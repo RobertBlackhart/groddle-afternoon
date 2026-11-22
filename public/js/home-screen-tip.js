@@ -2,15 +2,21 @@
  * G807 (#345): on an iPhone or iPad, Safari's Add to Home Screen opens the game full screen, like an
  * app (the play pages' manifest.webmanifest, display standalone, and apple-mobile-web-app-capable),
  * but players did not know. A short tip says so, in iPhone and iPad Safari only, never in the Home
- * Screen app itself, until it is closed; the close is remembered per browser (localStorage, every
- * access in try/catch: a private window just shows it again). A new idea, not Glitch's.
+ * Screen app itself, until it is closed; the close is remembered per browser (every access in
+ * try/catch: a private window just shows it again). A new idea, not Glitch's.
  *
  * Where: the phone page's Play card (js/phone/companion.js, where a phone or touch tablet lands
- * first) and the game (game.js, for an iPad that plays the full game), one key for both.
+ * first, loading this module only on an iPhone or iPad) and the game (game.js, for an iPad that
+ * plays the full game). One key for both: the game's device-preference cache (js/classic/ui-mode.js
+ * readUiCache / writeUiCache, key HOME_SCREEN_TIP_CACHE), which the phone page reads by its full
+ * name. The caller hands the store in ({ get(), set(v) }); this module touches no storage itself.
+ * Its look is in style.css (the game) and play/phone/phone.css (the phone page), from the tokens.
  * QA: `?hstip=1` shows it in any browser; `?hstip=0` never.
  */
 
-export const HOME_SCREEN_TIP_KEY = 'groddle-home-screen-tip';
+/** The ui-mode cache key (readUiCache), and its full stored name (UI_CACHE_PREFIX + it). */
+export const HOME_SCREEN_TIP_CACHE = 'homeScreenTip';
+export const HOME_SCREEN_TIP_KEY = `groddle.ui.cache.${HOME_SCREEN_TIP_CACHE}`;
 
 export const HOME_SCREEN_TEXT = Object.freeze({
   title: 'Play full screen',
@@ -48,52 +54,32 @@ export function homeScreenTipDue({ nav = {}, standalone = false, dismissed = fal
   return iosSafari(nav) && !standalone && !dismissed;
 }
 
-function storageOf(win) {
+/** True once the tip was closed in this browser. store: { get() } (null: never closed). */
+export function tipDismissed(store) {
   try {
-    return win?.localStorage || null;
-  } catch {
-    return null;
-  }
-}
-
-export function tipDismissed(storage) {
-  try {
-    return storage?.getItem(HOME_SCREEN_TIP_KEY) === '1';
+    return String(store?.get?.() ?? '') === '1';
   } catch {
     return false;
   }
 }
 
-export function dismissTip(storage) {
+export function dismissTip(store) {
   try {
-    storage?.setItem(HOME_SCREEN_TIP_KEY, '1');
+    store?.set?.('1');
   } catch {
     /* a private window: hidden for this visit only */
   }
 }
 
-const STYLE = `
-.hs-tip { display: flex; align-items: flex-start; gap: 10px; box-sizing: border-box; padding: 10px 12px; border-radius: 14px;
-  background: var(--surface-card, #fffdf6); color: var(--c-green-37, #2f5a2b); border: 1px solid color-mix(in srgb, #7aa35a 45%, transparent);
-  box-shadow: 0 6px 20px color-mix(in srgb, #000 16%, transparent); font-size: 0.9rem; line-height: 1.35; text-align: left; }
-.hs-tip[hidden] { display: none; }
-.hs-tip div { flex: 1; min-width: 0; }
-.hs-tip strong { display: block; margin-bottom: 2px; }
-.hs-tip button { flex: none; min-height: 32px; padding: 4px 12px; border: 0; border-radius: 999px; font: inherit; font-weight: 700; cursor: pointer;
-  color: #fff; background: var(--c-violet-54, #7a4fc4); }
-.hs-tip.is-floating { position: fixed; z-index: var(--z-overlay, 32); left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 32px));
-  top: calc(env(safe-area-inset-top, 0px) + 64px); }
-`;
-
 /**
  * The tip, made and placed when it is due; null otherwise. `floating` puts it over the game, under
  * the top bar; without it, it goes at the end of `host` (the phone page's Play card).
  * @param {Document} doc
- * @param {{ host?: Element, floating?: boolean, win?: Window }} o
+ * @param {{ host?: Element, floating?: boolean, win?: Window, store?: { get: () => any, set: (v: string) => void } }} o
  */
-export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, win = globalThis.window } = {}) {
+export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, win = globalThis.window, store = null } = {}) {
   if (!doc || !host) return null;
-  const storage = storageOf(win);
+  const storage = store;
   let qa = '';
   try {
     qa = new URLSearchParams(String(win?.location?.search || '')).get('hstip') || '';
@@ -102,12 +88,6 @@ export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, wi
   }
   if (!homeScreenTipDue({ nav: win?.navigator || {}, standalone: runsStandalone(win), dismissed: tipDismissed(storage), qa })) return null;
   if (doc.getElementById?.('home-screen-tip')) return doc.getElementById('home-screen-tip');
-  if (!doc.getElementById?.('home-screen-tip-css')) {
-    const style = doc.createElement('style');
-    style.id = 'home-screen-tip-css';
-    style.textContent = STYLE;
-    doc.head?.append(style);
-  }
   const tip = doc.createElement('aside');
   tip.id = 'home-screen-tip';
   tip.className = `hs-tip${floating ? ' is-floating' : ''}`;

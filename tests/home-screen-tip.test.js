@@ -8,7 +8,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HOME_SCREEN_TEXT, HOME_SCREEN_TIP_KEY, dismissTip, homeScreenTipDue, iosSafari, mountHomeScreenTip, runsStandalone, tipDismissed } from '../public/js/home-screen-tip.js?v=d6aa7d11';
+import { HOME_SCREEN_TEXT, HOME_SCREEN_TIP_CACHE, HOME_SCREEN_TIP_KEY, dismissTip, homeScreenTipDue, iosSafari, mountHomeScreenTip, runsStandalone, tipDismissed } from '../public/js/home-screen-tip.js?v=6b9d56e1';
 import { FakeEl } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');
@@ -20,11 +20,12 @@ const IPHONE_CHROME = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) Ap
 const ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Mobile Safari/537.36';
 const MAC = IPAD_DESKTOP;
 
+/** A store as the callers hand it in ({ get, set }): the game's ui cache, the phone page's localStorage. */
 function memory({ broken = false } = {}) {
-  const m = new Map();
+  let v = null;
   return {
-    getItem: (k) => { if (broken) throw new Error('blocked'); return m.has(k) ? m.get(k) : null; },
-    setItem: (k, v) => { if (broken) throw new Error('blocked'); m.set(k, String(v)); },
+    get: () => { if (broken) throw new Error('blocked'); return v; },
+    set: (x) => { if (broken) throw new Error('blocked'); v = String(x); },
   };
 }
 
@@ -71,7 +72,7 @@ describe('G807: the Add to Home Screen tip', () => {
     assert.equal(tipDismissed(s), false);
     dismissTip(s);
     assert.equal(tipDismissed(s), true);
-    assert.equal(s.getItem(HOME_SCREEN_TIP_KEY), '1');
+    assert.equal(s.get(), '1');
     const broken = memory({ broken: true });
     assert.doesNotThrow(() => dismissTip(broken));
     assert.equal(tipDismissed(broken), false);
@@ -81,19 +82,20 @@ describe('G807: the Add to Home Screen tip', () => {
   it('mounts once on an iPhone, and Got it hides it for good', () => {
     const doc = fakeDoc();
     const storage = memory();
-    const win = { navigator: { userAgent: IPHONE }, matchMedia: () => ({ matches: false }), location: { search: '' }, localStorage: storage };
-    const tip = mountHomeScreenTip(doc, { host: doc.body, win });
+    const win = { navigator: { userAgent: IPHONE }, matchMedia: () => ({ matches: false }), location: { search: '' } };
+    const tip = mountHomeScreenTip(doc, { host: doc.body, win, store: storage });
     assert.ok(tip);
-    assert.equal(mountHomeScreenTip(doc, { host: doc.body, win }), tip, 'one tip');
+    assert.equal(mountHomeScreenTip(doc, { host: doc.body, win, store: storage }), tip, 'one tip');
     const close = tip.all().find((n) => n.dataset?.homeScreenTipClose === '');
     assert.equal(close.textContent, HOME_SCREEN_TEXT.close);
     close.fire('click');
     assert.equal(tip.hidden, true);
-    assert.equal(storage.getItem(HOME_SCREEN_TIP_KEY), '1');
-    assert.equal(mountHomeScreenTip(fakeDoc(), { win }), null, 'closed: not again');
-    const android = { ...win, navigator: { userAgent: ANDROID }, localStorage: memory() };
-    assert.equal(mountHomeScreenTip(fakeDoc(), { win: android }), null);
-    assert.equal(mountHomeScreenTip(fakeDoc(), { win: { ...win, navigator: { userAgent: IPHONE, standalone: true }, localStorage: memory() } }), null);
+    assert.equal(storage.get(), '1');
+    assert.equal(mountHomeScreenTip(fakeDoc(), { win, store: storage }), null, 'closed: not again');
+    assert.equal(mountHomeScreenTip(fakeDoc(), { win: { ...win, navigator: { userAgent: ANDROID } }, store: memory() }), null);
+    assert.equal(mountHomeScreenTip(fakeDoc(), { win: { ...win, navigator: { userAgent: IPHONE, standalone: true } }, store: memory() }), null);
+    // No store (blocked storage): it still shows, and Got it still hides it for this visit.
+    assert.ok(mountHomeScreenTip(fakeDoc(), { win }));
   });
 
   it('plain short words, no em dashes', () => {
@@ -103,8 +105,16 @@ describe('G807: the Add to Home Screen tip', () => {
   });
 
   it('the phone page and the game show it; every page it shows on can go full screen', () => {
-    assert.match(read('js/phone/companion.js'), /mountHomeScreenTip\(doc, \{ host: play \}\);/);
-    assert.match(read('game.js'), /mountHomeScreenTip\(document, \{ host: document\.body, floating: true \}\);/);
+    // The phone page loads it only on an iPhone or iPad (its size budget); both use one stored key.
+    const phone = read('js/phone/companion.js');
+    assert.doesNotMatch(phone, /^import .*home-screen-tip/m);
+    assert.match(phone, /if \(mayShowHomeScreenTip\(\)\) \{\n\s*import\('\.\.\/home-screen-tip\.js\?v=[0-9a-f]+'\)/);
+    assert.match(phone, /localStorage\.getItem\(HOME_SCREEN_TIP_KEY\)/);
+    assert.match(read('game.js'), /mountHomeScreenTip\(document, \{ host: document\.body, floating: true, store: \{ get: \(\) => readUiCache\(HOME_SCREEN_TIP_CACHE\), set: \(v\) => writeUiCache\(HOME_SCREEN_TIP_CACHE, v\) \} \}\);/);
+    assert.equal(HOME_SCREEN_TIP_KEY, `groddle.ui.cache.${HOME_SCREEN_TIP_CACHE}`);
+    assert.match(read('js/classic/ui-mode.js'), /export const UI_CACHE_PREFIX = 'groddle\.ui\.cache\.';/);
+    assert.match(read('style.css'), /\.hs-tip\.is-floating \{[^}]*z-index: var\(--z-overlay\)/);
+    assert.match(read('play/phone/phone.css'), /\.hs-tip \{/);
     for (const page of ['play/index.html', 'play/online/index.html', 'play/phone/index.html']) {
       const html = read(page);
       assert.match(html, /<link rel="manifest" href="manifest\.webmanifest" \/>/, page);

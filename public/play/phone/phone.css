@@ -305,3 +305,9 @@ p { margin: 0; }
 /* #372: Edit on your report until the team reads it (companion.js editFirst). */
 .pc-message-head .pc-message-edit { padding: 0 2px; font-size: inherit; }
 .pc-edit-form { margin-top: 2px; }
+
+/* G807: the Add to Home Screen tip (js/home-screen-tip.js). */
+.hs-tip { display: flex; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-xl); border: 1px solid var(--border); font-size: .9rem; }
+.hs-tip div { flex: 1; }
+.hs-tip strong { display: block; }
+.hs-tip button { align-self: start; padding: 6px 12px; border: 0; border-radius: var(--radius-pill); font: inherit; font-weight: 700; color: var(--play-fg); background: var(--play-bg); }

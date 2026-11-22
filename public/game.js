@@ -828,7 +828,7 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, uiState } from './js/classic/ui-mode.js?v=e44e0f90';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=e44e0f90';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
@@ -1106,7 +1106,7 @@ import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelea
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
 import { bootStep } from './js/boot-progress.js?v=d84b898d';
-import { mountHomeScreenTip } from './js/home-screen-tip.js?v=d6aa7d11';
+import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip } from './js/home-screen-tip.js?v=6b9d56e1';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
@@ -35322,7 +35322,7 @@ async function main() {
   const endBoot = ({ fade = false } = {}) => {
     document.body.classList.remove('is-booting');
     // G807 (#345): iPhone and iPad Safari, not the Home Screen app: Add to Home Screen plays full screen.
-    mountHomeScreenTip(document, { host: document.body, floating: true });
+    mountHomeScreenTip(document, { host: document.body, floating: true, store: { get: () => readUiCache(HOME_SCREEN_TIP_CACHE), set: (v) => writeUiCache(HOME_SCREEN_TIP_CACHE, v) } });
     if (!bootLoader || bootLoader.hidden) return;
     if (!fade) {
       bootLoader.hidden = true;
@@ -35346,11 +35346,10 @@ async function main() {
     if (app?.canvas) app.canvas.dataset.ownLookWait = `${r.ready ? 'worn' : 'capped'}:${Math.round(performance.now() - t0Look)}`;
     return r;
   });
+  // G1117: the last step, while the card waits for your look (the start card's wait says nothing more).
+  if (!startCardWaits) bootStep('look');
   if (startCardWaits) startOverlay.classList.add('is-waiting');
-  else {
-    bootStep('look');
-    ownLookIn().then(() => endBoot());
-  }
+  else ownLookIn().then(() => endBoot());
 
   let newDayCheckAccum = 0;
   /** Report #545: ticker time since the street trants' fruit art was last checked. */
