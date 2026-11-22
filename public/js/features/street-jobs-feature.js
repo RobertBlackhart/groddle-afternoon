@@ -19,7 +19,7 @@
  *    a row of dots with a dimmed name, with no destination or teleport
  *    (streetUnderConstruction; js/map-graph.js, MapStreet.as 51-64, 125).
  *
- * QA: ?autostart=1&fresh=1&resetgame=1&jobdemo=<job class or job id>
+ * QA: ?autostart=1&fresh=1&resetgame=1&jobdemo=<job class or job id> (&jobopen=1: its window open, unseeded)
  *     (&jobautoplay=1, &jobphase=N)
  *
  * Multiplayer (G346, engine.mode 'multiplayer' with a realtime client): a
@@ -152,21 +152,21 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=c9635d96';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=6baf4dce';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=41ce4716';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=e47ddea6';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=835eb3f4';
+import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=c4de279a';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=aa543965';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=11115f7f';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=59764610';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=ee4dbf3c';
+import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=2b97d818';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
-import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../street-job-asks.js?v=c2511e10';
+import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 
@@ -1630,6 +1630,8 @@ const PANEL_CSS = `
 .sj-qty input{width:4.2em;font:inherit;font-size:var(--fs-sm);padding:.2rem .25rem;border-radius:var(--radius-sm);border:1px solid var(--c-sand-83);background:var(--surface-bright);color:inherit;text-align:center}
 .sj-req .sj-qty button[data-sj-qty-step]{padding:.15rem .4rem;min-width:1.7em}
 .sj-req small.sj-but{color:var(--c-umber-45)}
+.sj-req small.sj-skill.is-missing{font-weight:700;color:var(--c-umber-45)}
+.sj-req small.sj-skill.is-missing::before{content:"✕ "}
 .sj-note{margin:var(--sp-3) 0 0;font-size:var(--fs-sm);font-weight:700;color:var(--c-umber-45)}
 .sj-rewards{margin:var(--sp-4) 0 0;font-size:var(--fs-sm);color:var(--c-sand-39)}
 .sj-rewards b{color:var(--c-sand-33)}
@@ -1905,16 +1907,15 @@ function renderPanel(engine) {
     text.append(el('b', {}, title));
     const meta = [`${r.got.toLocaleString()} / ${r.need.toLocaleString()}`];
     if (r.type === 'item') meta.push(`you have ${countItem(engine.inv, r.classId)}`);
-    if (r.type === 'work') {
-      meta.push(workStepCost(r));
-      // G1073: the skill shows once the step is open (#425: lower or waived near the start, solo).
-      const skillNote = workSkillNote(r, skillLabel);
-      if (skillNote) meta.push(skillNote);
-    }
+    if (r.type === 'work') meta.push(workStepCost(r));
     if (unclaimed) meta.push(HALL_TEXT.locked);
     else if (!r.done && !r.open) meta.push('opens after the earlier steps');
     if (shared(jobId) && row.held?.[r.id]) meta.push(`${row.held[r.id]} being counted`);
     text.append(el('small', {}, meta.join(' · ')));
+    // G802: every work step not done names its skill, a locked one too, and says when you don't know it
+    // (#425: lower or waived near the start, solo).
+    const skillNote = workSkillNote(r, skillLabel, ctx.learned || []);
+    if (skillNote) text.append(el('small', { class: `sj-skill${workSkillMissing(r, ctx.learned) ? ' is-missing' : ''}`, dataset: { sjSkill: r.skill || '' } }, skillNote));
     // G617: how gems are found, under a gem ask still open (the remake's own line; no source).
     if (r.type === 'item' && isGem(r.classId) && !r.done) text.append(el('small', { class: 'sj-hint', dataset: { sjHint: 'gems' } }, GEM_HINTS.project));
     // G1073: where an item comes from: its Encyclopedia page's How to get it (the item card's link).
@@ -3303,6 +3304,8 @@ export const streetJobsFeature = {
       else arrive(engine, mine);
       grantFinishedTrophies(engine);
       if (demo && engine.param('jobautoplay')) autoplay.timer = Date.now() + 1500;
+      // QA (&jobopen=1): the demo's board window open as you find it, nothing seeded (G802's skill marks).
+      else if (demo && engine.param('jobopen')) openPanel(engine, demo.jobId);
       publish(engine);
     });
   },

@@ -25,6 +25,9 @@ export const FEATURED_TEXT = Object.freeze({
   // G1023: a street in its 30-minute post-build rest shows no board (Glitch inc_jobs.js 463-467).
   waiting: (mins) => `Opens in ${mins} min`,
   needs: 'Needs',
+  // G802: the skills its tool work needs, marked when you don't know one.
+  skills: 'Skills',
+  notLearned: 'not learned',
   // R11: nothing was left to build on foot, so the server featured one the subway reaches (needs papers).
   bySubway: 'by subway',
 });
@@ -123,12 +126,28 @@ export function featuredLabel(f, now = Date.now()) {
  * help: the first need of the phase you can do now ("Needs: Clear with a Pick (Mining IV) · 7
  * units, and 2 more"). `entry` is the Projects panel's entry for it (js/projects-tracker.js
  * projectEntry: needs with their needLine words). '' when it is not known or nothing is left.
+ * G802: then the skills the phase's tool work needs, its later steps too, with the ones you don't
+ * know marked (featuredSkillsLine).
  */
 export function featuredNeedsLine(entry) {
   if (!entry || entry.known === false || entry.finished) return '';
   const open = (entry.needs || []).filter((n) => n.open && n.text);
   if (!open.length) return '';
   const more = open.length - 1;
-  return `${FEATURED_TEXT.needs}: ${open[0].text}${more ? `, and ${more} more` : ''}`;
+  const skills = featuredSkillsLine(entry);
+  return `${FEATURED_TEXT.needs}: ${open[0].text}${more ? `, and ${more} more` : ''}${skills ? `. ${skills}` : ''}`;
+}
+
+/**
+ * G802 (players gathered a phase's items, then found they lacked its skill): "Skills: Mining IV,
+ * Piety (not learned)", each skill the phase's work still asks for once, '' for none.
+ */
+export function featuredSkillsLine(entry) {
+  const seen = new Map();
+  for (const n of entry?.needs || []) {
+    if (n.type !== 'work' || !n.skill || seen.has(n.skill)) continue;
+    seen.set(n.skill, `${n.skillName || n.skill}${n.skillMissing ? ` (${FEATURED_TEXT.notLearned})` : ''}`);
+  }
+  return seen.size ? `${FEATURED_TEXT.skills}: ${[...seen.values()].join(', ')}` : '';
 }
 

@@ -3,7 +3,8 @@
  * work step that had not opened as a rule for joining. Austin's ruling (option A, explain the board):
  * one line saying anyone can give items and skills are only for tool work, each item ask links to
  * where the item comes from (the item's Encyclopedia page, as the pack's item card does), and a work
- * row names its skill only once that step is open. Glitch: items need no skill (quest.js 1471), tool
+ * row names its skill only once that step is open (G802, approved later, names it on a locked step too,
+ * marked when you don't know it). Glitch: items need no skill (quest.js 1471), tool
  * work needs the tool and the skill (quest.js 942-986, 1489).
  */
 import assert from 'node:assert/strict';
@@ -11,9 +12,9 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { normalizeStreetJobState, phaseRequirements } from '../public/js/street-jobs.js?v=884e34b3';
-import { ITEM_GET_ANCHOR, JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../public/js/street-job-asks.js?v=c2511e10';
+import { ITEM_GET_ANCHOR, JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../public/js/street-job-asks.js?v=5b3e6bd0';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=28c46af4';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=8da6eec2';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
@@ -33,15 +34,22 @@ describe('G1073: the street project board explains who can give what', () => {
     assert.deepEqual(reqs.filter((r) => r.type === 'work').map((r) => [r.skill, r.open]), [['saucery_2', false], ['masterchef_2', false]]);
   });
 
-  it('a locked work step names no skill; an open one does', () => {
-    for (const r of reqs.filter((x) => x.type === 'work')) assert.equal(workSkillNote(r, label), '', r.id);
+  it('G802: every work step not done names its skill, a locked one too, and says when you lack it', () => {
+    assert.deepEqual(reqs.filter((x) => x.type === 'work').map((r) => workSkillNote(r, label)), ['needs Saucery II', 'needs Master Chef II']);
     const work = reqs.find((r) => r.skill === 'masterchef_2');
+    assert.equal(work.open, false);
+    assert.equal(workSkillNote(work, label, []), "needs Master Chef II, you don't know it yet");
+    assert.equal(workSkillNote(work, label, ['masterchef_2']), 'needs Master Chef II');
+    assert.equal(workSkillMissing(work, []), true);
+    assert.equal(workSkillMissing(work, ['masterchef_2']), false);
     assert.equal(workSkillNote({ ...work, open: true }, label), 'needs Master Chef II');
-    assert.equal(workSkillNote({ ...work, open: true, skill: 'masterchef_1', skillWas: 'masterchef_2' }, label), 'needs Master Chef I (II further out)');
+    assert.equal(workSkillNote({ ...work, open: true, skill: 'masterchef_1', skillWas: 'masterchef_2' }, label, []), "needs Master Chef I (II further out), you don't know it yet");
     assert.equal(workSkillNote({ ...work, open: true, skill: '', skillWas: 'masterchef_2' }, label), JOB_ASK_TEXT.noSkillNearStart);
-    assert.equal(workSkillNote({ ...work, open: false, skill: '', skillWas: 'masterchef_2' }, label), '');
-    assert.equal(workSkillNote({ ...work, open: true, done: true }, label), '');
-    assert.equal(workSkillNote(reqs.find((r) => r.type === 'item'), label), '');
+    assert.equal(workSkillNote({ ...work, open: false, skill: '', skillWas: 'masterchef_2' }, label, []), JOB_ASK_TEXT.noSkillNearStart);
+    assert.equal(workSkillMissing({ ...work, skill: '', skillWas: 'masterchef_2' }, []), false);
+    assert.equal(workSkillNote({ ...work, open: true, done: true }, label, []), '');
+    assert.equal(workSkillMissing({ ...work, done: true }, []), false);
+    assert.equal(workSkillNote(reqs.find((r) => r.type === 'item'), label, []), '');
   });
 
   it('the rule line: plain, short, shown while the project takes items or work', () => {
@@ -69,7 +77,8 @@ describe('G1073: the street project board explains who can give what', () => {
 
   it('the board (solo and shared, one renderPanel) uses them; the old always-on skill line is gone', () => {
     assert.doesNotMatch(feature, /else if \(r\.skill\) meta\.push\(`needs /);
-    assert.match(feature, /const skillNote = workSkillNote\(r, skillLabel\);/);
+    assert.match(feature, /const skillNote = workSkillNote\(r, skillLabel, ctx\.learned \|\| \[\]\);/);
+    assert.match(feature, /sj-skill\$\{workSkillMissing\(r, ctx\.learned\) \? ' is-missing' : ''\}/);
     assert.match(feature, /<p class="sj-rule" data-sj-rule hidden><\/p>\s*<ul class="sj-reqs" data-sj-reqs><\/ul>/);
     assert.match(feature, /rule\.hidden = !showAskRule\(reqs, open\);/);
     assert.match(feature, /const getLink = askGetLink\(engine, itemAskSubject\(r, itemLabel\)\);/);
@@ -129,7 +138,7 @@ describe('G1073: Hazy Gate 5\'s board as drawn, solo and online', () => {
   });
 
   for (const mode of ['solo', 'multiplayer']) {
-    it(`${mode}: the rule line, no skill on the locked work, a way to each vegetable`, () => {
+    it(`${mode}: the rule line, the locked work's skills marked as not known (G802), a way to each vegetable`, () => {
       engine.mode = mode;
       streetJobsFeature.restore({}, engine);
       linked.length = 0;
@@ -138,7 +147,16 @@ describe('G1073: Hazy Gate 5\'s board as drawn, solo and online', () => {
       const texts = nodes.map((n) => n.textContent).filter(Boolean);
       const rule = nodes.find((n) => n.textContent === JOB_ASK_TEXT.rule);
       assert.ok(rule && !rule.hidden, 'the rule line shows');
-      assert.ok(!texts.some((t) => /saucery|master ?chef/i.test(t) && /needs /.test(t)), 'no "needs <skill>" on a locked work row');
+      // G802: the locked work rows name their skills, marked for a player who knows neither.
+      const skills = nodes.filter((n) => n.dataset?.sjSkill);
+      // Solo eases them a level this close to the start (#425: "Saucery I (II further out)").
+      const lvl = mode === 'solo' ? 1 : 2;
+      assert.deepEqual(skills.map((n) => n.dataset.sjSkill), [`saucery_${lvl}`, `masterchef_${lvl}`]);
+      for (const n of skills) {
+        assert.match(n.textContent, /^needs (Saucery|Master ?Chef)/i);
+        assert.match(n.textContent, /, you don't know it yet$/);
+        assert.match(n.className, /\bis-missing\b/);
+      }
       assert.ok(texts.some((t) => t.includes('opens after the earlier steps')));
       const links = nodes.filter((n) => n.dataset?.sjGet);
       assert.deepEqual(links.map((a) => a.dataset.sjGet).sort(), ['broccoli', 'cabbage', 'corn', 'onion', 'rice', 'zucchini']);
@@ -149,6 +167,20 @@ describe('G1073: Hazy Gate 5\'s board as drawn, solo and online', () => {
     });
   }
 
+  it('a skill you know is named without the mark', () => {
+    engine.mode = 'solo';
+    engine.learnedSkills = ['saucery_1', 'masterchef_1'];
+    streetJobsFeature.restore({}, engine);
+    projectApi.open(engine, HAZY);
+    const skills = globalThis.document.body.all().filter((n) => n.dataset?.sjSkill);
+    engine.learnedSkills = [];
+    assert.equal(skills.length, 2);
+    for (const n of skills) {
+      assert.doesNotMatch(n.textContent, /don't know/);
+      assert.doesNotMatch(n.className, /is-missing/);
+    }
+  });
+
   it('the work step names its skill once it opens', () => {
     engine.mode = 'solo';
     streetJobsFeature.restore({}, engine);
@@ -158,6 +190,6 @@ describe('G1073: Hazy Gate 5\'s board as drawn, solo and online', () => {
     projectApi.open(engine, HAZY);
     const texts = globalThis.document.body.all().map((n) => n.textContent).filter(Boolean);
     assert.ok(texts.some((t) => /needs saucery/i.test(t)), 'the open step says what it needs');
-    assert.ok(!texts.some((t) => /needs master ?chef/i.test(t)), 'the other bucket\'s step is still locked');
+    assert.ok(texts.some((t) => t.includes('opens after the earlier steps')), 'the other bucket\'s step is still locked');
   });
 });

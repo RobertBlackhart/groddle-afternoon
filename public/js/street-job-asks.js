@@ -7,6 +7,11 @@
  * only tool work needs the tool and the skill (quest.js 942-986, 1489). So the board:
  * - says so in one line (JOB_ASK_TEXT.rule) while the project takes contributions;
  * - names a work step's skill only once that step is open (a locked step says it opens later);
+ *   G802 (Austin 2026-11-21, approved after G1073) then puts it back on a locked step too: players
+ *   gathered a phase's items and only learned at the work step that they lacked its skill. So every
+ *   work step not done names its skill, and says so when you have not learned it (Glitch's "You don't
+ *   know <skill>." from quest.js 978, shown here before the step opens); the rule line above the asks
+ *   still says that skills are only for tool work, so it does not read as a rule for joining;
  * - links each item ask still open to the item's Encyclopedia page, at its "In the remake" part
  *   (How to get it: vendors, gardens, recipes; tools/encyclopedia), the page the pack's item card
  *   links to (js/encyclopedia-links.js). An item with no page gets no link; nothing is made up here.
@@ -17,6 +22,8 @@ export const JOB_ASK_TEXT = Object.freeze({
   getIt: 'Where to get it',
   getItTip: 'Opens its Encyclopedia page in a new tab',
   noSkillNearStart: 'no skill needed this close to the start',
+  // G802: after the skill's name when you have not learned it.
+  notLearned: "you don't know it yet",
 });
 
 /** The item page's "In the remake" heading (tools/encyclopedia: How to get it is under it). */
@@ -30,16 +37,26 @@ export function showAskRule(reqs, open) {
 }
 
 /**
- * PURE: the skill words on a work row, '' for none. A step that has not opened yet names no skill
- * (G1073); an open one says what it needs. Report #425: solo near the start the skill is lower
+ * PURE: the skill words on a work row, '' for none. G802: every work step not done names its skill,
+ * the locked ones too, so a player sees it before gathering the phase's items; with `learned` (the
+ * skills you know) a skill you lack says so. Report #425: solo near the start the skill is lower
  * (skillWas the source's) or waived.
+ * @param {object} r a phaseRequirements row
+ * @param {(id: string) => string} [skillLabel]
+ * @param {string[]|null} [learned] the skills you know, or null to leave the mark out
  */
-export function workSkillNote(r, skillLabel = (id) => String(id)) {
-  if (!r || r.type !== 'work' || r.done || !r.open) return '';
+export function workSkillNote(r, skillLabel = (id) => String(id), learned = null) {
+  if (!r || r.type !== 'work' || r.done) return '';
   if (r.skillWas && !r.skill) return JOB_ASK_TEXT.noSkillNearStart;
   if (!r.skill) return '';
   const was = r.skillWas ? ` (${ROMAN[Number(String(r.skillWas).match(/_(\d+)$/)?.[1])] || skillLabel(r.skillWas)} further out)` : '';
-  return `needs ${skillLabel(r.skill)}${was}`;
+  const lack = Array.isArray(learned) && !learned.includes(r.skill) ? `, ${JOB_ASK_TEXT.notLearned}` : '';
+  return `needs ${skillLabel(r.skill)}${was}${lack}`;
+}
+
+/** PURE: true when a work row asks for a skill you have not learned (G802: the row's mark). */
+export function workSkillMissing(r, learned = []) {
+  return Boolean(r && r.type === 'work' && !r.done && r.skill && !(learned || []).includes(r.skill));
 }
 
 /** PURE: the Encyclopedia subject for an item ask still open, or null (js/encyclopedia-links.js subjects). */

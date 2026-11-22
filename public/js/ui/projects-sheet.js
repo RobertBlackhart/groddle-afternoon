@@ -21,8 +21,8 @@
  * or not you have put anything into it yet.
  */
 
-import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=e47ddea6';
-import { featuredTag } from './featured-project.js?v=59764610';
+import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=c4de279a';
+import { featuredTag } from './featured-project.js?v=2b97d818';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
 const ICON = 'assets/sprites/street-jobs/sign_stake.webp';

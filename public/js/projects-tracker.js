@@ -178,7 +178,9 @@ export function needCan(r, ctx, labels = {}) {
 export function needEntry(r, labels = {}, ctx = null) {
   const left = Math.max(0, whole(r.need) - whole(r.got));
   const icon = r.type === 'currants' ? CURRANTS_ICON : labels.icon ? labels.icon(r.type === 'work' ? r.classIds?.[0] || r.classId : r.classId) : '';
-  return { id: r.id, type: r.type, classId: r.classId, open: Boolean(r.open), left, text: needLine(r, labels), icon, ...needCan(r, ctx, labels) };
+  // G802: a work need's skill by name, and whether you lack it (null without a ctx), for the featured line.
+  const skill = r.type === 'work' && r.skill ? { skill: r.skill, skillName: labels.skill ? labels.skill(r.skill) : String(r.skill), skillMissing: ctx ? !(ctx.learned || []).includes(r.skill) : null } : {};
+  return { id: r.id, type: r.type, classId: r.classId, open: Boolean(r.open), left, text: needLine(r, labels), icon, ...skill, ...needCan(r, ctx, labels) };
 }
 
 /**

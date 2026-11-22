@@ -8,7 +8,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { featuredNeedsLine } from '../public/js/featured-project.js?v=11115f7f';
+import { featuredNeedsLine, featuredSkillsLine } from '../public/js/featured-project.js?v=ee4dbf3c';
+import { needEntry } from '../public/js/projects-tracker.js?v=c4de279a';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -26,6 +27,25 @@ describe('the featured project\'s needs', () => {
     assert.equal(featuredNeedsLine({ known: true, finished: true, needs }), '');
     assert.equal(featuredNeedsLine({ known: true, needs: [needs[0]] }), '');
     assert.equal(featuredNeedsLine(null), '');
+  });
+
+  it('G802: then the skills its tool work needs, later steps too, the ones you lack marked', () => {
+    const labels = { item: (c) => ({ pick: 'Pick', plank: 'Planks' })[c] || c, skill: (id) => ({ mining_4: 'Mining IV', piety_1: 'Piety' })[id] || id };
+    const rows = [
+      { id: 'r1', type: 'item', classId: 'plank', need: 12, got: 0, open: true },
+      { id: 'r2', type: 'work', classId: 'pick', classIds: ['pick'], skill: 'mining_4', verb: 'clear', need: 7, got: 0, open: true },
+      { id: 'r3', type: 'work', classId: 'pick', classIds: ['pick'], skill: 'piety_1', verb: 'bless', need: 5, got: 0, open: false },
+      { id: 'r4', type: 'work', classId: 'pick', classIds: ['pick'], skill: 'mining_4', verb: 'smash', need: 5, got: 0, open: false },
+    ];
+    const ctx = { inv: {}, learned: ['mining_4'], toolOk: () => true, currants: 0, have: () => 0 };
+    const needs = rows.map((r) => needEntry(r, labels, ctx));
+    assert.deepEqual(needs.slice(1).map((n) => [n.skill, n.skillName, n.skillMissing]), [['mining_4', 'Mining IV', false], ['piety_1', 'Piety', true], ['mining_4', 'Mining IV', false]]);
+    assert.equal(featuredSkillsLine({ needs }), 'Skills: Mining IV, Piety (not learned)');
+    assert.equal(featuredNeedsLine({ known: true, needs }), 'Needs: Contribute Planks · 12 more, and 1 more. Skills: Mining IV, Piety (not learned)');
+    // Without your pack (no ctx) the skills are named, unmarked; an item-only phase has no skills part.
+    assert.equal(featuredSkillsLine({ needs: rows.map((r) => needEntry(r, labels)) }), 'Skills: Mining IV, Piety');
+    assert.equal(featuredNeedsLine({ known: true, needs: [needs[0]] }), 'Needs: Contribute Planks · 12 more');
+    for (const t of [featuredNeedsLine({ known: true, needs })]) assert.doesNotMatch(t, /[–—]/);
   });
 
   it('the row and the line carry it, and the card opens with its needs shown', () => {
