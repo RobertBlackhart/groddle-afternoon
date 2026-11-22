@@ -30,6 +30,7 @@
  * [data-phone-photo-thumb=<n>], [data-phone-photo-remove], [data-phone-message-picture].
  */
 
+import { mountHomeScreenTip } from '../home-screen-tip.js?v=d6aa7d11';
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
@@ -85,6 +86,8 @@ function mountPlay(host) {
   }
   play.append(full, el('p', { class: 'pc-hint pc-stay' }, T.stayHere));
   host.append(play);
+  // G807 (#345): iPhone and iPad Safari, not the Home Screen app: Add to Home Screen plays full screen.
+  mountHomeScreenTip(doc, { host: play });
 }
 
 /** The note under the panels: best on a computer, and the home page. */

@@ -1105,6 +1105,7 @@ import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settl
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=5c5a4301';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
+import { mountHomeScreenTip } from './js/home-screen-tip.js?v=d6aa7d11';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
@@ -35311,6 +35312,8 @@ async function main() {
   /** The loading card goes and the game shows; `fade` when the start card comes in behind it. */
   const endBoot = ({ fade = false } = {}) => {
     document.body.classList.remove('is-booting');
+    // G807 (#345): iPhone and iPad Safari, not the Home Screen app: Add to Home Screen plays full screen.
+    mountHomeScreenTip(document, { host: document.body, floating: true });
     if (!bootLoader || bootLoader.hidden) return;
     if (!fade) {
       bootLoader.hidden = true;
