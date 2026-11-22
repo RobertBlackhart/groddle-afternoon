@@ -15,8 +15,8 @@ import {
   filterSkillTree,
   skillTreeCounts,
   skillTitle,
-} from './skill-tree.js?v=e399b9ca';
-import { formatStudyTime, listStudyQueue } from './skills.js?v=4542bdf9';
+} from './skill-tree.js?v=df9b7332';
+import { formatStudyTime, listStudyQueue } from './skills.js?v=db7039d9';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';
 
 const ui = {
@@ -500,6 +500,47 @@ export function patchChildren(live, next) {
   while (live.childNodes.length > fresh.length) live.lastChild.remove();
 }
 
+/**
+ * The study cards pinned above the tree (the one studying, then the paused ones), appended to
+ * `study`; returns the row studying now (or null). Each card and its button carry data-skill (#605).
+ */
+export function studyQueueCards(study, { state, ctx = {}, actions = {}, now = Date.now() } = {}) {
+  const queueRows = listStudyQueue(state, now);
+  const active = queueRows.find((row) => !row.isPaused) || null;
+  for (const row of queueRows) {
+    const def = getSkillCatalog()[row.classTsid];
+    if (!def) continue;
+    const card = el('div', `skill-study-card ${row.isPaused ? 'paused' : 'studying'}`);
+    // #605: the card and its button name their skill, so patchChildren never keeps a button bound to
+    // another skill when the cards change places (a switch moves the studied one to the top).
+    card.dataset.skill = row.classTsid;
+    const title = el('div', 'skill-study-title');
+    title.appendChild(el('b', '', skillTitle(def)));
+    title.appendChild(el('span', '', row.isPaused ? 'Paused' : row.isAccelerated ? 'Accelerated!' : 'Studying'));
+    card.appendChild(title);
+    // imagination_skills_time_fast: the accelerated time has its own style (ImaginationSkillsUI.as 440-441).
+    card.appendChild(el('div', `skill-study-time${row.isAccelerated ? ' is-fast' : ''}`, `${formatStudyTime(row.remainingSeconds)} remaining · ${Math.round(row.progress * 100)}%`));
+    card.appendChild(studyBar(row.progress, studyBarKind(row)));
+    if (!row.isPaused) {
+      const giants = studyGiantsLine(def, ctx);
+      if (giants) {
+        const line = el('div', 'skill-study-time skill-study-giants', giants);
+        // items/include/shrines.js giant_tips[3] (its dash made a comma, house style)
+        line.title = 'Spending favor with any Giant speeds up skill learning, but spending favor with the Primary Giant of a given skill will speed it up the most.';
+        card.appendChild(line);
+      }
+    }
+    // G222: a paused card's button uses the learn button's words (setLearnButton 225, 236).
+    const btn = el('button', 'content-action-btn', row.isPaused ? learnButtonText({ classTsid: row.classTsid, status: 'paused' }, active).label : 'Pause study');
+    btn.type = 'button';
+    btn.dataset.skill = row.classTsid;
+    btn.addEventListener('click', () => (row.isPaused ? actions.resume(row.classTsid) : actions.pause(row.classTsid)));
+    card.appendChild(btn);
+    study.appendChild(card);
+  }
+  return active;
+}
+
 export function renderSkillTreePanel({ box, meta, state, ctx, actions, now = Date.now() }) {
   if (!box) return;
   // Kept nodes hold the first render's `rerender`: it always draws with the newest arguments.
@@ -555,35 +596,7 @@ export function renderSkillTreePanel({ box, meta, state, ctx, actions, now = Dat
     }
     study.appendChild(card);
   }
-  const queueRows = listStudyQueue(state, now);
-  const active = queueRows.find((row) => !row.isPaused) || null;
-  for (const row of queueRows) {
-    const def = getSkillCatalog()[row.classTsid];
-    if (!def) continue;
-    const card = el('div', `skill-study-card ${row.isPaused ? 'paused' : 'studying'}`);
-    const title = el('div', 'skill-study-title');
-    title.appendChild(el('b', '', skillTitle(def)));
-    title.appendChild(el('span', '', row.isPaused ? 'Paused' : row.isAccelerated ? 'Accelerated!' : 'Studying'));
-    card.appendChild(title);
-    // imagination_skills_time_fast: the accelerated time has its own style (ImaginationSkillsUI.as 440-441).
-    card.appendChild(el('div', `skill-study-time${row.isAccelerated ? ' is-fast' : ''}`, `${formatStudyTime(row.remainingSeconds)} remaining · ${Math.round(row.progress * 100)}%`));
-    card.appendChild(studyBar(row.progress, studyBarKind(row)));
-    if (!row.isPaused) {
-      const giants = studyGiantsLine(def, ctx);
-      if (giants) {
-        const line = el('div', 'skill-study-time skill-study-giants', giants);
-        // items/include/shrines.js giant_tips[3] (its dash made a comma, house style)
-        line.title = 'Spending favor with any Giant speeds up skill learning, but spending favor with the Primary Giant of a given skill will speed it up the most.';
-        card.appendChild(line);
-      }
-    }
-    // G222: a paused card's button uses the learn button's words (setLearnButton 225, 236).
-    const btn = el('button', 'content-action-btn', row.isPaused ? learnButtonText({ classTsid: row.classTsid, status: 'paused' }, active).label : 'Pause study');
-    btn.type = 'button';
-    btn.addEventListener('click', () => (row.isPaused ? actions.resume(row.classTsid) : actions.pause(row.classTsid)));
-    card.appendChild(btn);
-    study.appendChild(card);
-  }
+  const active = studyQueueCards(study, { state, ctx, actions, now });
 
   const tree = filterSkillTree(state, { query: ui.query, filter: ui.filter, category: ui.category }, ctx, now);
   if (!tree.total) {
