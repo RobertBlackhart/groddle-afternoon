@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3099,
+  "commits": 3103,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Get off the Subway keeps your ride until the station loads, and a car with no ride shows the way out"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "A trip that fails to load tries once more, then leaves you where you were and says so"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-22",
     "kind": "improve",
     "text": "The star on the subway train's map follows the curved track"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "The subway train's map looks like the Map's Subway view"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Pot's Empty Table says only dishes cooked after accepting count"
    }
   ]
  },
- "tests": 1274,
+ "tests": 1276,
  "generatedAt": "2026-11-22"
 }
