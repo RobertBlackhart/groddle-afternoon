@@ -8,7 +8,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=0e1325c8';
+import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=8ee8cfe9';
 import {
   DOOR_FOOT_Y,
   INTERIOR,
@@ -18,7 +18,7 @@ import {
   normalizeHomeDecorState,
   placeFurniture,
   renderOrder,
-} from '../public/js/home-decor.js?v=10e86ffb';
+} from '../public/js/home-decor.js?v=f6d82a18';
 
 function houseWithDoor(x = 600) {
   const ground = createHomeDecorState({ starterKit: true });

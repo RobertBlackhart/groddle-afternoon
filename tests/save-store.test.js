@@ -41,9 +41,9 @@ import { persist as persistTrade } from '../public/js/features/trade-feature.js?
 import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=13b5cb98';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=f0e5a6d2';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=7fd1943b';
-import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=908d3dac';
-import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=ba980385';
-import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=1ad400f3';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=58151616';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=0ccd7091';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=2ee59d3b';
 import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=3f718120';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';

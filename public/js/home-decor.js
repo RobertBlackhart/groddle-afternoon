@@ -51,7 +51,7 @@ import {
   HOME_LIMITS,
   HOME_TEXTURE_CONFIGS,
 } from './homes-catalog.js?v=cce7f5a7';
-import { cleanHistory, cleanUpgradeId, upgradeArt, upgradeRow } from './furniture-upgrades.js?v=a3788c0d';
+import { cleanHistory, cleanUpgradeId, upgradeArt, upgradeRow } from './furniture-upgrades.js?v=6cc0e2da';
 import { SDB_COUNT_MAX, SDB_PRICE_MAX, isCabinetClass, normalizeContents, storagePickupLock } from './home-storage.js?v=b0225465';
 import { stackMaxOf } from './pack-slots.js?v=d9ab4a0b';
 

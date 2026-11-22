@@ -11,7 +11,8 @@
  *   the rendered frame ({ path, w, h } at 1x, and foot: how far the art's bottom
  *   sits above that point, tools/furniture-upgrades/render.py --feet; top, on a
  *   piece things rest on: its visible top over the middle, px from the art's top
- *   edge, tools/furniture-upgrades/tops.mjs).
+ *   edge, tools/furniture-upgrades/tops.mjs). A Door style's row.doorArt is its
+ *   art per role ({ up, up_job, down }, cropped alike; row.art is up_job).
  */
 
 export const FURNITURE_UPGRADES = Object.freeze({
@@ -3221,6 +3222,530 @@ export const FURNITURE_UPGRADES = Object.freeze({
      "h": 77,
      "foot": -23,
      "top": 0
+    }
+   }
+  }
+ },
+ "furniture_door": {
+  "canRevert": true,
+  "upgrades": {
+   "270": {
+    "name": "Industrial Spaceship Door",
+    "credits": 40,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/270@3x.webp",
+     "w": 140,
+     "h": 179,
+     "foot": -2
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/270@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/270_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/270_down@3x.webp"
+    }
+   },
+   "271": {
+    "name": "Turtle Shell Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/271@3x.webp",
+     "w": 139,
+     "h": 167,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/271@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/271_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/271_down@3x.webp"
+    }
+   },
+   "275": {
+    "name": "Violet Voyage Door",
+    "credits": 40,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/275@3x.webp",
+     "w": 160,
+     "h": 198,
+     "foot": -5
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/275@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/275_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/275_down@3x.webp"
+    }
+   },
+   "286": {
+    "name": "Black Paneled Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/286@3x.webp",
+     "w": 108,
+     "h": 167,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/286@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/286_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/286_down@3x.webp"
+    }
+   },
+   "287": {
+    "name": "Secret Bookcase Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/287@3x.webp",
+     "w": 120,
+     "h": 169,
+     "foot": -9
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/287@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/287_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/287_down@3x.webp"
+    }
+   },
+   "288": {
+    "name": "Cactus Apocalypse Door",
+    "credits": 40,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/288@3x.webp",
+     "w": 133,
+     "h": 175,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/288@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/288_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/288_down@3x.webp"
+    }
+   },
+   "289": {
+    "name": "Cutting Edge Wooden Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/289@3x.webp",
+     "w": 115,
+     "h": 166,
+     "foot": -2
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/289@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/289_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/289_down@3x.webp"
+    }
+   },
+   "290": {
+    "name": "Sturdy Stronghold Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/290@3x.webp",
+     "w": 103,
+     "h": 187,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/290@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/290_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/290_down@3x.webp"
+    }
+   },
+   "293": {
+    "name": "Wacky Wooden Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/293@3x.webp",
+     "w": 120,
+     "h": 180,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/293@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/293_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/293_down@3x.webp"
+    }
+   },
+   "337": {
+    "name": "Firebog Door",
+    "credits": 0,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/337@3x.webp",
+     "w": 151,
+     "h": 178,
+     "foot": -2
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/337@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/337_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/337_down@3x.webp"
+    }
+   },
+   "380": {
+    "name": "Blue Wonderland Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/380@3x.webp",
+     "w": 127,
+     "h": 160,
+     "foot": -4
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/380@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/380_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/380_down@3x.webp"
+    }
+   },
+   "381": {
+    "name": "Brown Wonderland Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/381@3x.webp",
+     "w": 127,
+     "h": 160,
+     "foot": -4
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/381@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/381_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/381_down@3x.webp"
+    }
+   },
+   "382": {
+    "name": "Short'n'Chubby White Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/382@3x.webp",
+     "w": 101,
+     "h": 141,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/382@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/382_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/382_down@3x.webp"
+    }
+   },
+   "383": {
+    "name": "Short'n'Chubby Black Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/383@3x.webp",
+     "w": 101,
+     "h": 139,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/383@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/383_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/383_down@3x.webp"
+    }
+   },
+   "384": {
+    "name": "Arched Lintel Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/384@3x.webp",
+     "w": 101,
+     "h": 168,
+     "foot": -2
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/384@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/384_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/384_down@3x.webp"
+    }
+   },
+   "385": {
+    "name": "Case Study Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/385@3x.webp",
+     "w": 100,
+     "h": 170,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/385@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/385_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/385_down@3x.webp"
+    }
+   },
+   "386": {
+    "name": "Pine Paneled Door",
+    "credits": 0,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/386@3x.webp",
+     "w": 98,
+     "h": 164,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/386@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/386_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/386_down@3x.webp"
+    }
+   },
+   "387": {
+    "name": "Crabato Stain Paneled Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/387@3x.webp",
+     "w": 98,
+     "h": 164,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/387@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/387_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/387_down@3x.webp"
+    }
+   },
+   "388": {
+    "name": "Pearly White Paneled Door",
+    "credits": 15,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/388@3x.webp",
+     "w": 97,
+     "h": 164,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/388@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/388_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/388_down@3x.webp"
+    }
+   },
+   "389": {
+    "name": "Beryl Paneled Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/389@3x.webp",
+     "w": 98,
+     "h": 164,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/389@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/389_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/389_down@3x.webp"
+    }
+   },
+   "390": {
+    "name": "Bubbled Glass Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/390@3x.webp",
+     "w": 100,
+     "h": 171,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/390@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/390_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/390_down@3x.webp"
+    }
+   },
+   "391": {
+    "name": "Chestnut Fort Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/391@3x.webp",
+     "w": 127,
+     "h": 153,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/391@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/391_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/391_down@3x.webp"
+    }
+   },
+   "392": {
+    "name": "Olive Noted Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/392@3x.webp",
+     "w": 127,
+     "h": 154,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/392@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/392_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/392_down@3x.webp"
+    }
+   },
+   "393": {
+    "name": "Pass Over This Door",
+    "credits": 25,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/393@3x.webp",
+     "w": 127,
+     "h": 154,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/393@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/393_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/393_down@3x.webp"
+    }
+   },
+   "394": {
+    "name": "That Round-Headed Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/394@3x.webp",
+     "w": 127,
+     "h": 154,
+     "foot": -3
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/394@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/394_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/394_down@3x.webp"
+    }
+   },
+   "403": {
+    "name": "Hobbit Hole Door",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/403@3x.webp",
+     "w": 186,
+     "h": 182,
+     "foot": 0
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/403@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/403_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/403_down@3x.webp"
+    }
+   },
+   "428": {
+    "name": "Morning Glory Passageway",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/428@3x.webp",
+     "w": 152,
+     "h": 171,
+     "foot": -5
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/428@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/428_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/428_down@3x.webp"
+    }
+   },
+   "429": {
+    "name": "Rose Vine Passageway",
+    "credits": 25,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/429@3x.webp",
+     "w": 152,
+     "h": 171,
+     "foot": -5
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/429@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/429_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/429_down@3x.webp"
+    }
+   },
+   "493": {
+    "name": "Powder Blue Door",
+    "credits": 15,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/493@3x.webp",
+     "w": 118,
+     "h": 167,
+     "foot": -1
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/493@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/493_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/493_down@3x.webp"
+    }
+   },
+   "665": {
+    "name": "Underworld Entrance",
+    "credits": 40,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/665@3x.webp",
+     "w": 130,
+     "h": 163,
+     "foot": -6
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/665@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/665_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/665_down@3x.webp"
+    }
+   },
+   "667": {
+    "name": "Celestial Gateway",
+    "credits": 40,
+    "visible": true,
+    "subscriberOnly": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/667@3x.webp",
+     "w": 148,
+     "h": 179,
+     "foot": -4
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/667@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/667_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/667_down@3x.webp"
+    }
+   },
+   "668": {
+    "name": "Valley Vines of Uralia Entryway",
+    "credits": 40,
+    "visible": true,
+    "art": {
+     "path": "assets/sprites/furniture/upgrades/furniture_door/668@3x.webp",
+     "w": 157,
+     "h": 173,
+     "foot": -5
+    },
+    "doorArt": {
+     "up_job": "assets/sprites/furniture/upgrades/furniture_door/668@3x.webp",
+     "up": "assets/sprites/furniture/upgrades/furniture_door/668_up@3x.webp",
+     "down": "assets/sprites/furniture/upgrades/furniture_door/668_down@3x.webp"
     }
    }
   }
@@ -7134,12 +7659,12 @@ export const FURNITURE_UPGRADES = Object.freeze({
 });
 
 export const FURNITURE_UPGRADE_COUNTS = Object.freeze({
- "classes": 28,
- "upgrades": 565,
- "free": 113,
- "paid": 452,
+ "classes": 29,
+ "upgrades": 597,
+ "free": 115,
+ "paid": 482,
  "hidden": 21,
- "withArt": 565
+ "withArt": 597
 });
 
 /** Upgrades with no art (blocked), by "<class>/<id>". */
@@ -7150,10 +7675,6 @@ export const FURNITURE_UPGRADES_LEFT_OUT = Object.freeze({
  "furniture_chassis": {
   "upgrades": 9,
   "why": "The house itself (Change House), not a piece in the room."
- },
- "furniture_door": {
-  "upgrades": 32,
-  "why": "The door's look follows its role (up, down, building a floor) through the SWF's config."
  },
  "furniture_tower_chassis": {
   "upgrades": 5,

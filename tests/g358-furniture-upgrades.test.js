@@ -11,7 +11,7 @@ import {
   FURNITURE_UPGRADE_COUNTS,
   FURNITURE_UPGRADES_LEFT_OUT,
   FURNITURE_UPGRADES_MISSING_ART,
-} from '../public/js/furniture-upgrades-data.js?v=ced89b64';
+} from '../public/js/furniture-upgrades-data.js?v=4fe80b0f';
 import {
   applyBonusUpgrade,
   applyUpgrade,
@@ -23,7 +23,7 @@ import {
   saveButtonText,
   upgradeVerb,
   UPGRADE_TEXT,
-} from '../public/js/furniture-upgrades.js?v=a3788c0d';
+} from '../public/js/furniture-upgrades.js?v=6cc0e2da';
 import {
   createHomeDecorState,
   furnitureSize,
@@ -33,11 +33,11 @@ import {
   pickUpFurniture,
   placeFurniture,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=10e86ffb';
+} from '../public/js/home-decor.js?v=f6d82a18';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { IMAGINATION_UPGRADES, upgradeStatus, DEALT_SECRET_CARDS } from '../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
-import { visitorHomeState } from '../public/js/features/homes-feature.js?v=3cb9c8a9';
+import { visitorHomeState } from '../public/js/features/homes-feature.js?v=79b7ba0a';
 
 const spike = join(import.meta.dirname, '..');
 const pub = join(spike, 'public');
@@ -60,17 +60,17 @@ function webpSize(file) {
 describe('upgrade data (tools/furniture-upgrades/build.mjs)', () => {
   it('is current with GameServerJS and the rendered art', { skip: !existsSync(GSJS) && 'no GameServerJS checkout' }, () => {
     const out = execFileSync(process.execPath, ['tools/furniture-upgrades/build.mjs', '--check'], { cwd: spike, encoding: 'utf8' });
-    assert.match(out, /^ok: 565 upgrades in 28 classes, 565 with art/);
+    assert.match(out, /^ok: 597 upgrades in 29 classes, 597 with art/);
   });
 
-  it('keeps every catalog upgrade of the 28 placed classes, 113 of them free', () => {
+  it('keeps every catalog upgrade of the 29 placed classes, 115 of them free', () => {
     assert.deepEqual(
       { ...FURNITURE_UPGRADE_COUNTS },
-      { classes: 28, upgrades: 565, free: 113, paid: 452, hidden: 21, withArt: 565 },
+      { classes: 29, upgrades: 597, free: 115, paid: 482, hidden: 21, withArt: 597 },
     );
     assert.deepEqual(FURNITURE_UPGRADES_MISSING_ART, []);
     assert.deepEqual(Object.keys(FURNITURE_UPGRADES_LEFT_OUT).sort(), [
-      'furniture_chassis', 'furniture_door', 'furniture_largecabinet', 'furniture_shortcabinet',
+      'furniture_chassis', 'furniture_largecabinet', 'furniture_shortcabinet',
       'furniture_smallcabinet', 'furniture_tower_chassis', 'furniture_wallcabinet',
     ]);
     for (const cls of Object.keys(FURNITURE_UPGRADES)) assert.ok(FURNITURE_CATALOG[cls], cls);
@@ -94,7 +94,7 @@ describe('upgrade data (tools/furniture-upgrades/build.mjs)', () => {
   });
 
   it('the picker gives a style\'s 3x file a density srcset: tiles at its 1x size, the preview at 2x as before', async () => {
-    const { artImgAttrs } = await import('../public/js/furniture-upgrade-picker.js?v=3a637ec8');
+    const { artImgAttrs } = await import('../public/js/furniture-upgrade-picker.js?v=8cfd5db7');
     const path = FURNITURE_UPGRADES.furniture_chair.upgrades['1'].art.path;
     assert.deepEqual(artImgAttrs(path), { src: path, srcset: `${path} 3x` });
     assert.deepEqual(artImgAttrs(path, 2), { src: path, srcset: `${path} 1.5x` });

@@ -24,9 +24,15 @@
  *   node tools/furniture-upgrades/build.mjs --check    exit 1 when the data module,
  *                                                      plan or art is stale or missing
  *
+ * The Door (G1137): its look follows its role through the SWF's config
+ * (items/furniture_door.js getDefaultUpgradeConfig / getUserConfig: door_up,
+ * door_down, door_up_job; the up / down role only picks the frame inside a
+ * style). Each Door style is rendered once per role (render.py `parts` swaps
+ * the placed door_up, `group` crops the three alike): row.art is the style
+ * building a floor (door_up_job, as the plain Door's art is) and row.doorArt
+ * { up, up_job, down } the art for each role.
+ *
  * Left out (written into the data module's LEFT_OUT):
- * - furniture_door: the door's look follows its role (up / down / building a
- *   floor) through the SWF's config; a single frame export cannot show that.
  * - furniture_chassis / furniture_tower_chassis: the house itself ("Change
  *   House"), not a piece in the room.
  * - classes the remake does not place (the 2012-01 furniture_wallcabinet,
@@ -49,8 +55,10 @@ const PLAN = join(here, 'plan.json');
 const ART = join(here, 'art.json');
 const ART_DIR = 'assets/sprites/furniture/upgrades';
 
+/** G1137: a Door style's art per role (getDefaultUpgradeConfig door_<direction>[_job]); '' is row.art. */
+export const DOOR_ROLES = Object.freeze({ '': 'door_up_job', up: 'door_up', down: 'door_down' });
+
 const LEFT_OUT = {
-  furniture_door: "The door's look follows its role (up, down, building a floor) through the SWF's config.",
   furniture_chassis: 'The house itself (Change House), not a piece in the room.',
   furniture_tower_chassis: 'The Tower itself, not a piece in the room.',
 };
@@ -154,7 +162,13 @@ export async function build() {
       const u = ups[id];
       const key = `${cls}/${id}`;
       const swf = swfs.get(swfName(u.swf));
-      if (swf) plan[key] = { swf: swf.replace(process.env.HOME, '~') };
+      const door = cls === 'furniture_door';
+      if (swf && !door) plan[key] = { swf: swf.replace(process.env.HOME, '~') };
+      if (swf && door) {
+        for (const [role, part] of Object.entries(DOOR_ROLES)) {
+          plan[role ? `${key}_${role}` : key] = { swf: swf.replace(process.env.HOME, '~'), group: key, ...(part === 'door_up' ? {} : { parts: { door_up: part } }) };
+        }
+      }
       const a = art[key];
       const row = {
         name: u.name,
@@ -168,6 +182,15 @@ export async function build() {
       if (a && swf) {
         // G448: rendered at 3x (tools/furniture-upgrades/render.py ZOOM).
         row.art = { path: `${ART_DIR}/${cls}/${id}@3x.webp`, w: a.w, h: a.h, ...(Number.isFinite(a.foot) ? { foot: a.foot } : {}), ...(Number.isFinite(a.top) ? { top: a.top } : {}) };
+        if (door) {
+          const roles = Object.keys(DOOR_ROLES).filter(Boolean);
+          if (roles.every((role) => art[`${key}_${role}`])) {
+            row.doorArt = { up_job: row.art.path };
+            for (const role of roles) row.doorArt[role] = `${ART_DIR}/${cls}/${id}_${role}@3x.webp`;
+          } else delete row.art;
+        }
+      }
+      if (row.art) {
         counts.withArt += 1;
       } else {
         missingArt.push({ key, swf: swfName(u.swf), why: swf ? 'not rendered yet' : 'no SWF in glitch-items' });
@@ -199,7 +222,8 @@ function render({ classes, counts, missingArt, leftOut }) {
  *   the rendered frame ({ path, w, h } at 1x, and foot: how far the art's bottom
  *   sits above that point, tools/furniture-upgrades/render.py --feet; top, on a
  *   piece things rest on: its visible top over the middle, px from the art's top
- *   edge, tools/furniture-upgrades/tops.mjs).
+ *   edge, tools/furniture-upgrades/tops.mjs). A Door style's row.doorArt is its
+ *   art per role ({ up, up_job, down }, cropped alike; row.art is up_job).
  */
 
 export const FURNITURE_UPGRADES = Object.freeze(${json(classes)});
@@ -230,6 +254,7 @@ async function main() {
     for (const [cls, c] of Object.entries(result.classes)) {
       for (const [id, row] of Object.entries(c.upgrades)) {
         if (row.art && !existsSync(join(root, 'public', row.art.path))) problems.push(`missing ${row.art.path}`);
+        for (const path of Object.values(row.doorArt || {})) if (!existsSync(join(root, 'public', path))) problems.push(`missing ${path}`);
         if (!row.art && result.plan[`${cls}/${id}`]) problems.push(`${cls}/${id} has a SWF but no art: run render.py`);
       }
     }

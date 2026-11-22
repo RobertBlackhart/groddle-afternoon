@@ -755,6 +755,582 @@
  "furniture_desk/700": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_desk/furniture_desk_pink_8bit_mushroom_desk.swf"
  },
+ "furniture_door/270": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_spaceship_door.swf",
+  "group": "furniture_door/270",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/270_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_spaceship_door.swf",
+  "group": "furniture_door/270"
+ },
+ "furniture_door/270_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_spaceship_door.swf",
+  "group": "furniture_door/270",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/271": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_turtle_shell_door.swf",
+  "group": "furniture_door/271",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/271_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_turtle_shell_door.swf",
+  "group": "furniture_door/271"
+ },
+ "furniture_door/271_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_turtle_shell_door.swf",
+  "group": "furniture_door/271",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/275": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_violet_voyage_door.swf",
+  "group": "furniture_door/275",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/275_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_violet_voyage_door.swf",
+  "group": "furniture_door/275"
+ },
+ "furniture_door/275_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_violet_voyage_door.swf",
+  "group": "furniture_door/275",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/286": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_black_polished_door.swf",
+  "group": "furniture_door/286",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/286_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_black_polished_door.swf",
+  "group": "furniture_door/286"
+ },
+ "furniture_door/286_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_black_polished_door.swf",
+  "group": "furniture_door/286",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/287": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_bookcase_door.swf",
+  "group": "furniture_door/287",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/287_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_bookcase_door.swf",
+  "group": "furniture_door/287"
+ },
+ "furniture_door/287_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_bookcase_door.swf",
+  "group": "furniture_door/287",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/288": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_cactus_door.swf",
+  "group": "furniture_door/288",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/288_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_cactus_door.swf",
+  "group": "furniture_door/288"
+ },
+ "furniture_door/288_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_cactus_door.swf",
+  "group": "furniture_door/288",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/289": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_knives_door.swf",
+  "group": "furniture_door/289",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/289_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_knives_door.swf",
+  "group": "furniture_door/289"
+ },
+ "furniture_door/289_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_knives_door.swf",
+  "group": "furniture_door/289",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/290": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_medieval_door.swf",
+  "group": "furniture_door/290",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/290_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_medieval_door.swf",
+  "group": "furniture_door/290"
+ },
+ "furniture_door/290_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_medieval_door.swf",
+  "group": "furniture_door/290",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/293": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_wacky_door.swf",
+  "group": "furniture_door/293",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/293_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_wacky_door.swf",
+  "group": "furniture_door/293"
+ },
+ "furniture_door/293_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_wacky_door.swf",
+  "group": "furniture_door/293",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/337": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_firebog_door.swf",
+  "group": "furniture_door/337",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/337_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_firebog_door.swf",
+  "group": "furniture_door/337"
+ },
+ "furniture_door/337_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_firebog_door.swf",
+  "group": "furniture_door/337",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/380": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_blue_door.swf",
+  "group": "furniture_door/380",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/380_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_blue_door.swf",
+  "group": "furniture_door/380"
+ },
+ "furniture_door/380_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_blue_door.swf",
+  "group": "furniture_door/380",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/381": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_brown_door.swf",
+  "group": "furniture_door/381",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/381_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_brown_door.swf",
+  "group": "furniture_door/381"
+ },
+ "furniture_door/381_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_brown_door.swf",
+  "group": "furniture_door/381",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/382": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_white_door.swf",
+  "group": "furniture_door/382",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/382_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_white_door.swf",
+  "group": "furniture_door/382"
+ },
+ "furniture_door/382_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_white_door.swf",
+  "group": "furniture_door/382",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/383": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_black_door.swf",
+  "group": "furniture_door/383",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/383_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_black_door.swf",
+  "group": "furniture_door/383"
+ },
+ "furniture_door/383_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_round_square_black_door.swf",
+  "group": "furniture_door/383",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/384": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_top_door.swf",
+  "group": "furniture_door/384",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/384_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_top_door.swf",
+  "group": "furniture_door/384"
+ },
+ "furniture_door/384_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_top_door.swf",
+  "group": "furniture_door/384",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/385": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_glass_door.swf",
+  "group": "furniture_door/385",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/385_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_glass_door.swf",
+  "group": "furniture_door/385"
+ },
+ "furniture_door/385_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_glass_door.swf",
+  "group": "furniture_door/385",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/386": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_brown_door.swf",
+  "group": "furniture_door/386",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/386_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_brown_door.swf",
+  "group": "furniture_door/386"
+ },
+ "furniture_door/386_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_brown_door.swf",
+  "group": "furniture_door/386",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/387": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_orang_door.swf",
+  "group": "furniture_door/387",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/387_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_orang_door.swf",
+  "group": "furniture_door/387"
+ },
+ "furniture_door/387_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_orang_door.swf",
+  "group": "furniture_door/387",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/388": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_white_door.swf",
+  "group": "furniture_door/388",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/388_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_white_door.swf",
+  "group": "furniture_door/388"
+ },
+ "furniture_door/388_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_white_door.swf",
+  "group": "furniture_door/388",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/389": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_yellolw_door.swf",
+  "group": "furniture_door/389",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/389_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_yellolw_door.swf",
+  "group": "furniture_door/389"
+ },
+ "furniture_door/389_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_color_painting_yellolw_door.swf",
+  "group": "furniture_door/389",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/390": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_glass_door.swf",
+  "group": "furniture_door/390",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/390_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_glass_door.swf",
+  "group": "furniture_door/390"
+ },
+ "furniture_door/390_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_glass_door.swf",
+  "group": "furniture_door/390",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/391": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_door.swf",
+  "group": "furniture_door/391",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/391_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_door.swf",
+  "group": "furniture_door/391"
+ },
+ "furniture_door/391_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_door.swf",
+  "group": "furniture_door/391",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/392": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_green_door.swf",
+  "group": "furniture_door/392",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/392_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_green_door.swf",
+  "group": "furniture_door/392"
+ },
+ "furniture_door/392_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_green_door.swf",
+  "group": "furniture_door/392",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/393": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_white_door.swf",
+  "group": "furniture_door/393",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/393_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_white_door.swf",
+  "group": "furniture_door/393"
+ },
+ "furniture_door/393_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_white_door.swf",
+  "group": "furniture_door/393",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/394": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_yellow_door.swf",
+  "group": "furniture_door/394",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/394_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_yellow_door.swf",
+  "group": "furniture_door/394"
+ },
+ "furniture_door/394_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_basic_round_yellow_door.swf",
+  "group": "furniture_door/394",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/403": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hobbit_hole_door.swf",
+  "group": "furniture_door/403",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/403_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hobbit_hole_door.swf",
+  "group": "furniture_door/403"
+ },
+ "furniture_door/403_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hobbit_hole_door.swf",
+  "group": "furniture_door/403",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/428": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_moss_door.swf",
+  "group": "furniture_door/428",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/428_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_moss_door.swf",
+  "group": "furniture_door/428"
+ },
+ "furniture_door/428_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_moss_door.swf",
+  "group": "furniture_door/428",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/429": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_flower_door.swf",
+  "group": "furniture_door/429",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/429_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_flower_door.swf",
+  "group": "furniture_door/429"
+ },
+ "furniture_door/429_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_garden_flower_door.swf",
+  "group": "furniture_door/429",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/493": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_powdered_blue_door.swf",
+  "group": "furniture_door/493",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/493_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_powdered_blue_door.swf",
+  "group": "furniture_door/493"
+ },
+ "furniture_door/493_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_powdered_blue_door.swf",
+  "group": "furniture_door/493",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/665": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hell_door.swf",
+  "group": "furniture_door/665",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/665_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hell_door.swf",
+  "group": "furniture_door/665"
+ },
+ "furniture_door/665_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_hell_door.swf",
+  "group": "furniture_door/665",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/667": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_door.swf",
+  "group": "furniture_door/667",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/667_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_door.swf",
+  "group": "furniture_door/667"
+ },
+ "furniture_door/667_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_door.swf",
+  "group": "furniture_door/667",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
+ "furniture_door/668": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_vine_door.swf",
+  "group": "furniture_door/668",
+  "parts": {
+   "door_up": "door_up_job"
+  }
+ },
+ "furniture_door/668_up": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_vine_door.swf",
+  "group": "furniture_door/668"
+ },
+ "furniture_door/668_down": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_door/furniture_door_uralia_vine_door.swf",
+  "group": "furniture_door/668",
+  "parts": {
+   "door_up": "door_down"
+  }
+ },
  "furniture_fireplace/269": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_fireplace/furniture_fireplace_fireplace.swf"
  },

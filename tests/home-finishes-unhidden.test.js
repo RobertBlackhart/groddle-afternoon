@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { WALLPAPER_MAPS, WALLPAPER_PIECES } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { ceilingSprite, roomPieces, swatchPiece } from '../public/js/home-wallpaper.js?v=99228166';
-import { createHomeDecorState, listTextures, setHomeTexture, textureCategory } from '../public/js/home-decor.js?v=10e86ffb';
+import { createHomeDecorState, listTextures, setHomeTexture, textureCategory } from '../public/js/home-decor.js?v=f6d82a18';
 import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=378178ac';
 
 const root = join(import.meta.dirname, '..');

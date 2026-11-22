@@ -152,11 +152,11 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=10e86ffb';
+} from '../home-decor.js?v=f6d82a18';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
-import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=a3788c0d';
+import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeRow, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=6cc0e2da';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=22c44bae';
-import { DOCK_GAP, DOCK_W, chooseUpgrade, closeUpgradePicker, openUpgradePicker, placeUpgradePicker, saveUpgrade, upgradePickerOpen, upgradePickerState } from '../furniture-upgrade-picker.js?v=3a637ec8';
+import { DOCK_GAP, DOCK_W, chooseUpgrade, closeUpgradePicker, openUpgradePicker, placeUpgradePicker, saveUpgrade, upgradePickerOpen, upgradePickerState } from '../furniture-upgrade-picker.js?v=8cfd5db7';
 import {
   BUILDER_TEXT,
   DRAG_DIST,
@@ -293,7 +293,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=0e1325c8';
+} from '../home-floors.js?v=8ee8cfe9';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=422a7242';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -2965,6 +2965,7 @@ function renderFurniture(engine) {
     furnitureHolder(layers, item).addChild(view);
   });
   scene.furnitureViews = views;
+  refreshDoorTargets(engine);
   scene.hoverGlow = null;
   if (hoverId != null) drawHover(engine);
   if (selected?.kind === 'furniture' && placing?.moveId !== selected.id) {
@@ -7855,10 +7856,41 @@ function houseFloorScene(engine, index) {
   };
 }
 
-/** The Door art for a placed Door on this floor (getDefaultUpgradeConfig). */
+/** The style a Door draws in: the one the picker previews on it, else its own (G1137). */
+function doorUpgradeId(item) {
+  return upgradePreview?.id === item.id ? upgradePreview.upgradeId : item.upgradeId;
+}
+
+/**
+ * The Door art for a placed Door on this floor (getDefaultUpgradeConfig / getUserConfig): the
+ * role picks the frame inside its style (G1137: a restyled Door keeps showing up, down or
+ * building a floor).
+ */
 function doorArtUrl(item, floor = houseFloorHere() ?? 0) {
+  const key = doorArtKey(doorRole(floors, floor, item.id));
+  const row = upgradeRow(DOOR_CLASS, doorUpgradeId(item));
+  if (row?.doorArt) return row.doorArt[key] || row.art.path;
   const def = furnitureDef(DOOR_CLASS);
-  return def?.doorArt?.[doorArtKey(doorRole(floors, floor, item.id))] || def?.art?.path;
+  return def?.doorArt?.[key] || def?.art?.path;
+}
+
+/** A Door target's art and size as it stands now (its style, or the one previewed on it). */
+function dressDoorSprite(spr, item, floor) {
+  spr.texture = textureFromUrl(doorArtUrl(item, floor));
+  const art = pieceArt(DOOR_CLASS, doorUpgradeId(item));
+  spr.width = art.w;
+  spr.height = art.h;
+}
+
+/** After a restyle or a preview, the Door targets on this floor take their new art. */
+function refreshDoorTargets(engine) {
+  const floor = houseFloorHere();
+  if (floor == null) return;
+  for (const t of engine.interactables || []) {
+    if (t.classId !== DOOR_CLASS || !t.sprite || t.sprite.destroyed) continue;
+    const item = placedItem(decor, t.state?.doorId);
+    if (item) dressDoorSprite(t.sprite, item, floor);
+  }
 }
 
 /** The Doors on this floor that do something (build a floor, lead up or down) are targets; their art is theirs. */
@@ -7872,9 +7904,7 @@ function spawnDoorTargets(engine) {
     if (!role) continue;
     const spr = new PIXI.Sprite(textureFromUrl(doorArtUrl(item, floor)));
     anchorBottomCentre(spr, 'deco');
-    const art = furnitureDef(DOOR_CLASS).art;
-    spr.width = art.w;
-    spr.height = art.h;
+    dressDoorSprite(spr, item, floor);
     spr.x = roomX0() + item.x;
     spr.y = item.y;
     spr.zIndex = FURNITURE_Z - 1;
@@ -7957,15 +7987,26 @@ async function goToHouseFloor(engine, floor, x) {
   return true;
 }
 
-function doorVerbs(target) {
+function doorVerbs(target, engine) {
   const floor = target.state?.floor ?? 0;
   const role = doorRole(floors, floor, target.state?.doorId);
+  // G1137: furniture_door.js verbs.upgrade (sort_on 53) / change_style (54), on your own Door.
+  const style = doorStyleVerb(engine, target.state?.doorId);
   if (role === 'pending') {
-    return [{ id: 'door_create', label: DOOR_TEXT.createLabel, sort: 55, enabled: true, reason: '', energy: 0, durationMs: 0, tooltip: DOOR_TEXT.createTooltip }];
+    return [{ id: 'door_create', label: DOOR_TEXT.createLabel, sort: 55, enabled: true, reason: '', energy: 0, durationMs: 0, tooltip: DOOR_TEXT.createTooltip }, ...style];
   }
   const dest = doorDestination(floors, floor, target.state?.doorId);
-  if (!dest) return [];
-  return [{ id: 'door_go', label: dest.dir === 'up' ? 'Go up' : 'Go down', sort: 10, enabled: true, reason: '', energy: 0, durationMs: 0, tooltip: `To the ${floorName(dest.floor)}` }];
+  if (!dest) return style;
+  return [{ id: 'door_go', label: dest.dir === 'up' ? 'Go up' : 'Go down', sort: 10, enabled: true, reason: '', energy: 0, durationMs: 0, tooltip: `To the ${floorName(dest.floor)}` }, ...style];
+}
+
+/** The Door's Upgrade / Change Style verb, in your own house outside Decoration Mode ([] otherwise). */
+function doorStyleVerb(engine, doorId) {
+  if (!engine || scene?.room !== 'interior' || mode) return [];
+  const item = placedItem(decor, doorId);
+  const row = item ? pieceStyleRow(engine, item) : null;
+  if (!row) return [];
+  return [{ id: `door_${row.id}`, label: row.label, sort: row.id === 'upgrade' ? 53 : 54, enabled: !row.disabled, reason: row.reason, energy: 0, durationMs: 0, tooltip: row.tip }];
 }
 
 function runDoorVerb(target, verbId, engine) {
@@ -7980,6 +8021,10 @@ function runDoorVerb(target, verbId, engine) {
   if (verbId === 'door_go') {
     const dest = doorDestination(floors, floor, target.state?.doorId);
     if (dest) goToHouseFloor(engine, dest.floor, dest.x);
+    return true;
+  }
+  if (verbId === 'door_upgrade' || verbId === 'door_change_style') {
+    openUpgradeFor(engine, target.state?.doorId);
     return true;
   }
   return false;
@@ -8381,7 +8426,7 @@ export const homesFeature = {
   /** Protos on the home street (items/proto_*.js restore / remove verbs). */
   verbsFor(target, engine) {
     if (target?.classId === 'magic_rock') return magicRockVerbs(target, engine);
-    if (target?.classId === DOOR_CLASS) return doorVerbs(target);
+    if (target?.classId === DOOR_CLASS) return doorVerbs(target, engine);
     const id = target?.state?.cultivationId;
     const item = id != null ? activeCult().items.find((row) => row.id === id) : null;
     if (!item?.depleted) return [];

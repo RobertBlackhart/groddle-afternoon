@@ -25,7 +25,7 @@
  * applies the choice.
  */
 
-import { listHasPaid, listUpgrades, purseText, saveButtonText, UPGRADE_TEXT } from './furniture-upgrades.js?v=a3788c0d';
+import { listHasPaid, listUpgrades, purseText, saveButtonText, UPGRADE_TEXT } from './furniture-upgrades.js?v=6cc0e2da';
 
 /** The in-place column's width (FurnUpgradeDialog.as 643-646: 572 - 250 - 10 - 20). */
 export const DOCK_W = 292;

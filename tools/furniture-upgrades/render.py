@@ -32,6 +32,14 @@ SWF size (the Fireplace's OGA frame is drawn about five times the SWF's size,
 so build-homes scales by art height over SWF height):
 
     python3 -I tools/furniture-upgrades/render.py --base [--work DIR] [class ...]
+
+A plan entry may carry `parts` ({placed class: class}, the SWF's exported
+symbol names) and `group`. `parts` swaps what the SWF places before it is
+rendered, for art whose look the client picks at runtime: a Door style places
+door_up and its config shows door_down or door_up_job instead (G1137,
+items/furniture_door.js getDefaultUpgradeConfig). Keys sharing a `group` are
+rendered in one batch and cropped to the union of their art, so a Door keeps
+its place when its role changes.
 """
 import hashlib, json, os, shutil, subprocess, sys, tempfile
 
@@ -48,6 +56,47 @@ from java_path import JAVA  # noqa: E402  (tools/java_path.py: $GRODDLE_JAVA, el
 FFDEC = os.path.expanduser('~/Documents/glitch-audit/tools/ffdec/ffdec.jar')
 ZOOM = 3
 BATCH = 80
+
+
+def symbol_ids(path):
+    """Exported class name -> character id (the SWF's SymbolClass tags)."""
+    body = swfinfo.swf_body(path)[0]
+    out = {}
+    for code, q, ln in swfinfo.tags(body, swfinfo.rect_len(body) + 4, len(body)):
+        if code != 76:
+            continue
+        n = int.from_bytes(body[q:q + 2], 'little')
+        p = q + 2
+        for _ in range(n):
+            cid = int.from_bytes(body[p:p + 2], 'little')
+            p += 2
+            e = body.index(0, p)
+            out[body[p:e].decode('latin1')] = cid
+            p = e + 1
+    return out
+
+
+def swaps_for(src, parts):
+    """`parts` ({class: class}) as character ids for swfinfo.rewrite, or None."""
+    if not parts:
+        return None
+    ids = symbol_ids(src)
+    return {ids[a]: ids[b] for a, b in parts.items()}
+
+
+def batches(todo, plan):
+    """BATCH-sized runs of `todo` that never split a `group`."""
+    out, cur, last = [], [], None
+    for row in todo:
+        group = plan[row[0]].get('group')
+        if len(cur) >= BATCH and (group is None or group != last):
+            out.append(cur)
+            cur = []
+        cur.append(row)
+        last = group
+    if cur:
+        out.append(cur)
+    return out
 
 
 def sha(path):
@@ -80,7 +129,7 @@ def feet(art, work):
         for key in batch:
             src = os.path.expanduser(plan[key]['swf'])
             infos[key] = swfinfo.read(src)
-            swfinfo.rewrite(src, os.path.join(src_dir, key.replace('/', '__') + '.swf'), pad=1.0)
+            swfinfo.rewrite(src, os.path.join(src_dir, key.replace('/', '__') + '.swf'), pad=1.0, swaps=swaps_for(src, plan[key].get('parts')))
         subprocess.run([JAVA, '-Djava.awt.headless=true', '-jar', FFDEC, '-zoom', '1', '-ignorebackground',
                         '-select', '1', '-format', 'frame:png', '-export', 'frame', out_dir, src_dir],
                        capture_output=True, text=True)
@@ -179,12 +228,22 @@ def main(args):
         if not force and art.get(key, {}).get('sha') == digest and os.path.exists(dst):
             continue
         todo.append((key, src, digest, dst))
+    # A group renders whole when any of it is due (its crop is the union of its art).
+    due = {plan[key].get('group') for key, *_ in todo} - {None}
+    if due:
+        have = {key for key, *_ in todo}
+        for key, p in sorted(plan.items()):
+            if p.get('group') in due and key not in have:
+                cls, uid = key.split('/')
+                src = os.path.expanduser(p['swf'])
+                todo.append((key, src, sha(src), os.path.join(OUT, cls, f'{uid}@{ZOOM}x.webp')))
+        todo.sort()
     print(f'{len(todo)} to render in {work}')
-    for b in range(0, len(todo), BATCH):
+    done = 0
+    for b, batch in enumerate(batches(todo, plan)):
         while guard() > 40:
             print('load above 40, waiting')
             subprocess.run(['sleep', '60'])
-        batch = todo[b:b + BATCH]
         src_dir = os.path.join(work, f'src{b}')
         out_dir = os.path.join(work, f'out{b}')
         os.makedirs(src_dir, exist_ok=True)
@@ -192,17 +251,33 @@ def main(args):
         for key, src, digest, dst in batch:
             name = key.replace('/', '__') + '.swf'
             names[key] = name
-            swfinfo.rewrite(src, os.path.join(src_dir, name), pad=1.0)
+            swfinfo.rewrite(src, os.path.join(src_dir, name), pad=1.0, swaps=swaps_for(src, plan[key].get('parts')))
         subprocess.run([JAVA, '-Djava.awt.headless=true', '-jar', FFDEC, '-zoom', str(ZOOM), '-ignorebackground',
                         '-select', '1', '-format', 'frame:png', '-export', 'frame', out_dir, src_dir],
                        capture_output=True, text=True)
+        boxes = {}
+        for key, *_ in batch:
+            png = os.path.join(out_dir, names[key], '1.png')
+            if os.path.exists(png):
+                boxes[key] = trim_box(png)
+        union = {}
+        for key, (w, h, x, y) in boxes.items():
+            group = plan[key].get('group')
+            if group is None:
+                continue
+            l, t, r, btm = union.get(group, (x, y, x + w, y + h))
+            union[group] = (min(l, x), min(t, y), max(r, x + w), max(btm, y + h))
         for key, src, digest, dst in batch:
             png = os.path.join(out_dir, names[key], '1.png')
-            if not os.path.exists(png):
+            if key not in boxes:
                 print('  no render', key)
                 art.pop(key, None)
                 continue
-            w, h, x, y = trim_box(png)
+            w, h, x, y = boxes[key]
+            group = plan[key].get('group')
+            if group in union:
+                l, t, r, btm = union[group]
+                w, h, x, y = r - l, btm - t, l, t
             if w < 4 or h < 4:
                 print('  empty render', key)
                 art.pop(key, None)
@@ -219,7 +294,8 @@ def main(args):
         open(ART, 'a').write('\n')
         shutil.rmtree(src_dir, ignore_errors=True)
         shutil.rmtree(out_dir, ignore_errors=True)
-        print(f'  {min(b + BATCH, len(todo))}/{len(todo)}')
+        done += len(batch)
+        print(f'  {done}/{len(todo)}')
     print(f'{len(art)} in art.json')
 
 
