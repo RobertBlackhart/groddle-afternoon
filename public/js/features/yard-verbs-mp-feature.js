@@ -72,9 +72,9 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=6d39d0d8';
 import { readVisitScene } from '../neighbours-mp.js?v=6cabf58b';
 import { saveStore } from '../save-store.js?v=cd053443';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=9ad8b36d';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=a3ca0df8';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=34ffc20b';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=1be047ab';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=0ff47e00';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=145d3e31';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -94,7 +94,7 @@ import {
   visitorRewardDelta,
   visitorRewardSnapshot,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=2606d77b';
+} from '../yard-verbs-mp.js?v=538c4965';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=3cbc3983';

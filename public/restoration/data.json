@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3049,
+  "commits": 3054,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The Red Line and Blue Line colours come from one table of design tokens"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The star on the subway train's map follows the curved track"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The subway train's map looks like the Map's Subway view"
+   },
    {
     "date": "2026-11-22",
     "kind": "improve",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-21",
     "kind": "new",
     "text": "A Calendar of Ur's holidays, the events coming up and the Feats, from the clock"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "new",
-    "text": "Your Butler tells you when the Rook is attacking a street"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "Toxic Moon's rocks, Nylon Phool's salmon and party quoins are where the server checks reach"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "The phone street map's head and signposts lift with the raised layer token"
    }
   ]
  },
- "tests": 1257,
+ "tests": 1258,
  "generatedAt": "2026-11-22"
 }
