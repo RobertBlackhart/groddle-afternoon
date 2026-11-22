@@ -77,7 +77,9 @@ describe('the server\'s data and growth agree with the game', { skip: skipWithou
     assert.equal(Object.values(data.streets).flat().length, 60, '60 beds');
     assert.equal(plots, 416, '416 plots');
     for (const [id, s] of Object.entries(SEED_CATALOG)) {
-      assert.deepEqual(data.rules.seeds[id], [s.gardenType === 'herb' ? 'herb' : 'default', s.grow1Ms, s.grow2Ms, s.cropId, s.produces], id);
+      // Pumpkin Seeds fit both beds (seed_pumpkin.js seed and herb_seed), so the server takes them as 'any'.
+      const bed = id === 'seed_pumpkin' ? 'any' : s.gardenType === 'herb' ? 'herb' : 'default';
+      assert.deepEqual(data.rules.seeds[id], [bed, s.grow1Ms, s.grow2Ms, s.cropId, s.produces], id);
       assert.deepEqual(data.rules.legacy.seeds[id], [Math.max(4000, s.grow1H * 8000), Math.max(4000, s.grow2H * 8000)], id);
     }
     assert.deepEqual([data.rules.pace, data.rules.waterMs, data.rules.legacy.waterMs, data.rules.lockMs], [10, 72 * 60_000, 12 * 3_600_000, 60_000]);
