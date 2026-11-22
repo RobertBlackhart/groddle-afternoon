@@ -55,6 +55,36 @@ export const JOB_INDICATOR_LOOK = Object.freeze({
   starEdge: 0x7a5200,
 });
 
+/**
+ * The teal "!" of quest_bubble_active.png as a vector, in its 5 x 19 box (iconW x iconH): a bar
+ * round at the top, full width for four rows and narrowing to about 2 px at row 11, then the dot
+ * in rows 13 to 18. The picture's 1 px white rim under each part falls on the white pill, so it is
+ * left out. Returns `g` for chaining.
+ */
+export const JOB_BANG = Object.freeze({
+  color: 0x055c73,
+  bar: Object.freeze({ top: 0, shoulder: 4, bottom: 10.8, topW: 5, bottomW: 2.2 }),
+  dot: Object.freeze({ x: 2.5, y: 15.6, rx: 2.5, ry: 2.4 }),
+});
+
+export function drawJobBang(g) {
+  const { color, bar, dot } = JOB_BANG;
+  const r = bar.topW / 2;
+  const cx = r;
+  const half = bar.bottomW / 2;
+  g.moveTo(0, r);
+  g.arc(cx, r, r, Math.PI, 0);
+  g.lineTo(bar.topW, bar.shoulder);
+  g.lineTo(cx + half, bar.bottom);
+  g.quadraticCurveTo(cx, bar.bottom + 0.6, cx - half, bar.bottom);
+  g.lineTo(0, bar.shoulder);
+  g.closePath();
+  g.fill({ color });
+  g.ellipse(dot.x, dot.y, dot.rx, dot.ry);
+  g.fill({ color });
+  return g;
+}
+
 /** flipNext: hold 3 s, fade 0.5 s, and its second tween's half second; one round of both faces is 8 s. */
 export const JOB_INDICATOR_FLIP = Object.freeze({ holdMs: 3000, fadeMs: 500, cycleMs: 8000 });
 
@@ -208,8 +238,17 @@ export function createJobIndicator(PIXI, { onClick, textureFor } = {}) {
   const star = new PIXI.Graphics();
   star.label = 'job-indicator-featured';
   root.addChild(shadow, pill, fillMask, fill, main, alt, star);
-  const iconTex = textureFor ? textureFor(JOB_INDICATOR_ICON) : null;
+  // The "!" is drawn as a shape, not the 5x19 picture: the street is scaled by zoom and the
+  // screen's pixel ratio, and the picture stretched blurry (Austin 2026-11-22). Same outline and teal.
+  const iconTex = PIXI.Graphics ? null : textureFor ? textureFor(JOB_INDICATOR_ICON) : null;
   const icon = (into) => {
+    if (PIXI.Graphics) {
+      const g = drawJobBang(new PIXI.Graphics());
+      // The renderer runs without antialiasing: bake the shape smooth at 8x, as the street signs' text is.
+      if (typeof g.cacheAsTexture === 'function') g.cacheAsTexture({ resolution: 8, antialias: true });
+      into.addChild(g);
+      return g;
+    }
     if (!iconTex) return null;
     const s = new PIXI.Sprite(iconTex);
     s.width = L.iconW;
