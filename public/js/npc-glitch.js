@@ -18,7 +18,7 @@
  */
 import { ANIMS, ANIM_FPS, EMOTIONS, EMOTION_MS, FALL_LOOP, IDLES_TO_RANDOM, RANDOM_IDLE_MS, RANDOM_IDLE_WAIT_MS, SHEET_FRAMES, STAND_ANIM, frameRef } from './avatar-anims.js?v=fb921bf4';
 import { NPC_GLITCH_HIRES, NPC_GLITCH_SHEETS } from './npc-glitch-sheets.js?v=1163dc99';
-import { mulberry32, nameSeed, npcIdFor, npcIdleTiming } from './npc-glitch-looks.js?v=4971d6eb';
+import { mulberry32, nameSeed, npcIdFor, npcIdleTiming } from './npc-glitch-looks.js?v=7afa4e47';
 import { frameTexture, holdSource, onLoaded, releaseTexture } from './textures.js?v=729b29ea';
 import { anchorBottomCentre } from './sprite-feet.js?v=6ffaec43';
 

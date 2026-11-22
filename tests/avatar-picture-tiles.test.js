@@ -15,12 +15,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FakeEl } from './social-fake-dom.js';
 import { drawListBounds, expandRig, frameDrawList, lookMatrices, slotAssignments } from '../public/js/avatar-rig.js?v=b67f0da8';
-import { expandCatalog, resolveLook } from '../public/js/avatar-looks.js?v=76eb9653';
+import { expandCatalog, resolveLook } from '../public/js/avatar-looks.js?v=5a28384d';
 import { CORE_FRAMES } from '../public/js/avatar-anims.js?v=fb921bf4';
 import {
   NONE_TYPES, TILE_FRAME, TILE_MIN_SPAN, TILE_PAGE, createTileArt, filterOptions, focusIn, itemsOf, pageCount, pageFor,
   pickPart, refocus, renderPartSwitch, renderPartTiles, tileFields, tileFrame, tileJob,
-} from '../public/js/avatar-tiles.js?v=2d2c18b4';
+} from '../public/js/avatar-tiles.js?v=7aeef276';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -384,7 +384,10 @@ describe('wiring', () => {
     assert.match(game, /avatarTileArt\.request\(canvas, tileJob\(/);
     assert.match(game, /setVectorFields\(\(v\) => pickPart\(v, type, name\)\)/);
     const mod = read('public/js/avatar-tiles.js');
-    assert.match(mod, /import \{ drawListFor, paintItems, prepareLook \} from '\.\/avatar-compositor\.js\?v=8b20791a'/, 'the same compositor module (and caches) the game loads');
+    // The key the game loads the compositor under (module keys change with its imports).
+    const key = game.match(/from '\.\/js\/avatar-compositor\.js\?v=([0-9a-f]+)'/)?.[1];
+    assert.ok(key, "game.js's compositor key");
+    assert.ok(mod.includes(`import { drawListFor, paintItems, prepareLook } from './avatar-compositor.js?v=${key}'`), 'the same compositor module (and caches) the game loads');
   });
 
   it('Reset goes back to the look last saved (Vanity.as doReset), not the default', () => {

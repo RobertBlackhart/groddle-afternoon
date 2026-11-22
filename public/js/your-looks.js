@@ -26,7 +26,7 @@
  * (systems.features['your-looks'], features/your-looks-feature.js), in solo
  * and online alike: 37 looks are a few kilobytes.
  */
-import { normalizeVectorFields } from './avatar-looks.js?v=76eb9653';
+import { normalizeVectorFields } from './avatar-looks.js?v=5a28384d';
 
 /** MAX_OUTFITS (ImaginationYourLooksUI.as 54): looks on file, the current one counted. */
 export const YOUR_LOOKS_MAX = 37;

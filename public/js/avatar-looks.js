@@ -12,6 +12,8 @@
  *   face:    { eye_scale, eye_dist, eye_height, ... } (AvatarConfig numbers)
  */
 
+import { applyCM, colorMatrixFor } from './avatar-rig.js?v=b67f0da8';
+
 /** Article types the builder offers, in tab order. */
 export const LOOK_TYPES = Object.freeze(['hair', 'hat', 'eyes', 'mouth', 'nose', 'ears', 'shirt', 'coat', 'dress', 'pants', 'skirt', 'shoes']);
 /** Types a look may leave empty. */
@@ -218,14 +220,128 @@ export function vectorFieldsFromColors(app) {
   return normalizeVectorFields(fields);
 }
 
-/** Swatch colour (hex) for a colourway: its color_1 tint. */
-export function variantSwatch(colors) {
-  const c = colors?.color_1;
-  if (!c) return 'cccccc';
-  const amount = Number(c.tintAmount) || 0;
-  const hex = cleanHex(c.tintColor) || 'cccccc';
-  if (amount >= 50) return hex;
-  return 'd8d8d8';
+/**
+ * #611 (G1144): how far apart two colours look, 0 (the same) to 255 (black and white): a weighted
+ * RGB distance ("redmean"), close enough to the eye's for telling swatches apart.
+ */
+export function colourDistance(a, b) {
+  const rm = (a[0] + b[0]) / 2;
+  const dr = a[0] - b[0];
+  const dg = a[1] - b[1];
+  const db = a[2] - b[2];
+  return Math.sqrt((2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db) / 3;
+}
+
+/** Two colours closer than this read as the same chip at swatch size. */
+export const SWATCH_NEAR = 24;
+
+/** The light grey a colour slot's art is drawn in before its filter (the rig tints it, avatar-rig.js colorMatrixFor). */
+const SLOT_BASE = Object.freeze([208, 208, 208, 1]);
+
+/**
+ * The colour one slot of a colourway shows: its GSJS filter on the slot's light art, as the rig
+ * draws it, [r, g, b]; the bare art for a slot the colourway leaves untinted; null for a slot it
+ * hides (alpha 0, as a top hat's unused colour_N layers are).
+ */
+export function slotColour(color) {
+  if (!color) return SLOT_BASE.slice(0, 3);
+  const [r, g, b, a] = applyCM(colorMatrixFor(color), SLOT_BASE);
+  if (!(a > 0.05)) return null;
+  return [r, g, b].map((v) => Math.round(v));
+}
+
+const hexOf = (rgb) => rgb.map((v) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+
+/** How far apart one slot looks in two colourways: a slot shown in one and hidden in the other is as far as it gets. */
+function slotGap(a, b) {
+  if (!a && !b) return 0;
+  if (!a || !b) return 255;
+  return colourDistance(a, b);
+}
+
+/**
+ * #611 (G1144): the chips for an article's colourways, one per variant: { main, extra } (hex;
+ * extra the corner colours, see below). Swatches had been coloured from color_1 alone, so 112 of
+ * 343 multi-colourway articles showed near-identical chips (the Rook headpiece's black colourway
+ * 707 read pale khaki: its color_1 is the skull). The main colour is the slot, shown in every
+ * colourway, that tells the most pairs of them apart; then up to two more, in the chip's corner,
+ * each the slot that tells apart the most pairs still alike (none when the main one tells them all
+ * apart). Each slot shows its filter as the rig draws it, not the bare tint colour.
+ */
+export function colourwaySwatches(item) {
+  // { main, extra: [hex | null] } per colourway: extra holds the corner slots' colours, null where that colourway hides the slot.
+  const variants = item?.variants || [];
+  if (!variants.length) return [];
+  const slots = [...new Set(variants.flatMap((v) => Object.keys(v.colors || {})))]
+    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
+  if (!slots.length) return variants.map(() => ({ main: hexOf(SLOT_BASE.slice(0, 3)), extra: [] }));
+  const colours = Object.fromEntries(slots.map((k) => [k, variants.map((v) => slotColour(v.colors?.[k]))]));
+  const pairs = [];
+  for (let i = 0; i < variants.length; i++) for (let j = i + 1; j < variants.length; j++) pairs.push([i, j]);
+  const gaps = Object.fromEntries(slots.map((k) => [k, pairs.map(([i, j]) => slotGap(colours[k][i], colours[k][j]))]));
+  const apart = (list) => list.filter((d) => d >= SWATCH_NEAR).length;
+  const spread = (list) => list.reduce((n, d) => n + Math.min(d, 128), 0);
+  const shown = (k) => colours[k].filter(Boolean).length;
+  // The main slot: shown in the most colourways, then telling the most pairs apart; ties keep the lower slot (color_1 first).
+  let main = slots[0];
+  for (const k of slots) {
+    const key = [shown(k), apart(gaps[k]), spread(gaps[k])];
+    const was = [shown(main), apart(gaps[main]), spread(gaps[main])];
+    if (key[0] > was[0] || (key[0] === was[0] && (key[1] > was[1] || (key[1] === was[1] && key[2] > was[2] + 0.5)))) main = k;
+  }
+  // Then up to two more slots, each the one that tells apart the most pairs still alike, judged as
+  // the chip draws them: a colourway that hides a slot shows its main colour in that corner.
+  const neutral = SLOT_BASE.slice(0, 3);
+  const mainOf = colours[main].map((c) => c || neutral);
+  const drawn = (k) => colours[k].map((c, i) => c || mainOf[i]);
+  const drawnGaps = (k) => pairs.map(([i, j]) => colourDistance(drawn(k)[i], drawn(k)[j]));
+  const picked = [main];
+  let best = pairs.map(([i, j]) => colourDistance(mainOf[i], mainOf[j]));
+  while (picked.length < SWATCH_SLOTS) {
+    let next = null;
+    let nextKey = null;
+    let nextGaps = null;
+    for (const k of slots) {
+      if (picked.includes(k)) continue;
+      const g = drawnGaps(k);
+      const both = best.map((d, p) => Math.max(d, g[p]));
+      if (apart(both) <= apart(best)) continue;
+      const key = [apart(both), apart(g), spread(g)];
+      if (!nextKey || key[0] > nextKey[0] || (key[0] === nextKey[0] && (key[1] > nextKey[1] || (key[1] === nextKey[1] && key[2] > nextKey[2] + 0.5)))) {
+        next = k;
+        nextKey = key;
+        nextGaps = g;
+      }
+    }
+    if (!next) break;
+    picked.push(next);
+    best = best.map((d, p) => Math.max(d, nextGaps[p]));
+  }
+  return variants.map((v, i) => {
+    const [m, ...rest] = picked.map((k) => colours[k][i]);
+    return { main: hexOf(m || neutral), extra: rest.map((c) => (c ? hexOf(c) : null)) };
+  });
+}
+
+/** A chip's colours at most: its main colour and two corners. */
+export const SWATCH_SLOTS = 3;
+
+/**
+ * A chip's CSS background: the main colour, then each extra colour as a band across its lower
+ * right corner (a hidden slot leaves the main colour there).
+ */
+export function swatchBackground(chip) {
+  return chipBands(chip).length > 1 ? `linear-gradient(135deg, ${chipBands(chip).map(([c, from, to]) => `#${c} ${from}% ${to}%`).join(', ')})` : `#${chipBands(chip)[0][0]}`;
+}
+
+/** PURE: a chip's bands as drawn, [[hex, from %, to %], ...]: the main colour, then each corner (the main colour where hidden). */
+export function chipBands(chip) {
+  const main = chip?.main || 'd8d8d8';
+  const extra = (chip?.extra || []).map((c) => c || main);
+  while (extra.length && extra[extra.length - 1] === main) extra.pop();
+  if (!extra.length) return [[main, 0, 100]];
+  if (extra.length === 1) return [[main, 0, 60], [extra[0], 60, 100]];
+  return [[main, 0, 52], [extra[0], 52, 74], [extra[1], 74, 100]];
 }
 
 /**

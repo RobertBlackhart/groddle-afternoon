@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=8ccaad08';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b73e8324';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fd227c60';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -881,10 +881,10 @@ import { hellBuffDesc, isInHell } from './js/hell.js?v=e77adbf2';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
-import { createNpcGlitchKit } from './js/npc-glitch.js?v=a99e456d';
-import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=8b20791a';
+import { createNpcGlitchKit } from './js/npc-glitch.js?v=3c21fee7';
+import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=dfe4b032';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
-import { catalogItem, lookKey, randomVectorFields, resolveLook, variantSwatch } from './js/avatar-looks.js?v=76eb9653';
+import { catalogItem, colourwaySwatches, lookKey, randomVectorFields, resolveLook, swatchBackground } from './js/avatar-looks.js?v=5a28384d';
 import {
   createDefaultAppearance,
   loadAppearance,
@@ -893,9 +893,9 @@ import {
   APPEARANCE_PRESETS,
   PRESET_GROUPS,
   appearanceCacheKey,
-} from './js/character-builder.js?v=ffa761e9';
-import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=4e57b8c5';
-import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=2d2c18b4';
+} from './js/character-builder.js?v=d2f33c8e';
+import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=e9e684cf';
+import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=7aeef276';
 import {
   loadAmbientMusicConfig,
   resolveAmbientTheme,
@@ -12594,11 +12594,13 @@ function renderStyleChips(box, type, title, { titled = true } = {}) {
   swatches.className = 'avatar-palette';
   const chosen = playerAppearance.vector?.variant?.[type] ?? (item.name === (avatarCatalog.defaultLook?.outfit?.[type]) ? avatarCatalog.defaultLook?.variant?.[type] ?? 0 : 0);
   const tinted = playerAppearance.vector?.tint?.[type] ?? (playerAppearance.vector?.variant?.[type] === undefined && item.name === avatarCatalog.defaultLook?.outfit?.[type] ? avatarCatalog.defaultLook?.tint?.[type] : null);
-  item.variants.forEach((variant, i) => {
+  // #611: each chip shows the colours that tell this article's colourways apart, not color_1 alone.
+  const chips = colourwaySwatches(item);
+  item.variants.forEach((_variant, i) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'avatar-swatch avatar-swatch-small';
-    btn.style.background = `#${variantSwatch(variant.colors)}`;
+    btn.style.background = swatchBackground(chips[i]);
     btn.setAttribute('aria-label', `${item.label} colourway ${i + 1}`);
     if (i === chosen && !tinted) btn.classList.add('active');
     btn.addEventListener('click', () => setVectorFields((v) => {

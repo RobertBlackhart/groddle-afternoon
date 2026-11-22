@@ -69,7 +69,7 @@ import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, vi
 import { BENCH_ART, towerApi } from './home-tower-feature.js?v=6b189997';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=18889f7a';
 import { projectApi } from './street-jobs-feature.js?v=76e7f775';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=b38e4be8';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=392608b2';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   GOOD_NEIGHBOUR_AT,

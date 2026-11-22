@@ -20,8 +20,8 @@ import {
   starterFields,
   starterRowFields,
 } from '../public/js/avatar-starter.js?v=2ba02b11';
-import { APPEARANCE_PRESETS, PRESET_GROUPS } from '../public/js/character-builder.js?v=ffa761e9';
-import { expandCatalog, normalizeVectorFields, resolveLook } from '../public/js/avatar-looks.js?v=76eb9653';
+import { APPEARANCE_PRESETS, PRESET_GROUPS } from '../public/js/character-builder.js?v=d2f33c8e';
+import { expandCatalog, normalizeVectorFields, resolveLook } from '../public/js/avatar-looks.js?v=5a28384d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = expandCatalog(JSON.parse(readFileSync(join(root, 'public/assets/avatar/catalog.json'), 'utf8')));

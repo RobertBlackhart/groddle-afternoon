@@ -12,8 +12,8 @@
  * (reference only). Saves that used them move to the nearest vector look
  * (migrateAppearance).
  */
-import { normalizeVectorFields, vectorFieldsFromColors } from './avatar-looks.js?v=76eb9653';
-import { installReimaginedTags } from './avatar-reimagined.js?v=a6f56800';
+import { normalizeVectorFields, vectorFieldsFromColors } from './avatar-looks.js?v=5a28384d';
+import { installReimaginedTags } from './avatar-reimagined.js?v=a24a1e27';
 import { starterRowFields } from './avatar-starter.js?v=2ba02b11';
 import { saveStore } from './save-store.js?v=cd053443';
 

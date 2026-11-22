@@ -22,9 +22,9 @@
  * from memory. While a tile's look changes (a new hair colour), it keeps its
  * last picture until the new one is ready.
  */
-import { drawListFor, paintItems, prepareLook } from './avatar-compositor.js?v=8b20791a';
+import { drawListFor, paintItems, prepareLook } from './avatar-compositor.js?v=dfe4b032';
 import { drawListBounds } from './avatar-rig.js?v=b67f0da8';
-import { lookKey, resolveLook } from './avatar-looks.js?v=76eb9653';
+import { lookKey, resolveLook } from './avatar-looks.js?v=5a28384d';
 
 /** Tiles on a page (six across, two down in Classic; four across, three down in Modern). */
 export const TILE_PAGE = 12;

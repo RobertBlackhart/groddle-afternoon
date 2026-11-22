@@ -29,8 +29,8 @@
 import {
   YOUR_LOOKS_KEEP_MS, YOUR_LOOKS_TEXT, cleanLook, createYourLooks, normalizeYourLooks, noteWear, pastLooks,
   recordLook, removeLook, totalLine, wearLook,
-} from '../your-looks.js?v=89b5ca2e';
-import { APPEARANCE_PRESETS } from '../character-builder.js?v=ffa761e9';
+} from '../your-looks.js?v=e2a62a96';
+import { APPEARANCE_PRESETS } from '../character-builder.js?v=d2f33c8e';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 
 export const YOUR_LOOKS_FEATURE_ID = 'your-looks';

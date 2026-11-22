@@ -64,9 +64,9 @@
  */
 
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { drawListFor, loadCatalog, paintItems, prepareLook } from '../avatar-compositor.js?v=8b20791a';
+import { drawListFor, loadCatalog, paintItems, prepareLook } from '../avatar-compositor.js?v=dfe4b032';
 import { drawListBounds } from '../avatar-rig.js?v=b67f0da8';
-import { lookKey, resolveLook } from '../avatar-looks.js?v=76eb9653';
+import { lookKey, resolveLook } from '../avatar-looks.js?v=5a28384d';
 import {
   AVATAR_FRAME, AVATAR_STILL, AVATAR_TILE, FAILURE_BACKOFF_MS, HOME_BACKDROP, HOME_MAX_BYTES, HOME_QUALITY, HOME_RESOLUTION, HOME_SETTLE_MS, HOME_TYPES,
   PICTURE_RESOLUTION, PROFILE_COPY, PROFILE_PAGE_VERB,

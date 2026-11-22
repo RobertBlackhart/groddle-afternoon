@@ -16,7 +16,7 @@ import {
   starterChoicesOf,
   starterFields,
 } from './avatar-starter.js?v=2ba02b11';
-import { FACE_DIMS } from './avatar-looks.js?v=76eb9653';
+import { FACE_DIMS } from './avatar-looks.js?v=5a28384d';
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
