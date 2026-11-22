@@ -757,6 +757,7 @@
   },
   "public/js/map-routes.js": {
     "remake-own: * PURE (#104, a remake addition: GpsUI.as showed only To and Next): the Map's": "map-route-line",
+    "remake-own: * The remake's own (R24): only the subway gets there, and the gate": "subway-ride-cost",
     "remake-own: * the subway (a remake addition, subwayRides): the path holds the two surface": "subway-route-card",
     "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line"
   },
@@ -909,7 +910,8 @@
     "glitch-had-none: * All of it is ours: Glitch never ran a Thanksgiving event and never dressed an": "pot-luck-costumes",
     "invented: * (inventions register: designed-seasons, pot-luck-costumes,": "pot-luck-costumes",
     "ours: * All of it is ours: Glitch never ran a Thanksgiving event and never": "pot-luck-costumes",
-    "ours: * Rules (ours):": "pot-luck-costumes"
+    "ours: * Rules (ours):": "pot-luck-costumes",
+    "ours: a yard's stay home: only the street's dress up (ours, the feast is the remake's).": "pot-luck-costumes"
   },
   "public/js/potion-bottle-fx.js": {
     "stand-in: * own stand-in).": "ours-potion-bottle-fx"
