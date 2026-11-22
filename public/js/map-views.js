@@ -25,7 +25,7 @@
  * above ground; its region's name opens that region's map with the street found.
  */
 import { WORLD_MAP } from './map-views-data.js?v=07734585';
-import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName, lineText } from './subway.js?v=36c6d2b2';
+import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, cubicAt, lineName, lineText, subwayPoints, subwaySegments } from './subway.js?v=36c6d2b2';
 
 export const MAP_VIEWS = Object.freeze(['hub', 'world', 'subway']);
 /** The window's title in each view (the client's: the region's name, "World Map", "Subway System"). */
@@ -239,39 +239,8 @@ export function subwayPaper({ dpr = Number(globalThis.devicePixelRatio) || 1, wa
   return { href: dpr > 1 ? paper.x2 : paper.x1, hi: paper.x2, wait: Boolean(wait) };
 }
 
-/** The Red Line's stations in order as [x, y] (config_prod.js map_pos; the Blue Line runs them backwards). */
-export function subwayPoints(stations = STATIONS) {
-  return stations.map((s) => [s.map_pos[0], s.map_pos[1]]);
-}
-
-/**
- * A closed Catmull-Rom curve through the points, as cubic Bezier segments
- * [[p0, c1, c2, p1], ...] (one a pair of neighbouring stations).
- */
-export function subwaySegments(pts) {
-  const n = pts.length;
-  const out = [];
-  for (let i = 0; i < n; i++) {
-    const p0 = pts[(i - 1 + n) % n];
-    const p1 = pts[i];
-    const p2 = pts[(i + 1) % n];
-    const p3 = pts[(i + 2) % n];
-    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    out.push([p1, c1, c2, p2]);
-  }
-  return out;
-}
-
-/** A cubic's point and direction (radians) at t. */
-export function cubicAt([p0, c1, c2, p1], t) {
-  const u = 1 - t;
-  const x = u * u * u * p0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * p1[0];
-  const y = u * u * u * p0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * p1[1];
-  const dx = 3 * u * u * (c1[0] - p0[0]) + 6 * u * t * (c2[0] - c1[0]) + 3 * t * t * (p1[0] - c2[0]);
-  const dy = 3 * u * u * (c1[1] - p0[1]) + 6 * u * t * (c2[1] - c1[1]) + 3 * t * t * (p1[1] - c2[1]);
-  return { x, y, angle: Math.atan2(dy, dx) };
-}
+// The track's curve lives in js/subway.js (the train's star rides it too, G1127); re-exported for callers here.
+export { cubicAt, subwayPoints, subwaySegments };
 
 /**
  * The station to mark (MapTransit.as setPlayerLocation, there only on the line itself): the one you

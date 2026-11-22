@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STATIONS, createRide, lineStarPoint, linePoint, lineView, nextStation, rideProgress, rideTiming, stationById, stepRide } from '../public/js/subway.js?v=36c6d2b2';
+import { STATIONS, createRide, curvePoint, lineStarPoint, linePoint, lineView, nextStation, rideProgress, rideTiming, stationById, stepRide } from '../public/js/subway.js?v=36c6d2b2';
 import { applyTrain } from '../public/js/subway-mp.js?v=ffd57d82';
 
 const root = join(import.meta.dirname, '..');
@@ -73,7 +73,8 @@ describe('lineStarPoint: the star on the line map', () => {
     const v = lineView(ride);
     assert.deepEqual(lineStarPoint(v, 0), pos(3));
     assert.deepEqual(lineStarPoint(v, 1), pos(next));
-    assert.deepEqual(lineStarPoint(v, 0.5), linePoint(pos(3), pos(next), 0.5));
+    // G1127 (#606): half way along the curved track the map draws, not the straight line's middle.
+    assert.deepEqual(lineStarPoint(v, 0.5), curvePoint(3, next, 0.5));
     stepRide(ride, ride.arriveAt);
     assert.deepEqual(lineStarPoint(lineView(ride), 0), pos(next));
     assert.equal(lineStarPoint(null, 0), null);

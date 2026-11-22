@@ -369,16 +369,102 @@ export function linePoint(a, b, p) {
   return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
 }
 
+/** The Red Line's stations in order as [x, y] (config_prod.js map_pos; the Blue Line runs them backwards). */
+export function subwayPoints(stations = STATIONS) {
+  return stations.map((s) => [s.map_pos[0], s.map_pos[1]]);
+}
+
+/**
+ * A closed Catmull-Rom curve through the points, as cubic Bezier segments
+ * [[p0, c1, c2, p1], ...] (one a pair of neighbouring stations). Every subway map draws its track
+ * with this (js/map-views.js renderSubwayMapSvg), and the train's star rides it (curvePoint).
+ */
+export function subwaySegments(pts) {
+  const n = pts.length;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n];
+    const p1 = pts[i];
+    const p2 = pts[(i + 1) % n];
+    const p3 = pts[(i + 2) % n];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    out.push([p1, c1, c2, p2]);
+  }
+  return out;
+}
+
+/** A cubic's point and direction (radians) at t. */
+export function cubicAt([p0, c1, c2, p1], t) {
+  const u = 1 - t;
+  const x = u * u * u * p0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * p1[0];
+  const y = u * u * u * p0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * p1[1];
+  const dx = 3 * u * u * (c1[0] - p0[0]) + 6 * u * t * (c2[0] - c1[0]) + 3 * t * t * (p1[0] - c2[0]);
+  const dy = 3 * u * u * (c1[1] - p0[1]) + 6 * u * t * (c2[1] - c1[1]) + 3 * t * t * (p1[1] - c2[1]);
+  return { x, y, angle: Math.atan2(dy, dx) };
+}
+
+const CURVE_STEPS = 48;
+let curveCache = null;
+/** The default line's segments with their running lengths (CURVE_STEPS samples each), made once. */
+function lineCurve(stations) {
+  if (stations === STATIONS && curveCache) return curveCache;
+  const segs = subwaySegments(subwayPoints(stations)).map((seg) => {
+    const lens = [0];
+    let prev = cubicAt(seg, 0);
+    for (let i = 1; i <= CURVE_STEPS; i += 1) {
+      const pt = cubicAt(seg, i / CURVE_STEPS);
+      lens.push(lens[i - 1] + Math.hypot(pt.x - prev.x, pt.y - prev.y));
+      prev = pt;
+    }
+    return { seg, lens };
+  });
+  if (stations === STATIONS) curveCache = segs;
+  return segs;
+}
+
+/**
+ * PURE (G1127, #606): the point `p` (0..1, clamped) of the way along the drawn track from station
+ * `fromId` to its neighbour `toId`, either way round the loop, by distance along the curve so the star
+ * keeps an even pace. Null when the two are not neighbours on the line.
+ */
+export function curvePoint(fromId, toId, p, stations = STATIONS) {
+  const n = stations.length;
+  const i = stations.findIndex((s) => s.id === Number(fromId));
+  const j = stations.findIndex((s) => s.id === Number(toId));
+  if (i < 0 || j < 0 || n < 2) return null;
+  let index;
+  let back;
+  if ((i + 1) % n === j) [index, back] = [i, false];
+  else if ((j + 1) % n === i) [index, back] = [j, true];
+  else return null;
+  const k = Number.isFinite(p) ? Math.min(1, Math.max(0, p)) : 0;
+  const end = (s) => ({ x: s.map_pos[0], y: s.map_pos[1] });
+  if (k <= 0) return end(stations[i]);
+  if (k >= 1) return end(stations[j]);
+  const { seg, lens } = lineCurve(stations)[index];
+  const want = (back ? 1 - k : k) * lens[CURVE_STEPS];
+  let a = 1;
+  while (a < CURVE_STEPS && lens[a] < want) a += 1;
+  const span = lens[a] - lens[a - 1];
+  const t = (a - 1 + (span > 0 ? (want - lens[a - 1]) / span : 0)) / CURVE_STEPS;
+  const pt = cubicAt(seg, t);
+  return { x: pt.x, y: pt.y };
+}
+
 /**
  * PURE (#538): where the star sits on the line map (map_pos space): on the train's station while it
- * stands, `p` of the way to the next stop while it moves. Null for a ride the map cannot place.
+ * stands, `p` of the way to the next stop while it moves. G1127 (#606): along the curved track the map
+ * draws (curvePoint), no longer the straight line between the two stops. Null for a ride the map
+ * cannot place.
  */
 export function lineStarPoint(view, p = 0) {
   const at = view && stationById(view.at?.id);
   if (!at) return null;
   const from = { x: at.map_pos[0], y: at.map_pos[1] };
   const next = view.moving && view.next ? stationById(view.next.id) : null;
-  return next ? linePoint(from, { x: next.map_pos[0], y: next.map_pos[1] }, p) : from;
+  if (!next) return from;
+  return curvePoint(at.id, next.id, p) || linePoint(from, { x: next.map_pos[0], y: next.map_pos[1] }, p);
 }
 
 /** The line map's footer: where you get off, if you picked a stop. */

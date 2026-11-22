@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { createRide, lineView, nextStation, rideTiming, stationById, stepRide } from '../public/js/subway.js?v=36c6d2b2';
+import { STATIONS, createRide, cubicAt, curvePoint, lineStarPoint, lineView, nextStation, rideTiming, stationById, stepRide, subwayPoints, subwaySegments } from '../public/js/subway.js?v=36c6d2b2';
 import { renderSubwayMapSvg } from '../public/js/map-views.js?v=b333b9df';
 
 const root = join(import.meta.dirname, '..');
@@ -17,6 +17,16 @@ const fn = (name) => {
   const a = feature.indexOf(`function ${name}(`);
   return feature.slice(a, feature.indexOf('\n}\n', a) + 2);
 };
+const segIndex = (fromId) => STATIONS.findIndex((s) => s.id === fromId);
+/** The least distance from pt to the drawn segment (sampled finely). */
+function distToSeg(seg, pt) {
+  let best = Infinity;
+  for (let i = 0; i <= 2000; i += 1) {
+    const c = cubicAt(seg, i / 2000);
+    best = Math.min(best, Math.hypot(c.x - pt.x, c.y - pt.y));
+  }
+  return best;
+}
 const movingRide = (stop, direction) => {
   const ride = createRide({ stop, direction, now: 0, timing: rideTiming(1) });
   stepRide(ride, ride.departAt);
@@ -61,5 +71,62 @@ describe('(1) the line map on the train is the Map\'s Subway view', () => {
     assert.match(feature, /\.subway-map \{ [^}]*background: var\(--scrim\); \}/);
     assert.match(feature, /\.subway-map-card \{ [^}]*background: var\(--surface\); border: 1px solid var\(--border\); border-radius: var\(--radius-l\);/);
     assert.match(feature, /\.subway-map-zoom, \.subway-line-frame \{ [^}]*border: 1px solid var\(--c-gold-59\);/);
+  });
+});
+
+describe('(2) the star rides the curve', () => {
+  const segs = subwaySegments(subwayPoints());
+
+  it('mid-ride the star lies on the drawn track, off the straight line between the stops', () => {
+    for (const dir of ['forwards', 'backwards']) {
+      for (const stop of [3, 8, 1]) {
+        const view = lineView(movingRide(stop, dir));
+        const next = view.next.id;
+        const seg = segs[dir === 'forwards' ? segIndex(stop) : segIndex(next)];
+        for (const p of [0.25, 0.5, 0.75]) {
+          const pt = lineStarPoint(view, p);
+          assert.ok(distToSeg(seg, pt) < 0.5, `${dir} from ${stop} at ${p}: on the curve`);
+        }
+      }
+    }
+    // Jutuan Central to Onto Parada bows well away from the straight line.
+    const view = lineView(movingRide(4, 'forwards'));
+    const a = stationById(4).map_pos;
+    const b = stationById(view.next.id).map_pos;
+    const mid = lineStarPoint(view, 0.5);
+    assert.ok(Math.hypot(mid.x - (a[0] + b[0]) / 2, mid.y - (a[1] + b[1]) / 2) > 10, 'not the straight line\'s middle');
+  });
+
+  it('even pace: half the hop is half the track; the ends are the stations', () => {
+    const seg = segs[segIndex(3)];
+    const next = nextStation(3, 'forwards').id;
+    const arc = (pt) => {
+      // Track length from the start of the segment to its sample nearest pt.
+      let len = 0;
+      let best = { d: Infinity, len: 0 };
+      let prev = cubicAt(seg, 0);
+      for (let i = 1; i <= 4000; i += 1) {
+        const c = cubicAt(seg, i / 4000);
+        len += Math.hypot(c.x - prev.x, c.y - prev.y);
+        prev = c;
+        const d = Math.hypot(c.x - pt.x, c.y - pt.y);
+        if (d < best.d) best = { d, len };
+      }
+      return { at: best.len, total: len };
+    };
+    const { at, total } = arc(curvePoint(3, next, 0.5));
+    assert.ok(Math.abs(at / total - 0.5) < 0.02, `half way: ${(at / total).toFixed(3)}`);
+    assert.deepEqual(curvePoint(3, next, 0), { x: stationById(3).map_pos[0], y: stationById(3).map_pos[1] });
+    assert.deepEqual(curvePoint(3, next, 1), { x: stationById(next).map_pos[0], y: stationById(next).map_pos[1] });
+    // The Blue Line runs the same stretch backwards.
+    const back = curvePoint(next, 3, 0.3);
+    const fwd = curvePoint(3, next, 0.7);
+    assert.ok(Math.hypot(back.x - fwd.x, back.y - fwd.y) < 0.01);
+    assert.equal(curvePoint(3, 5, 0.5), null, 'not neighbours');
+  });
+
+  it('the feature places the star with no offset: the map is drawn on map_pos itself', () => {
+    assert.match(fn('placeLineStar'), /const at = `translate\(\$\{pt\.x\.toFixed\(1\)\} \$\{pt\.y\.toFixed\(1\)\}\)`;/);
+    assert.doesNotMatch(feature, /LINE_MAP_SHIFT/);
   });
 });
