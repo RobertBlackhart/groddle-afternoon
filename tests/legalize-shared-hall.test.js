@@ -201,7 +201,7 @@ describe('online: the application uses the server\'s bureaucrats (G479 halls.go)
 describe('game.js wiring', () => {
   it('the route\'s hall is the shared scene, The Back Alley the only instance, the street door every player\'s', () => {
     assert.match(game, /\[LEGALIZE_STATION_STREET, LEGALIZE_GRANGE_STREET, LEGALIZE_BACK_ALLEY_TSID, LEGALIZE_SHARED_HALL\]\.includes\(currentStreetTsid\)/);
-    assert.match(game, /return Boolean\(legalizeRun && currentStreetTsid === LEGALIZE_BACK_ALLEY_TSID\);/);
+    assert.match(game, /return Boolean\(legalizeRun && heldPlace\?\.kind !== 'legalize' && currentStreetTsid === LEGALIZE_BACK_ALLEY_TSID\);/);
     assert.match(game, /executeVerb\(hall, 'hall_enter'\);/);
     const visit = game.slice(game.indexOf('function legalizeHallVisit('), game.indexOf('const LEGALIZE_HALL_PICKS'));
     assert.match(visit, /if \(hallTsid !== LEGALIZE_HALL_TSID \|\| !legalizeRouteState\(\)\) return null;/);

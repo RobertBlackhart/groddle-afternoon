@@ -52,6 +52,9 @@
  * party leads back to the spot you left: the quoins already taken stay taken, a solved level stays
  * solved, a level the Map card took you to stays in progress (no dead-end EXIT), even after a reload
  * at the party (save.held). The street's own scripts start over, as on any arrival.
+ * G911: a run inside a game.js instance (A Summer's Day's memory, De-Embiggenify's catalogue page)
+ * is held with the instance game.js holds for the party (instanceHeld, in the page only, as game.js
+ * keeps the instance): game.js answers the way back, and the run carries on when it is put back.
  *
  * QA: ?autostart=1&questoffer=off&puzzledemo=<tsid> travels to a puzzle
  * street and stands at its start; &puzzleautoplay=1 walks the triggers in
@@ -111,6 +114,8 @@ let demo = { stage: 'idle', at: 0, queue: [], target: '' };
 let leaving = false;
 // G888: the colour level the Map card is taking you to (this page only: a reload ends the trip).
 let cardTrip = '';
+/** G911: a run held with a game.js instance for a party (not saved: the instance lives in the page). */
+let instanceHeld = null;
 
 function load() {
   if (data) return Promise.resolve(data);
@@ -813,13 +818,17 @@ function complete(engine) {
 /* G904: away at a party                                               */
 /* ------------------------------------------------------------------ */
 
-/** partyTrip 'depart' on a puzzle street with a course (a finish) or no road out: hold the run. */
+/**
+ * partyTrip 'depart' on a puzzle street with a course (a finish) or no road out: hold the run.
+ * G911: inside a game.js instance the run is held with it, and game.js answers (null here).
+ */
 function departForParty(engine) {
-  if (!run || run.def.instance || !runsHere(engine, run.def) || key(engine.streetTsid) !== run.tsid) return null;
-  if (!run.def.exit && !noExit(run.tsid)) return null;
+  if (!run || !runsHere(engine, run.def) || key(engine.streetTsid) !== run.tsid) return null;
+  const owned = Boolean(run.def.instance);
+  if (!owned && !run.def.exit && !noExit(run.tsid)) return null;
   const p = engine.player;
   const spot = { x: Math.round(Number(p?.x) || 0), y: Math.round(Number(p?.y) || 0) };
-  save.held = {
+  const held = {
     tsid: run.tsid,
     ...spot,
     taken: [...run.taken].map(String),
@@ -829,6 +838,11 @@ function departForParty(engine) {
     respawns: run.respawns || 0,
     elapsedMs: Math.max(0, Math.round(locationEventsApi.clock() - run.startedAt)),
   };
+  if (owned) {
+    instanceHeld = held;
+    return null;
+  }
+  save.held = held;
   engine.save?.();
   const label = run.def.name || engine.street?.label || 'Puzzle street';
   return { hold: PUZZLES_FEATURE_ID, tsid: engine.streetTsid, ...spot, label, at: spot };
@@ -836,9 +850,10 @@ function departForParty(engine) {
 
 /** Back on the held street: the run carries on where it was (the street's scripts start over). */
 function applyHeld(engine) {
-  const held = save.held;
+  const held = save.held || instanceHeld;
   if (!held || !run || held.tsid !== run.tsid) return false;
   save.held = null;
+  instanceHeld = null;
   for (const q of run.def.quoins) {
     if (!held.taken.includes(String(q.id))) continue;
     run.taken.add(q.id);
@@ -1156,6 +1171,7 @@ export const puzzlesFeature = {
     // G904: a hold is for its own street; arriving anywhere else but the party ends it (a reload
     // into the space comes before the space sets its instance hold).
     if (save.held && save.held.tsid !== key(tsid) && !partySpaceForStreet(tsid)) save.held = null;
+    if (instanceHeld && instanceHeld.tsid !== key(tsid) && !partySpaceForStreet(tsid)) instanceHeld = null;
     // G888: arrived by the Map card (or a ?puzzledemo= run): the level is in progress, no exit sign.
     const viaCard = cardTrip === key(tsid) || key(engine.param?.('puzzledemo')) === key(tsid);
     cardTrip = '';

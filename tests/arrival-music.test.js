@@ -89,7 +89,9 @@ describe('#474 every home names its own music', () => {
     assert.match(fnBody(game, 'async function enterStreet('), /setAmbientForStreet\(data\);/);
     const scene = methodBody(game, '  enterScene(scene) {');
     assert.match(scene, /if \(scene\.musicFile\) \{[\s\S]{0,200}setAmbientForStreet\(currentStreet\);/);
-    assert.match(methodBody(game, '  resumeScene(parked, spot = null) {'), /setAmbientForStreet\(currentStreet\);/);
+    assert.match(methodBody(game, '  resumeScene(parked, spot = null) {'), /resumeWorld\(parked, spot, \{ scene: true \}\);/);
+    // G911: the world park the scenes share (and the rooms game.js holds for a party).
+    assert.match(fnBody(game, 'function resumeWorld('), /setAmbientForStreet\(currentStreet\);/);
   });
 
   it("another player's home plays its style's music too (a scene with a music_file)", () => {

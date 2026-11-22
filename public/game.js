@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=b52b3339';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=68f20684';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f66dfc4b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -1027,6 +1027,7 @@ import {
   streetQuoinPoints,
 } from './js/quoins.js?v=5abad2c7';
 import { isPartyStreet } from './js/party-spaces.js?v=b026ad60'; // G869: a Party Space's quoins are the party classes
+import { greedyReplayEvents, heldPlaceHold, heldPlaceKind, shiftHeldClock } from './js/party-held-places.js?v=c34cb987'; // G911
 import {
   buildHubMapView,
   mapClickTravel,
@@ -2896,6 +2897,12 @@ let paradiseStartPromise = null;
 let paradiseTransitionBusy = false;
 let paradiseAutoNextAt = 0;
 let paradiseCompletionAnnounced = false;
+/**
+ * G911: the hand-built place held while you are away at a party ({ kind, at, since, kept }: see
+ * HELD_PLACES), else null. A held place is not the place you are in, even before the party's
+ * street has replaced it on screen.
+ */
+let heldPlace = null;
 /** Persistent map-teleport rescue story; the state itself lives under questState.story. */
 let ilmenskieTarget = null;
 let ilmenskieAutoNextAt = 0;
@@ -13119,10 +13126,392 @@ function unregisterTarget(target) {
 const features = createFeatureHost(FEATURES);
 
 /**
+ * G904 / G911: the world on screen set aside whole for a party trip: its background, the owner's
+ * sprites and targets (the avatar's companions and labels are the street's), its floor, walls and
+ * size. The next enter replaces it without destroying it; resumeWorld puts it back. engine.parkScene
+ * (a feature scene) and the rooms game.js draws by hand (heldPlace) use it.
+ */
+function parkWorld({ sprites = [], targets = [] } = {}) {
+  const own = new Set([...sprites, ...targets.map((t) => t?.sprite)].filter(Boolean));
+  const parked = {
+    tsid: currentStreetTsid,
+    bg: bgLayer,
+    sprites: entityLayer.children.filter((s) => s !== player && own.has(s)),
+    targets: targets.filter(Boolean),
+    platforms: streetPlatforms,
+    walls: streetWalls,
+    width: WORLD_W,
+    groundY: GROUND_Y,
+    street: currentStreet,
+    filters: entityLayer.filters || null,
+  };
+  world.removeChild(bgLayer);
+  bgLayer = new PIXI.Container();
+  world.addChildAt(bgLayer, 0);
+  for (const s of parked.sprites) entityLayer.removeChild(s);
+  return parked;
+}
+
+/** The parked world back on screen (no rebuild), the avatar at `spot`; `scene` makes it the feature scene again. */
+function resumeWorld(parked, spot = null, { scene = false } = {}) {
+  if (!parked?.bg || parked.bg.destroyed || !world) return false;
+  clearWorldEntities();
+  if (bgLayer) {
+    world.removeChild(bgLayer);
+    bgLayer.destroy({ children: true });
+  }
+  bgLayer = parked.bg;
+  world.addChildAt(bgLayer, 0);
+  WORLD_W = parked.width;
+  GROUND_Y = parked.groundY;
+  streetPlatforms = parked.platforms || [];
+  streetWalls = parked.walls || [];
+  climb = { active: false, wall: null };
+  currentStreetTsid = parked.tsid;
+  if (scene) {
+    engine.sceneTsid = parked.tsid;
+    engine.sceneReturnTo = parked.returnTo ? { ...parked.returnTo } : null;
+  }
+  currentStreet = parked.street;
+  if (parked.street?.avatarFilters) setAvatarTone(parked.street.avatarFilters);
+  for (const s of parked.sprites) if (!s.destroyed) entityLayer.addChild(s);
+  if (parked.filters) entityLayer.filters = parked.filters;
+  for (const t of parked.targets) if (!interactables.includes(t)) interactables.push(t);
+  if (app?.canvas) app.canvas.dataset.ambientTheme = resolveAmbientTheme(currentStreet);
+  if (state.started && audio.ctx) setAmbientForStreet(currentStreet);
+  if (player && Number.isFinite(spot?.x) && Number.isFinite(spot?.y)) {
+    player.x = spot.x;
+    player.y = spot.y;
+    player.vx = 0;
+    player.vy = 0;
+  }
+  engine.snapCamera();
+  const name = document.getElementById('street-name');
+  if (name) {
+    name.textContent = currentStreet.hubName ? `${currentStreet.label} · ${currentStreet.hubName}` : currentStreet.label;
+    name.dataset.tsid = parked.tsid;
+  }
+  return true;
+}
+
+/**
+ * G911 (Austin 2026-11-16: build): a party teleporter taken in one of the eight hand-built places
+ * (Storyland, Legalize It's Back Alley, Paradise, Rooks' Woods, the Museum of the Rook, A Summer's
+ * Day, Winter Walk, Four Letter Words) holds it, as G904 holds a quest room. Glitch made the
+ * teleporter wherever you stood (players/inc_party.js 479-520), kept an instance you left for the
+ * party space, another instance (groups/instance.js player_exited_location 343-363), and leaving the
+ * party sent you back to that spot (players/inc_instances.js instances_enter 80-86, instances_left
+ * 135-180). None of the eight was a game (instance.js 353-355 game.playerLeft), so none is given up
+ * (js/party-held-places.js). party-spaces-feature asks through engine.query('partyTrip': plan,
+ * depart, resume); game.js answers when no feature does (heldPlaceTrip).
+ *
+ * The run stays here while you are away, its clock stopped (shiftHeldClock), its HUD hidden. A room
+ * drawn by hand with things to keep (Four Letter Words' blocks, Paradise's quoins and rings, the
+ * Annex) is set aside whole (parkWorld); a place on a street (Storyland, Winter Walk, the summer
+ * memory, the catalogue page) or one rebuilt from its state (the Back Alley, Rooks' Woods, the
+ * Museum) is entered again at its stage. Either way you stand on the spot you left. A reload at the
+ * party loses the run as a reload inside the place does (it lives in the page), so the party then
+ * leads back to the street it was entered from; Legalize It's application is saved with the quest,
+ * so its Back Alley comes back after a reload too.
+ */
+/** The Back Alley's two steps (the rest of Legalize It's route is on ordinary streets). */
+const LEGALIZE_ALLEY_STAGES = Object.freeze(['back_alley', 'back_alley_briefed']);
+
+/** The avatar on the spot it left (a rebuilt place first puts it at its own arrival). */
+function standAtHeldSpot(at) {
+  if (!player || !Number.isFinite(at?.x) || !Number.isFinite(at?.y)) return;
+  player.x = at.x;
+  player.y = at.y;
+  player.vx = 0;
+  player.vy = 0;
+  player.rotation = 0;
+  engine.snapCamera();
+}
+
+/** A held place's way back in, under the loading card (false when `setup` could not put it back). */
+async function heldPlaceTransition(label, setup, [topColor, bottomColor] = [0x26302a, 0x121714]) {
+  let ok = true;
+  const run = async () => {
+    ok = (await setup()) !== false;
+  };
+  const el = document.getElementById('screen-transition');
+  if (!el) await run();
+  else await runStreetTransition(el, { fromLabel: currentStreet?.label || '', fromHub: currentStreet?.hubName || '', toLabel: label, toHub: '', topColor, bottomColor, onMid: run });
+  return ok;
+}
+
+/** The Back Alley as Legalize It's stage has it, you on `at` (also after a reload: the stage is saved). */
+async function resumeLegalizeAlley(at) {
+  const run = legalizeRouteState();
+  if (!run || !LEGALIZE_ALLEY_STAGES.includes(run.stage)) return false;
+  await legalizeSceneTransition('The Back Alley', () => {
+    spawnLegalizeBackAlley();
+    standAtHeldSpot(at);
+  });
+  // The briefing done, the Bureaucrat sends you on, as startLegalizeIt does.
+  if (run.stage === 'back_alley_briefed') setTimeout(() => legalizeLeaveAlley(), 500);
+  renderLegalizeHud();
+  return true;
+}
+
+/**
+ * Each place: here (standing in it with nothing under way), its run, the way back it was entered
+ * from, its HUD, what it keeps on the way out (depart) and how it comes back (resume).
+ */
+const HELD_PLACES = {
+  storyland: {
+    label: () => 'The Greedy Street Spirit',
+    here: () => greedyStreetIsInstanced() && !greedyStreetTransitionBusy && !greedyStreetStartPromise && greedyStreetState.status !== 'expired',
+    run: () => greedyStreetState,
+    back: () => greedyStreetSourceLocation,
+    hud: 'greedy-street-hud',
+    resume: (held) => enterStreetWithTransition(GREEDY_STREET_GEOMETRY_TSID, {
+      quiet: true,
+      arrive: () => {
+        if (!greedyStreetState || !greedyStreetSceneManifest) return;
+        setupGreedyStreetInstance();
+        // The acts read so far show their scenes again.
+        for (const id of greedyReplayEvents(greedyStreetState.actSteps, GREEDY_ACTS)) applyGreedySceneEvent(id);
+        standAtHeldSpot(held.at);
+      },
+    }),
+  },
+  legalize: {
+    label: () => 'The Back Alley',
+    here: () => legalizeIsInstanced() && !legalizeTransitionBusy && !legalizeStartPromise && LEGALIZE_ALLEY_STAGES.includes(legalizeRun.stage),
+    run: () => legalizeRouteState(),
+    back: () => legalizeWayOut(),
+    hud: 'legalize-hud',
+    resume: (held) => resumeLegalizeAlley(held.at),
+  },
+  paradise: {
+    label: () => paradiseCourse()?.name || 'Paradise',
+    here: () => paradiseIsInstanced() && !paradiseTransitionBusy && !paradiseStartPromise && paradiseRun.status !== 'complete',
+    run: () => paradiseRun,
+    back: () => paradiseSourceLocation,
+    hud: 'paradise-flight-hud',
+    // startParadiseFlight refuses while a run is set: a hold whose way back never came ends it.
+    drop() {
+      paradiseRun = null;
+      paradiseSourceLocation = null;
+    },
+    depart() {
+      const sprites = [...paradisePickups, ...paradiseRings, paradiseExit, ...paradiseEventQuoinEntries].map((entry) => entry?.sprite);
+      const kept = { parked: parkWorld({ sprites }), pickups: paradisePickups, rings: paradiseRings, exit: paradiseExit, stars: paradiseBackdropStars };
+      // As returnFromParadise: the flight's tilt off the avatar.
+      if (player) {
+        player.rotation = 0;
+        player.pivot.y = 0;
+      }
+      return kept;
+    },
+    resume: (held) => heldPlaceTransition(HELD_PLACES.paradise.label(), () => {
+      if (!resumeWorld(held.kept.parked, held.at)) return false;
+      paradisePickups = held.kept.pickups;
+      paradiseRings = held.kept.rings;
+      paradiseExit = held.kept.exit;
+      paradiseBackdropStars = held.kept.stars;
+      renderParadiseFlightHud();
+      return true;
+    }),
+  },
+  'rook-woods': {
+    label: () => "Rooks' Woods",
+    here: () => rookWoodsIsInstanced() && !rookWoodsTransitionBusy && !rookWoodsStartPromise,
+    run: () => rookWoodsState,
+    back: () => rookWoodsSourceLocation,
+    hud: 'rook-woods-hud',
+    // The Crushers keep the run's clock and the Egg its state: built again as they were.
+    resume: (held) => heldPlaceTransition("Rooks' Woods", () => {
+      setupRookWoodsInstance();
+      standAtHeldSpot(held.at);
+    }, ['#2e332c', '#101411']),
+  },
+  'rook-museum': {
+    label: () => 'Museum of the Rook',
+    here: () => rookMuseumIsInstanced() && !rookMuseumTransitionBusy && !rookMuseumStartPromise,
+    run: () => rookMuseumState,
+    back: () => rookMuseumSourceLocation || rookMuseumState?.sourceLocation,
+    hud: 'rook-museum-hud',
+    depart() {
+      closeRookMuseumExhibit();
+      return {};
+    },
+    // The tour (exhibits seen, the Greeterbot's step) is the run's: the hall is built again.
+    resume: (held) => heldPlaceTransition('Museum of the Rook', () => {
+      setupRookMuseumInstance();
+      standAtHeldSpot(held.at);
+    }),
+  },
+  'summers-day': {
+    label: () => (summersDayRun?.stage === 'bonus' ? 'Annex of A Summer’s Day' : 'A Summer’s Day'),
+    here: () => summersDayIsInstanced() && !summersDayTransitionBusy && !summersDayStartPromise,
+    run: () => summersDayRun,
+    back: () => summersDaySourceLocation,
+    hud: 'summers-day-hud',
+    depart() {
+      // The memory itself is Tiny Speck's street: puzzles-feature holds its run (quoins taken) with it.
+      if (summersDayRun.stage !== 'bonus') return {};
+      const sprites = [...summersDayBonusQuoins.map((entry) => entry.sprite), summersDayAnnexReveal?.sprite, summersDayExit?.sprite];
+      return { parked: parkWorld({ sprites }), quoins: summersDayBonusQuoins, exit: summersDayExit, reveal: summersDayAnnexReveal };
+    },
+    resume: (held) => heldPlaceTransition(HELD_PLACES['summers-day'].label(), async () => {
+      if (!held.kept.parked) return setupSummersDayMain(held.at);
+      if (!resumeWorld(held.kept.parked, held.at)) return false;
+      summersDayBonusQuoins = held.kept.quoins;
+      summersDayExit = held.kept.exit;
+      summersDayAnnexReveal = held.kept.reveal;
+      summersDayNameplate(summersDayLocationLabel());
+      return true;
+    }, [0xf9fdff, 0xb8dce8]),
+  },
+  'winter-walk': {
+    label: () => winterLocationLabel(currentStreetTsid)?.street || 'Winter Walk',
+    here: () => winterWalkIsInstanced() && !winterWalkTransitionBusy && !winterWalkStartPromise && !['expired', 'complete'].includes(winterWalkState.status),
+    run: () => winterWalkState,
+    back: () => winterWalkSourceLocation,
+    hud: 'winter-walk-hud',
+    // The motes taken stay taken (spawnWinterMotes reads the run).
+    resume: (held) => enterStreetWithTransition(winterWalkState.stage === 'haven' ? WINTER_HAVEN_STREET_ID : WINTER_WALK_STREET_ID, {
+      quiet: true,
+      arrive: () => {
+        if (!winterWalkState) return;
+        setupWinterWalkStage(winterWalkState.stage);
+        standAtHeldSpot(held.at);
+      },
+    }),
+  },
+  'de-embiggenify': {
+    label: () => 'Eesti Life Catalogue Page 17',
+    here: () => deEmbiggenifyIsInstanced() && !deEmbiggenifyTransitionBusy && !deEmbiggenifyStartPromise && !['complete', 'expired'].includes(deEmbiggenifyState.status),
+    run: () => deEmbiggenifyState,
+    back: () => deEmbiggenifySourceLocation || deEmbiggenifyState?.sourceLocation,
+    hud: 'de-embiggenify-hud',
+    depart() {
+      // Full size at the party; setupDeEmbiggenifyInstance shrinks you again on the way back.
+      if (deEmbiggenifyPlayerBaseScale && player) {
+        player.baseScale = deEmbiggenifyPlayerBaseScale;
+        applyPlayerFacing();
+      }
+      return {};
+    },
+    resume: (held) => heldPlaceTransition('Eesti Life Catalogue Page 17', () => setupDeEmbiggenifyInstance(held.at)),
+  },
+  'four-letter': {
+    label: () => 'Mr. Block’s Playroom',
+    here: () => fourLetterIsInstanced() && !fourLetterStartPromise,
+    run: () => fourLetterState,
+    back: () => fourLetterSourceLocation,
+    hud: 'four-letter-hud',
+    depart() {
+      const kept = { parked: parkWorld({ targets: [...fourLetterTargets, fourLetterMrBlock] }), targets: fourLetterTargets, mrBlock: fourLetterMrBlock };
+      // Full size at the party, as leaveFourLetterQuest does.
+      if (fourLetterPlayerBaseScale && player) {
+        player.baseScale = fourLetterPlayerBaseScale;
+        applyPlayerFacing();
+      }
+      return kept;
+    },
+    resume: (held) => heldPlaceTransition('Mr. Block’s Playroom', () => {
+      if (!resumeWorld(held.kept.parked, held.at)) return false;
+      fourLetterTargets = held.kept.targets;
+      fourLetterMrBlock = held.kept.mrBlock;
+      if (player) {
+        // Small again, as startFourLetterQuest made you.
+        player.baseScale = (fourLetterPlayerBaseScale || player.baseScale) * 0.42;
+        applyPlayerFacing();
+      }
+      // Left with Mr. Block's welcome still open: the riddles start, as its last line would have.
+      if (fourLetterState.status === 'staging') startFourLetterPuzzle(fourLetterState);
+      renderFourLetterHud();
+      return true;
+    }),
+  },
+};
+
+/** The place you stand in with nothing under way (no dialogue open, no trip), else ''. */
+function heldPlaceHere() {
+  if (heldPlace || isQuestDialogueOpen()) return '';
+  return Object.keys(HELD_PLACES).find((kind) => HELD_PLACES[kind].here()) || '';
+}
+
+/** partyTrip 'depart': keep the place and its run, and say where the party leads back. */
+function departHeldPlace() {
+  const kind = heldPlaceHere();
+  if (!kind) return null;
+  const place = HELD_PLACES[kind];
+  const at = { x: Math.round(Number(player?.x) || 0), y: Math.round(Number(player?.y) || 0) };
+  const back = place.back() || { tsid: STREET_INDEX.default };
+  const label = place.label();
+  closeQuestDialogue({ force: true });
+  keys.clear();
+  const kept = place.depart?.() || {};
+  const hud = document.getElementById(place.hud);
+  if (hud) hud.hidden = true;
+  heldPlace = { kind, at, since: Date.now(), kept };
+  if (app?.canvas) app.canvas.dataset.heldPlace = kind;
+  return { hold: heldPlaceHold(kind), tsid: back.tsid, x: back.x, y: back.y, label, at };
+}
+
+/**
+ * partyTrip 'resume': back into the held place, its clock moved on by the time away. After a reload
+ * nothing is held (the run went with the page) but Legalize It's alley, whose stage is saved: false,
+ * and the party leads to the street the place was entered from.
+ */
+async function resumeHeldPlace(kind, back) {
+  const held = heldPlace?.kind === kind ? heldPlace : kind === 'legalize' ? { kind, at: back?.at || null, since: Date.now(), kept: {} } : null;
+  heldPlace = null;
+  if (app?.canvas) app.canvas.dataset.heldPlace = '';
+  const place = HELD_PLACES[kind];
+  const run = place.run();
+  if (!held || !run) return false;
+  shiftHeldClock(run, kind, Date.now() - held.since);
+  const ok = (await place.resume(held)) !== false;
+  if (!ok) place.drop?.();
+  else {
+    if (app?.canvas) app.canvas.dataset.heldPlaceBack = kind;
+    updateHud();
+  }
+  return ok;
+}
+
+/** The party teleporter's contract (party-spaces-feature partyTrip) for the places game.js holds. */
+function heldPlaceTrip(action, _engine, back) {
+  if (action === 'plan') {
+    const kind = heldPlaceHere();
+    return kind ? { kind: 'hold', label: HELD_PLACES[kind].label() } : null;
+  }
+  if (action === 'depart') return departHeldPlace();
+  if (action === 'resume') {
+    const kind = heldPlaceKind(back?.hold);
+    return kind ? resumeHeldPlace(kind, back) : null;
+  }
+  return null;
+}
+
+/**
+ * A start of a held place's quest: at the party, wait for its way back; anywhere else the way back
+ * never came (the party left some other way), so the hold ends and the place starts over.
+ */
+function heldPlaceBlocksStart(kind) {
+  if (heldPlace?.kind !== kind) return false;
+  if (isPartyStreet(currentStreetTsid)) {
+    toast('Leave the party to go back there.');
+    return true;
+  }
+  HELD_PLACES[kind].drop?.();
+  heldPlace = null;
+  return false;
+}
+
+/**
  * The way back of the instance you are in (where it was entered from), or null: a reload resumes
  * there, never inside the instance, and (ticket 67) a stay at home goes on when it leads home.
  */
 function instanceWayBack() {
+  // G911: away at a party (a place held for you, or on a party space at all): the party's own way
+  // back, never a place's (a reload there stays at the party while it lives, party-spaces-feature).
+  if (heldPlace || isPartyStreet(currentStreetTsid)) return null;
   // G718: the Grange's hall is a shared place, saved as itself (bureaucratic-halls-feature.js reloadLocation walks back in).
   if (legalizeRun && legalizeSourceLocation?.tsid && currentStreetTsid !== LEGALIZE_SHARED_HALL) return legalizeSourceLocation;
   // Never save a place inside the quest's instances: a reload there resumes at their way out.
@@ -13547,7 +13936,8 @@ const engine = {
     return out;
   },
   /** First non-null answer from any feature's `hook` (feature-host query). */
-  query: (hook, ...args) => features.query(hook, ...args),
+  // G911: the places game.js itself holds answer the party teleporter when no feature does.
+  query: (hook, ...args) => features.query(hook, ...args) ?? (hook === 'partyTrip' ? heldPlaceTrip(...args) : null),
   /** G888: every feature's array answer to `hook`, joined (feature-host collect: dead-ends-feature's urRoads). */
   collect: (hook, ...args) => features.collect(hook, ...args),
   award: (payload) => enqueueAward(payload),
@@ -14410,63 +14800,14 @@ const engine = {
    */
   parkScene({ sprites = [], targets = [] } = {}) {
     if (!engine.inScene() || !bgLayer || !world) return null;
-    const own = new Set([...sprites, ...targets.map((t) => t?.sprite)].filter(Boolean));
-    const parked = {
-      tsid: currentStreetTsid,
-      bg: bgLayer,
-      sprites: entityLayer.children.filter((s) => s !== player && own.has(s)),
-      targets: targets.filter(Boolean),
-      platforms: streetPlatforms,
-      walls: streetWalls,
-      width: WORLD_W,
-      groundY: GROUND_Y,
-      street: currentStreet,
-      returnTo: engine.sceneReturnTo ? { ...engine.sceneReturnTo } : null,
-      filters: entityLayer.filters || null,
-    };
-    world.removeChild(bgLayer);
-    bgLayer = new PIXI.Container();
-    world.addChildAt(bgLayer, 0);
-    for (const s of parked.sprites) entityLayer.removeChild(s);
+    const parked = parkWorld({ sprites, targets });
+    parked.returnTo = engine.sceneReturnTo ? { ...engine.sceneReturnTo } : null;
     return parked;
   },
   /** G904: the parked scene back on screen (enterScene without a rebuild), the avatar at `spot`. */
   resumeScene(parked, spot = null) {
     if (!parked?.bg || parked.bg.destroyed || !world) return false;
-    clearWorldEntities();
-    if (bgLayer) {
-      world.removeChild(bgLayer);
-      bgLayer.destroy({ children: true });
-    }
-    bgLayer = parked.bg;
-    world.addChildAt(bgLayer, 0);
-    WORLD_W = parked.width;
-    GROUND_Y = parked.groundY;
-    streetPlatforms = parked.platforms || [];
-    streetWalls = parked.walls || [];
-    climb = { active: false, wall: null };
-    currentStreetTsid = parked.tsid;
-    engine.sceneTsid = parked.tsid;
-    engine.sceneReturnTo = parked.returnTo ? { ...parked.returnTo } : null;
-    currentStreet = parked.street;
-    if (parked.street?.avatarFilters) setAvatarTone(parked.street.avatarFilters);
-    for (const s of parked.sprites) if (!s.destroyed) entityLayer.addChild(s);
-    if (parked.filters) entityLayer.filters = parked.filters;
-    for (const t of parked.targets) if (!interactables.includes(t)) interactables.push(t);
-    if (app?.canvas) app.canvas.dataset.ambientTheme = resolveAmbientTheme(currentStreet);
-    if (state.started && audio.ctx) setAmbientForStreet(currentStreet);
-    if (player && Number.isFinite(spot?.x) && Number.isFinite(spot?.y)) {
-      player.x = spot.x;
-      player.y = spot.y;
-      player.vx = 0;
-      player.vy = 0;
-    }
-    engine.snapCamera();
-    const name = document.getElementById('street-name');
-    if (name) {
-      name.textContent = currentStreet.hubName ? `${currentStreet.label} · ${currentStreet.hubName}` : currentStreet.label;
-      name.dataset.tsid = parked.tsid;
-    }
+    resumeWorld(parked, spot, { scene: true });
     const back = engine.sceneReturnTo;
     if (back?.tsid && back.tsid !== HOME_STREET_TSID && back.tsid !== HOME_INTERIOR_TSID) savePlayerLocation(back);
     updateHud();
@@ -15757,7 +16098,8 @@ function grabWorldQuoin(q, shared = null) {
  * source's prompt, not a window (report 132), and the rainbow, the 150 cap's own; in Paradise neither.
  */
 function announceQuoinLimit(dailyLimit) {
-  if (paradiseRun) return;
+  // G911: in it (a run held at a party is not Paradise).
+  if (paradiseIsInstanced()) return;
   engine.prompt(quoinLimitPrompt());
   // The prompt says it this time; the at-the-limit line (quoinLimitTouched) waits its minute from here.
   quoinLimitNoticeAt = Date.now();
@@ -15770,7 +16112,7 @@ function announceQuoinLimit(dailyLimit) {
  */
 let quoinLimitNoticeAt = 0;
 function quoinLimitTouched(now = Date.now()) {
-  if (paradiseRun || !quoinLimitNoticeDue(quoinLimitNoticeAt, now)) return false;
+  if (paradiseIsInstanced() || !quoinLimitNoticeDue(quoinLimitNoticeAt, now)) return false;
   quoinLimitNoticeAt = now;
   toast(QUOIN_LIMIT_NOTICE, 3000);
   app.canvas.dataset.quoinLimitNotice = String(now);
@@ -18074,7 +18416,7 @@ const FOUR_LETTER_FINAL_DIALOGUE = [
 ];
 
 function fourLetterIsInstanced() {
-  return Boolean(fourLetterState && currentStreetTsid === FOUR_LETTER_ROOM_ID);
+  return Boolean(fourLetterState && heldPlace?.kind !== 'four-letter' && currentStreetTsid === FOUR_LETTER_ROOM_ID);
 }
 
 function fourLetterTexture(letter) {
@@ -18262,6 +18604,7 @@ function handleFourLetterTarget(target, verbId) {
 }
 
 async function startFourLetterQuest(opts = {}) {
+  if (heldPlaceBlocksStart('four-letter')) return null; // G911: held for a party
   if (fourLetterStartPromise) return fourLetterStartPromise;
   if (fourLetterIsInstanced()) return fourLetterState;
   fourLetterStartPromise = (async () => {
@@ -18453,7 +18796,7 @@ const LEGALIZE_HALL_STREETS = Object.freeze(['GLI32G3NUTD100I', 'GA91JUQT2G82GUL
 
 /** The one place only the quest opens: The Back Alley instance (the hall is the street's shared one). */
 function legalizeIsInstanced() {
-  return Boolean(legalizeRun && currentStreetTsid === LEGALIZE_BACK_ALLEY_TSID);
+  return Boolean(legalizeRun && heldPlace?.kind !== 'legalize' && currentStreetTsid === LEGALIZE_BACK_ALLEY_TSID);
 }
 
 /** The application under way, also after a reload or a walk away and back. */
@@ -19040,6 +19383,7 @@ function endLegalizeRunInPlace() {
 }
 
 async function startLegalizeIt(opts = {}) {
+  if (heldPlaceBlocksStart('legalize')) return null; // G911: held for a party
   if (legalizeStartPromise) return legalizeStartPromise;
   if (legalizeOnRoute()) return legalizeRun;
   legalizeStartPromise = (async () => {
@@ -19235,6 +19579,7 @@ function updateLegalizeIt() {
 function winterWalkIsInstanced() {
   return Boolean(
     winterWalkState &&
+      heldPlace?.kind !== 'winter-walk' &&
       [WINTER_WALK_STREET_ID, WINTER_HAVEN_STREET_ID].includes(currentStreetTsid)
   );
 }
@@ -19242,6 +19587,7 @@ function winterWalkIsInstanced() {
 function greedyStreetIsInstanced() {
   return Boolean(
     greedyStreetState &&
+    heldPlace?.kind !== 'storyland' &&
     [GREEDY_STREET_GEOMETRY_TSID, GREEDY_STREET_ID].includes(currentStreetTsid)
   );
 }
@@ -19447,6 +19793,7 @@ function setupGreedyStreetInstance() {
 }
 
 async function startGreedyStreetSpirit(opts = {}) {
+  if (heldPlaceBlocksStart('storyland')) return null; // G911: held for a party
   if (greedyStreetStartPromise) return greedyStreetStartPromise;
   if (greedyStreetIsInstanced()) return greedyStreetState;
   greedyStreetStartPromise = (async () => {
@@ -20002,6 +20349,7 @@ function setupWinterWalkStage(stage) {
 }
 
 async function startWinterWalk(opts = {}) {
+  if (heldPlaceBlocksStart('winter-walk')) return null; // G911: held for a party
   if (winterWalkStartPromise) return winterWalkStartPromise;
   if (winterWalkIsInstanced()) return winterWalkState;
   winterWalkStartPromise = (async () => {
@@ -20304,13 +20652,14 @@ function updateWinterWalk(dt) {
 function summersDayIsInstanced() {
   return Boolean(
     summersDayRun &&
+      heldPlace?.kind !== 'summers-day' &&
       [SUMMERS_DAY_STREET_TSID, SUMMERS_DAY_BONUS_ID].includes(currentStreetTsid)
   );
 }
 
 /** The instance holding the imported street now (puzzles-feature runs its boxes inside it). */
 function summersDayHeldInstance() {
-  return summersDayRun?.stage === 'main' && currentStreetTsid === SUMMERS_DAY_STREET_TSID
+  return summersDayRun?.stage === 'main' && heldPlace?.kind !== 'summers-day' && currentStreetTsid === SUMMERS_DAY_STREET_TSID
     ? 'summers-day'
     : null;
 }
@@ -20655,8 +21004,9 @@ function summersDayNameplate(label) {
  * Its arrival scripts, physics (pc_scale 0.622) and rebuilt boxes start in enterStreet's
  * feature hooks; onStarted's 3709, -258 is the spawn.
  */
-async function setupSummersDayMain() {
-  const spawn = summersDayStreetPoint(SUMMERS_DAY_SOURCE_SPAWN);
+async function setupSummersDayMain(spot = null) {
+  // G911: back from a party, on the spot you left.
+  const spawn = spot || summersDayStreetPoint(SUMMERS_DAY_SOURCE_SPAWN);
   summersDayAutoStep = 0;
   await enterStreet(SUMMERS_DAY_STREET_TSID, {
     spawnX: spawn.x,
@@ -20693,6 +21043,7 @@ async function transitionIntoSummersDay(stage, useTransition = true) {
 }
 
 async function startSummersDay(opts = {}) {
+  if (heldPlaceBlocksStart('summers-day')) return null; // G911: held for a party
   if (summersDayStartPromise) return summersDayStartPromise;
   if (summersDayIsInstanced()) return summersDayRun;
   summersDayStartPromise = (async () => {
@@ -20976,7 +21327,7 @@ function summersDayAutoplayStep(mode) {
 }
 
 function rookWoodsIsInstanced() {
-  return Boolean(rookWoodsState && currentStreetTsid === ROOK_WOODS_STREET_ID);
+  return Boolean(rookWoodsState && heldPlace?.kind !== 'rook-woods' && currentStreetTsid === ROOK_WOODS_STREET_ID);
 }
 
 function rookEggTexture(state = ROOK_EGG_INITIAL_STATE) {
@@ -21282,6 +21633,7 @@ function setupRookWoodsInstance() {
 }
 
 async function startRookWoodsQuest(opts = {}) {
+  if (heldPlaceBlocksStart('rook-woods')) return null; // G911: held for a party
   if (rookWoodsStartPromise) return rookWoodsStartPromise;
   if (rookWoodsIsInstanced()) return rookWoodsState;
   const tool = findWorkingRookTool(inv, toolState);
@@ -21571,7 +21923,7 @@ function updateRookWoods(dt) {
 const ROOK_MUSEUM_ASSET_ROOT = 'assets/sprites/quests/rook-museum';
 
 function rookMuseumIsInstanced() {
-  return Boolean(rookMuseumState && currentStreetTsid === ROOK_MUSEUM_STREET_ID);
+  return Boolean(rookMuseumState && heldPlace?.kind !== 'rook-museum' && currentStreetTsid === ROOK_MUSEUM_STREET_ID);
 }
 
 /** A tower deco in the museum hall: bottom-centre at (x, y), world px, turned `r` degrees. */
@@ -22109,6 +22461,7 @@ function setupRookMuseumInstance() {
 }
 
 async function startRookMuseum(opts = {}) {
+  if (heldPlaceBlocksStart('rook-museum')) return null; // G911: held for a party
   if (rookMuseumStartPromise) return rookMuseumStartPromise;
   if (rookMuseumIsInstanced()) return rookMuseumState;
   rookMuseumStartPromise = (async () => {
@@ -22208,7 +22561,7 @@ function updateRookMuseum() {
 const EESTI_ASSET_ROOT = 'assets/sprites/quests/de-embiggenify';
 
 function deEmbiggenifyIsInstanced() {
-  return Boolean(deEmbiggenifyState && currentStreetTsid === EESTI_STREET_ID);
+  return Boolean(deEmbiggenifyState && heldPlace?.kind !== 'de-embiggenify' && currentStreetTsid === EESTI_STREET_ID);
 }
 
 /** The instance holding the imported street now (puzzles-feature runs its box inside it). */
@@ -22499,8 +22852,9 @@ function handleDeEmbiggenifyTarget(target, verbId) {
  * onStarted's -1832, -76 (quests/de_embiggenify.js 43): its geometry, decos, front layer
  * (the table front and the cake), DE_EMBIGGENIFY music and the myles_is_great box.
  */
-async function setupDeEmbiggenifyInstance() {
-  const spawn = eestiStreetPoint(EESTI_SOURCE_SPAWN);
+async function setupDeEmbiggenifyInstance(spot = null) {
+  // G911: back from a party, on the spot you left.
+  const spawn = spot || eestiStreetPoint(EESTI_SOURCE_SPAWN);
   await enterStreet(EESTI_STREET_ID, {
     spawnX: spawn.x,
     spawnY: spawn.y,
@@ -22542,6 +22896,7 @@ async function setupDeEmbiggenifyInstance() {
 }
 
 async function startDeEmbiggenify(opts = {}) {
+  if (heldPlaceBlocksStart('de-embiggenify')) return null; // G911: held for a party
   if (deEmbiggenifyStartPromise) return deEmbiggenifyStartPromise;
   if (deEmbiggenifyIsInstanced()) return deEmbiggenifyState;
   deEmbiggenifyStartPromise = (async () => {
@@ -22730,6 +23085,7 @@ function paradiseCourseHost() {
 function paradiseIsInstanced() {
   return Boolean(
     paradiseRun &&
+      heldPlace?.kind !== 'paradise' &&
       currentStreetTsid === `PARADISE_${String(paradiseRun.courseId).toUpperCase()}`
   );
 }
@@ -23794,6 +24150,7 @@ async function transitionIntoParadise(course, points, useTransition = true, geom
 }
 
 async function startParadiseFlight(courseId, opts = {}) {
+  if (heldPlaceBlocksStart('paradise')) return null; // G911: held for a party
   if (paradiseStartPromise) return paradiseStartPromise;
   if (paradiseRun) return paradiseRun;
   const course = PARADISE_COURSES[courseId];

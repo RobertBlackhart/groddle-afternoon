@@ -21,7 +21,7 @@ import { COLOUR_LEVEL_STREETS, NO_EXIT_PUZZLE_STREETS } from '../public/js/puzzl
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=524cda4d';
 import { midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=53e62d26';
 import { questInstancesFeature as qi } from '../public/js/features/quest-instances-feature.js?v=785cdb76';
-import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=9b4fd1f4';
+import { puzzlesFeature as pz } from '../public/js/features/puzzles-feature.js?v=92960e20';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=9507f5f8';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=417f95e2';
 import { interrogationRoomFeature } from '../public/js/features/interrogation-room-feature.js?v=aa6e9f09';

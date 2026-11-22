@@ -231,8 +231,8 @@ describe('#202: a quoin touched at the limit says why, at most once a minute', (
   it('street quoins (solo and online), quest rooms, puzzles and the Purple Journey send it; Paradise and the limit prompt hold it', () => {
     const game = readFileSync(join(publicRoot, 'game.js'), 'utf8');
     assert.match(game, /if \(result\.reason === 'daily_limit'\) quoinLimitTouched\(\);\n    return false;/);
-    assert.match(game, /function quoinLimitTouched\(now = Date\.now\(\)\) \{\n  if \(paradiseRun \|\| !quoinLimitNoticeDue\(quoinLimitNoticeAt, now\)\) return false;/);
-    assert.match(game, /function announceQuoinLimit\(dailyLimit\) \{\n  if \(paradiseRun\) return;\n  engine\.prompt\(quoinLimitPrompt\(\)\);\n[^\n]*\n  quoinLimitNoticeAt = Date\.now\(\);/);
+    assert.match(game, /function quoinLimitTouched\(now = Date\.now\(\)\) \{\n  if \(paradiseIsInstanced\(\) \|\| !quoinLimitNoticeDue\(quoinLimitNoticeAt, now\)\) return false;/);
+    assert.match(game, /function announceQuoinLimit\(dailyLimit\) \{\n[^\n]*G911[^\n]*\n  if \(paradiseIsInstanced\(\)\) return;\n  engine\.prompt\(quoinLimitPrompt\(\)\);\n[^\n]*\n  quoinLimitNoticeAt = Date\.now\(\);/);
     assert.match(game, /quoinLimitTouched: \(\) => quoinLimitTouched\(\),/);
     for (const f of ['features/quest-instances-feature.js', 'features/puzzles-feature.js', 'features/purple-journey-feature.js']) {
       assert.match(readFileSync(join(publicRoot, 'js', f), 'utf8'), /engine\.quoinLimitTouched\?\.\(\);/, f);
@@ -280,7 +280,7 @@ describe('report 132: the quoin limit is a prompt, once', () => {
   it('every collector with its own quoins hands the limit on; no award window is left', () => {
     const game = readFileSync(new URL('../public/game.js', import.meta.url), 'utf8');
     assert.doesNotMatch(game, /Quoin Limit Reached/);
-    assert.match(game, /function announceQuoinLimit\(dailyLimit\) \{\s*if \(paradiseRun\) return;\s*engine\.prompt\(quoinLimitPrompt\(\)\);/);
+    assert.match(game, /function announceQuoinLimit\(dailyLimit\) \{\s*\/\/[^\n]*\n\s*if \(paradiseIsInstanced\(\)\) return;\s*engine\.prompt\(quoinLimitPrompt\(\)\);/);
     for (const f of ['puzzles', 'purple-journey', 'quest-instances']) {
       const src = readFileSync(new URL(`../public/js/features/${f}-feature.js`, import.meta.url), 'utf8');
       assert.match(src, /\.hitLimit\) engine\.announceQuoinLimit\?\.\(/);

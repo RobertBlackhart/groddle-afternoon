@@ -379,10 +379,15 @@ function buildMapCard(engine) {
  * (groups/instance.js player_exited_location 343-363, inc_instances.js instances_left 135-180).
  * 'forfeit' (a race or game): the same exit runs game.playerLeft(pc) (instance.js 353-355), so the
  * game is given up and the way back is the street you joined it from.
- * Still '' (an instance nobody holds): the hand-built game.js instances (De-Embiggenify, Four Letter
- * Words, Storyland, Legalize It, Paradise, the Rook Museum and Woods, A Summer's Day, Winter Walk),
- * whose state game.js keeps for one trip; the tutorial's scenes; Le Voyage Violet (its buff carries
- * you out on its own); the Bureaucratic Hall's application; another feature scene. The dead get no
+ * G911 (Austin 2026-11-16: build): the eight hand-built game.js places (Storyland, Legalize It's
+ * Back Alley, Paradise, Rooks' Woods, the Museum of the Rook, A Summer's Day, Winter Walk, Four
+ * Letter Words) answer 'hold' too: none was a game in Glitch (all quest or ticket instances), so
+ * game.js keeps the place and its run, clock stopped, and the way back puts you on the spot you left
+ * (game.js heldPlaceTrip, asked through engine.query when no feature answers; js/party-held-places.js).
+ * A reload at the party loses such a run as a reload in the place does, and the way back is then the
+ * street it was entered from (Legalize It's alley excepted: its stage is saved with the quest).
+ * Still '' (an instance nobody holds): the tutorial's scenes; Le Voyage Violet (its buff carries you
+ * out on its own); the Bureaucratic Hall's application; another feature scene. The dead get no
  * teleporter at all (groups/party.js 583-584 "you have more pressing matters to attend to").
  */
 export function partyTeleporterSpot({ inHome = false, visit = false, transient = false, plan = '' } = {}) {
@@ -405,7 +410,8 @@ function teleporterSpot(engine) {
 
 /**
  * G904: back from the space. A place held for you (returnTo.hold) is put back by its owner
- * (partyTrip 'resume': the quest room or puzzle as you left it); else, or if that fails, the street.
+ * (partyTrip 'resume': the quest room, puzzle or G911 game.js place as you left it); else, or if
+ * that fails, the street.
  */
 async function goBack(engine, back) {
   if (back?.hold) {
