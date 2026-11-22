@@ -22793,6 +22793,12 @@ function addParadiseCloud(root, x, y, width, height, alpha = 0.9, tint = 0xfffff
 
 /** How far the sky runs on under a course: more than any window's view past the course's bottom. */
 const PARADISE_SKY_BELOW = 1200;
+/**
+ * #603: how far the sky runs on over a course's top. An upright phone's camera rises over the top
+ * by the top bar's height (cameraTopSlack, G928), and the canvas's clear colour (the page's light
+ * blue) showed there as a band behind the bar.
+ */
+const PARADISE_SKY_ABOVE = 1200;
 /** Courses whose art ends in a floor run on in the floor's colour (js/paradise-course-runtime.js), not the sky's. */
 const PARADISE_FLOOR_BELOW = Object.freeze({ abysmal_thrill: 0x1d2522, arbor_hollow: 0x24331c, sky_plunge: 0xffffff });
 
@@ -22821,6 +22827,8 @@ function paintParadiseSky(root, course) {
       (mix((from >> 16) & 0xff, (to >> 16) & 0xff) << 16) |
       (mix((from >> 8) & 0xff, (to >> 8) & 0xff) << 8) |
       mix(from & 0xff, to & 0xff);
+    // #603: the top band runs on up over the course, as the bottom one runs on under it.
+    if (index === 0) sky.rect(0, -PARADISE_SKY_ABOVE, course.width, PARADISE_SKY_ABOVE).fill(color);
     sky.rect(0, (course.height / bands) * index, course.width, course.height / bands + 2).fill(color);
     // Report 131: the camera sits up to its pack allowance and the pack's strip below the course (the
     // street view's skirt has no twin here), and the empty canvas showed there as a band.
@@ -22828,6 +22836,8 @@ function paintParadiseSky(root, course) {
   }
   sky.zIndex = -100;
   root.addChild(sky);
+  // #603: the band an upright phone leaves over a short view takes the course's top colour where it is dark (shortSceneBand).
+  root.skyTop = `#${(colors[0] >>> 0).toString(16).padStart(6, '0').slice(-6)}`;
 
   const stars = new PIXI.Graphics();
   const starCount = course.skyStars ?? (course.id === 'cloud_rings' ? 45 : course.id === 'slip_n_slide' ? 95 : 180);
