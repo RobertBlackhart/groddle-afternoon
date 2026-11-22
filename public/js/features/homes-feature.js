@@ -216,7 +216,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=249f4265';
+import { projectApi } from './street-jobs-feature.js?v=6d33e7e2';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=18889f7a';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=9c43393f';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -265,7 +265,7 @@ import {
   ROCK_VERB_IDS,
 } from '../magic-rock-home.js?v=c07b2327';
 import { getGameDayKey } from '../game-day.js?v=50c112eb';
-import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=b3d7775e';
+import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=acb21418';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
@@ -297,8 +297,8 @@ import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=422a7242';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
-import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=e5e54f6a';
-import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=79fc0b65';
+import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseFitViewH, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=3c88c47c';
+import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=9d018a82';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -2284,6 +2284,10 @@ function streetBackground(engine, styleKey, houseStyle = 'cottage') {
   root.addChild(trim);
 
   root.worldH = STREET_WORLD_H;
+  // HOUSE FIT (Austin 2026-11-22, "Raise it on home streets"): the stage zooms out until the whole
+  // house shows over the walk line (js/location-view.js stageFor `fitViewH`), the owner's house
+  // for a visitor too; other streets carry none, so their camera is untouched.
+  root.fitViewH = houseFitViewH(h.chassis, h.config, h.facingRight, { groundY: STREET_GROUND_Y, worldH: STREET_WORLD_H });
   root.platformsScreen = [{ id: 'home-ground', x1: 0, y1: STREET_GROUND_Y, x2: width, y2: STREET_GROUND_Y, pc_perm: -1 }];
   root.updateParallax = (camX, camY, vpW, vpH, skyH = vpH) => land.update(camX, camY, vpW, skyH);
   root.houseDoorX = doorX;

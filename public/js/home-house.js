@@ -252,3 +252,20 @@ export function houseLot(id, config = null, facingRight = HOUSE_FACING_RIGHT) {
 export function houseLabel(house) {
   return HOUSE_STYLES[house?.chassis]?.name || HOUSE_STYLES.cottage.name;
 }
+
+/** World px the street keeps in view over the house's top, clear of the top bar over the canvas. */
+export const HOUSE_HEADROOM = 64;
+
+/**
+ * PURE (G796 follow-up, Austin 2026-11-22 "Raise it on home streets"): the least location view
+ * height, in world px, that shows the whole house over the walk line. Walking on the ground the
+ * camera rests at the street's bottom (movement.js cameraTargetY: the 75% anchor sits below that
+ * clamp for any view of 408 or more on a street with 102 px of soil), so the view holds the soil
+ * under the walk line (worldH - groundY), the house's height over its foot (measured on its art,
+ * houseLot) and HOUSE_HEADROOM. js/location-view.js stageFor zooms out to this (`fitViewH`).
+ */
+export function houseFitViewH(id, config = null, facingRight = HOUSE_FACING_RIGHT, { groundY = 0, worldH = 0, headroom = HOUSE_HEADROOM } = {}) {
+  const { bounds } = houseLot(id, config, facingRight);
+  const soil = Math.max(0, (Number(worldH) || 0) - (Number(groundY) || 0));
+  return Math.ceil(soil + Math.max(0, -bounds.t) + Math.max(0, Number(headroom) || 0));
+}

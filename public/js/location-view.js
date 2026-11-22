@@ -221,6 +221,14 @@ export function phoneZoomSpan(args = {}) {
  *   so each step magnifies by the same share at any window size. Both ends keep
  *   the floors and the scene rule, so every value between does too.
  *
+ * - HOUSE FIT (G796 follow-up, Austin 2026-11-22): `fitViewH` (world px, a home street's
+ *   house: js/home-house.js houseFitViewH) is the least view the scene asks for. A computer's
+ *   stage (and a sideways phone's, built on it) zooms out until the view holds it, at every zoom
+ *   level, never past the scene's own height or width (the scene rule above still fills the
+ *   window). Glitch zoomed its viewport out for the house the same way, scale = loc_vp_h /
+ *   h_needed, though only while the house was being changed (ChassisManager.as scaleVP 189-247).
+ *   An upright phone already shows the scene's whole height and keeps its own rule.
+ *
  * width/height: the CSS room for the canvas (the game area under the top bar).
  * pinnedHeight: `viewh` (QA): the old layout, a LOCATION_VIEW_W view scaled to
  * the page width with that location height (the canvas may then outgrow the
@@ -237,14 +245,15 @@ export function stageFor({
   phone = false,
   closeup = 0,
   sceneBorders = false,
+  fitViewH,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const pinned = finite(pinnedHeight);
   if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup });
-  if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup });
-  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders });
+  if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
+  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH });
 }
 
 /**
@@ -261,7 +270,7 @@ export function stageFor({
  * max_vp_w = Math.min(max_vp_w, layer.w)): the game asks for no borders now (game.js stageArgs), so
  * such a street magnifies just enough to fill the window; every other street keeps the zoom's scale.
  */
-function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false }) {
+function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false, fitViewH }) {
   if (pinned > 0 || !(W > 0) || !(H > 0)) {
     const viewW = LOCATION_VIEW_W;
     const viewH = locationViewHeightFor({ forced: pinned > 0 ? pinned : NaN, sceneHeight });
@@ -282,6 +291,9 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
   const z = Math.min(1, Math.max(0, finite(zoom, 0)));
   let scale = ruleScale(VIEW_MAX_W, VIEW_CEIL_H);
   if (z > 0) scale *= (ruleScale(ORIGINAL_VIEW_W, ORIGINAL_VIEW_H) / scale) ** z;
+  // HOUSE FIT: out until the view holds `fitViewH`, never past the scene's own height or width.
+  const fit = Math.min(finite(fitViewH), sh, VIEW_HOLD_H);
+  if (fit > 0) scale = Math.min(scale, Math.max(H / (fit + pack), border ? 0 : W / sw));
   const fullW = Math.round(W / scale);
   const bordered = border && fullW > Math.round(sw);
   const viewW = bordered ? Math.round(sw) : fullW;
@@ -378,11 +390,11 @@ export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, scene
  * the screen leaves over the pack reserve) and the camera scrolls the street up and down, as it
  * does upright. Fewer world px are drawn, never bigger textures.
  */
-export function landscapePhoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, zoom = 0, closeup = 0 } = {}) {
+export function landscapePhoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, zoom = 0, closeup = 0, fitViewH } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
-  const base = computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: NaN, zoom });
+  const base = computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: NaN, zoom, fitViewH });
   const c = Math.min(1, Math.max(0, finite(closeup, 0)));
   const top = Math.max(W, H) / (VIEW_FLOOR_H + pack);
   if (!(c > 0) || !(top > base.scale) || !(W > 0) || !(H > 0)) return { ...base, phone: true, landscape: true };
