@@ -516,14 +516,23 @@ export function jobStatus(state, catalog, jobId, now = Date.now(), opts = {}) {
   return { status: started ? 'active' : 'open', phase };
 }
 
-const STATUS_RANK = { active: 0, open: 1, delayed: 2, cooldown: 3, done: 4, built: 5 };
+/*
+ * #615 (G1140): items/include/jobs.js getAvailableJobs 2-62 sorts a giver's jobs per job: done, then
+ * delayed (between phases), then given (the player has put something in: pc.jobs_has), else open,
+ * whoever else has started it. offerJobs 121-155 offers the first given job, else the first open one;
+ * onPlayerEnter (street_spirit.js 577-611) shows given, open, then delayed. A job resting between
+ * phases never hides another, and others having started a job does not put it first.
+ */
+const STATUS_RANK = { given: 0, active: 1, open: 1, delayed: 2, cooldown: 3, done: 4, built: 5 };
+const putIn = (row) => Object.values(row?.mine || {}).some((n) => Number(n) > 0);
+const offerRank = (state, r) => STATUS_RANK[(r.status === 'active' || r.status === 'open') && putIn(state.jobs?.[r.jobId]) ? 'given' : r.status];
 
-/** Every project a street's board offers, best first (items/include/jobs.js offerJobs). */
+/** Every project a street's board offers, best first (items/include/jobs.js offerJobs: yours, then open, catalog order). */
 export function streetJobs(state, catalog, tsid, now = Date.now(), opts = {}) {
   const ids = catalog?.byStreet?.[gTsid(tsid)] || [];
   return ids
     .map((jobId, order) => ({ jobId, order, ...jobStatus(state, catalog, jobId, now, { ...opts, street: gTsid(tsid) }) }))
-    .sort((a, b) => STATUS_RANK[a.status] - STATUS_RANK[b.status] || a.order - b.order);
+    .sort((a, b) => offerRank(state, a) - offerRank(state, b) || a.order - b.order);
 }
 
 /** Does this street need a board (any project not finished)? */

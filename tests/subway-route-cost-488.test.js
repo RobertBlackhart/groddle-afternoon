@@ -13,9 +13,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SUBWAY_RIDE_STREETS, findRoute, loadStreetGraph, roadsFor, streetGraph, worldRoads } from '../public/js/street-graph.js?v=dcc5cae4';
 import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
-import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=884e34b3';
+import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=692d65c4';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=a6d88dd7';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=87bce6df';
 import { gateRefusal } from '../public/js/subway.js?v=c2acbb52';
 
 const PUB = join(import.meta.dirname, '..', 'public');

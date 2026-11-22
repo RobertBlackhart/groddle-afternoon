@@ -55,7 +55,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireServer, serverPath } from './repos.mjs';
 import { TOWER_JOBS, towerFloorClass } from '../public/js/home-tower.js?v=18889f7a';
-import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=884e34b3';
+import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=692d65c4';
 import { exemptForEveryone, freeWays } from '../public/js/open-roads.js?v=597feeb5';
 import { routeGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';

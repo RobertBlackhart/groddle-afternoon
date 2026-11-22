@@ -14,9 +14,9 @@ import { after, before, describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=a6d88dd7';
-import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=cf065a41';
-import { soloNeed } from '../public/js/street-jobs.js?v=884e34b3';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=87bce6df';
+import { streetSpiritsFeature } from '../public/js/features/street-spirits-feature.js?v=a5ba2d0e';
+import { soloNeed } from '../public/js/street-jobs.js?v=692d65c4';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import {
   JOB_INDICATOR_TEXT,
@@ -263,5 +263,53 @@ describe('the Street Spirit gives the project (gap 3)', () => {
     }
     assert.ok(spirited > bare.length, 'most project streets have their spirit');
     assert.ok(bare.includes('GA5157TDPC42IGK'), 'Plains Rte C (Baqala) has none in its location XML');
+  });
+
+  // #615 (G1140): Hammar Steadies' spirit gives two four-phase projects. items/include/jobs.js
+  // getAvailableJobs 2-62 sorts per job (a job between phases is delayed and never hides another),
+  // offerJobs 121-155 offers the first job you have put something into, else the first open one.
+  it('two projects on one spirit: the one waiting between phases hides nothing, yours comes first', async () => {
+    const HAMMAR = 'GCR1H8R9J62257C';
+    assert.deepEqual(catalog.byStreet[HAMMAR], ['270', '558']);
+    assert.ok(ecology[HAMMAR]?.counts?.street_spirit > 0);
+    const { state } = streetJobsFeature._state();
+    const row = (o = {}) => ({ phase: 1, got: {}, mine: {}, hired: {}, startedAt: 1, readyAt: 0, doneAt: 0, option: null, ...o });
+    const own = (jobId) => ({ [catalog.jobs[jobId].phases[0].classTsid]: 5 });
+    // onTick republishes the QA data at most every 5 s of its clock.
+    let clock = Date.now() + 60_000;
+    const tick = () => streetJobsFeature.onTick(16, (clock += 6000), engine);
+    const offered = () => {
+      tick();
+      return { job: data.streetJobBoard, status: data.streetJobStatus, has: streetJobsFeature.spiritHasJobs(spirit, engine) };
+    };
+    await enter(HAMMAR);
+    // The way home keeps Dyran Notion's road open for this harness's solo player (openWayHome): put
+    // it back to the world's view, where both projects are still being built.
+    const kept = state.grandfathered.splice(0);
+    try {
+      // 270 waits for its next phase: 558 is still offered.
+      state.jobs['270'] = row({ readyAt: Date.now() + 20 * 60_000, mine: own('270') });
+      state.jobs['558'] = row();
+      assert.deepEqual(offered(), { job: '558', status: 'active', has: true });
+      assert.equal(streetJobsFeature.spiritOfferJobs(spirit, engine), true);
+      tick();
+      assert.equal(data.streetJobPanel, '558', 'talk to opens the open one');
+      // Both under way (others started 270): the one you put something into comes first.
+      state.jobs['270'] = row();
+      state.jobs['558'] = row({ mine: own('558') });
+      assert.deepEqual(offered(), { job: '558', status: 'active', has: true });
+      // Yours to neither: the first in the street's order, started or not (jobs.open).
+      state.jobs['558'] = row();
+      state.jobs['270'] = { ...row(), phase: 0, startedAt: 0 };
+      assert.equal(offered().job, '270', 'someone having started 558 does not put it first');
+      // Both waiting between phases: nothing to offer (hasJobs), the bubble shows the wait.
+      state.jobs['270'] = row({ readyAt: Date.now() + 20 * 60_000 });
+      state.jobs['558'] = row({ readyAt: Date.now() + 10 * 60_000 });
+      assert.deepEqual(offered(), { job: '270', status: 'delayed', has: null });
+    } finally {
+      state.grandfathered.push(...kept);
+      delete state.jobs['270'];
+      delete state.jobs['558'];
+    }
   });
 });
