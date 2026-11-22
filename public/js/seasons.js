@@ -33,7 +33,7 @@
 
 import { SEASON_DATA } from './seasons-data.js?v=b5174bc9';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
-import { FANCY_FEATHER, FEATHER_ROTS_TO, POT_LUCK_STOCK } from './pot-luck.js?v=84484e77';
+import { FANCY_FEATHER, FEATHER_ROTS_TO, POT_LUCK_STOCK } from './pot-luck.js?v=3a41ffe7';
 
 const DAY_MS = 86_400_000;
 

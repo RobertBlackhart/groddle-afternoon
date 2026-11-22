@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
-import { SEED_CATALOG } from '../public/js/garden.js?v=0efb1496';
+import { SEED_CATALOG } from '../public/js/garden.js?v=152fa293';
 import {
   HASHED_VENDOR_KEYS,
   VENDOR_PROFILES,
@@ -16,7 +16,7 @@ import {
   vendorBuy,
   vendorSell,
   vendorSellValue,
-} from '../public/js/vendor.js?v=05564505';
+} from '../public/js/vendor.js?v=3112f3ca';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');

@@ -39,8 +39,8 @@ import {
   questEvent,
   shownRows,
   tableCountLabel,
-} from '../public/js/pot-luck-feast.js?v=8fa008d0';
-import { SEED_CATALOG } from '../public/js/garden.js?v=0efb1496';
+} from '../public/js/pot-luck-feast.js?v=036c6456';
+import { SEED_CATALOG } from '../public/js/garden.js?v=152fa293';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=d28b2a24';
 import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
@@ -190,6 +190,14 @@ describe('Pot’s Empty Table', () => {
     const step = QUEST.steps.find((s) => s.id === 'dishes');
     assert.match(step.desc, /^Cook harvest dishes after accepting \(/);
     assert.match(QUEST.offer[1].text, /any three you like, cooked from now on\./);
+  });
+
+  it('says the Chicken to dress is one out on the streets, in the offer, the step and the log line', () => {
+    // Live 2026-11-22: a player with a costume looked for the Dress row on her own Chickens; only a street Chicken dresses up.
+    const step = QUEST.steps.find((s) => s.id === 'dressed');
+    assert.equal(step.desc, 'Dress a Chicken out on the streets for the feast');
+    assert.match(QUEST.offer[1].text, /Dress up a Chicken out on the streets for the occasion\./);
+    assert.match(QUEST.accepted, /dress a Chicken out on the streets,/);
   });
 
   it('is offered by the Magic Rock in four steps and pays favor with Pot', () => {

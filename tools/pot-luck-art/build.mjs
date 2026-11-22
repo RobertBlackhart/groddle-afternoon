@@ -256,7 +256,7 @@ export async function problems() {
   }
   const sheets = await chickenSheets();
   // The game's table of the same sheets (js/pot-luck.js, which cuts the twins) must agree with this one.
-  const { CHICKEN_SHEETS, costumeSheetPath } = await import('../../public/js/pot-luck.js?v=84484e77');
+  const { CHICKEN_SHEETS, costumeSheetPath } = await import('../../public/js/pot-luck.js?v=3a41ffe7');
   const game = JSON.stringify(CHICKEN_SHEETS.map(({ clip, path, fw, fh, cols, frames }) => [clip, path, fw, fh, cols, frames]));
   if (game !== JSON.stringify(sheets.map(({ clip, path, fw, fh, cols, frames }) => [clip, path, fw, fh, cols, frames]))) bad.push('public/js/pot-luck.js CHICKEN_SHEETS differs from the chicken sheets this tool draws');
   for (const c of COSTUMES) for (const s of sheets) if (costumeSheetPath(c, s.clip) !== costumePath(c, s.clip)) bad.push(`js/pot-luck.js names ${costumePath(c, s.clip)} differently`);

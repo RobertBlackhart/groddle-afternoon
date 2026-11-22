@@ -74,6 +74,8 @@ export const POT_LUCK_LINES = Object.freeze({
   noItem: 'You need a Turkey Tailfan or a Rooster Plume. The Toy Vendor has them for Pot Luck Day.',
   already: 'This Chicken is already dressed for the feast. It is keeping it on until Pot Luck Day is over.',
   notChicken: 'Only a Chicken will wear that.',
+  /** Your own Chickens and a yard's stay home: only the street's dress up (ours, the feast is the remake's). */
+  streetOnly: 'Only a Chicken out on the streets can dress up for Pot Luck Day.',
   notCostume: "That isn't something a Chicken can wear.",
   feather: 'A Fancy Feather floats down from the Chicken\'s costume. You catch it.',
   fellOff: 'Pot Luck Day is over. The Chickens shrug off their costumes.',
@@ -90,7 +92,8 @@ export const costumeLabel = (cls) => POT_LUCK_ITEMS[cls]?.label || '';
  * costume offered), have (how many of it the pack holds) }. { ok } or { ok: false, code, msg }.
  */
 export function dressCheck(ctx = {}) {
-  if (ctx.classId !== 'npc_chicken' || ctx.street === false) return { ok: false, code: 'not_chicken', msg: POT_LUCK_LINES.notChicken };
+  if (ctx.classId !== 'npc_chicken') return { ok: false, code: 'not_chicken', msg: POT_LUCK_LINES.notChicken };
+  if (ctx.street === false) return { ok: false, code: 'not_street', msg: POT_LUCK_LINES.streetOnly };
   if (!ctx.season) return { ok: false, code: 'no_season', msg: POT_LUCK_LINES.noSeason };
   if (!isCostume(ctx.cls)) return { ok: false, code: 'not_costume', msg: POT_LUCK_LINES.notCostume };
   if (ctx.costume) return { ok: false, code: 'dressed', msg: POT_LUCK_LINES.already };
@@ -101,12 +104,14 @@ export function dressCheck(ctx = {}) {
 /**
  * The dress rows a street Chicken's menu gets during the season: one per costume in the pack
  * (`potluck:dress:<costume>`), or one disabled row that says why not (dressed already, none in
- * the pack). Off season: none.
+ * the pack). Off season: none. Your own or a yard's Chicken (`street` false) gets the same rows
+ * greyed while you carry a costume, saying only a street Chicken dresses up; none without one.
  */
-export function dressVerbs({ season = false, costume = '', inv = {} } = {}) {
+export function dressVerbs({ season = false, costume = '', inv = {}, street = true } = {}) {
   if (!season) return [];
-  if (costume) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: POT_LUCK_LINES.already, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
   const owned = COSTUME_CLASSES.filter((cls) => (Number(inv?.[cls]) || 0) > 0);
+  if (!street) return owned.map((cls) => ({ id: `${DRESS_VERB}:${cls}`, label: `Dress in ${costumeLabel(cls)}`, enabled: false, reason: POT_LUCK_LINES.streetOnly, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }));
+  if (costume) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: POT_LUCK_LINES.already, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
   if (!owned.length) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: POT_LUCK_LINES.noItem, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
   return owned.map((cls) => ({ id: `${DRESS_VERB}:${cls}`, label: `Dress in ${costumeLabel(cls)}`, enabled: true, reason: '', tooltip: POT_LUCK_LINES.tip, durationMs: 0 }));
 }

@@ -50,7 +50,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../public/js/seasons.js?v=8b81947e';
+} from '../public/js/seasons.js?v=61f0a582';
 import { SEASON_DATA } from '../public/js/seasons-data.js?v=b5174bc9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -313,7 +313,7 @@ describe('Egg Hunt and Pi Day', () => {
   });
 
   it('counts each egg into the collection however it arrives, then gives the trophy for them (seasons-feature)', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=54c1c0ef');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=c7423b76');
     const { createInventory, addItem, countItem, removeItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const unlocked = [];
     const counted = {};
@@ -387,7 +387,7 @@ describe('supply paths', () => {
 
 describe('a ?season= preview leaves the save alone (G342)', () => {
   it('a carved pumpkin survives previewing another season, and the save still remembers Zilloween', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=54c1c0ef');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=c7423b76');
     const { createInventory, addItem, countItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const inv = createInventory();
     addItem(inv, 'pumpkin_carved_1', 2);

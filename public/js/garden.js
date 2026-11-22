@@ -21,7 +21,7 @@ import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf'
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { isCropGardenStreet } from './garden-beds.js?v=2ac6a12c';
 import { superHarvestWords } from './words.js?v=274023af';
-import { SEASONS } from './seasons.js?v=8b81947e';
+import { SEASONS } from './seasons.js?v=61f0a582';
 
 /** @typedef {'clean'|'seeds'|'shoots'|'crop'|'dirty'} PlotState */
 

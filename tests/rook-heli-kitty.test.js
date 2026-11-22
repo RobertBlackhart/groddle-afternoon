@@ -10,8 +10,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { ROOK_LOOSE_KEY_BASE, rookKeyFor } from '../public/js/rook-attack.js?v=5e62a79f';
 import { syncKeys } from '../public/js/rook-mp.js?v=dda37008';
-import { kittyIndex } from '../public/js/features/heli-kitties-feature.js?v=cd3c7e9a';
-import { creatureOf } from '../public/js/street-creatures.js?v=18c338a3';
+import { kittyIndex } from '../public/js/features/heli-kitties-feature.js?v=88c25d0a';
+import { creatureOf } from '../public/js/street-creatures.js?v=e2952c3a';
 
 const featureCopy = async (name) => (await import(`../public/js/features/rook-attack-feature.js?fresh=rook-heli-kitty-${name}`)).rookAttackFeature;
 

@@ -43,7 +43,7 @@ import {
   dressVerbs,
   featherDrop,
   isCostume,
-} from '../pot-luck.js?v=84484e77';
+} from '../pot-luck.js?v=3a41ffe7';
 
 export const POT_LUCK_FEATURE_ID = 'pot-luck';
 
@@ -57,6 +57,14 @@ let on = false;
 
 /** A Chicken of the street (game.js spawnChickens), not one of your own animals or a yard's. */
 export const isStreetChicken = (t) => t?.classId === 'npc_chicken' && !t.featureId && !t.yardVisit && Number.isInteger(t.classIndex);
+/** Your own Chicken (animal-husbandry) or a visited yard's: it stays home, and its menu says so. */
+const isHomeChicken = (t) => t?.classId === 'npc_chicken' && !isStreetChicken(t);
+
+/** Your own or a yard's Chicken while you carry a costume: the dress rows greyed, saying only a street Chicken dresses up. */
+function homeDressRows(target, engine) {
+  if (!isHomeChicken(target) || !seasonOn(engine)) return [];
+  return dressVerbs({ season: true, street: false, inv: engine.inv });
+}
 const keyOf = (engine, t) => `${engine.streetTsid}:${t.classIndex}`;
 const online = (engine) => engine?.mode === 'multiplayer';
 
@@ -243,10 +251,21 @@ export const potLuckFeature = {
     publish(engine);
   },
 
-  /** A street Chicken's menu: the dress rows (js/pot-luck.js dressVerbs) during the season. */
+  /**
+   * A street Chicken's menu: the dress rows (js/pot-luck.js dressVerbs) during the season. A visited
+   * yard's Chicken: the rows greyed while you carry a costume (homeDressRows).
+   */
   decorateVerbs(target, verbs, engine) {
+    const home = homeDressRows(target, engine);
+    if (home.length) return [...verbs, ...home];
     if (!isStreetChicken(target) || !seasonOn(engine)) return null;
     return [...verbs, ...dressVerbs({ season: true, costume: costumeOf(engine, target), inv: engine.inv })];
+  },
+
+  /** Your own Chicken's menu (animal-husbandry owns it): the dress rows greyed while you carry a costume. */
+  extraVerbs(target, engine) {
+    const home = homeDressRows(target, engine);
+    return home.length ? home : null;
   },
 
   runVerbOverride(target, verbId, engine) {

@@ -37,7 +37,7 @@
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { loadWildlifeCatalog, wildlifeCatalog } from '../wildlife.js?v=670c3a7f';
-import { VENDOR_PROFILES } from '../vendor.js?v=05564505';
+import { VENDOR_PROFILES } from '../vendor.js?v=3112f3ca';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { parseQuestConversation } from '../quests.js?v=90a2ee3d';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
@@ -65,7 +65,7 @@ import {
   vendorStrip,
 } from '../vendor-npcs.js?v=90b0c123';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { chickenSeed, walkerSpan } from '../street-creatures.js?v=18c338a3';
+import { chickenSeed, walkerSpan } from '../street-creatures.js?v=e2952c3a';
 import { measuredGardenVendor } from '../garden-beds.js?v=2ac6a12c';
 import { followFloorY, landingY } from '../walk-surface.js?v=3c919d5b';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
@@ -81,7 +81,7 @@ import {
   vendorHeld,
   vendorPlan,
   vendorWalkAt,
-} from '../vendor-walk.js?v=db4930c2';
+} from '../vendor-walk.js?v=90645a7d';
 
 export const VENDOR_NPCS_FEATURE_ID = 'vendor-npcs';
 const ATTRACT_RADIUS = 200; // npc_gardening_vendor.js onPathing: players within 200px

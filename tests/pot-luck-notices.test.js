@@ -37,8 +37,8 @@ globalThis.Image = class { constructor() { this.naturalWidth = 40; this.naturalH
 
 const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
 installPixiFixes(PIXI);
-const { SEASON_NOTICES, TABLE_STREET, noticesDue } = await import('../public/js/pot-luck-feast.js?v=8fa008d0');
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=0ddc77dc');
+const { SEASON_NOTICES, TABLE_STREET, noticesDue } = await import('../public/js/pot-luck-feast.js?v=036c6456');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=6eb3998e');
 
 let date = '2026-11-21';
 const awards = [];

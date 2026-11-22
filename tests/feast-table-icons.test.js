@@ -53,8 +53,8 @@ const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864
 installPixiFixes(PIXI);
 const { isLoaded } = await import('../public/js/textures.js?v=729b29ea');
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');
-const { TABLE_RULES, TABLE_STREET, HARVEST_DISHES, STUFFING } = await import('../public/js/pot-luck-feast.js?v=8fa008d0');
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=0ddc77dc');
+const { TABLE_RULES, TABLE_STREET, HARVEST_DISHES, STUFFING } = await import('../public/js/pot-luck-feast.js?v=036c6456');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=6eb3998e');
 
 // The first four dishes go on first; the last two arrive later, with icons not yet loaded.
 const DISHES = HARVEST_DISHES.slice(0, 4);

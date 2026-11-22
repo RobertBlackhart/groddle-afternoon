@@ -16,8 +16,8 @@ import { applyStreetIndex, setZoneStreetsShown } from '../public/js/street-loade
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { PLACEMENT_FOOTPRINTS, ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=1401a97c';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { FEAST_SPOTS, PILE_HALF, PILE_MARGIN } from '../public/js/feast-day.js?v=438fdca7';
-import { TABLE_AT, TABLE_STREET } from '../public/js/pot-luck-feast.js?v=8fa008d0';
+import { FEAST_SPOTS, PILE_HALF, PILE_MARGIN } from '../public/js/feast-day.js?v=b409cdbe';
+import { TABLE_AT, TABLE_STREET } from '../public/js/pot-luck-feast.js?v=036c6456';
 import { worldArtFor } from '../public/js/world-art.js?v=2b3cf8d5';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

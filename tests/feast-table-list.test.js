@@ -40,8 +40,8 @@ globalThis.Image = class { constructor() { this.naturalWidth = 40; this.naturalH
 const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
 installPixiFixes(PIXI);
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');
-const { TABLE_LINES, TABLE_RULES, TABLE_STREET, HARVEST_DISHES, tableList, createTableState, layOffering } = await import('../public/js/pot-luck-feast.js?v=8fa008d0');
-const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=0ddc77dc');
+const { TABLE_LINES, TABLE_RULES, TABLE_STREET, HARVEST_DISHES, tableList, createTableState, layOffering } = await import('../public/js/pot-luck-feast.js?v=036c6456');
+const { potLuckFeastFeature } = await import('../public/js/features/pot-luck-feast-feature.js?v=6eb3998e');
 const { storageWindowKind, closeStorageWindow } = await import('../public/js/ui/storage-windows.js?v=02bcf142');
 
 let target = null;

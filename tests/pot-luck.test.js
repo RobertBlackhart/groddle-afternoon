@@ -14,7 +14,7 @@ import { imageSize } from '../tools/image-size.mjs';
 import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
 import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
-import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=8b81947e';
+import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=61f0a582';
 import {
   CHICKEN_SHEETS,
   COSTUME_CLASSES,
@@ -26,10 +26,10 @@ import {
   dressCheck,
   dressVerbs,
   featherDrop,
-} from '../public/js/pot-luck.js?v=84484e77';
-import { applyCreatureState } from '../public/js/street-creatures.js?v=18c338a3';
+} from '../public/js/pot-luck.js?v=3a41ffe7';
+import { applyCreatureState } from '../public/js/street-creatures.js?v=e2952c3a';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
-import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=a9afaef7';
+import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=8cae18d6';
 import { problems } from '../tools/pot-luck-art/build.mjs';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -74,7 +74,7 @@ describe('dress rules (js/pot-luck.js)', () => {
     assert.equal(dressCheck({ ...base, have: 0 }).msg, POT_LUCK_LINES.noItem);
     assert.equal(dressCheck({ ...base, costume: 'rooster_plume' }).code, 'dressed');
     assert.equal(dressCheck({ ...base, classId: 'npc_piggy' }).code, 'not_chicken');
-    assert.equal(dressCheck({ ...base, street: false }).code, 'not_chicken');
+    assert.deepEqual(dressCheck({ ...base, street: false }), { ok: false, code: 'not_street', msg: POT_LUCK_LINES.streetOnly });
     assert.equal(dressCheck({ ...base, cls: 'chicken_egg' }).code, 'not_costume');
   });
 
@@ -191,9 +191,40 @@ describe('the dress flow and the feather (features/pot-luck-feature.js)', () => 
     e.inv = { turkey_tailfan: 1 };
     const yours = { classId: 'npc_chicken', featureId: 'animal-husbandry', state: {} };
     potLuckFeature.runVerbOverride(yours, 'potluck:dress:turkey_tailfan', e);
-    assert.equal(e.lines.at(-1), POT_LUCK_LINES.notChicken);
+    assert.equal(e.lines.at(-1), POT_LUCK_LINES.streetOnly);
     assert.equal(e.inv.turkey_tailfan, 1);
     assert.equal(e.counters.length, 0);
+  });
+
+  it('your own or a yard\'s Chicken, with a costume in the pack: the dress rows greyed, saying only a street Chicken dresses up', () => {
+    assert.equal(POT_LUCK_LINES.streetOnly, 'Only a Chicken out on the streets can dress up for Pot Luck Day.');
+    assert.doesNotMatch(POT_LUCK_LINES.streetOnly, /\u2014/);
+    const { e } = fakeEngine({ inv: { turkey_tailfan: 1, rooster_plume: 2 } });
+    const yours = { classId: 'npc_chicken', featureId: 'animal-husbandry', state: {} };
+    const yard = { classId: 'npc_chicken', yardVisit: { kind: 'animal', id: 'a1' }, state: {} };
+    const want = [
+      ['potluck:dress:turkey_tailfan', 'Dress in Turkey Tailfan', false, POT_LUCK_LINES.streetOnly],
+      ['potluck:dress:rooster_plume', 'Dress in Rooster Plume', false, POT_LUCK_LINES.streetOnly],
+    ];
+    const rows = (list) => list.map((r) => [r.id, r.label, r.enabled, r.reason]);
+    // Your own Chicken's menu is animal-husbandry's: the rows come as extraVerbs.
+    assert.deepEqual(rows(potLuckFeature.extraVerbs(yours, e)), want);
+    // A visited yard's Chicken has no owner feature: decorateVerbs.
+    assert.deepEqual(rows(potLuckFeature.decorateVerbs(yard, [{ id: 'squeeze' }], e)).slice(1), want);
+    // Without a costume, or out of season: nothing.
+    e.inv = {};
+    assert.equal(potLuckFeature.extraVerbs(yours, e), null);
+    assert.equal(potLuckFeature.decorateVerbs(yard, [], e), null);
+    e.inv = { turkey_tailfan: 1 };
+    e.season.on = false;
+    assert.equal(potLuckFeature.extraVerbs(yours, e), null);
+    assert.equal(potLuckFeature.decorateVerbs(yard, [], e), null);
+    // A street Chicken still gets the live rows.
+    e.season.on = true;
+    const { chicken } = fakeEngine({});
+    assert.deepEqual(potLuckFeature.decorateVerbs(chicken, [], e).map((r) => [r.id, r.enabled]), [['potluck:dress:turkey_tailfan', true]]);
+    assert.equal(potLuckFeature.extraVerbs(chicken, e), null);
+    assert.deepEqual(dressVerbs({ season: true, street: false, inv: {} }), []);
   });
 
   it('asks the server online before anything changes', () => {

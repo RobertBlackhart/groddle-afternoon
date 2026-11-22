@@ -38,7 +38,7 @@ import {
   MONTH_NAMES,
   dametimeParts,
 } from './game-day.js?v=50c112eb';
-import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=8b81947e';
+import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=61f0a582';
 import { MP_ORDER, RUN_EPOCH_MS, RUN_MS, runAt } from './feats-mp.js?v=d5cb2199';
 import { FEAT_BY_ID } from './solo-feats.js?v=3bc9b43c';
 

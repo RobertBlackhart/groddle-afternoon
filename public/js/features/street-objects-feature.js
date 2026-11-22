@@ -118,7 +118,7 @@
  * t1730000000000 chicken:0@2986,868#512,640).
  */
 
-import { dressVerbCostume } from '../pot-luck.js?v=84484e77';
+import { dressVerbCostume } from '../pot-luck.js?v=3a41ffe7';
 import {
   COPY,
   SHARED_NODE_CLASSES,
@@ -152,7 +152,7 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=a2950cbb';
+} from '../street-objects.js?v=57f1edd9';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=864ea9ff';
@@ -189,7 +189,7 @@ import {
   dragonWalkAt,
   kittyWalkAt,
   walkerSpan,
-} from '../street-creatures.js?v=18c338a3';
+} from '../street-creatures.js?v=e2952c3a';
 
 export const STREET_OBJECTS_FEATURE_ID = 'street-objects';
 const RECONCILE_MS = 250;
