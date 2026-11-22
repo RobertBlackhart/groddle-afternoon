@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.55.1",
+  "release": "v0.56.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 13,
+    "known": 14,
     "unreleased": 0,
-    "fixed": 420,
+    "fixed": 431,
     "lost": 5,
     "purpose": 16,
     "idea": 11
@@ -326,6 +326,18 @@
           "text": "Leaving the Greedy Street Spirit story before the end left the quest stuck with no way back in.",
           "state": "fixed",
           "version": "v0.55.1"
+        },
+        {
+          "id": "G1120",
+          "text": "After a reload the Secret Juju Hint read blank and the Juju Trowel could not dig.",
+          "state": "fixed",
+          "version": "v0.56.0"
+        },
+        {
+          "id": "G1128",
+          "text": "Carry That Weight could not go on after leaving the Juju hideout.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -536,6 +548,12 @@
           "text": "Some rocks and resource spots hung an end in the air over a ledge.",
           "state": "fixed",
           "version": "v0.54.1"
+        },
+        {
+          "id": "G1123",
+          "text": "A strip of dirt floated at the top of Mart's Way 1 and Dust Path 1C, and Hechey Track's herb garden sat sunk into the dirt.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -1235,6 +1253,11 @@
       "name": "Animals",
       "items": [
         {
+          "id": "G1107",
+          "text": "One salmon on Indri Slope could not be pocketed while the others there could. Not found yet.",
+          "state": "known"
+        },
+        {
           "id": "G642",
           "text": "Chickens squawk and flutter off when you walk into them.",
           "state": "fixed",
@@ -1367,6 +1390,12 @@
           "text": "The loading card counted a Piggy you had already captured on that street.",
           "state": "fixed",
           "version": "v0.55.0"
+        },
+        {
+          "id": "G1125",
+          "text": "Naming an animal online could be refused unless you stood at its home spot, and the box did not show the name as it would be saved.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -2406,6 +2435,12 @@
           "report": 330,
           "state": "fixed",
           "version": "v0.41.0"
+        },
+        {
+          "id": "G1126",
+          "text": "A paused skill showed the time left from when it was paused, and a Switch button could resume the wrong skill.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -2746,6 +2781,18 @@
           "text": "The Ticket To Beam Me Down cost nothing and did not count toward the day's tickets.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1119",
+          "text": "Radial Heights started you in the middle, already touching stars, so the spiral could not be done in order.",
+          "state": "fixed",
+          "version": "v0.56.0"
+        },
+        {
+          "id": "G1124",
+          "text": "On an upright phone the Paradise skies stopped short of the top of the screen.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -3015,6 +3062,12 @@
           "text": "On an upright phone the route card covered the buffs and the Menu button slid off its pill.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1121",
+          "text": "On a tall street the phone street map covered its Map button, close button and signposts.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     },
@@ -3138,6 +3191,39 @@
           "text": "Streets you had not visited were hard to see on dark region maps.",
           "state": "fixed",
           "version": "v0.54.1"
+        }
+      ]
+    },
+    {
+      "name": "Menus",
+      "items": [
+        {
+          "id": "G1122",
+          "text": "A menu could flash the picture of the last thing you clicked as it opened.",
+          "state": "fixed",
+          "version": "v0.56.0"
+        }
+      ]
+    },
+    {
+      "name": "Travel",
+      "items": [
+        {
+          "id": "G1129",
+          "text": "Pressing Enter on the travel screen started another trip, so you could bounce between two streets.",
+          "state": "fixed",
+          "version": "v0.56.0"
+        }
+      ]
+    },
+    {
+      "name": "Seasons",
+      "items": [
+        {
+          "id": "G1130",
+          "text": "Pumpkin Seeds would not plant on Pot Luck Day, and out of season the Plant menu left them out without saying why. Online they also would not go in a shared herb bed.",
+          "state": "fixed",
+          "version": "v0.56.0"
         }
       ]
     }

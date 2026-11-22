@@ -4276,6 +4276,119 @@
       "commits": [
         "game:030dc547711"
       ]
+    },
+    {
+      "id": "G1107",
+      "area": "Animals",
+      "text": "One salmon on Indri Slope could not be pocketed while the others there could. Not found yet."
+    },
+    {
+      "id": "G1119",
+      "area": "Paradise",
+      "text": "Radial Heights started you in the middle, already touching stars, so the spiral could not be done in order.",
+      "show": "fixing",
+      "commits": [
+        "game:6e0a4a5842c",
+        "game:675ab8e24f4"
+      ]
+    },
+    {
+      "id": "G1120",
+      "area": "Quests",
+      "text": "After a reload the Secret Juju Hint read blank and the Juju Trowel could not dig.",
+      "show": "fixing",
+      "commits": [
+        "game:36885415c8d",
+        "game:460abdc5e0c"
+      ]
+    },
+    {
+      "id": "G1121",
+      "area": "Phone",
+      "text": "On a tall street the phone street map covered its Map button, close button and signposts.",
+      "show": "fixing",
+      "commits": [
+        "game:27824e954e8"
+      ]
+    },
+    {
+      "id": "G1122",
+      "area": "Menus",
+      "text": "A menu could flash the picture of the last thing you clicked as it opened.",
+      "show": "fixing",
+      "commits": [
+        "game:37fc2240b8f"
+      ]
+    },
+    {
+      "id": "G1123",
+      "area": "Streets",
+      "text": "A strip of dirt floated at the top of Mart's Way 1 and Dust Path 1C, and Hechey Track's herb garden sat sunk into the dirt.",
+      "show": "fixing",
+      "commits": [
+        "game:e76533dc778",
+        "game:6c9ac4adb54"
+      ]
+    },
+    {
+      "id": "G1124",
+      "area": "Paradise",
+      "text": "On an upright phone the Paradise skies stopped short of the top of the screen.",
+      "show": "fixing",
+      "commits": [
+        "game:fa407ae3aeb"
+      ]
+    },
+    {
+      "id": "G1125",
+      "area": "Animals",
+      "text": "Naming an animal online could be refused unless you stood at its home spot, and the box did not show the name as it would be saved.",
+      "show": "fixing",
+      "commits": [
+        "game:d36c9d0caeb",
+        "game:6af789b6700",
+        "server:a53d706",
+        "server:8cb85ba"
+      ]
+    },
+    {
+      "id": "G1126",
+      "area": "Skills",
+      "text": "A paused skill showed the time left from when it was paused, and a Switch button could resume the wrong skill.",
+      "show": "fixing",
+      "commits": [
+        "game:577b565a7bc",
+        "game:9e26f310df8"
+      ]
+    },
+    {
+      "id": "G1128",
+      "area": "Quests",
+      "text": "Carry That Weight could not go on after leaving the Juju hideout.",
+      "show": "fixing",
+      "commits": [
+        "game:460abdc5e0c"
+      ]
+    },
+    {
+      "id": "G1129",
+      "area": "Travel",
+      "text": "Pressing Enter on the travel screen started another trip, so you could bounce between two streets.",
+      "show": "fixing",
+      "commits": [
+        "game:572e64c9b6a"
+      ]
+    },
+    {
+      "id": "G1130",
+      "area": "Seasons",
+      "text": "Pumpkin Seeds would not plant on Pot Luck Day, and out of season the Plant menu left them out without saying why. Online they also would not go in a shared herb bed.",
+      "show": "fixing",
+      "commits": [
+        "game:a7100f07d33",
+        "game:2b6bc9b92e4",
+        "server:b164083"
+      ]
     }
   ]
 }
