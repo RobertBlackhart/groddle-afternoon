@@ -52,6 +52,7 @@ const GAME_SELECTS = {
   'public/js/skills-panel.js': 1, // the skills' category
   'public/js/features/auctions-feature.js': 2, // Browse by type, Sort
   'public/js/features/street-jobs-feature.js': 1, // the hall's group
+  'public/js/ui/projects-sheet.js': 1, // the Projects sheet's Roads to a region (G801)
   'public/js/features/home-street-mp-feature.js': 1, // the signpost pole's Pole, Sign and Size (one maker)
   'public/js/features/homes-feature.js': 1, // the Storage Display Box's Display
   'public/js/features/imagination-feature.js': 1, // Your upgrades' Kind

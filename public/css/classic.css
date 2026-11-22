@@ -2164,6 +2164,15 @@
 :root[data-ui="classic"] #game-root #projects-list .pj-acts { display: flex; flex-wrap: wrap; gap: calc(8 * var(--cu)); margin-top: calc(8 * var(--cu)); }
 :root[data-ui="classic"] #game-root #projects-list .pj-acts .content-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 :root[data-ui="classic"] #game-root #projects-list .pj-empty { margin: 0; padding: calc(10 * var(--cu)) 0; color: var(--c-classic-offline); }
+/* G801: Roads to a region as a folded row of the window, its steps the same rows, numbered. */
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead { margin: calc(10 * var(--cu)) 0 0; padding: calc(8 * var(--cu)) 0; border-top: 1px solid var(--c-classic-row-rule); border-bottom: 1px solid var(--c-classic-row-rule); color: var(--c-classic-text); font: calc(var(--fs-classic-row) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-body); }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead-title { color: var(--c-classic-link); font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-tight) var(--font-classic-title); cursor: pointer; }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead-title:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead > .pj-note { margin: calc(6 * var(--cu)) 0 0; }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead-pick { display: flex; align-items: center; gap: calc(8 * var(--cu)); margin: calc(6 * var(--cu)) 0; color: var(--c-classic-title); font-weight: 700; }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead-pick > .combo { flex: 1 1 auto; width: auto; max-width: calc(320 * var(--cu)); min-width: 0; }
+:root[data-ui="classic"] #game-root #projects-list .pj-ahead-steps { margin: 0; padding: 0; list-style: none; }
+:root[data-ui="classic"] #game-root #projects-list .pj-step { color: var(--c-classic-link); }
 /* Search fields and selects: the 2012 field (InputField.as). */
 :root[data-ui="classic"] #game-root :is(#skills-panel, #achieve-panel, #make-panel, #map-panel) :is(input[type="search"], input[type="text"], select, .combo-input) {
   min-height: calc(25 * var(--cu));

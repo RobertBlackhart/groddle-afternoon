@@ -5155,6 +5155,35 @@
    "rows": [
     "G1075"
    ]
+  },
+  {
+   "id": "roads-to-region",
+   "title": "The Projects sheet's Roads to a region: the street projects that open the way to a region or a Map street you cannot walk to yet, in order, with their progress.",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/projects-tracker.js",
+     "symbol": "aheadRegions / aheadEntries"
+    },
+    {
+     "file": "public/js/ui/projects-sheet.js",
+     "symbol": "renderAhead"
+    },
+    {
+     "file": "public/js/features/street-jobs-feature.js",
+     "symbol": "aheadView"
+    },
+    {
+     "file": "public/js/features/map-routes-feature.js",
+     "symbol": "noRoadPick (Roads to build)"
+    }
+   ],
+   "why": "Glitch's world was fully open, so it never needed a planner for closed roads. In the remake most roads start closed until players build them, and players planned by hand in Global which projects open the way to the snails, the ice or Xalanga.",
+   "ruling": "Austin 2026-11-22: build (lane projk)",
+   "rows": [
+    "G801"
+   ]
   }
  ]
 }

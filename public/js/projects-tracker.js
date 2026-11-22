@@ -53,6 +53,14 @@ export const PROJECTS_TEXT = Object.freeze({
   // Report #425: solo amounts scale by distance from the start (js/street-jobs-solo.js).
   solo: SOLO_PANEL_LINE,
   online: 'Shared amounts: 1/50 of the original totals.',
+  // G801: the street projects that open the way to a region you cannot reach yet.
+  aheadTitle: 'Roads to a region',
+  aheadCopy: 'Pick a region you cannot walk to yet to see which street projects open the way there, in the order you would build them.',
+  aheadPick: 'Region',
+  aheadChoose: 'Choose a region',
+  aheadLoading: 'Working out the roads...',
+  aheadNone: 'Open roads already lead to every region.',
+  aheadUnknown: 'How far along it is shows once you have been near it.',
 });
 
 const whole = (v) => Math.max(0, Math.floor(Number(v) || 0));
@@ -263,6 +271,55 @@ export function projectList(state, catalog, rows = {}, o = {}) {
     .sort((a, b) => (ACTIVE_RANK[a.status] ?? 9) - (ACTIVE_RANK[b.status] ?? 9) || b.progress - a.progress || a.title.localeCompare(b.title));
   const done = entries.filter((e) => e.finished).sort((a, b) => b.doneAt - a.doneAt || a.title.localeCompare(b.title));
   return { active, done, fresh: done.filter((e) => e.isNew).length };
+}
+
+/**
+ * G801 (Dr Flavius, kevbob and Dorktor Who planned it by hand in Global; Austin approved it
+ * 2026-11-22): which street projects stand between you and a region. Glitch's world was fully
+ * open, so the remake's own: the regions none of whose streets the roads as they stand reach
+ * (`reach`), each with the projects on the way (`chainTo(streets)`: js/street-graph.js
+ * fewestClosures, the fewest unbuilt roads, each crossed from a street its board stands on, the
+ * first buildable now). A region no road leads to at all is left out. By name.
+ * @param {{ id: string, name: string, streets: string[] }[]} hubs
+ * @param {Set<string>} reach
+ * @param {(streets: string[]) => { street: string, board: string }[]} chainTo
+ */
+export function aheadRegions(hubs, reach, chainTo) {
+  const out = [];
+  for (const h of hubs || []) {
+    const streets = (h.streets || []).map(gTsid);
+    if (!streets.length || streets.some((t) => reach?.has(t))) continue;
+    const chain = chainTo(streets) || [];
+    if (chain.length) out.push({ id: String(h.id), name: String(h.name || h.id), count: chain.length });
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** The street project that builds `street` (its road), or ''. */
+export function streetProjectId(catalog, street) {
+  const t = gTsid(street);
+  for (const [id, job] of Object.entries(catalog?.jobs || {})) if (job.kind === 'street' && gTsid(job.street) === t) return id;
+  return '';
+}
+
+/**
+ * G801: the projects on the way, in the order they open it: a projectEntry each (progress from
+ * `rowOf(jobId)`: the save's row solo, the shared row online, null when this client has not seen
+ * it), numbered (`step`), its buttons going to the board on the way (the street the road is
+ * crossed from), not the first board in the catalog.
+ */
+export function aheadEntries(state, catalog, chain, rowOf, o = {}) {
+  const out = [];
+  for (const { street, board } of chain || []) {
+    const id = streetProjectId(catalog, street);
+    const e = id ? projectEntry(state, catalog, id, rowOf(id), o) : null;
+    if (!e) continue;
+    e.step = out.length + 1;
+    if (board && !e.finished) e.place = gTsid(board);
+    if (!e.known) e.unknownText = PROJECTS_TEXT.aheadUnknown;
+    out.push(e);
+  }
+  return out;
 }
 
 /** "just now", "5 min ago", "3 h ago", "yesterday", "4 days ago", else the date. */

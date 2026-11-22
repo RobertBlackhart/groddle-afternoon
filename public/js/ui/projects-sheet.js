@@ -24,9 +24,16 @@
  * (.skill-tree-chip), each with its count: #projects-filters, chips [data-pj-filter=all|open|done].
  * Open is the featured project and those under way, Done the finished ones. The choice is kept in
  * this browser (PROJECTS_FILTER_KEY); with none kept the panel opens on Open when anything is open.
+ *
+ * G801: "Roads to a region", folded after the open projects (not under Done): pick a region you
+ * cannot walk to yet and the street projects that open the way there follow in order, each a card
+ * as above (its progress, Set as Destination to its board on the way, Teleport, Show on Map).
+ * features/street-jobs-feature.js works out the regions and the projects (renderAhead's view).
+ * QA hooks: #projects-ahead [data-pj-ahead=<status>], #projects-ahead-region (the select),
+ * #projects-ahead-list, cards [data-project] with [data-step].
  */
 
-import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=c4de279a';
+import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=74da8b8a';
 import { featuredTag } from './featured-project.js?v=2b97d818';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
@@ -67,7 +74,9 @@ export function buildProjectsPanel(doc, root) {
   head.append(icon, title, key, close);
   const body = el(doc, 'div', { class: 'ui-sheet-body' });
   body.append(filterBar(doc));
-  body.append(el(doc, 'div', { id: 'projects-list', class: 'projects-list', 'data-projects-list': '', 'aria-live': 'polite' }));
+  const list = el(doc, 'div', { id: 'projects-list', class: 'projects-list', 'data-projects-list': '', 'aria-live': 'polite' });
+  list.append(aheadBox(doc));
+  body.append(list);
   const foot = el(doc, 'div', { class: 'ui-sheet-foot' });
   const meta = el(doc, 'p', { class: 'panel-meta', id: 'projects-meta' });
   const esc = el(doc, 'span', { class: 'ui-sheet-esc' });
@@ -80,6 +89,77 @@ export function buildProjectsPanel(doc, root) {
   if (after?.parentElement === root) after.after(panel);
   else root.append(panel);
   return panel;
+}
+
+/** G801: the folded Roads to a region box, made once and moved back into the list on each draw. */
+const aheadBoxes = new WeakMap();
+/** What renderAhead was last handed: its callbacks (onToggle, onPick) and the card options. */
+let aheadHooks = null;
+
+function aheadBox(doc) {
+  if (aheadBoxes.has(doc)) return aheadBoxes.get(doc);
+  const box = el(doc, 'details', { id: 'projects-ahead', class: 'pj-ahead', dataset: { pjAhead: 'closed' } });
+  box.append(el(doc, 'summary', { class: 'pj-ahead-title' }, T.aheadTitle));
+  box.append(el(doc, 'p', { class: 'pj-note' }, T.aheadCopy));
+  const pick = el(doc, 'label', { class: 'pj-ahead-pick' });
+  const select = el(doc, 'select', { id: 'projects-ahead-region' });
+  select.append(el(doc, 'option', { value: '' }, T.aheadChoose));
+  pick.append(el(doc, 'span', {}, T.aheadPick), select);
+  box.append(pick, el(doc, 'div', { id: 'projects-ahead-list', class: 'pj-ahead-list' }));
+  box.addEventListener('toggle', () => aheadHooks?.onToggle?.(Boolean(box.open)));
+  select.addEventListener('change', () => aheadHooks?.onPick?.(String(select.value || '')));
+  aheadBoxes.set(doc, box);
+  return box;
+}
+
+const roadsWord = (n) => (n === 1 ? '1 road to build' : `${n} roads to build`);
+
+/**
+ * G801: fill the Roads to a region box.
+ * @param {Document} doc
+ * @param {{ status: 'closed'|'loading'|'none'|'pick'|'open'|'noroad'|'list', regions?: { id: string, name: string, count: number }[],
+ *   hub?: string, name?: string, entries?: object[] }} view
+ * @param {{ onToggle?: (open: boolean) => void, onPick?: (hubId: string) => void, now?: number, teleport?: Function, onAction?: Function, openNeeds?: Set<string> }} o
+ */
+export function renderAhead(doc, view, o = {}) {
+  aheadHooks = o;
+  const box = aheadBox(doc);
+  const v = view || { status: 'closed' };
+  box.dataset.pjAhead = v.status;
+  const open = v.status !== 'closed';
+  if (Boolean(box.open) !== open) box.open = open;
+  const select = box.children.find?.((c) => c.tagName === 'LABEL')?.children.find((c) => c.tagName === 'SELECT') || box.querySelector?.('select');
+  const list = box.children.find?.((c) => c.id === 'projects-ahead-list') || box.querySelector?.('#projects-ahead-list');
+  if (select) {
+    const regions = [...(v.regions || [])];
+    if (v.hub && !regions.some((r) => r.id === v.hub)) regions.push({ id: v.hub, name: v.name || v.hub, count: 0 });
+    const sig = JSON.stringify(regions.map((r) => [r.id, r.count]));
+    if (select.dataset.sig !== sig) {
+      select.dataset.sig = sig;
+      select.replaceChildren(el(doc, 'option', { value: '' }, T.aheadChoose), ...regions.map((r) => el(doc, 'option', { value: r.id }, r.count ? `${r.name} (${roadsWord(r.count)})` : r.name)));
+    }
+    select.value = v.hub || '';
+    select.disabled = v.status === 'loading' || v.status === 'none';
+  }
+  if (!list) return;
+  list.replaceChildren();
+  const note = (text) => list.append(el(doc, 'p', { class: 'pj-note' }, text));
+  if (v.status === 'loading') note(T.aheadLoading);
+  else if (v.status === 'none') note(T.aheadNone);
+  else if (v.status === 'open') note(`Open roads already lead to ${v.name}.`);
+  else if (v.status === 'noroad') note(`No road leads to ${v.name}.`);
+  else if (v.status === 'list') {
+    const n = v.entries.length;
+    note(n === 1 ? `To reach ${v.name}, this road needs building.` : `To reach ${v.name}, these ${n} roads need building, first one first.`);
+    const ol = el(doc, 'ol', { class: 'pj-ahead-steps' });
+    const now = o.now ?? Date.now();
+    for (const e of v.entries) {
+      const li = el(doc, 'li');
+      li.append(projectCard(doc, e, { ...o, now }));
+      ol.append(li);
+    }
+    list.append(ol);
+  }
 }
 
 /** G1116: the All / Open / Done chips, drawn once; renderProjects sets their counts and which is on. */
@@ -193,10 +273,11 @@ export function projectCard(doc, e, o = {}) {
   const now = o.now ?? Date.now();
   const card = el(doc, 'article', {
     class: `pj-card${e.finished ? ' is-done' : ''}${e.isNew ? ' is-new' : ''}${e.featured ? ' is-featured' : ''}`,
-    dataset: { project: e.jobId, status: e.status, ...(e.isNew ? { new: '1' } : {}), ...(e.featured ? { featured: '1' } : {}) },
+    dataset: { project: e.jobId, status: e.status, ...(e.isNew ? { new: '1' } : {}), ...(e.featured ? { featured: '1' } : {}), ...(e.step ? { step: String(e.step) } : {}) },
   });
   const head = el(doc, 'div', { class: 'pj-head' });
   const title = el(doc, 'h3', { class: 'pj-title' });
+  if (e.step) title.append(el(doc, 'span', { class: 'pj-step' }, `${e.step}.`), doc.createTextNode(' '));
   if (e.featured) title.append(featuredTag(doc), doc.createTextNode(' '));
   title.append(doc.createTextNode(e.title));
   if (e.isNew) title.append(doc.createTextNode(' '), el(doc, 'span', { class: 'pj-new' }, T.newMark));
@@ -213,7 +294,7 @@ export function projectCard(doc, e, o = {}) {
   const share = shareLine(e);
   if (share) card.append(el(doc, 'p', { class: 'pj-share' }, share));
   if (!e.finished) {
-    if (!e.known) card.append(el(doc, 'p', { class: 'pj-note' }, T.unknown));
+    if (!e.known) card.append(el(doc, 'p', { class: 'pj-note' }, e.unknownText || T.unknown));
     else if (e.needs.length) {
       const needs = el(doc, 'details', { class: 'pj-needs', 'data-pj-needs': '' });
       if (o.openNeeds?.has(e.jobId)) needs.open = true;
@@ -260,6 +341,7 @@ export function renderProjects(doc, list, o = {}) {
   const now = o.now ?? Date.now();
   const scroll = box.parentElement?.scrollTop || 0;
   box.replaceChildren();
+  const ahead = aheadBoxes.get(doc) || null;
   const featured = list?.featured || null;
   // The featured project shows once, at the top (G656).
   const active = (list?.active || []).filter((e) => !featured || e.jobId !== featured.jobId);
@@ -292,6 +374,7 @@ export function renderProjects(doc, list, o = {}) {
   }
   if (!active.length && !done.length) {
     if (!featured) box.append(el(doc, 'p', { class: 'pj-empty' }, T.empty));
+    if (ahead) box.append(ahead);
   } else {
     const section = (name, rows, empty, kind) => {
       const sec = el(doc, 'section', { class: 'pj-section', dataset: { pjSection: kind }, 'aria-label': name });
@@ -301,6 +384,8 @@ export function renderProjects(doc, list, o = {}) {
       box.append(sec);
     };
     if (showOpen) section(T.active, active, T.noneActive, 'active');
+    // G801: the roads to a region, after what is open; never under Done.
+    if (showOpen && ahead) box.append(ahead);
     if (showDone) section(T.done, done, T.noneDone, 'done');
   }
   const meta = doc.getElementById('projects-meta');

@@ -27,8 +27,8 @@ import {
   projectPlace,
   shareLine,
   statusLine,
-} from '../public/js/projects-tracker.js?v=c4de279a';
-import { PROJECTS_FILTER_KEY, buildProjectsPanel, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=685fc60d';
+} from '../public/js/projects-tracker.js?v=74da8b8a';
+import { PROJECTS_FILTER_KEY, buildProjectsPanel, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=064b21c8';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=44e61ce8';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=5c5a4301';
@@ -315,7 +315,10 @@ describe('Projects panel (js/ui/projects-sheet.js)', () => {
     doc.body.append(gameRoot);
     buildProjectsPanel(doc, gameRoot);
     renderProjects(doc, { active: [], done: [], fresh: 0 }, { now: NOW });
-    assert.equal(doc.getElementById('projects-list').textContent, PROJECTS_TEXT.empty);
+    const box = doc.getElementById('projects-list');
+    assert.equal(box.children[0].textContent, PROJECTS_TEXT.empty);
+    // G801: the roads to a region follow, folded, even with nothing of yours yet.
+    assert.deepEqual(box.children.map((c) => c.id || c.className), ['pj-empty', 'projects-ahead']);
   });
 });
 

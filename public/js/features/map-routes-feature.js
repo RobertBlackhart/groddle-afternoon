@@ -119,6 +119,8 @@ let walk = null;
 let gps = null;
 let lastDead = null;
 let pickMode = false;
+/** G801: the street last picked on the Map that no open road reaches yet: its card offers the roads to build. */
+let noRoadPick = '';
 /** The Map row's route line opened out (a click on it; MAPFRAME). */
 let routeLineOpen = false;
 /** #104: the route's whole list of stops shown in its own box under the line. */
@@ -1028,6 +1030,9 @@ function bindMapCanvas(engine) {
     loadGraph().then(() => {
       pickMode = false;
       const res = setRoute(engine, { to: tsid, source: 'player' });
+      // G801: only closed roads in the way (or the street itself still being built): the card offers which to build.
+      noRoadPick = !res.ok && res.error === ROUTE_TEXT.noRoad ? tsid : '';
+      engine.setData?.('routeNoRoad', noRoadPick);
       if (!res.ok) {
         engine.toast?.(res.error, 2600);
         redrawOpenMap(engine);
@@ -1077,6 +1082,7 @@ function mapCard(engine) {
   } else {
     lines.push(pickMode ? `${isPhoneDevice() ? 'Tap' : 'Click'} a street to set it as your destination.` : 'No destination set.');
   }
+  if (noRoadPick && !pickMode) lines.push(`No open road leads to ${label(noRoadPick)} yet.`);
   card.dataset.mapRouteQuest = quest ? quest.source : '';
   const body = `${lead}<div class="map-route-body">${head ? `<strong>${esc(head)}</strong><br>` : ''}${lines.map((l) => `<span>${esc(l)}</span>`).join('<br>')}</div>`;
   card.innerHTML = `${body}<span class="map-route-actions"></span>`;
@@ -1119,6 +1125,7 @@ function mapCard(engine) {
   }
   button('Set a destination', () => {
     pickMode = !pickMode;
+    noRoadPick = '';
     engine.setData?.('routeMode', pickMode ? 'pick' : '');
     loadGraph();
     engine.openMap?.();
@@ -1148,6 +1155,14 @@ function mapCard(engine) {
   }
   if (r) {
     button('Clear route', () => dropRoute(engine, { reason: 'closed' }));
+  }
+  // G801: the street projects that open the way, in the Projects sheet's Roads to a region.
+  if (noRoadPick && !pickMode) {
+    const to = noRoadPick;
+    button('Roads to build', () => {
+      noRoadPick = '';
+      engine.query?.('projectsPanel', 'ahead', engine, to);
+    }).dataset.routeAhead = to;
   }
   if (pickMode) roomPicker(engine, card, shownHub);
   // openMap renders the SVG before it asks for cards, so the route can go on now.

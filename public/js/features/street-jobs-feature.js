@@ -159,8 +159,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=c4de279a';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=685fc60d';
+import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=74da8b8a';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=064b21c8';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=ee4dbf3c';
@@ -2860,7 +2860,7 @@ const mineRows = new Map();
 /** G656: the featured street project (js/featured-project.js featuredFromServer), online only; null in solo. */
 let featured = null;
 let featuredTick = 0;
-const pj = { panel: null, btn: null, dot: null, open: false, sessionSeen: 0, sig: '', badge: -1, asked: 0, answered: false, openNeeds: new Set(), last: '', pack: '', packAt: 0 };
+const pj = { panel: null, btn: null, dot: null, open: false, sessionSeen: 0, sig: '', badge: -1, asked: 0, answered: false, openNeeds: new Set(), last: '', pack: '', packAt: 0, aheadOpen: false, aheadTo: '', aheadSig: '', aheadRetry: 0 };
 
 /** The rows the panel reads: the save's in solo; online the server's list, then this page's live board rows. */
 function trackerRows() {
@@ -3186,10 +3186,138 @@ function renderProjectsPanel(engine) {
     pj.sig = sig;
     renderProjects(document, list, { meta, teleport, onAction: (act, e) => projectAction(engine, act, e), openNeeds: pj.openNeeds });
   }
+  renderProjectsAhead(engine, { teleport });
   engine.setData?.('projectsOpen', '1');
   engine.setData?.('projectsCount', `${list.active.length}/${list.done.length}`);
   engine.setData?.('projectsNewShown', String(list.fresh));
   engine.setData?.('projectsSource', mpMode ? (pj.answered ? 'server' : 'local') : 'solo');
+}
+
+/**
+ * G801: the regions, from the street index (each map hub and its streets), made once.
+ */
+let regionHubs = null;
+function hubsOfIndex() {
+  if (regionHubs || !streetIndex?.streets) return regionHubs || [];
+  const by = new Map();
+  for (const [tsid, meta] of Object.entries(streetIndex.streets)) {
+    const id = String(meta?.hubId || '');
+    if (!id || !meta.hubName) continue;
+    if (!by.has(id)) by.set(id, { id, name: meta.hubName, streets: [] });
+    by.get(id).streets.push(tsid);
+  }
+  regionHubs = [...by.values()];
+  return regionHubs;
+}
+
+/**
+ * G801: a project's row for the Roads to a region cards. Solo the save's (a fresh one when nobody
+ * has started it); online the shared rows this client holds: yours (project_mine), the featured
+ * one's (project_featured), a street's you have been on (project_street, project_state); null for
+ * one it has not seen (its card says so). Asks nothing of the server.
+ */
+function aheadRow(jobId) {
+  if (!mpMode) return state.jobs[jobId] || normalizeStreetJobState({ jobs: { [jobId]: {} } }).jobs[jobId];
+  const own = mineRows.get(jobId) || state.jobs[jobId] || null;
+  if (featured?.jobId === jobId && featured.row) return { ...rowFromServer(featured.row, mp?.offset || 0), mine: own?.mine || {} };
+  return own;
+}
+
+let aheadCache = { key: '', regions: null };
+/**
+ * G801: what the Roads to a region box shows (projects-sheet.js renderAhead's view). The pick is a
+ * region ("h:<hub id>", from the box's list) or a street ("s:<tsid>", from the Map's Roads to build).
+ */
+function aheadView(engine) {
+  if (!pj.aheadOpen) return { status: 'closed' };
+  const to = pj.aheadTo;
+  const r = questReach(engine);
+  if (!r || !waysReady || !streetIndex) return { status: 'loading', hub: to, name: aheadName(to) };
+  const chainTo = (targets) => fewestClosures(waysReady.graph, { free: waysReady.free, starts: r.starts, targets, boards: boardsOf() });
+  if (aheadCache.key !== r.key) {
+    aheadCache = { key: r.key, regions: aheadRegions(hubsOfIndex(), r.reach, chainTo).map((x) => ({ ...x, id: `h:${x.id}` })) };
+  }
+  const regions = aheadCache.regions;
+  const streets = aheadStreets(to);
+  if (!streets.length) return { status: regions.length ? 'pick' : 'none', regions };
+  const base = { regions, hub: to, name: aheadName(to) };
+  if (streets.some((t) => r.reach.has(t))) return { ...base, status: 'open' };
+  const chain = chainTo(streets);
+  if (!chain.length) return { ...base, status: 'noroad' };
+  const entries = aheadEntries(state, catalog, chain, aheadRow, {
+    now: Date.now(),
+    opts: opts(),
+    closed: closedStreets(state, catalog, opts()),
+    labels: { item: (cls, n) => itemLabel(cls, n), skill: skillLabel, icon: itemIcon },
+    ctx: projectsCtx(engine),
+  });
+  for (const e of entries) {
+    const where = streetMeta(e.place);
+    e.placeLabel = where.label;
+    e.placeTip = `A guided path to ${giverNoun(e.place, e.jobId) || 'the project board'} on ${where.label}`;
+  }
+  return { ...base, status: 'list', entries };
+}
+
+/** G801: the streets a pick stands for: a region's, or the one street. */
+function aheadStreets(to) {
+  if (to.startsWith('h:')) return hubsOfIndex().find((h) => h.id === to.slice(2))?.streets || [];
+  if (to.startsWith('s:') && streetIndex?.streets?.[streetMeta(to.slice(2)).tsid]) return [streetMeta(to.slice(2)).tsid];
+  return [];
+}
+
+/** G801: a pick's name: the region, or the street and its region. */
+function aheadName(to) {
+  if (to.startsWith('h:')) return hubsOfIndex().find((h) => h.id === to.slice(2))?.name || '';
+  if (!to.startsWith('s:')) return '';
+  const m = streetMeta(to.slice(2));
+  return m.hubName ? `${m.label} (${m.hubName})` : m.label;
+}
+
+/** G801: the Projects panel opened on the roads to a street (the Map's Roads to build). */
+function openAhead(engine, tsid) {
+  pj.aheadOpen = true;
+  pj.aheadTo = tsid ? `s:${streetMeta(tsid).tsid}` : pj.aheadTo;
+  pj.aheadSig = '';
+  if (!pj.open) openProjects(engine);
+  else renderProjectsPanel(engine);
+  const box = pj.panel?.querySelector?.('#projects-ahead');
+  box?.scrollIntoView?.({ block: 'start' });
+  box?.querySelector?.('select')?.focus?.();
+}
+
+/** G801: draw the Roads to a region box when what it shows changed (a redraw would take the focus off its select). */
+function renderProjectsAhead(engine, { teleport, force = false } = {}) {
+  if (!pj.panel || pj.panel.hidden || !catalog || typeof document === 'undefined') return;
+  const view = aheadView(engine);
+  const tp = teleport || ((e) => projectTeleport(engine, e));
+  const sig = JSON.stringify([view.status, view.hub || '', (view.regions || []).map((x) => `${x.id}:${x.count}`).join(','),
+    ...(view.entries || []).map((e) => [e.jobId, e.status, e.phase, Math.round(e.progress * 1000), e.known, e.place, JSON.stringify(tp(e)), e.needs.map((n) => `${n.id}:${n.left}:${n.can}`).join(',')])]);
+  // The roads still loading (or, online, the world's first word): look again in a second while the box is open.
+  if (view.status === 'loading' && !pj.aheadRetry) {
+    pj.aheadRetry = setTimeout(() => {
+      pj.aheadRetry = 0;
+      if (pj.open && pj.aheadOpen) renderProjectsAhead(engine);
+    }, 1000);
+  }
+  engine.setData?.('projectsAhead', view.status);
+  engine.setData?.('projectsAheadSteps', (view.entries || []).map((e) => e.jobId).join(','));
+  if (!force && sig === pj.aheadSig) return;
+  pj.aheadSig = sig;
+  renderAhead(document, view, {
+    teleport: tp,
+    onAction: (act, e) => projectAction(engine, act, e),
+    openNeeds: pj.openNeeds,
+    onToggle: (open) => {
+      if (open === pj.aheadOpen) return;
+      pj.aheadOpen = open;
+      renderProjectsAhead(engine);
+    },
+    onPick: (to) => {
+      pj.aheadTo = to;
+      renderProjectsAhead(engine);
+    },
+  });
 }
 
 /**
@@ -3200,7 +3328,8 @@ function renderProjectsPanel(engine) {
 function tickProjectsPack(engine, now) {
   if (!pj.open || now - (pj.packAt || 0) < 1000) return;
   pj.packAt = now;
-  const stamp = `${packStamp(engine.inv, { currants: engine.pc?.currants }, engine.toolState)}|${(engine.learnedSkills || []).length}`;
+  // G801: and the street you stand on (the Roads to a region start there).
+  const stamp = `${packStamp(engine.inv, { currants: engine.pc?.currants }, engine.toolState)}|${(engine.learnedSkills || []).length}|${engine.streetTsid || ''}`;
   if (stamp === pj.pack) return;
   pj.pack = stamp;
   renderProjectsPanel(engine);
@@ -3561,11 +3690,13 @@ export const streetJobsFeature = {
   },
 
   /**
-   * Ticket 81: the Projects panel ('open' | 'close' | 'toggle' | 'isOpen'), for game.js's P key,
+   * Ticket 81: the Projects panel ('open' | 'close' | 'toggle' | 'isOpen'; G801 'ahead' with a street), for game.js's P key,
    * Escape and the panel closers.
    */
-  projectsPanel(action, engine) {
+  projectsPanel(action, engine, to) {
     if (action === 'open') return openProjects(engine), true;
+    // G801: the Map's Roads to build: the panel open on the roads to that street.
+    if (action === 'ahead') return openAhead(engine, to), true;
     if (action === 'toggle') return toggleProjects(engine), true;
     if (action === 'close') return closeProjects(engine);
     if (action === 'isOpen') return Boolean(pj.open && pj.panel && !pj.panel.hidden);

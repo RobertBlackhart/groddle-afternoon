@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { featuredNeedsLine, featuredSkillsLine } from '../public/js/featured-project.js?v=ee4dbf3c';
-import { needEntry } from '../public/js/projects-tracker.js?v=c4de279a';
+import { needEntry } from '../public/js/projects-tracker.js?v=74da8b8a';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

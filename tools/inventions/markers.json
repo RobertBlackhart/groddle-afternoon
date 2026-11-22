@@ -918,6 +918,9 @@
     "ours: Ours: the tools' spots (street items; no snap shows": "ours-practice",
     "stand-in: * They replace the stand-ins store_counter and k04_table_01 (the": "ours-practice"
   },
+  "public/js/projects-tracker.js": {
+    "remake-own: * open, so the remake's own: the regions none of whose streets the roads as": "roads-to-region"
+  },
   "public/js/purple-journey.js": {
     "invented: there through a crack under the floor. I have invented them myself. After all, there was nothing else I": "not-an-invention"
   },
