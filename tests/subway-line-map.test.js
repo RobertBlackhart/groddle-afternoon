@@ -91,7 +91,7 @@ describe('wiring', () => {
   });
 
   it('G874 (#373): Esc closes the station sign\'s Subway System map, as the client\'s Dialog did', () => {
-    const open = feature.slice(feature.indexOf('function openMap(engine'), feature.indexOf('const esc = (s)'));
+    const open = feature.slice(feature.indexOf('function openMap(engine'), feature.indexOf('function mapSvg('));
     // aria-modal: game.js escapeOpenFeatureDialog hands it the key when focus is elsewhere.
     assert.match(open, /el\.setAttribute\('aria-modal', 'true'\);/);
     assert.match(open, /el\.addEventListener\('keydown', \(e\) => \{\s*if \(e\.key !== 'Escape'\) return;\s*e\.preventDefault\(\);\s*e\.stopPropagation\(\);\s*close\.click\(\);/);

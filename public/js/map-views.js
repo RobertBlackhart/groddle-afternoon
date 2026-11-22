@@ -25,7 +25,7 @@
  * above ground; its region's name opens that region's map with the street found.
  */
 import { WORLD_MAP } from './map-views-data.js?v=07734585';
-import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName } from './subway.js?v=36c6d2b2';
+import { LINE_COLOURS, STATIONS, SUBWAY_ART, SUBWAY_ART_BASE, lineName, lineText } from './subway.js?v=36c6d2b2';
 
 export const MAP_VIEWS = Object.freeze(['hub', 'world', 'subway']);
 /** The window's title in each view (the client's: the region's name, "World Map", "Subway System"). */
@@ -306,10 +306,19 @@ export function nearestStation(spot, stations = STATIONS, regions = WORLD_MAP.re
  * G917 (#445): the Encyclopedia draws it at build time (tools/encyclopedia/subway.mjs) with `links`,
  * station => { street, hub, label }: each station is a link to its street's page and its region's name
  * to the region's page, in place of the game's buttons; `buttons: false` leaves out the line buttons.
+ * G1127 (#606): the line map on the train is this map too, with `ride` (js/subway.js lineView): the
+ * line being ridden, the next stop's marker, a dashed ring round the stop you picked (its region's
+ * name reads Your stop), each station a button to pick it, and the train's star (data-star) at its
+ * station, which features/subway-feature.js placeLineStar moves along the track while it runs. The
+ * station's Subway Map is this map as well: `next` (a station id) marks the next stop, and
+ * `interactive: false` draws the stations as plain marks, with nothing to press.
  */
-export function renderSubwayMapSvg({ direction = 'forwards', here = null, stations = STATIONS, paper = subwayPaper(), links = null, buttons: withButtons = true } = {}) {
+export function renderSubwayMapSvg({ direction = 'forwards', here = null, stations = STATIONS, paper = subwayPaper(), links = null, buttons: withButtons = true, ride = null, next: nextId = null, interactive = true } = {}) {
   const W = 760;
   const H = 460;
+  const riding = ride?.at ? ride : null;
+  if (riding) direction = riding.direction === 'backwards' ? 'backwards' : 'forwards';
+  const blue = direction === 'backwards';
   const colour = LINE_COLOURS[direction] || LINE_COLOURS.forwards;
   const segs = subwaySegments(subwayPoints(stations));
   const d = `M${segs[0][0].map(f1).join(',')}` + segs.map(([, c1, c2, p1]) => ` C${c1.map(f1).join(',')} ${c2.map(f1).join(',')} ${p1.map(f1).join(',')}`).join('') + ' Z';
@@ -319,31 +328,47 @@ export function renderSubwayMapSvg({ direction = 'forwards', here = null, statio
     const deg = (m.angle * 180) / Math.PI + (direction === 'backwards' ? 180 : 0);
     return `<path class="subway-arrow" d="M-6,-5 L6,0 L-6,5 Z" transform="translate(${f1(m.x)} ${f1(m.y)}) rotate(${f1(deg)})"/>`;
   }).join('');
-  const mark = here?.station || null;
+  const mark = riding ? null : here?.station || null;
+  const nextArt = SUBWAY_ART[blue ? 'subway_map_next_stop_blue' : 'subway_map_next_stop_red'];
   const stops = stations.map((s) => {
     const [x, y] = s.map_pos;
     const [dx, dy, anchor] = SUBWAY_LABELS[s.id] || [14, -4, 'start'];
     const isHere = mark && mark.id === s.id;
     const label = `${s.name}, ${s.hubName}`;
     const link = links ? links(s) : null;
-    const hitOpen = link?.street
-      ? `<a class="subway-stop-hit" href="${esc(link.street)}" aria-label="${esc(link.label || label)}">`
-      : `<g class="subway-stop-hit" tabindex="0" role="button" aria-label="${esc(`${label}: set a destination or teleport`)}">`;
-    const hubText = link
-      ? `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}">${esc(s.hubName)}</text>`
-      : `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}" tabindex="0" role="link" aria-label="${esc(`${s.hubName} map`)}">${esc(s.hubName)}</text>`;
-    return `<g class="subway-stop${isHere ? ' is-here' : ''}" data-station="${s.id}" data-tsid="${esc(s.surfaceStreetTsid)}" data-hub="${esc(s.surfaceHubId)}" data-label="${esc(s.surfaceLabel)}">`
+    const mine = riding?.chosen?.id === s.id;
+    const isNext = (riding ? riding.next?.id : Number(nextId)) === s.id;
+    let hitOpen;
+    if (riding) hitOpen = `<g class="subway-stop-hit" tabindex="0" role="button" aria-pressed="${mine}" aria-label="${esc(mine ? `${lineText.unmark}: ${s.name}` : lineText.mark(s.name))}">`;
+    else if (!interactive) hitOpen = '<g class="subway-stop-hit">';
+    else if (link?.street) hitOpen = `<a class="subway-stop-hit" href="${esc(link.street)}" aria-label="${esc(link.label || label)}">`;
+    else hitOpen = `<g class="subway-stop-hit" tabindex="0" role="button" aria-label="${esc(`${label}: set a destination or teleport`)}">`;
+    let hubText;
+    if (riding) hubText = `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}">${esc(mine ? lineText.yourStop : s.hubName)}</text>`;
+    else if (link || !interactive) hubText = `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}">${esc(s.hubName)}</text>`;
+    else hubText = `<text class="subway-stop-hub" x="${x + dx}" y="${y + dy + 15}" text-anchor="${anchor}" tabindex="0" role="link" aria-label="${esc(`${s.hubName} map`)}">${esc(s.hubName)}</text>`;
+    const ring = mine ? `<circle class="subway-stop-mine" cx="${x}" cy="${y}" r="15"/>` : '';
+    const next = isNext && nextArt
+      ? `<image class="subway-stop-next" href="${esc(SUBWAY_ART_BASE + nextArt[0])}" x="${x - nextArt[1] / 2}" y="${y - nextArt[2] / 2}" width="${nextArt[1]}" height="${nextArt[2]}" pointer-events="none"/>`
+      : '';
+    const cls = `subway-stop${isHere ? ' is-here' : ''}${isNext ? ' is-next' : ''}${mine ? ' is-mine' : ''}`;
+    return `<g class="${cls}" data-station="${s.id}" data-tsid="${esc(s.surfaceStreetTsid)}" data-hub="${esc(s.surfaceHubId)}" data-label="${esc(s.surfaceLabel)}">`
       + hitOpen
-      + `<circle class="subway-stop-pad" cx="${x}" cy="${y}" r="14"/><circle class="subway-stop-ring" cx="${x}" cy="${y}" r="6"/><circle class="subway-stop-dot" cx="${x}" cy="${y}" r="2.6"/>`
-      + `<text class="subway-stop-name" x="${x + dx}" y="${y + dy}" text-anchor="${anchor}">${esc(s.name)}</text>${link?.street ? '</a>' : '</g>'}`
-      + `${link?.hub ? `<a class="subway-stop-hub-link" href="${esc(link.hub)}">${hubText}</a>` : hubText}</g>`;
+      + `<circle class="subway-stop-pad" cx="${x}" cy="${y}" r="14"/>${ring}<circle class="subway-stop-ring" cx="${x}" cy="${y}" r="6"/><circle class="subway-stop-dot" cx="${x}" cy="${y}" r="2.6"/>${next}`
+      + `<text class="subway-stop-name" x="${x + dx}" y="${y + dy}" text-anchor="${anchor}">${esc(s.name)}</text>${link?.street && !riding ? '</a>' : '</g>'}`
+      + `${link?.hub && !riding ? `<a class="subway-stop-hub-link" href="${esc(link.hub)}">${hubText}</a>` : hubText}</g>`;
   }).join('');
-  const art = mark ? SUBWAY_ART[direction === 'backwards' ? 'subway_map_current_station_blue' : 'subway_map_current_station_red'] : null;
+  const art = SUBWAY_ART[blue ? 'subway_map_current_station_blue' : 'subway_map_current_station_red'];
   const you = mark && art
     ? `<image class="map-you subway-you" href="${esc(SUBWAY_ART_BASE + art[0])}" x="${mark.map_pos[0] - art[1] / 2}" y="${mark.map_pos[1] - art[2] / 2 - 1}" width="${art[1]}" height="${art[2]}" pointer-events="none"/>`
     : '';
+  // The train's star, on its station; placeLineStar moves it along the track (translate) while it runs.
+  const trainAt = riding ? stations.find((s) => s.id === riding.at.id) : null;
+  const star = trainAt && art
+    ? `<image class="map-you subway-you subway-line-star${riding.moving ? ' moving' : ''}" data-star="1" href="${esc(SUBWAY_ART_BASE + art[0])}" x="${-art[1] / 2}" y="${-art[2] / 2 - 1}" width="${art[1]}" height="${art[2]}" transform="translate(${trainAt.map_pos[0]} ${trainAt.map_pos[1]})" pointer-events="none"/>`
+    : '';
   // The line buttons at the top right (MapTransit.as build: each line's name over a stroke of its colour).
-  const buttons = !withButtons ? '' : ['forwards', 'backwards'].map((dir, i) => {
+  const buttons = !withButtons || riding || !interactive ? '' : ['forwards', 'backwards'].map((dir, i) => {
     const on = dir === direction;
     const x = 586 + i * 86;
     return `<g class="subway-line-btn${on ? ' is-on' : ''}" data-dir="${dir}" tabindex="0" role="button" aria-pressed="${on}" style="--line-c: ${LINE_COLOURS[dir]}">`
@@ -356,9 +381,10 @@ export function renderSubwayMapSvg({ direction = 'forwards', here = null, statio
   const paperArt = paper?.href
     ? `<image class="subway-paper-art map-bg-soft${paper.wait ? ' is-waiting' : ''}" href="${esc(keyedArt(paper.href))}"${hi} x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" pointer-events="none"/>`
     : '';
-  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="subway-map-svg" role="group" aria-label="Subway System, ${esc(lineName(direction))}" style="--line-c: ${colour}">`
+  const aria = riding ? lineText.title(lineName(direction)) : `Subway System, ${lineName(direction)}`;
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="subway-map-svg${riding ? ' is-riding' : ''}${interactive ? '' : ' is-still'}" role="group" aria-label="${esc(aria)}" style="--line-c: ${colour}">`
     + `<rect class="subway-paper" width="${W}" height="${H}"/>${paperArt}`
-    + `<path class="subway-track" d="${d}"/>${arrows}${stops}${you}${buttons}</svg>`;
+    + `<path class="subway-track" d="${d}"/>${arrows}${stops}${you}${star}${buttons}</svg>`;
 }
 
 /**

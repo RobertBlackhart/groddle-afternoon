@@ -8,11 +8,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { clampMapView, fitMapView, mapViewBox, viewWithPointAt } from '../public/js/map-zoom.js?v=4f0762b2';
+import { renderSubwayMapSvg } from '../public/js/map-views.js?v=b333b9df';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/subway-feature.js'), 'utf8');
 const client = join(root, '../glitch-client/com/tinyspeck/engine/view/gameoverlay/maps/HubMapDialog.as');
-const open = feature.slice(feature.indexOf('function openMap(engine'), feature.indexOf('const esc = (s)'));
+const open = feature.slice(feature.indexOf('function openMap(engine'), feature.indexOf('function mapSvg('));
 
 describe('G909: the Subway System map on a phone (#437)', () => {
   it('the card is held to the screen: one grid track the width of the screen, the head wraps upright', () => {
@@ -32,14 +33,16 @@ describe('G909: the Subway System map on a phone (#437)', () => {
   });
 
   it("the map's frame is its viewBox: fit shows it all, a zoom stays inside it", () => {
-    const vb = /<svg viewBox="([\d. ]+)"/.exec(feature.slice(feature.indexOf('function mapSvg(')))[1].split(' ').map(Number);
-    assert.deepEqual(vb, [110, 0, 590, 475]);
+    // G1127 (#606): the station's map is the Map's Subway view, on Glitch's own 760 x 460 frame.
+    assert.match(feature, /function mapSvg\(station, direction\) \{[\s\S]*?return renderSubwayMapSvg\(\{/);
+    const vb = /<svg viewBox="([\d. ]+)"/.exec(renderSubwayMapSvg({ interactive: false }))[1].split(' ').map(Number);
+    assert.deepEqual(vb, [0, 0, 760, 460]);
     assert.deepEqual(mapViewBox(vb, fitMapView(vb)), vb);
     // Two fingers spread to 2x over the top left corner: the view never leaves the paper.
-    const v = viewWithPointAt(vb, 2, 110, 0, 0.1, 0.1);
+    const v = viewWithPointAt(vb, 2, 0, 0, 0.1, 0.1);
     const [x, y, w, h] = mapViewBox(vb, v);
-    assert.equal(w, 295);
-    assert.ok(x >= 110 && y >= 0 && x + w <= 700 && y + h <= 475);
+    assert.equal(w, 380);
+    assert.ok(x >= 0 && y >= 0 && x + w <= 760 && y + h <= 460);
     assert.equal(clampMapView(vb, { zoom: 9, cx: 0, cy: 0 }).zoom, 3);
   });
 

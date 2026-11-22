@@ -5213,6 +5213,35 @@
    "rows": [
     "G400"
    ]
+  },
+  {
+   "id": "subway-map-one-look",
+   "title": "Every subway map is the Map's Subway view: the line map on the train and the station's Subway Map have its paper, curved track and window, the train's star rides the curve between stops, and each line's colour comes from one table of design tokens (#606).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/map-views.js",
+     "symbol": "renderSubwayMapSvg (ride, next, interactive)"
+    },
+    {
+     "file": "public/js/subway.js",
+     "symbol": "curvePoint / lineStarPoint / LINE_TOKENS / LINE_COLOURS"
+    },
+    {
+     "file": "public/js/features/subway-feature.js",
+     "symbol": "lineSvg / mapSvg / placeLineStar"
+    },
+    {
+     "file": "public/style.css",
+     "symbol": "--subway-red / --subway-blue"
+    }
+   ],
+   "why": "Glitch's transit map (MapTransit.as) drew the lines over two lost pictures and kept the star on the station the train left. The remake had drawn the train's map as a second, straight-lined copy; a player asked for it to match the Map's Subway view, for the star to follow the curves, and for a clear colour per line. The line colours are a shade deeper than the footage's red and blue so they read as text.",
+   "ruling": "Austin 2026-11-22: build ideas 1, 2 and 4, not 3 (the star stays a star; lane subk)",
+   "rows": [
+    "G1127"
+   ]
   }
  ]
 }

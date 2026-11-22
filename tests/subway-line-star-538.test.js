@@ -12,6 +12,7 @@ import { applyTrain } from '../public/js/subway-mp.js?v=ffd57d82';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/subway-feature.js'), 'utf8');
+const views = readFileSync(join(root, 'public/js/map-views.js'), 'utf8');
 const pos = (id) => ({ x: stationById(id).map_pos[0], y: stationById(id).map_pos[1] });
 
 describe('linePoint: progress 0..1 to a point between two stops', () => {
@@ -82,7 +83,8 @@ describe('lineStarPoint: the star on the line map', () => {
 
 describe('wiring', () => {
   it('the star is one mark over the stops that never takes a tap, placed every tick on the train', () => {
-    assert.match(feature, /<image class="subway-line-star\$\{view\.moving \? ' moving' : ''\}" data-star="1" pointer-events="none"/);
+    // G1127: drawn by the Map's Subway view in ride mode (js/map-views.js renderSubwayMapSvg).
+    assert.match(views, /`<image class="map-you subway-you subway-line-star\$\{riding\.moving \? ' moving' : ''\}" data-star="1" [^`]*pointer-events="none"\/>`/);
     assert.match(feature, /const p = rideProgress\(ride, now, \{ steps: reducedMotion\(\) \? 4 : 0 \}\);\n\s*const pt = lineStarPoint\(view, p\);/);
     assert.match(feature, /drawLineMap\(engine\);\n\s*placeLineStar\(engine, t\);/);
     assert.match(feature, /lineMap\.star = lineMap\.svg\.querySelector\('\[data-star\]'\);\n\s*placeLineStar\(engine, Date\.now\(\)\);/);

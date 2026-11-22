@@ -541,6 +541,7 @@
     "stand-in: Hide the stand-in body and put the region's spirit in its place,": "not-an-invention"
   },
   "public/js/features/subway-feature.js": {
+    "ours: * G1127 (#606, ours): drawn by the Map's Subway view": "subway-map-one-look",
     "ours: // Ours: no seat (the platform changed under the": "ours-subway"
   },
   "public/js/features/swf-feature.js": {

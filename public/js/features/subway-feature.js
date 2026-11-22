@@ -45,6 +45,7 @@ import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SE
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { doorsFeature } from './doors-feature.js?v=a3ff43c8';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
+import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=b333b9df';
 import { frameTexture, textureFromUrl } from '../textures.js?v=729b29ea';
 import {
   CAR_FLOOR,
@@ -154,11 +155,20 @@ function ensureStyle() {
   text-align: center; pointer-events: none; color: var(--text-inverse); font: 700 clamp(var(--fs-xl), 3.2vw, var(--fs-4xl))/var(--lh-tight) var(--font-ui);
   text-shadow: 0 0 3px var(--c-sand-35), 0 2px 4px color-mix(in srgb, var(--c-black) 65%, transparent), 1px 1px 0 var(--c-sand-35), -1px -1px 0 var(--c-sand-35), 1px -1px 0 var(--c-sand-35), -1px 1px 0 var(--c-sand-35); }
 .subway-announce b { color: var(--c-yellow-90); }
-.subway-map { position: absolute; inset: 0; z-index: calc(var(--z-notice) + 10); display: grid; place-items: center; background: color-mix(in srgb, var(--c-grey-20) 35%, transparent); }
-.subway-map-card { width: 620px; max-width: calc(100% - 32px); background: var(--surface-moss); border-radius: var(--radius-xl); box-shadow: var(--shadow-3);
-  padding: .7rem var(--sp-7) .8rem; font: var(--fs-base)/var(--lh-snug) var(--font-ui); color: var(--c-grey-29); }
+/* G1127 (#606): the Map's window (style.css #map-panel .map-card.map-hub, .map-canvas): its scrim, its card, the
+   map in its gold frame, the Map's own Subway drawing inside (js/map-views.js renderSubwayMapSvg). */
+.subway-map { position: absolute; inset: 0; z-index: calc(var(--z-notice) + 10); display: grid; place-items: center; background: var(--scrim); }
+.subway-map-card { width: 760px; max-width: calc(100% - 32px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); box-shadow: var(--shadow-3);
+  padding: .7rem var(--sp-7) .8rem; font: var(--fs-base)/var(--lh-snug) var(--font-ui); color: var(--text); }
+.subway-map-zoom, .subway-line-frame { margin-top: .3rem; border: 1px solid var(--c-gold-59); border-radius: var(--radius-lg); overflow: hidden; background: var(--c-sage-93); }
+.subway-map-zoom > svg, .subway-line-frame > svg { margin-top: 0; }
+/* The paper fills the frame edge to edge (760 x 460), shrinking only on a short window. */
+.subway-map .subway-line-frame > svg { max-height: calc(100vh - 200px); }
+:root[data-ui="classic"] .subway-map .subway-map-svg :is(.subway-stop-name, .subway-stop-hub) { font-family: var(--font-classic-title); }
+.subway-map .subway-map-svg.is-riding .subway-stop-hub, .subway-map .subway-map-svg.is-still :is(.subway-stop-hit, .subway-stop-hub) { cursor: default; }
+.subway-map .subway-map-svg .subway-stop-mine { fill: none; stroke: var(--c-grey-29); stroke-width: 2.5; stroke-dasharray: 4 3; }
 .subway-map-head { display: flex; align-items: center; gap: var(--sp-4); }
-.subway-map-head h3 { margin: 0; flex: 1; text-align: center; font-size: var(--fs-2xl); }
+.subway-map-head h3 { margin: 0; flex: 1; text-align: left; font-size: var(--fs-2xl); color: var(--text); }
 .subway-map-head button { font: inherit; border: 0; background: none; cursor: pointer; }
 .subway-map-lines button { border-radius: var(--radius-pill); padding: var(--sp-1) var(--sp-5); font-size: var(--fs-sm); font-weight: 700; border: 2px solid transparent; background: var(--surface-sunken); }
 .subway-map-lines button[aria-pressed="true"] { border-color: currentColor; background: var(--surface-bright); }
@@ -189,13 +199,12 @@ function ensureStyle() {
   .subway-map-lines { order: 3; flex: 1 0 100%; display: flex; justify-content: center; gap: var(--sp-3); }
   .subway-map-zoom > svg { max-height: calc(100dvh - 8.5rem); }
 }
-.subway-line-card { width: 860px; }
+.subway-line-card { width: 1000px; }
 .subway-line-head h3 { text-align: left; display: flex; align-items: center; gap: var(--sp-3); }
 .subway-line-head .subway-dot { display: inline-block; width: .8rem; height: .8rem; border-radius: var(--radius-round); }
 .subway-line-head .subway-line-car { font-size: var(--fs-sm); font-weight: 400; color: var(--text-muted); }
 .subway-line-body { display: grid; grid-template-columns: minmax(0, 1fr) 15.5rem; gap: var(--sp-5); align-items: start; }
 .subway-line-body svg .moving { filter: grayscale(1); opacity: .75; }
-.subway-line-body svg .stop-hit { cursor: pointer; }
 .subway-line-stops { margin: .3rem 0 0; padding: 0; list-style: none; max-height: min(400px, calc(100vh - 260px)); overflow: auto; }
 .subway-line-stops li { margin: 0; }
 .subway-line-stops button { display: grid; grid-template-columns: 1.6rem 1fr auto; align-items: center; gap: var(--sp-2); width: 100%; text-align: left; font: inherit; border: 0; border-radius: var(--radius-md);
@@ -475,43 +484,14 @@ function openMap(engine, { direction = 'forwards' } = {}) {
   root().appendChild(el);
 }
 
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-
-/** Which side of its dot each name sits, as on the Subway System map in bvOH7rsQ6qo t0016. */
-const LABEL_SIDE = Object.freeze({ 11: 'above', 10: 'above', 9: 'right', 7: 'right', 12: 'left', 6: 'right', 1: 'right', 3: 'left', 8: 'above', 2: 'right', 4: 'left', 5: 'right' });
-
+/**
+ * The station's Subway Map (items/subway_map.js view): G1127 (#606) the Map's own Subway view
+ * (js/map-views.js renderSubwayMapSvg: the paper, the curved track, its names), your station marked,
+ * the line's next stop flagged; nothing on it to press.
+ */
 function mapSvg(station, direction) {
-  const colour = LINE_COLOURS[direction];
-  const pts = STATIONS.map((s) => ({ s, x: s.map_pos[0] + 60, y: s.map_pos[1] + 30 }));
-  const at = (id) => pts.find((p) => p.s.id === id);
-  let path = '';
-  let arrows = '';
-  for (const p of pts) {
-    const q = at(p.s.next_stop);
-    path += `M${p.x},${p.y} L${q.x},${q.y} `;
-    const [a, b] = direction === 'backwards' ? [q, p] : [p, q];
-    const mx = (a.x + b.x) / 2;
-    const my = (a.y + b.y) / 2;
-    const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
-    arrows += `<path d="M-6,-5 L5,0 L-6,5 Z" fill="${colour}" transform="translate(${mx.toFixed(1)},${my.toFixed(1)}) rotate(${ang.toFixed(1)})"/>`;
-  }
   const next = station ? nextStation(station.id, direction) : null;
-  const dots = pts.map((p) => {
-    const side = LABEL_SIDE[p.s.id] || 'right';
-    const tx = side === 'right' ? p.x + 12 : side === 'left' ? p.x - 12 : p.x;
-    const anchor = side === 'right' ? 'start' : side === 'left' ? 'end' : 'middle';
-    const ty = side === 'above' ? p.y - 22 : p.y - 2;
-    const marker = station && p.s.id === station.id
-      ? `<image href="${artUrl(direction === 'backwards' ? 'subway_map_current_station_blue' : 'subway_map_current_station_red')}" x="${p.x - 15}" y="${p.y - 14}" width="30" height="27"/>`
-      : `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#fff" stroke="${colour}" stroke-width="2.5"/>`;
-    return `${marker}<text x="${tx}" y="${ty}" text-anchor="${anchor}" font-weight="700" font-style="italic" font-size="13" fill="#2b2a26">${esc(p.s.name)}</text>`
-      + `<text x="${tx}" y="${ty + 13}" text-anchor="${anchor}" font-style="italic" font-size="11" fill="#8f8a7a">${esc(p.s.hubName)}</text>`;
-  }).join('');
-  const nextNote = next
-    ? `<text x="690" y="440" text-anchor="end" font-size="12" fill="${colour}">Next stop:</text><text x="690" y="458" text-anchor="end" font-size="15" font-weight="700" fill="${colour}">${esc(next.name)}</text>`
-    : '';
-  return `<svg viewBox="110 0 590 475" role="img" aria-label="${esc(TEXT.mapTitle)}"><rect x="110" width="590" height="475" rx="8" fill="#eceadb"/>`
-    + `<path d="${path}" fill="none" stroke="${colour}" stroke-width="3" stroke-linecap="round" opacity=".9"/>${arrows}${dots}${nextNote}</svg>`;
+  return renderSubwayMapSvg({ direction, here: station ? { station, how: 'here' } : null, next: next?.id ?? null, interactive: false, paper: subwayPaper() });
 }
 
 /**
@@ -519,47 +499,12 @@ function mapSvg(station, direction) {
  * while riding (MapTransit.as setPlayerLocation 180-240; js/subway.js lineView): that line only, the
  * train's station marked (grey while it moves), the next stop, the stops in order, and the stop you
  * picked to get off at. The markers are the Subway Map's own (glitch-items misc/subway_map, CC0).
+ * G1127 (#606, ours): drawn by the Map's Subway view (js/map-views.js renderSubwayMapSvg with `ride`),
+ * so the train's map has the same paper, curved track and names as the Map's.
  */
 function lineSvg(view) {
-  const colour = view.colour;
-  const pts = STATIONS.map((s) => ({ s, x: s.map_pos[0] + 60, y: s.map_pos[1] + 30 }));
-  const at = (id) => pts.find((p) => p.s.id === id);
-  const blue = view.direction === 'backwards';
-  let path = '';
-  let arrows = '';
-  for (const p of pts) {
-    const q = at(p.s.next_stop);
-    path += `M${p.x},${p.y} L${q.x},${q.y} `;
-    const [a, b] = blue ? [q, p] : [p, q];
-    const ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
-    arrows += `<path d="M-6,-5 L5,0 L-6,5 Z" fill="${colour}" transform="translate(${((a.x + b.x) / 2).toFixed(1)},${((a.y + b.y) / 2).toFixed(1)}) rotate(${ang.toFixed(1)})"/>`;
-  }
-  const dots = pts.map((p) => {
-    const side = LABEL_SIDE[p.s.id] || 'right';
-    const tx = side === 'right' ? p.x + 14 : side === 'left' ? p.x - 14 : p.x;
-    const anchor = side === 'right' ? 'start' : side === 'left' ? 'end' : 'middle';
-    const mine = view.chosen?.id === p.s.id;
-    // Above its dot, a name clears the ring round your stop.
-    const ty = side === 'above' ? p.y - (mine ? 32 : 22) : p.y - 2;
-    const isHere = p.s.id === view.at.id;
-    const isNext = view.next && p.s.id === view.next.id;
-    let mark = `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#fff" stroke="${colour}" stroke-width="2.5"/>`;
-    if (isNext) mark = `<image href="${artUrl(blue ? 'subway_map_next_stop_blue' : 'subway_map_next_stop_red')}" x="${p.x - 12}" y="${p.y - 11.5}" width="24" height="23"/>`;
-    const ring = mine ? `<circle cx="${p.x}" cy="${p.y}" r="15" fill="none" stroke="#2b2a26" stroke-width="2.5" stroke-dasharray="4 3"/>` : '';
-    const hint = mine ? ` (${lineText.yourStop.toLowerCase()})` : '';
-    return `<g class="stop-hit" data-stop="${p.s.id}"><title>${esc(p.s.name)}${hint}</title><circle cx="${p.x}" cy="${p.y}" r="18" fill="transparent"/>${ring}${mark}`
-      + `<text x="${tx}" y="${ty}" text-anchor="${anchor}" font-weight="700" font-style="italic" font-size="13" fill="#2b2a26">${esc(p.s.name)}</text>`
-      + `<text x="${tx}" y="${ty + 13}" text-anchor="${anchor}" font-style="italic" font-size="11" fill="#8f8a7a">${mine ? esc(lineText.yourStop) : esc(p.s.hubName)}</text></g>`;
-  }).join('');
-  // #538: the star is its own mark over the stops, placed every tick (placeLineStar): on the train's
-  // station while it stands, sliding to the next stop while it moves.
-  const star = `<image class="subway-line-star${view.moving ? ' moving' : ''}" data-star="1" pointer-events="none" href="${artUrl(blue ? 'subway_map_current_station_blue' : 'subway_map_current_station_red')}" x="-15" y="-14" width="30" height="27"/>`;
-  return `<svg viewBox="110 0 590 475" role="img" aria-label="${esc(lineText.title(view.lineName))}"><rect x="110" width="590" height="475" rx="8" fill="#eceadb"/>`
-    + `<path d="${path}" fill="none" stroke="${colour}" stroke-width="3" stroke-linecap="round" opacity=".9"/>${arrows}${dots}${star}</svg>`;
+  return renderSubwayMapSvg({ ride: view, paper: subwayPaper() });
 }
-
-/** The line map's svg offset from map_pos (the dots above are drawn at map_pos + this). */
-const LINE_MAP_SHIFT = Object.freeze({ x: 60, y: 30 });
 
 const reducedMotion = () => {
   try {
@@ -580,7 +525,7 @@ function placeLineStar(engine, now) {
   const p = rideProgress(ride, now, { steps: reducedMotion() ? 4 : 0 });
   const pt = lineStarPoint(view, p);
   if (!pt) return;
-  const at = `translate(${(pt.x + LINE_MAP_SHIFT.x).toFixed(1)},${(pt.y + LINE_MAP_SHIFT.y).toFixed(1)})`;
+  const at = `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`;
   if (star.getAttribute('transform') === at) return;
   star.setAttribute('transform', at);
   const pct = Math.round(p * 100);
@@ -622,7 +567,7 @@ function drawLineMap(engine, { focus = null } = {}) {
   lineMap.svg.innerHTML = lineSvg(view);
   lineMap.star = lineMap.svg.querySelector('[data-star]');
   placeLineStar(engine, Date.now());
-  for (const g of lineMap.svg.querySelectorAll('[data-stop]')) g.addEventListener('click', () => chooseStop(engine, Number(g.dataset.stop)));
+  bindSubwayMap(lineMap.svg, { onStop: (e, st) => chooseStop(engine, st.id) });
   lineMap.now.textContent = view.moving ? lineText.between(view.at.name, view.next?.name || '') : lineText.at(view.at.name);
   lineMap.next.replaceChildren(lineText.next);
   const nb = document.createElement('b');
@@ -686,6 +631,7 @@ function openLineMap(engine) {
   const body = document.createElement('div');
   body.className = 'subway-line-body';
   const svg = document.createElement('div');
+  svg.className = 'subway-line-frame';
   const side = document.createElement('div');
   const now = document.createElement('p');
   now.className = 'subway-line-now';
