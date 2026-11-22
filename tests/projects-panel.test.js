@@ -28,7 +28,7 @@ import {
   shareLine,
   statusLine,
 } from '../public/js/projects-tracker.js?v=c4de279a';
-import { buildProjectsPanel, needRow, needsSummary, projectCard, renderProjects } from '../public/js/ui/projects-sheet.js?v=aa543965';
+import { PROJECTS_FILTER_KEY, buildProjectsPanel, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=685fc60d';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=44e61ce8';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=5c5a4301';
@@ -232,6 +232,7 @@ function fakeDoc() {
   return {
     body,
     createElement: (tag) => new El(tag),
+    createElementNS: (ns, tag) => new El(tag),
     createTextNode: (t) => new Text(t),
     getElementById: (id) => body.all((n) => n.id === id)[0] || null,
   };
@@ -256,6 +257,7 @@ describe('Projects panel (js/ui/projects-sheet.js)', () => {
     const card = panel.children[0];
     assert.match(card.className, /ui-sheet-card/);
     assert.deepEqual(card.children.map((c) => c.className), ['side-head ui-sheet-head', 'ui-sheet-body', 'ui-sheet-foot']);
+    assert.deepEqual(card.children[1].children.map((c) => c.id), ['projects-filters', 'projects-list'], 'the chips sit over the list');
     const head = card.children[0];
     assert.equal(head.all((n) => n.tagName === 'H2')[0].textContent, 'Projects');
     assert.equal(head.all((n) => /ui-sheet-key/.test(n.className))[0].textContent, 'P');
@@ -273,6 +275,7 @@ describe('Projects panel (js/ui/projects-sheet.js)', () => {
     const acts = [];
     renderProjects(doc, list, {
       now: NOW,
+      storage: memStore({ [PROJECTS_FILTER_KEY]: 'all' }),
       meta: PROJECTS_TEXT.solo,
       teleport: (e) => (e.jobId === VIA ? { show: true, ok: true, label: 'Teleport' } : { show: true, ok: false, label: 'Teleport', reason: 'Not enough energy.' }),
       onAction: (act, e) => acts.push(`${act}:${e.jobId}`),
@@ -313,6 +316,110 @@ describe('Projects panel (js/ui/projects-sheet.js)', () => {
     buildProjectsPanel(doc, gameRoot);
     renderProjects(doc, { active: [], done: [], fresh: 0 }, { now: NOW });
     assert.equal(doc.getElementById('projects-list').textContent, PROJECTS_TEXT.empty);
+  });
+});
+
+/** A browser's localStorage, or one that throws (a private window, blocked site data). */
+function memStore(init = {}, { throws = false } = {}) {
+  const m = new Map(Object.entries(init));
+  return {
+    m,
+    getItem(k) { if (throws) throw new Error('blocked'); return m.has(k) ? m.get(k) : null; },
+    setItem(k, v) { if (throws) throw new Error('blocked'); m.set(k, String(v)); },
+  };
+}
+
+describe('Projects panel All / Open / Done chips (G1116, report #591)', () => {
+  const setup = () => {
+    const doc = fakeDoc();
+    const gameRoot = doc.createElement('div');
+    doc.body.append(gameRoot);
+    buildProjectsPanel(doc, gameRoot);
+    const state = soloState();
+    const list = projectList(state, catalog, state.jobs, { now: NOW });
+    const box = doc.getElementById('projects-list');
+    const bar = doc.getElementById('projects-filters');
+    const chips = () => Object.fromEntries(bar.children.map((c) => [c.dataset.pjFilter, c]));
+    const sections = () => box.all((n) => n.dataset.pjSection).map((s) => s.dataset.pjSection);
+    return { doc, list, box, bar, chips, sections };
+  };
+
+  it('three chips in the Skills look, each with its count; Open first when anything is open', () => {
+    const { doc, list, box, bar, chips, sections } = setup();
+    const storage = memStore();
+    renderProjects(doc, list, { now: NOW, storage });
+    assert.equal(bar.hidden, false);
+    assert.equal(bar.getAttribute('role'), 'tablist');
+    assert.match(bar.className, /\bskill-tree-filters\b/);
+    const c = chips();
+    assert.deepEqual(Object.keys(c), ['all', 'open', 'done']);
+    for (const chip of Object.values(c)) assert.match(chip.className, /\bskill-tree-chip\b/);
+    assert.deepEqual(Object.values(c).map((chip) => chip.textContent), ['All 2', 'Open 1', 'Done 1']);
+    assert.match(c.open.className, /is-active/);
+    assert.equal(c.open.getAttribute('aria-selected'), 'true');
+    assert.equal(c.done.getAttribute('aria-selected'), 'false');
+    assert.deepEqual(sections(), ['active'], 'Done does not fill the list');
+    assert.equal(box.dataset.pjFilter, 'open');
+    assert.equal(storage.m.size, 0, 'nothing kept until the viewer picks');
+  });
+
+  it('a chip shows its part and is kept for this viewer; the next opening starts there', () => {
+    const { doc, list, box, chips, sections } = setup();
+    const storage = memStore();
+    renderProjects(doc, list, { now: NOW, storage });
+    chips().done.click();
+    assert.deepEqual(sections(), ['done']);
+    assert.deepEqual(box.all((n) => n.dataset.project).map((n) => n.dataset.status), ['done']);
+    assert.equal(storage.m.get(PROJECTS_FILTER_KEY), 'done');
+    assert.match(chips().done.className, /is-active/);
+    assert.doesNotMatch(chips().open.className, /is-active/);
+    chips().all.click();
+    assert.deepEqual(sections(), ['active', 'done']);
+    assert.equal(storage.m.get(PROJECTS_FILTER_KEY), 'all');
+    // A fresh page reads the kept chip.
+    const again = setup();
+    renderProjects(again.doc, again.list, { now: NOW, storage: memStore({ [PROJECTS_FILTER_KEY]: 'done' }) });
+    assert.deepEqual(again.sections(), ['done']);
+  });
+
+  it('the featured project counts as open and leaves with Done', () => {
+    const { doc, list, chips, sections } = setup();
+    const featured = { ...list.active[0], jobId: 'featured-x', featured: true };
+    renderProjects(doc, { ...list, featured }, { now: NOW, storage: memStore() });
+    assert.equal(chips().open.textContent, 'Open 2');
+    assert.deepEqual(sections(), ['featured', 'active']);
+    chips().done.click();
+    assert.deepEqual(sections(), ['done']);
+  });
+
+  it('with nothing open it starts on All; a browser that keeps nothing still works', () => {
+    const { doc, list, chips, sections } = setup();
+    const storage = memStore({}, { throws: true });
+    renderProjects(doc, { ...list, active: [] }, { now: NOW, storage });
+    assert.match(chips().all.className, /is-active/);
+    assert.deepEqual(sections(), ['active', 'done']);
+    chips().open.click();
+    assert.deepEqual(sections(), ['active']);
+    assert.equal(projectsFilter({ open: 3 }, 'bogus'), 'open');
+    assert.equal(projectsFilter({ open: 0 }), 'all');
+    assert.equal(projectsFilter({ open: 3 }, 'done'), 'done');
+  });
+
+  it('no chips over an empty list', () => {
+    const { doc, bar } = setup();
+    renderProjects(doc, { active: [], done: [], fresh: 0 }, { now: NOW, storage: null });
+    assert.equal(bar.hidden, true);
+  });
+
+  it('styled in Modern and Classic', () => {
+    const style = read('public/style.css');
+    const classic = read('public/css/classic.css');
+    assert.match(style, /\[data-ui="modern"\] #projects-filters \{/);
+    // A display rule over [hidden] would keep "All 0 Open 0 Done 0" over an empty list.
+    assert.match(style, /\.pj-filters\[hidden\] \{ display: none; \}/);
+    assert.match(classic, /:root\[data-ui="classic"\] #game-root #projects-filters \.skill-tree-chip \{/);
+    assert.match(classic, /:root\[data-ui="classic"\] #game-root #projects-filters \.skill-tree-chip\.is-active \{/);
+    assert.doesNotMatch(classic, /Glitch/);
   });
 });
 

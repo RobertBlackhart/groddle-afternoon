@@ -2118,6 +2118,23 @@
 :root[data-ui="classic"] #game-root #quest-panel .q-bar > i { background: var(--c-classic-wear); }
 /* Projects (ticket 81): rows as the Quest Log's, the bar as its wear bar, the buttons its minor ones. */
 :root[data-ui="classic"] #game-root #projects-list { margin: 0; }
+/* G1116: All / Open / Done as the window's small tabs: grey until picked, the count after the word. */
+:root[data-ui="classic"] #game-root #projects-filters { gap: calc(6 * var(--cu)); margin: 0 0 calc(6 * var(--cu)); }
+:root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip {
+  flex: 1 0 28%;
+  min-width: max-content;
+  min-height: calc(24 * var(--cu));
+  padding: 0 calc(8 * var(--cu));
+  border: 1px solid var(--c-classic-input-border);
+  border-radius: 3px;
+  background: var(--c-classic-input);
+  color: var(--c-classic-tab-off);
+  font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-none) var(--font-classic-title);
+}
+:root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip b { color: var(--c-classic-offline); font-weight: 700; opacity: 1; }
+:root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip:hover { border-color: var(--c-classic-input-hi-border); background: var(--c-classic-input-hi); }
+:root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip.is-active { border-color: var(--c-classic-input-hi-border); background: var(--c-classic-input-hi); color: var(--c-classic-title); }
+:root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
 :root[data-ui="classic"] #game-root #projects-list .pj-section-title { margin: calc(10 * var(--cu)) 0 0; color: var(--c-classic-offline); font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-tight) var(--font-classic-title); }
 :root[data-ui="classic"] #game-root #projects-list .pj-card { margin: 0; padding: calc(10 * var(--cu)) 0; border-bottom: 1px solid var(--c-classic-row-rule); color: var(--c-classic-text); font: calc(var(--fs-classic-row) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-body); }
 :root[data-ui="classic"] #game-root #projects-list .pj-title { margin: 0; color: var(--c-classic-title); font: 800 calc(var(--fs-classic-row-title) * var(--cu-n, 1))/var(--lh-snug) var(--font-classic-title); }

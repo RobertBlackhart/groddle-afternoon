@@ -19,12 +19,21 @@
  * G656: online, the featured street project (js/featured-project.js) leads the list in a section
  * of its own, [data-pj-section="featured"], its card [data-featured] with a Featured tag, whether
  * or not you have put anything into it yet.
+ *
+ * G1116 (report #591): All / Open / Done chips over the list, in the Skills panel's chip look
+ * (.skill-tree-chip), each with its count: #projects-filters, chips [data-pj-filter=all|open|done].
+ * Open is the featured project and those under way, Done the finished ones. The choice is kept in
+ * this browser (PROJECTS_FILTER_KEY); with none kept the panel opens on Open when anything is open.
  */
 
 import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=c4de279a';
 import { featuredTag } from './featured-project.js?v=2b97d818';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';
+/** G1116: the chip a viewer last picked, kept in this browser only. */
+export const PROJECTS_FILTER_KEY = 'groddle.projects.filter';
+export const PROJECTS_FILTERS = Object.freeze([['all', 'All'], ['open', 'Open'], ['done', 'Done']]);
+const FILTER_IDS = new Set(PROJECTS_FILTERS.map(([id]) => id));
 const ICON = 'assets/sprites/street-jobs/sign_stake.webp';
 
 function el(doc, tag, attrs = {}, text = '') {
@@ -57,6 +66,7 @@ export function buildProjectsPanel(doc, root) {
   const close = el(doc, 'button', { type: 'button', id: 'projects-close', class: 'verb-menu-x ui-sheet-x', 'aria-label': 'Close Projects (Esc)' }, '×');
   head.append(icon, title, key, close);
   const body = el(doc, 'div', { class: 'ui-sheet-body' });
+  body.append(filterBar(doc));
   body.append(el(doc, 'div', { id: 'projects-list', class: 'projects-list', 'data-projects-list': '', 'aria-live': 'polite' }));
   const foot = el(doc, 'div', { class: 'ui-sheet-foot' });
   const meta = el(doc, 'p', { class: 'panel-meta', id: 'projects-meta' });
@@ -70,6 +80,66 @@ export function buildProjectsPanel(doc, root) {
   if (after?.parentElement === root) after.after(panel);
   else root.append(panel);
   return panel;
+}
+
+/** G1116: the All / Open / Done chips, drawn once; renderProjects sets their counts and which is on. */
+function filterBar(doc) {
+  const bar = el(doc, 'div', { id: 'projects-filters', class: 'skill-tree-filters pj-filters', role: 'tablist', 'aria-label': 'Show projects', hidden: true });
+  for (const [id, label] of PROJECTS_FILTERS) {
+    const chip = el(doc, 'button', { type: 'button', class: 'skill-tree-chip', role: 'tab', 'aria-selected': 'false', dataset: { pjFilter: id } });
+    chip.append(doc.createTextNode(`${label} `), el(doc, 'b'));
+    chip.addEventListener('click', () => pickFilter(doc, id));
+    bar.append(chip);
+  }
+  return bar;
+}
+
+function viewerStore(o) {
+  if (o && 'storage' in o) return o.storage;
+  try {
+    return globalThis.localStorage || null;
+  } catch {
+    return null;
+  }
+}
+
+/** The kept chip, or '' when none is kept (or this browser keeps nothing). */
+export function keptFilter(storage) {
+  try {
+    const v = storage?.getItem(PROJECTS_FILTER_KEY) || '';
+    return FILTER_IDS.has(v) ? v : '';
+  } catch {
+    return '';
+  }
+}
+
+function keepFilter(storage, id) {
+  try {
+    storage?.setItem(PROJECTS_FILTER_KEY, id);
+  } catch {
+    /* the choice just won't be remembered */
+  }
+}
+
+/**
+ * G1116: which chip the list shows: the one picked this session, else the kept one, else Open when
+ * anything is open and All when not.
+ */
+export function projectsFilter(counts, kept = '') {
+  if (FILTER_IDS.has(kept)) return kept;
+  return counts.open ? 'open' : 'all';
+}
+
+/** What the last renderProjects drew, so a chip can redraw the same list; the chip picked, per page. */
+let last = null;
+const picked = new WeakMap();
+
+function pickFilter(doc, id) {
+  if (!FILTER_IDS.has(id)) return;
+  picked.set(doc, id);
+  if (!last || last.doc !== doc) return;
+  keepFilter(viewerStore(last.o), id);
+  renderProjects(doc, last.list, last.o);
 }
 
 /** The marks beside "You can do this" and the rest; the words say it too (never colour alone). */
@@ -186,6 +256,7 @@ export function projectCard(doc, e, o = {}) {
 export function renderProjects(doc, list, o = {}) {
   const box = doc.getElementById('projects-list');
   if (!box) return;
+  last = { doc, list, o };
   const now = o.now ?? Date.now();
   const scroll = box.parentElement?.scrollTop || 0;
   box.replaceChildren();
@@ -193,7 +264,26 @@ export function renderProjects(doc, list, o = {}) {
   // The featured project shows once, at the top (G656).
   const active = (list?.active || []).filter((e) => !featured || e.jobId !== featured.jobId);
   const done = list?.done || [];
-  if (featured) {
+  const counts = { open: active.length + (featured ? 1 : 0), done: done.length };
+  counts.all = counts.open + counts.done;
+  const filter = projectsFilter(counts, picked.get(doc) || keptFilter(viewerStore(o)));
+  const bar = doc.getElementById('projects-filters');
+  if (bar) {
+    bar.hidden = !counts.all;
+    for (const chip of bar.children) {
+      const id = chip.dataset?.pjFilter;
+      if (!id) continue;
+      const on = id === filter;
+      chip.className = `skill-tree-chip${on ? ' is-active' : ''}`;
+      chip.setAttribute('aria-selected', String(on));
+      const n = chip.children.find?.((c) => c.tagName === 'B') || chip.querySelector?.('b');
+      if (n) n.textContent = String(counts[id]);
+    }
+  }
+  box.dataset.pjFilter = filter;
+  const showOpen = filter !== 'done';
+  const showDone = filter !== 'open';
+  if (featured && showOpen) {
     const sec = el(doc, 'section', { class: 'pj-section', dataset: { pjSection: 'featured' }, 'aria-label': T.featured });
     sec.append(el(doc, 'h3', { class: 'pj-section-title' }, T.featured));
     if (T.featuredCopy) sec.append(el(doc, 'p', { class: 'pj-note' }, T.featuredCopy));
@@ -210,8 +300,8 @@ export function renderProjects(doc, list, o = {}) {
       for (const e of rows) sec.append(projectCard(doc, e, { ...o, now }));
       box.append(sec);
     };
-    section(T.active, active, T.noneActive, 'active');
-    section(T.done, done, T.noneDone, 'done');
+    if (showOpen) section(T.active, active, T.noneActive, 'active');
+    if (showDone) section(T.done, done, T.noneDone, 'done');
   }
   const meta = doc.getElementById('projects-meta');
   if (meta) meta.textContent = o.meta || '';

@@ -12925,6 +12925,9 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #game-root #quest-panel .qc-sort .vm-chev { transform: rotate(90deg); }
 
 /* Projects (ticket 81, js/ui/projects-sheet.js): your street projects, cards in the Quest Log's look. */
+/* G1116: All / Open / Done over the list, the Skills chips (.skill-tree-chip) as they are. */
+[data-ui="modern"] #projects-filters { margin: 0 0 var(--space-3); }
+.pj-filters[hidden] { display: none; }
 [data-ui="modern"] #projects-list { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; font-size: var(--fs-m); }
 [data-ui="modern"] #projects-list .pj-section { display: flex; flex-direction: column; gap: var(--space-2); }
 [data-ui="modern"] #projects-list .pj-section-title { margin: var(--space-2) 0 0; color: var(--text-muted); font-size: var(--fs-s); font-weight: var(--fw-heavy); letter-spacing: 0.04em; text-transform: uppercase; }

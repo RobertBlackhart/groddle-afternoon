@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=ee4dbf3c';
 import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=2b97d818';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=aa543965';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=685fc60d';
 import { jobIndicatorView } from '../public/js/job-indicator.js?v=41ce4716';
 import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=884e34b3';
 import { rowFromServer } from '../public/js/street-jobs-mp.js?v=997303d1';

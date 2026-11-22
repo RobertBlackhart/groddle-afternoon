@@ -160,7 +160,7 @@ import { SIGN_ARMS } from '../map-routes.js?v=70f30ddf';
 import { TELEPORTERS } from '../hidden-floors.js?v=e1a92661';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=c4de279a';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=aa543965';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderProjects } from '../ui/projects-sheet.js?v=685fc60d';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredWaitMins } from '../featured-project.js?v=ee4dbf3c';
@@ -2975,6 +2975,36 @@ function openFeatured(engine) {
   engine.setData?.('featuredOpened', featured.jobId);
 }
 
+/**
+ * QA (&projectsdemo=1, solo only, G1116): the Projects panel filled for a look without playing for
+ * it: 14 street upgrades finished at an hour apart and 2 under way (upgrades only, so no road
+ * opens), then the panel opens. Kept in the save like any contribution.
+ */
+let qaProjectsSeeded = false;
+function qaProjectsDemo(engine) {
+  if (qaProjectsSeeded || mpMode || !catalog || !engine.param?.('projectsdemo')) return;
+  qaProjectsSeeded = true;
+  const now = Date.now();
+  const ups = Object.keys(catalog.jobs).filter((id) => catalog.jobs[id].kind === 'upgrade').slice(0, 16);
+  ups.forEach((id, i) => {
+    const job = catalog.jobs[id];
+    const row = normalizeStreetJobState({ jobs: { [id]: {} } }).jobs[id];
+    row.mine[job.phases[0].classTsid] = 20 + i;
+    row.startedAt = now - (i + 2) * 3_600_000;
+    if (i >= 2) {
+      row.phase = job.phases.length - 1;
+      row.doneAt = now - (i - 1) * 3_600_000;
+    } else {
+      state.jobs[id] = row;
+      const reqs = phaseRequirements(state, catalog, id);
+      for (const r of reqs.slice(0, 1 + i)) row.got[r.id] = Math.ceil(r.need / 2);
+    }
+    state.jobs[id] = row;
+  });
+  engine.save?.();
+  openProjects(engine);
+}
+
 /** How many projects of yours finished since you last looked (the Menu's dot). */
 function freshCount() {
   if (!catalog) return 0;
@@ -3299,6 +3329,7 @@ export const streetJobsFeature = {
       if (initializeStreetJobs(state, engine.visitedStreets ? engine.visitedStreets() : [])) engine.save();
       if (mpMode) ensureMp(engine);
       if (engine.param('jobdemo') && !demo && !mpMode) demo = resolveDemo(engine);
+      qaProjectsDemo(engine);
       // #520: online, the street's projects wait for the server's first word (project_world runs arrive).
       if (waitingWorld()) arrivalOwed = mine;
       else arrive(engine, mine);
