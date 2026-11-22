@@ -18,7 +18,7 @@ import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } f
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=476b7fdf';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
-import { anchorBottomCentre } from './sprite-feet.js?v=422a7242';
+import { anchorBottomCentre } from './sprite-feet.js?v=6ffaec43';
 import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 

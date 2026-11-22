@@ -172,7 +172,7 @@ import {
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=422a7242';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const NEWXP_FEATURE_ID = 'newxp';

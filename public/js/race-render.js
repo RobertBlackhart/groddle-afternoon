@@ -11,7 +11,7 @@
 
 import { textureFromUrl } from './textures.js?v=729b29ea';
 import { playSheetOverlay } from './overlay-art.js?v=95f23414';
-import { anchorBottomCentre } from './sprite-feet.js?v=422a7242';
+import { anchorBottomCentre } from './sprite-feet.js?v=6ffaec43';
 import { WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 
 const DECO_DIR = 'assets/decos/groddle/';

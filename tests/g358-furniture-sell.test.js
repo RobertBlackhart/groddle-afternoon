@@ -80,8 +80,8 @@ describe('what the styles cost', () => {
   }
   const sorted = paid.map((p) => p.currants).sort((a, b) => a - b);
 
-  it('prices all 452 paid styles from 5,000 to 75,000 currants, median 25,000', () => {
-    assert.equal(paid.length, 452);
+  it('prices all 482 paid styles from 5,000 to 75,000 currants, median 25,000', () => {
+    assert.equal(paid.length, 482); // 452 + the 30 paid Door styles (G1137)
     assert.deepEqual([sorted[0], sorted[Math.floor((sorted.length - 1) / 2)], sorted.at(-1)], [5_000, 25_000, 75_000]);
   });
 

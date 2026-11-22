@@ -108,14 +108,14 @@ import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureF
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=69e064ff';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=95f23414';
-import { playItemOverlay } from '../item-overlay.js?v=d5b87d17';
+import { playItemOverlay } from '../item-overlay.js?v=c498066d';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=038e7344';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { salmonSwimAt } from '../street-creatures.js?v=e2952c3a';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { anchorBottomCentre } from '../sprite-feet.js?v=422a7242';
+import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
 export const RESOURCE_FEATURE_ID = 'resource-nodes';
 export const RESOURCE_GROUP_PREFIX = 'resource:';

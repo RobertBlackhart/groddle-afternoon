@@ -21,7 +21,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { remoteAvatarZ } from '../public/js/features/realtime-feature.js?v=13eaf66b';
+import { remoteAvatarZ } from '../public/js/features/realtime-feature.js?v=8858935a';
 import { FRONT_FURNITURE_SLOTS, furnitureDrawsInFront } from '../public/js/home-decor.js?v=f6d82a18';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=cce7f5a7';
 import { typingElsewhere } from '../public/js/screen-fx.js?v=39954e0b';

@@ -81,7 +81,7 @@ import {
 import { cleanCopyTagOf } from '../copy-tags.js?v=7eec7d48';
 import { packSlotFor } from '../pack-slot-qa.js?v=1d74bf2d';
 import { cubimalBattleLabel, cubimalBattleStats, cubimalTagName, cubimalTagWith } from '../cubimal-battle.js?v=f91166b0';
-import { standOnFeet } from '../sprite-feet.js?v=422a7242';
+import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 
 export const CUBIMAL_RACE_FEATURE_ID = 'cubimal-race';
 const DEMO_DEFAULT = 'npc_cubimal_chick';

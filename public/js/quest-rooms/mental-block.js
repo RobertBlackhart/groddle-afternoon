@@ -49,7 +49,7 @@
  * flat, as the snaps show them.
  */
 
-import { pushOutOfSolids, spawnQuoins, takeQuoins, BODY_H } from './puzzle-kit.js?v=ef3250f1';
+import { pushOutOfSolids, spawnQuoins, takeQuoins, BODY_H } from './puzzle-kit.js?v=8c7a67f5';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { deco } from './kit.js?v=15fb2b7a';
 

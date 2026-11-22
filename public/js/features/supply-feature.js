@@ -102,7 +102,7 @@ import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=422a7242';
+import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 
 export const SUPPLY_FEATURE_ID = 'supply';
 export const CLERK_CLASS = 'npc_bureaucrat';

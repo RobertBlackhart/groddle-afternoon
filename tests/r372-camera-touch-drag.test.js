@@ -26,7 +26,7 @@ describe('#372 Camera Mode drag on a phone with touch events', async () => {
   const win = fakeWindow();
   globalThis.window = win;
   globalThis.GRODDLE_DEVICE = 'phone';
-  const { cameraModeFeature, cameraTouchMode } = await import('../public/js/features/camera-mode-feature.js?v=ac6e8030');
+  const { cameraModeFeature, cameraTouchMode } = await import('../public/js/features/camera-mode-feature.js?v=2a8eeea8');
   const canvas = { getBoundingClientRect: () => ({ width: 400, height: 600 }) };
   const data = {};
   const looks = [];

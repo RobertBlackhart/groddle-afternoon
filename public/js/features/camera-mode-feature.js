@@ -48,7 +48,7 @@ import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=1f5027a3';
 import { SPEECH_BUBBLE_Z } from '../fx-z.js?v=18dda7e3';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { anchorBottomCentre } from '../sprite-feet.js?v=422a7242';
+import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
 export const CAMERA_FEATURE_ID = 'camera-mode';
 /** getCameraAbilities: range without Eyeballery, px from the avatar. */

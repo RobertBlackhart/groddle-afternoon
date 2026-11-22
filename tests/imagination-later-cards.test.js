@@ -59,7 +59,7 @@ import { ROCK_RESPAWN_MS } from '../public/js/pace.js?v=c07dfbd8';
 import { runTransform, shuckDetails } from '../public/js/item-transforms.js?v=3a1b5812';
 import { brushFox, createFox, foxFiberRange } from '../public/js/foxes.js?v=4497a984';
 import { soundForMakingTool } from '../public/js/sound-moments.js?v=3e66996f';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=22c7ceb8';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=3941918a';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const seq = (...values) => {

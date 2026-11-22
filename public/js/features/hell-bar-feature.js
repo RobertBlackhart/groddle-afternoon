@@ -49,7 +49,7 @@ import {
   pickBartenderLine,
   talkStateFor,
 } from '../hell-bar.js?v=87b8440f';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=422a7242';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
 export const HELL_BAR_FEATURE_ID = 'hell-bar';
 const CLASS = 'hell_bartender';
