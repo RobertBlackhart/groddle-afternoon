@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.56.0",
+  "release": "v0.57.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 15,
+    "known": 13,
     "unreleased": 0,
-    "fixed": 431,
+    "fixed": 439,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -852,11 +852,6 @@
           "state": "known"
         },
         {
-          "id": "G400",
-          "text": "Nine wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop.",
-          "state": "known"
-        },
-        {
           "id": "G640",
           "text": "Visitors see the owner's Garden Gnomes, Magic Sticks and animal machines on a home street.",
           "state": "fixed",
@@ -901,6 +896,12 @@
           "text": "Friends could not help build a Tower floor, which Glitch let anyone on the floor do.",
           "state": "fixed",
           "version": "v0.42.0"
+        },
+        {
+          "id": "G400",
+          "text": "Eight wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop.",
+          "state": "fixed",
+          "version": "v0.57.0"
         },
         {
           "id": "G864",
@@ -1030,6 +1031,12 @@
           "text": "In Decorate, moving an item onto a matching stack did not join them.",
           "state": "fixed",
           "version": "v0.55.1"
+        },
+        {
+          "id": "G796",
+          "text": "You could not choose your house's look as in the original: every home was the same stand-in building.",
+          "state": "fixed",
+          "version": "v0.57.0"
         },
         {
           "id": "G48",
@@ -1181,6 +1188,12 @@
           "text": "The finished project card could say you did 0% of the work when you helped in earlier phases but not the last.",
           "state": "fixed",
           "version": "v0.55.1"
+        },
+        {
+          "id": "G1133",
+          "text": "The exclamation mark in a street project's bubble looked blurry.",
+          "state": "fixed",
+          "version": "v0.57.0"
         }
       ]
     },
@@ -1257,11 +1270,6 @@
     {
       "name": "Animals",
       "items": [
-        {
-          "id": "G1107",
-          "text": "One salmon on Indri Slope could not be pocketed while the others there could. Not found yet.",
-          "state": "known"
-        },
         {
           "id": "G642",
           "text": "Chickens squawk and flutter off when you walk into them.",
@@ -1395,6 +1403,12 @@
           "text": "The loading card counted a Piggy you had already captured on that street.",
           "state": "fixed",
           "version": "v0.55.0"
+        },
+        {
+          "id": "G1107",
+          "text": "A salmon on Indri Slope, and some rocks, trees and nodes on other streets, said you were too far away online while you stood beside them.",
+          "state": "fixed",
+          "version": "v0.57.0"
         },
         {
           "id": "G1125",
@@ -1680,6 +1694,12 @@
           "text": "Players already at Groddle Forest Junction at midnight would not see the Harvest Table or the feast until they left and came back.",
           "state": "fixed",
           "version": "v0.55.0"
+        },
+        {
+          "id": "G911",
+          "text": "A party could not be started from Storyland, Paradise, Winter Walk and the other hand-built quest places.",
+          "state": "fixed",
+          "version": "v0.57.0"
         }
       ]
     },
@@ -3218,6 +3238,12 @@
           "text": "Pressing Enter on the travel screen started another trip, so you could bounce between two streets.",
           "state": "fixed",
           "version": "v0.56.0"
+        },
+        {
+          "id": "G1134",
+          "text": "The Map could route you by subway even when the gate would turn you back for want of papers.",
+          "state": "fixed",
+          "version": "v0.57.0"
         }
       ]
     },
@@ -3229,6 +3255,18 @@
           "text": "Pumpkin Seeds would not plant on Pot Luck Day, and out of season the Plant menu left them out without saying why. Online they also would not go in a shared herb bed.",
           "state": "fixed",
           "version": "v0.56.0"
+        },
+        {
+          "id": "G1132",
+          "text": "Pot's Empty Table did not say that only dishes cooked after accepting count.",
+          "state": "fixed",
+          "version": "v0.57.0"
+        },
+        {
+          "id": "G1135",
+          "text": "Your own Chickens gave no hint that only a Chicken out on the streets can dress up for Pot Luck Day.",
+          "state": "fixed",
+          "version": "v0.57.0"
         }
       ]
     }

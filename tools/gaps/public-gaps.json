@@ -2017,7 +2017,11 @@
     {
       "id": "G400",
       "area": "Homes",
-      "text": "Nine wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop."
+      "text": "Eight wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop.",
+      "show": "fixing",
+      "commits": [
+        "game:5a3c2523b4f"
+      ]
     },
     {
       "id": "G856",
@@ -4280,7 +4284,12 @@
     {
       "id": "G1107",
       "area": "Animals",
-      "text": "One salmon on Indri Slope could not be pocketed while the others there could. Not found yet."
+      "text": "A salmon on Indri Slope, and some rocks, trees and nodes on other streets, said you were too far away online while you stood beside them.",
+      "show": "fixing",
+      "commits": [
+        "game:1322727e0b5",
+        "server:6e7fb36"
+      ]
     },
     {
       "id": "G1119",
@@ -4388,6 +4397,63 @@
         "game:a7100f07d33",
         "game:2b6bc9b92e4",
         "server:b164083"
+      ]
+    },
+    {
+      "id": "G796",
+      "area": "Homes",
+      "text": "You could not choose your house's look as in the original: every home was the same stand-in building.",
+      "show": "fixing",
+      "commits": [
+        "game:fccb4230217",
+        "game:508c3e4c365",
+        "site:74c13b7",
+        "site:4a8ab5a"
+      ]
+    },
+    {
+      "id": "G911",
+      "area": "Multiplayer",
+      "text": "A party could not be started from Storyland, Paradise, Winter Walk and the other hand-built quest places.",
+      "show": "fixing",
+      "commits": [
+        "game:92dd4bf8441"
+      ]
+    },
+    {
+      "id": "G1132",
+      "area": "Seasons",
+      "text": "Pot's Empty Table did not say that only dishes cooked after accepting count.",
+      "show": "fixing",
+      "commits": [
+        "game:3eba6760c0a"
+      ]
+    },
+    {
+      "id": "G1133",
+      "area": "Street projects",
+      "text": "The exclamation mark in a street project's bubble looked blurry.",
+      "show": "fixing",
+      "commits": [
+        "game:bbf6166479f"
+      ]
+    },
+    {
+      "id": "G1134",
+      "area": "Travel",
+      "text": "The Map could route you by subway even when the gate would turn you back for want of papers.",
+      "show": "fixing",
+      "commits": [
+        "game:be7acc7b539"
+      ]
+    },
+    {
+      "id": "G1135",
+      "area": "Seasons",
+      "text": "Your own Chickens gave no hint that only a Chicken out on the streets can dress up for Pot Luck Day.",
+      "show": "fixing",
+      "commits": [
+        "game:b9edca7ac4f"
       ]
     }
   ]
