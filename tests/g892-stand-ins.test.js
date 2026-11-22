@@ -6,7 +6,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TRAINING2_TABLE_ART, TRAINING2_TABLE_SCALE, training2Layout, training2TableTop } from '../public/js/newxp.js?v=5aa81665';
-import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseStarArt } from '../public/js/paradise-flight.js?v=f7dcfbef';
+import { PARADISE_COURSES, PARADISE_EXIT_ART, STARLIT_NIGHT_CLOUDS, STARLIT_NIGHT_CLOUD_SPRITE, PARADISE_STAR_SIDE, paradisePickupTouches, paradiseSourcePoints, paradiseStarArt } from '../public/js/paradise-flight.js?v=3eca39b5';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
 import { ROOK_WOODS_BIRDS } from '../public/js/rook-woods.js?v=0aab151e';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=ced89b64';
@@ -64,7 +64,7 @@ describe('Radial Heights stars and way out (A6, A7)', () => {
     const stars = data.layers.find((l) => l.name === 'yellow stars').decos;
     assert.equal(stars.length, 53);
     for (const deco of stars) {
-      // game.js loadParadiseSourcePoints
+      // js/paradise-flight.js paradiseSourcePoints
       const point = { radius: Math.max(10, Math.min(28, deco.w * 0.42)), major: deco.sprite === 'star_asset_01', r: deco.r };
       const art = paradiseStarArt(point);
       assert.equal(art.asset, deco.sprite);
@@ -73,7 +73,7 @@ describe('Radial Heights stars and way out (A6, A7)', () => {
       assert.ok(existsSync(join(ROOT, `assets/decos/groddle/${deco.sprite}.webp`)));
     }
     assert.equal(PARADISE_STAR_SIDE, 2.38);
-    assert.match(fnBody(game(), 'loadParadiseSourcePoints'), /r: Number\(deco\.r\) \|\| 0/);
+    assert.deepEqual(paradiseSourcePoints(PARADISE_COURSES.radial_heights, data).map((p) => p.r), stars.map((d) => d.r || 0));
   });
 
   it('the stars are drawn from the decos, the box and the collision unchanged', () => {

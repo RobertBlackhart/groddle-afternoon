@@ -17,7 +17,7 @@ import {
   finishParadiseRun,
   paradiseTicketCost,
   passParadiseRing,
-} from '../public/js/paradise-flight.js?v=f7dcfbef';
+} from '../public/js/paradise-flight.js?v=3eca39b5';
 import { recordedBenefit } from '../public/js/paradise-courses.js?v=17579e08';
 import { BEAM_ME_DOWN, beamQuoins } from '../public/js/puzzle-scenes.js?v=04413a6d';
 import { moodScaledXp } from '../public/js/mood-xp.js?v=e311b45c';

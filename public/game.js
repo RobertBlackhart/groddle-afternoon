@@ -369,6 +369,16 @@ import {
   STARLIT_NIGHT_STAR_FIELDS,
   STARLIT_NIGHT_CLOUDS,
   STARLIT_NIGHT_CLOUD_SPRITE,
+  RADIAL_HEIGHTS_MOON_FADE_MS,
+  RADIAL_HEIGHTS_START_PEN,
+  openRadialStartPen,
+  paradiseFlightCollide,
+  paradiseGeometryLines,
+  paradiseLowestFloor,
+  paradiseSourceGeometry,
+  paradiseSourcePoints,
+  paradiseSpawnFeet,
+  radialStartPenOpens,
   SLIP_N_SLIDE_LANDMARKS,
   SLIP_N_SLIDE_TREE_SPRITES,
   activateParadiseTicket,
@@ -394,7 +404,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=f7dcfbef';
+} from './js/paradise-flight.js?v=3eca39b5';
 import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=17579e08';
 import {
   buildParadiseCourseArt,
@@ -532,7 +542,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=2e1bb43d';
+} from './js/player-save.js?v=f59c1d86';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -2862,6 +2872,9 @@ let paradiseSourceLocation = null;
 let paradisePickups = [];
 let paradiseRings = [];
 let paradiseExit = null;
+/** G1119: the course's source lines and walls (js/paradise-flight.js paradiseSourceGeometry), and when Radial Heights' start pen opened. */
+let paradiseGeometry = null;
+let paradiseStartPenOpenedAt = 0;
 let paradiseBackdropStars = [];
 let paradiseStartPromise = null;
 let paradiseTransitionBusy = false;
@@ -22880,7 +22893,25 @@ function buildRadialBackground(root, course) {
   }
   addParadiseCloud(root, 1000, 1950, 1550, 320, 0.52, 0xc3d9de);
   addParadiseCloud(root, 500, 1685, 410, 120, 0.88, 0xe9f1f0);
-  addParadiseCloud(root, 1000, 1160, 440, 120, 0.72, 0xdbe7e8);
+  // G1119 (#599): the start cloud you arrive on is the source's three cloud_fluffy_1 decos over
+  // plat_1339609697362 (js/paradise-flight.js RADIAL_HEIGHTS_START_PEN); they fade when the pen opens.
+  const startCloudTexture = textureFromUrl('assets/decos/groddle/cloud_fluffy_1.png');
+  root.paradiseStartClouds = RADIAL_HEIGHTS_START_PEN.clouds.map((spec) => {
+    const cloud = new PIXI.Sprite(startCloudTexture);
+    anchorBottomCentre(cloud, 'deco');
+    cloud.position.set(spec.x, spec.y);
+    const applySize = () => {
+      cloud.width = spec.w;
+      cloud.height = spec.h;
+      if (spec.flip) cloud.scale.x *= -1;
+    };
+    if (isLoaded(startCloudTexture.source)) applySize();
+    else onLoaded(startCloudTexture.source, applySize);
+    cloud.zIndex = -19 + spec.z / 10;
+    cloud._sourceDecoId = spec.id;
+    root.addChild(cloud);
+    return cloud;
+  });
 
   const moonAsset = `assets/decos/groddle/${RADIAL_HEIGHTS_MOON.asset}?v=radial-322`;
   const moonTexture = textureFromUrl(moonAsset);
@@ -22891,6 +22922,10 @@ function buildRadialBackground(root, course) {
   moon.height = RADIAL_HEIGHTS_MOON.height;
   moon.zIndex = -3;
   moon._sourceStreetTsid = course.sourceStreetTsid;
+  // G1119: hidden until every star is found (updateParadiseFlight fades it in); the moon preview keeps it.
+  moon._preview = new URLSearchParams(location.search).get('paradisepreview') === 'moon';
+  moon._revealAt = 0;
+  moon.alpha = moon._preview ? 1 : 0;
   root.addChild(moon);
   root.paradiseRadialMoon = moon;
   // G892: the source's exit sign, its sign_txt printed in its deco's box (DecoRenderer.as 287-322).
@@ -23084,32 +23119,21 @@ function buildSlipBackground(root, course) {
   root.paradiseSlipTrees = snowTrees;
 }
 
-async function loadParadiseSourcePoints(course) {
-  if (!course?.sourceStreetTsid) return [];
+/**
+ * The course's source street (assets/streets/<sourceStreetTsid>.json): its star pickups
+ * (js/paradise-flight.js paradiseSourcePoints) and, G1119 (#599), its lines and walls with the
+ * arrival perms (paradiseSourceGeometry). A course with no source street gets neither.
+ */
+async function loadParadiseSource(course) {
+  const none = { points: [], geometry: null };
+  if (!course?.sourceStreetTsid) return none;
   try {
     const response = await fetch(`assets/streets/${course.sourceStreetTsid}.json`);
-    if (!response.ok) return [];
+    if (!response.ok) return none;
     const data = await response.json();
-    const layer = (data.layers || []).find((entry) =>
-      course.id === 'radial_heights'
-        ? entry.name === 'yellow stars'
-        : entry.name === 'middleground'
-    );
-    if (!layer) return [];
-    return (layer.decos || [])
-      .filter((deco) => /^star_asset_0[12]$/.test(String(deco.sprite || '')))
-      .map((deco) => {
-        const screenSpace = /^T_/.test(String(layer.id || ''));
-        return {
-          x: screenSpace ? deco.x : deco.x - data.bounds.l,
-          y: screenSpace ? deco.y : deco.y - data.bounds.t,
-          radius: Math.max(10, Math.min(28, Number(deco.w || 30) * 0.42)),
-          major: String(deco.sprite) === 'star_asset_01',
-          r: Number(deco.r) || 0,
-        };
-      });
+    return { points: paradiseSourcePoints(course, data), geometry: paradiseSourceGeometry(course, data) };
   } catch {
-    return [];
+    return none;
   }
 }
 
@@ -23501,7 +23525,7 @@ function renderParadiseFlightHud() {
   }
 }
 
-function setupParadiseCourse(course, sourcePoints) {
+function setupParadiseCourse(course, sourcePoints, geometry = null) {
   clearWorldEntities();
   const points = sourcePoints.length === course.pickupCount
     ? sourcePoints
@@ -23529,13 +23553,18 @@ function setupParadiseCourse(course, sourcePoints) {
     hubName: '', // G363: a paradise_ticket instance (paradise_ticket.js 285): no hub line (location.js 3311)
     musicFile: course.musicFile || null,
     bounds: { l: 0, r: course.width, t: 0, b: course.height },
-    platforms: [],
+    // G1119 / R44 (#599): the source street's lines and walls (js/paradise-flight.js
+    // paradiseSourceGeometry), course space, with the arrival perms; none for a course without one.
+    platforms: geometry?.platforms || [],
+    barriers: geometry?.barriers || [],
     signposts: [],
   };
+  paradiseGeometry = geometry;
+  paradiseStartPenOpenedAt = 0;
   if (course.musicFile) setAmbientForStreet(currentStreet);
   WORLD_W = course.width;
   GROUND_Y = course.height - 80;
-  streetPlatforms = [];
+  streetPlatforms = paradiseGeometryLines(geometry);
   streetWalls = [];
   climb = { active: false, wall: null };
   points.forEach((point, index) => spawnParadisePickup(course, point, index));
@@ -23544,6 +23573,8 @@ function setupParadiseCourse(course, sourcePoints) {
   }
   spawnParadiseExit(course);
   if (player) {
+    // #599: arrive standing on the course's start line (Radial Heights' start cloud), not in the air over the stars.
+    const spawnFeet = paradiseSpawnFeet(course, streetPlatforms);
     const previewRing =
       course.id === 'cloud_rings' &&
       new URLSearchParams(location.search).get('paradisepreview') === 'ring'
@@ -23579,10 +23610,10 @@ function setupParadiseCourse(course, sourcePoints) {
             ? slipTerrainY(player.x)
             : course.movement === 'slide'
               ? slipTerrainY(course.spawn.x)
-              : course.spawn.y;
+              : spawnFeet.y;
     player.vx = previewFinish ? 0 : course.movement === 'slide' ? 2.4 : 0;
     player.vy = 0;
-    player.onGround = course.movement === 'slide';
+    player.onGround = course.movement === 'slide' || (!previewRing && !previewMoon && !previewStarlitMoon && spawnFeet.y !== course.spawn.y);
     player.rotation = 0;
     setPlayerAnim('idle');
     if (previewRing && app?.canvas) app.canvas.dataset.paradisePreview = 'cloud-ring';
@@ -23627,8 +23658,8 @@ function setupParadiseCourse(course, sourcePoints) {
   updateHud();
 }
 
-async function transitionIntoParadise(course, points, useTransition = true) {
-  const setup = () => setupParadiseCourse(course, points);
+async function transitionIntoParadise(course, points, useTransition = true, geometry = null) {
+  const setup = () => setupParadiseCourse(course, points, geometry);
   const el = document.getElementById('screen-transition');
   if (!useTransition || !el) {
     setup();
@@ -23673,11 +23704,11 @@ async function startParadiseFlight(courseId, opts = {}) {
     paradiseAutoNextAt = 0;
     paradiseCompletionAnnounced = false;
     savePlayerLocation(paradiseSourceLocation);
-    const [points] = await Promise.all([
-      loadParadiseSourcePoints(course),
+    const [{ points, geometry }] = await Promise.all([
+      loadParadiseSource(course),
       loadParadiseVisualAssets(course),
     ]);
-    await transitionIntoParadise(course, points, opts.useTransition !== false);
+    await transitionIntoParadise(course, points, opts.useTransition !== false, geometry);
     const controls = paradiseControls(course, TOUCH_PHONE).hint;
     pushActivity(`${course.name}: ${controls} ${course.objective}.`);
     toast(controls, 3600);
@@ -24114,12 +24145,27 @@ function paradiseSlidePhysics(dt) {
 function paradiseFlightPhysics(dt) {
   if (!paradiseIsInstanced() || !player) return;
   const course = paradiseCourse();
+  const prevX = player.x;
+  const prevY = player.y;
+  // G1119: a course with source floor lines lets the feet down onto its lowest one (Starlit Night's cloud floor).
+  const bottom = Math.max(course.height - 45, Math.min(course.height - 2, paradiseLowestFloor(streetPlatforms)));
   player.x = clamp(player.x + player.vx * dt, 34, course.width - 34);
-  player.y = clamp(player.y + player.vy * dt, 72, course.height - 45);
+  player.y = clamp(player.y + player.vy * dt, 72, bottom);
   if (player.x <= 35 && player.vx < 0) player.vx *= -0.24;
   if (player.x >= course.width - 35 && player.vx > 0) player.vx *= -0.24;
   if (player.y <= 73 && player.vy < 0) player.vy *= -0.18;
-  if (player.y >= course.height - 46 && player.vy > 0) player.vy *= -0.18;
+  if (player.y >= bottom - 1 && player.vy > 0) player.vy *= -0.18;
+  if (streetPlatforms.length || currentStreet?.barriers?.length) {
+    const scale = features.query('avatarBodyScale', engine) ?? 1;
+    // G1119 (#599): the source street's lines and walls (js/paradise-flight.js paradiseFlightCollide).
+    paradiseFlightCollide(player, prevX, prevY, { lines: streetPlatforms, barriers: barriersScreen(currentStreet), scale });
+    if (course.id === 'radial_heights' && !paradiseStartPenOpenedAt && radialStartPenOpens(player, scale)) openParadiseStartPen();
+  }
+  for (const cloud of bgLayer?.paradiseStartClouds || []) {
+    if (!paradiseStartPenOpenedAt || cloud.destroyed) continue;
+    cloud.alpha = Math.max(0, 1 - (Date.now() - paradiseStartPenOpenedAt) / RADIAL_HEIGHTS_START_PEN.fadeMs);
+    cloud.visible = cloud.alpha > 0;
+  }
   const bankTarget = clamp(player.vy * 0.026 + player.vx * 0.012, -0.15, 0.15);
   player.rotation += (bankTarget - player.rotation) * dampingAlpha(0.14, dt);
   player.pivot.y = Math.sin(time * 0.13) * 1.4;
@@ -24133,6 +24179,18 @@ function paradiseFlightPhysics(dt) {
     mote._max = 38;
     fxLayer.addChild(mote);
   }
+}
+
+/** Radial Heights' hide_start_clouds: the pen's lines and walls go soft and its clouds fade (G1119). */
+function openParadiseStartPen() {
+  paradiseStartPenOpenedAt = Date.now();
+  openRadialStartPen(paradiseGeometry);
+  if (currentStreet && paradiseGeometry) {
+    currentStreet.platforms = paradiseGeometry.platforms;
+    currentStreet.barriers = paradiseGeometry.barriers;
+  }
+  streetPlatforms = paradiseGeometryLines(paradiseGeometry);
+  if (app?.canvas) app.canvas.dataset.paradiseStartPen = 'open';
 }
 
 function updateParadiseFlight(dt) {
@@ -24163,6 +24221,11 @@ function updateParadiseFlight(dt) {
           ? 'revealing'
           : 'smile';
     }
+  }
+  const radialMoon = course.id === 'radial_heights' ? bgLayer?.paradiseRadialMoon : null;
+  if (radialMoon && !radialMoon.destroyed && !radialMoon._preview) {
+    if (!radialMoon._revealAt && paradiseObjectiveComplete(paradiseRun)) radialMoon._revealAt = now;
+    radialMoon.alpha = radialMoon._revealAt ? Math.min(1, (now - radialMoon._revealAt) / RADIAL_HEIGHTS_MOON_FADE_MS) : 0;
   }
   if (paradiseRun.status === 'complete') {
     if (autoplayActive && isQuestDialogueOpen() && now >= paradiseAutoNextAt) {

@@ -3,6 +3,7 @@
 import { EXTRA_PARADISE_COURSES, paradiseReward } from './paradise-courses.js?v=17579e08';
 import { qrazyRewardForLevel, quoinPay, quoinTouches } from './quoins.js?v=5abad2c7';
 import { getGameDayKey } from './game-day.js?v=50c112eb';
+import { avatarHeadReach, barriersScreen, blockBarrierCrossing, headCeiling, isStandable, platformYAt, platformsScreen } from './street-model.js?v=a9a05f9d';
 
 export const PARADISE_DURATION_MS = 4 * 60 * 1000;
 export const PARADISE_DAILY_LIMIT = 11;
@@ -32,6 +33,13 @@ export const RADIAL_HEIGHTS_MOON = Object.freeze({
   width: 322,
   height: 322,
 });
+
+/**
+ * G1119: the moon is hidden while you fly (LHFQOLEIHN63P27.xml instance_created deco_hide
+ * moon_asset_smile_1339642021284) and fades in over 2000 ms once all 53 stars are found
+ * (master_check deco_show, fade 2000). Shown from the start it covered the start cloud.
+ */
+export const RADIAL_HEIGHTS_MOON_FADE_MS = 2000;
 
 export const STARLIT_NIGHT_MOON = Object.freeze({
   plain: Object.freeze({
@@ -271,7 +279,8 @@ export const PARADISE_COURSES = Object.freeze({
     sourceStreetTsid: 'GHFQOLEIHN63P27',
     width: 2000,
     height: 2000,
-    spawn: Object.freeze({ x: 1000, y: 1120 }),
+    // #599: on the start cloud plat_1339609697362 (835..1193 at y 1083 here), under "Spacebar to fly!".
+    spawn: Object.freeze({ x: 1000, y: 1083 }),
     exit: Object.freeze({ x: 500, y: 1645 }),
     pickupCount: 53,
     ringCount: 0,
@@ -710,4 +719,178 @@ export function finishParadiseRun(run, now = Date.now(), { multiplier = 1 } = {}
     run.completionRewarded = true;
   }
   return { ok: true, reason: 'complete', completionReward, run };
+}
+
+/**
+ * G1119 / R44 (#599): a recovered course keeps its source street's lines and walls, as the client
+ * built the instance from its template (pc.instances_create, paradise_ticket.js 285), not an empty
+ * sky. Screen space here is the street's own (bounds l and t taken off), the same as the stars.
+ *
+ * Radial Heights starts you penned on a cloud in the middle. Its source lines are soft (pc_perm 0,
+ * GHFQOLEIHN63P27.xml); the location's instance_created event (LHFQOLEIHN63P27.xml) makes the pen:
+ * the start cloud plat_1339609697362 a floor (-1), its roof plat_1339609697364 solid from below (1),
+ * and the side walls wall_1339609697367 (1) and wall_1339609697366 (-1) solid from inside.
+ * hide_start_clouds opens it again (the three start clouds fade over 500 ms, every pen line back to 0,
+ * the flitterbug fades). The collision box that ran it was an item the archive lost, and the
+ * flitterbug's hide_cover_01 plays FLITTERBUG_COLLISION, so the pen opens when you fly up into the
+ * flitterbug (flitterbug_limbo1_1339609697352, 68 x 82 at 9, -1056: 1009, 944 here), as the 2012 run
+ * kxnjN86TqNY shows: on the cloud, up past the sign, and the clouds are gone.
+ */
+export const RADIAL_HEIGHTS_START_PEN = Object.freeze({
+  shut: Object.freeze({
+    plat_1339609697362: -1,
+    plat_1339609697364: 1,
+    wall_1339609697367: 1,
+    wall_1339609697366: -1,
+  }),
+  floorId: 'plat_1339609697362',
+  trigger: Object.freeze({ x: 1009, y: 944, w: 68, h: 82 }),
+  /** The three cloud_fluffy_1 decos over the start cloud (middleground, bottom centre, x + 1000, y + 2000). */
+  clouds: Object.freeze([
+    Object.freeze({ id: 'cloud_fluffy_1_1339609697361', x: 1003, y: 1152, w: 324, h: 130, z: 0 }),
+    Object.freeze({ id: 'cloud_fluffy_1_1339609697360', x: 1049, y: 1128, w: 324, h: 126, z: 1, flip: true }),
+    Object.freeze({ id: 'cloud_fluffy_1_1339609697359', x: 966, y: 1129, w: 319, h: 124, z: 2 }),
+  ]),
+  fadeMs: 500,
+});
+
+/** The pen's perms per course: what instance_created set on arrival. */
+const PARADISE_START_PERMS = Object.freeze({ radial_heights: RADIAL_HEIGHTS_START_PEN.shut });
+
+/** PURE: the course's star pickups from its source street ('yellow stars' for Radial Heights). */
+export function paradiseSourcePoints(course, data) {
+  if (!course?.sourceStreetTsid || !data) return [];
+  const layer = (data.layers || []).find((entry) =>
+    course.id === 'radial_heights' ? entry.name === 'yellow stars' : entry.name === 'middleground'
+  );
+  if (!layer) return [];
+  const screenSpace = /^T_/.test(String(layer.id || ''));
+  const l = Number(data.bounds?.l) || 0;
+  const t = Number(data.bounds?.t) || 0;
+  return (layer.decos || [])
+    .filter((deco) => /^star_asset_0[12]$/.test(String(deco.sprite || '')))
+    .map((deco) => ({
+      x: screenSpace ? deco.x : deco.x - l,
+      y: screenSpace ? deco.y : deco.y - t,
+      radius: Math.max(10, Math.min(28, Number(deco.w || 30) * 0.42)),
+      major: String(deco.sprite) === 'star_asset_01',
+      r: Number(deco.r) || 0,
+    }));
+}
+
+/**
+ * PURE: the course's lines and walls from its source street, in course space, with the arrival
+ * perms applied: `{ platforms, barriers }` in the street's own shape (x1, y1, x2, y2, pc_perm; x, y,
+ * h, pc_perm), ready for platformsScreen / barriersScreen of a street whose bounds start at 0.
+ */
+export function paradiseSourceGeometry(course, data) {
+  if (!course?.sourceStreetTsid || !data) return { platforms: [], barriers: [] };
+  const l = Number(data.bounds?.l) || 0;
+  const t = Number(data.bounds?.t) || 0;
+  const perms = PARADISE_START_PERMS[course.id] || {};
+  const perm = (row) => (Object.prototype.hasOwnProperty.call(perms, row.id) ? perms[row.id] : row.pc_perm);
+  const platforms = (data.platforms || []).map((p) => ({
+    id: p.id,
+    x1: p.x1 - l,
+    y1: p.y1 - t,
+    x2: p.x2 - l,
+    y2: p.y2 - t,
+    pc_perm: perm(p),
+    item_perm: p.item_perm,
+  }));
+  const barriers = (data.barriers || []).map((w) => ({ id: w.id, x: w.x - l, y: w.y - t, h: w.h, pc_perm: perm(w) }));
+  return { platforms, barriers };
+}
+
+/** PURE: a geometry's lines as the avatar meets them (street-model platformsScreen; bounds start at 0). */
+export function paradiseGeometryLines(geometry) {
+  return platformsScreen({ bounds: { l: 0, t: 0 }, platforms: geometry?.platforms || [] });
+}
+
+/** PURE: the spawn's feet: on the first floor line at or under the course spawn, else the spawn. */
+export function paradiseSpawnFeet(course, lines = []) {
+  const x = Number(course?.spawn?.x) || 0;
+  const y = Number(course?.spawn?.y) || 0;
+  let best = null;
+  for (const p of lines) {
+    if (!isStandable(p)) continue;
+    const lineY = platformYAt(p, x, 0);
+    if (lineY == null || lineY < y - 1) continue;
+    if (best == null || lineY < best) best = lineY;
+  }
+  return { x, y: best ?? y };
+}
+
+/** PURE: the lowest floor line, so the flight's bottom bound never holds the feet over it. */
+export function paradiseLowestFloor(lines = []) {
+  let low = -Infinity;
+  for (const p of lines) if (isStandable(p)) low = Math.max(low, p.y1, p.y2);
+  return low;
+}
+
+/** PURE: Radial Heights' pen opens: the avatar's body (feet to head) overlaps the flitterbug. */
+export function radialStartPenOpens(feet, scale = 1) {
+  if (!feet) return false;
+  const box = RADIAL_HEIGHTS_START_PEN.trigger;
+  const head = feet.y - avatarHeadReach(scale).reach;
+  const halfW = 20 * (scale > 0 ? scale : 1);
+  return (
+    feet.x + halfW >= box.x - box.w / 2 &&
+    feet.x - halfW <= box.x + box.w / 2 &&
+    head <= box.y &&
+    feet.y >= box.y - box.h
+  );
+}
+
+/** Mutates `geometry`: hide_start_clouds sets every pen line and wall back to 0 (soft both ways). */
+export function openRadialStartPen(geometry) {
+  for (const row of [...(geometry?.platforms || []), ...(geometry?.barriers || [])]) {
+    if (Object.prototype.hasOwnProperty.call(RADIAL_HEIGHTS_START_PEN.shut, row.id)) row.pc_perm = 0;
+  }
+  return geometry;
+}
+
+/**
+ * PURE-ish (mutates `body`): one flight frame's meeting with the course's lines and walls, after the
+ * move from prevX, prevY. Walls stop the body sideways, a line solid from below stops the head, and a
+ * floor line crossed going down puts the feet on it (onGround). `lines` are paradiseGeometryLines,
+ * `barriers` barriersScreen rows.
+ */
+export function paradiseFlightCollide(body, prevX, prevY, { lines = [], barriers = [], scale = 1 } = {}) {
+  if (!body) return body;
+  const bodyH = 80 * (scale > 0 ? scale : 1);
+  const walledX = blockBarrierCrossing(barriers, prevX, body.x, body.y, bodyH);
+  if (walledX !== body.x) {
+    body.x = walledX;
+    body.vx = 0;
+  }
+  const head = avatarHeadReach(scale);
+  const roof = lines.length ? headCeiling(lines, prevX, prevY, body.x, body.y, head, 2, barriers) : null;
+  if (roof != null) {
+    body.y = roof;
+    if (body.vy < 0) body.vy = 0;
+  }
+  body.onGround = false;
+  if (body.vy >= 0) {
+    let floor = null;
+    for (const p of lines) {
+      if (!isStandable(p)) continue;
+      const y = platformYAt(p, body.x, 0);
+      if (y == null) continue;
+      const before = platformYAt(p, prevX, 4) ?? y;
+      // Crossed it going down this frame, or standing on it.
+      if (prevY <= before + 1 && body.y >= y - 0.5 && (floor == null || y < floor)) floor = y;
+    }
+    if (floor != null) {
+      body.y = floor;
+      body.vy = 0;
+      body.onGround = true;
+    }
+  }
+  return body;
+}
+
+/** PURE: a street-shaped view of a geometry for barriersScreen (bounds start at 0). */
+export function paradiseGeometryBarriers(geometry) {
+  return barriersScreen({ bounds: { l: 0, t: 0 }, barriers: geometry?.barriers || [] });
 }
