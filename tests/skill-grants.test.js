@@ -5,7 +5,7 @@
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createSkillState, grantSkillWithPrereqs } from '../public/js/skills.js?v=4542bdf9';
+import { createSkillState, grantSkillWithPrereqs } from '../public/js/skills.js?v=db7039d9';
 
 before(async () => {
   await loadContentCatalogsFromDir(new URL('../public/assets/content', import.meta.url).pathname);

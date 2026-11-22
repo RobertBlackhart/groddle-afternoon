@@ -178,10 +178,17 @@ export function canLearnSkill(state, classTsid, ctx = {}) {
   return { ok: true, reason: queued ? 'paused' : 'ok', def, queued };
 }
 
-export function getStudyStatus(state, classTsid, now = Date.now()) {
+/**
+ * One queued study's times. #605: a paused study's time is its points at the learning rate now
+ * (skills_points_to_seconds with the current modifier, as its resume will take it: every skill
+ * learned or queued since its pause changes the rate), when `ctx` gives the rate (ctx.timeFactor,
+ * a factor or a function of the skill's def); without one, the rate stored at its pause.
+ */
+export function getStudyStatus(state, classTsid, now = Date.now(), ctx = null) {
   const row = state.queue?.[classTsid];
   if (!row) return null;
-  const factor = cleanTimeFactor(row.timeFactor);
+  const rateNow = row.isPaused && ctx && (typeof ctx.timeFactor === 'function' || typeof ctx.timeFactor === 'number');
+  const factor = rateNow ? resolveTimeFactor(ctx, getSkillCatalog()[classTsid] || null) : cleanTimeFactor(row.timeFactor);
   const totalSeconds = Math.max(1, Math.round((row.totalPoints / SKILL_POINTS_PER_SECOND) * factor));
   const remainingSeconds = row.isPaused
     ? Math.max(1, Math.ceil((row.pointsRemaining / SKILL_POINTS_PER_SECOND) * factor))
@@ -198,9 +205,10 @@ export function getStudyStatus(state, classTsid, now = Date.now()) {
   };
 }
 
-export function listStudyQueue(state, now = Date.now()) {
+/** The queue, studying first; `ctx` (optional) gives paused rows the learning rate now (getStudyStatus). */
+export function listStudyQueue(state, now = Date.now(), ctx = null) {
   return Object.keys(state.queue || {})
-    .map((classTsid) => getStudyStatus(state, classTsid, now))
+    .map((classTsid) => getStudyStatus(state, classTsid, now, ctx))
     .filter(Boolean)
     .sort((a, b) => Number(a.isPaused) - Number(b.isPaused) || a.startedAt - b.startedAt);
 }

@@ -19,9 +19,9 @@ import {
   rescaleStudiesForLearningModifier,
   startSkillStudy,
   tickSkillStudy,
-} from '../public/js/skills.js?v=4542bdf9';
+} from '../public/js/skills.js?v=db7039d9';
 import { brainCapacityRescale } from '../public/js/imagination-effects.js?v=70169933';
-import { studyPillName } from '../public/js/skill-tree.js?v=e399b9ca';
+import { studyPillName } from '../public/js/skill-tree.js?v=df9b7332';
 
 const root = join(import.meta.dirname, '..', 'public');
 

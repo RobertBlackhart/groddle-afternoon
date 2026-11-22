@@ -13,7 +13,7 @@ import { join } from 'node:path';
 import { normalizeStreetJobState, phaseRequirements } from '../public/js/street-jobs.js?v=884e34b3';
 import { ITEM_GET_ANCHOR, JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillNote } from '../public/js/street-job-asks.js?v=c2511e10';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=78228046';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=28c46af4';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

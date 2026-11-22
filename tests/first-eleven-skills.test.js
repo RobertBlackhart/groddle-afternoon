@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createSkillState, grantSkillWithPrereqs } from '../public/js/skills.js?v=4542bdf9';
+import { createSkillState, grantSkillWithPrereqs } from '../public/js/skills.js?v=db7039d9';
 import { STARTER_MINING_SKILLS } from '../public/js/mining.js?v=8463f2ac';
 
 const here = dirname(fileURLToPath(import.meta.url));

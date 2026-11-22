@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 
 import { loadContentCatalogsFromDir, getSkillCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createSkillState, grantSkill } from '../public/js/skills.js?v=4542bdf9';
+import { createSkillState, grantSkill } from '../public/js/skills.js?v=db7039d9';
 import {
   SKILL_REMAKE_NOTES,
   SKILL_CATEGORIES,
@@ -22,7 +22,7 @@ import {
   emblemUnlockFor,
   spendEmblemForSkill,
   skillTitle,
-} from '../public/js/skill-tree.js?v=e399b9ca';
+} from '../public/js/skill-tree.js?v=df9b7332';
 
 const root = join(import.meta.dirname, '..', 'public');
 

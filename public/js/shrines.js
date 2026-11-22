@@ -26,8 +26,8 @@ import {
 import { gainMetabolic } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';
-import { accelerateActiveStudy, getActiveStudy, maxStudyAcceleration } from './skills.js?v=4542bdf9';
-import { emblemUnlockSkillFor } from './skill-tree.js?v=e399b9ca';
+import { accelerateActiveStudy, getActiveStudy, maxStudyAcceleration } from './skills.js?v=db7039d9';
+import { emblemUnlockSkillFor } from './skill-tree.js?v=df9b7332';
 import { NO_DONATE_CLASSES } from './shrine-no-donate-data.js?v=1a3b042f';
 
 export { NO_DONATE_CLASSES };

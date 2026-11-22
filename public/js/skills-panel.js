@@ -505,7 +505,8 @@ export function patchChildren(live, next) {
  * `study`; returns the row studying now (or null). Each card and its button carry data-skill (#605).
  */
 export function studyQueueCards(study, { state, ctx = {}, actions = {}, now = Date.now() } = {}) {
-  const queueRows = listStudyQueue(state, now);
+  // #605: a paused study shows the time it would take now (the learning rate changes with every skill).
+  const queueRows = listStudyQueue(state, now, ctx);
   const active = queueRows.find((row) => !row.isPaused) || null;
   for (const row of queueRows) {
     const def = getSkillCatalog()[row.classTsid];

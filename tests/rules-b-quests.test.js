@@ -20,7 +20,7 @@ import {
   HERB_GARDEN_STREETS,
 } from '../public/js/quest-offers.js?v=69e064ff';
 import { retireDeadQuests, retiredQuestLine } from '../public/js/retired-quests.js?v=61758261';
-import { questRemovedBy } from '../public/js/unlearning.js?v=20672dff';
+import { questRemovedBy } from '../public/js/unlearning.js?v=db761d33';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(ROOT, 'public/assets/content');

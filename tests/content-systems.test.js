@@ -45,7 +45,7 @@ import {
   grantSkill,
   listSkills,
   hasSkill,
-} from '../public/js/skills.js?v=4542bdf9';
+} from '../public/js/skills.js?v=db7039d9';
 import {
   createBuffState,
   applyBuff,

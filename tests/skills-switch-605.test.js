@@ -117,3 +117,38 @@ describe('#605: the Skills panel\'s Switch buttons stay with their own skill', (
     }
   });
 });
+
+describe('#605: a paused skill shows the time it would take now', () => {
+  it('a paused card takes the learning rate now, the same time its resume will take', () => {
+    const state = createSkillState();
+    let factor = 1;
+    const ctx = { level: 99, timeFactor: () => factor };
+    startSkillStudy(state, A, ctx, 1_000);
+    startSkillStudy(state, B, ctx, 31_000);
+    const pausedThen = getStudyStatus(state, A, 31_000).remainingSeconds;
+    // Skills learned since the pause make learning slower (1.05 per skill over brain capacity).
+    factor = 1.05 ** 11;
+    const shown = getStudyStatus(state, A, 31_000, ctx).remainingSeconds;
+    assert.ok(Math.abs(shown - pausedThen * factor) <= 1, `${shown} vs ${pausedThen * factor}`);
+    // The panel's card shows that time, and a resume takes the same.
+    const box = new El('div');
+    studyQueueCards(box, { state, ctx, actions: {}, now: 31_000 });
+    const card = box.childNodes.find((c) => c.dataset.skill === A);
+    const resumed = startSkillStudy(state, A, ctx, 31_000);
+    assert.ok(Math.abs(resumed.durationSeconds - shown) <= 1, 'the same time, to the second');
+    assert.match(card.childNodes[1].textContent, /remaining/);
+    // Without a rate (callers that do not know it), the rate stored at the pause.
+    startSkillStudy(state, B, ctx, 32_000);
+    factor = 2;
+    const stored = getStudyStatus(state, A, 32_000).remainingSeconds;
+    assert.ok(Math.abs(getStudyStatus(state, A, 32_000, ctx).remainingSeconds - stored * 2 / (1.05 ** 11)) <= 2);
+  });
+
+  it('the panel and the tree give the paused rows the rate (ctx)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const panel = readFileSync(join(root, 'js/skills-panel.js'), 'utf8');
+    const tree = readFileSync(join(root, 'js/skill-tree.js'), 'utf8');
+    assert.match(panel, /listStudyQueue\(state, now, ctx\)/);
+    assert.match(tree, /getStudyStatus\(state, classTsid, now, ctx\)/);
+  });
+});

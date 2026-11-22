@@ -218,7 +218,7 @@ describe('skill learned panel (G218)', () => {
     assert.deepEqual(none.resume, [], 'no paused skills: the heading stays hidden');
     const game = read('game.js');
     const info = game.slice(game.indexOf('skillLearnedInfo(classTsid) {'), game.indexOf('openSkillTree(classTsid'));
-    assert.match(info, /listStudyQueue\(skillState\)\s*\.filter\(\(row\) => row\.isPaused/);
+    assert.match(info, /listStudyQueue\(skillState, Date\.now\(\), ctx\)\s*\.filter\(\(row\) => row\.isPaused/);
     assert.match(info, /\.sort\(\(a, b\) => b\.pausedAt - a\.pausedAt\)/, 'the last paused first');
     const fx = read('js/features/familiar-dialog-feature.js');
     assert.ok(fx.indexOf('data-fam-resume-label') < fx.indexOf('data-fam-next-label'), 'the heading sits above the usual list');

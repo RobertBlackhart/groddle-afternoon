@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=ff2390f2';
+import { learnFasterOpen, learnFasterSummary } from '../public/js/shrines.js?v=de74a29b';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const GSJS = join(PUBLIC, '../../glitch-GameServerJS');

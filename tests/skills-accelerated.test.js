@@ -25,9 +25,9 @@ import {
   pauseSkillStudy,
   startSkillStudy,
   tickSkillStudy,
-} from '../public/js/skills.js?v=4542bdf9';
-import { switchStudyNote } from '../public/js/skills-panel.js?v=f5279b3d';
-import { createUnlearnState, startUnlearning } from '../public/js/unlearning.js?v=20672dff';
+} from '../public/js/skills.js?v=db7039d9';
+import { switchStudyNote } from '../public/js/skills-panel.js?v=0d67b499';
+import { createUnlearnState, startUnlearning } from '../public/js/unlearning.js?v=db761d33';
 
 const root = join(import.meta.dirname, '..', 'public');
 const CTX = { level: 99 };

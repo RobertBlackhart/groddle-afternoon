@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=26af9625';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a56bc922';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4cc3822e';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -456,10 +456,10 @@ import {
   grantSkillWithPrereqs,
   canLearnSkill,
   listLearnedSkills,
-} from './js/skills.js?v=4542bdf9';
-import { skillTitle, skillTreeCounts, skillTreeEntry, spendEmblemForSkill, studyPillName } from './js/skill-tree.js?v=e399b9ca';
+} from './js/skills.js?v=db7039d9';
+import { skillTitle, skillTreeCounts, skillTreeEntry, spendEmblemForSkill, studyPillName } from './js/skill-tree.js?v=df9b7332';
 import { CARD_ART_LAYERS } from './js/imagination-data.js?v=4a85e7fe';
-import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=f5279b3d';
+import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=0d67b499';
 import {
   createBuffState,
   applyBuff,
@@ -532,7 +532,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=95cd6249';
+} from './js/player-save.js?v=2e1bb43d';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -949,7 +949,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=ff2390f2';
+} from './js/shrines.js?v=de74a29b';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -1135,7 +1135,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=bf424cc7';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=191ecb13';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=a593b732';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -14157,7 +14157,7 @@ const engine = {
       .map((row) => ({ classTsid: row.classTsid, name: skillTitle(row) || row.name }));
     // Austin 2026-11-01: the skills started and paused, last paused first ("Pick up where you left off").
     const catalog = getSkillCatalog();
-    const paused = listStudyQueue(skillState)
+    const paused = listStudyQueue(skillState, Date.now(), ctx)
       .filter((row) => row.isPaused && catalog[row.classTsid])
       .sort((a, b) => b.pausedAt - a.pausedAt)
       .map((row) => ({ classTsid: row.classTsid, name: skillTitle(catalog[row.classTsid]) || row.classTsid, left: formatStudyTime(row.remainingSeconds) }));

@@ -16,7 +16,7 @@
  */
 
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';
-import { SKILL_POINTS_PER_SECOND, canLearnSkill, getStudyStatus, studySecondsForSkill } from './skills.js?v=4542bdf9';
+import { SKILL_POINTS_PER_SECOND, canLearnSkill, getStudyStatus, studySecondsForSkill } from './skills.js?v=db7039d9';
 
 export const SKILL_CATEGORIES = Object.freeze({
   6: 'Alchemy',
@@ -502,7 +502,7 @@ export function skillTreeEntry(state, classTsid, ctx = {}, now = Date.now()) {
   const def = catalog()[classTsid];
   if (!def) return null;
   const learned = state?.learned?.includes(classTsid);
-  const study = learned ? null : getStudyStatus(state, classTsid, now);
+  const study = learned ? null : getStudyStatus(state, classTsid, now, ctx);
   const check = learned || study ? null : canLearnSkill(state, classTsid, ctx);
   const status = learned
     ? 'learned'
