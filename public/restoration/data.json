@@ -2810,11 +2810,11 @@
   ]
  },
  "release": {
-  "game": "0.56.0",
+  "game": "0.57.0",
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3086,
+  "commits": 3088,
   "since": "2026-10-19",
   "recent": [
    {
@@ -2931,11 +2931,6 @@
     "date": "2026-11-21",
     "kind": "fix",
     "text": "Hechey Track's herb garden sits on level ground, not sunk into the dirt mound"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "fix",
-    "text": "No strip of dirt floating at the top of Mart's Way 1 and Dust Path 1C"
    }
   ]
  },
