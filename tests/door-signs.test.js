@@ -61,12 +61,11 @@ describe('house decos carry no For Sale sign', () => {
     }
   });
 
-  it('the home street, neighbours and Classic home draw the plain house decos', () => {
+  it('neighbours draw the plain house decos; the home street draws its chassis (G796)', () => {
     const homes = read('public/js/features/homes-feature.js');
-    const block = homes.slice(homes.indexOf('const HOUSES = {'), homes.indexOf('export const HOUSE_STYLE_KEYS'));
-    const paths = [...block.matchAll(/path: '([^']+)'/g)].map((m) => m[1]);
-    assert.deepEqual(paths, ['door_asset_house_large_01', 'door_asset_house_medium_03', 'door_asset_house_large_05']);
-    for (const p of paths) assert.ok(HOUSES.includes(p));
+    // G796: the player's own house is one of the ten furniture_chassis houses, no door deco.
+    assert.doesNotMatch(homes, /door_asset_house_/);
+    assert.match(homes, /const house = houseContainer\(PIXI, h\);/);
     for (const nb of NEIGHBOURS) assert.ok(!nb.house.path.includes('__forsale'), nb.id);
     assert.doesNotMatch(read('public/game.js'), /__forsale/);
     assert.doesNotMatch(homes, /doorSaleArt|__forsale/);

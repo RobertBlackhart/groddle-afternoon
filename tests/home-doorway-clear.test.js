@@ -31,7 +31,7 @@ import {
   streetNearSkip,
   streetTrimSpots,
   towerDoorway,
-} from '../public/js/features/homes-feature.js?v=800ab493';
+} from '../public/js/features/homes-feature.js?v=5717de2f';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const maxLeft = HOME_LIMITS.MAX_FRONTYARD_LEFT_SEGMENTS - HOME_LIMITS.START_FRONTYARD_LEFT_SEGMENTS;
@@ -46,7 +46,7 @@ describe('the home street keeps its doorways clear of scenery (PORCH)', () => {
       const door = houseDoorway(layout, style);
       const { doorX } = houseFixtureX(layout, style);
       assert.ok(door.x1 < doorX && door.x2 > doorX, `${style}: the door's hit area is inside`);
-      assert.ok(door.x2 - door.x1 >= 100, `${style}: wide enough for the mat`);
+      assert.ok(door.x2 - door.x1 >= 100, `${style}: wide enough to step up to the door`);
     }
   });
 
@@ -56,8 +56,9 @@ describe('the home street keeps its doorways clear of scenery (PORCH)', () => {
       const front = houseFront(layout, style);
       const door = houseDoorway(layout, style);
       const { left, signX } = houseFixtureX(layout, style);
-      assert.ok(front.x1 < door.x1 && front.x2 > door.x2, `${style}: the doorway is inside the front`);
-      assert.ok(front.x1 > left && front.x1 - left < 80, `${style}: from the wall's left corner`);
+      assert.ok(front.x1 <= door.x1 && front.x2 >= door.x2, `${style}: the doorway is inside the front`);
+      // G796: the chassis' own art, from its left end.
+      assert.ok(front.x1 >= left && front.x1 - left < 80, `${style}: from the wall's left corner`);
       assert.ok(front.x2 - front.x1 > 250, `${style}: across the whole front`);
       assert.ok(signX < front.x1, `${style}: the Mailbox's corner stays outside`);
     }

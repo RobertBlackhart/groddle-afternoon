@@ -20,10 +20,10 @@ import {
 } from '../public/js/home-layout.js?v=c33ebfb0';
 import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=dee06ab2';
 import { phoneStage, stageFor } from '../public/js/location-view.js?v=487afbb5';
-import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=800ab493';
+import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=5717de2f';
 import { AVATAR_STILL, homeKeyOf } from '../public/js/profiles.js?v=054ca723';
 import { HIRES_SPRITES, SPLIT_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
-import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=800ab493';
+import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=5717de2f';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -403,7 +403,7 @@ describe('the game sends it (features/profiles-feature.js and the tags)', () => 
     assert.match(homes, /sky\.homeLayoutSky = style\.sky;/);
     assert.match(homes, /field\.homeLayoutFills = /);
     assert.match(homes, /soilFill\.homeLayoutFills = /);
-    assert.match(homes, /house\.homeLayout = \{ k: 'house', s: HOUSES\[houseStyle\] \? houseStyle : 'meadow' \};/);
+    assert.match(homes, /house\.homeLayout = \{ k: 'house', s: h\.chassis \};/);
     assert.match(homes, /target\.sprite\.homeLayout = \{ k: 'cultivation', i: item\.protoClass \};/);
     assert.match(homes, /board\.label\.homeLayoutText = 'way_out';/);
     const tower = read('public/js/features/home-tower-feature.js');
@@ -474,7 +474,7 @@ describe('the site side (groddle-afternoon-site src/HomeLayout.php)', { skip: sk
     assert.deepEqual(out.kept.art[0].x2, ['assets/decos/groddle/bush_1@1.5x.webp', '1.5x']);
     assert.equal(out.kept.draw[3].w, 100, 'numbers rounded');
     assert.equal(out.kept.spots.length, 7, 'the spot naming no known item goes; its art would stay');
-    assert.deepEqual(out.labels, ['Metal Rock', '#!@$%&*#!@ Spire · Tower · 4 floors', 'Signpost', 'Zz <b>Owner</b>', 'Herb Garden', 'Door', 'House · Firebog']);
+    assert.deepEqual(out.labels, ['Metal Rock', '#!@$%&*#!@ Spire · Tower · 4 floors', 'Signpost', 'Zz <b>Owner</b>', 'Herb Garden', 'Door', 'Firebog House']);
     // The page: escaped owner, words from the table, links to the encyclopedia, srcset twins, lazy art.
     assert.match(out.html, /aria-label="Zz &lt;b&gt;Owner&lt;\/b&gt;&#039;s home street"/);
     assert.doesNotMatch(out.html, /<b>Owner/);

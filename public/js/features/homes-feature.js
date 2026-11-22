@@ -297,6 +297,7 @@ import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=a593b732';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
+import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseLot, normalizeHouse } from '../home-house.js?v=e5e54f6a';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -1545,33 +1546,43 @@ function runRockVerb(target, verbId, engine) {
 // ---------------------------------------------------------------------------
 
 /**
- * The house on the lot: the look picked with the Home Street Ticket at the
- * Selection Machine (js/home-ticket.js, js/homes.js HOME_STYLES). A street
- * style change keeps it, as the source keeps the furniture_chassis item
- * through homes_rebuild_exterior.
+ * The house on the lot (G796): the furniture_chassis, one of the ten recovered houses with a
+ * choice per part (js/home-house.js), picked and customized with the house's Customize verb. A
+ * street style change keeps it, as the source keeps the furniture_chassis item through
+ * homes_rebuild_exterior. It stands on the lot's middle with its foot on the walk line, as the
+ * chassis stood on the street's door (inc_homes.js homes_restore_chassis 2478-2504), facing left.
+ *
+ * `house` everywhere below is the home's house ({ chassis, config, facingRight }), a chassis id
+ * (its start config, facing left), or one of the remake's first home styles (meadow, firebog,
+ * uralia: the house it moved to, HOUSE_FROM_HOME_STYLE).
  */
-const HOUSES = {
-  meadow: { path: 'door_asset_house_large_01', w: 830, h: 668, scale: 0.48, doorX: 0.52, signX: 0.06, doorway: [0.38, 0.64], front: [0.15, 0.89] },
-  firebog: { path: 'door_asset_house_medium_03', w: 764, h: 586, scale: 0.58, doorX: 0.55, signX: 0.06, doorway: [0.32, 0.64], front: [0.15, 0.88] },
-  uralia: { path: 'door_asset_house_large_05', w: 830, h: 668, scale: 0.48, doorX: 0.52, signX: 0.06, doorway: [0.30, 0.62], front: [0.17, 0.88] },
-};
-export const HOUSE_STYLE_KEYS = Object.freeze(Object.keys(HOUSES));
+export const HOUSE_STYLE_KEYS = HOUSE_STYLE_IDS;
+
+/** A normalized house from a house, chassis id or old home style. */
+export function houseOf(house = 'cottage') {
+  if (house && typeof house === 'object') return normalizeHouse(house);
+  const id = HOUSE_FROM_HOME_STYLE[house] || house;
+  return normalizeHouse({ chassis: id, facingRight: false });
+}
+
+/** The house's lot numbers (houseLot), foot-relative. */
+function lotOf(house) {
+  const h = houseOf(house);
+  return houseLot(h.chassis, h.config, h.facingRight);
+}
 
 /**
- * PORCH (Austin 2026-11-01, "my house front is crowded"): the doorway, the front door and
- * the mat (Firebog's pink mat, Uralia's carrot rug) or worn path (Meadow) painted in front of
- * it, as fractions of the house art (measured on the door_asset_house_* decos). The street's
- * own scenery keeps out of it, as street-ecology's reserved spots keep a public street's
+ * PORCH (Austin 2026-11-01, "my house front is crowded"): the doorway, the house's door piece
+ * and room to step up to it (G796: measured on the chassis art, home-house.js houseLot). The
+ * street's own scenery keeps out of it, as street-ecology's reserved spots keep a public street's
  * doors clear (DOORCLEAR, streetReservedSpots; glitch-client DoorView.as 308-313).
  */
 export const DOORWAY_GAP = 8;
 
-/** The doorway (door and mat) in world x: { x1, x2 }. */
-export function houseDoorway(layout, houseStyle = 'meadow') {
-  const h = HOUSES[houseStyle] || HOUSES.meadow;
-  const w = h.w * h.scale;
-  const left = layout.houseX - w / 2;
-  return { x1: Math.round(left + w * h.doorway[0]), x2: Math.round(left + w * h.doorway[1]) };
+/** The doorway (the house's door piece, measured on its art) in world x: { x1, x2 }. */
+export function houseDoorway(layout, house = 'cottage') {
+  const { door } = lotOf(house);
+  return { x1: Math.round(layout.houseX + door.x1), x2: Math.round(layout.houseX + door.x2) };
 }
 
 /**
@@ -1585,16 +1596,12 @@ export function towerDoorway(footX) {
 
 /**
  * PLANTS (Austin 2026-11-01, "Plants by the house, thin out the ones covering the door"): the
- * house's front, everything Tiny Speck painted along its foot (the door and its mat or path, the
- * windows, Meadow's flower bed and bench, Firebog's two mushrooms, Uralia's four pots), from
- * the wall's left corner to its right one, as fractions of the house art (`front`, measured on
- * the door_asset_house_* decos where they stand on the ground). World x: { x1, x2 }.
+ * house's front, everything Tiny Speck painted of it, from its left end to its right one (G796:
+ * the chassis' own bounds, home-house.js houseLot). World x: { x1, x2 }.
  */
-export function houseFront(layout, houseStyle = 'meadow') {
-  const h = HOUSES[houseStyle] || HOUSES.meadow;
-  const w = h.w * h.scale;
-  const left = layout.houseX - w / 2;
-  return { x1: Math.round(left + w * h.front[0]), x2: Math.round(left + w * h.front[1]) };
+export function houseFront(layout, house = 'cottage') {
+  const { bounds } = lotOf(house);
+  return { x1: Math.round(layout.houseX + bounds.l), x2: Math.round(layout.houseX + bounds.r) };
 }
 
 /**
@@ -1609,8 +1616,8 @@ export function houseFront(layout, houseStyle = 'meadow') {
  * fringe too (its feet in front of the walk line); `move` (fringeMover) steps a sprite over a
  * cultivation aside, or drops it (null). The others keep their spots. PURE (world x).
  */
-export function streetTrimSpots(look, layout, houseStyle = 'meadow', { move = null } = {}) {
-  const front = houseFront(layout, houseStyle);
+export function streetTrimSpots(look, layout, house = 'cottage', { move = null } = {}) {
+  const front = houseFront(layout, house);
   const stop = layout.lotLeft + 40;
   let edge = front.x1 - DOORWAY_GAP;
   const out = [];
@@ -1715,7 +1722,7 @@ export function cultivationArtHalf(row) {
  * signpost's post, the Magic Rock, the Butler Box, a moved Mailbox and the Mail Dispatcher
  * (groundFixtures, dispatcherRx) and on the street. PURE.
  */
-export function homeFringeMovers(state, { houseStyle = 'meadow' } = {}) {
+export function homeFringeMovers(state, { houseStyle = 'cottage' } = {}) {
   const layout = homeStreetLayout(state);
   const spans = cultivationSpans(state, cultivationArtHalf);
   const fixtures = groundFixtures(layout, state);
@@ -1846,11 +1853,9 @@ export function landscapeNearSpots(style, seed, width, skip = () => false, { lot
 }
 
 /** The house's left end, its front door and its sign corner (where the Mailbox stands), in world x. */
-export function houseFixtureX(layout, houseStyle = 'meadow') {
-  const h = HOUSES[houseStyle] || HOUSES.meadow;
-  const w = h.w * h.scale;
-  const left = layout.houseX - w / 2;
-  return { left, doorX: layout.houseX + (h.doorX - 0.5) * w, signX: left + w * (h.signX + 0.02) };
+export function houseFixtureX(layout, house = 'cottage') {
+  const { bounds, door, sign } = lotOf(house);
+  return { left: Math.round(layout.houseX + bounds.l), doorX: layout.houseX + door.x, signX: layout.houseX + sign };
 }
 
 /**
@@ -2217,7 +2222,25 @@ export function drawLandscape(engine, root, style, seed, { width, groundY, lift,
   };
 }
 
-function streetBackground(engine, styleKey, houseStyle = 'meadow') {
+/**
+ * G796: the house's pieces (composeHouse) in a container whose origin is its foot. Each piece is
+ * a 1x file (tools/house-art); js/sprite-hires.js loads its 3x twin on dense screens.
+ */
+export function houseContainer(PIXI, house) {
+  const box = new PIXI.Container();
+  for (const op of composeHouse(house.chassis, house.config, house.facingRight)) {
+    const spr = new PIXI.Sprite(textureFromUrl(`${HOUSE_ART_DIR}${op.file}`));
+    spr.anchor.set(op.anchorX, op.anchorY);
+    spr.scale.set(op.scaleX, op.scaleY);
+    spr.x = op.x;
+    spr.y = op.y;
+    spr.houseLayer = op.part || 'band';
+    box.addChild(spr);
+  }
+  return box;
+}
+
+function streetBackground(engine, styleKey, houseStyle = 'cottage') {
   const { PIXI } = engine;
   const style = streetLook(styleKey);
   const seed = style.seed || styleKey;
@@ -2240,12 +2263,13 @@ function streetBackground(engine, styleKey, houseStyle = 'meadow') {
     lot: { left: layout.lotLeft, right: layout.lotRight },
   });
 
-  // The house, centred on its lot
-  const h = HOUSES[houseStyle] || HOUSES.meadow;
-  // Through the landscape artist: its sharp copy at the screen's density (tools/deco-pipeline/sharp.py house_placements).
-  const house = land.artist.sprite(PIXI, { s: h.path, w: h.w, h: h.h, scale: h.scale }, layout.houseX, STREET_GROUND_Y + 14);
+  // G796: the house, its foot on the lot's middle (the chassis on the street's door).
+  const h = houseOf(houseStyle);
+  const house = houseContainer(PIXI, h);
+  house.x = layout.houseX;
+  house.y = STREET_GROUND_Y;
   house.zIndex = -20;
-  house.homeLayout = { k: 'house', s: HOUSES[houseStyle] ? houseStyle : 'meadow' };
+  house.homeLayout = { k: 'house', s: h.chassis };
   root.addChild(house);
   // A planted border along the front of the house, from its left corner, clear of the doorway
   // (PORCH) and of the cultivations (YARDBUSH).
@@ -2264,6 +2288,8 @@ function streetBackground(engine, styleKey, houseStyle = 'meadow') {
   root.houseDoorX = doorX;
   root.houseSignX = signX;
   root.houseDoorway = houseDoorway(layout, houseStyle);
+  // G796: the door piece's top (its hit area reaches up to it: a door up a house's steps).
+  root.houseDoorTop = lotOf(houseStyle).door.top;
   root.streetStyle = styleKey;
   return root;
 }
@@ -2617,10 +2643,11 @@ function spawnStreetTargets(engine) {
     sprite: mailbox,
     state: { unread },
   });
-  // The house deco already paints its front door; this is its hit area.
+  // The house already paints its front door; this is its hit area, from the ground up to the door's top.
   const doorX = bg?.houseDoorX ?? layout.houseX;
   const door = new PIXI.Graphics();
-  door.rect(-46, -150, 92, 150).fill({ color: 0xffffff, alpha: 0.001 });
+  const doorH = Math.max(150, -(bg?.houseDoorTop ?? -150));
+  door.rect(-46, -doorH, 92, doorH).fill({ color: 0xffffff, alpha: 0.001 });
   door.x = doorX;
   door.y = STREET_GROUND_Y;
   door.zIndex = 9;
@@ -2651,6 +2678,37 @@ function spawnStreetTargets(engine) {
   // FRIENDPOST: hovering the arm says where it leads.
   for (const b of gate.signBoards || []) b.tip = way.label ? `Back to ${way.label}` : '';
   return { mailbox: mailTarget, door: doorTarget, gate: gateTarget };
+}
+
+// ---------------------------------------------------------------------------
+// The house (G796): QA
+// ---------------------------------------------------------------------------
+
+let houseDemoDone = false;
+
+/**
+ * QA (home demos): &homehouse=<chassis> builds that house once, free (&homehouseconfig=part:n,...
+ * picks parts, &homehousefacing=right turns it round).
+ */
+function qaHouse(engine) {
+  if (houseDemoDone) return;
+  const id = String(engine.param?.('homehouse') || '');
+  if (!id) return;
+  houseDemoDone = true;
+  const config = {};
+  for (const pair of String(engine.param?.('homehouseconfig') || '').split(',')) {
+    const [k, v] = pair.split(':');
+    if (k && v) config[k.trim()] = Number(v);
+  }
+  const base = houseOf(id);
+  engine.setHomeHouse?.({ chassis: base.chassis, config: { ...base.config, ...config }, facingRight: engine.param?.('homehousefacing') === 'right' });
+}
+
+/** QA: the house as data on the canvas (homeHouse "chassis|part:n,...|left"). */
+function publishHouse(engine) {
+  const ctx = engine.homeContext?.() || {};
+  const h = houseOf(ctx.house || ctx.style || 'meadow');
+  engine.setData?.('homeHouse', `${h.chassis}|${Object.entries(h.config).map(([k, v]) => `${k}:${v}`).join(',')}|${h.facingRight ? 'right' : 'left'}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -7549,7 +7607,8 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
         mailbox.zIndex = 30;
         eng.entityLayer.addChild(mailbox);
         const door = new PIXI.Graphics();
-        door.rect(-46, -150, 92, 150).fill({ color: 0xffffff, alpha: 0.001 });
+        const doorH = Math.max(150, -(background.houseDoorTop ?? -150));
+        door.rect(-46, -doorH, 92, doorH).fill({ color: 0xffffff, alpha: 0.001 });
         door.x = background.houseDoorX;
         door.y = STREET_GROUND_Y;
         door.zIndex = 9;
@@ -7901,7 +7960,9 @@ function homeScene(room, engine) {
   syncStreetShift(engine);
   qaStreetStyle(engine);
   qaRockFlags(engine);
-  const background = streetBackground(engine, shownStreetStyle(engine), style);
+  qaHouse(engine);
+  // G796: the house as it stands (a save from before it moves to its style's original).
+  const background = streetBackground(engine, shownStreetStyle(engine), engine.homeContext?.().house || style);
   const layout = homeStreetLayout(cult);
   return {
     width: layout.width,
@@ -7926,6 +7987,7 @@ function homeScene(room, engine) {
     enter() {
       spawnCultivations(engine);
       afterEnter(engine);
+      publishHouse(engine);
     },
   };
 }
