@@ -40,12 +40,12 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 14,
+    "known": 15,
     "unreleased": 0,
     "fixed": 431,
     "lost": 5,
     "purpose": 16,
-    "idea": 11
+    "idea": 10
   },
   "areas": [
     {
@@ -849,6 +849,11 @@
         {
           "id": "G223",
           "text": "Some house styles are still to come, including more interior and back yard styles. The Coral Caves style waits for its art to turn up.",
+          "state": "known"
+        },
+        {
+          "id": "G400",
+          "text": "Nine wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop.",
           "state": "known"
         },
         {
@@ -3361,11 +3366,6 @@
       "id": "G360",
       "text": "Two bracelets that exist in the art but that nobody could ever wear.",
       "area": "Wardrobe"
-    },
-    {
-      "id": "G400",
-      "text": "Nine wallpapers, floors and ceilings, such as the starry sky set, that were made but never put in the shop.",
-      "area": "Homes"
     }
   ]
 }
